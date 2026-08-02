@@ -1,6 +1,4 @@
-import type { PipelineFamilyItem } from "./types";
-
-export type GanComparisonMode = NonNullable<PipelineFamilyItem["comparison_mode"]>;
+import type { ActiveMethod, PipelineFamilyItem } from "./types";
 
 const MODEL_ORDER = [
   "openai/gpt-4.1-mini",
@@ -11,21 +9,11 @@ const MODEL_ORDER = [
   "ollama_chat/gemma4:26b",
 ];
 
-const GROUPS: Array<{ mode: GanComparisonMode; label: string }> = [
-  { mode: "llm_plus_rules", label: "Winning mode · LLM + rules" },
-  { mode: "llm_only", label: "LLM only · raw one-call output" },
-  { mode: "deterministic_only", label: "Deterministic only · no model" },
+const GROUPS: Array<{ method: ActiveMethod; label: string }> = [
+  { method: "llm_with_rules", label: "Winning mode · LLM with rules" },
+  { method: "llm", label: "LLM only · raw one-call output" },
+  { method: "rules", label: "Deterministic only · no model" },
 ];
-
-const MODE_LABELS: Record<GanComparisonMode, string> = {
-  llm_plus_rules: "LLM + Rules",
-  llm_only: "LLM Only",
-  deterministic_only: "Rules Only",
-};
-
-export function ganPipelineModeLabel(mode: GanComparisonMode): string {
-  return MODE_LABELS[mode];
-}
 
 export function ganPipelineOptionLabel(label: string): string {
   return label.replace(/\s*[·-]\s*(?:replay|live)\s*$/i, "");
@@ -40,7 +28,7 @@ export function groupGanPipelineOptions(options: PipelineFamilyItem[]) {
   return GROUPS.map((group) => ({
     ...group,
     options: options
-      .filter((option) => option.comparison_mode === group.mode)
+      .filter((option) => option.kind === group.method)
       .sort((a, b) => modelRank(a.model) - modelRank(b.model)),
   })).filter((group) => group.options.length > 0);
 }

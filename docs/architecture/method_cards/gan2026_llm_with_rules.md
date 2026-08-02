@@ -22,9 +22,9 @@ One structured call returns two linked objects: an event ledger of source-near s
 
 | Question | Answer |
 | --- | --- |
-| What enters? | GanFrequencyRecord - see `gan.hybrid.build_prompt` |
-| Who first proposes the clinical answer? | the model proposes and selects (gan.hybrid.model_call); ten deterministic repair families may change the answer afterwards |
-| Which later stages may change clinical meaning? | `gan.hybrid.repair.selected_evidence`, `gan.hybrid.repair.monthly_diary`, `gan.hybrid.repair.usual_interval`, `gan.hybrid.repair.typical_over_ytd`, `gan.hybrid.repair.breakthrough`, `gan.hybrid.repair.non_epileptic`, `gan.hybrid.repair.residual_jerk`, `gan.hybrid.repair.post_change_burst`, `gan.hybrid.repair.dated_sequence`, `gan.hybrid.repair.elapsed_anchor` |
+| What enters? | GanFrequencyRecord - see `gan.llm_with_rules.build_prompt` |
+| Who first proposes the clinical answer? | the model proposes and selects (gan.llm_with_rules.model_call); ten deterministic repair families may change the answer afterwards |
+| Which later stages may change clinical meaning? | `gan.llm_with_rules.repair.selected_evidence`, `gan.llm_with_rules.repair.monthly_diary`, `gan.llm_with_rules.repair.usual_interval`, `gan.llm_with_rules.repair.typical_over_ytd`, `gan.llm_with_rules.repair.breakthrough`, `gan.llm_with_rules.repair.non_epileptic`, `gan.llm_with_rules.repair.residual_jerk`, `gan.llm_with_rules.repair.post_change_burst`, `gan.llm_with_rules.repair.dated_sequence`, `gan.llm_with_rules.repair.elapsed_anchor` |
 | What final representation is scored? | One Gan label string per letter, projected to a Purist and a Pragmatic category. |
 | What evidence shows whether each component helped or harmed? | `docs/canon/06_gan_clinical_policy.md`, `docs/research/six_model_comparison_report_2026-07-18.md`, `docs/research/clinical_selection_policy_catalog_2026-07-31.md` |
 
@@ -34,32 +34,32 @@ Read the `Effect` column first. `CLINICAL MEANING` marks every stage that can ch
 
 | # | Stage | Owner | Effect | What it does |
 | --- | --- | --- | --- | --- |
-| 1 | `gan.hybrid.build_prompt`<br>Build the structured-events prompt | rules | transport/schema only | Render the note text and the event-ledger schema into the prompt input for one structured call. |
-| 2 | `gan.hybrid.model_call`<br>Model extracts events and selects the answer | model | CLINICAL MEANING | One structured call returns an event ledger plus a selection naming selected_event_ids, final_kind, final_label, evidence, confidence, and rationale. |
-| 3 | `gan.hybrid.json_schema_repair`<br>Repair JSON dialect and payload shape | rules | transport/schema only | Recover the JSON object, repair Python-literal dialect, repair the selected-answer payload shape, quarantine events that fail event-level validation, and drop unsupported keys. |
-| 4 | `gan.hybrid.format_only_retry`<br>Format-only retry (local models) | rules | transport/schema only | For local ollama-served models whose first output was unparseable, ask for a format-only repair of the same content and re-enter the parse path; the retry is accepted only if it validates. |
-| 5 | `gan.hybrid.schema_validation`<br>Validate the extraction schema | rules | gate | Validate the repaired payload against the structured extraction record; a failure ends the row with no prediction. |
-| 6 | `gan.hybrid.normalize_events`<br>Normalize every event | rules | representation | Convert each model event's source phrase into a comparable normalized rate; this runs over the whole ledger, not only the selected events. |
-| 7 | `gan.hybrid.resolve_label`<br>Resolve the label from the model's selection | rules | representation | Read the model's selected_event_ids and final_kind and resolve the initial label from the corresponding normalized events. |
-| 8 | `gan.hybrid.repair.selected_evidence`<br>Repair 1 - evidence-based label repair | rules | CLINICAL MEANING | Compare the resolved label with the model's quoted evidence span and rewrite the label when the evidence supports a different rate. |
-| 9 | `gan.hybrid.repair.monthly_diary`<br>Repair 2 - monthly diary | rules | CLINICAL MEANING | Derive a label from a month-by-month diary in the ledger and override the current label unless the existing label is preserved by the diary guard. |
-| 10 | `gan.hybrid.repair.usual_interval`<br>Repair 3 - usual interval | rules | CLINICAL MEANING | Convert a stated usual interval between seizures into a rate label when the ledger supports it. |
-| 11 | `gan.hybrid.repair.typical_over_ytd`<br>Repair 4 - typical rate over year-to-date | rules | CLINICAL MEANING | When the ledger holds both a typical recurring rate and a year-to-date total, prefer the typical recurring rate. |
-| 12 | `gan.hybrid.repair.breakthrough`<br>Repair 5 - breakthrough seizures | rules | CLINICAL MEANING | Handle letters where the current burden is expressed as breakthrough seizures against an otherwise controlled background. |
-| 13 | `gan.hybrid.repair.non_epileptic`<br>Repair 6 - non-epileptic events | rules | CLINICAL MEANING | Prevent events the ledger marks as non-epileptic from supplying the seizure-frequency answer. |
-| 14 | `gan.hybrid.repair.residual_jerk`<br>Repair 7 - residual jerks | rules | CLINICAL MEANING | Decide whether residual myoclonic jerks count toward the current seizure-frequency answer. |
-| 15 | `gan.hybrid.repair.post_change_burst`<br>Repair 8 - post-change burst | rules | CLINICAL MEANING | Handle a burst of seizures that follows a named medication or lifestyle change, so a transient burst does not become the current rate. |
-| 16 | `gan.hybrid.repair.dated_sequence`<br>Repair 9 - dated sequence | rules | CLINICAL MEANING | Derive a rate from a sequence of individually dated seizures and the window they span. |
-| 17 | `gan.hybrid.repair.elapsed_anchor`<br>Repair 10 - elapsed since anchor | rules | CLINICAL MEANING | Derive a seizure-free duration from the elapsed time since the last dated event, unless the sustained seizure-free guard preserves the existing label. |
-| 18 | `gan.hybrid.scorable_label_check`<br>Check the label is scorable | rules | gate | Parse the repaired label into a frequency record; an unparseable label is recorded as unscorable. |
-| 19 | `gan.hybrid.evidence_containment`<br>Check evidence is an exact substring | rules | gate | Require the model's quoted selection evidence to appear verbatim in the note text. |
-| 20 | `gan.hybrid.score`<br>Project to Purist and Pragmatic scoring | scorer | benchmark projection | Map the predicted and gold monthly frequencies into the Purist and Pragmatic categories and compare. |
+| 1 | `gan.llm_with_rules.build_prompt`<br>Build the structured-events prompt | rules | transport/schema only | Render the note text and the event-ledger schema into the prompt input for one structured call. |
+| 2 | `gan.llm_with_rules.model_call`<br>Model extracts events and selects the answer | model | CLINICAL MEANING | One structured call returns an event ledger plus a selection naming selected_event_ids, final_kind, final_label, evidence, confidence, and rationale. |
+| 3 | `gan.llm_with_rules.json_schema_repair`<br>Repair JSON dialect and payload shape | rules | transport/schema only | Recover the JSON object, repair Python-literal dialect, repair the selected-answer payload shape, quarantine events that fail event-level validation, and drop unsupported keys. |
+| 4 | `gan.llm_with_rules.format_only_retry`<br>Format-only retry (local models) | rules | transport/schema only | For local ollama-served models whose first output was unparseable, ask for a format-only repair of the same content and re-enter the parse path; the retry is accepted only if it validates. |
+| 5 | `gan.llm_with_rules.schema_validation`<br>Validate the extraction schema | rules | gate | Validate the repaired payload against the structured extraction record; a failure ends the row with no prediction. |
+| 6 | `gan.llm_with_rules.normalize_events`<br>Normalize every event | rules | representation | Convert each model event's source phrase into a comparable normalized rate; this runs over the whole ledger, not only the selected events. |
+| 7 | `gan.llm_with_rules.resolve_label`<br>Resolve the label from the model's selection | rules | representation | Read the model's selected_event_ids and final_kind and resolve the initial label from the corresponding normalized events. |
+| 8 | `gan.llm_with_rules.repair.selected_evidence`<br>Repair 1 - evidence-based label repair | rules | CLINICAL MEANING | Compare the resolved label with the model's quoted evidence span and rewrite the label when the evidence supports a different rate. |
+| 9 | `gan.llm_with_rules.repair.monthly_diary`<br>Repair 2 - monthly diary | rules | CLINICAL MEANING | Derive a label from a month-by-month diary in the ledger and override the current label unless the existing label is preserved by the diary guard. |
+| 10 | `gan.llm_with_rules.repair.usual_interval`<br>Repair 3 - usual interval | rules | CLINICAL MEANING | Convert a stated usual interval between seizures into a rate label when the ledger supports it. |
+| 11 | `gan.llm_with_rules.repair.typical_over_ytd`<br>Repair 4 - typical rate over year-to-date | rules | CLINICAL MEANING | When the ledger holds both a typical recurring rate and a year-to-date total, prefer the typical recurring rate. |
+| 12 | `gan.llm_with_rules.repair.breakthrough`<br>Repair 5 - breakthrough seizures | rules | CLINICAL MEANING | Handle letters where the current burden is expressed as breakthrough seizures against an otherwise controlled background. |
+| 13 | `gan.llm_with_rules.repair.non_epileptic`<br>Repair 6 - non-epileptic events | rules | CLINICAL MEANING | Prevent events the ledger marks as non-epileptic from supplying the seizure-frequency answer. |
+| 14 | `gan.llm_with_rules.repair.residual_jerk`<br>Repair 7 - residual jerks | rules | CLINICAL MEANING | Decide whether residual myoclonic jerks count toward the current seizure-frequency answer. |
+| 15 | `gan.llm_with_rules.repair.post_change_burst`<br>Repair 8 - post-change burst | rules | CLINICAL MEANING | Handle a burst of seizures that follows a named medication or lifestyle change, so a transient burst does not become the current rate. |
+| 16 | `gan.llm_with_rules.repair.dated_sequence`<br>Repair 9 - dated sequence | rules | CLINICAL MEANING | Derive a rate from a sequence of individually dated seizures and the window they span. |
+| 17 | `gan.llm_with_rules.repair.elapsed_anchor`<br>Repair 10 - elapsed since anchor | rules | CLINICAL MEANING | Derive a seizure-free duration from the elapsed time since the last dated event, unless the sustained seizure-free guard preserves the existing label. |
+| 18 | `gan.llm_with_rules.scorable_label_check`<br>Check the label is scorable | rules | gate | Parse the repaired label into a frequency record; an unparseable label is recorded as unscorable. |
+| 19 | `gan.llm_with_rules.evidence_containment`<br>Check evidence is an exact substring | rules | gate | Require the model's quoted selection evidence to appear verbatim in the note text. |
+| 20 | `gan.llm_with_rules.score`<br>Project to Purist and Pragmatic scoring | scorer | benchmark projection | Map the predicted and gold monthly frequencies into the Purist and Pragmatic categories and compare. |
 
 ## Stage walkthrough
 
 ### 1. Build the structured-events prompt
 
-`gan.hybrid.build_prompt` - rules-owned, transport/schema only, rule category `general`
+`gan.llm_with_rules.build_prompt` - rules-owned, transport/schema only, rule category `general`
 
 Render the note text and the event-ledger schema into the prompt input for one structured call.
 
@@ -75,7 +75,7 @@ Render the note text and the event-ledger schema into the prompt input for one s
 
 ### 2. Model extracts events and selects the answer
 
-`gan.hybrid.model_call` - model-owned, CLINICAL MEANING
+`gan.llm_with_rules.model_call` - model-owned, CLINICAL MEANING
 
 One structured call returns an event ledger plus a selection naming selected_event_ids, final_kind, final_label, evidence, confidence, and rationale.
 
@@ -93,7 +93,7 @@ One structured call returns an event ledger plus a selection naming selected_eve
 
 ### 3. Repair JSON dialect and payload shape
 
-`gan.hybrid.json_schema_repair` - rules-owned, transport/schema only, rule category `general`
+`gan.llm_with_rules.json_schema_repair` - rules-owned, transport/schema only, rule category `general`
 
 Recover the JSON object, repair Python-literal dialect, repair the selected-answer payload shape, quarantine events that fail event-level validation, and drop unsupported keys.
 
@@ -111,7 +111,7 @@ Recover the JSON object, repair Python-literal dialect, repair the selected-answ
 
 ### 4. Format-only retry (local models)
 
-`gan.hybrid.format_only_retry` - rules-owned, transport/schema only, rule category `general`
+`gan.llm_with_rules.format_only_retry` - rules-owned, transport/schema only, rule category `general`
 
 For local ollama-served models whose first output was unparseable, ask for a format-only repair of the same content and re-enter the parse path; the retry is accepted only if it validates.
 
@@ -129,7 +129,7 @@ For local ollama-served models whose first output was unparseable, ask for a for
 
 ### 5. Validate the extraction schema
 
-`gan.hybrid.schema_validation` - rules-owned, gate, rule category `general`
+`gan.llm_with_rules.schema_validation` - rules-owned, gate, rule category `general`
 
 Validate the repaired payload against the structured extraction record; a failure ends the row with no prediction.
 
@@ -145,7 +145,7 @@ Validate the repaired payload against the structured extraction record; a failur
 
 ### 6. Normalize every event
 
-`gan.hybrid.normalize_events` - rules-owned, representation, rule category `seizure_frequency`
+`gan.llm_with_rules.normalize_events` - rules-owned, representation, rule category `seizure_frequency`
 
 Convert each model event's source phrase into a comparable normalized rate; this runs over the whole ledger, not only the selected events.
 
@@ -161,7 +161,7 @@ Convert each model event's source phrase into a comparable normalized rate; this
 
 ### 7. Resolve the label from the model's selection
 
-`gan.hybrid.resolve_label` - rules-owned, representation, rule category `seizure_frequency`
+`gan.llm_with_rules.resolve_label` - rules-owned, representation, rule category `seizure_frequency`
 
 Read the model's selected_event_ids and final_kind and resolve the initial label from the corresponding normalized events.
 
@@ -179,7 +179,7 @@ Read the model's selected_event_ids and final_kind and resolve the initial label
 
 ### 8. Repair 1 - evidence-based label repair
 
-`gan.hybrid.repair.selected_evidence` - rules-owned, CLINICAL MEANING, rule category `seizure_frequency`
+`gan.llm_with_rules.repair.selected_evidence` - rules-owned, CLINICAL MEANING, rule category `seizure_frequency`
 
 Compare the resolved label with the model's quoted evidence span and rewrite the label when the evidence supports a different rate.
 
@@ -195,7 +195,7 @@ Compare the resolved label with the model's quoted evidence span and rewrite the
 
 ### 9. Repair 2 - monthly diary
 
-`gan.hybrid.repair.monthly_diary` - rules-owned, CLINICAL MEANING, rule category `seizure_frequency`
+`gan.llm_with_rules.repair.monthly_diary` - rules-owned, CLINICAL MEANING, rule category `seizure_frequency`
 
 Derive a label from a month-by-month diary in the ledger and override the current label unless the existing label is preserved by the diary guard.
 
@@ -211,7 +211,7 @@ Derive a label from a month-by-month diary in the ledger and override the curren
 
 ### 10. Repair 3 - usual interval
 
-`gan.hybrid.repair.usual_interval` - rules-owned, CLINICAL MEANING, rule category `seizure_frequency`
+`gan.llm_with_rules.repair.usual_interval` - rules-owned, CLINICAL MEANING, rule category `seizure_frequency`
 
 Convert a stated usual interval between seizures into a rate label when the ledger supports it.
 
@@ -227,7 +227,7 @@ Convert a stated usual interval between seizures into a rate label when the ledg
 
 ### 11. Repair 4 - typical rate over year-to-date
 
-`gan.hybrid.repair.typical_over_ytd` - rules-owned, CLINICAL MEANING, rule category `seizure_frequency`
+`gan.llm_with_rules.repair.typical_over_ytd` - rules-owned, CLINICAL MEANING, rule category `seizure_frequency`
 
 When the ledger holds both a typical recurring rate and a year-to-date total, prefer the typical recurring rate.
 
@@ -245,7 +245,7 @@ When the ledger holds both a typical recurring rate and a year-to-date total, pr
 
 ### 12. Repair 5 - breakthrough seizures
 
-`gan.hybrid.repair.breakthrough` - rules-owned, CLINICAL MEANING, rule category `seizure_frequency`
+`gan.llm_with_rules.repair.breakthrough` - rules-owned, CLINICAL MEANING, rule category `seizure_frequency`
 
 Handle letters where the current burden is expressed as breakthrough seizures against an otherwise controlled background.
 
@@ -261,7 +261,7 @@ Handle letters where the current burden is expressed as breakthrough seizures ag
 
 ### 13. Repair 6 - non-epileptic events
 
-`gan.hybrid.repair.non_epileptic` - rules-owned, CLINICAL MEANING, rule category `clinical_epilepsy`
+`gan.llm_with_rules.repair.non_epileptic` - rules-owned, CLINICAL MEANING, rule category `clinical_epilepsy`
 
 Prevent events the ledger marks as non-epileptic from supplying the seizure-frequency answer.
 
@@ -277,7 +277,7 @@ Prevent events the ledger marks as non-epileptic from supplying the seizure-freq
 
 ### 14. Repair 7 - residual jerks
 
-`gan.hybrid.repair.residual_jerk` - rules-owned, CLINICAL MEANING, rule category `clinical_epilepsy`
+`gan.llm_with_rules.repair.residual_jerk` - rules-owned, CLINICAL MEANING, rule category `clinical_epilepsy`
 
 Decide whether residual myoclonic jerks count toward the current seizure-frequency answer.
 
@@ -293,7 +293,7 @@ Decide whether residual myoclonic jerks count toward the current seizure-frequen
 
 ### 15. Repair 8 - post-change burst
 
-`gan.hybrid.repair.post_change_burst` - rules-owned, CLINICAL MEANING, rule category `seizure_frequency`
+`gan.llm_with_rules.repair.post_change_burst` - rules-owned, CLINICAL MEANING, rule category `seizure_frequency`
 
 Handle a burst of seizures that follows a named medication or lifestyle change, so a transient burst does not become the current rate.
 
@@ -309,7 +309,7 @@ Handle a burst of seizures that follows a named medication or lifestyle change, 
 
 ### 16. Repair 9 - dated sequence
 
-`gan.hybrid.repair.dated_sequence` - rules-owned, CLINICAL MEANING, rule category `seizure_frequency`
+`gan.llm_with_rules.repair.dated_sequence` - rules-owned, CLINICAL MEANING, rule category `seizure_frequency`
 
 Derive a rate from a sequence of individually dated seizures and the window they span.
 
@@ -325,7 +325,7 @@ Derive a rate from a sequence of individually dated seizures and the window they
 
 ### 17. Repair 10 - elapsed since anchor
 
-`gan.hybrid.repair.elapsed_anchor` - rules-owned, CLINICAL MEANING, rule category `seizure_frequency`
+`gan.llm_with_rules.repair.elapsed_anchor` - rules-owned, CLINICAL MEANING, rule category `seizure_frequency`
 
 Derive a seizure-free duration from the elapsed time since the last dated event, unless the sustained seizure-free guard preserves the existing label.
 
@@ -341,7 +341,7 @@ Derive a seizure-free duration from the elapsed time since the last dated event,
 
 ### 18. Check the label is scorable
 
-`gan.hybrid.scorable_label_check` - rules-owned, gate, rule category `benchmark_format`
+`gan.llm_with_rules.scorable_label_check` - rules-owned, gate, rule category `benchmark_format`
 
 Parse the repaired label into a frequency record; an unparseable label is recorded as unscorable.
 
@@ -357,7 +357,7 @@ Parse the repaired label into a frequency record; an unparseable label is record
 
 ### 19. Check evidence is an exact substring
 
-`gan.hybrid.evidence_containment` - rules-owned, gate, rule category `general`
+`gan.llm_with_rules.evidence_containment` - rules-owned, gate, rule category `general`
 
 Require the model's quoted selection evidence to appear verbatim in the note text.
 
@@ -375,7 +375,7 @@ Require the model's quoted selection evidence to appear verbatim in the note tex
 
 ### 20. Project to Purist and Pragmatic scoring
 
-`gan.hybrid.score` - scorer-owned, benchmark projection
+`gan.llm_with_rules.score` - scorer-owned, benchmark projection
 
 Map the predicted and gold monthly frequencies into the Purist and Pragmatic categories and compare.
 
@@ -395,26 +395,26 @@ Entry point: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestra
 
 | Stage | Implementation | Governing test |
 | --- | --- | --- |
-| `gan.hybrid.build_prompt` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:build_prompt_input` | `tests/test_gan2026_llm_prompt_hygiene.py` |
-| `gan.hybrid.model_call` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:DspyStructuredExtractor` | `tests/test_gan2026_hybrid_structured_events_contract.py` |
-| `gan.hybrid.json_schema_repair` | `clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair:repair_structured_extraction_payload` | `tests/test_gan2026_schema_repair.py` |
-| `gan.hybrid.format_only_retry` | `clinical_extraction.core.local_structured_output:validate_format_retry` | `tests/test_exectv2_local_format_retry.py` |
-| `gan.hybrid.schema_validation` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:StructuredExtractionRecord` | `tests/test_gan2026_hybrid_structured_events_contract.py` |
-| `gan.hybrid.normalize_events` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:_normalize_event` | `tests/test_gan2026_normalize_governance.py` |
-| `gan.hybrid.resolve_label` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:_resolve_final_label` | `tests/test_gan2026_hybrid_structured_events_contract.py` |
-| `gan.hybrid.repair.selected_evidence` | `clinical_extraction.tasks.seizure_frequency.gan2026.normalize:repair_prediction_label_with_evidence` | `tests/test_gan2026_selected_evidence_derivation.py` |
-| `gan.hybrid.repair.monthly_diary` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_monthly_diary:monthly_diary_label_from_events` | `tests/test_gan2026_hybrid_structured_events_diaries.py` |
-| `gan.hybrid.repair.usual_interval` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:usual_interval_label_from_events` | `tests/test_gan2026_hybrid_structured_events_repair.py` |
-| `gan.hybrid.repair.typical_over_ytd` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:typical_recurring_rate_over_ytd_from_events` | `tests/test_gan2026_floor_regression_guards.py` |
-| `gan.hybrid.repair.breakthrough` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:breakthrough_label_from_events` | `tests/test_gan2026_hybrid_structured_events_repair.py` |
-| `gan.hybrid.repair.non_epileptic` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:non_epileptic_label_from_events` | `tests/test_gan2026_hybrid_structured_events_repair.py` |
-| `gan.hybrid.repair.residual_jerk` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:residual_jerk_label_from_events` | `tests/test_gan2026_hybrid_structured_events_repair.py` |
-| `gan.hybrid.repair.post_change_burst` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:post_change_burst_label_from_events` | `tests/test_gan2026_hybrid_structured_events_temporal.py` |
-| `gan.hybrid.repair.dated_sequence` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:dated_sequence_label_from_events` | `tests/test_gan2026_dated_count_competing_rate_floor.py` |
-| `gan.hybrid.repair.elapsed_anchor` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:elapsed_since_anchor_label_from_events` | `tests/test_gan2026_hybrid_structured_events_repair.py` |
-| `gan.hybrid.scorable_label_check` | `clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser:label_to_frequency_record` | `tests/test_gan2026_labels.py` |
-| `gan.hybrid.evidence_containment` | `clinical_extraction.core.evidence:evidence_is_substring` | `tests/test_core_evidence.py` |
-| `gan.hybrid.score` | `clinical_extraction.tasks.seizure_frequency.gan2026.labels:map_purist` | `tests/test_gan2026_labels.py` |
+| `gan.llm_with_rules.build_prompt` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:build_prompt_input` | `tests/test_gan2026_llm_prompt_hygiene.py` |
+| `gan.llm_with_rules.model_call` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:DspyStructuredExtractor` | `tests/test_gan2026_hybrid_structured_events_contract.py` |
+| `gan.llm_with_rules.json_schema_repair` | `clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair:repair_structured_extraction_payload` | `tests/test_gan2026_schema_repair.py` |
+| `gan.llm_with_rules.format_only_retry` | `clinical_extraction.core.local_structured_output:validate_format_retry` | `tests/test_exectv2_local_format_retry.py` |
+| `gan.llm_with_rules.schema_validation` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:StructuredExtractionRecord` | `tests/test_gan2026_hybrid_structured_events_contract.py` |
+| `gan.llm_with_rules.normalize_events` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:_normalize_event` | `tests/test_gan2026_normalize_governance.py` |
+| `gan.llm_with_rules.resolve_label` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:_resolve_final_label` | `tests/test_gan2026_hybrid_structured_events_contract.py` |
+| `gan.llm_with_rules.repair.selected_evidence` | `clinical_extraction.tasks.seizure_frequency.gan2026.normalize:repair_prediction_label_with_evidence` | `tests/test_gan2026_selected_evidence_derivation.py` |
+| `gan.llm_with_rules.repair.monthly_diary` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_monthly_diary:monthly_diary_label_from_events` | `tests/test_gan2026_hybrid_structured_events_diaries.py` |
+| `gan.llm_with_rules.repair.usual_interval` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:usual_interval_label_from_events` | `tests/test_gan2026_hybrid_structured_events_repair.py` |
+| `gan.llm_with_rules.repair.typical_over_ytd` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:typical_recurring_rate_over_ytd_from_events` | `tests/test_gan2026_floor_regression_guards.py` |
+| `gan.llm_with_rules.repair.breakthrough` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:breakthrough_label_from_events` | `tests/test_gan2026_hybrid_structured_events_repair.py` |
+| `gan.llm_with_rules.repair.non_epileptic` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:non_epileptic_label_from_events` | `tests/test_gan2026_hybrid_structured_events_repair.py` |
+| `gan.llm_with_rules.repair.residual_jerk` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:residual_jerk_label_from_events` | `tests/test_gan2026_hybrid_structured_events_repair.py` |
+| `gan.llm_with_rules.repair.post_change_burst` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:post_change_burst_label_from_events` | `tests/test_gan2026_hybrid_structured_events_temporal.py` |
+| `gan.llm_with_rules.repair.dated_sequence` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:dated_sequence_label_from_events` | `tests/test_gan2026_dated_count_competing_rate_floor.py` |
+| `gan.llm_with_rules.repair.elapsed_anchor` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:elapsed_since_anchor_label_from_events` | `tests/test_gan2026_hybrid_structured_events_repair.py` |
+| `gan.llm_with_rules.scorable_label_check` | `clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser:label_to_frequency_record` | `tests/test_gan2026_labels.py` |
+| `gan.llm_with_rules.evidence_containment` | `clinical_extraction.core.evidence:evidence_is_substring` | `tests/test_core_evidence.py` |
+| `gan.llm_with_rules.score` | `clinical_extraction.tasks.seizure_frequency.gan2026.labels:map_purist` | `tests/test_gan2026_labels.py` |
 
 ## Not this method
 

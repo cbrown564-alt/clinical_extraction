@@ -16,7 +16,8 @@ Store one row per letter, clinical subproblem, component decision, and scored
 output. The row must include:
 
 - task, dataset, split definition, and inspected distribution;
-- method (`rules_only`, `llm_only`, or `llm_with_rules`) and run ID;
+- method (`rules`, `llm`, or `llm_with_rules`; retained row keys may still use
+  `rules_only`, `llm_only`, or `hybrid_structured_events`) and run ID;
 - output step and the component that made the clinical decision;
 - clinical subproblem and selected evidence;
 - evidence status: exact, source-near, invalid, missing, or not applicable;

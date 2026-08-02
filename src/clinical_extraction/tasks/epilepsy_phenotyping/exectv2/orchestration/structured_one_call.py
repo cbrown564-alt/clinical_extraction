@@ -197,7 +197,7 @@ def produce_structured_letter(
     }
     _producer_stages = (
         ExectStageEvent(
-            stage_id="exect.hybrid.build_prompt",
+            stage_id="exect.llm_with_rules.build_prompt",
             owner="deterministic",
             effect_class="transport_or_schema",
             input_value=letter.letter_id,
@@ -207,7 +207,7 @@ def produce_structured_letter(
             rule_category="general",
         ),
         ExectStageEvent(
-            stage_id="exect.hybrid.model_call",
+            stage_id="exect.llm_with_rules.model_call",
             owner="model",
             effect_class="clinical_meaning",
             input_value=prompt_input_json,
@@ -216,7 +216,7 @@ def produce_structured_letter(
             action="one_model_or_replay_call",
         ),
         ExectStageEvent(
-            stage_id="exect.hybrid.parse_and_retry",
+            stage_id="exect.llm_with_rules.parse_and_retry",
             owner="deterministic",
             effect_class="transport_or_schema",
             input_value=raw_text,
@@ -226,7 +226,7 @@ def produce_structured_letter(
             rule_category="general",
         ),
         ExectStageEvent(
-            stage_id="exect.hybrid.flatten_events",
+            stage_id="exect.llm_with_rules.flatten_events",
             owner="deterministic",
             effect_class="representation",
             input_value=row["structured_events"],
@@ -236,7 +236,7 @@ def produce_structured_letter(
             rule_category="general",
         ),
         ExectStageEvent(
-            stage_id="exect.hybrid.project_and_gate",
+            stage_id="exect.llm_with_rules.project_and_gate",
             owner="deterministic",
             effect_class="validation_gate",
             input_value=[_mention_to_row(mention) for mention in mentions],
@@ -378,7 +378,7 @@ def _run_llm_with_rules_letter(
     stages.extend(
         [
             ExectStageEvent(
-                stage_id="exect.hybrid.sf_state_projection",
+                stage_id="exect.llm_with_rules.sf_state_projection",
                 owner="deterministic",
                 effect_class="clinical_meaning",
                 input_value=producer_row.get("predicted_mentions", []),
@@ -388,7 +388,7 @@ def _run_llm_with_rules_letter(
                 rule_category="seizure_frequency",
             ),
             ExectStageEvent(
-                stage_id="exect.hybrid.sf_unknown_suppression",
+                stage_id="exect.llm_with_rules.sf_unknown_suppression",
                 owner="deterministic",
                 effect_class="clinical_meaning",
                 input_value=producer_row.get("predicted_mentions", []),
@@ -398,7 +398,7 @@ def _run_llm_with_rules_letter(
                 rule_category="seizure_frequency",
             ),
             ExectStageEvent(
-                stage_id="exect.hybrid.register_findings",
+                stage_id="exect.llm_with_rules.register_findings",
                 owner="deterministic",
                 effect_class="transport_or_schema",
                 input_value=len(producer.projected_letter.mentions),
@@ -424,7 +424,7 @@ def _run_llm_with_rules_letter(
         lane = assembled["lanes"][entity]
         stages.append(
             ExectStageEvent(
-                stage_id=f"exect.hybrid.lens.{lens_stage_names[entity]}",
+                stage_id=f"exect.llm_with_rules.lens.{lens_stage_names[entity]}",
                 owner="deterministic",
                 effect_class=(
                     "representation"
@@ -445,7 +445,7 @@ def _run_llm_with_rules_letter(
     stages.extend(
         [
             ExectStageEvent(
-                stage_id="exect.hybrid.evidence_requirement",
+                stage_id="exect.llm_with_rules.evidence_requirement",
                 owner="deterministic",
                 effect_class="validation_gate",
                 input_value=len(assembled["predicted_mentions"]),
@@ -455,7 +455,7 @@ def _run_llm_with_rules_letter(
                 rule_category="general",
             ),
             ExectStageEvent(
-                stage_id="exect.hybrid.materialize_views",
+                stage_id="exect.llm_with_rules.materialize_views",
                 owner="deterministic",
                 effect_class="benchmark_projection",
                 input_value=len(assembled["predicted_mentions"]),
@@ -468,7 +468,7 @@ def _run_llm_with_rules_letter(
                 rule_category="benchmark_format",
             ),
             ExectStageEvent(
-                stage_id="exect.hybrid.score",
+                stage_id="exect.llm_with_rules.score",
                 owner="scorer",
                 effect_class="benchmark_projection",
                 input_value=len(assembled["predicted_mentions"]),
@@ -553,7 +553,7 @@ def _fail_closed_hybrid_result(
     stages = list(_hybrid_producer_stages(producer))
     stages.append(
         ExectStageEvent(
-            stage_id="exect.hybrid.fail_closed",
+            stage_id="exect.llm_with_rules.fail_closed",
             owner="deterministic",
             effect_class="validation_gate",
             input_value={
@@ -669,7 +669,7 @@ def _hybrid_producer_stages(
             owner=event.owner,
             effect_class=(
                 "clinical_meaning"
-                if event.stage_id == "exect.hybrid.project_and_gate"
+                if event.stage_id == "exect.llm_with_rules.project_and_gate"
                 else event.effect_class
             ),
             input_value=event.input_value,
@@ -690,7 +690,7 @@ def _llm_only_producer_stages(
     stages = producer_stages_for(producer)
     return tuple(
         ExectStageEvent(
-            stage_id=event.stage_id.replace("exect.hybrid.", "exect.llm."),
+            stage_id=event.stage_id.replace("exect.llm_with_rules.", "exect.llm."),
             owner=event.owner,
             effect_class=event.effect_class,
             input_value=event.input_value,

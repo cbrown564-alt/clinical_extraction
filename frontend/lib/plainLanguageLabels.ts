@@ -1,3 +1,5 @@
+import type { ActiveMethod } from "./types";
+
 /**
  * Plain-language label helpers.
  *
@@ -7,19 +9,29 @@
  * `docs/reference/plain_language_glossary.md`.
  *
  * Rule: the plain name leads; a short distinguishing suffix in parens adds
- * granularity where the glossary's three buckets (rules-only / LLM-only /
- * hybrid) would otherwise collapse distinct architectures.
+ * granularity where the glossary's three buckets (rules / llm /
+ * llm_with_rules) would otherwise collapse distinct architectures.
  */
 
 /**
  * Architecture-family labels. All families collapse into one of three glossary
- * buckets — rules-only, LLM-only, hybrid — with a short parenthetical suffix
+ * buckets — rules, llm, llm_with_rules — with a short parenthetical suffix
  * that keeps known sub-variants distinguishable in pickers and ladders.
  *
  * Unknown families fall back to a de-snake_cased version of the codename rather
  * than the raw id, so a new family still reads as words instead of
- * `hybrid_something_new`.
+ * `llm_with_rules_something_new`.
  */
+/** Selected-method labels for badges, pickers, and grouped selectors. */
+export function activeMethodLabel(method: ActiveMethod): string {
+  const LABELS: Record<ActiveMethod, string> = {
+    rules: "Rules only",
+    llm: "LLM only",
+    llm_with_rules: "LLM with rules",
+  };
+  return LABELS[method];
+}
+
 export function familyLabel(pipelineFamily: string): string {
   const RULES_ONLY = "Rules-only";
   const BUCKETS: Record<string, string> = {
@@ -34,15 +46,15 @@ export function familyLabel(pipelineFamily: string): string {
     llm_heavy_clinical_frequency_reasoner: "LLM-only (heavy)",
     llm_heavy_evidence_selection_with_deterministic_adapters: "LLM-only (heavy + rules)",
     llm_replacement_postprocessing_ablation: "LLM-only (replacement)",
-    llm_only_canonical_pipeline: "LLM-only (canonical)",
+    llm_only_canonical_pipeline: "LLM-only",
     llm: "LLM-only",
 
-    // hybrid
-    hybrid_structured_events: "Hybrid (events)",
+    // llm_with_rules (retained legacy family ids resolve to the same label)
+    hybrid_structured_events: "LLM with rules",
     llm_with_rules: "LLM with rules",
-    hybrid_clinical_frequency_state_graph: "Hybrid (state graph)",
-    reset_clinical_assessment_pipeline: "Hybrid (reset)",
-    dspy_final_selection_adjudicator: "Hybrid (DSPy adjudicator)",
+    hybrid_clinical_frequency_state_graph: "LLM with rules (state graph)",
+    reset_clinical_assessment_pipeline: "LLM with rules (reset)",
+    dspy_final_selection_adjudicator: "LLM with rules (DSPy adjudicator)",
 
     // fresh-evidence / ceiling architectures
     fresh_evidence_reasoner: "LLM-only (fresh-evidence)",
@@ -84,7 +96,7 @@ export function splitLabel(split: string | undefined | null): string {
     "validation+test": "Validation + holdout",
     synthetic: "Synthetic",
     // Gan size prefixes
-    validation750: "Gan validation (750)",
+    validation750: "Gan dev (750)",
     validation250: "Gan validation (250)",
     validation50: "Gan validation (50)",
     validation25: "Gan validation (25)",

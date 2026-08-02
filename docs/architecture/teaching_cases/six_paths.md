@@ -33,7 +33,7 @@ The first clinical proposer is the model (stage gan.llm.model_call), with one de
 
 **Stages:** Build the structured-events prompt → Model extracts events and selects the answer → Repair JSON dialect and payload shape → Format-only retry (local models) → Validate the extraction schema → Normalize every event → Resolve the label from the model's selection → Repair 1 - evidence-based label repair → Repair 2 - monthly diary → Repair 3 - usual interval → Repair 4 - typical rate over year-to-date → Repair 5 - breakthrough seizures → Repair 6 - non-epileptic events → Repair 7 - residual jerks → Repair 8 - post-change burst → Repair 9 - dated sequence → Repair 10 - elapsed since anchor → Check the label is scorable → Check evidence is an exact substring → Project to Purist and Pragmatic scoring
 
-The first clinical proposer is the model proposes and selects (gan.hybrid.model_call); ten deterministic repair families may change the answer afterwards. Open the [method card](../method_cards/gan2026_llm_with_rules.md) for the contract, then the [full stage trace](gan2026.md#llm-with-rules) for the observed inputs, outputs, and ownership at each stage.
+The first clinical proposer is the model proposes and selects (gan.llm_with_rules.model_call); ten deterministic repair families may change the answer afterwards. Open the [method card](../method_cards/gan2026_llm_with_rules.md) for the contract, then the [full stage trace](gan2026.md#llm-with-rules) for the observed inputs, outputs, and ownership at each stage.
 
 ### 4. ExECTv2 — Rules only
 
@@ -57,7 +57,7 @@ The first clinical proposer is the named model (stage exect.llm.model_call); det
 
 **Stages:** Build the four-family prompt → Model proposes findings for four families → Parse output, with format-only retry when eligible → Flatten model events into mentions → Enrich attributes and apply render-safety gates → Project seizure-frequency facts into the state representation → Suppress unsupported unknown states → Register raw and scored findings → Diagnosis family transform → Seizure Frequency family transform → Prescription family transform → Investigations family transform → Require exact evidence for every finding → Materialize the score views → Score against gold
 
-The first clinical proposer is the named model proposes all four families (exect.hybrid.model_call); four family transforms may change findings afterwards. Open the [method card](../method_cards/exectv2_llm_with_rules.md) for the contract, then the [full stage trace](exectv2.md#llm-with-rules) for the observed inputs, outputs, and ownership at each stage.
+The first clinical proposer is the named model proposes all four families (exect.llm_with_rules.model_call); four family transforms may change findings afterwards. Open the [method card](../method_cards/exectv2_llm_with_rules.md) for the contract, then the [full stage trace](exectv2.md#llm-with-rules) for the observed inputs, outputs, and ownership at each stage.
 
 ## Deliberate failure and recovery
 

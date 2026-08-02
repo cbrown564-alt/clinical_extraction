@@ -1,10 +1,14 @@
 "use client";
 
 import { Suspense } from "react";
-import { useActiveDataset, getRuntimeAdapter } from "@/lib/datasets";
+import ComponentImpactUnavailable from "@/components/laboratory/ComponentImpactUnavailable";
+import { useActiveDataset, getRuntimeAdapter, datasetSupports } from "@/lib/datasets";
 
 function LaboratoryRoute() {
   const dataset = useActiveDataset();
+  if (!datasetSupports(dataset, "laboratory")) {
+    return <ComponentImpactUnavailable datasetId={dataset} />;
+  }
   const ComponentImpact = getRuntimeAdapter(dataset).surfaces.ComponentImpact;
   return <ComponentImpact />;
 }

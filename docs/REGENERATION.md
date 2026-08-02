@@ -52,14 +52,14 @@ registry, or reference-replay requirement; the only durable link was the
 prototype line in `docs/design/pipeline_trace_explorer_spec.md`, now retargeted
 to the live Next.js frontend and generated architecture teaching surface.
 Design decisions from the prototype remain in that specification. Record:
-[retention slice note](../research/maintenance/retention_slice_pipeline_flow_prototype_2026-08-02.md).
+[retention slice note](research/maintenance/retention_slice_pipeline_flow_prototype_2026-08-02.md).
 Recovery is available from Git history or by reverting the cleanup commit.
 
 The third safe cleanup slice removed three candidate-only prompt draft notes
 under `docs/experiments/` (ExECTv2 Luna, Gan Luna, DeepSeek unknown U).
 Inbound links were retargeted to protocols, exemplar packs, research threads,
 and machine compare artifacts. Record:
-[retention slice note](../research/maintenance/retention_slice_prompt_draft_notes_2026-08-02.md).
+[retention slice note](research/maintenance/retention_slice_prompt_draft_notes_2026-08-02.md).
 No protocol, exemplar pack, residual analysis, or research report was deleted.
 
 The fourth slice audited the ExECT candidate config trees
@@ -69,14 +69,14 @@ additional files were removed: five configs remain, each referenced by the
 retained-evidence manifest, a focused replay/check script, or a focused test.
 Seventy-nine sibling candidate manifests were already deleted in July 2026.
 Record:
-[retention slice note](../research/maintenance/retention_slice_exectv2_candidate_configs_2026-08-02.md).
+[retention slice note](research/maintenance/retention_slice_exectv2_candidate_configs_2026-08-02.md).
 
 The fifth slice evaluated the seven tracked JSON files under
 `frontend/public/mock-data/artifacts/` and retained them. `FrontendDataStore`
 glob-loads that directory for `/artifacts/{run_id}` replay and for ExECT
 dev140 letter allowlisting; frontend components and
 `tests/test_trace_explorer_frontend_api.py` depend on those loaders. Record:
-[retention slice note](../research/maintenance/retention_slice_frontend_mock_artifacts_2026-08-02.md).
+[retention slice note](research/maintenance/retention_slice_frontend_mock_artifacts_2026-08-02.md).
 A later delete would require refactoring those loaders onto governed
 `experiments/` sources first.
 
@@ -85,7 +85,7 @@ three tracked Markdown companions for the Gan rules / LLM-only / hybrid
 reference cells. Each is a hashed retained-evidence artifact and a registry
 `artifact_path`. Decision: **keep**; do not delete under an `archive/` name
 alone. Record:
-[retention slice note](../research/maintenance/retention_slice_experiments_archive_2026-08-02.md).
+[retention slice note](research/maintenance/retention_slice_experiments_archive_2026-08-02.md).
 
 The review covers the working tree, Git history, and Git LFS. It must not inspect
 locked rows or make model calls merely to restore an old name or result. Any
@@ -96,8 +96,27 @@ The initial bounded inventory and the 2026-08-02 classification wave are
 complete for the named Decision 0048 cleanup candidates. The stale
 fresh-evidence validation750 entry was removed from
 `frontend/public/mock-data/registry.json` after both listed artifacts were
-confirmed missing. Owner decisions still needed for broader plain-name source
-refactor readiness do not authorize locked-row inspection or a model call.
+confirmed missing. The completion-gate slice removed the stale
+test450 frozen-audit mock-registry entry (both listed artifacts already absent;
+authoritative lineage remains in `experiments/registry.jsonl` and aggregate-only
+test450 companions under `experiments/`).
+
+### Broader corpus triage wave (2026-08-02, continued)
+
+Inventory of mock-data leftovers, orphan docs, and 337 tracked
+`experiments/` + `docs/experiments/` files. Safe deletes applied:
+
+| Slice record | Deleted |
+| --- | --- |
+| [unserved ExECT mock](research/maintenance/retention_slice_unserved_exect_mock_2026-08-02.md) | Orphan p7fix mock; ExECT ablation/transitions fixtures (~2.3 MB) |
+| [orphan docs](research/maintenance/retention_slice_orphan_docs_2026-08-02.md) | 5 superseded/zero-inbound docs; rejected-policy protocols **kept** for check-script negative replay |
+| [experiments orphans](research/maintenance/retention_slice_experiments_orphans_2026-08-02.md) | 7 tier-1 orphans (pipeline-flow PNGs, archived Luna joint panels, superseded DeepSeek diff, Qwen retry backup) |
+
+Deferred judgment: intermediate six-model scoring-lane JSONL (~25–30), stale
+`registry.json` `artifact_paths` metadata, and protocol docs outside the
+machine manifest that still own focused evidence threads. Retained-evidence
+manifest check passes after this wave. Locked-row inspection and model calls
+remain unauthorized for cleanup alone.
 The retained evidence index records selected paths, hashes, source commit, and
 policy versions.
 

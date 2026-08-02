@@ -49,9 +49,9 @@
   "architectures": [
     {
       "run_id": "deterministic_canonical_pipeline",
-      "label": "Deterministic canonical",
+      "label": "Rules-only",
       "model": "rules",
-      "decision": "control",
+      "decision": "method",
       "examples": [
         {
           "row_id": 3137,
@@ -252,9 +252,9 @@
     },
     {
       "run_id": "hybrid_structured_events",
-      "label": "Hybrid (LLM extract)",
+      "label": "LLM with rules",
       "model": "openai/gpt-4.1-mini",
-      "decision": "diagnostic",
+      "decision": "method",
       "examples": [
         {
           "row_id": 4337,
@@ -506,9 +506,9 @@
     },
     {
       "run_id": "llm_only_canonical_pipeline",
-      "label": "LLM-only (rules in prompt)",
+      "label": "LLM-only",
       "model": "openai/gpt-4.1-mini",
-      "decision": "diagnostic",
+      "decision": "method",
       "examples": [
         {
           "row_id": 10,

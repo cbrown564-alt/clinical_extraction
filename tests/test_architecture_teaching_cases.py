@@ -74,13 +74,13 @@ def test_gan_hybrid_selection_is_attributed_to_the_model(
 
     hybrid = cases[0].runs[2]
     model_call = next(
-        obs for obs in hybrid.observations if obs.stage_id == "gan.hybrid.model_call"
+        obs for obs in hybrid.observations if obs.stage_id == "gan.llm_with_rules.model_call"
     )
     assert model_call.owner == "model"
     assert "selected_event_ids" in str(model_call.output_value)
 
     resolve = next(
-        obs for obs in hybrid.observations if obs.stage_id == "gan.hybrid.resolve_label"
+        obs for obs in hybrid.observations if obs.stage_id == "gan.llm_with_rules.resolve_label"
     )
     assert resolve.owner == "deterministic"
     assert "model selected" in str(resolve.input_value)
@@ -95,10 +95,10 @@ def test_exactly_one_repair_family_is_credited_with_the_gan_rescue(
     fired = [
         obs
         for obs in hybrid.observations
-        if obs.stage_id.startswith("gan.hybrid.repair.") and obs.changed
+        if obs.stage_id.startswith("gan.llm_with_rules.repair.") and obs.changed
     ]
     assert len(fired) == 1
-    assert fired[0].stage_id == "gan.hybrid.repair.typical_over_ytd"
+    assert fired[0].stage_id == "gan.llm_with_rules.repair.typical_over_ytd"
     assert fired[0].input_value == "7 per year"
     assert fired[0].output_value == "1 per month"
 

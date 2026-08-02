@@ -23,6 +23,7 @@ import type {
   GoldAuditDecision,
   GoldAuditRow,
 } from "@/lib/types";
+import { splitLabel } from "@/lib/plainLanguageLabels";
 import LetterRenderer from "./LetterRenderer";
 
 const SIMPLE_CLASSES = [
@@ -314,7 +315,7 @@ function DatasetGoldAuditPanel({ datasetId }: { datasetId: "gan2026" | "exectv2"
 
         <div className="flex items-center gap-2 text-[11px]">
           <span className="rounded border border-deterministic/20 bg-deterministic/10 px-2 py-1 font-medium text-deterministic">
-            {isExect ? "ExECTv2 · blinded full200" : "Gan 2026 · validation750"}
+            {isExect ? "ExECTv2 · blinded full200" : `Gan 2026 · ${splitLabel("validation750")}`}
           </span>
           {existing && (
             <span className={`rounded border px-2 py-1 font-medium capitalize ${badgeStyle(existing.review_confidence ?? existing.simple_class)}`}>

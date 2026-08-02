@@ -22,9 +22,9 @@ One structured call per letter asks the named model for candidate findings acros
 
 | Question | Answer |
 | --- | --- |
-| What enters? | ExectLetter - see `exect.hybrid.build_prompt` |
-| Who first proposes the clinical answer? | the named model proposes all four families (exect.hybrid.model_call); four family transforms may change findings afterwards |
-| Which later stages may change clinical meaning? | `exect.hybrid.project_and_gate`, `exect.hybrid.sf_state_projection`, `exect.hybrid.sf_unknown_suppression`, `exect.hybrid.lens.diagnosis`, `exect.hybrid.lens.prescription` |
+| What enters? | ExectLetter - see `exect.llm_with_rules.build_prompt` |
+| Who first proposes the clinical answer? | the named model proposes all four families (exect.llm_with_rules.model_call); four family transforms may change findings afterwards |
+| Which later stages may change clinical meaning? | `exect.llm_with_rules.project_and_gate`, `exect.llm_with_rules.sf_state_projection`, `exect.llm_with_rules.sf_unknown_suppression`, `exect.llm_with_rules.lens.diagnosis`, `exect.llm_with_rules.lens.prescription` |
 | What final representation is scored? | A PredictedLetter of four-family mentions materialized into named score views; the canonical view is clinical_headline. |
 | What evidence shows whether each component helped or harmed? | `docs/decisions/0040-final-exect-llm-with-rules-family-ownership.md`, `docs/decisions/0041-single-call-exect-model-comparison.md`, `docs/decisions/0045-exect-default-policy-not-joint-combined.md`, `docs/research/six_model_comparison_report_2026-07-18.md` |
 
@@ -34,27 +34,27 @@ Read the `Effect` column first. `CLINICAL MEANING` marks every stage that can ch
 
 | # | Stage | Owner | Effect | What it does |
 | --- | --- | --- | --- | --- |
-| 1 | `exect.hybrid.build_prompt`<br>Build the four-family prompt | rules | transport/schema only | Render the note text and the four-family event-ledger schema into the prompt input for one structured call. |
-| 2 | `exect.hybrid.model_call`<br>Model proposes findings for four families | model | CLINICAL MEANING | One structured call returns candidate findings for Diagnosis, Seizure Frequency, Prescription, and Investigations, each with evidence. |
-| 3 | `exect.hybrid.parse_and_retry`<br>Parse output, with format-only retry when eligible | rules | transport/schema only | Recover and repair the JSON payload, coerce legacy mention shapes into events, and for eligible local models make one format-only retry that is accepted only if it validates. |
-| 4 | `exect.hybrid.flatten_events`<br>Flatten model events into mentions | rules | representation | Turn each model event into an ExECT mention with its entity, text, attributes, and evidence. |
-| 5 | `exect.hybrid.project_and_gate`<br>Enrich attributes and apply render-safety gates | rules | CLINICAL MEANING | Attach CUI and canonical-phrase attributes, drop attribute values outside the closed vocabulary, drop seizure-frequency mentions that carry no frequency state, and drop modality-only Investigations duplicates. |
-| 6 | `exect.hybrid.sf_state_projection`<br>Project seizure-frequency facts into the state representation | rules | CLINICAL MEANING | Convert the model's seizure-frequency facts into the state and ownership representation the ExECT scorer expects, adding state attributes and named-type ownership the model did not supply. |
-| 7 | `exect.hybrid.sf_unknown_suppression`<br>Suppress unsupported unknown states | rules | CLINICAL MEANING | Remove seizure-frequency findings whose state is unknown and unsupported under the narrowly defined suppression rule. |
-| 8 | `exect.hybrid.register_findings`<br>Register raw and scored findings | rules | transport/schema only | Record both the raw and the scored surface of every finding in the finding store, with its producer, source lane, and ownership label. |
-| 9 | `exect.hybrid.lens.diagnosis`<br>Diagnosis family transform | rules | CLINICAL MEANING | Reconcile Diagnosis findings using heading recovery and the standard dictionary; may rewrite, drop, or add concepts. |
-| 10 | `exect.hybrid.lens.seizure_frequency`<br>Seizure Frequency family transform | rules | representation | Assemble the already-projected and already-suppressed seizure-frequency findings; a thin transform that adds no further clinical change. |
-| 11 | `exect.hybrid.lens.prescription`<br>Prescription family transform | rules | CLINICAL MEANING | Apply dictionary-driven regimen processing and bounded correction to Prescription findings. |
-| 12 | `exect.hybrid.lens.investigations`<br>Investigations family transform | rules | representation | Validate, normalize, and de-duplicate Investigations findings, including dropping modality-only duplicates of a finding that already carries a result. |
-| 13 | `exect.hybrid.evidence_requirement`<br>Require exact evidence for every finding | rules | gate | Reject the assembled letter if any final finding lacks evidence or carries evidence that is not an exact substring of the note. |
-| 14 | `exect.hybrid.materialize_views`<br>Materialize the score views | rules | benchmark projection | Build the named prediction surfaces - raw candidate, evidence valid, and clinical headline - from the same assembled findings. |
-| 15 | `exect.hybrid.score`<br>Score against gold | scorer | benchmark projection | Match the materialized view's mentions to gold annotations and report per-entity and overall precision, recall, and F1. |
+| 1 | `exect.llm_with_rules.build_prompt`<br>Build the four-family prompt | rules | transport/schema only | Render the note text and the four-family event-ledger schema into the prompt input for one structured call. |
+| 2 | `exect.llm_with_rules.model_call`<br>Model proposes findings for four families | model | CLINICAL MEANING | One structured call returns candidate findings for Diagnosis, Seizure Frequency, Prescription, and Investigations, each with evidence. |
+| 3 | `exect.llm_with_rules.parse_and_retry`<br>Parse output, with format-only retry when eligible | rules | transport/schema only | Recover and repair the JSON payload, coerce legacy mention shapes into events, and for eligible local models make one format-only retry that is accepted only if it validates. |
+| 4 | `exect.llm_with_rules.flatten_events`<br>Flatten model events into mentions | rules | representation | Turn each model event into an ExECT mention with its entity, text, attributes, and evidence. |
+| 5 | `exect.llm_with_rules.project_and_gate`<br>Enrich attributes and apply render-safety gates | rules | CLINICAL MEANING | Attach CUI and canonical-phrase attributes, drop attribute values outside the closed vocabulary, drop seizure-frequency mentions that carry no frequency state, and drop modality-only Investigations duplicates. |
+| 6 | `exect.llm_with_rules.sf_state_projection`<br>Project seizure-frequency facts into the state representation | rules | CLINICAL MEANING | Convert the model's seizure-frequency facts into the state and ownership representation the ExECT scorer expects, adding state attributes and named-type ownership the model did not supply. |
+| 7 | `exect.llm_with_rules.sf_unknown_suppression`<br>Suppress unsupported unknown states | rules | CLINICAL MEANING | Remove seizure-frequency findings whose state is unknown and unsupported under the narrowly defined suppression rule. |
+| 8 | `exect.llm_with_rules.register_findings`<br>Register raw and scored findings | rules | transport/schema only | Record both the raw and the scored surface of every finding in the finding store, with its producer, source lane, and ownership label. |
+| 9 | `exect.llm_with_rules.lens.diagnosis`<br>Diagnosis family transform | rules | CLINICAL MEANING | Reconcile Diagnosis findings using heading recovery and the standard dictionary; may rewrite, drop, or add concepts. |
+| 10 | `exect.llm_with_rules.lens.seizure_frequency`<br>Seizure Frequency family transform | rules | representation | Assemble the already-projected and already-suppressed seizure-frequency findings; a thin transform that adds no further clinical change. |
+| 11 | `exect.llm_with_rules.lens.prescription`<br>Prescription family transform | rules | CLINICAL MEANING | Apply dictionary-driven regimen processing and bounded correction to Prescription findings. |
+| 12 | `exect.llm_with_rules.lens.investigations`<br>Investigations family transform | rules | representation | Validate, normalize, and de-duplicate Investigations findings, including dropping modality-only duplicates of a finding that already carries a result. |
+| 13 | `exect.llm_with_rules.evidence_requirement`<br>Require exact evidence for every finding | rules | gate | Reject the assembled letter if any final finding lacks evidence or carries evidence that is not an exact substring of the note. |
+| 14 | `exect.llm_with_rules.materialize_views`<br>Materialize the score views | rules | benchmark projection | Build the named prediction surfaces - raw candidate, evidence valid, and clinical headline - from the same assembled findings. |
+| 15 | `exect.llm_with_rules.score`<br>Score against gold | scorer | benchmark projection | Match the materialized view's mentions to gold annotations and report per-entity and overall precision, recall, and F1. |
 
 ## Stage walkthrough
 
 ### 1. Build the four-family prompt
 
-`exect.hybrid.build_prompt` - rules-owned, transport/schema only, rule category `general`
+`exect.llm_with_rules.build_prompt` - rules-owned, transport/schema only, rule category `general`
 
 Render the note text and the four-family event-ledger schema into the prompt input for one structured call.
 
@@ -70,7 +70,7 @@ Render the note text and the four-family event-ledger schema into the prompt inp
 
 ### 2. Model proposes findings for four families
 
-`exect.hybrid.model_call` - model-owned, CLINICAL MEANING
+`exect.llm_with_rules.model_call` - model-owned, CLINICAL MEANING
 
 One structured call returns candidate findings for Diagnosis, Seizure Frequency, Prescription, and Investigations, each with evidence.
 
@@ -88,7 +88,7 @@ One structured call returns candidate findings for Diagnosis, Seizure Frequency,
 
 ### 3. Parse output, with format-only retry when eligible
 
-`exect.hybrid.parse_and_retry` - rules-owned, transport/schema only, rule category `general`
+`exect.llm_with_rules.parse_and_retry` - rules-owned, transport/schema only, rule category `general`
 
 Recover and repair the JSON payload, coerce legacy mention shapes into events, and for eligible local models make one format-only retry that is accepted only if it validates.
 
@@ -104,7 +104,7 @@ Recover and repair the JSON payload, coerce legacy mention shapes into events, a
 
 ### 4. Flatten model events into mentions
 
-`exect.hybrid.flatten_events` - rules-owned, representation, rule category `general`
+`exect.llm_with_rules.flatten_events` - rules-owned, representation, rule category `general`
 
 Turn each model event into an ExECT mention with its entity, text, attributes, and evidence.
 
@@ -120,7 +120,7 @@ Turn each model event into an ExECT mention with its entity, text, attributes, a
 
 ### 5. Enrich attributes and apply render-safety gates
 
-`exect.hybrid.project_and_gate` - rules-owned, CLINICAL MEANING, rule category `clinical_epilepsy`
+`exect.llm_with_rules.project_and_gate` - rules-owned, CLINICAL MEANING, rule category `clinical_epilepsy`
 
 Attach CUI and canonical-phrase attributes, drop attribute values outside the closed vocabulary, drop seizure-frequency mentions that carry no frequency state, and drop modality-only Investigations duplicates.
 
@@ -138,7 +138,7 @@ Attach CUI and canonical-phrase attributes, drop attribute values outside the cl
 
 ### 6. Project seizure-frequency facts into the state representation
 
-`exect.hybrid.sf_state_projection` - rules-owned, CLINICAL MEANING, rule category `seizure_frequency`
+`exect.llm_with_rules.sf_state_projection` - rules-owned, CLINICAL MEANING, rule category `seizure_frequency`
 
 Convert the model's seizure-frequency facts into the state and ownership representation the ExECT scorer expects, adding state attributes and named-type ownership the model did not supply.
 
@@ -156,7 +156,7 @@ Convert the model's seizure-frequency facts into the state and ownership represe
 
 ### 7. Suppress unsupported unknown states
 
-`exect.hybrid.sf_unknown_suppression` - rules-owned, CLINICAL MEANING, rule category `seizure_frequency`
+`exect.llm_with_rules.sf_unknown_suppression` - rules-owned, CLINICAL MEANING, rule category `seizure_frequency`
 
 Remove seizure-frequency findings whose state is unknown and unsupported under the narrowly defined suppression rule.
 
@@ -174,7 +174,7 @@ Remove seizure-frequency findings whose state is unknown and unsupported under t
 
 ### 8. Register raw and scored findings
 
-`exect.hybrid.register_findings` - rules-owned, transport/schema only, rule category `general`
+`exect.llm_with_rules.register_findings` - rules-owned, transport/schema only, rule category `general`
 
 Record both the raw and the scored surface of every finding in the finding store, with its producer, source lane, and ownership label.
 
@@ -192,7 +192,7 @@ Record both the raw and the scored surface of every finding in the finding store
 
 ### 9. Diagnosis family transform
 
-`exect.hybrid.lens.diagnosis` - rules-owned, CLINICAL MEANING, rule category `clinical_epilepsy`
+`exect.llm_with_rules.lens.diagnosis` - rules-owned, CLINICAL MEANING, rule category `clinical_epilepsy`
 
 Reconcile Diagnosis findings using heading recovery and the standard dictionary; may rewrite, drop, or add concepts.
 
@@ -210,7 +210,7 @@ Reconcile Diagnosis findings using heading recovery and the standard dictionary;
 
 ### 10. Seizure Frequency family transform
 
-`exect.hybrid.lens.seizure_frequency` - rules-owned, representation, rule category `seizure_frequency`
+`exect.llm_with_rules.lens.seizure_frequency` - rules-owned, representation, rule category `seizure_frequency`
 
 Assemble the already-projected and already-suppressed seizure-frequency findings; a thin transform that adds no further clinical change.
 
@@ -219,7 +219,7 @@ Assemble the already-projected and already-suppressed seizure-frequency findings
 | In | Seizure Frequency findings in the store | projected seizure-free findings from the sf producer |
 | Out | reconciled Seizure Frequency findings | the same findings in assembled form |
 
-> The clinical work for this family happened earlier, at exect.hybrid.sf_state_projection and exect.hybrid.sf_unknown_suppression. Reading the lens alone will understate what happened to Seizure Frequency.
+> The clinical work for this family happened earlier, at exect.llm_with_rules.sf_state_projection and exect.llm_with_rules.sf_unknown_suppression. Reading the lens alone will understate what happened to Seizure Frequency.
 
 - Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/seizure_frequency.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/seizure_frequency.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.seizure_frequency:SeizureFrequencyLens`)
 - Test: [`tests/test_exectv2_clinical_finding_assembly.py`](../../../tests/test_exectv2_clinical_finding_assembly.py)
@@ -228,7 +228,7 @@ Assemble the already-projected and already-suppressed seizure-frequency findings
 
 ### 11. Prescription family transform
 
-`exect.hybrid.lens.prescription` - rules-owned, CLINICAL MEANING, rule category `clinical_epilepsy`
+`exect.llm_with_rules.lens.prescription` - rules-owned, CLINICAL MEANING, rule category `clinical_epilepsy`
 
 Apply dictionary-driven regimen processing and bounded correction to Prescription findings.
 
@@ -246,7 +246,7 @@ Apply dictionary-driven regimen processing and bounded correction to Prescriptio
 
 ### 12. Investigations family transform
 
-`exect.hybrid.lens.investigations` - rules-owned, representation, rule category `clinical_epilepsy`
+`exect.llm_with_rules.lens.investigations` - rules-owned, representation, rule category `clinical_epilepsy`
 
 Validate, normalize, and de-duplicate Investigations findings, including dropping modality-only duplicates of a finding that already carries a result.
 
@@ -262,7 +262,7 @@ Validate, normalize, and de-duplicate Investigations findings, including droppin
 
 ### 13. Require exact evidence for every finding
 
-`exect.hybrid.evidence_requirement` - rules-owned, gate, rule category `general`
+`exect.llm_with_rules.evidence_requirement` - rules-owned, gate, rule category `general`
 
 Reject the assembled letter if any final finding lacks evidence or carries evidence that is not an exact substring of the note.
 
@@ -280,7 +280,7 @@ Reject the assembled letter if any final finding lacks evidence or carries evide
 
 ### 14. Materialize the score views
 
-`exect.hybrid.materialize_views` - rules-owned, benchmark projection, rule category `benchmark_format`
+`exect.llm_with_rules.materialize_views` - rules-owned, benchmark projection, rule category `benchmark_format`
 
 Build the named prediction surfaces - raw candidate, evidence valid, and clinical headline - from the same assembled findings.
 
@@ -298,7 +298,7 @@ Build the named prediction surfaces - raw candidate, evidence valid, and clinica
 
 ### 15. Score against gold
 
-`exect.hybrid.score` - scorer-owned, benchmark projection
+`exect.llm_with_rules.score` - scorer-owned, benchmark projection
 
 Match the materialized view's mentions to gold annotations and report per-entity and overall precision, recall, and F1.
 
@@ -318,21 +318,21 @@ Entry point: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orches
 
 | Stage | Implementation | Governing test |
 | --- | --- | --- |
-| `exect.hybrid.build_prompt` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.prompt_builders:build_prompt_input` | `tests/test_exectv2_llm_only_prompt_contract.py` |
-| `exect.hybrid.model_call` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.signatures` | `tests/test_exectv2_llm_only_prompt_contract.py` |
-| `exect.hybrid.parse_and_retry` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.parsing:parse_structured_events_json` | `tests/test_exectv2_local_format_retry.py` |
-| `exect.hybrid.flatten_events` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.parsing:flatten_events` | `tests/test_exectv2_llm_only_parsing.py` |
-| `exect.hybrid.project_and_gate` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.projection:to_predicted_letter` | `tests/test_exectv2_llm_only_projection.py` |
-| `exect.hybrid.sf_state_projection` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_state_projection:project_row` | `tests/test_exectv2_sf_state_projection.py` |
-| `exect.hybrid.sf_unknown_suppression` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_unknown_suppression:suppress_row` | `tests/test_exectv2_sf_unknown_suppression.py` |
-| `exect.hybrid.register_findings` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.finding_store:ClinicalFindingStore` | `tests/test_exectv2_clinical_finding_assembly.py` |
-| `exect.hybrid.lens.diagnosis` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.diagnosis:DiagnosisDictionaryLens` | `tests/test_exectv2_diagnosis_decomposer.py` |
-| `exect.hybrid.lens.seizure_frequency` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.seizure_frequency:SeizureFrequencyLens` | `tests/test_exectv2_clinical_finding_assembly.py` |
-| `exect.hybrid.lens.prescription` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.prescription:PrescriptionDictionaryLens` | `tests/test_exectv2_prescription_bounded_policy_candidate.py` |
-| `exect.hybrid.lens.investigations` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.investigations:InvestigationsLens` | `tests/test_exectv2_clinical_finding_assembly.py` |
-| `exect.hybrid.evidence_requirement` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.letter_assembly:assemble_letter` | `tests/test_exectv2_clinical_finding_assembly.py` |
-| `exect.hybrid.materialize_views` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.views:build_scoring_views` | `tests/test_exectv2_scoring_headlines.py` |
-| `exect.hybrid.score` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match:score_overall` | `tests/test_exectv2_scoring_match_fidelity.py` |
+| `exect.llm_with_rules.build_prompt` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.prompt_builders:build_prompt_input` | `tests/test_exectv2_llm_only_prompt_contract.py` |
+| `exect.llm_with_rules.model_call` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.signatures` | `tests/test_exectv2_llm_only_prompt_contract.py` |
+| `exect.llm_with_rules.parse_and_retry` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.parsing:parse_structured_events_json` | `tests/test_exectv2_local_format_retry.py` |
+| `exect.llm_with_rules.flatten_events` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.parsing:flatten_events` | `tests/test_exectv2_llm_only_parsing.py` |
+| `exect.llm_with_rules.project_and_gate` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.projection:to_predicted_letter` | `tests/test_exectv2_llm_only_projection.py` |
+| `exect.llm_with_rules.sf_state_projection` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_state_projection:project_row` | `tests/test_exectv2_sf_state_projection.py` |
+| `exect.llm_with_rules.sf_unknown_suppression` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_unknown_suppression:suppress_row` | `tests/test_exectv2_sf_unknown_suppression.py` |
+| `exect.llm_with_rules.register_findings` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.finding_store:ClinicalFindingStore` | `tests/test_exectv2_clinical_finding_assembly.py` |
+| `exect.llm_with_rules.lens.diagnosis` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.diagnosis:DiagnosisDictionaryLens` | `tests/test_exectv2_diagnosis_decomposer.py` |
+| `exect.llm_with_rules.lens.seizure_frequency` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.seizure_frequency:SeizureFrequencyLens` | `tests/test_exectv2_clinical_finding_assembly.py` |
+| `exect.llm_with_rules.lens.prescription` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.prescription:PrescriptionDictionaryLens` | `tests/test_exectv2_prescription_bounded_policy_candidate.py` |
+| `exect.llm_with_rules.lens.investigations` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.investigations:InvestigationsLens` | `tests/test_exectv2_clinical_finding_assembly.py` |
+| `exect.llm_with_rules.evidence_requirement` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.letter_assembly:assemble_letter` | `tests/test_exectv2_clinical_finding_assembly.py` |
+| `exect.llm_with_rules.materialize_views` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.views:build_scoring_views` | `tests/test_exectv2_scoring_headlines.py` |
+| `exect.llm_with_rules.score` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match:score_overall` | `tests/test_exectv2_scoring_match_fidelity.py` |
 
 ## Not this method
 

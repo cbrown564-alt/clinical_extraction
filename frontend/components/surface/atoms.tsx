@@ -74,6 +74,7 @@ export function F1Cell({
 const DECISION_TONE: Record<string, DatasetTone> = {
   // ExECTv2 RunDecision
   control: "deterministic",
+  method: "deterministic-alt",
   simplification: "success",
   diagnostic: "llm",
   pending: "muted",

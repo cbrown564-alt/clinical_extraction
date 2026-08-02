@@ -48,7 +48,9 @@ Current state, as of 2026-08-02:
 - Decision 0048 has promoted all three Gan and ExECT methods to the plain active names
   `rules`, `llm`, and `llm_with_rules` while preserving historical replay
   identities. The six selected task-method paths now use the canonical
-  orchestrators; the standalone supervisor handoff rebuild remains open.
+  orchestrators. The standalone `handoff/supervisor/` tree and ZIP were rebuilt
+  from active source on 2026-08-02 and pass source-to-shipped closure.
+  Supervisor-host verification and unaided README review remain open.
 - The latest repository-wide verification state is recorded in
   [project status](PROJECT_STATUS.md). CI continues to run pytest, Ruff, and
   mypy; selected evidence also has six exact no-call replay checks.
@@ -97,7 +99,7 @@ Current state, as of 2026-08-02:
 - All six selected models have completed the fixed ExECT dev140/test60 and Gan
   dev750/test450 panels. Retained Gan filenames use the legacy identifier
   `validation750` for `dev750`. The Gan development comparison includes six
-  matched `llm_with_rules` and `llm_only` pairs with 750 unique rows and valid
+  matched `llm_with_rules` and `llm` pairs with 750 unique rows and valid
   traces per condition. The component audit retains matched rescues,
   regressions, score layers, evidence validity, and first-failure ownership;
   the result is a bounded development answer, not method promotion.
@@ -174,17 +176,23 @@ only on the permitted development workflow.
 
 ### Standalone handoff package status
 
-The standalone `handoff/supervisor/` tree and ZIP are retained but are not
-current enough to treat as the supervisor package: shipped ExECT still carries
-the older Decision 0040 `combined`/joint identity, and shipped Gan code predates
-the canonical delegation. Active source uses Decision 0045 `default`/`default`
-for ExECT and the current Gan delegation. This is a strict Decision 0048
-completion blocker; this README milestone does not rebuild that package.
+The standalone `handoff/supervisor/` tree and
+`handoff/clinical_extraction_supervisor_handoff.zip` were rebuilt from active
+source on 2026-08-02. They ship readable Python for the selected Gan v0.5
+current-frequency and one-call ExECT four-family workflows under Decision 0045
+`default`/`default` assembly. Source-to-shipped closure passes:
 
-The archive's [source-to-shipped closure test](tests/test_supervisor_source_handoff.py)
-must pass after the handoff is rebuilt. Its archive/hash self-consistency checks
-are not sufficient on their own. The [handoff plan](docs/plans/supervisor_local_extraction_handoff_plan.md)
-owns the rebuild and supervisor-host verification.
+```powershell
+.venv\Scripts\python.exe scripts/build_supervisor_source_handoff.py --check-source-closure
+```
+
+The [source-to-shipped closure test](tests/test_supervisor_source_handoff.py)
+and archive hash self-consistency checks verify the shipped package against
+active source. Supervisor-host setup, endpoint `check`, and unaided README
+review remain open before calling the handoff usability-validated. The
+[handoff plan](docs/plans/supervisor_local_extraction_handoff_plan.md) owns
+those checks. Current evidence and verification state are recorded in
+[project status](PROJECT_STATUS.md).
 
 ### Canonical results, limits, and exact replay
 

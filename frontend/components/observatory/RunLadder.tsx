@@ -22,7 +22,7 @@ function familyColorClass(family: string): string {
   if (family === "rules" || family.includes("rules_only") || family.includes("deterministic")) {
     return "border-deterministic/25 bg-deterministic/5";
   }
-  if (family.includes("hybrid")) {
+  if (family.includes("llm_with_rules") || family.includes("hybrid")) {
     return "border-hybrid/25 bg-hybrid/5";
   }
   return "border-llm/25 bg-llm/5";
@@ -32,7 +32,7 @@ function familyTextClass(family: string): string {
   if (family === "rules" || family.includes("rules_only") || family.includes("deterministic")) {
     return "text-deterministic";
   }
-  if (family.includes("hybrid")) {
+  if (family.includes("llm_with_rules") || family.includes("hybrid")) {
     return "text-hybrid";
   }
   return "text-llm";

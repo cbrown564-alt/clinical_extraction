@@ -29,7 +29,7 @@ export const exectv2Dataset: DatasetDescriptor = {
   supports: {
     workbench: true,
     observatory: true,
-    laboratory: true,
+    laboratory: false,
     gallery: true,
     reliability: true,
   },

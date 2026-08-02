@@ -35,6 +35,9 @@ def test_discovery_serves_only_complete_validation750_conditions(tmp_path: Path)
     )
     assert complete["availability"] == "replay"
     assert complete["pipeline_family"] == "llm_with_rules"
+    assert complete["kind"] == "llm_with_rules"
+    assert complete["active_method"] == "llm_with_rules"
+    assert complete["architecture_family"] == "llm_with_rules"
     assert complete["evidence_scope"] == "validation750_row_level"
     assert complete["metrics"] == {
         "row_count": 750,

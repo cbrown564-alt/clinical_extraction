@@ -176,5 +176,23 @@ links, duplicate durable owners, stale claims outside the canonical results
 report, unexplained retained artifacts, or unverified selected live and replay
 paths. Generated architecture and frontend outputs must be rebuilt and checked.
 
+Label-leftover blockers resolved 2026-08-02 (must land before status flip):
+
+1. Delete the parallel `comparison_mode` vocabulary; group and badge only on
+   active method (`rules` / `llm` / `llm_with_rules`).
+2. Rename selected-method architecture stage IDs from `*.hybrid.*` to the
+   active-method namespace (`*.llm_with_rules.*` and matching `rules` / `llm`
+   forms), then regenerate architecture docs and update pinned tests.
+3. Remove the ExECT supervisor-facing component-ablation surface and its
+   historical mock ladder (`v08` / `v09` / diagnostics) until a selected-method
+   ladder exists; keep that evidence only in retained reports and experiments.
+   In the same pass, retag the Gan component-ablation three-way comparison
+   columns as selected active methods (`rules` / `llm` / `llm_with_rules`) with
+   plain labels—do not strip those reference-lineage columns as if they were
+   demoted ExECT controls.
+4. Keep the Gan API machine split field as `validation750`; prose and claims
+   continue to use `dev750`.
+
+Supervisor-host verification and unaided README review also remain required.
 This decision does not establish clinical validity. Independent clinical review
 and external validation remain open work.

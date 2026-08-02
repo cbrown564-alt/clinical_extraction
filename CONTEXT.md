@@ -17,17 +17,35 @@ Execution order **A → B → C**:
 
 ### Methods
 
+**Active method**:
+The public identity of a selected research method for a task: `rules`, `llm`, or `llm_with_rules`. Frontend grouping, badges, and selectors use this field only.
+_Avoid_: `comparison_mode`; `llm_plus_rules`; `deterministic_only` as a second public vocabulary; `hybrid` or `llm_only` as the active identity
+
+**Architecture stage ID**:
+A stable attribution key for one pipeline stage inside a method manifest. For selected methods it uses the active-method token in the namespace (`gan.llm_with_rules.*`, `exect.llm_with_rules.*`, and the matching `rules` / `llm` forms), not a parallel `hybrid` namespace.
+_Avoid_: `gan.hybrid.*` or `exect.hybrid.*` as the selected-method stage namespace; treating a stage ID as the public method name
+
 **Selected ExECT hybrid**:
 The current one-call, model-led ExECT LLM-with-rules method: the named model proposes Diagnosis, Seizure Frequency, Prescription, and Investigations findings, then family-specific deterministic transforms may change the scored answer under decision 0040 / 0041. Paper primary identity is governed by [decision 0046](docs/decisions/0046-exect-primary-method-comparison-boundary.md).
 _Avoid_: v08, historical hybrid, holistic assembly, LLM with rules (unqualified when ExECT is meant)
 
 **Historical ExECT hybrid control**:
-The retained `v08` ExECT LLM-with-rules development control. It is reproducible evidence for an earlier ownership pattern, not the paper's primary ExECT hybrid. In the paper it appears only in a secondary results table with an explicit ownership caveat, never as the primary hybrid method row.
-_Avoid_: selected hybrid, final architecture, model-led comparison, primary method row
+The retained `v08` ExECT LLM-with-rules development control. It is reproducible evidence for an earlier ownership pattern, not the paper's primary ExECT hybrid. In the paper it appears only in a secondary results table with an explicit ownership caveat, never as the primary hybrid method row. It is not a supervisor-facing frontend ladder architecture.
+_Avoid_: selected hybrid, final architecture, model-led comparison, primary method row; frontend component-ablation control column
+
+**Supervisor-facing method demonstration**:
+The frontend surfaces that teach or demonstrate the selected six-path system. They show only selected active methods and their teaching/replay evidence, not historical candidate ladders such as `v08` or `v09` partial-hybrid rows. The ExECT component-ablation ladder is not part of that demonstration until a selected-method ladder exists. The Gan component-ablation mock keeps the three-way comparison columns as selected `rules` / `llm` / `llm_with_rules` evidence (active-method labels), not as unnamed “diagnostic” or “Hybrid” columns.
+_Avoid_: presenting closed candidates as the default control; mixing retained historical ablation columns into the primary demonstration; supervisor-facing “Hybrid …” method labels
 
 **LLM with rules**:
 A research method class in which a model proposes clinical content and deterministic code may later change clinical meaning. On ExECT, the selected instance is the Selected ExECT hybrid; on Gan, it is the event-ledger plus repair stack.
 _Avoid_: using the phrase alone when the task-specific selected instance matters
+
+### Splits
+
+**Gan development split**:
+The 750-row Gan split that permits development review and replay. In prose and claims it is `dev750`. Retained filenames and live API machine `split` fields may keep the legacy identifier `validation750`.
+_Avoid_: presenting `validation750` as the current prose split name; renaming retained artifact filenames for cosmetics
 
 ### Paper roles
 

@@ -183,7 +183,7 @@ out: {'Diagnosis': 1, 'SeizureFrequency': 1, 'Investigations': 1, 'Prescription'
 
 > The model proposes findings for four families in one call; deterministic family transforms reconcile those findings into the final scored representation.
 
-**Prediction owner:** the named model proposes all four families (exect.hybrid.model_call); four family transforms may change findings afterwards
+**Prediction owner:** the named model proposes all four families (exect.llm_with_rules.model_call); four family transforms may change findings afterwards
 
 **Final answer:** Diagnosis x1, Investigations x1, Prescription x1, SeizureFrequency x1
 
@@ -191,7 +191,7 @@ This teaching letter carries no gold annotations, so no correctness verdict is c
 
 11 of 15 stages changed something on this letter.
 
-### 1. Build the four-family prompt <sub>`exect.hybrid.build_prompt`</sub>
+### 1. Build the four-family prompt <sub>`exect.llm_with_rules.build_prompt`</sub>
 
 rules-owned, transport/schema only - **changed**
 
@@ -202,7 +202,7 @@ out: {"architecture": {"component_ownership": "The deterministic ledger proposes
 
 > Canonical LLM-with-rules stage.
 
-### 2. Model proposes findings for four families <sub>`exect.hybrid.model_call`</sub>
+### 2. Model proposes findings for four families <sub>`exect.llm_with_rules.model_call`</sub>
 
 model-owned, CLINICAL MEANING - **changed**
 
@@ -213,7 +213,7 @@ out: {"clinical_events": [{"family": "diagnosis", "anchor_text": "focal epilepsy
 
 > Fixture boundary at the one-call producer; no live model call is made.
 
-### 3. Parse output, with format-only retry when eligible <sub>`exect.hybrid.parse_and_retry`</sub>
+### 3. Parse output, with format-only retry when eligible <sub>`exect.llm_with_rules.parse_and_retry`</sub>
 
 rules-owned, transport/schema only - no change
 
@@ -224,7 +224,7 @@ out: [{'family': 'diagnosis', 'anchor_text': 'focal epilepsy', 'evidence': 'Diag
 
 > Canonical LLM-with-rules stage.
 
-### 4. Flatten model events into mentions <sub>`exect.hybrid.flatten_events`</sub>
+### 4. Flatten model events into mentions <sub>`exect.llm_with_rules.flatten_events`</sub>
 
 rules-owned, representation - **changed**
 
@@ -235,7 +235,7 @@ out: [{'entity': 'Diagnosis', 'text': 'focal epilepsy', 'attributes': {'DiagCate
 
 > Canonical LLM-with-rules stage.
 
-### 5. Enrich attributes and apply render-safety gates <sub>`exect.hybrid.project_and_gate`</sub>
+### 5. Enrich attributes and apply render-safety gates <sub>`exect.llm_with_rules.project_and_gate`</sub>
 
 rules-owned, CLINICAL MEANING - no change
 
@@ -246,7 +246,7 @@ out: [{'entity': 'Diagnosis', 'text': 'focal epilepsy', 'attributes': {'DiagCate
 
 > Canonical LLM-with-rules stage.
 
-### 6. Project seizure-frequency facts into the state representation <sub>`exect.hybrid.sf_state_projection`</sub>
+### 6. Project seizure-frequency facts into the state representation <sub>`exect.llm_with_rules.sf_state_projection`</sub>
 
 rules-owned, CLINICAL MEANING - **changed**
 
@@ -257,7 +257,7 @@ out: [{'entity': 'SeizureFrequency', 'text': 'seizures', 'attributes': {'NumberO
 
 > Canonical LLM-with-rules stage.
 
-### 7. Suppress unsupported unknown states <sub>`exect.hybrid.sf_unknown_suppression`</sub>
+### 7. Suppress unsupported unknown states <sub>`exect.llm_with_rules.sf_unknown_suppression`</sub>
 
 rules-owned, CLINICAL MEANING - no change
 
@@ -268,7 +268,7 @@ out: [{'entity': 'SeizureFrequency', 'text': 'seizures', 'attributes': {'NumberO
 
 > Canonical LLM-with-rules stage.
 
-### 8. Register raw and scored findings <sub>`exect.hybrid.register_findings`</sub>
+### 8. Register raw and scored findings <sub>`exect.llm_with_rules.register_findings`</sub>
 
 rules-owned, transport/schema only - **changed**
 
@@ -279,7 +279,7 @@ out: 4
 
 > Canonical LLM-with-rules stage.
 
-### 9. Diagnosis family transform <sub>`exect.hybrid.lens.diagnosis`</sub>
+### 9. Diagnosis family transform <sub>`exect.llm_with_rules.lens.diagnosis`</sub>
 
 rules-owned, CLINICAL MEANING - **changed**
 
@@ -290,7 +290,7 @@ out: [{'entity': 'Diagnosis', 'text': 'focal epilepsy', 'attributes': {'DiagCate
 
 > Canonical LLM-with-rules stage.
 
-### 10. Seizure Frequency family transform <sub>`exect.hybrid.lens.seizure_frequency`</sub>
+### 10. Seizure Frequency family transform <sub>`exect.llm_with_rules.lens.seizure_frequency`</sub>
 
 rules-owned, representation - **changed**
 
@@ -301,7 +301,7 @@ out: [{'entity': 'SeizureFrequency', 'text': 'seizures', 'attributes': {'NumberO
 
 > Canonical LLM-with-rules stage.
 
-### 11. Prescription family transform <sub>`exect.hybrid.lens.prescription`</sub>
+### 11. Prescription family transform <sub>`exect.llm_with_rules.lens.prescription`</sub>
 
 rules-owned, CLINICAL MEANING - **changed**
 
@@ -312,7 +312,7 @@ out: [{'entity': 'Prescription', 'text': 'levetiracetam', 'attributes': {'DrugNa
 
 > Canonical LLM-with-rules stage.
 
-### 12. Investigations family transform <sub>`exect.hybrid.lens.investigations`</sub>
+### 12. Investigations family transform <sub>`exect.llm_with_rules.lens.investigations`</sub>
 
 rules-owned, representation - **changed**
 
@@ -323,7 +323,7 @@ out: [{'entity': 'Investigations', 'text': 'MRI', 'attributes': {'MRI_Performed'
 
 > Canonical LLM-with-rules stage.
 
-### 13. Require exact evidence for every finding <sub>`exect.hybrid.evidence_requirement`</sub>
+### 13. Require exact evidence for every finding <sub>`exect.llm_with_rules.evidence_requirement`</sub>
 
 rules-owned, gate - no change
 
@@ -334,7 +334,7 @@ out: True
 
 > Canonical LLM-with-rules stage.
 
-### 14. Materialize the score views <sub>`exect.hybrid.materialize_views`</sub>
+### 14. Materialize the score views <sub>`exect.llm_with_rules.materialize_views`</sub>
 
 rules-owned, benchmark projection - **changed**
 
@@ -345,7 +345,7 @@ out: {'source_scored': 4, 'evidence_valid': 4, 'protocol_model_preserving_canoni
 
 > Canonical LLM-with-rules stage.
 
-### 15. Score against gold <sub>`exect.hybrid.score`</sub>
+### 15. Score against gold <sub>`exect.llm_with_rules.score`</sub>
 
 scorer-owned, benchmark projection - **changed**
 

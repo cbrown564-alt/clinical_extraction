@@ -28,12 +28,12 @@ import {
 import { fetchRegistry, fetchArtifact, fetchRecord } from "@/lib/api";
 import { adaptDeterministicTrace, adaptTrace, isReplaySupported } from "@/lib/traceAdapter";
 import {
-  ganPipelineModeLabel,
   ganPipelineOptionLabel,
   groupGanPipelineOptions,
   isGanAggregateRunId,
   resolveGanPipelineOption,
 } from "@/lib/ganPipelineOptions";
+import { activeMethodLabel } from "@/lib/plainLanguageLabels";
 import RuleConfigPanel from "./RuleConfigPanel";
 
 const SPLITS = ["train", "validation", "test"];
@@ -416,24 +416,24 @@ export default function TraceControls() {
           <label htmlFor="architect-pipeline-select" className="text-[11px] font-semibold uppercase tracking-wide text-muted">
             Pipeline
           </label>
-          {selectedOption?.comparison_mode && (
+          {selectedOption?.kind && (
             <span
               className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[11px] font-medium ${
-                selectedOption.comparison_mode === "llm_plus_rules"
+                selectedOption.kind === "llm_with_rules"
                   ? "border-hybrid/25 bg-hybrid/8 text-hybrid"
-                  : selectedOption.comparison_mode === "llm_only"
+                  : selectedOption.kind === "llm"
                     ? "border-llm/25 bg-llm/8 text-llm"
                     : "border-deterministic/25 bg-deterministic/8 text-deterministic"
               }`}
             >
-              {selectedOption.comparison_mode === "llm_plus_rules" ? (
+              {selectedOption.kind === "llm_with_rules" ? (
                 <Blend className="h-3 w-3" aria-hidden="true" />
-              ) : selectedOption.comparison_mode === "llm_only" ? (
+              ) : selectedOption.kind === "llm" ? (
                 <Bot className="h-3 w-3" aria-hidden="true" />
               ) : (
                 <Braces className="h-3 w-3" aria-hidden="true" />
               )}
-              {ganPipelineModeLabel(selectedOption.comparison_mode)}
+              {activeMethodLabel(selectedOption.kind)}
             </span>
           )}
           <select
@@ -448,7 +448,7 @@ export default function TraceControls() {
             }}
           >
             {pipelineGroups.map((group) => (
-              <optgroup key={group.mode} label={group.label}>
+              <optgroup key={group.method} label={group.label}>
                 {group.options.map((opt) => (
                   <option
                     key={opt.run_id}

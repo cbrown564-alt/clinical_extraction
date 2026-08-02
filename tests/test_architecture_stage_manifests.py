@@ -66,7 +66,7 @@ def test_gan_hybrid_prediction_ownership_is_stated_as_model_led() -> None:
     """Finding 5 of the 2026-07-30 review: this is the fact that was wrong."""
 
     manifest = sm.load_manifest("gan2026_llm_with_rules")
-    model_call = manifest.stage("gan.hybrid.model_call")
+    model_call = manifest.stage("gan.llm_with_rules.model_call")
     assert model_call.owner == "model"
     assert "select" in model_call.operation.lower()
     assert "selected_event_ids" in model_call.operation

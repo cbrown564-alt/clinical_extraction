@@ -1,4 +1,4 @@
-import type { ClinicalTask } from "./shared";
+import type { ActiveMethod, ClinicalTask } from "./shared";
 
 // ── ExECTv2 frontend review data ──
 
@@ -7,11 +7,6 @@ export type Exectv2Entity =
   | "SeizureFrequency"
   | "Prescription"
   | "Investigations";
-
-export type Exectv2ComparisonMode =
-  | "llm_plus_rules"
-  | "llm_only"
-  | "deterministic_only";
 
 export interface Exectv2Mention {
   id: string;
@@ -79,7 +74,7 @@ export interface Exectv2RunSummary {
   task: "exectv2";
   label: string;
   model: string;
-  comparison_mode: Exectv2ComparisonMode;
+  kind?: ActiveMethod;
   architecture_family: string;
   pipeline_family: string;
   split: string;

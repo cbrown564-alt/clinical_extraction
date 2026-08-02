@@ -5,7 +5,7 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { fetchExectv2Run, fetchExectv2Runs } from "@/lib/api";
 import { DATASET_PARAM } from "@/lib/datasets";
-import { resolveExectv2RunId, sortExectv2Runs } from "@/lib/exectv2RunOptions";
+import { exectv2RunActiveMethod, resolveExectv2RunId, sortExectv2Runs } from "@/lib/exectv2RunOptions";
 import type { Exectv2RunSummary } from "@/lib/types";
 
 export function useExectv2Runs() {
@@ -88,7 +88,7 @@ const SELECTION_STORAGE_KEY = "exectv2-selected-runs";
 
 /** Default selection: all six models under the winning assembled mode. */
 function defaultSelection(runs: Exectv2RunSummary[]): string[] {
-  const winningMode = runs.filter((run) => run.comparison_mode === "llm_plus_rules");
+  const winningMode = runs.filter((run) => exectv2RunActiveMethod(run) === "llm_with_rules");
   return (winningMode.length > 0 ? winningMode : runs).map((run) => run.run_id);
 }
 

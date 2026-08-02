@@ -11,7 +11,7 @@ when linking to saved evidence or code that still uses it.
 | --- | --- | --- |
 | Rules only | `rules_only`, `deterministic_canonical_pipeline` | Deterministic rules determine the clinical facts |
 | LLM only | `llm_only`, `llm_only_canonical_pipeline` | The model determines the clinical facts; code validates or formats them |
-| LLM with rules | `hybrid`, `hybrid_structured_events` | The model and deterministic code can both affect clinical meaning |
+| LLM with rules | `hybrid`, `hybrid_structured_events` (retained row and filename ids) | The model and deterministic code can both affect clinical meaning |
 
 Current Gan commands use `rules`, `llm`, and `llm_with_rules`.
 
@@ -41,7 +41,7 @@ Do not use a version code as if it explains the method.
 
 | Code | Plain description | Row policy |
 | --- | --- | --- |
-| `validation750` | Gan development split, 750 letters | Row review allowed |
+| `validation750` | Gan development split (`dev750`); retained filename identifier | Row review allowed |
 | `test450` | Gan locked holdout, 450 letters | Saved aggregates only |
 | `dev140` | ExECT development split, 140 letters | Row review allowed |
 | `full200` | All 200 ExECT letters | Includes development rows; test60 row review remains barred |

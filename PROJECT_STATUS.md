@@ -41,6 +41,20 @@ surfaces, teaching material, and generated architecture. Historical filenames,
 run IDs, prompt versions, manifests, replay metadata, and explicit inbound
 aliases remain unchanged.
 
+Label-leftover blockers from the 2026-08-02 grill are implemented in the
+working tree (not yet committed): `comparison_mode` removed in favor of active
+method grouping; architecture stage IDs renamed to `*.llm_with_rules.*`; ExECT
+component-ablation removed from the supervisor path; Gan ablation three-way
+columns retagged as selected active methods. Focused architecture, trace-
+explorer, and frontend checks pass.
+
+Broader corpus retention triage is advanced in the same working tree: unserved
+ExECT mocks deleted; five orphan docs removed (rejected-policy protocols kept
+for negative replay); seven tier-1 experiment orphans removed; retained-
+evidence manifest still valid. Deferred: scoring-lane JSONL audit and stale
+mock-registry `artifact_paths`. Supervisor-host and unaided README review
+remain open before the Decision 0048 status flip.
+
 The ExECT `rules`, `llm`, and `llm_with_rules` vertical slices are implemented and verified
 through runtime, split/CLI, API, registry, trace/frontend, teaching material,
 generated architecture, and exact permitted-development parity. Active, saved
@@ -444,17 +458,18 @@ Current working-tree backend verification is green for tracked project files:
   and governing stage manifest. These checks verify engineering and replay
   behavior, not clinical validation.
 
-- **Verified on 2026-08-02 after the ExECT `llm` merge:** merged `main` passes
-  1,542
-  pytest tests with one expected strict `xfail` for the stale standalone
-  handoff package. Ruff, mypy across 358 source files, all 15 generated
-  architecture checks, the retained-evidence manifest, all six selected
-  no-call reference replays, locked-artifact safety, 71 frontend Jest tests,
-  TypeScript, focused source lint, and the Next.js production build pass. Sol's
-  final synthetic split, provenance, alias-collision, and base-parity probes
-  found no remaining actionable issue in the ExECT `llm` slice. The combined
-  gate also caught and fixed a test-fixture TypeScript widening defect. These
-  checks verify engineering and replay behavior, not clinical validation.
+- **Verified on 2026-08-02 after the ExECT `llm` merge:** merged `main` then
+  passed 1,542 pytest tests with one expected strict `xfail` for the still-
+  stale standalone handoff package at that moment (cleared later the same day
+  by the handoff rebuild verification above). Ruff, mypy across 358 source
+  files, all 15 generated architecture checks, the retained-evidence manifest,
+  all six selected no-call reference replays, locked-artifact safety, 71
+  frontend Jest tests, TypeScript, focused source lint, and the Next.js
+  production build passed. Sol's final synthetic split, provenance,
+  alias-collision, and base-parity probes found no remaining actionable issue
+  in the ExECT `llm` slice. The combined gate also caught and fixed a
+  test-fixture TypeScript widening defect. These checks verify engineering and
+  replay behavior, not clinical validation.
 
 - **Verified on 2026-08-02:** at merged commit `716b6de8`, all 1,512 pytest
   tests, Ruff, mypy across 352 source files, 14 architecture-document checks,

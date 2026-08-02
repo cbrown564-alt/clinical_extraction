@@ -58,6 +58,20 @@ verified.
    [restricted external-validation readiness template](../runbooks/external_validation_readiness.md)
    is linked. Run the strict Decision 0048 completion gate only after
    supervisor-host and unaided review checks pass.
+7. **Label-leftover blockers (before 0048 status flip):** delete
+   `comparison_mode` (group on active method only); rename architecture stage
+   IDs `*.hybrid.*` → active-method namespaces and regenerate docs; remove the
+   ExECT component-ablation supervisor surface (historical mock only); retag
+   the Gan ablation three-way columns as selected active methods with plain
+   labels. Keep API `split: validation750` with prose `dev750`. Owner:
+   [Decision 0048](../decisions/0048-comprehension-and-handoff-refactor.md)
+   completion gate; glossary terms in [CONTEXT.md](../../CONTEXT.md).
+8. **Broader corpus retention triage advanced (2026-08-02):** deleted unserved
+   ExECT mocks (~2.3 MB), five orphan/superseded docs, and seven tier-1
+   experiment orphans; fixed REGENERATION retention-slice links; deferred
+   scoring-lane JSONL batch and stale mock-registry path metadata. Records:
+   `docs/research/maintenance/retention_slice_{unserved_exect_mock,orphan_docs,experiments_orphans}_2026-08-02.md`
+   and [REGENERATION.md](../REGENERATION.md).
 
 Gan test450 remains aggregate-only. ExECT full200 combines development and
 held-out rows, so it is not an independent holdout.

@@ -20,13 +20,16 @@ function ids(items: Array<{ id: string }>): string[] {
 }
 
 describe("dataset descriptors", () => {
-  it("both datasets declare all four surfaces", () => {
-    for (const dataset of DATASETS) {
-      expect(datasetSupports(dataset.id, "workbench")).toBe(true);
-      expect(datasetSupports(dataset.id, "observatory")).toBe(true);
-      expect(datasetSupports(dataset.id, "laboratory")).toBe(true);
-      expect(datasetSupports(dataset.id, "gallery")).toBe(true);
-    }
+  it("both datasets declare supported surfaces", () => {
+    expect(datasetSupports("gan2026", "workbench")).toBe(true);
+    expect(datasetSupports("gan2026", "observatory")).toBe(true);
+    expect(datasetSupports("gan2026", "laboratory")).toBe(true);
+    expect(datasetSupports("gan2026", "gallery")).toBe(true);
+
+    expect(datasetSupports("exectv2", "workbench")).toBe(true);
+    expect(datasetSupports("exectv2", "observatory")).toBe(true);
+    expect(datasetSupports("exectv2", "laboratory")).toBe(false);
+    expect(datasetSupports("exectv2", "gallery")).toBe(true);
   });
 
   it("metric, component, and error class ids are unique and non-empty per dataset", () => {

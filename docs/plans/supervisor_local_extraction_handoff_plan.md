@@ -38,6 +38,9 @@ traced runtime change.
 
 ## Historical implementation snapshot (2026-07-21)
 
+This section records a past engineering snapshot. It does **not** override the
+current closure status in **Source-to-shipped closure (implemented)** above.
+
 The source-first handoff was built under `handoff/supervisor/` and in
 `handoff/clinical_extraction_supervisor_handoff.zip` at this snapshot. Its
 active public source is `src/clinical_extraction_local/`; `handoff/source/`
@@ -45,10 +48,11 @@ owns the README, setup, examples, and operational documentation. The builder
 copies the selected internal runtime through an explicit path allowlist and
 writes every shipped file and SHA-256 hash to `SOURCE_MANIFEST.json`.
 
-The shipped tree and ZIP are now stale relative to the active source. The
-source-to-shipped closure test in the blocker above fails until they are
-rebuilt. The claims below describe the historical snapshot's behavior and
-checks; they do not certify the current shipped package.
+**Historical status only (superseded 2026-08-02):** at this snapshot the shipped
+tree and ZIP had drifted from active source and the source-to-shipped closure
+test would have failed until rebuild. The 2026-08-02 rebuild restored closure.
+The claims below describe this snapshot's behavior and checks at the time; they
+do not certify today's shipped package.
 
 Historical behavior at that snapshot:
 
@@ -880,8 +884,8 @@ private data.
 ## Durable document ownership
 
 - This plan owns the handoff scope, user experience, privacy defaults,
-  implementation order, and acceptance criteria until implementation is
-  complete.
+  implementation order, and acceptance criteria until supervisor-host and
+  unaided README verification are complete.
 - [Software design](../design/architecture.md) continues to own main-package
   component boundaries.
 - [Decision 0040](../decisions/0040-final-exect-llm-with-rules-family-ownership.md)
