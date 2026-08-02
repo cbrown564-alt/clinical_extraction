@@ -126,6 +126,8 @@ class StructuredProducerResult:
     call_error: str | None = None
     model: str = ""
     mode: str = ""
+    route: str = ""
+    dspy_cache: bool = True
     row: Mapping[str, Any] = field(default_factory=dict)
 
 

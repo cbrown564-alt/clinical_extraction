@@ -9,6 +9,11 @@ import type {
 } from "./types";
 
 const UNOWNED_RULES_ALIASES = new Set(["deterministic_all9", "exectv2_deterministic_all9"]);
+const ACTIVE_METHOD_ALIASES: Readonly<Record<string, string>> = {
+  llm: "llm",
+  llm_only: "llm",
+  exectv2_llm_only: "llm",
+};
 
 const MODEL_ORDER = [
   "openai/gpt-4.1-mini",
@@ -58,11 +63,16 @@ export function resolveExectv2RunId(
   requested: string
 ): string | null {
   if (UNOWNED_RULES_ALIASES.has(requested)) return null;
+  const activeMethod = ACTIVE_METHOD_ALIASES[requested];
   const matches = runs.filter((run) =>
+    (activeMethod !== undefined &&
+      [run.active_method, run.method_id].includes(activeMethod)) ||
     [
       run.run_id,
       run.saved_run_id,
       run.retained_evidence_id,
+      run.active_method,
+      run.method_id,
       ...(run.legacy_run_ids ?? []),
     ].includes(requested)
   );

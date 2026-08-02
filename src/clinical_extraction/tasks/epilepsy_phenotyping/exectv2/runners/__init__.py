@@ -1,6 +1,8 @@
 """Public ExECTv2 method runners."""
 
 from .naming import (
+    LLM_METHOD_ALIASES,
+    LLM_WITH_RULES_METHOD_ALIASES,
     RULES_METHOD_ALIASES,
     UNOWNED_RULES_ALIASES,
     ActiveMethodName,
@@ -9,6 +11,8 @@ from .naming import (
 )
 
 __all__ = [
+    "LLM_METHOD_ALIASES",
+    "LLM_WITH_RULES_METHOD_ALIASES",
     "RULES_METHOD_ALIASES",
     "UNOWNED_RULES_ALIASES",
     "ActiveMethodName",
