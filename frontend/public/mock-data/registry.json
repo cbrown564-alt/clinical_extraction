@@ -3,10 +3,10 @@
   "runs": [
     {
       "artifact_paths": [
-        "experiments/gan2026_rules_only_v1_baseline_2026-05-31.jsonl"
+        "frontend/public/mock-data/artifacts/gan2026_rules_only_v1_baseline_2026-05-31.json"
       ],
       "cache_reuse_source": null,
-      "claim_language_notes": "Frozen rules_only_v1 comparator; aggregate locked-test context is historical, not a tuning surface.",
+      "claim_language_notes": "Frozen rules_only_v1 comparator; aggregate locked-test context is historical, not a tuning surface. Replay served from mock-data artifacts.",
       "date": "2026-05-31",
       "decision": "historical",
       "evidence_validity": "Report-level deterministic evidence summary.",
@@ -39,17 +39,14 @@
       "date": "2026-06-21",
       "row_count": 140,
       "artifact_paths": [
-        "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v08_dev140.yaml",
-        "docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v08_dev140_20260621.md",
-        "experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.json",
-        "experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.jsonl"
+        "frontend/public/mock-data/artifacts/exectv2_holistic_finding_assembly_v08_dev140.json"
       ],
       "mode": "v08 Dev140 Control",
       "model": "openai/gpt-4.1-mini",
       "model_role": "performance-control",
       "split": "dev140",
       "decision": "control",
-      "claim_boundary": "Dev-only component-attributed architecture evidence; not a benchmark, full-200, or locked-test claim",
+      "claim_boundary": "Dev-only component-attributed architecture evidence; not a benchmark, full-200, or locked-test claim. Frontend replay uses the mock artifact copy.",
       "scorer_view": "headline_target"
     },
     {
@@ -81,17 +78,14 @@
       "date": "2026-06-21",
       "row_count": 140,
       "artifact_paths": [
-        "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140.yaml",
-        "docs/experiments/exectv2/key_entities/exectv2_v09_single_gpt_simplification_study_dev140_20260621.md",
-        "experiments/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140_20260621.json",
-        "experiments/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140_20260621.jsonl"
+        "frontend/public/mock-data/artifacts/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140.json"
       ],
       "mode": "v09 Partial Hybrid Simplification",
       "model": "openai/gpt-4.1-mini",
       "model_role": "simplicity-control",
       "split": "dev140",
       "decision": "simplification",
-      "claim_boundary": "Dev-only simplification evidence; not a v08 replacement on all family surfaces",
+      "claim_boundary": "Dev-only simplification evidence; not a v08 replacement on all family surfaces. Frontend replay uses the mock artifact copy.",
       "scorer_view": "headline_target"
     },
     {
@@ -102,17 +96,14 @@
       "date": "2026-06-22",
       "row_count": 140,
       "artifact_paths": [
-        "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140.yaml",
-        "experiments/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.md",
-        "experiments/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.json",
-        "experiments/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.jsonl"
+        "frontend/public/mock-data/artifacts/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140.json"
       ],
       "mode": "DeepSeek v0.9.16 Dev140 Diagnostic",
       "model": "deepseek/deepseek-chat",
       "model_role": "diagnostic-comparator",
       "split": "dev140",
       "decision": "diagnostic",
-      "claim_boundary": "diagnostic same raw deepseek v0910 through v0916 dictionary dev140",
+      "claim_boundary": "diagnostic same raw deepseek v0910 through v0916 dictionary dev140. Frontend replay uses the mock artifact copy.",
       "scorer_view": "headline_target"
     },
     {
@@ -123,17 +114,14 @@
       "date": "2026-06-22",
       "row_count": 140,
       "artifact_paths": [
-        "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140.yaml",
-        "experiments/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.md",
-        "experiments/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.json",
-        "experiments/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.jsonl"
+        "frontend/public/mock-data/artifacts/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140.json"
       ],
       "mode": "Qwen v0.9.22 Dev140 Diagnostic",
       "model": "ollama_chat/qwen3.6:35b",
       "model_role": "diagnostic-comparator",
       "split": "dev140",
       "decision": "diagnostic",
-      "claim_boundary": "local qwen v0910 qwen compact live dev140 ctx12288 maxtok2500 standard dictionary residual repair v13",
+      "claim_boundary": "local qwen v0910 qwen compact live dev140 ctx12288 maxtok2500 standard dictionary residual repair v13. Frontend replay uses the mock artifact copy.",
       "scorer_view": "headline_target"
     }
   ]

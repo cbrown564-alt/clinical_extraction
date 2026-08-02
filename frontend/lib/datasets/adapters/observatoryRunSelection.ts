@@ -6,6 +6,7 @@
 
 import type { RegistryEntry } from "@/lib/types";
 import { laneForRun } from "@/lib/observatoryLanes";
+import { hasReplayableArtifact } from "@/lib/registryArtifacts";
 
 /** Parse a run ID into a human-readable variant string. */
 export function parseRunVariant(runId: string, family: string): string {
@@ -41,7 +42,7 @@ export function getDefaultSelections(runs: RegistryEntry[]): Set<string> {
   // context. They are exempt from the selection cap below.
   const laneRunIds = new Set<string>();
   for (const run of runs) {
-    if (laneForRun(run) && run.artifact_paths.some((p) => p.endsWith(".jsonl"))) {
+    if (laneForRun(run) && hasReplayableArtifact(run.artifact_paths)) {
       selected.add(run.run_id);
       laneRunIds.add(run.run_id);
     }
@@ -49,7 +50,7 @@ export function getDefaultSelections(runs: RegistryEntry[]): Set<string> {
 
   for (const run of runs) {
     if (run.split?.includes("validation+test") || run.split?.includes("test")) {
-      if (run.artifact_paths.some((p) => p.endsWith(".jsonl"))) {
+      if (hasReplayableArtifact(run.artifact_paths)) {
         selected.add(run.run_id);
       }
     }
@@ -57,7 +58,7 @@ export function getDefaultSelections(runs: RegistryEntry[]): Set<string> {
 
   const byFamily = new Map<string, RegistryEntry[]>();
   for (const run of runs) {
-    if (!run.artifact_paths.some((p) => p.endsWith(".jsonl"))) continue;
+    if (!hasReplayableArtifact(run.artifact_paths)) continue;
     const list = byFamily.get(run.pipeline_family) ?? [];
     list.push(run);
     byFamily.set(run.pipeline_family, list);

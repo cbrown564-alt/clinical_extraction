@@ -7,6 +7,7 @@ import { computeMetrics, computeSummary } from "@/lib/datasets/adapters/observat
 import { getDefaultSelections } from "@/lib/datasets/adapters/observatoryRunSelection";
 import { extractRowScore } from "@/lib/datasets/adapters/observatoryRowScore";
 import { isActivePipelineFamily } from "@/lib/pipelineFamilies";
+import { hasReplayableArtifact } from "@/lib/registryArtifacts";
 import type { RowScore, RunSummary } from "@/lib/types";
 import { useSearchParams } from "next/navigation";
 
@@ -76,9 +77,8 @@ export function useObservatoryData() {
       if (summaries.has(runId) || loadingRuns.has(runId)) continue;
       const entry = runs.find((r) => r.run_id === runId);
       if (!entry) continue;
-      const jsonlPaths = entry.artifact_paths.filter((p) => p.endsWith(".jsonl"));
-      if (jsonlPaths.length === 0) {
-        setRunErrors((prev) => new Map(prev).set(runId, "No JSONL artifact"));
+      if (!hasReplayableArtifact(entry.artifact_paths)) {
+        setRunErrors((prev) => new Map(prev).set(runId, "No replay artifact"));
         continue;
       }
 
@@ -130,9 +130,8 @@ export function useObservatoryData() {
         const entry = runs.find((r) => r.run_id === runId);
         if (!entry) return;
 
-        const jsonlPaths = entry.artifact_paths.filter((p) => p.endsWith(".jsonl"));
-        if (jsonlPaths.length === 0) {
-          setRunErrors((prev) => new Map(prev).set(runId, "No JSONL artifact"));
+        if (!hasReplayableArtifact(entry.artifact_paths)) {
+          setRunErrors((prev) => new Map(prev).set(runId, "No replay artifact"));
           return;
         }
 
@@ -168,8 +167,7 @@ export function useObservatoryData() {
         if (!summaries.has(runId) && !loadingRuns.has(runId)) {
           const entry = runs.find((r) => r.run_id === runId);
           if (!entry) continue;
-          const jsonlPaths = entry.artifact_paths.filter((p) => p.endsWith(".jsonl"));
-          if (jsonlPaths.length === 0) continue;
+          if (!hasReplayableArtifact(entry.artifact_paths)) continue;
           setLoadingRuns((prev) => new Set(prev).add(runId));
           setRunErrors((prev) => {
             if (!prev.has(runId)) return prev;
@@ -203,8 +201,7 @@ export function useObservatoryData() {
       if (detailRows.has(runId) || loadingRuns.has(runId)) return;
       const entry = runs.find((r) => r.run_id === runId);
       if (!entry) return;
-      const jsonlPaths = entry.artifact_paths.filter((p) => p.endsWith(".jsonl"));
-      if (jsonlPaths.length === 0) return;
+      if (!hasReplayableArtifact(entry.artifact_paths)) return;
 
       setLoadingRuns((prev) => new Set(prev).add(runId));
       setRunErrors((prev) => {
