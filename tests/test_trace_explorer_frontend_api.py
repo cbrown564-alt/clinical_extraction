@@ -61,6 +61,8 @@ def test_frontend_catalog_and_read_only_surfaces_use_the_live_api(client: TestCl
         assert selected.status_code == 200
         assert selected.json()["run"]["run_id"] == "rules"
 
+    assert client.get("/exectv2/runs/None").status_code == 404
+
     scorecard = client.get("/gan2026/reliability-scorecard")
     assert scorecard.status_code == 200
     assert scorecard.json()["dataset"] == "gan2026"

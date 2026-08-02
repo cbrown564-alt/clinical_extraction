@@ -264,11 +264,15 @@ class FrontendDataStore:
             and run.get("run_id") == "exectv2_deterministic_all9_dev140"
         ):
             return True
-        return requested in {
-            str(run.get("run_id")),
-            str(run.get("saved_run_id")),
-            *(str(item) for item in run.get("legacy_run_ids", [])),
+        aliases = {
+            value
+            for value in (run.get("run_id"), run.get("saved_run_id"))
+            if isinstance(value, str)
         }
+        legacy_run_ids = run.get("legacy_run_ids", [])
+        if isinstance(legacy_run_ids, list):
+            aliases.update(item for item in legacy_run_ids if isinstance(item, str))
+        return requested in aliases
 
     def prompt_template(self, module_name: str) -> dict[str, Any] | None:
         prompts = self.named("prompts").get("prompts")
