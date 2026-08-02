@@ -7,6 +7,10 @@ import json
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.naming import (
+    RULES_METHOD_ALIASES,
+    UNOWNED_RULES_ALIASES,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     load_records_for_split,
 )
@@ -232,17 +236,16 @@ class FrontendDataStore:
         shared_letters = payload.get("shared_letters")
         if not isinstance(runs, list) or not isinstance(shared_letters, list):
             raise ValueError("ExECTv2 runs resource is malformed")
-        matches = [
-            run
-            for run in runs
-            if isinstance(run, dict) and self._exect_run_matches(run, run_id)
+        canonical_runs = [
+            self._canonical_exect_run(run) for run in runs if isinstance(run, dict)
         ]
+        matches = [run for run in canonical_runs if self._exect_run_matches(run, run_id)]
         if len(matches) == 1:
             return {
                 "generated_on": payload.get("generated_on"),
                 "source_index": payload.get("source_index"),
                 "shared_letters": shared_letters,
-                "run": self._canonical_exect_run(matches[0]),
+                "run": matches[0],
             }
         return None
 
@@ -250,28 +253,41 @@ class FrontendDataStore:
     def _canonical_exect_run(run: dict[str, Any]) -> dict[str, Any]:
         """Expose the active rules name while retaining saved-run lookup."""
 
-        if run.get("run_id") != "exectv2_deterministic_all9_dev140":
+        if run.get("run_id") not in {
+            *RULES_METHOD_ALIASES,
+            "exectv2_deterministic_all9_dev140",
+        }:
             return run
-        return {
-            **run,
-            "run_id": "rules",
-            "saved_run_id": "exectv2_deterministic_all9_dev140",
-            "retained_evidence_id": "exectv2_deterministic_all9_dev_20260714",
-            "legacy_run_ids": [
-                "exectv2_deterministic_all9_dev140",
-                "exectv2_deterministic_all9_dev_20260714",
-            ],
-            "architecture_family": "rules",
-            "pipeline_family": "rules",
-        }
+        canonical = {**run, "run_id": "rules"}
+        saved_run_id = str(
+            canonical.setdefault("saved_run_id", "exectv2_deterministic_all9_dev140")
+        )
+        retained_evidence_id = str(
+            canonical.setdefault(
+                "retained_evidence_id", "exectv2_deterministic_all9_dev_20260714"
+            )
+        )
+        prior_aliases = canonical.get("legacy_run_ids", [])
+        approved_prior_aliases = [
+            alias
+            for alias in (prior_aliases if isinstance(prior_aliases, list) else [])
+            if alias in {*RULES_METHOD_ALIASES[1:], saved_run_id, retained_evidence_id}
+        ]
+        aliases = [
+            *approved_prior_aliases,
+            *RULES_METHOD_ALIASES[1:],
+            saved_run_id,
+            retained_evidence_id,
+        ]
+        canonical["legacy_run_ids"] = list(dict.fromkeys(alias for alias in aliases if alias))
+        canonical["architecture_family"] = "rules"
+        canonical["pipeline_family"] = "rules"
+        return canonical
 
     @staticmethod
     def _exect_run_matches(run: dict[str, Any], requested: str) -> bool:
-        if (
-            requested == "rules"
-            and run.get("run_id") == "exectv2_deterministic_all9_dev140"
-        ):
-            return True
+        if requested in UNOWNED_RULES_ALIASES:
+            return False
         aliases = {
             value
             for value in (

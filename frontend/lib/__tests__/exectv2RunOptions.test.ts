@@ -38,7 +38,11 @@ describe("ExECTv2 architecture options", () => {
       run_id: "rules",
       saved_run_id: "exectv2_deterministic_all9_dev140",
       retained_evidence_id: "exectv2_deterministic_all9_dev_20260714",
-      legacy_run_ids: ["exectv2_deterministic_all9_dev140"],
+      legacy_run_ids: [
+        "rules_only",
+        "exectv2_rules_only",
+        "exectv2_deterministic_all9_dev140",
+      ],
     };
     const other = run("llm_only", MODELS[0], 1);
     const collision = {
@@ -51,6 +55,8 @@ describe("ExECTv2 architecture options", () => {
     };
 
     expect(resolveExectv2RunId([rules, other], "rules")).toBe("rules");
+    expect(resolveExectv2RunId([rules, other], "rules_only")).toBe("rules");
+    expect(resolveExectv2RunId([rules, other], "exectv2_rules_only")).toBe("rules");
     expect(
       resolveExectv2RunId([rules, other], "exectv2_deterministic_all9_dev140")
     ).toBe("rules");
@@ -58,6 +64,8 @@ describe("ExECTv2 architecture options", () => {
       resolveExectv2RunId([rules, other], "exectv2_deterministic_all9_dev_20260714")
     ).toBe("rules");
     expect(resolveExectv2RunId([rules, other], "missing")).toBeNull();
+    expect(resolveExectv2RunId([rules, other], "deterministic_all9")).toBeNull();
+    expect(resolveExectv2RunId([rules, other], "exectv2_deterministic_all9")).toBeNull();
     expect(resolveExectv2RunId([collision, collision2], "same-alias")).toBeNull();
   });
 
