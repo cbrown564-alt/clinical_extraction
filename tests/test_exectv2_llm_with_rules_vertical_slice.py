@@ -330,6 +330,48 @@ def test_hybrid_dev140_replay_matches_independent_prechange_oracle() -> None:
         assert result.row["active_method"] == "llm_with_rules"
         assert result.row["source_method_id"] == "exectv2_llm_with_rules"
         assert result.row["source_pipeline_family"] == source["pipeline_family"]
+        for field in (
+            "model",
+            "mode",
+            "split",
+            "prompt_version",
+            "prompt_profile",
+            "raw_output",
+            "initial_parse_errors",
+            "parse_errors",
+            "format_retry_output",
+            "format_retry_notes",
+            "call_error",
+        ):
+            assert result.row[field] == producer.row[field], f"final provenance: {field}"
+        assert result.row["producer_row"] == producer.row
+        assert result.row["prediction"] == result.prediction.model_dump(mode="json")
+        assert result.row["scorer_projection"] == result.scorer_projection
+        assert result.row["first_prediction_changing_owner"] == (
+            result.first_prediction_changing_owner
+        )
+        assert result.row["first_failure"] == result.first_failure
+        assert result.row["stage_events"] == [
+            event.to_dict() for event in result.stage_events
+        ]
+        assert [
+            (event.stage_id, event.owner, event.action)
+            for event in result.stage_events
+            if event.owner != "model"
+        ] == [
+            (
+                str(stage["stage_id"]),
+                str(stage["owner"]),
+                str(stage["runtime_action"]),
+            )
+            for stage in json.loads(
+                Path(
+                    "src/clinical_extraction/architecture/manifests/"
+                    "exectv2_llm_with_rules.json"
+                ).read_text(encoding="utf-8")
+            )["stages"]
+            if stage["owner"] != "model"
+        ]
         parity.append(
             {
                 "letter_id": letter.letter_id,
