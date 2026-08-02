@@ -30,7 +30,10 @@
         "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:build_prompt_input"
       },
       "governing_test": "tests/test_gan2026_llm_prompt_hygiene.py",
-      "trace_fields": ["prompt_input_json", "prompt_version"],
+      "trace_fields": [
+        "prompt_input_json",
+        "prompt_version"
+      ],
       "paper_wording": "A single prompt requests a structured event ledger and an explicit selection."
     },
     {
@@ -48,7 +51,10 @@
         "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:DspyStructuredExtractor"
       },
       "governing_test": "tests/test_gan2026_hybrid_structured_events_contract.py",
-      "trace_fields": ["raw_output", "row_trace.model_prediction.record"],
+      "trace_fields": [
+        "raw_output",
+        "row_trace.model_prediction.record"
+      ],
       "paper_wording": "A single language-model call produces a structured event ledger and an explicit selection of the current event.",
       "notes": "The model, not a deterministic selector, makes the initial event selection. Finding 5 of the 2026-07-30 review reported a teaching fixture that attributed this to a deterministic component."
     },
@@ -68,7 +74,10 @@
         "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair:repair_structured_extraction_payload"
       },
       "governing_test": "tests/test_gan2026_schema_repair.py",
-      "trace_fields": ["row_trace.format_repair.schema_payload_changed", "row_trace.format_repair.events"],
+      "trace_fields": [
+        "row_trace.format_repair.schema_payload_changed",
+        "row_trace.format_repair.events"
+      ],
       "paper_wording": "Malformed model output is repaired at the transport and schema level only.",
       "notes": "Event quarantine removes entries that cannot validate. It is transport-level by contract, but it does reduce the ledger the model's selection can point at; quarantine notes are retained in parse_errors."
     },
@@ -88,7 +97,10 @@
         "symbol": "clinical_extraction.core.local_structured_output:validate_format_retry"
       },
       "governing_test": "tests/test_exectv2_local_format_retry.py",
-      "trace_fields": ["format_retry_output", "format_retry_notes"],
+      "trace_fields": [
+        "format_retry_output",
+        "format_retry_notes"
+      ],
       "paper_wording": "Local-model outputs that fail to parse receive one format-only repair attempt, accepted only when it validates.",
       "notes": "Conditional. Fires only in live mode for models whose name starts with ollama_chat/."
     },
@@ -108,7 +120,9 @@
         "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:StructuredExtractionRecord"
       },
       "governing_test": "tests/test_gan2026_hybrid_structured_events_contract.py",
-      "trace_fields": ["parse_errors"],
+      "trace_fields": [
+        "parse_errors"
+      ],
       "paper_wording": "Extractions that do not validate against the schema are recorded as failures rather than scored."
     },
     {
@@ -127,7 +141,10 @@
         "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:_normalize_event"
       },
       "governing_test": "tests/test_gan2026_normalize_governance.py",
-      "trace_fields": ["normalized_events", "row_trace.deterministic_selection.normalized_events_field"],
+      "trace_fields": [
+        "normalized_events",
+        "row_trace.deterministic_selection.normalized_events_field"
+      ],
       "paper_wording": "Model-produced events are normalized to a common rate representation."
     },
     {
@@ -146,7 +163,11 @@
         "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:_resolve_final_label"
       },
       "governing_test": "tests/test_gan2026_hybrid_structured_events_contract.py",
-      "trace_fields": ["row_trace.deterministic_selection.selected_event_ids", "row_trace.deterministic_selection.model_final_label", "row_trace.deterministic_selection.resolved_label"],
+      "trace_fields": [
+        "row_trace.deterministic_selection.selected_event_ids",
+        "row_trace.deterministic_selection.model_final_label",
+        "row_trace.deterministic_selection.resolved_label"
+      ],
       "paper_wording": "The model's selection is resolved into a label using the normalized form of the events it selected.",
       "notes": "Representation, not selection: this stage renders the model's choice, it does not re-choose. If no selected event normalizes to a Gan label the row is recorded unscorable. row_trace.deterministic_selection retains both the model's own final_label and the resolved label so the two can be compared."
     },
@@ -166,7 +187,9 @@
         "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.normalize:repair_prediction_label_with_evidence"
       },
       "governing_test": "tests/test_gan2026_selected_evidence_derivation.py",
-      "trace_fields": ["row_trace.deterministic_semantic.events"],
+      "trace_fields": [
+        "row_trace.deterministic_semantic.events"
+      ],
       "paper_wording": "A deterministic repair reconciles the label with the evidence span the model selected."
     },
     {
@@ -184,8 +207,10 @@
         "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_monthly_diary.py",
         "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_monthly_diary:monthly_diary_label_from_events"
       },
-      "governing_test": "tests/test_gan2026_hybrid_structured_events_diaries.py",
-      "trace_fields": ["row_trace.deterministic_semantic.events"],
+      "governing_test": "tests/test_gan2026_hybrid_structured_events_contract.py",
+      "trace_fields": [
+        "row_trace.deterministic_semantic.events"
+      ],
       "paper_wording": "A deterministic repair converts month-by-month diary entries into a single rate."
     },
     {
@@ -203,8 +228,10 @@
         "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
         "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:usual_interval_label_from_events"
       },
-      "governing_test": "tests/test_gan2026_hybrid_structured_events_repair.py",
-      "trace_fields": ["row_trace.deterministic_semantic.events"],
+      "governing_test": "tests/test_gan2026_hybrid_structured_events_contract.py",
+      "trace_fields": [
+        "row_trace.deterministic_semantic.events"
+      ],
       "paper_wording": "A deterministic repair converts a stated usual interval into a rate."
     },
     {
@@ -222,8 +249,10 @@
         "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
         "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:typical_recurring_rate_over_ytd_from_events"
       },
-      "governing_test": "tests/test_gan2026_floor_regression_guards.py",
-      "trace_fields": ["row_trace.deterministic_semantic.events"],
+      "governing_test": "tests/test_gan2026_hybrid_structured_events_contract.py",
+      "trace_fields": [
+        "row_trace.deterministic_semantic.events"
+      ],
       "paper_wording": "A deterministic repair prefers a stated typical recurring rate over a year-to-date total.",
       "notes": "Policy A1 in docs/research/clinical_selection_policy_catalog_2026-07-31.md. Unlike its neighbours this repair is not gated by a repair_config flag; it runs whenever its precondition holds."
     },
@@ -242,8 +271,10 @@
         "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
         "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:breakthrough_label_from_events"
       },
-      "governing_test": "tests/test_gan2026_hybrid_structured_events_repair.py",
-      "trace_fields": ["row_trace.deterministic_semantic.events"],
+      "governing_test": "tests/test_gan2026_hybrid_structured_events_contract.py",
+      "trace_fields": [
+        "row_trace.deterministic_semantic.events"
+      ],
       "paper_wording": "A deterministic repair resolves breakthrough-seizure phrasing against a controlled background."
     },
     {
@@ -261,8 +292,10 @@
         "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
         "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:non_epileptic_label_from_events"
       },
-      "governing_test": "tests/test_gan2026_hybrid_structured_events_repair.py",
-      "trace_fields": ["row_trace.deterministic_semantic.events"],
+      "governing_test": "tests/test_gan2026_hybrid_structured_events_contract.py",
+      "trace_fields": [
+        "row_trace.deterministic_semantic.events"
+      ],
       "paper_wording": "A deterministic repair excludes events recorded as non-epileptic from the frequency answer."
     },
     {
@@ -280,8 +313,10 @@
         "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
         "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:residual_jerk_label_from_events"
       },
-      "governing_test": "tests/test_gan2026_hybrid_structured_events_repair.py",
-      "trace_fields": ["row_trace.deterministic_semantic.events"],
+      "governing_test": "tests/test_gan2026_hybrid_structured_events_contract.py",
+      "trace_fields": [
+        "row_trace.deterministic_semantic.events"
+      ],
       "paper_wording": "A deterministic repair applies the residual-jerk policy to the frequency answer."
     },
     {
@@ -299,8 +334,10 @@
         "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
         "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:post_change_burst_label_from_events"
       },
-      "governing_test": "tests/test_gan2026_hybrid_structured_events_temporal.py",
-      "trace_fields": ["row_trace.deterministic_semantic.events"],
+      "governing_test": "tests/test_gan2026_hybrid_structured_events_contract.py",
+      "trace_fields": [
+        "row_trace.deterministic_semantic.events"
+      ],
       "paper_wording": "A deterministic repair separates a post-change seizure burst from the settled current rate."
     },
     {
@@ -318,8 +355,10 @@
         "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
         "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:dated_sequence_label_from_events"
       },
-      "governing_test": "tests/test_gan2026_dated_count_competing_rate_floor.py",
-      "trace_fields": ["row_trace.deterministic_semantic.events"],
+      "governing_test": "tests/test_gan2026_hybrid_structured_events_contract.py",
+      "trace_fields": [
+        "row_trace.deterministic_semantic.events"
+      ],
       "paper_wording": "A deterministic repair converts a dated seizure sequence into a rate over its observed window."
     },
     {
@@ -337,8 +376,10 @@
         "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
         "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:elapsed_since_anchor_label_from_events"
       },
-      "governing_test": "tests/test_gan2026_hybrid_structured_events_repair.py",
-      "trace_fields": ["row_trace.deterministic_semantic.events"],
+      "governing_test": "tests/test_gan2026_hybrid_structured_events_contract.py",
+      "trace_fields": [
+        "row_trace.deterministic_semantic.events"
+      ],
       "paper_wording": "A deterministic repair converts an elapsed interval since the last dated seizure into a seizure-free window."
     },
     {
@@ -357,7 +398,9 @@
         "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser:label_to_frequency_record"
       },
       "governing_test": "tests/test_gan2026_labels.py",
-      "trace_fields": ["parse_errors"],
+      "trace_fields": [
+        "parse_errors"
+      ],
       "paper_wording": "Labels that cannot be parsed into the benchmark representation are recorded as unscorable."
     },
     {
@@ -376,7 +419,10 @@
         "symbol": "clinical_extraction.core.evidence:evidence_is_substring"
       },
       "governing_test": "tests/test_core_evidence.py",
-      "trace_fields": ["evidence_valid", "row_trace.evidence_validation.exact_substring"],
+      "trace_fields": [
+        "evidence_valid",
+        "row_trace.evidence_validation.exact_substring"
+      ],
       "paper_wording": "Evidence is required to be an exact substring of the source note.",
       "notes": "The evidence checked is the model's selection evidence, which the repair families do not rewrite. A repaired label can therefore carry evidence that motivated the model's original answer."
     },
@@ -395,7 +441,11 @@
         "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.labels:map_purist"
       },
       "governing_test": "tests/test_gan2026_labels.py",
-      "trace_fields": ["comparison.purist_correct", "comparison.pragmatic_correct", "row_trace.scoring"],
+      "trace_fields": [
+        "comparison.purist_correct",
+        "comparison.pragmatic_correct",
+        "row_trace.scoring"
+      ],
       "paper_wording": "Predictions are scored under the Purist and Pragmatic category projections."
     }
   ],

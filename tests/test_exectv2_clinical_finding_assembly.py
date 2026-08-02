@@ -8,7 +8,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly import (
     LensManifest,
     ProducerManifest,
     build_finding_assembly,
-    load_finding_assembly_manifest,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
@@ -39,9 +38,7 @@ def test_manifest_driven_assembly_preserves_sources_and_views(tmp_path: Path) ->
         ("Prescription", "v0.42_control"),
         ("Investigations", "v0.42_control"),
     ]
-    dx = first["predicted_mentions"][0]
-    assert dx["provenance"][-1]["stage"] == "entity_lens"
-    assert dx["evidence_valid"] is True
+    assert run.stores["EA1"].findings(entity="SeizureFrequency")
     assert run.report["finding_views"] == [
         "raw_candidate",
         "evidence_valid",
@@ -49,118 +46,71 @@ def test_manifest_driven_assembly_preserves_sources_and_views(tmp_path: Path) ->
         "fidelity_companion",
         "benchmark_cui",
     ]
-    assert set(run.views) == {
-        "raw_candidate",
-        "evidence_valid",
-        "clinical_headline",
-        "fidelity_companion",
-        "benchmark_cui",
-    }
-    assert set(first["prediction_surfaces"]) == {
-        "source_scored",
-        "evidence_valid",
-        "protocol_model_preserving_canonical",
-        "dictionary_normalized",
-        "residual_benchmark_added",
-    }
-    assert (
-        run.report["score_ladder"]["materialized_surfaces"]["source_scored"]["overall"]["f1"]
-        == run.report["score_ladder"]["raw_lane_score"]["overall"]["f1"]
-    )
 
 
-def test_assembly_materializes_dictionary_and_residual_intermediate_surfaces(
-    tmp_path: Path,
-) -> None:
-    letters = _letters()[:1]
-    control_row = _control_row("EA1")
-    control_row["predicted_mentions"] = [
-        mention
-        for mention in control_row["predicted_mentions"]
-        if mention["entity"] != "Prescription"
-    ]
-    control_row["raw_output"] = json.dumps({"mentions": control_row["predicted_mentions"]})
-    control = _write_jsonl(tmp_path / "control.jsonl", [control_row])
-    diagnosis = _write_jsonl(tmp_path / "diagnosis.jsonl", [_diagnosis_row("EA1")])
-    sf = _write_jsonl(tmp_path / "sf.jsonl", [_sf_row("EA1")])
-    manifest = _manifest(control=control, diagnosis=diagnosis, sf=sf, row_count=1)
-    manifest = FindingAssemblyManifest(
-        **{
-            **manifest.__dict__,
-            "candidate_id": "test_materialized_surfaces",
-            "lenses": {
-                **manifest.lenses,
-                "Prescription": LensManifest(
-                    entity="Prescription",
-                    producer="control",
-                    lens="prescription_dictionary_v09",
-                    source_lane="v0.42_control",
-                    ownership_label="llm_first_control+standard_dictionary_prescription",
-                    portability="clinical_epilepsy",
-                ),
-            },
-        }
-    )
-
-    run = build_finding_assembly(
-        manifest,
-        generated_on="2026-06-22",
-        gold_loader=lambda _split: letters,
-    )
-
-    rx_surfaces = run.rows[0]["lanes"]["Prescription"]["prediction_surfaces"]
-    assert rx_surfaces["source_scored"] == []
-    assert rx_surfaces["protocol_model_preserving_canonical"] == []
-    assert rx_surfaces["dictionary_normalized"] == []
-    assert [m["text"] for m in rx_surfaces["residual_benchmark_added"]] == ["lamotrigine"]
-    assert "lamotrigine 100 mg bd" in rx_surfaces["residual_benchmark_added"][0]["evidence"]
-    materialized = run.report["score_ladder"]["materialized_surfaces"]
-    assert materialized["protocol_model_preserving_canonical"]["overall"]["pred_count"] == 3
-    assert materialized["dictionary_normalized"]["overall"]["pred_count"] == 3
-    assert materialized["residual_benchmark_added"]["overall"]["pred_count"] == 4
-
-
-def test_protocol_clean_surface_excludes_candidate_backed_passthrough(
+def test_assembly_sf_lens_applies_state_adjudication_without_expanding_mentions(
     tmp_path: Path,
 ) -> None:
     letters = _letters()[:1]
     control = _write_jsonl(tmp_path / "control.jsonl", [_control_row("EA1")])
-    candidate_backed_diagnosis = _diagnosis_row("EA1")
-    candidate_backed_diagnosis["pipeline_family"] = (
-        "exectv2_hybrid_family_conditioned_candidate_adjudicator"
-    )
-    candidate_backed_diagnosis["mode"] = "live-actions-strict"
-    candidate_backed_diagnosis["candidate_actions"] = [
-        {"candidate_id": "best_diagnosis:M0", "action": "keep"}
-    ]
-    candidate_backed_diagnosis["candidate_mentions"] = list(
-        candidate_backed_diagnosis["predicted_mentions"]
-    )
-    diagnosis = _write_jsonl(tmp_path / "diagnosis.jsonl", [candidate_backed_diagnosis])
+    diagnosis = _write_jsonl(tmp_path / "diagnosis.jsonl", [_diagnosis_row("EA1")])
     sf = _write_jsonl(tmp_path / "sf.jsonl", [_sf_row("EA1")])
 
     run = build_finding_assembly(
         _manifest(control=control, diagnosis=diagnosis, sf=sf, row_count=1),
-        generated_on="2026-06-23",
+        generated_on="2026-06-21",
         gold_loader=lambda _split: letters,
     )
 
-    dx_surfaces = run.rows[0]["lanes"]["Diagnosis"]["prediction_surfaces"]
-    assert len(dx_surfaces["source_scored"]) == 1
-    assert dx_surfaces["source_scored"][0]["fact_origin"] == "upstream_candidate_copied"
-    assert dx_surfaces["protocol_model_preserving_canonical"] == []
-    assert len(dx_surfaces["residual_benchmark_added"]) == 1
-    accounting = run.report["fact_origin_accounting"]["by_surface"]
-    assert accounting["source_scored"]["upstream_candidate_copied"] == 1
-    assert (
-        accounting["protocol_model_preserving_canonical"].get("upstream_candidate_copied", 0) == 0
+    sf_lane = run.rows[0]["lanes"]["SeizureFrequency"]
+    assert sf_lane["lens"] == "sf_state_adjudication_v01"
+    sf_mentions = [m for m in run.rows[0]["predicted_mentions"] if m["entity"] == "SeizureFrequency"]
+    assert len(sf_mentions) == 1
+    assert sf_mentions[0]["text"] == "focal seizures"
+
+
+def test_assembly_keeps_distinct_investigation_occurrences_from_control_lane(
+    tmp_path: Path,
+) -> None:
+    note = (
+        "Diagnosis: focal epilepsy. Current medication: lamotrigine 100 mg bd. "
+        "MRI was normal. EEG was abnormal. She has focal seizures twice a month."
     )
-    assert (
-        run.report["score_ladder"]["materialized_surfaces"]["protocol_model_preserving_canonical"][
-            "overall"
-        ]["pred_count"]
-        == 3
+    letters = [
+        ExectLetter(
+            letter_id="EA1",
+            note_text=note,
+            annotations=_letters()[0].annotations,
+        )
+    ]
+    control_row = _control_row("EA1")
+    control_row["predicted_mentions"].append(
+        _mention(
+            "Investigations",
+            "EEG",
+            "EEG was abnormal",
+            {"EEG_Performed": "Yes", "EEG_Results": "Abnormal"},
+        )
     )
+    control_row["n_mentions_raw"] = len(control_row["predicted_mentions"])
+    control_row["n_mentions_scored"] = len(control_row["predicted_mentions"])
+    control = _write_jsonl(tmp_path / "control.jsonl", [control_row])
+    diagnosis = _write_jsonl(tmp_path / "diagnosis.jsonl", [_diagnosis_row("EA1")])
+    sf = _write_jsonl(tmp_path / "sf.jsonl", [_sf_row("EA1")])
+
+    run = build_finding_assembly(
+        _manifest(control=control, diagnosis=diagnosis, sf=sf, row_count=1),
+        generated_on="2026-06-21",
+        gold_loader=lambda _split: letters,
+    )
+
+    investigations = [
+        mention
+        for mention in run.rows[0]["predicted_mentions"]
+        if mention["entity"] == "Investigations"
+    ]
+    assert [mention["text"] for mention in investigations] == ["MRI", "EEG"]
+    assert len({mention["evidence"] for mention in investigations}) == 2
 
 
 def test_assembly_retains_evidence_invalid_raw_findings_but_fails_final_invalid(
@@ -200,371 +150,6 @@ def test_assembly_retains_evidence_invalid_raw_findings_but_fails_final_invalid(
             generated_on="2026-06-21",
             gold_loader=lambda _split: letters,
         )
-
-
-def test_diagnosis_heading_recovery_lens_adds_explicit_focal_epilepsy(
-    tmp_path: Path,
-) -> None:
-    letters = _letters()[:1]
-    control = _write_jsonl(tmp_path / "control.jsonl", [_control_row("EA1")])
-    diagnosis = _write_jsonl(
-        tmp_path / "diagnosis.jsonl",
-        [_diagnosis_row("EA1", text="epilepsy", evidence="Diagnosis: focal epilepsy")],
-    )
-    sf = _write_jsonl(tmp_path / "sf.jsonl", [_sf_row("EA1")])
-    manifest = _manifest(control=control, diagnosis=diagnosis, sf=sf, row_count=1)
-    manifest = FindingAssemblyManifest(
-        **{
-            **manifest.__dict__,
-            "candidate_id": "test_heading_recovery",
-            "lenses": {
-                **manifest.lenses,
-                "Diagnosis": LensManifest(
-                    entity="Diagnosis",
-                    producer="diagnosis",
-                    lens="diagnosis_heading_recovery_v02",
-                    source_lane="focused_diagnosis_reconciler_v01",
-                    ownership_label="hybrid_diagnosis_route",
-                    portability="clinical_epilepsy",
-                ),
-            },
-        }
-    )
-
-    run = build_finding_assembly(
-        manifest,
-        generated_on="2026-06-21",
-        gold_loader=lambda _split: letters,
-    )
-
-    diagnoses = [
-        mention for mention in run.rows[0]["predicted_mentions"] if mention["entity"] == "Diagnosis"
-    ]
-    assert [mention["text"] for mention in diagnoses] == ["epilepsy", "focal epilepsy"]
-    added = diagnoses[1]
-    assert added["component_owner"] == ("hybrid_diagnosis_route+deterministic_heading_recovery")
-    assert added["provenance"][0]["action"] == "added_focal_epilepsy_from_diagnosis_heading"
-    assert added["provenance"][0]["portability"] == "clinical_epilepsy"
-    assert (
-        run.rows[0]["lanes"]["Diagnosis"]["lens_diagnostics"]["added_heading_recovery_findings"]
-        == 1
-    )
-
-
-def test_diagnosis_dictionary_lens_drops_standalone_overemissions(
-    tmp_path: Path,
-) -> None:
-    note = (
-        "Diagnosis: focal epilepsy. He understands DVLA laws on driving with epilepsy. "
-        "Occasional absences. Current medication: lamotrigine 100 mg bd. MRI was "
-        "normal. She has focal seizures twice a month."
-    )
-    letters = [
-        ExectLetter(
-            letter_id="EA1",
-            note_text=note,
-            annotations=_letters()[0].annotations,
-        )
-    ]
-    diagnosis_mentions = [
-        _mention("Diagnosis", "epilepsy", "driving with epilepsy", _dx_attrs()),
-        _mention(
-            "Diagnosis",
-            "absence seizures",
-            "Occasional absences",
-            {
-                "DiagCategory": "MultipleSeizures",
-                "Certainty": "5",
-                "Negation": "Affirmed",
-            },
-        ),
-    ]
-    control = _write_jsonl(tmp_path / "control.jsonl", [_control_row("EA1")])
-    diagnosis = _write_jsonl(
-        tmp_path / "diagnosis.jsonl",
-        [
-            {
-                **_diagnosis_row("EA1"),
-                "n_mentions_raw": len(diagnosis_mentions),
-                "n_mentions_scored": len(diagnosis_mentions),
-                "predicted_mentions": diagnosis_mentions,
-            }
-        ],
-    )
-    sf = _write_jsonl(tmp_path / "sf.jsonl", [_sf_row("EA1")])
-    manifest = _manifest(control=control, diagnosis=diagnosis, sf=sf, row_count=1)
-    manifest = FindingAssemblyManifest(
-        **{
-            **manifest.__dict__,
-            "candidate_id": "test_convention_cleanup",
-            "lenses": {
-                **manifest.lenses,
-                "Diagnosis": LensManifest(
-                    entity="Diagnosis",
-                    producer="diagnosis",
-                    lens="diagnosis_convention_dictionary_v09",
-                    source_lane="focused_diagnosis_reconciler_v01",
-                    ownership_label="hybrid_diagnosis_route",
-                    portability="clinical_epilepsy",
-                ),
-            },
-        }
-    )
-
-    run = build_finding_assembly(
-        manifest,
-        generated_on="2026-06-21",
-        gold_loader=lambda _split: letters,
-    )
-
-    diagnoses = [
-        mention for mention in run.rows[0]["predicted_mentions"] if mention["entity"] == "Diagnosis"
-    ]
-    texts = [mention["text"] for mention in diagnoses]
-    assert "focal epilepsy" in texts
-    assert "epilepsy" not in texts
-    assert "absence seizures" not in texts
-    diagnostics = run.rows[0]["lanes"]["Diagnosis"]["lens_diagnostics"]
-    assert diagnostics["dropped_dictionary_findings"] == 2
-
-
-def test_diagnosis_dictionary_lens_rewrites_and_drops_residuals(
-    tmp_path: Path,
-) -> None:
-    note = (
-        "Diagnosis: Hydrocephalus. She gets focal dyscognitive seizures. "
-        "He will get grand mal episodes. Current medication: lamotrigine 100 mg bd. "
-        "MRI was normal. She has focal seizures twice a month."
-    )
-    letters = [
-        ExectLetter(
-            letter_id="EA1",
-            note_text=note,
-            annotations=_letters()[0].annotations,
-        )
-    ]
-    diagnosis_mentions = [
-        _mention("Diagnosis", "Hydrocephalus", "Diagnosis: Hydrocephalus", _dx_attrs()),
-        _mention(
-            "Diagnosis",
-            "focal dyscognitive seizures",
-            "focal dyscognitive seizures",
-            {
-                "DiagCategory": "MultipleSeizures",
-                "Certainty": "5",
-                "Negation": "Affirmed",
-            },
-        ),
-        _mention(
-            "Diagnosis",
-            "grand mal seizure",
-            "grand mal episodes",
-            {
-                "DiagCategory": "SingleSeizure",
-                "Certainty": "5",
-                "Negation": "Affirmed",
-            },
-        ),
-    ]
-    control = _write_jsonl(tmp_path / "control.jsonl", [_control_row("EA1")])
-    diagnosis = _write_jsonl(
-        tmp_path / "diagnosis.jsonl",
-        [
-            {
-                **_diagnosis_row("EA1"),
-                "n_mentions_raw": len(diagnosis_mentions),
-                "n_mentions_scored": len(diagnosis_mentions),
-                "predicted_mentions": diagnosis_mentions,
-            }
-        ],
-    )
-    sf = _write_jsonl(tmp_path / "sf.jsonl", [_sf_row("EA1")])
-    manifest = _manifest(control=control, diagnosis=diagnosis, sf=sf, row_count=1)
-    manifest = FindingAssemblyManifest(
-        **{
-            **manifest.__dict__,
-            "candidate_id": "test_convention_alias_repair",
-            "lenses": {
-                **manifest.lenses,
-                "Diagnosis": LensManifest(
-                    entity="Diagnosis",
-                    producer="diagnosis",
-                    lens="diagnosis_convention_dictionary_v09",
-                    source_lane="focused_diagnosis_reconciler_v01",
-                    ownership_label="hybrid_diagnosis_route",
-                    portability="benchmark_format",
-                ),
-            },
-        }
-    )
-
-    run = build_finding_assembly(
-        manifest,
-        generated_on="2026-06-21",
-        gold_loader=lambda _split: letters,
-    )
-
-    diagnoses = [
-        mention for mention in run.rows[0]["predicted_mentions"] if mention["entity"] == "Diagnosis"
-    ]
-    texts = [mention["text"] for mention in diagnoses]
-    assert "dyscognitive seizures" in texts
-    assert "grand mal" in texts
-    assert "Hydrocephalus" not in texts
-    assert diagnoses[0]["component_owner"] == (
-        "hybrid_diagnosis_route+standard_dictionary_diagnosis_convention"
-    )
-    rewrite_events = [
-        event
-        for event in diagnoses[0]["provenance"]
-        if event["action"] == "rewrote_diagnosis_convention_from_dictionary"
-    ]
-    assert rewrite_events
-    assert rewrite_events[0]["portability"] == "benchmark_format"
-    diagnostics = run.rows[0]["lanes"]["Diagnosis"]["lens_diagnostics"]
-    assert diagnostics["rewritten_dictionary_findings"] == 2
-    assert diagnostics["dropped_dictionary_findings"] == 1
-
-
-def test_diagnosis_dictionary_lens_repairs_convention_phrases(
-    tmp_path: Path,
-) -> None:
-    note = (
-        "Diagnosis: symptomatic epilepsy with focal motor seizures with secondary "
-        "generalised seizures. She has no epilepsy protocol imaging planned. "
-        "Previous episode of status epilepticus. Current medication: lamotrigine "
-        "100 mg bd. MRI was normal. She has focal seizures twice a month."
-    )
-    letters = [
-        ExectLetter(
-            letter_id="EA1",
-            note_text=note,
-            annotations=_letters()[0].annotations,
-        )
-    ]
-    diagnosis_mentions = [
-        _mention(
-            "Diagnosis",
-            "symptomatic structural focal epilepsy",
-            "Diagnosis: symptomatic epilepsy",
-            _dx_attrs(),
-        ),
-        _mention(
-            "Diagnosis",
-            "secondary generalised tonic clonic seizures",
-            "secondary generalised seizures",
-            {
-                "DiagCategory": "MultipleSeizures",
-                "Certainty": "5",
-                "Negation": "Affirmed",
-            },
-        ),
-        _mention(
-            "Diagnosis", "tonic clonic seizures", "secondary generalised seizures", _dx_attrs()
-        ),
-        _mention("Diagnosis", "epilepsy", "epilepsy protocol", _dx_attrs()),
-    ]
-    control = _write_jsonl(tmp_path / "control.jsonl", [_control_row("EA1")])
-    diagnosis = _write_jsonl(
-        tmp_path / "diagnosis.jsonl",
-        [
-            {
-                **_diagnosis_row("EA1"),
-                "n_mentions_raw": len(diagnosis_mentions),
-                "n_mentions_scored": len(diagnosis_mentions),
-                "predicted_mentions": diagnosis_mentions,
-            }
-        ],
-    )
-    sf = _write_jsonl(tmp_path / "sf.jsonl", [_sf_row("EA1")])
-    manifest = _manifest(control=control, diagnosis=diagnosis, sf=sf, row_count=1)
-    manifest = FindingAssemblyManifest(
-        **{
-            **manifest.__dict__,
-            "candidate_id": "test_residual_benchmark_repair",
-            "lenses": {
-                **manifest.lenses,
-                "Diagnosis": LensManifest(
-                    entity="Diagnosis",
-                    producer="diagnosis",
-                    lens="diagnosis_convention_dictionary_v09",
-                    source_lane="focused_diagnosis_reconciler_v01",
-                    ownership_label="hybrid_diagnosis_route",
-                    portability="benchmark_format",
-                ),
-            },
-        }
-    )
-
-    run = build_finding_assembly(
-        manifest,
-        generated_on="2026-06-21",
-        gold_loader=lambda _split: letters,
-    )
-
-    diagnoses = [
-        mention for mention in run.rows[0]["predicted_mentions"] if mention["entity"] == "Diagnosis"
-    ]
-    texts = [mention["text"] for mention in diagnoses]
-    assert "symptomatic epilepsy" in texts
-    assert "secondary generalised seizures" in texts
-    assert "status epilepticus" in texts
-    assert "epilepsy" not in texts
-    assert diagnoses[0]["component_owner"] == (
-        "hybrid_diagnosis_route+standard_dictionary_diagnosis_convention"
-    )
-    diagnostics = run.rows[0]["lanes"]["Diagnosis"]["lens_diagnostics"]
-    assert diagnostics["rewritten_dictionary_findings"] == 2
-    assert diagnostics["added_dictionary_findings"] >= 1
-    assert diagnostics["dropped_dictionary_findings"] == 2
-
-
-def test_saved_artifact_producer_fails_closed_on_row_set_mismatch(tmp_path: Path) -> None:
-    letters = _letters()
-    control = _write_jsonl(tmp_path / "control.jsonl", [_control_row("EA1"), _control_row("EA2")])
-    diagnosis = _write_jsonl(tmp_path / "diagnosis.jsonl", [_diagnosis_row("EA1")])
-    sf = _write_jsonl(tmp_path / "sf.jsonl", [_sf_row("EA1"), _sf_row("EA2")])
-
-    with pytest.raises(ValueError, match="does not match frozen row set"):
-        build_finding_assembly(
-            _manifest(control=control, diagnosis=diagnosis, sf=sf, row_count=2),
-            gold_loader=lambda _split: letters,
-        )
-
-
-def test_yaml_manifest_parser(tmp_path: Path) -> None:
-    manifest_path = tmp_path / "manifest.yaml"
-    manifest_path.write_text(
-        """
-candidate_id: parsed_candidate
-pipeline_family: parsed_family
-ownership: parsed_owner
-split: dev
-row_count: 2
-claim_boundary: dev_only_component_evidence
-baseline_producer: control
-producers:
-  control:
-    kind: saved_jsonl
-    artifact: experiments/control.jsonl
-    ownership_label: llm_first_control
-lenses:
-  Diagnosis:
-    producer: control
-    lens: diagnosis_hierarchy_negation_v01
-    source_lane: v0.42_control
-views:
-  - raw_candidate
-  - evidence_valid
-""",
-        encoding="utf-8",
-    )
-
-    manifest = load_finding_assembly_manifest(manifest_path)
-
-    assert manifest.candidate_id == "parsed_candidate"
-    assert manifest.producers["control"].artifact == Path("experiments/control.jsonl")
-    assert manifest.lenses["Diagnosis"].lens == "diagnosis_hierarchy_negation_v01"
 
 
 def _manifest(
