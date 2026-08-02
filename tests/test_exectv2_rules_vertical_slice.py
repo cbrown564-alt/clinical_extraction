@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 from pathlib import Path
 
 import pytest
@@ -22,6 +24,14 @@ def _letter() -> ExectLetter:
     )
 
 
+def _fingerprint(records: list[dict[str, object]]) -> str:
+    payload = "\n".join(
+        json.dumps(record, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        for record in records
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
 def test_exect_rules_active_name_keeps_legacy_method_identity() -> None:
     assert active_method_name("rules") == "rules"
     assert active_method_name("rules_only") == "rules"
@@ -34,9 +44,6 @@ def test_exect_rules_active_name_keeps_legacy_method_identity() -> None:
 
 
 def test_exect_rules_public_runner_routes_aliases_to_canonical_active_runner(monkeypatch) -> None:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities import (
-        orchestrator,
-    )
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import rules
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runner import (
         Exectv2PipelineConfiguration,
@@ -58,39 +65,54 @@ def test_exect_rules_public_runner_routes_aliases_to_canonical_active_runner(mon
         Exectv2PipelineRunner(Exectv2PipelineConfiguration(method=alias)).run(letter)
         for alias in aliases
     ]
-    retained_base = orchestrator.extract_deterministic_all9(letter)
-
     assert calls == len(aliases)
     assert all(result.method == "rules" for result in results)
     assert all(
-        result.result.prediction.model_dump(mode="json") == retained_base.model_dump(mode="json")
+        len(result.result.prediction.diagnostics["active_entities"]) == 9
+        for result in results
+    )
+    assert all(
+        len(result.result.comparison_projection.mentions)
+        <= len(result.result.prediction.mentions)
         for result in results
     )
     assert all(event.owner and event.action for event in results[0].result.stage_events)
 
 
-def test_exect_rules_active_runner_matches_permitted_dev_base_without_alias_reuse() -> None:
+def test_exect_rules_active_runner_matches_governed_independent_dev_base_fingerprint() -> None:
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
         load_letters_for_split,
-    )
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities import (
-        orchestrator,
     )
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runner import (
         Exectv2PipelineConfiguration,
         Exectv2PipelineRunner,
     )
 
+    fingerprint_path = Path("tests/fixtures/exectv2_rules_base_264237bd_fingerprint.json")
+    expected = json.loads(fingerprint_path.read_text(encoding="utf-8"))
     letters = load_letters_for_split("dev")
     runner = Exectv2PipelineRunner(Exectv2PipelineConfiguration(method="rules"))
 
-    active = [runner.run(letter).result.prediction.model_dump(mode="json") for letter in letters]
-    retained_base = [
-        orchestrator.extract_deterministic_all9(letter).model_dump(mode="json")
-        for letter in letters
-    ]
+    extraction: list[dict[str, object]] = []
+    full: list[dict[str, object]] = []
+    for letter in letters:
+        result = runner.run(letter).result
+        prediction = result.prediction.model_dump(mode="json")
+        extraction.append({"letter_id": letter.letter_id, "prediction": prediction})
+        full.append(
+            {
+                "letter_id": letter.letter_id,
+                "prediction": prediction,
+                "comparison_projection": result.comparison_projection.model_dump(mode="json"),
+                "stage_events": [event.to_dict() for event in result.stage_events],
+            }
+        )
 
-    assert active == retained_base
+    assert expected["source_commit"] == "264237bd"
+    assert expected["row_count"] == 140
+    assert len(letters) == expected["row_count"]
+    assert _fingerprint(extraction) == expected["extraction_sha256"]
+    assert _fingerprint(full) == expected["prediction_projection_trace_sha256"]
 
 
 def test_exect_trace_generation_calls_active_rules_boundary(monkeypatch, tmp_path: Path) -> None:
@@ -144,15 +166,37 @@ def test_exect_rules_split_active_and_legacy_aliases_are_no_call_parity() -> Non
     assert "retained_evidence_id" not in active_metadata
 
 
-def test_exect_rules_split_rejects_every_governed_locked_alias_before_processing() -> None:
+def test_exect_rules_split_allowlist_rejects_forbidden_aliases_before_processing() -> None:
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.split import (
-        LOCKED_SPLIT_ALIASES,
+        DEVELOPMENT_SPLIT_ALIASES,
         run_split,
     )
 
-    for locked_split in sorted(LOCKED_SPLIT_ALIASES):
-        with pytest.raises(ValueError, match="locked"):
-            run_split([object()], method="rules", split=locked_split)
+    assert DEVELOPMENT_SPLIT_ALIASES == frozenset({"dev", "dev140"})
+
+    class MustNotBeConsumed:
+        def __iter__(self):
+            raise AssertionError("split validation must happen before processing")
+
+    for allowed_split in sorted(DEVELOPMENT_SPLIT_ALIASES):
+        rows, metadata = run_split([_letter()], method="rules", split=allowed_split)
+        assert rows
+        assert metadata["split"] == allowed_split
+
+    for forbidden_split in (
+        "test",
+        "test60",
+        "holdout",
+        "locked_test",
+        "locked-test",
+        "aggregate_only",
+        "aggregate-only",
+        "full",
+        "full200",
+        "all",
+    ):
+        with pytest.raises(ValueError, match="inspectable development split"):
+            run_split(MustNotBeConsumed(), method="rules", split=forbidden_split)
 
 
 def test_exect_rules_cli_spec_dispatches_active_method(monkeypatch) -> None:

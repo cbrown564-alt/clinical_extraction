@@ -67,6 +67,12 @@ describe("ExECTv2 architecture options", () => {
     expect(resolveExectv2RunId([rules, other], "deterministic_all9")).toBeNull();
     expect(resolveExectv2RunId([rules, other], "exectv2_deterministic_all9")).toBeNull();
     expect(resolveExectv2RunId([collision, collision2], "same-alias")).toBeNull();
+
+    const exactAliasCollision = [
+      rules,
+      { ...run("llm_only", MODELS[3], 4), legacy_run_ids: ["rules"] },
+    ];
+    expect(resolveExectv2RunId(exactAliasCollision, "rules")).toBeNull();
   });
 
   it("groups the winning mode first, then its raw and no-call comparators", () => {

@@ -93,6 +93,15 @@ def test_exect_alias_resolution_is_exact_and_collision_safe() -> None:
     assert store.exectv2_run("unknown") is None
     assert store.exectv2_run("same-alias") is None
 
+    store._exectv2_payload = {
+        "runs": [
+            {"run_id": "rules", "saved_run_id": "saved-rules"},
+            {"run_id": "llm", "legacy_run_ids": ["rules"]},
+        ],
+        "shared_letters": [],
+    }
+    assert store.exectv2_run("rules") is None
+
 
 def test_exect_architectures_are_the_winning_mode_model_matrix(client: TestClient) -> None:
     response = client.get("/exectv2/runs", headers={"Accept-Encoding": "identity"})
