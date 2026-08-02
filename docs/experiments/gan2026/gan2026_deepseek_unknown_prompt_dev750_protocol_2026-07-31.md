@@ -3,7 +3,6 @@
 Date: 2026-07-31  
 Status: **stopped (negative)** — UNK-slice pilot insufficient; full-750 aborted  
 Parent: [unknown-competence protocol](gan2026_deepseek_unknown_competence_protocol_2026-07-31.md)  
-Draft notes: [gan2026_deepseek_unknown_prompt_draft_notes_2026-07-31.md](gan2026_deepseek_unknown_prompt_draft_notes_2026-07-31.md)  
 Config: [configs/gan2026/deepseek_unknown_prompt_dev750_20260731.json](../../../configs/gan2026/deepseek_unknown_prompt_dev750_20260731.json)  
 Pilot compare: [experiments/gan2026_deepseek_unknown_heavy_slice_u_vs_a_20260731.json](../../../experiments/gan2026_deepseek_unknown_heavy_slice_u_vs_a_20260731.json)
 

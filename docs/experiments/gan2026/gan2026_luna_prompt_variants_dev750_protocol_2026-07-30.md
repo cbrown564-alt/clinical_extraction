@@ -2,8 +2,7 @@
 
 Date: 2026-07-30  
 Status: complete; A/B/C `validation750` panel finalized 2026-07-30  
-Parent panel: [matched v0.5 dev750](gan2026_matched_v05_dev750_protocol_2026-07-27.md)  
-Draft notes: [gan2026_luna_prompt_variants_draft_notes_2026-07-30.md](gan2026_luna_prompt_variants_draft_notes_2026-07-30.md)
+Parent panel: [matched v0.5 dev750](gan2026_matched_v05_dev750_protocol_2026-07-27.md)
 
 ## Primary question
 

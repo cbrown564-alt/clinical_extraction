@@ -4,8 +4,7 @@ Date: 2026-07-31
 Status: complete; A/B/C `dev140` panel finalized 2026-07-31  
 Report: [panel report](exectv2_luna_prompt_variants_dev140_2026-07-31.md)  
 Parent evidence: [Luna residual map](exectv2_luna_single_call_dev140_residual_map_2026-07-31.md)  
-Exemplar pack: [exemplar pack](exectv2_luna_prompt_variants_exemplar_pack_2026-07-31.md)  
-Draft notes: [draft notes](exectv2_luna_prompt_variants_draft_notes_2026-07-31.md)
+Exemplar pack: [exemplar pack](exectv2_luna_prompt_variants_exemplar_pack_2026-07-31.md)
 
 ## Primary question
 
