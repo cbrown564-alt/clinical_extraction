@@ -8,7 +8,5 @@
   "canonicalization": "one compact sorted-key UTF-8 JSON object per letter joined by LF; SHA-256",
   "full_output_scope": "producer row, full prediction, raw-candidate scorer projection, every exect.llm stage event, first owner/failure, raw/parse/retry layers, route/mode/cache, and active/source provenance",
   "outward_identity_allowlist": ["active_method", "method_id", "pipeline_family", "run_id", "source_method_id", "source_pipeline_family", "scored_view"],
-  "normalized_sha256": "081b6a66e38f4cd13aac407e2f654ac7d5803c34e8b755d771daa31c4bc68a55",
-  "full_output_sha256": "499c6f96e1faeaab369ddeaf2b34ca55480316ca1b82cce798bf80445954468a",
-  "sol_reported_full_sha256": "ad58b6bfb288c1dc6b34022180c065d9ae394f15b7316c7f1f04fb48085a3462"
+  "normalized_sha256": "081b6a66e38f4cd13aac407e2f654ac7d5803c34e8b755d771daa31c4bc68a55"
 }
