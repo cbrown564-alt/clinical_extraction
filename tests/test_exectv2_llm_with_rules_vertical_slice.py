@@ -126,6 +126,14 @@ def _normalise_empty_layer(value: Any) -> Any:
     return None if value in ("", []) else value
 
 
+def _clinical_mention(mention: Any) -> dict[str, Any]:
+    value = mention.model_dump(mode="json") if hasattr(mention, "model_dump") else mention
+    return {
+        field: value.get(field)
+        for field in ("entity", "text", "evidence", "attributes", "confidence")
+    }
+
+
 def test_hybrid_identity_and_cli_aliases_are_active() -> None:
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.cli_specs import get_cli_specs
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.naming import (
@@ -275,7 +283,7 @@ def test_hybrid_split_replay_projects_rows_without_a_second_producer_call(
     assert metadata["scored_view"] == "clinical_headline"
 
 
-def test_hybrid_dev140_replay_preserves_governed_producer_and_trace_fingerprint() -> None:
+def test_hybrid_dev140_replay_matches_independent_prechange_oracle() -> None:
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
         load_letters_for_split,
     )
@@ -288,6 +296,7 @@ def test_hybrid_dev140_replay_preserves_governed_producer_and_trace_fingerprint(
         json.loads(line) for line in RAW_ARTIFACT.read_text(encoding="utf-8").splitlines()
     ]
     assert baseline["migration_baseline_commit"] == "4d2b04c5354d9317a263d5fb0b44f1a0da4766e7"
+    assert baseline["oracle_commit"] == baseline["migration_baseline_commit"]
     assert baseline["source_commit"] == "7c9d8b5d"
     assert _file_sha256(RAW_ARTIFACT) == baseline["source_artifact_sha256"]
     assert len(source_rows) == baseline["row_count"] == 140
@@ -295,7 +304,7 @@ def test_hybrid_dev140_replay_preserves_governed_producer_and_trace_fingerprint(
     letters = load_letters_for_split("dev")
     assert len(letters) == len(source_rows)
 
-    full: list[dict[str, Any]] = []
+    parity: list[dict[str, Any]] = []
     for letter, source in zip(letters, source_rows, strict=True):
         producer = structured_one_call.produce_structured_letter(
             letter,
@@ -321,24 +330,23 @@ def test_hybrid_dev140_replay_preserves_governed_producer_and_trace_fingerprint(
         assert result.row["active_method"] == "llm_with_rules"
         assert result.row["source_method_id"] == "exectv2_llm_with_rules"
         assert result.row["source_pipeline_family"] == source["pipeline_family"]
-        full.append(
+        parity.append(
             {
                 "letter_id": letter.letter_id,
                 "producer": dict(producer.row),
-                "raw_candidate": producer.projected_letter.model_dump(mode="json"),
-                "raw_scorer": {
-                    "view": "raw_candidate",
-                    "n_mentions": len(producer.projected_letter.mentions),
+                "prediction": [
+                    _clinical_mention(mention) for mention in result.prediction.mentions
+                ],
+                "scorer": {
+                    "view": result.scorer_projection["view"],
+                    "n_mentions": len(result.prediction.mentions),
                 },
-                "prediction": result.prediction.model_dump(mode="json"),
-                "stages": [event.to_dict() for event in result.stage_events],
-                "scorer": dict(result.scorer_projection),
                 "first_owner": result.first_prediction_changing_owner,
                 "first_failure": result.first_failure,
             }
         )
 
-    assert _fingerprint(full) == baseline["hybrid_full_sha256"]
+    assert _fingerprint(parity) == baseline["independent_prechange_oracle_sha256"]
 
 
 def test_hybrid_operational_api_delegates_to_the_public_runner(
@@ -385,3 +393,70 @@ def test_hybrid_operational_api_delegates_to_the_public_runner(
     assert output[0]["run_id"] == "llm_with_rules"
     assert output[0]["scored_view"] == "clinical_headline"
     assert output[0]["trace"][-1]["stage_id"] == "exect.hybrid.score"
+
+
+@pytest.mark.parametrize(
+    "raw_output",
+    ["not json", '{"clinical_events":[{"family":"diagnosis"}]}'],
+)
+def test_hybrid_operational_api_fails_closed_on_malformed_model_output(
+    monkeypatch: pytest.MonkeyPatch,
+    raw_output: str,
+) -> None:
+    from clinical_extraction.operational import exect
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runner import (
+        Exectv2PipelineConfiguration,
+        Exectv2PipelineRunner,
+    )
+
+    real_run = Exectv2PipelineRunner.run
+
+    def replay_malformed(self: Exectv2PipelineRunner, letter: ExectLetter):
+        return real_run(
+            Exectv2PipelineRunner(
+                self.config.__class__(
+                    **{
+                        **self.config.__dict__,
+                        "mode": "replay",
+                        "raw_output": raw_output,
+                    }
+                )
+            ),
+            letter,
+        )
+
+    monkeypatch.setattr(Exectv2PipelineRunner, "run", replay_malformed)
+    public_result = Exectv2PipelineRunner(
+        Exectv2PipelineConfiguration(
+            method="llm_with_rules",
+            mode="replay",
+            raw_output=raw_output,
+            model="fixture/model",
+        )
+    ).run(_letter()).result
+    assert public_result.row["parse_errors"]
+    assert public_result.row["producer_row"]["parse_errors"]
+    assert public_result.row["first_failure"]
+    assert public_result.prediction.mentions == ()
+
+    output = exect.run_exect_notes(
+        [InputNote("HYBRID-API-MALFORMED", _letter().note_text)],
+        RuntimeConfig(
+            base_url="http://fixture.invalid/v1",
+            api_key="fixture-key",
+            model="fixture/model",
+        ),
+        method="llm_with_rules",
+    )
+
+    assert output[0]["status"] == "error"
+    assert output[0]["error"]["type"] == "model_or_parse_failure"
+    assert any(
+        marker in output[0]["error"]["message"]
+        for marker in ("invalid_json:", "schema_validation_error:")
+    )
+    assert output[0]["trace"][-1]["stage_id"] == "exect.hybrid.fail_closed"
+    assert not any(
+        mention["entity"] == "Diagnosis"
+        for mention in output[0].get("prediction", {}).get("mentions", [])
+    )

@@ -3,12 +3,71 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedLetter,
 )
+
+
+class _FrozenDict(dict[str, Any]):
+    """JSON-compatible recursively immutable mapping used at producer boundaries."""
+
+    def _immutable(self, *_args: Any, **_kwargs: Any) -> None:
+        raise TypeError("producer values are immutable")
+
+    __setitem__ = __delitem__ = clear = pop = popitem = setdefault = update = _immutable
+
+    def __deepcopy__(self, memo: dict[int, Any]) -> dict[str, Any]:
+        copied = {deepcopy(key, memo): deepcopy(value, memo) for key, value in self.items()}
+        memo[id(self)] = copied
+        return copied
+
+
+class _FrozenList(list[Any]):
+    """JSON-compatible recursively immutable sequence used at producer boundaries."""
+
+    def _immutable(self, *_args: Any, **_kwargs: Any) -> None:
+        raise TypeError("producer values are immutable")
+
+    __setitem__ = __delitem__ = append = clear = extend = insert = pop = remove = reverse = sort = (
+        _immutable
+    )
+
+    def __deepcopy__(self, memo: dict[int, Any]) -> list[Any]:
+        copied = [deepcopy(value, memo) for value in self]
+        memo[id(self)] = copied
+        return copied
+
+
+def deep_freeze(value: Any) -> Any:
+    """Copy nested producer data into JSON-compatible immutable containers."""
+
+    if isinstance(value, Mapping):
+        frozen = _FrozenDict()
+        dict.update(frozen, {key: deep_freeze(item) for key, item in value.items()})
+        return frozen
+    if isinstance(value, list):
+        return _FrozenList(deep_freeze(item) for item in value)
+    if isinstance(value, tuple):
+        return tuple(deep_freeze(item) for item in value)
+    if isinstance(value, set):
+        return frozenset(deep_freeze(item) for item in value)
+    return value
+
+
+def deep_thaw(value: Any) -> Any:
+    """Make a mutable deep copy for a downstream projection that may transform data."""
+
+    if isinstance(value, Mapping):
+        return {key: deep_thaw(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [deep_thaw(item) for item in value]
+    if isinstance(value, (set, frozenset)):
+        return {deep_thaw(item) for item in value}
+    return deepcopy(value)
 
 
 @dataclass(frozen=True)
@@ -95,6 +154,10 @@ class ExectStageEvent:
     action: str = ""
     rule_category: str | None = None
 
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "input_value", deep_freeze(self.input_value))
+        object.__setattr__(self, "output_value", deep_freeze(self.output_value))
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "stage_id": self.stage_id,
@@ -130,6 +193,10 @@ class StructuredProducerResult:
     dspy_cache: bool = True
     row: Mapping[str, Any] = field(default_factory=dict)
     stage_events: tuple[ExectStageEvent, ...] = ()
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "row", deep_freeze(self.row))
+        object.__setattr__(self, "stage_events", tuple(self.stage_events))
 
 
 @dataclass(frozen=True)

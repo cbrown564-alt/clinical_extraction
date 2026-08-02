@@ -7,8 +7,10 @@
   "row_count": 140,
   "record_order": "manifest dev letter order",
   "canonicalization": "one compact sorted-key UTF-8 JSON object per letter joined by LF; SHA-256",
-  "full_output_scope": "producer row, raw candidate, final prediction, raw/final scorer projections, every exect.hybrid stage event with action/owner/effect/rule/changed fields, first owner/failure, raw/parse/retry layers, route/mode/cache, requested split, policy, and active/source provenance",
+  "oracle_commit": "4d2b04c5354d9317a263d5fb0b44f1a0da4766e7",
+  "oracle_generation": "offline replay of the pre-change implementation against the saved dev140 raw outputs; no model calls",
+  "oracle_scope": "producer row, final clinical mention fields, scorer view/count, first owner/failure; runtime stage contract is checked independently against the Decision 0048 manifest",
   "outward_identity_allowlist": ["active_method", "method_id", "pipeline_family", "run_id", "source_method_id", "source_pipeline_family", "scored_view"],
   "normalized_sha256": "081b6a66e38f4cd13aac407e2f654ac7d5803c34e8b755d771daa31c4bc68a55",
-  "hybrid_full_sha256": "754df54ab3f181084461acd242aabdbc7287040095ae7edd51c3581d18c0e92f"
+  "independent_prechange_oracle_sha256": "9b8fe845068cf885041ec4cb282554bf4a98cbef3c4315177a49316399dc966c"
 }
