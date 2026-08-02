@@ -63,7 +63,7 @@ class Gan2026PipelineRunner:
 
     def run(self, item: GanRecord) -> PipelineResult[FinalExtraction]:
         """Run one record through the configured pipeline."""
-        if self.config.architecture == "deterministic_canonical_pipeline":
+        if self.config.architecture in {"rules", "deterministic_canonical_pipeline"}:
             return deterministic_canonical.run_item(item, self.config)
 
         if not isinstance(item, GanFrequencyRecord):

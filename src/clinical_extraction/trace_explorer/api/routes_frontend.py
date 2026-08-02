@@ -51,7 +51,7 @@ class RunNoteRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     note_text: str = Field(min_length=1, max_length=2_000_000)
-    pipeline: str = "rules_only"
+    pipeline: str = "rules"
     source_row_index: int = 0
     gold_label: str | None = None
     gold_reference: str | None = None
@@ -62,7 +62,7 @@ class RunAblationRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     split: str = "validation"
-    pipeline: str = "rules_only"
+    pipeline: str = "rules"
     limit: int | None = Field(default=None, ge=1, le=100)
     ablation_config: AblationPayload = Field(default_factory=AblationPayload)
 
@@ -207,7 +207,7 @@ def artifact(
 
 @router.post("/run/note")
 def run_note(request: RunNoteRequest) -> dict[str, Any]:
-    if request.pipeline not in {"rules_only", "deterministic_canonical_pipeline"}:
+    if request.pipeline not in {"rules", "rules_only", "deterministic_canonical_pipeline"}:
         raise TraceExplorerError(
             status_code=400,
             code="model_calls_disabled",
@@ -215,7 +215,7 @@ def run_note(request: RunNoteRequest) -> dict[str, Any]:
         )
     result = run_item(_gan_record(request), _pipeline_configuration(request.ablation_config))
     return {
-        "pipeline": "rules_only",
+        "pipeline": request.pipeline,
         "source_row_index": request.source_row_index,
         "gold_label": request.gold_label or "unknown",
         "result": result.model_dump(mode="json"),
@@ -228,7 +228,7 @@ def run_ablation(request: RunAblationRequest, data: FrontendDataDependency) -> d
         raise aggregate_only()
     if request.split != "validation":
         raise not_found()
-    if request.pipeline not in {"rules_only", "deterministic_canonical_pipeline"}:
+    if request.pipeline not in {"rules", "rules_only", "deterministic_canonical_pipeline"}:
         raise TraceExplorerError(
             status_code=400,
             code="model_calls_disabled",
@@ -275,7 +275,7 @@ def run_ablation(request: RunAblationRequest, data: FrontendDataDependency) -> d
         )
     return {
         "split": request.split,
-        "pipeline": "rules_only",
+        "pipeline": "rules",
         "row_count": len(rows),
         "ablation_config": request.ablation_config.model_dump(mode="json", exclude_none=True),
         "summary": {
@@ -601,7 +601,7 @@ def _pipeline_configuration(payload: AblationPayload) -> PipelineConfiguration:
         else frozenset(Portability)
     )
     return PipelineConfiguration(
-        architecture="deterministic_canonical_pipeline",
+        architecture="rules",
         ablation_config=AblationConfig(
             enabled_groups=enabled_groups,
             enabled_portability=enabled_portability,
