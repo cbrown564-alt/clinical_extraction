@@ -22,6 +22,7 @@ function isEventsFamily(family: string): boolean {
   return (
     family === "llm_structured_events" ||
     family === "hybrid_structured_events" ||
+    family === "llm_with_rules" ||
     family === "llm_heavy_clinical_frequency_reasoner"
   );
 }

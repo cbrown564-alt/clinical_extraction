@@ -35,6 +35,19 @@ def test_gan_llm_active_name_and_legacy_identity_share_one_boundary() -> None:
     assert retained_pipeline_id("llm") == "llm_only_canonical_pipeline"
 
 
+def test_gan_hybrid_active_name_is_used_by_live_split_configuration() -> None:
+    from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration import (
+        llm_with_rules,
+    )
+
+    assert active_pipeline_name("llm_with_rules") == "llm_with_rules"
+    assert active_pipeline_name("hybrid_structured_events") == "llm_with_rules"
+    assert retained_pipeline_id("llm_with_rules") == "hybrid_structured_events"
+    assert llm_with_rules.PipelineConfiguration(
+        architecture="llm_with_rules"
+    ).architecture == "llm_with_rules"
+
+
 def test_gan_llm_legacy_module_reexports_active_implementation() -> None:
     from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
         llm,

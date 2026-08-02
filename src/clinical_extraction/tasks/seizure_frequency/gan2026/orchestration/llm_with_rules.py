@@ -401,7 +401,7 @@ def run_split(
 
     reuse_raw_outputs = reuse_raw_outputs or {}
     config = PipelineConfiguration(
-        architecture="hybrid_structured_events",
+        architecture="llm_with_rules",
         model=model,
         temperature=temperature,
         max_tokens=max_tokens,

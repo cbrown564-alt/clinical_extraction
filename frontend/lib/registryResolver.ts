@@ -17,6 +17,7 @@ import { laneForRun } from "@/lib/observatoryLanes";
 export const KNOWN_PIPELINE_FAMILIES = new Set<string>([
   "rules",
   "rules_only",
+  "llm_with_rules",
   "hybrid_structured_events",
   "llm",
   "llm_only_canonical_pipeline",
@@ -25,6 +26,7 @@ export const KNOWN_PIPELINE_FAMILIES = new Set<string>([
 const ACTIVE_FAMILY_BY_ALIAS: Record<string, string> = {
   rules: "rules",
   rules_only: "rules",
+  llm_with_rules: "llm_with_rules",
   hybrid_structured_events: "hybrid_structured_events",
   llm: "llm",
   llm_only_canonical_pipeline: "llm",
