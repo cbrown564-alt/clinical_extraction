@@ -83,6 +83,8 @@ def produce_structured_letter(
     config = config or StructuredMethodConfig.selected()
     prompt_version = prompt_version_for(config.prompt_profile)
     prompt_input_json = build_prompt_input(letter, prompt_profile=config.prompt_profile)
+    if mode == "live" and raw_output is not None:
+        raise ValueError("live mode does not accept raw_outputs")
     if mode == "replay" and raw_output is None:
         raise ValueError("replay mode requires a saved raw_output")
     raw_text = raw_output if raw_output is not None else ""
@@ -600,8 +602,17 @@ def run_split(
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Compatibility batch adapter around the shared producer."""
 
+    if mode not in {"live", "prompt-only", "replay"}:
+        raise ValueError("ExECT split mode must be live, prompt-only, or replay")
+    if mode == "live" and raw_outputs is not None:
+        raise ValueError("live mode does not accept raw_outputs")
+    if mode == "prompt-only" and raw_outputs is not None:
+        raise ValueError("prompt-only mode does not accept raw_outputs")
     config = config or StructuredMethodConfig.selected()
     order = [letter.letter_id for letter in letters]
+    if mode == "replay":
+        if raw_outputs is None or set(raw_outputs) != set(order):
+            raise ValueError("replay mode requires complete raw_outputs for the requested letters")
     requested = set(order)
     existing_rows, completed = read_completed(
         checkpoint_jsonl_path if resume else None, key="letter_id"

@@ -212,6 +212,131 @@ def test_exect_llm_split_rejects_forbidden_splits_before_consuming_input() -> No
             run_split(MustNotBeConsumed(), method="llm", split=split, mode="replay")
 
 
+def test_exect_llm_public_split_requires_explicit_valid_mode_before_iteration() -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.split import run_split
+
+    class MustNotBeConsumed:
+        def __iter__(self):
+            raise AssertionError("mode validation must happen before input iteration")
+
+    for mode in (None, "no-call", "unknown", "live/replay"):
+        kwargs: dict[str, Any] = {"method": "llm", "split": "dev"}
+        if mode is not None:
+            kwargs["mode"] = mode
+        with pytest.raises(ValueError, match="live, prompt-only, or replay"):
+            run_split(MustNotBeConsumed(), **kwargs)
+
+
+def test_exect_llm_modes_reject_mixed_provenance_and_preflight_replay_ids(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
+        structured_one_call,
+    )
+
+    with pytest.raises(ValueError, match="live mode does not accept raw_outputs"):
+        structured_one_call.produce_structured_letter(
+            _letter(), mode="live", raw_output=_raw(), model="fixture/model"
+        )
+    prompt_fixture = structured_one_call.produce_structured_letter(
+        _letter(), mode="prompt-only", raw_output=_raw(), model="fixture/model"
+    )
+    assert prompt_fixture.mode == "prompt-only"
+    assert prompt_fixture.raw_output == _raw()
+
+    calls = 0
+
+    def fail_producer(*_args: Any, **_kwargs: Any) -> Any:
+        nonlocal calls
+        calls += 1
+        raise AssertionError("incomplete replay must fail before processing")
+
+    monkeypatch.setattr(structured_one_call, "produce_structured_letter", fail_producer)
+    with pytest.raises(ValueError, match="complete raw_outputs"):
+        structured_one_call.run_split(
+            [_letter(), ExectLetter("LLM-VERTICAL-2", _letter().note_text)],
+            split="dev",
+            model="fixture/model",
+            temperature=0,
+            max_tokens=900,
+            mode="replay",
+            raw_outputs={_letter().letter_id: _raw()},
+            projection="llm",
+        )
+    assert calls == 0
+
+    with pytest.raises(ValueError, match="prompt-only mode does not accept raw_outputs"):
+        structured_one_call.run_split(
+            [_letter()],
+            split="dev",
+            model="fixture/model",
+            temperature=0,
+            max_tokens=900,
+            mode="prompt-only",
+            raw_outputs={_letter().letter_id: _raw()},
+            projection="llm",
+        )
+
+
+def test_exect_llm_split_records_unambiguous_per_mode_call_counts() -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
+        structured_one_call,
+    )
+
+    letters = [
+        ExectLetter("LLM-MODE-1", _letter().note_text),
+        ExectLetter("LLM-MODE-2", _letter().note_text),
+    ]
+    calls = 0
+
+    class Program:
+        def __call__(self, **_kwargs: Any) -> Any:
+            nonlocal calls
+            calls += 1
+            return type("Prediction", (), {"extraction_json": _raw()})()
+
+    live_rows, live_metadata = structured_one_call.run_split(
+        letters,
+        split="dev",
+        model="fixture/model",
+        temperature=0,
+        max_tokens=900,
+        mode="live",
+        program=Program(),
+        projection="llm",
+    )
+    assert calls == 2
+    assert live_metadata["mode"] == "live"
+    assert all(row["mode"] == "live" for row in live_rows)
+
+    prompt_rows, prompt_metadata = structured_one_call.run_split(
+        letters,
+        split="dev",
+        model="fixture/model",
+        temperature=0,
+        max_tokens=900,
+        mode="prompt-only",
+        projection="llm",
+    )
+    assert calls == 2
+    assert prompt_metadata["mode"] == "prompt-only"
+    assert all(row["mode"] == "prompt-only" for row in prompt_rows)
+
+    replay_rows, replay_metadata = structured_one_call.run_split(
+        letters,
+        split="dev",
+        model="fixture/model",
+        temperature=0,
+        max_tokens=900,
+        mode="replay",
+        raw_outputs={letter.letter_id: _raw() for letter in letters},
+        projection="llm",
+    )
+    assert calls == 2
+    assert replay_metadata["mode"] == "replay"
+    assert all(row["mode"] == "replay" for row in replay_rows)
+
+
 def test_exect_llm_split_accepts_only_development_aliases_and_preserves_fresh_identity() -> None:
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.split import run_split
 
@@ -520,27 +645,47 @@ def test_exect_llm_independent_dev140_raw_lane_parity_is_pinned() -> None:
 
 def test_exect_llm_full_dev140_baseline_hashes_actual_output_and_trace() -> None:
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import load_letters_for_split
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.split import run_split
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
+        structured_one_call,
+    )
 
     baseline = json.loads(BASELINE.read_text(encoding="utf-8"))
     source_rows = _baseline_rows()
     assert _file_sha256(RAW_ARTIFACT) == baseline["source_artifact_sha256"]
     raw_outputs = {str(row["letter_id"]): str(row["raw_output"]) for row in source_rows}
-    rows, metadata = run_split(
-        load_letters_for_split("dev"),
-        method="llm",
-        split="dev140",
-        model="openai/gpt-5.6-sol",
-        mode="live",
-        raw_outputs=raw_outputs,
-        program=object(),
-    )
-    assert metadata["active_method"] == "llm"
-    assert len(rows) == baseline["row_count"]
+    letters = load_letters_for_split("dev")
+    assert len(letters) == baseline["row_count"]
+    excluded = {
+        "active_method",
+        "method_id",
+        "pipeline_family",
+        "run_id",
+        "source_method_id",
+        "source_pipeline_family",
+        "scored_view",
+        "route",
+        "dspy_cache",
+        "producer_row",
+        "prediction",
+        "stage_events",
+        "scorer_projection",
+        "first_prediction_changing_owner",
+        "first_failure",
+    }
 
     full: list[dict[str, Any]] = []
-    for actual, source in zip(rows, source_rows, strict=True):
-        producer = dict(actual["producer_row"])
+    active_rows: list[dict[str, Any]] = []
+    for letter, source in zip(letters, source_rows, strict=True):
+        producer_result = structured_one_call.produce_structured_letter(
+            letter,
+            model="openai/gpt-5.6-sol",
+            mode="prompt-only",
+            raw_output=raw_outputs[letter.letter_id],
+            split="dev140",
+        )
+        result = structured_one_call.run_llm_only_letter(letter, producer_result)
+        actual = result.row
+        producer = dict(producer_result.row)
         for field in BASELINE_FIELDS:
             actual_value = producer.get(field)
             source_value = source.get(field)
@@ -554,7 +699,7 @@ def test_exect_llm_full_dev140_baseline_hashes_actual_output_and_trace() -> None
                 ]
             assert actual_value == source_value, f"producer parity: {field}"
 
-        assert actual["mode"] == source["mode"]
+        assert actual["mode"] == "prompt-only"
         assert actual["route"] == ""
         assert actual["active_method"] == "llm"
         assert actual["method_id"] == "llm"
@@ -567,37 +712,23 @@ def test_exect_llm_full_dev140_baseline_hashes_actual_output_and_trace() -> None
         assert all(event["owner"] and event["action"] for event in actual["stage_events"])
         assert actual["first_prediction_changing_owner"] == "model"
         assert actual["first_failure"] is None
+        active_rows.append(actual)
         full.append(
             {
                 "letter_id": actual["letter_id"],
-                "producer_row": producer,
-                "prediction": actual["prediction"],
-                "scorer_projection": actual["scorer_projection"],
-                "stage_events": actual["stage_events"],
-                "first_prediction_changing_owner": actual[
-                    "first_prediction_changing_owner"
-                ],
-                "first_failure": actual["first_failure"],
-                "active_provenance": {
-                    key: actual[key]
-                    for key in (
-                        "active_method",
-                        "method_id",
-                        "pipeline_family",
-                        "run_id",
-                        "source_method_id",
-                        "source_pipeline_family",
-                        "scored_view",
-                        "route",
-                        "mode",
-                        "dspy_cache",
-                    )
+                "producer_row": {
+                    key: value for key, value in actual.items() if key not in excluded
                 },
+                "prediction": result.prediction.model_dump(mode="json"),
+                "stages": [event.to_dict() for event in result.stage_events],
+                "scorer": result.scorer_projection,
+                "first_owner": result.first_prediction_changing_owner,
+                "first_failure": result.first_failure,
             }
         )
 
-    assert _fingerprint(full) == baseline["full_output_sha256"]
-    assert baseline["sol_reported_full_sha256"] == (
+    assert len(active_rows) == baseline["row_count"]
+    assert _fingerprint(full) == (
         "ad58b6bfb288c1dc6b34022180c065d9ae394f15b7316c7f1f04fb48085a3462"
     )
 

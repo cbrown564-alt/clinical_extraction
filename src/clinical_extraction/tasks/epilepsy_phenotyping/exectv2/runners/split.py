@@ -30,7 +30,7 @@ def run_split(
     model: str = "(model-independent)",
     temperature: float = 0.0,
     max_tokens: int = 0,
-    mode: str = "no-call",
+    mode: str | None = None,
     prompt_profile: PromptProfile = "full",
     dspy_cache: bool = True,
     api_base: str | None = None,
@@ -73,6 +73,8 @@ def run_split(
         return _run_rules_split(letters, method=method, split=split)
     if active_method != "llm":
         raise ValueError("the ExECT llm_with_rules split runner remains a separate phase")
+    if mode not in {"live", "prompt-only", "replay"}:
+        raise ValueError("ExECT llm mode must be live, prompt-only, or replay")
 
     return _run_llm_split(
         letters,
