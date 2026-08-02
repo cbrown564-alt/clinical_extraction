@@ -247,13 +247,17 @@ def _deterministic_run(root: Path, gold_letters: Sequence[ExectLetter]) -> dict[
     if not (root / summary_path).is_file():
         raise FileNotFoundError(root / summary_path)
     return {
-        "run_id": "exectv2_deterministic_all9_dev140",
+        # `rules` is the active outward identity.  Keep the historical saved
+        # artifact/run name explicit because replay manifests depend on it.
+        "run_id": "rules",
+        "saved_run_id": "exectv2_deterministic_all9_dev140",
+        "legacy_run_ids": ["exectv2_deterministic_all9_dev140"],
         "task": "exectv2",
         "label": "Deterministic all-9 · rules only",
         "model": "(model-independent)",
         "comparison_mode": "deterministic_only",
-        "architecture_family": "deterministic_all9",
-        "pipeline_family": "exectv2_deterministic_all9",
+        "architecture_family": "rules",
+        "pipeline_family": "rules",
         "split": "dev140",
         "row_count": 140,
         "date": "2026-07-14",

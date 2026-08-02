@@ -52,6 +52,14 @@ def test_frontend_catalog_and_read_only_surfaces_use_the_live_api(client: TestCl
     assert exect_runs.status_code == 200
     assert exect_runs.json()["runs"]
     assert all(run["task"] == "exectv2" for run in exect_runs.json()["runs"])
+    rules = next(run for run in exect_runs.json()["runs"] if run["run_id"] == "rules")
+    assert rules["pipeline_family"] == "rules"
+    assert rules["saved_run_id"] == "exectv2_deterministic_all9_dev140"
+
+    for run_id in ("rules", "exectv2_deterministic_all9_dev140"):
+        selected = client.get(f"/exectv2/runs/{run_id}")
+        assert selected.status_code == 200
+        assert selected.json()["run"]["run_id"] == "rules"
 
     scorecard = client.get("/gan2026/reliability-scorecard")
     assert scorecard.status_code == 200
