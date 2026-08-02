@@ -5,14 +5,6 @@ Glossary for the two-task clinical extraction research system. Implementation de
 Paper-facing ExECT primary method-comparison boundary:
 [decision 0046](docs/decisions/0046-exect-primary-method-comparison-boundary.md).
 
-**0046 evidence backlog** (authorized, not yet done):
-Protocol:
-[exectv2_primary_method_comparison_surface_protocol_2026-08-01.md](docs/experiments/exectv2/reliability/exectv2_primary_method_comparison_surface_protocol_2026-08-01.md).
-Execution order **A → B → C**:
-- **A** — Public six-model ExECT `test60` stage panel (`raw_lane_score` vs final). **Complete** — [panel](experiments/exectv2_six_model_test60_stage_panel_20260801/panel_aggregate.json); Sol raw `0.7771` / final `0.8047`.
-- **B** — Four-family rules-only `clinical_headline` on `dev140`. **Complete** — F1 **0.8160**; [artifact](experiments/exectv2_rules_only_four_family_clinical_headline_dev140_20260801.json).
-- **C** — Aggregate-only four-family rules-only `clinical_headline` on `test60`. **Complete** — F1 **0.7154**; [artifact](experiments/exectv2_rules_only_four_family_clinical_headline_test60_20260801.json).
-
 ## Language
 
 ### Methods
@@ -40,6 +32,44 @@ _Avoid_: presenting closed candidates as the default control; mixing retained hi
 **LLM with rules**:
 A research method class in which a model proposes clinical content and deterministic code may later change clinical meaning. On ExECT, the selected instance is the Selected ExECT hybrid; on Gan, it is the event-ledger plus repair stack.
 _Avoid_: using the phrase alone when the task-specific selected instance matters
+
+### Documentation reading paths
+
+**Supervisor path**:
+The short README-led handoff route a supervisor follows without agent help: system story, frontend or six-path teaching case, canonical results, claim limits, and exact replay. It is intentionally small.
+_Avoid_: treating the long evidence tables in `docs/NAVIGATION.md` as the supervisor path; packing historical Gan or ExECT reports into the handoff route
+
+**Worker path**:
+A short intentional route for ongoing research or engineering work, owned by `docs/THREAD_MAP.md` plus durable owner documents such as project status, active roadmap, regeneration triage, canon, design, and decisions.
+_Avoid_: using worker paths as a dumping ground for every retained experiment report; equating “linked from NAVIGATION” with “active work”
+
+**Documentation demotion**:
+Keep a document or artifact on disk for named evidence, negative replay, or limitation context, but remove it from supervisor and worker indexes so it is no longer on an active reading path. Discovery after demotion is through the regeneration ledger, retained-evidence index, or the decision/report that owns the claim.
+_Avoid_: creating a `docs/archive/` tree as the demotion mechanism; deleting solely because a path contains `archive`; conflating this with pytest deep-tier demotion
+
+**Active documentation index**:
+The short map of supervisor and worker paths. After Decision 0048 documentation cleanup, that role belongs to a thinned `docs/NAVIGATION.md` plus `docs/THREAD_MAP.md`, not to a long evidence catalog.
+_Avoid_: treating a long NAVIGATION evidence table as the active index; adding a parallel status board or evidence register
+
+**Demoted evidence discovery**:
+Finding a demoted-but-kept report goes only through existing owners: paper claim status, the retained-evidence index, the regeneration ledger and retention-slice notes, or the decision/report that still cites it. A file with no such owner and no hard caller is a delete candidate, not an invisible keep.
+_Avoid_: a new historical evidence catalog page; mirroring demoted NAVIGATION rows inside `REGENERATION.md`
+
+**NAVIGATION evidence pointer block**:
+The only evidence links that remain on the thinned active documentation index: retained-evidence manifest, paper claim status (`canon/10`), and the canonical six-model results report. Historical and focused experiment rows do not live on `NAVIGATION.md`.
+_Avoid_: restoring long historical Gan/ExECT catalogs on NAVIGATION; parking active research threads on NAVIGATION instead of THREAD_MAP
+
+**Documentation corpus triage pass**:
+The Decision 0048 documentation wave that first drafts the thinned `PROJECT_STATUS` live view and thinned active documentation index, then inventories paths that lost a living-owner citation on that post-thin graph, keeps files with a hard caller or remaining living owner, deletes the rest, rebinds still-needed citations, lands the thinned docs and deletes together, keeps `CONTEXT.md` glossary-only, and records dispositions in the regeneration ledger and a retention-slice note. README currency and paper/canon provenance rewrites stay out unless a delete forces a rebind; leftover canon drift becomes a Next item after a consistency glance.
+_Avoid_: unlink-only demotion that leaves invisible keeps; deleting against the pre-thin status citation graph; a second evidence catalog; porting NAVIGATION's Implementation table wholesale into THREAD_MAP; a separate documentation-cleanup decision when 0048 already owns the gate; preserving status chronology in a new log file; coupling index triage to manuscript editing
+
+**Project status live view**:
+The shape of `PROJECT_STATUS.md` after thinning: current outcome, a short fresh-evidence block for still-active claims, in progress, blocked or unvalidated, next, data and claim boundaries, and a short canonical-owners list. Fresh evidence covers the Decision 0048/0049 point, the selected six-model matrix owners, Decision 0046 primary fills, and open threads (DeepSeek unknown, handoff host/unaided review, semantic-support review). Canonical owners stay minimal: retained manifest, paper claim status, active roadmap, regeneration ledger, Decision 0048, comparison report, and open DeepSeek thread while it remains open.
+_Avoid_: multi-date verification bullet histories; quarantined v0.7 catalogs on the status page; parking closed Luna/ruleset/reliability catalogs on the live panel; duplicating NAVIGATION's former evidence tables under Canonical owners
+
+**Living owner citation**:
+A keep-alive reference from a durable active surface: canon, decisions, retained-evidence manifest, regeneration ledger, project status, active roadmap, THREAD_MAP, README, thinned NAVIGATION, design or runbook owners, or a hard caller such as a test, check script, registry entry, or config. Peer links among demoted experiment or research reports do not count.
+_Avoid_: transitive keep-alive through demoted-to-demoted links; treating any inbound `docs/` link as ownership
 
 ### Splits
 

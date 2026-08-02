@@ -43,9 +43,8 @@ architecture comparator**, not the primary peer of Sol hybrid.
     **public aggregate-only six-model `test60` stage panel** under
     `experiments/` with at least `raw_lane_score` vs final
     `clinical_headline` for all six models (primary table still cites Sol).
-  - Rules-only four-family `clinical_headline` on `test60` is **authorized**
-    as aggregate-only scoring (no row inspection) and is not yet
-    materialized.
+  - Rules-only four-family `clinical_headline` on `test60` is materialized as
+    aggregate-only scoring (no row inspection): overall F1 `0.7154`.
 
 Do not inspect sealed `test60` rows. Do not treat the Gan six-model LLM-only
 `test450` panel as ExECT evidence.
@@ -70,9 +69,9 @@ deterministic stages on the same Sol calls.
 - Canon score tables, paper manuscript method rows, and architecture method
   cards that still present `v08` or GEPA as the primary ExECT hybrid /
   LLM-only peers are stale relative to this decision until updated.
-- Evidence protocol A→B→C is complete (2026-08-01). Canon / manuscript
-  primary method rows still need rewriting to these fills; `v08` and GEPA
-  remain secondary / historical only.
+- Evidence protocol A→B→C is complete (2026-08-01). Canon primary fills are
+  recorded; residual manuscript wording drift remains a separate edit. `v08`
+  and GEPA remain secondary / historical only.
 - Do not reopen `v08` as the primary hybrid to recover `0.9189`.
 - Do not put nine-entity published metrics beside Sol `0.81` / `0.89` as if
   they measured the same task.
@@ -81,6 +80,15 @@ deterministic stages on the same Sol calls.
 
 - Evidence protocol (A → B → C):
   [primary method-comparison surface protocol](../experiments/exectv2/reliability/exectv2_primary_method_comparison_surface_protocol_2026-08-01.md)
+- Phase A — public six-model `test60` stage panel:
+  [stage panel report](../experiments/exectv2/reliability/exectv2_six_model_test60_stage_panel_2026-08-01.md)
+  and [panel aggregate](../../experiments/exectv2_six_model_test60_stage_panel_20260801/panel_aggregate.json)
+- Phase B — rules-only four-family `dev140`:
+  [Phase B report](../experiments/exectv2/reliability/exectv2_rules_only_four_family_clinical_headline_dev140_2026-08-01.md)
+  and [artifact](../../experiments/exectv2_rules_only_four_family_clinical_headline_dev140_20260801.json)
+- Phase C — rules-only four-family aggregate-only `test60`:
+  [Phase C report](../experiments/exectv2/reliability/exectv2_rules_only_four_family_clinical_headline_test60_2026-08-01.md)
+  and [artifact](../../experiments/exectv2_rules_only_four_family_clinical_headline_test60_20260801.json)
 - Review:
   [pipeline understandability review](../reviews/pipeline-understandability-review-2026-07-30.md)
 - Selected hybrid architecture:

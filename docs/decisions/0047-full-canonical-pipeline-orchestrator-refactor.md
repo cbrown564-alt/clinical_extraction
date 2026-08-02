@@ -501,6 +501,14 @@ must pass.
 
 Model calls and locked-row inspection are not authorized by this decision.
 
+## Parity evidence
+
+- Human summary:
+  [canonical orchestrator parity 0047](../experiments/canonical_orchestrator_parity_0047.md)
+- Machine artifact:
+  [`experiments/canonical_orchestrator_parity_0047.json`](../../experiments/canonical_orchestrator_parity_0047.json)
+- Checker: `scripts/check_canonical_orchestrator_parity.py`
+
 ## Consequences
 
 - The canonical orchestrators become the primary code-reading path for the

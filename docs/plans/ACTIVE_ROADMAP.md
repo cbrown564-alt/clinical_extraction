@@ -1,6 +1,6 @@
 # Active roadmap
 
-Last updated: 2026-08-02
+Last updated: 2026-08-03
 
 [Project status](../../PROJECT_STATUS.md) owns current evidence and checks.
 [Paper claim status](../canon/10_paper_provenance.md) owns claim strength.
@@ -76,6 +76,14 @@ verified.
    **243** collected/passing tests (~51 files), inside the 200–300 exit band.
    Deep allowlist empty. Owner:
    [Decision 0049](../decisions/0049-pytest-research-validity-firewall.md).
+10. **Documentation corpus triage pass advanced (2026-08-03):** thinned
+    `NAVIGATION.md` and `PROJECT_STATUS.md`; expanded `THREAD_MAP.md` durable
+    doors; rebound Decision 0046/0047 evidence owners; deleted six orphan
+    docs. Peer research-satellite cull and README currency remain deferred.
+    Record:
+    [documentation corpus slice](../research/maintenance/retention_slice_documentation_corpus_2026-08-03.md)
+    and [REGENERATION.md](../REGENERATION.md). Glossary:
+    [CONTEXT.md](../../CONTEXT.md) (Documentation reading paths).
 
 Gan test450 remains aggregate-only. ExECT full200 combines development and
 held-out rows, so it is not an independent holdout.

@@ -120,6 +120,22 @@ manifest that own focused evidence threads, and optional further lane
 `*_sf_state_projection_combined.jsonl` review. Retained-evidence manifest check
 passes after this wave. Locked-row inspection and model calls remain
 unauthorized for cleanup alone.
+
+### Documentation corpus triage (2026-08-03)
+
+Active-index and status thinning under Decision 0048 documentation reading-path
+rules. Record:
+[documentation corpus slice](research/maintenance/retention_slice_documentation_corpus_2026-08-03.md).
+
+| Change | Disposition |
+| --- | --- |
+| `docs/NAVIGATION.md` | Thinned to supervisor/worker doors + evidence pointer block |
+| `docs/THREAD_MAP.md` | Durable design/decision doors only in Change the implementation |
+| `PROJECT_STATUS.md` | Live control panel; not an evidence catalog |
+| Six orphan experiment/protocol docs | Deleted (see slice note); Git history recovery |
+| Decision 0046 / 0047 | Rebound Phase A/B/C and parity summary as living owners |
+| Peer research satellites | Deferred (would break links inside living-cited reports) |
+
 The retained evidence index records selected paths, hashes, source commit, and
 policy versions.
 
