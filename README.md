@@ -8,103 +8,54 @@ values, validating evidence, scoring predictions, and analysing errors. It is
 also the research code for a paper about which pipeline component improves a
 clinical result and where each method fails.
 
-The current work is a comprehension and handoff refactor. The repository must
-remain able to generate live runs and support external validation while becoming
-clear enough for a supervisor to understand the system, inspect the frontend,
-follow the six-path teaching walkthrough, and reproduce selected
-results exactly from saved outputs. See [Decision 0048](docs/decisions/0048-comprehension-and-handoff-refactor.md)
-and [project status](PROJECT_STATUS.md) for the scope, current results, and
-limits.
+The current work is a comprehension and handoff refactor: keep live runs and
+external-validation readiness while making the selected system clear enough for
+a supervisor to understand it, open the frontend, follow the six-path teaching
+walkthrough, and reproduce selected results exactly from saved outputs. Scope
+and limits: [Decision 0048](docs/decisions/0048-comprehension-and-handoff-refactor.md)
+and [project status](PROJECT_STATUS.md).
 
-## Current work
-
-The repository contains two tasks:
+## Two tasks × three methods
 
 - **Gan 2026** extracts one current seizure-frequency label from each letter.
-  Its 750-row development split permits row review and replay. Its 450-row test
-  split is locked; only saved aggregate results may be used.
+  Development review uses `dev750` (machine/API field and retained filenames may
+  still say `validation750`). The `test450` split is locked; only saved
+  aggregate results may be used. Primary score: **Purist** accuracy.
 - **ExECTv2** extracts diagnosis, seizure frequency, prescriptions, and
-  investigations from de-identified letters. Its 140-row development split
-  remains available for research.
+  investigations. Development review uses `dev140`; `test60` is locked and
+  aggregate-only. Primary score: de-duplicated clinical fact recovery
+  (`clinical_headline`), an internal research metric, not the published strict
+  benchmark.
 
-The main scores are Gan Purist accuracy and ExECT de-duplicated clinical fact
-recovery (`clinical_headline`). The ExECT score is an internal research metric,
-not the published strict benchmark. Paper-derived normalized-phrase, CUI, and
-full-attribute views are also available for explicit benchmark comparison.
+Each task has the same three active methods: `rules`, `llm`, and
+`llm_with_rules`.
 
-Current state, as of 2026-08-02:
+## At a glance
 
-- The selected system remains operational: six models, three methods, and two
-  tasks must continue to support live generation, saved/fixture demonstrations,
-  frontend development workflows, and exact no-call replay.
-- The frontend is a retained demonstration and operational surface. External
-  validation uses a separate restricted workflow and readiness record.
-- Historical artifacts are being reviewed for value and regeneration status;
-  anything outside the selected system, decision evidence, reproducibility, or
-  stated limits is a deletion or simplification candidate.
+Both tasks are primary. Scores are not interchangeable across tasks.
 
-- The retained evidence index selects six no-call reference runs. The five
-  largest replay files are content-addressed Git LFS objects.
-- Decision 0048 has promoted all three Gan and ExECT methods to the plain active names
-  `rules`, `llm`, and `llm_with_rules` while preserving historical replay
-  identities. The six selected task-method paths now use the canonical
-  orchestrators. The standalone `handoff/supervisor/` tree and ZIP were rebuilt
-  from active source on 2026-08-02 and pass source-to-shipped closure.
-  Supervisor-host verification and unaided README review remain open.
-- The latest repository-wide verification state is recorded in
-  [project status](PROJECT_STATUS.md). CI continues to run pytest, Ruff, and
-  mypy; selected evidence also has six exact no-call replay checks.
-- Retained evidence index v3 records the source commit and exact dependency,
-  prompt, scorer, split, repair, model, runbook, and CI versions.
-- The Markdown manuscript and IEEE source use only selected evidence. The
-  compiled four-page PDF was previously visually checked; it was not rebuilt
-  for this handoff milestone.
-- The Gan efficiency audit records a 15/450 Purist gain for V12 at three cold
-  model passes per note rather than one; unmatched cost and latency claims were
-  rejected because the old runs lack telemetry.
-- The ExECT rules-only no-call dev140 replay reports macro item F1 of 0.5687 for
-  normalized phrase, 0.7144 for CUI, and 0.6020 for all features. This is a
-  development metric result, not reproduction of the original ExECT system.
-- The historical ExECT `v08` and three-model rows do not meet the final
-  model-led family boundary: Prescription was deterministic-only and Seizure
-  Frequency included an independent extractor union. Decision 0040 now has
-  durable corrected configurations and a verified aggregate-only replay with
-  `state_profile`, attribution, evidence, schema, and regression records.
-  Nonzero deterministic regressions keep the historical rows unpromoted.
-- A frozen aggregate-only test60 replay found model-reported confidence
-  uninformative for routing review across the three historical model outputs;
-  no confidence-based review policy was adopted.
-- One bounded Prescription study and one separate Diagnosis-guard study both
-  improved dev140 aggregates but failed their predeclared mechanism gates. No
-  further rule iteration is planned. ExECT `joint`/`combined` is archived
-  development evidence only; active comparison uses `default`/`default` under
-  Decision 0045.
-- A no-call GPT-4.1-mini ablation found that the one-call Diagnosis
-  architecture lowers final Diagnosis F1 from 0.8727 to 0.8542, with 3 rescues
-  and 11 regressions. The same study exposed a first-140 versus manifest-dev140
-  runner defect. Affected runs were stopped, and resume validation now prevents
-  their partial artifacts from being reused. Decision 0041 accepts this
-  quality tradeoff and selects one structured call per letter.
-- The fixed six-model ExECT panel is retained on dev140 and aggregate-only
-  test60. Test60 clinical-headline F1 is 0.7572 for GPT-4.1-mini, 0.7950 for
-  GPT-5.6 Luna, 0.8047 for GPT-5.6 Sol, 0.7881 for DeepSeek V4 Flash,
-  0.7872 for Qwen 3.6:35B, and 0.7169 for Gemma 4 26B. The selected matched Gan
-  v0.5 aggregate-only test450 panel retains the same six models, with the hosted
-  and local route differences disclosed. Matched six-model v0.5 dev750 coverage
-  is complete; its detailed evidence remains bounded development evidence.
-- The retained six-model comparison report keeps the task-specific scores
-  separate. A predeclared no-call ExECT SF reliability replay improves the
-  state-profile result for every model, but its unknown-only gold denominator
-  is zero; Gan-to-ExECT over-reading transfer therefore remains unsupported.
-- All six selected models have completed the fixed ExECT dev140/test60 and Gan
-  dev750/test450 panels. Retained Gan filenames use the legacy identifier
-  `validation750` for `dev750`. The Gan development comparison includes six
-  matched `llm_with_rules` and `llm` pairs with 750 unique rows and valid
-  traces per condition. The component audit retains matched rescues,
-  regressions, score layers, evidence validity, and first-failure ownership;
-  the result is a bounded development answer, not method promotion.
+| Task | Measure | Selected primary results |
+| --- | --- | --- |
+| **Gan 2026** | Purist | **LLM with rules** (final ruleset, no-call replay of matched v0.5 raws): Sol **381/450** on `test450`; on `dev750`, mini **677/750**, Sol/Luna **660/750**. Development method peers on `dev750` (GPT-4.1-mini three-way reference): **rules** **697/750**, **llm** **581/750**. |
+| **ExECTv2** | `clinical_headline` F1 | Decision 0046 Sol-matched three-method strip: **rules** **0.8160** / **0.7154**; **llm** **0.8097** / **0.7771**; **llm with rules** **0.8920** / **0.8047** (`dev140` / `test60`). |
 
-Use the [short reading paths](docs/THREAD_MAP.md) to find the relevant files.
+Six-model ranks, Pragmatic accuracy, paper-derived ExECT metrics, and claim
+limits live in the [comparison report](docs/research/six_model_comparison_report_2026-07-18.md)
+and [paper claim status](docs/canon/10_paper_provenance.md).
+
+**System state**
+
+- Selected six-model × three-method × two-task system: live generation,
+  saved/fixture demonstration, frontend workflows, and exact no-call replay.
+- Active method names are `rules`, `llm`, and `llm_with_rules`; historical
+  replay identities remain for provenance.
+- Canonical orchestrators own the six selected task-method paths
+  ([Decision 0047](docs/decisions/0047-full-canonical-pipeline-orchestrator-refactor.md)).
+- Standalone supervisor handoff package rebuilt; host setup and unaided README
+  review remain open before calling the handoff usability-validated.
+- Verification owners: always-on pytest firewall ([Decision 0049](docs/decisions/0049-pytest-research-validity-firewall.md)),
+  retained-evidence manifest, and six no-call reference replays
+  ([project status](PROJECT_STATUS.md)).
 
 ## Supervisor path
 
@@ -219,21 +170,25 @@ separate run-readiness protocol.
 
 ## Method names
 
-Gan commands use three plain names:
+Gan and ExECT active runtime, CLI, registry, API, trace, and frontend paths use
+the same three plain names:
 
 - `rules`: deterministic rules produce the clinical interpretation;
 - `llm`: the model produces the clinical interpretation;
 - `llm_with_rules`: the model extracts or selects facts and deterministic code
   can normalize, select, or repair them.
 
-ExECT active runtime, CLI, registry, API, trace, and frontend paths use the same
-three plain method names. Saved run IDs, retained evidence IDs, filenames, and
-historical aliases remain unchanged for exact replay.
-
-Older long identifiers and version codes remain in saved filenames because
-replay hashes and research provenance depend on them. The
-[naming guide](docs/reference/plain_language_glossary.md) maps those identifiers
+Saved run IDs, retained evidence IDs, filenames, and historical aliases remain
+unchanged for exact replay. The
+[naming guide](docs/reference/plain_language_glossary.md) maps older identifiers
 to their plain descriptions.
+
+## For workers
+
+Ongoing research and engineering routes live in
+[THREAD_MAP.md](docs/THREAD_MAP.md), [project status](PROJECT_STATUS.md), and
+the [active roadmap](docs/plans/ACTIVE_ROADMAP.md). Do not treat the supervisor
+path as a dump for experiment archaeology.
 
 ## Design principles
 
