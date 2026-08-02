@@ -647,7 +647,7 @@ def render_six_path_walkthrough(cases: Sequence[TeachingCase]) -> str:
     repairs = [
         observation
         for observation in recovered.observations
-        if observation.stage_id.startswith("gan.hybrid.repair.")
+        if observation.stage_id.startswith("gan.llm_with_rules.repair.")
         and observation.changed
     ]
     repair_name = repairs[0].stage_name if repairs else "the named deterministic repair stage"

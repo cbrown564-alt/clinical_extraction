@@ -71,18 +71,6 @@ export function fetchExectv2ReliabilityScorecard() {
   );
 }
 
-export function fetchExectv2ComponentAblation() {
-  return request<import("../types").Exectv2ComponentAblationResponse>(
-    "/exectv2/component-ablation"
-  );
-}
-
-export function fetchExectv2ComponentTransitions() {
-  return request<import("../types").Exectv2ComponentTransitionsResponse>(
-    "/exectv2/component-transitions"
-  );
-}
-
 export function fetchExectv2SfInspection() {
   return request<import("../types").SfInspectionResponse>("/exectv2/sf-inspection");
 }

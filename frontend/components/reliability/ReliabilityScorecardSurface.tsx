@@ -9,6 +9,7 @@ import {
   TONE_CLASSES,
   useActiveDataset,
   getDataset,
+  datasetSupports,
   type DatasetTone,
 } from "@/lib/datasets";
 import type {
@@ -473,7 +474,9 @@ export default function ReliabilityScorecardSurface() {
           right={
             <>
               <SurfaceLink surface="observatory" datasetId={datasetId} label="Runs" />
-              <SurfaceLink surface="laboratory" datasetId={datasetId} label="Component Impact" />
+              {datasetSupports(datasetId, "laboratory") && (
+                <SurfaceLink surface="laboratory" datasetId={datasetId} label="Component Impact" />
+              )}
             </>
           }
         />

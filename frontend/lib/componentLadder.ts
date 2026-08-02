@@ -1,21 +1,15 @@
 import type { DatasetDescriptor, DatasetTone } from "@/lib/datasets";
-import { exectv2Dataset, gan2026Dataset, EXECTV2_FAMILIES } from "@/lib/datasets";
-import type {
-  Exectv2ComponentAblationResponse,
-  Exectv2Entity,
-  Gan2026ComponentAblationResponse,
-} from "@/lib/types";
-import { exectv2ArchitectureLabel, splitLabel } from "@/lib/plainLanguageLabels";
+import { gan2026Dataset } from "@/lib/datasets";
+import type { Gan2026ComponentAblationResponse } from "@/lib/types";
 
 /**
  * Dataset-agnostic "component ladder" view-model.
  *
- * Both ExECTv2 and Gan answer the same question — *how much does each component
+ * Both datasets answer the same question — *how much does each component
  * contribute to the final score?* — by decomposing a pipeline into an ordered
  * stack of named, typed stages and reading the cumulative score at each stage's
  * output. The marginal step at each stage is its contribution. This shape is the
- * single contract the shared waterfall surface renders, so the two datasets look
- * and function identically even though their stages and metric differ.
+ * single contract the shared waterfall surface renders.
  */
 export interface LadderCategory {
   id: string;
@@ -56,7 +50,7 @@ export interface LadderArchitecture {
 }
 
 export interface ComponentLadder {
-  dataset: "exectv2" | "gan2026";
+  dataset: "gan2026";
   /** Short human name for how contribution was measured. */
   method: string;
   /** Provenance line shown under the method (split, replay policy, …). */
@@ -78,87 +72,6 @@ function resolveComponentType(
   return {
     label: match?.label ?? componentType.replace(/_/g, " "),
     tone: match?.tone ?? "muted",
-  };
-}
-
-/**
- * Adapt the ExECTv2 component-ablation payload (already a layered score ladder)
- * onto the shared view-model.
- *
- * Inert stages (tagged `inert` in the backend — surfaces that pass every
- * prediction straight through and so never move the score on these single-lane
- * holistic runs) are dropped here rather than rendered as permanently ~0 rows.
- * Because deltas in the payload are stored against the *adjacent* layer, we
- * recompute each visible stage's contribution from the absolute scores of the
- * surviving stages, so the waterfall still closes exactly (any tiny effect of a
- * hidden stage is absorbed into the next visible one).
- */
-export function adaptExectv2Ladder(
-  payload: Exectv2ComponentAblationResponse
-): ComponentLadder {
-  const categories: LadderCategory[] = EXECTV2_FAMILIES.map((family) => ({
-    id: family.id,
-    label: family.label,
-    shortLabel: family.shortLabel,
-    tone: family.tone,
-  }));
-
-  const architectures: LadderArchitecture[] = payload.architectures.map((arch) => {
-    const visibleLayers = arch.layers.filter((layer) => !layer.inert);
-    const stages: LadderStage[] = visibleLayers.map((layer, index) => {
-      const previous = index === 0 ? null : visibleLayers[index - 1];
-      const { label: componentTypeLabel, tone } = resolveComponentType(
-        exectv2Dataset,
-        layer.component_type
-      );
-      const categoryDeltas: Record<string, number> = {};
-      if (previous) {
-        for (const family of EXECTV2_FAMILIES) {
-          const familyId = family.id as Exectv2Entity;
-          const current = layer.scores.families[familyId]?.f1;
-          const prior = previous.scores.families[familyId]?.f1;
-          if (typeof current === "number" && typeof prior === "number") {
-            categoryDeltas[family.id] = current - prior;
-          }
-        }
-      }
-      return {
-        id: layer.layer_id,
-        label: layer.label,
-        componentType: layer.component_type,
-        componentTypeLabel,
-        tone,
-        score: layer.scores.overall.f1,
-        deltaFromPrevious: previous
-          ? layer.scores.overall.f1 - previous.scores.overall.f1
-          : 0,
-        isBaseline: index === 0,
-        categoryDeltas,
-        precision: layer.scores.overall.precision,
-        recall: layer.scores.overall.recall,
-        interpretation: layer.interpretation,
-      };
-    });
-    return {
-      id: arch.run_id,
-      label: exectv2ArchitectureLabel(arch.run_id),
-      model: arch.model,
-      decision: arch.decision,
-      finalScore: arch.final_score.overall.f1,
-      rowCount: arch.row_count,
-      stages,
-    };
-  });
-
-  return {
-    dataset: "exectv2",
-    method: "Cumulative stage ladder",
-    methodNote: `${splitLabel("dev140")} · replay only · no model calls · ${payload.generated_on}`,
-    metricLabel: "Clinical F1",
-    claimBoundary: payload.claim_boundary,
-    generatedOn: payload.generated_on,
-    categories,
-    architectures,
   };
 }
 

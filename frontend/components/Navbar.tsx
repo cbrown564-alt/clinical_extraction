@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Database, Microscope } from "lucide-react";
-import { DATASET_PARAM, useActiveDataset, DEFAULT_DATASET } from "@/lib/datasets";
+import { DATASET_PARAM, useActiveDataset, DEFAULT_DATASET, datasetSupports } from "@/lib/datasets";
 import DatasetSwitcher from "@/components/shell/DatasetSwitcher";
 import {
   APP_WORKFLOWS,
@@ -86,7 +86,13 @@ export default function Navbar() {
           {activeWorkflow.label}
         </span>
         <span className="mr-1 hidden h-4 w-px shrink-0 bg-border sm:block" aria-hidden />
-        {activeWorkflow.destinations.map((destination) => {
+        {activeWorkflow.destinations
+          .filter(
+            (destination) =>
+              destination.href !== "/laboratory" ||
+              datasetSupports(datasetId, "laboratory")
+          )
+          .map((destination) => {
           const active = pathname === destination.href;
           const Icon = destination.Icon;
           return (

@@ -28,8 +28,10 @@ export default createComponentImpactSurface<
   errorTitle: "Gan component data failed to load",
   resolveSelectedId: (ladder, activeId) => {
     const fromState = ladder.architectures.find((a) => a.id === activeId);
-    const control = ladder.architectures.find((a) => a.decision === "control");
-    return (fromState ?? control ?? ladder.architectures[0])?.id;
+    const rulesBaseline = ladder.architectures.find(
+      (a) => a.id === "deterministic_canonical_pipeline"
+    );
+    return (fromState ?? rulesBaseline ?? ladder.architectures[0])?.id;
   },
   buildWorkedExample: (transitions) => {
     const exampleCounts: Record<string, number> = {};

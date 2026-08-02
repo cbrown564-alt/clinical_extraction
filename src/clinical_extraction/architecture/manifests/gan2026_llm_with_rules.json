@@ -11,11 +11,11 @@
   },
   "one_sentence": "The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer.",
   "sixty_second": "One structured call returns two linked objects: an event ledger of source-near seizure-frequency facts, and a selection naming which event IDs won, the answer kind, the final label, evidence, confidence, and rationale. The model therefore makes the initial clinical selection - this is the single most misread fact about the method. Deterministic code then repairs JSON and schema, normalizes every event to a comparable rate, resolves an initial label from the model's chosen events, and runs ten named repair families in a fixed order. Each family can rewrite the final label, and each records a named event when it fires, so a changed answer is always attributable to one rule. The repaired label is checked for scorability and exact evidence, then projected to Purist and Pragmatic categories. Model owns the first answer; rules own every subsequent change to it.",
-  "prediction_owner": "the model proposes and selects (gan.hybrid.model_call); ten deterministic repair families may change the answer afterwards",
+  "prediction_owner": "the model proposes and selects (gan.llm_with_rules.model_call); ten deterministic repair families may change the answer afterwards",
   "scored_representation": "One Gan label string per letter, projected to a Purist and a Pragmatic category.",
   "stages": [
     {
-      "stage_id": "gan.hybrid.build_prompt",
+      "stage_id": "gan.llm_with_rules.build_prompt",
       "name": "Build the structured-events prompt",
       "operation": "Render the note text and the event-ledger schema into the prompt input for one structured call.",
       "owner": "deterministic",
@@ -34,7 +34,7 @@
       "paper_wording": "A single prompt requests a structured event ledger and an explicit selection."
     },
     {
-      "stage_id": "gan.hybrid.model_call",
+      "stage_id": "gan.llm_with_rules.model_call",
       "name": "Model extracts events and selects the answer",
       "operation": "One structured call returns an event ledger plus a selection naming selected_event_ids, final_kind, final_label, evidence, confidence, and rationale.",
       "owner": "model",
@@ -53,7 +53,7 @@
       "notes": "The model, not a deterministic selector, makes the initial event selection. Finding 5 of the 2026-07-30 review reported a teaching fixture that attributed this to a deterministic component."
     },
     {
-      "stage_id": "gan.hybrid.json_schema_repair",
+      "stage_id": "gan.llm_with_rules.json_schema_repair",
       "name": "Repair JSON dialect and payload shape",
       "operation": "Recover the JSON object, repair Python-literal dialect, repair the selected-answer payload shape, quarantine events that fail event-level validation, and drop unsupported keys.",
       "owner": "deterministic",
@@ -73,7 +73,7 @@
       "notes": "Event quarantine removes entries that cannot validate. It is transport-level by contract, but it does reduce the ledger the model's selection can point at; quarantine notes are retained in parse_errors."
     },
     {
-      "stage_id": "gan.hybrid.format_only_retry",
+      "stage_id": "gan.llm_with_rules.format_only_retry",
       "name": "Format-only retry (local models)",
       "operation": "For local ollama-served models whose first output was unparseable, ask for a format-only repair of the same content and re-enter the parse path; the retry is accepted only if it validates.",
       "owner": "deterministic",
@@ -93,7 +93,7 @@
       "notes": "Conditional. Fires only in live mode for models whose name starts with ollama_chat/."
     },
     {
-      "stage_id": "gan.hybrid.schema_validation",
+      "stage_id": "gan.llm_with_rules.schema_validation",
       "name": "Validate the extraction schema",
       "operation": "Validate the repaired payload against the structured extraction record; a failure ends the row with no prediction.",
       "owner": "deterministic",
@@ -112,7 +112,7 @@
       "paper_wording": "Extractions that do not validate against the schema are recorded as failures rather than scored."
     },
     {
-      "stage_id": "gan.hybrid.normalize_events",
+      "stage_id": "gan.llm_with_rules.normalize_events",
       "name": "Normalize every event",
       "operation": "Convert each model event's source phrase into a comparable normalized rate; this runs over the whole ledger, not only the selected events.",
       "owner": "deterministic",
@@ -131,7 +131,7 @@
       "paper_wording": "Model-produced events are normalized to a common rate representation."
     },
     {
-      "stage_id": "gan.hybrid.resolve_label",
+      "stage_id": "gan.llm_with_rules.resolve_label",
       "name": "Resolve the label from the model's selection",
       "operation": "Read the model's selected_event_ids and final_kind and resolve the initial label from the corresponding normalized events.",
       "owner": "deterministic",
@@ -151,7 +151,7 @@
       "notes": "Representation, not selection: this stage renders the model's choice, it does not re-choose. If no selected event normalizes to a Gan label the row is recorded unscorable. row_trace.deterministic_selection retains both the model's own final_label and the resolved label so the two can be compared."
     },
     {
-      "stage_id": "gan.hybrid.repair.selected_evidence",
+      "stage_id": "gan.llm_with_rules.repair.selected_evidence",
       "name": "Repair 1 - evidence-based label repair",
       "operation": "Compare the resolved label with the model's quoted evidence span and rewrite the label when the evidence supports a different rate.",
       "owner": "deterministic",
@@ -170,7 +170,7 @@
       "paper_wording": "A deterministic repair reconciles the label with the evidence span the model selected."
     },
     {
-      "stage_id": "gan.hybrid.repair.monthly_diary",
+      "stage_id": "gan.llm_with_rules.repair.monthly_diary",
       "name": "Repair 2 - monthly diary",
       "operation": "Derive a label from a month-by-month diary in the ledger and override the current label unless the existing label is preserved by the diary guard.",
       "owner": "deterministic",
@@ -189,7 +189,7 @@
       "paper_wording": "A deterministic repair converts month-by-month diary entries into a single rate."
     },
     {
-      "stage_id": "gan.hybrid.repair.usual_interval",
+      "stage_id": "gan.llm_with_rules.repair.usual_interval",
       "name": "Repair 3 - usual interval",
       "operation": "Convert a stated usual interval between seizures into a rate label when the ledger supports it.",
       "owner": "deterministic",
@@ -208,7 +208,7 @@
       "paper_wording": "A deterministic repair converts a stated usual interval into a rate."
     },
     {
-      "stage_id": "gan.hybrid.repair.typical_over_ytd",
+      "stage_id": "gan.llm_with_rules.repair.typical_over_ytd",
       "name": "Repair 4 - typical rate over year-to-date",
       "operation": "When the ledger holds both a typical recurring rate and a year-to-date total, prefer the typical recurring rate.",
       "owner": "deterministic",
@@ -228,7 +228,7 @@
       "notes": "Policy A1 in docs/research/clinical_selection_policy_catalog_2026-07-31.md. Unlike its neighbours this repair is not gated by a repair_config flag; it runs whenever its precondition holds."
     },
     {
-      "stage_id": "gan.hybrid.repair.breakthrough",
+      "stage_id": "gan.llm_with_rules.repair.breakthrough",
       "name": "Repair 5 - breakthrough seizures",
       "operation": "Handle letters where the current burden is expressed as breakthrough seizures against an otherwise controlled background.",
       "owner": "deterministic",
@@ -247,7 +247,7 @@
       "paper_wording": "A deterministic repair resolves breakthrough-seizure phrasing against a controlled background."
     },
     {
-      "stage_id": "gan.hybrid.repair.non_epileptic",
+      "stage_id": "gan.llm_with_rules.repair.non_epileptic",
       "name": "Repair 6 - non-epileptic events",
       "operation": "Prevent events the ledger marks as non-epileptic from supplying the seizure-frequency answer.",
       "owner": "deterministic",
@@ -266,7 +266,7 @@
       "paper_wording": "A deterministic repair excludes events recorded as non-epileptic from the frequency answer."
     },
     {
-      "stage_id": "gan.hybrid.repair.residual_jerk",
+      "stage_id": "gan.llm_with_rules.repair.residual_jerk",
       "name": "Repair 7 - residual jerks",
       "operation": "Decide whether residual myoclonic jerks count toward the current seizure-frequency answer.",
       "owner": "deterministic",
@@ -285,7 +285,7 @@
       "paper_wording": "A deterministic repair applies the residual-jerk policy to the frequency answer."
     },
     {
-      "stage_id": "gan.hybrid.repair.post_change_burst",
+      "stage_id": "gan.llm_with_rules.repair.post_change_burst",
       "name": "Repair 8 - post-change burst",
       "operation": "Handle a burst of seizures that follows a named medication or lifestyle change, so a transient burst does not become the current rate.",
       "owner": "deterministic",
@@ -304,7 +304,7 @@
       "paper_wording": "A deterministic repair separates a post-change seizure burst from the settled current rate."
     },
     {
-      "stage_id": "gan.hybrid.repair.dated_sequence",
+      "stage_id": "gan.llm_with_rules.repair.dated_sequence",
       "name": "Repair 9 - dated sequence",
       "operation": "Derive a rate from a sequence of individually dated seizures and the window they span.",
       "owner": "deterministic",
@@ -323,7 +323,7 @@
       "paper_wording": "A deterministic repair converts a dated seizure sequence into a rate over its observed window."
     },
     {
-      "stage_id": "gan.hybrid.repair.elapsed_anchor",
+      "stage_id": "gan.llm_with_rules.repair.elapsed_anchor",
       "name": "Repair 10 - elapsed since anchor",
       "operation": "Derive a seizure-free duration from the elapsed time since the last dated event, unless the sustained seizure-free guard preserves the existing label.",
       "owner": "deterministic",
@@ -342,7 +342,7 @@
       "paper_wording": "A deterministic repair converts an elapsed interval since the last dated seizure into a seizure-free window."
     },
     {
-      "stage_id": "gan.hybrid.scorable_label_check",
+      "stage_id": "gan.llm_with_rules.scorable_label_check",
       "name": "Check the label is scorable",
       "operation": "Parse the repaired label into a frequency record; an unparseable label is recorded as unscorable.",
       "owner": "deterministic",
@@ -361,7 +361,7 @@
       "paper_wording": "Labels that cannot be parsed into the benchmark representation are recorded as unscorable."
     },
     {
-      "stage_id": "gan.hybrid.evidence_containment",
+      "stage_id": "gan.llm_with_rules.evidence_containment",
       "name": "Check evidence is an exact substring",
       "operation": "Require the model's quoted selection evidence to appear verbatim in the note text.",
       "owner": "deterministic",
@@ -381,7 +381,7 @@
       "notes": "The evidence checked is the model's selection evidence, which the repair families do not rewrite. A repaired label can therefore carry evidence that motivated the model's original answer."
     },
     {
-      "stage_id": "gan.hybrid.score",
+      "stage_id": "gan.llm_with_rules.score",
       "name": "Project to Purist and Pragmatic scoring",
       "operation": "Map the predicted and gold monthly frequencies into the Purist and Pragmatic categories and compare.",
       "owner": "scorer",

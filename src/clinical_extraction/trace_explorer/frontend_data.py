@@ -27,8 +27,6 @@ _NAMED_RESOURCES: dict[str, str] = {
     "rules": "rules.json",
     "prompts": "prompts.json",
     "exectv2_runs": "exectv2/runs.json",
-    "exectv2_component_ablation": "exectv2/component-ablation.json",
-    "exectv2_component_transitions": "exectv2/component-transitions.json",
     "exectv2_reliability_scorecard": "exectv2/reliability-scorecard.json",
     "exectv2_sf_inspection": "exectv2/sf-inspection.json",
     "gan2026_component_ablation": "gan2026/component-ablation.json",

@@ -139,9 +139,22 @@ def _check_source_closure() -> None:
         )
 
 
+def _source_package_module_paths() -> set[Path]:
+    files: set[Path] = set()
+    for module in sys.modules.values():
+        filename = getattr(module, "__file__", None)
+        if not filename:
+            continue
+        path = Path(filename).resolve()
+        if path.suffix == ".py" and path.is_relative_to(SOURCE_PACKAGE):
+            files.add(path)
+    return files
+
+
 def _trace_runtime_closure() -> tuple[set[Path], set[Path]]:
     read_assets: set[Path] = set()
     original_read_text = Path.read_text
+    modules_before = _source_package_module_paths()
 
     def traced_read_text(path: Path, *args: object, **kwargs: object) -> str:
         resolved = path.resolve()
@@ -154,7 +167,7 @@ def _trace_runtime_closure() -> tuple[set[Path], set[Path]]:
         _exercise_runtime_paths()
     finally:
         Path.read_text = original_read_text  # type: ignore[method-assign]
-    modules = _loaded_source_modules()
+    modules = _loaded_source_modules(modules_before=modules_before)
     for source in modules | read_assets:
         _assert_allowed_runtime_file(source)
     return modules, read_assets
@@ -208,15 +221,8 @@ def _exercise_runtime_paths() -> None:
     assert "synthetic-002" in assembled
 
 
-def _loaded_source_modules() -> set[Path]:
-    files: set[Path] = set()
-    for module in tuple(sys.modules.values()):
-        filename = getattr(module, "__file__", None)
-        if not filename:
-            continue
-        path = Path(filename).resolve()
-        if path.suffix == ".py" and path.is_relative_to(SOURCE_PACKAGE):
-            files.add(path)
+def _loaded_source_modules(*, modules_before: set[Path]) -> set[Path]:
+    loaded = _source_package_module_paths()
     required = {
         SOURCE_PACKAGE / "operational" / "exect.py",
         SOURCE_PACKAGE
@@ -226,9 +232,11 @@ def _loaded_source_modules() -> set[Path]:
         / "llm"
         / "hybrid_structured_events.py",
     }
-    if missing := required - files:
+    if missing := required - loaded:
         raise RuntimeError(f"runtime trace missed required files: {sorted(missing)}")
-    return files
+    # Ignore modules already resident in sys.modules before the exercise. Prior
+    # test imports (for example trace_explorer) must not expand the handoff closure.
+    return (loaded - modules_before) | (loaded & required)
 
 
 def _assert_allowed_runtime_file(source: Path) -> None:

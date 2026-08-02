@@ -434,7 +434,7 @@ export default function Exectv2ExampleExplorer() {
               className="min-w-0 flex-1 sm:min-w-[200px] sm:flex-none"
             >
               {runGroups.map((group) => (
-                <optgroup key={group.mode} label={group.label}>
+                <optgroup key={group.method} label={group.label}>
                   {group.runs.map((run) => (
                     <option key={run.run_id} value={run.run_id}>
                       {compactRunLabel(run)} · {run.model}
@@ -443,7 +443,7 @@ export default function Exectv2ExampleExplorer() {
                 </optgroup>
               ))}
             </ControlSelect>
-            <Exectv2ModeBadge mode={selectedRun.comparison_mode} />
+            <Exectv2ModeBadge run={selectedRun} />
             <span className="rounded border border-border bg-surface-raised px-1.5 py-0.5 font-mono text-[11px] text-muted">
               {selectedRun.split} / {selectedRun.row_count}
             </span>

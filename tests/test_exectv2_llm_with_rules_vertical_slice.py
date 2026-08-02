@@ -179,7 +179,7 @@ def test_hybrid_public_runner_uses_canonical_projection_and_fresh_identity() -> 
         "prescription_policy_variant": "default",
         "sf_projection_ablation": "combined",
     }
-    assert result.result.stage_events[-1].stage_id == "exect.hybrid.score"
+    assert result.result.stage_events[-1].stage_id == "exect.llm_with_rules.score"
 
 
 def test_hybrid_runtime_trace_agrees_with_manifest_and_records_noops() -> None:
@@ -434,7 +434,7 @@ def test_hybrid_operational_api_delegates_to_the_public_runner(
     assert output[0]["method"] == "llm_with_rules"
     assert output[0]["run_id"] == "llm_with_rules"
     assert output[0]["scored_view"] == "clinical_headline"
-    assert output[0]["trace"][-1]["stage_id"] == "exect.hybrid.score"
+    assert output[0]["trace"][-1]["stage_id"] == "exect.llm_with_rules.score"
 
 
 @pytest.mark.parametrize(
@@ -497,7 +497,7 @@ def test_hybrid_operational_api_fails_closed_on_malformed_model_output(
         marker in output[0]["error"]["message"]
         for marker in ("invalid_json:", "schema_validation_error:")
     )
-    assert output[0]["trace"][-1]["stage_id"] == "exect.hybrid.fail_closed"
+    assert output[0]["trace"][-1]["stage_id"] == "exect.llm_with_rules.fail_closed"
     assert not any(
         mention["entity"] == "Diagnosis"
         for mention in output[0].get("prediction", {}).get("mentions", [])

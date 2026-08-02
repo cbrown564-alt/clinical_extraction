@@ -126,7 +126,7 @@ function RunGroup({
                   </td>
                   <td className="px-3 py-2">
                     <div className="flex items-center gap-2">
-                      <Exectv2ModeBadge mode={run.comparison_mode} />
+                      <Exectv2ModeBadge run={run} />
                       <div className="min-w-0">
                         <p className="truncate font-semibold text-foreground">{compactRunLabel(run)}</p>
                         <p className="truncate font-mono text-[11px] text-muted">{run.model}</p>
@@ -227,7 +227,7 @@ export default function Exectv2AggregatePerformance() {
     >
       {runGroups.map((group) => (
         <RunGroup
-          key={group.mode}
+          key={group.method}
           title={`${group.label} · ${groupSplitLabel(group.runs)}`}
           caption={group.caption}
           runs={group.runs}

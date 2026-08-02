@@ -80,6 +80,7 @@ export interface ErrorClassDescriptor {
 /** How a run relates to the claim being made. */
 export type RunDecision =
   | "control"
+  | "method"
   | "simplification"
   | "diagnostic"
   | "pending"
@@ -145,6 +146,7 @@ export const TONE_CLASSES: Record<DatasetTone, string> = {
 /** Classes for a decision badge; keeps control vs diagnostic visually distinct. */
 export const DECISION_CLASSES: Record<RunDecision, string> = {
   control: "border-deterministic/25 bg-deterministic/10 text-deterministic",
+  method: "border-deterministic-alt/25 bg-deterministic-alt/10 text-deterministic-alt",
   simplification: "border-success/25 bg-success/10 text-success",
   diagnostic: "border-llm/25 bg-llm/10 text-llm",
   pending: "border-muted/20 bg-muted/10 text-muted",

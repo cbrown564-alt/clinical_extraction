@@ -38,8 +38,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     clinical_headline_unit_keys,
 )
 
-ComparisonMode = Literal["llm_plus_rules", "llm_only", "deterministic_only"]
-
 FAMILIES: tuple[str, ...] = (
     "Diagnosis",
     "SeizureFrequency",
@@ -116,7 +114,7 @@ def build_exectv2_comparison(repo_root: Path) -> dict[str, Any]:
                 summary=summary,
                 rows=rows,
                 gold_by_id=gold_by_id,
-                comparison_mode="llm_plus_rules",
+                active_method_lane="llm_with_rules",
                 source_key="predicted_mentions",
                 score_key="headline_target",
                 summary_path=summary_path.relative_to(root),
@@ -129,7 +127,7 @@ def build_exectv2_comparison(repo_root: Path) -> dict[str, Any]:
                 summary=summary,
                 rows=rows,
                 gold_by_id=gold_by_id,
-                comparison_mode="llm_only",
+                active_method_lane="llm",
                 source_key="raw_lane_mentions",
                 score_key="raw_lane_score",
                 summary_path=summary_path.relative_to(root),
@@ -167,13 +165,13 @@ def _model_run(
     summary: Mapping[str, Any],
     rows: Sequence[Mapping[str, Any]],
     gold_by_id: Mapping[str, ExectLetter],
-    comparison_mode: ComparisonMode,
+    active_method_lane: Literal["llm_with_rules", "llm"],
     source_key: str,
     score_key: str,
     summary_path: Path,
     rows_path: Path,
 ) -> dict[str, Any]:
-    is_final = comparison_mode == "llm_plus_rules"
+    is_final = active_method_lane == "llm_with_rules"
     surface = _mapping(_mapping(summary["score_ladder"])[score_key])
     lane_diagnostics = _mapping(summary["lane_diagnostics"])
     letters = [
@@ -194,7 +192,7 @@ def _model_run(
         "task": "exectv2",
         "label": f"{retained.label} · {mode_label}",
         "model": retained.model,
-        "comparison_mode": comparison_mode,
+        "kind": active_method_lane,
         "architecture_family": "decision_0041_model_led_single_call",
         # The saved frontend run id and source artifact remain immutable.  Only
         # the active outward method identity changes for the raw lane.
@@ -276,7 +274,7 @@ def _deterministic_run(root: Path, gold_letters: Sequence[ExectLetter]) -> dict[
         "task": "exectv2",
         "label": "Deterministic all-9 · rules only",
         "model": "(model-independent)",
-        "comparison_mode": "deterministic_only",
+        "kind": "rules",
         "architecture_family": "rules",
         "pipeline_family": "rules",
         "split": "dev140",

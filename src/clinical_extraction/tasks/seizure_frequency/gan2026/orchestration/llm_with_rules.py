@@ -197,7 +197,7 @@ def run_record(
     repair_events = semantic.get("events", []) if isinstance(semantic, Mapping) else []
     stage_events: list[GanStageEvent] = [
         GanStageEvent(
-            stage_id="gan.hybrid.build_prompt",
+            stage_id="gan.llm_with_rules.build_prompt",
             owner="deterministic",
             effect_class="transport_or_schema",
             input_value=record.source_row_index,
@@ -207,7 +207,7 @@ def run_record(
             rule_category="general",
         ),
         GanStageEvent(
-            stage_id="gan.hybrid.model_call",
+            stage_id="gan.llm_with_rules.model_call",
             owner="model",
             effect_class="clinical_meaning",
             input_value=prompt_input_json,
@@ -216,7 +216,7 @@ def run_record(
             action="model_or_replay_output",
         ),
         GanStageEvent(
-            stage_id="gan.hybrid.json_schema_repair",
+            stage_id="gan.llm_with_rules.json_schema_repair",
             owner="deterministic",
             effect_class="transport_or_schema",
             input_value=raw_text,
@@ -226,7 +226,7 @@ def run_record(
             rule_category="benchmark_format",
         ),
         GanStageEvent(
-            stage_id="gan.hybrid.format_only_retry",
+            stage_id="gan.llm_with_rules.format_only_retry",
             owner="deterministic",
             effect_class="transport_or_schema",
             input_value=initial_parse_errors,
@@ -236,7 +236,7 @@ def run_record(
             rule_category="benchmark_format",
         ),
         GanStageEvent(
-            stage_id="gan.hybrid.schema_validation",
+            stage_id="gan.llm_with_rules.schema_validation",
             owner="deterministic",
             effect_class="validation_gate",
             input_value=raw_text,
@@ -249,7 +249,7 @@ def run_record(
             rule_category="benchmark_format",
         ),
         GanStageEvent(
-            stage_id="gan.hybrid.normalize_events",
+            stage_id="gan.llm_with_rules.normalize_events",
             owner="deterministic",
             effect_class="representation",
             input_value=extraction.model_dump() if extraction else None,
@@ -259,7 +259,7 @@ def run_record(
             rule_category="seizure_frequency",
         ),
         GanStageEvent(
-            stage_id="gan.hybrid.resolve_label",
+            stage_id="gan.llm_with_rules.resolve_label",
             owner="deterministic",
             effect_class="clinical_meaning",
             input_value=(
@@ -296,7 +296,7 @@ def run_record(
         )
         stage_events.append(
             GanStageEvent(
-                stage_id=f"gan.hybrid.repair.{family}",
+                stage_id=f"gan.llm_with_rules.repair.{family}",
                 owner="deterministic",
                 effect_class="clinical_meaning",
                 input_value=(family_event or {}).get("before_label"),
@@ -309,7 +309,7 @@ def run_record(
     stage_events.extend(
         [
             GanStageEvent(
-                stage_id="gan.hybrid.scorable_label_check",
+                stage_id="gan.llm_with_rules.scorable_label_check",
                 owner="deterministic",
                 effect_class="validation_gate",
                 input_value=output.final_value,
@@ -319,7 +319,7 @@ def run_record(
                 rule_category="benchmark_format",
             ),
             GanStageEvent(
-                stage_id="gan.hybrid.evidence_containment",
+                stage_id="gan.llm_with_rules.evidence_containment",
                 owner="deterministic",
                 effect_class="validation_gate",
                 input_value=output.evidence,
@@ -329,7 +329,7 @@ def run_record(
                 rule_category="general",
             ),
             GanStageEvent(
-                stage_id="gan.hybrid.score",
+                stage_id="gan.llm_with_rules.score",
                 owner="scorer",
                 effect_class="benchmark_projection",
                 input_value=output.model_dump(),

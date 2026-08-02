@@ -185,8 +185,8 @@ def _model_family(
     repair_mode: str,
     inspection: dict[str, Any],
 ) -> dict[str, Any]:
-    comparison_mode = "llm_plus_rules" if method_name == "llm_with_rules" else "llm_only"
-    kind = "hybrid" if method_name == "llm_with_rules" else "llm_only"
+    active_method = "llm_with_rules" if method_name == "llm_with_rules" else "llm"
+    kind = active_method
     run_id = f"gan2026_validation750_{condition.slug}_{method_name}"
     complete = bool(inspection["complete"])
     mode_label = "LLM + rules" if method_name == "llm_with_rules" else "LLM only"
@@ -199,14 +199,10 @@ def _model_family(
         "model_label": condition.label,
         "executable": False,
         "kind": kind,
-        "architecture_family": kind,
-        "pipeline_family": (
-            "llm_with_rules"
-            if method_name == "llm_with_rules"
-            else "llm"
-        ),
+        "active_method": active_method,
+        "architecture_family": active_method,
+        "pipeline_family": active_method,
         "model": condition.route,
-        "comparison_mode": comparison_mode,
         "comparison_role": "winner" if method_name == "llm_with_rules" else "diagnostic",
         "availability": "replay" if complete else "not_retained",
         "evidence_scope": "validation750_row_level" if complete else "incomplete_not_served",
@@ -239,7 +235,6 @@ def _rules_only_family() -> dict[str, Any]:
         "architecture_family": "rules",
         "pipeline_family": "rules",
         "model": "(model-independent)",
-        "comparison_mode": "deterministic_only",
         "comparison_role": "control",
         "availability": "live",
         "evidence_scope": "validation_rows",

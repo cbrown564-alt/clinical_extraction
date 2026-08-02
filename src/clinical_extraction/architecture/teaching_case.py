@@ -596,14 +596,14 @@ def _gan_llm_with_rules_run() -> MethodRun:
 
     prompt_input = hybrid.build_prompt_input(record)
     run.record(
-        "gan.hybrid.build_prompt",
+        "gan.llm_with_rules.build_prompt",
         input_value=GAN_NOTE_TEXT,
         output_value=f"prompt input of {len(prompt_input)} characters",
         changed=True,
         note="Transport only.",
     )
     run.record(
-        "gan.hybrid.model_call",
+        "gan.llm_with_rules.model_call",
         input_value="prompt input (fixture: no model call is made)",
         output_value=GAN_HYBRID_RAW_OUTPUT,
         changed=True,
@@ -619,27 +619,27 @@ def _gan_llm_with_rules_run() -> MethodRun:
         repair_config=repair_config,
     )
     run.record(
-        "gan.hybrid.json_schema_repair",
+        "gan.llm_with_rules.json_schema_repair",
         input_value=GAN_HYBRID_RAW_OUTPUT,
         output_value=trace["format_repair"],
         changed=bool(trace["format_repair"]["schema_payload_changed"]),
         note="This fixture is already well formed, so nothing is repaired.",
     )
     run.record(
-        "gan.hybrid.format_only_retry",
+        "gan.llm_with_rules.format_only_retry",
         input_value="(not eligible: hosted model, first parse succeeded)",
         output_value="(not run)",
         changed=False,
         note="Conditional stage. Fires only for local ollama-served models.",
     )
     run.record(
-        "gan.hybrid.schema_validation",
+        "gan.llm_with_rules.schema_validation",
         input_value="repaired payload",
         output_value=("validated" if extraction else "schema_validation_error"),
         changed=False,
     )
     run.record(
-        "gan.hybrid.normalize_events",
+        "gan.llm_with_rules.normalize_events",
         input_value=[
             _event_summary(event) for event in trace["model_prediction"]["record"]["events"]
         ],
@@ -650,7 +650,7 @@ def _gan_llm_with_rules_run() -> MethodRun:
 
     selection_block = trace["deterministic_selection"]
     run.record(
-        "gan.hybrid.resolve_label",
+        "gan.llm_with_rules.resolve_label",
         input_value=(
             f"model selected {selection_block['selected_event_ids']} with "
             f"final_label {selection_block['model_final_label']!r}"
@@ -679,7 +679,7 @@ def _gan_llm_with_rules_run() -> MethodRun:
     )
     for (family, before, after) in walk:
         run.record(
-            f"gan.hybrid.repair.{family}",
+            f"gan.llm_with_rules.repair.{family}",
             input_value=before,
             output_value=after,
             changed=before != after,
@@ -690,7 +690,7 @@ def _gan_llm_with_rules_run() -> MethodRun:
             ),
         )
     run.record(
-        "gan.hybrid.scorable_label_check",
+        "gan.llm_with_rules.scorable_label_check",
         input_value=final_label,
         output_value=(
             "unscorable"
@@ -702,7 +702,7 @@ def _gan_llm_with_rules_run() -> MethodRun:
     evidence = extraction.selection.evidence if extraction else ""
     evidence_valid = evidence_is_substring(GAN_NOTE_TEXT, evidence) if evidence else False
     run.record(
-        "gan.hybrid.evidence_containment",
+        "gan.llm_with_rules.evidence_containment",
         input_value=evidence,
         output_value=f"evidence_valid={evidence_valid}",
         changed=False,
@@ -711,7 +711,7 @@ def _gan_llm_with_rules_run() -> MethodRun:
             "A repair can change the label without changing this span."
         ),
     )
-    _gan_scoring(run, "gan.hybrid.score", final_label)
+    _gan_scoring(run, "gan.llm_with_rules.score", final_label)
     return run
 
 
@@ -1027,7 +1027,7 @@ def _exect_llm_with_rules_run() -> MethodRun:
         config=StructuredMethodConfig.selected(),
     )
     for event in result.stage_events:
-        if event.stage_id == "exect.hybrid.score":
+        if event.stage_id == "exect.llm_with_rules.score":
             continue
         run.record(
             event.stage_id,
@@ -1037,13 +1037,13 @@ def _exect_llm_with_rules_run() -> MethodRun:
             note=(
                 "Fixture boundary at the one-call producer; no live model call "
                 "is made."
-                if event.stage_id == "exect.hybrid.model_call"
+                if event.stage_id == "exect.llm_with_rules.model_call"
                 else "Canonical LLM-with-rules stage."
             ),
         )
     _exect_scoring(
         run,
-        "exect.hybrid.score",
+        "exect.llm_with_rules.score",
         result.prediction.mentions,
         nine_entity=False,
     )

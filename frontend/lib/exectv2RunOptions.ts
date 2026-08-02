@@ -1,5 +1,5 @@
 import type {
-  Exectv2ComparisonMode,
+  ActiveMethod,
   Exectv2RunWireResponse,
   Exectv2RunsResponse,
   Exectv2RunsWireResponse,
@@ -27,22 +27,22 @@ const MODEL_ORDER = [
 ] as const;
 
 const GROUPS: ReadonlyArray<{
-  mode: Exectv2ComparisonMode;
+  method: ActiveMethod;
   label: string;
   caption: string;
 }> = [
   {
-    mode: "llm_plus_rules",
-    label: "Winning mode · LLM + rules",
+    method: "llm_with_rules",
+    label: "Winning mode · LLM with rules",
     caption: "Six models under the fixed one-call architecture after bounded assembly",
   },
   {
-    mode: "llm_only",
+    method: "llm",
     label: "LLM only · raw one-call output",
     caption: "The same six calls before deterministic assembly",
   },
   {
-    mode: "deterministic_only",
+    method: "rules",
     label: "Deterministic only · no model",
     caption: "No-call all-9 rules baseline",
   },
@@ -53,10 +53,31 @@ const MODEL_RANK: ReadonlyMap<string, number> = new Map(
 );
 
 export interface Exectv2RunGroup {
-  mode: Exectv2ComparisonMode;
+  method: ActiveMethod;
   label: string;
   caption: string;
   runs: Exectv2RunSummary[];
+}
+
+/** Resolve the selected active method for grouping and badges. */
+export function exectv2RunActiveMethod(run: Exectv2RunSummary): ActiveMethod {
+  if (run.kind === "rules" || run.kind === "llm" || run.kind === "llm_with_rules") {
+    return run.kind;
+  }
+  if (run.pipeline_family === "rules" || run.run_id === "rules") {
+    return "rules";
+  }
+  if (run.scorer_view === "raw_lane_score" || run.pipeline_family === "llm") {
+    return "llm";
+  }
+  if (run.scorer_view === "headline_target") {
+    return "llm_with_rules";
+  }
+  const method = run.active_method ?? run.method_id;
+  if (method === "rules" || method === "llm" || method === "llm_with_rules") {
+    return method;
+  }
+  return "llm_with_rules";
 }
 
 /** Resolve only exact canonical or explicitly retained aliases. */
@@ -81,17 +102,11 @@ export function resolveExectv2RunId(
   return matches.length === 1 ? matches[0].run_id : null;
 }
 
-export function comparisonModeLabel(mode: Exectv2ComparisonMode): string {
-  if (mode === "llm_plus_rules") return "LLM + rules";
-  if (mode === "llm_only") return "LLM only";
-  return "Deterministic only";
-}
-
 export function groupExectv2Runs(runs: Exectv2RunSummary[]): Exectv2RunGroup[] {
   return GROUPS.map((group) => ({
     ...group,
     runs: runs
-      .filter((run) => run.comparison_mode === group.mode)
+      .filter((run) => exectv2RunActiveMethod(run) === group.method)
       .sort(
         (a, b) =>
           (MODEL_RANK.get(a.model) ?? MODEL_ORDER.length) -

@@ -1,25 +1,28 @@
-import { comparisonModeLabel } from "@/lib/exectv2RunOptions";
-import type { Exectv2ComparisonMode } from "@/lib/types";
+import { activeMethodLabel } from "@/lib/plainLanguageLabels";
+import { exectv2RunActiveMethod } from "@/lib/exectv2RunOptions";
+import type { ActiveMethod, Exectv2RunSummary } from "@/lib/types";
 
-const MODE_CLASSES: Record<Exectv2ComparisonMode, string> = {
-  llm_plus_rules: "border-success/25 bg-success/10 text-success",
-  llm_only: "border-llm/25 bg-llm/8 text-llm",
-  deterministic_only:
-    "border-deterministic/25 bg-deterministic/8 text-deterministic",
+const METHOD_CLASSES: Record<ActiveMethod, string> = {
+  llm_with_rules: "border-success/25 bg-success/10 text-success",
+  llm: "border-llm/25 bg-llm/8 text-llm",
+  rules: "border-deterministic/25 bg-deterministic/8 text-deterministic",
 };
 
 export function Exectv2ModeBadge({
-  mode,
+  run,
+  method,
   className = "",
 }: {
-  mode: Exectv2ComparisonMode;
+  run?: Exectv2RunSummary;
+  method?: ActiveMethod;
   className?: string;
 }) {
+  const activeMethod = method ?? (run ? exectv2RunActiveMethod(run) : "llm_with_rules");
   return (
     <span
-      className={`shrink-0 rounded border px-1.5 py-0.5 text-[11px] font-medium ${MODE_CLASSES[mode]} ${className}`}
+      className={`shrink-0 rounded border px-1.5 py-0.5 text-[11px] font-medium ${METHOD_CLASSES[activeMethod]} ${className}`}
     >
-      {comparisonModeLabel(mode)}
+      {activeMethodLabel(activeMethod)}
     </span>
   );
 }

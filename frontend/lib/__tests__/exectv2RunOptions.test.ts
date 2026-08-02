@@ -1,11 +1,12 @@
 import {
+  exectv2RunActiveMethod,
   groupExectv2Runs,
   hydrateExectv2Run,
   hydrateExectv2Runs,
   resolveExectv2RunId,
 } from "../exectv2RunOptions";
 import type {
-  Exectv2ComparisonMode,
+  ActiveMethod,
   Exectv2RunsWireResponse,
   Exectv2RunSummary,
 } from "../types";
@@ -23,22 +24,29 @@ const MODELS = [
 ];
 
 function run(
-  comparisonMode: Exectv2ComparisonMode,
+  method: ActiveMethod,
   model: string,
   index: number
 ): Exectv2RunSummary {
   return {
-    run_id: `${comparisonMode}-${index}`,
-    comparison_mode: comparisonMode,
+    run_id: `${method}-${index}`,
+    kind: method,
     model,
     label: `Model ${index}`,
+    scorer_view:
+      method === "llm"
+        ? "raw_lane_score"
+        : method === "llm_with_rules"
+          ? "headline_target"
+          : "clinical_headline",
+    pipeline_family: method === "rules" ? "rules" : method === "llm" ? "llm" : "exectv2_model_led_key_family_event_ledger",
   } as Exectv2RunSummary;
 }
 
 describe("ExECTv2 architecture options", () => {
   it("resolves retained aliases exactly and rejects unknown or colliding aliases", () => {
     const rules = {
-      ...run("deterministic_only", "rules", 0),
+      ...run("rules", "rules", 0),
       run_id: "rules",
       saved_run_id: "exectv2_deterministic_all9_dev140",
       retained_evidence_id: "exectv2_deterministic_all9_dev_20260714",
@@ -48,13 +56,13 @@ describe("ExECTv2 architecture options", () => {
         "exectv2_deterministic_all9_dev140",
       ],
     };
-    const other = run("llm_only", MODELS[0], 1);
+    const other = run("llm", MODELS[0], 1);
     const collision = {
-      ...run("llm_plus_rules", MODELS[1], 2),
+      ...run("llm_with_rules", MODELS[1], 2),
       saved_run_id: "same-alias",
     };
     const collision2 = {
-      ...run("llm_plus_rules", MODELS[2], 3),
+      ...run("llm_with_rules", MODELS[2], 3),
       saved_run_id: "same-alias",
     };
 
@@ -74,14 +82,14 @@ describe("ExECTv2 architecture options", () => {
 
     const exactAliasCollision = [
       rules,
-      { ...run("llm_only", MODELS[3], 4), legacy_run_ids: ["rules"] },
+      { ...run("llm", MODELS[3], 4), legacy_run_ids: ["rules"] },
     ];
     expect(resolveExectv2RunId(exactAliasCollision, "rules")).toBeNull();
   });
 
   it("resolves the active llm aliases without rewriting the saved run id", () => {
     const savedLlmRun = {
-      ...run("llm_only", MODELS[2], 8),
+      ...run("llm", MODELS[2], 8),
       run_id: "exectv2_winning_mode_gpt56sol_llm_only_dev140",
       active_method: "llm",
       method_id: "llm",
@@ -92,7 +100,7 @@ describe("ExECTv2 architecture options", () => {
     expect(resolveExectv2RunId([savedLlmRun], "llm-only")).toBeNull();
 
     const collidingRun = {
-      ...run("llm_plus_rules", MODELS[3], 9),
+      ...run("llm_with_rules", MODELS[3], 9),
       legacy_run_ids: ["llm"],
     };
     expect(resolveExectv2RunId([savedLlmRun, collidingRun], "llm")).toBeNull();
@@ -100,7 +108,7 @@ describe("ExECTv2 architecture options", () => {
 
   it("resolves the active hybrid aliases without rewriting the saved run id", () => {
     const savedHybridRun = {
-      ...run("llm_plus_rules", MODELS[2], 10),
+      ...run("llm_with_rules", MODELS[2], 10),
       run_id: "exectv2_winning_mode_gpt56sol_llm_plus_rules_dev140",
       active_method: "llm_with_rules",
       method_id: "llm_with_rules",
@@ -113,7 +121,7 @@ describe("ExECTv2 architecture options", () => {
     );
 
     const collidingRun = {
-      ...run("llm_only", MODELS[3], 11),
+      ...run("llm", MODELS[3], 11),
       legacy_run_ids: ["llm_with_rules"],
     };
     expect(resolveExectv2RunId([savedHybridRun, collidingRun], "llm_with_rules")).toBeNull();
@@ -121,7 +129,7 @@ describe("ExECTv2 architecture options", () => {
 
   it("uses only the Decision-0046 Sol raw lane for the active aliases in the actual payload", () => {
     const hydrated = hydrateExectv2Runs(actualRuns);
-    const rawRuns = hydrated.runs.filter((item) => item.comparison_mode === "llm_only");
+    const rawRuns = hydrated.runs.filter((item) => exectv2RunActiveMethod(item) === "llm");
     const sol = rawRuns.find((item) => item.model === "openai/gpt-5.6-sol");
     expect(rawRuns).toHaveLength(6);
     expect(sol).toBeDefined();
@@ -140,7 +148,7 @@ describe("ExECTv2 architecture options", () => {
   it("uses only the Decision-0046 Sol final lane for the active hybrid aliases", () => {
     const hydrated = hydrateExectv2Runs(actualRuns);
     const finalRuns = hydrated.runs.filter(
-      (item) => item.comparison_mode === "llm_plus_rules"
+      (item) => exectv2RunActiveMethod(item) === "llm_with_rules"
     );
     const sol = finalRuns.find((item) => item.model === "openai/gpt-5.6-sol");
     expect(finalRuns).toHaveLength(6);
@@ -159,22 +167,22 @@ describe("ExECTv2 architecture options", () => {
 
   it("groups the winning mode first, then its raw and no-call comparators", () => {
     const runs = [
-      run("deterministic_only", "(model-independent)", 0),
+      run("rules", "(model-independent)", 0),
       ...MODELS.flatMap((model, index) => [
-        run("llm_only", model, index),
-        run("llm_plus_rules", model, index),
+        run("llm", model, index),
+        run("llm_with_rules", model, index),
       ]),
     ];
 
     const groups = groupExectv2Runs(runs);
 
-    expect(groups.map((group) => group.mode)).toEqual([
-      "llm_plus_rules",
-      "llm_only",
-      "deterministic_only",
+    expect(groups.map((group) => group.method)).toEqual([
+      "llm_with_rules",
+      "llm",
+      "rules",
     ]);
     expect(groups.map((group) => group.runs.length)).toEqual([6, 6, 1]);
-    expect(groups[0].label).toBe("Winning mode · LLM + rules");
+    expect(groups[0].label).toBe("Winning mode · LLM with rules");
     expect(groups[1].label).toBe("LLM only · raw one-call output");
     expect(groups[2].label).toBe("Deterministic only · no model");
     expect(groups[0].runs.map((item) => item.model)).toEqual(MODELS);
@@ -202,7 +210,7 @@ describe("ExECTv2 architecture options", () => {
       ],
       runs: [
         {
-          ...run("llm_plus_rules", MODELS[0], 0),
+          ...run("llm_with_rules", MODELS[0], 0),
           letters: [
             {
               letter_id: "EA0002",

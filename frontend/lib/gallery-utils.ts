@@ -397,7 +397,7 @@ export function familyColorClass(family: string): string {
   if (family.includes("rules_only") || family.includes("deterministic")) {
     return "text-deterministic bg-deterministic/10 border-deterministic/20";
   }
-  if (family.includes("hybrid")) {
+  if (family.includes("llm_with_rules") || family.includes("hybrid")) {
     return "text-hybrid bg-hybrid/10 border-hybrid/20";
   }
   return "text-llm bg-llm/10 border-llm/20";

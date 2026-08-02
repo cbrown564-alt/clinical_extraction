@@ -3,7 +3,7 @@
 import type { ComponentType } from "react";
 import { useObservatoryData } from "@/components/observatory/useObservatoryData";
 import Exectv2AggregatePerformance from "@/components/exectv2/Exectv2AggregatePerformance";
-import Exectv2ComponentImpact from "@/components/exectv2/Exectv2ComponentImpact";
+import Exectv2ComponentImpactUnavailable from "@/components/exectv2/Exectv2ComponentImpactUnavailable";
 import Exectv2ErrorGallery from "@/components/exectv2/Exectv2ErrorGallery";
 import Exectv2ExampleExplorer from "@/components/exectv2/Exectv2ExampleExplorer";
 import { useExectv2Runs, useExectv2Selection } from "@/components/exectv2/useExectv2";
@@ -127,7 +127,7 @@ export const exectv2RuntimeAdapter: DatasetRuntimeAdapter = {
   surfaces: {
     ErrorGallery: Exectv2ErrorGallery,
     AggregatePerformance: Exectv2AggregatePerformance,
-    ComponentImpact: Exectv2ComponentImpact,
+    ComponentImpact: Exectv2ComponentImpactUnavailable,
     ExampleExplorer: Exectv2ExampleExplorer,
   },
 };

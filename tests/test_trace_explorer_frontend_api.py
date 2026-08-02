@@ -60,7 +60,7 @@ def test_frontend_catalog_and_read_only_surfaces_use_the_live_api(client: TestCl
     hybrid = [
         run
         for run in exect_runs.json()["runs"]
-        if run["comparison_mode"] == "llm_plus_rules"
+        if run.get("kind") == "llm_with_rules"
     ]
     active_hybrid = [run for run in hybrid if run.get("active_method") == "llm_with_rules"]
     assert len(active_hybrid) == 1
@@ -125,14 +125,15 @@ def test_exect_architectures_are_the_winning_mode_model_matrix(client: TestClien
     runs = payload["runs"]
     assert len(runs) == 13
 
-    by_mode: dict[str, list[dict[str, object]]] = {}
+    by_method: dict[str, list[dict[str, object]]] = {}
     for run in runs:
-        by_mode.setdefault(str(run["comparison_mode"]), []).append(run)
+        method = str(run.get("kind") or run.get("active_method") or "")
+        by_method.setdefault(method, []).append(run)
 
-    assert {mode: len(items) for mode, items in by_mode.items()} == {
-        "llm_plus_rules": 6,
-        "llm_only": 6,
-        "deterministic_only": 1,
+    assert {method: len(items) for method, items in by_method.items()} == {
+        "llm_with_rules": 6,
+        "llm": 6,
+        "rules": 1,
     }
 
     expected_models = {
@@ -143,17 +144,17 @@ def test_exect_architectures_are_the_winning_mode_model_matrix(client: TestClien
         "ollama_chat/qwen3.6:35b",
         "ollama_chat/gemma4:26b",
     }
-    assert {str(run["model"]) for run in by_mode["llm_plus_rules"]} == expected_models
-    assert {str(run["model"]) for run in by_mode["llm_only"]} == expected_models
-    assert by_mode["deterministic_only"][0]["model"] == "(model-independent)"
+    assert {str(run["model"]) for run in by_method["llm_with_rules"]} == expected_models
+    assert {str(run["model"]) for run in by_method["llm"]} == expected_models
+    assert by_method["rules"][0]["model"] == "(model-independent)"
 
     sol_final = next(
         run
-        for run in by_mode["llm_plus_rules"]
+        for run in by_method["llm_with_rules"]
         if run["model"] == "openai/gpt-5.6-sol"
     )
     sol_raw = next(
-        run for run in by_mode["llm_only"] if run["model"] == "openai/gpt-5.6-sol"
+        run for run in by_method["llm"] if run["model"] == "openai/gpt-5.6-sol"
     )
     assert sol_final["metrics"]["overall_f1"] == 0.892  # type: ignore[index]
     assert sol_raw["metrics"]["overall_f1"] == 0.8097  # type: ignore[index]
@@ -187,14 +188,14 @@ def test_gan_architectures_use_the_same_six_model_comparison_matrix(
     families = response.json()["families"]
     assert len(families) == 13
 
-    by_mode: dict[str, list[dict[str, object]]] = {}
+    by_method: dict[str, list[dict[str, object]]] = {}
     for family in families:
-        by_mode.setdefault(str(family["comparison_mode"]), []).append(family)
+        by_method.setdefault(str(family["kind"]), []).append(family)
 
-    assert {mode: len(items) for mode, items in by_mode.items()} == {
-        "llm_plus_rules": 6,
-        "llm_only": 6,
-        "deterministic_only": 1,
+    assert {method: len(items) for method, items in by_method.items()} == {
+        "llm_with_rules": 6,
+        "llm": 6,
+        "rules": 1,
     }
 
     expected_models = [
@@ -205,10 +206,10 @@ def test_gan_architectures_use_the_same_six_model_comparison_matrix(
         "ollama_chat/qwen3.6:35b",
         "ollama_chat/gemma4:26b",
     ]
-    assert [str(item["model"]) for item in by_mode["llm_plus_rules"]] == expected_models
-    assert [str(item["model"]) for item in by_mode["llm_only"]] == expected_models
+    assert [str(item["model"]) for item in by_method["llm_with_rules"]] == expected_models
+    assert [str(item["model"]) for item in by_method["llm"]] == expected_models
 
-    model_runs = [*by_mode["llm_plus_rules"], *by_mode["llm_only"]]
+    model_runs = [*by_method["llm_with_rules"], *by_method["llm"]]
     assert all(item["split"] == "validation750" for item in model_runs)
     assert all("test450" not in str(item["run_id"]) for item in model_runs)
     assert all(item["availability"] in {"replay", "not_retained"} for item in model_runs)
@@ -230,7 +231,7 @@ def test_gan_architectures_use_the_same_six_model_comparison_matrix(
         assert len(replay.json()["content"]) == 2
         assert all(row["split"] == "validation" for row in replay.json()["content"])
 
-    deterministic = by_mode["deterministic_only"][0]
+    deterministic = by_method["rules"][0]
     assert deterministic["run_id"] == "rules"
     assert deterministic["availability"] == "live"
     assert deterministic["model"] == "(model-independent)"

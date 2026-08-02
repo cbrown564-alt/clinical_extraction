@@ -133,17 +133,18 @@ export interface FullRecordResponse {
   quotes_ok_all_categories: boolean;
 }
 
+export type ActiveMethod = "rules" | "llm" | "llm_with_rules";
+
 export interface PipelineFamilyItem {
   value: PipelineFamily;
   run_id: string;
   label: string;
   display_label?: string;
   executable: boolean;
-  kind: "rules" | "rules_only" | "hybrid" | "llm_only";
+  kind: ActiveMethod;
   pipeline_family: string;
   model?: string;
   model_label?: string;
-  comparison_mode: "llm_plus_rules" | "llm_only" | "deterministic_only";
   comparison_role?: "control" | "diagnostic";
   availability: "live" | "replay" | "aggregate_only" | "not_retained";
   evidence_scope: "validation_rows" | "test450_aggregate_only" | "not_measured";

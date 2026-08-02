@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Any, Literal
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
@@ -307,8 +307,6 @@ def run_ablation(request: RunAblationRequest, data: FrontendDataDependency) -> d
 
 
 _STATIC_ROUTES = {
-    "/exectv2/component-ablation": "exectv2_component_ablation",
-    "/exectv2/component-transitions": "exectv2_component_transitions",
     "/exectv2/reliability-scorecard": "exectv2_reliability_scorecard",
     "/exectv2/sf-inspection": "exectv2_sf_inspection",
     "/gan2026/component-ablation": "gan2026_component_ablation",
@@ -332,6 +330,28 @@ def _add_static_route(path: str, resource: str) -> None:
 
 for _path, _resource in _STATIC_ROUTES.items():
     _add_static_route(_path, _resource)
+
+
+@router.get("/exectv2/component-ablation")
+def exectv2_component_ablation_unavailable() -> None:
+    raise HTTPException(
+        status_code=404,
+        detail=(
+            "ExECT component-ablation ladder is not exposed on the supervisor path; "
+            "retained evidence lives in experiment reports."
+        ),
+    )
+
+
+@router.get("/exectv2/component-transitions")
+def exectv2_component_transitions_unavailable() -> None:
+    raise HTTPException(
+        status_code=404,
+        detail=(
+            "ExECT component-transition examples are not exposed on the supervisor path; "
+            "retained evidence lives in experiment reports."
+        ),
+    )
 
 
 @router.get("/exectv2/runs")
