@@ -7,6 +7,13 @@ Use the shortest path that answers the question.
 [README](../README.md) → [status](../PROJECT_STATUS.md) →
 [roadmap](plans/ACTIVE_ROADMAP.md)
 
+## Resume Decision 0048 after the 2026-08-02 pause
+
+[Decision 0048](decisions/0048-comprehension-and-handoff-refactor.md) →
+[status pause point](../PROJECT_STATUS.md#decision-0048-pause-point) →
+[active milestone sequence](plans/ACTIVE_ROADMAP.md#active-comprehension-and-handoff-work) →
+[regeneration and retention ledger](REGENERATION.md)
+
 ## DeepSeek unknown collaboration (active; hosted)
 
 [protocol](experiments/gan2026/gan2026_deepseek_unknown_competence_protocol_2026-07-31.md) →

@@ -21,22 +21,30 @@ verified.
 
 ## Active comprehension and handoff work
 
-1. Freeze `c3a6fbb7` as the clean baseline and complete the working-tree,
-   Git-history, and Git-LFS regeneration ledger in [REGENERATION.md](../REGENERATION.md).
-2. Refactor the Gan three-method slice using plain active names, then regenerate
-   and verify live, fixture, replay, frontend, and architecture paths.
-3. Apply the proven pattern to ExECT, shared code, and frontend routes; remove
-   obsolete interfaces, duplicate reports, and dead compatibility paths.
-4. Build the README-led supervisor path: concise claim, five-stage diagram, six
-   method summaries, six-path teaching case, frontend link, canonical results,
-   evidence/limits, and reproduction note.
-5. Review supporting prompt, component, negative, safety, and validation
-   evidence; delete anything that does not serve the five retention purposes in
-   Decision 0048.
-6. Add the restricted external-validation readiness record and run the strict
-   completion gate.
-
-Milestone 6: add the [restricted external-validation readiness template](../runbooks/external_validation_readiness.md); the strict completion gate remains open.
+1. **Complete:** freeze `c3a6fbb7` as the baseline and record working-tree,
+   Git-history, Git-LFS, regeneration, and replay ownership in
+   [REGENERATION.md](../REGENERATION.md).
+2. **Implemented and verified:** promote all three Gan methods to `rules`,
+   `llm`, and `llm_with_rules`, with explicit legacy identity boundaries and
+   no-call parity. The final canonical parity repair is `7ddc116a`.
+3. **Started, then paused:** apply the pattern to ExECT. Commit `716b6de8`
+   covers only the ExECT rules trace/frontend outward identity. Complete that
+   vertical slice before starting ExECT `llm`, then `llm_with_rules`; shared
+   code and route cleanup follows stabilized method identities. Sol's review
+   findings are closed by `7d9c4000`.
+4. **Audited, implementation open:** build the README-led supervisor path. The
+   remaining gaps are a directly exposed five-stage diagram, one contiguous
+   six-path walkthrough, a deliberate failure/recovery path, and shallower
+   links to frontend startup, results, limits, and replay commands.
+5. **Audited, deletion open:** retain selected architecture, evidence, replay,
+   component-attribution, safety, and validation owners. Delete only after an
+   owner check; unreferenced frontend mocks, candidate-only prompt drafts,
+   broad deployment infrastructure, and archive-only experiments are the main
+   candidates.
+6. **Template complete; gate open:** the
+   [restricted external-validation readiness template](../runbooks/external_validation_readiness.md)
+   is linked. Run the strict Decision 0048 completion gate only after milestones
+   3-5 are complete.
 
 Gan test450 remains aggregate-only. ExECT full200 combines development and
 held-out rows, so it is not an independent holdout.

@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-08-02 after decision 0048 comprehension and handoff refactor
+Last updated: 2026-08-02 at the decision 0048 pause point
 
 ## Current handoff objective
 
@@ -22,6 +22,28 @@ the six-path teaching case, the canonical results report, evidence and limits,
 and reproduction commands without agent assistance. Engineering verification,
 research evidence, independent clinical review, and clinical validation remain
 separate claims.
+
+## Decision 0048 pause point
+
+The regeneration/LFS ledger and restricted external-validation readiness
+template are complete. The active Gan method names are now `rules`, `llm`, and
+`llm_with_rules` across the runtime, compatibility boundary, API/frontend
+surfaces, teaching material, and generated architecture. Historical filenames,
+run IDs, prompt versions, manifests, replay metadata, and explicit inbound
+aliases remain unchanged.
+
+The ExECT migration has begun but is not complete. Commit `716b6de8` promotes
+the ExECT rules outward identity at the trace/frontend boundary and retains the
+legacy saved identifier. Runtime, CLI, registry, generated architecture, and
+the other two ExECT methods still require complete vertical-slice review.
+
+Sol's strict review found two compatibility-helper defects; `7d9c4000` fixes
+both. Gan parity now permits only the explicit absence-to-`llm_with_rules`
+identity transition, and ExECT alias resolution accepts only real string IDs.
+
+The work is intentionally paused. `main` contains the Gan migration, the
+canonical parity repair, and the bounded ExECT rules change. Nothing from this
+Decision 0048 sequence has been pushed to `origin/main`.
 
 ## Current outcome
 
@@ -377,6 +399,15 @@ the detailed evidence and remaining acceptance checks.
 
 Current working-tree backend verification is green for tracked project files:
 
+- **Verified on 2026-08-02:** at merged commit `716b6de8`, all 1,512 pytest
+  tests, Ruff, mypy across 352 source files, 14 architecture-document checks,
+  the retained-evidence manifest, six selected no-call reference replays, 68
+  frontend Jest tests, source lint, and the Next.js production build passed.
+  After the review fixes in `7d9c4000`, the 16 affected parity/frontend tests,
+  focused Ruff, and Sol's independent negative-case checks passed; the full
+  suite was not rerun after the final legacy-side guard was tightened. These
+  checks verify engineering and replay behavior, not clinical validation.
+
 - **Verified on 2026-07-28 after CI repair:** all 1,397 pytest tests pass with a
   fresh workspace-local base temp directory. Repository-wide Ruff passes after
   excluding ignored workspace-local `.tmp` test fixtures, and mypy passes
@@ -414,6 +445,10 @@ correctness, retained research hashes, or a new clean-checkout reproduction.
 
 ## In progress
 
+- **Decision 0048 is paused after the Gan migration and first bounded ExECT
+  rules change.** Resume from the ordered steps below. Do not treat the ExECT
+  method rename or supervisor path as complete.
+
 - **DeepSeek unknown-competence thread (U stopped).** Hosted Phase 2 candidate
   U piloted on the gold UNK slice (170): +2 final Purist vs A; LLM-only UNK
   accuracy did not improve. Full-750 scale-up aborted. Do not resume U.
@@ -438,23 +473,27 @@ correctness, retained research hashes, or a new clean-checkout reproduction.
 
 ## Next
 
-1. Decide the next DeepSeek unknown-thread move after U's negative pilot: pause
-   until local DeepSeek, try one sharper prompt cycle, or a Phase 3
-   unknown-preserving rules gate. Do not resume U to 750.
-2. Defer local DeepSeek route parity until the partner runtime arrives.
-3. On the supervisor's intended Python 3.11 host, run handoff setup, `check`,
-   and both bundled synthetic examples against the approved model route; record
-   JSON/thinking/retry behavior and unaided README corrections in the handoff
-   plan.
-4. Assign two independent clinical reviewer IDs and have each reviewer complete
-   all 48 items without sharing IDs or reviewing the other's export.
-5. Send every field-level disagreement to a third named clinical adjudicator;
-   retain both original decisions and every revision.
-6. Export the completed reviewer and adjudication artifacts, validate their
-   completeness, then update the reliability scorecard and paper claim owner
-   within the protocol's development-only limits.
-7. Keep sealed `test450` and Real(300) unused for tuning. Keep ExECT assembly
-   on `default`/`default` (decision 0045).
+1. Complete ExECT `rules` through runtime, split/CLI, API, registry,
+   trace/frontend, teaching case, architecture, and exact no-call parity. Then
+   repeat sequentially for `llm` and `llm_with_rules`.
+2. After ExECT names stabilize, update shared code and frontend routes, then run
+   the full engineering, architecture, retained-manifest, six-cell replay,
+   lint, and production-build gate.
+3. Complete the README-led supervisor path: expose the five-stage diagram, one
+   contiguous six-path teaching walkthrough, a deliberate failure/recovery
+   example, canonical results and limits, frontend startup, and exact replay
+   commands.
+4. Apply the completed retention audit before deleting anything. Keep selected
+   architecture/evidence/replay/safety/validation owners; separately review
+   unreferenced frontend mocks, candidate-only prompt drafts, broad deployment
+   infrastructure, and archive-only experiment material.
+5. Run the Decision 0048 strict completion gate and update its status only
+   after all selected live, fixture, replay, frontend, generated-document, and
+   internal-link paths pass.
+6. Keep the separate research and validation dependencies intact: do not resume
+   DeepSeek U to 750; defer local-route parity until its runtime exists; retain
+   independent clinical review and supervisor-host verification as unvalidated
+   work; and never tune from sealed `test450`, Real(300), or ExECT `test60`.
 
 ## Blocked or unvalidated
 

@@ -45,9 +45,13 @@ Current state, as of 2026-08-02:
 
 - The retained evidence index selects six no-call reference runs. The five
   largest replay files are content-addressed Git LFS objects.
-- All 1,285 tests and Ruff pass on the current working tree; the latest mypy
-  run passed across 290 source files. CI runs all three checks. A separate
-  Python 3.11 checkout reproduced the hashes, split restrictions, and six runs.
+- Decision 0048 has promoted all three Gan methods to the plain active names
+  `rules`, `llm`, and `llm_with_rules` while preserving historical replay
+  identities. The ExECT migration has started at the trace/frontend boundary;
+  the remaining ExECT runtime and shared-code migration is paused for handoff.
+- The latest repository-wide verification state is recorded in
+  [project status](PROJECT_STATUS.md). CI continues to run pytest, Ruff, and
+  mypy; selected evidence also has six exact no-call replay checks.
 - Retained evidence index v3 records the source commit and exact dependency,
   prompt, scorer, split, repair, model, runbook, and CI versions.
 - The Markdown manuscript and IEEE source use only selected evidence. The
