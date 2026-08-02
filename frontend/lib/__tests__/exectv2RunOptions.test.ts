@@ -6,9 +6,12 @@ import {
 } from "../exectv2RunOptions";
 import type {
   Exectv2ComparisonMode,
+  Exectv2RunsWireResponse,
   Exectv2RunSummary,
 } from "../types";
-import actualRuns from "../../public/mock-data/exectv2/runs.json";
+import actualRunsJson from "../../public/mock-data/exectv2/runs.json";
+
+const actualRuns = actualRunsJson as unknown as Exectv2RunsWireResponse;
 
 const MODELS = [
   "openai/gpt-4.1-mini",
