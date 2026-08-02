@@ -429,6 +429,25 @@ def test_rules_cli_spec_dispatches_the_active_rules_architecture(monkeypatch) ->
     assert seen["architecture"] == "rules"
 
 
+def test_hybrid_cli_spec_dispatches_the_active_hybrid_architecture(monkeypatch) -> None:
+    from clinical_extraction.tasks.seizure_frequency.gan2026.runners import split as split_runner
+
+    seen: dict[str, Any] = {}
+
+    def fake_run_split(records, **kwargs):
+        seen["architecture"] = kwargs["architecture"]
+        return [], {}
+
+    monkeypatch.setattr(split_runner, "run_split", fake_run_split)
+    llm_pipeline_cli.pipeline_specs()["llm_with_rules"].run_split(
+        [], split="validation", split_manifest="fixture", model="none", temperature=0.0,
+        max_tokens=5000, mode="prompt-only", dspy_cache=False, api_base=None,
+        escalation_reason=None, progress_every=None, checkpoint_jsonl_path=None,
+        checkpoint_report_path=None,
+    )
+    assert seen["architecture"] == "llm_with_rules"
+
+
 def _dummy_spec(
     tmp_path: Path,
     calls: dict[str, Any] | None = None,

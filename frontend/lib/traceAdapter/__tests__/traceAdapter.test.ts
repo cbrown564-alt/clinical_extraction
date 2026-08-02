@@ -59,6 +59,7 @@ async function loadFirstArtifactRow(family: string): Promise<unknown> {
 
     case "llm_structured_events":
     case "hybrid_structured_events":
+    case "llm_with_rules":
     case "llm_heavy_clinical_frequency_reasoner":
       return {
         source_row_index: 0,
@@ -171,6 +172,7 @@ const activeFamilies = [
   "dspy_final_selection_adjudicator",
   "llm_structured_events",
   "hybrid_structured_events",
+  "llm_with_rules",
   "llm_heavy_clinical_frequency_reasoner",
   "llm_heavy_evidence_selection_with_deterministic_adapters",
   "hybrid_clinical_frequency_state_graph",
@@ -213,6 +215,17 @@ describe("adaptTrace", () => {
       expect(trace.pipelineFamily).toBe(family);
     });
   }
+
+  it("dispatches active and legacy Gan hybrid families to compatible event traces", async () => {
+    const row = await loadFirstArtifactRow("llm_with_rules");
+    const active = adaptTrace(row, "llm_with_rules", mockRecord);
+    const legacy = adaptTrace(row, "hybrid_structured_events", mockRecord);
+    expect(active).toEqual(expect.objectContaining({ pipelineFamily: "llm_with_rules" }));
+    expect(legacy).toEqual(expect.objectContaining({ pipelineFamily: "hybrid_structured_events" }));
+    expect(active.extract.items).toEqual(legacy.extract.items);
+    expect(active.select.finalLabel).toBe(legacy.select.finalLabel);
+    expect(active.select.evidence).toBe(legacy.select.evidence);
+  });
 
   it("throws for unsupported families", () => {
     expect(() => adaptTrace({}, "unknown_family", mockRecord)).toThrow(
