@@ -111,6 +111,13 @@ def _check_source_closure() -> None:
     _check_sources()
     if not HANDOFF.is_dir():
         raise RuntimeError(f"shipped handoff is missing: {HANDOFF}")
+    runtime_files, runtime_assets = _trace_runtime_closure()
+    required_runtime_files = tuple(
+        sorted(
+            path.relative_to(SOURCE_PACKAGE).as_posix()
+            for path in runtime_files | runtime_assets
+        )
+    )
     mismatches = closure_mismatches(
         PUBLIC_PACKAGE,
         HANDOFF / "clinical_extraction_local",
@@ -121,7 +128,7 @@ def _check_source_closure() -> None:
             SOURCE_PACKAGE,
             HANDOFF / "clinical_extraction",
             exact_tree=False,
-            required_paths=ALLOWED_RUNTIME_PREFIXES,
+            required_paths=required_runtime_files,
         )
     )
     if mismatches:
@@ -286,8 +293,8 @@ def closure_mismatches(
 
     Public handoff code uses ``exact_tree=True``. Internal runtime code uses
     ``False`` because the explicit runtime allowlist intentionally ships only
-    the traced subset of the main package. ``required_paths`` names the
-    allowlisted files and subtrees that must still be present in both trees.
+    the traced subset of the main package. ``required_paths`` names files or
+    subtrees that must still be present in both trees.
     """
 
     source_files_by_name = source_files(source)
