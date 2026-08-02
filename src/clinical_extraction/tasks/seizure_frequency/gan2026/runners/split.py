@@ -11,6 +11,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.runners.config import (
     PipelineArchitecture,
     PipelineConfiguration,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.runners.naming import active_pipeline_name
 
 
 def run_split(
@@ -33,10 +34,10 @@ def run_split(
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Run the selected retained pipeline on one data split."""
     del candidate_set_jsonl_path
-    if architecture in {"rules", "deterministic_canonical_pipeline"}:
+    if active_pipeline_name(architecture) == "rules":
         return _run_deterministic_split(
             records,
-            architecture=architecture,
+            architecture="rules",
             split=split,
             split_manifest=split_manifest,
             model=model,

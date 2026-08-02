@@ -25,6 +25,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.runners.config import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners.deterministic_canonical import (
     run_item,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.runners.naming import active_pipeline_name
 from clinical_extraction.trace_explorer.api.dependencies import (
     FrontendDataDependency,
     ReviewStoreDependency,
@@ -209,15 +210,23 @@ def artifact(
 def run_note(request: RunNoteRequest) -> dict[str, Any]:
     # Active API name is ``rules``. Legacy inbound names remain accepted and
     # echoed only for the established historical client response contract.
-    if request.pipeline not in {"rules", "rules_only", "deterministic_canonical_pipeline"}:
+    try:
+        canonical_pipeline = active_pipeline_name(request.pipeline)
+    except ValueError:
         raise TraceExplorerError(
             status_code=400,
             code="model_calls_disabled",
             message="Model-backed execution is disabled; inspect an indexed saved replay instead.",
-        )
+        ) from None
+    if canonical_pipeline != "rules":
+        raise TraceExplorerError(
+            status_code=400,
+            code="model_calls_disabled",
+            message="Model-backed execution is disabled; inspect an indexed saved replay instead.",
+        ) from None
     result = run_item(_gan_record(request), _pipeline_configuration(request.ablation_config))
     return {
-        "pipeline": request.pipeline,
+        "pipeline": canonical_pipeline,
         "source_row_index": request.source_row_index,
         "gold_label": request.gold_label or "unknown",
         "result": result.model_dump(mode="json"),
@@ -230,12 +239,20 @@ def run_ablation(request: RunAblationRequest, data: FrontendDataDependency) -> d
         raise aggregate_only()
     if request.split != "validation":
         raise not_found()
-    if request.pipeline not in {"rules", "rules_only", "deterministic_canonical_pipeline"}:
+    try:
+        canonical_pipeline = active_pipeline_name(request.pipeline)
+    except ValueError:
         raise TraceExplorerError(
             status_code=400,
             code="model_calls_disabled",
             message="Model-backed ablation is disabled; use saved comparison artifacts.",
-        )
+        ) from None
+    if canonical_pipeline != "rules":
+        raise TraceExplorerError(
+            status_code=400,
+            code="model_calls_disabled",
+            message="Model-backed ablation is disabled; use saved comparison artifacts.",
+        ) from None
     record_list = data.records("validation")
     if record_list is None:
         raise not_found()

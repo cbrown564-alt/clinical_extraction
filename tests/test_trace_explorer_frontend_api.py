@@ -46,7 +46,7 @@ def test_frontend_catalog_and_read_only_surfaces_use_the_live_api(client: TestCl
 
     families = client.get("/pipeline-families")
     assert families.status_code == 200
-    assert any(family["run_id"] == "rules_only" for family in families.json()["families"])
+    assert any(family["run_id"] == "rules" for family in families.json()["families"])
 
     exect_runs = client.get("/exectv2/runs")
     assert exect_runs.status_code == 200
@@ -173,7 +173,7 @@ def test_gan_architectures_use_the_same_six_model_comparison_matrix(
         assert all(row["split"] == "validation" for row in replay.json()["content"])
 
     deterministic = by_mode["deterministic_only"][0]
-    assert deterministic["run_id"] == "rules_only"
+    assert deterministic["run_id"] == "rules"
     assert deterministic["availability"] == "live"
     assert deterministic["model"] == "(model-independent)"
 
@@ -238,7 +238,7 @@ def test_run_note_executes_the_real_deterministic_pipeline(client: TestClient) -
 
     assert response.status_code == 200
     body = response.json()
-    assert body["pipeline"] == "rules_only"
+    assert body["pipeline"] == "rules"
     assert body["source_row_index"] == 314
     assert body["result"]["output"]["final_value"] == "4 per day"
     assert body["result"]["diagnostics"]["candidate_events"]

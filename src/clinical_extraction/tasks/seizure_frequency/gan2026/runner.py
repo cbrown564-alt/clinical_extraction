@@ -31,6 +31,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.runners.config import (
     PipelineConfiguration,
     PipelineOutputArtifact,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.runners.naming import active_pipeline_name
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners.reports import (
     write_deterministic_report,
 )
@@ -63,7 +64,7 @@ class Gan2026PipelineRunner:
 
     def run(self, item: GanRecord) -> PipelineResult[FinalExtraction]:
         """Run one record through the configured pipeline."""
-        if self.config.architecture in {"rules", "deterministic_canonical_pipeline"}:
+        if active_pipeline_name(self.config.architecture) == "rules":
             return deterministic_canonical.run_item(item, self.config)
 
         if not isinstance(item, GanFrequencyRecord):

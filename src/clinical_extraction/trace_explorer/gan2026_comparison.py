@@ -228,14 +228,15 @@ def _model_family(
 
 def _rules_only_family() -> dict[str, Any]:
     return {
-        "value": "rules_only",
-        "run_id": "rules_only",
+        "value": "rules",
+        "run_id": "rules",
+        "saved_run_id": "rules_only",
         "label": "Deterministic canonical",
         "display_label": "Deterministic canonical",
         "model_label": "No model",
         "executable": True,
-        "kind": "rules_only",
-        "architecture_family": "rules_only",
+        "kind": "rules",
+        "architecture_family": "rules",
         "pipeline_family": "rules",
         "model": "(model-independent)",
         "comparison_mode": "deterministic_only",

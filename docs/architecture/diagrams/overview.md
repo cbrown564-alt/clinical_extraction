@@ -28,6 +28,7 @@ flowchart TB
   class exectv2_rules_only rules_only;
   class exectv2_llm_only llm_only;
   class exectv2_llm_with_rules llm_with_rules;
+  classDef rules fill:#eef4ea,stroke:#5a7d4f;
   classDef rules_only fill:#eef4ea,stroke:#5a7d4f;
   classDef llm_only fill:#eaf0f7,stroke:#4a6f9c;
   classDef llm_with_rules fill:#f7f0e6,stroke:#a07b3c;

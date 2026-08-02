@@ -69,6 +69,22 @@ def test_gan_rules_active_method_dispatches_to_the_canonical_orchestrator() -> N
     assert active.to_pipeline_result().model_dump() == legacy.to_pipeline_result().model_dump()
 
 
+def test_gan_public_runner_rules_path_preserves_full_result_contract() -> None:
+    from clinical_extraction.tasks.seizure_frequency.gan2026.runner import Gan2026PipelineRunner
+
+    record = _record("The patient has one seizure per month.")
+    active = Gan2026PipelineRunner(
+        PipelineConfiguration(architecture="rules")
+    ).run(record)
+    legacy = Gan2026PipelineRunner(
+        PipelineConfiguration(architecture="deterministic_canonical_pipeline")
+    ).run(record)
+
+    assert active.model_dump() == legacy.model_dump()
+    assert active.diagnostics["evidence_valid"] is True
+    assert active.diagnostics["final_selection"]["final_label"] == "1 per month"
+
+
 def test_gan_llm_canonical_replay_keeps_model_boundary_and_evidence_gate() -> None:
     record = _record("The patient has one seizure per month.")
     raw = (

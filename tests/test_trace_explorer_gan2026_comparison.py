@@ -54,6 +54,19 @@ def test_deepseek_uses_the_same_plain_model_naming_as_other_routes() -> None:
     assert deepseek.label == "DeepSeek V4 Flash"
 
 
+def test_rules_family_uses_exact_active_run_id_without_legacy_fallback(tmp_path: Path) -> None:
+    config_path = _write_config(tmp_path)
+    discovery = discover_gan2026_validation_runs(
+        config_path,
+        expected_indices=set(range(750)),
+    )
+    rules = next(item for item in discovery.catalog["families"] if item["kind"] == "rules")
+
+    assert rules["run_id"] == "rules"
+    assert rules["saved_run_id"] == "rules_only"
+    assert rules["run_id"] != rules["saved_run_id"]
+
+
 def test_discovery_rejects_wrong_split_or_trace_schema(tmp_path: Path) -> None:
     config_path = _write_config(tmp_path)
     path = (
