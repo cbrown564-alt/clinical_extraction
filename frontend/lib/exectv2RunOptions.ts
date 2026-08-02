@@ -50,6 +50,21 @@ export interface Exectv2RunGroup {
   runs: Exectv2RunSummary[];
 }
 
+/** Resolve only exact canonical or explicitly retained aliases. */
+export function resolveExectv2RunId(
+  runs: Exectv2RunSummary[],
+  requested: string
+): string | null {
+  const exact = runs.find((run) => run.run_id === requested);
+  if (exact) return exact.run_id;
+  const matches = runs.filter((run) =>
+    [run.saved_run_id, run.retained_evidence_id, ...(run.legacy_run_ids ?? [])].includes(
+      requested
+    )
+  );
+  return matches.length === 1 ? matches[0].run_id : null;
+}
+
 export function comparisonModeLabel(mode: Exectv2ComparisonMode): string {
   if (mode === "llm_plus_rules") return "LLM + rules";
   if (mode === "llm_only") return "LLM only";

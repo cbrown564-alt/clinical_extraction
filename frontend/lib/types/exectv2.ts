@@ -71,6 +71,9 @@ export interface Exectv2LetterRecord {
 
 export interface Exectv2RunSummary {
   run_id: string;
+  saved_run_id?: string;
+  retained_evidence_id?: string;
+  legacy_run_ids?: string[];
   task: "exectv2";
   label: string;
   model: string;

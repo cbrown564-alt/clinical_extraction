@@ -2,7 +2,7 @@
   "method_id": "exectv2_rules_only",
   "task": "exectv2",
   "task_label": "ExECTv2",
-  "method": "rules_only",
+  "method": "rules",
   "method_label": "Rules only",
   "role": "selected",
   "entry_point": {

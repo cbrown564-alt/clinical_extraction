@@ -19,14 +19,24 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = _parser()
     args = parser.parse_args(list(argv) if argv is not None else None)
     try:
-        runtime = RuntimeConfig.from_environment(
-            base_url=args.base_url,
-            api_key=args.api_key,
-            model=args.model,
-            temperature=getattr(args, "temperature", 0.0),
-            max_tokens=getattr(args, "max_tokens", 16000),
-            timeout_seconds=args.timeout,
-        )
+        if args.command == "exect" and args.method == "rules":
+            runtime = RuntimeConfig(
+                base_url="",
+                api_key="",
+                model="(model-independent)",
+                temperature=args.temperature,
+                max_tokens=args.max_tokens,
+                timeout_seconds=args.timeout,
+            )
+        else:
+            runtime = RuntimeConfig.from_environment(
+                base_url=args.base_url,
+                api_key=args.api_key,
+                model=args.model,
+                temperature=getattr(args, "temperature", 0.0),
+                max_tokens=getattr(args, "max_tokens", 16000),
+                timeout_seconds=args.timeout,
+            )
     except ValueError as exc:
         parser.error(str(exc))
 
@@ -42,7 +52,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     rows = (
         run_gan_notes(notes, runtime)
         if args.command == "gan"
-        else run_exect_notes(notes, runtime)
+        else run_exect_notes(notes, runtime, method=args.method)
     )
     write_jsonl_atomic(rows, args.output)
     failures = sum(row.get("status") != "ok" for row in rows)
@@ -60,6 +70,12 @@ def _parser() -> argparse.ArgumentParser:
         child.add_argument("--overwrite", action="store_true")
         child.add_argument("--temperature", type=float, default=0.0)
         child.add_argument("--max-tokens", type=int, default=16000)
+        if command == "exect":
+            child.add_argument(
+                "--method",
+                choices=("rules", "llm", "llm_with_rules"),
+                default="llm_with_rules",
+            )
         _add_runtime_arguments(child)
     probe = subparsers.add_parser("probe")
     _add_runtime_arguments(probe)

@@ -38,7 +38,7 @@ ReplayStatus = Literal[
 ]
 
 ComparisonRole = Literal["control", "diagnostic"]
-ArchitectureFamily = Literal["rules_only", "hybrid", "llm_only"]
+ArchitectureFamily = Literal["rules", "rules_only", "hybrid", "llm_only"]
 RegistryRole = Literal[
     "architecture_comparator",
     "model_family_variant",
@@ -304,7 +304,7 @@ def _optional_architecture_family(value: Any) -> ArchitectureFamily | None:
         return None
     if not isinstance(value, str):
         raise ValueError("architecture_family must be a string or null")
-    allowed: frozenset[str] = frozenset(("rules_only", "hybrid", "llm_only"))
+    allowed: frozenset[str] = frozenset(("rules", "rules_only", "hybrid", "llm_only"))
     if value not in allowed:
         raise ValueError(f"architecture_family must be one of: {', '.join(sorted(allowed))}")
     return cast(ArchitectureFamily, value)

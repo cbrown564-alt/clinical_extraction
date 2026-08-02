@@ -232,14 +232,18 @@ class FrontendDataStore:
         shared_letters = payload.get("shared_letters")
         if not isinstance(runs, list) or not isinstance(shared_letters, list):
             raise ValueError("ExECTv2 runs resource is malformed")
-        for run in runs:
-            if isinstance(run, dict) and self._exect_run_matches(run, run_id):
-                return {
-                    "generated_on": payload.get("generated_on"),
-                    "source_index": payload.get("source_index"),
-                    "shared_letters": shared_letters,
-                    "run": self._canonical_exect_run(run),
-                }
+        matches = [
+            run
+            for run in runs
+            if isinstance(run, dict) and self._exect_run_matches(run, run_id)
+        ]
+        if len(matches) == 1:
+            return {
+                "generated_on": payload.get("generated_on"),
+                "source_index": payload.get("source_index"),
+                "shared_letters": shared_letters,
+                "run": self._canonical_exect_run(matches[0]),
+            }
         return None
 
     @staticmethod
@@ -252,7 +256,11 @@ class FrontendDataStore:
             **run,
             "run_id": "rules",
             "saved_run_id": "exectv2_deterministic_all9_dev140",
-            "legacy_run_ids": ["exectv2_deterministic_all9_dev140"],
+            "retained_evidence_id": "exectv2_deterministic_all9_dev_20260714",
+            "legacy_run_ids": [
+                "exectv2_deterministic_all9_dev140",
+                "exectv2_deterministic_all9_dev_20260714",
+            ],
             "architecture_family": "rules",
             "pipeline_family": "rules",
         }
@@ -266,7 +274,11 @@ class FrontendDataStore:
             return True
         aliases = {
             value
-            for value in (run.get("run_id"), run.get("saved_run_id"))
+            for value in (
+                run.get("run_id"),
+                run.get("saved_run_id"),
+                run.get("retained_evidence_id"),
+            )
             if isinstance(value, str)
         }
         legacy_run_ids = run.get("legacy_run_ids", [])
