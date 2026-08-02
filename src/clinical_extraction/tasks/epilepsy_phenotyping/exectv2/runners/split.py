@@ -36,6 +36,7 @@ def run_split(
     api_base: str | None = None,
     api_key: str | None = None,
     timeout: int | None = None,
+    progress_every: int | None = None,
     checkpoint_jsonl_path: Path | None = None,
     checkpoint_report_path: Path | None = None,
     resume: bool = False,
@@ -56,10 +57,19 @@ def run_split(
 
     require_development_split(split)
 
-    del checkpoint_jsonl_path, checkpoint_report_path, resume
     active_method = active_method_name(method)
     if active_method == "rules":
-        del temperature, max_tokens, raw_outputs, program, format_retry_program
+        del (
+            temperature,
+            max_tokens,
+            raw_outputs,
+            program,
+            format_retry_program,
+            checkpoint_jsonl_path,
+            checkpoint_report_path,
+            resume,
+            progress_every,
+        )
         return _run_rules_split(letters, method=method, split=split)
     if active_method != "llm":
         raise ValueError("the ExECT llm_with_rules split runner remains a separate phase")
@@ -83,6 +93,10 @@ def run_split(
         program_factory=program_factory,
         format_retry_factory=format_retry_factory,
         config=config,
+        progress_every=progress_every,
+        checkpoint_jsonl_path=checkpoint_jsonl_path,
+        checkpoint_report_path=checkpoint_report_path,
+        resume=resume,
     )
 
 
@@ -155,76 +169,37 @@ def _run_llm_split(
     program_factory: Callable[[], Any] | None,
     format_retry_factory: Callable[[], Any] | None,
     config: StructuredMethodConfig | None,
+    progress_every: int | None,
+    checkpoint_jsonl_path: Path | None,
+    checkpoint_report_path: Path | None,
+    resume: bool,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Run only the shared producer plus the selected raw-candidate projection."""
-
-    if mode not in {"live", "prompt-only", "replay"}:
-        raise ValueError("ExECT llm mode must be live, prompt-only, or replay")
-    if mode == "replay" and raw_outputs is None:
-        raise ValueError("replay mode requires raw_outputs")
-
-    if mode == "live":
-        import dspy
-
-        from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
-
-        from ..llm.pipelines.key_entities_structured.signatures import (
-            DspyKeyEntitiesStructuredExtractor,
-        )
-
-        builder = model_builder or build_dspy_lm
-        if program is None:
-            dspy.configure(
-                lm=builder(
-                    model,
-                    temperature=temperature,
-                    max_tokens=max_tokens,
-                    cache=dspy_cache,
-                    api_base=api_base,
-                    api_key=api_key,
-                    timeout=timeout,
-                )
-            )
-        program = program or (
-            program_factory() if program_factory else DspyKeyEntitiesStructuredExtractor()
-        )
-        format_retry_program = format_retry_program or (
-            format_retry_factory() if format_retry_factory else None
-        )
 
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
         structured_one_call,
     )
-
-    rows: list[dict[str, Any]] = []
-    for letter in letters:
-        producer = structured_one_call.produce_structured_letter(
-            letter,
-            model=model,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            mode=mode,  # type: ignore[arg-type]
-            raw_output=(raw_outputs or {}).get(letter.letter_id),
-            program=program,
-            format_retry_program=format_retry_program,
-            split=split,
-            api_base=api_base,
-            config=config or StructuredMethodConfig.selected(prompt_profile=prompt_profile),
-        )
-        result = structured_one_call.run_llm_only_letter(letter, producer)
-        rows.append(dict(result.row))
-
-    metadata = {
-        "method_id": "llm",
-        "pipeline_family": "llm",
-        "run_id": "llm",
-        "split": split,
-        "model": model,
-        "mode": mode,
-        "prompt_version": rows[0].get("prompt_version", "") if rows else "",
-        "prompt_profile": rows[0].get("prompt_profile", "full") if rows else "full",
-        "row_count": len(rows),
-        "call_failures": sum(bool(row.get("call_error")) for row in rows),
-        "parse_failures": sum(bool(row.get("parse_errors")) for row in rows),
-    }
-    return rows, metadata
+    return structured_one_call.run_split(
+        letters,
+        split=split,
+        model=model,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        mode=mode,  # type: ignore[arg-type]
+        dspy_cache=dspy_cache,
+        api_base=api_base,
+        api_key=api_key,
+        timeout=timeout,
+        progress_every=progress_every,
+        checkpoint_jsonl_path=checkpoint_jsonl_path,
+        checkpoint_report_path=checkpoint_report_path,
+        resume=resume,
+        config=config or StructuredMethodConfig.selected(prompt_profile=prompt_profile),
+        model_builder=model_builder,
+        program_factory=program_factory,
+        format_retry_factory=format_retry_factory,
+        program=program,
+        format_retry_program=format_retry_program,
+        raw_outputs=raw_outputs,
+        projection="llm",
+    )

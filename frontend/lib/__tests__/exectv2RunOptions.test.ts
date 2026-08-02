@@ -8,6 +8,7 @@ import type {
   Exectv2ComparisonMode,
   Exectv2RunSummary,
 } from "../types";
+import actualRuns from "../../public/mock-data/exectv2/runs.json";
 
 const MODELS = [
   "openai/gpt-4.1-mini",
@@ -92,6 +93,24 @@ describe("ExECTv2 architecture options", () => {
       legacy_run_ids: ["llm"],
     };
     expect(resolveExectv2RunId([savedLlmRun, collidingRun], "llm")).toBeNull();
+  });
+
+  it("uses only the Decision-0046 Sol raw lane for the active aliases in the actual payload", () => {
+    const hydrated = hydrateExectv2Runs(actualRuns);
+    const rawRuns = hydrated.runs.filter((item) => item.comparison_mode === "llm_only");
+    const sol = rawRuns.find((item) => item.model === "openai/gpt-5.6-sol");
+    expect(rawRuns).toHaveLength(6);
+    expect(sol).toBeDefined();
+    expect(resolveExectv2RunId(rawRuns, "llm")).toBe(sol?.run_id);
+    expect(resolveExectv2RunId(rawRuns, "llm_only")).toBe(sol?.run_id);
+    expect(resolveExectv2RunId(rawRuns, "exectv2_llm_only")).toBe(sol?.run_id);
+    expect(
+      rawRuns.every((item) =>
+        item.run_id === sol?.run_id ||
+        (item.active_method === undefined && item.method_id === undefined)
+      )
+    ).toBe(true);
+    expect(resolveExectv2RunId(rawRuns, sol?.run_id ?? "")).toBe(sol?.run_id);
   });
 
   it("groups the winning mode first, then its raw and no-call comparators", () => {

@@ -121,6 +121,15 @@ def _fingerprint(records: list[dict[str, Any]]) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
+def _file_sha256(path: Path) -> str:
+    content = path.read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    return hashlib.sha256(content).hexdigest()
+
+
+def _normalise_empty_layer(value: Any) -> Any:
+    return None if value in ("", []) else value
+
+
 def _baseline_rows() -> list[dict[str, Any]]:
     return [json.loads(line) for line in RAW_ARTIFACT.read_text(encoding="utf-8").splitlines()]
 
@@ -324,12 +333,156 @@ def test_exect_llm_operational_api_uses_the_canonical_runner_without_a_live_call
     assert all(event["stage_id"].startswith("exect.llm.") for event in output[0]["trace"])
 
 
+def test_exect_llm_operational_api_marks_blocking_parse_output_as_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from clinical_extraction.operational import exect
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
+        structured_one_call,
+    )
+
+    real = structured_one_call.produce_structured_letter
+
+    def malformed_spy(letter: ExectLetter, **kwargs: Any):
+        return real(letter, model=kwargs["model"], mode="replay", raw_output="not json")
+
+    monkeypatch.setattr(structured_one_call, "produce_structured_letter", malformed_spy)
+    output = exect.run_exect_notes(
+        [InputNote(note_id="LLM-API-BAD", text=_letter().note_text)],
+        RuntimeConfig(
+            base_url="http://fixture.invalid/v1",
+            api_key="fixture",
+            model="fixture/model",
+        ),
+        method="llm",
+    )
+
+    assert output[0]["status"] == "error"
+    assert output[0]["error"]["type"] == "model_or_parse_failure"
+    assert "invalid_json:" in output[0]["error"]["message"]
+
+
+def test_exect_llm_operational_live_contract_reuses_one_program_and_preserves_route_cache(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from clinical_extraction.operational import exect
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
+        structured_one_call,
+    )
+
+    seen: dict[str, Any] = {"build": [], "configure": [], "programs": 0, "calls": 0}
+
+    def build(model: str, **kwargs: Any) -> object:
+        seen["build"].append((model, kwargs))
+        return object()
+
+    def configure(**kwargs: Any) -> None:
+        seen["configure"].append(kwargs)
+
+    class Program:
+        def __init__(self) -> None:
+            seen["programs"] += 1
+
+        def __call__(self, **_kwargs: Any) -> Any:
+            seen["calls"] += 1
+            return type("Prediction", (), {"extraction_json": _raw()})()
+
+    monkeypatch.setattr(structured_one_call, "build_dspy_lm", build)
+    monkeypatch.setattr(structured_one_call.dspy, "configure", configure)
+    monkeypatch.setattr(structured_one_call, "DspyKeyEntitiesStructuredExtractor", Program)
+
+    output = exect.run_exect_notes(
+        [
+            InputNote(note_id="LLM-LIVE-1", text=_letter().note_text),
+            InputNote(note_id="LLM-LIVE-2", text=_letter().note_text),
+        ],
+        RuntimeConfig(
+            base_url="http://fixture.invalid/v1",
+            api_key="fixture",
+            model="fixture/model",
+        ),
+        method="llm",
+    )
+
+    assert seen["programs"] == 1
+    assert seen["calls"] == 2
+    assert len(seen["build"]) == 1
+    assert seen["build"][0][1]["cache"] is False
+    assert seen["build"][0][1]["api_base"] == "http://fixture.invalid/v1"
+    assert len(seen["configure"]) == 1
+    assert all(item["status"] == "ok" for item in output)
+    assert all(item["route"] == "http://fixture.invalid/v1" for item in output)
+
+
+def test_exect_llm_split_delegates_checkpoint_resume_and_skips_completed_ids(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    import dspy
+
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.split import run_split
+
+    letters = [
+        ExectLetter("LLM-RESUME-1", _letter().note_text),
+        ExectLetter("LLM-RESUME-2", _letter().note_text),
+    ]
+    counts = {"build": 0, "programs": 0, "calls": 0}
+
+    def build(_model: str, **_kwargs: Any) -> object:
+        counts["build"] += 1
+        return object()
+
+    class Program:
+        def __init__(self) -> None:
+            counts["programs"] += 1
+
+        def __call__(self, **_kwargs: Any) -> Any:
+            counts["calls"] += 1
+            return type("Prediction", (), {"extraction_json": _raw()})()
+
+    monkeypatch.setattr(dspy, "configure", lambda **_kwargs: None)
+    checkpoint = tmp_path / "rows.jsonl"
+    report = tmp_path / "report.json"
+    first_rows, first_meta = run_split(
+        letters,
+        method="llm",
+        split="dev",
+        model="fixture/model",
+        mode="live",
+        progress_every=1,
+        checkpoint_jsonl_path=checkpoint,
+        checkpoint_report_path=report,
+        model_builder=build,
+        program_factory=Program,
+    )
+    assert len(first_rows) == 2
+    assert first_meta["n_resumed"] == 0
+    assert counts == {"build": 1, "programs": 1, "calls": 2}
+
+    second_rows, second_meta = run_split(
+        letters,
+        method="exectv2_llm_only",
+        split="dev140",
+        model="fixture/model",
+        mode="live",
+        resume=True,
+        checkpoint_jsonl_path=checkpoint,
+        checkpoint_report_path=report,
+        model_builder=build,
+        program_factory=Program,
+    )
+    assert second_rows == first_rows
+    assert second_meta["n_resumed"] == 2
+    assert counts == {"build": 1, "programs": 1, "calls": 2}
+
+
 def test_exect_llm_independent_dev140_raw_lane_parity_is_pinned() -> None:
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import load_letters_for_split
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.split import run_split
 
     baseline = json.loads(BASELINE.read_text(encoding="utf-8"))
     source_rows = _baseline_rows()
+    assert _file_sha256(RAW_ARTIFACT) == baseline["source_artifact_sha256"]
     assert len(source_rows) == baseline["row_count"]
     letters = load_letters_for_split("dev")
     raw_outputs = {str(row["letter_id"]): str(row["raw_output"]) for row in source_rows}
@@ -363,6 +516,90 @@ def test_exect_llm_independent_dev140_raw_lane_parity_is_pinned() -> None:
             for mention in actual["predicted_mentions"]
         ] == source["predicted_mentions"]
     assert _fingerprint(expected) == baseline["normalized_sha256"]
+
+
+def test_exect_llm_full_dev140_baseline_hashes_actual_output_and_trace() -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import load_letters_for_split
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.split import run_split
+
+    baseline = json.loads(BASELINE.read_text(encoding="utf-8"))
+    source_rows = _baseline_rows()
+    assert _file_sha256(RAW_ARTIFACT) == baseline["source_artifact_sha256"]
+    raw_outputs = {str(row["letter_id"]): str(row["raw_output"]) for row in source_rows}
+    rows, metadata = run_split(
+        load_letters_for_split("dev"),
+        method="llm",
+        split="dev140",
+        model="openai/gpt-5.6-sol",
+        mode="live",
+        raw_outputs=raw_outputs,
+        program=object(),
+    )
+    assert metadata["active_method"] == "llm"
+    assert len(rows) == baseline["row_count"]
+
+    full: list[dict[str, Any]] = []
+    for actual, source in zip(rows, source_rows, strict=True):
+        producer = dict(actual["producer_row"])
+        for field in BASELINE_FIELDS:
+            actual_value = producer.get(field)
+            source_value = source.get(field)
+            if field in {"initial_parse_errors", "format_retry_output", "format_retry_notes"}:
+                actual_value = _normalise_empty_layer(actual_value)
+                source_value = _normalise_empty_layer(source_value)
+            if field == "predicted_mentions":
+                actual_value = [
+                    {key: value for key, value in mention.items() if key != "component_owner"}
+                    for mention in actual_value
+                ]
+            assert actual_value == source_value, f"producer parity: {field}"
+
+        assert actual["mode"] == source["mode"]
+        assert actual["route"] == ""
+        assert actual["active_method"] == "llm"
+        assert actual["method_id"] == "llm"
+        assert actual["pipeline_family"] == "llm"
+        assert actual["run_id"] == "llm"
+        assert actual["source_method_id"] == "exectv2_llm_only"
+        assert actual["source_pipeline_family"] == source["pipeline_family"]
+        assert actual["scored_view"] == "raw_candidate"
+        assert actual["scorer_projection"]["view"] == "raw_candidate"
+        assert all(event["owner"] and event["action"] for event in actual["stage_events"])
+        assert actual["first_prediction_changing_owner"] == "model"
+        assert actual["first_failure"] is None
+        full.append(
+            {
+                "letter_id": actual["letter_id"],
+                "producer_row": producer,
+                "prediction": actual["prediction"],
+                "scorer_projection": actual["scorer_projection"],
+                "stage_events": actual["stage_events"],
+                "first_prediction_changing_owner": actual[
+                    "first_prediction_changing_owner"
+                ],
+                "first_failure": actual["first_failure"],
+                "active_provenance": {
+                    key: actual[key]
+                    for key in (
+                        "active_method",
+                        "method_id",
+                        "pipeline_family",
+                        "run_id",
+                        "source_method_id",
+                        "source_pipeline_family",
+                        "scored_view",
+                        "route",
+                        "mode",
+                        "dspy_cache",
+                    )
+                },
+            }
+        )
+
+    assert _fingerprint(full) == baseline["full_output_sha256"]
+    assert baseline["sol_reported_full_sha256"] == (
+        "ad58b6bfb288c1dc6b34022180c065d9ae394f15b7316c7f1f04fb48085a3462"
+    )
 
 
 def test_exect_llm_manifest_and_teaching_case_use_active_method_without_renaming_ids() -> None:
