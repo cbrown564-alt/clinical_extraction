@@ -15,6 +15,12 @@ _ALIASES = {
     "hybrid_structured_events": "llm_with_rules",
 }
 
+_RETAINED_IDS = {
+    "rules": "deterministic_canonical_pipeline",
+    "llm": "llm_only_canonical_pipeline",
+    "llm_with_rules": "hybrid_structured_events",
+}
+
 
 def active_pipeline_name(value: str) -> ActivePipelineName:
     """Map an active name or documented legacy alias to its active name."""
@@ -23,3 +29,9 @@ def active_pipeline_name(value: str) -> ActivePipelineName:
         return _ALIASES[value]  # type: ignore[return-value]
     except KeyError as exc:
         raise ValueError(f"Unsupported Gan rules pipeline name: {value}") from exc
+
+
+def retained_pipeline_id(value: str) -> str:
+    """Translate an active public name to its retained internal identity."""
+
+    return _RETAINED_IDS[active_pipeline_name(value)]

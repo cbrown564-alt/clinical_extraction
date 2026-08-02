@@ -33,7 +33,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.runners.config import (
     PipelineConfiguration,
     PipelineOutputArtifact,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.runners.naming import active_pipeline_name
+from clinical_extraction.tasks.seizure_frequency.gan2026.runners.naming import (
+    active_pipeline_name,
+    retained_pipeline_id,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners.reports import (
     write_deterministic_report,
 )
@@ -54,7 +57,6 @@ __all__ = [
 _ITEM_RUNNERS = {
     "deterministic_canonical_pipeline": deterministic_canonical.run_item,
     "hybrid_structured_events": hybrid_structured_events.run_item,
-    "llm": llm.run_item,
     "llm_only_canonical_pipeline": llm.run_item,
 }
 
@@ -75,9 +77,10 @@ class Gan2026PipelineRunner:
                 f"{self.config.architecture} requires a GanFrequencyRecord with "
                 "normalized gold frequency fields"
             )
-        if self.config.architecture == "hybrid_structured_events":
+        retained_id = retained_pipeline_id(self.config.architecture)
+        if retained_id == "hybrid_structured_events":
             return hybrid_structured_events.run_item(item, self.config)
-        if self.config.architecture in {"llm", "llm_only_canonical_pipeline"}:
+        if retained_id == "llm_only_canonical_pipeline":
             return llm.run_item(item, self.config)
         raise ValueError(
             f"Unsupported retained pipeline ID: {self.config.architecture}"

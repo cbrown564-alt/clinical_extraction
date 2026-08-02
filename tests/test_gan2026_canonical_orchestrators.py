@@ -10,6 +10,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.rules imp
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners.config import (
     PipelineConfiguration,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.runners.naming import (
+    active_pipeline_name,
+    retained_pipeline_id,
+)
 
 
 def _record(note_text: str) -> GanRecord:
@@ -23,6 +27,21 @@ def _record(note_text: str) -> GanRecord:
         row_ok=True,
         raw={},
     )
+
+
+def test_gan_llm_active_name_and_legacy_identity_share_one_boundary() -> None:
+    assert active_pipeline_name("llm") == "llm"
+    assert active_pipeline_name("llm_only_canonical_pipeline") == "llm"
+    assert retained_pipeline_id("llm") == "llm_only_canonical_pipeline"
+
+
+def test_gan_llm_legacy_module_reexports_active_implementation() -> None:
+    from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+        llm,
+        llm_only_canonical_pipeline,
+    )
+
+    assert llm_only_canonical_pipeline.build_prompt_input is llm.build_prompt_input
 
 
 def test_gan_rules_canonical_record_preserves_stage_order_and_avoids_gold() -> None:
