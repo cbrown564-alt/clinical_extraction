@@ -30,7 +30,8 @@ inputs support now; it does not authorize a new prediction run.
 | Frontend and trace explorer: `frontend/` and `src/clinical_extraction/trace_explorer/`, plus fixture/trace inputs referenced by frontend tests | Decision 0048 operational surface; frontend tests | Retained requirement; no broad frontend build. | Live development and restricted validation are separate; no real-patient or locked data here. | Demonstrates selected methods and teaching workflow. | Keep selected routes/fixtures; audit callers during refactor. |
 | Historical experiments and decisions: `experiments/`, `docs/experiments/`, `docs/decisions/0040-0047*.md`, focused `docs/research/` | Each decision/report; lineage in `experiments/registry.jsonl` | Mixed: selected evidence replayable; closed candidates explanatory; others unclassified. | Superseded producers/policies may not support current claims. | Rejected rules, negative studies, and design limits. | Keep named decision evidence; trace unselected candidates before deletion. |
 | Removed generated/cache noise visible in `c3a6fbb7`: `.tmp/`, notebook charts, review HTML, cache-like files | Baseline cleanup commit | Retired; not retained deliverables. | No current claim or replay dependency identified. | None identified. | Leave removed; do not restore without a named owner. |
-| Unreferenced candidates including `experiments/archive/` and `experiments/pipeline_flow_prototypes_20260716.html` | No owner until classified | Unclassified; this review does not authorize deletion. | Requires reference, claim, and producer-closure checks. | Possible historical context; unknown until traced. | Classify against manifest, decisions, claim owner, and registry; later remove only as a complete vertical slice or assign owner. |
+| Early HTML prototype `experiments/pipeline_flow_prototypes_20260716.html` (removed 2026-08-02) | Decision 0048 cleanup slice; [`docs/design/pipeline_trace_explorer_spec.md`](design/pipeline_trace_explorer_spec.md) | Deleted after classification; superseded by live frontend and trace explorer. | Not in manifest, registry, or six reference replays; no code or test caller. | Design decisions captured in the trace explorer specification. | Removed in cleanup commit; recover from Git history if needed. |
+| Unreferenced candidates: `experiments/archive/` | No owner until classified | Unclassified; this review does not authorize deletion. | Requires reference, claim, and producer-closure checks. | Possible historical context; unknown until traced. | Classify against manifest, decisions, claim owner, and registry; later remove only as a complete vertical slice or assign owner. |
 
 ## Bounded cleanup applied 2026-08-02
 
@@ -43,6 +44,15 @@ fixtures. The directory was introduced as frontend fallback data, but the
 current frontend has no caller for it. No source, test, selected evidence,
 replay input, or clinical behavior changed. Recovery is available from Git
 history or by reverting the cleanup commit.
+
+The second safe cleanup slice removed
+`experiments/pipeline_flow_prototypes_20260716.html`, an early static HTML
+mock of the trace explorer. Dependency checks found no code, test, manifest,
+registry, or reference-replay requirement; the only durable link was the
+prototype line in `docs/design/pipeline_trace_explorer_spec.md`, now retargeted
+to the live Next.js frontend and generated architecture teaching surface.
+Design decisions from the prototype remain in that specification. Recovery is
+available from Git history or by reverting the cleanup commit.
 
 The review covers the working tree, Git history, and Git LFS. It must not inspect
 locked rows or make model calls merely to restore an old name or result. Any
