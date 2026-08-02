@@ -52,5 +52,6 @@ def test_readme_supervisor_links_resolve_to_local_files() -> None:
     ]
     assert local_links
     for link in local_links:
-        target = ROOT / link.split("#", 1)[0].replace("/", "\\")
+        # Pathlib accepts POSIX-style markdown links on Windows and Linux.
+        target = ROOT / Path(link.split("#", 1)[0])
         assert target.exists(), link

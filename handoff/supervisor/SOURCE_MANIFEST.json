@@ -621,9 +621,9 @@
       "sha256": "49fc9c62a1b56ce95532a8719f01194489069fea18b1dc9fb4052aeb8cc45408"
     },
     {
-      "bytes": 19339,
+      "bytes": 19427,
       "path": "clinical_extraction/tasks/seizure_frequency/gan2026/orchestration/llm_with_rules.py",
-      "sha256": "08c90ee8757ddd8e7b0995b2f1a78ac7c6f15361cb08b94a419b8d1f7fa5c663"
+      "sha256": "e2a06378b211b2c29349d62f9f5e32ff3e6121a8ff6a0b75b8b96c7aa3a4e468"
     },
     {
       "bytes": 1501,
