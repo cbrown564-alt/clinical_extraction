@@ -32,6 +32,18 @@ inputs support now; it does not authorize a new prediction run.
 | Removed generated/cache noise visible in `c3a6fbb7`: `.tmp/`, notebook charts, review HTML, cache-like files | Baseline cleanup commit | Retired; not retained deliverables. | No current claim or replay dependency identified. | None identified. | Leave removed; do not restore without a named owner. |
 | Unreferenced candidates including `experiments/archive/` and `experiments/pipeline_flow_prototypes_20260716.html` | No owner until classified | Unclassified; this review does not authorize deletion. | Requires reference, claim, and producer-closure checks. | Possible historical context; unknown until traced. | Classify against manifest, decisions, claim owner, and registry; later remove only as a complete vertical slice or assign owner. |
 
+## Bounded cleanup applied 2026-08-02
+
+The first safe cleanup slice removed the 15 tracked JSON files under
+`frontend/public/mock-data/run-note/validation/`. Dependency checks found no
+code, route, test, retained-evidence manifest, experiment registry, or durable
+documentation reference to that directory. The active `/run/note` endpoint
+executes the deterministic pipeline from the request and does not load these
+fixtures. The directory was introduced as frontend fallback data, but the
+current frontend has no caller for it. No source, test, selected evidence,
+replay input, or clinical behavior changed. Recovery is available from Git
+history or by reverting the cleanup commit.
+
 The review covers the working tree, Git history, and Git LFS. It must not inspect
 locked rows or make model calls merely to restore an old name or result. Any
 new prediction-changing replay requires its own predeclared protocol and
