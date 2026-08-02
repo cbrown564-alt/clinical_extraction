@@ -45,6 +45,13 @@ current frontend has no caller for it. No source, test, selected evidence,
 replay input, or clinical behavior changed. Recovery is available from Git
 history or by reverting the cleanup commit.
 
+A second safe slice on 2026-08-02 removed three candidate-only prompt draft
+notes under `docs/experiments/` (ExECTv2 Luna, Gan Luna, DeepSeek unknown U).
+Inbound links were retargeted to protocols, exemplar packs, research threads,
+and machine compare artifacts. Record:
+[retention slice note](../research/maintenance/retention_slice_prompt_draft_notes_2026-08-02.md).
+No protocol, exemplar pack, residual analysis, or research report was deleted.
+
 The second safe cleanup slice removed
 `experiments/pipeline_flow_prototypes_20260716.html`, an early static HTML
 mock of the trace explorer. Dependency checks found no code, test, manifest,

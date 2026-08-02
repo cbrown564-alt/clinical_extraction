@@ -4,7 +4,6 @@ Date: 2026-07-31
 Status: open thread; Phase 2 candidate U **stopped (negative)** on UNK-slice pilot; full-750 aborted; local route still deferred  
 Thread owner: [thread note](../../research/gan2026_deepseek_unknown_competence_thread_2026-07-31.md)  
 Baseline artifact: [dev750 unknown-slice baseline](../../../experiments/gan2026_deepseek_unknown_competence_baseline_dev750_20260731.json)  
-Phase 2 draft: [unknown prompt draft notes](gan2026_deepseek_unknown_prompt_draft_notes_2026-07-31.md)  
 Phase 2 run: [A/U dev750 protocol](gan2026_deepseek_unknown_prompt_dev750_protocol_2026-07-31.md)
 
 ## Primary question

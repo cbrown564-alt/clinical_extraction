@@ -19,7 +19,6 @@ Use the shortest path that answers the question.
 [protocol](experiments/gan2026/gan2026_deepseek_unknown_competence_protocol_2026-07-31.md) →
 [thread](research/gan2026_deepseek_unknown_competence_thread_2026-07-31.md) →
 [A/U run protocol](experiments/gan2026/gan2026_deepseek_unknown_prompt_dev750_protocol_2026-07-31.md) →
-[draft notes](experiments/gan2026/gan2026_deepseek_unknown_prompt_draft_notes_2026-07-31.md) →
 [roadmap](plans/ACTIVE_ROADMAP.md#deepseek-unknown-competence-open)
 
 ## Check a paper claim
