@@ -67,11 +67,11 @@ verified.
    [Decision 0048](../decisions/0048-comprehension-and-handoff-refactor.md)
    completion gate; glossary terms in [CONTEXT.md](../../CONTEXT.md).
 8. **Broader corpus retention triage advanced (2026-08-02):** deleted unserved
-   ExECT mocks (~2.3 MB), five orphan/superseded docs, and seven tier-1
-   experiment orphans; fixed REGENERATION retention-slice links; deferred
-   scoring-lane JSONL batch and stale mock-registry path metadata. Records:
-   `docs/research/maintenance/retention_slice_{unserved_exect_mock,orphan_docs,experiments_orphans}_2026-08-02.md`
-   and [REGENERATION.md](../REGENERATION.md).
+   ExECT mocks (~2.3 MB), five orphan/superseded docs, seven tier-1 experiment
+   orphans, ~99 MB scoring-lane/two-call orphans; retargeted five stale
+   mock-registry `artifact_paths` to served artifacts. Records:
+   `docs/research/maintenance/retention_slice_*_2026-08-02.md` and
+   [REGENERATION.md](../REGENERATION.md).
 
 Gan test450 remains aggregate-only. ExECT full200 combines development and
 held-out rows, so it is not an independent holdout.

@@ -12,6 +12,7 @@
 
 import type { RegistryEntry } from "@/lib/types";
 import { laneForRun } from "@/lib/observatoryLanes";
+import { hasReplayableArtifact } from "@/lib/registryArtifacts";
 
 /** Bare family names historically accepted by the architect URL (?pipeline=…). */
 export const KNOWN_PIPELINE_FAMILIES = new Set<string>([
@@ -49,7 +50,7 @@ export function resolveFamilyDefaultRun(
   const inFamily = runs.filter(
     (r) =>
       r.pipeline_family === activeFamily &&
-      r.artifact_paths.some((p) => p.endsWith(".jsonl"))
+      hasReplayableArtifact(r.artifact_paths)
   );
   if (inFamily.length === 0) return null;
 

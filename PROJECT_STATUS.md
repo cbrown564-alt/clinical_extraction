@@ -50,10 +50,11 @@ explorer, and frontend checks pass.
 
 Broader corpus retention triage is advanced in the same working tree: unserved
 ExECT mocks deleted; five orphan docs removed (rejected-policy protocols kept
-for negative replay); seven tier-1 experiment orphans removed; retained-
-evidence manifest still valid. Deferred: scoring-lane JSONL audit and stale
-mock-registry `artifact_paths`. Supervisor-host and unaided README review
-remain open before the Decision 0048 status flip.
+for negative replay); seven tier-1 experiment orphans removed; ~99 MB
+scoring-lane/two-call orphans removed; five stale mock-registry paths
+retargeted to served artifacts. Retained-evidence manifest still valid.
+Supervisor-host and unaided README review remain open before the Decision 0048
+status flip.
 
 The ExECT `rules`, `llm`, and `llm_with_rules` vertical slices are implemented and verified
 through runtime, split/CLI, API, registry, trace/frontend, teaching material,

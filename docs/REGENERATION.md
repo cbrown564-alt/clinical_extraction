@@ -112,11 +112,14 @@ Inventory of mock-data leftovers, orphan docs, and 337 tracked
 | [orphan docs](research/maintenance/retention_slice_orphan_docs_2026-08-02.md) | 5 superseded/zero-inbound docs; rejected-policy protocols **kept** for check-script negative replay |
 | [experiments orphans](research/maintenance/retention_slice_experiments_orphans_2026-08-02.md) | 7 tier-1 orphans (pipeline-flow PNGs, archived Luna joint panels, superseded DeepSeek diff, Qwen retry backup) |
 
-Deferred judgment: intermediate six-model scoring-lane JSONL (~25–30), stale
-`registry.json` `artifact_paths` metadata, and protocol docs outside the
-machine manifest that still own focused evidence threads. Retained-evidence
-manifest check passes after this wave. Locked-row inspection and model calls
-remain unauthorized for cleanup alone.
+Scoring-lane / two-call orphan cleanup and mock-registry path retarget applied
+in [scoring-lane + registry slice](research/maintenance/retention_slice_scoring_lane_and_registry_2026-08-02.md)
+(~99 MB deleted; five historical registry rows point at served
+`mock-data/artifacts/`). Still deferred: protocol docs outside the machine
+manifest that own focused evidence threads, and optional further lane
+`*_sf_state_projection_combined.jsonl` review. Retained-evidence manifest check
+passes after this wave. Locked-row inspection and model calls remain
+unauthorized for cleanup alone.
 The retained evidence index records selected paths, hashes, source commit, and
 policy versions.
 

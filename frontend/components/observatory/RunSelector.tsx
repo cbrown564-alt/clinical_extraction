@@ -5,6 +5,7 @@ import { Telescope, Check, Filter, Search, X, ChevronDown, ChevronUp } from "luc
 import type { RegistryEntry } from "@/lib/types";
 import { laneMetaForRun } from "@/lib/observatoryLanes";
 import { familyLabel, splitLabel } from "@/lib/plainLanguageLabels";
+import { hasReplayableArtifact } from "@/lib/registryArtifacts";
 import { parseRunVariant } from "./useObservatoryData";
 
 interface RunSelectorProps {
@@ -82,7 +83,7 @@ export default function RunSelector({
   const [collapsedFamilies, setCollapsedFamilies] = useState<Set<string>>(new Set());
 
   const filtered = useMemo(() => {
-    let list = runs.filter((r) => r.artifact_paths.some((p) => p.endsWith(".jsonl")));
+    let list = runs.filter((r) => hasReplayableArtifact(r.artifact_paths));
     if (filterFamily !== "all") {
       list = list.filter((r) => r.pipeline_family === filterFamily);
     }

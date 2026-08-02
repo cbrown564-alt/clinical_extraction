@@ -26,6 +26,7 @@ import {
   useRunNote,
 } from "@/lib/hooks";
 import { fetchRegistry, fetchArtifact, fetchRecord } from "@/lib/api";
+import { firstReplayableArtifactPath } from "@/lib/registryArtifacts";
 import { adaptDeterministicTrace, adaptTrace, isReplaySupported } from "@/lib/traceAdapter";
 import {
   ganPipelineOptionLabel,
@@ -158,13 +159,13 @@ export default function TraceControls() {
           setIsLoading(false);
           return;
         }
-        const jsonlPath = matchingRun.artifact_paths.find((p) => p.endsWith(".jsonl"));
-        if (!jsonlPath) {
-          setError(`No JSONL artifact found for ${selectedRunId}`);
+        const replayPath = firstReplayableArtifactPath(matchingRun.artifact_paths);
+        if (!replayPath) {
+          setError(`No replay artifact found for ${selectedRunId}`);
           setIsLoading(false);
           return;
         }
-        const artifact = await fetchArtifact(matchingRun.run_id, jsonlPath, 100);
+        const artifact = await fetchArtifact(matchingRun.run_id, replayPath, 100);
         if (!cancelled) {
           setReplayRunId(matchingRun.run_id);
           setReplayArtifactRows(artifact.content as unknown[]);
