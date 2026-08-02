@@ -34,6 +34,7 @@ def test_discovery_serves_only_complete_validation750_conditions(tmp_path: Path)
         if item["run_id"] == "gan2026_validation750_gpt56luna_llm_with_rules"
     )
     assert complete["availability"] == "replay"
+    assert complete["pipeline_family"] == "llm_with_rules"
     assert complete["evidence_scope"] == "validation750_row_level"
     assert complete["metrics"] == {
         "row_count": 750,
@@ -46,6 +47,8 @@ def test_discovery_serves_only_complete_validation750_conditions(tmp_path: Path)
     assert partial["progress"] == {"completed_rows": 3, "expected_rows": 750}
     assert partial["run_id"] not in discovery.replay_artifacts
     assert set(discovery.replay_artifacts) == {complete["run_id"]}
+    assert discovery.registry_entries[0]["run_id"] == complete["run_id"]
+    assert discovery.registry_entries[0]["pipeline_family"] == "llm_with_rules"
 
 
 def test_deepseek_uses_the_same_plain_model_naming_as_other_routes() -> None:

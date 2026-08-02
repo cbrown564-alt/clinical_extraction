@@ -15,6 +15,29 @@ function run(pipelineFamily: string, runId: string, rowCount: number): RegistryE
 }
 
 describe("registry family aliases", () => {
+  it("resolves active and legacy Gan hybrid names to the same active entry", () => {
+    const runs = [
+      run("hybrid_structured_events", "stale-hybrid-row", 9999),
+      run("llm_with_rules", "historical-immutable-run", 750),
+    ];
+
+    expect(resolveFamilyDefaultRun(runs, "llm_with_rules")).toBe(
+      "historical-immutable-run"
+    );
+    expect(resolveFamilyDefaultRun(runs, "hybrid_structured_events")).toBe(
+      "historical-immutable-run"
+    );
+  });
+
+  it("does not fall back when an active family has no matching artifact", () => {
+    expect(
+      resolveFamilyDefaultRun(
+        [run("hybrid_structured_events", "stale-hybrid-row", 9999)],
+        "llm_with_rules"
+      )
+    ).toBeNull();
+  });
+
   it("resolves active and legacy Gan LLM family names to the same active run", () => {
     const runs = [run("llm", "historical-immutable-run", 750)];
 

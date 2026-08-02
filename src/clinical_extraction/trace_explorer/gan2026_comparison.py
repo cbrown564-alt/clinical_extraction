@@ -201,7 +201,7 @@ def _model_family(
         "kind": kind,
         "architecture_family": kind,
         "pipeline_family": (
-            "hybrid_structured_events"
+            "llm_with_rules"
             if method_name == "llm_with_rules"
             else "llm"
         ),

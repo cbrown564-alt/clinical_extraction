@@ -27,7 +27,7 @@ const ACTIVE_FAMILY_BY_ALIAS: Record<string, string> = {
   rules: "rules",
   rules_only: "rules",
   llm_with_rules: "llm_with_rules",
-  hybrid_structured_events: "hybrid_structured_events",
+  hybrid_structured_events: "llm_with_rules",
   llm: "llm",
   llm_only_canonical_pipeline: "llm",
 };
