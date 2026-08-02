@@ -23,8 +23,8 @@ and reproduction commands without agent assistance. Engineering verification,
 research evidence, independent clinical review, and clinical validation remain
 separate claims.
 
-The bounded README-led supervisor milestone is implemented in the current
-working branch. It changes the README, navigation, generated walkthrough,
+The bounded README-led supervisor milestone is implemented on `main`. It
+changes the README, navigation, generated walkthrough,
 roadmap, and focused documentation tests; it does not change clinical behavior.
 Focused architecture, link, and no-call checks pass. This does not complete
 Decision 0048: the standalone handoff tree and ZIP are stale relative to active
@@ -41,20 +41,22 @@ surfaces, teaching material, and generated architecture. Historical filenames,
 run IDs, prompt versions, manifests, replay metadata, and explicit inbound
 aliases remain unchanged.
 
-The ExECT migration has begun but is not complete. Commit `716b6de8` promotes
-the ExECT rules outward identity at the trace/frontend boundary and retains the
-legacy saved identifier. Runtime, CLI, registry, generated architecture, and
-the other two ExECT methods still require complete vertical-slice review.
+The ExECT `rules` vertical slice is implemented and verified through runtime,
+split/CLI, API, registry, trace/frontend, teaching material, generated
+architecture, and exact permitted-development parity. Active, saved frontend,
+retained-evidence, and historical manifest identities remain separate. The
+`llm` and `llm_with_rules` vertical slices remain open and must proceed in that
+order.
 
 Sol's strict review found two compatibility-helper defects; `7d9c4000` fixes
 both. Gan parity now permits only the explicit absence-to-`llm_with_rules`
 identity transition, and ExECT alias resolution accepts only real string IDs.
 
-The work is intentionally paused. `main` contains the Gan migration, the
-canonical parity repair, and the bounded ExECT rules change. The README-led
-milestone is implemented in this working branch, but the ExECT migration and
-standalone handoff closure remain open. Nothing from this Decision 0048
-sequence has been pushed to `origin/main`.
+The work is intentionally paused. `main` contains the Gan migration, canonical
+parity repair, complete ExECT `rules` vertical slice, and bounded README-led
+milestone. The remaining ExECT method migration and standalone handoff closure
+remain open. Nothing from this Decision 0048 sequence has been pushed to
+`origin/main`.
 
 ## Current outcome
 
@@ -417,6 +419,16 @@ the detailed evidence and remaining acceptance checks.
 
 Current working-tree backend verification is green for tracked project files:
 
+- **Verified on 2026-08-02 after integration:** merged `main` passes 1,525
+  pytest tests with one expected strict `xfail` for the stale standalone
+  handoff package. Ruff, mypy across 358 source files, all 15 generated
+  architecture checks, the retained-evidence manifest, all six selected
+  no-call reference replays, 69 frontend Jest tests, TypeScript, focused source
+  lint, and the Next.js production build pass. Sol's final synthetic split,
+  provenance, alias-collision, and base-parity probes found no remaining
+  actionable issue in the ExECT `rules` slice. These checks verify engineering
+  and replay behavior, not clinical validation.
+
 - **Verified on 2026-08-02:** at merged commit `716b6de8`, all 1,512 pytest
   tests, Ruff, mypy across 352 source files, 14 architecture-document checks,
   the retained-evidence manifest, six selected no-call reference replays, 68
@@ -464,9 +476,9 @@ research hashes, or a new clean-checkout reproduction.
 
 ## In progress
 
-- **Decision 0048 is paused after the Gan migration and first bounded ExECT
-  rules change.** The bounded README-led supervisor path is implemented;
-  resume from the ordered steps below. Do not treat the ExECT migration,
+- **Decision 0048 is paused after the Gan migration and complete ExECT `rules`
+  vertical slice.** The bounded README-led supervisor path is implemented;
+  resume from the ordered steps below. Do not treat the full ExECT migration,
   standalone handoff archive, supervisor host, or unaided README review as
   complete.
 
@@ -495,12 +507,12 @@ research hashes, or a new clean-checkout reproduction.
 
 ## Next
 
-1. Complete ExECT `rules` through runtime, split/CLI, API, registry,
-   trace/frontend, teaching case, architecture, and exact no-call parity. Then
-   repeat sequentially for `llm` and `llm_with_rules`.
-2. After ExECT names stabilize, update shared code and frontend routes, then run
-   the full engineering, architecture, retained-manifest, six-cell replay,
-   lint, and production-build gate.
+1. Complete ExECT `llm`, then `llm_with_rules`, using the verified `rules`
+   vertical slice as the identity, split-safety, alias, and exact-parity
+   pattern.
+2. After all ExECT names stabilize, update shared code and frontend routes,
+   then run the full engineering, architecture, retained-manifest, six-cell
+   replay, lint, and production-build gate.
 3. Complete the remaining README-led supervisor checks: rebuild the stale
    standalone handoff tree and ZIP from active source, pass source-to-shipped
    closure, verify the supervisor host/endpoint, and perform unaided README

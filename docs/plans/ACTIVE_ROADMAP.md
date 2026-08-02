@@ -27,19 +27,22 @@ verified.
 2. **Implemented and verified:** promote all three Gan methods to `rules`,
    `llm`, and `llm_with_rules`, with explicit legacy identity boundaries and
    no-call parity. The final canonical parity repair is `7ddc116a`.
-3. **Started, then paused:** apply the pattern to ExECT. Commit `716b6de8`
-   covers only the ExECT rules trace/frontend outward identity. Complete that
-   vertical slice before starting ExECT `llm`, then `llm_with_rules`; shared
-   code and route cleanup follows stabilized method identities. Sol's review
-   findings are closed by `7d9c4000`.
+3. **Rules complete; two methods open:** the ExECT `rules` vertical slice now
+   covers runtime, split/CLI, API, registry, trace/frontend, teaching material,
+   generated architecture, locked-split rejection, distinct active/replay
+   identities, and exact permitted-development parity. Sol's final review
+   found no remaining actionable issue at `bee48c6c`. Complete ExECT `llm`,
+   then `llm_with_rules`; shared code and route cleanup follows stabilized
+   method identities.
 4. **Implemented in the bounded slice; broader gate open:** the README-led
    supervisor path now exposes the five-stage orientation, generated six-path
    walkthrough, deliberate failure/recovery example, frontend startup,
    canonical results/limits, and exact no-call replay commands. Focused checks
-   pass. This does not complete Decision 0048: ExECT migration, standalone
-   source-to-shipped closure, supervisor-host verification, and unaided review
-   remain open. The stale standalone handoff package is a strict blocker
-   recorded in the [handoff plan](supervisor_local_extraction_handoff_plan.md).
+   pass. This does not complete Decision 0048: the remaining ExECT migration,
+   standalone source-to-shipped closure, supervisor-host verification, and
+   unaided review remain open. The stale standalone handoff package is a strict
+   blocker recorded in the
+   [handoff plan](supervisor_local_extraction_handoff_plan.md).
 5. **Audited, deletion open:** retain selected architecture, evidence, replay,
    component-attribution, safety, and validation owners. Delete only after an
    owner check; unreferenced frontend mocks, candidate-only prompt drafts,
