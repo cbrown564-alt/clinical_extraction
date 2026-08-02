@@ -75,6 +75,25 @@ describe("ExECTv2 architecture options", () => {
     expect(resolveExectv2RunId(exactAliasCollision, "rules")).toBeNull();
   });
 
+  it("resolves the active llm aliases without rewriting the saved run id", () => {
+    const savedLlmRun = {
+      ...run("llm_only", MODELS[2], 8),
+      run_id: "exectv2_winning_mode_gpt56sol_llm_only_dev140",
+      active_method: "llm",
+      method_id: "llm",
+    };
+    expect(resolveExectv2RunId([savedLlmRun], "llm")).toBe(savedLlmRun.run_id);
+    expect(resolveExectv2RunId([savedLlmRun], "llm_only")).toBe(savedLlmRun.run_id);
+    expect(resolveExectv2RunId([savedLlmRun], "exectv2_llm_only")).toBe(savedLlmRun.run_id);
+    expect(resolveExectv2RunId([savedLlmRun], "llm-only")).toBeNull();
+
+    const collidingRun = {
+      ...run("llm_plus_rules", MODELS[3], 9),
+      legacy_run_ids: ["llm"],
+    };
+    expect(resolveExectv2RunId([savedLlmRun, collidingRun], "llm")).toBeNull();
+  });
+
   it("groups the winning mode first, then its raw and no-call comparators", () => {
     const runs = [
       run("deterministic_only", "(model-independent)", 0),

@@ -51,7 +51,51 @@ def run_exect_notes(
             )
         return rules_output
     if active_method == "llm":
-        raise ValueError("ExECT llm-only migration is not part of the rules vertical slice")
+        runner = Exectv2PipelineRunner(
+            Exectv2PipelineConfiguration(
+                method=method,
+                model=runtime.model,
+                temperature=runtime.temperature,
+                max_tokens=runtime.max_tokens,
+                mode="live",
+                api_base=runtime.base_url,
+                api_key=runtime.api_key,
+                timeout=int(runtime.timeout_seconds),
+                split="operational",
+            )
+        )
+        llm_output: list[dict[str, Any]] = []
+        for note in notes:
+            result = runner.run(ExectLetter(note.note_id, note.text)).result
+            row = dict(result.row)
+            llm_output.append(
+                {
+                    "id": note.note_id,
+                    "task": "exect",
+                    "status": "ok" if not row.get("call_error") else "error",
+                    "model": runtime.model,
+                    "pipeline": "llm",
+                    "method": "llm",
+                    "run_id": "llm",
+                    "prediction": {
+                        "mentions": [
+                            mention.model_dump(mode="json")
+                            for mention in result.prediction.mentions
+                        ]
+                    },
+                    "scored_view": "raw_candidate",
+                    "prompt_version": row.get("prompt_version", ""),
+                    "prompt_profile": row.get("prompt_profile", ""),
+                    "route": row.get("route", runtime.base_url),
+                    "raw_output": row.get("raw_output", ""),
+                    "initial_parse_errors": row.get("initial_parse_errors", []),
+                    "parse_errors": row.get("parse_errors", []),
+                    "format_retry_output": row.get("format_retry_output", ""),
+                    "format_retry_notes": row.get("format_retry_notes", []),
+                    "trace": [event.to_dict() for event in result.stage_events],
+                }
+            )
+        return llm_output
 
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured import (  # noqa: E501
         runner as structured_runner,
