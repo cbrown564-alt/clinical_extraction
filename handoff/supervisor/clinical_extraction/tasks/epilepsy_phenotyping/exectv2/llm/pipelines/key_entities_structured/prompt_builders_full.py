@@ -7,6 +7,8 @@ import json
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 
 from .constants import (
+    PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX,
+    PROMPT_VERSION_V0_9_25_LUNA_SF_STATE,
     PromptProfile,
     prompt_version_for,
 )
@@ -18,16 +20,29 @@ from .prompt_content import (
     _worked_examples,
     candidate_evidence_ledger_for_letter,
 )
+from .prompt_luna_variants import (
+    LUNA_SF_BOUNDARY_DX_GUIDANCE,
+    LUNA_SF_STATE_GUIDANCE,
+)
 from .prompt_rules_full import (
     _clinical_rules,
 )
 
 
-def build_full_prompt_input(letter: ExectLetter, *, prompt_profile: PromptProfile = "full") -> str:
+def build_full_prompt_input(
+    letter: ExectLetter,
+    *,
+    prompt_profile: PromptProfile = "full",
+    prompt_version: str | None = None,
+) -> str:
     """Build the comprehensive structured-event payload."""
 
+    selected_prompt_version = prompt_version_for(
+        prompt_profile,
+        prompt_version=prompt_version,
+    )
     payload = {
-        "prompt_version": prompt_version_for(prompt_profile),
+        "prompt_version": selected_prompt_version,
         "task": (
             "Read the clinical letter once. Use the candidate_evidence_ledger as "
             "attention scaffolding, then build a compact list of source-near "
@@ -89,4 +104,15 @@ def build_full_prompt_input(letter: ExectLetter, *, prompt_profile: PromptProfil
         "letter_id": letter.letter_id,
         "letter_text": letter.note_text,
     }
+    extra = _luna_extra_guidance(selected_prompt_version)
+    if extra:
+        payload["extra_clinical_guidance"] = list(extra)
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
+
+
+def _luna_extra_guidance(prompt_version: str) -> tuple[str, ...]:
+    if prompt_version == PROMPT_VERSION_V0_9_25_LUNA_SF_STATE:
+        return LUNA_SF_STATE_GUIDANCE
+    if prompt_version == PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX:
+        return LUNA_SF_BOUNDARY_DX_GUIDANCE
+    return ()

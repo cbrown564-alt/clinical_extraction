@@ -27,6 +27,15 @@ from .selected_evidence.selected_evidence_derivation import (
 from .selected_evidence.selected_evidence_monthly_diary import (
     monthly_diary_label_from_text,
 )
+from .selected_evidence.selected_evidence_rate import (
+    _evidence_describes_medication_use_limit,
+)
+from .selected_evidence.selected_evidence_text import (
+    once_twice_thrice as _once_twice_thrice,
+)
+from .selected_evidence.selected_evidence_text import (
+    words_to_numbers as _words_to_numbers,
+)
 from .selected_evidence.selected_evidence_window import (
     range_count_over_window,
     single_count_over_window,
@@ -163,6 +172,17 @@ def repair_prediction_label_with_evidence(
         return raw_repaired
     if evidence_label is None and raw_repaired == "no seizure frequency reference":
         evidence_label = prediction_label_from_selected_evidence(str(raw), context_text)
+    normalized_evidence = normalize_frequency_label(
+        _once_twice_thrice(_words_to_numbers(str(evidence or "")))
+    )
+    if (
+        evidence_label is None
+        and normalized_evidence
+        and _evidence_describes_medication_use_limit(normalized_evidence)
+        and "cluster" in raw_repaired
+    ):
+        # Rescue/as-required medication cadence is not seizure-frequency evidence.
+        return "unknown"
     if (
         evidence_label
         and raw_repaired.startswith("seizure free")

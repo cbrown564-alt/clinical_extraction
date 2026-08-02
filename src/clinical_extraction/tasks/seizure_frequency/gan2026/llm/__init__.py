@@ -1,3 +1,6 @@
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm import llm_only_canonical_pipeline
+"""Gan 2026 LLM package.
 
-__all__ = ["llm_only_canonical_pipeline"]
+Keep this package init free of eager submodule imports. Importing hybrid or
+other prediction modules must not pull research report writers into the
+supervisor handoff runtime closure.
+"""

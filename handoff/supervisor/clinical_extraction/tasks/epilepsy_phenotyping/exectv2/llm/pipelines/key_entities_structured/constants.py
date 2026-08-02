@@ -16,8 +16,24 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     SEIZURE_FREQUENCY,
 )
 
-PROMPT_VERSION = "exectv2_hybrid_key_family_event_ledger_v0.9.24"
+PROMPT_VERSION_V0_9_24 = "exectv2_hybrid_key_family_event_ledger_v0.9.24"
+PROMPT_VERSION_V0_9_25_LUNA_SF_STATE = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.25_luna_sf_state"
+)
+PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.25_luna_sf_boundary_dx"
+)
+# Primary prompt version for the frozen six-model panel. Luna v0.9.25 variants
+# are development candidates only; they must not replace v0.9.24 in place.
+PROMPT_VERSION = PROMPT_VERSION_V0_9_24
 QWEN_COMPACT_PROMPT_VERSION = "exectv2_hybrid_key_family_event_ledger_v0.9.24_qwen_compact"
+_SUPPORTED_FULL_PROMPT_VERSIONS = frozenset(
+    {
+        PROMPT_VERSION_V0_9_24,
+        PROMPT_VERSION_V0_9_25_LUNA_SF_STATE,
+        PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX,
+    }
+)
 PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"
 COMPONENT_OWNER = "hybrid_key_family_event_ledger"
 
@@ -75,5 +91,36 @@ _SEIZURE_STATE_RE = re.compile(
 )
 
 
-def prompt_version_for(profile: PromptProfile = "full") -> str:
-    return QWEN_COMPACT_PROMPT_VERSION if profile == "qwen_compact" else PROMPT_VERSION
+def set_active_prompt_version(version: str) -> None:
+    """Select the full-profile prompt version emitted by build_prompt_input."""
+
+    global PROMPT_VERSION
+    if version not in _SUPPORTED_FULL_PROMPT_VERSIONS:
+        raise ValueError(
+            f"unsupported prompt version {version!r}; "
+            f"expected one of {sorted(_SUPPORTED_FULL_PROMPT_VERSIONS)}"
+        )
+    PROMPT_VERSION = version
+
+
+def prompt_version_for(
+    profile: PromptProfile = "full",
+    *,
+    prompt_version: str | None = None,
+) -> str:
+    """Resolve the prompt identity for a profile and optional override."""
+
+    if profile == "qwen_compact":
+        if prompt_version is not None and prompt_version != QWEN_COMPACT_PROMPT_VERSION:
+            raise ValueError(
+                "qwen_compact profile only supports "
+                f"{QWEN_COMPACT_PROMPT_VERSION!r}, got {prompt_version!r}"
+            )
+        return QWEN_COMPACT_PROMPT_VERSION
+    selected = prompt_version or PROMPT_VERSION
+    if selected not in _SUPPORTED_FULL_PROMPT_VERSIONS:
+        raise ValueError(
+            f"unsupported prompt version {selected!r}; "
+            f"expected one of {sorted(_SUPPORTED_FULL_PROMPT_VERSIONS)}"
+        )
+    return selected

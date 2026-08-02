@@ -146,7 +146,12 @@ def should_prefer_selected_evidence_label(
         for marker in ("≤", "<=", "up to", "at most", "no more than", "quarter")
     ):
         return True
-    return not _raw_label_is_simple_rate(normalized_raw)
+    normalized_raw_rate = re.sub(
+        r"\b(\d+(?:\.\d+)?)\s+or\s+(\d+(?:\.\d+)?)\b",
+        r"\1 to \2",
+        normalized_raw,
+    )
+    return not _raw_label_is_simple_rate(normalized_raw_rate)
 
 
 def _raw_label_is_simple_rate(normalized_raw: str) -> bool:

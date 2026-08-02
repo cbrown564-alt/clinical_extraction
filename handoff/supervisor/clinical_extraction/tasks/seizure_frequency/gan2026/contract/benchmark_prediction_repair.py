@@ -338,6 +338,18 @@ def _fix_cluster_block(text: str) -> str:
         text,
     )
     if "cluster per" in text and "per cluster" not in text and "unknown" not in text:
+        cadence = re.search(
+            r"\b((?P<count>\d+(?:\s*to\s*\d+)?|multiple)\s+cluster\s+per\s+"
+            r"(?:\d+(?:\s*to\s*\d+)?\s+)?(?:day|week|month|year))\b",
+            text,
+        )
+        if cadence:
+            # Singleton cadence-only clusters often mark uncertain burden and
+            # should stay unknown; 2+/multiple keep dual form for scoring.
+            count_text = cadence.group("count")
+            if count_text == "1":
+                return "unknown"
+            return f"{cadence.group(1)}, multiple per cluster"
         return "unknown"
     return text
 
@@ -530,6 +542,53 @@ def _normalize_ranges(text: str) -> str:
     return re.sub(r"(\d+)\s*[-–—]\s*(\d+)", r"\1 to \2", text)
 
 
+def _normalize_or_count_ranges(text: str) -> str:
+    """Project countable ``N or M per ...`` ranges to ``N to M per ...``.
+
+    Benchmark-format projection: preserves both endpoints already present in the
+    selected label instead of collapsing through fallback to one end.
+    """
+    return re.sub(
+        r"\b(?P<low>\d+(?:\.\d+)?)\s+or\s+(?P<high>\d+(?:\.\d+)?)\s+(?=per\b)",
+        r"\g<low> to \g<high> ",
+        text,
+    )
+
+
+def _in_period_count_to_per(text: str) -> str:
+    """Project ``N in/within M months`` observation counts to ``N per M month``."""
+    return re.sub(
+        r"\b(?P<count>\d+(?:\s*to\s*\d+)?|multiple)\s+"
+        r"(?:(?:seizures?|events?|episodes?|attacks?|convulsions?)\s+)?"
+        r"(?:in|within)\s+(?:the\s+)?(?:past\s+|last\s+)?"
+        r"(?P<den>\d+(?:\s*to\s*\d+)?)\s+(?P<unit>day|week|month|year)s?\b",
+        r"\g<count> per \g<den> \g<unit>",
+        text,
+    )
+
+
+def _cluster_over_in_window(text: str) -> str:
+    """Project ``N clusters over/in M weeks`` before inequality remaps ``over``."""
+
+    def _replace(match: re.Match[str]) -> str:
+        count = match.group("count")
+        den = match.group("den")
+        unit = match.group("unit")
+        unit = re.sub(r"s$", "", unit)
+        cadence = f"{count} cluster per {den} {unit}"
+        if count == "1":
+            return cadence
+        return f"{cadence}, multiple per cluster"
+
+    return re.sub(
+        r"\b(?P<count>\d+(?:\s*to\s*\d+)?|multiple)\s+clusters?\s+"
+        r"(?:over|in)\s+(?:the\s+)?(?:past\s+|last\s+)?"
+        r"(?P<den>\d+(?:\s*to\s*\d+)?)\s+(?P<unit>days?|weeks?|months?|years?)\b",
+        _replace,
+        text,
+    )
+
+
 def _once_twice_thrice(text: str) -> str:
     text = re.sub(r"\bonce\b", "1", text)
     text = re.sub(r"\btwice\b", "2", text)
@@ -590,6 +649,11 @@ BENCHMARK_REPAIR_STEPS = (
         apply=_normalize_ranges,
     ),
     BenchmarkRepairStep(
+        rule_id="benchmark_repair.or_count_ranges",
+        description="Project countable N or M per-period ranges to N to M.",
+        apply=_normalize_or_count_ranges,
+    ),
+    BenchmarkRepairStep(
         rule_id="benchmark_repair.once_twice_thrice",
         description="Convert once/twice/thrice to numeric counts.",
         apply=_once_twice_thrice,
@@ -620,6 +684,14 @@ BENCHMARK_REPAIR_STEPS = (
         apply=_period_words,
     ),
     BenchmarkRepairStep(
+        rule_id="benchmark_repair.cluster_over_in_window",
+        description=(
+            "Project cluster counts over or in a stated window into cadence-only "
+            "cluster labels before inequality remapping."
+        ),
+        apply=_cluster_over_in_window,
+    ),
+    BenchmarkRepairStep(
         rule_id="benchmark_repair.inequality_to_multiple",
         description="Map inequality phrases to multiple when scorer format lacks bounds.",
         apply=_inequality_to_multiple,
@@ -648,6 +720,11 @@ BENCHMARK_REPAIR_STEPS = (
         rule_id="benchmark_repair.normalize_units_first",
         description="Normalize unit abbreviations and plurals.",
         apply=_normalize_units,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.in_period_count_to_per",
+        description="Project N in/within M period observation counts to N per M period.",
+        apply=_in_period_count_to_per,
     ),
     BenchmarkRepairStep(
         rule_id="benchmark_repair.normalize_whitespace_first",
@@ -761,6 +838,11 @@ FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS = (
         rule_id="benchmark_repair.range_delimiters",
         description="Normalize hyphenated numeric ranges to 'to'.",
         apply=_normalize_ranges,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.or_count_ranges",
+        description="Project countable N or M per-period ranges to N to M.",
+        apply=_normalize_or_count_ranges,
     ),
     BenchmarkRepairStep(
         rule_id="benchmark_repair.once_twice_thrice",

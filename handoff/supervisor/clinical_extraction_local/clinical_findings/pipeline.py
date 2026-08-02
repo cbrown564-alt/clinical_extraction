@@ -34,7 +34,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_en
 from ..errors import SchemaValidationError
 from ..models import GenerationSettings, ModelClient, WorkflowOutput
 
-RULE_SET_VERSION = "decision_0040_joint_bounded_dev140_v1"
+RULE_SET_VERSION = "decision_0045_default_default_operational_v1"
 
 
 class ClinicalFindingsPipeline:

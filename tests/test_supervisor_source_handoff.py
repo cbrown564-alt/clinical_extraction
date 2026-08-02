@@ -94,25 +94,42 @@ def test_source_manifest_lists_every_shipped_file_with_matching_hash() -> None:
         assert recorded[name]["bytes"] == len(content)
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "handoff/supervisor is stale; rebuild it before Decision 0048 can "
-        "call the standalone package current"
-    ),
-)
 def test_shipped_package_matches_current_source_closure() -> None:
     """Hash self-consistency is insufficient; compare shipped code to source."""
 
+    runtime_files, runtime_assets = handoff_builder._trace_runtime_closure()
+    required_runtime_files = tuple(
+        sorted(
+            path.relative_to(INTERNAL_SOURCE).as_posix()
+            for path in runtime_files | runtime_assets
+        )
+    )
     mismatches = closure_mismatches(
         PUBLIC_SOURCE, SHIPPED_PUBLIC, exact_tree=True
     )
     mismatches.extend(
         closure_mismatches(
-            INTERNAL_SOURCE, SHIPPED_INTERNAL, exact_tree=False
+            INTERNAL_SOURCE,
+            SHIPPED_INTERNAL,
+            exact_tree=False,
+            required_paths=required_runtime_files,
         )
     )
     assert mismatches == [], "\n".join(mismatches)
+
+
+def test_traced_runtime_closure_excludes_research_reports() -> None:
+    runtime_files, runtime_assets = handoff_builder._trace_runtime_closure()
+    forbidden = sorted(
+        path.relative_to(INTERNAL_SOURCE).as_posix()
+        for path in runtime_files | runtime_assets
+        if any(part in handoff_builder.FORBIDDEN_PARTS for part in path.parts)
+    )
+    assert forbidden == []
+    assert not any(
+        path.name == "base.py" and "reports" in path.parts
+        for path in runtime_files | runtime_assets
+    )
 
 
 def test_closure_mismatches_reports_drift_and_respects_internal_subset(tmp_path: Path) -> None:
