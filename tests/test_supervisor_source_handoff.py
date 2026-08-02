@@ -9,6 +9,9 @@ from pathlib import Path
 
 import pytest
 
+from scripts import build_supervisor_source_handoff as handoff_builder
+from scripts.build_supervisor_source_handoff import closure_mismatches
+
 ROOT = Path(__file__).resolve().parents[1]
 HANDOFF = ROOT / "handoff" / "supervisor"
 ARCHIVE = ROOT / "handoff" / "clinical_extraction_supervisor_handoff.zip"
@@ -42,31 +45,6 @@ def _canonical_bytes(path: Path) -> bytes:
     if path.name.lower() in TEXT_FILENAMES or path.suffix.lower() in TEXT_SUFFIXES:
         content = content.replace(b"\r\n", b"\n")
     return content
-
-
-def _source_files(root: Path) -> dict[str, Path]:
-    return {
-        path.relative_to(root).as_posix(): path
-        for path in root.rglob("*")
-        if path.is_file() and not _is_runtime_generated(path)
-    }
-
-
-def _closure_mismatches(source: Path, shipped: Path, *, exact_tree: bool) -> list[str]:
-    source_files = _source_files(source)
-    shipped_files = _source_files(shipped)
-    names = set(source_files) | set(shipped_files) if exact_tree else set(shipped_files)
-    mismatches: list[str] = []
-    for name in sorted(names):
-        source_path = source_files.get(name)
-        shipped_path = shipped_files.get(name)
-        if source_path is None:
-            mismatches.append(f"extra shipped file: {name}")
-        elif shipped_path is None:
-            mismatches.append(f"missing shipped file: {name}")
-        elif _canonical_bytes(source_path) != _canonical_bytes(shipped_path):
-            mismatches.append(f"content drift: {name}")
-    return mismatches
 
 
 def test_handoff_is_readable_source_first_and_has_both_workflows() -> None:
@@ -117,15 +95,87 @@ def test_source_manifest_lists_every_shipped_file_with_matching_hash() -> None:
 def test_shipped_package_matches_current_source_closure() -> None:
     """Hash self-consistency is insufficient; compare shipped code to source."""
 
-    mismatches = _closure_mismatches(
+    mismatches = closure_mismatches(
         PUBLIC_SOURCE, SHIPPED_PUBLIC, exact_tree=True
     )
     mismatches.extend(
-        _closure_mismatches(
+        closure_mismatches(
             INTERNAL_SOURCE, SHIPPED_INTERNAL, exact_tree=False
         )
     )
     assert mismatches == [], "\n".join(mismatches)
+
+
+def test_closure_mismatches_reports_drift_and_respects_internal_subset(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    shipped = tmp_path / "shipped"
+    (source / "nested").mkdir(parents=True)
+    (shipped / "nested").mkdir(parents=True)
+    (source / "same.py").write_text("value = 1\n", encoding="utf-8")
+    (shipped / "same.py").write_text("value = 2\n", encoding="utf-8")
+    (source / "nested" / "missing.py").write_text("value = 3\n", encoding="utf-8")
+    (shipped / "extra.py").write_text("value = 4\n", encoding="utf-8")
+
+    assert closure_mismatches(source, shipped, exact_tree=True) == [
+        "extra shipped file: extra.py",
+        "missing shipped file: nested/missing.py",
+        "content drift: same.py",
+    ]
+    assert closure_mismatches(source, shipped, exact_tree=False) == [
+        "extra shipped file: extra.py",
+        "content drift: same.py",
+    ]
+
+
+def test_closure_mismatches_rejects_missing_internal_subtree(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    shipped = tmp_path / "shipped"
+    (source / "required").mkdir(parents=True)
+    shipped.mkdir()
+    (source / "required" / "runtime.py").write_text("value = 1\n", encoding="utf-8")
+    (source / "required_file.py").write_text("value = 2\n", encoding="utf-8")
+
+    assert closure_mismatches(
+        source,
+        shipped,
+        exact_tree=False,
+        required_paths=("required/", "required_file.py"),
+    ) == [
+        "missing shipped subtree: required/",
+        "missing shipped file: required_file.py",
+    ]
+
+
+def test_source_closure_check_is_non_mutating(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    template = tmp_path / "template"
+    public_source = tmp_path / "public-source"
+    internal_source = tmp_path / "internal-source"
+    handoff = tmp_path / "handoff"
+    public_shipped = handoff / "clinical_extraction_local"
+    internal_shipped = handoff / "clinical_extraction"
+    template.mkdir()
+    public_source.mkdir()
+    internal_source.mkdir()
+    public_shipped.mkdir(parents=True)
+    internal_shipped.mkdir(parents=True)
+    (public_source / "api.py").write_text("value = 1\n", encoding="utf-8")
+    (internal_source / "runtime.py").write_text("value = 2\n", encoding="utf-8")
+    (public_shipped / "api.py").write_text("value = 1\n", encoding="utf-8")
+    (internal_shipped / "runtime.py").write_text("value = 2\n", encoding="utf-8")
+    monkeypatch.setattr(handoff_builder, "TEMPLATE", template)
+    monkeypatch.setattr(handoff_builder, "PUBLIC_PACKAGE", public_source)
+    monkeypatch.setattr(handoff_builder, "SOURCE_PACKAGE", internal_source)
+    monkeypatch.setattr(handoff_builder, "HANDOFF", handoff)
+    monkeypatch.setattr(handoff_builder, "ALLOWED_RUNTIME_PREFIXES", ("runtime.py",))
+
+    handoff_builder.main(["--check-source-closure"])
+    (internal_shipped / "runtime.py").unlink()
+
+    with pytest.raises(RuntimeError, match="source-to-shipped handoff closure is stale"):
+        handoff_builder.main(["--check-source-closure"])
+    assert not (internal_shipped / "runtime.py").exists()
 
 
 def test_archive_matches_readable_tree_and_excludes_private_or_research_files() -> None:
