@@ -48,7 +48,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 )
 
 DEFAULT_REGISTRY_PATH = Path("experiments/registry.jsonl")
-PIPELINE_FAMILY = "exectv2_deterministic_all9"
+PIPELINE_FAMILY = "rules"
 MODEL = "(model-independent)"
 ALL_ENTITY_NAMES: tuple[str, ...] = tuple(spec.name for spec in ALL_ENTITIES)
 PRESCRIPTION_CLINICAL_HEADLINE = "clinical_headline"
@@ -456,7 +456,7 @@ def _registry_entry(
         ),
         surface_as_architecture=True,
         display_label="ExECTv2 rules-only dev140 reference",
-        architecture_family="rules_only",
+        architecture_family="rules",
         comparison_role="control",
         registry_roles=("architecture_comparator",),
     )

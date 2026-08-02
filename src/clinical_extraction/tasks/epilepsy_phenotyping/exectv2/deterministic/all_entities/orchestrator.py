@@ -96,7 +96,7 @@ def run_all9_on_letters(
     include_diagnosis_resolution_candidate: bool = False,
     include_diagnosis_benchmark_residuals: bool = False,
 ) -> list[PredictedLetter]:
-    """Compatibility batch adapter for the canonical rules orchestrator."""
+    """Compatibility batch adapter for the retained all-nine output."""
 
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.rules import (
         run_all9_on_letters as canonical_run_all9_on_letters,

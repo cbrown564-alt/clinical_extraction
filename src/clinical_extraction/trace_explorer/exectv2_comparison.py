@@ -24,8 +24,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
     load_letters_for_split,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities import (
-    run_all9_on_letters,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
+    rules,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.scoring import (
     aggregate_scores,
@@ -214,7 +214,7 @@ def _model_run(
 
 
 def _deterministic_run(root: Path, gold_letters: Sequence[ExectLetter]) -> dict[str, Any]:
-    predictions = run_all9_on_letters(gold_letters)
+    predictions = [rules.run_letter(letter).prediction for letter in gold_letters]
     pred_letters = [
         to_exect_letter(prediction, note_text=gold.note_text)
         for prediction, gold in zip(predictions, gold_letters, strict=True)
@@ -251,7 +251,11 @@ def _deterministic_run(root: Path, gold_letters: Sequence[ExectLetter]) -> dict[
         # artifact/run name explicit because replay manifests depend on it.
         "run_id": "rules",
         "saved_run_id": "exectv2_deterministic_all9_dev140",
-        "legacy_run_ids": ["exectv2_deterministic_all9_dev140"],
+        "retained_evidence_id": "exectv2_deterministic_all9_dev_20260714",
+        "legacy_run_ids": [
+            "exectv2_deterministic_all9_dev140",
+            "exectv2_deterministic_all9_dev_20260714",
+        ],
         "task": "exectv2",
         "label": "Deterministic all-9 · rules only",
         "model": "(model-independent)",

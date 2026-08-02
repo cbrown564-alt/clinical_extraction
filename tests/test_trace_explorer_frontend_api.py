@@ -55,8 +55,13 @@ def test_frontend_catalog_and_read_only_surfaces_use_the_live_api(client: TestCl
     rules = next(run for run in exect_runs.json()["runs"] if run["run_id"] == "rules")
     assert rules["pipeline_family"] == "rules"
     assert rules["saved_run_id"] == "exectv2_deterministic_all9_dev140"
+    assert rules["retained_evidence_id"] == "exectv2_deterministic_all9_dev_20260714"
 
-    for run_id in ("rules", "exectv2_deterministic_all9_dev140"):
+    for run_id in (
+        "rules",
+        "exectv2_deterministic_all9_dev140",
+        "exectv2_deterministic_all9_dev_20260714",
+    ):
         selected = client.get(f"/exectv2/runs/{run_id}")
         assert selected.status_code == 200
         assert selected.json()["run"]["run_id"] == "rules"
@@ -66,6 +71,22 @@ def test_frontend_catalog_and_read_only_surfaces_use_the_live_api(client: TestCl
     scorecard = client.get("/gan2026/reliability-scorecard")
     assert scorecard.status_code == 200
     assert scorecard.json()["dataset"] == "gan2026"
+
+
+def test_exect_alias_resolution_is_exact_and_collision_safe() -> None:
+    from clinical_extraction.trace_explorer.frontend_data import FrontendDataStore
+
+    store = FrontendDataStore(FRONTEND_FIXTURES)
+    store._exectv2_payload = {
+        "runs": [
+            {"run_id": "rules", "saved_run_id": "same-alias"},
+            {"run_id": "llm", "saved_run_id": "same-alias"},
+        ],
+        "shared_letters": [],
+    }
+
+    assert store.exectv2_run("unknown") is None
+    assert store.exectv2_run("same-alias") is None
 
 
 def test_exect_architectures_are_the_winning_mode_model_matrix(client: TestClient) -> None:

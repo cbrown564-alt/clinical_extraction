@@ -73,8 +73,24 @@ def run_letter(
         include_diagnosis_benchmark_residuals=include_diagnosis_benchmark_residuals,
     )
     comparison = project_primary_comparison(prediction)
+    stage_events = build_stage_events(letter, prediction, comparison)
+    return RulesRecordResult(
+        prediction=prediction,
+        comparison_projection=comparison,
+        stage_events=stage_events,
+    )
+
+
+def build_stage_events(
+    letter: ExectLetter,
+    prediction: PredictedLetter,
+    comparison: PredictedLetter | None = None,
+) -> tuple[ExectStageEvent, ...]:
+    """Build the stable rules trace for a completed prediction."""
+
+    comparison = comparison or project_primary_comparison(prediction)
     counts = dict(prediction.diagnostics.get("entity_counts", {}))
-    stage_events = (
+    return (
         ExectStageEvent(
             stage_id="exect.rules.extract_seizure_frequency",
             owner="deterministic",
@@ -117,11 +133,6 @@ def run_letter(
             changed=False,
             action="defer_gold_comparison_to_scorer",
         ),
-    )
-    return RulesRecordResult(
-        prediction=prediction,
-        comparison_projection=comparison,
-        stage_events=stage_events,
     )
 
 

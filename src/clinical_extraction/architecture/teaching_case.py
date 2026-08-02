@@ -935,15 +935,18 @@ def _fact_summary(fact: Any) -> str:
 
 
 def _exect_rules_only_run() -> MethodRun:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
-        rules,
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runner import (
+        Exectv2PipelineConfiguration,
+        Exectv2PipelineRunner,
     )
 
     manifest = load_manifest("exectv2_rules_only")
     run = MethodRun(method_id=manifest.method_id, manifest=manifest)
     letter = _exect_letter()
 
-    result = rules.run_letter(letter)
+    result = Exectv2PipelineRunner(
+        Exectv2PipelineConfiguration(method="rules")
+    ).run(letter).result
     for event in result.stage_events[:3]:
         run.record(
             event.stage_id,

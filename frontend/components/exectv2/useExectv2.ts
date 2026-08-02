@@ -5,7 +5,7 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { fetchExectv2Run, fetchExectv2Runs } from "@/lib/api";
 import { DATASET_PARAM } from "@/lib/datasets";
-import { sortExectv2Runs } from "@/lib/exectv2RunOptions";
+import { resolveExectv2RunId, sortExectv2Runs } from "@/lib/exectv2RunOptions";
 import type { Exectv2RunSummary } from "@/lib/types";
 
 export function useExectv2Runs() {
@@ -111,13 +111,20 @@ export function useExectv2Selection(runs: Exectv2RunSummary[]) {
   const selectedIds = useMemo<Set<string>>(() => {
     const valid = new Set(runs.map((r) => r.run_id));
     if (runsParam !== null) {
-      return new Set(runsParam.split(",").filter((id) => valid.has(id)));
+      return new Set(
+        runsParam
+          .split(",")
+          .map((id) => resolveExectv2RunId(runs, id))
+          .filter((id): id is string => id !== null && valid.has(id))
+      );
     }
     if (typeof window !== "undefined") {
       try {
         const saved = window.localStorage.getItem(SELECTION_STORAGE_KEY);
         if (saved) {
-          const ids = (JSON.parse(saved) as string[]).filter((id) => valid.has(id));
+          const ids = (JSON.parse(saved) as string[])
+            .map((id) => resolveExectv2RunId(runs, id))
+            .filter((id): id is string => id !== null && valid.has(id));
           if (ids.length > 0) return new Set(ids);
         }
       } catch {
