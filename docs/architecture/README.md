@@ -12,9 +12,10 @@ Everything here is generated from the stage manifests in `src/clinical_extractio
 ## Start here
 
 1. [Two tasks x three methods](diagrams/overview.md) - the whole system on one page.
-2. [Ownership matrix](diagrams/ownership_matrix.md) - who may change a clinical answer, everywhere.
-3. A method card below, for the method you need.
-4. The teaching case for that task, to see a real letter move through it.
+2. [Six-path teaching walkthrough](teaching_cases/six_paths.md) - one continuous reading order across the selected methods.
+3. [Ownership matrix](diagrams/ownership_matrix.md) - who may change a clinical answer, everywhere.
+4. A method card below, for the method you need.
+5. The teaching case for that task, to see a real letter move through it.
 
 ## Method cards
 
@@ -29,6 +30,7 @@ Everything here is generated from the stage manifests in `src/clinical_extractio
 
 ## Teaching cases
 
+- [Six-path walkthrough](teaching_cases/six_paths.md) - the supervisor reading order, including the deliberate failure and recovery.
 - [Gan 2026](teaching_cases/gan2026.md) - one letter where the model selects the wrong competing rate and the deterministic layer rescues it.
 - [ExECTv2](teaching_cases/exectv2.md) - one ordinary letter through all three methods, showing the four-family versus nine-entity comparison boundary.
 

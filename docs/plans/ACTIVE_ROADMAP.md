@@ -32,10 +32,14 @@ verified.
    vertical slice before starting ExECT `llm`, then `llm_with_rules`; shared
    code and route cleanup follows stabilized method identities. Sol's review
    findings are closed by `7d9c4000`.
-4. **Audited, implementation open:** build the README-led supervisor path. The
-   remaining gaps are a directly exposed five-stage diagram, one contiguous
-   six-path walkthrough, a deliberate failure/recovery path, and shallower
-   links to frontend startup, results, limits, and replay commands.
+4. **Implemented; focused verification passes:** build the README-led
+   supervisor path. The README now exposes the five-stage orientation, the
+   generated architecture layer provides one contiguous six-path walkthrough
+   with a deliberate failure/recovery example, and frontend startup, canonical
+   results/limits, and exact no-call replay commands are directly linked. The
+   broader Decision 0048 gate remains open until milestones 3-5 are complete;
+   the stale standalone handoff package is a strict blocker recorded in the
+   [handoff plan](supervisor_local_extraction_handoff_plan.md).
 5. **Audited, deletion open:** retain selected architecture, evidence, replay,
    component-attribution, safety, and validation owners. Delete only after an
    owner check; unreferenced frontend mocks, candidate-only prompt drafts,

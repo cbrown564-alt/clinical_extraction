@@ -1,10 +1,32 @@
 # Supervisor local clinical extraction handoff plan
 
 Date: 2026-07-20  
-Status: implemented in source; focused and clean-archive checks pass; supervisor endpoint and usability validation pending  
+Status: source implementation exists; shipped tree and ZIP are stale relative to current source; strict closure and supervisor-host checks pending
 Work mode: build one complete operational handoff, then verify it on the
 supervisor's endpoint  
 Owner: this document
+
+## Strict completion blocker: source-to-shipped closure
+
+The standalone `handoff/supervisor/` tree and
+`handoff/clinical_extraction_supervisor_handoff.zip` are not current. Their
+archive/hash self-consistency checks pass against the stale shipped tree, but
+they do not prove parity with the active source. The shipped ExECT runtime still
+identifies the older Decision 0040 `combined`/joint policy, while active source
+uses Decision 0045 `default`/`default`; shipped Gan code also predates the
+current canonical delegation.
+
+The source-to-shipped closure gate is
+`tests/test_supervisor_source_handoff.py::test_shipped_package_matches_current_source_closure`.
+It compares the public handoff package exactly and every shipped internal
+runtime file against the current source. It is an intentional strict `xfail`
+until the handoff is rebuilt, so a clean archive/hash result must not be
+reported as a current supervisor package. Rebuild and re-run the handoff's
+focused checks before calling the standalone handoff verified or directing a
+supervisor to use it.
+
+This blocker is outside the bounded README-led milestone. No archive rebuild or
+new model call is authorized by that milestone.
 
 ## Implementation state (2026-07-21)
 

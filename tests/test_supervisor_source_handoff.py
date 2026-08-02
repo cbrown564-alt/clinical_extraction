@@ -7,9 +7,15 @@ import sys
 import zipfile
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 HANDOFF = ROOT / "handoff" / "supervisor"
 ARCHIVE = ROOT / "handoff" / "clinical_extraction_supervisor_handoff.zip"
+PUBLIC_SOURCE = ROOT / "src" / "clinical_extraction_local"
+SHIPPED_PUBLIC = HANDOFF / "clinical_extraction_local"
+INTERNAL_SOURCE = ROOT / "src" / "clinical_extraction"
+SHIPPED_INTERNAL = HANDOFF / "clinical_extraction"
 TEXT_FILENAMES = frozenset({".env.example", ".gitignore"})
 TEXT_SUFFIXES = frozenset(
     {
@@ -36,6 +42,31 @@ def _canonical_bytes(path: Path) -> bytes:
     if path.name.lower() in TEXT_FILENAMES or path.suffix.lower() in TEXT_SUFFIXES:
         content = content.replace(b"\r\n", b"\n")
     return content
+
+
+def _source_files(root: Path) -> dict[str, Path]:
+    return {
+        path.relative_to(root).as_posix(): path
+        for path in root.rglob("*")
+        if path.is_file() and not _is_runtime_generated(path)
+    }
+
+
+def _closure_mismatches(source: Path, shipped: Path, *, exact_tree: bool) -> list[str]:
+    source_files = _source_files(source)
+    shipped_files = _source_files(shipped)
+    names = set(source_files) | set(shipped_files) if exact_tree else set(shipped_files)
+    mismatches: list[str] = []
+    for name in sorted(names):
+        source_path = source_files.get(name)
+        shipped_path = shipped_files.get(name)
+        if source_path is None:
+            mismatches.append(f"extra shipped file: {name}")
+        elif shipped_path is None:
+            mismatches.append(f"missing shipped file: {name}")
+        elif _canonical_bytes(source_path) != _canonical_bytes(shipped_path):
+            mismatches.append(f"content drift: {name}")
+    return mismatches
 
 
 def test_handoff_is_readable_source_first_and_has_both_workflows() -> None:
@@ -74,6 +105,27 @@ def test_source_manifest_lists_every_shipped_file_with_matching_hash() -> None:
         content = _canonical_bytes(path)
         assert recorded[name]["sha256"] == hashlib.sha256(content).hexdigest()
         assert recorded[name]["bytes"] == len(content)
+
+
+@pytest.mark.xfail(
+    strict=True,
+    reason=(
+        "handoff/supervisor is stale; rebuild it before Decision 0048 can "
+        "call the standalone package current"
+    ),
+)
+def test_shipped_package_matches_current_source_closure() -> None:
+    """Hash self-consistency is insufficient; compare shipped code to source."""
+
+    mismatches = _closure_mismatches(
+        PUBLIC_SOURCE, SHIPPED_PUBLIC, exact_tree=True
+    )
+    mismatches.extend(
+        _closure_mismatches(
+            INTERNAL_SOURCE, SHIPPED_INTERNAL, exact_tree=False
+        )
+    )
+    assert mismatches == [], "\n".join(mismatches)
 
 
 def test_archive_matches_readable_tree_and_excludes_private_or_research_files() -> None:

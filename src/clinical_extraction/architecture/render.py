@@ -568,6 +568,113 @@ def _render_run(run: MethodRun) -> list[str]:
     return lines
 
 
+def _case_slug(case: TeachingCase) -> str:
+    return "gan2026" if case.task == "gan2026" else "exectv2"
+
+
+def _method_anchor(run: MethodRun) -> str:
+    return run.manifest.method_label.lower().replace(" ", "-")
+
+
+def render_six_path_walkthrough(cases: Sequence[TeachingCase]) -> str:
+    """Render one compact reading order across all six selected paths.
+
+    The detailed stage observations stay in the task-specific generated cases.
+    This page is the single supervisor entry point: it sequences those
+    observations and derives its result and failure language from the
+    executable case output rather than duplicating pipeline facts by hand.
+    """
+
+    lines: list[str] = [GENERATED_BANNER, ""]
+    lines.append("# Six-path teaching walkthrough")
+    lines.append("")
+    lines.append(
+        "Read this page as one continuous tour of the selected system. The "
+        "tour uses two synthetic letters because Gan 2026 and ExECTv2 have "
+        "different output contracts: `TEACH-GAN-01` supplies the competing "
+        "frequency example, and `TEACH-EXECT-01` supplies the four-family "
+        "example. No model call is made; fixture model outputs are marked at "
+        "the model boundary, and every later observation comes from the real "
+        "implementation."
+    )
+    lines.append("")
+    lines.append(
+        "The five-stage diagram in the [repository README](../../../README.md) "
+        "is the short orientation. Each link below opens the generated method "
+        "card and the full stage trace for that path."
+    )
+    lines.append("")
+
+    lines.append("## Walk the six paths in order")
+    lines.append("")
+    path_runs = [
+        (teaching_case, method_run)
+        for teaching_case in cases
+        for method_run in teaching_case.runs
+    ]
+    for index, (case, run) in enumerate(path_runs, start=1):
+        manifest = run.manifest
+        result = run.final_answer
+        if run.correct is None:
+            verdict = "no correctness verdict is claimed for this fixture"
+        else:
+            verdict = "correct" if run.correct else "incorrect"
+        stage_names = " → ".join(stage.name for stage in manifest.stages)
+        lines.append(f"### {index}. {case.task_label} — {manifest.method_label}")
+        lines.append("")
+        lines.append(
+            f"**Letter:** `{case.letter_id}` · **Final output:** `{result}` · "
+            f"**Status:** {verdict}"
+        )
+        lines.append("")
+        lines.append(f"**Stages:** {stage_names}")
+        lines.append("")
+        lines.append(
+            f"The first clinical proposer is {manifest.prediction_owner}. "
+            f"Open the [method card](../method_cards/{manifest.method_id}.md) "
+            f"for the contract, then the [full stage trace]({_case_slug(case)}.md"
+            f"#{_method_anchor(run)}) for the observed inputs, outputs, and "
+            "ownership at each stage."
+        )
+        lines.append("")
+
+    gan = next(case for case in cases if case.task == "gan2026")
+    gan_runs = {run.method_id: run for run in gan.runs}
+    failed = gan_runs["gan2026_llm_only"]
+    recovered = gan_runs["gan2026_llm_with_rules"]
+    repairs = [
+        observation
+        for observation in recovered.observations
+        if observation.stage_id.startswith("gan.hybrid.repair.")
+        and observation.changed
+    ]
+    repair_name = repairs[0].stage_name if repairs else "the named deterministic repair stage"
+
+    lines.append("## Deliberate failure and recovery")
+    lines.append("")
+    lines.append(
+        f"**Failure:** the Gan LLM-only path returns `{failed.final_answer}` "
+        f"against the teaching answer `{gan.gold}`. Its full trace preserves "
+        "the model label and quoted evidence, making the selection error "
+        "visible rather than silently rewriting it."
+    )
+    lines.append("")
+    lines.append(
+        f"**Recovery:** the LLM-with-rules path starts from the same competing "
+        f"model choice and reaches `{recovered.final_answer}`. The change is "
+        f"credited to `{repair_name}`; the [Gan teaching trace]"
+        f"(gan2026.md#{_method_anchor(recovered)}) shows the before/after "
+        "values and the evidence check."
+    )
+    lines.append("")
+    lines.append(
+        "This is a mechanism example from a synthetic fixture, not a clinical "
+        "validation result."
+    )
+    lines.append("")
+    return "\n".join(lines)
+
+
 def _clip(text: str, limit: int = 600) -> str:
     single = text.replace("\n", " ")
     if len(single) <= limit:
@@ -608,11 +715,15 @@ def render_index() -> str:
         "system on one page."
     )
     lines.append(
-        "2. [Ownership matrix](diagrams/ownership_matrix.md) - who may change "
+        "2. [Six-path teaching walkthrough](teaching_cases/six_paths.md) - one "
+        "continuous reading order across the selected methods."
+    )
+    lines.append(
+        "3. [Ownership matrix](diagrams/ownership_matrix.md) - who may change "
         "a clinical answer, everywhere."
     )
-    lines.append("3. A method card below, for the method you need.")
-    lines.append("4. The teaching case for that task, to see a real letter move through it.")
+    lines.append("4. A method card below, for the method you need.")
+    lines.append("5. The teaching case for that task, to see a real letter move through it.")
     lines.append("")
     lines.append("## Method cards")
     lines.append("")
@@ -633,6 +744,10 @@ def render_index() -> str:
     lines.append("")
     lines.append("## Teaching cases")
     lines.append("")
+    lines.append(
+        "- [Six-path walkthrough](teaching_cases/six_paths.md) - the supervisor "
+        "reading order, including the deliberate failure and recovery."
+    )
     lines.append(
         "- [Gan 2026](teaching_cases/gan2026.md) - one letter where the model "
         "selects the wrong competing rate and the deterministic layer rescues "
@@ -687,6 +802,7 @@ def all_documents(cases: Sequence[TeachingCase]) -> dict[str, str]:
     for case in cases:
         slug = "gan2026" if case.task == "gan2026" else "exectv2"
         documents[f"teaching_cases/{slug}.md"] = render_teaching_case(case)
+    documents["teaching_cases/six_paths.md"] = render_six_path_walkthrough(cases)
     return documents
 
 
