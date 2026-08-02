@@ -58,6 +58,17 @@ def test_gan_rules_compatibility_runner_delegates_to_same_result() -> None:
     assert adapted.model_dump() == canonical.model_dump()
 
 
+def test_gan_rules_active_method_dispatches_to_the_canonical_orchestrator() -> None:
+    record = _record("The patient has one seizure per month.")
+    active = run_record(record, PipelineConfiguration(architecture="rules"))
+    legacy = run_record(
+        record,
+        PipelineConfiguration(architecture="deterministic_canonical_pipeline"),
+    )
+
+    assert active.to_pipeline_result().model_dump() == legacy.to_pipeline_result().model_dump()
+
+
 def test_gan_llm_canonical_replay_keeps_model_boundary_and_evidence_gate() -> None:
     record = _record("The patient has one seizure per month.")
     raw = (

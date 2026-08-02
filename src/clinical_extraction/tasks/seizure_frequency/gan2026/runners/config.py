@@ -12,6 +12,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_meta
 )
 
 PipelineArchitecture = Literal[
+    "rules",
     "deterministic_canonical_pipeline",
     "hybrid_structured_events",
     "llm_only_canonical_pipeline",

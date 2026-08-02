@@ -33,7 +33,7 @@ def run_split(
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Run the selected retained pipeline on one data split."""
     del candidate_set_jsonl_path
-    if architecture == "deterministic_canonical_pipeline":
+    if architecture in {"rules", "deterministic_canonical_pipeline"}:
         return _run_deterministic_split(
             records,
             architecture=architecture,
