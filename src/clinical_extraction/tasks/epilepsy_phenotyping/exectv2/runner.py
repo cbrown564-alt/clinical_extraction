@@ -27,6 +27,8 @@ class Exectv2PipelineConfiguration:
     api_base: str | None = None
     api_key: str | None = None
     timeout: int | None = None
+    route: str | None = None
+    dspy_cache: bool = True
     program: Any | None = None
     format_retry_program: Any | None = None
     split: str = "dev"
@@ -81,9 +83,14 @@ class Exectv2PipelineRunner:
                 max_tokens=self.config.max_tokens,
                 mode=self.config.mode,
                 raw_output=self.config.raw_output,
-                api_base=self.config.api_base,
+                api_base=(
+                    self.config.route
+                    if self.config.route is not None
+                    else self.config.api_base
+                ),
                 api_key=self.config.api_key,
                 timeout=self.config.timeout,
+                dspy_cache=self.config.dspy_cache,
                 split=self.config.split,
                 program=self.config.program,
                 format_retry_program=self.config.format_retry_program,

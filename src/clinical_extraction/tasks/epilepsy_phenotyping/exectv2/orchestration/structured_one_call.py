@@ -253,6 +253,8 @@ def produce_structured_letter(
         call_error=call_error,
         model=model,
         mode=mode,
+        route=api_base or "",
+        dspy_cache=dspy_cache,
         row=row,
     )
     return producer
@@ -268,11 +270,11 @@ def run_llm_only_letter(
     row = dict(producer.row)
     row["source_method_id"] = "exectv2_llm_only"
     row["source_pipeline_family"] = row.get("pipeline_family", PIPELINE_FAMILY)
+    row["active_method"] = "llm"
     row["method_id"] = "llm"
     row["pipeline_family"] = "llm"
     row["run_id"] = "llm"
     row["scored_view"] = "raw_candidate"
-    row["route"] = row.get("route", "")
     stages = _llm_only_producer_stages(producer)
     stages += (
         ExectStageEvent(
@@ -295,6 +297,19 @@ def run_llm_only_letter(
             action="defer_gold_comparison_to_scorer",
         ),
     )
+    row["route"] = producer.route
+    row["dspy_cache"] = producer.dspy_cache
+    row["producer_row"] = dict(producer.row)
+    row["prediction"] = producer.projected_letter.model_dump(mode="json")
+    row["stage_events"] = [event.to_dict() for event in stages]
+    row["scorer_projection"] = {
+        "view": "raw_candidate",
+        "n_mentions": len(producer.projected_letter.mentions),
+    }
+    row["first_prediction_changing_owner"] = (
+        "model" if producer.raw_output else None
+    )
+    row["first_failure"] = producer.call_error or next(iter(producer.parse_errors), None)
     return ExectRecordResult(
         prediction=producer.projected_letter,
         row=row,
@@ -578,6 +593,10 @@ def run_split(
     model_builder: Callable[..., Any] | None = None,
     program_factory: Callable[[], Any] | None = None,
     format_retry_factory: Callable[[], Any] | None = None,
+    program: Any | None = None,
+    format_retry_program: Any | None = None,
+    raw_outputs: Mapping[str, str] | None = None,
+    projection: Literal["producer", "llm"] = "producer",
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Compatibility batch adapter around the shared producer."""
 
@@ -590,31 +609,34 @@ def run_split(
     rows: list[dict[str, Any]] = [r for r in existing_rows if r.get("letter_id") in requested]
     n_resumed = len(rows)
     todo = pending_items(letters, completed, key_of=lambda letter: letter.letter_id)
-    program = None
-    retry_program = None
-    if mode == "live":
+    if projection not in {"producer", "llm"}:
+        raise ValueError(f"unsupported ExECT split projection: {projection}")
+    retry_program = format_retry_program
+    if mode == "live" and todo:
         model_builder = model_builder or build_dspy_lm
-        dspy.configure(
-            lm=model_builder(
-                model,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                cache=dspy_cache,
-                api_base=api_base,
-                api_key=api_key,
-                timeout=timeout,
+        if program is None:
+            dspy.configure(
+                lm=model_builder(
+                    model,
+                    temperature=temperature,
+                    max_tokens=max_tokens,
+                    cache=dspy_cache,
+                    api_base=api_base,
+                    api_key=api_key,
+                    timeout=timeout,
+                )
             )
-        )
-        program = (
-            program_factory()
-            if program_factory is not None
-            else DspyKeyEntitiesStructuredExtractor()
-        )
-        retry_program = (
-            format_retry_factory()
-            if format_retry_factory is not None
-            else FormatOnlyJsonRetry()
-        )
+            program = (
+                program_factory()
+                if program_factory is not None
+                else DspyKeyEntitiesStructuredExtractor()
+            )
+        if retry_program is None:
+            retry_program = (
+                format_retry_factory()
+                if format_retry_factory is not None
+                else FormatOnlyJsonRetry()
+            )
     prompt_version = prompt_version_for(config.prompt_profile)
     for letter in todo:
         producer = produce_structured_letter(
@@ -630,9 +652,14 @@ def run_split(
             split=split,
             program=program,
             format_retry_program=retry_program,
+            raw_output=(raw_outputs or {}).get(letter.letter_id),
             config=config,
         )
-        row = dict(producer.row)
+        if projection == "llm":
+            result = run_llm_only_letter(letter, producer)
+            row = dict(result.row)
+        else:
+            row = dict(producer.row)
         if progress_every and (len(rows) - n_resumed + 1) % progress_every == 0:
             rows.append(row)
             _emit_checkpoint(
@@ -664,6 +691,16 @@ def run_split(
         "diagnosis_policy_variant": config.diagnosis_policy_variant,
         "prescription_policy_variant": config.prescription_policy_variant,
     }
+    if projection == "llm":
+        metadata.update(
+            {
+                "active_method": "llm",
+                "method_id": "llm",
+                "pipeline_family": "llm",
+                "run_id": "llm",
+                "scored_view": "raw_candidate",
+            }
+        )
     metadata["summary"] = _summarize_rows(rows)
     return rows, metadata
 
