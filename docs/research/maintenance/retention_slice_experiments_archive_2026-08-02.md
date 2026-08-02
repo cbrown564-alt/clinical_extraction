@@ -55,16 +55,19 @@ and [`docs/experiments/retained_evidence_manifest.md`](../../experiments/retaine
 Claim boundary remains the existing Gan reference-cell and paper-provenance
 owners; these Markdown companions do not expand holdout permissions.
 
-## Out of scope / follow-ups
+## Follow-up hygiene (completed same day)
 
-- `frontend/public/mock-data/registry.json` still names a **missing** archive
-  path
-  `experiments/archive/gan2026_validation750_iterations/gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.md`.
-  That is mock-registry hygiene, not a reason to delete the three live archive
-  files. Clean that stale string in a separate frontend-mock slice if desired.
-- `scripts/check_doc_hygiene.py` mentions `experiments/archive/` only as a
-  preferred landing place instead of underscore-prefixed root directories; that
-  is guidance, not a keep/delete signal for these three files.
+Removed the stale mock-registry run
+`gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13` from
+`frontend/public/mock-data/registry.json`. Both listed artifact paths were
+already pruned from the repository (JSONL and archive Markdown); the live
+`experiments/registry.jsonl` retains only the aggregate-only test450 Markdown
+companion. This does not change the keep decision for the three hashed archive
+Markdown files above.
+
+`scripts/check_doc_hygiene.py` mentions `experiments/archive/` only as a
+preferred landing place instead of underscore-prefixed root directories; that is
+guidance, not a keep/delete signal for these three files.
 
 ## Verification
 

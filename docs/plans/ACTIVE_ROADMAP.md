@@ -50,9 +50,9 @@ verified.
    prototype removed; three candidate-only prompt draft notes removed; ExECT
    candidate configs kept (5); frontend `mock-data/artifacts/` kept;
    `experiments/archive/` classified **keep** (three Gan reference Markdown
-   companions hashed in the retained-evidence manifest). Optional follow-up:
-   stale missing archive path in `frontend/public/mock-data/registry.json`.
-   Owners: [REGENERATION.md](../REGENERATION.md) and
+   companions hashed in the retained-evidence manifest); stale
+   fresh-evidence validation750 mock-registry entry removed. Owners:
+   [REGENERATION.md](../REGENERATION.md) and
    `docs/research/maintenance/retention_slice_*_2026-08-02.md`.
 6. **Template complete; gate open:** the
    [restricted external-validation readiness template](../runbooks/external_validation_readiness.md)

@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-08-02 after `experiments/archive/` keep classification
+Last updated: 2026-08-02 after mock-registry fresh-evidence hygiene
 
 ## Current handoff objective
 
@@ -535,12 +535,12 @@ research hashes, or a new clean-checkout reproduction.
 
 1. Verify the rebuilt supervisor handoff on the intended host/endpoint and
    perform unaided README review. Source-to-shipped closure is already current.
-2. Optional retention hygiene only: clean the stale missing archive path in
-   `frontend/public/mock-data/registry.json`. The 2026-08-02 wave removed the
-   pipeline-flow HTML prototype and three superseded prompt draft notes;
-   audited and kept ExECT candidate configs, `frontend/public/mock-data/artifacts/`,
-   and all three `experiments/archive/` Gan reference Markdown companions
-   (hashed retained-evidence artifacts). Records:
+2. Retention cleanup for the named Decision 0048 candidates is complete. The
+   2026-08-02 wave removed the pipeline-flow HTML prototype, three superseded
+   prompt draft notes, and the stale fresh-evidence validation750 mock-registry
+   entry; audited and kept ExECT candidate configs,
+   `frontend/public/mock-data/artifacts/`, and all three
+   `experiments/archive/` Gan reference Markdown companions. Records:
    `docs/research/maintenance/retention_slice_*_2026-08-02.md`.
 3. Run the Decision 0048 strict completion gate and update its status only
    after supervisor-host, unaided review, selected live/fixture/replay,

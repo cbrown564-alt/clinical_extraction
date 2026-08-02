@@ -93,11 +93,11 @@ new prediction-changing replay requires its own predeclared protocol and
 baseline.
 
 The initial bounded inventory and the 2026-08-02 classification wave are
-complete for the named Decision 0048 cleanup candidates. Remaining optional
-hygiene includes the stale missing archive path in
-`frontend/public/mock-data/registry.json`. Owner decisions still needed for
-broader plain-name source refactor readiness do not authorize locked-row
-inspection or a model call.
+complete for the named Decision 0048 cleanup candidates. The stale
+fresh-evidence validation750 entry was removed from
+`frontend/public/mock-data/registry.json` after both listed artifacts were
+confirmed missing. Owner decisions still needed for broader plain-name source
+refactor readiness do not authorize locked-row inspection or a model call.
 The retained evidence index records selected paths, hashes, source commit, and
 policy versions.
 
