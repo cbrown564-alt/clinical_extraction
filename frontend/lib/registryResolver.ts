@@ -22,6 +22,14 @@ export const KNOWN_PIPELINE_FAMILIES = new Set<string>([
   "llm_only_canonical_pipeline",
 ]);
 
+const ACTIVE_FAMILY_BY_ALIAS: Record<string, string> = {
+  rules: "rules",
+  rules_only: "rules",
+  hybrid_structured_events: "hybrid_structured_events",
+  llm: "llm",
+  llm_only_canonical_pipeline: "llm",
+};
+
 /**
  * Resolve a family name (or pass through a full run id) against a registry.
  * Returns the chosen `RegistryEntry`'s `run_id`, or `null` if no match.
@@ -35,8 +43,11 @@ export function resolveFamilyDefaultRun(
   runs: RegistryEntry[],
   family: string
 ): string | null {
+  const activeFamily = ACTIVE_FAMILY_BY_ALIAS[family] ?? family;
   const inFamily = runs.filter(
-    (r) => r.pipeline_family === family && r.artifact_paths.some((p) => p.endsWith(".jsonl"))
+    (r) =>
+      r.pipeline_family === activeFamily &&
+      r.artifact_paths.some((p) => p.endsWith(".jsonl"))
   );
   if (inFamily.length === 0) return null;
 
