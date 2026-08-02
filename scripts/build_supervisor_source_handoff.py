@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import zipfile
+from collections.abc import Sequence
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -68,7 +69,15 @@ TEXT_SUFFIXES = frozenset(
 )
 
 
-def main() -> None:
+def main(argv: Sequence[str] | None = None) -> None:
+    if argv is None:
+        argv = sys.argv[1:]
+    if argv == ["--check-source-closure"]:
+        _check_source_closure()
+        print("Source-to-shipped handoff closure is current.")
+        return
+    if argv:
+        raise SystemExit("usage: build_supervisor_source_handoff.py [--check-source-closure]")
     _check_sources()
     runtime_files, runtime_assets = _trace_runtime_closure()
     _replace_destination()
@@ -94,6 +103,33 @@ def main() -> None:
 def _check_sources() -> None:
     if not TEMPLATE.is_dir() or not PUBLIC_PACKAGE.is_dir():
         raise RuntimeError("handoff template or public package is missing")
+
+
+def _check_source_closure() -> None:
+    """Check the existing handoff without rebuilding or modifying it."""
+
+    _check_sources()
+    if not HANDOFF.is_dir():
+        raise RuntimeError(f"shipped handoff is missing: {HANDOFF}")
+    mismatches = closure_mismatches(
+        PUBLIC_PACKAGE,
+        HANDOFF / "clinical_extraction_local",
+        exact_tree=True,
+    )
+    mismatches.extend(
+        closure_mismatches(
+            SOURCE_PACKAGE,
+            HANDOFF / "clinical_extraction",
+            exact_tree=False,
+            required_paths=ALLOWED_RUNTIME_PREFIXES,
+        )
+    )
+    if mismatches:
+        detail = "\n".join(f"- {mismatch}" for mismatch in mismatches)
+        raise RuntimeError(
+            "source-to-shipped handoff closure is stale; rebuild only after the "
+            f"active source identities are stable:\n{detail}"
+        )
 
 
 def _trace_runtime_closure() -> tuple[set[Path], set[Path]]:
@@ -218,18 +254,93 @@ def _remove_generated_junk() -> None:
         shutil.rmtree(path)
 
 
-def _canonical_bytes(path: Path) -> bytes:
+def canonical_bytes(path: Path) -> bytes:
     content = path.read_bytes()
     if path.name.lower() in TEXT_FILENAMES or path.suffix.lower() in TEXT_SUFFIXES:
         content = content.replace(b"\r\n", b"\n")
     return content
 
 
+def source_files(root: Path) -> dict[str, Path]:
+    """Return non-generated files under a source or shipped tree."""
+
+    return {
+        path.relative_to(root).as_posix(): path
+        for path in root.rglob("*")
+        if (
+            path.is_file()
+            and "__pycache__" not in path.parts
+            and path.suffix not in {".pyc", ".pyo"}
+        )
+    }
+
+
+def closure_mismatches(
+    source: Path,
+    shipped: Path,
+    *,
+    exact_tree: bool,
+    required_paths: Sequence[str] = (),
+) -> list[str]:
+    """Compare a source tree with its shipped copy.
+
+    Public handoff code uses ``exact_tree=True``. Internal runtime code uses
+    ``False`` because the explicit runtime allowlist intentionally ships only
+    the traced subset of the main package. ``required_paths`` names the
+    allowlisted files and subtrees that must still be present in both trees.
+    """
+
+    source_files_by_name = source_files(source)
+    shipped_files_by_name = source_files(shipped)
+    mismatches = _required_path_mismatches(
+        source_files_by_name,
+        shipped_files_by_name,
+        required_paths,
+    )
+    names = (
+        set(source_files_by_name) | set(shipped_files_by_name)
+        if exact_tree
+        else set(shipped_files_by_name)
+    )
+    for name in sorted(names):
+        source_path = source_files_by_name.get(name)
+        shipped_path = shipped_files_by_name.get(name)
+        if source_path is None:
+            mismatches.append(f"extra shipped file: {name}")
+        elif shipped_path is None:
+            mismatches.append(f"missing shipped file: {name}")
+        elif canonical_bytes(source_path) != canonical_bytes(shipped_path):
+            mismatches.append(f"content drift: {name}")
+    return mismatches
+
+
+def _required_path_mismatches(
+    source_files_by_name: dict[str, Path],
+    shipped_files_by_name: dict[str, Path],
+    required_paths: Sequence[str],
+) -> list[str]:
+    mismatches: list[str] = []
+    for required in sorted(required_paths):
+        if required.endswith("/"):
+            source_present = any(name.startswith(required) for name in source_files_by_name)
+            shipped_present = any(name.startswith(required) for name in shipped_files_by_name)
+            if not source_present:
+                mismatches.append(f"missing source subtree: {required}")
+            if not shipped_present:
+                mismatches.append(f"missing shipped subtree: {required}")
+            continue
+        if required not in source_files_by_name:
+            mismatches.append(f"missing source file: {required}")
+        if required not in shipped_files_by_name:
+            mismatches.append(f"missing shipped file: {required}")
+    return mismatches
+
+
 def _write_source_manifest() -> None:
     entries = []
     for path in sorted(HANDOFF.rglob("*")):
         if path.is_file() and path.name != "SOURCE_MANIFEST.json":
-            content = _canonical_bytes(path)
+            content = canonical_bytes(path)
             entries.append(
                 {
                     "path": path.relative_to(HANDOFF).as_posix(),
