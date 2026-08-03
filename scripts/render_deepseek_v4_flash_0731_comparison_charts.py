@@ -22,6 +22,7 @@ BLUE = "#2563A6"
 TEAL = "#167C80"
 ORANGE = "#D97706"
 GOLD = "#B8871B"
+FONT = "DejaVu Sans, Arial, sans-serif"
 
 
 def _esc(text: str) -> str:
@@ -33,8 +34,8 @@ def _write(path: Path, body: str, *, width: int, height: int) -> None:
     path.write_text(
         (
             '<?xml version="1.0" encoding="UTF-8"?>\n'
-            f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
-            f'viewBox="0 0 {width} {height}">\n'
+            f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" '
+            f'height="{height}" viewBox="0 0 {width} {height}">\n'
             f'<rect width="100%" height="100%" fill="{BG}"/>\n'
             f"{body}\n</svg>\n"
         ),
@@ -44,9 +45,9 @@ def _write(path: Path, body: str, *, width: int, height: int) -> None:
 
 def _header(title: str, subtitle: str, x: int = 36) -> str:
     return (
-        f'<text x="{x}" y="36" fill="{INK}" font-family="DejaVu Sans, Arial, sans-serif" '
+        f'<text x="{x}" y="36" fill="{INK}" font-family="{FONT}" '
         f'font-size="20" font-weight="700">{_esc(title)}</text>\n'
-        f'<text x="{x}" y="58" fill="{MUTED}" font-family="DejaVu Sans, Arial, sans-serif" '
+        f'<text x="{x}" y="58" fill="{MUTED}" font-family="{FONT}" '
         f'font-size="12">{_esc(subtitle)}</text>'
     )
 
@@ -74,56 +75,72 @@ def _barbell_chart(
     for i in range(5):
         tick = xmin + span * i / 4
         x = x_of(tick)
+        y2 = top + row_h * len(rows) - 8
         parts.append(
-            f'<line x1="{x:.1f}" y1="{top - 10}" x2="{x:.1f}" y2="{top + row_h * len(rows) - 8}" '
-            f'stroke="{GRID}" stroke-width="1"/>'
+            f'<line x1="{x:.1f}" y1="{top - 10}" x2="{x:.1f}" '
+            f'y2="{y2}" stroke="{GRID}" stroke-width="1"/>'
         )
         parts.append(
-            f'<text x="{x:.1f}" y="{top + row_h * len(rows) + 18}" fill="{MUTED}" '
-            f'font-family="DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="middle">'
-            f"{tick:.2f}</text>"
+            f'<text x="{x:.1f}" y="{top + row_h * len(rows) + 18}" '
+            f'fill="{MUTED}" font-family="{FONT}" font-size="11" '
+            f'text-anchor="middle">{tick:.2f}</text>'
         )
     for i, (label, prior, update) in enumerate(rows):
         y = top + i * row_h + 18
         x0, x1 = x_of(prior), x_of(update)
         parts.append(
-            f'<text x="24" y="{y + 4}" fill="{INK}" font-family="DejaVu Sans, Arial, sans-serif" '
-            f'font-size="13">{_esc(label)}</text>'
+            f'<text x="24" y="{y + 4}" fill="{INK}" '
+            f'font-family="{FONT}" font-size="13">{_esc(label)}</text>'
         )
         parts.append(
-            f'<line x1="{x0:.1f}" y1="{y}" x2="{x1:.1f}" y2="{y}" stroke="{GRID}" '
-            f'stroke-width="4" stroke-linecap="round"/>'
+            f'<line x1="{x0:.1f}" y1="{y}" x2="{x1:.1f}" y2="{y}" '
+            f'stroke="{GRID}" stroke-width="4" stroke-linecap="round"/>'
         )
         parts.append(
-            f'<circle cx="{x0:.1f}" cy="{y}" r="7" fill="{BG}" stroke="{BLUE}" stroke-width="2.4"/>'
+            f'<circle cx="{x0:.1f}" cy="{y}" r="7" fill="{BG}" '
+            f'stroke="{BLUE}" stroke-width="2.4"/>'
         )
-        parts.append(f'<circle cx="{x1:.1f}" cy="{y}" r="7" fill="{TEAL}" stroke="{TEAL}"/>')
+        parts.append(
+            f'<circle cx="{x1:.1f}" cy="{y}" r="7" '
+            f'fill="{TEAL}" stroke="{TEAL}"/>'
+        )
         prior_right = prior >= update
         parts.append(
-            f'<text x="{(x0 + 10) if prior_right else (x0 - 10):.1f}" y="{y + 4}" fill="{INK}" '
-            f'font-family="DejaVu Sans, Arial, sans-serif" font-size="11" '
-            f'text-anchor="{"start" if prior_right else "end"}">{prior:.3f}</text>'
+            f'<text x="{(x0 + 10) if prior_right else (x0 - 10):.1f}" '
+            f'y="{y + 4}" fill="{INK}" font-family="{FONT}" '
+            f'font-size="11" '
+            f'text-anchor="{"start" if prior_right else "end"}">'
+            f"{prior:.3f}</text>"
         )
         parts.append(
-            f'<text x="{(x1 - 10) if prior_right else (x1 + 10):.1f}" y="{y + 4}" fill="{INK}" '
-            f'font-family="DejaVu Sans, Arial, sans-serif" font-size="11" '
-            f'text-anchor="{"end" if prior_right else "start"}">{update:.3f}</text>'
+            f'<text x="{(x1 - 10) if prior_right else (x1 + 10):.1f}" '
+            f'y="{y + 4}" fill="{INK}" font-family="{FONT}" '
+            f'font-size="11" '
+            f'text-anchor="{"end" if prior_right else "start"}">'
+            f"{update:.3f}</text>"
         )
     legend_y = height - 34
     parts.append(
-        f'<circle cx="280" cy="{legend_y}" r="6" fill="{BG}" stroke="{BLUE}" stroke-width="2.2"/>'
-        f'<text x="294" y="{legend_y + 4}" fill="{MUTED}" font-family="DejaVu Sans, Arial, sans-serif" '
-        f'font-size="12">Prior (ruleset-matched)</text>'
+        f'<circle cx="280" cy="{legend_y}" r="6" fill="{BG}" '
+        f'stroke="{BLUE}" stroke-width="2.2"/>'
+        f'<text x="294" y="{legend_y + 4}" fill="{MUTED}" '
+        f'font-family="{FONT}" font-size="12">'
+        f"Prior (ruleset-matched)</text>"
         f'<circle cx="500" cy="{legend_y}" r="6" fill="{TEAL}"/>'
-        f'<text x="514" y="{legend_y + 4}" fill="{MUTED}" font-family="DejaVu Sans, Arial, sans-serif" '
-        f'font-size="12">0731 live</text>'
-        f'<text x="680" y="{legend_y + 4}" fill="{MUTED}" font-family="DejaVu Sans, Arial, sans-serif" '
-        f'font-size="12">{_esc(xlabel)}</text>'
+        f'<text x="514" y="{legend_y + 4}" fill="{MUTED}" '
+        f'font-family="{FONT}" font-size="12">0731 live</text>'
+        f'<text x="680" y="{legend_y + 4}" fill="{MUTED}" '
+        f'font-family="{FONT}" font-size="12">{_esc(xlabel)}</text>'
     )
     _write(OUTPUT / filename, "\n".join(parts), width=width, height=height)
 
 
-def _family_delta_chart(filename: str, title: str, subtitle: str, families: dict[str, dict]) -> None:
+def _family_delta_chart(
+    filename: str,
+    title: str,
+    subtitle: str,
+    families: dict[str, dict],
+) -> None:
     width, height = 900, 360
     left, bar_max = 220, 520
     top, row_h = 100, 48
@@ -133,9 +150,10 @@ def _family_delta_chart(filename: str, title: str, subtitle: str, families: dict
     zero = left + bar_max / 2
 
     parts = [_header(title, subtitle)]
+    y2 = top + row_h * len(order) - 10
     parts.append(
-        f'<line x1="{zero:.1f}" y1="{top - 8}" x2="{zero:.1f}" y2="{top + row_h * len(order) - 10}" '
-        f'stroke="{GRID}" stroke-width="1.5"/>'
+        f'<line x1="{zero:.1f}" y1="{top - 8}" x2="{zero:.1f}" '
+        f'y2="{y2}" stroke="{GRID}" stroke-width="1.5"/>'
     )
     for i, name in enumerate(order):
         delta = families[name]["delta"]
@@ -144,20 +162,25 @@ def _family_delta_chart(filename: str, title: str, subtitle: str, families: dict
         color = TEAL if delta >= 0 else ORANGE
         x = zero if delta >= 0 else zero - w
         parts.append(
-            f'<text x="24" y="{y + 22}" fill="{INK}" font-family="DejaVu Sans, Arial, sans-serif" '
-            f'font-size="13">{_esc(name)}</text>'
+            f'<text x="24" y="{y + 22}" fill="{INK}" '
+            f'font-family="{FONT}" font-size="13">{_esc(name)}</text>'
         )
         parts.append(
-            f'<rect x="{x:.1f}" y="{y + 8}" width="{max(w, 1):.1f}" height="24" fill="{color}" rx="3"/>'
+            f'<rect x="{x:.1f}" y="{y + 8}" width="{max(w, 1):.1f}" '
+            f'height="24" fill="{color}" rx="3"/>'
         )
         parts.append(
-            f'<text x="{(x + w + 8) if delta >= 0 else (x - 8):.1f}" y="{y + 25}" fill="{INK}" '
-            f'font-family="DejaVu Sans, Arial, sans-serif" font-size="12" '
-            f'text-anchor="{"start" if delta >= 0 else "end"}">{delta:+.4f}</text>'
+            f'<text x="{(x + w + 8) if delta >= 0 else (x - 8):.1f}" '
+            f'y="{y + 25}" fill="{INK}" font-family="{FONT}" '
+            f'font-size="12" '
+            f'text-anchor="{"start" if delta >= 0 else "end"}">'
+            f"{delta:+.4f}</text>"
         )
     parts.append(
-        f'<text x="{left}" y="{height - 28}" fill="{MUTED}" font-family="DejaVu Sans, Arial, sans-serif" '
-        f'font-size="12">Δ clinical fact F1 on ExECT dev140 (ruleset-matched)</text>'
+        f'<text x="{left}" y="{height - 28}" fill="{MUTED}" '
+        f'font-family="{FONT}" font-size="12">'
+        f"Δ clinical fact F1 on ExECT dev140 "
+        f"(ruleset-matched)</text>"
     )
     _write(OUTPUT / filename, "\n".join(parts), width=width, height=height)
 
@@ -166,15 +189,28 @@ def _gan_ladder_chart(filename: str, title: str, subtitle: str, cell: dict) -> N
     width, height = 900, 340
     left, right = 260, 820
     top = 110
+    frozen = cell["frozen_panel"]
+    prior = cell["prior_ruleset_matched"]
+    update = cell["update_0731"]
     steps = [
-        ("Frozen matched panel", cell["frozen_panel"]["purist_accuracy"], cell["frozen_panel"]["purist_correct"], BLUE),
+        (
+            "Frozen matched panel",
+            frozen["purist_accuracy"],
+            frozen["purist_correct"],
+            BLUE,
+        ),
         (
             "Final-ruleset replay",
-            cell["prior_ruleset_matched"]["purist_accuracy"],
-            cell["prior_ruleset_matched"]["purist_correct"],
+            prior["purist_accuracy"],
+            prior["purist_correct"],
             GOLD,
         ),
-        ("0731 live", cell["update_0731"]["purist_accuracy"], cell["update_0731"]["purist_correct"], TEAL),
+        (
+            "0731 live",
+            update["purist_accuracy"],
+            update["purist_correct"],
+            TEAL,
+        ),
     ]
     values = [v for _, v, _, _ in steps]
     xmin, xmax = min(values) - 0.03, max(values) + 0.03
@@ -188,32 +224,42 @@ def _gan_ladder_chart(filename: str, title: str, subtitle: str, cell: dict) -> N
     for i in range(len(steps) - 1):
         x0, x1 = x_of(steps[i][1]), x_of(steps[i + 1][1])
         parts.append(
-            f'<line x1="{x0:.1f}" y1="{y}" x2="{x1:.1f}" y2="{y}" stroke="{GRID}" '
-            f'stroke-width="5" stroke-linecap="round"/>'
+            f'<line x1="{x0:.1f}" y1="{y}" x2="{x1:.1f}" y2="{y}" '
+            f'stroke="{GRID}" stroke-width="5" stroke-linecap="round"/>'
         )
     for label, value, correct, color in steps:
         x = x_of(value)
         parts.append(f'<circle cx="{x:.1f}" cy="{y}" r="10" fill="{color}"/>')
         parts.append(
-            f'<text x="{x:.1f}" y="{y - 22}" fill="{INK}" font-family="DejaVu Sans, Arial, sans-serif" '
-            f'font-size="12" text-anchor="middle" font-weight="700">{value:.3f}</text>'
+            f'<text x="{x:.1f}" y="{y - 22}" fill="{INK}" '
+            f'font-family="{FONT}" font-size="12" text-anchor="middle" '
+            f'font-weight="700">{value:.3f}</text>'
         )
         parts.append(
-            f'<text x="{x:.1f}" y="{y + 34}" fill="{MUTED}" font-family="DejaVu Sans, Arial, sans-serif" '
-            f'font-size="12" text-anchor="middle">{_esc(label)}</text>'
+            f'<text x="{x:.1f}" y="{y + 34}" fill="{MUTED}" '
+            f'font-family="{FONT}" font-size="12" text-anchor="middle">'
+            f"{_esc(label)}</text>"
         )
         parts.append(
-            f'<text x="{x:.1f}" y="{y + 52}" fill="{MUTED}" font-family="DejaVu Sans, Arial, sans-serif" '
-            f'font-size="11" text-anchor="middle">{correct}/450 Purist</text>'
+            f'<text x="{x:.1f}" y="{y + 52}" fill="{MUTED}" '
+            f'font-family="{FONT}" font-size="11" text-anchor="middle">'
+            f"{correct}/450 Purist</text>"
         )
     parts.append(
-        f'<text x="36" y="{height - 28}" fill="{MUTED}" font-family="DejaVu Sans, Arial, sans-serif" '
-        f'font-size="12">Ruleset-matched compare uses final-ruleset replay (348), not frozen 344 alone.</text>'
+        f'<text x="36" y="{height - 28}" fill="{MUTED}" '
+        f'font-family="{FONT}" font-size="12">'
+        f"Ruleset-matched compare uses final-ruleset replay (348), "
+        f"not frozen 344 alone.</text>"
     )
     _write(OUTPUT / filename, "\n".join(parts), width=width, height=height)
 
 
-def _delta_summary_chart(filename: str, title: str, subtitle: str, rows: list[tuple[str, float, str]]) -> None:
+def _delta_summary_chart(
+    filename: str,
+    title: str,
+    subtitle: str,
+    rows: list[tuple[str, float, str]],
+) -> None:
     width, height = 900, 380
     left, max_w = 320, 420
     top, row_h = 100, 48
@@ -223,15 +269,16 @@ def _delta_summary_chart(filename: str, title: str, subtitle: str, rows: list[tu
         y = top + i * row_h
         w = abs(delta) / max_abs * max_w
         parts.append(
-            f'<text x="24" y="{y + 22}" fill="{INK}" font-family="DejaVu Sans, Arial, sans-serif" '
-            f'font-size="13">{_esc(label)}</text>'
+            f'<text x="24" y="{y + 22}" fill="{INK}" '
+            f'font-family="{FONT}" font-size="13">{_esc(label)}</text>'
         )
         parts.append(
-            f'<rect x="{left}" y="{y + 8}" width="{max(w, 2):.1f}" height="24" fill="{TEAL}" rx="3"/>'
+            f'<rect x="{left}" y="{y + 8}" width="{max(w, 2):.1f}" '
+            f'height="24" fill="{TEAL}" rx="3"/>'
         )
         parts.append(
             f'<text x="{left + w + 10:.1f}" y="{y + 25}" fill="{INK}" '
-            f'font-family="DejaVu Sans, Arial, sans-serif" font-size="12">'
+            f'font-family="{FONT}" font-size="12">'
             f"{delta:+.4f} {_esc(unit)}</text>"
         )
     _write(OUTPUT / filename, "\n".join(parts), width=width, height=height)
@@ -241,15 +288,20 @@ def main() -> None:
     data = json.loads(ARTIFACT.read_text(encoding="utf-8"))
     cells = data["cells"]
 
+    def _pair(cell_key: str) -> tuple[float, float]:
+        cell = cells[cell_key]
+        return cell["prior"]["value"], cell["update_0731"]["value"]
+
     _barbell_chart(
         "exect_prior_vs_0731.svg",
         "ExECT DeepSeek: prior vs 0731",
-        "Ruleset-matched on dev140; test60 uses retained prior panel vs live 0731",
+        "Ruleset-matched on dev140; test60 uses retained prior "
+        "panel vs live 0731",
         [
-            ("dev140 · llm only", cells["exectv2_dev140_llm_only"]["prior"]["value"], cells["exectv2_dev140_llm_only"]["update_0731"]["value"]),
-            ("dev140 · llm + rules", cells["exectv2_dev140_llm_with_rules"]["prior"]["value"], cells["exectv2_dev140_llm_with_rules"]["update_0731"]["value"]),
-            ("test60 · llm only", cells["exectv2_test60_llm_only"]["prior"]["value"], cells["exectv2_test60_llm_only"]["update_0731"]["value"]),
-            ("test60 · llm + rules", cells["exectv2_test60_llm_with_rules"]["prior"]["value"], cells["exectv2_test60_llm_with_rules"]["update_0731"]["value"]),
+            ("dev140 · llm only", *_pair("exectv2_dev140_llm_only")),
+            ("dev140 · llm + rules", *_pair("exectv2_dev140_llm_with_rules")),
+            ("test60 · llm only", *_pair("exectv2_test60_llm_only")),
+            ("test60 · llm + rules", *_pair("exectv2_test60_llm_with_rules")),
         ],
         xlabel="Clinical fact F1",
     )
@@ -272,13 +324,34 @@ def main() -> None:
     _delta_summary_chart(
         "cross_task_delta_summary.svg",
         "Ruleset-matched provider-update deltas",
-        "DeepSeek V4 Flash prior panel cell → 0731 live; tasks use native metrics",
+        "DeepSeek V4 Flash prior panel cell → 0731 live; "
+        "tasks use native metrics",
         [
-            ("ExECT dev140 llm + rules", cells["exectv2_dev140_llm_with_rules"]["delta"], "F1"),
-            ("ExECT dev140 llm only", cells["exectv2_dev140_llm_only"]["delta"], "F1"),
-            ("ExECT test60 llm + rules", cells["exectv2_test60_llm_with_rules"]["delta"], "F1"),
-            ("ExECT test60 llm only", cells["exectv2_test60_llm_only"]["delta"], "F1"),
-            ("Gan test450 llm + rules", gan["delta_vs_ruleset_matched_purist"], "Purist"),
+            (
+                "ExECT dev140 llm + rules",
+                cells["exectv2_dev140_llm_with_rules"]["delta"],
+                "F1",
+            ),
+            (
+                "ExECT dev140 llm only",
+                cells["exectv2_dev140_llm_only"]["delta"],
+                "F1",
+            ),
+            (
+                "ExECT test60 llm + rules",
+                cells["exectv2_test60_llm_with_rules"]["delta"],
+                "F1",
+            ),
+            (
+                "ExECT test60 llm only",
+                cells["exectv2_test60_llm_only"]["delta"],
+                "F1",
+            ),
+            (
+                "Gan test450 llm + rules",
+                gan["delta_vs_ruleset_matched_purist"],
+                "Purist",
+            ),
         ],
     )
     print(f"Wrote charts to {OUTPUT}")
