@@ -1,71 +1,27 @@
-# Clinical Extraction agent guidance
+# Clinical Extraction
 
-Global guidance in `~/.codex/AGENTS.md` applies here. The rules below protect clinical and research validity.
+Build modular deterministic, LLM, and hybrid pipelines for structured extraction from clinical notes. Preserve component attribution, evidence, reproducibility, and conservative claims. A higher score is not useful when its cause cannot be explained.
 
-## Product and research mandate
+Gan 2026 and ExECTv2 have different data and claim boundaries. Read `PROJECT_STATUS.md` before assuming which track is active; never transfer tuning or claim permissions between them.
 
-Build modular deterministic, LLM-only, and LLM-with-rules pipelines for structured extraction from clinical notes. Preserve component attribution, evidence, reproducibility, and conservative claims. A higher score is not useful if the source of the improvement cannot be explained.
+## Document owners
 
-The repository contains two research tracks with different data and claim boundaries. Read `PROJECT_STATUS.md` before assuming which track is active. Gan 2026 holdout evidence may be frozen while ExECTv2 remains active; never transfer tuning or claim permissions between them.
+Use `README.md` for the repository map, `docs/NAVIGATION.md` and `docs/THREAD_MAP.md` for routing, `docs/canon/README.md` for governing claims, `PROJECT_STATUS.md` for current work, and `docs/plans/ACTIVE_ROADMAP.md` for sequence. Then read the relevant design, decision, experiment, or runbook owner.
 
-## Canonical documents
+Do not add another roadmap, status board, evidence register, or research canon. Keep detailed results in their existing artifact or log; update `PROJECT_STATUS.md` only after its evidence owner.
 
-Read in this order as needed:
+## Research safeguards
 
-1. `README.md` for the repository map and current framing.
-2. `docs/NAVIGATION.md` and `docs/THREAD_MAP.md` to find the shortest relevant path.
-3. `docs/canon/README.md` for frozen or governing claims.
-4. `PROJECT_STATUS.md` for current work and evidence freshness.
-5. `docs/plans/ACTIVE_ROADMAP.md` for the active sequence.
-6. The relevant design, decision, experiment, research, or runbook owner.
+- Use the repository `.venv` for all Python work.
+- Record the dataset, split, row policy, scorer, model, prompt or program version, replay mode, and repair policy for each reported result.
+- Never tune on locked-test rows or inspect their failures during development. A holdout defect starts a new development candidate; it does not permit holdout repair.
+- Keep raw output, format repair, evidence selection, semantic deterministic repair, and scoring separable.
+- Treat any rule that changes clinical meaning, event selection, sentinel state, category, timeframe, denominator, cluster meaning, or benchmark family as a semantic rule, regardless of its file location.
+- Preserve source identifiers, valid evidence, permitted row-level mechanism examples, and reproducible machine-readable artifacts.
+- Never present synthetic development evidence as clinical benchmark performance or validation evidence as holdout generalization.
 
-Do not create another roadmap, status board, evidence register, or research canon. Update the document that owns the concern and archive superseded material through the documented lifecycle.
+Use the project skills whose descriptions match the task; their procedures and trigger rules belong in the skills, not here. Model-facing prompts, schemas, and field descriptions require the plain-language prompt audit.
 
-## Environment and commands
+Run focused tests while iterating. Before a broad completion claim, activate `.venv` and run the relevant combination of `python -m pytest`, `ruff check .`, and `mypy src`. Do not run expensive model calls, inspect locked data, or regenerate broad artifacts merely to update documentation.
 
-- Use the repository `.venv` for Python, tests, scripts, notebooks, and package imports. Use `$clinical-extraction-env` when command work is involved.
-- Install the package editable. Repair the environment before interpreting an import failure as a code failure.
-- Run focused tests during iteration. Before a broad completion claim, use the repository interpreter for the current host and run the relevant combination of:
-
-```powershell
-# Windows
-.venv\Scripts\python.exe -m pytest
-.venv\Scripts\python.exe -m ruff check .
-.venv\Scripts\python.exe -m mypy src
-```
-
-```sh
-# macOS or Linux
-.venv/bin/python -m pytest
-.venv/bin/python -m ruff check .
-.venv/bin/python -m mypy src
-```
-
-- Pytest tiers follow [Decision 0049](docs/decisions/0049-pytest-research-validity-firewall.md): plain `pytest` is the always-on research-validity firewall (`-m "not deep"`). Use `pytest -m deep` only for the capped deep allowlist. New always-on cases must pass always-on admission and should replace or narrow an existing case for the same obligation. Terms: `CONTEXT.md` Verification.
-- Never run expensive model calls, inspect locked data, or regenerate broad artifacts merely to update documentation.
-
-## Data, scoring, and evidence
-
-- Name the dataset, split, row policy, scorer, model, prompt/program version, cache or replay mode, and repair policy for every reported result.
-- Never tune from locked-test rows or inspect their failures during development. A final holdout defect starts a new development candidate; it does not license holdout repair.
-- Keep raw model selection, format-only repair, selected-evidence repair, semantic deterministic repair, and final scoring separable.
-- A change that alters clinical meaning, selected event, sentinel state, category, timeframe, denominator, cluster meaning, or benchmark family is a deterministic semantic rule even when placed in a parser or normalization module.
-- Categorize deterministic rules as `general`, `clinical_epilepsy`, `seizure_frequency`, `gan2026_specific`, or `benchmark_format` when that distinction affects claims or ablations.
-- Preserve source identifiers, evidence validity, row-level mechanism examples on permitted development data, and machine-readable artifacts that can reproduce reported tables.
-- Treat inferred unions, mixed raw outputs, no-call reparses, and validation-shaped policies as diagnostic until materialized and tested under a predeclared comparison.
-- Never describe synthetic development results as clinical benchmark performance or validation evidence as holdout generalization.
-
-## Working methods
-
-- Use `$clinical-extraction-research-loop` for experiments, research questions, ablations, robustness studies, and paper-facing interpretations.
-- Use `$grill-with-docs` for consequential plans or architecture choices; these repository rules provide the clinical checklist.
-- Use `$maintain-project-status` for `PROJECT_STATUS.md`; keep it current, concise, evidence-linked, and subordinate to canonical rules.
-- Use the narrow safeguards when their triggers apply: scoring, TDD, component attribution, LLM delta analysis, research drift, or thermonuclear review.
-- Use `$plain-language-prompt-auditor` whenever model-facing prompts, schemas, field descriptions, or DSPy signatures change.
-
-## Completion claims
-
-- Separate implemented, verified, validated, and promoted work.
-- Near-ceiling aggregate validation is not automatic evidence of progress. Prefer hard cases, hard slices, robustness, component ablation, calibration/selective action, or a frozen holdout protocol when those answer the mechanism question better.
-- Do not mark a research question answered from aggregate F1 alone. Require the stated component evidence, failure analysis, claim boundary, and transfer limits.
-- Update `PROJECT_STATUS.md` only after the evidence owner is updated. Keep detailed rows, experiment tables, and chronology in their existing artifact or log.
+Pytest tiers follow [Decision 0049](docs/decisions/0049-pytest-research-validity-firewall.md): plain `pytest` is the always-on research-validity firewall (`-m "not deep"`). Use `pytest -m deep` only for the capped deep allowlist. New always-on cases must pass always-on admission and should replace or narrow an existing case for the same obligation. Terms: `CONTEXT.md` Verification.
