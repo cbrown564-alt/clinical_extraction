@@ -22,8 +22,8 @@
       {
         "role": "dependency",
         "path": "pyproject.toml",
-        "sha256": "3c1b468056e4b6e44e13c6abedba44c5f87c814fd3a75b14ccf05f3b8dc38872",
-        "bytes": 1777
+        "sha256": "591515cab087e526be4f0bb588b12086f7a0a21ed7f0749639b460b16bd7035a",
+        "bytes": 1877
       },
       {
         "role": "dependency",
@@ -1709,8 +1709,8 @@
       "artifacts": [
         {
           "path": "docs/research/six_model_comparison_report_2026-07-18.md",
-          "sha256": "541ec7c47eeb41fcc0e4b218420426573c9a9c8ed20de1575aa24d7d1a0f2288",
-          "bytes": 28374,
+          "sha256": "5e432aaa98ce2fe052423e6d8f36a64afe89392084a73bde5fd641a79f2f2d38",
+          "bytes": 24281,
           "retrieval": "git_path"
         },
         {
@@ -2195,14 +2195,14 @@
         },
         {
           "path": "docs/canon/09_cross_task_reliability.md",
-          "sha256": "42874c2ff6c57d2f6b67ff12ffaa7f17364ba7b009c6f333f1dd46ee4327672b",
-          "bytes": 3578,
+          "sha256": "c83fbadcb7e68825f60ec0bfce99ad66b7f8637c4f6c388861e8cb56747203b1",
+          "bytes": 3570,
           "retrieval": "git_path"
         },
         {
           "path": "docs/canon/10_paper_provenance.md",
-          "sha256": "15a109f0058e44326bb0a986c31be3a59cb85112a288831900fe69802ac7e8ae",
-          "bytes": 13225,
+          "sha256": "945be01385abb879003456d318394fa850d28094feb01d6486c987bab3bd1b9a",
+          "bytes": 13241,
           "retrieval": "git_path"
         }
       ]
