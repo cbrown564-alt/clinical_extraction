@@ -8,6 +8,7 @@ Rules enforced
 2. No underscore-prefixed directories at repository root (orphan dumps).
 3. experiments/*.md at repo root must exactly match the retained-evidence
    allowlist.
+4. Generated output roots must never be tracked.
 
 Run: python scripts/check_doc_hygiene.py
 """
@@ -24,6 +25,7 @@ ROOT_MARKDOWN_ALLOWED = frozenset(
 )
 ALLOWLIST_PATH = Path(__file__).resolve().parent / "doc_hygiene_experiments_root_allowlist.txt"
 FORBIDDEN_TOOL_STATE = (".claude", ".playwright-cli", ".zcode")
+FORBIDDEN_TRACKED_ROOTS = (".tmp", "logs", "mlruns", "output", "scratch", "tmp")
 
 
 def repo_root() -> Path:
@@ -57,29 +59,47 @@ def check_root_underscore_dirs(root: Path) -> list[str]:
     return violations
 
 
+def existing_tracked_paths(root: Path) -> tuple[str, ...]:
+    """Return tracked files that still exist in the working tree."""
+
+    result = subprocess.run(
+        ["git", "ls-files", "--cached"],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return tuple(
+        path
+        for path in result.stdout.splitlines()
+        if _is_file_without_access_error(root / Path(path))
+    )
+
+
 def check_forbidden_tool_state(
     root: Path, *, tracked_paths: Sequence[str] | None = None
 ) -> list[str]:
     """Reject checked-in state produced by local coding and browser tools."""
 
-    if tracked_paths is None:
-        result = subprocess.run(
-            ["git", "ls-files", "--cached"],
-            cwd=root,
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-        tracked_paths = [
-            path
-            for path in result.stdout.splitlines()
-            if _is_file_without_access_error(root / Path(path))
-        ]
+    paths = existing_tracked_paths(root) if tracked_paths is None else tracked_paths
     return [
         f"tool-generated state directory: {name}/ "
         "(keep agent configuration outside the repository)"
         for name in FORBIDDEN_TOOL_STATE
-        if any(path == name or path.startswith(f"{name}/") for path in tracked_paths)
+        if any(path == name or path.startswith(f"{name}/") for path in paths)
+    ]
+
+
+def check_forbidden_tracked_roots(
+    root: Path, *, tracked_paths: Sequence[str] | None = None
+) -> list[str]:
+    """Reject generated output and scratch directories committed at repo root."""
+
+    paths = existing_tracked_paths(root) if tracked_paths is None else tracked_paths
+    return [
+        f"generated output directory is tracked: {name}/"
+        for name in FORBIDDEN_TRACKED_ROOTS
+        if any(path == name or path.startswith(f"{name}/") for path in paths)
     ]
 
 
@@ -118,10 +138,12 @@ def check_experiments_root_allowlist(root: Path, allowlist: frozenset[str]) -> l
 def check_doc_hygiene(root: Path | None = None) -> list[str]:
     base = repo_root() if root is None else root
     allowlist = load_allowlist()
+    tracked_paths = existing_tracked_paths(base)
     return (
         check_root_markdown(base)
         + check_root_underscore_dirs(base)
-        + check_forbidden_tool_state(base)
+        + check_forbidden_tool_state(base, tracked_paths=tracked_paths)
+        + check_forbidden_tracked_roots(base, tracked_paths=tracked_paths)
         + check_experiments_root_allowlist(base, allowlist)
     )
 

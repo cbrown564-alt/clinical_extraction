@@ -11,16 +11,16 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.scoring import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
+    score_concept_identity,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
     aggregate_scores,
     clinical_headline_scores,
     headline_keys,
     letters_for_rows,
     row_family_score,
     score_dict,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
-    score_concept_identity,
 )
 
 ROOT = Path(__file__).resolve().parents[1]

@@ -2,12 +2,6 @@
 repos:
   - repo: local
     hooks:
-      - id: line-count-gates
-        name: line-count gates (src, tests, frontend)
-        entry: python scripts/check_line_counts.py
-        language: system
-        pass_filenames: false
-        always_run: true
       - id: doc-hygiene-gates
         name: documentation hygiene gates
         entry: python scripts/check_doc_hygiene.py

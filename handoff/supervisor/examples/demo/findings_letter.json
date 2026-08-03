@@ -1,0 +1,67 @@
+{
+  "id": "TEACH-EXECT-01",
+  "mode": "prepared",
+  "workflow": "clinical_findings",
+  "synthetic": true,
+  "text": "Epilepsy clinic letter, 14 March 2026.\n\nDiagnosis: focal epilepsy.\n\nMr B has been seizure free since March 2025. MRI brain was normal. He continues on levetiracetam 500mg twice daily.",
+  "note": "Four-family findings are a separate contract from the Gan-derived single current seizure-frequency answer.",
+  "result": {
+    "diagnoses": [
+      {
+        "family": "Diagnosis",
+        "value": "focal epilepsy",
+        "attributes": {},
+        "evidence": "Diagnosis: focal epilepsy.",
+        "evidence_exact": true,
+        "first_prediction_owner": "model",
+        "deterministic_actions": [],
+        "warnings": []
+      }
+    ],
+    "seizure_frequencies": [
+      {
+        "family": "SeizureFrequency",
+        "value": "seizure free since March 2025",
+        "attributes": {
+          "state": "seizure_free"
+        },
+        "evidence": "Mr B has been seizure free since March 2025",
+        "evidence_exact": true,
+        "first_prediction_owner": "model",
+        "deterministic_actions": [],
+        "warnings": []
+      }
+    ],
+    "prescriptions": [
+      {
+        "family": "Prescription",
+        "value": "levetiracetam 500mg twice daily",
+        "attributes": {
+          "drug": "levetiracetam",
+          "dose": "500mg",
+          "frequency": "twice daily"
+        },
+        "evidence": "He continues on levetiracetam 500mg twice daily",
+        "evidence_exact": true,
+        "first_prediction_owner": "model",
+        "deterministic_actions": [],
+        "warnings": []
+      }
+    ],
+    "investigations": [
+      {
+        "family": "Investigations",
+        "value": "MRI brain was normal",
+        "attributes": {
+          "modality": "MRI",
+          "result": "normal"
+        },
+        "evidence": "MRI brain was normal",
+        "evidence_exact": true,
+        "first_prediction_owner": "model",
+        "deterministic_actions": [],
+        "warnings": []
+      }
+    ]
+  }
+}

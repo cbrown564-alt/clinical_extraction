@@ -34,6 +34,10 @@ cp .env.example .env
 prompt and response schema. It reports the requested and returned model, JSON
 mode, thinking state, final-content state, and schema result.
 
+Prefer a walkthrough? Open [`demo.ipynb`](demo.ipynb) from this directory
+(Cursor, VS Code, or Jupyter). The prepared cells use synthetic fixtures only
+and make no model call; optional live cells use the same `.env` as the CLI.
+
 ## Endpoint settings
 
 Edit `.env`:

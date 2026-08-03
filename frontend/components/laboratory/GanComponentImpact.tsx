@@ -60,7 +60,6 @@ export default createComponentImpactSurface<
   },
   headerRight: () => (
     <>
-      <SurfaceLink surface="reliability" datasetId="gan2026" label="Reliability" />
       <SurfaceLink surface="observatory" datasetId="gan2026" label="Runs" />
     </>
   ),

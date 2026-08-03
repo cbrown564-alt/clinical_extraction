@@ -307,11 +307,9 @@ def run_ablation(request: RunAblationRequest, data: FrontendDataDependency) -> d
 
 
 _STATIC_ROUTES = {
-    "/exectv2/reliability-scorecard": "exectv2_reliability_scorecard",
     "/exectv2/sf-inspection": "exectv2_sf_inspection",
     "/gan2026/component-ablation": "gan2026_component_ablation",
     "/gan2026/component-transitions": "gan2026_component_transitions",
-    "/gan2026/reliability-scorecard": "gan2026_reliability_scorecard",
     "/gold-noise/ledgers": "gold_noise_ledgers",
     "/gold-noise/gan-audit": "gold_noise_gan_audit",
     "/gold-noise/issues": "gold_noise_issues",

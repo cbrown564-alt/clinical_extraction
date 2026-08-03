@@ -5,7 +5,6 @@ import {
   BarChart3,
   Boxes,
   GalleryHorizontalEnd,
-  ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
 import type { DatasetTone, ExplorerSurface } from "@/lib/datasets";
@@ -58,13 +57,6 @@ export const SURFACE_META: Record<ExplorerSurface, SurfaceMeta> = {
     tone: "error",
     Icon: GalleryHorizontalEnd,
   },
-  reliability: {
-    surface: "reliability",
-    label: "Reliability Scorecard",
-    href: "/reliability-scorecard",
-    tone: "success",
-    Icon: ShieldCheck,
-  },
 };
 
 /** Surfaces in canonical app-shell order. */
@@ -72,7 +64,6 @@ export const SURFACE_ORDER: ExplorerSurface[] = [
   "workbench",
   "observatory",
   "laboratory",
-  "reliability",
   "gallery",
 ];
 

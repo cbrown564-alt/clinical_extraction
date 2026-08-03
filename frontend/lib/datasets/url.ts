@@ -23,7 +23,6 @@ const SURFACE_PATHS: Record<ExplorerSurface, string> = {
   workbench: "/workbench",
   observatory: "/observatory",
   laboratory: "/laboratory",
-  reliability: "/reliability-scorecard",
   gallery: "/gallery",
 };
 
