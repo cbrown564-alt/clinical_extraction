@@ -43,12 +43,14 @@ None appear in `retained_evidence_manifest.json`. Recovery: Git history.
 
 - Peer-satellite cull among `docs/research/*` and focused experiment reports
   that are only reachable from other demoted/research pages.
-- Manuscript provenance wording pass (separate from index triage).
+- Manuscript provenance wording pass: completed 2026-08-03 for Decision 0046
+  primary ExECT rows in `docs/research/paper_manuscript_2026-06-26.md`
+  (separate from index triage).
 
 ## Follow-on completed outside this slice
 
 - README currency pass (2026-08-03): decluttered glance layer; Gan Purist and
-  ExECT `clinical_headline` primary results shown as peers in `README.md` and
+  ExECT clinical fact F1 primary results shown as peers in `README.md` and
   `PROJECT_STATUS.md` Current outcome.
 
 ## Checks

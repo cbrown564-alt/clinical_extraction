@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-08-03 after handoff prepared demo notebook
+Last updated: 2026-08-03 after six-model final panel consolidation
 
 ## Current handoff objective
 
@@ -59,17 +59,17 @@ and exact no-call replay of the six retained reference cells. Decision 0047
 canonical orchestrators own the six selected task-method paths. Gan and ExECT
 results are equally primary; scores are not interchangeable across tasks.
 
-**Gan 2026 (Purist):** selected `llm_with_rules` final-ruleset no-call replay
-gives Sol `381/450` on `test450`; on `dev750`, mini `677/750` and Sol/Luna
-`660/750`. Development method peers on `dev750` (GPT-4.1-mini three-way
-reference): rules `697/750`, llm `581/750`. Owners:
+**Gan 2026 (Purist):** selected `llm_with_rules` final holdout results give Sol
+`0.85` on `test450`; DeepSeek `0.82`. On `dev750`, mini `0.90` and Sol/Luna
+`0.88`. Development method peers on `dev750` (GPT-4.1-mini three-way
+reference): rules `0.93`, llm `0.77`. Owners:
+[final panel](experiments/six_model_final_panel_20260803/panel_aggregate.json),
 [comparison report](docs/research/six_model_comparison_report_2026-07-18.md),
 [paper claim status C16](docs/canon/10_paper_provenance.md),
-[final-ruleset replay](experiments/gan2026_six_model_current_floors_replay_20260731/replay_summary.json),
 retained three-way reference cells in
 [retained evidence index](docs/experiments/retained_evidence_manifest.md).
 
-**ExECTv2 (`clinical_headline` F1):** Decision 0046 locks the paper's primary
+**ExECTv2 (clinical fact F1):** Decision 0046 locks the paper's primary
 three-method comparison on Sol-matched four-family scores. Primary fills:
 rules `0.8160` (`dev140`) / `0.7154` (`test60`); Sol llm `0.8097` / `0.7771`;
 Sol llm_with_rules `0.8920` / `0.8047`. Owners:
@@ -80,7 +80,8 @@ Sol llm_with_rules `0.8920` / `0.8047`. Owners:
 
 ## Fresh evidence
 
-- **Selected matrix owners:** [comparison report](docs/research/six_model_comparison_report_2026-07-18.md),
+- **Selected matrix owners:** [final panel](experiments/six_model_final_panel_20260803/panel_aggregate.json),
+  [comparison report](docs/research/six_model_comparison_report_2026-07-18.md),
   [retained evidence index](docs/experiments/retained_evidence_manifest.md),
   [paper claim status](docs/canon/10_paper_provenance.md).
 - **Decision 0048/0049:** method migrations and pytest firewall are verified on
@@ -88,8 +89,15 @@ Sol llm_with_rules `0.8920` / `0.8047`. Owners:
   ExECT as equal primary strips; host/unaided handoff checks and the 0048
   status flip remain open.
 - **Decision 0046 primary fills:** A→B→C protocol complete; numbers above.
-  A consistency glance may still find residual manuscript wording drift; that
-  is a separate Next item, not part of index triage.
+  Manuscript primary ExECT three-method rows aligned 2026-08-03
+  ([working manuscript](docs/research/paper_manuscript_2026-06-26.md)); GEPA
+  and `v08` remain secondary controls only.
+- **DeepSeek V4-Flash-0731:** folded into the
+  [final six-model panel](experiments/six_model_final_panel_20260803/panel_aggregate.json)
+  (ExECT `test60` `0.81`; Gan Purist `0.82`). Provider-update study remains at
+  [0731 report](docs/research/deepseek_v4_flash_0731_matched_comparison_report_2026-08-03.md).
+  Decision 0046 Sol method-row fills are unchanged. Gan llm_only `test450` =
+  `0.74`; matched llm_only `dev750` re-run is **in progress**.
 - **Open DeepSeek unknown thread:** U stopped after UNK-slice pilot; do not
   resume U to full-750. Owners:
   [thread](docs/research/gan2026_deepseek_unknown_competence_thread_2026-07-31.md),
@@ -124,9 +132,7 @@ Sol llm_with_rules `0.8920` / `0.8047`. Owners:
    to 750; defer local-route DeepSeek parity until its runtime exists; retain
    independent clinical review as unvalidated; never tune from sealed
    `test450`, Real(300), or ExECT `test60`.
-4. If manuscript wording still contradicts Decision 0046 primary rows, open a
-   separate provenance edit.
-5. Optional: if the standalone handoff package should point supervisors at the
+4. Optional: if the standalone handoff package should point supervisors at the
    repository glance layer, add a short link from `handoff/source/README.md`
    (operational package README remains distinct from the research front door).
 
@@ -139,7 +145,7 @@ Sol llm_with_rules `0.8920` / `0.8047`. Owners:
 - Supervisor endpoint/host setup and unaided README use remain open.
 - ExECT joint/`combined` assembly stays archived under
   [decision 0045](docs/decisions/0045-exect-default-policy-not-joint-combined.md);
-  it is not an active comparison surface.
+  it is not an active comparison.
 
 ## Data and claim boundaries
 
@@ -148,9 +154,9 @@ Sol llm_with_rules `0.8920` / `0.8047`. Owners:
 - **ExECT `dev140`:** development review is permitted.
 - **ExECT `test60`:** locked and aggregate-only; sealed row artifacts must not
   be inspected or shared.
-- **Scores:** Gan reports Purist and Pragmatic label accuracy. ExECT
-  `clinical_headline` is an internal research metric, not the published
-  benchmark.
+- **Scores:** Gan reports Purist and Pragmatic label accuracy. ExECT clinical
+  fact recovery is an internal research metric, not the published benchmark
+  (code and saved scores still use `clinical_headline`).
 
 ## Canonical owners
 
@@ -160,8 +166,11 @@ Sol llm_with_rules `0.8920` / `0.8047`. Owners:
 - Work order: [active roadmap](docs/plans/ACTIVE_ROADMAP.md)
 - Regeneration and retention triage: [REGENERATION.md](docs/REGENERATION.md)
 - Handoff refactor: [Decision 0048](docs/decisions/0048-comprehension-and-handoff-refactor.md)
-- Cross-task six-model synthesis:
+- Cross-task six-model final results:
+  [final panel](experiments/six_model_final_panel_20260803/panel_aggregate.json),
   [comparison report](docs/research/six_model_comparison_report_2026-07-18.md)
+- DeepSeek V4-Flash-0731 matched comparison:
+  [report](docs/research/deepseek_v4_flash_0731_matched_comparison_report_2026-08-03.md)
 - DeepSeek unknown-competence (open):
   [thread](docs/research/gan2026_deepseek_unknown_competence_thread_2026-07-31.md)
 - Active documentation index: [NAVIGATION.md](docs/NAVIGATION.md) and

@@ -1,19 +1,20 @@
 # Naming guide
 
-Last updated: 2026-07-15
+Last updated: 2026-08-03
 
 Use the plain name in prose and commands. Give an internal identifier once only
 when linking to saved evidence or code that still uses it.
 
 ## Pipeline methods
 
-| Plain name | Saved or internal identifiers | Meaning |
-| --- | --- | --- |
-| Rules only | `rules_only`, `deterministic_canonical_pipeline` | Deterministic rules determine the clinical facts |
-| LLM only | `llm_only`, `llm_only_canonical_pipeline` | The model determines the clinical facts; code validates or formats them |
-| LLM with rules | `hybrid`, `hybrid_structured_events` (retained row and filename ids) | The model and deterministic code can both affect clinical meaning |
+| Plain name | Active identity | Saved or internal identifiers | Meaning |
+| --- | --- | --- | --- |
+| Rules only | `rules` | `rules_only`, `deterministic_canonical_pipeline` | Deterministic rules determine the clinical facts |
+| LLM only | `llm` | `llm_only`, `llm_only_canonical_pipeline` | The model determines the clinical facts; code validates or formats them |
+| LLM with rules | `llm_with_rules` | `hybrid`, `hybrid_structured_events`, `hybrid_full_stack` (retained row, filename, and ruleset ids) | The model and deterministic code can both affect clinical meaning |
 
-Current Gan commands use `rules`, `llm`, and `llm_with_rules`.
+Do not use `hybrid` as the supervisor-facing method name. Keep it when citing a
+saved identity that still contains the word.
 
 ## Saved result identifiers
 
@@ -28,30 +29,33 @@ Do not use a version code as if it explains the method.
 
 ## Scores
 
-| Code or term | Plain description | Important limit |
+| Plain name | Code or saved term | Important limit |
 | --- | --- | --- |
-| `clinical_headline` | De-duplicated clinical fact recovery across the main ExECT entities | Internal research score, not the published strict benchmark |
-| `state_profile` | Combined seizure-frequency state score | Used for seizure-frequency development only |
-| Purist | Strict Gan label accuracy | Primary Gan holdout score |
-| Pragmatic | Gan accuracy with specified label equivalences | Secondary score; do not replace Purist in holdout claims |
-| Phrase/CUI/full attributes | Published ExECT representation metrics | Required for a published-benchmark comparison |
-| Evidence groundedness | Share of cited evidence found in the note after neutral text repair | Measures citation presence, not clinical correctness |
+| Clinical fact recovery / clinical fact F1 | `clinical_headline`, `headline_target` | Internal research score, not the published strict benchmark |
+| Seizure-frequency state profile | `state_profile` | Used for seizure-frequency development only |
+| Purist | Purist | Strict Gan label accuracy; primary Gan holdout score |
+| Pragmatic | Pragmatic | Gan accuracy with specified label equivalences; secondary score |
+| Phrase / CUI / full attributes | published-metric views | Required for a published-benchmark comparison |
+| Evidence groundedness | evidence groundedness | Measures citation presence, not clinical correctness |
 
 ## Data splits
 
-| Code | Plain description | Row policy |
+| Plain name | Code | Row policy |
 | --- | --- | --- |
-| `validation750` | Gan development split (`dev750`); retained filename identifier | Row review allowed |
-| `test450` | Gan locked holdout, 450 letters | Saved aggregates only |
-| `dev140` | ExECT development split, 140 letters | Row review allowed |
-| `full200` | All 200 ExECT letters | Includes development rows; test60 row review remains barred |
+| Gan development split | `dev750` in prose; retained filenames and API `split` may say `validation750` | Row review allowed |
+| Gan locked holdout | `test450` | Saved aggregates only |
+| ExECT development split | `dev140` | Row review allowed |
+| ExECT locked holdout | `test60` | Aggregate-only |
+| All ExECT letters | `full200` | Includes development rows; test60 row review remains barred |
 
 ## Terms to use carefully
 
 | Avoid as a default | Prefer | Keep only when… |
 | --- | --- | --- |
+| clinical headline / `clinical_headline` as the prose measure name | clinical fact recovery or clinical fact F1 | Linking to code, JSON keys, filenames, or replay fields |
+| hybrid as the active method name | LLM with rules / `llm_with_rules` | Citing a retained filename, ruleset id, or historical stage namespace |
 | architecture family | method | Comparing rules-only, LLM-only, and LLM-with-rules as research categories |
-| surface | score, output format, data split, or view | Retain only in fixed code fields that cannot be renamed safely |
+| surface | score, output format, data split, or view | Fixed code fields that cannot be renamed safely |
 | cell | run or selected result | Referring to a literal table cell |
 | spine | pipeline or processing steps | Retired from current prose; the file is now `02_pipeline_steps.md` |
 | gate | check, restriction, or approval | A named decision truly depends on pass/fail evidence |
@@ -61,6 +65,7 @@ Do not use a version code as if it explains the method.
 | canonical | current, selected, or authoritative | A code identifier or filename still contains it |
 | artifact | file, output, report, or saved evidence | A build system uses “artifact” as an exact technical term |
 | provenance | source and change history | A formal provenance record is being discussed |
+| reliability scorecard (as a live frontend page) | Decision 0044 shared reliability report and machine package | Citing the retained shared scorecard artifact |
 
 ## Domain and technical terms retained deliberately
 

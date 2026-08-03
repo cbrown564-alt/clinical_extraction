@@ -130,7 +130,7 @@ These paths exist and are easy to mistake for the selected method. They are name
 
 | Path | Role | Why it is not the selected method |
 | --- | --- | --- |
-| `src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/published.py` | historical performance control | Reproduces the paper-derived metric view, which is not the internal clinical_headline scorer. |
+| `src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/published.py` | historical performance control | Reproduces the paper-derived metric view, which is not the internal clinical fact recovery scorer (`clinical_headline`). |
 | `src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/all_entities/diagnosis.py` | rejected candidate or ablation | include_diagnosis_resolution_candidate and include_diagnosis_benchmark_residuals are off in the selected baseline. |
 
 ## Executable trace

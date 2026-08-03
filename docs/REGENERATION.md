@@ -151,7 +151,7 @@ cull and ACTIVE_ROADMAP completed-link thinning remain deferred.
 
 Decluttered the repository front door under Decision 0048 supervisor-path
 rules. `README.md` now leads with two tasks × three methods, an at-a-glance
-results table that treats Gan Purist and ExECT `clinical_headline` as equal
+results table that treats Gan Purist and ExECT clinical fact F1 as equal
 primary strips, short system-state bullets, then the supervisor path.
 Research chronology moved out of the glance layer into existing owners
 (`PROJECT_STATUS.md`, comparison report, claim status). Recorded also in the
@@ -172,8 +172,8 @@ also retired. They described pre-selected candidate architectures, cited two
 already-deleted reports, and depended on ignored files under
 `experiments/_archive/`; a fresh clone could not reproduce the catalog. The
 Decision 0044 shared reliability artifact, report and claim boundary remain the
-current owners. Clinical-headline score aggregation still used by exact replay
-and the selected comparison moved to
+current owners. Clinical fact recovery score aggregation still used by exact
+replay and the selected comparison moved to
 `exectv2/scoring/clinical_headline.py`; the retained-evidence manifest records
 its new path and hash. No scorer behavior, prediction, split or claim changed.
 

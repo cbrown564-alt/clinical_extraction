@@ -25,7 +25,7 @@ One structured call per letter asks the named model for candidate findings acros
 | What enters? | ExectLetter - see `exect.llm_with_rules.build_prompt` |
 | Who first proposes the clinical answer? | the named model proposes all four families (exect.llm_with_rules.model_call); four family transforms may change findings afterwards |
 | Which later stages may change clinical meaning? | `exect.llm_with_rules.project_and_gate`, `exect.llm_with_rules.sf_state_projection`, `exect.llm_with_rules.sf_unknown_suppression`, `exect.llm_with_rules.lens.diagnosis`, `exect.llm_with_rules.lens.prescription` |
-| What final representation is scored? | A PredictedLetter of four-family mentions materialized into named score views; the canonical view is clinical_headline. |
+| What final representation is scored? | A PredictedLetter of four-family mentions materialized into named score views; the primary view is clinical fact recovery (`clinical_headline`). |
 | What evidence shows whether each component helped or harmed? | `docs/decisions/0040-final-exect-llm-with-rules-family-ownership.md`, `docs/decisions/0041-single-call-exect-model-comparison.md`, `docs/decisions/0045-exect-default-policy-not-joint-combined.md`, `docs/research/six_model_comparison_report_2026-07-18.md` |
 
 ## Stages
@@ -47,7 +47,7 @@ Read the `Effect` column first. `CLINICAL MEANING` marks every stage that can ch
 | 11 | `exect.llm_with_rules.lens.prescription`<br>Prescription family transform | rules | CLINICAL MEANING | Apply dictionary-driven regimen processing and bounded correction to Prescription findings. |
 | 12 | `exect.llm_with_rules.lens.investigations`<br>Investigations family transform | rules | representation | Validate, normalize, and de-duplicate Investigations findings, including dropping modality-only duplicates of a finding that already carries a result. |
 | 13 | `exect.llm_with_rules.evidence_requirement`<br>Require exact evidence for every finding | rules | gate | Reject the assembled letter if any final finding lacks evidence or carries evidence that is not an exact substring of the note. |
-| 14 | `exect.llm_with_rules.materialize_views`<br>Materialize the score views | rules | benchmark projection | Build the named prediction surfaces - raw candidate, evidence valid, and clinical headline - from the same assembled findings. |
+| 14 | `exect.llm_with_rules.materialize_views`<br>Materialize the score views | rules | benchmark projection | Build the named prediction views - raw candidate, evidence valid, and clinical fact recovery - from the same assembled findings. |
 | 15 | `exect.llm_with_rules.score`<br>Score against gold | scorer | benchmark projection | Match the materialized view's mentions to gold annotations and report per-entity and overall precision, recall, and F1. |
 
 ## Stage walkthrough
@@ -282,19 +282,19 @@ Reject the assembled letter if any final finding lacks evidence or carries evide
 
 `exect.llm_with_rules.materialize_views` - rules-owned, benchmark projection, rule category `benchmark_format`
 
-Build the named prediction surfaces - raw candidate, evidence valid, and clinical headline - from the same assembled findings.
+Build the named prediction views - raw candidate, evidence valid, and clinical fact recovery - from the same assembled findings.
 
 |  | Type | Example |
 | --- | --- | --- |
 | In | assembled findings | four families of reconciled findings |
-| Out | named FindingViewResult surfaces | a clinical_headline view holding the headline unit keys |
+| Out | named FindingViewResult views | a clinical fact recovery (`clinical_headline`) view holding the unit keys |
 
 > One set of findings, several numbers. Naming the view is part of naming the result.
 
 - Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/views.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/views.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.views:build_scoring_views`)
 - Test: [`tests/test_exectv2_scoring_headlines.py`](../../../tests/test_exectv2_scoring_headlines.py)
 - Proven in a trace by: `prediction_surfaces`
-- Paper wording: Findings are materialized into named scoring views; the canonical view is clinical_headline.
+- Paper wording: Findings are materialized into named scoring views; the primary view is clinical fact recovery (`clinical_headline`).
 
 ### 15. Score against gold
 
@@ -304,8 +304,8 @@ Match the materialized view's mentions to gold annotations and report per-entity
 
 |  | Type | Example |
 | --- | --- | --- |
-| In | materialized view plus gold annotations | clinical_headline view against the four-family gold |
-| Out | OverallScore plus per-entity EntityScore | a clinical_headline overall F1 |
+| In | materialized view plus gold annotations | clinical fact recovery view against the four-family gold |
+| Out | OverallScore plus per-entity EntityScore | a clinical fact recovery overall F1 |
 
 - Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/match.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/match.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match:score_overall`)
 - Test: [`tests/test_exectv2_scoring_match_fidelity.py`](../../../tests/test_exectv2_scoring_match_fidelity.py)

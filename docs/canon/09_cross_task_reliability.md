@@ -1,6 +1,6 @@
 # 09 — Reliability across tasks
 
-Last updated: 2026-07-27
+Last updated: 2026-08-03
 
 Gan 2026 and ExECTv2 now use the same eight paper-facing reliability questions:
 
@@ -32,7 +32,7 @@ Both tasks have retained evidence for all eight questions, but the evidence is
 not equally complete:
 
 - The fixed six-model panels provide task-specific correctness and aggregate
-  holdout evidence. Sol leads ExECT test60 at `0.8047` clinical-headline F1;
+  holdout evidence. Sol leads ExECT test60 at `0.8047` clinical fact F1;
   Sol leads the selected Gan v0.5 test450 panel at `373/450` Purist.
 - Exact source presence is measured separately from semantic support. The
   48-item ExECT dev140 semantic-support sample is prepared across six models
@@ -45,7 +45,7 @@ not equally complete:
   changes are not perturbation robustness, and Gan's repeated-temperature
   result remains a one-model study.
 - Component results stay task-specific. The shared normalization ablation is
-  `+0.0389` ExECT clinical-headline F1 and `+0.0293` Gan Purist accuracy. The
+  `+0.0389` ExECT clinical fact F1 and `+0.0293` Gan Purist accuracy. The
   ExECT six-model SF replay records 54 wrong-to-correct and one
   correct-to-wrong transition across 840 model-letter rows, representing 140
   unique letters.

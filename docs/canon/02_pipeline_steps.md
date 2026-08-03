@@ -7,7 +7,7 @@ Exact source, configuration, scorer, test, and replay paths are in the
 
 This page is the abstract. The arrows below compress each method into four
 steps, which is too few to explain ownership, improvement, regression, or
-evidence — the selected Gan hybrid expands "deterministic selection and
+evidence — selected Gan LLM with rules expands "deterministic selection and
 normalization" into schema repair, event normalization, label resolution, and
 ten ordered repair families.
 

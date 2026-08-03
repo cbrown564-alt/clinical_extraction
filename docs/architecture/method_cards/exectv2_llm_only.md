@@ -12,11 +12,11 @@ Stages that may change clinical meaning: 1
 
 ## One sentence
 
-> One structured model call proposes four-family findings, and the selected LLM-only view scores those findings without the hybrid family lenses.
+> One structured model call proposes four-family findings, and the selected LLM-only view scores those findings before family-specific deterministic transforms.
 
 ## Sixty seconds
 
-The canonical LLM-only lane shares one structured producer with the hybrid method. It builds the four-family prompt, makes or replays one model call, parses the event ledger, optionally performs a format-only retry for eligible local models, flattens events, and applies evidence and render-safety gates. Its selected prediction is the raw candidate view from that producer. It does not run seizure-frequency projection, Diagnosis reconciliation, Prescription rescue, or any other hybrid family lens. The old GEPA program remains named as a historical comparison rather than silently serving as the current selected entry point.
+The selected LLM-only lane shares one structured producer with the LLM-with-rules method. It builds the four-family prompt, makes or replays one model call, parses the event ledger, optionally performs a format-only retry for eligible local models, flattens events, and applies evidence and render-safety gates. Its selected prediction is the raw candidate view from that producer. It does not run seizure-frequency projection, Diagnosis reconciliation, Prescription rescue, or any other LLM-with-rules family transform. The old GEPA program remains named as a historical comparison rather than silently serving as the current selected entry point.
 
 ## The five recall questions
 
@@ -39,7 +39,7 @@ Read the `Effect` column first. `CLINICAL MEANING` marks every stage that can ch
 | 3 | `exect.llm.parse_and_retry`<br>Parse output with format-only retry | rules | transport/schema only | Recover the structured event record and, when eligible, accept one format-only retry only after schema validation. |
 | 4 | `exect.llm.flatten_events`<br>Flatten events into mentions | rules | representation | Turn each model event into an ExECT mention with its entity, text, attributes, and evidence. |
 | 5 | `exect.llm.project_and_gate`<br>Apply representation and evidence gates | rules | gate | Normalize closed-vocabulary attributes, require exact source evidence, and withhold mentions rejected by the shared render-safety gates. |
-| 6 | `exect.llm.raw_candidate`<br>Materialize the raw candidate view | rules | benchmark projection | Expose the producer's gated mentions as the selected LLM-only scoring view without applying the hybrid family transforms. |
+| 6 | `exect.llm.raw_candidate`<br>Materialize the raw candidate view | rules | benchmark projection | Expose the producer's gated mentions as the selected LLM-only scoring view without applying the LLM-with-rules family transforms. |
 | 7 | `exect.llm.score`<br>Score against gold | scorer | benchmark projection | Match predicted mentions to gold annotations under the configured ExECT match policy and report per-entity and overall metrics. |
 
 ## Stage walkthrough
@@ -128,7 +128,7 @@ Normalize closed-vocabulary attributes, require exact source evidence, and withh
 
 `exect.llm.raw_candidate` - rules-owned, benchmark projection, rule category `benchmark_format`
 
-Expose the producer's gated mentions as the selected LLM-only scoring view without applying the hybrid family transforms.
+Expose the producer's gated mentions as the selected LLM-only scoring view without applying the LLM-with-rules family transforms.
 
 |  | Type | Example |
 | --- | --- | --- |

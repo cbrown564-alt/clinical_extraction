@@ -83,16 +83,16 @@ _Avoid_: presenting `validation750` as the current prose split name; renaming re
 The result that stands for a method in the paper's main three-method comparison for a task.
 _Avoid_: selected run (when meaning the paper table), headline score (when meaning role rather than number)
 
-**Primary ExECT method-comparison surface**:
-Matched four-family `clinical_headline` scoring used to compare ExECT rules-only, LLM-only, and the Selected ExECT hybrid as peers.
-_Avoid_: nine-entity published metrics as the three-method peer score; mixing entity counts across method rows
+**Primary ExECT method-comparison score**:
+Matched four-family clinical fact recovery used to compare ExECT rules-only, LLM-only, and the Selected ExECT hybrid as peers. Code and saved scores still use `clinical_headline` / `headline_target`.
+_Avoid_: leading with “clinical headline” in prose; nine-entity published metrics as the three-method peer score; mixing entity counts across method rows
 
 **Primary ExECT hybrid method-row fill**:
-The Selected ExECT hybrid result for GPT-5.6 Sol on the primary ExECT method-comparison surface. The six-model panel remains model-comparison evidence; Sol is the paper's method-identity number for ExECT LLM with rules.
+The Selected ExECT hybrid result for GPT-5.6 Sol on the primary ExECT method-comparison score. The six-model panel remains model-comparison evidence; Sol is the paper's method-identity number for ExECT LLM with rules.
 _Avoid_: GPT-4.1-mini as the ExECT hybrid method identity; v08; best-of-six without naming Sol
 
 **Primary ExECT LLM-only method-row fill**:
-GPT-5.6 Sol's `raw_candidate` / `raw_lane_score` from the same one-call four-family pipeline — the earliest scored model boundary before deterministic clinical changes. On `dev140` this is clinical-headline F1 `0.8097` (reported as `0.81`). On `test60`, the public six-model stage panel records Sol `raw_lane_score` F1 `0.7771` (final hybrid `0.8047`). Owner: [stage panel](experiments/exectv2_six_model_test60_stage_panel_20260801/panel_aggregate.json). The primary method table still cites Sol only.
+GPT-5.6 Sol's `raw_candidate` / `raw_lane_score` from the same one-call four-family pipeline — the earliest scored model boundary before deterministic clinical changes. On `dev140` this is clinical fact F1 `0.8097` (reported as `0.81`). On `test60`, the public six-model stage panel records Sol `raw_lane_score` F1 `0.7771` (final LLM-with-rules `0.8047`). Owner: [stage panel](experiments/exectv2_six_model_test60_stage_panel_20260801/panel_aggregate.json). The primary method table still cites Sol only.
 _Avoid_: GEPA as the Sol hybrid's LLM-only peer; `source_scored` as the LLM-only method identity; citing the Gan LLM-only `test450` panel as ExECT evidence; citing sealed-only test60 LLM-only numbers in the manuscript; Sol-only holdout stage panel when six-model finals already exist
 
 **Gan six-model LLM-only test450 panel**:
@@ -100,7 +100,7 @@ The retained aggregate-only Gan LLM-only holdout panel at `experiments/gan2026_s
 _Avoid_: ExECT test60 LLM-only; ExECT model-boundary
 
 **Primary ExECT three-method split policy**:
-The primary ExECT method table includes both `dev140` and `test60` once every method cell has an aggregate-safe source. Sol LLM-only / hybrid already have sealed stage aggregates on `test60`. Rules-only four-family `clinical_headline` is authorized on `test60` as aggregate-only scoring (no row inspection) and is not yet materialized.
+The primary ExECT method table includes both `dev140` and `test60` once every method cell has an aggregate-safe source. Sol LLM-only / hybrid already have sealed stage aggregates on `test60`. Rules-only four-family clinical fact recovery is authorized on `test60` as aggregate-only scoring (no row inspection) and is materialized.
 _Avoid_: publishing test60 method cells without an aggregate source; inspecting sealed test60 rows; treating the Gan LLM-only `test450` panel as satisfying an ExECT test cell
 
 **GEPA ExECT LLM-only comparator**:
@@ -112,11 +112,11 @@ The nine-entity paper-derived phrase / CUI / all-features rules-only replay. It 
 _Avoid_: primary method row, three-method peer
 
 **Primary ExECT rules-only method-row fill**:
-Four-family Sol-matched `clinical_headline` / `headline_target` applied to rules-only deterministic predictions restricted to Diagnosis, Seizure Frequency, Prescription, and Investigations. The all-nine extractors may still run; non-key entities are excluded from this peer score only. On `dev140` the materialized overall F1 is **0.8160**. On aggregate-only `test60` it is **0.7154**.
+Four-family Sol-matched clinical fact recovery (`clinical_headline` / `headline_target`) applied to rules-only deterministic predictions restricted to Diagnosis, Seizure Frequency, Prescription, and Investigations. The all-nine extractors may still run; non-key entities are excluded from this peer score only. On `dev140` the materialized overall F1 is **0.8160**. On aggregate-only `test60` it is **0.7154**.
 _Avoid_: all-nine strict micro F1 as the three-method peer; Diagnosis-only clinical recovery as the four-family peer; published-metric all-features as the three-method peer; `clinical_recovery_scorecard` overall as the Sol peer; four-extractor-only as a different rules-only method
 
 **0046 rules-only scoring rule**:
-B/C use restrict-and-rescore through the same assembly `headline_target` surface as Sol, not the older multi-entity clinical-recovery scorecard.
+B/C use restrict-and-rescore through the same assembly `headline_target` score as Sol, not the older multi-entity clinical-recovery scorecard.
 
 ### Verification
 

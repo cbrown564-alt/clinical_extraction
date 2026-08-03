@@ -41,5 +41,5 @@ flowchart TB
 | Gan 2026 | LLM only | One model call reads the letter and returns the final Gan label directly; deterministic code then repairs, validates, and scores that answer. |
 | Gan 2026 | LLM with rules | The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer. |
 | ExECTv2 | Rules only | Nine independent deterministic extractors produce the all-nine prediction, while an explicit four-family projection defines the primary model comparison. |
-| ExECTv2 | LLM only | One structured model call proposes four-family findings, and the selected LLM-only view scores those findings without the hybrid family lenses. |
+| ExECTv2 | LLM only | One structured model call proposes four-family findings, and the selected LLM-only view scores those findings before family-specific deterministic transforms. |
 | ExECTv2 | LLM with rules | The model proposes findings for four families in one call; deterministic family transforms reconcile those findings into the final scored representation. |

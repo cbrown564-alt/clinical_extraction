@@ -25,7 +25,7 @@ Everything here is generated from the stage manifests in `src/clinical_extractio
 | Gan 2026 | LLM only | One model call reads the letter and returns the final Gan label directly; deterministic code then repairs, validates, and scores that answer. | [card](method_cards/gan2026_llm_only.md) |
 | Gan 2026 | LLM with rules | The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer. | [card](method_cards/gan2026_llm_with_rules.md) |
 | ExECTv2 | Rules only | Nine independent deterministic extractors produce the all-nine prediction, while an explicit four-family projection defines the primary model comparison. | [card](method_cards/exectv2_rules_only.md) |
-| ExECTv2 | LLM only | One structured model call proposes four-family findings, and the selected LLM-only view scores those findings without the hybrid family lenses. | [card](method_cards/exectv2_llm_only.md) |
+| ExECTv2 | LLM only | One structured model call proposes four-family findings, and the selected LLM-only view scores those findings before family-specific deterministic transforms. | [card](method_cards/exectv2_llm_only.md) |
 | ExECTv2 | LLM with rules | The model proposes findings for four families in one call; deterministic family transforms reconcile those findings into the final scored representation. | [card](method_cards/exectv2_llm_with_rules.md) |
 
 ## Teaching cases

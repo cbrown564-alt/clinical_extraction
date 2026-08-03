@@ -1,11 +1,12 @@
 # Inspectable Clinical Extraction from Epilepsy Letters
 
-Updated: 2026-07-18
+Updated: 2026-08-03
 Status: working manuscript
 
 The [paper claim status](../canon/10_paper_provenance.md) limits what this
 manuscript may say. The [retained evidence index](../experiments/retained_evidence_manifest.md)
-records the supporting files and hashes.
+records the supporting files and hashes. ExECT primary method rows follow
+[decision 0046](../decisions/0046-exect-primary-method-comparison-boundary.md).
 
 ## Abstract
 
@@ -16,21 +17,24 @@ two epilepsy-letter tasks. Gan 2026 asks for one current seizure-frequency
 label; ExECTv2 extracts several epilepsy phenotypes. On Gan dev750, the
 three selected methods produced 697/750, 581/750, and 661/748 rendered
 Purist-correct predictions. Saved Gan holdout results are 364/450 for the
-single-pass system and 379/450 for a multi-model comparison. On ExECT dev140,
-rules only reached 0.6020 paper-derived all-features macro item F1 (0.3548 under
-the existing strict micro scorer), the GEPA LLM-only negative comparison
-reached 0.7393 clinical fact F1, and the historical LLM-with-rules development
-control reached 0.9189. That control uses a deterministic Prescription producer
-and a Seizure Frequency extractor union, so it is not the final model-led
-architecture. In the fixed six-model ExECT test60 panel, Sol led at 0.8047
-clinical-headline F1; in the selected matched Gan v0.5 test450 panel, Sol led
-at 373/450 Purist. Replays of saved outputs found normalization
-gains on both tasks (+0.0389 ExECT; +0.0293 Gan); the exact-evidence check did
-not change those replay scores. The selected evidence supports a reproducible
-component comparison with explicit data limits and a tested implementation of
-the published ExECT metric views. It does not reproduce the original ExECT
-system or its reported 0.87/0.90 scores, general model superiority, cross-task
-reliability transfer, or independent clinical validation.
+single-pass system and 379/450 for a multi-model comparison. On ExECT, the
+primary three-method comparison uses Sol-matched four-family clinical fact
+recovery: rules only 0.8160 / 0.7154, Sol LLM only (`raw_lane_score`)
+0.8097 / 0.7771, and Sol LLM with rules 0.8920 / 0.8047 on
+dev140 / aggregate-only test60. Secondary development controls include the
+paper-derived rules-only all-features macro item F1 0.6020, the GEPA LLM-only
+negative comparison at 0.7393, and the historical LLM-with-rules control
+(`v08`) at 0.9189; that control uses a deterministic Prescription producer and
+a Seizure Frequency extractor union, so it is not the selected architecture. In
+the fixed six-model ExECT test60 panel, Sol led at 0.8047 clinical fact F1; in
+the selected matched Gan v0.5 test450 panel, Sol led at 373/450 Purist. Replays
+of saved outputs found normalization gains on both tasks (+0.0389 ExECT;
++0.0293 Gan); the exact-evidence check did not change those replay scores. The
+selected evidence supports a reproducible component comparison with explicit
+data limits and a tested implementation of the published ExECT metric views. It
+does not reproduce the original ExECT system or its reported 0.87/0.90 scores,
+general model superiority, cross-task reliability transfer, or independent
+clinical validation.
 
 ## 1. Introduction
 
@@ -95,9 +99,10 @@ run predates and does not satisfy this final ownership boundary.
 ### 3.3 Scores
 
 Gan uses Purist and Pragmatic label accuracy; Purist is primary. ExECT's primary
-internal score is de-duplicated clinical fact recovery (`clinical_headline`).
-Phrase, CUI, evidence-valid, and full-attribute scores remain separate.
-`clinical_headline` is not the published strict ExECT benchmark.
+internal score is de-duplicated clinical fact recovery. Code and saved scores
+still use the identifier `clinical_headline`. Phrase, CUI, evidence-valid, and
+full-attribute scores remain separate. Clinical fact recovery is not the
+published strict ExECT benchmark.
 
 The paper-derived ExECT views score each entity type separately and report their
 macro mean. Normalized phrase compares entity-linked surface forms; CUI compares
@@ -126,22 +131,37 @@ This rule does not authorize model calls.
 
 ### 4.1 Two-task comparison
 
+Primary ExECT three-method comparison (decision 0046; Sol-matched four-family
+clinical fact recovery):
+
 | Task | Method | Split | Result | Use |
 | --- | --- | --- | ---: | --- |
-| ExECTv2 | Rules only | dev140 | all-features macro item F1 0.6020 | Paper-derived metric development reference; strict micro item F1 0.3548 |
-| ExECTv2 | LLM only | dev140 | clinical fact F1 0.7393 | GEPA negative development comparison |
-| ExECTv2 | Historical LLM with rules (`v08`) | dev140 | clinical fact F1 0.9189 | Reproducible development control; not the final model-led family architecture |
+| ExECTv2 | Rules only | dev140 | clinical fact F1 0.8160 | Primary method row; four-family Sol-matched |
+| ExECTv2 | Rules only | test60 | clinical fact F1 0.7154 | Primary method row; aggregate-only |
+| ExECTv2 | LLM only | dev140 | clinical fact F1 0.8097 | Primary method row; Sol `raw_lane_score` |
+| ExECTv2 | LLM only | test60 | clinical fact F1 0.7771 | Primary method row; Sol `raw_lane_score`; aggregate-only |
+| ExECTv2 | LLM with rules | dev140 | clinical fact F1 0.8920 | Primary method row; Sol one-call |
+| ExECTv2 | LLM with rules | test60 | clinical fact F1 0.8047 | Primary method row; Sol one-call; aggregate-only |
 | Gan 2026 | Rules only | dev750 | 697/750 Purist | Development comparison |
 | Gan 2026 | LLM only | dev750 | 581/750 Purist | Development comparison |
 | Gan 2026 | LLM with rules | dev750 | 661/748 rendered Purist | Development comparison |
 
-All six runs replay from selected files without model calls. The ExECT combined
-method also returns evidence-valid F1 0.8913. Its legacy benchmark/CUI companion
-replays at 0.4791 versus 0.4729 in the saved run; that diagnostic does not define
-the new paper-derived rules-only result and does not affect the reproduced
-0.9189 clinical fact score. Its deterministic Prescription producer and
-Seizure Frequency extractor union are now disclosed architecture limits, not
-model contributions.
+Secondary ExECT development controls (not primary method peers):
+
+| Task | Method | Split | Result | Use |
+| --- | --- | --- | ---: | --- |
+| ExECTv2 | Rules only (all nine entities) | dev140 | all-features macro item F1 0.6020 | Paper-derived metric reference; strict micro item F1 0.3548 |
+| ExECTv2 | LLM only (GEPA) | dev140 | clinical fact F1 0.7393 | Historical / negative architecture comparator |
+| ExECTv2 | Historical LLM with rules (`v08`) | dev140 | clinical fact F1 0.9189 | Reproducible development control; not the selected family-ownership architecture |
+
+The primary ExECT fills and the Gan development runs replay from selected files
+without model calls. The historical `v08` control also returns evidence-valid F1
+0.8913. Its legacy benchmark/CUI companion replays at 0.4791 versus 0.4729 in
+the saved run; that diagnostic does not define the paper-derived rules-only
+result and does not affect the reproduced 0.9189 clinical fact score. Its
+deterministic Prescription producer and Seizure Frequency extractor union are
+disclosed architecture limits, not model contributions, and keep it out of the
+primary three-method table.
 
 ### 4.2 ExECT paper-derived metric replay
 
@@ -194,9 +214,12 @@ Prescription column was deterministic-only and their Seizure Frequency column
 included an independent extractor union. The fixed rows use the decision-0041
 one-call architecture and preserve attribution, `state_profile`,
 schema/evidence, and regression records. DeepSeek uses the official
-`deepseek-v4-flash` route. Dev140 family scores are shown
-above; test60 is aggregate only and uses the same internal scorer. Hosted/local
-route and temperature differences prevent a model-neutral capability ranking.
+`deepseek-v4-flash` route. Dev140 family scores are shown above; test60 is
+aggregate only and uses the same clinical fact recovery scorer. Sol's final
+row is the primary LLM-with-rules method identity under decision 0046; Sol's
+`raw_lane_score` and the four-family rules-only fills are the matching primary
+LLM-only and rules-only peers. Hosted/local route and temperature differences
+prevent a model-neutral capability ranking.
 
 ### 4.5 Component replays
 
@@ -241,15 +264,18 @@ or clinical faithfulness.
 
 ## 5. Discussion
 
-The repository can replay six selected runs while preserving component
-provenance. On ExECT's internal clinical fact score, the historical `v08`
-control exceeds the selected rules-only and LLM-only development references,
-but its Prescription and Seizure Frequency ownership does not meet the final
-model-led architecture. Those three results also do not share the
-paper-derived metric views, so they cannot establish strict benchmark
-superiority. The rules-only replay does
-show that CUI matching recovers surface-form variation, but feature completion
-remains a larger limitation than identifier coverage.
+The repository can replay the selected runs while preserving component
+provenance. On ExECT's primary Sol-matched clinical fact score, LLM with rules
+improves on both rules only and Sol LLM only on development and on
+aggregate-only test60. The historical `v08` control still exceeds those primary
+fills on development (0.9189), but its Prescription and Seizure Frequency
+ownership does not meet the selected family architecture, so it remains a
+secondary control rather than the primary hybrid method row. The GEPA LLM-only
+run and the nine-entity paper-derived rules-only metrics answer different
+questions and are not interchangeable with the primary three-method strip. The
+nine-entity rules-only replay does show that CUI matching recovers surface-form
+variation, but feature completion remains a larger limitation than identifier
+coverage.
 
 Historical ExECT artifacts ran with three different model providers, but their
 Prescription and Seizure Frequency columns are excluded from model comparison.
@@ -269,9 +295,9 @@ and repair behavior require direct tests.
   not reproduce the original ExECT system, annotation process, or reported
   0.87/0.90 validation scores.
 - A legacy ExECT benchmark/CUI companion has a small unresolved scorer difference.
-- The selected `v08` control does not meet the final model-led family ownership
+- The historical `v08` control does not meet the selected family-ownership
   boundary because Prescription is deterministic and Seizure Frequency uses an
-  independent extractor union.
+  independent extractor union; it is not the primary ExECT LLM-with-rules row.
 - The fixed six-model panels use different provider transports, temperatures,
   token limits, and local versus hosted runtimes.
 - Model-reported confidence was uninformative for the three saved historical

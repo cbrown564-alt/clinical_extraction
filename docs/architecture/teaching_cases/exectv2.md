@@ -92,7 +92,7 @@ out: {'Diagnosis': 2, 'Investigations': 1, 'Prescription': 1, 'SeizureFrequency'
 
 ## LLM only
 
-> One structured model call proposes four-family findings, and the selected LLM-only view scores those findings without the hybrid family lenses.
+> One structured model call proposes four-family findings, and the selected LLM-only view scores those findings before family-specific deterministic transforms.
 
 **Prediction owner:** the named model (stage exect.llm.model_call); deterministic stages only parse, represent, and gate its findings
 

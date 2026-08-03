@@ -1,0 +1,253 @@
+{
+  "schema_version": "six_model.final_panel.v2",
+  "generated_on": "2026-08-03",
+  "identity": "Final six-model results on the selected ExECT and Gan codebase for the comparison report",
+  "primary_method": "llm_with_rules",
+  "also_reports": [
+    "llm"
+  ],
+  "display_rule": "Report primary scores to two decimal places in prose and tables.",
+  "models": [
+    "openai/gpt-4.1-mini",
+    "openai/gpt-5.6-luna",
+    "openai/gpt-5.6-sol",
+    "deepseek/deepseek-v4-flash",
+    "ollama_chat/qwen3.6:35b",
+    "ollama_chat/gemma4:26b"
+  ],
+  "claim_boundary": "Aggregate-only locked holdout for test60/test450. Development splits permit row review. ExECT clinical fact F1 and Gan Purist are not interchangeable. Decision 0046 Sol method-row fills remain the paper ExECT method identity. Not clinical validation.",
+  "conditions": [
+    {
+      "model": "openai/gpt-4.1-mini",
+      "slug": "gpt41mini",
+      "label": "GPT-4.1-mini",
+      "provider_revision": null,
+      "exectv2": {
+        "dev140": {
+          "llm_with_rules_clinical_fact_f1": 0.8202
+        },
+        "test60": {
+          "row_count": 59,
+          "row_policy": "aggregate_only",
+          "llm_clinical_fact_f1": 0.7343,
+          "llm_with_rules_clinical_fact_f1": 0.7572,
+          "llm_with_rules_by_family": {
+            "Diagnosis": 0.811,
+            "Investigations": 0.9091,
+            "Prescription": 0.8144,
+            "SeizureFrequency": 0.5103
+          }
+        }
+      },
+      "gan2026": {
+        "dev750": {
+          "row_count": 750,
+          "row_policy": "development_review_permitted",
+          "llm_with_rules_purist_accuracy": 0.9027
+        },
+        "test450": {
+          "row_count": 450,
+          "row_policy": "aggregate_only",
+          "llm_purist_accuracy": 0.7333,
+          "llm_with_rules_purist_accuracy": 0.82,
+          "llm_with_rules_pragmatic_accuracy": 0.8578
+        }
+      }
+    },
+    {
+      "model": "openai/gpt-5.6-luna",
+      "slug": "gpt56luna",
+      "label": "GPT-5.6 Luna",
+      "provider_revision": null,
+      "exectv2": {
+        "dev140": {
+          "llm_with_rules_clinical_fact_f1": 0.8832
+        },
+        "test60": {
+          "row_count": 59,
+          "row_policy": "aggregate_only",
+          "llm_clinical_fact_f1": 0.7631,
+          "llm_with_rules_clinical_fact_f1": 0.795,
+          "llm_with_rules_by_family": {
+            "Diagnosis": 0.8489,
+            "Investigations": 0.9231,
+            "Prescription": 0.8344,
+            "SeizureFrequency": 0.5693
+          }
+        }
+      },
+      "gan2026": {
+        "dev750": {
+          "row_count": 750,
+          "row_policy": "development_review_permitted",
+          "llm_with_rules_purist_accuracy": 0.88
+        },
+        "test450": {
+          "row_count": 450,
+          "row_policy": "aggregate_only",
+          "llm_purist_accuracy": 0.7089,
+          "llm_with_rules_purist_accuracy": 0.8089,
+          "llm_with_rules_pragmatic_accuracy": 0.84
+        }
+      }
+    },
+    {
+      "model": "openai/gpt-5.6-sol",
+      "slug": "gpt56sol",
+      "label": "GPT-5.6 Sol",
+      "provider_revision": null,
+      "exectv2": {
+        "dev140": {
+          "llm_with_rules_clinical_fact_f1": 0.892
+        },
+        "test60": {
+          "row_count": 59,
+          "row_policy": "aggregate_only",
+          "llm_clinical_fact_f1": 0.7771,
+          "llm_with_rules_clinical_fact_f1": 0.8047,
+          "llm_with_rules_by_family": {
+            "Diagnosis": 0.8424,
+            "Investigations": 0.9032,
+            "Prescription": 0.8554,
+            "SeizureFrequency": 0.6143
+          }
+        }
+      },
+      "gan2026": {
+        "dev750": {
+          "row_count": 750,
+          "row_policy": "development_review_permitted",
+          "llm_with_rules_purist_accuracy": 0.88
+        },
+        "test450": {
+          "row_count": 450,
+          "row_policy": "aggregate_only",
+          "llm_purist_accuracy": 0.7444,
+          "llm_with_rules_purist_accuracy": 0.8467,
+          "llm_with_rules_pragmatic_accuracy": 0.8711
+        }
+      }
+    },
+    {
+      "model": "deepseek/deepseek-v4-flash",
+      "slug": "deepseek_v4_flash",
+      "label": "DeepSeek V4 Flash",
+      "provider_revision": "DeepSeek-V4-Flash-0731",
+      "exectv2": {
+        "dev140": {
+          "llm_with_rules_clinical_fact_f1": 0.8994
+        },
+        "test60": {
+          "row_count": 59,
+          "row_policy": "aggregate_only",
+          "llm_clinical_fact_f1": 0.7785,
+          "llm_with_rules_clinical_fact_f1": 0.8118,
+          "llm_with_rules_by_family": {
+            "Diagnosis": 0.8187,
+            "Investigations": 0.9011,
+            "Prescription": 0.8503,
+            "SeizureFrequency": 0.5839
+          }
+        }
+      },
+      "gan2026": {
+        "dev750": {
+          "row_count": 750,
+          "row_policy": "development_review_permitted",
+          "llm_with_rules_purist_accuracy": 0.836
+        },
+        "test450": {
+          "row_count": 450,
+          "row_policy": "aggregate_only",
+          "llm_purist_accuracy": 0.7378,
+          "llm_with_rules_purist_accuracy": 0.8178,
+          "llm_with_rules_pragmatic_accuracy": 0.8378
+        }
+      }
+    },
+    {
+      "model": "ollama_chat/qwen3.6:35b",
+      "slug": "qwen36_35b",
+      "label": "Qwen 3.6:35B",
+      "provider_revision": null,
+      "exectv2": {
+        "dev140": {
+          "llm_with_rules_clinical_fact_f1": 0.8571
+        },
+        "test60": {
+          "row_count": 59,
+          "row_policy": "aggregate_only",
+          "llm_clinical_fact_f1": 0.7267,
+          "llm_with_rules_clinical_fact_f1": 0.7872,
+          "llm_with_rules_by_family": {
+            "Diagnosis": 0.8374,
+            "Investigations": 0.8571,
+            "Prescription": 0.8383,
+            "SeizureFrequency": 0.6104
+          }
+        }
+      },
+      "gan2026": {
+        "dev750": {
+          "row_count": 750,
+          "row_policy": "development_review_permitted",
+          "llm_with_rules_purist_accuracy": 0.876
+        },
+        "test450": {
+          "row_count": 450,
+          "row_policy": "aggregate_only",
+          "llm_purist_accuracy": 0.7022,
+          "llm_with_rules_purist_accuracy": 0.8,
+          "llm_with_rules_pragmatic_accuracy": 0.8444
+        }
+      }
+    },
+    {
+      "model": "ollama_chat/gemma4:26b",
+      "slug": "gemma4_26b",
+      "label": "Gemma 4 26B",
+      "provider_revision": null,
+      "exectv2": {
+        "dev140": {
+          "llm_with_rules_clinical_fact_f1": 0.8016
+        },
+        "test60": {
+          "row_count": 59,
+          "row_policy": "aggregate_only",
+          "llm_clinical_fact_f1": 0.6918,
+          "llm_with_rules_clinical_fact_f1": 0.7169,
+          "llm_with_rules_by_family": {
+            "Diagnosis": 0.7934,
+            "Investigations": 0.7865,
+            "Prescription": 0.7778,
+            "SeizureFrequency": 0.4901
+          }
+        }
+      },
+      "gan2026": {
+        "dev750": {
+          "row_count": 750,
+          "row_policy": "development_review_permitted",
+          "llm_with_rules_purist_accuracy": 0.8627
+        },
+        "test450": {
+          "row_count": 450,
+          "row_policy": "aggregate_only",
+          "llm_purist_accuracy": 0.6778,
+          "llm_with_rules_purist_accuracy": 0.7911,
+          "llm_with_rules_pragmatic_accuracy": 0.8333
+        }
+      }
+    }
+  ],
+  "provenance": {
+    "note": "Internal assembly sources only. Supervisor-facing prose cites this panel as the final results directory.",
+    "exectv2_test60_stage_panel": "experiments/exectv2_six_model_test60_stage_panel_20260801/panel_aggregate.json",
+    "exectv2_dev140_scorecard_measurement": "exectv2_six_model_dev140_clinical_headline_f1",
+    "gan2026_llm_with_rules_scores": "experiments/gan2026_six_model_current_floors_replay_20260731/replay_summary.json",
+    "gan2026_llm_only_test450": "experiments/gan2026_six_model_llm_only_test450_20260801/panel_aggregate.json",
+    "deepseek_v4_flash_0731": "experiments/deepseek_v4_flash_0731_matched_comparison_20260803.json",
+    "report": "docs/research/six_model_comparison_report_2026-07-18.md",
+    "builder": "scripts/build_six_model_final_panel.py"
+  }
+}

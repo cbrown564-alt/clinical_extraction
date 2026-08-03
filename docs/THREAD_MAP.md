@@ -14,6 +14,12 @@ Use the shortest path that answers the question.
 [active milestone sequence](plans/ACTIVE_ROADMAP.md#active-comprehension-and-handoff-work) →
 [regeneration and retention ledger](REGENERATION.md)
 
+## DeepSeek V4-Flash-0731 provider update (matched comparison)
+
+[protocol](research/deepseek_v4_flash_0731_matched_comparison_protocol_2026-08-03.md) →
+[report](research/deepseek_v4_flash_0731_matched_comparison_report_2026-08-03.md) →
+[artifact](../experiments/deepseek_v4_flash_0731_matched_comparison_20260803.json)
+
 ## DeepSeek unknown collaboration (active; hosted)
 
 [protocol](experiments/gan2026/gan2026_deepseek_unknown_competence_protocol_2026-07-31.md) →

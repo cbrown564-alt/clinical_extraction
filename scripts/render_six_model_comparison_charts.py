@@ -1,4 +1,4 @@
-"""Render the retained six-model comparison report charts from selected evidence."""
+"""Render six-model comparison report charts from the clean final panel."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.ticker import FormatStrFormatter
 
 ROOT = Path(__file__).resolve().parents[1]
-SCORECARD = ROOT / "experiments/shared_reliability_scorecard_20260718.json"
+PANEL = ROOT / "experiments/six_model_final_panel_20260803/panel_aggregate.json"
 OUTPUT = ROOT / "docs/research/assets/six_model_comparison_2026-07-18"
 
 MODELS = [
@@ -24,14 +24,10 @@ MODELS = [
     ("ollama_chat/gemma4:26b", "Gemma 4 26B"),
 ]
 
-BLUE = "#2563A6"
-BLUE_LIGHT = "#B8D5ED"
 TEAL = "#167C80"
 TEAL_LIGHT = "#B7DDD8"
 ORANGE = "#D97706"
 NEUTRAL = "#D9DEE3"
-GOLD = "#B8871B"
-GOLD_LIGHT = "#E9D8A6"
 INK = "#25313C"
 MUTED = "#66727D"
 GRID = "#DDE3E8"
@@ -40,10 +36,6 @@ BG = "#FBFCFD"
 
 def _read(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
-
-
-def _measurement(scorecard: dict[str, Any], measurement_id: str) -> dict[str, Any]:
-    return next(row for row in scorecard["measurements"] if row["measurement_id"] == measurement_id)
 
 
 def _style() -> None:
@@ -114,14 +106,14 @@ def _grouped_bar(
         color=colors[1],
         edgecolor="none",
     )
-    for offset, values, color in ((-height / 2, first, INK), (height / 2, second, INK)):
+    for offset, values in ((-height / 2, first), (height / 2, second)):
         for row, key in enumerate(keys):
             ax.text(
                 values[key] + 0.008,
                 row + offset,
                 f"{values[key]:.2f}",
                 va="center",
-                color=color,
+                color=INK,
                 fontsize=9,
             )
     ax.set_yticks(y, labels)
@@ -249,7 +241,7 @@ def _heatmap(
         ["#A94442", "#F5F2ED", "#2563A6"],
     )
     fig, ax = plt.subplots(figsize=(10.8, 6.2), constrained_layout=True)
-    image = ax.imshow(matrix, cmap=cmap, vmin=0.60, vmax=0.95, aspect="auto")
+    image = ax.imshow(matrix, cmap=cmap, vmin=0.45, vmax=0.95, aspect="auto")
     ax.set_xticks(np.arange(len(columns)), columns)
     ax.set_yticks(np.arange(len(labels)), labels)
     ax.tick_params(length=0)
@@ -262,7 +254,7 @@ def _heatmap(
                 f"{value:.2f}",
                 ha="center",
                 va="center",
-                color="white" if value <= 0.67 or value >= 0.87 else INK,
+                color="white" if value <= 0.58 or value >= 0.87 else INK,
                 fontsize=9,
             )
     colorbar = fig.colorbar(image, ax=ax, fraction=0.025, pad=0.025)
@@ -279,70 +271,102 @@ def _heatmap(
 def main() -> None:
     _style()
     OUTPUT.mkdir(parents=True, exist_ok=True)
-    scorecard = _read(SCORECARD)
+    panel = _read(PANEL)
+    by_model = {row["model"]: row for row in panel["conditions"]}
 
-    exect_dev = _measurement(scorecard, "exectv2_six_model_dev140_clinical_headline_f1")["value"]
-    exect_test = _measurement(scorecard, "exectv2_six_model_test60_clinical_headline_f1")["value"]
-    exect_stages = _measurement(scorecard, "exectv2_six_model_score_stage_f1")["value"]
-    exect_family = _measurement(scorecard, "exectv2_six_model_dev140_family_f1")["value"]
+    exect_dev = {
+        model: float(by_model[model]["exectv2"]["dev140"]["llm_with_rules_clinical_fact_f1"])
+        for model, _ in MODELS
+    }
+    exect_test = {
+        model: float(by_model[model]["exectv2"]["test60"]["llm_with_rules_clinical_fact_f1"])
+        for model, _ in MODELS
+    }
+    exect_llm = {
+        model: float(by_model[model]["exectv2"]["test60"]["llm_clinical_fact_f1"])
+        for model, _ in MODELS
+    }
+    exect_family = {
+        model: {
+            family: float(score)
+            for family, score in by_model[model]["exectv2"]["test60"][
+                "llm_with_rules_by_family"
+            ].items()
+        }
+        for model, _ in MODELS
+    }
+    gan_dev = {
+        model: float(by_model[model]["gan2026"]["dev750"]["llm_with_rules_purist_accuracy"])
+        for model, _ in MODELS
+    }
+    gan_test = {
+        model: float(by_model[model]["gan2026"]["test450"]["llm_with_rules_purist_accuracy"])
+        for model, _ in MODELS
+    }
+    gan_llm = {
+        model: float(by_model[model]["gan2026"]["test450"]["llm_purist_accuracy"])
+        for model, _ in MODELS
+    }
 
-    gan_test_purist = {
-        key: value["accuracy"]
-        for key, value in _measurement(scorecard, "gan2026_six_model_test450_purist_accuracy")[
-            "value"
-        ].items()
-    }
-    gan_test_pragmatic = {
-        key: value["accuracy"]
-        for key, value in _measurement(scorecard, "gan2026_six_model_test450_pragmatic_accuracy")[
-            "value"
-        ].items()
-    }
+    shared_split_subtitle = (
+        "Final LLM-with-rules results; primary readout is aggregate-only locked holdout"
+    )
+    shared_method_subtitle = "Final results on aggregate-only locked holdout"
 
     _barbell(
         "exect_dev_test.svg",
-        "ExECT clinical-headline F1: development and test",
-        "Final pipeline; dev140 permits row analysis, test60 is aggregate-only "
-        "(59 loadable letters); focused scale",
+        "ExECT clinical fact F1: locked holdout versus development",
+        shared_split_subtitle,
         "dev140",
         "test60",
         exect_dev,
         exect_test,
         sort_on=exect_test,
-        xlabel="Clinical-headline F1 (0–1)",
+        xlabel="Clinical fact F1 (0–1)",
         colors=(TEAL_LIGHT, TEAL),
     )
     _grouped_bar(
         "exect_llm_rules.svg",
-        "ExECT clinical-headline F1: LLM and LLM + rules",
-        "dev140; raw model-owned candidates versus final deterministic family "
-        "transforms and assembly",
-        "LLM (raw stage)",
-        "LLM + rules (final)",
-        {key: row["raw"] for key, row in exect_stages.items()},
-        {key: row["final"] for key, row in exect_stages.items()},
-        sort_on={key: row["final"] for key, row in exect_stages.items()},
-        xlabel="Clinical-headline F1 (0–1)",
+        "ExECT clinical fact F1: LLM only and LLM with rules",
+        shared_method_subtitle,
+        "LLM only",
+        "LLM with rules",
+        exect_llm,
+        exect_test,
+        sort_on=exect_test,
+        xlabel="Clinical fact F1 (0–1)",
         colors=(NEUTRAL, ORANGE),
     )
     _heatmap(
         "exect_family_heatmap.svg",
-        "ExECT development F1 by phenotype family",
-        "Final pipeline on dev140; family F1 uses model-specific fact counts",
+        "ExECT locked-holdout F1 by letter part",
+        "Final LLM-with-rules clinical fact F1 on aggregate-only test60",
         ["Diagnosis", "SeizureFrequency", "Prescription", "Investigations"],
         exect_family,
     )
+    _barbell(
+        "gan_dev_test.svg",
+        "Gan Purist accuracy: locked holdout versus development",
+        shared_split_subtitle,
+        "dev750",
+        "test450",
+        gan_dev,
+        gan_test,
+        sort_on=gan_test,
+        xlabel="Purist accuracy (0–1)",
+        colors=(TEAL_LIGHT, TEAL),
+    )
     _grouped_bar(
-        "gan_purist_pragmatic.svg",
-        "Gan test accuracy by scoring view",
-        "Aggregate-only test450; Purist is primary and Pragmatic is a secondary side-car",
-        "Purist",
-        "Pragmatic",
-        gan_test_purist,
-        gan_test_pragmatic,
-        sort_on=gan_test_purist,
-        xlabel="Accuracy (0–1)",
-        colors=(GOLD_LIGHT, GOLD),
+        "gan_llm_rules.svg",
+        "Gan Purist accuracy: LLM only and LLM with rules",
+        shared_method_subtitle,
+        "LLM only",
+        "LLM with rules",
+        gan_llm,
+        gan_test,
+        sort_on=gan_test,
+        xlabel="Purist accuracy (0–1)",
+        colors=(NEUTRAL, ORANGE),
     )
 
 

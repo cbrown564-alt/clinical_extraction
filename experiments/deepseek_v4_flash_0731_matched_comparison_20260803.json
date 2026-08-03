@@ -1,0 +1,192 @@
+{
+  "schema_version": "deepseek_v4_flash_0731_matched_comparison.v1",
+  "generated_on": "2026-08-03",
+  "study": "deepseek_v4_flash_0731_matched_comparison",
+  "provider_revision": "DeepSeek-V4-Flash-0731",
+  "model": "deepseek/deepseek-v4-flash",
+  "question": "How does the 2026-07-31 DeepSeek-V4-Flash API revision change ruleset-matched ExECTv2 and Gan2026 results for llm_only and llm_with_rules versus the prior matched panel cells?",
+  "claim_boundary": "Provider-update evidence. The canonical six-model comparison report uses these 0731 figures for primary DeepSeek holdout cells. Decision 0046 Sol method-row fills and retained July panel files remain the paper-identity and historical owners. Holdout splits remain aggregate-only. ExECT clinical fact F1 and Gan Purist are not interchangeable. Not clinical validation.",
+  "comparability_rules": {
+    "exect_dev140": "Ruleset-matched: 2026-07-15 structured outputs replayed through current default lenses equal the retained panel (0.8767 / raw 0.7915); 0731 is a live no-cache re-run on the same frozen prompt and Decision 0040/0041 stack.",
+    "exect_test60": "Aggregate-only prior retained panel versus live 0731. No separate current-rules no-call replay of prior test60 raws; ExECT DeepSeek current-rules invariance on dev140 is disclosed as the closest ruleset control.",
+    "gan_llm_with_rules_test450": "Ruleset-matched prior is final-ruleset no-call replay of frozen matched v0.5 DeepSeek raws (348/450 Purist). Frozen July panel (344/450) is historical context only. 0731 is live hybrid_full_stack on the same v0.5 prompt.",
+    "gan_llm_only_test450": "No pre-0731 matched v0.5 llm_only DeepSeek test450 prior exists. 0731 cell is the first matched DeepSeek product-arm llm_only test450 result; do not invent a prior from v0.7 validation or model-boundary scores."
+  },
+  "operational_disclosures": [
+    "ExECT 0731 raised structured max_tokens from 16000 to 64000 after thinking-budget truncation under the 0731 default thinking route.",
+    "Gan and ExECT holdout row JSONL under scratch/holdout remain sealed; this artifact is aggregate-only.",
+    "0731 live runs used cache disabled."
+  ],
+  "cells": {
+    "exectv2_dev140_llm_only": {
+      "task": "exectv2",
+      "method": "llm",
+      "split": "dev140",
+      "metric": "clinical_fact_f1_raw_lane_score",
+      "row_policy": "development_review_permitted",
+      "comparability": "ruleset_matched",
+      "prior": {
+        "label": "2026-07-15 model / current-rules replay",
+        "value": 0.7915,
+        "source": "docs/experiments/exectv2/reliability/exectv2_deepseek_v4_flash_20260715_model_current_rules_dev140_2026-07-31.md"
+      },
+      "update_0731": {
+        "label": "0731 live",
+        "value": 0.8139,
+        "source": "docs/experiments/exectv2/reliability/exectv2_deepseek_v4_flash_0731_dev140_2026-07-31.md"
+      },
+      "delta": 0.0224
+    },
+    "exectv2_dev140_llm_with_rules": {
+      "task": "exectv2",
+      "method": "llm_with_rules",
+      "split": "dev140",
+      "metric": "clinical_fact_f1_clinical_headline",
+      "row_policy": "development_review_permitted",
+      "comparability": "ruleset_matched",
+      "prior": {
+        "label": "2026-07-15 model / current-rules replay",
+        "value": 0.8767,
+        "source": "experiments/exectv2_deepseek_v4_flash_20260715_model_current_rules_dev140_20260731.json"
+      },
+      "update_0731": {
+        "label": "0731 live",
+        "value": 0.8994,
+        "source": "experiments/exectv2_deepseek_v4_flash_0731_update_dev140_20260731.json"
+      },
+      "delta": 0.0227,
+      "family_clinical_headline": {
+        "Diagnosis": {"prior": 0.8764, "update_0731": 0.8917, "delta": 0.0153},
+        "SeizureFrequency": {"prior": 0.7610, "update_0731": 0.8282, "delta": 0.0672},
+        "Prescription": {"prior": 0.9280, "update_0731": 0.9353, "delta": 0.0073},
+        "Investigations": {"prior": 0.9389, "update_0731": 0.9506, "delta": 0.0117}
+      },
+      "changed_letter_summary": {
+        "n_letters": 140,
+        "n_changed": 59,
+        "rescue": 38,
+        "regression": 11,
+        "prediction_only": 10,
+        "source": "experiments/exectv2_deepseek_v4_flash_0731_update_dev140_20260731_vs_20260715_current_rules.json"
+      }
+    },
+    "exectv2_test60_llm_only": {
+      "task": "exectv2",
+      "method": "llm",
+      "split": "test60",
+      "metric": "clinical_fact_f1_raw_lane_score",
+      "row_policy": "aggregate_only",
+      "comparability": "prior_panel_vs_live_0731_ruleset_control_via_dev140",
+      "prior": {
+        "label": "retained six-model test60 panel",
+        "value": 0.7575,
+        "source": "experiments/exectv2_six_model_test60_stage_panel_20260801/panel_aggregate.json"
+      },
+      "update_0731": {
+        "label": "0731 live",
+        "value": 0.7785,
+        "source": "scratch/holdout/exectv2_test60_deepseek_v4_flash_0731_20260731/deepseek_v4_flash/deepseek_v4_flash_aggregate.md"
+      },
+      "delta": 0.0210
+    },
+    "exectv2_test60_llm_with_rules": {
+      "task": "exectv2",
+      "method": "llm_with_rules",
+      "split": "test60",
+      "metric": "clinical_fact_f1_clinical_headline",
+      "row_policy": "aggregate_only",
+      "comparability": "prior_panel_vs_live_0731_ruleset_control_via_dev140",
+      "prior": {
+        "label": "retained six-model test60 panel",
+        "value": 0.7881,
+        "source": "experiments/exectv2_six_model_test60_stage_panel_20260801/panel_aggregate.json"
+      },
+      "update_0731": {
+        "label": "0731 live",
+        "value": 0.8118,
+        "source": "scratch/holdout/exectv2_test60_deepseek_v4_flash_0731_20260731/deepseek_v4_flash/deepseek_v4_flash_aggregate.md"
+      },
+      "delta": 0.0237
+    },
+    "gan2026_test450_llm_with_rules": {
+      "task": "gan2026",
+      "method": "llm_with_rules",
+      "split": "test450",
+      "metric": "purist_accuracy",
+      "row_policy": "aggregate_only",
+      "comparability": "ruleset_matched_final_replay_vs_live_0731",
+      "prompt": "gan2026_hybrid_structured_events_v0.5",
+      "frozen_panel": {
+        "label": "matched v0.5 panel (historical repair)",
+        "purist_correct": 344,
+        "purist_accuracy": 0.7644,
+        "pragmatic_correct": 366,
+        "pragmatic_accuracy": 0.8133,
+        "source": "experiments/gan2026_matched_v05_test450_aggregate_20260716.json"
+      },
+      "prior_ruleset_matched": {
+        "label": "final-ruleset no-call replay of prior raws",
+        "purist_correct": 348,
+        "purist_accuracy": 0.7733,
+        "pragmatic_correct": 370,
+        "pragmatic_accuracy": 0.8222,
+        "source": "experiments/gan2026_six_model_current_floors_replay_20260731/replay_summary.json"
+      },
+      "update_0731": {
+        "label": "0731 live hybrid_full_stack",
+        "purist_correct": 368,
+        "purist_accuracy": 0.8178,
+        "pragmatic_correct": 377,
+        "pragmatic_accuracy": 0.8378,
+        "call_failures": 0,
+        "parse_or_validation_failures": 0,
+        "source": "scratch/holdout/gan2026_test450_deepseek_v4_flash_0731_20260731/llm_with_rules/aggregate.md"
+      },
+      "delta_vs_ruleset_matched_purist": 0.0444,
+      "delta_vs_ruleset_matched_purist_correct": 20,
+      "delta_vs_frozen_purist_correct": 24,
+      "delta_vs_ruleset_matched_pragmatic_correct": 7
+    },
+    "gan2026_test450_llm_only": {
+      "task": "gan2026",
+      "method": "llm",
+      "split": "test450",
+      "metric": "purist_accuracy",
+      "row_policy": "aggregate_only",
+      "comparability": "0731_first_matched_cell_no_prior",
+      "prompt": "gan2026_llm_only_canonical_pipeline_v0.8",
+      "prior_ruleset_matched": null,
+      "update_0731": {
+        "label": "0731 live llm_only",
+        "purist_correct": 332,
+        "purist_accuracy": 0.7378,
+        "pragmatic_correct": 350,
+        "pragmatic_accuracy": 0.7778,
+        "call_failures": 0,
+        "parse_or_validation_failures": 0,
+        "source": "scratch/holdout/gan2026_test450_deepseek_v4_flash_0731_20260731/llm/aggregate.md",
+        "panel_cell": "experiments/gan2026_six_model_llm_only_test450_20260801/panel_aggregate.json"
+      },
+      "non_matched_context_only": {
+        "note": "Do not use as matched priors for 0731 llm_only test450.",
+        "v07_validation750_llm_only_purist": "559/750",
+        "v05_model_boundary_dev750_purist": "449/750"
+      }
+    }
+  },
+  "headline_deltas": {
+    "exectv2_dev140_llm_with_rules": "+0.0227 clinical fact F1",
+    "exectv2_dev140_llm_only": "+0.0224 clinical fact F1",
+    "exectv2_test60_llm_with_rules": "+0.0237 clinical fact F1",
+    "exectv2_test60_llm_only": "+0.0210 clinical fact F1",
+    "gan2026_test450_llm_with_rules_vs_ruleset_matched": "+20 Purist (348→368); +7 Pragmatic (370→377)",
+    "gan2026_test450_llm_only": "no matched prior; 0731 = 332/450 Purist"
+  },
+  "owners": {
+    "protocol": "docs/research/deepseek_v4_flash_0731_matched_comparison_protocol_2026-08-03.md",
+    "report": "docs/research/deepseek_v4_flash_0731_matched_comparison_report_2026-08-03.md",
+    "exect_dev140_diff": "experiments/exectv2_deepseek_v4_flash_0731_update_dev140_20260731_vs_20260715_current_rules.json",
+    "charts_dir": "docs/research/assets/deepseek_v4_flash_0731_comparison_2026-08-03",
+    "chart_script": "scripts/render_deepseek_v4_flash_0731_comparison_charts.py"
+  }
+}

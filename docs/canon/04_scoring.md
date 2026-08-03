@@ -1,35 +1,35 @@
 # 04 — ExECT scoring and annotation evidence
 
-Last updated: 2026-08-01
+Last updated: 2026-08-03
 
 | Score | Question | Use |
 | --- | --- | --- |
-| Clinical fact recovery (`clinical_headline`) | Were the right facts recovered across the four main entity types? | Primary internal comparison |
+| Clinical fact recovery | Were the right facts recovered across the four main entity types? | Primary internal comparison (`clinical_headline` in code and saved scores) |
 | Entity-specific score | Was the entity's clinical object recovered? | Entity analysis |
 | Seizure-frequency state profile | Was the combined seizure-burden state recovered? | Seizure-frequency development |
 | Phrase, CUI, and full attributes | Does the output match the published representation? | Published-metric comparison |
 | Evidence groundedness | Is the cited text present after neutral text repair? | Evidence fidelity |
 
-Do not describe `clinical_headline` as the published strict benchmark. The
+Do not describe clinical fact recovery as the published strict benchmark. The
 repository now implements the paper-derived normalized-phrase, CUI, and
 full-attribute views, but it has not reproduced the paper's original system or
 reported validation scores.
 
-The primary ExECT method comparison is now the Sol-matched four-family
-surface defined by [decision 0046](../decisions/0046-exect-primary-method-comparison-boundary.md).
-It uses the same `headline_target` / `clinical_headline` surface for the
-rules-only and hybrid rows, and `raw_lane_score` for the Sol LLM-only row.
+The primary ExECT method comparison is now the Sol-matched four-family score
+defined by [decision 0046](../decisions/0046-exect-primary-method-comparison-boundary.md).
+Rules-only and LLM-with-rules rows use the same `headline_target` /
+`clinical_headline` assembly score; the Sol LLM-only row uses `raw_lane_score`.
 The all-nine rules-only results and the historical GEPA and `v08` results
 remain secondary evidence.
 
 | Primary method | Split | Selected result |
 | --- | --- | ---: |
-| Rules only, Sol-matched four families | dev140 | clinical_headline F1 0.8160 |
+| Rules only, Sol-matched four families | dev140 | clinical fact F1 0.8160 |
 | LLM only, GPT-5.6 Sol (`raw_lane_score`) | dev140 | F1 0.8097 |
-| LLM with rules, GPT-5.6 Sol one-call hybrid | dev140 | clinical_headline F1 0.8920 |
-| Rules only, Sol-matched four families | test60 | clinical_headline F1 0.7154; aggregate-only |
+| LLM with rules, GPT-5.6 Sol one-call | dev140 | clinical fact F1 0.8920 |
+| Rules only, Sol-matched four families | test60 | clinical fact F1 0.7154; aggregate-only |
 | LLM only, GPT-5.6 Sol (`raw_lane_score`) | test60 | F1 0.7771; aggregate-only |
-| LLM with rules, GPT-5.6 Sol one-call hybrid | test60 | clinical_headline F1 0.8047; aggregate-only |
+| LLM with rules, GPT-5.6 Sol one-call | test60 | clinical fact F1 0.8047; aggregate-only |
 
 | Secondary or historical method | Split | Selected result |
 | --- | --- | ---: |

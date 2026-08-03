@@ -330,7 +330,7 @@ export function GanAuditView({ data }: { data: GoldNoiseGanAuditResponse }) {
       </div>
       <div>
         <h4 className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted">
-          Headline metrics
+          Primary metrics
         </h4>
         <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
           {Object.entries(metrics).map(([k, v]) => (

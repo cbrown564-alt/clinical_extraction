@@ -41,7 +41,7 @@ export const exectv2Dataset: DatasetDescriptor = {
       shortLabel: "Overall",
       kind: "headline",
       format: "f1",
-      description: "Headline clinical mention F1 across all four families.",
+      description: "Clinical fact F1 across all four families.",
     },
     {
       id: "f1_Diagnosis",

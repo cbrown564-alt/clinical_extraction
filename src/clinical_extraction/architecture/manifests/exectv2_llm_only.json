@@ -9,8 +9,8 @@
     "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py",
     "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_only_letter"
   },
-  "one_sentence": "One structured model call proposes four-family findings, and the selected LLM-only view scores those findings without the hybrid family lenses.",
-  "sixty_second": "The canonical LLM-only lane shares one structured producer with the hybrid method. It builds the four-family prompt, makes or replays one model call, parses the event ledger, optionally performs a format-only retry for eligible local models, flattens events, and applies evidence and render-safety gates. Its selected prediction is the raw candidate view from that producer. It does not run seizure-frequency projection, Diagnosis reconciliation, Prescription rescue, or any other hybrid family lens. The old GEPA program remains named as a historical comparison rather than silently serving as the current selected entry point.",
+  "one_sentence": "One structured model call proposes four-family findings, and the selected LLM-only view scores those findings before family-specific deterministic transforms.",
+  "sixty_second": "The selected LLM-only lane shares one structured producer with the LLM-with-rules method. It builds the four-family prompt, makes or replays one model call, parses the event ledger, optionally performs a format-only retry for eligible local models, flattens events, and applies evidence and render-safety gates. Its selected prediction is the raw candidate view from that producer. It does not run seizure-frequency projection, Diagnosis reconciliation, Prescription rescue, or any other LLM-with-rules family transform. The old GEPA program remains named as a historical comparison rather than silently serving as the current selected entry point.",
   "prediction_owner": "the named model (stage exect.llm.model_call); deterministic stages only parse, represent, and gate its findings",
   "scored_representation": "The raw_candidate four-family PredictedLetter from the shared one-call producer, scored per entity and overall.",
   "stages": [
@@ -129,7 +129,7 @@
     {
       "stage_id": "exect.llm.raw_candidate",
       "name": "Materialize the raw candidate view",
-      "operation": "Expose the producer's gated mentions as the selected LLM-only scoring view without applying the hybrid family transforms.",
+      "operation": "Expose the producer's gated mentions as the selected LLM-only scoring view without applying the LLM-with-rules family transforms.",
       "owner": "deterministic",
       "rule_category": "benchmark_format",
       "effect_class": "benchmark_projection",

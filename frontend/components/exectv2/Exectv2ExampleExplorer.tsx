@@ -153,21 +153,21 @@ function runMetricChips(run: Exectv2RunSummary): MetricChip[] {
 }
 
 /**
- * How the clinical-recovery headline treats a mention's scoring unit. The
- * drill-down renders every raw mention, but the headline chips score the
- * de-duplicated `Headline Scoring Unit`, so this badge keeps the two from
- * silently disagreeing: a deduplicated mention looks like a miss but is not
- * charged, while a distinct-assertion duplicate is genuinely counted. See
- * CONTEXT.md (`Redundant-Convention Duplicate`, `Distinct-Assertion Duplicate`).
+ * How clinical fact recovery treats a mention's scoring unit. The drill-down
+ * renders every raw mention, but the score chips use the de-duplicated unit, so
+ * this badge keeps the two from silently disagreeing: a deduplicated mention
+ * looks like a miss but is not charged, while a distinct-assertion duplicate
+ * is genuinely counted. See CONTEXT.md (`Redundant-Convention Duplicate`,
+ * `Distinct-Assertion Duplicate`).
  */
 function HeadlineStatusBadge({ status }: { status: Exectv2Mention["headline_status"] }) {
   if (status === "deduplicated") {
     return (
       <span
         className="inline-block rounded border border-dashed border-muted/40 bg-surface-raised px-1.5 py-0.5 text-[11px] font-medium text-muted"
-        title="The clinical-recovery headline scores one unit per distinct fact; this mention's unit was already counted from an earlier mention (it differs only in a headline-demoted attribute), so the model is not charged for it."
+        title="Clinical fact recovery scores one unit per distinct fact; this mention's unit was already counted from an earlier mention (it differs only in a demoted attribute), so the model is not charged for it."
       >
-        removed from headline scoring - deduplicated
+        removed from clinical-fact scoring - deduplicated
       </span>
     );
   }
@@ -175,7 +175,7 @@ function HeadlineStatusBadge({ status }: { status: Exectv2Mention["headline_stat
     return (
       <span
         className="inline-block rounded border border-deterministic-alt/25 bg-deterministic-alt/8 px-1.5 py-0.5 text-[11px] font-medium text-deterministic-alt"
-        title="The same concept asserted again at a distinct point in the letter. The benchmark counts each occurrence, so the headline preserves it rather than collapsing – it is a genuine required mention."
+        title="The same concept asserted again at a distinct point in the letter. The benchmark counts each occurrence, so clinical fact recovery preserves it rather than collapsing – it is a genuine required mention."
       >
         distinct assertion – counted
       </span>

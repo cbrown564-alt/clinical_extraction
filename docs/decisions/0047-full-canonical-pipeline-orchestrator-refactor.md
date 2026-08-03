@@ -60,7 +60,7 @@ Before freezing behavior, reconcile the architecture layer with decisions
 2. Make the selected ExECT rules-only manifest show both truths: the rules-only
    pipeline may extract all nine entity types, while the primary comparison
    projects only Diagnosis, Seizure Frequency, Prescription, and
-   Investigations into `clinical_headline`.
+   Investigations into clinical fact recovery (`clinical_headline`).
 3. Confirm that the selected ExECT hybrid configuration is one structured call
    with `default` / `default` Diagnosis and Prescription policy. The archived
    `combined` / `combined` policy must require an explicit historical-replay

@@ -7,15 +7,18 @@ owns the claim. Short task routes live in [THREAD_MAP.md](THREAD_MAP.md).
 
 ## Supervisor handoff
 
-Start with [README.md](../README.md). The supervisor path covers the two-task ×
-three-method story, equal Gan and ExECT primary results at a glance, five-stage
-pipeline diagram, six selected methods, frontend demonstration, six-path teaching
-case, canonical results report, evidence and limits, and exact reproduction
-instructions.
+Start with [README.md](../README.md). It is the public front door: what the
+project is, held-out results, the two tasks and three methods, how a letter
+moves through the pipeline, how to open the frontend, and how to reproduce
+selected results. Internal decisions, open engineering status, and contributor
+routes stay out of that path.
 
-The direct handoff links are [six-path walkthrough](architecture/teaching_cases/six_paths.md),
-[frontend startup](../frontend/README.md), [canonical results](research/six_model_comparison_report_2026-07-18.md),
-[claim limits](canon/10_paper_provenance.md), and [exact no-call replay](../scripts/verify_reference_evidence.py).
+Direct links from the README story:
+[six-path walkthrough](architecture/teaching_cases/six_paths.md),
+[frontend startup](../frontend/README.md),
+[canonical results](research/six_model_comparison_report_2026-07-18.md),
+[claim limits](canon/10_paper_provenance.md), and
+[exact no-call replay](../scripts/verify_reference_evidence.py).
 
 ## Current work
 
@@ -47,6 +50,7 @@ The direct handoff links are [six-path walkthrough](architecture/teaching_cases/
 | Selected files, hashes, and replay requirements | [retained evidence index](experiments/retained_evidence_manifest.md) |
 | Strength of paper claims | [paper claim status](canon/10_paper_provenance.md) |
 | Canonical six-model results | [comparison report](research/six_model_comparison_report_2026-07-18.md) |
+| DeepSeek V4-Flash-0731 vs matched priors | [0731 matched comparison](research/deepseek_v4_flash_0731_matched_comparison_report_2026-08-03.md) |
 
 Detailed experiment history is intentionally absent from the active index. Use
 Git history and the owning claim documents when the selected evidence is not
