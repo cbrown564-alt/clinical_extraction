@@ -8,8 +8,11 @@ on the selected codebase; provenance pointers stay inside the JSON.
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
+
+from clinical_extraction.core.evidence import evidence_is_substring
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = ROOT / "experiments/six_model_final_panel_20260803"
@@ -37,6 +40,36 @@ EXECT_DEV140_LLM_ONLY_SOURCES: dict[str, Path] = {
     / "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json",
     "openai/gpt-5.6-sol": ROOT
     / "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json",
+    "ollama_chat/qwen3.6:35b": ROOT
+    / "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json",
+    "ollama_chat/gemma4:26b": ROOT
+    / "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json",
+}
+
+EXECT_DEV140_STRUCTURED_JSONL: dict[str, Path] = {
+    "openai/gpt-4.1-mini": ROOT
+    / "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715_structured.jsonl",
+    "openai/gpt-5.6-luna": ROOT
+    / "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715_structured.jsonl",
+    "openai/gpt-5.6-sol": ROOT
+    / "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715_structured.jsonl",
+    "deepseek/deepseek-v4-flash": ROOT
+    / "experiments/exectv2_deepseek_v4_flash_0731_update_dev140_20260731_structured.jsonl",
+    "ollama_chat/qwen3.6:35b": ROOT
+    / "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715_structured.jsonl",
+    "ollama_chat/gemma4:26b": ROOT
+    / "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715_structured.jsonl",
+}
+
+EXECT_DEV140_ASSEMBLY_JSON: dict[str, Path] = {
+    "openai/gpt-4.1-mini": ROOT
+    / "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.json",
+    "openai/gpt-5.6-luna": ROOT
+    / "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json",
+    "openai/gpt-5.6-sol": ROOT
+    / "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json",
+    "deepseek/deepseek-v4-flash": ROOT
+    / "experiments/exectv2_deepseek_v4_flash_0731_update_dev140_20260731.json",
     "ollama_chat/qwen3.6:35b": ROOT
     / "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json",
     "ollama_chat/gemma4:26b": ROOT
@@ -87,6 +120,134 @@ def _raw_lane_f1(path: Path) -> float:
         elif isinstance(obj, list):
             stack.extend(obj)
     raise KeyError(f"raw_lane_score F1 not found in {path}")
+
+
+def _read_jsonl(path: Path) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    with path.open(encoding="utf-8") as handle:
+        for line in handle:
+            if line.strip():
+                rows.append(json.loads(line))
+    return rows
+
+
+def _letter_text(row: Mapping[str, Any]) -> str:
+    payload = row.get("prompt_input_json")
+    if isinstance(payload, str):
+        payload = json.loads(payload)
+    if not isinstance(payload, dict):
+        raise KeyError("prompt_input_json missing letter_text")
+    return str(payload["letter_text"])
+
+
+def _mentions_from_structured_events(row: Mapping[str, Any]) -> list[dict[str, str]]:
+    mentions: list[dict[str, str]] = []
+    for event in row.get("structured_events") or []:
+        if not isinstance(event, dict):
+            continue
+        evidence = str(event.get("evidence") or "")
+        for mention in event.get("mentions") or []:
+            if not isinstance(mention, dict):
+                continue
+            mentions.append(
+                {
+                    "entity": str(mention.get("entity") or ""),
+                    "text": str(mention.get("text") or ""),
+                    "evidence": evidence,
+                }
+            )
+    return mentions
+
+
+def _classify_evidence_warnings(warnings: Any) -> tuple[int, int, dict[str, int]]:
+    repaired = 0
+    hard_drop = 0
+    detail = {
+        "repaired_from_mention_text": 0,
+        "repaired_exact_copy": 0,
+        "dropped_not_substring": 0,
+        "dropped_empty": 0,
+    }
+    for warning in warnings or []:
+        text = str(warning)
+        body = text
+        if ": " in text:
+            maybe = text.split(": ", 1)[1]
+            if maybe.startswith(("repaired_", "dropped_")):
+                body = maybe
+        if body.startswith("repaired_evidence_from_mention_text"):
+            repaired += 1
+            detail["repaired_from_mention_text"] += 1
+        elif body.startswith("repaired_evidence_exact_copy"):
+            repaired += 1
+            detail["repaired_exact_copy"] += 1
+        elif body.startswith("dropped_evidence_not_substring"):
+            hard_drop += 1
+            detail["dropped_not_substring"] += 1
+        elif body.startswith("dropped_empty_evidence"):
+            hard_drop += 1
+            detail["dropped_empty"] += 1
+    return repaired, hard_drop, detail
+
+
+def _pre_gate_evidence(model: str) -> dict[str, Any]:
+    """Producer-stage quote validity before evidence repair/drop gates."""
+
+    structured_path = EXECT_DEV140_STRUCTURED_JSONL[model]
+    assembly_path = EXECT_DEV140_ASSEMBLY_JSON[model]
+    rows = _read_jsonl(structured_path)
+    exact = 0
+    total = 0
+    repaired = 0
+    hard_drop = 0
+    detail_totals = {
+        "repaired_from_mention_text": 0,
+        "repaired_exact_copy": 0,
+        "dropped_not_substring": 0,
+        "dropped_empty": 0,
+    }
+    for row in rows:
+        note = _letter_text(row)
+        for mention in _mentions_from_structured_events(row):
+            total += 1
+            if evidence_is_substring(note, mention["evidence"]):
+                exact += 1
+        row_repaired, row_hard, detail = _classify_evidence_warnings(row.get("gate_warnings"))
+        repaired += row_repaired
+        hard_drop += row_hard
+        for key, value in detail.items():
+            detail_totals[key] += value
+
+    assembly = _read(assembly_path)
+    lane_diagnostics = assembly.get("lane_diagnostics") or {}
+    post_exact = sum(
+        int(lane.get("exact_evidence_mentions") or 0) for lane in lane_diagnostics.values()
+    )
+    post_scored = sum(int(lane.get("scored_mentions") or 0) for lane in lane_diagnostics.values())
+    if total <= 0:
+        raise ValueError(f"no pre-gate mentions in {structured_path}")
+    if post_scored <= 0:
+        raise ValueError(f"no post-rules scored mentions in {assembly_path}")
+
+    return {
+        "pre_gate_mention_count": total,
+        "pre_gate_exact_evidence_count": exact,
+        "pre_gate_exact_evidence_rate": _round4(exact / total),
+        "evidence_repaired_count": repaired,
+        "evidence_hard_dropped_count": hard_drop,
+        "evidence_warning_detail": detail_totals,
+        "post_rules_exact_evidence_mentions": post_exact,
+        "post_rules_scored_mentions": post_scored,
+        "post_rules_exact_evidence_rate": _round4(post_exact / post_scored),
+        "source_structured_jsonl": str(structured_path.relative_to(ROOT)).replace("\\", "/"),
+        "source_assembly_json": str(assembly_path.relative_to(ROOT)).replace("\\", "/"),
+        "metric_note": (
+            "Pre-gate rate uses structured_events mention evidence versus letter_text "
+            "before repaired_evidence_* / dropped_evidence_* gates. "
+            "Post-rules rate is lane_diagnostics on final predicted_mentions "
+            "(filter outcome; expect ~1.0)."
+        ),
+    }
 
 
 def main() -> None:
@@ -166,6 +327,7 @@ def main() -> None:
         if gan_llm_only_dev_note is not None:
             gan_dev750["llm_only_revision_note"] = gan_llm_only_dev_note
 
+        evidence = _pre_gate_evidence(model)
         conditions.append(
             {
                 "model": model,
@@ -176,6 +338,31 @@ def main() -> None:
                     "dev140": {
                         "llm_clinical_fact_f1": exect_dev_llm,
                         "llm_with_rules_clinical_fact_f1": exect_dev_final,
+                        "pre_gate_exact_evidence_rate": evidence[
+                            "pre_gate_exact_evidence_rate"
+                        ],
+                        "pre_gate_mention_count": evidence["pre_gate_mention_count"],
+                        "pre_gate_exact_evidence_count": evidence[
+                            "pre_gate_exact_evidence_count"
+                        ],
+                        "evidence_repaired_count": evidence["evidence_repaired_count"],
+                        "evidence_hard_dropped_count": evidence[
+                            "evidence_hard_dropped_count"
+                        ],
+                        "evidence_warning_detail": evidence["evidence_warning_detail"],
+                        "post_rules_exact_evidence_rate": evidence[
+                            "post_rules_exact_evidence_rate"
+                        ],
+                        "post_rules_scored_mentions": evidence[
+                            "post_rules_scored_mentions"
+                        ],
+                        "evidence_metric_note": evidence["metric_note"],
+                        "evidence_source_structured_jsonl": evidence[
+                            "source_structured_jsonl"
+                        ],
+                        "evidence_source_assembly_json": evidence[
+                            "source_assembly_json"
+                        ],
                     },
                     "test60": {
                         "row_count": 59,
@@ -204,7 +391,7 @@ def main() -> None:
         )
 
     panel = {
-        "schema_version": "six_model.final_panel.v3",
+        "schema_version": "six_model.final_panel.v4",
         "generated_on": "2026-08-03",
         "identity": (
             "Final six-model results on the selected ExECT and Gan codebase for "
@@ -221,7 +408,10 @@ def main() -> None:
             "ExECT method identity. Gan llm_only uses matched v0.8 prompt on "
             "dev750 and test450; do not mix historical llm_with_rules v0.7 "
             "validation with current-floors v0.5 test450. DeepSeek gan llm_only "
-            "dev750 remains pre-0731 while test450 is 0731. Not clinical validation."
+            "dev750 remains pre-0731 while test450 is 0731. ExECT "
+            "post_rules_exact_evidence_rate is a filter outcome after "
+            "evidence repair/drop; use pre_gate_exact_evidence_rate for model "
+            "quote divergence. Not clinical validation."
         ),
         "conditions": conditions,
         "provenance": {
@@ -239,6 +429,10 @@ def main() -> None:
                 "experiments/deepseek_v4_flash_0731_matched_comparison_20260803.json"
                 "#cells.exectv2_dev140_llm_only"
             ),
+            "exectv2_dev140_pre_gate_evidence_structured_jsonl": {
+                model: str(path.relative_to(ROOT)).replace("\\", "/")
+                for model, path in EXECT_DEV140_STRUCTURED_JSONL.items()
+            },
             "gan2026_llm_with_rules_scores": str(GAN_FLOORS.relative_to(ROOT)).replace("\\", "/"),
             "gan2026_llm_only_test450": str(GAN_LLM_ONLY_TEST450.relative_to(ROOT)).replace(
                 "\\", "/"

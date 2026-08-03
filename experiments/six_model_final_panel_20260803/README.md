@@ -15,3 +15,8 @@ Gan `llm_only` uses the matched v0.8 prompt on `dev750` and `test450`. Do not
 mix historical `llm_with_rules` v0.7 validation with current-floors v0.5
 `test450`. DeepSeek Gan `llm_only` `dev750` is still pre-0731 while `test450`
 is 0731; that gap is provisional.
+
+ExECT `dev140` also reports producer-stage pre-gate exact-evidence rates plus
+evidence repair/hard-drop counts from retained structured JSONL. Final
+post-rules exact-evidence rate is a filter outcome after the evidence gate
+(expect ~1.0) and does not separate models.

@@ -48,6 +48,10 @@ and [CONTEXT.md](../../CONTEXT.md).
 - **Exact evidence** means that a prediction includes text copied exactly from
   its source letter. It shows that a quotation is present, not that the
   quotation clinically supports the prediction.
+- **Pre-gate exact evidence** (ExECT) is the exact-substring rate on producer
+  mentions **before** evidence repair/drop. **Post-rules exact evidence** is
+  the rate on final predicted mentions after that gate (typically ~`1.00` for
+  every model and does not separate models).
 
 ## Executive conclusion
 
@@ -74,7 +78,7 @@ is model-comparison evidence, not a rewrite of the paper method identity.
 | Top cluster | Sol and DeepSeek lead; mid-ranks diverge (cross-task ρ `0.54`) |
 | Rules on ExECT | Weaker models gain more; ranks compress |
 | Generalization gaps | ExECT large drops are mostly rules non-transfer; Gan “smaller gap” is rules-primary |
-| Failure shape | Stronger models fail less on evidence selection; ExECT exact-evidence is saturated |
+| Failure shape | Pre-gate ExECT quote rates diverge; post-rules exact-evidence is a filter. Gan: stronger models fail less on evidence selection |
 | Cost–quality | DeepSeek is the practical balance; Sol when max score matters |
 
 ## 1. Stronger models tend to do better; Healthcare Index is a soft predictor
@@ -244,15 +248,42 @@ current-floors v0.5 `test450`. DeepSeek Gan `llm_only` `dev750` is still
 pre-0731 while `test450` is 0731; that LLM-only gap is provisional until the
 matched 0731 validation750 run completes.
 
-## 6. Stronger models fail less on evidence selection
+## 6. Evidence quality diverges before rules; failure owners differ after
 
 This section uses **development** row-level evidence. Locked holdout rows
 remain aggregate-only.
 
-ExECT exact source-text match is `1.00` for every model on the retained
-development panel. That confirms citation presence for all six, so it does not
-separate models. Independent clinical review of whether the cited text supports
-the fact is still pending.
+### ExECT: final exact-evidence `1.00` is a filter, not a model finding
+
+Under LLM with rules, mentions without valid quoted evidence are repaired
+(Dx/Rx text→evidence) or hard-dropped. Counting exact substrings on the
+**final** predicted mentions therefore yields ~`1.00` for every model — the
+gate outcome, not producer quote quality.
+
+The useful metric is **pre-gate** exact-evidence on producer
+`structured_events` mentions versus `letter_text`, before
+`repaired_evidence_*` / `dropped_evidence_*`:
+
+![ExECT pre-gate versus post-rules exact-evidence](assets/six_model_comparison_2026-07-18/exect_pre_gate_vs_post_rules_evidence.svg)
+
+| Model | Pre-gate exact rate | Mentions | Repaired | Hard-dropped | Post-rules exact rate |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| GPT-5.6 Sol | 1.00 | 842 | 1 | 0 | 1.00 |
+| GPT-5.6 Luna | 0.99 | 813 | 8 | 0 | 1.00 |
+| DeepSeek V4 Flash | 0.99 | 843 | 10 | 0 | 1.00 |
+| GPT-4.1-mini | 0.94 | 973 | 58 | 1 | 1.00 |
+| Gemma 4 26B | 0.93 | 978 | 56 | 17 | 1.00 |
+| Qwen 3.6:35B | 0.86 | 875 | 120 | 1 | 1.00 |
+
+![ExECT evidence repair and hard-drop counts](assets/six_model_comparison_2026-07-18/exect_evidence_repair_drop_counts.svg)
+
+Qwen’s quote quality is weakest pre-gate but is mostly **repaired** rather
+than hard-dropped — directly relevant to open question C below (where Qwen
+gains from rules). Gemma has the most hard drops. Independent clinical review
+of whether cited text supports the fact remains pending (semantic support ≠
+substring presence).
+
+### Gan: stronger models fail less on evidence selection
 
 On Gan `dev750`, first-failure owners among rows that are not `none`:
 
@@ -379,6 +410,34 @@ Prescription policy is **`default` / `default`**
 Qwen and Gemma use the same prompt and method as the hosted models, but run
 locally.
 
+## Open mechanism questions
+
+The findings above show *what* happened. The natural *why* questions below are
+the shared follow-up set; they are not answered by this panel alone.
+
+### Background answers (owned elsewhere)
+
+- **Why an error floor remains** after better models and rules: models usually
+  find text; residual failures are forced clinical choices under gold
+  conventions (`rate_denominator`, SF state sets, diagnosis granularity).
+  Owner: [why the error floor persists](why_the_error_floor_persists_2026-07-31.md).
+- **Where DeepSeek 0731 helped on ExECT development:** Seizure Frequency drove
+  most of the `dev140` lift (+0.067), with letter-level rescue/regression
+  counts. Holdout stays aggregate-only. Owner:
+  [0731 matched comparison](deepseek_v4_flash_0731_matched_comparison_report_2026-08-03.md).
+
+### Open
+
+| ID | Question | Why it matters |
+| --- | --- | --- |
+| A | Why does ExECT rules lift fail to transfer from `dev140` to `test60`? | Finding 5 shows the large ExECT gap is mostly rules non-transfer; which rule classes / families overfit development is unknown |
+| B | Why does mini suit Gan better than ExECT? | Explains mid-rank divergence (mini 2nd on Gan, 5th on ExECT); tests task-shaped fit vs one capability ladder |
+| C | Which ExECT rules make Qwen competitive? | Qwen’s holdout rules gain is larger (`+0.06` vs Sol `+0.03`); pre-gate evidence shows Qwen needs far more quote repair |
+
+These need predeclared development-only attribution studies (retained
+`dev140` / `dev750` artifacts first). No holdout row inspection. Pre-gate
+evidence above instruments C; it does not answer A–C by itself.
+
 ## What the report does and does not establish
 
 The report supports:
@@ -388,6 +447,9 @@ The report supports:
 - final ExECT and Gan results from one panel directory, including LLM-only and
   LLM-with-rules cells on development and holdout for generalization-gap
   analysis;
+- ExECT producer-stage pre-gate exact-evidence rates and repair/hard-drop
+  counts on `dev140`, showing model quote divergence that post-rules
+  exact-evidence (~`1.00`) hides;
 - the result, limited to these task-specific procedures, that DeepSeek leads
   current ExECT `test60` while Sol leads current Gan `test450`;
 - the mechanism reading that ExECT’s large development-to-holdout drop under
@@ -405,11 +467,13 @@ It does not support general model superiority, one reliability score combined
 across tasks, applying Gan findings to ExECT, the published ExECT benchmark,
 matched run token/latency/dollar rankings, treating AA max-effort scores as the
 extraction runtime, estimates of confidence after deployment, proof that
-quotations clinically support the extracted facts, or clinical validation.
+quotations clinically support the extracted facts, treating final ExECT
+exact-evidence as a model-quality ranking, or clinical validation.
 Independent clinical review is required before making stronger clinical-
 validity claims. Decision 0046 Sol method-row fills are unchanged by the
 six-model ranking. DeepSeek Gan `llm_only` generalization gap remains
-provisional until matched 0731 `dev750` completes.
+provisional until matched 0731 `dev750` completes. Open questions A–C are
+not answered here.
 
 ## Sources and technical detail
 
