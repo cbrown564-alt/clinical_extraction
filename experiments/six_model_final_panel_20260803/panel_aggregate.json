@@ -1,5 +1,5 @@
 {
-  "schema_version": "six_model.final_panel.v2",
+  "schema_version": "six_model.final_panel.v4",
   "generated_on": "2026-08-03",
   "identity": "Final six-model results on the selected ExECT and Gan codebase for the comparison report",
   "primary_method": "llm_with_rules",
@@ -15,7 +15,7 @@
     "ollama_chat/qwen3.6:35b",
     "ollama_chat/gemma4:26b"
   ],
-  "claim_boundary": "Aggregate-only locked holdout for test60/test450. Development splits permit row review. ExECT clinical fact F1 and Gan Purist are not interchangeable. Decision 0046 Sol method-row fills remain the paper ExECT method identity. Not clinical validation.",
+  "claim_boundary": "Aggregate-only locked holdout for test60/test450. Development splits permit row review. ExECT clinical fact F1 and Gan Purist are not interchangeable. Decision 0046 Sol method-row fills remain the paper ExECT method identity. Gan llm_only uses matched v0.8 prompt on dev750 and test450; do not mix historical llm_with_rules v0.7 validation with current-floors v0.5 test450. DeepSeek gan llm_only dev750 remains pre-0731 while test450 is 0731. ExECT post_rules_exact_evidence_rate is a filter outcome after evidence repair/drop; use pre_gate_exact_evidence_rate for model quote divergence. Not clinical validation.",
   "conditions": [
     {
       "model": "openai/gpt-4.1-mini",
@@ -24,7 +24,24 @@
       "provider_revision": null,
       "exectv2": {
         "dev140": {
-          "llm_with_rules_clinical_fact_f1": 0.8202
+          "llm_clinical_fact_f1": 0.7128,
+          "llm_with_rules_clinical_fact_f1": 0.8202,
+          "pre_gate_exact_evidence_rate": 0.9394,
+          "pre_gate_mention_count": 973,
+          "pre_gate_exact_evidence_count": 914,
+          "evidence_repaired_count": 58,
+          "evidence_hard_dropped_count": 1,
+          "evidence_warning_detail": {
+            "repaired_from_mention_text": 45,
+            "repaired_exact_copy": 13,
+            "dropped_not_substring": 0,
+            "dropped_empty": 1
+          },
+          "post_rules_exact_evidence_rate": 1.0,
+          "post_rules_scored_mentions": 932,
+          "evidence_metric_note": "Pre-gate rate uses structured_events mention evidence versus letter_text before repaired_evidence_* / dropped_evidence_* gates. Post-rules rate is lane_diagnostics on final predicted_mentions (filter outcome; expect ~1.0).",
+          "evidence_source_structured_jsonl": "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715_structured.jsonl",
+          "evidence_source_assembly_json": "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.json"
         },
         "test60": {
           "row_count": 59,
@@ -43,6 +60,7 @@
         "dev750": {
           "row_count": 750,
           "row_policy": "development_review_permitted",
+          "llm_purist_accuracy": 0.7693,
           "llm_with_rules_purist_accuracy": 0.9027
         },
         "test450": {
@@ -61,7 +79,24 @@
       "provider_revision": null,
       "exectv2": {
         "dev140": {
-          "llm_with_rules_clinical_fact_f1": 0.8832
+          "llm_clinical_fact_f1": 0.8059,
+          "llm_with_rules_clinical_fact_f1": 0.8832,
+          "pre_gate_exact_evidence_rate": 0.9902,
+          "pre_gate_mention_count": 813,
+          "pre_gate_exact_evidence_count": 805,
+          "evidence_repaired_count": 8,
+          "evidence_hard_dropped_count": 0,
+          "evidence_warning_detail": {
+            "repaired_from_mention_text": 6,
+            "repaired_exact_copy": 2,
+            "dropped_not_substring": 0,
+            "dropped_empty": 0
+          },
+          "post_rules_exact_evidence_rate": 1.0,
+          "post_rules_scored_mentions": 840,
+          "evidence_metric_note": "Pre-gate rate uses structured_events mention evidence versus letter_text before repaired_evidence_* / dropped_evidence_* gates. Post-rules rate is lane_diagnostics on final predicted_mentions (filter outcome; expect ~1.0).",
+          "evidence_source_structured_jsonl": "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715_structured.jsonl",
+          "evidence_source_assembly_json": "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json"
         },
         "test60": {
           "row_count": 59,
@@ -80,6 +115,7 @@
         "dev750": {
           "row_count": 750,
           "row_policy": "development_review_permitted",
+          "llm_purist_accuracy": 0.744,
           "llm_with_rules_purist_accuracy": 0.88
         },
         "test450": {
@@ -98,7 +134,24 @@
       "provider_revision": null,
       "exectv2": {
         "dev140": {
-          "llm_with_rules_clinical_fact_f1": 0.892
+          "llm_clinical_fact_f1": 0.8097,
+          "llm_with_rules_clinical_fact_f1": 0.892,
+          "pre_gate_exact_evidence_rate": 0.9988,
+          "pre_gate_mention_count": 842,
+          "pre_gate_exact_evidence_count": 841,
+          "evidence_repaired_count": 1,
+          "evidence_hard_dropped_count": 0,
+          "evidence_warning_detail": {
+            "repaired_from_mention_text": 1,
+            "repaired_exact_copy": 0,
+            "dropped_not_substring": 0,
+            "dropped_empty": 0
+          },
+          "post_rules_exact_evidence_rate": 1.0,
+          "post_rules_scored_mentions": 862,
+          "evidence_metric_note": "Pre-gate rate uses structured_events mention evidence versus letter_text before repaired_evidence_* / dropped_evidence_* gates. Post-rules rate is lane_diagnostics on final predicted_mentions (filter outcome; expect ~1.0).",
+          "evidence_source_structured_jsonl": "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715_structured.jsonl",
+          "evidence_source_assembly_json": "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json"
         },
         "test60": {
           "row_count": 59,
@@ -117,6 +170,7 @@
         "dev750": {
           "row_count": 750,
           "row_policy": "development_review_permitted",
+          "llm_purist_accuracy": 0.7867,
           "llm_with_rules_purist_accuracy": 0.88
         },
         "test450": {
@@ -135,7 +189,24 @@
       "provider_revision": "DeepSeek-V4-Flash-0731",
       "exectv2": {
         "dev140": {
-          "llm_with_rules_clinical_fact_f1": 0.8994
+          "llm_clinical_fact_f1": 0.8139,
+          "llm_with_rules_clinical_fact_f1": 0.8994,
+          "pre_gate_exact_evidence_rate": 0.9881,
+          "pre_gate_mention_count": 843,
+          "pre_gate_exact_evidence_count": 833,
+          "evidence_repaired_count": 10,
+          "evidence_hard_dropped_count": 0,
+          "evidence_warning_detail": {
+            "repaired_from_mention_text": 8,
+            "repaired_exact_copy": 2,
+            "dropped_not_substring": 0,
+            "dropped_empty": 0
+          },
+          "post_rules_exact_evidence_rate": 1.0,
+          "post_rules_scored_mentions": 857,
+          "evidence_metric_note": "Pre-gate rate uses structured_events mention evidence versus letter_text before repaired_evidence_* / dropped_evidence_* gates. Post-rules rate is lane_diagnostics on final predicted_mentions (filter outcome; expect ~1.0).",
+          "evidence_source_structured_jsonl": "experiments/exectv2_deepseek_v4_flash_0731_update_dev140_20260731_structured.jsonl",
+          "evidence_source_assembly_json": "experiments/exectv2_deepseek_v4_flash_0731_update_dev140_20260731.json"
         },
         "test60": {
           "row_count": 59,
@@ -154,7 +225,9 @@
         "dev750": {
           "row_count": 750,
           "row_policy": "development_review_permitted",
-          "llm_with_rules_purist_accuracy": 0.836
+          "llm_purist_accuracy": 0.7453,
+          "llm_with_rules_purist_accuracy": 0.836,
+          "llm_only_revision_note": "dev750 llm_only is pre-0731 six-model validation cell; test450 llm_only is 0731. Gap is provisional until matched 0731 validation750 completes."
         },
         "test450": {
           "row_count": 450,
@@ -172,7 +245,24 @@
       "provider_revision": null,
       "exectv2": {
         "dev140": {
-          "llm_with_rules_clinical_fact_f1": 0.8571
+          "llm_clinical_fact_f1": 0.7488,
+          "llm_with_rules_clinical_fact_f1": 0.8571,
+          "pre_gate_exact_evidence_rate": 0.8617,
+          "pre_gate_mention_count": 875,
+          "pre_gate_exact_evidence_count": 754,
+          "evidence_repaired_count": 120,
+          "evidence_hard_dropped_count": 1,
+          "evidence_warning_detail": {
+            "repaired_from_mention_text": 82,
+            "repaired_exact_copy": 38,
+            "dropped_not_substring": 1,
+            "dropped_empty": 0
+          },
+          "post_rules_exact_evidence_rate": 1.0,
+          "post_rules_scored_mentions": 864,
+          "evidence_metric_note": "Pre-gate rate uses structured_events mention evidence versus letter_text before repaired_evidence_* / dropped_evidence_* gates. Post-rules rate is lane_diagnostics on final predicted_mentions (filter outcome; expect ~1.0).",
+          "evidence_source_structured_jsonl": "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715_structured.jsonl",
+          "evidence_source_assembly_json": "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json"
         },
         "test60": {
           "row_count": 59,
@@ -191,6 +281,7 @@
         "dev750": {
           "row_count": 750,
           "row_policy": "development_review_permitted",
+          "llm_purist_accuracy": 0.7533,
           "llm_with_rules_purist_accuracy": 0.876
         },
         "test450": {
@@ -209,7 +300,24 @@
       "provider_revision": null,
       "exectv2": {
         "dev140": {
-          "llm_with_rules_clinical_fact_f1": 0.8016
+          "llm_clinical_fact_f1": 0.701,
+          "llm_with_rules_clinical_fact_f1": 0.8016,
+          "pre_gate_exact_evidence_rate": 0.9254,
+          "pre_gate_mention_count": 978,
+          "pre_gate_exact_evidence_count": 905,
+          "evidence_repaired_count": 56,
+          "evidence_hard_dropped_count": 17,
+          "evidence_warning_detail": {
+            "repaired_from_mention_text": 50,
+            "repaired_exact_copy": 6,
+            "dropped_not_substring": 17,
+            "dropped_empty": 0
+          },
+          "post_rules_exact_evidence_rate": 1.0,
+          "post_rules_scored_mentions": 974,
+          "evidence_metric_note": "Pre-gate rate uses structured_events mention evidence versus letter_text before repaired_evidence_* / dropped_evidence_* gates. Post-rules rate is lane_diagnostics on final predicted_mentions (filter outcome; expect ~1.0).",
+          "evidence_source_structured_jsonl": "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715_structured.jsonl",
+          "evidence_source_assembly_json": "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json"
         },
         "test60": {
           "row_count": 59,
@@ -228,6 +336,7 @@
         "dev750": {
           "row_count": 750,
           "row_policy": "development_review_permitted",
+          "llm_purist_accuracy": 0.6827,
           "llm_with_rules_purist_accuracy": 0.8627
         },
         "test450": {
@@ -244,8 +353,25 @@
     "note": "Internal assembly sources only. Supervisor-facing prose cites this panel as the final results directory.",
     "exectv2_test60_stage_panel": "experiments/exectv2_six_model_test60_stage_panel_20260801/panel_aggregate.json",
     "exectv2_dev140_scorecard_measurement": "exectv2_six_model_dev140_clinical_headline_f1",
+    "exectv2_dev140_llm_only_sources": {
+      "openai/gpt-4.1-mini": "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.json",
+      "openai/gpt-5.6-luna": "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json",
+      "openai/gpt-5.6-sol": "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json",
+      "ollama_chat/qwen3.6:35b": "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json",
+      "ollama_chat/gemma4:26b": "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json"
+    },
+    "exectv2_dev140_llm_only_deepseek_0731": "experiments/deepseek_v4_flash_0731_matched_comparison_20260803.json#cells.exectv2_dev140_llm_only",
+    "exectv2_dev140_pre_gate_evidence_structured_jsonl": {
+      "openai/gpt-4.1-mini": "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715_structured.jsonl",
+      "openai/gpt-5.6-luna": "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715_structured.jsonl",
+      "openai/gpt-5.6-sol": "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715_structured.jsonl",
+      "deepseek/deepseek-v4-flash": "experiments/exectv2_deepseek_v4_flash_0731_update_dev140_20260731_structured.jsonl",
+      "ollama_chat/qwen3.6:35b": "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715_structured.jsonl",
+      "ollama_chat/gemma4:26b": "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715_structured.jsonl"
+    },
     "gan2026_llm_with_rules_scores": "experiments/gan2026_six_model_current_floors_replay_20260731/replay_summary.json",
     "gan2026_llm_only_test450": "experiments/gan2026_six_model_llm_only_test450_20260801/panel_aggregate.json",
+    "gan2026_llm_only_dev750": "experiments/gan2026_six_model_validation_comparison_20260718.json",
     "deepseek_v4_flash_0731": "experiments/deepseek_v4_flash_0731_matched_comparison_20260803.json",
     "report": "docs/research/six_model_comparison_report_2026-07-18.md",
     "builder": "scripts/build_six_model_final_panel.py"

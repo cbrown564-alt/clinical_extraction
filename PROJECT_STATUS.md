@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-08-03 after six-model final panel consolidation
+Last updated: 2026-08-03 after pre-gate ExECT evidence + open mechanism questions
 
 ## Current handoff objective
 
@@ -80,10 +80,16 @@ Sol llm_with_rules `0.8920` / `0.8047`. Owners:
 
 ## Fresh evidence
 
-- **Selected matrix owners:** [final panel](experiments/six_model_final_panel_20260803/panel_aggregate.json),
-  [comparison report](docs/research/six_model_comparison_report_2026-07-18.md),
-  [retained evidence index](docs/experiments/retained_evidence_manifest.md),
-  [paper claim status](docs/canon/10_paper_provenance.md).
+- **Selected matrix owners:** [final panel](experiments/six_model_final_panel_20260803/panel_aggregate.json)
+  (`six_model.final_panel.v4`: LLM-only development cells plus ExECT
+  `dev140` pre-gate exact-evidence / repair / hard-drop), finding-led
+  [comparison report](docs/research/six_model_comparison_report_2026-07-18.md)
+  with open mechanism questions A–C, [retained evidence index](docs/experiments/retained_evidence_manifest.md),
+  [paper claim status](docs/canon/10_paper_provenance.md). Key report reading:
+  ExECT large holdout drops under LLM with rules are mostly rules lift that
+  does not transfer; post-rules exact-evidence ~`1.00` is a filter, not model
+  quality (pre-gate rates diverge, Qwen ~0.86); Gan “better models, smaller
+  gap” is mainly LLM-with-rules.
 - **Decision 0048/0049:** method migrations and pytest firewall are verified on
   the stated dates above; README glance currency pass complete with Gan and
   ExECT as equal primary strips; host/unaided handoff checks and the 0048
