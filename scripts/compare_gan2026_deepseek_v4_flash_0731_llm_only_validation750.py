@@ -11,13 +11,13 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-PRIOR_REPORT = (
-    ROOT
-    / "scratch/validation/gan2026_six_model_comparison_20260718/deepseek_v4_flash/llm_only/validation750.report.md"
+PRIOR_REPORT = ROOT / (
+    "scratch/validation/gan2026_six_model_comparison_20260718/"
+    "deepseek_v4_flash/llm_only/validation750.report.md"
 )
-UPDATE_REPORT = (
-    ROOT
-    / "scratch/validation/gan2026_validation750_deepseek_v4_flash_0731_20260803/llm_only/aggregate.md"
+UPDATE_REPORT = ROOT / (
+    "scratch/validation/gan2026_validation750_deepseek_v4_flash_0731_20260803/"
+    "llm_only/aggregate.md"
 )
 OUT = ROOT / "experiments/gan2026_deepseek_v4_flash_0731_llm_only_validation750_vs_20260718.json"
 
