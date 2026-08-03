@@ -1,7 +1,0 @@
-.env
-.venv/
-*.jsonl
-!examples/**/*.jsonl
-__pycache__/
-.pytest_cache/
-

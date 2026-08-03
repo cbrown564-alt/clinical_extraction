@@ -331,12 +331,6 @@
       "note": "Adds endpoint handling and live assembly around the same stages. Not a separate method; it must not drift from this manifest."
     },
     {
-      "name": "Public readable wrapper",
-      "role": "operational wrapper",
-      "path": "src/clinical_extraction_local/clinical_findings/pipeline.py",
-      "note": "The readable public surface over the operational wrapper."
-    },
-    {
       "name": "Historical v08 architecture",
       "role": "historical performance control",
       "path": "docs/experiments/exectv2/reliability/archive/exectv2_joint_policy_archive_README.md",

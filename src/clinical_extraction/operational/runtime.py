@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 
 
@@ -21,6 +22,7 @@ class RuntimeConfig:
     def from_environment(
         cls,
         *,
+        environment: Mapping[str, str] | None = None,
         base_url: str | None = None,
         api_key: str | None = None,
         model: str | None = None,
@@ -28,17 +30,27 @@ class RuntimeConfig:
         max_tokens: int = 16000,
         timeout_seconds: float = 300.0,
     ) -> RuntimeConfig:
+        values = os.environ if environment is None else environment
         resolved_base = (
-            base_url if base_url is not None else os.getenv("CLINICAL_LLM_BASE_URL") or ""
+            base_url
+            if base_url is not None
+            else _resolve_alias(values, "CLINICAL_LLM_BASE_URL", "VLLM_BASE_URL")
         ).rstrip("/")
         resolved_key = (
-            api_key if api_key is not None else os.getenv("CLINICAL_LLM_API_KEY") or ""
+            api_key
+            if api_key is not None
+            else _resolve_alias(values, "CLINICAL_LLM_API_KEY", "VLLM_API_KEY")
         )
-        resolved_model = (
-            model
-            if model is not None
-            else os.getenv("CLINICAL_LLM_MODEL") or "deepseek-v4-flash"
-        )
+        if model is not None:
+            resolved_model = model
+        else:
+            clinical_model = values.get("CLINICAL_LLM_MODEL")
+            vllm_model = values.get("VLLM_MODEL")
+            if clinical_model and vllm_model and clinical_model != vllm_model:
+                raise ValueError("CLINICAL_LLM_MODEL and VLLM_MODEL disagree")
+            resolved_model = clinical_model or vllm_model or "deepseek-v4-flash"
+            if vllm_model and "/" not in resolved_model:
+                resolved_model = f"vllm/{resolved_model}"
         if not resolved_base:
             raise ValueError(
                 "No endpoint configured. Set CLINICAL_LLM_BASE_URL or pass --base-url."
@@ -64,3 +76,11 @@ class RuntimeConfig:
         """Return the provider model name without DSPy's routing prefix."""
 
         return self.model.split("/", 1)[1] if "/" in self.model else self.model
+
+
+def _resolve_alias(values: Mapping[str, str], primary: str, alias: str) -> str:
+    primary_value = values.get(primary, "")
+    alias_value = values.get(alias, "")
+    if primary_value and alias_value and primary_value != alias_value:
+        raise ValueError(f"{primary} and {alias} disagree")
+    return primary_value or alias_value

@@ -8,6 +8,7 @@ from typing import Any
 import dspy
 
 OLLAMA_CHAT_PREFIX = "ollama_chat/"
+VLLM_PREFIX = "vllm/"
 
 
 def build_dspy_lm(
@@ -41,6 +42,13 @@ def build_dspy_lm(
             extra_body["options"] = ollama_options
         kwargs["extra_body"] = extra_body
         return dspy.LM(model, **kwargs)
+    if model.startswith(VLLM_PREFIX):
+        model = "openai/" + model.removeprefix(VLLM_PREFIX)
+        api_base = api_base or os.environ.get("VLLM_BASE_URL")
+        kwargs["api_key"] = api_key or os.environ.get("VLLM_API_KEY", "EMPTY")
+        kwargs["extra_body"] = {
+            "chat_template_kwargs": _vllm_chat_template_kwargs_from_environment()
+        }
     if api_base:
         kwargs["api_base"] = api_base
     return dspy.LM(model, **kwargs)
@@ -56,4 +64,19 @@ def _ollama_options_from_environment() -> dict[str, int]:
         if not raw:
             continue
         options[option_name] = int(raw)
+    return options
+
+
+def _vllm_chat_template_kwargs_from_environment() -> dict[str, Any]:
+    thinking_raw = os.environ.get("VLLM_THINKING", "false").strip().lower()
+    if thinking_raw in {"1", "true", "yes", "on"}:
+        thinking = True
+    elif thinking_raw in {"0", "false", "no", "off"}:
+        thinking = False
+    else:
+        raise ValueError("VLLM_THINKING must be true or false")
+    options: dict[str, Any] = {"thinking": thinking}
+    reasoning_effort = os.environ.get("VLLM_REASONING_EFFORT", "").strip()
+    if reasoning_effort:
+        options["reasoning_effort"] = reasoning_effort
     return options

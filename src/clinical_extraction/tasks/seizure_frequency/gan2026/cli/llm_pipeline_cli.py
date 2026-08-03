@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import inspect
 import json
+import os
 import sys
 import time
 from collections.abc import Callable, Mapping, Sequence
@@ -169,6 +170,10 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
     )
     args = parser.parse_args(raw_argv)
     spec = specs[args.pipeline]
+    if args.model.startswith("vllm/") and args.api_base is None:
+        args.api_base = os.environ.get("VLLM_BASE_URL")
+        if not args.api_base:
+            parser.error("vllm models require --api-base or VLLM_BASE_URL")
     if args.split == "test" and args.frozen_test_protocol is None:
         parser.error(
             "This command cannot run the Gan holdout. Write and approve a fixed test "

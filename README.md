@@ -141,6 +141,29 @@ is the always-on suite; `python -m pytest -m deep` runs the optional deep tier.
 For local Ollama runs, start with one row, then five, then 25. Record the model
 route and API base in the run metadata.
 
+For an OpenAI-compatible vLLM endpoint, use the canonical experiment runner;
+`vllm/` selects the endpoint-specific chat template while retaining the normal
+development JSONL, checkpoints, prompt inputs, raw outputs, diagnostics,
+scores, and report:
+
+```sh
+export VLLM_BASE_URL=https://approved-host/v1
+export VLLM_API_KEY=EMPTY
+export VLLM_THINKING=false
+gan2026-llm-experiment \
+  --pipeline llm_with_rules \
+  --split validation \
+  --limit 10 \
+  --model vllm/deepseek-v4-flash \
+  --disable-dspy-cache \
+  --jsonl scratch/validation/vllm-dev10.rows.jsonl \
+  --markdown scratch/validation/vllm-dev10.report.md
+```
+
+Freeze explicit `--source-row-indices` for a named dev10 comparison rather
+than relying on the first ten rows. Development rows may be inspected; Gan
+`test450` and ExECT `test60` remain locked and aggregate-only.
+
 ## Repository layout
 
 ```text
