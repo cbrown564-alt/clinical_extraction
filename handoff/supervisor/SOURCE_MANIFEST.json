@@ -776,6 +776,16 @@
       "sha256": "0ff3ab0cf6980e1ff19d730a1dee3f8d775070868605ebf9937c08251256c49e"
     },
     {
+      "bytes": 8626,
+      "path": "demo.ipynb",
+      "sha256": "5ad6503d5c4ed9dd3c3f3795c09d8207589a4f02c41073ee87f425b5fa849a14"
+    },
+    {
+      "bytes": 12438,
+      "path": "demo_viz.py",
+      "sha256": "e0622277cc12988fc01e055d12fbfe4b3e303d50267aa08382990cc35bf9d7d3"
+    },
+    {
       "bytes": 2518,
       "path": "docs/HOW_IT_WORKS.md",
       "sha256": "2b1746948fb596580c95768cba05825e1162b3a13f70608ea306e7af5faaaa7a"
@@ -806,6 +816,26 @@
       "sha256": "0a415eda34737b96624ad7aaa8565c2ab7cfd8abf861cf326ef168945737f2cf"
     },
     {
+      "bytes": 3054,
+      "path": "examples/demo/deep_letter.json",
+      "sha256": "7c1cd5a714ba728f7c62a5429d5e944bff18da0b3ff5bc430ffa3d577441d39c"
+    },
+    {
+      "bytes": 2044,
+      "path": "examples/demo/findings_letter.json",
+      "sha256": "a0844a3e81f5cfdb116edd29dff8fbde0bde7e2735ae0962f7da30d8ad9ff7cd"
+    },
+    {
+      "bytes": 344,
+      "path": "examples/demo/glance_notes.jsonl",
+      "sha256": "143135fe84e66aaeee6a4042754c174cc74b3f3615b748e78bf325f273b2e980"
+    },
+    {
+      "bytes": 1219,
+      "path": "examples/demo/glance_results.json",
+      "sha256": "21881f93304bb85c9dffe9d5cd0203215a2c0295ef2efd2f1e787a6caaf1e2bd"
+    },
+    {
       "bytes": 179,
       "path": "examples/seizure_frequency/expected_shape.jsonl",
       "sha256": "646fca7605659b7dd93933b0c82f60ee184be11f754a4585d669cfec9e62b370"
@@ -821,9 +851,9 @@
       "sha256": "54de4116dafa8c32e7a85c12fd0ee770b2e828e0eb9ff3d62177e0695e71a916"
     },
     {
-      "bytes": 3559,
+      "bytes": 3788,
       "path": "README.md",
-      "sha256": "1a589e541dd25b0dbfad01c35693ee99cbaa53ec52f2b4ce3189ecb721547137"
+      "sha256": "c4574e5375a9a6b870cb81ed40804a41c5371cf82f24c1ba5463e31e21bda29f"
     },
     {
       "bytes": 35,
@@ -869,6 +899,11 @@
       "bytes": 4881,
       "path": "tests/test_clinical_extraction_local_parity.py",
       "sha256": "c72c08be02b8988199b94fe6b02d6603343a2040279f5b34df9de5b6ffc4e51a"
+    },
+    {
+      "bytes": 1964,
+      "path": "tests/test_demo_package.py",
+      "sha256": "be7171378f753d0b757fc22b80808546ad90937de576c3802a1528ac76798a78"
     },
     {
       "bytes": 659,

@@ -31,7 +31,6 @@ export const exectv2Dataset: DatasetDescriptor = {
     observatory: true,
     laboratory: false,
     gallery: true,
-    reliability: true,
   },
   tone: "deterministic",
   families: EXECTV2_FAMILIES,

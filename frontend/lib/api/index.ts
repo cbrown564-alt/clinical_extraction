@@ -65,12 +65,6 @@ export function fetchExectv2Run(runId: string) {
   ).then(hydrateExectv2Run);
 }
 
-export function fetchExectv2ReliabilityScorecard() {
-  return request<import("../types").Exectv2ReliabilityScorecardResponse>(
-    "/exectv2/reliability-scorecard"
-  );
-}
-
 export function fetchExectv2SfInspection() {
   return request<import("../types").SfInspectionResponse>("/exectv2/sf-inspection");
 }
@@ -85,14 +79,6 @@ export function fetchGan2026ComponentTransitions() {
   return request<import("../types").Gan2026ComponentTransitionsResponse>(
     "/gan2026/component-transitions"
   );
-}
-
-export function fetchReliabilityScorecard(dataset: import("../types").ClinicalTask) {
-  const path =
-    dataset === "exectv2"
-      ? "/exectv2/reliability-scorecard"
-      : "/gan2026/reliability-scorecard";
-  return request<import("../types").ReliabilityScorecardResponse>(path);
 }
 
 export function runAblation(params: {

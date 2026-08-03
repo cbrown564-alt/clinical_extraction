@@ -1,7 +1,7 @@
 # Supervisor local clinical extraction handoff plan
 
 Date: 2026-07-20  
-Status: source-to-shipped closure current after 2026-08-02 rebuild; supervisor-host and unaided README checks pending
+Status: source-to-shipped closure current after 2026-08-02 rebuild; prepared `demo.ipynb` added in template (rebuild to ship); supervisor-host and unaided README checks pending
 Work mode: build one complete operational handoff, then verify it on the
 supervisor's endpoint  
 Owner: this document

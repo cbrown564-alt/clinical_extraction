@@ -55,6 +55,7 @@ TEMPLATE_EXCLUSIONS = {".env", ".venv", "__pycache__", ".pytest_cache"}
 TEXT_FILENAMES = frozenset({".env.example", ".gitignore"})
 TEXT_SUFFIXES = frozenset(
     {
+        ".ipynb",
         ".json",
         ".jsonl",
         ".lock",

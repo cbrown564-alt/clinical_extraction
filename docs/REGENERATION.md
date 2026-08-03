@@ -159,6 +159,32 @@ Research chronology moved out of the glance layer into existing owners
 follow-on note. Rebuild the standalone handoff package so shipped `README.md`
 matches active source.
 
+### Repository-root and stale-scorecard cleanup (2026-08-03)
+
+Removed three unowned root-level artifact families: the static `index.html`
+trace prototype and `assets/trace-hero.png`, the unlinked hosted-model notebook,
+and six rendered paper pages under `tmp/pdfs/`. The maintained frontend,
+canonical comparison report and paper sources supersede them. Git history is
+the recovery path.
+
+The visible per-dataset reliability-scorecard page and its backend catalog were
+also retired. They described pre-selected candidate architectures, cited two
+already-deleted reports, and depended on ignored files under
+`experiments/_archive/`; a fresh clone could not reproduce the catalog. The
+Decision 0044 shared reliability artifact, report and claim boundary remain the
+current owners. Clinical-headline score aggregation still used by exact replay
+and the selected comparison moved to
+`exectv2/scoring/clinical_headline.py`; the retained-evidence manifest records
+its new path and hash. No scorer behavior, prediction, split or claim changed.
+
+Ignored local run debris was removed, including the superseded 1.18 GB
+`experiments/_archive/` quarantine, GEPA optimizer internals, caches and logs.
+The governed `scratch/` holdout locations were not deleted. `/tmp/` is now
+ignored, the documentation-hygiene gate rejects tracked output roots, and CI
+runs that gate. The pre-commit entry for the previously deleted
+`scripts/check_line_counts.py` was also removed; it could not run in a clean
+checkout.
+
 The retained evidence index records selected paths, hashes, source commit, and
 policy versions.
 

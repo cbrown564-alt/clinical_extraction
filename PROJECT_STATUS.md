@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-08-03 after README glance currency and residual label polish
+Last updated: 2026-08-03 after handoff prepared demo notebook
 
 ## Current handoff objective
 
@@ -103,8 +103,9 @@ Sol llm_with_rules `0.8920` / `0.8047`. Owners:
 - **Retained evidence:** manifest check and six no-call reference replays remain
   the selected reproduction gate (`scripts/check_retained_evidence_manifest.py`,
   `scripts/verify_reference_evidence.py`).
-- **Handoff packaging:** source-to-shipped closure current; supervisor-host and
-  unaided README review not done.
+- **Handoff packaging:** source-to-shipped closure current after rebuild that
+  ships prepared `demo.ipynb` (synthetic fixtures + optional live cells);
+  supervisor-host and unaided README review not done.
 - Older full-suite and frontend green checks from the ExECT method-migration
   merges remain in Git history; they are not re-listed here as live archaeology.
 
@@ -114,7 +115,8 @@ Sol llm_with_rules `0.8920` / `0.8047`. Owners:
 
 ## Next
 
-1. Verify the rebuilt supervisor handoff on the intended host/endpoint and
+1. Verify the rebuilt supervisor handoff on the intended host/endpoint
+   (including prepared `demo.ipynb` Run All, then optional live cells) and
    perform unaided README review against the decluttered glance layer.
 2. Run the strict Decision 0048 completion gate only after host/unaided checks
    pass.

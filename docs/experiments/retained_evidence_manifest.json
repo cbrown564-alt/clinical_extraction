@@ -22,8 +22,8 @@
       {
         "role": "dependency",
         "path": "pyproject.toml",
-        "sha256": "7f91c7ca35c5c945e3b363d0c5019ead0961f217af2dbd22b5fed477c3b16c5e",
-        "bytes": 1851
+        "sha256": "3c1b468056e4b6e44e13c6abedba44c5f87c814fd3a75b14ccf05f3b8dc38872",
+        "bytes": 1777
       },
       {
         "role": "dependency",
@@ -82,8 +82,8 @@
       {
         "role": "quality",
         "path": ".github/workflows/ci.yml",
-        "sha256": "8e43dd6956f0dcbe77f5a3692d867a9608b79e2c03ece1b60fed299bb44925a1",
-        "bytes": 443
+        "sha256": "c1d36e9551abe5bc7b83ee1d46b152fc5f301a74916439ffa02b50aabe7f1159",
+        "bytes": 492
       },
       {
         "role": "repair",
@@ -183,9 +183,9 @@
       },
       {
         "role": "scorer",
-        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/reliability/scoring.py",
-        "sha256": "b0d13d14d454b3092e1dec502c878e5e204dab0c111249314ac3afeefb68b035",
-        "bytes": 11202
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/clinical_headline.py",
+        "sha256": "6ee73acd980ff84de70ffe33e2573dcb819ea4fbc5b8adf10e38b524c3b3f194",
+        "bytes": 5607
       },
       {
         "role": "scorer",
@@ -294,7 +294,7 @@
         ],
         "scoring": [
           "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/__init__.py",
-          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/reliability/scoring.py"
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/clinical_headline.py"
         ],
         "data_contract": [
           "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/data.py",
@@ -375,7 +375,7 @@
         ],
         "scoring": [
           "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/__init__.py",
-          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/reliability/scoring.py"
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/clinical_headline.py"
         ],
         "data_contract": [
           "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/data.py",
@@ -470,7 +470,7 @@
         ],
         "scoring": [
           "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/__init__.py",
-          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/reliability/scoring.py"
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/clinical_headline.py"
         ],
         "data_contract": [
           "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/data.py",

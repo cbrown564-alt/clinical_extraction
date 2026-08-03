@@ -1,6 +1,6 @@
 # Clinical Extraction
 
-Python pipelines that combine deterministic rules and language models to turn
+A Python package that combines deterministic rules and language models to turn
 clinical notes into structured data.
 
 The repository supports loading data, extracting clinical facts, normalizing
@@ -8,12 +8,7 @@ values, validating evidence, scoring predictions, and analysing errors. It is
 also the research code for a paper about which pipeline component improves a
 clinical result and where each method fails.
 
-The current work is a comprehension and handoff refactor: keep live runs and
-external-validation readiness while making the selected system clear enough for
-a supervisor to understand it, open the frontend, follow the six-path teaching
-walkthrough, and reproduce selected results exactly from saved outputs. Scope
-and limits: [Decision 0048](docs/decisions/0048-comprehension-and-handoff-refactor.md)
-and [project status](PROJECT_STATUS.md).
+The current work is described in [project status](PROJECT_STATUS.md).
 
 ## Two tasks × three methods
 

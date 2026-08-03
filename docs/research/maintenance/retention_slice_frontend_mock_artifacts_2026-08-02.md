@@ -47,7 +47,8 @@ Seven tracked JSON files under `frontend/public/mock-data/artifacts/`:
 - `frontend/public/mock-data/registry.json` — lists the same run_ids with `experiments/` artifact paths, not `mock-data/artifacts/` paths.
 - `frontend/public/mock-data/exectv2/component-transitions.json` — later removed
   with the unserved ExECT mock slice (2026-08-02 broader triage).
-- `frontend/public/mock-data/exectv2/reliability-scorecard.json` — candidate names and experiment paths.
+- `frontend/public/mock-data/exectv2/reliability-scorecard.json` — later removed
+  with the stale per-dataset reliability scorecard (2026-08-03 cleanup).
 - Experiment docs, configs, and archived JSONL under `experiments/` — separate from mock-data artifacts.
 
 ### Search commands run

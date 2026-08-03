@@ -57,13 +57,13 @@ def replay_exectv2_saved_predictions(path: Path, *, split: str) -> dict[str, int
         ExectLetter,
         load_letters_for_split,
     )
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.scoring import (
-        aggregate_scores,
-        clinical_headline_scores,
-    )
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
         benchmark_config_for,
         score_overall,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
+        aggregate_scores,
+        clinical_headline_scores,
     )
 
     rows = _load_jsonl(path)

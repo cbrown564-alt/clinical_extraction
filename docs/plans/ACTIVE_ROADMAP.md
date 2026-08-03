@@ -40,9 +40,10 @@ verified.
    README-led supervisor path exposes the five-stage orientation, generated
    six-path walkthrough, deliberate failure/recovery example, frontend
    startup, canonical results/limits, and exact no-call replay commands. The
-   standalone handoff tree and ZIP were rebuilt from active source; source-to-
-   shipped closure and the non-mutating checker pass. Supervisor-host
-   verification and unaided README review remain open. Owner:
+   standalone handoff tree and ZIP were rebuilt from active source and now
+   ship prepared `demo.ipynb`; source-to-shipped closure and the non-mutating
+   checker pass. Supervisor-host verification and unaided README review remain
+   open. Owner:
    [handoff plan](supervisor_local_extraction_handoff_plan.md).
 5. **Retention wave advanced (2026-08-02):** retain selected architecture,
    evidence, replay, component-attribution, safety, and validation owners.

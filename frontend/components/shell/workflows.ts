@@ -50,12 +50,6 @@ export const APP_WORKFLOWS: AppWorkflow[] = [
     destinations: [
       { href: "/observatory", label: "Runs", scope: "dataset", Icon: BarChart3 },
       { href: "/laboratory", label: "Components", scope: "dataset", Icon: Boxes },
-      {
-        href: "/reliability-scorecard",
-        label: "Reliability",
-        scope: "dataset",
-        Icon: ShieldCheck,
-      },
     ],
   },
   {

@@ -27,15 +27,15 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
     rules,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.scoring import (
-    aggregate_scores,
-    clinical_headline_scores,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.naming import (
     RULES_METHOD_ALIASES,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     clinical_headline_unit_keys,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
+    aggregate_scores,
+    clinical_headline_scores,
 )
 
 FAMILIES: tuple[str, ...] = (
