@@ -278,10 +278,10 @@ The useful metric is **pre-gate** exact-evidence on producer
 ![ExECT evidence repair and hard-drop counts](assets/six_model_comparison_2026-07-18/exect_evidence_repair_drop_counts.svg)
 
 Qwen’s quote quality is weakest pre-gate but is mostly **repaired** rather
-than hard-dropped — directly relevant to open question C below (where Qwen
-gains from rules). Gemma has the most hard drops. Independent clinical review
-of whether cited text supports the fact remains pending (semantic support ≠
-substring presence).
+than hard-dropped — answered under question C below (Qwen’s holdout rules gain
+is SF-heavy and repair-rescued). Gemma has the most hard drops. Independent
+clinical review of whether cited text supports the fact remains pending
+(semantic support ≠ substring presence).
 
 ### Gan: stronger models fail less on evidence selection
 
@@ -410,10 +410,16 @@ Prescription policy is **`default` / `default`**
 Qwen and Gemma use the same prompt and method as the hosted models, but run
 locally.
 
-## Open mechanism questions
+## Mechanism questions A–C
 
-The findings above show *what* happened. The natural *why* questions below are
-the shared follow-up set; they are not answered by this panel alone.
+The findings above show *what* happened. The *why* questions below were the
+shared follow-up set. They are now answered at family / development-mechanism
+resolution under
+[protocol 2026-08-03](six_model_open_mechanism_questions_abc_protocol_2026-08-03.md)
+from retained artifacts only
+([artifact](../../experiments/six_model_open_mechanism_questions_abc_20260803.json)).
+No holdout row inspection. Individual `test60` rule-ID overfit remains out of
+scope without a sealed aggregate ablation.
 
 ### Background answers (owned elsewhere)
 
@@ -426,17 +432,22 @@ the shared follow-up set; they are not answered by this panel alone.
   counts. Holdout stays aggregate-only. Owner:
   [0731 matched comparison](deepseek_v4_flash_0731_matched_comparison_report_2026-08-03.md).
 
-### Open
+### Answered (2026-08-03)
 
-| ID | Question | Why it matters |
+| ID | Question | Answer |
 | --- | --- | --- |
-| A | Why does ExECT rules lift fail to transfer from `dev140` to `test60`? | Finding 5 shows the large ExECT gap is mostly rules non-transfer; which rule classes / families overfit development is unknown |
-| B | Why does mini suit Gan better than ExECT? | Explains mid-rank divergence (mini 2nd on Gan, 5th on ExECT); tests task-shaped fit vs one capability ladder |
-| C | Which ExECT rules make Qwen competitive? | Qwen’s holdout rules gain is larger (`+0.06` vs Sol `+0.03`); pre-gate evidence shows Qwen needs far more quote repair |
+| A | Why does ExECT rules lift fail to transfer from `dev140` to `test60`? | Family-specific: Diagnosis has the largest average lift shrinkage; Prescription often turns negative on aggregate holdout; Seizure Frequency still supplies most retained holdout rules lift; Investigations unchanged by rules on both splits |
+| B | Why does mini suit Gan better than ExECT? | Task-shaped fit, not one capability ladder: on matched Gan v0.5 `dev750`, mini’s middling model boundary (`0.48`) becomes final Purist `0.89` via `314` wrong→correct repairs; on ExECT `dev140`, mini trails Sol after rules on SF (`0.69` vs `0.80`) and quote quality (pre-gate `0.94` vs `1.00`) |
+| C | Which ExECT rules make Qwen competitive? | Holdout rules gain vs Sol is concentrated in SF (`+0.18` vs `+0.10`) and less Prescription damage (`−0.02` vs `−0.06`); on `dev140`, Qwen needs `120` quote repairs vs Sol `1`, and SF projection fires more often (`21` actions, mostly `state.drop_unlabelled_active_rate`) with `13` SF wrong→correct vs Sol `3` |
 
-These need predeclared development-only attribution studies (retained
-`dev140` / `dev750` artifacts first). No holdout row inspection. Pre-gate
-evidence above instruments C; it does not answer A–C by itself.
+Mean family transfer gaps (test lift − dev lift, six-model average): Diagnosis
+`−0.10`, Seizure Frequency `−0.06`, Prescription `−0.05`, Investigations `0.00`.
+Mean absolute test60 rules lift: SF `+0.13`, Diagnosis `+0.04`, Prescription
+`−0.04`, Investigations `0.00`.
+
+Claim boundary: development answers plus aggregate-only holdout family
+transfer. Not clinical validation; exact evidence ≠ semantic support; Decision
+0046 Sol ExECT method-row fills unchanged.
 
 ## What the report does and does not establish
 
@@ -473,7 +484,8 @@ Independent clinical review is required before making stronger clinical-
 validity claims. Decision 0046 Sol method-row fills are unchanged by the
 six-model ranking. DeepSeek Gan `llm_only` generalization gap remains
 provisional until matched 0731 `dev750` completes. Open questions A–C are
-not answered here.
+answered at family / development-mechanism resolution in the section above;
+individual sealed holdout rule-ID attribution is not.
 
 ## Sources and technical detail
 
@@ -493,5 +505,9 @@ not answered here.
   (provider-update study; values already folded into the final panel)
 - [ExECT SF reliability protocol](../experiments/exectv2/reliability/exectv2_six_model_sf_overinference_protocol_2026-07-18.md)
 - [ExECT SF reliability result](../experiments/exectv2/reliability/exectv2_six_model_sf_overinference_2026-07-18.md)
+- [Open mechanism questions A–C protocol](six_model_open_mechanism_questions_abc_protocol_2026-08-03.md)
+- [Open mechanism questions A–C artifact](../../experiments/six_model_open_mechanism_questions_abc_20260803.json)
 - Chart rebuild: `python scripts/render_six_model_comparison_charts.py`
 - Panel rebuild: `python scripts/build_six_model_final_panel.py`
+- A–C attribution rebuild:
+  `python scripts/analyze_six_model_open_mechanism_questions_abc.py`
