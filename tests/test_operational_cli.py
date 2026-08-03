@@ -50,6 +50,27 @@ def test_runtime_accepts_vllm_environment_names() -> None:
     assert runtime.api_model == "deepseek-v4-flash"
 
 
+def test_runtime_defaults_to_empty_api_key_for_keyless_vllm() -> None:
+    runtime = RuntimeConfig.from_environment(
+        environment={
+            "VLLM_BASE_URL": "http://127.0.0.1:8000/v1",
+            "VLLM_MODEL": "deepseek-v4-flash",
+        }
+    )
+
+    assert runtime.base_url == "http://127.0.0.1:8000/v1"
+    assert runtime.api_key == "EMPTY"
+    assert runtime.model == "vllm/deepseek-v4-flash"
+
+
+def test_runtime_still_requires_api_key_for_non_vllm_provider() -> None:
+    with pytest.raises(ValueError, match="No API key configured"):
+        RuntimeConfig.from_environment(
+            environment={"CLINICAL_LLM_BASE_URL": "https://api.example/v1"},
+            model="openai/example-model",
+        )
+
+
 def test_runtime_rejects_disagreeing_endpoint_aliases() -> None:
     with pytest.raises(ValueError, match="CLINICAL_LLM_BASE_URL and VLLM_BASE_URL disagree"):
         RuntimeConfig.from_environment(
@@ -90,10 +111,8 @@ def test_cli_writes_one_result_per_input_note(
             str(target),
             "--base-url",
             "http://localhost:8000/v1",
-            "--api-key",
-            "test-key",
             "--model",
-            "deepseek-v4-flash",
+            "vllm/deepseek-v4-flash",
         ]
     )
 

@@ -141,6 +141,35 @@ is the always-on suite; `python -m pytest -m deep` runs the optional deep tier.
 For local Ollama runs, start with one row, then five, then 25. Record the model
 route and API base in the run metadata.
 
+### Run against a local vLLM server
+
+Install the package, then probe an OpenAI-compatible server before processing
+notes. A `vllm/<served-model>` identifier defaults to the keyless placeholder
+`EMPTY`, so `--api-key` is not required for an unauthenticated local server:
+
+```sh
+python -m pip install .
+clinical-extract probe \
+  --base-url http://127.0.0.1:8000/v1 \
+  --model vllm/deepseek-v4-flash
+```
+
+The input is JSONL with one `id` and `text` object per line. Run the selected
+Gan seizure-frequency pipeline with:
+
+```sh
+clinical-extract gan \
+  --input notes.jsonl \
+  --output predictions.jsonl \
+  --base-url http://127.0.0.1:8000/v1 \
+  --model vllm/deepseek-v4-flash
+```
+
+For ExECT extraction, replace `gan` with `exect`; its default method is
+`llm_with_rules`. Pass `--api-key` only when the server is configured to require
+one. The value after `vllm/` must exactly match the model name returned by the
+server's `/v1/models` endpoint.
+
 For an OpenAI-compatible vLLM endpoint, use the canonical experiment runner;
 `vllm/` selects the endpoint-specific chat template while retaining the normal
 development JSONL, checkpoints, prompt inputs, raw outputs, diagnostics,
@@ -148,7 +177,6 @@ scores, and report:
 
 ```sh
 export VLLM_BASE_URL=https://approved-host/v1
-export VLLM_API_KEY=EMPTY
 export VLLM_THINKING=false
 gan2026-llm-experiment \
   --pipeline llm_with_rules \

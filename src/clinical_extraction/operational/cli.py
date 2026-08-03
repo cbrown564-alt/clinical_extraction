@@ -84,7 +84,13 @@ def _parser() -> argparse.ArgumentParser:
 
 def _add_runtime_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--base-url", help="OpenAI-compatible API base URL")
-    parser.add_argument("--api-key", help="endpoint API key; VLLM_API_KEY is also accepted")
+    parser.add_argument(
+        "--api-key",
+        help=(
+            "endpoint API key; optional for vllm/<served-model> routes, "
+            "which default to EMPTY"
+        ),
+    )
     parser.add_argument(
         "--model",
         help="provider/model identifier; use vllm/<model> for vLLM chat-template settings",
