@@ -450,6 +450,124 @@ def _scatter(
     _save(fig, filename)
 
 
+def _evidence_pre_post_bars(
+    filename: str,
+    title: str,
+    subtitle: str,
+    pre_gate: dict[str, float],
+    post_rules: dict[str, float],
+    *,
+    sort_on: dict[str, float],
+) -> None:
+    ordered = sorted(MODELS, key=lambda item: sort_on[item[0]])
+    keys = [key for key, _ in ordered]
+    labels = [label for _, label in ordered]
+    y = np.arange(len(labels))
+    height = 0.32
+    fig, ax = plt.subplots(figsize=(10.8, 6.5))
+    fig.subplots_adjust(left=0.22, right=0.97, top=0.84, bottom=0.20)
+    ax.barh(
+        y - height / 2,
+        [pre_gate[k] for k in keys],
+        height,
+        label="Pre-gate (producer)",
+        color=ORANGE,
+        edgecolor="none",
+    )
+    ax.barh(
+        y + height / 2,
+        [post_rules[k] for k in keys],
+        height,
+        label="Post-rules (final)",
+        color=TEAL,
+        edgecolor="none",
+    )
+    for offset, values in ((-height / 2, pre_gate), (height / 2, post_rules)):
+        for row, key in enumerate(keys):
+            ax.text(
+                values[key] + 0.008,
+                row + offset,
+                f"{values[key]:.2f}",
+                va="center",
+                color=INK,
+                fontsize=9,
+            )
+    ax.set_yticks(y, labels)
+    ax.invert_yaxis()
+    ax.set_xlim(0.80, 1.02)
+    ax.legend(
+        frameon=False,
+        ncols=2,
+        loc="upper right",
+        bbox_to_anchor=(1, -0.10),
+        borderaxespad=0,
+    )
+    _header(ax, title, subtitle)
+    _finish_x(ax, "Exact source-substring evidence rate (0–1)")
+    _save(fig, filename)
+
+
+def _evidence_repair_drop_bars(
+    filename: str,
+    title: str,
+    subtitle: str,
+    repaired: dict[str, float],
+    hard_dropped: dict[str, float],
+    *,
+    sort_on: dict[str, float],
+) -> None:
+    ordered = sorted(MODELS, key=lambda item: sort_on[item[0]], reverse=True)
+    keys = [key for key, _ in ordered]
+    labels = [label for _, label in ordered]
+    y = np.arange(len(labels))
+    height = 0.32
+    fig, ax = plt.subplots(figsize=(10.8, 6.5))
+    fig.subplots_adjust(left=0.22, right=0.97, top=0.84, bottom=0.20)
+    ax.barh(
+        y - height / 2,
+        [repaired[k] for k in keys],
+        height,
+        label="Evidence repaired",
+        color=TEAL_LIGHT,
+        edgecolor="none",
+    )
+    ax.barh(
+        y + height / 2,
+        [hard_dropped[k] for k in keys],
+        height,
+        label="Evidence hard-dropped",
+        color=ORANGE,
+        edgecolor="none",
+    )
+    for offset, values in ((-height / 2, repaired), (height / 2, hard_dropped)):
+        for row, key in enumerate(keys):
+            ax.text(
+                values[key] + 1.5,
+                row + offset,
+                f"{int(values[key])}",
+                va="center",
+                color=INK,
+                fontsize=9,
+            )
+    ax.set_yticks(y, labels)
+    ax.invert_yaxis()
+    ax.set_xlim(0, max(max(repaired.values()), max(hard_dropped.values()), 1) * 1.15)
+    ax.legend(
+        frameon=False,
+        ncols=2,
+        loc="upper right",
+        bbox_to_anchor=(1, -0.10),
+        borderaxespad=0,
+    )
+    _header(ax, title, subtitle)
+    ax.set_xlabel("Mention count on dev140", labelpad=10)
+    ax.grid(axis="x", color=GRID, linewidth=0.8)
+    ax.set_axisbelow(True)
+    ax.spines[["top", "right", "left"]].set_visible(False)
+    ax.spines["bottom"].set_color(GRID)
+    _save(fig, filename)
+
+
 def _cost_frontier(
     filename: str,
     title: str,
@@ -557,6 +675,23 @@ def main() -> None:
         cost_per_1k[model] = (
             float(price["input"]) * in_tok + float(price["output"]) * out_tok
         ) / 1000.0
+
+    pre_gate_evidence = {
+        model: float(by_model[model]["exectv2"]["dev140"]["pre_gate_exact_evidence_rate"])
+        for model, _ in MODELS
+    }
+    post_rules_evidence = {
+        model: float(by_model[model]["exectv2"]["dev140"]["post_rules_exact_evidence_rate"])
+        for model, _ in MODELS
+    }
+    evidence_repaired = {
+        model: float(by_model[model]["exectv2"]["dev140"]["evidence_repaired_count"])
+        for model, _ in MODELS
+    }
+    evidence_hard_dropped = {
+        model: float(by_model[model]["exectv2"]["dev140"]["evidence_hard_dropped_count"])
+        for model, _ in MODELS
+    }
 
     shared_split_subtitle = (
         "Final LLM-with-rules results; primary readout is aggregate-only locked holdout"
@@ -701,6 +836,22 @@ def main() -> None:
         exect_test_rules,
         xlabel="Illustrative USD per 1,000 notes (log scale)",
         ylabel="ExECT test60 clinical fact F1",
+    )
+    _evidence_pre_post_bars(
+        "exect_pre_gate_vs_post_rules_evidence.svg",
+        "ExECT exact-evidence: pre-gate versus post-rules",
+        "dev140 producer mentions before repair/drop versus final predicted mentions",
+        pre_gate_evidence,
+        post_rules_evidence,
+        sort_on=pre_gate_evidence,
+    )
+    _evidence_repair_drop_bars(
+        "exect_evidence_repair_drop_counts.svg",
+        "ExECT evidence repairs and hard drops",
+        "dev140 gate_warnings: repaired_evidence_* versus dropped_evidence_*",
+        evidence_repaired,
+        evidence_hard_dropped,
+        sort_on=evidence_repaired,
     )
 
 
