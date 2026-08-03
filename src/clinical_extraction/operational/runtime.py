@@ -55,10 +55,12 @@ class RuntimeConfig:
             raise ValueError(
                 "No endpoint configured. Set CLINICAL_LLM_BASE_URL or pass --base-url."
             )
+        if not resolved_key and resolved_model.startswith("vllm/"):
+            resolved_key = "EMPTY"
         if not resolved_key:
             raise ValueError(
                 "No API key configured. Set CLINICAL_LLM_API_KEY or pass --api-key. "
-                "Use EMPTY only when the endpoint explicitly permits it."
+                "Keyless vLLM routes use the vllm/<served-model> identifier."
             )
         if "/" not in resolved_model:
             resolved_model = f"openai/{resolved_model}"

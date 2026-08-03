@@ -12,8 +12,9 @@ endpoints. It is an endpoint/runtime condition, not a new clinical method.
 
 Completion means:
 
-1. the exact endpoint, served model name, thinking mode, temperature, token
-   limit, cache mode, and fixed ten development row identifiers are recorded;
+1. the exact endpoint, served model name, authentication mode, thinking mode,
+   temperature, token limit, cache mode, and fixed ten development row
+   identifiers are recorded;
 2. a synthetic probe confirms connection, returned model identity, and usable
    structured output;
 3. all ten rows complete through the selected canonical pipeline with the
@@ -133,16 +134,18 @@ Sol llm_with_rules `0.8920` / `0.8047`. Owners:
 
 ## Verification state
 
-- **Always-on pytest (2026-08-03):** 223 collected; 222 passed. The sole
+- **Always-on pytest (2026-08-03):** 225 collected; 224 passed. The sole
   failure is retained-evidence hash drift in the already-modified canonical
   comparison report, not a runtime or pipeline failure. Deep allowlist empty.
 - **Retained evidence:** manifest check and six no-call reference replays remain
   the selected reproduction gate (`scripts/check_retained_evidence_manifest.py`,
   `scripts/verify_reference_evidence.py`).
 - **vLLM runtime:** `vllm/<model>` routes through the shared DSPy factory,
-  accepts `VLLM_BASE_URL` and `VLLM_API_KEY`, and records normal inspectable
-  development rows. Exact endpoint compatibility still requires the live
-  synthetic probe and dev10 run.
+  accepts `VLLM_BASE_URL` and an optional `VLLM_API_KEY`, defaults keyless
+  routes to the conventional `EMPTY` placeholder, and records normal
+  inspectable development rows. The portable `clinical-extract` probe and
+  extraction path is covered by focused tests. Exact endpoint compatibility
+  still requires the live synthetic probe and dev10 run.
 - Older full-suite and frontend green checks from the ExECT method-migration
   merges remain in Git history; they are not re-listed here as live archaeology.
 
@@ -156,9 +159,10 @@ Sol llm_with_rules `0.8920` / `0.8047`. Owners:
 
 ## Next
 
-1. Record `VLLM_BASE_URL`, `VLLM_API_KEY` source, exact served model name,
-   `VLLM_THINKING`, token limit, and the ten development row identifiers without
-   committing credentials.
+1. Record `VLLM_BASE_URL`, authentication mode, exact served model name,
+   `VLLM_THINKING`, token limit, and the ten development row identifiers. Record
+   a credential source without committing credentials only if authentication is
+   enabled.
 2. Run the synthetic endpoint probe and resolve transport-only incompatibility,
    if any, without changing the clinical prompt, schema meaning, rules, or scorer.
 3. Run the fixed dev10 sample with cache disabled; inspect its ordinary row

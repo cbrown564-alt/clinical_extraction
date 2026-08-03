@@ -27,10 +27,12 @@ OpenAI-compatible vLLM endpoints use the explicit `vllm/<served-model>`
 runtime identifier. The shared model factory sends requests through DSPy's
 OpenAI-compatible transport and adds only the vLLM chat-template settings from
 `VLLM_THINKING` and optional `VLLM_REASONING_EFFORT`. The route and credential
-come from `VLLM_BASE_URL` and `VLLM_API_KEY`, or the routine command's explicit
-API-base option. These runs retain the same development prompts, raw outputs,
-row traces, checkpoints, scoring, and reports as other routes. vLLM is a
-transport condition, not permission to change the clinical prompt or rules.
+come from `VLLM_BASE_URL` and optional `VLLM_API_KEY`, or the routine command's
+explicit options. Keyless `vllm/<served-model>` routes use the conventional
+`EMPTY` placeholder. These runs retain the same development prompts, raw
+outputs, row traces, checkpoints, scoring, and reports as other routes. vLLM
+is a transport condition, not permission to change the clinical prompt or
+rules.
 
 Local structured-output handling is governed by
 [decision 0042](../decisions/0042-shared-local-model-structured-output-repair.md).
