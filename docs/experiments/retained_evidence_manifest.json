@@ -1709,8 +1709,8 @@
       "artifacts": [
         {
           "path": "docs/research/six_model_comparison_report_2026-07-18.md",
-          "sha256": "5e432aaa98ce2fe052423e6d8f36a64afe89392084a73bde5fd641a79f2f2d38",
-          "bytes": 24281,
+          "sha256": "76e5ec85ec67682b39ae9d3fdca9b50beea6e886c6339a6a604adbaf9836ab37",
+          "bytes": 25845,
           "retrieval": "git_path"
         },
         {

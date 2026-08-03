@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-08-03 after pre-gate ExECT evidence + open mechanism questions
+Last updated: 2026-08-03 after answering six-model open mechanism questions A–C
 
 ## Current handoff objective
 
@@ -83,13 +83,24 @@ Sol llm_with_rules `0.8920` / `0.8047`. Owners:
 - **Selected matrix owners:** [final panel](experiments/six_model_final_panel_20260803/panel_aggregate.json)
   (`six_model.final_panel.v4`: LLM-only development cells plus ExECT
   `dev140` pre-gate exact-evidence / repair / hard-drop), finding-led
-  [comparison report](docs/research/six_model_comparison_report_2026-07-18.md)
-  with open mechanism questions A–C, [retained evidence index](docs/experiments/retained_evidence_manifest.md),
+  [comparison report](docs/research/six_model_comparison_report_2026-07-18.md),
+  [retained evidence index](docs/experiments/retained_evidence_manifest.md),
   [paper claim status](docs/canon/10_paper_provenance.md). Key report reading:
   ExECT large holdout drops under LLM with rules are mostly rules lift that
   does not transfer; post-rules exact-evidence ~`1.00` is a filter, not model
   quality (pre-gate rates diverge, Qwen ~0.86); Gan “better models, smaller
   gap” is mainly LLM-with-rules.
+- **Open mechanism questions A–C (answered 2026-08-03):** no-call attribution
+  from retained artifacts.
+  [protocol](docs/research/six_model_open_mechanism_questions_abc_protocol_2026-08-03.md),
+  [artifact](experiments/six_model_open_mechanism_questions_abc_20260803.json).
+  A: Diagnosis loses the most rules lift on aggregate `test60`; Prescription
+  often turns negative; SF keeps most holdout lift. B: mini’s Gan rank is
+  task-shaped (large deterministic rescue on v0.5 `dev750`), not a general
+  ladder over ExECT. C: Qwen’s larger ExECT rules gain is SF-heavy plus quote
+  repair (`120` vs Sol `1`) and less Prescription damage. Claim boundary:
+  development + aggregate family transfer; not sealed rule-ID holdout
+  attribution; Decision 0046 Sol fills unchanged.
 - **Decision 0048/0049:** method migrations and pytest firewall are verified on
   the stated dates above; README glance currency pass complete with Gan and
   ExECT as equal primary strips; host/unaided handoff checks and the 0048

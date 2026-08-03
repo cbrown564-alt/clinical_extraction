@@ -1,0 +1,1334 @@
+{
+  "answers": {
+    "A": {
+      "claim_class": "development_answer_with_aggregate_holdout_family_transfer",
+      "evidence_limit": "Family-level only. Individual rule-ID overfit on test60 is not asserted; holdout rows remain sealed.",
+      "families_ordered_worst_transfer": [
+        "Diagnosis",
+        "SeizureFrequency",
+        "Prescription",
+        "Investigations"
+      ],
+      "mean_dev140_rules_lift_by_family": {
+        "Diagnosis": 0.1396,
+        "Investigations": 0.0,
+        "Prescription": 0.0025,
+        "SeizureFrequency": 0.1853
+      },
+      "mean_test60_rules_lift_by_family": {
+        "Diagnosis": 0.04,
+        "Investigations": 0.0,
+        "Prescription": -0.0441,
+        "SeizureFrequency": 0.126
+      },
+      "mean_transfer_gap_by_family": {
+        "Diagnosis": -0.0996,
+        "Investigations": 0.0,
+        "Prescription": -0.0466,
+        "SeizureFrequency": -0.0594
+      },
+      "overall_lifts": [
+        {
+          "dev140_llm_only_f1": 0.7128,
+          "dev140_llm_with_rules_f1": 0.8202,
+          "dev140_rules_lift": 0.1074,
+          "family": "OVERALL",
+          "model": "GPT-4.1-mini",
+          "slug": "gpt41mini",
+          "test60_llm_only_f1": 0.7343,
+          "test60_llm_with_rules_f1": 0.7572,
+          "test60_rules_lift": 0.0229,
+          "transfer_gap_test_minus_dev": -0.0845
+        },
+        {
+          "dev140_llm_only_f1": 0.8059,
+          "dev140_llm_with_rules_f1": 0.8832,
+          "dev140_rules_lift": 0.0773,
+          "family": "OVERALL",
+          "model": "GPT-5.6 Luna",
+          "slug": "gpt56luna",
+          "test60_llm_only_f1": 0.7631,
+          "test60_llm_with_rules_f1": 0.795,
+          "test60_rules_lift": 0.0319,
+          "transfer_gap_test_minus_dev": -0.0454
+        },
+        {
+          "dev140_llm_only_f1": 0.8097,
+          "dev140_llm_with_rules_f1": 0.892,
+          "dev140_rules_lift": 0.0823,
+          "family": "OVERALL",
+          "model": "GPT-5.6 Sol",
+          "slug": "gpt56sol",
+          "test60_llm_only_f1": 0.7771,
+          "test60_llm_with_rules_f1": 0.8047,
+          "test60_rules_lift": 0.0276,
+          "transfer_gap_test_minus_dev": -0.0547
+        },
+        {
+          "dev140_llm_only_f1": 0.7915,
+          "dev140_llm_with_rules_f1": 0.8767,
+          "dev140_rules_lift": 0.0852,
+          "family": "OVERALL",
+          "model": "DeepSeek V4 Flash",
+          "slug": "deepseek_v4_flash",
+          "test60_llm_only_f1": 0.7575,
+          "test60_llm_with_rules_f1": 0.7881,
+          "test60_rules_lift": 0.0306,
+          "transfer_gap_test_minus_dev": -0.0546
+        },
+        {
+          "dev140_llm_only_f1": 0.7488,
+          "dev140_llm_with_rules_f1": 0.8571,
+          "dev140_rules_lift": 0.1083,
+          "family": "OVERALL",
+          "model": "Qwen 3.6:35B",
+          "slug": "qwen36_35b",
+          "test60_llm_only_f1": 0.7267,
+          "test60_llm_with_rules_f1": 0.7872,
+          "test60_rules_lift": 0.0605,
+          "transfer_gap_test_minus_dev": -0.0478
+        },
+        {
+          "dev140_llm_only_f1": 0.701,
+          "dev140_llm_with_rules_f1": 0.8016,
+          "dev140_rules_lift": 0.1006,
+          "family": "OVERALL",
+          "model": "Gemma 4 26B",
+          "slug": "gemma4_26b",
+          "test60_llm_only_f1": 0.6918,
+          "test60_llm_with_rules_f1": 0.7169,
+          "test60_rules_lift": 0.0251,
+          "transfer_gap_test_minus_dev": -0.0755
+        }
+      ],
+      "status": "answered",
+      "verdict": "ExECT rules non-transfer is family-specific: Diagnosis has the largest average lift shrinkage from dev140 to aggregate test60; Prescription lift shrinks and often turns negative on holdout; Seizure Frequency still supplies most of the retained holdout rules lift; Investigations is unchanged by rules on both splits."
+    },
+    "B": {
+      "claim_class": "development_answer_task_shaped_fit",
+      "evidence_limit": "Cross-task scores are not interchangeable. Attribution uses matched Gan v0.5 development owners and ExECT six-model development surfaces.",
+      "exect_dev140": {
+        "mini_family_final": {
+          "Diagnosis": 0.847,
+          "Investigations": 0.8538,
+          "Prescription": 0.8672,
+          "SeizureFrequency": 0.6936
+        },
+        "mini_family_llm_only": {
+          "Diagnosis": 0.6864,
+          "Investigations": 0.8538,
+          "Prescription": 0.853,
+          "SeizureFrequency": 0.4986
+        },
+        "mini_pre_gate": {
+          "evidence_hard_dropped_count": 1,
+          "evidence_repaired_count": 58,
+          "evidence_warning_detail": {
+            "dropped_empty": 1,
+            "dropped_not_substring": 0,
+            "repaired_exact_copy": 13,
+            "repaired_from_mention_text": 45
+          },
+          "model": "GPT-4.1-mini",
+          "post_rules_exact_evidence_rate": 1.0,
+          "pre_gate_exact_evidence_count": 914,
+          "pre_gate_exact_evidence_rate": 0.9394,
+          "pre_gate_mention_count": 973
+        },
+        "mini_sf_transitions": {
+          "candidate_state_f1": 0.7845,
+          "changed_still_wrong": 3,
+          "comparator_state_f1": 0.734,
+          "correct_to_wrong": 0,
+          "state_f1_lift": 0.0505,
+          "unchanged_correct": 73,
+          "unchanged_wrong": 51,
+          "wrong_to_correct": 13
+        },
+        "sol_family_final": {
+          "Diagnosis": 0.8882,
+          "Investigations": 0.9358,
+          "Prescription": 0.9432,
+          "SeizureFrequency": 0.8012
+        },
+        "sol_pre_gate": {
+          "evidence_hard_dropped_count": 0,
+          "evidence_repaired_count": 1,
+          "evidence_warning_detail": {
+            "dropped_empty": 0,
+            "dropped_not_substring": 0,
+            "repaired_exact_copy": 0,
+            "repaired_from_mention_text": 1
+          },
+          "model": "GPT-5.6 Sol",
+          "post_rules_exact_evidence_rate": 1.0,
+          "pre_gate_exact_evidence_count": 841,
+          "pre_gate_exact_evidence_rate": 0.9988,
+          "pre_gate_mention_count": 842
+        },
+        "sol_sf_transitions": {
+          "candidate_state_f1": 0.8603,
+          "changed_still_wrong": 0,
+          "comparator_state_f1": 0.8509,
+          "correct_to_wrong": 1,
+          "state_f1_lift": 0.0094,
+          "unchanged_correct": 102,
+          "unchanged_wrong": 34,
+          "wrong_to_correct": 3
+        }
+      },
+      "gan_matched_v05": {
+        "luna": {
+          "clinical_subproblem": {
+            "cluster_or_diary_aggregation": 115,
+            "competing_event_selection": 29,
+            "rate_denominator": 326,
+            "seizure_free_boundary": 146,
+            "temporal_selection": 51,
+            "uncertainty_boundary": 83
+          },
+          "deterministic_correct_to_wrong": 5,
+          "deterministic_wrong_to_correct": 240,
+          "final_purist": 0.8613,
+          "final_purist_correct": 646,
+          "first_failure_owner": {
+            "deterministic_semantic": 5,
+            "evidence_selection": 3,
+            "format_or_schema": 3,
+            "llm_clinical_selection": 96,
+            "none": 643
+          },
+          "model": "openai/gpt-5.6-luna",
+          "model_boundary_purist": 0.548,
+          "model_boundary_purist_correct": 411,
+          "owned_failure_share": {
+            "deterministic_semantic": 0.0467,
+            "evidence_selection": 0.028,
+            "format_or_schema": 0.028,
+            "llm_clinical_selection": 0.8972
+          }
+        },
+        "mini": {
+          "clinical_subproblem": {
+            "cluster_or_diary_aggregation": 172,
+            "competing_event_selection": 46,
+            "rate_denominator": 320,
+            "seizure_free_boundary": 144,
+            "temporal_selection": 53,
+            "uncertainty_boundary": 15
+          },
+          "deterministic_correct_to_wrong": 5,
+          "deterministic_wrong_to_correct": 314,
+          "final_purist": 0.8907,
+          "final_purist_correct": 668,
+          "first_failure_owner": {
+            "deterministic_semantic": 4,
+            "evidence_selection": 57,
+            "format_or_schema": 1,
+            "llm_clinical_selection": 70,
+            "none": 618
+          },
+          "model": "openai/gpt-4.1-mini",
+          "model_boundary_purist": 0.4787,
+          "model_boundary_purist_correct": 359,
+          "owned_failure_share": {
+            "deterministic_semantic": 0.0303,
+            "evidence_selection": 0.4318,
+            "format_or_schema": 0.0076,
+            "llm_clinical_selection": 0.5303
+          }
+        },
+        "sol": {
+          "clinical_subproblem": {
+            "cluster_or_diary_aggregation": 149,
+            "competing_event_selection": 30,
+            "rate_denominator": 328,
+            "seizure_free_boundary": 142,
+            "temporal_selection": 55,
+            "uncertainty_boundary": 46
+          },
+          "deterministic_correct_to_wrong": 6,
+          "deterministic_wrong_to_correct": 317,
+          "final_purist": 0.8747,
+          "final_purist_correct": 656,
+          "first_failure_owner": {
+            "deterministic_semantic": 6,
+            "evidence_selection": 1,
+            "llm_clinical_selection": 88,
+            "none": 655
+          },
+          "model": "openai/gpt-5.6-sol",
+          "model_boundary_purist": 0.46,
+          "model_boundary_purist_correct": 345,
+          "owned_failure_share": {
+            "deterministic_semantic": 0.0632,
+            "evidence_selection": 0.0105,
+            "format_or_schema": 0.0,
+            "llm_clinical_selection": 0.9263
+          }
+        }
+      },
+      "holdout_rank_context_only": {
+        "exect_test60_llm_with_rules_rank": "mini 5th (0.76), Sol 2nd (0.80)",
+        "gan_test450_llm_with_rules_rank": "mini 2nd (0.82), Sol 1st (0.85)"
+      },
+      "status": "answered",
+      "verdict": "Mini suits Gan better than ExECT because Gan\u2019s specialized deterministic stack turns a middling model boundary into a high final Purist with large wrong\u2192correct mass, while ExECT needs broad four-family fact recovery where mini trails on Seizure Frequency and quote quality even after rules."
+    },
+    "C": {
+      "changed_row_categories_dev140": {
+        "qwen": {
+          "by_family": {
+            "Diagnosis": {
+              "categories": {
+                "assertion_or_negation_change": 56,
+                "hierarchy_reconciliation": 29,
+                "hierarchy_reconciliation_or_duplicate_collapse": 56,
+                "projection_only": 3
+              },
+              "changed_rows": 88
+            },
+            "Investigations": {
+              "categories": {},
+              "changed_rows": 0
+            },
+            "Prescription": {
+              "categories": {
+                "model_output": 60
+              },
+              "changed_rows": 60
+            },
+            "SeizureFrequency": {
+              "categories": {
+                "active_rate": 17,
+                "projection_action": 19,
+                "reject_or_drop": 1,
+                "seizure_free": 6,
+                "unknown_or_change_state": 5
+              },
+              "changed_rows": 20
+            }
+          },
+          "model": "Qwen 3.6:35B",
+          "sf_rule_action_counts": {
+            "projection:ownership.generic_active_to_named": 1,
+            "projection:state.drop_historical_active_rate": 1,
+            "projection:state.drop_historical_or_advice_seizure_free": 1,
+            "projection:state.drop_preceded_by_current_seizure_free": 1,
+            "projection:state.drop_unlabelled_active_rate": 15,
+            "projection:state.last_event_active_to_seizure_free": 2,
+            "suppression:unknown_suppression.contextual_or_historical_change": 1
+          }
+        },
+        "sol": {
+          "by_family": {
+            "Diagnosis": {
+              "categories": {
+                "assertion_or_negation_change": 61,
+                "hierarchy_reconciliation": 24,
+                "hierarchy_reconciliation_or_duplicate_collapse": 61,
+                "projection_only": 1
+              },
+              "changed_rows": 86
+            },
+            "Investigations": {
+              "categories": {},
+              "changed_rows": 0
+            },
+            "Prescription": {
+              "categories": {
+                "model_output": 48
+              },
+              "changed_rows": 48
+            },
+            "SeizureFrequency": {
+              "categories": {
+                "active_rate": 7,
+                "projection_action": 7,
+                "seizure_free": 5
+              },
+              "changed_rows": 7
+            }
+          },
+          "model": "GPT-5.6 Sol",
+          "sf_rule_action_counts": {
+            "projection:ownership.generic_active_to_named": 1,
+            "projection:state.drop_historical_active_rate": 1,
+            "projection:state.drop_preceded_by_current_seizure_free": 2,
+            "projection:state.last_event_active_to_seizure_free": 3
+          }
+        }
+      },
+      "claim_class": "development_answer_with_aggregate_holdout_family_transfer",
+      "evidence_limit": "Family and development rule-class evidence only. Quote repair proves substring presence, not clinical support. No sealed per-rule test60 ablation.",
+      "pre_gate": {
+        "qwen": {
+          "evidence_hard_dropped_count": 1,
+          "evidence_repaired_count": 120,
+          "evidence_warning_detail": {
+            "dropped_empty": 0,
+            "dropped_not_substring": 1,
+            "repaired_exact_copy": 38,
+            "repaired_from_mention_text": 82
+          },
+          "model": "Qwen 3.6:35B",
+          "post_rules_exact_evidence_rate": 1.0,
+          "pre_gate_exact_evidence_count": 754,
+          "pre_gate_exact_evidence_rate": 0.8617,
+          "pre_gate_mention_count": 875
+        },
+        "sol": {
+          "evidence_hard_dropped_count": 0,
+          "evidence_repaired_count": 1,
+          "evidence_warning_detail": {
+            "dropped_empty": 0,
+            "dropped_not_substring": 0,
+            "repaired_exact_copy": 0,
+            "repaired_from_mention_text": 1
+          },
+          "model": "GPT-5.6 Sol",
+          "post_rules_exact_evidence_rate": 1.0,
+          "pre_gate_exact_evidence_count": 841,
+          "pre_gate_exact_evidence_rate": 0.9988,
+          "pre_gate_mention_count": 842
+        }
+      },
+      "qwen_family_lifts": {
+        "Diagnosis": {
+          "dev140_llm_only_f1": 0.7174,
+          "dev140_llm_with_rules_f1": 0.872,
+          "dev140_rules_lift": 0.1546,
+          "family": "Diagnosis",
+          "model": "Qwen 3.6:35B",
+          "slug": "qwen36_35b",
+          "test60_llm_only_f1": 0.7737,
+          "test60_llm_with_rules_f1": 0.8374,
+          "test60_rules_lift": 0.0637,
+          "transfer_gap_test_minus_dev": -0.0909
+        },
+        "Investigations": {
+          "dev140_llm_only_f1": 0.9105,
+          "dev140_llm_with_rules_f1": 0.9105,
+          "dev140_rules_lift": 0.0,
+          "family": "Investigations",
+          "model": "Qwen 3.6:35B",
+          "slug": "qwen36_35b",
+          "test60_llm_only_f1": 0.8571,
+          "test60_llm_with_rules_f1": 0.8571,
+          "test60_rules_lift": 0.0,
+          "transfer_gap_test_minus_dev": 0.0
+        },
+        "OVERALL": {
+          "dev140_llm_only_f1": 0.7488,
+          "dev140_llm_with_rules_f1": 0.8571,
+          "dev140_rules_lift": 0.1083,
+          "family": "OVERALL",
+          "model": "Qwen 3.6:35B",
+          "slug": "qwen36_35b",
+          "test60_llm_only_f1": 0.7267,
+          "test60_llm_with_rules_f1": 0.7872,
+          "test60_rules_lift": 0.0605,
+          "transfer_gap_test_minus_dev": -0.0478
+        },
+        "Prescription": {
+          "dev140_llm_only_f1": 0.8981,
+          "dev140_llm_with_rules_f1": 0.9249,
+          "dev140_rules_lift": 0.0268,
+          "family": "Prescription",
+          "model": "Qwen 3.6:35B",
+          "slug": "qwen36_35b",
+          "test60_llm_only_f1": 0.8621,
+          "test60_llm_with_rules_f1": 0.8383,
+          "test60_rules_lift": -0.0238,
+          "transfer_gap_test_minus_dev": -0.0506
+        },
+        "SeizureFrequency": {
+          "dev140_llm_only_f1": 0.5056,
+          "dev140_llm_with_rules_f1": 0.7062,
+          "dev140_rules_lift": 0.2006,
+          "family": "SeizureFrequency",
+          "model": "Qwen 3.6:35B",
+          "slug": "qwen36_35b",
+          "test60_llm_only_f1": 0.4304,
+          "test60_llm_with_rules_f1": 0.6104,
+          "test60_rules_lift": 0.18,
+          "transfer_gap_test_minus_dev": -0.0206
+        }
+      },
+      "qwen_minus_sol_test60_rules_lift_by_family": {
+        "Diagnosis": 0.0099,
+        "Investigations": 0.0,
+        "Prescription": 0.0365,
+        "SeizureFrequency": 0.0763
+      },
+      "sf_state_transitions": {
+        "qwen": {
+          "candidate_state_f1": 0.7986,
+          "changed_still_wrong": 2,
+          "comparator_state_f1": 0.7517,
+          "correct_to_wrong": 0,
+          "state_f1_lift": 0.0469,
+          "unchanged_correct": 77,
+          "unchanged_wrong": 48,
+          "wrong_to_correct": 13
+        },
+        "sol": {
+          "candidate_state_f1": 0.8603,
+          "changed_still_wrong": 0,
+          "comparator_state_f1": 0.8509,
+          "correct_to_wrong": 1,
+          "state_f1_lift": 0.0094,
+          "unchanged_correct": 102,
+          "unchanged_wrong": 34,
+          "wrong_to_correct": 3
+        }
+      },
+      "sol_family_lifts": {
+        "Diagnosis": {
+          "dev140_llm_only_f1": 0.7595,
+          "dev140_llm_with_rules_f1": 0.8882,
+          "dev140_rules_lift": 0.1287,
+          "family": "Diagnosis",
+          "model": "GPT-5.6 Sol",
+          "slug": "gpt56sol",
+          "test60_llm_only_f1": 0.7886,
+          "test60_llm_with_rules_f1": 0.8424,
+          "test60_rules_lift": 0.0538,
+          "transfer_gap_test_minus_dev": -0.0749
+        },
+        "Investigations": {
+          "dev140_llm_only_f1": 0.9358,
+          "dev140_llm_with_rules_f1": 0.9358,
+          "dev140_rules_lift": 0.0,
+          "family": "Investigations",
+          "model": "GPT-5.6 Sol",
+          "slug": "gpt56sol",
+          "test60_llm_only_f1": 0.9032,
+          "test60_llm_with_rules_f1": 0.9032,
+          "test60_rules_lift": 0.0,
+          "transfer_gap_test_minus_dev": 0.0
+        },
+        "OVERALL": {
+          "dev140_llm_only_f1": 0.8097,
+          "dev140_llm_with_rules_f1": 0.892,
+          "dev140_rules_lift": 0.0823,
+          "family": "OVERALL",
+          "model": "GPT-5.6 Sol",
+          "slug": "gpt56sol",
+          "test60_llm_only_f1": 0.7771,
+          "test60_llm_with_rules_f1": 0.8047,
+          "test60_rules_lift": 0.0276,
+          "transfer_gap_test_minus_dev": -0.0547
+        },
+        "Prescription": {
+          "dev140_llm_only_f1": 0.9531,
+          "dev140_llm_with_rules_f1": 0.9432,
+          "dev140_rules_lift": -0.0099,
+          "family": "Prescription",
+          "model": "GPT-5.6 Sol",
+          "slug": "gpt56sol",
+          "test60_llm_only_f1": 0.9157,
+          "test60_llm_with_rules_f1": 0.8554,
+          "test60_rules_lift": -0.0603,
+          "transfer_gap_test_minus_dev": -0.0504
+        },
+        "SeizureFrequency": {
+          "dev140_llm_only_f1": 0.6294,
+          "dev140_llm_with_rules_f1": 0.8012,
+          "dev140_rules_lift": 0.1718,
+          "family": "SeizureFrequency",
+          "model": "GPT-5.6 Sol",
+          "slug": "gpt56sol",
+          "test60_llm_only_f1": 0.5106,
+          "test60_llm_with_rules_f1": 0.6143,
+          "test60_rules_lift": 0.1037,
+          "transfer_gap_test_minus_dev": -0.0681
+        }
+      },
+      "status": "answered",
+      "verdict": "Qwen\u2019s larger ExECT holdout rules gain is concentrated in Seizure Frequency and Diagnosis, with less Prescription damage than Sol; on development, Qwen also needs far more quote repair before the evidence gate, so competitiveness is rules-rescued grounding plus SF/Dx lift, not raw producer quality."
+    }
+  },
+  "call_mode": "saved_output_no_call",
+  "changed_row_categories_dev140": {
+    "gpt41mini": {
+      "by_family": {
+        "Diagnosis": {
+          "categories": {
+            "assertion_or_negation_change": 66,
+            "hierarchy_reconciliation": 29,
+            "hierarchy_reconciliation_or_duplicate_collapse": 65,
+            "projection_only": 3
+          },
+          "changed_rows": 98
+        },
+        "Investigations": {
+          "categories": {},
+          "changed_rows": 0
+        },
+        "Prescription": {
+          "categories": {
+            "model_output": 76
+          },
+          "changed_rows": 76
+        },
+        "SeizureFrequency": {
+          "categories": {
+            "active_rate": 17,
+            "generic_vs_specific": 1,
+            "projection_action": 18,
+            "reject_or_drop": 2,
+            "seizure_free": 10,
+            "unknown_or_change_state": 3
+          },
+          "changed_rows": 20
+        }
+      },
+      "model": "GPT-4.1-mini",
+      "sf_rule_action_counts": {
+        "projection:ownership.generic_active_to_named": 1,
+        "projection:state.drop_historical_active_rate": 2,
+        "projection:state.drop_historical_or_advice_seizure_free": 5,
+        "projection:state.drop_preceded_by_current_seizure_free": 1,
+        "projection:state.drop_unlabelled_active_rate": 8,
+        "projection:state.last_event_active_to_seizure_free": 2,
+        "suppression:unknown_suppression.contextual_or_historical_change": 2
+      }
+    },
+    "gpt56sol": {
+      "by_family": {
+        "Diagnosis": {
+          "categories": {
+            "assertion_or_negation_change": 61,
+            "hierarchy_reconciliation": 24,
+            "hierarchy_reconciliation_or_duplicate_collapse": 61,
+            "projection_only": 1
+          },
+          "changed_rows": 86
+        },
+        "Investigations": {
+          "categories": {},
+          "changed_rows": 0
+        },
+        "Prescription": {
+          "categories": {
+            "model_output": 48
+          },
+          "changed_rows": 48
+        },
+        "SeizureFrequency": {
+          "categories": {
+            "active_rate": 7,
+            "projection_action": 7,
+            "seizure_free": 5
+          },
+          "changed_rows": 7
+        }
+      },
+      "model": "GPT-5.6 Sol",
+      "sf_rule_action_counts": {
+        "projection:ownership.generic_active_to_named": 1,
+        "projection:state.drop_historical_active_rate": 1,
+        "projection:state.drop_preceded_by_current_seizure_free": 2,
+        "projection:state.last_event_active_to_seizure_free": 3
+      }
+    },
+    "qwen36_35b": {
+      "by_family": {
+        "Diagnosis": {
+          "categories": {
+            "assertion_or_negation_change": 56,
+            "hierarchy_reconciliation": 29,
+            "hierarchy_reconciliation_or_duplicate_collapse": 56,
+            "projection_only": 3
+          },
+          "changed_rows": 88
+        },
+        "Investigations": {
+          "categories": {},
+          "changed_rows": 0
+        },
+        "Prescription": {
+          "categories": {
+            "model_output": 60
+          },
+          "changed_rows": 60
+        },
+        "SeizureFrequency": {
+          "categories": {
+            "active_rate": 17,
+            "projection_action": 19,
+            "reject_or_drop": 1,
+            "seizure_free": 6,
+            "unknown_or_change_state": 5
+          },
+          "changed_rows": 20
+        }
+      },
+      "model": "Qwen 3.6:35B",
+      "sf_rule_action_counts": {
+        "projection:ownership.generic_active_to_named": 1,
+        "projection:state.drop_historical_active_rate": 1,
+        "projection:state.drop_historical_or_advice_seizure_free": 1,
+        "projection:state.drop_preceded_by_current_seizure_free": 1,
+        "projection:state.drop_unlabelled_active_rate": 15,
+        "projection:state.last_event_active_to_seizure_free": 2,
+        "suppression:unknown_suppression.contextual_or_historical_change": 1
+      }
+    }
+  },
+  "claim_boundary": "Development answers with aggregate-only holdout family transfer for A/C. Not clinical validation, not published ExECT benchmark, not general model superiority. Exact evidence \u2260 semantic support. Decision 0046 Sol ExECT method-row fills unchanged. No test60/test450 row inspection.",
+  "dirty_tree_note": "dirty working tree at generation time; see git status",
+  "family_transfer": [
+    {
+      "dev140_llm_only_f1": 0.6864,
+      "dev140_llm_with_rules_f1": 0.847,
+      "dev140_rules_lift": 0.1606,
+      "family": "Diagnosis",
+      "model": "GPT-4.1-mini",
+      "slug": "gpt41mini",
+      "test60_llm_only_f1": 0.8201,
+      "test60_llm_with_rules_f1": 0.811,
+      "test60_rules_lift": -0.0091,
+      "transfer_gap_test_minus_dev": -0.1697
+    },
+    {
+      "dev140_llm_only_f1": 0.4986,
+      "dev140_llm_with_rules_f1": 0.6936,
+      "dev140_rules_lift": 0.195,
+      "family": "SeizureFrequency",
+      "model": "GPT-4.1-mini",
+      "slug": "gpt41mini",
+      "test60_llm_only_f1": 0.4,
+      "test60_llm_with_rules_f1": 0.5103,
+      "test60_rules_lift": 0.1103,
+      "transfer_gap_test_minus_dev": -0.0847
+    },
+    {
+      "dev140_llm_only_f1": 0.853,
+      "dev140_llm_with_rules_f1": 0.8672,
+      "dev140_rules_lift": 0.0142,
+      "family": "Prescription",
+      "model": "GPT-4.1-mini",
+      "slug": "gpt41mini",
+      "test60_llm_only_f1": 0.8161,
+      "test60_llm_with_rules_f1": 0.8144,
+      "test60_rules_lift": -0.0017,
+      "transfer_gap_test_minus_dev": -0.0159
+    },
+    {
+      "dev140_llm_only_f1": 0.8538,
+      "dev140_llm_with_rules_f1": 0.8538,
+      "dev140_rules_lift": 0.0,
+      "family": "Investigations",
+      "model": "GPT-4.1-mini",
+      "slug": "gpt41mini",
+      "test60_llm_only_f1": 0.9091,
+      "test60_llm_with_rules_f1": 0.9091,
+      "test60_rules_lift": 0.0,
+      "transfer_gap_test_minus_dev": 0.0
+    },
+    {
+      "dev140_llm_only_f1": 0.7128,
+      "dev140_llm_with_rules_f1": 0.8202,
+      "dev140_rules_lift": 0.1074,
+      "family": "OVERALL",
+      "model": "GPT-4.1-mini",
+      "slug": "gpt41mini",
+      "test60_llm_only_f1": 0.7343,
+      "test60_llm_with_rules_f1": 0.7572,
+      "test60_rules_lift": 0.0229,
+      "transfer_gap_test_minus_dev": -0.0845
+    },
+    {
+      "dev140_llm_only_f1": 0.7702,
+      "dev140_llm_with_rules_f1": 0.891,
+      "dev140_rules_lift": 0.1208,
+      "family": "Diagnosis",
+      "model": "GPT-5.6 Luna",
+      "slug": "gpt56luna",
+      "test60_llm_only_f1": 0.8026,
+      "test60_llm_with_rules_f1": 0.8489,
+      "test60_rules_lift": 0.0463,
+      "transfer_gap_test_minus_dev": -0.0745
+    },
+    {
+      "dev140_llm_only_f1": 0.61,
+      "dev140_llm_with_rules_f1": 0.7892,
+      "dev140_rules_lift": 0.1792,
+      "family": "SeizureFrequency",
+      "model": "GPT-5.6 Luna",
+      "slug": "gpt56luna",
+      "test60_llm_only_f1": 0.4173,
+      "test60_llm_with_rules_f1": 0.5693,
+      "test60_rules_lift": 0.152,
+      "transfer_gap_test_minus_dev": -0.0272
+    },
+    {
+      "dev140_llm_only_f1": 0.9479,
+      "dev140_llm_with_rules_f1": 0.925,
+      "dev140_rules_lift": -0.0229,
+      "family": "Prescription",
+      "model": "GPT-5.6 Luna",
+      "slug": "gpt56luna",
+      "test60_llm_only_f1": 0.9091,
+      "test60_llm_with_rules_f1": 0.8344,
+      "test60_rules_lift": -0.0747,
+      "transfer_gap_test_minus_dev": -0.0518
+    },
+    {
+      "dev140_llm_only_f1": 0.9202,
+      "dev140_llm_with_rules_f1": 0.9202,
+      "dev140_rules_lift": 0.0,
+      "family": "Investigations",
+      "model": "GPT-5.6 Luna",
+      "slug": "gpt56luna",
+      "test60_llm_only_f1": 0.9231,
+      "test60_llm_with_rules_f1": 0.9231,
+      "test60_rules_lift": 0.0,
+      "transfer_gap_test_minus_dev": 0.0
+    },
+    {
+      "dev140_llm_only_f1": 0.8059,
+      "dev140_llm_with_rules_f1": 0.8832,
+      "dev140_rules_lift": 0.0773,
+      "family": "OVERALL",
+      "model": "GPT-5.6 Luna",
+      "slug": "gpt56luna",
+      "test60_llm_only_f1": 0.7631,
+      "test60_llm_with_rules_f1": 0.795,
+      "test60_rules_lift": 0.0319,
+      "transfer_gap_test_minus_dev": -0.0454
+    },
+    {
+      "dev140_llm_only_f1": 0.7595,
+      "dev140_llm_with_rules_f1": 0.8882,
+      "dev140_rules_lift": 0.1287,
+      "family": "Diagnosis",
+      "model": "GPT-5.6 Sol",
+      "slug": "gpt56sol",
+      "test60_llm_only_f1": 0.7886,
+      "test60_llm_with_rules_f1": 0.8424,
+      "test60_rules_lift": 0.0538,
+      "transfer_gap_test_minus_dev": -0.0749
+    },
+    {
+      "dev140_llm_only_f1": 0.6294,
+      "dev140_llm_with_rules_f1": 0.8012,
+      "dev140_rules_lift": 0.1718,
+      "family": "SeizureFrequency",
+      "model": "GPT-5.6 Sol",
+      "slug": "gpt56sol",
+      "test60_llm_only_f1": 0.5106,
+      "test60_llm_with_rules_f1": 0.6143,
+      "test60_rules_lift": 0.1037,
+      "transfer_gap_test_minus_dev": -0.0681
+    },
+    {
+      "dev140_llm_only_f1": 0.9531,
+      "dev140_llm_with_rules_f1": 0.9432,
+      "dev140_rules_lift": -0.0099,
+      "family": "Prescription",
+      "model": "GPT-5.6 Sol",
+      "slug": "gpt56sol",
+      "test60_llm_only_f1": 0.9157,
+      "test60_llm_with_rules_f1": 0.8554,
+      "test60_rules_lift": -0.0603,
+      "transfer_gap_test_minus_dev": -0.0504
+    },
+    {
+      "dev140_llm_only_f1": 0.9358,
+      "dev140_llm_with_rules_f1": 0.9358,
+      "dev140_rules_lift": 0.0,
+      "family": "Investigations",
+      "model": "GPT-5.6 Sol",
+      "slug": "gpt56sol",
+      "test60_llm_only_f1": 0.9032,
+      "test60_llm_with_rules_f1": 0.9032,
+      "test60_rules_lift": 0.0,
+      "transfer_gap_test_minus_dev": 0.0
+    },
+    {
+      "dev140_llm_only_f1": 0.8097,
+      "dev140_llm_with_rules_f1": 0.892,
+      "dev140_rules_lift": 0.0823,
+      "family": "OVERALL",
+      "model": "GPT-5.6 Sol",
+      "slug": "gpt56sol",
+      "test60_llm_only_f1": 0.7771,
+      "test60_llm_with_rules_f1": 0.8047,
+      "test60_rules_lift": 0.0276,
+      "transfer_gap_test_minus_dev": -0.0547
+    },
+    {
+      "dev140_llm_only_f1": 0.7432,
+      "dev140_llm_with_rules_f1": 0.8764,
+      "dev140_rules_lift": 0.1332,
+      "family": "Diagnosis",
+      "model": "DeepSeek V4 Flash",
+      "slug": "deepseek_v4_flash",
+      "test60_llm_only_f1": 0.7737,
+      "test60_llm_with_rules_f1": 0.8187,
+      "test60_rules_lift": 0.045,
+      "transfer_gap_test_minus_dev": -0.0882
+    },
+    {
+      "dev140_llm_only_f1": 0.5818,
+      "dev140_llm_with_rules_f1": 0.761,
+      "dev140_rules_lift": 0.1792,
+      "family": "SeizureFrequency",
+      "model": "DeepSeek V4 Flash",
+      "slug": "deepseek_v4_flash",
+      "test60_llm_only_f1": 0.4539,
+      "test60_llm_with_rules_f1": 0.5839,
+      "test60_rules_lift": 0.13,
+      "transfer_gap_test_minus_dev": -0.0492
+    },
+    {
+      "dev140_llm_only_f1": 0.938,
+      "dev140_llm_with_rules_f1": 0.928,
+      "dev140_rules_lift": -0.01,
+      "family": "Prescription",
+      "model": "DeepSeek V4 Flash",
+      "slug": "deepseek_v4_flash",
+      "test60_llm_only_f1": 0.9112,
+      "test60_llm_with_rules_f1": 0.8503,
+      "test60_rules_lift": -0.0609,
+      "transfer_gap_test_minus_dev": -0.0509
+    },
+    {
+      "dev140_llm_only_f1": 0.9389,
+      "dev140_llm_with_rules_f1": 0.9389,
+      "dev140_rules_lift": 0.0,
+      "family": "Investigations",
+      "model": "DeepSeek V4 Flash",
+      "slug": "deepseek_v4_flash",
+      "test60_llm_only_f1": 0.9011,
+      "test60_llm_with_rules_f1": 0.9011,
+      "test60_rules_lift": 0.0,
+      "transfer_gap_test_minus_dev": 0.0
+    },
+    {
+      "dev140_llm_only_f1": 0.7915,
+      "dev140_llm_with_rules_f1": 0.8767,
+      "dev140_rules_lift": 0.0852,
+      "family": "OVERALL",
+      "model": "DeepSeek V4 Flash",
+      "slug": "deepseek_v4_flash",
+      "test60_llm_only_f1": 0.7575,
+      "test60_llm_with_rules_f1": 0.7881,
+      "test60_rules_lift": 0.0306,
+      "transfer_gap_test_minus_dev": -0.0546
+    },
+    {
+      "dev140_llm_only_f1": 0.7174,
+      "dev140_llm_with_rules_f1": 0.872,
+      "dev140_rules_lift": 0.1546,
+      "family": "Diagnosis",
+      "model": "Qwen 3.6:35B",
+      "slug": "qwen36_35b",
+      "test60_llm_only_f1": 0.7737,
+      "test60_llm_with_rules_f1": 0.8374,
+      "test60_rules_lift": 0.0637,
+      "transfer_gap_test_minus_dev": -0.0909
+    },
+    {
+      "dev140_llm_only_f1": 0.5056,
+      "dev140_llm_with_rules_f1": 0.7062,
+      "dev140_rules_lift": 0.2006,
+      "family": "SeizureFrequency",
+      "model": "Qwen 3.6:35B",
+      "slug": "qwen36_35b",
+      "test60_llm_only_f1": 0.4304,
+      "test60_llm_with_rules_f1": 0.6104,
+      "test60_rules_lift": 0.18,
+      "transfer_gap_test_minus_dev": -0.0206
+    },
+    {
+      "dev140_llm_only_f1": 0.8981,
+      "dev140_llm_with_rules_f1": 0.9249,
+      "dev140_rules_lift": 0.0268,
+      "family": "Prescription",
+      "model": "Qwen 3.6:35B",
+      "slug": "qwen36_35b",
+      "test60_llm_only_f1": 0.8621,
+      "test60_llm_with_rules_f1": 0.8383,
+      "test60_rules_lift": -0.0238,
+      "transfer_gap_test_minus_dev": -0.0506
+    },
+    {
+      "dev140_llm_only_f1": 0.9105,
+      "dev140_llm_with_rules_f1": 0.9105,
+      "dev140_rules_lift": 0.0,
+      "family": "Investigations",
+      "model": "Qwen 3.6:35B",
+      "slug": "qwen36_35b",
+      "test60_llm_only_f1": 0.8571,
+      "test60_llm_with_rules_f1": 0.8571,
+      "test60_rules_lift": 0.0,
+      "transfer_gap_test_minus_dev": 0.0
+    },
+    {
+      "dev140_llm_only_f1": 0.7488,
+      "dev140_llm_with_rules_f1": 0.8571,
+      "dev140_rules_lift": 0.1083,
+      "family": "OVERALL",
+      "model": "Qwen 3.6:35B",
+      "slug": "qwen36_35b",
+      "test60_llm_only_f1": 0.7267,
+      "test60_llm_with_rules_f1": 0.7872,
+      "test60_rules_lift": 0.0605,
+      "transfer_gap_test_minus_dev": -0.0478
+    },
+    {
+      "dev140_llm_only_f1": 0.6982,
+      "dev140_llm_with_rules_f1": 0.8378,
+      "dev140_rules_lift": 0.1396,
+      "family": "Diagnosis",
+      "model": "Gemma 4 26B",
+      "slug": "gemma4_26b",
+      "test60_llm_only_f1": 0.7531,
+      "test60_llm_with_rules_f1": 0.7934,
+      "test60_rules_lift": 0.0403,
+      "transfer_gap_test_minus_dev": -0.0993
+    },
+    {
+      "dev140_llm_only_f1": 0.4364,
+      "dev140_llm_with_rules_f1": 0.6226,
+      "dev140_rules_lift": 0.1862,
+      "family": "SeizureFrequency",
+      "model": "Gemma 4 26B",
+      "slug": "gemma4_26b",
+      "test60_llm_only_f1": 0.4103,
+      "test60_llm_with_rules_f1": 0.4901,
+      "test60_rules_lift": 0.0798,
+      "transfer_gap_test_minus_dev": -0.1064
+    },
+    {
+      "dev140_llm_only_f1": 0.8878,
+      "dev140_llm_with_rules_f1": 0.9046,
+      "dev140_rules_lift": 0.0168,
+      "family": "Prescription",
+      "model": "Gemma 4 26B",
+      "slug": "gemma4_26b",
+      "test60_llm_only_f1": 0.8208,
+      "test60_llm_with_rules_f1": 0.7778,
+      "test60_rules_lift": -0.043,
+      "transfer_gap_test_minus_dev": -0.0598
+    },
+    {
+      "dev140_llm_only_f1": 0.8047,
+      "dev140_llm_with_rules_f1": 0.8047,
+      "dev140_rules_lift": 0.0,
+      "family": "Investigations",
+      "model": "Gemma 4 26B",
+      "slug": "gemma4_26b",
+      "test60_llm_only_f1": 0.7865,
+      "test60_llm_with_rules_f1": 0.7865,
+      "test60_rules_lift": 0.0,
+      "transfer_gap_test_minus_dev": 0.0
+    },
+    {
+      "dev140_llm_only_f1": 0.701,
+      "dev140_llm_with_rules_f1": 0.8016,
+      "dev140_rules_lift": 0.1006,
+      "family": "OVERALL",
+      "model": "Gemma 4 26B",
+      "slug": "gemma4_26b",
+      "test60_llm_only_f1": 0.6918,
+      "test60_llm_with_rules_f1": 0.7169,
+      "test60_rules_lift": 0.0251,
+      "transfer_gap_test_minus_dev": -0.0755
+    }
+  ],
+  "gan_matched_v05_focal": {
+    "gpt41mini": {
+      "clinical_subproblem": {
+        "cluster_or_diary_aggregation": 172,
+        "competing_event_selection": 46,
+        "rate_denominator": 320,
+        "seizure_free_boundary": 144,
+        "temporal_selection": 53,
+        "uncertainty_boundary": 15
+      },
+      "deterministic_correct_to_wrong": 5,
+      "deterministic_wrong_to_correct": 314,
+      "final_purist": 0.8907,
+      "final_purist_correct": 668,
+      "first_failure_owner": {
+        "deterministic_semantic": 4,
+        "evidence_selection": 57,
+        "format_or_schema": 1,
+        "llm_clinical_selection": 70,
+        "none": 618
+      },
+      "model": "openai/gpt-4.1-mini",
+      "model_boundary_purist": 0.4787,
+      "model_boundary_purist_correct": 359,
+      "owned_failure_share": {
+        "deterministic_semantic": 0.0303,
+        "evidence_selection": 0.4318,
+        "format_or_schema": 0.0076,
+        "llm_clinical_selection": 0.5303
+      }
+    },
+    "gpt56luna": {
+      "clinical_subproblem": {
+        "cluster_or_diary_aggregation": 115,
+        "competing_event_selection": 29,
+        "rate_denominator": 326,
+        "seizure_free_boundary": 146,
+        "temporal_selection": 51,
+        "uncertainty_boundary": 83
+      },
+      "deterministic_correct_to_wrong": 5,
+      "deterministic_wrong_to_correct": 240,
+      "final_purist": 0.8613,
+      "final_purist_correct": 646,
+      "first_failure_owner": {
+        "deterministic_semantic": 5,
+        "evidence_selection": 3,
+        "format_or_schema": 3,
+        "llm_clinical_selection": 96,
+        "none": 643
+      },
+      "model": "openai/gpt-5.6-luna",
+      "model_boundary_purist": 0.548,
+      "model_boundary_purist_correct": 411,
+      "owned_failure_share": {
+        "deterministic_semantic": 0.0467,
+        "evidence_selection": 0.028,
+        "format_or_schema": 0.028,
+        "llm_clinical_selection": 0.8972
+      }
+    },
+    "gpt56sol": {
+      "clinical_subproblem": {
+        "cluster_or_diary_aggregation": 149,
+        "competing_event_selection": 30,
+        "rate_denominator": 328,
+        "seizure_free_boundary": 142,
+        "temporal_selection": 55,
+        "uncertainty_boundary": 46
+      },
+      "deterministic_correct_to_wrong": 6,
+      "deterministic_wrong_to_correct": 317,
+      "final_purist": 0.8747,
+      "final_purist_correct": 656,
+      "first_failure_owner": {
+        "deterministic_semantic": 6,
+        "evidence_selection": 1,
+        "llm_clinical_selection": 88,
+        "none": 655
+      },
+      "model": "openai/gpt-5.6-sol",
+      "model_boundary_purist": 0.46,
+      "model_boundary_purist_correct": 345,
+      "owned_failure_share": {
+        "deterministic_semantic": 0.0632,
+        "evidence_selection": 0.0105,
+        "format_or_schema": 0.0,
+        "llm_clinical_selection": 0.9263
+      }
+    }
+  },
+  "generated_at_utc": "2026-08-03T11:14:09.025171+00:00",
+  "parent_report": "docs/research/six_model_comparison_report_2026-07-18.md",
+  "pre_gate_exact_evidence": {
+    "deepseek_v4_flash": {
+      "evidence_hard_dropped_count": 0,
+      "evidence_repaired_count": 10,
+      "evidence_warning_detail": {
+        "dropped_empty": 0,
+        "dropped_not_substring": 0,
+        "repaired_exact_copy": 2,
+        "repaired_from_mention_text": 8
+      },
+      "model": "DeepSeek V4 Flash",
+      "post_rules_exact_evidence_rate": 1.0,
+      "pre_gate_exact_evidence_count": 833,
+      "pre_gate_exact_evidence_rate": 0.9881,
+      "pre_gate_mention_count": 843
+    },
+    "gemma4_26b": {
+      "evidence_hard_dropped_count": 17,
+      "evidence_repaired_count": 56,
+      "evidence_warning_detail": {
+        "dropped_empty": 0,
+        "dropped_not_substring": 17,
+        "repaired_exact_copy": 6,
+        "repaired_from_mention_text": 50
+      },
+      "model": "Gemma 4 26B",
+      "post_rules_exact_evidence_rate": 1.0,
+      "pre_gate_exact_evidence_count": 905,
+      "pre_gate_exact_evidence_rate": 0.9254,
+      "pre_gate_mention_count": 978
+    },
+    "gpt41mini": {
+      "evidence_hard_dropped_count": 1,
+      "evidence_repaired_count": 58,
+      "evidence_warning_detail": {
+        "dropped_empty": 1,
+        "dropped_not_substring": 0,
+        "repaired_exact_copy": 13,
+        "repaired_from_mention_text": 45
+      },
+      "model": "GPT-4.1-mini",
+      "post_rules_exact_evidence_rate": 1.0,
+      "pre_gate_exact_evidence_count": 914,
+      "pre_gate_exact_evidence_rate": 0.9394,
+      "pre_gate_mention_count": 973
+    },
+    "gpt56luna": {
+      "evidence_hard_dropped_count": 0,
+      "evidence_repaired_count": 8,
+      "evidence_warning_detail": {
+        "dropped_empty": 0,
+        "dropped_not_substring": 0,
+        "repaired_exact_copy": 2,
+        "repaired_from_mention_text": 6
+      },
+      "model": "GPT-5.6 Luna",
+      "post_rules_exact_evidence_rate": 1.0,
+      "pre_gate_exact_evidence_count": 805,
+      "pre_gate_exact_evidence_rate": 0.9902,
+      "pre_gate_mention_count": 813
+    },
+    "gpt56sol": {
+      "evidence_hard_dropped_count": 0,
+      "evidence_repaired_count": 1,
+      "evidence_warning_detail": {
+        "dropped_empty": 0,
+        "dropped_not_substring": 0,
+        "repaired_exact_copy": 0,
+        "repaired_from_mention_text": 1
+      },
+      "model": "GPT-5.6 Sol",
+      "post_rules_exact_evidence_rate": 1.0,
+      "pre_gate_exact_evidence_count": 841,
+      "pre_gate_exact_evidence_rate": 0.9988,
+      "pre_gate_mention_count": 842
+    },
+    "qwen36_35b": {
+      "evidence_hard_dropped_count": 1,
+      "evidence_repaired_count": 120,
+      "evidence_warning_detail": {
+        "dropped_empty": 0,
+        "dropped_not_substring": 1,
+        "repaired_exact_copy": 38,
+        "repaired_from_mention_text": 82
+      },
+      "model": "Qwen 3.6:35B",
+      "post_rules_exact_evidence_rate": 1.0,
+      "pre_gate_exact_evidence_count": 754,
+      "pre_gate_exact_evidence_rate": 0.8617,
+      "pre_gate_mention_count": 875
+    }
+  },
+  "protocol": "docs/research/six_model_open_mechanism_questions_abc_protocol_2026-08-03.md",
+  "row_policy": {
+    "exect_dev140": "development_row_level",
+    "exect_test60": "aggregate_only",
+    "gan_dev750": "development_row_level",
+    "gan_test450": "aggregate_only_rank_context_only"
+  },
+  "schema_version": "six_model.open_mechanism_questions_abc.v1",
+  "sf_state_transitions": {
+    "GPT-4.1-mini": {
+      "candidate_state_f1": 0.7845,
+      "changed_still_wrong": 3,
+      "comparator_state_f1": 0.734,
+      "correct_to_wrong": 0,
+      "state_f1_lift": 0.0505,
+      "unchanged_correct": 73,
+      "unchanged_wrong": 51,
+      "wrong_to_correct": 13
+    },
+    "GPT-5.6 Luna": {
+      "candidate_state_f1": 0.8551,
+      "changed_still_wrong": 1,
+      "comparator_state_f1": 0.8357,
+      "correct_to_wrong": 0,
+      "state_f1_lift": 0.0194,
+      "unchanged_correct": 99,
+      "unchanged_wrong": 36,
+      "wrong_to_correct": 4
+    },
+    "GPT-5.6 Sol": {
+      "candidate_state_f1": 0.8603,
+      "changed_still_wrong": 0,
+      "comparator_state_f1": 0.8509,
+      "correct_to_wrong": 1,
+      "state_f1_lift": 0.0094,
+      "unchanged_correct": 102,
+      "unchanged_wrong": 34,
+      "wrong_to_correct": 3
+    },
+    "Qwen 3.6:35B": {
+      "candidate_state_f1": 0.7986,
+      "changed_still_wrong": 2,
+      "comparator_state_f1": 0.7517,
+      "correct_to_wrong": 0,
+      "state_f1_lift": 0.0469,
+      "unchanged_correct": 77,
+      "unchanged_wrong": 48,
+      "wrong_to_correct": 13
+    }
+  },
+  "source_revision": "8973938bd38dd512571565362e8f04b7e14ab43a",
+  "sources": {
+    "exect_dev140_score_ladders": {
+      "deepseek_v4_flash": {
+        "bytes": 471487,
+        "path": "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715.json",
+        "sha256": "98267fbaef4bbbadc4ced66bab7625566c04b0bd17809ec57173f8e75fb5317e"
+      },
+      "gemma4_26b": {
+        "bytes": 562164,
+        "path": "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json",
+        "sha256": "1afdab2e74bc60d9dd2d277c477cffa1560373246983a92e1edb9337b4387912"
+      },
+      "gpt41mini": {
+        "bytes": 602461,
+        "path": "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.json",
+        "sha256": "9740e39d975703e931b20482840f84f639ed935f661392e83d0de9ae3b260680"
+      },
+      "gpt56luna": {
+        "bytes": 455203,
+        "path": "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json",
+        "sha256": "869915467d23e755a06feb287cd3b4aa227b4a7dfed47174dc6e601317671dec"
+      },
+      "gpt56sol": {
+        "bytes": 460148,
+        "path": "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json",
+        "sha256": "f1455ee19a79bc245778b69d79f8d772325ca2de1bdf0125a8f01d129a42c527"
+      },
+      "qwen36_35b": {
+        "bytes": 483099,
+        "path": "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json",
+        "sha256": "fe24cfadb408c6fd9581d66bc68538b12ed5e631c029d4127a5fdf8c0a86065e"
+      }
+    },
+    "final_panel": {
+      "bytes": 17448,
+      "path": "experiments/six_model_final_panel_20260803/panel_aggregate.json",
+      "sha256": "7eb0928e3f24cf43256a6a558b4823627c1a487ec3bac84421071de0ce0a6da2"
+    },
+    "gan_matched_v05": {
+      "bytes": 30275,
+      "path": "experiments/gan2026_matched_v05_dev750_panel_20260727.json",
+      "sha256": "ffc2008b8adfd9040854240771ea34db718cd594c4c28945bedc4d99a55a2fab"
+    },
+    "sf_overinference": {
+      "bytes": 918187,
+      "path": "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json",
+      "sha256": "cf643698629d011d5c668ca1bf001ca53f55e1934843832a623be336ea160ae8"
+    },
+    "test60_stage_panel": {
+      "bytes": 13295,
+      "path": "experiments/exectv2_six_model_test60_stage_panel_20260801/panel_aggregate.json",
+      "sha256": "2f394d56e1311354081c7846c48ac13df0abee9429fc2da7b01475cec5bdc788"
+    }
+  }
+}
