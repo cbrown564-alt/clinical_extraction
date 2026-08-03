@@ -12,7 +12,7 @@
   "one_sentence": "The model proposes findings for four families in one call; deterministic family transforms reconcile those findings into the final scored representation.",
   "sixty_second": "One structured call per letter asks the named model for candidate findings across Diagnosis, Seizure Frequency, Prescription, and Investigations. No deterministic extractor proposes findings and none is unioned in - that is the family-ownership rule from decision 0040. After the call, code parses and may make one format-only retry, flattens the model's events into ExECT mentions, projects the model's seizure-frequency facts into the required state representation, and suppresses a narrowly defined class of unsupported unknown states. Raw and scored findings are both registered in a finding store, so every later change stays attributable. Then one family transform runs per entity, and the four behave differently: Diagnosis may rewrite, drop, or add concepts; Seizure Frequency is a thin assembly over the earlier projection; Prescription applies dictionary-driven regimen processing with bounded correction; Investigations validates, normalizes, and de-duplicates. Every final finding must carry exact source evidence, and the scored views are then materialized.",
   "prediction_owner": "the named model proposes all four families (exect.llm_with_rules.model_call); four family transforms may change findings afterwards",
-  "scored_representation": "A PredictedLetter of four-family mentions materialized into named score views; the canonical view is clinical_headline.",
+  "scored_representation": "A PredictedLetter of four-family mentions materialized into named score views; the primary view is clinical fact recovery (`clinical_headline`).",
   "stages": [
     {
       "stage_id": "exect.llm_with_rules.build_prompt",
@@ -286,21 +286,21 @@
       "stage_id": "exect.llm_with_rules.materialize_views",
       "runtime_action": "materialize_scoring_views",
       "name": "Materialize the score views",
-      "operation": "Build the named prediction surfaces - raw candidate, evidence valid, and clinical headline - from the same assembled findings.",
+      "operation": "Build the named prediction views - raw candidate, evidence valid, and clinical fact recovery - from the same assembled findings.",
       "owner": "deterministic",
       "rule_category": "benchmark_format",
       "effect_class": "benchmark_projection",
       "input_type": "assembled findings",
       "input_example": "four families of reconciled findings",
-      "output_type": "named FindingViewResult surfaces",
-      "output_example": "a clinical_headline view holding the headline unit keys",
+      "output_type": "named FindingViewResult views",
+      "output_example": "a clinical fact recovery (`clinical_headline`) view holding the unit keys",
       "implementation": {
         "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/views.py",
         "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.views:build_scoring_views"
       },
       "governing_test": "tests/test_exectv2_scoring_headlines.py",
       "trace_fields": ["prediction_surfaces"],
-      "paper_wording": "Findings are materialized into named scoring views; the canonical view is clinical_headline.",
+      "paper_wording": "Findings are materialized into named scoring views; the primary view is clinical fact recovery (`clinical_headline`).",
       "notes": "One set of findings, several numbers. Naming the view is part of naming the result."
     },
     {
@@ -311,9 +311,9 @@
       "owner": "scorer",
       "effect_class": "benchmark_projection",
       "input_type": "materialized view plus gold annotations",
-      "input_example": "clinical_headline view against the four-family gold",
+      "input_example": "clinical fact recovery view against the four-family gold",
       "output_type": "OverallScore plus per-entity EntityScore",
-      "output_example": "a clinical_headline overall F1",
+      "output_example": "a clinical fact recovery overall F1",
       "implementation": {
         "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/match.py",
         "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match:score_overall"

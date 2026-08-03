@@ -63,7 +63,7 @@ export function phraseSurfaceKind(gold: string, pred: string): PhraseSurfaceKind
 
 /** Short human label for a FrequencyStateScores component name. */
 export const COMPONENT_SHORT_LABEL: Record<string, string> = {
-  clinical_headline: "Headline (3-way state)",
+  clinical_headline: "3-way state",
   state_profile: "Change profile (4-way)",
   state_profile_directional: "Directional change",
   state_profile_direction_deconf: "Direction deconflicted",

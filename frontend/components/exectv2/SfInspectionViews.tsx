@@ -70,7 +70,7 @@ export function VerdictBanner({ letter }: { letter: SfInspectionLetter }) {
 
   return (
     <VerdictShell tone="error" icon={<AlertOctagon className="h-4 w-4" />}>
-      Headline miss
+      3-way miss
       {comp ? <VerdictComponentRef name={comp.name} stat={stat} /> : null}
     </VerdictShell>
   );

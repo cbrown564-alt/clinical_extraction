@@ -99,7 +99,7 @@
       "name": "Published-metric reproduction",
       "role": "historical performance control",
       "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/published.py",
-      "note": "Reproduces the paper-derived metric view, which is not the internal clinical_headline scorer."
+      "note": "Reproduces the paper-derived metric view, which is not the internal clinical fact recovery scorer (`clinical_headline`)."
     },
     {
       "name": "Diagnosis candidate switches",

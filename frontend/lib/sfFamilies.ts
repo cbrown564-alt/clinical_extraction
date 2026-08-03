@@ -25,7 +25,7 @@ export interface SfFamily {
 export const SF_FAMILIES: SfFamily[] = [
   {
     id: "headline",
-    label: "Headline state",
+    label: "3-way state",
     accent: "var(--color-deterministic)",
     blurb:
       "Convention-strict 3-way state (active-rate / seizure-free / unknown). Rules-owned — the deterministic SeizureFrequencyDictionaryLens fills every key here.",
@@ -148,7 +148,7 @@ export interface LetterVerdict {
 
 /**
  * One-glance read on a letter: is there a genuine disagreement, and if so,
- * which family and which specific lens. Headline-state errors outrank
+ * which family and which specific lens. 3-way-state errors outrank
  * change-state errors (a wrong entity/state is a bigger deal than a right
  * state with the wrong direction); strict-benchmark is tracked but never
  * drives the verdict since it's expected to disagree by construction.
@@ -175,7 +175,7 @@ export function letterVerdict(letter: SfInspectionLetter): LetterVerdict {
 
 /**
  * Triage filters for the overview letter list. "Actionable" is the default:
- * Headline or Change disagrees. Bench-only stays out of that bucket so the
+ * 3-way or Change disagrees. Bench-only stays out of that bucket so the
  * matrix doesn't drown in expected exact-match noise.
  */
 export type LetterTriageFilter =
@@ -187,11 +187,11 @@ export type LetterTriageFilter =
   | "all";
 
 export const LETTER_TRIAGE_FILTERS: { id: LetterTriageFilter; label: string; hint: string }[] = [
-  { id: "actionable", label: "Actionable", hint: "Headline or Change disagrees" },
-  { id: "headline", label: "Headline", hint: "Headline-state family error" },
+  { id: "actionable", label: "Actionable", hint: "3-way or Change disagrees" },
+  { id: "headline", label: "3-way", hint: "3-way-state family error" },
   { id: "change", label: "Change", hint: "Change-state family error" },
   { id: "bench", label: "Bench only", hint: "Strict-benchmark disagrees, scored families clean" },
-  { id: "clean", label: "Clean", hint: "Headline and Change both clean" },
+  { id: "clean", label: "Clean", hint: "3-way and Change both clean" },
   { id: "all", label: "All", hint: "Every letter, original order" },
 ];
 
@@ -214,7 +214,7 @@ export function letterMatchesTriageFilter(letter: SfInspectionLetter, filter: Le
   }
 }
 
-/** Headline errors first, then change-only, bench-only, clean, then inactive. */
+/** 3-way-state errors first, then change-only, bench-only, clean, then inactive. */
 export function triageRank(letter: SfInspectionLetter): number {
   const v = letterVerdict(letter);
   if (v.severity === "headline") return 0;
