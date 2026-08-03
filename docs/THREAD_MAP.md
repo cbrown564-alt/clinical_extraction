@@ -63,9 +63,9 @@ Also: [pipeline trace explorer spec](design/pipeline_trace_explorer_spec.md),
 [evidence groundedness metric](reference/evidence_groundedness_metric.md),
 and [runbooks](runbooks/).
 
-## Build the supervisor handoff
+## Run an OpenAI-compatible or vLLM endpoint
 
-[Supervisor handoff plan](plans/supervisor_local_extraction_handoff_plan.md) →
+[model strategy](design/model_strategy.md) →
 [software design](design/architecture.md) →
 [ExECT family ownership](decisions/0040-final-exect-llm-with-rules-family-ownership.md) →
 [one-call ExECT architecture](decisions/0041-single-call-exect-model-comparison.md) →

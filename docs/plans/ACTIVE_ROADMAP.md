@@ -36,15 +36,12 @@ verified.
    `31103533` and `76d0dbcd`, with final replay-content, immutability, and
    parity closure at `6fd70834`. The full backend, architecture, replay,
    frontend, Ruff, and mypy gates pass.
-4. **Source-to-shipped closure current; host/unaided checks open:** the
-   README-led supervisor path exposes the five-stage orientation, generated
-   six-path walkthrough, deliberate failure/recovery example, frontend
-   startup, canonical results/limits, and exact no-call replay commands. The
-   standalone handoff tree and ZIP were rebuilt from active source and now
-   ship prepared `demo.ipynb`; source-to-shipped closure and the non-mutating
-   checker pass. Supervisor-host verification and unaided README review remain
-   open. Owner:
-   [handoff plan](supervisor_local_extraction_handoff_plan.md).
+4. **First-class vLLM integration in progress:** the rejected standalone
+   supervisor/handoff package and parallel runtime were retired. The shared
+   model factory now routes `vllm/<model>` through an OpenAI-compatible endpoint
+   with endpoint-specific chat-template settings while preserving ordinary
+   development row artifacts, traces, checkpoints, and reports. Live endpoint
+   probe and fixed dev10 execution remain open.
 5. **Retention wave advanced (2026-08-02):** retain selected architecture,
    evidence, replay, component-attribution, safety, and validation owners.
    Completed slices: run-note mock fixtures removed; pipeline-flow HTML
@@ -57,8 +54,8 @@ verified.
    `docs/research/maintenance/retention_slice_*_2026-08-02.md`.
 6. **Template complete; gate open:** the
    [restricted external-validation readiness template](../runbooks/external_validation_readiness.md)
-   is linked. Run the strict Decision 0048 completion gate only after
-   supervisor-host and unaided review checks pass.
+   is linked. Run the strict Decision 0048 completion gate after the vLLM
+   integration checks pass.
 7. **Complete:** Decision 0048 label-leftover blockers landed in `d8f39378`
    (`comparison_mode` removed; stage IDs use active-method namespaces; ExECT
    ablation supervisor surface removed; Gan ablation retagged). Residual plain
@@ -72,9 +69,10 @@ verified.
    mock-registry `artifact_paths` to served artifacts. Records:
    `docs/research/maintenance/retention_slice_*_2026-08-02.md` and
    [REGENERATION.md](../REGENERATION.md).
-9. **Decision 0049 pytest firewall — Waves 1–4 complete:** always-on suite is
-   **243** collected/passing tests (~51 files), inside the 200–300 exit band.
-   Deep allowlist empty. Owner:
+9. **Decision 0049 pytest firewall — Waves 1–4 complete:** after retiring the
+   handoff-only tests, the always-on suite collects **223** tests. On 2026-08-03,
+   222 passed; the sole failure was pre-existing retained-evidence hash drift
+   in the modified canonical comparison report. Deep allowlist empty. Owner:
    [Decision 0049](../decisions/0049-pytest-research-validity-firewall.md).
 10. **Documentation corpus triage + peer-satellite cull (2026-08-03):** thinned
     `NAVIGATION.md` and `PROJECT_STATUS.md`; expanded `THREAD_MAP.md` durable

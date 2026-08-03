@@ -103,12 +103,14 @@ Demoted deep tests are not owners. Do not rebind one-for-one every old stage
    pipeline_v1 / normalize / SF-split encyclopedias whose living owners remain.
    Rebinds: retained-evidence manifest GEPA and Gan LLM-only test lists;
    ExECT candidate-config retention slice example command. Kept
-   `tests/test_clinical_extraction_local_parity.py` because the supervisor
-   handoff source allowlist still traces it.
+   the canonical development parity checks because the selected pipelines
+   still require fixture parity.
 3. **Wave 3 landed:** deleted ~54 more mid-surface / diagnostic / breadcrumb
    files; rebound architecture manifests (ExECT LLM-only vertical slice; Gan
    hybrid repair stages → hybrid contract); regenerated architecture docs;
    thinned remaining fat owners to exemplars.
-4. **Wave 4 scoreboard:** plain `pytest` collects and passes **243** always-on
-   tests (~51 files), inside the 200–300 exit band. Deep allowlist empty.
-   Suite runtime ~40s on the Wave 4 host.
+4. **Wave 4 scoreboard:** after the later handoff-package retirement, plain
+   `pytest` collects **223** always-on tests, inside the 200–300 exit band.
+   The 2026-08-03 integration run passed 222; its sole failure was unrelated
+   retained-artifact hash drift in an already-modified report. Deep allowlist
+   empty.

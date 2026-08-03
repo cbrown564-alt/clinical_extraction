@@ -6,53 +6,6 @@ Status: final six-model results on the selected codebase; primary readout is
 aggregate-only locked holdout (`test60` / `test450`); development side-by-side
 and row-level error analysis remain on `dev140` / `dev750`
 
-Final results owner:
-[`experiments/six_model_final_panel_20260803/`](../../experiments/six_model_final_panel_20260803/panel_aggregate.json)
-
-Language follows [Decision 0048](../decisions/0048-comprehension-and-handoff-refactor.md)
-and [CONTEXT.md](../../CONTEXT.md).
-
-## Terms used in this report
-
-Naming follows the [plain-language glossary](../reference/plain_language_glossary.md)
-and [CONTEXT.md](../../CONTEXT.md).
-
-- **ExECTv2** extracts facts from four parts of an epilepsy letter: Diagnosis,
-  Seizure Frequency, Prescription, and Investigations.
-- **Gan 2026** assigns one current seizure-frequency label to each letter.
-- **Active methods** are `rules`, `llm`, and `llm_with_rules`. Plain names:
-  rules only, LLM only, and LLM with rules.
-- **Development split** means data that may be examined one row at a time.
-  ExECT `dev140` has 140 letters; Gan `dev750` has 750 letters. Retained Gan
-  filenames and API `split` fields may still say `validation750`.
-- **Locked holdout** means data whose individual rows may not be examined or
-  used to change the system. This report gives only totals for ExECT `test60`
-  and Gan `test450`.
-- **Aggregate-only** means that only totals and summary scores are available,
-  not individual predictions or errors.
-- **LLM only** (`llm`) means the saved model output before deterministic code
-  changes its clinical content. On ExECT, that scored boundary is
-  `raw_lane_score`. **LLM with rules** (`llm_with_rules`) means the final
-  output after fixed code checks, standardizes, selects, or repairs that
-  output. On ExECT, the scored final view is still stored as
-  `clinical_headline` / `headline_target`.
-- **Clinical fact F1** is the primary ExECT measure: internal de-duplicated
-  clinical fact recovery. It is not the published ExECT benchmark.
-- **Purist accuracy** is the primary Gan measure and requires the exact
-  reference label. Higher is better.
-- **Generalization gap** means holdout score minus matched development score
-  under the same method. Negative values mean holdout is lower.
-- **Reporting precision:** primary scores in this report are given to two
-  decimal places. Do not mix count numerators with rate scores in the same
-  comparison table.
-- **Exact evidence** means that a prediction includes text copied exactly from
-  its source letter. It shows that a quotation is present, not that the
-  quotation clinically supports the prediction.
-- **Pre-gate exact evidence** (ExECT) is the exact-substring rate on producer
-  mentions **before** evidence repair/drop. **Post-rules exact evidence** is
-  the rate on final predicted mentions after that gate (typically ~`1.00` for
-  every model and does not separate models).
-
 ## Executive conclusion
 
 Stronger general/domain models tend to do better on both fixed extraction

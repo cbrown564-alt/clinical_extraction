@@ -9,6 +9,7 @@ import pytest
 
 from clinical_extraction.operational.cli import main
 from clinical_extraction.operational.io import read_notes
+from clinical_extraction.operational.runtime import RuntimeConfig
 
 
 def test_read_notes_accepts_jsonl_id_and_text(tmp_path: Path) -> None:
@@ -33,6 +34,31 @@ def test_read_notes_rejects_invalid_rows(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError):
         read_notes(source)
+
+
+def test_runtime_accepts_vllm_environment_names() -> None:
+    runtime = RuntimeConfig.from_environment(
+        environment={
+            "VLLM_BASE_URL": "https://vllm.example/v1/",
+            "VLLM_API_KEY": "secret",
+            "VLLM_MODEL": "deepseek-v4-flash",
+        }
+    )
+
+    assert runtime.base_url == "https://vllm.example/v1"
+    assert runtime.model == "vllm/deepseek-v4-flash"
+    assert runtime.api_model == "deepseek-v4-flash"
+
+
+def test_runtime_rejects_disagreeing_endpoint_aliases() -> None:
+    with pytest.raises(ValueError, match="CLINICAL_LLM_BASE_URL and VLLM_BASE_URL disagree"):
+        RuntimeConfig.from_environment(
+            environment={
+                "CLINICAL_LLM_BASE_URL": "https://one.example/v1",
+                "VLLM_BASE_URL": "https://two.example/v1",
+                "VLLM_API_KEY": "secret",
+            }
+        )
 
 
 def test_cli_writes_one_result_per_input_note(

@@ -341,7 +341,6 @@ These paths exist and are easy to mistake for the selected method. They are name
 | Path | Role | Why it is not the selected method |
 | --- | --- | --- |
 | `src/clinical_extraction/operational/exect.py` | operational wrapper | Adds endpoint handling and live assembly around the same stages. Not a separate method; it must not drift from this manifest. |
-| `src/clinical_extraction_local/clinical_findings/pipeline.py` | operational wrapper | The readable public surface over the operational wrapper. |
 | `docs/experiments/exectv2/reliability/archive/exectv2_joint_policy_archive_README.md` | historical performance control | v08 used a deterministic Prescription producer and a Seizure Frequency extractor union. It does NOT meet decision 0040 and is not this method, despite sharing the label 'LLM with rules'. |
 | `scripts/check_exectv2_joint_bounded_policy_replay.py` | rejected candidate or ablation | The combined/combined Diagnosis and Prescription policy. Demoted by decision 0045; requires an explicit opt-in flag. |
 

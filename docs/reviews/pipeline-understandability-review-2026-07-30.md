@@ -213,7 +213,7 @@ Primary operational implementation:
 `src/clinical_extraction/operational/exect.py`.
 
 The public, readable wrapper is
-`src/clinical_extraction_local/clinical_findings/pipeline.py`.
+the now-retired parallel handoff wrapper.
 
 ## Principal findings
 

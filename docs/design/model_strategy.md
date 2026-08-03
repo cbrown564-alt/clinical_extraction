@@ -1,6 +1,6 @@
 # LLM model and comparison policy
 
-Last updated: 2026-07-16
+Last updated: 2026-08-03
 Status: retained reference frozen; corrected final-comparison target accepted
 
 The machine-readable freeze is `architecture_freeze` in
@@ -22,6 +22,15 @@ be added to the paper evidence set.
 The exact Ollama route is part of the identity. Qwen must use the native
 `ollama_chat/qwen3.6:35b` route with thinking disabled; the OpenAI-compatible
 Ollama endpoint is not an equivalent runtime.
+
+OpenAI-compatible vLLM endpoints use the explicit `vllm/<served-model>`
+runtime identifier. The shared model factory sends requests through DSPy's
+OpenAI-compatible transport and adds only the vLLM chat-template settings from
+`VLLM_THINKING` and optional `VLLM_REASONING_EFFORT`. The route and credential
+come from `VLLM_BASE_URL` and `VLLM_API_KEY`, or the routine command's explicit
+API-base option. These runs retain the same development prompts, raw outputs,
+row traces, checkpoints, scoring, and reports as other routes. vLLM is a
+transport condition, not permission to change the clinical prompt or rules.
 
 Local structured-output handling is governed by
 [decision 0042](../decisions/0042-shared-local-model-structured-output-repair.md).

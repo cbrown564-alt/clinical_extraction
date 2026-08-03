@@ -72,7 +72,7 @@ Before freezing behavior, reconcile the architecture layer with decisions
    register.
 5. Resolve the existing operational-policy drift before using operational
    output as a parity baseline. In particular,
-   `src/clinical_extraction_local/clinical_findings/pipeline.py` still names the
+   `src/clinical_extraction/operational/exect.py` still names the
    joint bounded rule set, and `src/clinical_extraction/operational/exect.py`
    enables a Diagnosis candidate directly. If those paths change clinical
    output when brought into line with decision 0045, make that correction in a

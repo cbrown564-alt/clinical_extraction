@@ -156,8 +156,8 @@ primary strips, short system-state bullets, then the supervisor path.
 Research chronology moved out of the glance layer into existing owners
 (`PROJECT_STATUS.md`, comparison report, claim status). Recorded also in the
 [documentation corpus slice](research/maintenance/retention_slice_documentation_corpus_2026-08-03.md)
-follow-on note. Rebuild the standalone handoff package so shipped `README.md`
-matches active source.
+follow-on note. The later first-class vLLM integration retired the standalone
+handoff package.
 
 ### Repository-root and stale-scorecard cleanup (2026-08-03)
 
