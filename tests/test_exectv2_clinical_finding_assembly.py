@@ -64,7 +64,11 @@ def test_assembly_sf_lens_applies_state_adjudication_without_expanding_mentions(
 
     sf_lane = run.rows[0]["lanes"]["SeizureFrequency"]
     assert sf_lane["lens"] == "sf_state_adjudication_v01"
-    sf_mentions = [m for m in run.rows[0]["predicted_mentions"] if m["entity"] == "SeizureFrequency"]
+    sf_mentions = [
+        m
+        for m in run.rows[0]["predicted_mentions"]
+        if m["entity"] == "SeizureFrequency"
+    ]
     assert len(sf_mentions) == 1
     assert sf_mentions[0]["text"] == "focal seizures"
 
