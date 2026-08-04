@@ -122,6 +122,10 @@ code { font-family: var(--mono); font-size: .82em; }
 .paper .body mark { padding: 0 .12em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 .paper .body mark.typical { background: oklch(0.47 0.08 195 / .3); }
 .paper .body mark.ytd { background: oklch(0.55 0.12 75 / .35); }
+.paper .body mark.fam-diagnosis { background: oklch(0.52 0.19 18 / .25); }
+.paper .body mark.fam-seizure_frequency { background: oklch(0.47 0.08 195 / .3); }
+.paper .body mark.fam-investigation { background: oklch(0.55 0.12 75 / .35); }
+.paper .body mark.fam-medication { background: oklch(0.5 0.1 300 / .25); }
 .paper .gold {
   margin-top: 20px; padding-top: 14px; border-top: 1px dashed oklch(0.62 0.04 60);
   font-size: 15px; color: oklch(0.4 0.03 60);
@@ -144,6 +148,48 @@ a.vcard:hover .watch-cta { color: var(--claim); }
   font-family: var(--mono); font-size: 11px; letter-spacing: .06em;
   color: var(--faint); text-transform: uppercase;
 }
+.vcard.owner-rules { border-top-color: var(--hands); }
+.vcard.owner-llm { border-top-color: var(--mind); }
+.vcard.owner-llm_with_rules { border-top-color: var(--claim); }
+.vcard .answer.small { font-size: 15px; line-height: 1.4; }
+
+.task-toggle {
+  display: inline-flex; gap: 3px; background: var(--panel);
+  border: 1px solid var(--line); padding: 3px; margin: 0 0 34px;
+  font-family: var(--mono); font-size: 12px;
+}
+.task-toggle button { background: transparent; border: 0; color: var(--muted); padding: 8px 14px; }
+.task-toggle button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.task-toggle .lbl { color: var(--faint); padding: 8px 6px 8px 10px; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; }
+
+.rescue {
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  border: 1px solid var(--ink); background: var(--panel);
+  padding: 20px 24px; margin: 0 0 26px;
+}
+.rescue .rk {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--faint); width: 100%;
+}
+.rescue .pick {
+  font-family: var(--mono); font-size: clamp(20px, 3vw, 28px); font-weight: 500;
+  color: var(--bad); text-decoration: line-through; text-decoration-thickness: 2px;
+}
+.rescue .arr { font-family: var(--mono); font-size: 22px; color: var(--claim); }
+.rescue .fixed {
+  font-family: var(--mono); font-size: clamp(20px, 3vw, 28px); font-weight: 600;
+  color: var(--good);
+}
+.rescue .by { font-size: 14.5px; color: var(--muted); max-width: 30ch; }
+.rescue .by b { color: var(--ink); font-weight: 600; }
+.rescue .chips { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.rescue .chip {
+  font-family: var(--mono); font-size: 13px; padding: 7px 12px;
+  border: 1px solid var(--line); color: var(--muted);
+}
+.rescue .chip b { color: var(--ink); font-weight: 600; }
+.rescue .chip.hot { border-color: var(--claim); color: var(--ink); background: var(--claim-soft); }
+.rescue .neq { font-family: var(--mono); font-size: 18px; color: var(--claim); }
 .vcard .who { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); }
 .vcard h3 { margin: 0; font-size: 20px; letter-spacing: -.01em; }
 .vcard .answer { font-family: var(--mono); font-size: 24px; font-weight: 600; letter-spacing: -.01em; }
@@ -401,6 +447,8 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
       One synthetic letter shows the entire idea.
     </p>
 
+    <div class="task-toggle" id="task-toggle" role="group" aria-label="Benchmark story"></div>
+
     <div class="paper" id="hero-paper">
       <div class="from" id="hero-from">Clinic correspondence · synthetic teaching letter</div>
       <p class="body" id="hero-note"></p>
@@ -408,11 +456,10 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
     </div>
     <p class="paper-note" id="hero-paper-note"></p>
 
+    <div class="rescue" id="rescue"></div>
+
     <div class="verdicts" id="verdicts"></div>
-    <p class="lede" style="font-size:15px; margin-top:10px;">
-      Same letter, same scorer, same gold answer. Three different owners of the answer —
-      and three different outcomes. Everything below is these three cards, unfolded.
-    </p>
+    <p class="lede" style="font-size:15px; margin-top:10px;" id="hero-closing"></p>
   </div>
 </section>
 
@@ -420,14 +467,14 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
 <section id="why">
   <div class="wrap">
     <div class="kicker">The mechanism in one paragraph <span class="depth everyone">for everyone</span></div>
-    <h2>Why the model alone gets this one wrong</h2>
+    <h2 id="why-h2">Why the model alone gets this one wrong</h2>
     <p class="lede" id="why-prose"></p>
 
     <div class="compare" id="delta"></div>
     <div class="legend">
       <span><i style="background: var(--mind)"></i>model stage</span>
       <span><i style="background: var(--hands)"></i>deterministic, may change meaning</span>
-      <span><i style="background: var(--claim)"></i>deterministic repair family</span>
+      <span><i style="background: var(--claim)"></i>deterministic repair / transform the hybrid adds</span>
       <span><i style="background: var(--score)"></i>scorer</span>
       <span><i style="background: oklch(0.88 0.01 250)"></i>quiet / transport</span>
       <span>red outline = exists only on the hybrid path</span>
@@ -577,77 +624,190 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
   function parseJSON(s) { try { return JSON.parse(s); } catch (e) { return null; } }
 
   /* ============================================================
-     1 · hero: the letter + three verdict cards
+     1 · hero: task toggle, the letter, the rescue, three cards
      ============================================================ */
-  function renderHero() {
-    var c = caseByTask.gan2026;
-    document.getElementById("hero-from").textContent =
-      c.letter_id + " · " + c.task_label + " · synthetic teaching letter";
+  var heroState = { task: "gan2026" };
 
-    // Highlight the two competing statements, derived from the fixture's own events.
-    var hybridRun = runFor(byId.gan2026_llm_with_rules, c);
-    var events = (parseJSON(modelCallObs(hybridRun).output) || {}).events || [];
-    var spans = events.map(function (ev) {
-      return { text: ev.evidence, cls: /typical/i.test(ev.time_window || "") ? "typical" : "ytd" };
-    }).filter(function (s) { return s.text && c.note_text.indexOf(s.text) >= 0; });
-
-    var note = document.getElementById("hero-note");
-    if (spans.length === 2) {
-      spans.sort(function (a, b) { return c.note_text.indexOf(a.text) - c.note_text.indexOf(b.text); });
-      var cursor = 0;
-      spans.forEach(function (s) {
-        var at = c.note_text.indexOf(s.text, cursor);
-        note.appendChild(document.createTextNode(c.note_text.slice(cursor, at)));
-        note.appendChild(el("mark", s.cls, s.text));
-        cursor = at + s.text.length;
-      });
-      note.appendChild(document.createTextNode(c.note_text.slice(cursor)));
-    } else {
-      note.textContent = c.note_text;
-    }
-
-    var gold = document.getElementById("hero-gold");
-    gold.appendChild(document.createTextNode("The benchmark's answer: "));
-    gold.appendChild(el("b", null, c.gold));
-    gold.appendChild(document.createTextNode(
-      " — a stated typical pattern (teal) outranks a year-to-date count (amber), by the task's gold convention."
-    ));
-    document.getElementById("hero-paper-note").textContent =
-      "teal = stated typical rate · amber = counted year-to-date total · gold convention: policy A1";
-
-    var WHY = {
-      rules: "Code finds every seizure-frequency statement, normalizes it, and applies the convention directly. No model involved.",
-      llm: "The model prefers the concrete counted total. It is a plausible reading — and this method has no later stage allowed to overrule the selection.",
-      llm_with_rules: "The model makes the same choice — then one deterministic repair family rewrites it to the stated typical rate."
-    };
-    // The defining moment of each method, as a theater deep link: the rules'
-    // selection, the model's unfixable answer, the repair that fires.
-    var DEFINING = {
+  // The defining moment of each method, as a theater deep link: the rules'
+  // selection, the model's unfixable answer, the deterministic layer firing.
+  var DEFINING = {
+    gan2026: {
       rules: function (o) { return /select/.test(o.stage_id); },
       llm: function (o) { return /model_call$/.test(o.stage_id); },
       llm_with_rules: function (o) { return o.changed && /\.repair\./.test(o.stage_id); }
-    };
-    function watchHref(m, run) {
-      var pred = DEFINING[m.method];
-      for (var i = 0; i < run.observations.length; i++) {
-        if (pred(run.observations[i])) return "#watch=" + m.method_id + ":" + i;
-      }
-      return "#watch=" + m.method_id + ":0";
+    },
+    exectv2: {
+      rules: function (o) { return /extract_entities/.test(o.stage_id); },
+      llm: function (o) { return /model_call$/.test(o.stage_id); },
+      llm_with_rules: function (o) { return o.changed && /\.lens\./.test(o.stage_id); }
     }
+  };
 
+  var HERO_COPY = {
+    gan2026: {
+      paperNote: "teal = stated typical rate · amber = counted year-to-date total · gold convention: policy A1",
+      closing: "Same letter, same scorer, same gold answer. Three different owners of the answer — " +
+        "and three different outcomes. Everything below is these three cards, unfolded.",
+      why: {
+        rules: "Code finds every seizure-frequency statement, normalizes it, and applies the convention directly. No model involved.",
+        llm: "The model prefers the concrete counted total. It is a plausible reading — and this method has no later stage allowed to overrule the selection.",
+        llm_with_rules: "The model makes the same choice — then one deterministic repair family rewrites it to the stated typical rate."
+      }
+    },
+    exectv2: {
+      paperNote: "one colour per fact family — the four families the model-led methods answer over",
+      closing: "Same letter, same scorer. Three different shapes of answer, and a defined boundary " +
+        "between them. Everything below is these three cards, unfolded.",
+      why: {
+        rules: "Nine independent deterministic extractors produce the all-nine baseline. No model involved.",
+        llm: "One structured call proposes findings for four families, scored as proposed, before any deterministic transform.",
+        llm_with_rules: "The same one call — then deterministic family transforms reconcile the findings into the scored representation."
+      }
+    }
+  };
+
+  var EXECT_TAGLINE = {
+    rules: "answers over nine entities",
+    llm: "answers over four families · no deterministic correction",
+    llm_with_rules: "answers over four families · reconciled by family transforms"
+  };
+
+  function watchHref(task, m, run) {
+    var pred = DEFINING[task][m.method];
+    for (var i = 0; i < run.observations.length; i++) {
+      if (pred(run.observations[i])) return "#watch=" + m.method_id + ":" + i;
+    }
+    return "#watch=" + m.method_id + ":0";
+  }
+
+  function heroSpans(task, c) {
+    // Highlight spans derived from the fixture's own events, never hardcoded text.
+    var hybridRun = runFor(byId[task + "_llm_with_rules"], c);
+    var raw = parseJSON(modelCallObs(hybridRun).output) || {};
+    if (task === "gan2026") {
+      return (raw.events || []).map(function (ev) {
+        return { text: ev.evidence, cls: /typical/i.test(ev.time_window || "") ? "typical" : "ytd" };
+      });
+    }
+    return (raw.clinical_events || []).map(function (ev) {
+      return { text: ev.evidence, cls: "fam-" + String(ev.family || "").toLowerCase() };
+    });
+  }
+
+  function renderToggle() {
+    var host = document.getElementById("task-toggle");
+    clear(host);
+    host.appendChild(el("span", "lbl", "story"));
+    [["gan2026", "Gan 2026 · one label"], ["exectv2", "ExECTv2 · four families"]].forEach(function (pair) {
+      var b = el("button", null, pair[1]);
+      b.type = "button";
+      b.setAttribute("aria-pressed", String(heroState.task === pair[0]));
+      b.addEventListener("click", function () {
+        heroState.task = pair[0];
+        renderHero();
+        renderWhy();
+      });
+      host.appendChild(b);
+    });
+  }
+
+  function renderLetter(task, c) {
+    document.getElementById("hero-from").textContent =
+      c.letter_id + " · " + c.task_label + " · synthetic teaching letter";
+    var note = document.getElementById("hero-note");
+    var spans = heroSpans(task, c).filter(function (s) {
+      return s.text && c.note_text.indexOf(s.text) >= 0;
+    });
+    spans.sort(function (a, b) { return c.note_text.indexOf(a.text) - c.note_text.indexOf(b.text); });
+    var cursor = 0;
+    spans.forEach(function (s) {
+      var at = c.note_text.indexOf(s.text, cursor);
+      note.appendChild(document.createTextNode(c.note_text.slice(cursor, at)));
+      note.appendChild(el("mark", s.cls, s.text));
+      cursor = at + s.text.length;
+    });
+    note.appendChild(document.createTextNode(c.note_text.slice(cursor)));
+
+    var gold = document.getElementById("hero-gold");
+    if (task === "gan2026") {
+      gold.appendChild(document.createTextNode("The benchmark's answer: "));
+      gold.appendChild(el("b", null, c.gold));
+      gold.appendChild(document.createTextNode(
+        " — a stated typical pattern outranks a year-to-date count, by the task's gold convention."
+      ));
+    } else {
+      gold.appendChild(el("b", null, "This letter teaches shape, not accuracy: "));
+      gold.appendChild(document.createTextNode(
+        "a synthetic teaching letter carries no gold annotations. The rules-only baseline answers " +
+        "over nine entities; the two model-led methods answer over four families — and their " +
+        "numbers are not interchangeable."
+      ));
+    }
+    document.getElementById("hero-paper-note").textContent = HERO_COPY[task].paperNote;
+  }
+
+  function renderRescue(task, c) {
+    var host = document.getElementById("rescue");
+    if (task === "gan2026") {
+      var hybridRun = runFor(byId.gan2026_llm_with_rules, c);
+      var fired = hybridRun.observations.filter(function (o) {
+        return o.changed && /\.repair\./.test(o.stage_id);
+      });
+      var rescue = fired[0];
+      host.appendChild(el("span", "rk", "The whole project in one rewrite"));
+      host.appendChild(el("span", "pick", rescue ? String(rescue.input) : "—"));
+      host.appendChild(el("span", "arr", "→"));
+      host.appendChild(el("span", "fixed", rescue ? String(rescue.output) : "—"));
+      var by = el("span", "by");
+      by.appendChild(document.createTextNode("the model's pick, rewritten by one deterministic repair family: "));
+      by.appendChild(el("b", null, rescue ? rescue.stage_name.replace(/^Repair \d+ - /, "") : ""));
+      host.appendChild(by);
+      return;
+    }
+    // ExECT's story is the defined comparison boundary, derived from the runs.
+    var rulesRun = runFor(byId.exectv2_rules_only, c);
+    var entitiesObs = rulesRun.observations.filter(function (o) {
+      return /extract_entities/.test(o.stage_id);
+    })[0];
+    var entityDict = parseJSON(String(entitiesObs.output)) || {};
+    var hybridRun2 = runFor(byId.exectv2_llm_with_rules, c);
+    var events = (parseJSON(modelCallObs(hybridRun2).output) || {}).clinical_events || [];
+    host.appendChild(el("span", "rk", "The comparison boundary in one line"));
+    var chips = el("span", "chips");
+    chips.appendChild(el("span", "chip", ""));
+    chips.lastChild.appendChild(el("b", null, String(Object.keys(entityDict).length)));
+    chips.lastChild.appendChild(document.createTextNode(" entities · rules only"));
+    chips.appendChild(el("span", "neq", "≠"));
+    var famChip = el("span", "chip hot");
+    famChip.appendChild(el("b", null, String(events.length)));
+    famChip.appendChild(document.createTextNode(" families · model-led methods"));
+    chips.appendChild(famChip);
+    host.appendChild(chips);
+    var by2 = el("span", "by");
+    by2.appendChild(document.createTextNode("two different questions by design — "));
+    by2.appendChild(el("b", null, "scores are not interchangeable"));
+    host.appendChild(by2);
+  }
+
+  function renderCards(task, c) {
     var host = document.getElementById("verdicts");
-    ["gan2026_rules_only", "gan2026_llm_only", "gan2026_llm_with_rules"].forEach(function (id) {
-      var m = byId[id];
+    var methods = DATA.manifests.filter(function (m) { return m.task === task; });
+    methods.forEach(function (m) {
       var run = runFor(m, c);
-      var card = el("a", "vcard " + (run.correct ? "ok" : "bad"));
-      card.href = watchHref(m, run);
+      var cls = task === "gan2026"
+        ? (run.correct ? "ok" : "bad")
+        : "owner-" + m.method;
+      var card = el("a", "vcard " + cls);
+      card.href = watchHref(task, m, run);
       card.appendChild(el("span", "who", METHOD_WHO[m.method] + " answers"));
       card.appendChild(el("h3", null, m.method_label));
-      card.appendChild(el("div", "answer", run.final_answer));
-      var why = el("p", "why", WHY[m.method]);
-      card.appendChild(why);
+      var answer = el("div", "answer" + (task === "exectv2" ? " small" : ""), run.final_answer);
+      card.appendChild(answer);
+      card.appendChild(el("p", "why", HERO_COPY[task].why[m.method]));
       var tagline = el("div", "tagline");
-      if (m.method === "llm_with_rules") {
+      if (task === "exectv2") {
+        tagline.appendChild(document.createTextNode(EXECT_TAGLINE[m.method]));
+      } else if (m.method === "llm_with_rules") {
         var fired = run.observations.filter(function (o) {
           return o.changed && /\.repair\./.test(o.stage_id);
         });
@@ -664,51 +824,88 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
       card.appendChild(el("div", "watch-cta", "watch this moment →"));
       host.appendChild(card);
     });
+    document.getElementById("hero-closing").textContent = HERO_COPY[task].closing;
+  }
+
+  function renderHero() {
+    var c = caseByTask[heroState.task];
+    clear(document.getElementById("hero-note"));
+    clear(document.getElementById("hero-gold"));
+    clear(document.getElementById("rescue"));
+    clear(document.getElementById("verdicts"));
+    renderToggle();
+    renderLetter(heroState.task, c);
+    renderRescue(heroState.task, c);
+    renderCards(heroState.task, c);
   }
 
   /* ============================================================
      2 · why: prose + the hybrid delta strip
      ============================================================ */
-  function renderWhy() {
-    var prose = document.getElementById("why-prose");
-    prose.appendChild(document.createTextNode(
-      "The letter offers two numbers: a stated typical pattern — "
-    ));
-    prose.appendChild(el("b", null, "a focal seizure monthly"));
-    prose.appendChild(document.createTextNode(" — and a concrete count — "));
-    prose.appendChild(el("b", null, "seven seizures so far this year"));
-    prose.appendChild(document.createTextNode(
-      ". The benchmark's gold convention prefers the typical pattern, because a year-to-date " +
-      "count is not a rate. A language model, reading like a person in a hurry, prefers the count. " +
-      "LLM-only has no stage after the model that is allowed to change a selection, so the mistake " +
-      "stands. LLM-with-rules adds deterministic repair families that are allowed to — and on this " +
-      "letter exactly one fires."
-    ));
+  var WHY_COPY = {
+    gan2026: {
+      h2: "Why the model alone gets this one wrong",
+      pairs: [["LLM only", "no repair stage exists"], ["LLM with rules", "the repair families dock here"]],
+      pointer: null
+    },
+    exectv2: {
+      h2: "What the deterministic layer adds around one model call",
+      pairs: [["LLM only", "scored as proposed"], ["LLM with rules", "the family transforms dock here"]],
+      pointer: null
+    }
+  };
 
-    var llm = byId.gan2026_llm_only;
-    var hybrid = byId.gan2026_llm_with_rules;
+  function renderWhy() {
+    var task = heroState.task;
+    document.getElementById("why-h2").textContent = WHY_COPY[task].h2;
+    var prose = document.getElementById("why-prose");
+    clear(prose);
+    if (task === "gan2026") {
+      prose.appendChild(document.createTextNode("The letter offers two numbers: a stated typical pattern — "));
+      prose.appendChild(el("b", null, "a focal seizure monthly"));
+      prose.appendChild(document.createTextNode(" — and a concrete count — "));
+      prose.appendChild(el("b", null, "seven seizures so far this year"));
+      prose.appendChild(document.createTextNode(
+        ". The benchmark's gold convention prefers the typical pattern, because a year-to-date " +
+        "count is not a rate. A language model, reading like a person in a hurry, prefers the count. " +
+        "LLM-only has no stage after the model that is allowed to change a selection, so the mistake " +
+        "stands. LLM-with-rules adds deterministic repair families that are allowed to — and on this " +
+        "letter exactly one fires."
+      ));
+    } else {
+      prose.appendChild(document.createTextNode(
+        "One model call proposes findings across four families — diagnosis, seizure frequency, " +
+        "prescriptions, investigations. LLM-only scores them as proposed. LLM-with-rules passes " +
+        "them through deterministic family transforms that complete state representations and " +
+        "reconcile findings before scoring. This letter is chosen for shape, so both model-led " +
+        "methods produce the same four families here; the stage tables below show exactly which " +
+        "transforms sit between the call and the score."
+      ));
+    }
+
+    var llm = byId[task + "_llm_only"];
+    var hybrid = byId[task + "_llm_with_rules"];
+    var key = function (s) { return s.name.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim(); };
     var llmNames = {};
-    llm.stages.forEach(function (s) { llmNames[s.name.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim()] = true; });
+    llm.stages.forEach(function (s) { llmNames[key(s)] = true; });
     var added = {};
-    hybrid.stages.forEach(function (s) {
-      if (!llmNames[s.name.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim()]) added[s.stage_id] = true;
-    });
-    var repairs = hybrid.stages.filter(function (s) { return /\.repair\./.test(s.stage_id); });
+    hybrid.stages.forEach(function (s) { if (!llmNames[key(s)]) added[s.stage_id] = true; });
 
     var host = document.getElementById("delta");
-    [[llm, "LLM only", "no repair stage exists"], [hybrid, "LLM with rules", "the repair families dock here"]].forEach(function (pair) {
+    clear(host);
+    [[llm, WHY_COPY[task].pairs[0]], [hybrid, WHY_COPY[task].pairs[1]]].forEach(function (pair) {
       var m = pair[0];
       var row = el("div", "row");
       var who = el("div", "who");
-      who.appendChild(el("b", null, pair[1]));
-      who.appendChild(document.createTextNode(m.stages.length + " stages · " + pair[2]));
+      who.appendChild(el("b", null, pair[1][0]));
+      who.appendChild(document.createTextNode(m.stages.length + " stages · " + pair[1][1]));
       row.appendChild(who);
       var strip = el("div", "strip");
       m.stages.forEach(function (s, i) {
         var cls = "cell";
         if (s.owner === "model") cls += " model";
         else if (s.owner === "scorer") cls += " scorer";
-        else if (/\.repair\./.test(s.stage_id)) cls += " meaning repair";
+        else if (added[s.stage_id] && s.effect_class === "clinical_meaning") cls += " meaning repair";
         else if (s.effect_class === "clinical_meaning") cls += " meaning";
         if (added[s.stage_id]) cls += " added";
         var cell = el("button", cls);
@@ -721,10 +918,13 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
       host.appendChild(row);
     });
 
-    document.getElementById("why-exect").appendChild(document.createTextNode(
-      "The second benchmark, ExECTv2, tells the same story across four fact families — diagnosis, " +
-      "seizure frequency, prescriptions, investigations — where the hybrid adds deterministic family " +
-      "transforms instead of label repairs. Switch tasks in the theater below to watch that variant."
+    var pointer = document.getElementById("why-exect");
+    clear(pointer);
+    var other = task === "gan2026" ? "exectv2" : "gan2026";
+    pointer.appendChild(document.createTextNode(
+      "The other benchmark — " + byId[other + "_llm_with_rules"].task_label +
+      " — tells its own variant of this story. Switch with the toggle above; " +
+      "the theater, stage tables, and commands below cover both."
     ));
   }
 
