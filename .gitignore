@@ -59,7 +59,10 @@ mlflow.db
 mlflow.db-*
 
 # Local operational scratch and captured run output (summaries belong in experiments/ or docs/).
-scratch/
+# Ignore scratch contents, but keep the architecture explainer prototypes tracked.
+scratch/*
+!scratch/explainer/
+!scratch/explainer/**
 output/
 
 # Run-log captures not matched by experiments/*.log (e.g. *.stderr.log suffix).
