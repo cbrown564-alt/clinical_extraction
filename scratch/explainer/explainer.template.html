@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clinical extraction, explained — one letter, three depths</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,600;6..72,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: oklch(0.985 0.002 250);
+  --panel: oklch(1 0 0);
+  --ink: oklch(0.17 0.02 250);
+  --muted: oklch(0.44 0.02 250);
+  --faint: oklch(0.66 0.015 250);
+  --line: oklch(0.9 0.008 250);
+  --claim: oklch(0.52 0.19 18);
+  --claim-soft: oklch(0.52 0.19 18 / .1);
+  --mind: oklch(0.55 0.12 75);
+  --mind-soft: oklch(0.55 0.12 75 / .14);
+  --hands: oklch(0.47 0.08 195);
+  --hands-soft: oklch(0.47 0.08 195 / .12);
+  --score: oklch(0.5 0.1 300);
+  --score-soft: oklch(0.5 0.1 300 / .12);
+  --good: oklch(0.48 0.12 155);
+  --bad: oklch(0.53 0.16 22);
+  --serif: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --t-bg: oklch(0.15 0.012 250);
+  --t-surface: oklch(0.2 0.014 250);
+  --t-surface-2: oklch(0.24 0.015 250);
+  --t-ink: oklch(0.93 0.01 250);
+  --t-muted: oklch(0.7 0.02 250);
+  --t-faint: oklch(0.48 0.02 250);
+  --t-line: oklch(1 0 0 / .09);
+  --t-claim: oklch(0.7 0.18 18);
+  --t-mind: oklch(0.78 0.12 75);
+  --t-hands: oklch(0.74 0.09 195);
+  --t-score: oklch(0.74 0.1 300);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--serif); font-size: 18px; line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--hands); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+button { font: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--claim); outline-offset: 2px; }
+
+/* ---------------- nav ---------------- */
+nav.top {
+  position: sticky; top: 0; z-index: 30;
+  display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap;
+  padding: 12px 26px;
+  background: oklch(0.985 0.002 250 / .88);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+nav.top .brand {
+  font-family: var(--mono); font-size: 12px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink); text-decoration: none;
+  margin-right: 18px; font-weight: 600;
+}
+nav.top a.sec {
+  font-family: var(--mono); font-size: 11.5px; color: var(--muted);
+  text-decoration: none; padding: 4px 8px; border-radius: 3px;
+}
+nav.top a.sec:hover { color: var(--ink); }
+nav.top a.sec.active { background: var(--ink); color: var(--bg); }
+nav.top .spacer { flex: 1; }
+nav.top a.archive { font-family: var(--mono); font-size: 11.5px; color: var(--faint); text-decoration: none; }
+nav.top a.archive:hover { color: var(--claim); }
+
+/* ---------------- shared section furniture ---------------- */
+section { padding: 72px 26px 26px; }
+.wrap { max-width: 980px; margin: 0 auto; }
+.kicker {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  font-family: var(--mono); font-size: 11.5px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--faint); margin-bottom: 14px;
+}
+.depth {
+  font-size: 10px; letter-spacing: .1em; padding: 2px 7px;
+  border: 1px solid currentColor; border-radius: 999px;
+}
+.depth.everyone { color: var(--hands); }
+.depth.curious { color: var(--mind); }
+.depth.supervisor { color: var(--score); }
+h2 {
+  margin: 0 0 14px; font-size: clamp(26px, 3.6vw, 36px); font-weight: 600;
+  letter-spacing: -.02em; line-height: 1.15; text-wrap: balance;
+}
+.lede { color: var(--muted); max-width: 62ch; margin: 0 0 30px; }
+.lede b, .compare b { color: var(--ink); font-weight: 600; }
+code { font-family: var(--mono); font-size: .82em; }
+
+/* ---------------- hero ---------------- */
+.hero { padding-top: 96px; }
+.hero h1 {
+  margin: 0 0 18px; font-size: clamp(34px, 5.4vw, 54px); font-weight: 600;
+  letter-spacing: -.03em; line-height: 1.06; text-wrap: balance; max-width: 20ch;
+}
+.hero .sub { color: var(--muted); max-width: 60ch; margin: 0 0 40px; font-size: 19px; }
+
+.paper {
+  background: oklch(0.96 0.02 88);
+  border: 1px solid oklch(0.86 0.03 85);
+  color: oklch(0.24 0.02 60);
+  padding: 30px 30px 26px;
+  box-shadow: 0 1px 0 oklch(0 0 0 / .04), 0 26px 50px oklch(0.2 0.02 250 / .1);
+  transform: rotate(-.35deg);
+  margin: 0 0 14px;
+}
+.paper .from {
+  font-family: var(--mono); font-size: 11px; letter-spacing: .1em;
+  text-transform: uppercase; color: oklch(0.5 0.03 60); margin-bottom: 14px;
+}
+.paper .body { margin: 0; font-size: 17.5px; line-height: 1.6; white-space: pre-wrap; }
+.paper .body mark { padding: 0 .12em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.paper .body mark.typical { background: oklch(0.47 0.08 195 / .3); }
+.paper .body mark.ytd { background: oklch(0.55 0.12 75 / .35); }
+.paper .gold {
+  margin-top: 20px; padding-top: 14px; border-top: 1px dashed oklch(0.62 0.04 60);
+  font-size: 15px; color: oklch(0.4 0.03 60);
+}
+.paper .gold b { color: oklch(0.35 0.1 18); font-weight: 600; }
+.paper-note { font-size: 13.5px; color: var(--faint); font-family: var(--mono); margin: 0 0 44px; }
+
+.verdicts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 0 0 12px; }
+@media (max-width: 840px) { .verdicts { grid-template-columns: 1fr; } }
+.vcard {
+  background: var(--panel); border: 1px solid var(--line); border-top-width: 3px;
+  padding: 18px 18px 16px; display: flex; flex-direction: column; gap: 8px;
+}
+.vcard.ok { border-top-color: var(--good); }
+.vcard.bad { border-top-color: var(--bad); }
+.vcard .who { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); }
+.vcard h3 { margin: 0; font-size: 20px; letter-spacing: -.01em; }
+.vcard .answer { font-family: var(--mono); font-size: 24px; font-weight: 600; letter-spacing: -.01em; }
+.vcard.ok .answer { color: var(--good); }
+.vcard.bad .answer { color: var(--bad); }
+.vcard .why { margin: 0; font-size: 14.5px; color: var(--muted); }
+.vcard .tagline { margin-top: auto; font-family: var(--mono); font-size: 11px; color: var(--faint); }
+.vcard .tagline b { color: var(--hands); font-weight: 500; }
+
+/* ---------------- why ---------------- */
+.compare {
+  background: var(--panel); border: 1px solid var(--line);
+  padding: 20px 22px; margin: 0 0 16px;
+}
+.compare .row { display: grid; grid-template-columns: 150px 1fr; gap: 14px; align-items: center; margin-bottom: 10px; }
+.compare .row:last-child { margin-bottom: 0; }
+.compare .who { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+.compare .who b { display: block; color: var(--ink); font-size: 12.5px; }
+.strip { display: flex; flex-wrap: wrap; gap: 2px; }
+.cell {
+  width: 16px; height: 26px; background: oklch(0.88 0.01 250);
+  border: 0; padding: 0; position: relative;
+}
+.cell.model { background: var(--mind); }
+.cell.meaning { background: var(--hands); }
+.cell.meaning.repair { background: var(--claim); }
+.cell.scorer { background: var(--score); }
+.cell.added { box-shadow: 0 0 0 2px var(--claim); }
+.cell:hover { transform: translateY(-2px); }
+.cell .tip {
+  display: none; position: absolute; left: 50%; bottom: calc(100% + 6px);
+  transform: translateX(-50%); background: var(--ink); color: var(--bg);
+  font-family: var(--mono); font-size: 10.5px; padding: 4px 7px; white-space: nowrap; z-index: 5;
+}
+.cell:hover .tip { display: block; }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; font-family: var(--mono); font-size: 11px; color: var(--muted); margin: 12px 0 0; }
+.legend i { font-style: normal; display: inline-block; width: 9px; height: 9px; margin-right: 5px; }
+
+/* ---------------- theater ---------------- */
+section.theater {
+  background:
+    radial-gradient(900px 420px at 12% 0%, oklch(0.3 0.05 18 / .3), transparent 60%),
+    radial-gradient(760px 460px at 92% 100%, oklch(0.26 0.04 195 / .28), transparent 55%),
+    var(--t-bg);
+  color: var(--t-ink);
+  padding-bottom: 60px;
+}
+.theater .kicker { color: var(--t-faint); }
+.theater h2 { color: var(--t-ink); }
+.theater .lede { color: var(--t-muted); }
+.theater .wrap { max-width: 1060px; }
+
+.method-pick { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 20px; }
+.method-pick .group {
+  display: flex; gap: 4px; background: var(--t-surface); padding: 3px;
+  border: 1px solid var(--t-line); font-family: var(--mono); font-size: 12px;
+}
+.method-pick .group > span { color: var(--t-faint); padding: 7px 4px 7px 10px; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; }
+.method-pick button { background: transparent; border: 0; color: var(--t-muted); padding: 7px 11px; font: inherit; font-family: var(--mono); font-size: 12px; }
+.method-pick button[aria-pressed="true"] { background: var(--t-ink); color: var(--t-bg); }
+
+.controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.scrub { flex: 1; min-width: 220px; display: flex; align-items: center; gap: 12px; }
+.scrub input[type="range"] { flex: 1; accent-color: var(--t-claim); height: 2px; }
+.scrub .pos { font-family: var(--mono); font-size: 12px; color: var(--t-muted); min-width: 7ch; }
+.play {
+  background: var(--t-claim); color: #fff; border: 0;
+  font-family: var(--mono); font-size: 12px; padding: 8px 16px; letter-spacing: .06em;
+}
+.play[aria-pressed="true"] { background: var(--t-hands); color: var(--t-bg); }
+
+.board {
+  background: var(--t-surface); border: 1px solid var(--t-line);
+  padding: 22px 24px; margin-bottom: 22px; min-height: 128px;
+}
+.board .who {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  font-family: var(--mono); font-size: 11px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--t-faint); margin-bottom: 10px;
+}
+.custody { display: inline-flex; align-items: center; gap: 6px; margin-left: 10px; }
+.custody .node {
+  font-size: 9.5px; letter-spacing: .08em; padding: 2px 8px; border-radius: 999px;
+  border: 1px solid var(--t-faint); color: var(--t-faint); transition: all .25s;
+}
+.custody .link { width: 16px; height: 1px; background: var(--t-faint); }
+.custody .node.on.model { border-color: var(--t-mind); color: var(--t-mind); box-shadow: 0 0 12px oklch(0.78 0.12 75 / .35); }
+.custody .node.on.deterministic { border-color: var(--t-hands); color: var(--t-hands); box-shadow: 0 0 12px oklch(0.74 0.09 195 / .35); }
+.custody .node.on.scorer { border-color: var(--t-score); color: var(--t-score); box-shadow: 0 0 12px oklch(0.74 0.1 300 / .35); }
+.board .answer {
+  font-size: clamp(28px, 4vw, 44px); font-weight: 600; letter-spacing: -.02em;
+  line-height: 1.1; color: var(--t-claim); text-wrap: balance;
+}
+.board .answer.idle { color: var(--t-faint); font-size: clamp(22px, 3vw, 30px); }
+.board .tray { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.board .tray .fam {
+  font-family: var(--mono); font-size: 13px; padding: 6px 12px;
+  border: 1px dashed var(--t-faint); color: var(--t-faint);
+}
+.board .tray .fam.filled { border: 1px solid var(--t-claim); color: var(--t-ink); background: oklch(0.7 0.18 18 / .12); }
+.board .tray .fam.filled b { color: var(--t-claim); font-weight: 600; }
+.board .delta { margin-top: 10px; font-family: var(--mono); font-size: 12.5px; color: var(--t-muted); }
+.board .delta b { color: var(--t-ink); font-weight: 500; }
+.board .delta .arrow { color: var(--t-claim); margin: 0 6px; }
+
+.film { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 24px; }
+.frame {
+  flex: 0 0 86px; background: transparent; border: 1px solid var(--t-line);
+  color: var(--t-muted); padding: 9px 8px; text-align: left;
+  font-family: var(--mono); font-size: 10px; min-height: 88px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.frame:hover { border-color: oklch(1 0 0 / .3); color: var(--t-ink); }
+.frame[aria-pressed="true"] { background: var(--t-surface-2); border-color: var(--t-claim); color: var(--t-ink); }
+.frame.skipped { opacity: .4; }
+.frame .n { color: var(--t-faint); }
+.frame .dot { width: 8px; height: 8px; border-radius: 50%; margin-top: auto; background: var(--t-faint); }
+.frame.model .dot { background: var(--t-mind); }
+.frame.deterministic .dot { background: var(--t-hands); }
+.frame.scorer .dot { background: var(--t-score); }
+.frame.changed { box-shadow: inset 0 -2px 0 var(--t-claim); }
+.frame .short { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; }
+
+.focus { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 760px) { .focus { grid-template-columns: 1fr; } }
+.panel {
+  background: var(--t-surface); border: 1px solid var(--t-line);
+  padding: 18px 18px 20px; min-height: 170px;
+}
+.panel h3 {
+  margin: 0 0 10px; font-size: 11.5px; font-family: var(--mono); font-weight: 500;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--t-faint);
+}
+.panel .title { font-size: 21px; font-weight: 600; letter-spacing: -.015em; margin: 0 0 10px; color: var(--t-ink); text-wrap: balance; }
+.panel p { margin: 0 0 10px; color: var(--t-muted); font-size: 15px; }
+.panel .io {
+  font-family: var(--mono); font-size: 11.5px; line-height: 1.5;
+  background: var(--t-bg); padding: 10px 12px; color: var(--t-ink);
+  white-space: pre-wrap; word-break: break-word; max-height: 200px; overflow: auto;
+  border: 1px solid var(--t-line);
+}
+.panel .code { font-family: var(--mono); font-size: 11px; color: var(--t-muted); word-break: break-all; }
+.panel .tag {
+  display: inline-block; font-family: var(--mono); font-size: 10px;
+  letter-spacing: .08em; text-transform: uppercase; padding: 3px 7px;
+  margin: 0 6px 8px 0; border: 1px solid currentColor;
+}
+.panel .tag.model { color: var(--t-mind); }
+.panel .tag.deterministic { color: var(--t-hands); }
+.panel .tag.scorer { color: var(--t-score); }
+.panel .tag.meaning { color: var(--t-claim); }
+
+.tverdict { margin-top: 20px; padding: 16px 18px; border: 1px solid var(--t-line); display: none; }
+.tverdict.show { display: block; }
+.tverdict.ok { border-color: oklch(0.72 0.14 150 / .5); background: oklch(0.72 0.14 150 / .08); }
+.tverdict.bad { border-color: oklch(0.68 0.17 25 / .5); background: oklch(0.68 0.17 25 / .08); }
+.tverdict .label { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--t-muted); }
+.tverdict .big { font-size: 20px; font-weight: 600; margin-top: 4px; }
+.fixture-note { margin-top: 22px; font-family: var(--mono); font-size: 11.5px; color: var(--t-faint); max-width: 76ch; }
+
+/* ---------------- stages ---------------- */
+.legendblock { background: var(--panel); border: 1px solid var(--line); padding: 16px 18px; margin-bottom: 22px; }
+.legendblock .row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.legendblock .row:last-child { margin-bottom: 0; }
+.pill { font-family: var(--mono); font-size: 10.5px; letter-spacing: .05em; text-transform: uppercase; padding: 3px 8px; border: 1px solid currentColor; white-space: nowrap; }
+.pill.model { color: var(--mind); background: var(--mind-soft); }
+.pill.deterministic { color: var(--hands); background: var(--hands-soft); }
+.pill.scorer { color: var(--score); background: var(--score-soft); }
+.pill.eff { color: var(--muted); border-style: dashed; }
+.pill.eff.clinical_meaning { color: var(--claim); border-style: solid; background: var(--claim-soft); }
+.legendblock .def { font-size: 13.5px; color: var(--muted); align-self: center; }
+
+details.method { background: var(--panel); border: 1px solid var(--line); margin-bottom: 12px; }
+details.method summary {
+  list-style: none; cursor: pointer; padding: 16px 18px;
+  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+}
+details.method summary::-webkit-details-marker { display: none; }
+details.method summary:hover { background: oklch(0.97 0.004 250); }
+details.method[open] summary { border-bottom: 1px solid var(--line); }
+details.method summary .arrow { font-family: var(--mono); color: var(--faint); font-size: 12px; }
+details.method[open] summary .arrow { transform: rotate(90deg); }
+details.method summary h3 { margin: 0; font-size: 19px; letter-spacing: -.01em; }
+details.method summary .meta { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+details.method summary .owner { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--faint); max-width: 40ch; }
+.stable { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.stable th {
+  text-align: left; font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--faint); font-weight: 500;
+  padding: 10px 14px 8px; border-bottom: 1px solid var(--line);
+}
+.stable td { padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.stable tr:last-child td { border-bottom: 0; }
+.stable .num { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+.stable .sname { font-weight: 600; font-size: 14px; }
+.stable .sop { color: var(--muted); font-size: 13px; margin-top: 2px; max-width: 52ch; }
+.stable .sid { font-family: var(--mono); font-size: 10.5px; color: var(--faint); margin-top: 2px; }
+.stable .sym, .stable .test { font-family: var(--mono); font-size: 11px; color: var(--muted); word-break: break-all; }
+
+/* ---------------- commands ---------------- */
+.cmd { background: var(--panel); border: 1px solid var(--line); margin-bottom: 14px; }
+.cmd .head { padding: 16px 18px 0; }
+.cmd h3 { margin: 0 0 4px; font-size: 19px; letter-spacing: -.01em; }
+.cmd .headline { margin: 0 0 12px; color: var(--muted); font-size: 14.5px; }
+.cmdline {
+  font-family: var(--mono); font-size: 13px; background: oklch(0.16 0.02 250);
+  color: oklch(0.92 0.01 250); padding: 14px 16px; margin: 0 18px 14px;
+  overflow-x: auto; white-space: nowrap; border-radius: 3px;
+}
+.cmdline .t { padding: 2px 4px; border-radius: 2px; }
+.cmdline .t.binary { color: oklch(0.85 0.12 75); font-weight: 600; }
+.cmdline .t.subcommand { color: oklch(0.75 0.09 195); }
+.cmdline .t.flag { color: oklch(0.78 0.1 300); }
+.cmdline .t .val { color: oklch(0.72 0.16 18); margin-left: 5px; }
+.ttable { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.ttable td { padding: 9px 18px; border-top: 1px solid var(--line); vertical-align: top; }
+.ttable .tok { font-family: var(--mono); font-size: 12px; font-weight: 600; white-space: nowrap; }
+.ttable .what { color: var(--ink); }
+.ttable .note { color: var(--muted); font-size: 12.5px; }
+.ttable .code { font-family: var(--mono); font-size: 11px; color: var(--faint); word-break: break-all; }
+.handtag { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); border: 1px dashed var(--faint); padding: 2px 7px; margin-left: 8px; }
+
+/* ---------------- footer ---------------- */
+footer { padding: 56px 26px 90px; border-top: 1px solid var(--line); margin-top: 40px; }
+footer .wrap { max-width: 980px; }
+footer h2 { font-size: 22px; }
+footer p { color: var(--muted); font-size: 15px; max-width: 68ch; }
+footer .mono { font-family: var(--mono); font-size: 12px; }
+</style>
+
+<nav class="top" id="nav">
+  <a class="brand" href="explainer.html">Clinical extraction, explained</a>
+  <a class="sec" href="#letter" data-spy="letter">1 · The letter</a>
+  <a class="sec" href="#why" data-spy="why">2 · Why it slips</a>
+  <a class="sec" href="#watch" data-spy="watch">3 · Watch it work</a>
+  <a class="sec" href="#stages" data-spy="stages">4 · The stages</a>
+  <a class="sec" href="#commands" data-spy="commands">5 · The commands</a>
+  <span class="spacer"></span>
+  <a class="archive" href="index.html">prototype archive →</a>
+</nav>
+
+<!-- ================= 1 · THE LETTER ================= -->
+<section class="hero" id="letter">
+  <div class="wrap">
+    <div class="kicker">One letter, the whole idea <span class="depth everyone">for everyone</span></div>
+    <h1>A clinic letter goes in. A clinical answer comes out.</h1>
+    <p class="sub">
+      This project compares three ways of getting that answer — deterministic rules, a language model,
+      or the model with rules checking it — on two epilepsy benchmarks.
+      The point is not only the score: it is knowing <em>which component</em> changed the answer.
+      One synthetic letter shows the entire idea.
+    </p>
+
+    <div class="paper" id="hero-paper">
+      <div class="from" id="hero-from">Clinic correspondence · synthetic teaching letter</div>
+      <p class="body" id="hero-note"></p>
+      <div class="gold" id="hero-gold"></div>
+    </div>
+    <p class="paper-note" id="hero-paper-note"></p>
+
+    <div class="verdicts" id="verdicts"></div>
+    <p class="lede" style="font-size:15px; margin-top:10px;">
+      Same letter, same scorer, same gold answer. Three different owners of the answer —
+      and three different outcomes. Everything below is these three cards, unfolded.
+    </p>
+  </div>
+</section>
+
+<!-- ================= 2 · WHY IT SLIPS ================= -->
+<section id="why">
+  <div class="wrap">
+    <div class="kicker">The mechanism in one paragraph <span class="depth everyone">for everyone</span></div>
+    <h2>Why the model alone gets this one wrong</h2>
+    <p class="lede" id="why-prose"></p>
+
+    <div class="compare" id="delta"></div>
+    <div class="legend">
+      <span><i style="background: var(--mind)"></i>model stage</span>
+      <span><i style="background: var(--hands)"></i>deterministic, may change meaning</span>
+      <span><i style="background: var(--claim)"></i>deterministic repair family</span>
+      <span><i style="background: var(--score)"></i>scorer</span>
+      <span><i style="background: oklch(0.88 0.01 250)"></i>quiet / transport</span>
+      <span>red outline = exists only on the hybrid path</span>
+    </div>
+    <p class="lede" style="font-size:15px; margin-top:18px;" id="why-exect"></p>
+  </div>
+</section>
+
+<!-- ================= 3 · WATCH IT WORK ================= -->
+<section class="theater" id="watch">
+  <div class="wrap">
+    <div class="kicker">The letter, stage by stage <span class="depth curious">for the curious</span></div>
+    <h2>Watch the answer change hands</h2>
+    <p class="lede">
+      Scrub or press play. The board shows the answer so far and who holds it —
+      the model, the deterministic rules, or the scorer. Every frame is one stage
+      running the real selected code on the teaching letter.
+    </p>
+
+    <div class="method-pick" id="methods"></div>
+
+    <div class="controls">
+      <button type="button" class="play" id="play" aria-pressed="false">Play</button>
+      <div class="scrub">
+        <input type="range" id="scrub" min="0" max="1" value="0" step="1" aria-label="Stage">
+        <span class="pos" id="pos">1 / 1</span>
+      </div>
+    </div>
+
+    <div class="board" id="board">
+      <div class="who">
+        <span id="board-label">The answer so far</span>
+        <span class="custody" id="custody">
+          <span class="node model" data-owner="model">model</span>
+          <span class="link"></span>
+          <span class="node deterministic" data-owner="deterministic">rules</span>
+          <span class="link"></span>
+          <span class="node scorer" data-owner="scorer">scorer</span>
+        </span>
+      </div>
+      <div id="board-body"></div>
+      <div class="delta" id="delta-line"></div>
+    </div>
+
+    <div class="film" id="film" role="listbox" aria-label="Stages"></div>
+
+    <div class="focus">
+      <div class="panel" id="stage-panel"></div>
+      <div class="panel" id="io-panel"></div>
+    </div>
+
+    <div class="tverdict" id="tverdict"></div>
+    <p class="fixture-note" id="fixture-note"></p>
+  </div>
+</section>
+
+<!-- ================= 4 · THE STAGES ================= -->
+<section id="stages">
+  <div class="wrap">
+    <div class="kicker">The supervisor layer <span class="depth supervisor">for the supervisor</span></div>
+    <h2>Every stage, who owns it, and what it may change</h2>
+    <p class="lede">
+      Each method is declared in a machine-readable stage manifest; this section is rendered from
+      those manifests, not written by hand. Two vocabularies carry the whole system:
+      the <b>owner</b> (model, deterministic, scorer) and the <b>effect class</b>
+      (what a stage is allowed to change).
+    </p>
+    <div class="legendblock" id="legendblock"></div>
+    <div id="methods-tables"></div>
+  </div>
+</section>
+
+<!-- ================= 5 · THE COMMANDS ================= -->
+<section id="commands">
+  <div class="wrap">
+    <div class="kicker">The machine room <span class="depth supervisor">for the supervisor</span></div>
+    <h2>Five commands, token by token</h2>
+    <p class="lede">
+      Two commands turn your own notes into answers. One reproduces research runs on permitted
+      splits. One serves saved runs to the frontend. One regenerates the explanation layer.
+      The CLI map is hand-authored from the argument parsers and labelled as such; the stage
+      wiring beneath it is derived from the manifests.
+    </p>
+    <div id="cmds"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <h2>Where this page comes from</h2>
+    <p id="provenance"></p>
+    <p class="mono" id="regen"></p>
+    <p>
+      Boundaries: the teaching letters are synthetic and the model outputs are labelled fixtures —
+      this page is teaching material, not clinical benchmark evidence. Locked test rows are never
+      read here. The generated documentation layer lives in
+      <code>docs/architecture/</code>; claim strength is owned by <code>docs/canon/</code>.
+      Earlier prototypes this page grew out of are in the <a href="index.html">archive</a>.
+    </p>
+  </div>
+</footer>
+
+<script id="explainer-data" type="application/json">__EXPLAINER_DATA__</script>
+<script>
+(function () {
+  "use strict";
+  var DATA = JSON.parse(document.getElementById("explainer-data").textContent);
+  var byId = {};
+  DATA.manifests.forEach(function (m) { byId[m.method_id] = m; });
+  var caseByTask = {};
+  DATA.cases.forEach(function (c) { caseByTask[c.task] = c; });
+
+  function el(t, c, x) {
+    var n = document.createElement(t);
+    if (c) n.className = c;
+    if (x != null) n.textContent = x;
+    return n;
+  }
+  function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); }
+
+  var EFFECT_LABEL = {
+    transport_or_schema: "transport / schema",
+    representation: "representation",
+    clinical_meaning: "clinical meaning",
+    benchmark_projection: "benchmark projection",
+    validation_gate: "validation gate"
+  };
+  var EFFECT_HELP = {
+    transport_or_schema: "Changes shape only. Cannot change which clinical answer is expressed.",
+    representation: "Changes how a fact is written down, not which fact it is.",
+    clinical_meaning: "May change the clinical answer: a different label, event, or finding.",
+    benchmark_projection: "Projects a settled answer into the scorer's view. Moves the number, not the answer.",
+    validation_gate: "Accepts or rejects. Cannot rewrite an answer, but can drop one out of scoring."
+  };
+  var METHOD_WHO = {
+    rules: "Deterministic code",
+    llm: "The model",
+    llm_with_rules: "The model, checked by rules"
+  };
+
+  function runFor(manifest, taskCase) {
+    return taskCase.runs.filter(function (r) { return r.method_id === manifest.method_id; })[0];
+  }
+  function modelCallObs(run) {
+    return run.observations.filter(function (o) { return /model_call$/.test(o.stage_id); })[0];
+  }
+  function parseJSON(s) { try { return JSON.parse(s); } catch (e) { return null; } }
+
+  /* ============================================================
+     1 · hero: the letter + three verdict cards
+     ============================================================ */
+  function renderHero() {
+    var c = caseByTask.gan2026;
+    document.getElementById("hero-from").textContent =
+      c.letter_id + " · " + c.task_label + " · synthetic teaching letter";
+
+    // Highlight the two competing statements, derived from the fixture's own events.
+    var hybridRun = runFor(byId.gan2026_llm_with_rules, c);
+    var events = (parseJSON(modelCallObs(hybridRun).output) || {}).events || [];
+    var spans = events.map(function (ev) {
+      return { text: ev.evidence, cls: /typical/i.test(ev.time_window || "") ? "typical" : "ytd" };
+    }).filter(function (s) { return s.text && c.note_text.indexOf(s.text) >= 0; });
+
+    var note = document.getElementById("hero-note");
+    if (spans.length === 2) {
+      spans.sort(function (a, b) { return c.note_text.indexOf(a.text) - c.note_text.indexOf(b.text); });
+      var cursor = 0;
+      spans.forEach(function (s) {
+        var at = c.note_text.indexOf(s.text, cursor);
+        note.appendChild(document.createTextNode(c.note_text.slice(cursor, at)));
+        note.appendChild(el("mark", s.cls, s.text));
+        cursor = at + s.text.length;
+      });
+      note.appendChild(document.createTextNode(c.note_text.slice(cursor)));
+    } else {
+      note.textContent = c.note_text;
+    }
+
+    var gold = document.getElementById("hero-gold");
+    gold.appendChild(document.createTextNode("The benchmark's answer: "));
+    gold.appendChild(el("b", null, c.gold));
+    gold.appendChild(document.createTextNode(
+      " — a stated typical pattern (teal) outranks a year-to-date count (amber), by the task's gold convention."
+    ));
+    document.getElementById("hero-paper-note").textContent =
+      "teal = stated typical rate · amber = counted year-to-date total · gold convention: policy A1";
+
+    var WHY = {
+      rules: "Code finds every seizure-frequency statement, normalizes it, and applies the convention directly. No model involved.",
+      llm: "The model prefers the concrete counted total. It is a plausible reading — and this method has no later stage allowed to overrule the selection.",
+      llm_with_rules: "The model makes the same choice — then one deterministic repair family rewrites it to the stated typical rate."
+    };
+    var host = document.getElementById("verdicts");
+    ["gan2026_rules_only", "gan2026_llm_only", "gan2026_llm_with_rules"].forEach(function (id) {
+      var m = byId[id];
+      var run = runFor(m, c);
+      var card = el("div", "vcard " + (run.correct ? "ok" : "bad"));
+      card.appendChild(el("span", "who", METHOD_WHO[m.method] + " answers"));
+      card.appendChild(el("h3", null, m.method_label));
+      card.appendChild(el("div", "answer", run.final_answer));
+      var why = el("p", "why", WHY[m.method]);
+      card.appendChild(why);
+      var tagline = el("div", "tagline");
+      if (m.method === "llm_with_rules") {
+        var fired = run.observations.filter(function (o) {
+          return o.changed && /\.repair\./.test(o.stage_id);
+        });
+        tagline.appendChild(el("b", null, fired.length + " repair " + (fired.length === 1 ? "family" : "families") + " fired: "));
+        tagline.appendChild(document.createTextNode(fired.map(function (o) {
+          return o.stage_name.replace(/^Repair \d+ - /, "") + " (" + o.input + " → " + o.output + ")";
+        }).join("; ")));
+      } else {
+        tagline.appendChild(document.createTextNode(
+          run.correct ? "matches gold" : "does not match gold — and nothing downstream can catch it"
+        ));
+      }
+      card.appendChild(tagline);
+      host.appendChild(card);
+    });
+  }
+
+  /* ============================================================
+     2 · why: prose + the hybrid delta strip
+     ============================================================ */
+  function renderWhy() {
+    var prose = document.getElementById("why-prose");
+    prose.appendChild(document.createTextNode(
+      "The letter offers two numbers: a stated typical pattern — "
+    ));
+    prose.appendChild(el("b", null, "a focal seizure monthly"));
+    prose.appendChild(document.createTextNode(" — and a concrete count — "));
+    prose.appendChild(el("b", null, "seven seizures so far this year"));
+    prose.appendChild(document.createTextNode(
+      ". The benchmark's gold convention prefers the typical pattern, because a year-to-date " +
+      "count is not a rate. A language model, reading like a person in a hurry, prefers the count. " +
+      "LLM-only has no stage after the model that is allowed to change a selection, so the mistake " +
+      "stands. LLM-with-rules adds deterministic repair families that are allowed to — and on this " +
+      "letter exactly one fires."
+    ));
+
+    var llm = byId.gan2026_llm_only;
+    var hybrid = byId.gan2026_llm_with_rules;
+    var llmNames = {};
+    llm.stages.forEach(function (s) { llmNames[s.name.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim()] = true; });
+    var added = {};
+    hybrid.stages.forEach(function (s) {
+      if (!llmNames[s.name.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim()]) added[s.stage_id] = true;
+    });
+    var repairs = hybrid.stages.filter(function (s) { return /\.repair\./.test(s.stage_id); });
+
+    var host = document.getElementById("delta");
+    [[llm, "LLM only", "no repair stage exists"], [hybrid, "LLM with rules", "the repair families dock here"]].forEach(function (pair) {
+      var m = pair[0];
+      var row = el("div", "row");
+      var who = el("div", "who");
+      who.appendChild(el("b", null, pair[1]));
+      who.appendChild(document.createTextNode(m.stages.length + " stages · " + pair[2]));
+      row.appendChild(who);
+      var strip = el("div", "strip");
+      m.stages.forEach(function (s, i) {
+        var cls = "cell";
+        if (s.owner === "model") cls += " model";
+        else if (s.owner === "scorer") cls += " scorer";
+        else if (/\.repair\./.test(s.stage_id)) cls += " meaning repair";
+        else if (s.effect_class === "clinical_meaning") cls += " meaning";
+        if (added[s.stage_id]) cls += " added";
+        var cell = el("button", cls);
+        cell.type = "button";
+        cell.appendChild(el("span", "tip", (i + 1) + ". " + s.name));
+        cell.setAttribute("aria-label", s.name);
+        strip.appendChild(cell);
+      });
+      row.appendChild(strip);
+      host.appendChild(row);
+    });
+
+    document.getElementById("why-exect").appendChild(document.createTextNode(
+      "The second benchmark, ExECTv2, tells the same story across four fact families — diagnosis, " +
+      "seizure frequency, prescriptions, investigations — where the hybrid adds deterministic family " +
+      "transforms instead of label repairs. Switch tasks in the theater below to watch that variant."
+    ));
+  }
+
+  /* ============================================================
+     3 · theater: scrub the letter through one method
+     ============================================================ */
+  var FAMILIES = ["Diagnosis", "SeizureFrequency", "Prescription", "Investigations"];
+  var state = { method: "gan2026_llm_with_rules", i: 0, playing: false, timer: null };
+
+  function claimCandidate(o) {
+    // Only stages that may carry the clinical answer update the board.
+    if (!o || o.output === "(not run)") return null;
+    if (o.owner !== "model" && o.effect_class !== "clinical_meaning") return null;
+    var s = String(o.output);
+    var label = s.match(/\b\d+(?:\.\d+)?\s+per\s+\w+/i);
+    if (label) return label[0];
+    if (!/[{[]/.test(s) && s.length <= 64) return s;
+    if (/^selected \[/.test(s)) {
+      var m2 = s.match(/->\s*(.+)$/);
+      if (m2) return m2[1];
+    }
+    return null;
+  }
+
+  var FAMILY_CANON = {
+    diagnosis: "Diagnosis",
+    seizure_frequency: "SeizureFrequency",
+    investigation: "Investigations",
+    investigations: "Investigations",
+    medication: "Prescription",
+    prescription: "Prescription"
+  };
+  function canon(key) {
+    var mapped = FAMILY_CANON[String(key).toLowerCase()];
+    return mapped || String(key);
+  }
+
+  function trayAdd(tray, o) {
+    // Presence, not accumulation: a family chip shows the most facts any
+    // answer-bearing stage has produced for it. Transforms rewrite the same
+    // mention; they do not add a new one.
+    if (!o || o.output === "(not run)") return;
+    if (o.owner !== "model" && o.effect_class !== "clinical_meaning") return;
+    var v = parseJSON(String(o.output));
+    if (Array.isArray(v)) {
+      var counts = {};
+      v.forEach(function (item) {
+        var key = item && (item.entity || item.family);
+        if (key) counts[canon(key)] = (counts[canon(key)] || 0) + 1;
+      });
+      Object.keys(counts).forEach(function (k) {
+        tray[k] = Math.max(tray[k] || 0, counts[k]);
+      });
+    } else if (v && typeof v === "object") {
+      Object.keys(v).forEach(function (k) {
+        if (typeof v[k] === "number" && v[k] > 0) {
+          tray[canon(k)] = Math.max(tray[canon(k)] || 0, v[k]);
+        }
+      });
+    }
+  }
+
+  function boardState(obs, upto, task) {
+    if (task === "gan2026") {
+      var claim = null;
+      for (var i = 0; i <= upto; i++) {
+        var cand = claimCandidate(obs[i]);
+        if (cand) claim = cand;
+      }
+      return { kind: "claim", claim: claim };
+    }
+    var tray = {};
+    for (var j = 0; j <= upto; j++) trayAdd(tray, obs[j]);
+    return { kind: "tray", tray: tray };
+  }
+
+  function renderMethods() {
+    var host = document.getElementById("methods");
+    clear(host);
+    [["gan2026", "Gan 2026"], ["exectv2", "ExECTv2"]].forEach(function (task) {
+      var group = el("div", "group");
+      group.appendChild(el("span", null, task[1]));
+      DATA.manifests.filter(function (m) { return m.task === task[0]; }).forEach(function (m) {
+        var b = el("button", null, m.method_label);
+        b.type = "button";
+        b.setAttribute("aria-pressed", String(m.method_id === state.method));
+        b.addEventListener("click", function () { state.method = m.method_id; state.i = 0; stopPlay(); renderTheater(true); });
+        group.appendChild(b);
+      });
+      host.appendChild(group);
+    });
+  }
+
+  function renderFilm(manifest, run) {
+    var film = document.getElementById("film");
+    clear(film);
+    manifest.stages.forEach(function (s, i) {
+      var o = run.observations[i];
+      var skipped = o && o.output === "(not run)";
+      var f = el("button", "frame " + s.owner + (o && o.changed && !skipped ? " changed" : "") + (skipped ? " skipped" : ""));
+      f.type = "button";
+      f.setAttribute("role", "option");
+      f.setAttribute("aria-pressed", String(i === state.i));
+      f.appendChild(el("span", "n", String(i + 1)));
+      f.appendChild(el("span", "short", s.name));
+      f.appendChild(el("span", "dot"));
+      f.addEventListener("click", function () { state.i = i; stopPlay(); renderTheater(true); });
+      film.appendChild(f);
+    });
+    var active = film.children[state.i];
+    if (active) active.scrollIntoView({ inline: "center", block: "nearest" });
+  }
+
+  function renderBoard(manifest, run) {
+    var obs = run.observations;
+    var o = obs[state.i];
+    var board = boardState(obs, state.i, manifest.task);
+    var body = document.getElementById("board-body");
+    clear(body);
+    if (board.kind === "claim") {
+      var ans = el("div", "answer" + (board.claim ? "" : " idle"), board.claim || "no answer yet — still reading the letter");
+      body.appendChild(ans);
+    } else {
+      var trayKeys = Object.keys(board.tray);
+      if (!trayKeys.length) {
+        body.appendChild(el("div", "answer idle", "no facts collected yet — still reading the letter"));
+      } else {
+        var tray = el("div", "tray");
+        var keys = FAMILIES.concat(trayKeys.filter(function (k) { return FAMILIES.indexOf(k) < 0; }));
+        var seen = {};
+        keys.forEach(function (k) {
+          if (seen[k]) return;
+          seen[k] = true;
+          var filled = board.tray[k] != null;
+          var fam = el("span", "fam" + (filled ? " filled" : ""));
+          fam.appendChild(document.createTextNode(k + " "));
+          fam.appendChild(el("b", null, "×" + (filled ? board.tray[k] : 0)));
+          tray.appendChild(fam);
+        });
+        body.appendChild(tray);
+      }
+    }
+    document.getElementById("board-label").textContent =
+      manifest.task === "gan2026" ? "The answer so far" : "The fact tray so far";
+
+    // custody highlight: the owner of the current stage
+    var nodes = document.querySelectorAll("#custody .node");
+    nodes.forEach(function (n) {
+      n.classList.toggle("on", !!o && n.getAttribute("data-owner") === o.owner);
+    });
+
+    var delta = document.getElementById("delta-line");
+    clear(delta);
+    if (!o) return;
+    if (o.output === "(not run)") {
+      delta.appendChild(document.createTextNode("Stage skipped on this letter — " + (o.note || "conditional stage").toLowerCase()));
+    } else if (o.changed && o.effect_class === "clinical_meaning" && o.owner !== "model" && String(o.input) !== String(o.output)) {
+      delta.appendChild(el("b", null, String(o.input).slice(0, 80)));
+      delta.appendChild(el("span", "arrow", "→"));
+      delta.appendChild(el("b", null, String(o.output).slice(0, 80)));
+      delta.appendChild(document.createTextNode(" · rules rewrote the answer"));
+    } else if (o.owner === "model") {
+      delta.appendChild(document.createTextNode("The model answers. Everything after this frame is deterministic code or the scorer."));
+    } else if (o.changed) {
+      delta.appendChild(document.createTextNode("State changed shape; the clinical answer is unchanged."));
+    } else {
+      delta.appendChild(document.createTextNode("Checked, unchanged. Quiet stages are the pipeline keeping its promises."));
+    }
+  }
+
+  function renderFocus(manifest, run) {
+    var s = manifest.stages[state.i];
+    var o = run.observations[state.i];
+    var sp = document.getElementById("stage-panel");
+    clear(sp);
+    sp.appendChild(el("h3", null, "Stage " + (state.i + 1) + " of " + manifest.stages.length));
+    sp.appendChild(el("div", "title", s.name));
+    var tags = el("div");
+    tags.appendChild(el("span", "tag " + s.owner, s.owner));
+    tags.appendChild(el("span", "tag" + (s.effect_class === "clinical_meaning" ? " meaning" : ""), EFFECT_LABEL[s.effect_class] || s.effect_class));
+    sp.appendChild(tags);
+    sp.appendChild(el("p", null, s.operation));
+    sp.appendChild(el("p", null, EFFECT_HELP[s.effect_class] || ""));
+    sp.appendChild(el("div", "code", s.implementation.symbol));
+
+    var ip = document.getElementById("io-panel");
+    clear(ip);
+    ip.appendChild(el("h3", null, "On this letter"));
+    ip.appendChild(el("p", null, o.note || (o.changed ? "Output diverged from input." : "Passthrough or quiet check.")));
+    var inText = String(o.input == null ? "—" : o.input);
+    var outText = String(o.output == null ? "—" : o.output);
+    if (inText.length > 900) inText = inText.slice(0, 900) + " …";
+    if (outText.length > 900) outText = outText.slice(0, 900) + " …";
+    ip.appendChild(el("div", "io", "IN\n" + inText + "\n\nOUT\n" + outText));
+  }
+
+  function renderVerdict(manifest, run, c) {
+    var v = document.getElementById("tverdict");
+    if (state.i !== run.observations.length - 1) { v.className = "tverdict"; return; }
+    clear(v);
+    if (run.correct === true || run.correct === false) {
+      v.className = "tverdict show " + (run.correct ? "ok" : "bad");
+      v.appendChild(el("div", "label", run.correct ? "Matches gold" : "Does not match gold · gold is " + c.gold));
+      v.appendChild(el("div", "big", run.final_answer));
+      if (run.correctness_note) v.appendChild(el("p", null, run.correctness_note));
+    } else {
+      v.className = "tverdict show";
+      v.appendChild(el("div", "label", "No gold verdict — synthetic teaching letter"));
+      v.appendChild(el("div", "big", run.final_answer));
+      v.appendChild(el("p", null, run.correctness_note || ""));
+    }
+  }
+
+  function syncHash() {
+    if (!window.history || !history.replaceState) return;
+    history.replaceState(null, "", "#watch=" + state.method + ":" + state.i);
+  }
+
+  function readHash() {
+    var m = (window.location.hash || "").match(/^#watch=([a-z0-9_]+):(\d+)$/);
+    if (m && byId[m[1]]) {
+      state.method = m[1];
+      state.i = Number(m[2]);
+      return true;
+    }
+    return false;
+  }
+
+  function renderTheater(syncUrl) {
+    var manifest = byId[state.method];
+    var c = caseByTask[manifest.task];
+    var run = runFor(manifest, c);
+    state.i = Math.max(0, Math.min(state.i, run.observations.length - 1));
+    renderMethods();
+    var scrub = document.getElementById("scrub");
+    scrub.max = String(run.observations.length - 1);
+    scrub.value = String(state.i);
+    document.getElementById("pos").textContent = (state.i + 1) + " / " + run.observations.length;
+    renderBoard(manifest, run);
+    renderFilm(manifest, run);
+    renderFocus(manifest, run);
+    renderVerdict(manifest, run, c);
+    document.getElementById("fixture-note").textContent =
+      c.fixture_note + " Prediction owner on this path: " + manifest.prediction_owner + ".";
+    if (syncUrl) syncHash();
+  }
+
+  function stopPlay() {
+    state.playing = false;
+    var b = document.getElementById("play");
+    b.setAttribute("aria-pressed", "false");
+    b.textContent = "Play";
+    if (state.timer) { clearInterval(state.timer); state.timer = null; }
+  }
+
+  /* ============================================================
+     4 · stages: six manifest tables
+     ============================================================ */
+  function renderStages() {
+    var legend = document.getElementById("legendblock");
+    var owners = el("div", "row");
+    owners.appendChild(el("span", "pill model", "model"));
+    owners.appendChild(el("span", "def", "proposes or selects the clinical answer"));
+    owners.appendChild(el("span", "pill deterministic", "deterministic"));
+    owners.appendChild(el("span", "def", "code: extracts, normalizes, repairs, gates"));
+    owners.appendChild(el("span", "pill scorer", "scorer"));
+    owners.appendChild(el("span", "def", "turns a settled answer into a benchmark number"));
+    legend.appendChild(owners);
+    var effs = el("div", "row");
+    Object.keys(EFFECT_LABEL).forEach(function (k) {
+      effs.appendChild(el("span", "pill eff " + k, EFFECT_LABEL[k]));
+    });
+    legend.appendChild(effs);
+
+    var host = document.getElementById("methods-tables");
+    DATA.manifests.forEach(function (m) {
+      var det = el("details", "method");
+      if (m.method_id === "gan2026_llm_with_rules") det.open = true;
+      var sum = el("summary");
+      sum.appendChild(el("span", "arrow", "▶"));
+      sum.appendChild(el("h3", null, m.task_label + " · " + m.method_label));
+      sum.appendChild(el("span", "meta", m.stages.length + " stages · " + m.method_id));
+      sum.appendChild(el("span", "owner", "answer owned by: " + m.prediction_owner));
+      det.appendChild(sum);
+
+      var table = el("table", "stable");
+      var thead = el("tr");
+      ["#", "Stage", "Owner", "May change", "Implemented in", "Governing test"].forEach(function (h) {
+        thead.appendChild(el("th", null, h));
+      });
+      table.appendChild(thead);
+      m.stages.forEach(function (s, i) {
+        var tr = el("tr");
+        tr.appendChild(el("td", "num", String(i + 1)));
+        var tdStage = el("td");
+        tdStage.appendChild(el("div", "sname", s.name));
+        tdStage.appendChild(el("div", "sop", s.operation));
+        tdStage.appendChild(el("div", "sid", s.stage_id));
+        tr.appendChild(tdStage);
+        var tdOwner = el("td");
+        tdOwner.appendChild(el("span", "pill " + s.owner, s.owner));
+        tr.appendChild(tdOwner);
+        var tdEff = el("td");
+        tdEff.appendChild(el("span", "pill eff " + s.effect_class, EFFECT_LABEL[s.effect_class] || s.effect_class));
+        tr.appendChild(tdEff);
+        tr.appendChild(el("td", "sym", s.implementation.symbol));
+        tr.appendChild(el("td", "test", s.governing_test));
+        table.appendChild(tr);
+      });
+      det.appendChild(table);
+      host.appendChild(det);
+    });
+  }
+
+  /* ============================================================
+     5 · commands: the CLI, token by token
+     ============================================================ */
+  function renderCommands() {
+    var host = document.getElementById("cmds");
+    DATA.cli.forEach(function (cmd) {
+      var card = el("div", "cmd");
+      var head = el("div", "head");
+      var h3 = el("h3", null, cmd.headline);
+      if (cmd.id !== "build-architecture-docs") {
+        h3.appendChild(el("span", "handtag", "hand-authored CLI map"));
+      }
+      head.appendChild(h3);
+      card.appendChild(head);
+
+      var line = el("div", "cmdline");
+      cmd.template.forEach(function (tok) {
+        var t = el("span", "t " + tok.kind, tok.token);
+        if (tok.kind === "flag" && tok.value) t.appendChild(el("span", "val", tok.value));
+        line.appendChild(t);
+        line.appendChild(document.createTextNode(" "));
+      });
+      card.appendChild(line);
+
+      var table = el("table", "ttable");
+      Object.keys(cmd.tokens).forEach(function (key) {
+        var meta = cmd.tokens[key];
+        var tr = el("tr");
+        tr.appendChild(el("td", "tok", key));
+        var td = el("td");
+        td.appendChild(el("div", "what", meta.what));
+        if (meta.note) td.appendChild(el("div", "note", meta.note));
+        if (meta.choices) {
+          var ch = el("div", "note");
+          ch.appendChild(document.createTextNode(
+            Object.keys(meta.choices).map(function (k) { return k + " → " + meta.choices[k]; }).join("  ·  ")
+          ));
+          td.appendChild(ch);
+        }
+        td.appendChild(el("div", "code", meta.code));
+        tr.appendChild(td);
+        table.appendChild(tr);
+      });
+      card.appendChild(table);
+      host.appendChild(card);
+    });
+
+    // This page's own build command, same card style.
+    var card = el("div", "cmd");
+    var head = el("div", "head");
+    head.appendChild(el("h3", null, "Regenerate this explainer, or fail on drift"));
+    card.appendChild(head);
+    var line = el("div", "cmdline");
+    line.appendChild(el("span", "t binary", ".venv/Scripts/python.exe scratch/explainer/build.py"));
+    line.appendChild(document.createTextNode(" "));
+    line.appendChild(el("span", "t flag", "--check"));
+    card.appendChild(line);
+    var table = el("table", "ttable");
+    [["(no flags)", "Rebuilds every page in this directory from the live repository: stage manifests, executed teaching cases, a walk of src, and the hand-authored CLI map.", "Makes no model calls and reads no locked rows.", "scratch/explainer/build.py:main"],
+     ["--check", "Writes nothing. Exits non-zero if any committed page is stale against the current repository.", "The drift gate: if the code moves and the explainer does not, the check fails.", "scratch/explainer/build.py:main"]]
+      .forEach(function (row) {
+        var tr = el("tr");
+        tr.appendChild(el("td", "tok", row[0]));
+        var td = el("td");
+        td.appendChild(el("div", "what", row[1]));
+        td.appendChild(el("div", "note", row[2]));
+        td.appendChild(el("div", "code", row[3]));
+        tr.appendChild(td);
+        table.appendChild(tr);
+      });
+    card.appendChild(table);
+    host.appendChild(card);
+  }
+
+  /* ============================================================
+     footer provenance + scrollspy + controls
+     ============================================================ */
+  function renderFooter() {
+    document.getElementById("provenance").textContent =
+      "Every number, stage, and trace on this page is rendered from the repository itself: " +
+      DATA.manifests.length + " validated stage manifests (" +
+      DATA.manifests.reduce(function (a, m) { return a + m.stages.length; }, 0) + " stages), " +
+      DATA.cases.length + " executable teaching cases that run the real pipelines on synthetic " +
+      "letters with fixture model output, and a measured walk of the source tree (" +
+      DATA.codebase.total_loc.toLocaleString("en-US") + " lines across " +
+      DATA.codebase.total_files + " Python files). Nothing here is hand-copied output.";
+    document.getElementById("regen").textContent =
+      "Regenerate: .venv/Scripts/python.exe scratch/explainer/build.py  ·  Drift gate: same command with --check  ·  Serve: python -m http.server 8765 --directory scratch/explainer";
+  }
+
+  function initScrollSpy() {
+    if (!("IntersectionObserver" in window)) return;
+    var links = {};
+    document.querySelectorAll("nav.top a.sec").forEach(function (a) { links[a.getAttribute("data-spy")] = a; });
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          Object.keys(links).forEach(function (k) { links[k].classList.remove("active"); });
+          var link = links[entry.target.id];
+          if (link) link.classList.add("active");
+        }
+      });
+    }, { rootMargin: "-30% 0px -60% 0px" });
+    ["letter", "why", "watch", "stages", "commands"].forEach(function (id) {
+      var sec = document.getElementById(id);
+      if (sec) obs.observe(sec);
+    });
+  }
+
+  document.getElementById("scrub").addEventListener("input", function (e) {
+    state.i = Number(e.target.value); stopPlay(); renderTheater(true);
+  });
+  document.getElementById("play").addEventListener("click", function () {
+    if (state.playing) { stopPlay(); return; }
+    state.playing = true;
+    var b = document.getElementById("play");
+    b.setAttribute("aria-pressed", "true");
+    b.textContent = "Pause";
+    state.timer = setInterval(function () {
+      var manifest = byId[state.method];
+      var run = runFor(manifest, caseByTask[manifest.task]);
+      if (state.i >= run.observations.length - 1) { stopPlay(); return; }
+      state.i += 1; renderTheater(true);
+    }, 1000);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.target && /input|textarea|select/i.test(e.target.tagName)) return;
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    var manifest = byId[state.method];
+    var run = runFor(manifest, caseByTask[manifest.task]);
+    var next = state.i + (e.key === "ArrowRight" ? 1 : -1);
+    if (next < 0 || next > run.observations.length - 1) return;
+    state.i = next; stopPlay(); renderTheater(true);
+  });
+
+  renderHero();
+  renderWhy();
+  var deepLinked = readHash();
+  renderTheater();
+  renderStages();
+  renderCommands();
+  renderFooter();
+  initScrollSpy();
+  if (deepLinked) {
+    document.getElementById("watch").scrollIntoView();
+  }
+})();
+</script>
