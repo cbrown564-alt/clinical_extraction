@@ -1,23 +1,26 @@
 #!/usr/bin/env python3
-"""Build the explainer prototypes from live repository data.
+"""Build the explainer pages from live repository data.
 
-Three prototype views, one shared data file:
+One front door, plus the prototype archive it grew out of:
 
-* ``map.html``     - where the code lives and how much of it is on a selected path
-* ``ladder.html``  - the stage ladder for each of the six selected methods,
-                     switchable between the manifest and an executed example
-* ``console.html`` - what a CLI command actually selects and runs
+* ``explainer.html`` - the whole system on one page, in three depths
+                       (glance / mechanism / machinery)
+* ``index.html``     - the prototype archive and directory
+* ``journey.html``, ``xray.html``, ``custody.html`` - wave-2 mechanism prototypes
+* ``map.html``, ``ladder.html``, ``console.html``   - wave-1 orientation prototypes
 
 Everything except the ``CLI_MAP`` block below is derived from the repository:
-stage manifests, an executed teaching case, and a walk of ``src``. The CLI map
+stage manifests, executed teaching cases, and a walk of ``src``. The CLI map
 is hand-authored from the argument parsers and is labelled as such in the UI.
 
-    .venv\\Scripts\\python.exe scratch\\explainer\\build.py
+    .venv\\Scripts\\python.exe scratch\\explainer\\build.py          # rebuild all pages
+    .venv\\Scripts\\python.exe scratch\\explainer\\build.py --check  # fail if any page is stale
 """
 
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -71,7 +74,10 @@ def collect_cases() -> list[dict[str, Any]]:
 DIRECTORY_ROLES: dict[str, tuple[str, str]] = {
     "agentic": ("sediment", "Retained agentic experiments. Not a selected path."),
     "gepa": ("sediment", "Closed GEPA prompt-optimization workstream. Historical comparison only."),
-    "experiments": ("sediment", "Ablation and experiment controls, switched off in the selected configuration."),
+    "experiments": (
+        "sediment",
+        "Ablation and experiment controls, switched off in the selected configuration.",
+    ),
     "artifact_analysis": ("sediment", "Post-hoc analysis over saved run artifacts."),
     "reports": ("support", "Report rendering over saved runs."),
     "runners": ("support", "Split runners and CLI wrappers. Add no clinical stage."),
@@ -98,7 +104,8 @@ LAYERS = [
     (
         "src/clinical_extraction/architecture",
         "Architecture",
-        "The stage manifests and the teaching case. This directory is the source of truth these prototypes read.",
+        "The stage manifests and the teaching case. This directory is the source of "
+        "truth these prototypes read.",
     ),
     (
         "src/clinical_extraction/operational",
@@ -264,7 +271,10 @@ CLI_MAP: list[dict[str, Any]] = [
                 "note": "The sibling subcommand is `gan`. `probe` just checks the endpoint.",
             },
             "--method": {
-                "what": "Selects which of the three methods runs, and therefore which stage manifest describes it.",
+                "what": (
+                    "Selects which of the three methods runs, and therefore which "
+                    "stage manifest describes it."
+                ),
                 "code": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/runner.py",
                 "choices": {
                     "rules": "exectv2_rules_only",
@@ -316,9 +326,15 @@ CLI_MAP: list[dict[str, Any]] = [
                 "note": "One binary, two tasks.",
             },
             "gan": {
-                "what": "Selects the Gan 2026 task: one current seizure-frequency label per letter.",
+                "what": (
+                    "Selects the Gan 2026 task: one current seizure-frequency label "
+                    "per letter."
+                ),
                 "code": "src/clinical_extraction/operational/gan.py:run_gan_notes",
-                "note": "There is no --method here. The operational wrapper always runs LLM with rules.",
+                "note": (
+                    "There is no --method here. The operational wrapper always runs "
+                    "LLM with rules."
+                ),
             },
             "--input": {
                 "what": "JSONL of notes.",
@@ -344,7 +360,10 @@ CLI_MAP: list[dict[str, Any]] = [
         "id": "gan2026-llm-experiment",
         "binary": "gan2026-llm-experiment",
         "headline": "Reproduce a Gan 2026 research run on a permitted split",
-        "entry": "src/clinical_extraction/tasks/seizure_frequency/gan2026/cli/llm_pipeline_cli.py:main",
+        "entry": (
+            "src/clinical_extraction/tasks/seizure_frequency/gan2026/cli/"
+            "llm_pipeline_cli.py:main"
+        ),
         "template": [
             {"token": "gan2026-llm-experiment", "kind": "binary"},
             {"token": "--pipeline", "kind": "flag", "value": "llm_with_rules"},
@@ -355,13 +374,25 @@ CLI_MAP: list[dict[str, Any]] = [
         ],
         "tokens": {
             "gan2026-llm-experiment": {
-                "what": "The research runner. Loads a split, runs a pipeline, writes checkpoints and a report.",
-                "code": "src/clinical_extraction/tasks/seizure_frequency/gan2026/cli/llm_pipeline_cli.py:main",
+                "what": (
+                    "The research runner. Loads a split, runs a pipeline, writes "
+                    "checkpoints and a report."
+                ),
+                "code": (
+                    "src/clinical_extraction/tasks/seizure_frequency/gan2026/cli/"
+                    "llm_pipeline_cli.py:main"
+                ),
                 "note": "Research entry point, not the operational one. It adds no clinical stage.",
             },
             "--pipeline": {
-                "what": "Selects the method. The three choices are exactly the three stage manifests.",
-                "code": "src/clinical_extraction/tasks/seizure_frequency/gan2026/cli/llm_pipeline_cli.py:pipeline_specs",
+                "what": (
+                    "Selects the method. The three choices are exactly the three "
+                    "stage manifests."
+                ),
+                "code": (
+                    "src/clinical_extraction/tasks/seizure_frequency/gan2026/cli/"
+                    "llm_pipeline_cli.py:pipeline_specs"
+                ),
                 "choices": {
                     "rules": "gan2026_rules_only",
                     "llm": "gan2026_llm_only",
@@ -371,7 +402,10 @@ CLI_MAP: list[dict[str, Any]] = [
             },
             "--split": {
                 "what": "Which rows to run: train, validation, or test.",
-                "code": "src/clinical_extraction/tasks/seizure_frequency/gan2026/data.py:load_records_for_split",
+                "code": (
+                    "src/clinical_extraction/tasks/seizure_frequency/gan2026/"
+                    "data.py:load_records_for_split"
+                ),
                 "note": "test is the locked test450 holdout and reports aggregate scores only.",
             },
             "--model": {
@@ -381,8 +415,14 @@ CLI_MAP: list[dict[str, Any]] = [
             },
             "--mode": {
                 "what": "live makes model calls; prompt-only renders the prompts and stops.",
-                "code": "src/clinical_extraction/tasks/seizure_frequency/gan2026/cli/llm_pipeline_cli.py",
-                "note": "prompt-only is the cheap way to see exactly what the model would be asked.",
+                "code": (
+                    "src/clinical_extraction/tasks/seizure_frequency/gan2026/cli/"
+                    "llm_pipeline_cli.py"
+                ),
+                "note": (
+                    "prompt-only is the cheap way to see exactly what the model "
+                    "would be asked."
+                ),
             },
             "--jsonl": {
                 "what": "Per-row output path, written incrementally so a run can resume.",
@@ -446,7 +486,10 @@ CLI_MAP: list[dict[str, Any]] = [
         ],
         "tokens": {
             "python scripts/build_architecture_docs.py": {
-                "what": "Renders the method cards, diagrams, and teaching cases from the stage manifests.",
+                "what": (
+                    "Renders the method cards, diagrams, and teaching cases from "
+                    "the stage manifests."
+                ),
                 "code": "scripts/build_architecture_docs.py:main",
                 "note": "This is the same data these prototypes read. Makes no model calls.",
             },
@@ -484,35 +527,50 @@ def build_data() -> dict[str, Any]:
     }
 
 
-def render(data: dict[str, Any]) -> None:
+def render(data: dict[str, Any]) -> dict[Path, str]:
+    """Return the content each generated file should have, keyed by path."""
     # `<\/` is valid JSON string escaping and keeps the payload from closing
     # the surrounding <script> element.
     payload = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace(
         "</", "<\\/"
     )
+    outputs: dict[Path, str] = {
+        HERE / "explainer_data.json": json.dumps(data, ensure_ascii=False, indent=1)
+    }
     for template in sorted(HERE.glob("*.template.html")):
         target = HERE / template.name.replace(".template.html", ".html")
         html = template.read_text(encoding="utf-8")
         if "__EXPLAINER_DATA__" not in html:
             raise SystemExit(f"{template.name} has no __EXPLAINER_DATA__ placeholder")
-        target.write_text(
-            html.replace("__EXPLAINER_DATA__", payload), encoding="utf-8"
-        )
-        print(f"wrote {target.relative_to(ROOT).as_posix()}  ({len(html) // 1024} KB template)")
+        outputs[target] = html.replace("__EXPLAINER_DATA__", payload)
+    return outputs
 
 
 def main() -> int:
+    check = "--check" in sys.argv[1:]
     data = build_data()
-    (HERE / "explainer_data.json").write_text(
-        json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8"
-    )
+    outputs = render(data)
     print(
         f"data: {len(data['manifests'])} manifests, "
         f"{sum(len(m['stages']) for m in data['manifests'])} stages, "
         f"{len(data['cases'])} teaching cases, "
         f"{data['codebase']['total_loc']:,} lines mapped"
     )
-    render(data)
+    if check:
+        stale = []
+        for target, content in sorted(outputs.items()):
+            if not target.exists() or target.read_text(encoding="utf-8") != content:
+                stale.append(target.relative_to(ROOT).as_posix())
+        if stale:
+            print("stale explainer pages (run scratch/explainer/build.py):")
+            for name in stale:
+                print(f"  {name}")
+            return 1
+        print(f"check: all {len(outputs)} generated files are current")
+        return 0
+    for target, content in sorted(outputs.items()):
+        target.write_text(content, encoding="utf-8")
+        print(f"wrote {target.relative_to(ROOT).as_posix()}")
     return 0
 
 
