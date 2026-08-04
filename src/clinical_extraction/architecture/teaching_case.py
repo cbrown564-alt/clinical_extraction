@@ -1,4 +1,5 @@
-"""Executable teaching cases: one Gan letter and one ExECT letter, all methods.
+"""Executable teaching cases: one canonical Gan letter, a Gan letter library,
+and one ExECT letter, all methods.
 
 Every observation in a teaching case is produced by running the real selected
 implementation. Nothing here is hand-written prose about what the code *would*
@@ -11,6 +12,12 @@ Both are labelled as such in the generated document. Everything downstream of
 the model boundary - repair, normalization, selection resolution, family
 transforms, gates, scoring - is the real code path, so a teaching case cannot
 drift from the pipeline without this module failing.
+
+``build_all_cases()`` returns the canonical pair used by the generated
+architecture documents. ``build_teaching_letters()`` adds the Gan letter
+library - extra letters that each isolate one mechanism (a diary-span rescue,
+a preservation stand-down) for the interactive explainer. The library does not
+change the canonical reading order.
 
 Building a teaching case makes no model calls and reads no locked rows.
 """
@@ -27,6 +34,29 @@ from clinical_extraction.architecture.stage_manifest import MethodManifest, load
 # --------------------------------------------------------------------------
 # Fixtures
 # --------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class GanCaseSpec:
+    """Everything one synthetic Gan teaching letter needs: text, gold, and
+    the two fixture model outputs. All pipeline behaviour below the model
+    boundary is executed, never scripted. The prose fields teach *about* the
+    fixture and are versioned with it; they never describe pipeline behaviour
+    the runs do not demonstrate."""
+
+    case_id: str
+    letter_id: str
+    note_text: str
+    gold: str
+    gold_reference: str
+    gold_note: str
+    story: str
+    card_why: dict[str, str]
+    mechanism_title: str
+    mechanism: str
+    hybrid_raw_output: str
+    llm_only_raw_output: str
+
 
 GAN_LETTER_ID = "TEACH-GAN-01"
 GAN_NOTE_TEXT = (
@@ -100,6 +130,288 @@ GAN_LLM_ONLY_RAW_OUTPUT = json.dumps(
             "in the letter."
         ),
     }
+)
+
+GAN_SPEC = GanCaseSpec(
+    case_id="gan2026_typical_rate_over_year_to_date",
+    letter_id=GAN_LETTER_ID,
+    note_text=GAN_NOTE_TEXT,
+    gold=GAN_GOLD_LABEL,
+    gold_reference="His typical pattern is a focal seizure monthly",
+    gold_note=(
+        "The Gan gold convention prefers a stated typical recurring rate "
+        "over a year-to-date total (policy A1 in the clinical selection "
+        "policy catalog). A reader who expects the counted total to win "
+        "will read every result on this letter backwards."
+    ),
+    story=(
+        "The model prefers the concrete year-to-date count over the stated "
+        "typical pattern, and one deterministic repair family rewrites it."
+    ),
+    card_why={
+        "rules": (
+            "Code finds every seizure-frequency statement, normalizes it, "
+            "and applies the convention directly. No model involved."
+        ),
+        "llm": (
+            "The model prefers the concrete counted total. It is a plausible "
+            "reading - and this method has no later stage allowed to overrule "
+            "the selection."
+        ),
+        "llm_with_rules": (
+            "The model makes the same choice - then one deterministic repair "
+            "family rewrites it to the stated typical rate."
+        ),
+    },
+    mechanism_title="Why the model alone gets this one wrong",
+    mechanism=(
+        "The letter offers two numbers: a stated typical pattern - a focal "
+        "seizure monthly - and a concrete count - seven seizures so far this "
+        "year. The benchmark's gold convention prefers the typical pattern, "
+        "because a year-to-date count is not a rate. A language model, "
+        "reading like a person in a hurry, prefers the count. LLM-only has "
+        "no stage after the model that is allowed to change a selection, so "
+        "the mistake stands. LLM-with-rules adds deterministic repair "
+        "families that are allowed to - and on this letter exactly one fires."
+    ),
+    hybrid_raw_output=GAN_HYBRID_RAW_OUTPUT,
+    llm_only_raw_output=GAN_LLM_ONLY_RAW_OUTPUT,
+)
+
+# --------------------------------------------------------------------------
+# Letter library: TEACH-GAN-02 isolates the monthly-diary repair.
+# --------------------------------------------------------------------------
+
+GAN_DIARY_LETTER_ID = "TEACH-GAN-02"
+GAN_DIARY_NOTE_TEXT = (
+    "Epilepsy clinic letter. Clinic date: 10 July 2026.\n"
+    "\n"
+    "I reviewed Ms C in the epilepsy clinic today. Her seizure diary shows "
+    "one seizure in January, one seizure in February, and two seizures in "
+    "June. She remains on lamotrigine 200mg twice daily and tolerates it "
+    "well."
+)
+# The diary convention: a completed diary is a rate over its recorded span
+# (4 seizures over 6 months), not the rate of its most recent month.
+GAN_DIARY_GOLD_LABEL = "4 per 6 month"
+
+# Fixture standing in for one LLM-with-rules structured call. The model
+# extracts the diary correctly but selects only the most recent month - the
+# recency bias the monthly-diary repair family exists to correct.
+GAN_DIARY_HYBRID_RAW_OUTPUT = json.dumps(
+    {
+        "events": [
+            {
+                "event_id": "evt_1",
+                "kind": "frequency_rate",
+                "raw_value": "one seizure in January, one seizure in February",
+                "applies_to": "all seizures",
+                "time_window": "2026 diary, January-February",
+                "temporality": "current",
+                "assertion_status": "asserted",
+                "evidence": "one seizure in January, one seizure in February",
+                "notes": "diary months with one seizure each",
+            },
+            {
+                "event_id": "evt_2",
+                "kind": "frequency_rate",
+                "raw_value": "two seizures in June",
+                "applies_to": "all seizures",
+                "time_window": "June 2026",
+                "temporality": "current",
+                "assertion_status": "asserted",
+                "evidence": "two seizures in June",
+                "notes": "most recent diary month",
+            },
+        ],
+        "selection": {
+            "selected_event_ids": ["evt_2"],
+            "final_kind": "frequency",
+            "final_label": "2 per month",
+            "evidence": "two seizures in June",
+            "confidence": "medium",
+            "rationale": (
+                "The most recent month is the best guide to the current rate."
+            ),
+        },
+    }
+)
+
+# Fixture standing in for one LLM-only decision call: the same recency-biased
+# answer, with no repair family downstream to correct it.
+GAN_DIARY_LLM_ONLY_RAW_OUTPUT = json.dumps(
+    {
+        "final_label": "2 per month",
+        "evidence": "two seizures in June",
+        "answer_kind": "frequency",
+        "selected_seizure_type": "all seizures",
+        "time_window": "June 2026",
+        "applied_rule_families": ["recency"],
+        "confidence": "medium",
+        "rationale": (
+            "The most recent month is the best guide to the current rate."
+        ),
+    }
+)
+
+GAN_DIARY_SPEC = GanCaseSpec(
+    case_id="gan2026_diary_span_over_recent_month",
+    letter_id=GAN_DIARY_LETTER_ID,
+    note_text=GAN_DIARY_NOTE_TEXT,
+    gold=GAN_DIARY_GOLD_LABEL,
+    gold_reference=(
+        "Her seizure diary shows one seizure in January, one seizure in "
+        "February, and two seizures in June"
+    ),
+    gold_note=(
+        "A completed diary is a rate over its recorded span: four seizures "
+        "across six recorded months, not two per month from the most recent "
+        "month alone. This is the same span-rate convention seen in gold "
+        "rows such as '11 events in 3 months' -> '11 per 3 month'."
+    ),
+    story=(
+        "Rules find nothing to grab in a bare diary line; the model reads "
+        "the diary but answers from the most recent month; the monthly-diary "
+        "repair recomputes the rate over the whole recorded span."
+    ),
+    card_why={
+        "rules": (
+            "The deterministic extractors find nothing to grab in a bare "
+            "diary line. A real coverage boundary: no frequency phrase, no "
+            "extraction."
+        ),
+        "llm": (
+            "The model reads the diary but answers from the most recent "
+            "month. Two seizures in June is not a monthly rate - and nothing "
+            "here can catch that."
+        ),
+        "llm_with_rules": (
+            "The model makes the same recency pick - then the monthly-diary "
+            "repair recomputes the rate over the whole recorded span."
+        ),
+    },
+    mechanism_title="The model reads the diary; it just believes the latest month",
+    mechanism=(
+        "A completed diary is a rate over its recorded span: one seizure in "
+        "January, one in February, two in June - four seizures over six "
+        "recorded months. The deterministic extractors cannot parse the bare "
+        "diary lines at all, so rules-only reports no reference. The model "
+        "extracts the diary correctly but selects only June - two seizures - "
+        "and renders 2 per month. The monthly-diary repair counts every "
+        "recorded month and rewrites the answer to 4 per 6 month."
+    ),
+    hybrid_raw_output=GAN_DIARY_HYBRID_RAW_OUTPUT,
+    llm_only_raw_output=GAN_DIARY_LLM_ONLY_RAW_OUTPUT,
+)
+
+# --------------------------------------------------------------------------
+# Letter library: TEACH-GAN-03 isolates a preservation stand-down.
+# --------------------------------------------------------------------------
+
+GAN_FREE_LETTER_ID = "TEACH-GAN-03"
+GAN_FREE_NOTE_TEXT = (
+    "Epilepsy clinic letter. Clinic date: 12 June 2026.\n"
+    "\n"
+    "I reviewed Mr D in the epilepsy clinic today. He has remained "
+    "seizure-free since March 2025 with levetiracetam 500mg twice daily. "
+    "MRI brain was normal."
+)
+GAN_FREE_GOLD_LABEL = "seizure free since March 2025"
+
+# Fixture standing in for one LLM-with-rules structured call. Here the model
+# is right: it selects the sustained seizure-free event. The interest is what
+# the repair layer declines to do - the elapsed-anchor family computes a
+# benchmark rate and the preservation rule withholds it.
+GAN_FREE_HYBRID_RAW_OUTPUT = json.dumps(
+    {
+        "events": [
+            {
+                "event_id": "evt_1",
+                "kind": "seizure_free",
+                "raw_value": "remained seizure-free since March 2025",
+                "applies_to": "all seizures",
+                "time_window": "since March 2025",
+                "temporality": "current",
+                "assertion_status": "asserted",
+                "evidence": "He has remained seizure-free since March 2025",
+                "notes": "sustained freedom on stable medication",
+            }
+        ],
+        "selection": {
+            "selected_event_ids": ["evt_1"],
+            "final_kind": "seizure_free",
+            "final_label": "seizure free since March 2025",
+            "evidence": "He has remained seizure-free since March 2025",
+            "confidence": "high",
+            "rationale": (
+                "The letter reports sustained seizure freedom since March 2025."
+            ),
+        },
+    }
+)
+
+GAN_FREE_LLM_ONLY_RAW_OUTPUT = json.dumps(
+    {
+        "final_label": "seizure free since March 2025",
+        "evidence": "He has remained seizure-free since March 2025",
+        "answer_kind": "seizure_free",
+        "selected_seizure_type": "all seizures",
+        "time_window": "since March 2025",
+        "applied_rule_families": [],
+        "confidence": "high",
+        "rationale": (
+            "The letter reports sustained seizure freedom since March 2025."
+        ),
+    }
+)
+
+GAN_FREE_SPEC = GanCaseSpec(
+    case_id="gan2026_seizure_free_preservation_standdown",
+    letter_id=GAN_FREE_LETTER_ID,
+    note_text=GAN_FREE_NOTE_TEXT,
+    gold=GAN_FREE_GOLD_LABEL,
+    gold_reference="He has remained seizure-free since March 2025",
+    gold_note=(
+        "A stated sustained seizure-free period is the answer. The "
+        "elapsed-anchor repair can express the same fact as a benchmark rate "
+        "('1 per 15 month'), but the preservation rule keeps the model's "
+        "well-supported seizure-free answer instead - watch the repair walk "
+        "normalize the phrasing and then decline to fire."
+    ),
+    story=(
+        "The model is right, and the repair layer shows both halves of its "
+        "judgement: one family normalizes the phrasing, then the "
+        "elapsed-anchor family computes a rate and a preservation rule "
+        "withholds it."
+    ),
+    card_why={
+        "rules": (
+            "Deterministic code extracts the sustained seizure-free "
+            "statement and normalizes it. No model involved."
+        ),
+        "llm": (
+            "The model selects the seizure-free event directly. This letter "
+            "shows the method can also be right."
+        ),
+        "llm_with_rules": (
+            "One family normalizes the phrasing; the elapsed-anchor family "
+            "computes a benchmark rate and a preservation rule withholds it. "
+            "Both halves of repair judgement."
+        ),
+    },
+    mechanism_title="When the repair layer stands down",
+    mechanism=(
+        "The model selects the seizure-free statement - correctly, for once. "
+        "The selected-evidence repair still normalizes the phrasing "
+        "('seizure free since March 2025' becomes 'seizure free for multiple "
+        "year'), and then the elapsed-anchor family computes the benchmark "
+        "rate '1 per 15 month' from the anchor date. A preservation rule "
+        "withholds it: the model's sustained seizure-free answer is well "
+        "supported, so the rewrite is declined. Repairs are gated by what "
+        "they would destroy."
+    ),
+    hybrid_raw_output=GAN_FREE_HYBRID_RAW_OUTPUT,
+    llm_only_raw_output=GAN_FREE_LLM_ONLY_RAW_OUTPUT,
 )
 
 EXECT_LETTER_ID = "TEACH-EXECT-01"
@@ -327,6 +639,11 @@ class TeachingCase:
     gold: str
     gold_note: str
     fixture_note: str
+    story: str = ""
+    gold_reference: str = ""
+    card_why: dict[str, str] = field(default_factory=dict)
+    mechanism_title: str = ""
+    mechanism: str = ""
     runs: list[MethodRun] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
@@ -339,6 +656,11 @@ class TeachingCase:
             "gold": self.gold,
             "gold_note": self.gold_note,
             "fixture_note": self.fixture_note,
+            "story": self.story,
+            "gold_reference": self.gold_reference,
+            "card_why": self.card_why,
+            "mechanism_title": self.mechanism_title,
+            "mechanism": self.mechanism,
             "runs": [run.to_dict() for run in self.runs],
         }
 
@@ -373,40 +695,42 @@ def _jsonable(value: Any) -> Any:
 # --------------------------------------------------------------------------
 
 
-def _gan_gold_monthly_frequency() -> float:
+def _gan_gold_monthly_frequency(gold_label: str) -> float:
     """Take the gold monthly rate from the label parser, not from a literal."""
 
     from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
         label_to_frequency_record,
     )
 
-    return label_to_frequency_record(GAN_GOLD_LABEL).monthly_frequency
+    return label_to_frequency_record(gold_label).monthly_frequency
 
 
-def _gan_record() -> Any:
+def _gan_record(spec: GanCaseSpec) -> Any:
     from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
         label_to_frequency_record,
     )
     from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 
-    gold = label_to_frequency_record(GAN_GOLD_LABEL)
+    gold = label_to_frequency_record(spec.gold)
     return GanFrequencyRecord(
         source_row_index=1,
-        note_text=GAN_NOTE_TEXT,
-        gold_label=GAN_GOLD_LABEL,
-        gold_reference="His typical pattern is a focal seizure monthly",
+        note_text=spec.note_text,
+        gold_label=spec.gold,
+        gold_reference=spec.gold_reference,
         labels_match_all_categories=True,
         quotes_ok_all_categories=True,
         row_ok=True,
         raw={},
-        gold_normalized_label=GAN_GOLD_LABEL,
+        gold_normalized_label=spec.gold,
         gold_label_kind=gold.kind,
         gold_yearly_bounds=gold.yearly_bounds,
         gold_monthly_frequency=gold.monthly_frequency,
     )
 
 
-def _gan_scoring(run: MethodRun, stage_id: str, final_label: str | None) -> None:
+def _gan_scoring(
+    run: MethodRun, stage_id: str, final_label: str | None, *, gold_label: str
+) -> None:
     from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
         label_to_frequency_record,
     )
@@ -415,7 +739,7 @@ def _gan_scoring(run: MethodRun, stage_id: str, final_label: str | None) -> None
         map_purist,
     )
 
-    gold_monthly = _gan_gold_monthly_frequency()
+    gold_monthly = _gan_gold_monthly_frequency(gold_label)
     gold_purist = str(map_purist(gold_monthly))
     gold_pragmatic = str(map_pragmatic(gold_monthly))
     if not final_label:
@@ -450,7 +774,7 @@ def _gan_scoring(run: MethodRun, stage_id: str, final_label: str | None) -> None
     )
 
 
-def _gan_rules_only_run() -> MethodRun:
+def _gan_rules_only_run(spec: GanCaseSpec) -> MethodRun:
     from clinical_extraction.tasks.seizure_frequency.gan2026.runners import (
         deterministic_canonical,
     )
@@ -461,7 +785,7 @@ def _gan_rules_only_run() -> MethodRun:
     manifest = load_manifest("gan2026_rules_only")
     run = MethodRun(method_id=manifest.method_id, manifest=manifest)
     result = deterministic_canonical.run_item(
-        _gan_record(),
+        _gan_record(spec),
         PipelineConfiguration(architecture="rules"),
     )
     diagnostics = result.diagnostics
@@ -469,7 +793,7 @@ def _gan_rules_only_run() -> MethodRun:
     candidates = diagnostics["candidate_events"]
     run.record(
         "gan.rules.extract",
-        input_value=GAN_NOTE_TEXT,
+        input_value=spec.note_text,
         output_value=[_event_summary(event) for event in candidates],
         changed=True,
         note=f"{len(candidates)} candidate event(s) matched by the rules.",
@@ -499,11 +823,11 @@ def _gan_rules_only_run() -> MethodRun:
         changed=False,
         note="A gate: it accepts or rejects, it does not rewrite the answer.",
     )
-    _gan_scoring(run, "gan.rules.score", result.output.final_value)
+    _gan_scoring(run, "gan.rules.score", result.output.final_value, gold_label=spec.gold)
     return run
 
 
-def _gan_llm_only_run() -> MethodRun:
+def _gan_llm_only_run(spec: GanCaseSpec) -> MethodRun:
     from clinical_extraction.core.evidence import evidence_is_substring
     from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
         llm as pipeline,
@@ -511,12 +835,12 @@ def _gan_llm_only_run() -> MethodRun:
 
     manifest = load_manifest("gan2026_llm_only")
     run = MethodRun(method_id=manifest.method_id, manifest=manifest)
-    record = _gan_record()
+    record = _gan_record(spec)
 
     prompt_input = pipeline.build_prompt_input(record)
     run.record(
         "gan.llm.build_prompt",
-        input_value=GAN_NOTE_TEXT,
+        input_value=spec.note_text,
         output_value=f"prompt input of {len(prompt_input)} characters",
         changed=True,
         note="Transport only.",
@@ -524,17 +848,17 @@ def _gan_llm_only_run() -> MethodRun:
     run.record(
         "gan.llm.model_call",
         input_value="prompt input (fixture: no model call is made)",
-        output_value=GAN_LLM_ONLY_RAW_OUTPUT,
+        output_value=spec.llm_only_raw_output,
         changed=True,
         note="Fixture boundary. Everything after this line is real code.",
     )
 
     decision, errors, trace = pipeline.parse_decision_json_with_trace(
-        GAN_LLM_ONLY_RAW_OUTPUT
+        spec.llm_only_raw_output
     )
     run.record(
         "gan.llm.json_schema_repair",
-        input_value=GAN_LLM_ONLY_RAW_OUTPUT,
+        input_value=spec.llm_only_raw_output,
         output_value=trace["format_repair"],
         changed=bool(trace["format_repair"]["schema_payload_changed"]),
         note="This fixture is already well formed, so nothing is repaired.",
@@ -571,7 +895,7 @@ def _gan_llm_only_run() -> MethodRun:
         changed=False,
     )
     evidence_valid = (
-        evidence_is_substring(GAN_NOTE_TEXT, decision.evidence) if decision else False
+        evidence_is_substring(spec.note_text, decision.evidence) if decision else False
     )
     run.record(
         "gan.llm.evidence_containment",
@@ -579,11 +903,11 @@ def _gan_llm_only_run() -> MethodRun:
         output_value=f"evidence_valid={evidence_valid}",
         changed=False,
     )
-    _gan_scoring(run, "gan.llm.score", final_label)
+    _gan_scoring(run, "gan.llm.score", final_label, gold_label=spec.gold)
     return run
 
 
-def _gan_llm_with_rules_run() -> MethodRun:
+def _gan_llm_with_rules_run(spec: GanCaseSpec) -> MethodRun:
     from clinical_extraction.core.evidence import evidence_is_substring
     from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
         hybrid_structured_events as hybrid,
@@ -591,13 +915,13 @@ def _gan_llm_with_rules_run() -> MethodRun:
 
     manifest = load_manifest("gan2026_llm_with_rules")
     run = MethodRun(method_id=manifest.method_id, manifest=manifest)
-    record = _gan_record()
+    record = _gan_record(spec)
     repair_config = hybrid.StructuredRepairConfig.for_mode("hybrid_full_stack")
 
     prompt_input = hybrid.build_prompt_input(record)
     run.record(
         "gan.llm_with_rules.build_prompt",
-        input_value=GAN_NOTE_TEXT,
+        input_value=spec.note_text,
         output_value=f"prompt input of {len(prompt_input)} characters",
         changed=True,
         note="Transport only.",
@@ -605,7 +929,7 @@ def _gan_llm_with_rules_run() -> MethodRun:
     run.record(
         "gan.llm_with_rules.model_call",
         input_value="prompt input (fixture: no model call is made)",
-        output_value=GAN_HYBRID_RAW_OUTPUT,
+        output_value=spec.hybrid_raw_output,
         changed=True,
         note=(
             "Fixture boundary. Note what the model returned: two events AND a "
@@ -614,13 +938,13 @@ def _gan_llm_with_rules_run() -> MethodRun:
     )
 
     extraction, normalized_events, errors, trace = hybrid.parse_structured_json_with_trace(
-        GAN_HYBRID_RAW_OUTPUT,
-        note_text=GAN_NOTE_TEXT,
+        spec.hybrid_raw_output,
+        note_text=spec.note_text,
         repair_config=repair_config,
     )
     run.record(
         "gan.llm_with_rules.json_schema_repair",
-        input_value=GAN_HYBRID_RAW_OUTPUT,
+        input_value=spec.hybrid_raw_output,
         output_value=trace["format_repair"],
         changed=bool(trace["format_repair"]["schema_payload_changed"]),
         note="This fixture is already well formed, so nothing is repaired.",
@@ -673,21 +997,26 @@ def _gan_llm_with_rules_run() -> MethodRun:
     walk = _gan_repair_walk(
         model_extraction,
         semantic["before_label"],
-        note_text=GAN_NOTE_TEXT,
+        note_text=spec.note_text,
         repair_config=repair_config,
         expected_final_label=final_label,
     )
-    for (family, before, after) in walk:
+    for (family, before, after, vetoed_with) in walk:
+        if before != after:
+            note = "fired on this letter"
+        elif vetoed_with:
+            note = (
+                f"computed {vetoed_with}, withheld by the preservation rule - "
+                "the model's answer was left standing"
+            )
+        else:
+            note = "did not fire on this letter"
         run.record(
             f"gan.llm_with_rules.repair.{family}",
             input_value=before,
             output_value=after,
             changed=before != after,
-            note=(
-                "fired on this letter"
-                if before != after
-                else "did not fire on this letter"
-            ),
+            note=note,
         )
     run.record(
         "gan.llm_with_rules.scorable_label_check",
@@ -700,7 +1029,7 @@ def _gan_llm_with_rules_run() -> MethodRun:
         changed=False,
     )
     evidence = extraction.selection.evidence if extraction else ""
-    evidence_valid = evidence_is_substring(GAN_NOTE_TEXT, evidence) if evidence else False
+    evidence_valid = evidence_is_substring(spec.note_text, evidence) if evidence else False
     run.record(
         "gan.llm_with_rules.evidence_containment",
         input_value=evidence,
@@ -711,7 +1040,7 @@ def _gan_llm_with_rules_run() -> MethodRun:
             "A repair can change the label without changing this span."
         ),
     )
-    _gan_scoring(run, "gan.llm_with_rules.score", final_label)
+    _gan_scoring(run, "gan.llm_with_rules.score", final_label, gold_label=spec.gold)
     return run
 
 
@@ -726,7 +1055,7 @@ def _gan_repair_walk(
     note_text: str,
     repair_config: Any,
     expected_final_label: str | None,
-) -> list[tuple[str, str, str]]:
+) -> list[tuple[str, str, str, str | None]]:
     """Attribute each label change to the repair family that actually made it.
 
     The pipeline records repair events in a flat list, so the family that fired
@@ -737,7 +1066,10 @@ def _gan_repair_walk(
     pipeline itself produced. If the two disagree, this raises instead of
     publishing an invented attribution.
 
-    Returns one (family, before, after) triple per repair stage.
+    Returns one (family, before, after, vetoed_with) quadruple per repair
+    stage. ``vetoed_with`` carries the candidate a preservation rule withheld,
+    so a deliberate stand-down is visible rather than indistinguishable from
+    a family that found nothing to do.
     """
 
     from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
@@ -754,13 +1086,13 @@ def _gan_repair_walk(
     )
 
     label = resolved_label
-    walk: list[tuple[str, str, str]] = []
+    walk: list[tuple[str, str, str, str | None]] = []
 
-    def step(family: str, candidate: str | None) -> None:
+    def step(family: str, candidate: str | None, vetoed_with: str | None = None) -> None:
         nonlocal label
         before = label
         after = candidate if candidate else before
-        walk.append((family, before, after))
+        walk.append((family, before, after, vetoed_with))
         label = after
 
     step(
@@ -777,11 +1109,12 @@ def _gan_repair_walk(
         if repair_config.monthly_diary_repair
         else None
     )
+    diary_vetoed = None
     if diary_label and hybrid._should_preserve_label_from_monthly_diary(
         label, extraction=model_extraction
     ):
-        diary_label = None
-    step("monthly_diary", diary_label)
+        diary_vetoed, diary_label = diary_label, None
+    step("monthly_diary", diary_label, vetoed_with=diary_vetoed)
 
     step(
         "usual_interval",
@@ -836,11 +1169,12 @@ def _gan_repair_walk(
         if repair_config.elapsed_anchor_repair
         else None
     )
+    elapsed_vetoed = None
     if elapsed_label and hybrid._should_preserve_sustained_selected_seizure_free(
         model_extraction, label, elapsed_label
     ):
-        elapsed_label = None
-    step("elapsed_anchor", elapsed_label)
+        elapsed_vetoed, elapsed_label = elapsed_label, None
+    step("elapsed_anchor", elapsed_label, vetoed_with=elapsed_vetoed)
 
     if expected_final_label is not None and label != expected_final_label:
         raise RepairAttributionError(
@@ -872,20 +1206,15 @@ def _normalized_summary(event: Any) -> str:
     )
 
 
-def build_gan_case() -> TeachingCase:
+def _gan_case(spec: GanCaseSpec) -> TeachingCase:
     case = TeachingCase(
-        case_id="gan2026_typical_rate_over_year_to_date",
+        case_id=spec.case_id,
         task="gan2026",
         task_label="Gan 2026",
-        letter_id=GAN_LETTER_ID,
-        note_text=GAN_NOTE_TEXT,
-        gold=GAN_GOLD_LABEL,
-        gold_note=(
-            "The Gan gold convention prefers a stated typical recurring rate "
-            "over a year-to-date total (policy A1 in the clinical selection "
-            "policy catalog). A reader who expects the counted total to win "
-            "will read every result on this letter backwards."
-        ),
+        letter_id=spec.letter_id,
+        note_text=spec.note_text,
+        gold=spec.gold,
+        gold_note=spec.gold_note,
         fixture_note=(
             "The letter is synthetic and the raw model outputs are fixtures "
             "standing in for one model call each. No model call is made when "
@@ -893,13 +1222,22 @@ def build_gan_case() -> TeachingCase:
             "after the model boundary use the real selected implementation; "
             "the Gan score projection is run over the synthetic gold label."
         ),
+        story=spec.story,
+        gold_reference=spec.gold_reference,
+        card_why=spec.card_why,
+        mechanism_title=spec.mechanism_title,
+        mechanism=spec.mechanism,
     )
     case.runs = [
-        _gan_rules_only_run(),
-        _gan_llm_only_run(),
-        _gan_llm_with_rules_run(),
+        _gan_rules_only_run(spec),
+        _gan_llm_only_run(spec),
+        _gan_llm_with_rules_run(spec),
     ]
     return case
+
+
+def build_gan_case() -> TeachingCase:
+    return _gan_case(GAN_SPEC)
 
 
 # --------------------------------------------------------------------------
@@ -1125,6 +1463,36 @@ def build_exect_case() -> TeachingCase:
             "score entry is an unscored scorer-boundary illustration because "
             "this letter has no gold annotations."
         ),
+        story=(
+            "One model call proposes findings across four families; the "
+            "hybrid adds deterministic family transforms, and the rules "
+            "baseline answers a different, nine-entity question."
+        ),
+        card_why={
+            "rules": (
+                "Nine independent deterministic extractors produce the "
+                "all-nine baseline. No model involved."
+            ),
+            "llm": (
+                "One structured call proposes findings for four families, "
+                "scored as proposed, before any deterministic transform."
+            ),
+            "llm_with_rules": (
+                "The same one call - then deterministic family transforms "
+                "reconcile the findings into the scored representation."
+            ),
+        },
+        mechanism_title="What the deterministic layer adds around one model call",
+        mechanism=(
+            "One model call proposes findings across four families - "
+            "diagnosis, seizure frequency, prescriptions, investigations. "
+            "LLM-only scores them as proposed. LLM-with-rules passes them "
+            "through deterministic family transforms that complete state "
+            "representations and reconcile findings before scoring. This "
+            "letter is chosen for shape, so both model-led methods produce "
+            "the same four families here; the stage tables below show "
+            "exactly which transforms sit between the call and the score."
+        ),
     )
     case.runs = [
         _exect_rules_only_run(),
@@ -1136,3 +1504,18 @@ def build_exect_case() -> TeachingCase:
 
 def build_all_cases() -> tuple[TeachingCase, ...]:
     return (build_gan_case(), build_exect_case())
+
+
+def build_gan_letter_library() -> tuple[TeachingCase, ...]:
+    """Additional Gan letters, each isolating one mechanism for the
+    interactive explainer. Not part of the canonical architecture-document
+    reading order."""
+
+    return (_gan_case(GAN_DIARY_SPEC), _gan_case(GAN_FREE_SPEC))
+
+
+def build_teaching_letters() -> tuple[TeachingCase, ...]:
+    """The full explainer letter set: canonical Gan, the Gan letter library,
+    and the canonical ExECT case."""
+
+    return (build_gan_case(), *build_gan_letter_library(), build_exect_case())
