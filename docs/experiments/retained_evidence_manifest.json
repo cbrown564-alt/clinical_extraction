@@ -34,8 +34,8 @@
       {
         "role": "model",
         "path": "docs/design/model_strategy.md",
-        "sha256": "5035fb9cf90d1c4862d97184b7bdb0479e9825998d0fd6adf18cc69f5d2ab385",
-        "bytes": 6972
+        "sha256": "17a2cda9a62021bf6ae4cd656c0837f16c4fd47fe0318fb789cc596130302c0f",
+        "bytes": 7665
       },
       {
         "role": "prompt",
@@ -1709,8 +1709,8 @@
       "artifacts": [
         {
           "path": "docs/research/six_model_comparison_report_2026-07-18.md",
-          "sha256": "76e5ec85ec67682b39ae9d3fdca9b50beea6e886c6339a6a604adbaf9836ab37",
-          "bytes": 25845,
+          "sha256": "ea4e1c9482cf5396a4418b3317007d352f8d13ee35f4a7b116536da02a99524b",
+          "bytes": 23148,
           "retrieval": "git_path"
         },
         {
