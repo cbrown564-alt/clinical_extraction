@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CLI Console — clinical extraction</title>
+<style>
+:root {
+  --paper: #f4f6f7; --panel: #ffffff; --panel-2: #eef1f3;
+  --ink: #14181b; --ink-2: #4a5257; --ink-3: #79838a;
+  --rule: #dde2e5; --rule-2: #c7ced2;
+  --model: #a6522a; --model-bg: #f3e6dd;
+  --det: #2c6a6d; --det-bg: #dfeceb;
+  --scorer: #6b5a93; --scorer-bg: #e8e4f0;
+  --focus: #16639e; --focus-bg: #e3eef7;
+  --bin: #14181b; --flag: #16639e; --sub: #2c6a6d; --val: #a6522a;
+  --mono: ui-monospace, "Cascadia Mono", "Cascadia Code", Consolas, "SF Mono", "Roboto Mono", monospace;
+  --sans: "Segoe UI Variable Text", "Segoe UI", -apple-system, Roboto, system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0f1214; --panel: #161a1d; --panel-2: #1d2225;
+    --ink: #e8ecee; --ink-2: #a4aeb4; --ink-3: #6f7b82;
+    --rule: #262d31; --rule-2: #384247;
+    --model: #d9895d; --model-bg: #2e211a;
+    --det: #5fada9; --det-bg: #16292a;
+    --scorer: #a795d0; --scorer-bg: #221e30;
+    --focus: #62aae8; --focus-bg: #172531;
+    --bin: #e8ecee; --flag: #62aae8; --sub: #5fada9; --val: #d9895d;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f1214; --panel: #161a1d; --panel-2: #1d2225;
+  --ink: #e8ecee; --ink-2: #a4aeb4; --ink-3: #6f7b82;
+  --rule: #262d31; --rule-2: #384247;
+  --model: #d9895d; --model-bg: #2e211a;
+  --det: #5fada9; --det-bg: #16292a;
+  --scorer: #a795d0; --scorer-bg: #221e30;
+  --focus: #62aae8; --focus-bg: #172531;
+  --bin: #e8ecee; --flag: #62aae8; --sub: #5fada9; --val: #d9895d;
+}
+:root[data-theme="light"] {
+  --paper: #f4f6f7; --panel: #ffffff; --panel-2: #eef1f3;
+  --ink: #14181b; --ink-2: #4a5257; --ink-3: #79838a;
+  --rule: #dde2e5; --rule-2: #c7ced2;
+  --model: #a6522a; --model-bg: #f3e6dd;
+  --det: #2c6a6d; --det-bg: #dfeceb;
+  --scorer: #6b5a93; --scorer-bg: #e8e4f0;
+  --focus: #16639e; --focus-bg: #e3eef7;
+  --bin: #14181b; --flag: #16639e; --sub: #2c6a6d; --val: #a6522a;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans);
+  font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+a { color: var(--focus); }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 2px; }
+
+.eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-3); }
+.mono { font-family: var(--mono); font-size: 12.5px; }
+
+header.top { border-bottom: 1px solid var(--rule); background: var(--panel);
+  position: sticky; top: 0; z-index: 20; }
+.top-inner { display: flex; align-items: baseline; gap: 20px; flex-wrap: wrap;
+  padding: 14px 22px; }
+.top h1 { font-size: 17px; margin: 0; font-weight: 640; letter-spacing: -.01em; }
+.top h1 span { color: var(--ink-3); font-weight: 400; }
+.top .spacer { flex: 1; }
+nav.proto { display: flex; gap: 2px; font-family: var(--mono); font-size: 11.5px; }
+nav.proto span, nav.proto a { padding: 4px 9px; border: 1px solid var(--rule);
+  text-decoration: none; color: var(--ink-2); }
+nav.proto span[aria-current] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+.shell { display: grid; grid-template-columns: 248px minmax(0, 1fr) minmax(0, 360px);
+  gap: 0; align-items: start; }
+@media (max-width: 1100px) { .shell { grid-template-columns: 1fr; } }
+
+aside.rail { border-right: 1px solid var(--rule); padding: 20px 16px; position: sticky; top: 52px;
+  max-height: calc(100vh - 52px); overflow-y: auto; }
+.rail-group { margin-bottom: 22px; }
+.rail-group > .eyebrow { display: block; margin-bottom: 8px; }
+.chip { display: block; width: 100%; text-align: left; background: transparent;
+  border: 1px solid var(--rule); color: var(--ink); font: inherit; font-size: 13.5px;
+  padding: 8px 10px; margin-bottom: 6px; cursor: pointer; }
+.chip:hover { border-color: var(--rule-2); background: var(--panel-2); }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.chip small { display: block; font-family: var(--mono); font-size: 10.5px; opacity: .7;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+main.center { padding: 22px 26px 80px; min-width: 0; }
+.head-block { max-width: 64ch; margin-bottom: 18px; }
+.head-block h2 { font-size: 22px; margin: 4px 0 8px; letter-spacing: -.015em; text-wrap: balance; }
+.head-block p { color: var(--ink-2); margin: 0 0 8px; }
+
+.cmdline { border: 1px solid var(--rule); background: var(--panel); padding: 16px 16px 12px;
+  margin-bottom: 18px; }
+.cmdline .eyebrow { display: block; margin-bottom: 10px; }
+.tokens { display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  font-family: var(--mono); font-size: 13.5px; line-height: 1.3; }
+button.tok { background: var(--panel-2); border: 1px solid var(--rule); color: var(--ink);
+  font: inherit; font-family: var(--mono); padding: 5px 8px; cursor: pointer; }
+button.tok:hover { border-color: var(--rule-2); }
+button.tok[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+button.tok.binary { color: var(--bin); font-weight: 600; }
+button.tok.subcommand { color: var(--sub); }
+button.tok.flag { color: var(--flag); }
+button.tok .val { color: var(--val); margin-left: 6px; }
+button.tok[aria-pressed="true"] .val { color: inherit; opacity: .85; }
+
+.choice { margin-top: 12px; display: none; }
+.choice.show { display: block; }
+.choice .eyebrow { margin-bottom: 6px; }
+.choice-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.choice-row button { font-family: var(--mono); font-size: 12px; background: transparent;
+  border: 1px solid var(--rule); color: var(--ink); padding: 5px 9px; cursor: pointer; }
+.choice-row button[aria-pressed="true"] { background: var(--focus); color: var(--paper);
+  border-color: var(--focus); }
+
+.wire { border: 1px solid var(--rule); background: var(--panel); padding: 14px 16px;
+  margin-bottom: 14px; }
+.wire h3 { margin: 4px 0 10px; font-size: 15px; }
+.steps { list-style: none; margin: 0; padding: 0; }
+.steps li { position: relative; padding: 0 0 10px 22px; }
+.steps li::before { content: ""; position: absolute; left: 5px; top: 0; bottom: 0;
+  width: 1px; background: var(--rule-2); }
+.steps li:last-child::before { bottom: calc(100% - 10px); }
+.steps li::after { content: ""; position: absolute; left: 1px; top: 6px; width: 9px; height: 9px;
+  border-radius: 50%; background: var(--panel); border: 2px solid var(--focus); }
+.steps .label { font-size: 13.5px; font-weight: 560; }
+.steps .detail { font-family: var(--mono); font-size: 11.5px; color: var(--ink-3);
+  word-break: break-all; }
+
+.stages { border: 1px solid var(--rule); background: var(--panel); padding: 14px 16px; }
+.stages h3 { margin: 4px 0 6px; font-size: 15px; }
+.stages .blurb { color: var(--ink-2); font-size: 13.5px; margin: 0 0 12px; max-width: 62ch; }
+.stage-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.stage-list li { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  font-size: 13px; padding: 5px 8px; background: var(--panel-2); border: 1px solid var(--rule); }
+.stage-list .idx { font-family: var(--mono); font-size: 11px; color: var(--ink-3); min-width: 18px; }
+.stage-list .name { font-weight: 560; }
+.tag { font-family: var(--mono); font-size: 10px; letter-spacing: .04em; text-transform: uppercase;
+  padding: 2px 6px; border: 1px solid currentColor; white-space: nowrap; }
+.tag.model { color: var(--model); background: var(--model-bg); }
+.tag.deterministic { color: var(--det); background: var(--det-bg); }
+.tag.scorer { color: var(--scorer); background: var(--scorer-bg); }
+.tag.hand { color: var(--ink-3); border-style: dashed; }
+.none { color: var(--ink-3); font-size: 13.5px; }
+
+.jump { margin-top: 12px; font-family: var(--mono); font-size: 12px; }
+.jump a { margin-right: 12px; }
+
+aside.inspector { border-left: 1px solid var(--rule); background: var(--panel);
+  padding: 20px 18px 60px; position: sticky; top: 52px; max-height: calc(100vh - 52px);
+  overflow-y: auto; }
+@media (max-width: 1100px) {
+  aside.inspector, aside.rail { position: static; max-height: none; border: 0; border-top: 1px solid var(--rule); }
+}
+.inspector h3 { font-size: 16px; margin: 6px 0 2px; letter-spacing: -.01em; text-wrap: balance; }
+.field { margin-top: 16px; }
+.field > .eyebrow { display: block; margin-bottom: 4px; }
+.field p { margin: 0; font-size: 13.5px; color: var(--ink-2); }
+.field .code { display: block; font-family: var(--mono); font-size: 11.5px;
+  background: var(--panel-2); border: 1px solid var(--rule); padding: 6px 8px;
+  overflow-x: auto; white-space: pre-wrap; word-break: break-all; color: var(--ink); }
+.choice-map { margin-top: 6px; }
+.choice-map div { font-family: var(--mono); font-size: 11.5px; padding: 3px 0;
+  border-bottom: 1px solid var(--rule); color: var(--ink-2); }
+.choice-map b { color: var(--ink); font-weight: 600; }
+.footnote { max-width: 68ch; margin: 28px 0 0; font-size: 12.5px; color: var(--ink-3); }
+.banner { border: 1px dashed var(--rule-2); background: var(--panel-2); padding: 8px 10px;
+  font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); margin-bottom: 14px; }
+</style>
+
+<header class="top">
+  <div class="top-inner">
+    <h1>CLI console <span>/ what a command selects</span></h1>
+    <div class="spacer"></div>
+    <nav class="proto" aria-label="Prototypes">
+      <a href="map.html">1 · Map</a>
+      <a href="ladder.html">2 · Ladder</a>
+      <span aria-current="page">3 · Console</span>
+    </nav>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="rail" id="rail"></aside>
+  <main class="center">
+    <div class="head-block">
+      <span class="eyebrow" id="cmd-binary"></span>
+      <h2 id="cmd-headline"></h2>
+      <p>Click a token to see what it selects. Changing <span class="mono">--method</span> or <span class="mono">--pipeline</span> rewires the stage ladder below.</p>
+    </div>
+
+    <div class="banner">CLI map is hand-authored from the argument parsers and labelled as such. Stage lists and entry points below it are derived from the manifests.</div>
+
+    <div class="cmdline" id="cmdline"></div>
+    <div class="wire" id="wire"></div>
+    <div class="stages" id="stages"></div>
+    <p class="footnote">The operational binary (<span class="mono">clinical-extract</span>) and the research runners share clinical stages via the same manifests. The CLI itself owns argument parsing and IO — never a clinical stage.</p>
+  </main>
+  <aside class="inspector" id="inspector"></aside>
+</div>
+
+<script id="explainer-data" type="application/json">__EXPLAINER_DATA__</script>
+<script>
+(function () {
+  "use strict";
+  var DATA = JSON.parse(document.getElementById("explainer-data").textContent);
+  var byId = {};
+  DATA.manifests.forEach(function (m) { byId[m.method_id] = m; });
+
+  var state = {
+    cmd: DATA.cli[0].id,
+    token: DATA.cli[0].template[0].token,
+    choice: DATA.cli[0].default_choice || ""
+  };
+
+  function el(tag, cls, text) {
+    var node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text !== undefined && text !== null) node.textContent = text;
+    return node;
+  }
+  function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
+
+  function currentCmd() {
+    return DATA.cli.filter(function (c) { return c.id === state.cmd; })[0];
+  }
+
+  function resolvedMethodId(cmd) {
+    if (!cmd.manifest_for || !Object.keys(cmd.manifest_for).length) return null;
+    if (cmd.manifest_for[state.choice] !== undefined) return cmd.manifest_for[state.choice];
+    var keys = Object.keys(cmd.manifest_for);
+    return cmd.manifest_for[keys[0]];
+  }
+
+  function buildRail() {
+    var rail = document.getElementById("rail");
+    clear(rail);
+    var group = el("div", "rail-group");
+    group.appendChild(el("span", "eyebrow", "Commands"));
+    DATA.cli.forEach(function (cmd) {
+      var b = el("button", "chip");
+      b.type = "button";
+      b.setAttribute("aria-pressed", String(cmd.id === state.cmd));
+      b.appendChild(document.createTextNode(cmd.headline));
+      b.appendChild(el("small", null, cmd.binary));
+      b.addEventListener("click", function () {
+        state.cmd = cmd.id;
+        state.choice = cmd.default_choice || "";
+        state.token = cmd.template[0].token;
+        render();
+      });
+      group.appendChild(b);
+    });
+    rail.appendChild(group);
+  }
+
+  function field(parent, label, value, mono) {
+    if (value === undefined || value === null || value === "") return;
+    var f = el("div", "field");
+    f.appendChild(el("span", "eyebrow", label));
+    f.appendChild(el(mono ? "div" : "p", mono ? "code" : null, value));
+    parent.appendChild(f);
+  }
+
+  function tokenValue(cmd, tok) {
+    if (tok.kind !== "flag") return "";
+    if (cmd.choice_flag && tok.token === cmd.choice_flag) return state.choice;
+    return tok.value || "";
+  }
+
+  function renderCmdline(cmd) {
+    var box = document.getElementById("cmdline");
+    clear(box);
+    box.appendChild(el("span", "eyebrow", "Command line — click a token"));
+    var row = el("div", "tokens");
+    cmd.template.forEach(function (tok) {
+      var btn = el("button", "tok " + tok.kind);
+      btn.type = "button";
+      btn.setAttribute("aria-pressed", String(tok.token === state.token));
+      btn.appendChild(document.createTextNode(tok.token));
+      var val = tokenValue(cmd, tok);
+      if (val) btn.appendChild(el("span", "val", val));
+      btn.addEventListener("click", function () { state.token = tok.token; render(); });
+      row.appendChild(btn);
+    });
+    box.appendChild(row);
+
+    var choiceBox = el("div", "choice" + (cmd.choice_flag ? " show" : ""));
+    if (cmd.choice_flag) {
+      choiceBox.appendChild(el("span", "eyebrow", "Value of " + cmd.choice_flag));
+      var crow = el("div", "choice-row");
+      Object.keys(cmd.manifest_for).forEach(function (key) {
+        var b = el("button");
+        b.type = "button";
+        b.setAttribute("aria-pressed", String(key === state.choice));
+        b.textContent = key || "(fixed)";
+        b.addEventListener("click", function () {
+          state.choice = key;
+          state.token = cmd.choice_flag;
+          render();
+        });
+        crow.appendChild(b);
+      });
+      choiceBox.appendChild(crow);
+    }
+    box.appendChild(choiceBox);
+  }
+
+  function renderWire(cmd, manifest) {
+    var box = document.getElementById("wire");
+    clear(box);
+    box.appendChild(el("span", "eyebrow", "Wiring"));
+    box.appendChild(el("h3", null, "From binary to clinical stages"));
+    var ol = el("ol", "steps");
+
+    var steps = [
+      ["Entry point", cmd.entry],
+      ["Binary / script", cmd.binary]
+    ];
+    if (manifest) {
+      steps.push(["Selected method", manifest.method_id + " — " + manifest.method_label]);
+      steps.push(["Orchestrator", manifest.entry_point.symbol]);
+      steps.push(["Stages", manifest.stages.length + " stages in the ladder"]);
+    } else {
+      steps.push(["Clinical stages", "This command does not select a clinical method."]);
+    }
+
+    steps.forEach(function (pair) {
+      var li = el("li");
+      li.appendChild(el("div", "label", pair[0]));
+      li.appendChild(el("div", "detail", pair[1]));
+      ol.appendChild(li);
+    });
+    box.appendChild(ol);
+
+    if (manifest) {
+      var jump = el("div", "jump");
+      var a1 = el("a", null, "Open in Ladder →");
+      a1.href = "ladder.html";
+      var a2 = el("a", null, "Find on Map →");
+      a2.href = "map.html";
+      jump.appendChild(a1);
+      jump.appendChild(a2);
+      box.appendChild(jump);
+    }
+  }
+
+  function renderStages(manifest) {
+    var box = document.getElementById("stages");
+    clear(box);
+    box.appendChild(el("span", "eyebrow", "Selected ladder"));
+    if (!manifest) {
+      box.appendChild(el("h3", null, "No clinical stages"));
+      box.appendChild(el("p", "none", "This command serves saved runs, regenerates docs, or does IO. It does not pick a method ladder."));
+      return;
+    }
+    box.appendChild(el("h3", null, manifest.task_label + " · " + manifest.method_label));
+    box.appendChild(el("p", "blurb", manifest.one_sentence));
+    var ul = el("ul", "stage-list");
+    manifest.stages.forEach(function (stage, i) {
+      var li = el("li");
+      li.appendChild(el("span", "idx", String(i + 1)));
+      li.appendChild(el("span", "name", stage.name));
+      li.appendChild(el("span", "tag " + stage.owner, stage.owner));
+      ul.appendChild(li);
+    });
+    box.appendChild(ul);
+  }
+
+  function renderInspector(cmd) {
+    var box = document.getElementById("inspector");
+    clear(box);
+    var meta = cmd.tokens[state.token];
+    box.appendChild(el("span", "eyebrow", "Token"));
+    box.appendChild(el("h3", null, state.token));
+    box.appendChild(el("div", "mono", cmd.binary));
+
+    var hand = el("div", "field");
+    hand.appendChild(el("span", "tag hand", "hand-authored CLI map"));
+    box.appendChild(hand);
+
+    if (!meta) {
+      box.appendChild(el("p", "none", "No notes for this token."));
+      return;
+    }
+    field(box, "What it does", meta.what);
+    field(box, "Code", meta.code, true);
+    field(box, "Note", meta.note);
+    if (meta.choices) {
+      var f = el("div", "field");
+      f.appendChild(el("span", "eyebrow", "Choices → method id"));
+      var map = el("div", "choice-map");
+      Object.keys(meta.choices).forEach(function (k) {
+        var row = el("div");
+        row.appendChild(el("b", null, k || "(empty)"));
+        row.appendChild(document.createTextNode(" → " + meta.choices[k]));
+        map.appendChild(row);
+      });
+      f.appendChild(map);
+      box.appendChild(f);
+    }
+    if (cmd.choice_flag && state.token === cmd.choice_flag) {
+      var mid = resolvedMethodId(cmd);
+      if (mid && byId[mid]) {
+        field(box, "Currently selected", mid + "\n" + byId[mid].one_sentence, true);
+      }
+    }
+  }
+
+  function render() {
+    var cmd = currentCmd();
+    var mid = resolvedMethodId(cmd);
+    var manifest = mid ? byId[mid] : null;
+
+    buildRail();
+    document.getElementById("cmd-binary").textContent = cmd.binary;
+    document.getElementById("cmd-headline").textContent = cmd.headline;
+    renderCmdline(cmd);
+    renderWire(cmd, manifest);
+    renderStages(manifest);
+    renderInspector(cmd);
+  }
+
+  render();
+})();
+</script>

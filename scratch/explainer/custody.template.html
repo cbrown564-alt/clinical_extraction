@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Answer Custody — clinical extraction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,600;6..72,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: oklch(0.11 0.015 250);
+  --ink: oklch(0.94 0.01 250);
+  --muted: oklch(0.65 0.02 250);
+  --faint: oklch(0.4 0.02 250);
+  --line: oklch(1 0 0 / .08);
+  --claim: oklch(0.72 0.18 18);
+  --mind: oklch(0.8 0.12 75);
+  --hands: oklch(0.75 0.09 195);
+  --serif: "Newsreader", Georgia, serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink);
+  font-family: var(--serif); font-size: 17px; line-height: 1.45;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% 0%, oklch(0.25 0.04 18 / .25), transparent),
+    radial-gradient(ellipse 60% 40% at 20% 100%, oklch(0.22 0.03 195 / .2), transparent);
+}
+a { color: var(--hands); }
+button { font: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--claim); outline-offset: 2px; }
+
+.top {
+  display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap;
+  padding: 18px 28px; border-bottom: 1px solid var(--line);
+}
+.top h1 {
+  margin: 0; font-size: 15px; font-family: var(--mono); font-weight: 500;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
+}
+.top h1 em { font-style: normal; color: var(--ink); }
+.top nav { margin-left: auto; display: flex; gap: 14px; font-family: var(--mono); font-size: 12px; }
+.top nav a { color: var(--muted); text-decoration: none; }
+.top nav a[aria-current], .top nav a:hover { color: var(--ink); }
+
+.wrap { padding: 36px 28px 80px; max-width: 1100px; margin: 0 auto; }
+
+.lede h2 {
+  margin: 0 0 12px; font-size: clamp(28px, 4.2vw, 40px);
+  font-weight: 600; letter-spacing: -.02em; line-height: 1.12; text-wrap: balance;
+}
+.lede p { margin: 0 0 28px; color: var(--muted); max-width: 56ch; }
+
+.pick {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 32px;
+}
+.pick button {
+  background: transparent; border: 1px solid var(--line); color: var(--muted);
+  font-family: var(--mono); font-size: 12px; padding: 8px 12px;
+}
+.pick button[aria-pressed="true"] {
+  background: var(--ink); color: var(--bg); border-color: var(--ink);
+}
+
+/* The custody diagram */
+.court {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 0;
+  min-height: 280px;
+  margin-bottom: 36px;
+}
+@media (max-width: 800px) {
+  .court { grid-template-columns: 1fr; min-height: auto; }
+}
+
+.zone {
+  border: 1px solid var(--line);
+  padding: 22px 18px;
+  position: relative;
+  background: oklch(1 0 0 / .02);
+}
+.zone.mind { border-color: oklch(0.8 0.12 75 / .35); }
+.zone.hands { border-color: oklch(0.75 0.09 195 / .35); }
+.zone.score { border-color: oklch(0.72 0.1 300 / .35); }
+.zone h3 {
+  margin: 0 0 6px; font-family: var(--mono); font-size: 11px;
+  letter-spacing: .14em; text-transform: uppercase; font-weight: 500;
+}
+.zone.mind h3 { color: var(--mind); }
+.zone.hands h3 { color: var(--hands); }
+.zone.score h3 { color: oklch(0.75 0.1 300); }
+.zone .blurb { font-size: 14px; color: var(--muted); margin: 0 0 18px; min-height: 3.2em; }
+.zone.active {
+  background: oklch(1 0 0 / .05);
+  box-shadow: inset 0 0 40px oklch(0.72 0.18 18 / .08);
+}
+
+.token {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--claim); color: white;
+  padding: 10px 14px; font-family: var(--mono); font-size: 13px; font-weight: 500;
+  box-shadow: 0 12px 40px oklch(0.5 0.2 18 / .45);
+  max-width: 100%;
+  transition: transform .45s cubic-bezier(.2,.8,.2,1), opacity .3s;
+}
+.token.hidden { opacity: 0; transform: scale(.92); }
+.token .lbl { opacity: .75; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+.token .val { word-break: break-word; }
+
+.handoff {
+  margin: 8px 0 0; font-family: var(--mono); font-size: 11px; color: var(--faint);
+  min-height: 2.5em;
+}
+.handoff.hot { color: var(--claim); }
+
+.timeline {
+  border-top: 1px solid var(--line); padding-top: 22px;
+}
+.timeline h3 {
+  margin: 0 0 14px; font-size: 13px; font-family: var(--mono);
+  letter-spacing: .1em; text-transform: uppercase; color: var(--faint); font-weight: 500;
+}
+.events { display: flex; flex-direction: column; gap: 0; }
+.ev {
+  display: grid; grid-template-columns: 56px 14px 1fr; gap: 12px;
+  padding: 10px 0; border: 0; background: transparent; color: inherit;
+  text-align: left; width: 100%;
+  border-bottom: 1px solid oklch(1 0 0 / .04);
+}
+.ev:hover { background: oklch(1 0 0 / .03); }
+.ev[aria-pressed="true"] { background: oklch(1 0 0 / .06); }
+.ev .idx { font-family: var(--mono); font-size: 12px; color: var(--faint); padding-top: 2px; }
+.ev .spine {
+  width: 10px; height: 10px; border-radius: 50%; margin-top: 5px;
+  background: var(--faint); justify-self: center;
+  box-shadow: 0 0 0 4px transparent;
+}
+.ev.transfer .spine {
+  background: var(--claim);
+  box-shadow: 0 0 0 4px oklch(0.72 0.18 18 / .2);
+}
+.ev.model .spine { background: var(--mind); }
+.ev.det .spine { background: var(--hands); }
+.ev .body .name { font-weight: 600; font-size: 16px; letter-spacing: -.01em; }
+.ev .body .meta { font-family: var(--mono); font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+.ev .body .meta b { color: var(--ink); font-weight: 500; }
+
+.story {
+  margin-top: 28px; padding: 20px 22px;
+  border: 1px solid var(--line);
+  background: oklch(1 0 0 / .03);
+}
+.story .k { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--faint); }
+.story h4 { margin: 6px 0 8px; font-size: 22px; font-weight: 600; letter-spacing: -.015em; }
+.story p { margin: 0; color: var(--muted); max-width: 60ch; }
+
+@media (prefers-reduced-motion: reduce) {
+  .token { transition: none; }
+}
+</style>
+
+<header class="top">
+  <h1>Prototype · <em>Answer custody</em></h1>
+  <nav>
+    <a href="index.html">Hub</a>
+    <a href="journey.html">Journey</a>
+    <a href="xray.html">X-ray</a>
+    <a href="custody.html" aria-current="page">Custody</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <div class="lede">
+    <h2>Who is holding the clinical answer right now?</h2>
+    <p>Directories do not show custody. This view treats the answer as a physical token that moves between the model, the deterministic rules, and the scorer — and lights up every time custody transfers.</p>
+  </div>
+
+  <div class="pick" id="pick"></div>
+
+  <div class="court" id="court">
+    <div class="zone mind" id="zone-model">
+      <h3>Model</h3>
+      <p class="blurb">Proposes the first clinical claim when a model stage fires.</p>
+      <div class="token-slot" id="slot-model"></div>
+      <div class="handoff" id="hand-model"></div>
+    </div>
+    <div class="zone hands" id="zone-det">
+      <h3>Deterministic rules</h3>
+      <p class="blurb">May keep, rewrite, or gate the claim. Repairs are custody transfers.</p>
+      <div class="token-slot" id="slot-det"></div>
+      <div class="handoff" id="hand-det"></div>
+    </div>
+    <div class="zone score" id="zone-scorer">
+      <h3>Scorer</h3>
+      <p class="blurb">Projects a settled claim into benchmark categories. Does not invent facts.</p>
+      <div class="token-slot" id="slot-scorer"></div>
+      <div class="handoff" id="hand-scorer"></div>
+    </div>
+  </div>
+
+  <div class="timeline">
+    <h3>Custody log · click any handoff</h3>
+    <div class="events" id="events"></div>
+  </div>
+
+  <div class="story" id="story"></div>
+</div>
+
+<script id="explainer-data" type="application/json">__EXPLAINER_DATA__</script>
+<script>
+(function () {
+  "use strict";
+  var DATA = JSON.parse(document.getElementById("explainer-data").textContent);
+  var byId = {};
+  DATA.manifests.forEach(function (m) { byId[m.method_id] = m; });
+  var caseByTask = {};
+  DATA.cases.forEach(function (c) { caseByTask[c.task] = c; });
+
+  var CHOICES = [
+    "gan2026_llm_only",
+    "gan2026_llm_with_rules",
+    "gan2026_rules_only",
+    "exectv2_llm_with_rules"
+  ];
+  var state = { method: "gan2026_llm_with_rules", i: null };
+
+  function el(t, c, x) {
+    var n = document.createElement(t);
+    if (c) n.className = c;
+    if (x != null) n.textContent = x;
+    return n;
+  }
+  function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); }
+
+  function shortClaim(text) {
+    if (!text || text === "(not run)") return null;
+    var m = String(text).match(/\b\d+(?:\.\d+)?\s+per\s+\w+/i);
+    if (m) return m[0];
+    if (String(text).length <= 42) return String(text);
+    return String(text).slice(0, 40) + "…";
+  }
+
+  function buildLog(manifest, run) {
+    var log = [];
+    var claim = null;
+    var holder = null;
+    manifest.stages.forEach(function (s, i) {
+      var o = run.observations[i];
+      var nextClaim = shortClaim(o && o.output);
+      var transfer = false;
+      var reason = "";
+
+      if (s.owner === "model" && o && o.changed) {
+        holder = "model";
+        claim = nextClaim || claim;
+        transfer = true;
+        reason = "Model proposes";
+      } else if (s.effect_class === "clinical_meaning" && o && o.changed && nextClaim && nextClaim !== claim) {
+        holder = "deterministic";
+        reason = "Rules rewrite claim";
+        claim = nextClaim;
+        transfer = true;
+      } else if (s.owner === "scorer") {
+        holder = "scorer";
+        transfer = true;
+        reason = "Scorer projects";
+        claim = nextClaim || claim;
+      } else if (o && o.changed && s.effect_class === "clinical_meaning") {
+        holder = "deterministic";
+        reason = "Rules touch claim";
+        if (nextClaim) claim = nextClaim;
+        transfer = true;
+      }
+
+      log.push({
+        i: i,
+        stage: s,
+        obs: o,
+        holder: holder,
+        claim: claim,
+        transfer: transfer,
+        reason: reason || (o && o.changed ? "State changed" : "Held"),
+        prevHolder: log.length ? log[log.length - 1].holder : null
+      });
+    });
+    return log;
+  }
+
+  function placeToken(holder, claim) {
+    ["model", "det", "scorer"].forEach(function (k) {
+      clear(document.getElementById("slot-" + k));
+      document.getElementById("zone-" + (k === "det" ? "det" : k)).classList.remove("active");
+      var hand = document.getElementById("hand-" + k);
+      hand.textContent = "";
+      hand.className = "handoff";
+    });
+    var key = holder === "deterministic" ? "det" : holder;
+    if (!key || !claim) return;
+    var zone = document.getElementById("zone-" + key);
+    zone.classList.add("active");
+    var token = el("div", "token");
+    token.appendChild(el("div", "lbl", "claim"));
+    token.appendChild(el("div", "val", claim));
+    document.getElementById("slot-" + key).appendChild(token);
+  }
+
+  function render() {
+    var manifest = byId[state.method];
+    var c = caseByTask[manifest.task];
+    var run = c.runs.filter(function (r) { return r.method_id === state.method; })[0];
+    var log = buildLog(manifest, run);
+    if (state.i == null) {
+      // default to last transfer
+      for (var t = log.length - 1; t >= 0; t--) {
+        if (log[t].transfer) { state.i = t; break; }
+      }
+      if (state.i == null) state.i = log.length - 1;
+    }
+
+    var pick = document.getElementById("pick");
+    clear(pick);
+    CHOICES.forEach(function (id) {
+      var m = byId[id];
+      var b = el("button", null, m.task_label + " · " + m.method_label);
+      b.type = "button";
+      b.setAttribute("aria-pressed", String(id === state.method));
+      b.addEventListener("click", function () { state.method = id; state.i = null; render(); });
+      pick.appendChild(b);
+    });
+
+    var cur = log[state.i];
+    placeToken(cur.holder, cur.claim || shortClaim(run.final_answer) || "—");
+    if (cur.transfer) {
+      var key = cur.holder === "deterministic" ? "det" : cur.holder;
+      var hand = document.getElementById("hand-" + key);
+      hand.textContent = cur.reason + (cur.prevHolder && cur.prevHolder !== cur.holder
+        ? " · from " + cur.prevHolder
+        : "");
+      hand.className = "handoff hot";
+    }
+
+    var events = document.getElementById("events");
+    clear(events);
+    log.forEach(function (e) {
+      if (!e.transfer && !(e.obs && e.obs.changed && e.stage.effect_class === "clinical_meaning")) {
+        // keep log readable: show transfers + clinical meaning changes
+        if (!e.transfer) return;
+      }
+      var ownerCls = e.stage.owner === "model" ? "model" : (e.stage.owner === "scorer" ? "scorer" : "det");
+      var btn = el("button", "ev " + ownerCls + (e.transfer ? " transfer" : ""));
+      btn.type = "button";
+      btn.setAttribute("aria-pressed", String(e.i === state.i));
+      btn.appendChild(el("span", "idx", String(e.i + 1)));
+      btn.appendChild(el("span", "spine"));
+      var body = el("div", "body");
+      body.appendChild(el("div", "name", e.stage.name));
+      var meta = el("div", "meta");
+      meta.innerHTML = e.reason + (e.claim ? " · <b>" + e.claim + "</b>" : "");
+      body.appendChild(meta);
+      btn.appendChild(body);
+      btn.addEventListener("click", function () { state.i = e.i; render(); });
+      events.appendChild(btn);
+    });
+
+    // If filter emptied (rules-only may have few), show all clinical_meaning
+    if (!events.firstChild) {
+      log.forEach(function (e) {
+        if (e.stage.effect_class !== "clinical_meaning" && e.stage.owner !== "model" && e.stage.owner !== "scorer") return;
+        var btn = el("button", "ev transfer");
+        btn.type = "button";
+        btn.setAttribute("aria-pressed", String(e.i === state.i));
+        btn.appendChild(el("span", "idx", String(e.i + 1)));
+        btn.appendChild(el("span", "spine"));
+        var body = el("div", "body");
+        body.appendChild(el("div", "name", e.stage.name));
+        body.appendChild(el("div", "meta", e.reason));
+        btn.appendChild(body);
+        btn.addEventListener("click", function () { state.i = e.i; render(); });
+        events.appendChild(btn);
+      });
+    }
+
+    var story = document.getElementById("story");
+    clear(story);
+    story.appendChild(el("div", "k", "Read this path"));
+    var transfers = log.filter(function (e) { return e.transfer; });
+    var rewrites = log.filter(function (e) {
+      return e.transfer && e.reason.indexOf("rewrite") >= 0;
+    });
+    var title = el("h4");
+    if (manifest.method === "llm" && run.correct === false) {
+      title.textContent = "Custody stays with the model’s first wrong claim.";
+    } else if (rewrites.length) {
+      title.textContent = "Rules take custody and rewrite the claim " + rewrites.length + " time" + (rewrites.length > 1 ? "s" : "") + ".";
+    } else if (manifest.method === "rules") {
+      title.textContent = "No model. Deterministic code holds custody from the first proposal.";
+    } else {
+      title.textContent = "Custody moves " + transfers.length + " times before scoring.";
+    }
+    story.appendChild(title);
+    var p = el("p");
+    p.textContent = "Final answer: " + run.final_answer +
+      (run.correct === true ? " · matches gold" : run.correct === false ? " · does not match gold" : " · no gold verdict") +
+      ". Gold: " + c.gold + ". " +
+      (rewrites[0]
+        ? "First rewrite: " + rewrites[0].stage.name + "."
+        : "Prediction owner: " + run.prediction_owner);
+    story.appendChild(p);
+  }
+
+  render();
+})();
+</script>
