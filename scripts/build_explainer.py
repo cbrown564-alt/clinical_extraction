@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the explainer pages from live repository data.
+"""Build the explainer pages under ``docs/explainer/`` from live repository data.
 
 One front door, plus the prototype archive it grew out of:
 
@@ -10,11 +10,11 @@ One front door, plus the prototype archive it grew out of:
 * ``map.html``, ``ladder.html``, ``console.html``   - wave-1 orientation prototypes
 
 Everything except the ``CLI_MAP`` block below is derived from the repository:
-stage manifests, executed teaching cases, and a walk of ``src``. The CLI map
+stage manifests, executed teaching letters, and a walk of ``src``. The CLI map
 is hand-authored from the argument parsers and is labelled as such in the UI.
 
-    .venv\\Scripts\\python.exe scratch\\explainer\\build.py          # rebuild all pages
-    .venv\\Scripts\\python.exe scratch\\explainer\\build.py --check  # fail if any page is stale
+    python scripts/build_explainer.py          # rebuild all pages
+    python scripts/build_explainer.py --check  # fail if any page is stale
 """
 
 from __future__ import annotations
@@ -29,9 +29,9 @@ from clinical_extraction.architecture.stage_manifest import (
     load_manifest,
     repo_root,
 )
-from clinical_extraction.architecture.teaching_case import build_all_cases
+from clinical_extraction.architecture.teaching_case import build_teaching_letters
 
-HERE = Path(__file__).resolve().parent
+HERE = repo_root() / "docs" / "explainer"
 ROOT = repo_root()
 
 
@@ -61,7 +61,7 @@ def collect_manifests() -> list[dict[str, Any]]:
 
 
 def collect_cases() -> list[dict[str, Any]]:
-    return [case.to_dict() for case in build_all_cases()]
+    return [case.to_dict() for case in build_teaching_letters()]
 
 
 # ---------------------------------------------------------------------------

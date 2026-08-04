@@ -1549,6 +1549,15 @@
    "gold": "1 per month",
    "gold_note": "The Gan gold convention prefers a stated typical recurring rate over a year-to-date total (policy A1 in the clinical selection policy catalog). A reader who expects the counted total to win will read every result on this letter backwards.",
    "fixture_note": "The letter is synthetic and the raw model outputs are fixtures standing in for one model call each. No model call is made when this case is built. Prediction-bearing stages and evidence gates after the model boundary use the real selected implementation; the Gan score projection is run over the synthetic gold label.",
+   "story": "The model prefers the concrete year-to-date count over the stated typical pattern, and one deterministic repair family rewrites it.",
+   "gold_reference": "His typical pattern is a focal seizure monthly",
+   "card_why": {
+    "rules": "Code finds every seizure-frequency statement, normalizes it, and applies the convention directly. No model involved.",
+    "llm": "The model prefers the concrete counted total. It is a plausible reading - and this method has no later stage allowed to overrule the selection.",
+    "llm_with_rules": "The model makes the same choice - then one deterministic repair family rewrites it to the stated typical rate."
+   },
+   "mechanism_title": "Why the model alone gets this one wrong",
+   "mechanism": "The letter offers two numbers: a stated typical pattern - a focal seizure monthly - and a concrete count - seven seizures so far this year. The benchmark's gold convention prefers the typical pattern, because a year-to-date count is not a rate. A language model, reading like a person in a hurry, prefers the count. LLM-only has no stage after the model that is allowed to change a selection, so the mistake stands. LLM-with-rules adds deterministic repair families that are allowed to - and on this letter exactly one fires.",
    "runs": [
     {
      "method_id": "gan2026_rules_only",
@@ -1916,6 +1925,774 @@
    ]
   },
   {
+   "case_id": "gan2026_diary_span_over_recent_month",
+   "task": "gan2026",
+   "task_label": "Gan 2026",
+   "letter_id": "TEACH-GAN-02",
+   "note_text": "Epilepsy clinic letter. Clinic date: 10 July 2026.\n\nI reviewed Ms C in the epilepsy clinic today. Her seizure diary shows one seizure in January, one seizure in February, and two seizures in June. She remains on lamotrigine 200mg twice daily and tolerates it well.",
+   "gold": "4 per 6 month",
+   "gold_note": "A completed diary is a rate over its recorded span: four seizures across six recorded months, not two per month from the most recent month alone. This is the same span-rate convention seen in gold rows such as '11 events in 3 months' -> '11 per 3 month'.",
+   "fixture_note": "The letter is synthetic and the raw model outputs are fixtures standing in for one model call each. No model call is made when this case is built. Prediction-bearing stages and evidence gates after the model boundary use the real selected implementation; the Gan score projection is run over the synthetic gold label.",
+   "story": "Rules find nothing to grab in a bare diary line; the model reads the diary but answers from the most recent month; the monthly-diary repair recomputes the rate over the whole recorded span.",
+   "gold_reference": "Her seizure diary shows one seizure in January, one seizure in February, and two seizures in June",
+   "card_why": {
+    "rules": "The deterministic extractors find nothing to grab in a bare diary line. A real coverage boundary: no frequency phrase, no extraction.",
+    "llm": "The model reads the diary but answers from the most recent month. Two seizures in June is not a monthly rate - and nothing here can catch that.",
+    "llm_with_rules": "The model makes the same recency pick - then the monthly-diary repair recomputes the rate over the whole recorded span."
+   },
+   "mechanism_title": "The model reads the diary; it just believes the latest month",
+   "mechanism": "A completed diary is a rate over its recorded span: one seizure in January, one in February, two in June - four seizures over six recorded months. The deterministic extractors cannot parse the bare diary lines at all, so rules-only reports no reference. The model extracts the diary correctly but selects only June - two seizures - and renders 2 per month. The monthly-diary repair counts every recorded month and rewrites the answer to 4 per 6 month.",
+   "runs": [
+    {
+     "method_id": "gan2026_rules_only",
+     "method_label": "Rules only",
+     "one_sentence": "Deterministic rules find every seizure-frequency statement in the letter, normalize them, pick one as the current answer, and render it as a Gan label.",
+     "prediction_owner": "deterministic rules (stage gan.rules.select_and_render)",
+     "final_answer": "no seizure frequency reference",
+     "correct": false,
+     "correctness_note": "purist predicted seizure_freq_unknown vs gold seizure_freq_more1per6mon_less1mon; pragmatic predicted seizure_freq_unknown vs gold seizure_infrequent",
+     "observations": [
+      {
+       "stage_id": "gan.rules.extract",
+       "stage_name": "Extract candidate events",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "Epilepsy clinic letter. Clinic date: 10 July 2026.\n\nI reviewed Ms C in the epilepsy clinic today. Her seizure diary shows one seizure in January, one seizure in February, and two seizures in June. She remains on lamotrigine 200mg twice daily and tolerates it well.",
+       "output": "[\"event_1: no seizure frequency reference\"]",
+       "changed": true,
+       "note": "1 candidate event(s) matched by the rules."
+      },
+      {
+       "stage_id": "gan.rules.normalize",
+       "stage_name": "Normalize candidate events",
+       "owner": "deterministic",
+       "effect_class": "representation",
+       "input": "[\"event_1: no seizure frequency reference\"]",
+       "output": "[\"event_1: no seizure frequency reference (monthly 1000.0)\"]",
+       "changed": true,
+       "note": "Representation only: the candidate list is unchanged in length."
+      },
+      {
+       "stage_id": "gan.rules.select_and_render",
+       "stage_name": "Select the current event and render the label",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "[\"event_1: no seizure frequency reference (monthly 1000.0)\"]",
+       "output": "selected ['event_1'] -> no seizure frequency reference",
+       "changed": true,
+       "note": "The rules own this choice. Nothing before it made a selection."
+      },
+      {
+       "stage_id": "gan.rules.evidence_trace_check",
+       "stage_name": "Check evidence and clinical trace",
+       "owner": "deterministic",
+       "effect_class": "validation_gate",
+       "input": "Epilepsy clinic letter.",
+       "output": "evidence_valid=True",
+       "changed": false,
+       "note": "A gate: it accepts or rejects, it does not rewrite the answer."
+      },
+      {
+       "stage_id": "gan.rules.score",
+       "stage_name": "Project to Purist and Pragmatic scoring",
+       "owner": "scorer",
+       "effect_class": "benchmark_projection",
+       "input": "label no seizure frequency reference (monthly 1000.0)",
+       "output": "purist seizure_freq_unknown vs gold seizure_freq_more1per6mon_less1mon; pragmatic seizure_freq_unknown vs gold seizure_infrequent",
+       "changed": true,
+       "note": "The scorer turns one label into two categorical verdicts."
+      }
+     ]
+    },
+    {
+     "method_id": "gan2026_llm_only",
+     "method_label": "LLM only",
+     "one_sentence": "One model call reads the letter and returns the final Gan label directly; deterministic code then repairs, validates, and scores that answer.",
+     "prediction_owner": "the model (stage gan.llm.model_call), with one deterministic override at gan.llm.selected_evidence_repair",
+     "final_answer": "2 per month",
+     "correct": false,
+     "correctness_note": "purist predicted seizure_freq_more1mon_less1week vs gold seizure_freq_more1per6mon_less1mon; pragmatic predicted seizure_frequent vs gold seizure_infrequent",
+     "observations": [
+      {
+       "stage_id": "gan.llm.build_prompt",
+       "stage_name": "Build the decision prompt",
+       "owner": "deterministic",
+       "effect_class": "transport_or_schema",
+       "input": "Epilepsy clinic letter. Clinic date: 10 July 2026.\n\nI reviewed Ms C in the epilepsy clinic today. Her seizure diary shows one seizure in January, one seizure in February, and two seizures in June. She remains on lamotrigine 200mg twice daily and tolerates it well.",
+       "output": "prompt input of 13015 characters",
+       "changed": true,
+       "note": "Transport only."
+      },
+      {
+       "stage_id": "gan.llm.model_call",
+       "stage_name": "Model decides the final label",
+       "owner": "model",
+       "effect_class": "clinical_meaning",
+       "input": "prompt input (fixture: no model call is made)",
+       "output": "{\"final_label\": \"2 per month\", \"evidence\": \"two seizures in June\", \"answer_kind\": \"frequency\", \"selected_seizure_type\": \"all seizures\", \"time_window\": \"June 2026\", \"applied_rule_families\": [\"recency\"], \"confidence\": \"medium\", \"rationale\": \"The most recent month is the best guide to the current rate.\"}",
+       "changed": true,
+       "note": "Fixture boundary. Everything after this line is real code."
+      },
+      {
+       "stage_id": "gan.llm.json_schema_repair",
+       "stage_name": "Repair JSON dialect and payload shape",
+       "owner": "deterministic",
+       "effect_class": "transport_or_schema",
+       "input": "{\"final_label\": \"2 per month\", \"evidence\": \"two seizures in June\", \"answer_kind\": \"frequency\", \"selected_seizure_type\": \"all seizures\", \"time_window\": \"June 2026\", \"applied_rule_families\": [\"recency\"], \"confidence\": \"medium\", \"rationale\": \"The most recent month is the best guide to the current rate.\"}",
+       "output": "{\"events\": [], \"schema_payload_changed\": false}",
+       "changed": false,
+       "note": "This fixture is already well formed, so nothing is repaired."
+      },
+      {
+       "stage_id": "gan.llm.schema_validation",
+       "stage_name": "Validate the decision schema",
+       "owner": "deterministic",
+       "effect_class": "validation_gate",
+       "input": "repaired payload",
+       "output": "validated",
+       "changed": false,
+       "note": ""
+      },
+      {
+       "stage_id": "gan.llm.selected_evidence_repair",
+       "stage_name": "Evidence-based label repair",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "2 per month",
+       "output": "2 per month",
+       "changed": false,
+       "note": "The one deterministic stage in this method that may change the clinical answer. Here the model's label already agrees with the span it quoted, so it does not fire - and nothing else in this method can catch the selection error."
+      },
+      {
+       "stage_id": "gan.llm.scorable_label_check",
+       "stage_name": "Check the label is scorable",
+       "owner": "deterministic",
+       "effect_class": "validation_gate",
+       "input": "2 per month",
+       "output": "scorable",
+       "changed": false,
+       "note": ""
+      },
+      {
+       "stage_id": "gan.llm.evidence_containment",
+       "stage_name": "Check evidence is an exact substring",
+       "owner": "deterministic",
+       "effect_class": "validation_gate",
+       "input": "two seizures in June",
+       "output": "evidence_valid=True",
+       "changed": false,
+       "note": ""
+      },
+      {
+       "stage_id": "gan.llm.score",
+       "stage_name": "Project to Purist and Pragmatic scoring",
+       "owner": "scorer",
+       "effect_class": "benchmark_projection",
+       "input": "label 2 per month (monthly 2.0277777777777777)",
+       "output": "purist seizure_freq_more1mon_less1week vs gold seizure_freq_more1per6mon_less1mon; pragmatic seizure_frequent vs gold seizure_infrequent",
+       "changed": true,
+       "note": "The scorer turns one label into two categorical verdicts."
+      }
+     ]
+    },
+    {
+     "method_id": "gan2026_llm_with_rules",
+     "method_label": "LLM with rules",
+     "one_sentence": "The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer.",
+     "prediction_owner": "the model proposes and selects (gan.llm_with_rules.model_call); ten deterministic repair families may change the answer afterwards",
+     "final_answer": "4 per 6 month",
+     "correct": true,
+     "correctness_note": "purist predicted seizure_freq_more1per6mon_less1mon vs gold seizure_freq_more1per6mon_less1mon; pragmatic predicted seizure_infrequent vs gold seizure_infrequent",
+     "observations": [
+      {
+       "stage_id": "gan.llm_with_rules.build_prompt",
+       "stage_name": "Build the structured-events prompt",
+       "owner": "deterministic",
+       "effect_class": "transport_or_schema",
+       "input": "Epilepsy clinic letter. Clinic date: 10 July 2026.\n\nI reviewed Ms C in the epilepsy clinic today. Her seizure diary shows one seizure in January, one seizure in February, and two seizures in June. She remains on lamotrigine 200mg twice daily and tolerates it well.",
+       "output": "prompt input of 3423 characters",
+       "changed": true,
+       "note": "Transport only."
+      },
+      {
+       "stage_id": "gan.llm_with_rules.model_call",
+       "stage_name": "Model extracts events and selects the answer",
+       "owner": "model",
+       "effect_class": "clinical_meaning",
+       "input": "prompt input (fixture: no model call is made)",
+       "output": "{\"events\": [{\"event_id\": \"evt_1\", \"kind\": \"frequency_rate\", \"raw_value\": \"one seizure in January, one seizure in February\", \"applies_to\": \"all seizures\", \"time_window\": \"2026 diary, January-February\", \"temporality\": \"current\", \"assertion_status\": \"asserted\", \"evidence\": \"one seizure in January, one seizure in February\", \"notes\": \"diary months with one seizure each\"}, {\"event_id\": \"evt_2\", \"kind\": \"frequency_rate\", \"raw_value\": \"two seizures in June\", \"applies_to\": \"all seizures\", \"time_window\": \"June 2026\", \"temporality\": \"current\", \"assertion_status\": \"asserted\", \"evidence\": \"two seizures in June\", \"notes\": \"most recent diary month\"}], \"selection\": {\"selected_event_ids\": [\"evt_2\"], \"final_kind\": \"frequency\", \"final_label\": \"2 per month\", \"evidence\": \"two seizures in June\", \"confidence\": \"medium\", \"rationale\": \"The most recent month is the best guide to the current rate.\"}}",
+       "changed": true,
+       "note": "Fixture boundary. Note what the model returned: two events AND a selection. The selection is the model's, not a rule's."
+      },
+      {
+       "stage_id": "gan.llm_with_rules.json_schema_repair",
+       "stage_name": "Repair JSON dialect and payload shape",
+       "owner": "deterministic",
+       "effect_class": "transport_or_schema",
+       "input": "{\"events\": [{\"event_id\": \"evt_1\", \"kind\": \"frequency_rate\", \"raw_value\": \"one seizure in January, one seizure in February\", \"applies_to\": \"all seizures\", \"time_window\": \"2026 diary, January-February\", \"temporality\": \"current\", \"assertion_status\": \"asserted\", \"evidence\": \"one seizure in January, one seizure in February\", \"notes\": \"diary months with one seizure each\"}, {\"event_id\": \"evt_2\", \"kind\": \"frequency_rate\", \"raw_value\": \"two seizures in June\", \"applies_to\": \"all seizures\", \"time_window\": \"June 2026\", \"temporality\": \"current\", \"assertion_status\": \"asserted\", \"evidence\": \"two seizures in June\", \"notes\": \"most recent diary month\"}], \"selection\": {\"selected_event_ids\": [\"evt_2\"], \"final_kind\": \"frequency\", \"final_label\": \"2 per month\", \"evidence\": \"two seizures in June\", \"confidence\": \"medium\", \"rationale\": \"The most recent month is the best guide to the current rate.\"}}",
+       "output": "{\"events\": [], \"schema_payload_changed\": false}",
+       "changed": false,
+       "note": "This fixture is already well formed, so nothing is repaired."
+      },
+      {
+       "stage_id": "gan.llm_with_rules.format_only_retry",
+       "stage_name": "Format-only retry (local models)",
+       "owner": "deterministic",
+       "effect_class": "transport_or_schema",
+       "input": "(not eligible: hosted model, first parse succeeded)",
+       "output": "(not run)",
+       "changed": false,
+       "note": "Conditional stage. Fires only for local ollama-served models."
+      },
+      {
+       "stage_id": "gan.llm_with_rules.schema_validation",
+       "stage_name": "Validate the extraction schema",
+       "owner": "deterministic",
+       "effect_class": "validation_gate",
+       "input": "repaired payload",
+       "output": "validated",
+       "changed": false,
+       "note": ""
+      },
+      {
+       "stage_id": "gan.llm_with_rules.normalize_events",
+       "stage_name": "Normalize every event",
+       "owner": "deterministic",
+       "effect_class": "representation",
+       "input": "[\"evt_1: one seizure in January, one seizure in February\", \"evt_2: two seizures in June\"]",
+       "output": "[\"evt_1: 2 per 2 month (monthly 1.0138888888888888)\", \"evt_2: no seizure frequency reference (monthly 1000.0)\"]",
+       "changed": true,
+       "note": "Every event is normalized, not only the selected one."
+      },
+      {
+       "stage_id": "gan.llm_with_rules.resolve_label",
+       "stage_name": "Resolve the label from the model's selection",
+       "owner": "deterministic",
+       "effect_class": "representation",
+       "input": "model selected ['evt_2'] with final_label '2 per month'",
+       "output": "2 per month",
+       "changed": true,
+       "note": "Rendering the model's choice, not re-choosing. The selected event id came from the model."
+      },
+      {
+       "stage_id": "gan.llm_with_rules.repair.selected_evidence",
+       "stage_name": "Repair 1 - evidence-based label repair",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "2 per month",
+       "output": "2 per month",
+       "changed": false,
+       "note": "did not fire on this letter"
+      },
+      {
+       "stage_id": "gan.llm_with_rules.repair.monthly_diary",
+       "stage_name": "Repair 2 - monthly diary",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "2 per month",
+       "output": "4 per 6 month",
+       "changed": true,
+       "note": "fired on this letter"
+      },
+      {
+       "stage_id": "gan.llm_with_rules.repair.usual_interval",
+       "stage_name": "Repair 3 - usual interval",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "4 per 6 month",
+       "output": "4 per 6 month",
+       "changed": false,
+       "note": "did not fire on this letter"
+      },
+      {
+       "stage_id": "gan.llm_with_rules.repair.typical_over_ytd",
+       "stage_name": "Repair 4 - typical rate over year-to-date",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "4 per 6 month",
+       "output": "4 per 6 month",
+       "changed": false,
+       "note": "did not fire on this letter"
+      },
+      {
+       "stage_id": "gan.llm_with_rules.repair.breakthrough",
+       "stage_name": "Repair 5 - breakthrough seizures",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "4 per 6 month",
+       "output": "4 per 6 month",
+       "changed": false,
+       "note": "did not fire on this letter"
+      },
+      {
+       "stage_id": "gan.llm_with_rules.repair.non_epileptic",
+       "stage_name": "Repair 6 - non-epileptic events",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "4 per 6 month",
+       "output": "4 per 6 month",
+       "changed": false,
+       "note": "did not fire on this letter"
+      },
+      {
+       "stage_id": "gan.llm_with_rules.repair.residual_jerk",
+       "stage_name": "Repair 7 - residual jerks",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "4 per 6 month",
+       "output": "4 per 6 month",
+       "changed": false,
+       "note": "did not fire on this letter"
+      },
+      {
+       "stage_id": "gan.llm_with_rules.repair.post_change_burst",
+       "stage_name": "Repair 8 - post-change burst",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "4 per 6 month",
+       "output": "4 per 6 month",
+       "changed": false,
+       "note": "did not fire on this letter"
+      },
+      {
+       "stage_id": "gan.llm_with_rules.repair.dated_sequence",
+       "stage_name": "Repair 9 - dated sequence",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "4 per 6 month",
+       "output": "4 per 6 month",
+       "changed": false,
+       "note": "did not fire on this letter"
+      },
+      {
+       "stage_id": "gan.llm_with_rules.repair.elapsed_anchor",
+       "stage_name": "Repair 10 - elapsed since anchor",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "4 per 6 month",
+       "output": "4 per 6 month",
+       "changed": false,
+       "note": "did not fire on this letter"
+      },
+      {
+       "stage_id": "gan.llm_with_rules.scorable_label_check",
+       "stage_name": "Check the label is scorable",
+       "owner": "deterministic",
+       "effect_class": "validation_gate",
+       "input": "4 per 6 month",
+       "output": "scorable",
+       "changed": false,
+       "note": ""
+      },
+      {
+       "stage_id": "gan.llm_with_rules.evidence_containment",
+       "stage_name": "Check evidence is an exact substring",
+       "owner": "deterministic",
+       "effect_class": "validation_gate",
+       "input": "two seizures in June",
+       "output": "evidence_valid=True",
+       "changed": false,
+       "note": "The evidence checked is the model's original selection evidence. A repair can change the label without changing this span."
+      },
+      {
+       "stage_id": "gan.llm_with_rules.score",
+       "stage_name": "Project to Purist and Pragmatic scoring",
+       "owner": "scorer",
+       "effect_class": "benchmark_projection",
+       "input": "label 4 per 6 month (monthly 0.6759259259259259)",
+       "output": "purist seizure_freq_more1per6mon_less1mon vs gold seizure_freq_more1per6mon_less1mon; pragmatic seizure_infrequent vs gold seizure_infrequent",
+       "changed": true,
+       "note": "The scorer turns one label into two categorical verdicts."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "case_id": "gan2026_seizure_free_preservation_standdown",
+   "task": "gan2026",
+   "task_label": "Gan 2026",
+   "letter_id": "TEACH-GAN-03",
+   "note_text": "Epilepsy clinic letter. Clinic date: 12 June 2026.\n\nI reviewed Mr D in the epilepsy clinic today. He has remained seizure-free since March 2025 with levetiracetam 500mg twice daily. MRI brain was normal.",
+   "gold": "seizure free since March 2025",
+   "gold_note": "A stated sustained seizure-free period is the answer. The elapsed-anchor repair can express the same fact as a benchmark rate ('1 per 15 month'), but the preservation rule keeps the model's well-supported seizure-free answer instead - watch the repair walk normalize the phrasing and then decline to fire.",
+   "fixture_note": "The letter is synthetic and the raw model outputs are fixtures standing in for one model call each. No model call is made when this case is built. Prediction-bearing stages and evidence gates after the model boundary use the real selected implementation; the Gan score projection is run over the synthetic gold label.",
+   "story": "The model is right, and the repair layer shows both halves of its judgement: one family normalizes the phrasing, then the elapsed-anchor family computes a rate and a preservation rule withholds it.",
+   "gold_reference": "He has remained seizure-free since March 2025",
+   "card_why": {
+    "rules": "Deterministic code extracts the sustained seizure-free statement and normalizes it. No model involved.",
+    "llm": "The model selects the seizure-free event directly. This letter shows the method can also be right.",
+    "llm_with_rules": "One family normalizes the phrasing; the elapsed-anchor family computes a benchmark rate and a preservation rule withholds it. Both halves of repair judgement."
+   },
+   "mechanism_title": "When the repair layer stands down",
+   "mechanism": "The model selects the seizure-free statement - correctly, for once. The selected-evidence repair still normalizes the phrasing ('seizure free since March 2025' becomes 'seizure free for multiple year'), and then the elapsed-anchor family computes the benchmark rate '1 per 15 month' from the anchor date. A preservation rule withholds it: the model's sustained seizure-free answer is well supported, so the rewrite is declined. Repairs are gated by what they would destroy.",
+   "runs": [
+    {
+     "method_id": "gan2026_rules_only",
+     "method_label": "Rules only",
+     "one_sentence": "Deterministic rules find every seizure-frequency statement in the letter, normalize them, pick one as the current answer, and render it as a Gan label.",
+     "prediction_owner": "deterministic rules (stage gan.rules.select_and_render)",
+     "final_answer": "seizure free for multiple year",
+     "correct": true,
+     "correctness_note": "purist predicted currently_no_seizure vs gold currently_no_seizure; pragmatic predicted currently_no_seizure vs gold currently_no_seizure",
+     "observations": [
+      {
+       "stage_id": "gan.rules.extract",
+       "stage_name": "Extract candidate events",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "Epilepsy clinic letter. Clinic date: 12 June 2026.\n\nI reviewed Mr D in the epilepsy clinic today. He has remained seizure-free since March 2025 with levetiracetam 500mg twice daily. MRI brain was normal.",
+       "output": "[\"event_1: seizure free for multiple year\"]",
+       "changed": true,
+       "note": "1 candidate event(s) matched by the rules."
+      },
+      {
+       "stage_id": "gan.rules.normalize",
+       "stage_name": "Normalize candidate events",
+       "owner": "deterministic",
+       "effect_class": "representation",
+       "input": "[\"event_1: seizure free for multiple year\"]",
+       "output": "[\"event_1: seizure free for multiple year (monthly 0.0)\"]",
+       "changed": true,
+       "note": "Representation only: the candidate list is unchanged in length."
+      },
+      {
+       "stage_id": "gan.rules.select_and_render",
+       "stage_name": "Select the current event and render the label",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "[\"event_1: seizure free for multiple year (monthly 0.0)\"]",
+       "output": "selected ['event_1'] -> seizure free for multiple year",
+       "changed": true,
+       "note": "The rules own this choice. Nothing before it made a selection."
+      },
+      {
+       "stage_id": "gan.rules.evidence_trace_check",
+       "stage_name": "Check evidence and clinical trace",
+       "owner": "deterministic",
+       "effect_class": "validation_gate",
+       "input": "seizure-free since",
+       "output": "evidence_valid=True",
+       "changed": false,
+       "note": "A gate: it accepts or rejects, it does not rewrite the answer."
+      },
+      {
+       "stage_id": "gan.rules.score",
+       "stage_name": "Project to Purist and Pragmatic scoring",
+       "owner": "scorer",
+       "effect_class": "benchmark_projection",
+       "input": "label seizure free for multiple year (monthly 0.0)",
+       "output": "purist currently_no_seizure vs gold currently_no_seizure; pragmatic currently_no_seizure vs gold currently_no_seizure",
+       "changed": true,
+       "note": "The scorer turns one label into two categorical verdicts."
+      }
+     ]
+    },
+    {
+     "method_id": "gan2026_llm_only",
+     "method_label": "LLM only",
+     "one_sentence": "One model call reads the letter and returns the final Gan label directly; deterministic code then repairs, validates, and scores that answer.",
+     "prediction_owner": "the model (stage gan.llm.model_call), with one deterministic override at gan.llm.selected_evidence_repair",
+     "final_answer": "seizure free for multiple year",
+     "correct": true,
+     "correctness_note": "purist predicted currently_no_seizure vs gold currently_no_seizure; pragmatic predicted currently_no_seizure vs gold currently_no_seizure",
+     "observations": [
+      {
+       "stage_id": "gan.llm.build_prompt",
+       "stage_name": "Build the decision prompt",
+       "owner": "deterministic",
+       "effect_class": "transport_or_schema",
+       "input": "Epilepsy clinic letter. Clinic date: 12 June 2026.\n\nI reviewed Mr D in the epilepsy clinic today. He has remained seizure-free since March 2025 with levetiracetam 500mg twice daily. MRI brain was normal.",
+       "output": "prompt input of 12954 characters",
+       "changed": true,
+       "note": "Transport only."
+      },
+      {
+       "stage_id": "gan.llm.model_call",
+       "stage_name": "Model decides the final label",
+       "owner": "model",
+       "effect_class": "clinical_meaning",
+       "input": "prompt input (fixture: no model call is made)",
+       "output": "{\"final_label\": \"seizure free since March 2025\", \"evidence\": \"He has remained seizure-free since March 2025\", \"answer_kind\": \"seizure_free\", \"selected_seizure_type\": \"all seizures\", \"time_window\": \"since March 2025\", \"applied_rule_families\": [], \"confidence\": \"high\", \"rationale\": \"The letter reports sustained seizure freedom since March 2025.\"}",
+       "changed": true,
+       "note": "Fixture boundary. Everything after this line is real code."
+      },
+      {
+       "stage_id": "gan.llm.json_schema_repair",
+       "stage_name": "Repair JSON dialect and payload shape",
+       "owner": "deterministic",
+       "effect_class": "transport_or_schema",
+       "input": "{\"final_label\": \"seizure free since March 2025\", \"evidence\": \"He has remained seizure-free since March 2025\", \"answer_kind\": \"seizure_free\", \"selected_seizure_type\": \"all seizures\", \"time_window\": \"since March 2025\", \"applied_rule_families\": [], \"confidence\": \"high\", \"rationale\": \"The letter reports sustained seizure freedom since March 2025.\"}",
+       "output": "{\"events\": [], \"schema_payload_changed\": false}",
+       "changed": false,
+       "note": "This fixture is already well formed, so nothing is repaired."
+      },
+      {
+       "stage_id": "gan.llm.schema_validation",
+       "stage_name": "Validate the decision schema",
+       "owner": "deterministic",
+       "effect_class": "validation_gate",
+       "input": "repaired payload",
+       "output": "validated",
+       "changed": false,
+       "note": ""
+      },
+      {
+       "stage_id": "gan.llm.selected_evidence_repair",
+       "stage_name": "Evidence-based label repair",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "seizure free since March 2025",
+       "output": "seizure free for multiple year",
+       "changed": true,
+       "note": "The one deterministic stage in this method that may change the clinical answer. Here the model's label already agrees with the span it quoted, so it does not fire - and nothing else in this method can catch the selection error."
+      },
+      {
+       "stage_id": "gan.llm.scorable_label_check",
+       "stage_name": "Check the label is scorable",
+       "owner": "deterministic",
+       "effect_class": "validation_gate",
+       "input": "seizure free for multiple year",
+       "output": "scorable",
+       "changed": false,
+       "note": ""
+      },
+      {
+       "stage_id": "gan.llm.evidence_containment",
+       "stage_name": "Check evidence is an exact substring",
+       "owner": "deterministic",
+       "effect_class": "validation_gate",
+       "input": "He has remained seizure-free since March 2025",
+       "output": "evidence_valid=True",
+       "changed": false,
+       "note": ""
+      },
+      {
+       "stage_id": "gan.llm.score",
+       "stage_name": "Project to Purist and Pragmatic scoring",
+       "owner": "scorer",
+       "effect_class": "benchmark_projection",
+       "input": "label seizure free for multiple year (monthly 0.0)",
+       "output": "purist currently_no_seizure vs gold currently_no_seizure; pragmatic currently_no_seizure vs gold currently_no_seizure",
+       "changed": true,
+       "note": "The scorer turns one label into two categorical verdicts."
+      }
+     ]
+    },
+    {
+     "method_id": "gan2026_llm_with_rules",
+     "method_label": "LLM with rules",
+     "one_sentence": "The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer.",
+     "prediction_owner": "the model proposes and selects (gan.llm_with_rules.model_call); ten deterministic repair families may change the answer afterwards",
+     "final_answer": "seizure free for multiple year",
+     "correct": true,
+     "correctness_note": "purist predicted currently_no_seizure vs gold currently_no_seizure; pragmatic predicted currently_no_seizure vs gold currently_no_seizure",
+     "observations": [
+      {
+       "stage_id": "gan.llm_with_rules.build_prompt",
+       "stage_name": "Build the structured-events prompt",
+       "owner": "deterministic",
+       "effect_class": "transport_or_schema",
+       "input": "Epilepsy clinic letter. Clinic date: 12 June 2026.\n\nI reviewed Mr D in the epilepsy clinic today. He has remained seizure-free since March 2025 with levetiracetam 500mg twice daily. MRI brain was normal.",
+       "output": "prompt input of 3362 characters",
+       "changed": true,
+       "note": "Transport only."
+      },
+      {
+       "stage_id": "gan.llm_with_rules.model_call",
+       "stage_name": "Model extracts events and selects the answer",
+       "owner": "model",
+       "effect_class": "clinical_meaning",
+       "input": "prompt input (fixture: no model call is made)",
+       "output": "{\"events\": [{\"event_id\": \"evt_1\", \"kind\": \"seizure_free\", \"raw_value\": \"remained seizure-free since March 2025\", \"applies_to\": \"all seizures\", \"time_window\": \"since March 2025\", \"temporality\": \"current\", \"assertion_status\": \"asserted\", \"evidence\": \"He has remained seizure-free since March 2025\", \"notes\": \"sustained freedom on stable medication\"}], \"selection\": {\"selected_event_ids\": [\"evt_1\"], \"final_kind\": \"seizure_free\", \"final_label\": \"seizure free since March 2025\", \"evidence\": \"He has remained seizure-free since March 2025\", \"confidence\": \"high\", \"rationale\": \"The letter reports sustained seizure freedom since March 2025.\"}}",
+       "changed": true,
+       "note": "Fixture boundary. Note what the model returned: two events AND a selection. The selection is the model's, not a rule's."
+      },
+      {
+       "stage_id": "gan.llm_with_rules.json_schema_repair",
+       "stage_name": "Repair JSON dialect and payload shape",
+       "owner": "deterministic",
+       "effect_class": "transport_or_schema",
+       "input": "{\"events\": [{\"event_id\": \"evt_1\", \"kind\": \"seizure_free\", \"raw_value\": \"remained seizure-free since March 2025\", \"applies_to\": \"all seizures\", \"time_window\": \"since March 2025\", \"temporality\": \"current\", \"assertion_status\": \"asserted\", \"evidence\": \"He has remained seizure-free since March 2025\", \"notes\": \"sustained freedom on stable medication\"}], \"selection\": {\"selected_event_ids\": [\"evt_1\"], \"final_kind\": \"seizure_free\", \"final_label\": \"seizure free since March 2025\", \"evidence\": \"He has remained seizure-free since March 2025\", \"confidence\": \"high\", \"rationale\": \"The letter reports sustained seizure freedom since March 2025.\"}}",
+       "output": "{\"events\": [], \"schema_payload_changed\": false}",
+       "changed": false,
+       "note": "This fixture is already well formed, so nothing is repaired."
+      },
+      {
+       "stage_id": "gan.llm_with_rules.format_only_retry",
+       "stage_name": "Format-only retry (local models)",
+       "owner": "deterministic",
+       "effect_class": "transport_or_schema",
+       "input": "(not eligible: hosted model, first parse succeeded)",
+       "output": "(not run)",
+       "changed": false,
+       "note": "Conditional stage. Fires only for local ollama-served models."
+      },
+      {
+       "stage_id": "gan.llm_with_rules.schema_validation",
+       "stage_name": "Validate the extraction schema",
+       "owner": "deterministic",
+       "effect_class": "validation_gate",
+       "input": "repaired payload",
+       "output": "validated",
+       "changed": false,
+       "note": ""
+      },
+      {
+       "stage_id": "gan.llm_with_rules.normalize_events",
+       "stage_name": "Normalize every event",
+       "owner": "deterministic",
+       "effect_class": "representation",
+       "input": "[\"evt_1: remained seizure-free since March 2025\"]",
+       "output": "[\"evt_1: seizure free for multiple year (monthly 0.0)\"]",
+       "changed": true,
+       "note": "Every event is normalized, not only the selected one."
+      },
+      {
+       "stage_id": "gan.llm_with_rules.resolve_label",
+       "stage_name": "Resolve the label from the model's selection",
+       "owner": "deterministic",
+       "effect_class": "representation",
+       "input": "model selected ['evt_1'] with final_label 'seizure free since March 2025'",
+       "output": "seizure free since March 2025",
+       "changed": true,
+       "note": "Rendering the model's choice, not re-choosing. The selected event id came from the model."
+      },
+      {
+       "stage_id": "gan.llm_with_rules.repair.selected_evidence",
+       "stage_name": "Repair 1 - evidence-based label repair",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "seizure free since March 2025",
+       "output": "seizure free for multiple year",
+       "changed": true,
+       "note": "fired on this letter"
+      },
+      {
+       "stage_id": "gan.llm_with_rules.repair.monthly_diary",
+       "stage_name": "Repair 2 - monthly diary",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "seizure free for multiple year",
+       "output": "seizure free for multiple year",
+       "changed": false,
+       "note": "did not fire on this letter"
+      },
+      {
+       "stage_id": "gan.llm_with_rules.repair.usual_interval",
+       "stage_name": "Repair 3 - usual interval",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "seizure free for multiple year",
+       "output": "seizure free for multiple year",
+       "changed": false,
+       "note": "did not fire on this letter"
+      },
+      {
+       "stage_id": "gan.llm_with_rules.repair.typical_over_ytd",
+       "stage_name": "Repair 4 - typical rate over year-to-date",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "seizure free for multiple year",
+       "output": "seizure free for multiple year",
+       "changed": false,
+       "note": "did not fire on this letter"
+      },
+      {
+       "stage_id": "gan.llm_with_rules.repair.breakthrough",
+       "stage_name": "Repair 5 - breakthrough seizures",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "seizure free for multiple year",
+       "output": "seizure free for multiple year",
+       "changed": false,
+       "note": "did not fire on this letter"
+      },
+      {
+       "stage_id": "gan.llm_with_rules.repair.non_epileptic",
+       "stage_name": "Repair 6 - non-epileptic events",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "seizure free for multiple year",
+       "output": "seizure free for multiple year",
+       "changed": false,
+       "note": "did not fire on this letter"
+      },
+      {
+       "stage_id": "gan.llm_with_rules.repair.residual_jerk",
+       "stage_name": "Repair 7 - residual jerks",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "seizure free for multiple year",
+       "output": "seizure free for multiple year",
+       "changed": false,
+       "note": "did not fire on this letter"
+      },
+      {
+       "stage_id": "gan.llm_with_rules.repair.post_change_burst",
+       "stage_name": "Repair 8 - post-change burst",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "seizure free for multiple year",
+       "output": "seizure free for multiple year",
+       "changed": false,
+       "note": "did not fire on this letter"
+      },
+      {
+       "stage_id": "gan.llm_with_rules.repair.dated_sequence",
+       "stage_name": "Repair 9 - dated sequence",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "seizure free for multiple year",
+       "output": "seizure free for multiple year",
+       "changed": false,
+       "note": "did not fire on this letter"
+      },
+      {
+       "stage_id": "gan.llm_with_rules.repair.elapsed_anchor",
+       "stage_name": "Repair 10 - elapsed since anchor",
+       "owner": "deterministic",
+       "effect_class": "clinical_meaning",
+       "input": "seizure free for multiple year",
+       "output": "seizure free for multiple year",
+       "changed": false,
+       "note": "computed 1 per 15 month, withheld by the preservation rule - the model's answer was left standing"
+      },
+      {
+       "stage_id": "gan.llm_with_rules.scorable_label_check",
+       "stage_name": "Check the label is scorable",
+       "owner": "deterministic",
+       "effect_class": "validation_gate",
+       "input": "seizure free for multiple year",
+       "output": "scorable",
+       "changed": false,
+       "note": ""
+      },
+      {
+       "stage_id": "gan.llm_with_rules.evidence_containment",
+       "stage_name": "Check evidence is an exact substring",
+       "owner": "deterministic",
+       "effect_class": "validation_gate",
+       "input": "He has remained seizure-free since March 2025",
+       "output": "evidence_valid=True",
+       "changed": false,
+       "note": "The evidence checked is the model's original selection evidence. A repair can change the label without changing this span."
+      },
+      {
+       "stage_id": "gan.llm_with_rules.score",
+       "stage_name": "Project to Purist and Pragmatic scoring",
+       "owner": "scorer",
+       "effect_class": "benchmark_projection",
+       "input": "label seizure free for multiple year (monthly 0.0)",
+       "output": "purist currently_no_seizure vs gold currently_no_seizure; pragmatic currently_no_seizure vs gold currently_no_seizure",
+       "changed": true,
+       "note": "The scorer turns one label into two categorical verdicts."
+      }
+     ]
+    }
+   ]
+  },
+  {
    "case_id": "exectv2_four_family_ordinary_letter",
    "task": "exectv2",
    "task_label": "ExECTv2",
@@ -1924,6 +2701,15 @@
    "gold": "(no gold annotations; this is a synthetic teaching letter)",
    "gold_note": "This case teaches the shape of the pipeline and the comparison boundary, not accuracy. The rules-only baseline answers over nine entities; the two model-led methods answer over four families. Their overall numbers are not interchangeable.",
    "fixture_note": "The letter is synthetic and the raw model outputs are fixtures standing in for one model call each. No model call is made when this case is built. Prediction-bearing stages and post-model gates use the real selected implementation; the final ExECT score entry is an unscored scorer-boundary illustration because this letter has no gold annotations.",
+   "story": "One model call proposes findings across four families; the hybrid adds deterministic family transforms, and the rules baseline answers a different, nine-entity question.",
+   "gold_reference": "",
+   "card_why": {
+    "rules": "Nine independent deterministic extractors produce the all-nine baseline. No model involved.",
+    "llm": "One structured call proposes findings for four families, scored as proposed, before any deterministic transform.",
+    "llm_with_rules": "The same one call - then deterministic family transforms reconcile the findings into the scored representation."
+   },
+   "mechanism_title": "What the deterministic layer adds around one model call",
+   "mechanism": "One model call proposes findings across four families - diagnosis, seizure frequency, prescriptions, investigations. LLM-only scores them as proposed. LLM-with-rules passes them through deterministic family transforms that complete state representations and reconcile findings before scoring. This letter is chosen for shape, so both model-led methods produce the same four families here; the stage tables below show exactly which transforms sit between the call and the score.",
    "runs": [
     {
      "method_id": "exectv2_rules_only",
@@ -2489,7 +3275,7 @@
     "path": "src/clinical_extraction/architecture",
     "blurb": "The stage manifests and the teaching case. This directory is the source of truth these prototypes read.",
     "files": 4,
-    "loc": 2456,
+    "loc": 2839,
     "children": []
    },
    {
@@ -2510,7 +3296,7 @@
    }
   ],
   "total_files": 329,
-  "total_loc": 71073,
+  "total_loc": 71456,
   "on_path_dirs": {
    "src/clinical_extraction/core": [
     "gan2026_llm_only",
@@ -2917,6 +3703,6 @@
    ]
   }
  ],
- "scripts_count": 68,
- "tests_count": 48
+ "scripts_count": 69,
+ "tests_count": 49
 }

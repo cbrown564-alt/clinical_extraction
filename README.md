@@ -80,6 +80,13 @@ diagrams, and machine-readable stage manifests. For a letter-by-letter walk
 through all six paths, read the
 [six-path teaching case](docs/architecture/teaching_cases/six_paths.md).
 
+For a single page that tells the same story at three depths — one synthetic
+letter a friend can read at a glance, then mechanism, then the full stage and
+CLI machinery — open
+[docs/explainer/explainer.html](docs/explainer/explainer.html) in a browser
+(regenerate with `python scripts/build_explainer.py`; it makes no model calls
+and reads no locked rows).
+
 ## Try the demo
 
 The frontend is the main interactive demonstration. From the repository root,

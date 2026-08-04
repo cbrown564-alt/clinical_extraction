@@ -138,9 +138,9 @@ p.index-note { margin: 0 0 18px; color: var(--muted); font-size: 15px; max-width
 
   <p class="note">
     Regenerate from repo root:
-    <code>.venv\Scripts\python.exe scratch\explainer\build.py</code>
-    · Drift gate: <code>build.py --check</code>
-    · Serve: <code>python -m http.server 8765 --directory scratch\explainer</code>
+    <code>python scripts/build_explainer.py</code>
+    · Drift gate: <code>python scripts/build_explainer.py --check</code>
+    · Serve: <code>python -m http.server 8765 --directory docs/explainer</code>
     · No model calls, no locked rows.
   </p>
 </div>

@@ -250,6 +250,7 @@ section.theater {
 .method-pick .group > span { color: var(--t-faint); padding: 7px 4px 7px 10px; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; }
 .method-pick button { background: transparent; border: 0; color: var(--t-muted); padding: 7px 11px; font: inherit; font-family: var(--mono); font-size: 12px; }
 .method-pick button[aria-pressed="true"] { background: var(--t-ink); color: var(--t-bg); }
+.theater-letter-note { font-size: 13.5px; color: var(--t-faint); max-width: 62ch; align-self: center; }
 
 .controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
 .scrub { flex: 1; min-width: 220px; display: flex; align-items: center; gap: 12px; }
@@ -657,8 +658,6 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
   var DATA = JSON.parse(document.getElementById("explainer-data").textContent);
   var byId = {};
   DATA.manifests.forEach(function (m) { byId[m.method_id] = m; });
-  var caseByTask = {};
-  DATA.cases.forEach(function (c) { caseByTask[c.task] = c; });
 
   function el(t, c, x) {
     var n = document.createElement(t);
@@ -696,18 +695,43 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
   }
   function parseJSON(s) { try { return JSON.parse(s); } catch (e) { return null; } }
 
+  // One letter drives the whole page: hero, cards, rescue strip, why-section,
+  // and theater. Switching task resets the letter to the task's first case.
+  var casesByTask = {};
+  DATA.cases.forEach(function (c) {
+    (casesByTask[c.task] = casesByTask[c.task] || []).push(c);
+  });
+  var heroState = { task: "gan2026", letterId: DATA.cases[0].case_id };
+
+  function currentCase() {
+    var list = casesByTask[heroState.task] || [];
+    return list.filter(function (c) { return c.case_id === heroState.letterId; })[0] || list[0];
+  }
+  function selectTask(task) {
+    heroState.task = task;
+    heroState.letterId = (casesByTask[task] || [])[0].case_id;
+  }
+  function vetoObservation(run) {
+    return run.observations.filter(function (o) {
+      return /\.repair\./.test(o.stage_id) && /withheld/.test(o.note || "");
+    })[0] || null;
+  }
+
   /* ============================================================
-     1 · hero: task toggle, the letter, the rescue, three cards
+     1 · hero: task + letter pickers, the letter, the strip, cards
      ============================================================ */
-  var heroState = { task: "gan2026" };
 
   // The defining moment of each method, as a theater deep link: the rules'
-  // selection, the model's unfixable answer, the deterministic layer firing.
+  // selection, the model's answer, the deterministic layer firing - or the
+  // preservation veto that declined to.
   var DEFINING = {
     gan2026: {
       rules: function (o) { return /select/.test(o.stage_id); },
       llm: function (o) { return /model_call$/.test(o.stage_id); },
-      llm_with_rules: function (o) { return o.changed && /\.repair\./.test(o.stage_id); }
+      llm_with_rules: function (o, run) {
+        if (vetoObservation(run)) return /\.repair\./.test(o.stage_id) && /withheld/.test(o.note || "");
+        return o.changed && /\.repair\./.test(o.stage_id);
+      }
     },
     exectv2: {
       rules: function (o) { return /extract_entities/.test(o.stage_id); },
@@ -718,24 +742,14 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
 
   var HERO_COPY = {
     gan2026: {
-      paperNote: "teal = stated typical rate · amber = counted year-to-date total · gold convention: policy A1",
+      paperNote: "teal = supports the gold answer · amber = what the model selected",
       closing: "Same letter, same scorer, same gold answer. Three different owners of the answer — " +
-        "and three different outcomes. Everything below is these three cards, unfolded.",
-      why: {
-        rules: "Code finds every seizure-frequency statement, normalizes it, and applies the convention directly. No model involved.",
-        llm: "The model prefers the concrete counted total. It is a plausible reading — and this method has no later stage allowed to overrule the selection.",
-        llm_with_rules: "The model makes the same choice — then one deterministic repair family rewrites it to the stated typical rate."
-      }
+        "and three different outcomes. Everything below is these three cards, unfolded."
     },
     exectv2: {
       paperNote: "one colour per fact family — the four families the model-led methods answer over",
       closing: "Same letter, same scorer. Three different shapes of answer, and a defined boundary " +
-        "between them. Everything below is these three cards, unfolded.",
-      why: {
-        rules: "Nine independent deterministic extractors produce the all-nine baseline. No model involved.",
-        llm: "One structured call proposes findings for four families, scored as proposed, before any deterministic transform.",
-        llm_with_rules: "The same one call — then deterministic family transforms reconcile the findings into the scored representation."
-      }
+        "between them. Everything below is these three cards, unfolded."
     }
   };
 
@@ -745,26 +759,67 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
     llm_with_rules: "answers over four families · reconciled by family transforms"
   };
 
+  function watchLink(methodId, i) {
+    // Keep the current letter when the method belongs to the visible task.
+    if (byId[methodId].task === heroState.task) {
+      return "#watch=" + heroState.letterId + "/" + methodId + ":" + i;
+    }
+    return "#watch=" + methodId + ":" + i;
+  }
+
   function watchHref(task, m, run) {
     var pred = DEFINING[task][m.method];
     for (var i = 0; i < run.observations.length; i++) {
-      if (pred(run.observations[i])) return "#watch=" + m.method_id + ":" + i;
+      if (pred(run.observations[i], run)) return watchLink(m.method_id, i);
     }
-    return "#watch=" + m.method_id + ":0";
+    return watchLink(m.method_id, 0);
   }
 
   function heroSpans(task, c) {
-    // Highlight spans derived from the fixture's own events, never hardcoded text.
-    var hybridRun = runFor(byId[task + "_llm_with_rules"], c);
-    var raw = parseJSON(modelCallObs(hybridRun).output) || {};
+    // Highlight spans derived from the case data, never hardcoded text.
     if (task === "gan2026") {
-      return (raw.events || []).map(function (ev) {
-        return { text: ev.evidence, cls: /typical/i.test(ev.time_window || "") ? "typical" : "ytd" };
-      });
+      var hybridRun = runFor(byId[task + "_llm_with_rules"], c);
+      var selection = (parseJSON(modelCallObs(hybridRun).output) || {}).selection || {};
+      return [
+        { text: c.gold_reference, cls: "typical" },
+        { text: selection.evidence, cls: "ytd" }
+      ];
     }
+    var raw = parseJSON(modelCallObs(runFor(byId[task + "_llm_with_rules"], c)).output) || {};
     return (raw.clinical_events || []).map(function (ev) {
       return { text: ev.evidence, cls: "fam-" + String(ev.family || "").toLowerCase() };
     });
+  }
+
+  function appendHighlighted(note, text, spans) {
+    // Overlap-aware: later spans win overlapping segments, so the model's
+    // selection can sit inside the gold-supporting span.
+    var marks = [];
+    spans.forEach(function (s, prio) {
+      if (!s.text) return;
+      var at = text.indexOf(s.text);
+      while (at >= 0) {
+        marks.push({ start: at, end: at + s.text.length, cls: s.cls, prio: prio });
+        at = text.indexOf(s.text, at + 1);
+      }
+    });
+    if (!marks.length) { note.textContent = text; return; }
+    var pts = {};
+    marks.forEach(function (m) { pts[m.start] = true; pts[m.end] = true; });
+    var bounds = Object.keys(pts).map(Number).sort(function (a, b) { return a - b; });
+    var cursor = 0;
+    bounds.forEach(function (b) {
+      if (b <= cursor) return;
+      var best = null;
+      marks.forEach(function (m) {
+        if (m.start <= cursor && m.end >= b && (!best || m.prio > best.prio)) best = m;
+      });
+      var chunk = text.slice(cursor, b);
+      if (best) note.appendChild(el("mark", best.cls, chunk));
+      else note.appendChild(document.createTextNode(chunk));
+      cursor = b;
+    });
+    note.appendChild(document.createTextNode(text.slice(cursor)));
   }
 
   function renderToggle() {
@@ -776,9 +831,26 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
       b.type = "button";
       b.setAttribute("aria-pressed", String(heroState.task === pair[0]));
       b.addEventListener("click", function () {
-        heroState.task = pair[0];
+        selectTask(pair[0]);
+        state.i = 0;
         renderHero();
         renderWhy();
+        renderTheater(true);
+      });
+      host.appendChild(b);
+    });
+    host.appendChild(el("span", "lbl", "letter"));
+    (casesByTask[heroState.task] || []).forEach(function (c) {
+      var b = el("button", null, c.letter_id);
+      b.type = "button";
+      b.title = c.story;
+      b.setAttribute("aria-pressed", String(heroState.letterId === c.case_id));
+      b.addEventListener("click", function () {
+        heroState.letterId = c.case_id;
+        state.i = 0;
+        renderHero();
+        renderWhy();
+        renderTheater(true);
       });
       host.appendChild(b);
     });
@@ -787,27 +859,17 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
   function renderLetter(task, c) {
     document.getElementById("hero-from").textContent =
       c.letter_id + " · " + c.task_label + " · synthetic teaching letter";
-    var note = document.getElementById("hero-note");
-    var spans = heroSpans(task, c).filter(function (s) {
-      return s.text && c.note_text.indexOf(s.text) >= 0;
-    });
-    spans.sort(function (a, b) { return c.note_text.indexOf(a.text) - c.note_text.indexOf(b.text); });
-    var cursor = 0;
-    spans.forEach(function (s) {
-      var at = c.note_text.indexOf(s.text, cursor);
-      note.appendChild(document.createTextNode(c.note_text.slice(cursor, at)));
-      note.appendChild(el("mark", s.cls, s.text));
-      cursor = at + s.text.length;
-    });
-    note.appendChild(document.createTextNode(c.note_text.slice(cursor)));
+    appendHighlighted(
+      document.getElementById("hero-note"),
+      c.note_text,
+      heroSpans(task, c)
+    );
 
     var gold = document.getElementById("hero-gold");
     if (task === "gan2026") {
       gold.appendChild(document.createTextNode("The benchmark's answer: "));
       gold.appendChild(el("b", null, c.gold));
-      gold.appendChild(document.createTextNode(
-        " — a stated typical pattern outranks a year-to-date count, by the task's gold convention."
-      ));
+      gold.appendChild(document.createTextNode(" — " + c.gold_note));
     } else {
       gold.appendChild(el("b", null, "This letter teaches shape, not accuracy: "));
       gold.appendChild(document.createTextNode(
@@ -826,15 +888,33 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
       var fired = hybridRun.observations.filter(function (o) {
         return o.changed && /\.repair\./.test(o.stage_id);
       });
-      var rescue = fired[0];
-      host.appendChild(el("span", "rk", "The whole project in one rewrite"));
-      host.appendChild(el("span", "pick", rescue ? String(rescue.input) : "—"));
-      host.appendChild(el("span", "arr", "→"));
-      host.appendChild(el("span", "fixed", rescue ? String(rescue.output) : "—"));
-      var by = el("span", "by");
-      by.appendChild(document.createTextNode("the model's pick, rewritten by one deterministic repair family: "));
-      by.appendChild(el("b", null, rescue ? rescue.stage_name.replace(/^Repair \d+ - /, "") : ""));
-      host.appendChild(by);
+      var veto = vetoObservation(hybridRun);
+      if (fired.length) {
+        var rescue = fired[0];
+        host.appendChild(el("span", "rk", "The whole project in one rewrite"));
+        host.appendChild(el("span", "pick", String(rescue.input)));
+        host.appendChild(el("span", "arr", "→"));
+        host.appendChild(el("span", "fixed", String(rescue.output)));
+        var by = el("span", "by");
+        by.appendChild(document.createTextNode(c.story + " Repair: "));
+        by.appendChild(el("b", null, rescue.stage_name.replace(/^Repair \d+ - /, "")));
+        host.appendChild(by);
+      } else if (veto) {
+        host.appendChild(el("span", "rk", "The whole project in one stand-down"));
+        var computed = (veto.note.match(/^computed (.+?), withheld/) || [])[1] || "";
+        host.appendChild(el("span", "pick", computed));
+        host.appendChild(el("span", "arr", "✕"));
+        host.appendChild(el("span", "fixed", String(veto.output)));
+        var by2 = el("span", "by");
+        by2.appendChild(document.createTextNode(c.story + " Withheld by: "));
+        by2.appendChild(el("b", null, "the preservation rule"));
+        host.appendChild(by2);
+      } else {
+        host.appendChild(el("span", "rk", "Nothing fired on this letter"));
+        var by3 = el("span", "by");
+        by3.appendChild(document.createTextNode(c.story));
+        host.appendChild(by3);
+      }
       return;
     }
     // ExECT's story is the defined comparison boundary, derived from the runs.
@@ -856,10 +936,10 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
     famChip.appendChild(document.createTextNode(" families · model-led methods"));
     chips.appendChild(famChip);
     host.appendChild(chips);
-    var by2 = el("span", "by");
-    by2.appendChild(document.createTextNode("two different questions by design — "));
-    by2.appendChild(el("b", null, "scores are not interchangeable"));
-    host.appendChild(by2);
+    var by4 = el("span", "by");
+    by4.appendChild(document.createTextNode("two different questions by design — "));
+    by4.appendChild(el("b", null, "scores are not interchangeable"));
+    host.appendChild(by4);
   }
 
   function renderCards(task, c) {
@@ -876,7 +956,7 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
       card.appendChild(el("h3", null, m.method_label));
       var answer = el("div", "answer" + (task === "exectv2" ? " small" : ""), run.final_answer);
       card.appendChild(answer);
-      card.appendChild(el("p", "why", HERO_COPY[task].why[m.method]));
+      card.appendChild(el("p", "why", (c.card_why || {})[m.method] || ""));
       var tagline = el("div", "tagline");
       if (task === "exectv2") {
         tagline.appendChild(document.createTextNode(EXECT_TAGLINE[m.method]));
@@ -884,10 +964,20 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
         var fired = run.observations.filter(function (o) {
           return o.changed && /\.repair\./.test(o.stage_id);
         });
-        tagline.appendChild(el("b", null, fired.length + " repair " + (fired.length === 1 ? "family" : "families") + " fired: "));
-        tagline.appendChild(document.createTextNode(fired.map(function (o) {
-          return o.stage_name.replace(/^Repair \d+ - /, "") + " (" + o.input + " → " + o.output + ")";
-        }).join("; ")));
+        var veto = vetoObservation(run);
+        if (fired.length) {
+          tagline.appendChild(el("b", null, fired.length + " repair " + (fired.length === 1 ? "family" : "families") + " fired: "));
+          tagline.appendChild(document.createTextNode(fired.map(function (o) {
+            return o.stage_name.replace(/^Repair \d+ - /, "") + " (" + o.input + " → " + o.output + ")";
+          }).join("; ")));
+        } else if (veto) {
+          tagline.appendChild(el("b", null, "one rewrite computed, withheld: "));
+          tagline.appendChild(document.createTextNode(
+            veto.stage_name.replace(/^Repair \d+ - /, "") + " · " + (veto.note.match(/^computed (.+?), withheld/) || [])[1]
+          ));
+        } else {
+          tagline.appendChild(document.createTextNode("no repair family fired"));
+        }
       } else {
         tagline.appendChild(document.createTextNode(
           run.correct ? "matches gold" : "does not match gold — and nothing downstream can catch it"
@@ -901,7 +991,7 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
   }
 
   function renderHero() {
-    var c = caseByTask[heroState.task];
+    var c = currentCase();
     clear(document.getElementById("hero-note"));
     clear(document.getElementById("hero-gold"));
     clear(document.getElementById("rescue"));
@@ -930,31 +1020,11 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
 
   function renderWhy() {
     var task = heroState.task;
-    document.getElementById("why-h2").textContent = WHY_COPY[task].h2;
+    var c = currentCase();
+    document.getElementById("why-h2").textContent = c.mechanism_title || WHY_COPY[task].h2;
     var prose = document.getElementById("why-prose");
     clear(prose);
-    if (task === "gan2026") {
-      prose.appendChild(document.createTextNode("The letter offers two numbers: a stated typical pattern — "));
-      prose.appendChild(el("b", null, "a focal seizure monthly"));
-      prose.appendChild(document.createTextNode(" — and a concrete count — "));
-      prose.appendChild(el("b", null, "seven seizures so far this year"));
-      prose.appendChild(document.createTextNode(
-        ". The benchmark's gold convention prefers the typical pattern, because a year-to-date " +
-        "count is not a rate. A language model, reading like a person in a hurry, prefers the count. " +
-        "LLM-only has no stage after the model that is allowed to change a selection, so the mistake " +
-        "stands. LLM-with-rules adds deterministic repair families that are allowed to — and on this " +
-        "letter exactly one fires."
-      ));
-    } else {
-      prose.appendChild(document.createTextNode(
-        "One model call proposes findings across four families — diagnosis, seizure frequency, " +
-        "prescriptions, investigations. LLM-only scores them as proposed. LLM-with-rules passes " +
-        "them through deterministic family transforms that complete state representations and " +
-        "reconcile findings before scoring. This letter is chosen for shape, so both model-led " +
-        "methods produce the same four families here; the stage tables below show exactly which " +
-        "transforms sit between the call and the score."
-      ));
-    }
+    prose.appendChild(document.createTextNode(c.mechanism || ""));
 
     var llm = byId[task + "_llm_only"];
     var hybrid = byId[task + "_llm_with_rules"];
@@ -1077,18 +1147,19 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
   function renderMethods() {
     var host = document.getElementById("methods");
     clear(host);
-    [["gan2026", "Gan 2026"], ["exectv2", "ExECTv2"]].forEach(function (task) {
-      var group = el("div", "group");
-      group.appendChild(el("span", null, task[1]));
-      DATA.manifests.filter(function (m) { return m.task === task[0]; }).forEach(function (m) {
-        var b = el("button", null, m.method_label);
-        b.type = "button";
-        b.setAttribute("aria-pressed", String(m.method_id === state.method));
-        b.addEventListener("click", function () { state.method = m.method_id; state.i = 0; stopPlay(); renderTheater(true); });
-        group.appendChild(b);
-      });
-      host.appendChild(group);
+    var c = currentCase();
+    var group = el("div", "group");
+    group.appendChild(el("span", null, c.letter_id));
+    DATA.manifests.filter(function (m) { return m.task === heroState.task; }).forEach(function (m) {
+      var b = el("button", null, m.method_label);
+      b.type = "button";
+      b.setAttribute("aria-pressed", String(m.method_id === state.method));
+      b.addEventListener("click", function () { state.method = m.method_id; state.i = 0; stopPlay(); renderTheater(true); });
+      group.appendChild(b);
     });
+    host.appendChild(group);
+    var note = el("div", "theater-letter-note", c.story);
+    host.appendChild(note);
   }
 
   function renderFilm(manifest, run) {
@@ -1213,12 +1284,24 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
 
   function syncHash() {
     if (!window.history || !history.replaceState) return;
-    history.replaceState(null, "", "#watch=" + state.method + ":" + state.i);
+    history.replaceState(null, "", "#watch=" + heroState.letterId + "/" + state.method + ":" + state.i);
   }
 
   function readHash() {
+    var full = (window.location.hash || "").match(/^#watch=([a-z0-9_]+)\/([a-z0-9_]+):(\d+)$/);
+    if (full && byId[full[2]]) {
+      var target = DATA.cases.filter(function (c) { return c.case_id === full[1]; })[0];
+      if (target) {
+        heroState.task = target.task;
+        heroState.letterId = target.case_id;
+        state.method = full[2];
+        state.i = Number(full[3]);
+        return true;
+      }
+    }
     var m = (window.location.hash || "").match(/^#watch=([a-z0-9_]+):(\d+)$/);
     if (m && byId[m[1]]) {
+      if (heroState.task !== byId[m[1]].task) selectTask(byId[m[1]].task);
       state.method = m[1];
       state.i = Number(m[2]);
       return true;
@@ -1228,7 +1311,11 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
 
   function renderTheater(syncUrl) {
     var manifest = byId[state.method];
-    var c = caseByTask[manifest.task];
+    if (manifest.task !== heroState.task) {
+      state.method = (casesByTask[heroState.task] || [])[0].runs[0].method_id;
+      manifest = byId[state.method];
+    }
+    var c = currentCase();
     var run = runFor(manifest, c);
     state.i = Math.max(0, Math.min(state.i, run.observations.length - 1));
     renderMethods();
@@ -1330,7 +1417,7 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
         inLane.forEach(function (x) {
           var chip = el("a", "achip " + alignChipClass(x.s, lane),
             (x.i + 1) + " · " + x.s.name);
-          chip.href = "#watch=" + m.method_id + ":" + x.i;
+          chip.href = watchLink(m.method_id, x.i);
           chip.title = x.s.name;
           cell.appendChild(chip);
         });
@@ -1457,7 +1544,7 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
         var tdStage = el("td");
         var sname = el("div", "sname");
         var link = el("a", null, s.name);
-        link.href = "#watch=" + m.method_id + ":" + i;
+        link.href = watchLink(m.method_id, i);
         link.appendChild(el("span", "go", "watch →"));
         sname.appendChild(link);
         tdStage.appendChild(sname);
@@ -1548,13 +1635,13 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
     head.appendChild(el("h3", null, "Regenerate this explainer, or fail on drift"));
     card.appendChild(head);
     var line = el("div", "cmdline");
-    line.appendChild(el("span", "t binary", ".venv/Scripts/python.exe scratch/explainer/build.py"));
+    line.appendChild(el("span", "t binary", "python scripts/build_explainer.py"));
     line.appendChild(document.createTextNode(" "));
     line.appendChild(el("span", "t flag", "--check"));
     card.appendChild(line);
     var table = el("table", "ttable");
-    [["(no flags)", "Rebuilds every page in this directory from the live repository: stage manifests, executed teaching cases, a walk of src, and the hand-authored CLI map.", "Makes no model calls and reads no locked rows.", "scratch/explainer/build.py:main"],
-     ["--check", "Writes nothing. Exits non-zero if any committed page is stale against the current repository.", "The drift gate: if the code moves and the explainer does not, the check fails.", "scratch/explainer/build.py:main"]]
+    [["(no flags)", "Rebuilds every page in docs/explainer from the live repository: stage manifests, executed teaching letters, a walk of src, and the hand-authored CLI map.", "Makes no model calls and reads no locked rows.", "scripts/build_explainer.py:main"],
+     ["--check", "Writes nothing. Exits non-zero if any committed page is stale against the current repository.", "The drift gate: if the code moves and the explainer does not, the check fails.", "scripts/build_explainer.py:main"]]
       .forEach(function (row) {
         var tr = el("tr");
         tr.appendChild(el("td", "tok", row[0]));
@@ -1568,9 +1655,9 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
     card.appendChild(table);
     card.appendChild(artifactBlock([
       {
-        name: "scratch/explainer/*.html + explainer_data.json",
+        name: "docs/explainer/*.html + explainer_data.json",
         what: "Every page in this directory, regenerated from the stage manifests, " +
-          "executed teaching cases, a walk of src, and the CLI map above. " +
+          "executed teaching letters, a walk of src, and the CLI map above. " +
           "--check fails on drift instead of writing."
       }
     ]));
@@ -1590,7 +1677,7 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
       DATA.codebase.total_loc.toLocaleString("en-US") + " lines across " +
       DATA.codebase.total_files + " Python files). Nothing here is hand-copied output.";
     document.getElementById("regen").textContent =
-      "Regenerate: .venv/Scripts/python.exe scratch/explainer/build.py  ·  Drift gate: same command with --check  ·  Serve: python -m http.server 8765 --directory scratch/explainer";
+      "Regenerate: python scripts/build_explainer.py  ·  Drift gate: same command with --check  ·  Serve: python -m http.server 8765 --directory docs/explainer";
   }
 
   function initScrollSpy() {
@@ -1623,7 +1710,7 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
     b.textContent = "Pause";
     state.timer = setInterval(function () {
       var manifest = byId[state.method];
-      var run = runFor(manifest, caseByTask[manifest.task]);
+      var run = runFor(manifest, currentCase());
       if (state.i >= run.observations.length - 1) { stopPlay(); return; }
       state.i += 1; renderTheater(true);
     }, 1000);
@@ -1632,7 +1719,7 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
     if (e.target && /input|textarea|select/i.test(e.target.tagName)) return;
     if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
     var manifest = byId[state.method];
-    var run = runFor(manifest, caseByTask[manifest.task]);
+    var run = runFor(manifest, currentCase());
     var next = state.i + (e.key === "ArrowRight" ? 1 : -1);
     if (next < 0 || next > run.observations.length - 1) return;
     state.i = next; stopPlay(); renderTheater(true);
@@ -1640,6 +1727,8 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
   window.addEventListener("hashchange", function () {
     if (readHash()) {
       stopPlay();
+      renderHero();
+      renderWhy();
       renderTheater();
       document.getElementById("watch").scrollIntoView();
     }
@@ -1656,9 +1745,9 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
     renderStages();
   });
 
+  var deepLinked = readHash();
   renderHero();
   renderWhy();
-  var deepLinked = readHash();
   renderTheater();
   renderAlign();
   renderStages();
