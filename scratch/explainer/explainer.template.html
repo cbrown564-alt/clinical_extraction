@@ -351,6 +351,57 @@ section.theater {
 .fixture-note { margin-top: 22px; font-family: var(--mono); font-size: 11.5px; color: var(--t-faint); max-width: 76ch; }
 
 /* ---------------- stages ---------------- */
+.subhead { margin: 0 0 12px; font-size: 21px; font-weight: 600; letter-spacing: -.015em; }
+.subnote { margin: -6px 0 16px; color: var(--muted); font-size: 14.5px; max-width: 68ch; }
+
+.align-wrap { overflow-x: auto; margin-bottom: 8px; }
+.align-grid { min-width: 780px; }
+.arow { display: grid; grid-template-columns: 132px repeat(6, 1fr); gap: 4px; margin-bottom: 4px; }
+.acell { padding: 6px; min-height: 34px; }
+.ahead .acell { min-height: 0; padding: 4px 6px; }
+.alane { font-family: var(--mono); font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
+.alabel b { display: block; font-size: 13.5px; }
+.alabel span { font-family: var(--mono); font-size: 10.5px; color: var(--faint); }
+.acell.lane-model { background: var(--mind-soft); }
+.acell.lane-repair { background: var(--claim-soft); }
+.acell.lane-gate, .acell.lane-score { background: oklch(0.96 0.005 250); }
+.achip {
+  display: block; font-family: var(--mono); font-size: 10.5px; line-height: 1.3;
+  padding: 3px 6px; margin-bottom: 3px; border: 1px solid var(--rule, var(--line));
+  color: var(--ink); text-decoration: none; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; background: var(--panel);
+}
+.achip:hover { border-color: var(--ink); }
+.achip.model { border-color: var(--mind); }
+.achip.repair { border-color: var(--claim); font-weight: 500; }
+.achip.gate { border-style: dashed; color: var(--muted); }
+.achip.score { border-color: var(--score); }
+.achip.det { border-color: var(--hands); }
+.anone { font-family: var(--mono); font-size: 10px; color: var(--faint); font-style: normal; }
+.align-caption { font-size: 14.5px; color: var(--muted); margin: 6px 0 26px; max-width: 74ch; }
+.align-caption b { color: var(--ink); font-weight: 600; }
+
+.filterbar {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  background: var(--panel); border: 1px solid var(--line);
+  padding: 10px 12px; margin-bottom: 14px;
+}
+.filterbar input[type="search"] {
+  font-family: var(--mono); font-size: 12.5px; padding: 7px 10px;
+  border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+  min-width: 240px; flex: 0 1 300px;
+}
+.filterbar input[type="search"]:focus { outline: 2px solid var(--claim); outline-offset: 1px; }
+.fchip {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .04em; text-transform: uppercase;
+  padding: 4px 9px; border: 1px solid var(--line); background: transparent; color: var(--muted);
+}
+.fchip:hover { border-color: var(--faint); }
+.fchip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.fchip.eff-clinical_meaning[aria-pressed="true"] { background: var(--claim); border-color: var(--claim); }
+.fcount { font-family: var(--mono); font-size: 11px; color: var(--faint); margin-left: auto; }
+.fclear { font-family: var(--mono); font-size: 11px; color: var(--hands); border: 0; background: transparent; text-decoration: underline; text-underline-offset: 2px; }
+
 .legendblock { background: var(--panel); border: 1px solid var(--line); padding: 16px 18px; margin-bottom: 22px; }
 .legendblock .row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
 .legendblock .row:last-child { margin-bottom: 0; }
@@ -415,6 +466,14 @@ details.method summary .owner { margin-left: auto; font-family: var(--mono); fon
 .ttable .note { color: var(--muted); font-size: 12.5px; }
 .ttable .code { font-family: var(--mono); font-size: 11px; color: var(--faint); word-break: break-all; }
 .handtag { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); border: 1px dashed var(--faint); padding: 2px 7px; margin-left: 8px; }
+.artifacts { border-top: 1px solid var(--line); padding: 12px 18px 14px; }
+.artifacts .ak {
+  display: block; font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--faint); margin-bottom: 8px;
+}
+.artifacts .an { font-family: var(--mono); font-size: 12px; font-weight: 600; }
+.artifacts .aw { color: var(--muted); font-size: 13px; margin: 2px 0 10px; max-width: 72ch; }
+.artifacts .aw:last-child { margin-bottom: 0; }
 
 /* ---------------- footer ---------------- */
 footer { padding: 56px 26px 90px; border-top: 1px solid var(--line); margin-top: 40px; }
@@ -542,6 +601,20 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
       the <b>owner</b> (model, deterministic, scorer) and the <b>effect class</b>
       (what a stage is allowed to change).
     </p>
+
+    <h3 class="subhead">The three methods, aligned</h3>
+    <p class="subnote">Same task, three paths, one set of lanes. The hybrid's claim is structural:
+      it is the LLM path with a deterministic lane inserted.</p>
+    <div id="align"></div>
+
+    <h3 class="subhead">All 59 stages, searchable</h3>
+    <div class="filterbar" id="filterbar">
+      <input type="search" id="stage-search" placeholder="Search stage names, symbols, tests…" aria-label="Search stages">
+      <span id="owner-chips"></span>
+      <span id="eff-chips"></span>
+      <span class="fcount" id="stage-count"></span>
+      <button type="button" class="fclear" id="stage-clear">clear</button>
+    </div>
     <div class="legendblock" id="legendblock"></div>
     <div id="methods-tables"></div>
   </div>
@@ -1181,10 +1254,159 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
   }
 
   /* ============================================================
-     4 · stages: six manifest tables
+     4 · stages: alignment view + searchable manifest tables
      ============================================================ */
+  var LANES = ["transport", "model", "propose", "repair", "gate", "score"];
+  var LANE_LABEL = {
+    transport: "transport / shape",
+    model: "model",
+    propose: "propose / decide",
+    repair: "repair / transform",
+    gate: "gates",
+    score: "score"
+  };
+  var alignState = { task: "gan2026" };
+
+  function laneOf(s, method) {
+    if (s.owner === "model") return "model";
+    if (s.owner === "scorer" || s.effect_class === "benchmark_projection") return "score";
+    if (s.effect_class === "validation_gate") return "gate";
+    if (s.effect_class === "clinical_meaning") return method === "rules" ? "propose" : "repair";
+    return "transport";
+  }
+
+  function alignChipClass(s, lane) {
+    if (s.owner === "model") return "model";
+    if (lane === "repair") return "repair";
+    if (lane === "gate") return "gate";
+    if (lane === "score") return "score";
+    return "det";
+  }
+
+  function renderAlign() {
+    var host = document.getElementById("align");
+    clear(host);
+
+    var toggle = el("div", "task-toggle");
+    toggle.style.marginBottom = "14px";
+    toggle.appendChild(el("span", "lbl", "task"));
+    [["gan2026", "Gan 2026"], ["exectv2", "ExECTv2"]].forEach(function (pair) {
+      var b = el("button", null, pair[1]);
+      b.type = "button";
+      b.setAttribute("aria-pressed", String(alignState.task === pair[0]));
+      b.addEventListener("click", function () { alignState.task = pair[0]; renderAlign(); });
+      toggle.appendChild(b);
+    });
+    host.appendChild(toggle);
+
+    var wrap = el("div", "align-wrap");
+    var grid = el("div", "align-grid");
+    var head = el("div", "arow ahead");
+    head.appendChild(el("div", "acell alabel", ""));
+    LANES.forEach(function (lane) {
+      head.appendChild(el("div", "acell alane", LANE_LABEL[lane]));
+    });
+    grid.appendChild(head);
+
+    var methods = DATA.manifests.filter(function (m) { return m.task === alignState.task; });
+    var repairCounts = {};
+    methods.forEach(function (m) {
+      var row = el("div", "arow");
+      var label = el("div", "acell alabel");
+      label.appendChild(el("b", null, m.method_label));
+      label.appendChild(el("span", null, m.stages.length + " stages"));
+      row.appendChild(label);
+      LANES.forEach(function (lane) {
+        var cell = el("div", "acell lane-" + lane);
+        var inLane = [];
+        m.stages.forEach(function (s, i) {
+          if (laneOf(s, m.method) === lane) inLane.push({ s: s, i: i });
+        });
+        if (lane === "repair") repairCounts[m.method] = inLane.length;
+        if (!inLane.length && lane === "model") cell.appendChild(el("span", "anone", "no model"));
+        if (!inLane.length && lane === "repair" && m.method !== "llm_with_rules") {
+          cell.appendChild(el("span", "anone", m.method === "rules" ? "not applicable" : "nothing here"));
+        }
+        inLane.forEach(function (x) {
+          var chip = el("a", "achip " + alignChipClass(x.s, lane),
+            (x.i + 1) + " · " + x.s.name);
+          chip.href = "#watch=" + m.method_id + ":" + x.i;
+          chip.title = x.s.name;
+          cell.appendChild(chip);
+        });
+        row.appendChild(cell);
+      });
+      grid.appendChild(row);
+    });
+    wrap.appendChild(grid);
+    host.appendChild(wrap);
+
+    var cap = el("p", "align-caption");
+    cap.appendChild(document.createTextNode("Repair/transform lanes on this task: "));
+    cap.appendChild(el("b", null, "rules " + repairCounts.rules));
+    cap.appendChild(document.createTextNode(" · "));
+    cap.appendChild(el("b", null, "LLM " + repairCounts.llm));
+    cap.appendChild(document.createTextNode(" · "));
+    cap.appendChild(el("b", null, "LLM with rules " + repairCounts.llm_with_rules));
+    cap.appendChild(document.createTextNode(
+      ". LLM-only's single " + (alignState.task === "gan2026" ? "repair stage did not fire on this letter" : "row has no such stage") +
+      " — the hybrid's lane is the whole difference. Every chip opens the same stage in the theater above."
+    ));
+    host.appendChild(cap);
+  }
+
+  /* ---------------- filter + tables ---------------- */
+  var stageFilter = { q: "", owner: null, eff: null };
+
+  function stageMatches(s) {
+    if (stageFilter.owner && s.owner !== stageFilter.owner) return false;
+    if (stageFilter.eff && s.effect_class !== stageFilter.eff) return false;
+    if (stageFilter.q) {
+      var hay = (
+        s.name + " " + s.stage_id + " " + s.operation + " " +
+        s.implementation.symbol + " " + s.governing_test
+      ).toLowerCase();
+      if (hay.indexOf(stageFilter.q.toLowerCase()) < 0) return false;
+    }
+    return true;
+  }
+
+  function filtering() {
+    return !!(stageFilter.q || stageFilter.owner || stageFilter.eff);
+  }
+
+  function buildFilterBar() {
+    var owners = document.getElementById("owner-chips");
+    clear(owners);
+    ["model", "deterministic", "scorer"].forEach(function (owner) {
+      var b = el("button", "fchip", owner);
+      b.type = "button";
+      b.setAttribute("aria-pressed", String(stageFilter.owner === owner));
+      b.addEventListener("click", function () {
+        stageFilter.owner = stageFilter.owner === owner ? null : owner;
+        renderStages();
+      });
+      owners.appendChild(b);
+    });
+    var effs = document.getElementById("eff-chips");
+    clear(effs);
+    Object.keys(EFFECT_LABEL).forEach(function (k) {
+      var b = el("button", "fchip eff-" + k, EFFECT_LABEL[k]);
+      b.type = "button";
+      b.setAttribute("aria-pressed", String(stageFilter.eff === k));
+      b.addEventListener("click", function () {
+        stageFilter.eff = stageFilter.eff === k ? null : k;
+        renderStages();
+      });
+      effs.appendChild(b);
+    });
+  }
+
   function renderStages() {
+    buildFilterBar();
+
     var legend = document.getElementById("legendblock");
+    clear(legend);
     var owners = el("div", "row");
     owners.appendChild(el("span", "pill model", "model"));
     owners.appendChild(el("span", "def", "proposes or selects the clinical answer"));
@@ -1199,14 +1421,25 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
     });
     legend.appendChild(effs);
 
+    var total = 0;
+    var shown = 0;
     var host = document.getElementById("methods-tables");
+    clear(host);
     DATA.manifests.forEach(function (m) {
+      var matched = [];
+      m.stages.forEach(function (s, i) {
+        total++;
+        if (stageMatches(s)) { matched.push({ s: s, i: i }); shown++; }
+      });
+      if (filtering() && !matched.length) return;
+
       var det = el("details", "method");
-      if (m.method_id === "gan2026_llm_with_rules") det.open = true;
+      det.open = filtering() || m.method_id === "gan2026_llm_with_rules";
       var sum = el("summary");
       sum.appendChild(el("span", "arrow", "▶"));
       sum.appendChild(el("h3", null, m.task_label + " · " + m.method_label));
-      sum.appendChild(el("span", "meta", m.stages.length + " stages · " + m.method_id));
+      sum.appendChild(el("span", "meta",
+        (filtering() ? matched.length + " of " : "") + m.stages.length + " stages · " + m.method_id));
       sum.appendChild(el("span", "owner", "answer owned by: " + m.prediction_owner));
       det.appendChild(sum);
 
@@ -1216,7 +1449,9 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
         thead.appendChild(el("th", null, h));
       });
       table.appendChild(thead);
-      m.stages.forEach(function (s, i) {
+      (filtering() ? matched : m.stages.map(function (s, i) { return { s: s, i: i }; })).forEach(function (x) {
+        var s = x.s;
+        var i = x.i;
         var tr = el("tr");
         tr.appendChild(el("td", "num", String(i + 1)));
         var tdStage = el("td");
@@ -1242,11 +1477,24 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
       det.appendChild(table);
       host.appendChild(det);
     });
+
+    document.getElementById("stage-count").textContent =
+      filtering() ? shown + " of " + total + " stages" : total + " stages";
   }
 
   /* ============================================================
      5 · commands: the CLI, token by token
      ============================================================ */
+  function artifactBlock(entries) {
+    var block = el("div", "artifacts");
+    block.appendChild(el("span", "ak", "What you get"));
+    entries.forEach(function (a) {
+      block.appendChild(el("div", "an", a.name));
+      block.appendChild(el("p", "aw", a.what));
+    });
+    return block;
+  }
+
   function renderCommands() {
     var host = document.getElementById("cmds");
     DATA.cli.forEach(function (cmd) {
@@ -1288,6 +1536,9 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
         table.appendChild(tr);
       });
       card.appendChild(table);
+      if (cmd.artifacts && cmd.artifacts.length) {
+        card.appendChild(artifactBlock(cmd.artifacts));
+      }
       host.appendChild(card);
     });
 
@@ -1315,6 +1566,14 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
         table.appendChild(tr);
       });
     card.appendChild(table);
+    card.appendChild(artifactBlock([
+      {
+        name: "scratch/explainer/*.html + explainer_data.json",
+        what: "Every page in this directory, regenerated from the stage manifests, " +
+          "executed teaching cases, a walk of src, and the CLI map above. " +
+          "--check fails on drift instead of writing."
+      }
+    ]));
     host.appendChild(card);
   }
 
@@ -1385,11 +1644,23 @@ footer .mono { font-family: var(--mono); font-size: 12px; }
       document.getElementById("watch").scrollIntoView();
     }
   });
+  document.getElementById("stage-search").addEventListener("input", function (e) {
+    stageFilter.q = e.target.value;
+    renderStages();
+  });
+  document.getElementById("stage-clear").addEventListener("click", function () {
+    stageFilter.q = "";
+    stageFilter.owner = null;
+    stageFilter.eff = null;
+    document.getElementById("stage-search").value = "";
+    renderStages();
+  });
 
   renderHero();
   renderWhy();
   var deepLinked = readHash();
   renderTheater();
+  renderAlign();
   renderStages();
   renderCommands();
   renderFooter();
