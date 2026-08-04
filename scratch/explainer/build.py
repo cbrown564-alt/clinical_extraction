@@ -306,6 +306,13 @@ CLI_MAP: list[dict[str, Any]] = [
         },
         "default_choice": "llm_with_rules",
         "choice_flag": "--method",
+        "artifacts": [
+            {
+                "name": "facts JSONL (--output)",
+                "what": "One object per input note: the predicted facts with their "
+                "evidence spans. Written atomically; refuses to overwrite without --overwrite.",
+            },
+        ],
     },
     {
         "id": "clinical-extract-gan",
@@ -355,6 +362,13 @@ CLI_MAP: list[dict[str, Any]] = [
         "manifest_for": {"": "gan2026_llm_with_rules"},
         "default_choice": "",
         "choice_flag": "",
+        "artifacts": [
+            {
+                "name": "frequency JSONL (--output)",
+                "what": "One record per note: the frequency label and its evidence. "
+                "Same atomic write and overwrite guard as the exect subcommand.",
+            },
+        ],
     },
     {
         "id": "gan2026-llm-experiment",
@@ -437,6 +451,24 @@ CLI_MAP: list[dict[str, Any]] = [
         },
         "default_choice": "llm_with_rules",
         "choice_flag": "--pipeline",
+        "artifacts": [
+            {
+                "name": "row JSONL (--jsonl)",
+                "what": "Per-row records written incrementally: prompt inputs, raw "
+                "outputs, parse diagnostics, traces, and scores. Safe to inspect "
+                "mid-run; a rerun resumes from it.",
+            },
+            {
+                "name": "report (--markdown)",
+                "what": "The aggregate report for the run: configuration, scores, "
+                "and diagnostics summary.",
+            },
+            {
+                "name": ".resume-part checkpoints",
+                "what": "Progress checkpoints written every N rows. A rerun loads "
+                "the durable target plus any newer interrupted-run checkpoint.",
+            },
+        ],
     },
     {
         "id": "trace-explorer",
@@ -474,6 +506,18 @@ CLI_MAP: list[dict[str, Any]] = [
         "manifest_for": {},
         "default_choice": "",
         "choice_flag": "",
+        "artifacts": [
+            {
+                "name": ".trace_explorer/ trace index",
+                "what": "Disposable index over saved runs, built on first start. "
+                "Reviewer decisions live separately in reviews.sqlite3.",
+            },
+            {
+                "name": "the workbench",
+                "what": "The Next.js frontend proxies /api/* to this service. "
+                "Open http://127.0.0.1:3000/workbench.",
+            },
+        ],
     },
     {
         "id": "build-architecture-docs",
@@ -502,6 +546,13 @@ CLI_MAP: list[dict[str, Any]] = [
         "manifest_for": {},
         "default_choice": "",
         "choice_flag": "",
+        "artifacts": [
+            {
+                "name": "docs/architecture/*",
+                "what": "Regenerated method cards, diagrams, and teaching walks. "
+                "--check fails on drift instead of writing.",
+            },
+        ],
     },
 ]
 
