@@ -1518,12 +1518,6 @@
      "note": "Adds endpoint handling and live assembly around the same stages. Not a separate method; it must not drift from this manifest."
     },
     {
-     "name": "Public readable wrapper",
-     "role": "operational wrapper",
-     "path": "src/clinical_extraction_local/clinical_findings/pipeline.py",
-     "note": "The readable public surface over the operational wrapper."
-    },
-    {
      "name": "Historical v08 architecture",
      "role": "historical performance control",
      "path": "docs/experiments/exectv2/reliability/archive/exectv2_joint_policy_archive_README.md",
@@ -2234,50 +2228,23 @@
     "path": "src/clinical_extraction/tasks",
     "blurb": "The two research pipelines. Almost all of the code, and all of the clinical stages.",
     "files": 279,
-    "loc": 59784,
+    "loc": 59812,
     "children": [
      {
       "name": "Gan 2026",
       "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026",
       "files": 88,
-      "loc": 22160,
+      "loc": 22188,
       "role": "task",
       "note": "",
       "children": [
        {
-        "name": "agentic",
-        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/agentic",
-        "files": 0,
-        "loc": 0,
-        "role": "sediment",
-        "note": "Retained agentic experiments. Not a selected path.",
-        "methods": []
-       },
-       {
-        "name": "artifact_analysis",
-        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis",
-        "files": 0,
-        "loc": 0,
-        "role": "sediment",
-        "note": "Post-hoc analysis over saved run artifacts.",
-        "methods": []
-       },
-       {
         "name": "cli",
         "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/cli",
         "files": 2,
-        "loc": 478,
+        "loc": 483,
         "role": "support",
         "note": "Argument parsing and run bookkeeping.",
-        "methods": []
-       },
-       {
-        "name": "components",
-        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/components",
-        "files": 0,
-        "loc": 0,
-        "role": "support",
-        "note": "Reusable pipeline components.",
         "methods": []
        },
        {
@@ -2308,24 +2275,6 @@
         "loc": 257,
         "role": "sediment",
         "note": "Ablation and experiment controls, switched off in the selected configuration.",
-        "methods": []
-       },
-       {
-        "name": "gepa",
-        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/gepa",
-        "files": 0,
-        "loc": 0,
-        "role": "sediment",
-        "note": "Closed GEPA prompt-optimization workstream. Historical comparison only.",
-        "methods": []
-       },
-       {
-        "name": "hybrid",
-        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/hybrid",
-        "files": 0,
-        "loc": 0,
-        "role": "support",
-        "note": "Supporting code.",
         "methods": []
        },
        {
@@ -2388,15 +2337,6 @@
         "role": "support",
         "note": "Evidence records for the selected runs.",
         "methods": []
-       },
-       {
-        "name": "state_graph",
-        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/state_graph",
-        "files": 0,
-        "loc": 0,
-        "role": "sediment",
-        "note": "Retained state-graph exploration.",
-        "methods": []
        }
       ]
      },
@@ -2408,15 +2348,6 @@
       "role": "task",
       "note": "",
       "children": [
-       {
-        "name": "agentic",
-        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/agentic",
-        "files": 0,
-        "loc": 0,
-        "role": "sediment",
-        "note": "Retained agentic experiments. Not a selected path.",
-        "methods": []
-       },
        {
         "name": "assembly",
         "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly",
@@ -2465,15 +2396,6 @@
         "loc": 1807,
         "role": "sediment",
         "note": "Closed GEPA prompt-optimization workstream. Historical comparison only.",
-        "methods": []
-       },
-       {
-        "name": "hybrid",
-        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/hybrid",
-        "files": 0,
-        "loc": 0,
-        "role": "support",
-        "note": "Supporting code.",
         "methods": []
        },
        {
@@ -2575,7 +2497,7 @@
     "path": "src/clinical_extraction/operational",
     "blurb": "The thin wrapper behind `clinical-extract`: notes in, JSONL out.",
     "files": 7,
-    "loc": 626,
+    "loc": 657,
     "children": []
    },
    {
@@ -2585,26 +2507,10 @@
     "files": 20,
     "loc": 4076,
     "children": []
-   },
-   {
-    "name": "Observatory",
-    "path": "src/clinical_extraction/observatory",
-    "blurb": "Additional routers over saved runs.",
-    "files": 0,
-    "loc": 0,
-    "children": []
-   },
-   {
-    "name": "Readable wrappers",
-    "path": "src/clinical_extraction_local",
-    "blurb": "A short public surface over the operational wrapper.",
-    "files": 14,
-    "loc": 1180,
-    "children": []
    }
   ],
-  "total_files": 343,
-  "total_loc": 72194,
+  "total_files": 329,
+  "total_loc": 71073,
   "on_path_dirs": {
    "src/clinical_extraction/core": [
     "gan2026_llm_only",
@@ -2969,6 +2875,6 @@
    "choice_flag": ""
   }
  ],
- "scripts_count": 69,
- "tests_count": 51
+ "scripts_count": 68,
+ "tests_count": 48
 }
