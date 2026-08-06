@@ -1,21 +1,44 @@
 #!/usr/bin/env python3
-"""Sealed holdout category aggregates from public panels only.
+"""Sealed holdout category aggregates, including unlocked bucket scores.
 
-No sealed row JSONL. No failure examples. See
-docs/research/six_model_holdout_category_aggregates_protocol_2026-08-06.md.
+Machine-only scoring of sealed prediction ledgers. Public outputs stay
+aggregate-only. See
+docs/research/six_model_holdout_category_aggregates_protocol_2026-08-06.md and
+docs/research/six_model_holdout_category_aggregates_unlock_protocol_2026-08-06.md.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
+from collections import defaultdict
 from pathlib import Path
 from typing import Any
+
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
+    ExectLetter,
+    load_letters_for_split,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
+    aggregate_scores,
+    annotation_from_mapping,
+    clinical_headline_scores,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
+    load_records_for_split,
+    load_split_manifest,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
+    load_jsonl_rows,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import hybrid_structured_events
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DATE_STAMP = "20260806"
 REPORT_DATE = "2026-08-06"
+_MULTIPLE_WORD_RE = re.compile(r"\bmultiple\b", re.IGNORECASE)
 
 MODEL_SPECS = (
     ("gpt41mini", "GPT-4.1-mini"),
@@ -35,7 +58,9 @@ X_MIN = 0.85
 X_SPREAD_MAX = 0.08
 Z_MAX = 0.75
 EXECT_MIN_N = 10
+GAN_MIN_N = 20
 EXECT_HOLDOUT_N = 59
+FIDELITY_F1_TOL = 1e-4
 
 EXECT_PANEL = (
     REPO_ROOT / "experiments/exectv2_six_model_test60_stage_panel_20260801/panel_aggregate.json"
@@ -52,6 +77,57 @@ DEV_CATEGORY_CUT = (
 )
 GAN_TAXONOMY = REPO_ROOT / "experiments/gan2026_gold_task_taxonomy_20260806.json"
 EXECT_TAXONOMY = REPO_ROOT / "experiments/exectv2_gold_task_taxonomy_20260806.json"
+
+GAN_LLM_ROOT = REPO_ROOT / "scratch/holdout/gan2026_six_model_llm_only_test450_20260801"
+GAN_HYBRID_SOURCES = {
+    "gpt41mini": REPO_ROOT / "scratch/holdout/gan2026_matched_v05/gpt41mini/rows.jsonl",
+    "gpt56luna": REPO_ROOT / "scratch/holdout/gan2026_matched_v05/gpt56luna/rows.jsonl",
+    "gpt56sol": REPO_ROOT / "scratch/holdout/gan2026_matched_v05/gpt56sol/rows.jsonl",
+    "deepseek_v4_flash": (
+        REPO_ROOT / "scratch/holdout/gan2026_matched_v05/deepseek_v4_flash/rows.jsonl"
+    ),
+    "qwen36_35b": (
+        REPO_ROOT / "scratch/holdout/gan2026_matched_v05_local/qwen36_35b/rows.jsonl"
+    ),
+    "gemma4_26b": (
+        REPO_ROOT / "scratch/holdout/gan2026_matched_v05_local/gemma4_26b/rows.jsonl"
+    ),
+}
+GAN_HYBRID_MODELS = {
+    "gpt41mini": ("openai/gpt-4.1-mini", 0.0, 10_000),
+    "gpt56luna": ("openai/gpt-5.6-luna", 1.0, 10_000),
+    "gpt56sol": ("openai/gpt-5.6-sol", 0.0, 10_000),
+    "deepseek_v4_flash": ("deepseek/deepseek-v4-flash", 0.0, 32_000),
+    "qwen36_35b": ("ollama_chat/qwen3.6:35b", 0.0, 16_000),
+    "gemma4_26b": ("ollama_chat/gemma4:26b", 0.0, 16_000),
+}
+EXECT_SEALED = {
+    "gpt41mini": (
+        REPO_ROOT / "scratch/holdout/exectv2_test60/gpt41mini/gpt41mini_sealed_rows.jsonl"
+    ),
+    "gpt56luna": (
+        REPO_ROOT / "scratch/holdout/exectv2_test60/gpt56luna/gpt56luna_sealed_rows.jsonl"
+    ),
+    "gpt56sol": (
+        REPO_ROOT
+        / "scratch/holdout/exectv2_test60_sol_credit_v2/gpt56sol/gpt56sol_sealed_rows.jsonl"
+    ),
+    "deepseek_v4_flash": (
+        REPO_ROOT
+        / "scratch/holdout/exectv2_test60/deepseek_v4_flash"
+        / "deepseek_v4_flash_sealed_rows.jsonl"
+    ),
+    "qwen36_35b": (
+        REPO_ROOT
+        / "scratch/local_queue/qwen36_35b_exect/test60/qwen36_35b"
+        / "qwen36_35b_sealed_rows.jsonl"
+    ),
+    "gemma4_26b": (
+        REPO_ROOT
+        / "scratch/local_queue/gemma4_26b_exect/test60/gemma4_26b"
+        / "gemma4_26b_sealed_rows.jsonl"
+    ),
+}
 
 FORBIDDEN_KEYS = {
     "letter_id",
@@ -99,6 +175,58 @@ def _assign_lens(*, scores: dict[str, float], n: int, min_n: int) -> str | None:
     return "y"
 
 
+def _gan_shape_flags(label: str) -> dict[str, bool]:
+    text = label.lower().strip()
+    return {
+        "is_range": " to " in text,
+        "is_cluster": "cluster" in text,
+        "is_multiple_word": bool(_MULTIPLE_WORD_RE.search(text)),
+        "is_seizure_free": text.startswith("seizure free"),
+        "is_unknown_exact": text == "unknown",
+        "is_no_reference": text == "no seizure frequency reference",
+        "has_per": " per " in text,
+    }
+
+
+def _gan_bucket(kind: str, flags: dict[str, bool]) -> str:
+    if kind == "frequency" and flags["is_cluster"]:
+        return "cluster_burden"
+    if kind == "frequency" and flags["is_range"]:
+        return "range_rate"
+    if kind == "frequency" and flags["is_multiple_word"]:
+        return "multiple_word_frequency"
+    if kind == "frequency":
+        return "ordinary_point_rate"
+    if kind == "seizure_free":
+        return "seizure_free"
+    if kind == "unknown":
+        return "unknown_sentinel"
+    if kind == "no_reference":
+        return "no_reference_sentinel"
+    if kind == "unresolved_multiple":
+        return "unresolved_multiple"
+    return "other"
+
+
+def _exect_letter_bucket(dx: int, sf: int, rx: int, inv: int) -> str:
+    counts = (dx, sf, rx, inv)
+    n_families = sum(1 for count in counts if count)
+    multi_any = any(count >= 2 for count in counts)
+    if n_families == 0:
+        return "no_four_family_gold"
+    if sf == 0 and n_families >= 1:
+        if multi_any:
+            return "present_families_multi_mention_empty_sf"
+        return "present_families_single_mention_empty_sf"
+    if multi_any:
+        return "multi_mention_with_sf"
+    if n_families >= 3:
+        return "broad_single_mention_with_sf"
+    if n_families == 1:
+        return "single_family_single_mention_with_sf"
+    return "sparse_multi_family_single_mention_with_sf"
+
+
 def _family_lens_table(
     by_family_scores: dict[str, dict[str, float]],
     *,
@@ -117,6 +245,44 @@ def _family_lens_table(
             "mean": _round(sum(scores.values()) / len(scores)),
             "by_model": {slug: _round(score) for slug, score in scores.items()},
             "lens": _assign_lens(scores=scores, n=n, min_n=EXECT_MIN_N),
+        }
+    return table
+
+
+def _lens_table(
+    method_block: dict[str, Any],
+    *,
+    partition: str,
+    score_key: str,
+    min_n: int,
+    n_key: str = "n",
+) -> dict[str, Any]:
+    bucket_names: set[str] = set()
+    for slug_block in method_block.values():
+        bucket_names.update(slug_block[partition].keys())
+    table: dict[str, Any] = {}
+    for bucket in sorted(bucket_names):
+        scores: dict[str, float] = {}
+        n_values: list[int] = []
+        for slug, slug_block in method_block.items():
+            entry = slug_block[partition].get(bucket)
+            if not entry or entry.get(score_key) is None:
+                continue
+            scores[slug] = float(entry[score_key])
+            n_values.append(int(entry[n_key]))
+        if not scores:
+            continue
+        n = max(n_values) if n_values else 0
+        low = min(scores.values())
+        high = max(scores.values())
+        table[bucket] = {
+            "n": n,
+            "min": _round(low),
+            "max": _round(high),
+            "spread": _round(high - low),
+            "mean": _round(sum(scores.values()) / len(scores)),
+            "by_model": {slug: _round(score) for slug, score in scores.items()},
+            "lens": _assign_lens(scores=scores, n=n, min_n=min_n),
         }
     return table
 
@@ -186,6 +352,164 @@ def _forbidden_paths(value: Any, prefix: str = "") -> list[str]:
     return found
 
 
+def _require_paths(paths: list[Path]) -> None:
+    missing = [path.relative_to(REPO_ROOT).as_posix() for path in paths if not path.is_file()]
+    if missing:
+        raise FileNotFoundError(
+            "sealed ledgers missing; restore per runbook: " + ", ".join(missing)
+        )
+
+
+def _gan_gold_index() -> dict[int, str]:
+    out: dict[int, str] = {}
+    for record in load_records_for_split("test"):
+        kind = record.gold_label_kind.value
+        flags = _gan_shape_flags(record.gold_label)
+        out[int(record.source_row_index)] = _gan_bucket(kind, flags)
+    return out
+
+
+def _gan_bucket_scores(
+    *,
+    correctness: dict[int, bool],
+    gold_index: dict[int, str],
+) -> dict[str, dict[str, Any]]:
+    buckets: dict[str, list[bool]] = defaultdict(list)
+    for index, bucket in gold_index.items():
+        if index not in correctness:
+            continue
+        buckets[bucket].append(correctness[index])
+    return {
+        name: {
+            "n": len(values),
+            "correct": sum(values),
+            "accuracy": _round(sum(values) / len(values)) if values else None,
+        }
+        for name, values in sorted(buckets.items(), key=lambda item: (-len(item[1]), item[0]))
+    }
+
+
+def _load_gan_llm_correct(slug: str) -> dict[int, bool]:
+    path = GAN_LLM_ROOT / slug / "rows.jsonl"
+    out: dict[int, bool] = {}
+    for row in load_jsonl_rows(path):
+        comparison = row.get("comparison")
+        out[int(row["source_row_index"])] = bool(
+            comparison and comparison.get("purist_correct")
+        )
+    return out
+
+
+def _replay_gan_hybrid_correct(slug: str) -> dict[int, bool]:
+    source = GAN_HYBRID_SOURCES[slug]
+    model, temperature, max_tokens = GAN_HYBRID_MODELS[slug]
+    source_rows = load_jsonl_rows(source)
+    raw_outputs = {
+        int(row["source_row_index"]): str(row.get("raw_output") or "")
+        for row in source_rows
+    }
+    if any(not value for value in raw_outputs.values()):
+        raise ValueError(f"{slug} hybrid source has empty raw_output")
+    hybrid_structured_events.set_active_prompt_version(
+        hybrid_structured_events.PROMPT_VERSION_V0_5
+    )
+    manifest = load_split_manifest()
+    replay_rows, _metadata = hybrid_structured_events.run_split(
+        load_records_for_split("test"),
+        split="test",
+        split_manifest=str(manifest.get("manifest_version", "gan2026_split_v1")),
+        model=model,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        mode="prompt-only",
+        dspy_cache=False,
+        reuse_raw_outputs=raw_outputs,
+        reuse_source=str(source.relative_to(REPO_ROOT).as_posix()),
+        repair_config=hybrid_structured_events.StructuredRepairConfig(),
+    )
+    out: dict[int, bool] = {}
+    for row in replay_rows:
+        comparison = row.get("comparison")
+        out[int(row["source_row_index"])] = bool(
+            comparison and comparison.get("purist_correct")
+        )
+    return out
+
+
+def _exect_gold_index() -> dict[str, str]:
+    out: dict[str, str] = {}
+    for letter in load_letters_for_split("test"):
+        dx = len(letter.entities("Diagnosis"))
+        sf = len(letter.entities("SeizureFrequency"))
+        rx = len(letter.entities("Prescription"))
+        inv = len(letter.entities("Investigations"))
+        out[letter.letter_id] = _exect_letter_bucket(dx, sf, rx, inv)
+    return out
+
+
+def _score_exect_rows(rows: list[dict[str, Any]], *, field: str) -> dict[str, Any]:
+    gold_letters: list[ExectLetter] = []
+    pred_letters: list[ExectLetter] = []
+    for row in rows:
+        gold_letters.append(
+            ExectLetter(
+                letter_id=str(row["letter_id"]),
+                note_text="",
+                annotations=tuple(
+                    annotation_from_mapping(mention)
+                    for mention in row.get("gold_mentions", [])
+                ),
+            )
+        )
+        pred_letters.append(
+            ExectLetter(
+                letter_id=str(row["letter_id"]),
+                note_text="",
+                annotations=tuple(
+                    annotation_from_mapping(mention) for mention in row.get(field, [])
+                ),
+            )
+        )
+    family = clinical_headline_scores(gold_letters, pred_letters)
+    overall = aggregate_scores(family.values())
+    return {
+        "n_letters": len(rows),
+        "clinical_fact_f1": overall["f1"],
+        "precision": overall["precision"],
+        "recall": overall["recall"],
+        "by_family": {name: _round(score["f1"]) for name, score in family.items()},
+        "counts": {
+            name: {
+                "pred_count": score["pred_count"],
+                "gold_count": score["gold_count"],
+                "precision_tp": score["precision_tp"],
+                "recall_tp": score["recall_tp"],
+            }
+            for name, score in family.items()
+        },
+    }
+
+
+def _exect_partition_scores(
+    rows_by_id: dict[str, dict[str, Any]],
+    gold_index: dict[str, str],
+    *,
+    field: str,
+) -> dict[str, dict[str, Any]]:
+    groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for letter_id, bucket in gold_index.items():
+        row = rows_by_id.get(letter_id)
+        if row is None:
+            continue
+        groups[bucket].append(row)
+    return {
+        name: _score_exect_rows(group_rows, field=field)
+        for name, group_rows in sorted(
+            groups.items(), key=lambda item: (-len(item[1]), item[0])
+        )
+    }
+
+
 def _exect_holdout_section() -> dict[str, Any]:
     panel = json.loads(EXECT_PANEL.read_text(encoding="utf-8"))
     by_slug = {condition["slug"]: condition for condition in panel["conditions"]}
@@ -232,7 +556,175 @@ def _exect_holdout_section() -> dict[str, Any]:
     }
 
 
-def _gan_overall_holdout() -> dict[str, Any]:
+def _build_gan_bucket_section() -> dict[str, Any]:
+    _require_paths(
+        [GAN_LLM_ROOT / slug / "rows.jsonl" for slug, _ in MODEL_SPECS]
+        + [GAN_HYBRID_SOURCES[slug] for slug, _ in MODEL_SPECS]
+    )
+    gold_index = _gan_gold_index()
+    floors = json.loads(GAN_FLOORS.read_text(encoding="utf-8"))
+    llm_panel = json.loads(GAN_LLM_PANEL.read_text(encoding="utf-8"))
+    llm_expected = {
+        condition["slug"]: float(condition["purist_accuracy"])
+        for condition in llm_panel["conditions"]
+    }
+    methods: dict[str, Any] = {"llm": {}, "llm_with_rules": {}}
+    fidelity: list[dict[str, Any]] = []
+
+    for slug, display in MODEL_SPECS:
+        llm_correct = _load_gan_llm_correct(slug)
+        hybrid_correct = _replay_gan_hybrid_correct(slug)
+        llm_correct_n = sum(llm_correct.values())
+        llm_acc = llm_correct_n / len(llm_correct)
+        hybrid_correct_n = sum(hybrid_correct.values())
+        expected_after = int(floors["test450_aggregate"][slug]["after_purist"])
+        expected_llm_correct = int(round(llm_expected[slug] * len(llm_correct)))
+        llm_ok = llm_correct_n == expected_llm_correct
+        hybrid_ok = hybrid_correct_n == expected_after
+        fidelity.append(
+            {
+                "slug": slug,
+                "llm_overall_matches_panel": llm_ok,
+                "llm_correct": llm_correct_n,
+                "llm_panel_correct": expected_llm_correct,
+                "llm_overall": _round(llm_acc),
+                "llm_panel": _round(llm_expected[slug]),
+                "hybrid_after_purist_matches_floors": hybrid_ok,
+                "hybrid_correct": hybrid_correct_n,
+                "floors_after_purist": expected_after,
+            }
+        )
+        if not llm_ok or not hybrid_ok:
+            raise RuntimeError(f"Gan fidelity gate failed for {slug}: {fidelity[-1]}")
+        methods["llm"][slug] = {
+            "display_name": display,
+            "a_priori_buckets": _gan_bucket_scores(
+                correctness=llm_correct, gold_index=gold_index
+            ),
+            "overall": {"n": len(llm_correct), "accuracy": _round(llm_acc)},
+        }
+        methods["llm_with_rules"][slug] = {
+            "display_name": display,
+            "a_priori_buckets": _gan_bucket_scores(
+                correctness=hybrid_correct, gold_index=gold_index
+            ),
+            "overall": {
+                "n": len(hybrid_correct),
+                "accuracy": _round(hybrid_correct_n / len(hybrid_correct)),
+            },
+        }
+
+    return {
+        "status": "complete",
+        "split": "test450",
+        "row_count": 450,
+        "row_policy": "machine_only_sealed_scoring",
+        "metric": "purist_accuracy",
+        "llm_source_root": GAN_LLM_ROOT.relative_to(REPO_ROOT).as_posix(),
+        "hybrid_scoring": (
+            "no_call_reuse_matched_v05_raw_through_current_hybrid_full_stack"
+        ),
+        "hybrid_source_roots": {
+            "hosted": "scratch/holdout/gan2026_matched_v05",
+            "local": "scratch/holdout/gan2026_matched_v05_local",
+        },
+        "methods": methods,
+        "lenses_llm_a_priori": _lens_table(
+            methods["llm"],
+            partition="a_priori_buckets",
+            score_key="accuracy",
+            min_n=GAN_MIN_N,
+        ),
+        "lenses_llm_with_rules_a_priori": _lens_table(
+            methods["llm_with_rules"],
+            partition="a_priori_buckets",
+            score_key="accuracy",
+            min_n=GAN_MIN_N,
+        ),
+        "fidelity": fidelity,
+    }
+
+
+def _build_exect_letter_bucket_section() -> dict[str, Any]:
+    _require_paths([EXECT_SEALED[slug] for slug, _ in MODEL_SPECS])
+    panel = json.loads(EXECT_PANEL.read_text(encoding="utf-8"))
+    by_slug = {condition["slug"]: condition for condition in panel["conditions"]}
+    gold_index = _exect_gold_index()
+    methods: dict[str, Any] = {"llm": {}, "llm_with_rules": {}}
+    fidelity: list[dict[str, Any]] = []
+
+    for slug, display in MODEL_SPECS:
+        rows = load_jsonl_rows(EXECT_SEALED[slug])
+        rows_by_id = {str(row["letter_id"]): row for row in rows}
+        for method, field in (
+            ("llm", "raw_lane_mentions"),
+            ("llm_with_rules", "predicted_mentions"),
+        ):
+            overall = _score_exect_rows(rows, field=field)
+            methods[method][slug] = {
+                "display_name": display,
+                "prediction_field": field,
+                "overall": overall,
+                "a_priori_letter_buckets": _exect_partition_scores(
+                    rows_by_id, gold_index, field=field
+                ),
+            }
+        hybrid_f1 = float(
+            methods["llm_with_rules"][slug]["overall"]["clinical_fact_f1"]
+        )
+        panel_f1 = float(by_slug[slug]["clinical_headline"]["f1"])
+        hybrid_ok = abs(hybrid_f1 - panel_f1) <= FIDELITY_F1_TOL
+        fidelity.append(
+            {
+                "slug": slug,
+                "n_letters": len(rows),
+                "hybrid_matches_panel_clinical_headline": hybrid_ok,
+                "helper_hybrid_f1": _round(hybrid_f1),
+                "panel_clinical_headline_f1": _round(panel_f1),
+                "llm_helper_f1": _round(
+                    methods["llm"][slug]["overall"]["clinical_fact_f1"]
+                ),
+                "panel_raw_lane_f1": _round(by_slug[slug]["raw_lane_score"]["f1"]),
+                "llm_note": (
+                    "llm uses clinical_headline helper on raw_lane_mentions; "
+                    "absolute F1 may differ from panel raw_lane_score"
+                ),
+            }
+        )
+        if not hybrid_ok:
+            raise RuntimeError(f"ExECT hybrid fidelity gate failed for {slug}")
+
+    return {
+        "status": "complete",
+        "split": "test60",
+        "row_count": EXECT_HOLDOUT_N,
+        "row_policy": "machine_only_sealed_scoring",
+        "metric": "four_family_clinical_fact_f1",
+        "llm_scoring_note": (
+            "llm uses clinical_headline helper on raw_lane_mentions; "
+            "absolute F1 may differ from panel raw_lane_score ladder. "
+            "Lens assignment still uses the same x/y/z thresholds."
+        ),
+        "methods": methods,
+        "lenses_llm_a_priori": _lens_table(
+            methods["llm"],
+            partition="a_priori_letter_buckets",
+            score_key="clinical_fact_f1",
+            min_n=EXECT_MIN_N,
+            n_key="n_letters",
+        ),
+        "lenses_llm_with_rules_a_priori": _lens_table(
+            methods["llm_with_rules"],
+            partition="a_priori_letter_buckets",
+            score_key="clinical_fact_f1",
+            min_n=EXECT_MIN_N,
+            n_key="n_letters",
+        ),
+        "fidelity": fidelity,
+    }
+
+
+def _gan_overall_holdout(bucket_section: dict[str, Any]) -> dict[str, Any]:
     llm_panel = json.loads(GAN_LLM_PANEL.read_text(encoding="utf-8"))
     floors = json.loads(GAN_FLOORS.read_text(encoding="utf-8"))
     llm_by_model = {
@@ -253,7 +745,9 @@ def _gan_overall_holdout() -> dict[str, Any]:
                 "source": GAN_LLM_PANEL.relative_to(REPO_ROOT).as_posix(),
                 "min": _round(min(llm_by_model.values())),
                 "max": _round(max(llm_by_model.values())),
-                "by_model": {slug: _round(score) for slug, score in llm_by_model.items()},
+                "by_model": {
+                    slug: _round(score) for slug, score in llm_by_model.items()
+                },
             },
             "llm_with_rules": {
                 "source": GAN_FLOORS.relative_to(REPO_ROOT).as_posix(),
@@ -263,14 +757,7 @@ def _gan_overall_holdout() -> dict[str, Any]:
                 "by_model": hybrid_by_model,
             },
         },
-        "a_priori_bucket_scores": {
-            "status": "blocked",
-            "reason": (
-                "Sealed Gan test450 prediction ledgers are not present in this "
-                "checkout for Phase-C machine-only aggregate scoring. Public "
-                "panels retain overall Purist only."
-            ),
-        },
+        "a_priori_bucket_scores": bucket_section,
     }
 
 
@@ -310,11 +797,24 @@ def _lens_transfer(
     return rows
 
 
+def _bucket_lens_summary(lenses: dict[str, Any]) -> dict[str, list[str]]:
+    summary = {"x": [], "y": [], "z": [], "below_floor": []}
+    for name, block in lenses.items():
+        lens = block.get("lens")
+        if lens is None:
+            summary["below_floor"].append(name)
+        else:
+            summary[str(lens)].append(name)
+    return summary
+
+
 def build_artifact() -> dict[str, Any]:
     gan_tax = json.loads(GAN_TAXONOMY.read_text(encoding="utf-8"))
     exect_tax = json.loads(EXECT_TAXONOMY.read_text(encoding="utf-8"))
     exect_holdout = _exect_holdout_section()
-    gan_holdout = _gan_overall_holdout()
+    gan_buckets = _build_gan_bucket_section()
+    exect_buckets = _build_exect_letter_bucket_section()
+    gan_holdout = _gan_overall_holdout(gan_buckets)
     development_families = _development_family_lenses()
     transfer = _lens_transfer(development_families, exect_holdout)
     gan_mix = _mix_delta(
@@ -325,12 +825,20 @@ def build_artifact() -> dict[str, Any]:
         exect_tax["dev"]["a_priori_letter_buckets"],
         exect_tax["test"]["a_priori_letter_buckets"],
     )
+    gan_hybrid_lenses = gan_buckets["lenses_llm_with_rules_a_priori"]
+    gan_hybrid_summary = _bucket_lens_summary(gan_hybrid_lenses)
+    exect_hybrid_summary = _bucket_lens_summary(
+        exect_buckets["lenses_llm_with_rules_a_priori"]
+    )
 
     artifact: dict[str, Any] = {
-        "artifact_id": "six_model.holdout_category_aggregates.v1",
+        "artifact_id": "six_model.holdout_category_aggregates.v2",
         "date": REPORT_DATE,
         "protocol": (
             "docs/research/six_model_holdout_category_aggregates_protocol_2026-08-06.md"
+        ),
+        "unlock_protocol": (
+            "docs/research/six_model_holdout_category_aggregates_unlock_protocol_2026-08-06.md"
         ),
         "parent_report": (
             "docs/research/six_model_category_cut_performance_2026-08-06.md"
@@ -340,15 +848,20 @@ def build_artifact() -> dict[str, Any]:
             "x_min": X_MIN,
             "x_spread_max": X_SPREAD_MAX,
             "z_max": Z_MAX,
+            "gan_min_n": GAN_MIN_N,
             "exect_min_n": EXECT_MIN_N,
             "surfaces": ["llm", "llm_with_rules"],
         },
         "row_policy": {
-            "sealed_row_jsonl_opened": False,
+            "sealed_row_jsonl_machine_scored": True,
+            "sealed_row_jsonl_human_inspected": False,
             "public_row_identifiers_allowed": False,
             "failure_examples_allowed": False,
         },
-        "exectv2_test60": exect_holdout,
+        "exectv2_test60": {
+            **exect_holdout,
+            "a_priori_letter_bucket_scores": exect_buckets,
+        },
         "gan2026_test450": gan_holdout,
         "development_family_lenses_for_transfer": development_families,
         "exect_family_lens_transfer": transfer,
@@ -370,34 +883,25 @@ def build_artifact() -> dict[str, Any]:
                 "delta": exect_mix,
             },
         },
-        "blocked_arms": [
-            {
-                "id": "gan_a_priori_bucket_scores",
-                "status": "blocked",
-                "reason": gan_holdout["a_priori_bucket_scores"]["reason"],
-            },
-            {
-                "id": "exect_a_priori_letter_bucket_scores",
-                "status": "blocked",
-                "reason": (
-                    "Sealed ExECT test60 prediction JSONL is not present for "
-                    "Phase-C machine-only letter-bucket aggregate scoring. "
-                    "Family F1 from the public stage panel is available."
-                ),
-            },
-        ],
+        "blocked_arms": [],
         "decision": {
-            "label": "partial_answer_family_holdout_plus_mix",
+            "label": "holdout_bucket_lenses_unlocked",
             "summary": (
-                "ExECT holdout family lenses are answered from public aggregates. "
-                "Gan a_priori holdout bucket scores remain blocked without sealed "
-                "ledgers. Gold mix share shifts are small."
+                "ExECT holdout family lenses remain from public panels. "
+                "Gan a_priori and ExECT letter-bucket holdout scores are unlocked "
+                "via machine-only sealed scoring with panel/floors fidelity checks. "
+                f"Gan hybrid a_priori lenses: x={_fmt_lens_list(gan_hybrid_summary['x'])}; "
+                f"z={_fmt_lens_list(gan_hybrid_summary['z'])}. "
+                f"ExECT hybrid letter-bucket lenses with n≥10: "
+                f"x={_fmt_lens_list(exect_hybrid_summary['x'])}; "
+                f"z={_fmt_lens_list(exect_hybrid_summary['z'])}."
             ),
         },
         "claim_boundary": (
-            "Aggregate-only sealed holdout category packaging from retained public "
-            "panels and gold taxonomy. No sealed row inspection. Not a Decision "
-            "0046 rewrite. Not Gan a_priori holdout competence by bucket."
+            "Aggregate-only sealed holdout category packaging, including machine-only "
+            "a_priori bucket scores from restored sealed ledgers. No human sealed-row "
+            "inspection. Not a Decision 0046 rewrite. Not repair or prompt tuning from "
+            "holdout."
         ),
     }
     forbidden = _forbidden_paths(artifact)
@@ -411,7 +915,9 @@ def build_artifact() -> dict[str, Any]:
 
 
 def _fmt_band(block: dict[str, Any]) -> str:
-    return f"{block['min']:.2f}–{block['max']:.2f} (**{block['lens']}**)"
+    lens = block.get("lens")
+    lens_txt = f" (**{lens}**)" if lens else " (below floor)"
+    return f"{block['min']:.2f}–{block['max']:.2f}{lens_txt}"
 
 
 def _decision_transfer_note(transfer: list[dict[str, Any]]) -> str:
@@ -469,21 +975,33 @@ def _plain_exect_summary(exect: dict[str, Any]) -> str:
     return " ".join(parts)
 
 
+def _fmt_lens_list(names: list[str]) -> str:
+    return ", ".join(f"`{name}`" for name in names) if names else "none"
+
+
 def write_report(artifact: dict[str, Any]) -> str:
     exect = artifact["exectv2_test60"]
     gan = artifact["gan2026_test450"]
+    gan_buckets = gan["a_priori_bucket_scores"]
+    exect_buckets = exect["a_priori_letter_bucket_scores"]
     transfer = artifact["exect_family_lens_transfer"]
     gan_mix = artifact["gold_mix"]["gan_a_priori_buckets"]["delta"]
     exect_mix = artifact["gold_mix"]["exect_a_priori_letter_buckets"]["delta"]
     decision = artifact["decision"]
+    gan_hyb = _bucket_lens_summary(gan_buckets["lenses_llm_with_rules_a_priori"])
+    gan_llm = _bucket_lens_summary(gan_buckets["lenses_llm_a_priori"])
+    exect_hyb = _bucket_lens_summary(exect_buckets["lenses_llm_with_rules_a_priori"])
+    exect_llm = _bucket_lens_summary(exect_buckets["lenses_llm_a_priori"])
 
     lines = [
         "# Sealed holdout category aggregates",
         "",
         f"Date: {REPORT_DATE}  ",
-        "Status: aggregate-only holdout packaging; Gan a_priori bucket scores blocked  ",
+        "Status: holdout family + a_priori bucket lenses unlocked  ",
         "Protocol: [holdout category aggregates protocol]"
         "(six_model_holdout_category_aggregates_protocol_2026-08-06.md)  ",
+        "Unlock protocol: [blocked-arm unlock]"
+        "(six_model_holdout_category_aggregates_unlock_protocol_2026-08-06.md)  ",
         "Parent: [category-cut performance]"
         "(six_model_category_cut_performance_2026-08-06.md)  ",
         "Artifact: "
@@ -497,12 +1015,25 @@ def write_report(artifact: dict[str, Any]) -> str:
         _plain_exect_summary(exect),
         "",
         (
-            f"Gan `test450` overall Purist only: llm "
+            f"Gan `test450` overall Purist: llm "
             f"{gan['surfaces']['llm']['min']:.2f}–{gan['surfaces']['llm']['max']:.2f}; "
             f"llm_with_rules (current floors) "
             f"{gan['surfaces']['llm_with_rules']['min']:.2f}–"
-            f"{gan['surfaces']['llm_with_rules']['max']:.2f}. "
-            "Per a_priori bucket scores are blocked."
+            f"{gan['surfaces']['llm_with_rules']['max']:.2f}."
+        ),
+        "",
+        (
+            "Gan hybrid a_priori holdout lenses: "
+            f"**x** = {_fmt_lens_list(gan_hyb['x'])}; "
+            f"**z** = {_fmt_lens_list(gan_hyb['z'])}; "
+            f"**y** = {_fmt_lens_list(gan_hyb['y'])}."
+        ),
+        "",
+        (
+            "ExECT hybrid letter-bucket holdout lenses (n≥10): "
+            f"**x** = {_fmt_lens_list(exect_hyb['x'])}; "
+            f"**z** = {_fmt_lens_list(exect_hyb['z'])}; "
+            f"**y** = {_fmt_lens_list(exect_hyb['y'])}."
         ),
         "",
         (
@@ -561,7 +1092,41 @@ def write_report(artifact: dict[str, Any]) -> str:
     lines.extend(
         [
             "",
-            "## Gan `test450` overall only",
+            "## Gan `test450` a_priori bucket lenses",
+            "",
+            "| Bucket | n | llm min–max (lens) | llm_with_rules min–max (lens) |",
+            "| --- | ---: | --- | --- |",
+        ]
+    )
+    bucket_names = sorted(
+        set(gan_buckets["lenses_llm_a_priori"])
+        | set(gan_buckets["lenses_llm_with_rules_a_priori"])
+    )
+    for bucket in bucket_names:
+        llm_block = gan_buckets["lenses_llm_a_priori"].get(bucket)
+        hyb_block = gan_buckets["lenses_llm_with_rules_a_priori"].get(bucket)
+        n = (hyb_block or llm_block or {}).get("n", 0)
+        llm_txt = _fmt_band(llm_block) if llm_block else "—"
+        hyb_txt = _fmt_band(hyb_block) if hyb_block else "—"
+        lines.append(f"| `{bucket}` | {n} | {llm_txt} | {hyb_txt} |")
+
+    lines.extend(
+        [
+            "",
+            (
+                f"llm lenses: **x**={_fmt_lens_list(gan_llm['x'])}; "
+                f"**z**={_fmt_lens_list(gan_llm['z'])}; "
+                f"**y**={_fmt_lens_list(gan_llm['y'])}; "
+                f"below floor={_fmt_lens_list(gan_llm['below_floor'])}."
+            ),
+            (
+                f"hybrid lenses: **x**={_fmt_lens_list(gan_hyb['x'])}; "
+                f"**z**={_fmt_lens_list(gan_hyb['z'])}; "
+                f"**y**={_fmt_lens_list(gan_hyb['y'])}; "
+                f"below floor={_fmt_lens_list(gan_hyb['below_floor'])}."
+            ),
+            "",
+            "### Overall Purist bands",
             "",
             "| Surface | min–max Purist | Source |",
             "| --- | --- | --- |",
@@ -576,9 +1141,39 @@ def write_report(artifact: dict[str, Any]) -> str:
                 f"`{gan['surfaces']['llm_with_rules']['source']}` |"
             ),
             "",
-            "Per-model values are in the artifact. a_priori bucket × model scores: "
-            f"**{gan['a_priori_bucket_scores']['status']}** — "
-            f"{gan['a_priori_bucket_scores']['reason']}",
+            "## ExECT `test60` a_priori letter-bucket lenses",
+            "",
+            "| Bucket | n | llm min–max (lens) | llm_with_rules min–max (lens) |",
+            "| --- | ---: | --- | --- |",
+        ]
+    )
+    letter_names = sorted(
+        set(exect_buckets["lenses_llm_a_priori"])
+        | set(exect_buckets["lenses_llm_with_rules_a_priori"])
+    )
+    for bucket in letter_names:
+        llm_block = exect_buckets["lenses_llm_a_priori"].get(bucket)
+        hyb_block = exect_buckets["lenses_llm_with_rules_a_priori"].get(bucket)
+        n = (hyb_block or llm_block or {}).get("n", 0)
+        llm_txt = _fmt_band(llm_block) if llm_block else "—"
+        hyb_txt = _fmt_band(hyb_block) if hyb_block else "—"
+        lines.append(f"| `{bucket}` | {n} | {llm_txt} | {hyb_txt} |")
+
+    lines.extend(
+        [
+            "",
+            (
+                f"llm lenses: **x**={_fmt_lens_list(exect_llm['x'])}; "
+                f"**z**={_fmt_lens_list(exect_llm['z'])}; "
+                f"**y**={_fmt_lens_list(exect_llm['y'])}; "
+                f"below floor={_fmt_lens_list(exect_llm['below_floor'])}."
+            ),
+            (
+                f"hybrid lenses: **x**={_fmt_lens_list(exect_hyb['x'])}; "
+                f"**z**={_fmt_lens_list(exect_hyb['z'])}; "
+                f"**y**={_fmt_lens_list(exect_hyb['y'])}; "
+                f"below floor={_fmt_lens_list(exect_hyb['below_floor'])}."
+            ),
             "",
             "## Gold mix (shares only)",
             "",
@@ -625,17 +1220,22 @@ def write_report(artifact: dict[str, Any]) -> str:
             "",
             "## Next",
             "",
-            "1. To unlock Gan a_priori / ExECT letter-bucket holdout scores: restore "
-            "sealed prediction ledgers and run a Phase-C machine-only aggregate "
-            "extension of this builder (still no public row content).",
-            "2. Do not open sealed rows for failure catalogs.",
-            "3. Operational primary remains the vLLM dev10 task.",
+            "1. Treat unlocked holdout bucket lenses as aggregate transfer evidence "
+            "only; do not open sealed rows for failure catalogs.",
+            "2. Operational primary remains the vLLM dev10 task.",
             "",
             "## Method",
             "",
-            "- Sources: public ExECT stage panel, Gan llm-only panel, Gan floors "
-            "replay summary, gold taxonomies, development category-cut lenses.",
-            "- Sealed row JSONL opened: no.",
+            "- Family lenses: public ExECT stage panel.",
+            "- Gan llm buckets: sealed llm-only `test450` ledgers.",
+            "- Gan hybrid buckets: no-call matched-v0.5 raw replay through current "
+            "`hybrid_full_stack`; fidelity to floors `after_purist`.",
+            "- ExECT letter buckets: sealed `*_sealed_rows.jsonl` scored with the "
+            "clinical-headline helper; hybrid fidelity to panel "
+            "`clinical_headline`.",
+            "- Gold taxonomies supply mix shares only; bucket membership recomputed "
+            "in-process from locked gold loaders.",
+            "- Public row identifiers / failure examples: no.",
             f"- Git: `{git.get('commit')}` "
             f"({'dirty tree' if git.get('dirty_tree') else 'clean'}).",
             "",
@@ -672,10 +1272,21 @@ def main() -> None:
     args.report.write_text(report)
     print(f"Wrote {args.artifact}")
     print(f"Wrote {args.report}")
-    hybrid = artifact["exectv2_test60"]["lenses_llm_with_rules_families"]
+    gan = artifact["gan2026_test450"]["a_priori_bucket_scores"]
+    exect = artifact["exectv2_test60"]["a_priori_letter_bucket_scores"]
     print(
-        "exect hybrid lenses: "
-        + ", ".join(f"{name}={block['lens']}" for name, block in hybrid.items())
+        "gan hybrid lenses: "
+        + ", ".join(
+            f"{name}={block['lens']}"
+            for name, block in gan["lenses_llm_with_rules_a_priori"].items()
+        )
+    )
+    print(
+        "exect hybrid letter lenses: "
+        + ", ".join(
+            f"{name}={block['lens']}"
+            for name, block in exect["lenses_llm_with_rules_a_priori"].items()
+        )
     )
     print(f"decision={artifact['decision']['label']}")
 
