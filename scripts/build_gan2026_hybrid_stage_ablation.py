@@ -179,7 +179,17 @@ def _model_prediction_record(row: dict[str, Any]) -> dict[str, Any] | None:
     return record if isinstance(record, dict) else None
 
 
-def replay_row(row: dict[str, Any]) -> dict[str, Any] | None:
+def replay_row(
+    row: dict[str, Any],
+    *,
+    omit_stages: frozenset[str] | None = None,
+) -> dict[str, Any] | None:
+    """Ordered study-local repair replay.
+
+    ``omit_stages`` skips named families for leave-one-family-out studies.
+    Production ``parse_structured_json_with_trace`` defaults are unchanged.
+    """
+    omitted = omit_stages or frozenset()
     record = _model_prediction_record(row)
     note = _note_text(row)
     if record is None or note is None:
@@ -208,65 +218,72 @@ def replay_row(row: dict[str, Any]) -> dict[str, Any] | None:
             "historical_before": historical.get("before_label"),
             "historical_after": historical.get("after_label"),
             "replayable": False,
+            "omit_stages": sorted(omitted),
         }
 
     label = resolved
-    new_label = repair_prediction_label_with_evidence(
-        label,
-        extraction.selection.evidence,
-        context_text=note,
-    )
-    if new_label != label:
-        changes.append(
-            {
-                "stage": "repair.selected_evidence",
-                "band": "evidence_reconcile",
-                "before": label,
-                "after": new_label,
-            }
+    if "repair.selected_evidence" not in omitted:
+        new_label = repair_prediction_label_with_evidence(
+            label,
+            extraction.selection.evidence,
+            context_text=note,
         )
-        label = new_label
+        if new_label != label:
+            changes.append(
+                {
+                    "stage": "repair.selected_evidence",
+                    "band": "evidence_reconcile",
+                    "before": label,
+                    "after": new_label,
+                }
+            )
+            label = new_label
     band_labels["evidence_reconcile"] = label
 
-    diary = _monthly_diary_label_from_events(extraction, note_text=note)
-    if (
-        diary
-        and not _should_preserve_label_from_monthly_diary(label, extraction=extraction)
-        and diary != label
-    ):
-        changes.append(
-            {
-                "stage": "repair.monthly_diary",
-                "band": "clinical_selection",
-                "before": label,
-                "after": diary,
-            }
-        )
-        label = diary
+    if "repair.monthly_diary" not in omitted:
+        diary = _monthly_diary_label_from_events(extraction, note_text=note)
+        if (
+            diary
+            and not _should_preserve_label_from_monthly_diary(
+                label, extraction=extraction
+            )
+            and diary != label
+        ):
+            changes.append(
+                {
+                    "stage": "repair.monthly_diary",
+                    "band": "clinical_selection",
+                    "before": label,
+                    "after": diary,
+                }
+            )
+            label = diary
 
-    usual = _usual_interval_label_from_events(extraction, label)
-    if usual and usual != label:
-        changes.append(
-            {
-                "stage": "repair.usual_interval",
-                "band": "clinical_selection",
-                "before": label,
-                "after": usual,
-            }
-        )
-        label = usual
+    if "repair.usual_interval" not in omitted:
+        usual = _usual_interval_label_from_events(extraction, label)
+        if usual and usual != label:
+            changes.append(
+                {
+                    "stage": "repair.usual_interval",
+                    "band": "clinical_selection",
+                    "before": label,
+                    "after": usual,
+                }
+            )
+            label = usual
 
-    typical = _typical_recurring_rate_over_ytd_from_events(extraction, label)
-    if typical and typical != label:
-        changes.append(
-            {
-                "stage": "repair.typical_over_ytd",
-                "band": "clinical_selection",
-                "before": label,
-                "after": typical,
-            }
-        )
-        label = typical
+    if "repair.typical_over_ytd" not in omitted:
+        typical = _typical_recurring_rate_over_ytd_from_events(extraction, label)
+        if typical and typical != label:
+            changes.append(
+                {
+                    "stage": "repair.typical_over_ytd",
+                    "band": "clinical_selection",
+                    "before": label,
+                    "after": typical,
+                }
+            )
+            label = typical
 
     for stage_id, candidate_fn in (
         (
@@ -296,6 +313,8 @@ def replay_row(row: dict[str, Any]) -> dict[str, Any] | None:
             ),
         ),
     ):
+        if stage_id in omitted:
+            continue
         candidate = candidate_fn(label)
         if candidate and candidate != label:
             changes.append(
@@ -310,25 +329,26 @@ def replay_row(row: dict[str, Any]) -> dict[str, Any] | None:
 
     band_labels["clinical_selection"] = label
 
-    elapsed = _elapsed_since_anchor_label_from_events(
-        extraction, label, note_text=note
-    )
-    if (
-        elapsed
-        and not _should_preserve_sustained_selected_seizure_free(
-            extraction, label, elapsed
+    if "repair.elapsed_anchor" not in omitted:
+        elapsed = _elapsed_since_anchor_label_from_events(
+            extraction, label, note_text=note
         )
-        and elapsed != label
-    ):
-        changes.append(
-            {
-                "stage": "repair.elapsed_anchor",
-                "band": "free_interval",
-                "before": label,
-                "after": elapsed,
-            }
-        )
-        label = elapsed
+        if (
+            elapsed
+            and not _should_preserve_sustained_selected_seizure_free(
+                extraction, label, elapsed
+            )
+            and elapsed != label
+        ):
+            changes.append(
+                {
+                    "stage": "repair.elapsed_anchor",
+                    "band": "free_interval",
+                    "before": label,
+                    "after": elapsed,
+                }
+            )
+            label = elapsed
     band_labels["free_interval"] = label
 
     return {
@@ -341,6 +361,7 @@ def replay_row(row: dict[str, Any]) -> dict[str, Any] | None:
         "historical_after": historical.get("after_label"),
         "replayable": True,
         "selected_evidence": _truncate(extraction.selection.evidence),
+        "omit_stages": sorted(omitted),
     }
 
 

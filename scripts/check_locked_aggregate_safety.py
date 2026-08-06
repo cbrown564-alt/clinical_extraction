@@ -13,6 +13,7 @@ ARTIFACTS = (
     ROOT / "experiments/gan2026_six_model_llm_only_test450_20260801/panel_aggregate.json",
     ROOT / "experiments/exectv2_six_model_test60_stage_panel_20260801/panel_aggregate.json",
     ROOT / "experiments/exectv2_rules_only_four_family_clinical_headline_test60_20260801.json",
+    ROOT / "experiments/six_model_holdout_category_aggregates_20260806.json",
 )
 FORBIDDEN_KEYS = {
     "letter_id", "letter_ids", "source_row_index", "source_row_indices",
