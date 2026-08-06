@@ -246,14 +246,21 @@ def _pick_examples(
     *,
     consensus: set[int],
 ) -> list[dict[str, Any]]:
-    def sort_key(row: dict[str, Any]) -> tuple[int, int, str]:
+    def sort_key(row: dict[str, Any]) -> tuple[int, int, int, str]:
         slug = str(row.get("model_slug", ""))
         try:
             model_rank = MODEL_PREFERENCE.index(slug)
         except ValueError:
             model_rank = len(MODEL_PREFERENCE)
         consensus_rank = 0 if int(row["source_row_index"]) in consensus else 1
-        return (consensus_rank, model_rank, str(row["source_row_index"]))
+        # Prefer rows where hybrid later rescues when illustrating llm failures.
+        rescue_rank = 0 if row.get("hybrid_rescues") is True else 1
+        return (
+            consensus_rank,
+            rescue_rank,
+            model_rank,
+            str(row["source_row_index"]),
+        )
 
     picked: list[dict[str, Any]] = []
     seen: set[int] = set()
@@ -440,172 +447,493 @@ def build_surface(
     }
 
 
-def _md_escape(text: str) -> str:
-    return text.replace("|", "\\|")
-
-
-def _render_example(row: dict[str, Any]) -> str:
-    evidence = row.get("selected_evidence") or "_(no saved evidence span)_"
-    lines = [
-        f"- **Row {row['source_row_index']} / {row['model_display']}.** "
-        f"Gold `{_md_escape(str(row['gold_label']))}` → scored "
-        f"`{_md_escape(str(row['scored_predicted_label']))}`."
+def _acc_band(block: dict[str, Any]) -> str:
+    accs = [
+        model["accuracy"]
+        for model in block["models"].values()
+        if model["accuracy"] is not None
     ]
-    boundary = row.get("model_boundary_label")
-    if boundary and str(boundary) != str(row.get("scored_predicted_label")):
-        lines.append(f"  Boundary: `{_md_escape(str(boundary))}`.")
-    lines.append(f"  Evidence: {_md_escape(str(evidence))}")
-    if row.get("hybrid_rescues") is True:
-        lines.append(
-            f"  Hybrid rescues to `{_md_escape(str(row.get('hybrid_final_label')))}`."
-        )
-    if row.get("parse_errors"):
-        lines.append(f"  Parse: `{_md_escape(str(row['parse_errors'][:2]))}`.")
-    return "\n".join(lines)
+    if not accs:
+        return "n/a"
+    return f"{min(accs):.2f}–{max(accs):.2f}"
+
+
+def _top_modes(counts: dict[str, int], limit: int = 3) -> str:
+    if not counts:
+        return "_(none)_"
+    return ", ".join(f"`{mode}` ({count})" for mode, count in list(counts.items())[:limit])
+
+
+def _mode_delta_rows(
+    llm_counts: dict[str, int],
+    hybrid_counts: dict[str, int],
+    *,
+    min_either: int = 5,
+) -> list[tuple[str, int, int, int]]:
+    modes = sorted(
+        set(llm_counts) | set(hybrid_counts),
+        key=lambda mode: -(llm_counts.get(mode, 0) + hybrid_counts.get(mode, 0)),
+    )
+    rows: list[tuple[str, int, int, int]] = []
+    for mode in modes:
+        llm_n = int(llm_counts.get(mode, 0))
+        hybrid_n = int(hybrid_counts.get(mode, 0))
+        if max(llm_n, hybrid_n) < min_either:
+            continue
+        rows.append((mode, llm_n, hybrid_n, hybrid_n - llm_n))
+    return rows
+
+
+BUCKET_BLURBS: dict[str, str] = {
+    "ordinary_point_rate": (
+        "Largest gold mass. Without rules this is a shared floor; rules mostly "
+        "erase abstention and many wrong-rate / false-free readings."
+    ),
+    "cluster_burden": (
+        "Practical floor on both surfaces. Format repair hides incomplete "
+        "cluster grammar as sentinels; hybrid still leaves smooth-rate and "
+        "unknown residuals."
+    ),
+    "seizure_free": (
+        "Rules turn a separator into common competence mainly by clearing "
+        "over-abstention."
+    ),
+    "range_rate": (
+        "Same pattern as seizure-free: abstention falls hard; band-edge and "
+        "false-free remain the thin residual."
+    ),
+    "unknown_sentinel": (
+        "The hybrid step that does **not** cleanly help: false active-rate and "
+        "false seizure-free both rise."
+    ),
+    "no_reference_sentinel": (
+        "llm variance is mostly parse/call failure on one weak model; hybrid "
+        "collapses the bucket to near-ceiling."
+    ),
+    "unresolved_multiple": (
+        "Already easy without rules; residual is rare false resolution or "
+        "false seizure-free."
+    ),
+}
 
 
 def render_report(artifact: dict[str, Any]) -> str:
+    llm = artifact["surfaces"]["llm"]["buckets"]
+    hybrid = artifact["surfaces"]["llm_with_rules"]["buckets"]
+
     lines: list[str] = [
         "# Gan 2026 category error catalog",
         "",
         f"Date: {REPORT_DATE}  ",
-        "Status: development catalog on retained no-call artifacts  ",
+        "Status: development catalog with pipeline ablation reading  ",
         "Protocol: [gan category error catalog protocol]"
         "(gan2026_category_error_catalog_protocol_2026-08-06.md)  ",
         "Parent: [category-cut performance]"
         "(six_model_category_cut_performance_2026-08-06.md)  ",
+        "Companions: [task-shape framework]"
+        "(task_shape_framework_2026-08-06.md), "
+        "[hard-slice modes](six_model_hard_slice_error_modes_2026-08-06.md)  ",
         f"Artifact: [`experiments/gan2026_category_error_catalog_{DATE_STAMP}.json`]"
         f"(../../experiments/gan2026_category_error_catalog_{DATE_STAMP}.json)",
         "",
         "## Plain answer",
         "",
-        "Every Gan a_priori gold bucket has characteristic wrong-answer shapes.",
-        "On `llm`, ordinary rates are mostly abstention / wrong-rate / false",
-        "seizure-free, and clusters collapse incomplete grammar to unknown or",
-        "smooth rates. Rules create easy mass on seizure-free, range, and",
-        "no-reference by erasing those llm modes. The hybrid residual that does",
-        "**not** cleanly improve is `unknown_sentinel` (false active-rate and",
-        "false seizure-free). Clusters remain the practical floor.",
+        "Category errors are not a flat list of wrong labels. They are a small",
+        "set of wrong-answer **shapes**, and different pipeline layers erase,",
+        "reshape, or amplify them.",
         "",
-        "## Method",
+        "1. The **raw model label** often emits incomplete cluster grammar,",
+        "   illegal fragments, or soft `unknown`.",
+        "2. **Format repair** (llm-only scored label) collapses many of those",
+        "   fragments into sentinels or invented year totals—so Purist sees",
+        "   abstention / wrong-rate even when the model almost said something",
+        "   cluster-like.",
+        "3. **Semantic rules** (`llm_with_rules`) erase most over-abstention and",
+        "   create the easy mass on seizure-free, range, and no-reference. They",
+        "   do **not** cleanly fix `unknown_sentinel`, and clusters remain the",
+        "   practical floor.",
         "",
-        "- Split: `dev750`. Surfaces: `llm` and `llm_with_rules`.",
-        "- Wrongness: Purist false.",
-        "- Modes: mutually exclusive predicted-shape buckets (cluster refinements",
-        "  kept). `llm` also reports model-boundary modes before format adapter.",
-        "- Examples: up to two per observed mode; consensus-wrong and Sol preferred;",
-        "  saved evidence spans only; holdout sealed.",
-        "- Regenerate: `python scripts/build_gan2026_category_error_catalog.py`.",
+        "## Why this document exists",
         "",
+        "The [category-cut report]"
+        "(six_model_category_cut_performance_2026-08-06.md) shows **which**",
+        "gold buckets move under rules. This catalog shows **how**: which wrong",
+        "shapes dominate each bucket, and which observable pipeline layer",
+        "changes those shapes. Full per-model counts and every retained example",
+        "live in the JSON artifact; this page is the readable ablation.",
+        "",
+        "## Observable ablation layers",
+        "",
+        "No new calls. Same retained `dev750` rows. Three labels we can already",
+        "separate in saved artifacts:",
+        "",
+        "```mermaid",
+        "flowchart LR",
+        '  raw["1. Raw model label<br/>before format repair"]',
+        '  adapter["2. After format repair<br/>llm scored label"]',
+        '  rules["3. After semantic rules<br/>llm_with_rules final"]',
+        "  raw --> adapter --> rules",
+        "```",
+        "",
+        "| Layer | What it is | What it typically does to errors |",
+        "| --- | --- | --- |",
+        "| **1. Raw model label** | What the model selected before llm-only "
+        "format repair | Emits incomplete cluster grammar, malformed "
+        "fragments, soft `unknown` |",
+        "| **2. After format repair** | llm-only scored `final_label` | Erases "
+        "illegal fragments into sentinels or year-rate guesses; can *create* "
+        "scored wrong-rate / no-reference from an almost-right raw label |",
+        "| **3. After semantic rules** | Hybrid final after deterministic "
+        "repairs | Clears most abstention and many false-free / wrong-rate "
+        "cases on easy mass; can *worsen* unknown-gold by asserting a rate "
+        "or free interval |",
+        "",
+        "This is an ablation over **saved surfaces**, not a claim that every",
+        "numbered repair rule was toggled in isolation. Attribute a rescue to",
+        "the first layer that changes the answer.",
+        "",
+        "## Four cases that explain the catalog",
+        "",
+        "Read these first. Each arrow is one pipeline layer changing the label.",
+        "Green end-state = Purist-correct; red = still wrong.",
+        "",
+        "### A. Format invents a year total; rules rescue",
+        "",
+        "Ordinary point rate. Gold is a short observation window; the note says",
+        "“so far this year.”",
+        "",
+        "```mermaid",
+        "flowchart LR",
+        '  gold["Gold<br/>6 per 4 month"]',
+        '  raw["1. Raw model<br/>unknown"]',
+        '  fmt["2. Format repair<br/>6 per year"]',
+        '  hyb["3. Semantic rules<br/>6 per 4 month"]',
+        "  gold -.-> raw",
+        "  raw -->|invents YTD total| fmt",
+        "  fmt -->|rescues| hyb",
+        "  classDef ok fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;",
+        "  classDef bad fill:#fbe9e7,stroke:#c62828,color:#b71c1c;",
+        "  classDef gold fill:#eef0fb,stroke:#5b6abf,color:#1a237e;",
+        "  class gold gold;",
+        "  class raw,fmt bad;",
+        "  class hyb ok;",
+        "```",
+        "",
+        "Row 12788 / Sol. Evidence: six focal seizures “so far this year.”",
+        "Lesson: format repair can **create** a scored wrong-rate from soft",
+        "`unknown`; rules undo it when the diary/window reading is recoverable.",
+        "",
+        "### B. Incomplete cluster grammar collapses, then rebuilds",
+        "",
+        "Cluster burden. Model almost has the answer but omits ",
+        "`…, M per cluster`.",
+        "",
+        "```mermaid",
+        "flowchart LR",
+        '  gold["Gold<br/>3 cluster per month,<br/>multiple per cluster"]',
+        '  raw["1. Raw model<br/>3 clusters per month"]',
+        '  fmt["2. Format repair<br/>unknown"]',
+        '  hyb["3. Semantic rules<br/>full cluster label"]',
+        "  gold -.-> raw",
+        "  raw -->|illegal / incomplete| fmt",
+        "  fmt -->|rebuilds from evidence| hyb",
+        "  classDef ok fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;",
+        "  classDef bad fill:#fbe9e7,stroke:#c62828,color:#b71c1c;",
+        "  classDef gold fill:#eef0fb,stroke:#5b6abf,color:#1a237e;",
+        "  class gold gold;",
+        "  class raw,fmt bad;",
+        "  class hyb ok;",
+        "```",
+        "",
+        "Row 10097 / Sol. Lesson: the llm-only **z** floor on clusters is partly",
+        "a format collapse of almost-right answers—not pure non-comprehension.",
+        "",
+        "### C. Rules clear ordinary abstention",
+        "",
+        "Ordinary point rate. Model abstains; hybrid recovers the rate.",
+        "",
+        "```mermaid",
+        "flowchart LR",
+        '  gold["Gold<br/>1 per 5 month"]',
+        '  raw["1–2. Raw / format<br/>unknown"]',
+        '  hyb["3. Semantic rules<br/>1 per 5 month"]',
+        "  gold -.-> raw",
+        "  raw -->|clears abstention| hyb",
+        "  classDef ok fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;",
+        "  classDef bad fill:#fbe9e7,stroke:#c62828,color:#b71c1c;",
+        "  classDef gold fill:#eef0fb,stroke:#5b6abf,color:#1a237e;",
+        "  class gold gold;",
+        "  class raw bad;",
+        "  class hyb ok;",
+        "```",
+        "",
+        "Row 13190 / Sol. This is the mass effect behind −207",
+        "`over_abstain_unknown` on ordinary rates.",
+        "",
+        "### D. Two residuals rules do not fix",
+        "",
+        "Left: cluster still read as a smooth rate. Right: unknown gold gets a",
+        "confident active rate.",
+        "",
+        "```mermaid",
+        "flowchart TB",
+        "  subgraph clusterFloor[\"Cluster floor — smooth-rate residual\"]",
+        "    direction LR",
+        '    cg["Gold<br/>multiple cluster / week,<br/>2 to 3 per cluster"]',
+        '    cr["Raw / format / rules<br/>multiple per week"]',
+        "    cg -.-> cr",
+        "  end",
+        "  subgraph unknownHurt[\"Unknown gold — rules keep a false rate\"]",
+        "    direction LR",
+        '    ug["Gold<br/>unknown"]',
+        '    ur["Raw / format / rules<br/>1 per 1 to 2 week"]',
+        "    ug -.-> ur",
+        "  end",
+        "  classDef ok fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;",
+        "  classDef bad fill:#fbe9e7,stroke:#c62828,color:#b71c1c;",
+        "  classDef gold fill:#eef0fb,stroke:#5b6abf,color:#1a237e;",
+        "  class cg,ug gold;",
+        "  class cr,ur bad;",
+        "```",
+        "",
+        "Rows 10434 and 6368 / Sol. Lesson: after rules, the hard remainder is",
+        "**selection / convention**, often with evidence already in hand—not",
+        "parse failure.",
+        "",
+        "## Ablation map: which step addresses which mode",
+        "",
+        "```mermaid",
+        "flowchart TB",
+        '  raw["Raw model label"]',
+        '  fmt["Format repair"]',
+        '  rules["Semantic rules"]',
+        "  raw --> fmt --> rules",
+        '  fmt -->|reshapes| r1["incomplete cluster → sentinel<br/>YTD → year rate"]',
+        '  rules -->|erases| r2["over-abstain / wrong-rate / parse"]',
+        '  rules -->|amplifies| r3["false rate on unknown gold"]',
+        '  rules -->|leaves| r4["cluster smooth-rate residual"]',
+        "```",
+        "",
+        "| Error shape | Main gold homes | Format repair | Semantic rules |",
+        "| --- | --- | --- | --- |",
+        "| Incomplete cluster grammar / illegal "
+        "`N per cluster` | clusters; some ordinary rates | "
+        "**Reshapes** → `unknown` / no-reference | "
+        "Often rebuilds a legal label when evidence supports it |",
+        "| Over-abstain `unknown` | ordinary, free, range | "
+        "Sometimes invents a year total instead | "
+        "**Clears** most of this mass (−207 ordinary, −43 free, −39 range) |",
+        "| Wrong point-rate / wrong range band | ordinary, range | "
+        "Can increase wrong-rate by repairing YTD phrases | "
+        "Large but incomplete cut (−85 ordinary wrong-rate) |",
+        "| False seizure-free on active gold | ordinary, range | "
+        "Usually passes through | "
+        "Cuts ordinary false-free (−58); thinner residual remains |",
+        "| Parse / call failure | weak models, no-reference | "
+        "Still empty / unscored | "
+        "**Erases** (hybrid path recovers a label) |",
+        "| False active-rate / false free on "
+        "`unknown` gold | unknown sentinel | "
+        "Passes through or slightly worsens | "
+        "**Amplifies** (+19 false active-rate, +5 false free) |",
+        "| Dropped cluster → smooth rate | clusters | "
+        "Passes through | "
+        "Does not clear; can become the dominant residual (+22) |",
+        "",
+        "## Rules lift by bucket (llm → hybrid modes)",
+        "",
+        "Pooled six-model Purist wrongs. Delta = hybrid − llm (negative means",
+        "rules removed that error shape).",
+        "",
+        "| Bucket | n | llm acc | hybrid acc | Dominant llm modes | What rules do |",
+        "| --- | ---: | --- | --- | --- | --- |",
     ]
 
-    for surface in ("llm", "llm_with_rules"):
-        surface_block = artifact["surfaces"][surface]
-        lines.extend(
-            [
-                f"## Surface: `{surface}`",
-                "",
-                "### Bucket accuracy band (six models)",
-                "",
-                "| Bucket | n | min–max acc | Consensus wrong / n | Top wrong modes (pooled) |",
-                "| --- | ---: | --- | --- | --- |",
-            ]
+    for bucket in BUCKET_ORDER:
+        if bucket not in llm:
+            continue
+        llm_block = llm[bucket]
+        hybrid_block = hybrid[bucket]
+        top_llm = _top_modes(llm_block["pooled_wrong_mode_counts"], limit=2)
+        blurb = BUCKET_BLURBS.get(bucket, "")
+        lines.append(
+            f"| `{bucket}` | {llm_block['n_gold']} | {_acc_band(llm_block)} | "
+            f"{_acc_band(hybrid_block)} | {top_llm} | {blurb} |"
         )
-        for bucket, block in surface_block["buckets"].items():
-            accs = [
-                model["accuracy"]
-                for model in block["models"].values()
-                if model["accuracy"] is not None
-            ]
-            band = (
-                f"{min(accs):.2f}–{max(accs):.2f}" if accs else "n/a"
-            )
-            top = ", ".join(
-                f"{mode} ({count})"
-                for mode, count in list(block["pooled_wrong_mode_counts"].items())[:3]
-            ) or "_(no wrongs)_"
-            lines.append(
-                f"| `{bucket}` | {block['n_gold']} | {band} | "
-                f"{block['consensus_wrong_all_six']['n']} / {block['n_gold']} | {top} |"
-            )
-        lines.append("")
-
-        for bucket, block in surface_block["buckets"].items():
-            lines.extend(
-                [
-                    f"### `{bucket}` (n={block['n_gold']})",
-                    "",
-                    "#### Per-model accuracy and wrongs",
-                    "",
-                    "| Model | Acc | Wrong | Mode counts |",
-                    "| --- | ---: | ---: | --- |",
-                ]
-            )
-            for slug, _display in hs.MODEL_SPECS:
-                model = block["models"][slug]
-                mode_txt = ", ".join(
-                    f"{mode}:{count}"
-                    for mode, count in model["error_modes"].items()
-                ) or "—"
-                lines.append(
-                    f"| {model['display_name']} | {model['accuracy']:.4f} | "
-                    f"{model['n_wrong']} | {mode_txt} |"
-                )
-            lines.extend(["", "#### Pooled wrong modes", ""])
-            if not block["pooled_wrong_mode_counts"]:
-                lines.append("_No Purist wrongs on this surface._")
-                lines.append("")
-                continue
-            lines.extend(
-                [
-                    "| Mode | Pooled wrongs |",
-                    "| --- | ---: |",
-                ]
-            )
-            for mode, count in block["pooled_wrong_mode_counts"].items():
-                lines.append(f"| `{mode}` | {count} |")
-            lines.extend(["", "#### Examples by mode", ""])
-            for mode, examples in block["examples_by_mode"].items():
-                lines.append(f"##### `{mode}`")
-                lines.append("")
-                if not examples:
-                    lines.append("_No retained example._")
-                else:
-                    for example in examples:
-                        lines.append(_render_example(example))
-                lines.append("")
-
-            if surface == "llm" and block.get("pooled_model_boundary_mode_counts"):
-                lines.extend(
-                    [
-                        "#### Model-boundary modes (diagnostic)",
-                        "",
-                        "| Mode | Pooled |",
-                        "| --- | ---: |",
-                    ]
-                )
-                for mode, count in block["pooled_model_boundary_mode_counts"].items():
-                    lines.append(f"| `{mode}` | {count} |")
-                lines.append("")
-                # Only expand boundary modes that are absent or materially larger
-                scored = block["pooled_wrong_mode_counts"]
-                for mode, examples in block.get("boundary_examples_by_mode", {}).items():
-                    if mode in scored and block["pooled_model_boundary_mode_counts"].get(
-                        mode, 0
-                    ) <= scored.get(mode, 0):
-                        continue
-                    lines.append(f"##### Boundary `{mode}`")
-                    lines.append("")
-                    for example in examples:
-                        lines.append(_render_example(example))
-                    lines.append("")
 
     lines.extend(
         [
+            "",
+            "### Mode deltas worth remembering",
+            "",
+        ]
+    )
+
+    for bucket in (
+        "ordinary_point_rate",
+        "cluster_burden",
+        "seizure_free",
+        "range_rate",
+        "unknown_sentinel",
+    ):
+        llm_counts = llm[bucket]["pooled_wrong_mode_counts"]
+        hybrid_counts = hybrid[bucket]["pooled_wrong_mode_counts"]
+        rows = _mode_delta_rows(llm_counts, hybrid_counts, min_either=8)
+        if not rows:
+            continue
+        lines.extend(
+            [
+                f"#### `{bucket}`",
+                "",
+                "| Mode | llm wrongs | hybrid wrongs | Δ |",
+                "| --- | ---: | ---: | ---: |",
+            ]
+        )
+        for mode, llm_n, hybrid_n, delta in rows:
+            sign = f"{delta:+d}"
+            lines.append(f"| `{mode}` | {llm_n} | {hybrid_n} | {sign} |")
+        lines.append("")
+
+    lines.extend(
+        [
+            "## Format-repair ablation (raw model label → llm scored)",
+            "",
+            "On `llm` only we also keep the raw model label. The interesting",
+            "deltas are where format repair **changes the error shape** before",
+            "rules ever run.",
+            "",
+        ]
+    )
+
+    adapter_stories = (
+        (
+            "ordinary_point_rate",
+            (
+                "Raw `unknown` falls (−51) while scored wrong-rate rises "
+                "(+81): YTD / “so far this year” phrases get repaired into a "
+                "year total. Illegal cluster fragments (−28) become "
+                "no-reference (+19)."
+            ),
+        ),
+        (
+            "cluster_burden",
+            (
+                "Incomplete cluster grammar (91 in the raw label) disappears "
+                "from scored labels; collapse-to-unknown (+78) and no-reference "
+                "(+31) absorb it. The floor Purist sees is partly a format "
+                "collapse of almost-cluster answers."
+            ),
+        ),
+        (
+            "range_rate",
+            (
+                "False cluster structure in the raw label (8) is cleared; a "
+                "few rows become scored abstention or collapsed point rates."
+            ),
+        ),
+        (
+            "unknown_sentinel",
+            (
+                "Wrong unknown variants in the raw label (10) are reshaped "
+                "into active rates before scoring (+10 false active-rate)."
+            ),
+        ),
+    )
+    for bucket, story in adapter_stories:
+        lines.extend([f"### `{bucket}`", "", story, ""])
+        llm_block = llm[bucket]
+        raw_counts = llm_block.get("pooled_model_boundary_mode_counts") or {}
+        scored = llm_block["pooled_wrong_mode_counts"]
+        modes = sorted(
+            set(raw_counts) | set(scored),
+            key=lambda mode: -(raw_counts.get(mode, 0) + scored.get(mode, 0)),
+        )
+        lines.extend(
+            [
+                "| Mode | raw model | scored llm | Δ |",
+                "| --- | ---: | ---: | ---: |",
+            ]
+        )
+        for mode in modes:
+            b_n = int(raw_counts.get(mode, 0))
+            s_n = int(scored.get(mode, 0))
+            if max(b_n, s_n) < 8:
+                continue
+            lines.append(f"| `{mode}` | {b_n} | {s_n} | {s_n - b_n:+d} |")
+        lines.append("")
+
+    lines.extend(
+        [
+            "## Bucket cards",
+            "",
+            "Accuracy bands are six-model min–max Purist on `dev750`. Mode",
+            "counts are pooled wrong row×model cells. Mechanism pictures are",
+            "in [Four cases](#four-cases-that-explain-the-catalog) above.",
+            "",
+        ]
+    )
+
+    for bucket in BUCKET_ORDER:
+        if bucket not in llm:
+            continue
+        llm_block = llm[bucket]
+        hybrid_block = hybrid[bucket]
+        lines.extend(
+            [
+                f"### `{bucket}` (n={llm_block['n_gold']})",
+                "",
+                BUCKET_BLURBS.get(bucket, ""),
+                "",
+                "| Surface | Acc band | Consensus wrong | Top modes |",
+                "| --- | --- | ---: | --- |",
+                f"| `llm` | {_acc_band(llm_block)} | "
+                f"{llm_block['consensus_wrong_all_six']['n']} / {llm_block['n_gold']} | "
+                f"{_top_modes(llm_block['pooled_wrong_mode_counts'])} |",
+                f"| `llm_with_rules` | {_acc_band(hybrid_block)} | "
+                f"{hybrid_block['consensus_wrong_all_six']['n']} / {hybrid_block['n_gold']} | "
+                f"{_top_modes(hybrid_block['pooled_wrong_mode_counts'])} |",
+                "",
+            ]
+        )
+
+    lines.extend(
+        [
+            "## How to explore further",
+            "",
+            "| Need | Where |",
+            "| --- | --- |",
+            "| Per-model accuracy and mode counts | JSON "
+            f"`surfaces.*.buckets.*.models` in "
+            f"[`gan2026_category_error_catalog_{DATE_STAMP}.json`]"
+            f"(../../experiments/gan2026_category_error_catalog_{DATE_STAMP}.json) |",
+            "| Up to two examples per observed mode × surface | "
+            "JSON `examples_by_mode` / `boundary_examples_by_mode` "
+            "(raw-label examples; field name is historical) |",
+            "| Hard-slice rescue rates on ordinary rates / clusters | "
+            "[hard-slice error modes]"
+            "(six_model_hard_slice_error_modes_2026-08-06.md) |",
+            "| Gold-bucket definitions and x/y/z lenses | "
+            "[task-shape](task_shape_framework_2026-08-06.md), "
+            "[category-cut](six_model_category_cut_performance_2026-08-06.md) |",
+            "| Regenerate this page + artifact | "
+            "`python scripts/build_gan2026_category_error_catalog.py` |",
+            "",
+            "## Method",
+            "",
+            "- Split: Gan `dev750`. Surfaces: `llm` and `llm_with_rules`.",
+            "- Wrongness: Purist false. Modes: mutually exclusive predicted-shape",
+            "  buckets (cluster refinements kept).",
+            "- Ablation layers: raw model label (llm only), format-repaired",
+            "  scored label, hybrid final label.",
+            "- Examples in JSON: up to two per observed mode; consensus-wrong",
+            "  and Sol preferred; saved evidence spans only; holdout sealed.",
+            "",
             "## Claim boundary",
             "",
             "- Development Gan category error catalog on `dev750`.",
             "- Mode labels are analyst heuristics over saved predictions.",
+            "- Ablation is across retained surfaces / label stages, not a",
+            "  full leave-one-repair-out experiment.",
             "- Evidence strings are model-selected spans, not full notes.",
             "- Not sealed holdout competence; DeepSeek `llm` remains pre-0731.",
             "",

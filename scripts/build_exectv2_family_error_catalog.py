@@ -264,168 +264,462 @@ def build_surface(*, surface: str) -> dict[str, Any]:
     }
 
 
-def _md_escape(text: str) -> str:
-    return text.replace("|", "\\|")
-
-
-def _render_example(row: dict[str, Any]) -> str:
-    gold_texts = [str(m.get("text") or "") for m in row.get("gold_mentions") or []]
-    pred_texts = [str(m.get("text") or "") for m in row.get("pred_mentions") or []]
-    lines = [
-        f"- **{row['letter_id']} / {row['model_display']}.** "
-        f"Mode `{row['error_mode']}`; keys {row['gold_key_count']}→"
-        f"{row['pred_key_count']}."
+def _exact_band(block: dict[str, Any]) -> str:
+    rates = [
+        model["letter_exact_rate"]
+        for model in block["models"].values()
+        if model["letter_exact_rate"] is not None
     ]
-    lines.append(
-        "  Tokens: "
-        f"{row.get('gold_tokens')} → {row.get('pred_tokens')}."
+    if not rates:
+        return "n/a"
+    return f"{min(rates):.2f}–{max(rates):.2f}"
+
+
+def _top_modes(counts: dict[str, int], limit: int = 3) -> str:
+    if not counts:
+        return "_(none)_"
+    return ", ".join(
+        f"`{mode}` ({count})" for mode, count in list(counts.items())[:limit]
     )
-    if gold_texts or pred_texts:
-        lines.append(
-            "  Mentions: gold "
-            f"`{_md_escape(', '.join(gold_texts) or '∅')}` vs pred "
-            f"`{_md_escape(', '.join(pred_texts) or '∅')}`."
-        )
-    return "\n".join(lines)
+
+
+def _mode_delta_rows(
+    llm_counts: dict[str, int],
+    hybrid_counts: dict[str, int],
+    *,
+    min_either: int = 8,
+) -> list[tuple[str, int, int, int]]:
+    modes = sorted(
+        set(llm_counts) | set(hybrid_counts),
+        key=lambda mode: -(llm_counts.get(mode, 0) + hybrid_counts.get(mode, 0)),
+    )
+    rows: list[tuple[str, int, int, int]] = []
+    for mode in modes:
+        llm_n = int(llm_counts.get(mode, 0))
+        hybrid_n = int(hybrid_counts.get(mode, 0))
+        if max(llm_n, hybrid_n) < min_either:
+            continue
+        rows.append((mode, llm_n, hybrid_n, hybrid_n - llm_n))
+    return rows
+
+
+def _short_token(token: str) -> str:
+    text = token.strip()
+    # ("Diagnosis", "focal epilepsy") or ("ordinary", "lamotrigine", ...)
+    if text.startswith("(") and "'" in text:
+        parts = [part for part in text.split("'") if part.strip() not in {"", ",", ", ", "(", ")"}]
+        if text.startswith("('Diagnosis'") and len(parts) >= 2:
+            return parts[1]
+        if text.startswith("('ordinary'") and len(parts) >= 2:
+            drug = parts[1]
+            dose = parts[2] if len(parts) > 2 else ""
+            unit = parts[3] if len(parts) > 3 else ""
+            return f"{drug} {dose}{unit}".strip()
+        if len(parts) >= 2 and parts[0] in {"EEG", "MRI"}:
+            return f"{parts[0]} {' '.join(parts[1:3])}".strip()
+    if len(text) > 40:
+        return text[:39] + "…"
+    return text
+
+
+FAMILY_BLURBS: dict[str, str] = {
+    "Diagnosis": (
+        "Inventory problem. Rules convert many substitutions into exact "
+        "letters (−167 `substituted_or_mixed`) but can leave a larger "
+        "`extra_only` residue (+45)."
+    ),
+    "SeizureFrequency": (
+        "Practical floor on both surfaces. Rules cut some empty-gold "
+        "spurious and extra `active-rate`, but missed-state inventory stays."
+    ),
+    "Prescription": (
+        "High without rules; rules are not uniformly helpful—consensus "
+        "imperfect widens as `missed_all` / `missed_only` rise."
+    ),
+    "Investigations": (
+        "Same letter-exact modes on both surfaces for this roster "
+        "(rules are a no-op here); residual is mostly missed inventory."
+    ),
+}
 
 
 def render_report(artifact: dict[str, Any]) -> str:
+    llm = artifact["surfaces"]["llm"]["families"]
+    hybrid = artifact["surfaces"]["llm_with_rules"]["families"]
+
     lines: list[str] = [
         "# ExECTv2 four-family error catalog",
         "",
         f"Date: {REPORT_DATE}  ",
-        "Status: development catalog on retained no-call artifacts  ",
+        "Status: development catalog with pipeline ablation reading  ",
         "Protocol: [exect family error catalog protocol]"
         "(exectv2_family_error_catalog_protocol_2026-08-06.md)  ",
         "Parent: [category-cut performance]"
         "(six_model_category_cut_performance_2026-08-06.md)  ",
+        "Companions: [task-shape framework]"
+        "(task_shape_framework_2026-08-06.md), "
+        "[hard-slice modes](six_model_hard_slice_error_modes_2026-08-06.md), "
+        "[Gan error catalog](gan2026_category_error_catalog_2026-08-06.md)  ",
         f"Artifact: [`experiments/exectv2_family_error_catalog_{DATE_STAMP}.json`]"
         f"(../../experiments/exectv2_family_error_catalog_{DATE_STAMP}.json)",
         "",
         "## Plain answer",
         "",
-        "All four families have imperfect letter modes on both surfaces.",
-        "Diagnosis is an inventory problem (large `extra_only` /",
-        "`substituted_or_mixed`; dozens of consensus imperfect letters).",
-        "SeizureFrequency adds empty-gold spurious active-rate and missed state",
-        "inventory. Prescription and Investigations are smaller but real:",
-        "missed-only, missed-all, and empty-gold spurious still appear. Rules",
-        "improve Diagnosis letter-exact rates and cut some SF empty-gold",
-        "over-reads; Prescription consensus imperfect can widen under rules",
-        "(missed-all rises)—rules are not uniformly helpful by family.",
+        "Family errors are inventory shapes, not a single low score. On the",
+        "model lane, Diagnosis is mostly wrong-set / extra concepts;",
+        "SeizureFrequency adds empty-gold spurious `active-rate`; Prescription",
+        "and Investigations are smaller missed/extra problems.",
         "",
-        "## Method",
+        "Family rules then do **different jobs by family**:",
         "",
-        "- Split: `dev140`. Surfaces: `llm` (`raw_lane_mentions`) and",
-        "  `llm_with_rules` (`predicted_mentions`).",
-        "- Letter metric: clinical-headline unit-key multiset exactness **per family**.",
-        "- Imperfect modes: `empty_gold_spurious`, `missed_all`, `missed_only`,",
-        "  `extra_only`, `substituted_or_mixed`.",
-        "- Examples: up to two per observed imperfect mode; consensus + Sol preferred;",
-        "  mention texts/attributes from saved rows only; holdout sealed.",
-        "- Category-cut family F1 remains the competence metric; letter exactness is",
-        "  the mechanism lens used here.",
-        "- Regenerate: `python scripts/build_exectv2_family_error_catalog.py`.",
+        "1. **Diagnosis** — large rescue: substitutions collapse into exact",
+        "   letters; empty-gold spurious nearly vanishes.",
+        "2. **SeizureFrequency** — partial rescue: fewer empty-gold over-reads",
+        "   and less extra `active-rate`; missed states remain the floor.",
+        "3. **Prescription** — can **hurt**: consensus imperfect widens as",
+        "   rules drop drugs that the model lane had right.",
+        "4. **Investigations** — no change on this roster (rules leave the",
+        "   lane alone).",
         "",
+        "## Why this document exists",
+        "",
+        "The [category-cut report]"
+        "(six_model_category_cut_performance_2026-08-06.md) shows **which**",
+        "families move under rules (F1). This catalog shows **how** at letter",
+        "exactness: which imperfect modes dominate, and whether family rules",
+        "erase, reshape, or amplify them. Full per-model tables and every",
+        "retained example live in the JSON; this page is the readable ablation.",
+        "",
+        "## Observable ablation layers",
+        "",
+        "No new calls. Same retained `dev140` letters. Two prediction fields we",
+        "can already separate:",
+        "",
+        "```mermaid",
+        "flowchart LR",
+        '  lane["1. Model lane<br/>raw_lane_mentions"]',
+        '  rules["2. After family rules<br/>predicted_mentions"]',
+        "  lane --> rules",
+        "```",
+        "",
+        "| Layer | What it is | What it typically does to errors |",
+        "| --- | --- | --- |",
+        "| **1. Model lane** | One-call mentions before family transforms "
+        "(`raw_lane_mentions`) | Diagnosis substitutions / extras; SF "
+        "empty-gold `active-rate`; smaller Rx / Investigations misses |",
+        "| **2. After family rules** | Mentions after deterministic family "
+        "transforms (`predicted_mentions`) | Diagnosis inventory rescue; SF "
+        "precision trim; Prescription drop risk; Investigations unchanged |",
+        "",
+        "This is an ablation over **saved surfaces**, not a leave-one-rule-out",
+        "factorial. Category-cut **family F1** remains the competence metric;",
+        "letter exactness here is the mechanism lens.",
+        "",
+        "## Four cases that explain the catalog",
+        "",
+        "Read these first. Green end-state = letter-exact for that family;",
+        "red = still imperfect. Paired Sol letters unless noted.",
+        "",
+        "### A. Diagnosis rules strip a spurious extra",
+        "",
+        "Model lane adds `febrile seizures`; family rules drop it and match gold.",
+        "",
+        "```mermaid",
+        "flowchart LR",
+        '  gold["Gold<br/>focal to bilateral<br/>convulsive seizures"]',
+        '  lane["1. Model lane<br/>+ febrile seizures"]',
+        '  hyb["2. Family rules<br/>gold set only"]',
+        "  gold -.-> lane",
+        "  lane -->|drops extra| hyb",
+        "  classDef ok fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;",
+        "  classDef bad fill:#fbe9e7,stroke:#c62828,color:#b71c1c;",
+        "  classDef gold fill:#eef0fb,stroke:#5b6abf,color:#1a237e;",
+        "  class gold gold;",
+        "  class lane bad;",
+        "  class hyb ok;",
+        "```",
+        "",
+        "EA0009 / Sol (`extra_only` → exact). This is the Diagnosis mass story:",
+        "−167 `substituted_or_mixed`, +156 `correct_nonempty` pooled.",
+        "",
+        "### B. SeizureFrequency rules drop an extra active-rate",
+        "",
+        "Gold is seizure-free; the lane also emits `active-rate`.",
+        "",
+        "```mermaid",
+        "flowchart LR",
+        '  gold["Gold<br/>seizure-free"]',
+        '  lane["1. Model lane<br/>active-rate + seizure-free"]',
+        '  hyb["2. Family rules<br/>seizure-free"]',
+        "  gold -.-> lane",
+        "  lane -->|drops active-rate| hyb",
+        "  classDef ok fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;",
+        "  classDef bad fill:#fbe9e7,stroke:#c62828,color:#b71c1c;",
+        "  classDef gold fill:#eef0fb,stroke:#5b6abf,color:#1a237e;",
+        "  class gold gold;",
+        "  class lane bad;",
+        "  class hyb ok;",
+        "```",
+        "",
+        "EA0142 / Sol. Extra `active-rate` tokens fall 201→141 pooled; this is",
+        "precision help, not a solved inventory floor.",
+        "",
+        "### C. Two residuals rules do not clear",
+        "",
+        "Left: empty-gold SF still emits `active-rate` after rules (Sol).",
+        "Right: Investigations miss is unchanged by rules.",
+        "",
+        "```mermaid",
+        "flowchart TB",
+        "  subgraph sfPersist[\"SF empty-gold tax — still spurious\"]",
+        "    direction LR",
+        '    sg["Gold<br/>no SF facts"]',
+        '    sr["Lane / rules<br/>active-rate"]',
+        "    sg -.-> sr",
+        "  end",
+        "  subgraph invFlat[\"Investigations — rules are a no-op\"]",
+        "    direction LR",
+        '    ig["Gold<br/>EEG + normal MRI"]',
+        '    ir["Lane = rules<br/>MRI only"]',
+        "    ig -.-> ir",
+        "  end",
+        "  classDef bad fill:#fbe9e7,stroke:#c62828,color:#b71c1c;",
+        "  classDef gold fill:#eef0fb,stroke:#5b6abf,color:#1a237e;",
+        "  class sg,ig gold;",
+        "  class sr,ir bad;",
+        "```",
+        "",
+        "EA0092 / Sol (SF) and EA0102 / mini (Investigations `missed_only`).",
+        "Empty-gold SF still falls for some weaker models under rules; Sol’s",
+        "empty-gold band does not.",
+        "",
+        "### D. Prescription rules can drop a correct drug",
+        "",
+        "Model lane matches gold; family rules wipe the prescription set.",
+        "",
+        "```mermaid",
+        "flowchart LR",
+        '  gold["Gold<br/>lamotrigine 75 mg"]',
+        '  lane["1. Model lane<br/>lamotrigine 75 mg"]',
+        '  hyb["2. Family rules<br/>empty / missed_all"]',
+        "  gold -.-> lane",
+        "  lane -->|drops drug| hyb",
+        "  classDef ok fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;",
+        "  classDef bad fill:#fbe9e7,stroke:#c62828,color:#b71c1c;",
+        "  classDef gold fill:#eef0fb,stroke:#5b6abf,color:#1a237e;",
+        "  class gold gold;",
+        "  class lane ok;",
+        "  class hyb bad;",
+        "```",
+        "",
+        "EA0008 / Sol. Consensus imperfect rises 6→14; pooled `missed_all`",
+        "+17. Rules are not a free upgrade on Prescription.",
+        "",
+        "## Ablation map: which step addresses which mode",
+        "",
+        "```mermaid",
+        "flowchart TB",
+        '  lane["Model lane"]',
+        '  rules["Family rules"]',
+        "  lane --> rules",
+        '  rules -->|erases| r1["Diagnosis substitutions<br/>SF empty-gold / active-rate"]',
+        '  rules -->|amplifies| r2["Prescription missed_all / missed_only"]',
+        '  rules -->|leaves| r3["SF missed states<br/>Investigations inventory"]',
+        "```",
+        "",
+        "| Error shape | Main families | Family rules |",
+        "| --- | --- | --- |",
+        "| Wrong / mixed Diagnosis inventory "
+        "(`substituted_or_mixed`) | Diagnosis | "
+        "**Clears** most (−167); lifts `correct_nonempty` (+156) |",
+        "| Extra Diagnosis concepts (`extra_only`) | Diagnosis | "
+        "Mixed: some stripped (case A), pooled count can **rise** (+45) "
+        "as substitutions resolve into extras |",
+        "| Empty-gold spurious SF | SeizureFrequency | "
+        "**Cuts** (−30 pooled); Sol often still emits `active-rate` |",
+        "| Extra SF `active-rate` | SeizureFrequency | "
+        "**Cuts** token mass (201→141); residual remains |",
+        "| Missed SF states | SeizureFrequency | "
+        "Mostly **leaves** (`missed_only` +7; `missed_all` unchanged) |",
+        "| Prescription drops | Prescription | "
+        "**Amplifies** misses (`missed_all` +17, `missed_only` +21) |",
+        "| Investigations misses / extras | Investigations | "
+        "**No-op** on this roster (all mode deltas 0) |",
+        "",
+        "## Rules lift by family (llm → hybrid modes)",
+        "",
+        "Pooled six-model letter cells. Exact bands are letter-exact rates",
+        "(mechanism lens), not category-cut F1.",
+        "",
+        "| Family | llm exact | hybrid exact | Consensus imperfect "
+        "llm→hyb | Dominant llm imperfect | What rules do |",
+        "| --- | --- | --- | ---: | --- | --- |",
     ]
 
-    for surface in ("llm", "llm_with_rules"):
-        surface_block = artifact["surfaces"][surface]
-        lines.extend(
-            [
-                f"## Surface: `{surface}`",
-                "",
-                "### Family letter-exact overview",
-                "",
-                (
-                    "| Family | Sol exact | Exact min–max | Consensus imperfect | "
-                    "Top imperfect modes |"
-                ),
-                "| --- | ---: | --- | ---: | --- |",
-            ]
+    for family in FAMILIES:
+        llm_block = llm[family]
+        hybrid_block = hybrid[family]
+        cons = (
+            f"{llm_block['consensus_imperfect_all_six']['n']}→"
+            f"{hybrid_block['consensus_imperfect_all_six']['n']}"
         )
-        for family in FAMILIES:
-            block = surface_block["families"][family]
-            rates = [
-                model["letter_exact_rate"]
-                for model in block["models"].values()
-                if model["letter_exact_rate"] is not None
-            ]
-            band = f"{min(rates):.2f}–{max(rates):.2f}" if rates else "n/a"
-            sol = block["models"]["gpt56sol"]["letter_exact_rate"]
-            top = ", ".join(
-                f"{mode} ({count})"
-                for mode, count in list(
-                    block["pooled_imperfect_mode_counts"].items()
-                )[:3]
-            ) or "_(none)_"
-            lines.append(
-                f"| {family} | {sol:.4f} | {band} | "
-                f"{block['consensus_imperfect_all_six']['n']} | {top} |"
-            )
-        lines.append("")
-
-        for family in FAMILIES:
-            block = surface_block["families"][family]
-            lines.extend(
-                [
-                    f"### {family}",
-                    "",
-                    "#### Per-model letter exactness",
-                    "",
-                    "| Model | Exact | Imperfect | Mode counts |",
-                    "| --- | ---: | ---: | --- |",
-                ]
-            )
-            for slug, _display in hs.MODEL_SPECS:
-                model = block["models"][slug]
-                mode_txt = ", ".join(
-                    f"{mode}:{count}" for mode, count in model["modes"].items()
-                )
-                lines.append(
-                    f"| {model['display_name']} | {model['letter_exact_rate']:.4f} | "
-                    f"{model['n_imperfect_letters']} | {mode_txt} |"
-                )
-            lines.extend(
-                [
-                    "",
-                    "#### Pooled modes",
-                    "",
-                    "| Mode | Count |",
-                    "| --- | ---: |",
-                ]
-            )
-            for mode, count in block["pooled_mode_counts"].items():
-                lines.append(f"| `{mode}` | {count} |")
-            lines.extend(["", "#### Top missed / extra tokens (pooled)", ""])
-            if block["pooled_missed_tokens_top"] or block["pooled_extra_tokens_top"]:
-                lines.append("| Direction | Token | Count |")
-                lines.append("| --- | --- | ---: |")
-                for token, count in list(block["pooled_missed_tokens_top"].items())[:8]:
-                    lines.append(f"| missed | `{_md_escape(token)}` | {count} |")
-                for token, count in list(block["pooled_extra_tokens_top"].items())[:8]:
-                    lines.append(f"| extra | `{_md_escape(token)}` | {count} |")
-            else:
-                lines.append("_No imperfect token mass._")
-            lines.extend(["", "#### Examples by imperfect mode", ""])
-            if not block["examples_by_mode"]:
-                lines.append("_No imperfect letters on this surface._")
-                lines.append("")
-                continue
-            for mode, examples in block["examples_by_mode"].items():
-                lines.append(f"##### `{mode}`")
-                lines.append("")
-                for example in examples:
-                    lines.append(_render_example(example))
-                lines.append("")
+        lines.append(
+            f"| {family} | {_exact_band(llm_block)} | {_exact_band(hybrid_block)} | "
+            f"{cons} | {_top_modes(llm_block['pooled_imperfect_mode_counts'], 2)} | "
+            f"{FAMILY_BLURBS[family]} |"
+        )
 
     lines.extend(
         [
+            "",
+            "### Mode deltas worth remembering",
+            "",
+        ]
+    )
+
+    for family in FAMILIES:
+        rows = _mode_delta_rows(
+            llm[family]["pooled_mode_counts"],
+            hybrid[family]["pooled_mode_counts"],
+            min_either=10,
+        )
+        # Investigations is all zeros — still show imperfect modes once.
+        if family == "Investigations":
+            lines.extend(
+                [
+                    "#### Investigations",
+                    "",
+                    "Every pooled mode count is identical on `llm` and",
+                    "`llm_with_rules` for this six-model roster.",
+                    "",
+                ]
+            )
+            continue
+        if not rows:
+            continue
+        lines.extend(
+            [
+                f"#### {family}",
+                "",
+                "| Mode | llm | hybrid | Δ |",
+                "| --- | ---: | ---: | ---: |",
+            ]
+        )
+        for mode, llm_n, hybrid_n, delta in rows:
+            lines.append(f"| `{mode}` | {llm_n} | {hybrid_n} | {delta:+d} |")
+        lines.append("")
+
+    # SF token lens
+    sf_llm_extra = llm["SeizureFrequency"]["pooled_extra_tokens_top"]
+    sf_hyb_extra = hybrid["SeizureFrequency"]["pooled_extra_tokens_top"]
+    sf_llm_miss = llm["SeizureFrequency"]["pooled_missed_tokens_top"]
+    sf_hyb_miss = hybrid["SeizureFrequency"]["pooled_missed_tokens_top"]
+    lines.extend(
+        [
+            "### SeizureFrequency state tokens (pooled)",
+            "",
+            "| State | llm missed | llm extra | hybrid missed | hybrid extra |",
+            "| --- | ---: | ---: | ---: | ---: |",
+        ]
+    )
+    for state in ("active-rate", "seizure-free", "unknown"):
+        lines.append(
+            f"| `{state}` | {sf_llm_miss.get(state, 0)} | "
+            f"{sf_llm_extra.get(state, 0)} | {sf_hyb_miss.get(state, 0)} | "
+            f"{sf_hyb_extra.get(state, 0)} |"
+        )
+    lines.extend(
+        [
+            "",
+            "Extra `active-rate` is the distinctive precision pressure; rules",
+            "shrink it without clearing missed `unknown` / inventory under-fill.",
+            "",
+            "## Family cards",
+            "",
+            "Letter-exact bands are six-model min–max on `dev140`. Mode counts",
+            "are pooled letter×model cells. Mechanism pictures are in",
+            "[Four cases](#four-cases-that-explain-the-catalog) above.",
+            "",
+        ]
+    )
+
+    for family in FAMILIES:
+        llm_block = llm[family]
+        hybrid_block = hybrid[family]
+        lines.extend(
+            [
+                f"### {family}",
+                "",
+                FAMILY_BLURBS[family],
+                "",
+                "| Surface | Exact band | Consensus imperfect | Top imperfect |",
+                "| --- | --- | ---: | --- |",
+                f"| `llm` | {_exact_band(llm_block)} | "
+                f"{llm_block['consensus_imperfect_all_six']['n']} | "
+                f"{_top_modes(llm_block['pooled_imperfect_mode_counts'])} |",
+                f"| `llm_with_rules` | {_exact_band(hybrid_block)} | "
+                f"{hybrid_block['consensus_imperfect_all_six']['n']} | "
+                f"{_top_modes(hybrid_block['pooled_imperfect_mode_counts'])} |",
+                "",
+            ]
+        )
+        # Compact top tokens for Diagnosis / SF only
+        if family in {"Diagnosis", "SeizureFrequency"}:
+            lines.extend(
+                [
+                    "Top missed / extra tokens on `llm` (pooled):",
+                    "",
+                    "| Direction | Token | Count |",
+                    "| --- | --- | ---: |",
+                ]
+            )
+            for token, count in list(llm_block["pooled_missed_tokens_top"].items())[:5]:
+                lines.append(f"| missed | `{_short_token(token)}` | {count} |")
+            for token, count in list(llm_block["pooled_extra_tokens_top"].items())[:5]:
+                lines.append(f"| extra | `{_short_token(token)}` | {count} |")
+            lines.append("")
+
+    lines.extend(
+        [
+            "## How to explore further",
+            "",
+            "| Need | Where |",
+            "| --- | --- |",
+            "| Per-model exact rates and mode counts | JSON "
+            f"`surfaces.*.families.*.models` in "
+            f"[`exectv2_family_error_catalog_{DATE_STAMP}.json`]"
+            f"(../../experiments/exectv2_family_error_catalog_{DATE_STAMP}.json) |",
+            "| Up to two examples per imperfect mode × surface | "
+            "JSON `examples_by_mode` |",
+            "| SF floor token lens and rescue context | "
+            "[hard-slice error modes]"
+            "(six_model_hard_slice_error_modes_2026-08-06.md) |",
+            "| Family F1 competence (x/y/z) | "
+            "[category-cut](six_model_category_cut_performance_2026-08-06.md) |",
+            "| Peer Gan ablation catalog | "
+            "[Gan category error catalog]"
+            "(gan2026_category_error_catalog_2026-08-06.md) |",
+            "| Regenerate this page + artifact | "
+            "`python scripts/build_exectv2_family_error_catalog.py` |",
+            "",
+            "## Method",
+            "",
+            "- Split: ExECT `dev140`. Surfaces: `llm` (`raw_lane_mentions`) and",
+            "  `llm_with_rules` (`predicted_mentions`).",
+            "- Letter metric: clinical-headline unit-key multiset exactness",
+            "  **per family**.",
+            "- Imperfect modes: `empty_gold_spurious`, `missed_all`,",
+            "  `missed_only`, `extra_only`, `substituted_or_mixed`.",
+            "- Ablation: model lane vs after family rules on retained rows.",
+            "- Examples in JSON: up to two per imperfect mode; consensus + Sol",
+            "  preferred; saved mention texts only; holdout sealed.",
+            "",
             "## Claim boundary",
             "",
             "- Development ExECT four-family error catalog on `dev140`.",
-            "- Letter exactness is a mechanism lens; category-cut family F1 remains",
-            "  the competence metric.",
+            "- Letter exactness is a mechanism lens; category-cut family F1",
+            "  remains the competence metric.",
+            "- Ablation is across retained surfaces, not a full rule factorial.",
             "- Mention texts are from saved prediction rows, not full notes.",
             "- Not sealed holdout competence; not a Decision 0046 rewrite.",
             "",
