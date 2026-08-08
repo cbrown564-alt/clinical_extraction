@@ -136,6 +136,16 @@ GAN_FLOORS_PATCH = REPO_ROOT / (
     "experiments/gan2026_six_model_current_floors_replay_20260731/"
     "dev750_changed_rows.jsonl"
 )
+GAN_RULES_ONLY_JSONL = REPO_ROOT / (
+    "experiments/gan2026_three_way_comparison_validation750_"
+    "deterministic_canonical_pipeline_gpt41mini_2026-06-07.jsonl"
+)
+EXECT_RULES_ONLY_JSONL = REPO_ROOT / (
+    f"experiments/exectv2_rules_only_four_family_letter_scores_dev140_{DATE_STAMP}.jsonl"
+)
+EXECT_RULES_ONLY_SUMMARY = REPO_ROOT / (
+    f"experiments/exectv2_rules_only_four_family_letter_scores_dev140_{DATE_STAMP}.json"
+)
 EXECT_JSONL = {
     "gpt41mini": REPO_ROOT
     / "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.jsonl",
@@ -182,6 +192,18 @@ def _assign_lens(*, scores: dict[str, float], n: int, min_n: int) -> str | None:
     return "y"
 
 
+def _assign_single_system_band(*, score: float | None, n: int, min_n: int) -> str | None:
+    """Band for one rules-only system (not six-model x/y/z)."""
+
+    if score is None or n < min_n:
+        return None
+    if score >= X_MIN:
+        return "high"
+    if score <= Z_MAX:
+        return "floor"
+    return "mid"
+
+
 def _gan_gold_index() -> dict[int, dict[str, Any]]:
     out: dict[int, dict[str, Any]] = {}
     for record in load_records_for_split("validation"):
@@ -201,6 +223,16 @@ def _load_gan_llm_correct(slug: str) -> dict[int, bool]:
     for row in _read_jsonl(path):
         comparison = row.get("comparison")
         # Null comparison (parse/call failure) counts as incorrect, matching panel.
+        out[int(row["source_row_index"])] = bool(
+            comparison and comparison.get("purist_correct")
+        )
+    return out
+
+
+def _load_gan_rules_correct() -> dict[int, bool]:
+    out: dict[int, bool] = {}
+    for row in _read_jsonl(GAN_RULES_ONLY_JSONL):
+        comparison = row.get("comparison")
         out[int(row["source_row_index"])] = bool(
             comparison and comparison.get("purist_correct")
         )
@@ -245,9 +277,33 @@ def _gan_bucket_scores(
     }
 
 
+def _single_system_bucket_table(
+    bucket_scores: dict[str, dict[str, Any]],
+    *,
+    score_key: str,
+    min_n: int,
+    n_key: str = "n",
+) -> dict[str, Any]:
+    table: dict[str, Any] = {}
+    for name, entry in sorted(bucket_scores.items()):
+        score = entry.get(score_key)
+        n = int(entry.get(n_key, 0))
+        table[name] = {
+            "n": n,
+            "score": None if score is None else _round(float(score)),
+            "band": _assign_single_system_band(
+                score=None if score is None else float(score),
+                n=n,
+                min_n=min_n,
+            ),
+        }
+    return table
+
+
 def build_gan_section() -> dict[str, Any]:
     gold_index = _gan_gold_index()
     hybrid = _load_gan_hybrid_correct()
+    rules_correct = _load_gan_rules_correct()
     methods: dict[str, Any] = {"llm": {}, "llm_with_rules": {}}
     for slug, display in MODEL_SPECS:
         llm_correct = _load_gan_llm_correct(slug)
@@ -287,11 +343,40 @@ def build_gan_section() -> dict[str, Any]:
             },
         }
 
+    rules_a_priori = _gan_bucket_scores(
+        correctness=rules_correct,
+        gold_index=gold_index,
+        field="a_priori_bucket",
+    )
+    rules_boundary = _gan_bucket_scores(
+        correctness=rules_correct,
+        gold_index=gold_index,
+        field="boundary_band",
+    )
+    rules_method = {
+        "display_name": "Rules only (deterministic canonical)",
+        "source": GAN_RULES_ONLY_JSONL.relative_to(REPO_ROOT).as_posix(),
+        "system_note": (
+            "Single deterministic method, not a six-model surface. "
+            "Bands use high/mid/floor thresholds, not x/y/z across models."
+        ),
+        "a_priori_buckets": rules_a_priori,
+        "boundary_band": rules_boundary,
+        "overall": {
+            "n": len(rules_correct),
+            "accuracy": _round(sum(rules_correct.values()) / len(rules_correct)),
+        },
+    }
+
     return {
         "split": "dev750",
         "metric": "purist_accuracy",
-        "surfaces": ["llm", "llm_with_rules"],
-        "methods": methods,
+        "surfaces": ["rules", "llm", "llm_with_rules"],
+        "methods": {
+            "rules": {"rules_only": rules_method},
+            "llm": methods["llm"],
+            "llm_with_rules": methods["llm_with_rules"],
+        },
         "lenses_llm_a_priori": _lens_table(
             methods["llm"],
             partition="a_priori_buckets",
@@ -301,6 +386,11 @@ def build_gan_section() -> dict[str, Any]:
         "lenses_llm_with_rules_a_priori": _lens_table(
             methods["llm_with_rules"],
             partition="a_priori_buckets",
+            score_key="accuracy",
+            min_n=GAN_MIN_N,
+        ),
+        "bands_rules_a_priori": _single_system_bucket_table(
+            rules_a_priori,
             score_key="accuracy",
             min_n=GAN_MIN_N,
         ),
@@ -406,6 +496,19 @@ def _exect_partition_scores(
     }
 
 
+def _exect_family_band_table(overall: dict[str, Any]) -> dict[str, Any]:
+    table: dict[str, Any] = {}
+    by_family = overall.get("by_family", {})
+    for family in ("Diagnosis", "SeizureFrequency", "Prescription", "Investigations"):
+        score = float(by_family[family])
+        table[family] = {
+            "n": 140,
+            "score": _round(score),
+            "band": _assign_single_system_band(score=score, n=140, min_n=EXECT_MIN_N),
+        }
+    return table
+
+
 def build_exect_section() -> dict[str, Any]:
     gold_index = _exect_gold_index()
     methods: dict[str, Any] = {"llm": {}, "llm_with_rules": {}}
@@ -437,16 +540,79 @@ def build_exect_section() -> dict[str, Any]:
                     partition="sf_mention_letter_groups",
                 ),
             }
+
+    if not EXECT_RULES_ONLY_JSONL.is_file():
+        raise FileNotFoundError(
+            f"missing rules-only letter scores: {EXECT_RULES_ONLY_JSONL}. "
+            "Run scripts/build_exectv2_rules_only_four_family_letter_scores_dev140.py"
+        )
+    rules_rows = _read_jsonl(EXECT_RULES_ONLY_JSONL)
+    rules_by_id = {str(row["letter_id"]): row for row in rules_rows}
+    rules_overall = _score_exect_rows(rules_rows, field="predicted_mentions")
+    rules_a_priori = _exect_partition_scores(
+        rules_by_id,
+        gold_index,
+        field="predicted_mentions",
+        partition="a_priori_letter_bucket",
+    )
+    rules_diag = _exect_partition_scores(
+        rules_by_id,
+        gold_index,
+        field="predicted_mentions",
+        partition="diag_letter_multiplicity",
+    )
+    rules_sf_empty = _exect_partition_scores(
+        rules_by_id,
+        gold_index,
+        field="predicted_mentions",
+        partition="sf_empty",
+    )
+    rules_sf_groups = _exect_partition_scores(
+        rules_by_id,
+        gold_index,
+        field="predicted_mentions",
+        partition="sf_mention_letter_groups",
+    )
+    rules_summary = json.loads(EXECT_RULES_ONLY_SUMMARY.read_text(encoding="utf-8"))
+    rules_method = {
+        "display_name": "Rules only (four-family restrict-and-rescore)",
+        "source": EXECT_RULES_ONLY_JSONL.relative_to(REPO_ROOT).as_posix(),
+        "summary_source": EXECT_RULES_ONLY_SUMMARY.relative_to(REPO_ROOT).as_posix(),
+        "prediction_field": "predicted_mentions",
+        "system_note": (
+            "Single deterministic method, not a six-model surface. "
+            "Category-cut scores use clinical_headline helper for parity with "
+            "llm / llm_with_rules. Decision 0046 primary fill remains "
+            "assembly headline_target 0.8160."
+        ),
+        "overall": rules_overall,
+        "a_priori_letter_buckets": rules_a_priori,
+        "diag_letter_multiplicity": rules_diag,
+        "sf_empty": rules_sf_empty,
+        "sf_mention_letter_groups": rules_sf_groups,
+        "decision_0046_headline_target": rules_summary["decision_0046_headline_target"],
+    }
+
     return {
         "split": "dev140",
         "metric": "four_family_clinical_fact_f1",
-        "surfaces": ["llm", "llm_with_rules"],
+        "surfaces": ["rules", "llm", "llm_with_rules"],
         "llm_scoring_note": (
             "llm uses clinical_headline helper on raw_lane_mentions; "
             "absolute F1 may differ from panel raw_lane_score ladder. "
             "Lens assignment still uses the same x/y/z thresholds."
         ),
-        "methods": methods,
+        "rules_scoring_note": (
+            "rules uses the same clinical_headline helper on regenerated "
+            "four-family deterministic predictions. Helper overall may differ "
+            "slightly from Decision 0046 headline_target (0.8160); letter-bucket "
+            "cuts stay on the helper for surface parity."
+        ),
+        "methods": {
+            "rules": {"rules_only": rules_method},
+            "llm": methods["llm"],
+            "llm_with_rules": methods["llm_with_rules"],
+        },
         "lenses_llm_a_priori": _lens_table(
             methods["llm"],
             partition="a_priori_letter_buckets",
@@ -461,10 +627,22 @@ def build_exect_section() -> dict[str, Any]:
             min_n=EXECT_MIN_N,
             n_key="n_letters",
         ),
+        "bands_rules_a_priori": _single_system_bucket_table(
+            {
+                name: {
+                    "n": entry["n_letters"],
+                    "clinical_fact_f1": entry["clinical_fact_f1"],
+                }
+                for name, entry in rules_a_priori.items()
+            },
+            score_key="clinical_fact_f1",
+            min_n=EXECT_MIN_N,
+        ),
         "lenses_llm_families": _exect_family_lens_table(methods["llm"]),
         "lenses_llm_with_rules_families": _exect_family_lens_table(
             methods["llm_with_rules"]
         ),
+        "bands_rules_families": _exect_family_band_table(rules_overall),
         "lenses_llm_sf_empty": _lens_table(
             methods["llm"],
             partition="sf_empty",
@@ -609,16 +787,25 @@ def build_artifact() -> dict[str, Any]:
         "protocol": "docs/research/six_model_category_cut_protocol_2026-08-06.md",
         "parent_framework": "docs/research/task_shape_framework_2026-08-06.md",
         "claim_boundary": (
-            "Development category cuts from retained no-call artifacts. "
-            "No locked-test row inspection. Not Decision 0046 method-fill rewrite."
+            "Development category cuts from retained no-call artifacts, now "
+            "including the single-system rules surface beside six-model llm and "
+            "llm_with_rules. No locked-test row inspection. Not Decision 0046 "
+            "method-fill rewrite."
         ),
         "lens_thresholds": {
-            "surfaces": ["llm", "llm_with_rules"],
+            "surfaces": ["rules", "llm", "llm_with_rules"],
+            "six_model_surfaces": ["llm", "llm_with_rules"],
+            "single_system_surfaces": ["rules"],
             "x_min": X_MIN,
             "x_spread_max": X_SPREAD_MAX,
             "z_max": Z_MAX,
             "gan_min_n": GAN_MIN_N,
             "exect_min_n": EXECT_MIN_N,
+            "single_system_bands": {
+                "high_min": X_MIN,
+                "floor_max": Z_MAX,
+                "mid": "neither",
+            },
         },
         "gan2026": gan,
         "exectv2": exect,
@@ -639,6 +826,13 @@ def main() -> None:
     args.output.write_text(json.dumps(artifact, indent=2) + "\n", encoding="utf-8")
     print(f"wrote {args.output.relative_to(REPO_ROOT)}")
     print("panel_match", artifact["panel_reconstruction"]["all_gan_and_exect_hybrid_match"])
+    print(
+        "gan rules bands",
+        {
+            name: entry["band"]
+            for name, entry in artifact["gan2026"]["bands_rules_a_priori"].items()
+        },
+    )
     for surface_key, label in (
         ("lenses_llm_a_priori", "gan llm"),
         ("lenses_llm_with_rules_a_priori", "gan llm_with_rules"),
@@ -650,6 +844,20 @@ def main() -> None:
                 for name, entry in artifact["gan2026"][surface_key].items()
             },
         )
+    print(
+        "exect rules families",
+        {
+            name: entry["band"]
+            for name, entry in artifact["exectv2"]["bands_rules_families"].items()
+        },
+    )
+    print(
+        "exect rules letter buckets",
+        {
+            name: entry["band"]
+            for name, entry in artifact["exectv2"]["bands_rules_a_priori"].items()
+        },
+    )
     for surface_key, label in (
         ("lenses_llm_families", "exect llm families"),
         ("lenses_llm_with_rules_families", "exect llm_with_rules families"),

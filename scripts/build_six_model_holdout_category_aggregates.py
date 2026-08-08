@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import subprocess
+from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 from typing import Any
 
@@ -39,6 +40,9 @@ EXECT_HOLDOUT_N = 59
 
 EXECT_PANEL = (
     REPO_ROOT / "experiments/exectv2_six_model_test60_stage_panel_20260801/panel_aggregate.json"
+)
+EXECT_RULES_HOLDOUT = REPO_ROOT / (
+    "experiments/exectv2_rules_only_four_family_clinical_headline_test60_20260801.json"
 )
 GAN_LLM_PANEL = (
     REPO_ROOT / "experiments/gan2026_six_model_llm_only_test450_20260801/panel_aggregate.json"
@@ -83,6 +87,12 @@ def _git_note() -> dict[str, Any]:
 
 def _round(value: float) -> float:
     return round(float(value), 4)
+
+
+def _display_score(value: float) -> str:
+    return str(
+        Decimal(str(value)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    )
 
 
 def _assign_lens(*, scores: dict[str, float], n: int, min_n: int) -> str | None:
@@ -188,6 +198,7 @@ def _forbidden_paths(value: Any, prefix: str = "") -> list[str]:
 
 def _exect_holdout_section() -> dict[str, Any]:
     panel = json.loads(EXECT_PANEL.read_text(encoding="utf-8"))
+    rules_artifact = json.loads(EXECT_RULES_HOLDOUT.read_text(encoding="utf-8"))
     by_slug = {condition["slug"]: condition for condition in panel["conditions"]}
     surfaces: dict[str, dict[str, dict[str, float]]] = {
         "llm": {family: {} for family in FAMILIES},
@@ -212,6 +223,7 @@ def _exect_holdout_section() -> dict[str, Any]:
         "metric": "four_family_clinical_fact_f1",
         "source": EXECT_PANEL.relative_to(REPO_ROOT).as_posix(),
         "surface_fields": {
+            "rules": "clinical_headline_by_family",
             "llm": "raw_lane_score_by_family",
             "llm_with_rules": "clinical_headline_by_family",
         },
@@ -222,6 +234,21 @@ def _exect_holdout_section() -> dict[str, Any]:
                 "by_model": {slug: _round(score) for slug, score in scores.items()},
             }
             for surface, scores in overall.items()
+        },
+        "rules_only": {
+            "source": EXECT_RULES_HOLDOUT.relative_to(REPO_ROOT).as_posix(),
+            "method": "deterministic_all9_restrict_and_rescore",
+            "overall": rules_artifact["clinical_headline"],
+            "by_family": rules_artifact["clinical_headline_by_family"],
+            "bands": {
+                family: (
+                    "high" if values["f1"] >= X_MIN
+                    else "floor" if values["f1"] <= Z_MAX
+                    else "mid"
+                )
+                for family, values in rules_artifact["clinical_headline_by_family"].items()
+            },
+            "note": "Single deterministic method; high/mid/floor bands, not x/y/z.",
         },
         "lenses_llm_families": _family_lens_table(
             surfaces["llm"], n=EXECT_HOLDOUT_N
@@ -341,7 +368,7 @@ def build_artifact() -> dict[str, Any]:
             "x_spread_max": X_SPREAD_MAX,
             "z_max": Z_MAX,
             "exect_min_n": EXECT_MIN_N,
-            "surfaces": ["llm", "llm_with_rules"],
+            "surfaces": ["rules", "llm", "llm_with_rules"],
         },
         "row_policy": {
             "sealed_row_jsonl_opened": False,
@@ -389,7 +416,9 @@ def build_artifact() -> dict[str, Any]:
         "decision": {
             "label": "partial_answer_family_holdout_plus_mix",
             "summary": (
-                "ExECT holdout family lenses are answered from public aggregates. "
+                "ExECT holdout family lenses are answered from public aggregates, "
+                "with independent rules-only family scores alongside the two "
+                "six-model surfaces. "
                 "Gan a_priori holdout bucket scores remain blocked without sealed "
                 "ledgers. Gold mix share shifts are small."
             ),
@@ -466,6 +495,16 @@ def _plain_exect_summary(exect: dict[str, Any]) -> str:
         + ("**z** = " + ", ".join(llm_z) if llm_z else "no **z**")
         + f"; Prescription is **{llm['Prescription']['lens']}**."
     )
+    rules = exect["rules_only"]
+    parts.append(
+        "Independent rules-only bands: "
+        + ", ".join(
+            f"{family} {_display_score(rules['by_family'][family]['f1'])} "
+            f"({rules['bands'][family]})"
+            for family in FAMILIES
+        )
+        + "."
+    )
     return " ".join(parts)
 
 
@@ -481,7 +520,8 @@ def write_report(artifact: dict[str, Any]) -> str:
         "# Sealed holdout category aggregates",
         "",
         f"Date: {REPORT_DATE}  ",
-        "Status: aggregate-only holdout packaging; Gan a_priori bucket scores blocked  ",
+        "Status: aggregate-only holdout packaging; ExECT rules-only family "
+        "scores added; Gan a_priori bucket scores blocked  ",
         "Protocol: [holdout category aggregates protocol]"
         "(six_model_holdout_category_aggregates_protocol_2026-08-06.md)  ",
         "Parent: [category-cut performance]"
@@ -514,8 +554,9 @@ def write_report(artifact: dict[str, Any]) -> str:
         "",
         "## ExECT `test60` family lenses",
         "",
-        "| Family | llm min–max (lens) | llm_with_rules min–max (lens) | Dev hybrid lens |",
-        "| --- | --- | --- | --- |",
+        "| Family | rules (band) | llm min–max (lens) | "
+        "llm_with_rules min–max (lens) | Dev hybrid lens |",
+        "| --- | --- | --- | --- | --- |",
     ]
     dev_hybrid = artifact["development_family_lenses_for_transfer"][
         "lenses_llm_with_rules_families"
@@ -523,8 +564,11 @@ def write_report(artifact: dict[str, Any]) -> str:
     for family in FAMILIES:
         llm = exect["lenses_llm_families"][family]
         hybrid = exect["lenses_llm_with_rules_families"][family]
+        rules = exect["rules_only"]["by_family"][family]
+        rules_band = exect["rules_only"]["bands"][family]
         lines.append(
-            f"| {family} | {_fmt_band(llm)} | {_fmt_band(hybrid)} | "
+            f"| {family} | **{_display_score(rules['f1'])} ({rules_band})** | "
+            f"{_fmt_band(llm)} | {_fmt_band(hybrid)} | "
             f"**{dev_hybrid[family]['lens']}** "
             f"({dev_hybrid[family]['min']:.2f}–{dev_hybrid[family]['max']:.2f}) |"
         )
@@ -633,8 +677,9 @@ def write_report(artifact: dict[str, Any]) -> str:
             "",
             "## Method",
             "",
-            "- Sources: public ExECT stage panel, Gan llm-only panel, Gan floors "
-            "replay summary, gold taxonomies, development category-cut lenses.",
+            "- Sources: public ExECT stage panel, Decision 0046 rules-only test60 "
+            "aggregate, Gan llm-only panel, Gan floors replay summary, gold "
+            "taxonomies, development category-cut lenses.",
             "- Sealed row JSONL opened: no.",
             f"- Git: `{git.get('commit')}` "
             f"({'dirty tree' if git.get('dirty_tree') else 'clean'}).",
