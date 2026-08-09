@@ -26,6 +26,19 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_hea
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import load_records_for_split
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import boundary_band
 
+try:
+    from scripts.exectv2_within_family_categories import (
+        FAMILIES,
+        mentions_for_subtype,
+        observed_gold_subtypes,
+    )
+except ModuleNotFoundError:  # Direct ``python scripts/...`` execution.
+    from exectv2_within_family_categories import (  # type: ignore[no-redef]
+        FAMILIES,
+        mentions_for_subtype,
+        observed_gold_subtypes,
+    )
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DATE_STAMP = "20260806"
 REPORT_DATE = "2026-08-06"
@@ -85,14 +98,16 @@ def _exect_letter_bucket(dx: int, sf: int, rx: int, inv: int) -> str:
 
 
 def _sf_mention_bucket(attributes: dict[str, str]) -> str:
-    has_count = any(
-        key in attributes
+    count_values = [
+        attributes[key]
         for key in (
             "NumberOfSeizures",
             "LowerNumberOfSeizures",
             "UpperNumberOfSeizures",
         )
-    )
+        if key in attributes
+    ]
+    has_count = bool(count_values)
     has_cadence = "TimePeriod" in attributes or any(
         "TimePeriod" in key for key in attributes
     )
@@ -107,6 +122,8 @@ def _sf_mention_bucket(attributes: dict[str, str]) -> str:
             "DayDate",
         )
     )
+    if has_count and all(value in {"", "0"} for value in count_values):
+        return "seizure_free"
     if has_count and has_cadence:
         return "numeric_cadence_rate"
     if has_count and has_anchor and not has_cadence:
@@ -465,6 +482,99 @@ def _score_exect_rows(rows: list[dict[str, Any]], *, field: str) -> dict[str, An
     }
 
 
+def _score_exect_subtype(
+    rows: list[dict[str, Any]],
+    *,
+    family: str,
+    subtype: str,
+    field: str,
+) -> dict[str, Any]:
+    """Score one family on letters selected by a gold-defined subtype."""
+
+    subtype_rows: list[dict[str, Any]] = []
+    gold_mentions = 0
+    pred_mentions = 0
+    for row in rows:
+        subtype_gold = mentions_for_subtype(
+            row.get("gold_mentions", []), family, subtype
+        )
+        if not subtype_gold:
+            continue
+        gold = [
+            mention
+            for mention in row.get("gold_mentions", [])
+            if str(mention.get("entity") or "") == family
+        ]
+        pred = [
+            mention
+            for mention in row.get(field, [])
+            if str(mention.get("entity") or "") == family
+        ]
+        gold_mentions += len(subtype_gold)
+        pred_mentions += len(pred)
+        subtype_rows.append(
+            {
+                "letter_id": row["letter_id"],
+                "gold_mentions": gold,
+                "predicted_mentions": pred,
+            }
+        )
+    score = _score_exect_rows(subtype_rows, field="predicted_mentions")["counts"][family]
+    family_score = clinical_headline_scores(
+        [
+            ExectLetter(
+                letter_id=str(row["letter_id"]),
+                note_text="",
+                annotations=tuple(
+                    annotation_from_mapping(mention)
+                    for mention in row["gold_mentions"]
+                ),
+            )
+            for row in subtype_rows
+        ],
+        [
+            ExectLetter(
+                letter_id=str(row["letter_id"]),
+                note_text="",
+                annotations=tuple(
+                    annotation_from_mapping(mention)
+                    for mention in row["predicted_mentions"]
+                ),
+            )
+            for row in subtype_rows
+        ],
+    )[family]
+    return {
+        "family": family,
+        "subtype": subtype,
+        "n_letters": len(subtype_rows),
+        "n_gold_letters": len(subtype_rows),
+        "gold_mentions": gold_mentions,
+        "pred_mentions": pred_mentions,
+        "precision": _round(family_score["precision"]),
+        "recall": _round(family_score["recall"]),
+        "f1": _round(family_score["f1"]),
+        "counts": score,
+    }
+
+
+def _exect_within_family_scores(
+    rows: list[dict[str, Any]], *, field: str
+) -> dict[str, dict[str, Any]]:
+    return {
+        family: {
+            subtype: _score_exect_subtype(
+                rows,
+                family=family,
+                subtype=subtype,
+                field=field,
+            )
+            for subtype in observed_gold_subtypes(rows, family)
+        }
+        for family in FAMILIES
+    }
+
+
 def _exect_partition_scores(
     rows_by_id: dict[str, dict[str, Any]],
     gold_index: dict[str, dict[str, Any]],
@@ -524,6 +634,9 @@ def build_exect_section() -> dict[str, Any]:
                 "display_name": display,
                 "prediction_field": field,
                 "overall": _score_exect_rows(rows, field=field),
+                "within_family_subtypes": _exect_within_family_scores(
+                    rows, field=field
+                ),
                 "a_priori_letter_buckets": _exect_partition_scores(
                     rows_by_id, gold_index, field=field, partition="a_priori_letter_bucket"
                 ),
@@ -586,6 +699,9 @@ def build_exect_section() -> dict[str, Any]:
             "assembly headline_target 0.8160."
         ),
         "overall": rules_overall,
+        "within_family_subtypes": _exect_within_family_scores(
+            rules_rows, field="predicted_mentions"
+        ),
         "a_priori_letter_buckets": rules_a_priori,
         "diag_letter_multiplicity": rules_diag,
         "sf_empty": rules_sf_empty,
@@ -596,6 +712,12 @@ def build_exect_section() -> dict[str, Any]:
     return {
         "split": "dev140",
         "metric": "four_family_clinical_fact_f1",
+        "primary_category_unit": "gold_defined_within_family_subtype",
+        "secondary_composition_lenses": [
+            "a_priori_letter_buckets",
+            "diag_letter_multiplicity",
+            "sf_empty",
+        ],
         "surfaces": ["rules", "llm", "llm_with_rules"],
         "llm_scoring_note": (
             "llm uses clinical_headline helper on raw_lane_mentions; "
@@ -643,6 +765,15 @@ def build_exect_section() -> dict[str, Any]:
             methods["llm_with_rules"]
         ),
         "bands_rules_families": _exect_family_band_table(rules_overall),
+        "lenses_llm_within_family_subtypes": _exect_subtype_lens_table(
+            methods["llm"]
+        ),
+        "lenses_llm_with_rules_within_family_subtypes": _exect_subtype_lens_table(
+            methods["llm_with_rules"]
+        ),
+        "bands_rules_within_family_subtypes": _exect_rules_subtype_band_table(
+            rules_method["within_family_subtypes"]
+        ),
         "lenses_llm_sf_empty": _lens_table(
             methods["llm"],
             partition="sf_empty",
@@ -694,6 +825,63 @@ def _exect_family_lens_table(method_block: dict[str, Any]) -> dict[str, Any]:
             "lens": _assign_lens(scores=scores, n=140, min_n=EXECT_MIN_N),
         }
     return table
+
+
+def _exect_subtype_lens_table(method_block: dict[str, Any]) -> dict[str, Any]:
+    table: dict[str, Any] = {}
+    for family in FAMILIES:
+        subtype_names = {
+            subtype
+            for block in method_block.values()
+            for subtype in block["within_family_subtypes"][family]
+        }
+        table[family] = {}
+        for subtype in sorted(subtype_names):
+            scores = {
+                slug: float(block["within_family_subtypes"][family][subtype]["f1"])
+                for slug, block in method_block.items()
+                if subtype in block["within_family_subtypes"][family]
+            }
+            sample = next(
+                block["within_family_subtypes"][family][subtype]
+                for block in method_block.values()
+                if subtype in block["within_family_subtypes"][family]
+            )
+            n = int(sample["n_gold_letters"])
+            low = min(scores.values())
+            high = max(scores.values())
+            table[family][subtype] = {
+                "n_gold_letters": n,
+                "gold_mentions": int(sample["gold_mentions"]),
+                "min": _round(low),
+                "max": _round(high),
+                "spread": _round(high - low),
+                "mean": _round(sum(scores.values()) / len(scores)),
+                "by_model": {slug: _round(score) for slug, score in scores.items()},
+                "lens": _assign_lens(scores=scores, n=n, min_n=EXECT_MIN_N),
+            }
+    return table
+
+
+def _exect_rules_subtype_band_table(
+    scores_by_family: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    return {
+        family: {
+            subtype: {
+                "n_gold_letters": int(entry["n_gold_letters"]),
+                "gold_mentions": int(entry["gold_mentions"]),
+                "score": _round(entry["f1"]),
+                "band": _assign_single_system_band(
+                    score=float(entry["f1"]),
+                    n=int(entry["n_gold_letters"]),
+                    min_n=EXECT_MIN_N,
+                ),
+            }
+            for subtype, entry in subtypes.items()
+        }
+        for family, subtypes in scores_by_family.items()
+    }
 
 
 def _lens_table(
@@ -782,14 +970,16 @@ def build_artifact() -> dict[str, Any]:
     gan = build_gan_section()
     exect = build_exect_section()
     return {
-        "artifact_id": "six_model.category_cut_performance.v1",
+        "artifact_id": "six_model.category_cut_performance.v2",
         "date": REPORT_DATE,
         "protocol": "docs/research/six_model_category_cut_protocol_2026-08-06.md",
         "parent_framework": "docs/research/task_shape_framework_2026-08-06.md",
         "claim_boundary": (
             "Development category cuts from retained no-call artifacts, now "
             "including the single-system rules surface beside six-model llm and "
-            "llm_with_rules. No locked-test row inspection. Not Decision 0046 "
+            "llm_with_rules. ExECT primary categories are gold-defined subtypes "
+            "within each family; whole-letter composition is secondary. No "
+            "locked-test row inspection. Not Decision 0046 "
             "method-fill rewrite."
         ),
         "lens_thresholds": {

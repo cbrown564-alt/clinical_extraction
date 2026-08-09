@@ -161,14 +161,16 @@ def _exect_letter_bucket(dx: int, sf: int, rx: int, inv: int) -> str:
 
 
 def _sf_mention_bucket(attributes: dict[str, str]) -> str:
-    has_count = any(
-        key in attributes
+    count_values = [
+        attributes[key]
         for key in (
             "NumberOfSeizures",
             "LowerNumberOfSeizures",
             "UpperNumberOfSeizures",
         )
-    )
+        if key in attributes
+    ]
+    has_count = bool(count_values)
     has_cadence = "TimePeriod" in attributes or any(
         "TimePeriod" in key for key in attributes
     )
@@ -183,6 +185,8 @@ def _sf_mention_bucket(attributes: dict[str, str]) -> str:
             "DayDate",
         )
     )
+    if has_count and all(value in {"", "0"} for value in count_values):
+        return "seizure_free"
     if has_count and has_cadence:
         return "numeric_cadence_rate"
     if has_count and has_anchor and not has_cadence:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ExECTv2 four-family error catalog with examples.
+"""ExECTv2 within-family error catalog with examples.
 
 No new model calls. No locked-test row inspection. See
 docs/research/exectv2_family_error_catalog_protocol_2026-08-06.md.
@@ -20,16 +20,23 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_hea
     headline_keys,
 )
 
+try:
+    from scripts.exectv2_within_family_categories import (
+        FAMILIES,
+        family_subtypes,
+        observed_gold_subtypes,
+    )
+except ModuleNotFoundError:  # Direct ``python scripts/...`` execution.
+    from exectv2_within_family_categories import (  # type: ignore[no-redef]
+        FAMILIES,
+        family_subtypes,
+        observed_gold_subtypes,
+    )
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DATE_STAMP = "20260806"
 REPORT_DATE = "2026-08-06"
 EXAMPLES_PER_MODE = 2
-FAMILIES = (
-    "Diagnosis",
-    "SeizureFrequency",
-    "Prescription",
-    "Investigations",
-)
 _STATE_RE = re.compile(r"'(active-rate|seizure-free|unknown|changed)'")
 
 _HS_PATH = REPO_ROOT / "scripts/build_six_model_hard_slice_error_modes.py"
@@ -264,6 +271,131 @@ def build_surface(*, surface: str) -> dict[str, Any]:
     }
 
 
+def _row_has_gold_subtype(row: dict[str, Any], family: str, subtype: str) -> bool:
+    return any(
+        str(mention.get("entity") or "") == family
+        and subtype in family_subtypes(mention)
+        for mention in row.get("gold_mentions", [])
+    )
+
+
+def build_within_family_surface(*, surface: str) -> dict[str, Any]:
+    """Build error modes inside gold-defined family subtypes."""
+
+    field = "raw_lane_mentions" if surface == "llm" else "predicted_mentions"
+    reference_rows = hs._read_jsonl(hs.EXECT_JSONL[hs.MODEL_SPECS[0][0]])
+    families_out: dict[str, Any] = {}
+    for family in FAMILIES:
+        subtypes_out: dict[str, Any] = {}
+        for subtype in observed_gold_subtypes(reference_rows, family):
+            per_model: dict[str, Any] = {}
+            imperfect_by_model: dict[str, set[str]] = {}
+            all_imperfect: list[dict[str, Any]] = []
+            pooled_modes: Counter[str] = Counter()
+            n_gold_mentions = sum(
+                sum(
+                    1
+                    for mention in row.get("gold_mentions", [])
+                    if str(mention.get("entity") or "") == family
+                    and subtype in family_subtypes(mention)
+                )
+                for row in reference_rows
+            )
+            for slug, display in hs.MODEL_SPECS:
+                rows = [
+                    row
+                    for row in hs._read_jsonl(hs.EXECT_JSONL[slug])
+                    if _row_has_gold_subtype(row, family, subtype)
+                ]
+                model_modes: Counter[str] = Counter()
+                imperfect_ids: set[str] = set()
+                n_correct = 0
+                for row in rows:
+                    letter_id = str(row["letter_id"])
+                    gold_keys = headline_keys(row, family, field="gold_mentions")
+                    pred_keys = headline_keys(row, family, field=field)
+                    mode = _mode(gold_keys, pred_keys)
+                    model_modes[mode] += 1
+                    pooled_modes[mode] += 1
+                    if mode.startswith("correct_"):
+                        n_correct += 1
+                        continue
+                    imperfect_ids.add(letter_id)
+                    all_imperfect.append(
+                        {
+                            "model_slug": slug,
+                            "model_display": display,
+                            "letter_id": letter_id,
+                            "family": family,
+                            "gold_subtype": subtype,
+                            "prediction_field": field,
+                            "error_mode": mode,
+                            "gold_keys": gold_keys,
+                            "pred_keys": pred_keys,
+                            "gold_mentions": _compact_mentions(
+                                row.get("gold_mentions") or [], family
+                            ),
+                            "pred_mentions": _compact_mentions(
+                                row.get(field) or [], family
+                            ),
+                        }
+                    )
+                imperfect_by_model[slug] = imperfect_ids
+                per_model[slug] = {
+                    "display_name": display,
+                    "n_gold_letters": len(rows),
+                    "n_correct_letters": n_correct,
+                    "n_imperfect_letters": len(rows) - n_correct,
+                    "letter_exact_rate": round(n_correct / len(rows), 4)
+                    if rows
+                    else None,
+                    "modes": dict(
+                        sorted(model_modes.items(), key=lambda item: (-item[1], item[0]))
+                    ),
+                }
+            consensus = (
+                set.intersection(*imperfect_by_model.values())
+                if imperfect_by_model
+                else set()
+            )
+            imperfect_modes = sorted(
+                mode for mode in pooled_modes if not mode.startswith("correct_")
+            )
+            subtypes_out[subtype] = {
+                "family": family,
+                "gold_subtype": subtype,
+                "n_gold_letters": next(iter(per_model.values()))["n_gold_letters"],
+                "n_gold_mentions": n_gold_mentions,
+                "models": per_model,
+                "pooled_mode_counts": dict(
+                    sorted(pooled_modes.items(), key=lambda item: (-item[1], item[0]))
+                ),
+                "pooled_imperfect_mode_counts": {
+                    mode: pooled_modes[mode] for mode in imperfect_modes
+                },
+                "consensus_imperfect_all_six": {
+                    "n": len(consensus),
+                    "letter_ids": sorted(consensus),
+                },
+                "examples_by_mode": {
+                    mode: _pick_examples(
+                        [row for row in all_imperfect if row["error_mode"] == mode],
+                        consensus=consensus,
+                    )
+                    for mode in imperfect_modes
+                },
+            }
+        families_out[family] = subtypes_out
+    return {
+        "surface": surface,
+        "split": "dev140",
+        "category_unit": "gold_defined_within_family_subtype",
+        "metric": "named_family_clinical_headline_letter_exact_on_gold_subtype_cohort",
+        "prediction_field": field,
+        "families": families_out,
+    }
+
+
 def _exact_band(block: dict[str, Any]) -> str:
     rates = [
         model["letter_exact_rate"]
@@ -348,24 +480,26 @@ def render_report(artifact: dict[str, Any]) -> str:
     hybrid = artifact["surfaces"]["llm_with_rules"]["families"]
 
     lines: list[str] = [
-        "# ExECTv2 four-family error catalog",
+        "# ExECTv2 within-family error catalog",
         "",
-        f"Date: {REPORT_DATE}  ",
-        "Status: development catalog with pipeline ablation reading  ",
+        f"Date: {REPORT_DATE}",
+        "Correction: within-family categories adopted 2026-08-08",
+        "Status: development catalog with subtype and pipeline ablation reading",
         "Protocol: [exect family error catalog protocol]"
-        "(exectv2_family_error_catalog_protocol_2026-08-06.md)  ",
+        "(exectv2_family_error_catalog_protocol_2026-08-06.md)",
         "Parent: [category-cut performance]"
-        "(six_model_category_cut_performance_2026-08-06.md)  ",
+        "(six_model_category_cut_performance_2026-08-06.md)",
         "Companions: [task-shape framework]"
         "(task_shape_framework_2026-08-06.md), "
         "[hard-slice modes](six_model_hard_slice_error_modes_2026-08-06.md), "
-        "[Gan error catalog](gan2026_category_error_catalog_2026-08-06.md)  ",
+        "[Gan error catalog](gan2026_category_error_catalog_2026-08-06.md)",
         f"Artifact: [`experiments/exectv2_family_error_catalog_{DATE_STAMP}.json`]"
         f"(../../experiments/exectv2_family_error_catalog_{DATE_STAMP}.json)",
         "",
         "## Plain answer",
         "",
-        "Family errors are inventory shapes, not a single low score. On the",
+        "The useful error categories are clinical subtypes inside each family,",
+        "not whole-letter composition and not the four family names alone. On the",
         "model lane, Diagnosis is mostly wrong-set / extra concepts;",
         "SeizureFrequency adds empty-gold spurious `active-rate`; Prescription",
         "and Investigations are smaller missed/extra problems.",
@@ -385,7 +519,7 @@ def render_report(artifact: dict[str, Any]) -> str:
         "",
         "The [category-cut report]"
         "(six_model_category_cut_performance_2026-08-06.md) shows **which**",
-        "families move under rules (F1). This catalog shows **how** at letter",
+        "within-family subtypes move under rules (F1). This catalog shows **how** at letter",
         "exactness: which imperfect modes dominate, and whether family rules",
         "erase, reshape, or amplify them. Full per-model tables and every",
         "retained example live in the JSON; this page is the readable ablation.",
@@ -412,10 +546,10 @@ def render_report(artifact: dict[str, Any]) -> str:
         "precision trim; Prescription drop risk; Investigations unchanged |",
         "",
         "This is an ablation over **saved surfaces**, not a leave-one-rule-out",
-        "factorial. Category-cut **family F1** remains the competence metric;",
+        "factorial. Category-cut **within-family F1** remains the competence metric;",
         "letter exactness here is the mechanism lens.",
         "",
-        "## Four cases that explain the catalog",
+        "## Secondary whole-family mechanism cases",
         "",
         "Read these first. Green end-state = letter-exact for that family;",
         "red = still imperfect. Paired Sol letters unless noted.",
@@ -546,7 +680,7 @@ def render_report(artifact: dict[str, Any]) -> str:
         "| Investigations misses / extras | Investigations | "
         "**No-op** on this roster (all mode deltas 0) |",
         "",
-        "## Rules lift by family (llm → hybrid modes)",
+        "## Secondary rules lift by whole family (llm → hybrid modes)",
         "",
         "Pooled six-model letter cells. Exact bands are letter-exact rates",
         "(mechanism lens), not category-cut F1.",
@@ -634,7 +768,7 @@ def render_report(artifact: dict[str, Any]) -> str:
             "Extra `active-rate` is the distinctive precision pressure; rules",
             "shrink it without clearing missed `unknown` / inventory under-fill.",
             "",
-            "## Family cards",
+            "## Secondary family roll-up cards",
             "",
             "Letter-exact bands are six-model min–max on `dev140`. Mode counts",
             "are pooled letter×model cells. Mechanism pictures are in",
@@ -685,12 +819,12 @@ def render_report(artifact: dict[str, Any]) -> str:
             "",
             "| Need | Where |",
             "| --- | --- |",
-            "| Per-model exact rates and mode counts | JSON "
-            f"`surfaces.*.families.*.models` in "
+            "| Per-model subtype exact rates and mode counts | JSON "
+            f"`within_family_surfaces.*.families.*.*.models` in "
             f"[`exectv2_family_error_catalog_{DATE_STAMP}.json`]"
             f"(../../experiments/exectv2_family_error_catalog_{DATE_STAMP}.json) |",
-            "| Up to two examples per imperfect mode × surface | "
-            "JSON `examples_by_mode` |",
+            "| Up to two examples per subtype × imperfect mode × surface | "
+            "JSON `within_family_surfaces.*...examples_by_mode` |",
             "| SF floor token lens and rescue context | "
             "[hard-slice error modes]"
             "(six_model_hard_slice_error_modes_2026-08-06.md) |",
@@ -716,21 +850,59 @@ def render_report(artifact: dict[str, Any]) -> str:
             "",
             "## Claim boundary",
             "",
-            "- Development ExECT four-family error catalog on `dev140`.",
-            "- Letter exactness is a mechanism lens; category-cut family F1",
-            "  remains the competence metric.",
+            "- Development ExECT within-family subtype error catalog on `dev140`,",
+            "  with whole-family roll-ups retained as secondary context.",
+            "- Letter exactness is a mechanism lens; category-cut within-family",
+            "  subtype F1 remains the competence metric.",
             "- Ablation is across retained surfaces, not a full rule factorial.",
             "- Mention texts are from saved prediction rows, not full notes.",
             "- Not sealed holdout competence; not a Decision 0046 rewrite.",
             "",
         ]
     )
+    subtype_llm = artifact["within_family_surfaces"]["llm"]["families"]
+    subtype_hybrid = artifact["within_family_surfaces"]["llm_with_rules"]["families"]
+    subtype_lines = [
+        "## Primary catalogue: errors within each family subtype",
+        "",
+        "Gold subtype selects the development cohort; modes compare the complete",
+        "named-family output on those letters. This preserves the unchanged",
+        "clinical-headline scorer. Subtypes may overlap on multi-mention letters.",
+        "",
+    ]
+    for family in FAMILIES:
+        subtype_lines.extend(
+            [
+                f"### {family}",
+                "",
+                "| Gold subtype | n | llm exact | hybrid exact | Dominant llm errors |",
+                "| --- | ---: | --- | --- | --- |",
+            ]
+        )
+        for subtype, llm_block in subtype_llm[family].items():
+            hybrid_block = subtype_hybrid[family][subtype]
+            subtype_lines.append(
+                f"| `{subtype}` | {llm_block['n_gold_letters']} | "
+                f"{_exact_band(llm_block)} | {_exact_band(hybrid_block)} | "
+                f"{_top_modes(llm_block['pooled_imperfect_mode_counts'], 2)} |"
+            )
+        subtype_lines.append("")
+    subtype_lines.extend(
+        [
+            "The artifact stores per-model mode counts and examples under",
+            "`within_family_surfaces.*.families.<family>.<subtype>`. The older",
+            "whole-family roll-up follows as secondary mechanism context.",
+            "",
+        ]
+    )
+    marker = lines.index("## Observable ablation layers")
+    lines[marker:marker] = subtype_lines
     return "\n".join(lines)
 
 
 def build_artifact() -> dict[str, Any]:
     return {
-        "schema_version": "exectv2.family_error_catalog.v1",
+        "schema_version": "exectv2.family_error_catalog.v2",
         "date": REPORT_DATE,
         "protocol": "docs/research/exectv2_family_error_catalog_protocol_2026-08-06.md",
         "parent_category_cut": (
@@ -748,8 +920,15 @@ def build_artifact() -> dict[str, Any]:
             "llm": build_surface(surface="llm"),
             "llm_with_rules": build_surface(surface="llm_with_rules"),
         },
+        "within_family_surfaces": {
+            "llm": build_within_family_surface(surface="llm"),
+            "llm_with_rules": build_within_family_surface(
+                surface="llm_with_rules"
+            ),
+        },
         "claim_boundary": (
-            "Development ExECT four-family error catalog with examples. "
+            "Development ExECT within-family subtype error catalog with examples; "
+            "whole-family modes retained as a secondary roll-up. "
             "Not holdout competence."
         ),
     }
