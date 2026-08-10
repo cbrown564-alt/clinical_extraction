@@ -12,7 +12,7 @@
   "oracle_scope": "producer row, final clinical mention fields, scorer view/count, first owner/failure; runtime stage contract is checked independently against the Decision 0048 manifest",
   "outward_identity_allowlist": ["active_method", "method_id", "pipeline_family", "run_id", "source_method_id", "source_pipeline_family", "scored_view"],
   "normalized_sha256": "081b6a66e38f4cd13aac407e2f654ac7d5803c34e8b755d771daa31c4bc68a55",
-  "independent_prechange_oracle_sha256": "b6fb4f1758588f850ea0c097dd8231031d138503d7e6de94c822250624d5be04",
+  "independent_prechange_oracle_sha256": "8f19d9aa627fb72b5e4c8bb365ac6a995c46300ccd306f9a7fd46646932acbdf",
   "superseded_oracles": [
     {
       "sha256": "9b8fe845068cf885041ec4cb282554bf4a98cbef3c4315177a49316399dc966c",
@@ -22,6 +22,24 @@
       "why": "Measured on dev140 across six models by leave-one-out replay: the noise drop deleted 46 gold-supported regimens to remove 53 spurious ones, and residual additions produced 18 correct against 22 spurious. Removing both lifts Prescription letter exactness 0.8108 -> 0.8337 and micro F1 0.9175 -> 0.9182.",
       "evidence": "docs/research/exectv2_prescription_lens_rule_decomposition_2026-08-10.md",
       "scope_note": "This oracle no longer certifies parity with the pre-Decision-0048 implementation for Prescription. It now pins the post-simplification assembly. Diagnosis, SeizureFrequency and Investigations parity is unaffected."
+    },
+    {
+      "sha256": "b6fb4f1758588f850ea0c097dd8231031d138503d7e6de94c822250624d5be04",
+      "held_until": "2026-08-10",
+      "superseded_by": "intentional Diagnosis and Investigations lens simplification",
+      "change": "Removed zero-fire Diagnosis heading-recovery and generic-companion hooks and replaced the zero-fire Investigations dictionary pass with a behavior-preserving adapter; prompt-side residual providers remain available.",
+      "why": "The predeclared dev140 decomposition found zero score movement for all selected dead hooks, and the frozen six-rule Diagnosis-plus-Investigations test59 bundle changed zero of 352 scored cells with exactness and micro-F1 deltas of 0.0000.",
+      "evidence": "docs/research/exectv2_family_lens_rule_decomposition_2026-08-10.md; docs/research/exectv2_family_lens_rule_decomposition_test59_confirmation_protocol_2026-08-10.md",
+      "scope_note": "The fixture continues to pin the current no-call replay against the saved dev140 sidecars; the superseded hash is retained as historical evidence only."
+    },
+    {
+      "sha256": "dc3e2e15393b9926810e5f1f5c87e323d997e370f1832d7f3aca97816a547919",
+      "held_until": "2026-08-10",
+      "superseded_by": "completion of the confirmed Diagnosis dead-hook cleanup",
+      "change": "Removed the standalone post-selection Diagnosis attribute-repair pass while retaining attribute normalization required when constructing rewritten or added findings.",
+      "why": "The predeclared decomposition measured the standalone attribute-repair arm as zero-fire; the narrower code change now matches the frozen six-rule deletion bundle without removing helper behavior needed by active rewrites and additions.",
+      "evidence": "docs/research/exectv2_family_lens_rule_decomposition_2026-08-10.md; docs/research/exectv2_family_lens_rule_decomposition_test59_confirmation_2026-08-10.md",
+      "scope_note": "The superseded hash is retained as historical evidence only."
     }
   ]
 }

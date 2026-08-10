@@ -124,15 +124,22 @@ def repair_selected_answer_payload(
             notes.append("container_shape_repaired: no_reference_null_evidence")
         repaired["selection"] = repaired_selection
         selection = repaired_selection
+    elif selection is not None:
+        # A non-mapping selection (a bare string or list) carries no usable
+        # selected ids. Treat it as absent for id extraction, leaving the
+        # payload itself untouched for downstream consumers.
+        notes.append("container_shape_repaired: selection_not_mapping")
+        selection = None
 
     if not isinstance(events, list) or event_validator is None:
         return repaired, notes, quarantined
 
-    selected_ids = {
-        str(value)
-        for value in (selection or {}).get("selected_event_ids", [])
-        if value is not None
-    }
+    raw_selected_ids = (selection or {}).get("selected_event_ids", [])
+    if not isinstance(raw_selected_ids, (list, tuple, set)):
+        # A bare string here would otherwise iterate character by character.
+        notes.append("container_shape_repaired: selected_event_ids_not_sequence")
+        raw_selected_ids = []
+    selected_ids = {str(value) for value in raw_selected_ids if value is not None}
     retained: list[Any] = []
     for event in events:
         event_id = str(event.get("event_id", "")) if isinstance(event, dict) else ""

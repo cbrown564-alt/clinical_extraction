@@ -124,7 +124,10 @@ def capture(arm: str) -> int:
 
     CAPTURE_DIR.mkdir(parents=True, exist_ok=True)
     path = CAPTURE_DIR / f"{arm}.json"
-    path.write_text(json.dumps({"arm": arm, "unreplayable": unreplayable, "cells": cells}), encoding="utf-8")
+    path.write_text(
+        json.dumps({"arm": arm, "unreplayable": unreplayable, "cells": cells}),
+        encoding="utf-8",
+    )
     print(f"captured arm={arm} cells={len(cells)} unreplayable={unreplayable} -> scratch/")
     return 0
 

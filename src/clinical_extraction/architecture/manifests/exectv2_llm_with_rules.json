@@ -10,7 +10,7 @@
     "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_with_rules_letter"
   },
   "one_sentence": "The model proposes findings for four families in one call; deterministic family transforms reconcile those findings into the final scored representation.",
-  "sixty_second": "One structured call per letter asks the named model for candidate findings across Diagnosis, Seizure Frequency, Prescription, and Investigations. No deterministic extractor proposes findings and none is unioned in - that is the family-ownership rule from decision 0040. After the call, code parses and may make one format-only retry, flattens the model's events into ExECT mentions, projects the model's seizure-frequency facts into the required state representation, and suppresses a narrowly defined class of unsupported unknown states. Raw and scored findings are both registered in a finding store, so every later change stays attributable. Then one family transform runs per entity, and the four behave differently: Diagnosis may rewrite, drop, or add concepts; Seizure Frequency is a thin assembly over the earlier projection; Prescription applies dictionary-driven regimen processing with bounded correction; Investigations validates, normalizes, and de-duplicates. Every final finding must carry exact source evidence, and the scored views are then materialized.",
+  "sixty_second": "One structured call per letter asks the named model for candidate findings across Diagnosis, Seizure Frequency, Prescription, and Investigations. No deterministic extractor proposes findings and none is unioned in - that is the family-ownership rule from decision 0040. After the call, code parses and may make one format-only retry, flattens the model's events into ExECT mentions, projects the model's seizure-frequency facts into the required state representation, and suppresses a narrowly defined class of unsupported unknown states. Raw and scored findings are both registered in a finding store, so every later change stays attributable. Then one family transform runs per entity, and the four behave differently: Diagnosis applies the active standard dictionary to model findings; Seizure Frequency is a thin assembly over the earlier projection; Prescription applies dictionary-driven regimen processing with bounded correction; Investigations is a behavior-preserving adapter while its residual providers remain prompt-side. Every final finding must carry exact source evidence, and the scored views are then materialized.",
   "prediction_owner": "the named model proposes all four families (exect.llm_with_rules.model_call); four family transforms may change findings afterwards",
   "scored_representation": "A PredictedLetter of four-family mentions materialized into named score views; the primary view is clinical fact recovery (`clinical_headline`).",
   "stages": [
@@ -206,14 +206,14 @@
       "stage_id": "exect.llm_with_rules.lens.diagnosis",
       "runtime_action": "apply_named_family_lens",
       "name": "Diagnosis family transform",
-      "operation": "Reconcile Diagnosis findings using heading recovery and the standard dictionary; may rewrite, drop, or add concepts.",
+      "operation": "Reconcile Diagnosis findings with the active standard dictionary; may rewrite, drop, or add bounded concepts.",
       "owner": "deterministic",
       "rule_category": "clinical_epilepsy",
       "effect_class": "clinical_meaning",
       "input_type": "Diagnosis findings in the store",
-      "input_example": "model finding 'epilepsy' under a 'Diagnosis:' heading listing two conditions",
+      "input_example": "model Diagnosis findings such as 'epilepsy' with exact source evidence",
       "output_type": "reconciled Diagnosis findings plus lens diagnostics",
-      "output_example": "two Diagnosis concepts, one recovered from the heading",
+      "output_example": "model concepts after standard-dictionary rewrite, drop, or bounded addition",
       "implementation": {
         "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/diagnosis.py",
         "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.diagnosis:DiagnosisDictionaryLens"
@@ -223,8 +223,8 @@
         "lanes.Diagnosis.lens_diagnostics",
         "provenance[].action"
       ],
-      "paper_wording": "A deterministic Diagnosis transform reconciles model findings against heading structure and the standard dictionary.",
-      "notes": "The active policy variant is 'default' (decision 0045). The 'combined' variant is archived development evidence and must not be the default for new runs. This is the family transform with the widest licence: it is the only one that can add a concept the model did not produce."
+      "paper_wording": "A deterministic Diagnosis transform reconciles model findings against the active standard dictionary.",
+      "notes": "The active policy variant is 'default' (decision 0045). The 'combined' variant is archived development evidence and must not be the default for new runs. This is the family transform with the widest licence: it is the only one that can add a concept the model did not produce. Heading recovery and the generic epilepsy companion were zero-fire hooks in the decomposition and are retained only in historical artifacts, not the active lens."
     },
     {
       "stage_id": "exect.llm_with_rules.lens.seizure_frequency",
@@ -277,23 +277,23 @@
       "stage_id": "exect.llm_with_rules.lens.investigations",
       "runtime_action": "apply_named_family_lens",
       "name": "Investigations family transform",
-      "operation": "Validate, normalize, and de-duplicate Investigations findings, including dropping modality-only duplicates of a finding that already carries a result.",
+      "operation": "Assemble model-selected Investigations findings without an additional dictionary rule pass.",
       "owner": "deterministic",
       "rule_category": "clinical_epilepsy",
       "effect_class": "representation",
       "input_type": "Investigations findings in the store",
-      "input_example": "'MRI brain' and 'MRI brain normal' from the same letter",
-      "output_type": "reconciled Investigations findings",
-      "output_example": "one Investigations finding 'MRI brain' with a normal result",
+      "input_example": "model-selected Investigations findings with exact source evidence",
+      "output_type": "assembled Investigations findings",
+      "output_example": "the model-selected Investigations findings in assembled form",
       "implementation": {
         "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/investigations.py",
-        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.investigations:InvestigationsLens"
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.investigations:InvestigationsDictionaryLens"
       },
       "governing_test": "tests/test_exectv2_clinical_finding_assembly.py",
       "trace_fields": [
         "lanes.Investigations.lens_diagnostics"
       ],
-      "paper_wording": "A deterministic Investigations transform validates, normalizes, and de-duplicates findings."
+      "paper_wording": "The Investigations assembly stage preserves model-selected findings; residual providers remain available to prompt construction but are not consumed by this no-op lens."
     },
     {
       "stage_id": "exect.llm_with_rules.evidence_requirement",
