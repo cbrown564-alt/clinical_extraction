@@ -29,7 +29,6 @@ from .seizure_frequency import SeizureFrequencyDictionaryLens
 def lens_from_manifest(config: LensManifest) -> EntityLens:
     dictionary_lens_by_manifest: dict[tuple[str, str], type[ThinArtifactLens]] = {
         (DIAGNOSIS.name, "diagnosis_convention_dictionary_v09"): DiagnosisDictionaryLens,
-        (SEIZURE_FREQUENCY.name, "sf_convention_dictionary_v09"): SeizureFrequencyDictionaryLens,
         (PRESCRIPTION.name, "prescription_dictionary_v10"): PrescriptionDictionaryLens,
         # v09 manifests still resolve, but they replay under v10 behaviour: the
         # noise-drop and residual-add rules were deleted, not gated. See

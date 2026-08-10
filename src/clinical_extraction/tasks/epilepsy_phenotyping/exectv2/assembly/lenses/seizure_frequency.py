@@ -33,10 +33,11 @@ from .base import SeizureFrequencyLens, ThinArtifactLens
 
 
 class SeizureFrequencyDictionaryLens(ThinArtifactLens):
-    """v09 SeizureFrequency: thin standard-dictionary benchmark rewrites only.
+    """v10 SeizureFrequency: pass-through lens adapter.
 
-    Type/state precision is owned by the v0.9 prompt; this lens only applies the
-    small set of benchmark CUIPhrase rewrites from ``standard_dictionary``.
+    SeizureFrequency extraction and state projection are owned by model sidecars
+    and ``sf_state_projection_suppression_v01``. Standard-dictionary rewrites
+    and residual additions are not applied in the assembly stage.
     """
 
     def reconcile(
@@ -45,111 +46,7 @@ class SeizureFrequencyDictionaryLens(ThinArtifactLens):
         *,
         policy: LensPolicy,
     ) -> LensResult:
-        selected = list(
-            store.findings(
-                entity=self.entity,
-                producer_id=policy.producer_id,
-                raw_surface=False,
-            )
-        )
-        out: list[ClinicalFinding] = []
-        rewritten = 0
-        dropped: list[ClinicalFinding] = []
-        seen_exact: set[tuple[str, tuple[tuple[str, str], ...], str]] = set()
-        for finding in selected:
-            rewrite = sd.sf_convention_rewrite(
-                finding.text,
-                evidence=finding.evidence or finding.text,
-                attributes=finding.attributes,
-            )
-            if rewrite is not None:
-                new_text, new_attrs, rule_id = rewrite
-                finding = finding_with_text_attributes(
-                    finding,
-                    text=new_text,
-                    attributes=new_attrs,
-                    owner_suffix="standard_dictionary_sf_convention",
-                    provenance=ProvenanceEvent(
-                        stage="entity_lens",
-                        action="rewrote_sf_convention_from_dictionary",
-                        owner="standard_dictionary",
-                        portability="benchmark_format",
-                        detail={"lens_id": self.lens_id, "rule_id": rule_id},
-                    ),
-                )
-                rewritten += 1
-            if sd.is_sf_convention_noise(
-                finding.text,
-                evidence=finding.evidence or finding.text,
-                attributes=finding.attributes,
-            ):
-                dropped.append(finding)
-                continue
-            exact_key = (
-                normalize_phrase(finding.text),
-                tuple(sorted((str(k), str(v)) for k, v in finding.attributes.items())),
-                finding.evidence,
-            )
-            if exact_key in seen_exact:
-                dropped.append(finding)
-                continue
-            seen_exact.add(exact_key)
-            out.append(finding)
-
-        added: list[ClinicalFinding] = []
-        existing_keys = {_sf_recovery_key(finding) for finding in out}
-        for text, evidence, attrs in sd.sf_residual_additions(store.note_text):
-            if sd.is_sf_convention_noise(text, evidence=evidence, attributes=attrs):
-                continue
-            key = _sf_recovery_key_from_parts(text, attrs)
-            if key in existing_keys:
-                continue
-            new_finding = _sf_added_finding(
-                store,
-                text=text,
-                evidence=evidence,
-                attributes=attrs,
-                selected=selected,
-                policy=policy,
-                lens_id=self.lens_id,
-            )
-            if new_finding is None:
-                continue
-            existing_keys.add(key)
-            added.append(new_finding)
-
-        event = ProvenanceEvent(
-            stage="entity_lens",
-            action="applied_standard_dictionary_sf_repair",
-            owner="standard_dictionary",
-            portability=policy.portability,
-            detail={
-                "lens_id": self.lens_id,
-                "producer_id": policy.producer_id,
-                "source_lane": policy.source_lane,
-                "rewritten_count": rewritten,
-                "added_count": len(added),
-                "added_text_counts": text_counts(added),
-                "dropped_count": len(dropped),
-                "dropped_text_counts": text_counts(dropped),
-            },
-        )
-        final_findings = tuple(
-            [finding.with_provenance(event) for finding in out]
-            + [finding.with_provenance(event) for finding in added]
-        )
-        return LensResult(
-            entity=self.entity,
-            lens_id=self.lens_id,
-            findings=final_findings,
-            diagnostics={
-                "lens_id": self.lens_id,
-                "rewritten_dictionary_findings": rewritten,
-                "added_dictionary_findings": len(added),
-                "dropped_dictionary_findings": len(dropped),
-                "selected_findings": len(final_findings),
-            },
-        )
+        return super().reconcile(store, policy=policy)
 
 
 def _sf_recovery_key(finding: ClinicalFinding) -> tuple[str, ...]:
