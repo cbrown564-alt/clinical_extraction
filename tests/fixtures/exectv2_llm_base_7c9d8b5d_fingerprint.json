@@ -12,5 +12,16 @@
   "oracle_scope": "producer row, final clinical mention fields, scorer view/count, first owner/failure; runtime stage contract is checked independently against the Decision 0048 manifest",
   "outward_identity_allowlist": ["active_method", "method_id", "pipeline_family", "run_id", "source_method_id", "source_pipeline_family", "scored_view"],
   "normalized_sha256": "081b6a66e38f4cd13aac407e2f654ac7d5803c34e8b755d771daa31c4bc68a55",
-  "independent_prechange_oracle_sha256": "9b8fe845068cf885041ec4cb282554bf4a98cbef3c4315177a49316399dc966c"
+  "independent_prechange_oracle_sha256": "b6fb4f1758588f850ea0c097dd8231031d138503d7e6de94c822250624d5be04",
+  "superseded_oracles": [
+    {
+      "sha256": "9b8fe845068cf885041ec4cb282554bf4a98cbef3c4315177a49316399dc966c",
+      "held_until": "2026-08-10",
+      "superseded_by": "intentional Prescription lens simplification (v09 -> v10)",
+      "change": "Removed two net-harmful sub-rules from PrescriptionDictionaryLens: the planned/historical noise drop (is_prescription_convention_noise plus its explicit-current guards) and the dictionary residual regimen additions. Normalization and regimen splitting are unchanged.",
+      "why": "Measured on dev140 across six models by leave-one-out replay: the noise drop deleted 46 gold-supported regimens to remove 53 spurious ones, and residual additions produced 18 correct against 22 spurious. Removing both lifts Prescription letter exactness 0.8108 -> 0.8337 and micro F1 0.9175 -> 0.9182.",
+      "evidence": "docs/research/exectv2_prescription_lens_rule_decomposition_2026-08-10.md",
+      "scope_note": "This oracle no longer certifies parity with the pre-Decision-0048 implementation for Prescription. It now pins the post-simplification assembly. Diagnosis, SeizureFrequency and Investigations parity is unaffected."
+    }
+  ]
 }

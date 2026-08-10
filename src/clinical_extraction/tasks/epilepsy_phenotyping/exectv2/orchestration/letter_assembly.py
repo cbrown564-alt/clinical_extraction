@@ -383,7 +383,7 @@ def _manifest_payload(
             },
             "Prescription": {
                 "producer": "structured_key_family_event_ledger",
-                "lens": "prescription_dictionary_v09",
+                "lens": "prescription_dictionary_v10",
                 "ownership_label": "named_model_prescription_plus_shared_rules",
                 "portability": "clinical_epilepsy",
             },

@@ -344,7 +344,7 @@ def _write_config(
                         else "prescription_deterministic_repair"
                     ),
                     "lens": (
-                        "prescription_dictionary_v09" if model_led else "prescription_regimen_v01"
+                        "prescription_dictionary_v10" if model_led else "prescription_regimen_v01"
                     ),
                     "source_lane": "toy_model_rx" if model_led else "toy_rx",
                     "ownership_label": "toy_model_rx" if model_led else "toy_rx",
