@@ -20,7 +20,6 @@ from .diagnosis import (
     diagnosis_residual_additions,
     is_diagnosis_convention_noise,
     is_redundant_diagnosis_residual_addition,
-    should_add_generic_epilepsy_companion,
 )
 from .investigations import (
     investigation_convention_attribute_repairs,
@@ -68,6 +67,5 @@ __all__ = [
     "prescription_residual_additions",
     "sf_convention_rewrite",
     "sf_residual_additions",
-    "should_add_generic_epilepsy_companion",
     "split_daily_dose_regimen",
 ]

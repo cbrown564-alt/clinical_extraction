@@ -136,7 +136,7 @@ _STRONG_GENERIC_EPILEPSY_CONTEXT = re.compile(
     re.IGNORECASE,
 )
 _SECONDARY_GENERALISED_EVIDENCE = re.compile(
-    r"secondary generalised|secondary generalisation",
+    r"secondar(?:y|ily) generali[sz]|secondary generalisation|focal to bilateral",
     re.IGNORECASE,
 )
 _GENERAL_AND_COMPLEX_PARTIAL_EVIDENCE = re.compile(
@@ -321,7 +321,6 @@ RESIDUAL_SOURCE_CONCEPT_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"\bdiagnosed with epilepsy\b", re.IGNORECASE), "epilepsy"),
     (re.compile(r"\bdiagnosis of epilepsy\b", re.IGNORECASE), "epilepsy"),
     (re.compile(r"\bprimary generalised epilepsy\b", re.IGNORECASE), "generalised epilepsy"),
-    (re.compile(r"\bgenetic generalised epilepsy\b", re.IGNORECASE), "generalised epilepsy"),
     (re.compile(r"\btemporal lobe epilepsy\b", re.IGNORECASE), "temporal lobe epilepsy"),
     (re.compile(r"\bjuvenile myoclonic epilepsy\b", re.IGNORECASE), "juvenile myoclonic epilepsy"),
     (
@@ -346,18 +345,6 @@ RESIDUAL_SOURCE_CONCEPT_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     (
         re.compile(r"\bfocal seizures with altered awareness\b", re.IGNORECASE),
         "focal seizures with altered awareness",
-    ),
-    (
-        re.compile(r"\bfocal (?:impaired awareness|dyscognitive) seizures\b", re.IGNORECASE),
-        "focal seizures with altered awareness",
-    ),
-    (
-        re.compile(
-            r"(?:Diagnosis|Seizure type(?: and frequency)?):[^\n]{0,180}"
-            r"\bfocal seizures?\b",
-            re.IGNORECASE,
-        ),
-        "focal seizures",
     ),
     (re.compile(r"\bfocal motor seizures?\b", re.IGNORECASE), "focal motor seizures"),
     (
@@ -391,14 +378,6 @@ RESIDUAL_SOURCE_CONCEPT_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
         ),
         "generalised tonic clonic seizures",
     ),
-    (
-        re.compile(
-            r"(?:Diagnosis|Seizure type(?: and frequency)?):[^\n]{0,180}"
-            r"\bgeneralised seizures\b",
-            re.IGNORECASE,
-        ),
-        "generalised seizures",
-    ),
     (re.compile(r"\bcomplex partial seizures\b", re.IGNORECASE), "complex partial seizures"),
 )
 _RESOLUTION_CANDIDATE_SOURCE_CONCEPT_PATTERNS: tuple[
@@ -425,10 +404,7 @@ def diagnosis_convention_target(text: str, evidence: str) -> str | None:
             return target
 
     concept = canonicalize_diagnosis_concept(text)
-    alias = DIAGNOSIS_CONVENTION_ALIAS_REPAIRS.get(concept)
-    if alias is not None:
-        return alias
-    return _diagnosis_residual_benchmark_target(concept, evidence)
+    return DIAGNOSIS_CONVENTION_ALIAS_REPAIRS.get(concept)
 
 
 def diagnosis_convention_attribute_repairs(
@@ -469,31 +445,6 @@ def diagnosis_convention_attribute_repairs(
         repaired["Certainty"] = "5"
         repaired["Negation"] = "Affirmed"
     return repaired
-
-
-def _diagnosis_residual_benchmark_target(concept: str, evidence: str) -> str | None:
-    if (
-        concept == "focal epilepsy"
-        and re.search(r"\bsymptomatic epilepsy\b", evidence, re.IGNORECASE)
-        and not re.search(r"\bfocal\b", evidence, re.IGNORECASE)
-    ):
-        return "symptomatic epilepsy"
-    if concept == "focal epilepsy" and re.search(
-        r"\bsymptomatic focal epilepsy\b", evidence, re.IGNORECASE
-    ):
-        return "symptomatic focal epilepsy"
-    if concept == "epilepsy" and re.search(r"\bintractable epilepsy\b", evidence, re.IGNORECASE):
-        return "intractable epilepsy"
-    if concept == "temporal lobe epilepsy" and re.search(
-        r"focal seizures, probably temporal lobe", evidence, re.IGNORECASE
-    ):
-        return "temporal lobe seizures"
-    if concept == "secondary generalised tonic clonic seizures":
-        if re.search(r"secondary generalisation", evidence, re.IGNORECASE):
-            return "secondary generalisation"
-        if re.search(r"secondary generalised seizures", evidence, re.IGNORECASE):
-            return "secondary generalised seizures"
-    return None
 
 
 def is_diagnosis_convention_noise(
@@ -639,8 +590,11 @@ def is_redundant_diagnosis_residual_addition(
 ) -> bool:
     """True when a dev residual fragment is already covered by a specific concept."""
 
-    del evidence
     concept = canonicalize_diagnosis_concept(text)
+    if concept == "generalised tonic clonic seizures" and _SECONDARY_GENERALISED_EVIDENCE.search(
+        evidence
+    ):
+        return True
     selected = {canonicalize_diagnosis_concept(item) for item in selected_texts}
     if model_preserving_policy_candidate and _seizure_concept_is_subsumed(
         concept, selected
