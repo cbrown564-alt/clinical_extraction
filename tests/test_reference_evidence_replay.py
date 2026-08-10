@@ -71,5 +71,5 @@ def test_replay_exectv2_v08_p7_config_matches_primary_reference() -> None:
     )
 
     assert result["row_count"] == 140
-    assert result["clinical_headline_f1"] == 0.9189
-    assert result["evidence_valid_f1"] == 0.8913
+    assert result["clinical_headline_f1"] == 0.919
+    assert result["evidence_valid_f1"] == 0.8912

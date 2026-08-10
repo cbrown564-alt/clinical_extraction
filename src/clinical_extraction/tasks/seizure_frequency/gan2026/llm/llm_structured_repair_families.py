@@ -698,6 +698,8 @@ def _seizure_free_duration_from_events(
             and "seizure free" not in text
         ):
             continue
+        if event.assertion_status != "asserted" or event.temporality not in {"current", "recent"}:
+            continue
         text = small_number_words_to_digits(text)
         match = re.search(r"\b(?:for\s+)?(?P<count>\d+)\s+(?P<unit>month|year)s?\b", text)
         if match:

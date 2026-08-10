@@ -12,8 +12,17 @@
   "oracle_scope": "producer row, final clinical mention fields, scorer view/count, first owner/failure; runtime stage contract is checked independently against the Decision 0048 manifest",
   "outward_identity_allowlist": ["active_method", "method_id", "pipeline_family", "run_id", "source_method_id", "source_pipeline_family", "scored_view"],
   "normalized_sha256": "081b6a66e38f4cd13aac407e2f654ac7d5803c34e8b755d771daa31c4bc68a55",
-  "independent_prechange_oracle_sha256": "8f19d9aa627fb72b5e4c8bb365ac6a995c46300ccd306f9a7fd46646932acbdf",
+  "independent_prechange_oracle_sha256": "923ef2389a6f65f3f8b98cc4558e97a85d424185d79135b4527ef54330e54530",
   "superseded_oracles": [
+    {
+      "sha256": "8f19d9aa627fb72b5e4c8bb365ac6a995c46300ccd306f9a7fd46646932acbdf",
+      "held_until": "2026-08-10",
+      "superseded_by": "intentional Diagnosis, SeizureFrequency, and Investigations family lens simplification",
+      "change": "Removed Diagnosis residual additions, simplified SeizureFrequency and Investigations to pass-through adapters following dev140 LOO decomposition and test59 holdout confirmation.",
+      "why": "The LOO decomposition measured these assembly lens rules as zero-fire or dev-fitted, and the frozen test59 confirmation verified zero changed cells on holdout data.",
+      "evidence": "docs/research/exectv2_family_lens_rule_decomposition_2026-08-10.md; docs/research/exectv2_family_lens_rule_decomposition_test59_confirmation_2026-08-10.md",
+      "scope_note": "The fixture continues to pin the current no-call replay against the saved dev140 sidecars; the superseded hash is retained as historical evidence only."
+    },
     {
       "sha256": "9b8fe845068cf885041ec4cb282554bf4a98cbef3c4315177a49316399dc966c",
       "held_until": "2026-08-10",

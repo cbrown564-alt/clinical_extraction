@@ -322,6 +322,7 @@ class StructuredRepairConfig:
     selected_evidence_repair: bool = True
     monthly_diary_repair: bool = True
     usual_interval_repair: bool = True
+    typical_over_ytd_repair: bool = True
     breakthrough_repair: bool = True
     non_epileptic_repair: bool = True
     residual_jerk_repair: bool = True
@@ -943,12 +944,13 @@ def parse_structured_json_with_trace(
         usual_interval_label = _usual_interval_label_from_events(extraction, repaired_label)
         if usual_interval_label:
             repaired_label = _replace_repaired_label(errors, repaired_label, usual_interval_label)
-    typical_over_ytd = _typical_recurring_rate_over_ytd_from_events(
-        extraction,
-        repaired_label,
-    )
-    if typical_over_ytd:
-        repaired_label = _replace_repaired_label(errors, repaired_label, typical_over_ytd)
+    if repair_config.typical_over_ytd_repair:
+        typical_over_ytd = _typical_recurring_rate_over_ytd_from_events(
+            extraction,
+            repaired_label,
+        )
+        if typical_over_ytd:
+            repaired_label = _replace_repaired_label(errors, repaired_label, typical_over_ytd)
     if repair_config.breakthrough_repair:
         breakthrough_label = _breakthrough_label_from_events(extraction, repaired_label)
         if breakthrough_label:

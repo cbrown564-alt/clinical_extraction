@@ -109,10 +109,11 @@ def _monthly_diary_event_counts(
         r"nov(?:ember)?|dec(?:ember)?"
     )
     count_terms = r"\d+|no|zero|a|an"
+    med_unit_filter = r"(?!\s*(?:mg|mcg|g|ml|tablets?|pills?|capsules?|doses?|prn|bd|tds|qds)\b)"
     counts: dict[MonthlyDiaryMonthKey, int] = {}
 
     for match in re.finditer(
-        rf"\b(?P<count>{count_terms})\s+"
+        rf"\b(?P<count>{count_terms}){med_unit_filter}\s+"
         r"(?:(?:[a-z]+(?:-[a-z]+)?\s+){0,4}(?:seizures?|events?|convulsions?)\s+)?"
         rf"in\s+(?:early|mid|late)?\s*(?P<month>{month_pattern})"
         rf"(?:\s+(?P<year>\d{{4}}))?\b",
@@ -127,7 +128,7 @@ def _monthly_diary_event_counts(
     for match in re.finditer(
         rf"\bin\s+(?:early|mid|late)?\s*(?P<month>{month_pattern})"
         rf"(?:\s+(?P<year>\d{{4}}))?\b[^.;]*?\b"
-        rf"(?P<count>{count_terms})\s+"
+        rf"(?P<count>{count_terms}){med_unit_filter}\s+"
         r"(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
         r"(?:seizures?|events?|convulsions?|absences?|attacks?|jerks?)\b",
         text,
@@ -139,7 +140,7 @@ def _monthly_diary_event_counts(
                 count,
             )
     for match in re.finditer(
-        rf"\b(?P<count>{count_terms})\s+"
+        rf"\b(?P<count>{count_terms}){med_unit_filter}\s+"
         r"(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
         r"(?:seizures?|events?|convulsions?|absences?|attacks?|jerks?)\s+"
         rf"(?:in\s+)?(?:early|mid|late)?\s*(?P<month>{month_pattern})"
@@ -265,10 +266,11 @@ def _monthly_diary_event_count(event: StructuredMonthlyDiaryEventLike) -> int | 
 def _monthly_diary_state_count(text: str) -> int | None:
     state_terms = r"sleep|asleep|night|nocturnal|awake|waking|daytime|day"
     count_terms = r"\d+|no|zero|a|an"
+    med_unit_filter = r"(?!\s*(?:mg|mcg|g|ml|tablets?|pills?|capsules?|doses?|prn|bd|tds|qds)\b)"
     counts: list[int] = []
     for pattern in (
-        rf"\b(?P<count>{count_terms})\s+(?!in\s+)(?:\w+\s+){{0,3}}(?:{state_terms})\b",
-        rf"\b(?P<count>{count_terms})\s+in\s+(?:{state_terms})\b",
+        rf"\b(?P<count>{count_terms}){med_unit_filter}\s+(?!in\s+)(?:\w+\s+){{0,3}}(?:{state_terms})\b",
+        rf"\b(?P<count>{count_terms}){med_unit_filter}\s+in\s+(?:{state_terms})\b",
     ):
         for match in re.finditer(pattern, text):
             count = _monthly_diary_count_value(match.group("count"))
@@ -302,16 +304,16 @@ def _monthly_diary_span_months(
     counts_by_month: Mapping[MonthlyDiaryMonthKey, int],
 ) -> int:
     keys = list(counts_by_month)
+    if not keys:
+        return 0
     if all(year is not None for _, year in keys):
         ordinals = [year * 12 + month for month, year in keys if year is not None]
         return max(ordinals) - min(ordinals) + 1
-    months = sorted({month for month, _ in keys})
+    months = {month for month, _ in keys}
     if not months:
         return 0
-    linear_span = max(months) - min(months) + 1
-    if linear_span > 6:
-        return (12 - max(months)) + min(months) + 1
-    return linear_span
+    spans = [1 + max((m - start) % 12 for m in months) for start in months]
+    return min(spans)
 
 
 def _event_text(event: StructuredMonthlyDiaryEventLike) -> str:
