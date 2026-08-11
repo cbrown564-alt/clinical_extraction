@@ -81,6 +81,18 @@ _NAMED_TYPE_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"\bdyscognitive\s+seizures?\b", re.I), "dyscognitive seizures"),
     (re.compile(r"\bconvulsive\s+seizures?\b", re.I), "convulsive seizures"),
 )
+# Onset framing for Rule 4. The ``since`` alternatives are anchored to the year
+# or age token they claim to describe: a bare ``"since 20"`` substring also
+# matched doses ("since 20mg"), durations ("since 20 years ago"), and unrelated
+# text elsewhere in a long evidence window.
+_ONSET_FRAMING_RE = re.compile(
+    r"\b(?:"
+    r"started\s+in\b"
+    r"|since\s+(?:the\s+)?age\s+(?:of\s+)?\d+"
+    r"|since\s+(?:19|20)\d{2}"
+    r")\b",
+    re.IGNORECASE,
+)
 _WORD_NUMBER: dict[str, str] = {
     "one": "1",
     "two": "2",
@@ -343,15 +355,21 @@ def _repair_state_mention(mention: Mapping[str, Any]) -> dict[str, Any] | Mappin
         changed = True
 
     # Rule 4: Active rate mention with historical onset framing -> Strip onset YearDate / Age
-    has_onset = (
-        "started in" in lower_evidence
-        or "since age" in lower_evidence
-        or "since 20" in lower_evidence
-    )
+    has_onset = bool(_ONSET_FRAMING_RE.search(lower_evidence))
     if num_sz and num_sz != "0" and has_duration and has_onset:
         repaired_attrs.pop("TimeSince_or_TimeOfEvent", None)
-        repaired_attrs.pop("YearDate", None)
-        repaired_attrs.pop("AgeLower", None)
+        # Date and age attributes are paired: dropping only YearDate/AgeLower
+        # would leave a MonthDate with no year, an upper age bound with no
+        # lower, or an AgeUnit qualifying an age that is no longer there.
+        for onset_key in (
+            "YearDate",
+            "MonthDate",
+            "DayDate",
+            "AgeLower",
+            "AgeUpper",
+            "AgeUnit",
+        ):
+            repaired_attrs.pop(onset_key, None)
         changed = True
 
     # Rule 5: Seizure-free mention (NumberOfSeizures == '0') -> TimeSince_or_TimeOfEvent is Since
@@ -359,7 +377,7 @@ def _repair_state_mention(mention: Mapping[str, Any]) -> dict[str, Any] | Mappin
         repaired_attrs["TimeSince_or_TimeOfEvent"] = "Since"
         changed = True
 
-    # Rule 7: Strip FrequencyChange from concrete numeric count mentions
+    # Rule 6: Strip FrequencyChange from concrete numeric count mentions
     has_count = any(
         k in attrs
         for k in ("NumberOfSeizures", "LowerNumberOfSeizures", "UpperNumberOfSeizures")
@@ -368,14 +386,23 @@ def _repair_state_mention(mention: Mapping[str, Any]) -> dict[str, Any] | Mappin
         repaired_attrs.pop("FrequencyChange")
         changed = True
 
-    # Rule 8: Strip TimePeriod & NumberOfTimePeriods when PointInTime is present
+    # Rule 7: Strip TimePeriod & NumberOfTimePeriods when PointInTime is present
     if point and "TimePeriod" in repaired_attrs:
         repaired_attrs.pop("TimePeriod", None)
         repaired_attrs.pop("NumberOfTimePeriods", None)
         changed = True
 
-    # Rule 9: Strip TimeSince_or_TimeOfEvent when DayDate is present
-    if "DayDate" in attrs and "TimeSince_or_TimeOfEvent" in repaired_attrs:
+    # Rule 8: Strip TimeSince_or_TimeOfEvent when DayDate anchors a point event.
+    # A seizure-free mention anchored with an explicit 'since <day>' keeps its
+    # direction: the day is the start of the free period, not the event date.
+    seizure_free_since = repaired_attrs.get("NumberOfSeizures") == "0" and (
+        "since" in lower_evidence or "seizure free" in lower_evidence
+    )
+    if (
+        "DayDate" in repaired_attrs
+        and "TimeSince_or_TimeOfEvent" in repaired_attrs
+        and not seizure_free_since
+    ):
         repaired_attrs.pop("TimeSince_or_TimeOfEvent", None)
         changed = True
 

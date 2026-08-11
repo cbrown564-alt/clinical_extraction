@@ -12,8 +12,17 @@
   "oracle_scope": "producer row, final clinical mention fields, scorer view/count, first owner/failure; runtime stage contract is checked independently against the Decision 0048 manifest",
   "outward_identity_allowlist": ["active_method", "method_id", "pipeline_family", "run_id", "source_method_id", "source_pipeline_family", "scored_view"],
   "normalized_sha256": "081b6a66e38f4cd13aac407e2f654ac7d5803c34e8b755d771daa31c4bc68a55",
-  "independent_prechange_oracle_sha256": "31936f775dd0f2cd306381573f1d592ea0af2514124d9f66d7b3be59db1f93d1",
+  "independent_prechange_oracle_sha256": "99f52a8a1a200b9030aec4d81c1e70641bb3b096587d66ce73106408a64db0c5",
   "superseded_oracles": [
+    {
+      "sha256": "31936f775dd0f2cd306381573f1d592ea0af2514124d9f66d7b3be59db1f93d1",
+      "held_until": "2026-08-11",
+      "superseded_by": "SF state-projection code-review correctness fixes (Rules 4 and 8)",
+      "change": "sf_state_projection._repair_state_mention: (a) Rule 4 now clears the whole onset date/age group (YearDate, MonthDate, DayDate, AgeLower, AgeUpper, AgeUnit) instead of only YearDate/AgeLower, which previously left a MonthDate with no year, an AgeUpper with no AgeLower, or an AgeUnit qualifying an age that had already been removed; (b) Rule 4's onset-framing test moved from bare substring matching ('started in', 'since age', 'since 20') to an anchored regex, so 'since 20' no longer fires on doses ('since 20mg') or durations ('since 20 years ago'), while 'since the age of N' -- the common phrasing that the old 'since age' substring missed entirely -- now matches; (c) Rule 8 (formerly Rule 9) no longer strips TimeSince_or_TimeOfEvent from a DayDate-anchored mention when that mention is seizure-free with explicit 'since'/'seizure free' evidence, where the day starts the seizure-free period rather than dating an event -- the old unconditional strip directly contradicted Rule 5. Rules were also renumbered 7/8/9 -> 6/7/8 to close a numbering gap; no rule was added or removed.",
+      "why": "Measured by offline replay of sf_state_projection (ablation=combined) over the saved dev140 structured outputs for all six single-call models; no model calls. GPT-5.6 Sol (the model this fixture pins): benchmark/semantic per-item F1 0.5950 -> 0.6006 (TP 108->109, FP 68->67, FN 79->78); clinical-headline F1 unchanged at 0.8072 (the state-level metric is insensitive to these attribute-only rules). Pooled across all six models: benchmark/semantic per-item F1 0.4291 -> 0.4355 (TP 472->479, FP 606->599, FN 650->643); no model regressed on any view. 10 letter-level mention diffs across the three affected models, all in the intended direction: dangling AgeLower/AgeUnit cleared on 'since the age of N' rate mentions (EA0043, EA0085, EA0113), and TimeSince_or_TimeOfEvent 'Since' retained on 'since February 6th he has not had any more seizures' (EA0142).",
+      "evidence": "code review of HEAD~5..HEAD, findings 1-3 (Rule 4 dangling paired attributes, Rule 9 over-stripping, unscoped has_onset substring match)",
+      "scope_note": "This oracle pins the post-fix assembly for exectv2_llm_with_rules; Diagnosis, Prescription and Investigations parity is unaffected, and the rules-only exectv2_rules_base_264237bd fingerprint is unchanged because sf_state_projection is not on the rules-only all-nine path."
+    },
     {
       "sha256": "6b63a0b3cb22c24369e430d08d4fc611cf7b6243d55cc11cc9a6b82c0b5bdecb",
       "held_until": "2026-08-11",

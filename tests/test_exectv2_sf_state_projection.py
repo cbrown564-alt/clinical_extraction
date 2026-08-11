@@ -189,3 +189,148 @@ def test_temporal_direction_alignment_rules() -> None:
     assert proj5["predicted_mentions"][0]["attributes"]["TimeSince_or_TimeOfEvent"] == "Since"
 
 
+def _attrs_after_state_projection(attributes: dict, evidence: str) -> dict:
+    row = _row(
+        predicted_mentions=[
+            {
+                "entity": "SeizureFrequency",
+                "text": "seizures",
+                "attributes": attributes,
+                "evidence": evidence,
+            }
+        ]
+    )
+    return projection.project_row(row, ablation="state")["predicted_mentions"][0]["attributes"]
+
+
+def test_rule_4_clears_paired_onset_date_and_age_attributes() -> None:
+    attrs = _attrs_after_state_projection(
+        {
+            "NumberOfSeizures": "2",
+            "TimePeriod": "Year",
+            "TimeSince_or_TimeOfEvent": "Since",
+            "YearDate": "2010",
+            "MonthDate": "3",
+            "AgeLower": "14",
+            "AgeUpper": "16",
+            "AgeUnit": "Year",
+        },
+        "seizures started in 2010 and he has roughly two seizures per year",
+    )
+
+    # A MonthDate with no YearDate, an AgeUpper with no AgeLower, or an AgeUnit
+    # qualifying an age that is no longer there, is incoherent.
+    for key in (
+        "YearDate",
+        "MonthDate",
+        "AgeLower",
+        "AgeUpper",
+        "AgeUnit",
+        "TimeSince_or_TimeOfEvent",
+    ):
+        assert key not in attrs
+    assert attrs["NumberOfSeizures"] == "2"
+
+
+def test_rule_4_onset_framing_requires_a_real_date_or_age_phrase() -> None:
+    # "since 20mg" contains the old bare "since 20" substring but frames a dose,
+    # not an onset year, so Rule 4 must not strip this mention's YearDate.
+    attrs = _attrs_after_state_projection(
+        {
+            "NumberOfSeizures": "2",
+            "TimePeriod": "Month",
+            "TimeSince_or_TimeOfEvent": "Since",
+            "YearDate": "2019",
+        },
+        "he has had two seizures a month since 20mg lamotrigine was introduced",
+    )
+
+    assert attrs["YearDate"] == "2019"
+
+
+def test_rule_4_onset_framing_matches_since_the_age_of_n() -> None:
+    # The old bare "since age" substring missed the far more common
+    # "since the age of N" phrasing, so onset attributes survived.
+    attrs = _attrs_after_state_projection(
+        {
+            "NumberOfSeizures": "1",
+            "NumberOfTimePeriods": "1",
+            "TimePeriod": "Year",
+            "AgeLower": "17",
+            "AgeUnit": "Year",
+        },
+        "He has had on average one seizure a year since the age of 17 but a total of 3 in 2020.",
+    )
+
+    assert "AgeLower" not in attrs
+    assert "AgeUnit" not in attrs
+    assert attrs["TimePeriod"] == "Year"
+
+
+def test_rule_6_strips_frequency_change_from_concrete_counts() -> None:
+    attrs = _attrs_after_state_projection(
+        {"NumberOfSeizures": "3", "TimePeriod": "Month", "FrequencyChange": "Increased"},
+        "he has had 3 seizures a month, more than before",
+    )
+
+    assert "FrequencyChange" not in attrs
+    assert attrs["NumberOfSeizures"] == "3"
+
+
+def test_rule_6_keeps_frequency_change_without_a_count() -> None:
+    attrs = _attrs_after_state_projection(
+        {"FrequencyChange": "Increased"},
+        "his seizures have become more frequent",
+    )
+
+    assert attrs["FrequencyChange"] == "Increased"
+
+
+def test_rule_7_strips_time_period_when_point_in_time_is_present() -> None:
+    attrs = _attrs_after_state_projection(
+        {
+            "NumberOfSeizures": "2",
+            "PointInTime": "LastClinic",
+            "TimePeriod": "Month",
+            "NumberOfTimePeriods": "3",
+        },
+        "he has had 2 seizures since his last clinic",
+    )
+
+    assert "TimePeriod" not in attrs
+    assert "NumberOfTimePeriods" not in attrs
+    assert attrs["PointInTime"] == "LastClinic"
+
+
+def test_rule_8_strips_time_since_for_a_day_anchored_event() -> None:
+    attrs = _attrs_after_state_projection(
+        {
+            "NumberOfSeizures": "1",
+            "DayDate": "14",
+            "MonthDate": "3",
+            "YearDate": "2019",
+            "TimeSince_or_TimeOfEvent": "Since",
+        },
+        "he had a seizure on 14 March 2019",
+    )
+
+    assert "TimeSince_or_TimeOfEvent" not in attrs
+    assert attrs["DayDate"] == "14"
+
+
+def test_rule_8_keeps_time_since_for_a_day_anchored_seizure_free_period() -> None:
+    # The day starts the seizure-free period; it is not the date of an event.
+    attrs = _attrs_after_state_projection(
+        {
+            "NumberOfSeizures": "0",
+            "DayDate": "14",
+            "MonthDate": "3",
+            "YearDate": "2019",
+            "TimeSince_or_TimeOfEvent": "Since",
+        },
+        "he has been seizure free since 14 March 2019",
+    )
+
+    assert attrs["TimeSince_or_TimeOfEvent"] == "Since"
+
+
