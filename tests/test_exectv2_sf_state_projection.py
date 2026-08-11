@@ -115,3 +115,38 @@ def test_project_rows_reports_ablation_metadata() -> None:
     assert metadata["projection_version"] == projection.PROJECTION_VERSION
     assert metadata["ablation"] == "combined"
     assert metadata["projection_action_counts"]["state.drop_unlabelled_active_rate"] == 1
+
+
+def test_temporal_direction_alignment_rules() -> None:
+    # Rule 1: PointInTime missing TimeSince_or_TimeOfEvent -> Adds Since
+    row1 = _row(
+        predicted_mentions=[
+            {
+                "entity": "SeizureFrequency",
+                "text": "seizures",
+                "attributes": {"PointInTime": "DrugChange"},
+                "evidence": "No events since drug change",
+            }
+        ]
+    )
+    proj1 = projection.project_row(row1, ablation="state")
+    assert proj1["predicted_mentions"][0]["attributes"]["TimeSince_or_TimeOfEvent"] == "Since"
+
+    # Rule 2: Duration without date -> Strips TimeSince_or_TimeOfEvent
+    row2 = _row(
+        predicted_mentions=[
+            {
+                "entity": "SeizureFrequency",
+                "text": "seizures",
+                "attributes": {
+                    "TimePeriod": "Year",
+                    "NumberOfTimePeriods": "3",
+                    "TimeSince_or_TimeOfEvent": "Since",
+                },
+                "evidence": "seizure free for 3 years",
+            }
+        ]
+    )
+    proj2 = projection.project_row(row2, ablation="state")
+    assert "TimeSince_or_TimeOfEvent" not in proj2["predicted_mentions"][0]["attributes"]
+

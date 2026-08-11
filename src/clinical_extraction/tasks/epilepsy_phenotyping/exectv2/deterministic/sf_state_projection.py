@@ -307,6 +307,50 @@ def _state_drop_rule(
 
 def _repair_state_mention(mention: Mapping[str, Any]) -> dict[str, Any] | Mapping[str, Any]:
     evidence = str(mention.get("evidence", ""))
+    lower_evidence = evidence.lower()
+    attrs = dict(mention.get("attributes") or {})
+    num_sz = attrs.get("NumberOfSeizures")
+    tso = attrs.get("TimeSince_or_TimeOfEvent")
+    point = attrs.get("PointInTime")
+    has_date = any(k in attrs for k in ("YearDate", "MonthDate", "DayDate"))
+    has_duration = "TimePeriod" in attrs or "NumberOfTimePeriods" in attrs
+
+    repaired_attrs = dict(attrs)
+    changed = False
+
+    # Rule 1: PointInTime anchor missing TimeSince_or_TimeOfEvent -> Add 'Since' (or 'During')
+    if point and "TimeSince_or_TimeOfEvent" not in attrs:
+        if point in ("Last_Year", "Last_Month", "Last_Week") and num_sz and num_sz != "0":
+            repaired_attrs["TimeSince_or_TimeOfEvent"] = "During"
+        else:
+            repaired_attrs["TimeSince_or_TimeOfEvent"] = "Since"
+        changed = True
+
+    # Rule 2: Duration-based mention WITHOUT a specific date/point -> Strip TimeSince_or_TimeOfEvent
+    if has_duration and not point and not has_date and "TimeSince_or_TimeOfEvent" in repaired_attrs:
+        repaired_attrs.pop("TimeSince_or_TimeOfEvent")
+        changed = True
+
+    # Rule 3: Active count (NumberOfSeizures > 0) -> Set 'During' if no 'since'
+    if (
+        num_sz
+        and num_sz != "0"
+        and (point or has_date)
+        and tso == "Since"
+        and "since" not in lower_evidence
+    ):
+        repaired_attrs["TimeSince_or_TimeOfEvent"] = "During"
+        changed = True
+
+    if changed:
+        repaired = _copy_mention(mention)
+        repaired["attributes"] = repaired_attrs
+        repaired["rationale"] = _append_rationale(
+            repaired,
+            "Deterministic state projection aligns temporal direction.",
+        )
+        return repaired
+
     if _state(mention) != "active-rate":
         return mention
     duration = _last_event_duration(evidence)
