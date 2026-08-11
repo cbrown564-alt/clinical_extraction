@@ -11,6 +11,7 @@ NUMBER_TOKEN = (
     rf"\s*[-–—]\s*{NUMBER_VALUE_TOKEN})?)"
 )
 UNIT_TOKEN = r"day|week|month|quarter|year|days|weeks|months|quarters|years"
+ADJECTIVE_PERIOD_TOKEN = r"daily|weekly|monthly|yearly|bimonthly"
 
 
 def rate_label(count: str, unit: str, denominator: str | None = None) -> str:

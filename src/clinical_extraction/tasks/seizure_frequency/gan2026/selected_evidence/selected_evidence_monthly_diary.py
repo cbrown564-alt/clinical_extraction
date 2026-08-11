@@ -6,6 +6,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
     normalize_frequency_label,
 )
 
+from ._shared_tokens import GAP_WORDS_TOKEN
 from .selected_evidence_text import (
     format_prediction_rate,
     once_twice_thrice,
@@ -153,7 +154,7 @@ def _general_monthly_diary_label_from_selected_evidence(text: str) -> str | None
 
     for match in re.finditer(
         rf"\b(?P<count>{number})\s+"
-        r"(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+        rf"{GAP_WORDS_TOKEN}"
         rf"(?:seizures?|events?|convulsions?)\s+(?:so\s+far\s+)?in\s+(?P<month>{month})\b",
         text,
     ):

@@ -40,6 +40,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_meta
 )
 from clinical_extraction.tasks.shared.epilepsy.terms import NUMBER_WORDS
 
+from ..deterministic_frequency_tokens import ADJECTIVE_PERIOD_TOKEN
+
 # Digit-only range token: matches "5", "2-3", "1–2", "4—6" but NOT word numbers
 # like "nine" or "four". Compact shorthand with word numbers is GAN-dataset-specific
 # notation; real clinical notes use digit counts.
@@ -207,7 +209,7 @@ ABS_ADJECTIVE_RATE_RULE = RuleSpec(
     ),
     pattern=re.compile(
         r"\b(?P<evidence>(?:abs|absence)\s+"
-        r"(?P<period>daily|weekly|monthly|yearly|bimonthly))\b",
+        rf"(?P<period>{ADJECTIVE_PERIOD_TOKEN}))\b",
         re.IGNORECASE,
     ),
     build=_build_abs_adjective_rate,
@@ -248,7 +250,7 @@ ABS_COUNT_RATE_RULE = RuleSpec(
     ),
     pattern=re.compile(
         r"\b(?P<evidence>(?:abs|absence)\s+(?P<count>\d+)\s+"
-        r"(?P<period>daily|weekly|monthly|yearly|bimonthly))\b",
+        rf"(?P<period>{ADJECTIVE_PERIOD_TOKEN}))\b",
         re.IGNORECASE,
     ),
     build=_build_abs_count_rate,

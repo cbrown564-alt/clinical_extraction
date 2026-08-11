@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 
+from ._shared_tokens import GAP_WORDS_TOKEN
 from .selected_evidence_text import (
     format_prediction_rate as _format_prediction_rate,
 )
@@ -134,7 +135,7 @@ def cluster_label_from_selected_evidence(text: str) -> str | None:
     if monthly_cluster:
         monthly_per_cluster_match = re.search(
             r"\b(?P<count>\d+(?:\s*to\s*\d+)?)\s+"
-            r"(?=(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+            rf"(?={GAP_WORDS_TOKEN}"
             r"(?:seizure|absence|attack|convulsion|spasm|event|mal))",
             text[monthly_cluster.end() :],
         )
@@ -364,7 +365,7 @@ def cluster_label_from_selected_evidence(text: str) -> str | None:
     per_cluster_match = re.search(
         r"\b(?:each|per\s+cluster|per\s+episode|cluster(?:s)?\s+(?:with|of|having))\s+"
         r"(?:≈|~|about\s+|approximately\s+|around\s+)?(?P<count>\d+(?:\s*(?:to|-|–|—)\s*\d+)?)\s+"
-        r"(?=(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+        rf"(?={GAP_WORDS_TOKEN}"
         r"(?:seizure|absence|attack|convulsion|spasm|event|episode|spell|mal))",
         tail,
     )

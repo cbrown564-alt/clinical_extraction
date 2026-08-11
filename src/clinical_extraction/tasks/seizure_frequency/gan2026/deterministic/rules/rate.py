@@ -17,12 +17,16 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_meta
 )
 
 from ..deterministic_frequency_tokens import (
+    ADJECTIVE_PERIOD_TOKEN,
     NUMBER_TOKEN,
     NUMBER_WORDS,
     UNIT_TOKEN,
 )
 from ..deterministic_frequency_tokens import (
     quarter_month_denominator as _quarter_month_denominator,
+)
+from ..deterministic_rate_distractors import (
+    is_medication_or_dose_rate_distractor as _is_medication_or_dose_rate_distractor_impl,
 )
 from ..deterministic_rate_terms import (
     QUALIFIED_SEIZURE_TERMS,
@@ -433,23 +437,7 @@ def _has_historical_lead_in(match: re.Match[str], context: ExtractionContext) ->
 def _is_medication_or_dose_rate_distractor(
     match: re.Match[str], context: ExtractionContext
 ) -> bool:
-    preceding = context.text[max(0, match.start() - 80) : match.start()].lower()
-    following = context.text[match.end() : match.end() + 80].lower()
-    surrounding = f"{preceding} {match.group(0).lower()} {following}"
-    dose_pattern = re.compile(
-        r"\b(?:dose|dosing|current treatment|current medication|medication|"
-        r"levetiracetam|lamotrigine|carbamazepine|brivaracetam|lacosamide|"
-        r"valproate|epilim|topiramate|zonisamide|sumatriptan)\b"
-        r".{0,80}(?:\b\d+\s*(?:mg|g|micrograms?|mcg|µg)\b|"
-        r"\b(?:mg|g|micrograms?|mcg|µg)\b)",
-        re.IGNORECASE,
-    )
-    if dose_pattern.search(surrounding):
-        return True
-    return bool(
-        re.search(r"\b(?:migraine|headache|prn)\b", surrounding)
-        and re.search(r"\bper\s+(?:day|week|month|year)\b", match.group(0), re.IGNORECASE)
-    )
+    return _is_medication_or_dose_rate_distractor_impl(match, context.text)
 
 
 def _is_nonprogressive_myoclonic_rate_distractor(
@@ -759,10 +747,10 @@ SEIZURE_ADJECTIVE_RATE_RULE = RuleSpec(
     portability=Portability.SEIZURE_FREQUENCY,
     description="Seizure noun or descriptor modified by daily/weekly/monthly/yearly.",
     pattern=re.compile(
-        rf"\b(?P<evidence>(?P<period>daily|weekly|monthly|yearly|bimonthly)\s+"
+        rf"\b(?P<evidence>(?P<period>{ADJECTIVE_PERIOD_TOKEN})\s+"
         rf"(?:{SEIZURE_RATE_PHRASE})|"
         rf"(?:(?:{SEIZURE_RATE_PHRASE})|{SEIZURE_DESCRIPTOR_PHRASE})\s+"
-        rf"(?P<period_after>daily|weekly|monthly|yearly|bimonthly))\b",
+        rf"(?P<period_after>{ADJECTIVE_PERIOD_TOKEN}))\b",
         re.IGNORECASE,
     ),
     build=_build_seizure_adjective_rate,
@@ -789,7 +777,7 @@ STANDALONE_ADJECTIVE_RATE_RULE = RuleSpec(
     description="Frequency, pattern, or rate stated as daily/weekly/monthly/yearly.",
     pattern=re.compile(
         r"\b(?:frequency|pattern|rate)\s+(?:is\s+|was\s+|reported as\s+)?"
-        r"(?P<evidence>(?P<period>daily|weekly|monthly|yearly|bimonthly))\b",
+        rf"(?P<evidence>(?P<period>{ADJECTIVE_PERIOD_TOKEN}))\b",
         re.IGNORECASE,
     ),
     build=_build_standalone_adjective_rate,
@@ -811,7 +799,7 @@ OCCURRING_ADJECTIVE_RATE_RULE = RuleSpec(
     pattern=re.compile(
         r"\b(?P<evidence>(?:occurring|occur|occurs)\s+"
         r"(?:roughly\s+|approximately\s+)?"
-        r"(?P<period>daily|weekly|monthly|yearly|bimonthly))\b",
+        rf"(?P<period>{ADJECTIVE_PERIOD_TOKEN}))\b",
         re.IGNORECASE,
     ),
     build=_build_occurring_adjective_rate,

@@ -7,6 +7,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
 )
 from clinical_extraction.tasks.shared.epilepsy.terms import FULL_MONTHS
 
+from ._shared_tokens import GAP_WORDS_TOKEN
 from .selected_evidence_text import (
     format_prediction_rate as _format_prediction_rate,
 )
@@ -24,7 +25,7 @@ def sum_counts_over_window(text: str) -> str | None:
         r"\bmultiple\s+times?\s+"
         r"(?:in|over|during|for)\s+(?:the\s+)?(?:past|last)\s+"
         r"(?:\d+\s+)?(?:day|week|month|year)s?\b.{0,80}"
-        r"\bincluding\s+\d+\s+(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+        rf"\bincluding\s+\d+\s+{GAP_WORDS_TOKEN}"
         r"(?:seizure|attack|convulsion|spasm|mal|event|episode|aura)",
         text,
     ):
@@ -37,7 +38,7 @@ def sum_counts_over_window(text: str) -> str | None:
             r"\b(\d+)\s+(?!(?:day|week|month|year)s?\b)"
             r"(?!(?:seizure[- ]free|free)\b)"
             r"(?=(?:tonic(?:-clonic)?|drop|absence|"
-            r"(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+            rf"{GAP_WORDS_TOKEN}"
             r"(?:seizure|attack|convulsion|spasm|mal|event|episode|aura)))",
             prefix,
         )
@@ -67,7 +68,7 @@ def range_count_over_window(text: str) -> str | None:
 
     range_match = re.search(
         r"\b(?P<low>\d+)\s*(?:to|-|–|—|or)\s*(?P<high>\d+)\s+"
-        r"(?=(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+        rf"(?={GAP_WORDS_TOKEN}"
         r"(?:seizure|attack|convulsion|spasm|mal|event|episode|tonic))",
         text,
     )
@@ -93,7 +94,7 @@ def range_count_over_window(text: str) -> str | None:
 
 def single_count_over_window(text: str) -> str | None:
     match = re.search(
-        r"\b(?P<count>\d+)\s+(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+        rf"\b(?P<count>\d+)\s+{GAP_WORDS_TOKEN}"
         r"(?:seizure|attack|convulsion|spasm|mal|event|episode)s?\s+"
         r"(?:in|within|over|during|for)\s+(?:the\s+)?(?:past|last)?\s*"
         r"(?P<denominator>\d+)\s+(?P<unit>day|week|month|year)s?\b",

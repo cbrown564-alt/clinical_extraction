@@ -12,6 +12,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_temp
     small_number_words_to_digits,
 )
 
+from ..selected_evidence._shared_tokens import GAP_WORDS_TOKEN
 from ..selected_evidence.selected_evidence_monthly_diary import (
     monthly_diary_label_from_text,
 )
@@ -114,7 +115,7 @@ def _monthly_diary_event_counts(
 
     for match in re.finditer(
         rf"\b(?P<count>{count_terms}){med_unit_filter}\s+"
-        r"(?:(?:[a-z]+(?:-[a-z]+)?\s+){0,4}(?:seizures?|events?|convulsions?)\s+)?"
+        rf"(?:{GAP_WORDS_TOKEN}(?:seizures?|events?|convulsions?)\s+)?"
         rf"in\s+(?:early|mid|late)?\s*(?P<month>{month_pattern})"
         rf"(?:\s+(?P<year>\d{{4}}))?\b",
         text,
@@ -129,7 +130,7 @@ def _monthly_diary_event_counts(
         rf"\bin\s+(?:early|mid|late)?\s*(?P<month>{month_pattern})"
         rf"(?:\s+(?P<year>\d{{4}}))?\b[^.;]*?\b"
         rf"(?P<count>{count_terms}){med_unit_filter}\s+"
-        r"(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+        rf"{GAP_WORDS_TOKEN}"
         r"(?:seizures?|events?|convulsions?|absences?|attacks?|jerks?)\b",
         text,
     ):
@@ -141,7 +142,7 @@ def _monthly_diary_event_counts(
             )
     for match in re.finditer(
         rf"\b(?P<count>{count_terms}){med_unit_filter}\s+"
-        r"(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+        rf"{GAP_WORDS_TOKEN}"
         r"(?:seizures?|events?|convulsions?|absences?|attacks?|jerks?)\s+"
         rf"(?:in\s+)?(?:early|mid|late)?\s*(?P<month>{month_pattern})"
         rf"(?:\s+(?P<year>\d{{4}}))?\b",
@@ -253,7 +254,7 @@ def _monthly_diary_event_count(event: StructuredMonthlyDiaryEventLike) -> int | 
             return state_count
         event_count = re.search(
             r"\b(?P<count>\d+|a|an|no|zero)\s+"
-            r"(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+            rf"{GAP_WORDS_TOKEN}"
             r"(?:seizures?|events?|convulsions?|absences?|attacks?|jerks?)\b",
             text,
         )

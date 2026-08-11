@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 
+from ._shared_tokens import GAP_WORDS_TOKEN, GAP_WORDS_TOKEN_5
 from .selected_evidence_text import (
     format_prediction_rate as _format_prediction_rate,
 )
@@ -122,7 +123,7 @@ def early_rate_label_from_selected_evidence(text: str) -> str | None:
 
     upper_bound = re.search(
         rf"(?:≤|<=|up to|at most|no more than)\s+(?P<count>{_COUNT})\s+"
-        rf"(?:[a-z]+(?:-[a-z]+)?\s+){{0,5}}"
+        rf"{GAP_WORDS_TOKEN_5}"
         rf"(?:{_EVENT_NOUN}\s+)?per\s+(?P<unit>{_UNIT})s?\b",
         text,
     )
@@ -140,7 +141,7 @@ def early_rate_label_from_selected_evidence(text: str) -> str | None:
         )
     upper_bound_in_weeks = re.search(
         rf"(?:≤|<=|up to|at most|no more than)\s+(?P<count>{_COUNT})\s+"
-        r"(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+        rf"{GAP_WORDS_TOKEN}"
         r"\bin\s+(?:bad\s+|flare\s+)?weeks?\b",
         text,
     )
@@ -191,7 +192,7 @@ def early_rate_label_from_selected_evidence(text: str) -> str | None:
 
     vague_count_over_period = re.search(
         r"\b(?:multiple|several|many)\s+"
-        r"(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+        rf"{GAP_WORDS_TOKEN}"
         r"(?:episodes?|events?|seizures?|spells?|absences?|convulsions?)\s+"
         r"(?:in|over|during|within)\s+(?:the\s+)?(?:past|last|current)\s+"
         r"(?:(?P<count>\d+(?:\.\d+)?)\s+)?(?P<unit>day|week|month|year)s?\b",
@@ -276,7 +277,7 @@ def _best_explicit_rate_label(text: str) -> str | None:
     candidates: list[tuple[float, str, str]] = []
     for match in re.finditer(
         rf"\b(?P<count>{_COUNT})\s+"
-        rf"(?:times?\s+)?(?:[a-z]+(?:-[a-z]+)?\s+){{0,5}}"
+        rf"(?:times?\s+)?{GAP_WORDS_TOKEN_5}"
         rf"(?:{_EVENT_NOUN}\s+)?(?:per|each|every)\s+"
         rf"(?P<unit>{_UNIT})s?\b",
         text,
@@ -317,7 +318,7 @@ def _evidence_describes_medication_use_limit(text: str) -> bool:
 def _yesterday_count_label(text: str) -> str | None:
     yesterday = re.search(
         r"\b\d+\s+(?!(?:day|week|month|year)s?\b)"
-        r"(?=(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+        rf"(?={GAP_WORDS_TOKEN}"
         r"(?:seizure|attack|convulsion|spasm|mal|event)).*\byesterday\b",
         text,
     )
@@ -352,7 +353,7 @@ def pre_window_rate_label_from_selected_evidence(text: str) -> str | None:
     """Derive non-cluster rate labels that should run before count-window parsing."""
     yesterday = re.search(
         r"\b\d+\s+(?!(?:day|week|month|year)s?\b)"
-        r"(?=(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+        rf"(?={GAP_WORDS_TOKEN}"
         r"(?:seizure|attack|convulsion|spasm|mal|event)).*\byesterday\b",
         text,
     )
@@ -396,14 +397,14 @@ def late_rate_label_from_selected_evidence(
     if slash_month:
         return _format_prediction_rate(slash_month.group("count"), "month")
     fortnight = re.search(
-        rf"\b(?P<count>{_COUNT})\s+(?:[a-z]+(?:-[a-z]+)?\s+){{0,4}}"
+        rf"\b(?P<count>{_COUNT})\s+{GAP_WORDS_TOKEN}"
         r"(?:over|in|during|for)?\s*(?:the\s+)?(?:past|last)\s+fortnight\b",
         text,
     )
     if not fortnight:
         fortnight = re.search(
             r"\b(?:past|last)\s+fortnight\b.*?"
-            rf"\b(?P<count>{_COUNT})\s+(?:[a-z]+(?:-[a-z]+)?\s+){{0,4}}"
+            rf"\b(?P<count>{_COUNT})\s+{GAP_WORDS_TOKEN}"
             r"(?:seizure|attack|convulsion|spasm|event|episode)",
             text,
         )
@@ -432,7 +433,7 @@ def late_rate_label_from_selected_evidence(
     if quarter:
         return _format_prediction_rate(quarter.group("count"), "3 month")
     this_quarter = re.search(
-        rf"\b(?P<count>{_COUNT})\s+(?:[a-z]+(?:-[a-z]+)?\s+){{0,4}}"
+        rf"\b(?P<count>{_COUNT})\s+{GAP_WORDS_TOKEN}"
         r"(?:this|past|last)\s+quarter\b",
         text,
     )
@@ -440,7 +441,7 @@ def late_rate_label_from_selected_evidence(
         return _format_prediction_rate(this_quarter.group("count"), "3 month")
 
     this_year = re.search(
-        rf"\b(?P<count>{_COUNT})\s+(?:[a-z]+(?:-[a-z]+)?\s+){{0,4}}"
+        rf"\b(?P<count>{_COUNT})\s+{GAP_WORDS_TOKEN}"
         r"(?:this|past|last)\s+year\b",
         text,
     )
@@ -453,7 +454,7 @@ def late_rate_label_from_selected_evidence(
             )
         return _format_prediction_rate(this_year.group("count"), "year")
     year_to_date = re.search(
-        rf"\b(?P<count>{_COUNT})\s+(?:[a-z]+(?:-[a-z]+)?\s+){{0,5}}"
+        rf"\b(?P<count>{_COUNT})\s+{GAP_WORDS_TOKEN_5}"
         r"(?:so\s+far\s+this\s+year|this\s+year\s+to\s+date|"
         r"\d{4}\s+so\s+far)\b",
         text,
