@@ -170,6 +170,15 @@ def cluster_label_from_selected_evidence(text: str) -> str | None:
     )
     if weekly_cluster_count:
         return f"1 cluster per week, {weekly_cluster_count.group('count')} per cluster"
+    weekly_per_cluster_reversed = re.search(
+        r"\bweekly\b.{0,40}?\b(?P<count>\d+(?:\s*(?:to|-|–|—)\s*\d+)?)\s+per\s+cluster\b",
+        text,
+    )
+    if weekly_per_cluster_reversed:
+        per_str = re.sub(
+            r"\s*(?:-|–|—)\s*", " to ", weekly_per_cluster_reversed.group("count")
+        )
+        return f"1 cluster per week, {per_str} per cluster"
 
     cluster_days_month = re.search(
         r"\b(?:cluster\s+days?|clusters?)\s+"
@@ -199,6 +208,14 @@ def cluster_label_from_selected_evidence(text: str) -> str | None:
             f"{cluster_days_month_reversed.group('count')} cluster per month, "
             f"{per_cluster} per cluster"
         )
+
+    cluster_days_month_simple = re.search(
+        r"\b(?P<count>\d+(?:\s*(?:to|-|–|—)\s*\d+)?)\s+cluster\s+days?\s+"
+        r"this\s+month\b",
+        text,
+    )
+    if cluster_days_month_simple:
+        return f"{cluster_days_month_simple.group('count')} cluster per month, multiple per cluster"
 
     clusters_x_month = re.search(
         r"\bclusters?\s+(?P<count>\d+(?:\s*(?:to|-|–|—)\s*\d+)?)\s*×\s*/\s*month\b"
@@ -281,9 +298,19 @@ def cluster_label_from_selected_evidence(text: str) -> str | None:
         return f"{count_str} cluster per {unit_str}, multiple per cluster"
 
     ratio_match = re.search(
-        r"\b(?P<count>\d+)\s+clusters?\s+(?:in|over)\s+(?:the\s+past\s+)?(?P<period>\d+)\s+(?P<unit>day|week|month|year)s?\b",
+        r"\b(?P<count>\d+)\s+(?:[a-z-]+(?:\s+[a-z-]+)?\s+)?clusters?\s+"
+        r"(?:in|over)\s+(?:the\s+past\s+)?(?P<period>\d+)\s+(?P<unit>day|week|month|year)s?\b",
         text,
     )
+    ratio_match_reversed = re.search(
+        r"\b(?:over|in|during)\s+(?:the\s+past\s+)?(?P<period>\d+)\s+"
+        r"(?P<unit>day|week|month|year)s?\b.{0,40}?"
+        r"\b(?:≈|~|about\s+|approximately\s+|around\s+)?(?P<count>\d+)\s+"
+        r"(?:[a-z-]+(?:\s+[a-z-]+)?\s+)?clusters?\b",
+        text,
+    )
+    if not ratio_match and ratio_match_reversed:
+        ratio_match = ratio_match_reversed
     if ratio_match:
         count = int(ratio_match.group("count"))
         period = int(ratio_match.group("period"))
@@ -314,10 +341,26 @@ def cluster_label_from_selected_evidence(text: str) -> str | None:
         r"|(?:this|past|last)\s+(?P<period>day|week|month|year|quarter))\b",
         text,
     )
-    if not cluster_match:
+    last_period_cluster = re.search(
+        r"\b(?:this|past|last)\s+(?P<unit>day|week|month|year)\b.{0,40}?"
+        r"\b(?:≈|~|about\s+|approximately\s+|around\s+)?(?P<count>\d+)\s+"
+        r"(?:[a-z-]+(?:\s+[a-z-]+)?\s+)?clusters?\b",
+        text,
+    )
+    if cluster_match:
+        tail_start = cluster_match.end()
+        denominator = cluster_match.group("den") or "1"
+        unit = cluster_match.group("unit") or cluster_match.group("period")
+        count = cluster_match.group("count")
+    elif last_period_cluster:
+        tail_start = last_period_cluster.end()
+        denominator = "1"
+        unit = last_period_cluster.group("unit")
+        count = last_period_cluster.group("count")
+    else:
         return None
 
-    tail = text[cluster_match.end() :]
+    tail = text[tail_start:]
     per_cluster_match = re.search(
         r"\b(?:each|per\s+cluster|per\s+episode|cluster(?:s)?\s+(?:with|of|having))\s+"
         r"(?:≈|~|about\s+|approximately\s+|around\s+)?(?P<count>\d+(?:\s*(?:to|-|–|—)\s*\d+)?)\s+"
@@ -325,19 +368,14 @@ def cluster_label_from_selected_evidence(text: str) -> str | None:
         r"(?:seizure|absence|attack|convulsion|spasm|event|episode|spell|mal))",
         tail,
     )
-    denominator = cluster_match.group("den") or "1"
-    unit = cluster_match.group("unit") or cluster_match.group("period")
     if unit == "quarter":
         denominator = "3"
         unit = "month"
     den_text = f"{denominator} " if denominator != "1" else ""
     if not per_cluster_match:
-        return f"{cluster_match.group('count')} cluster per {den_text}{unit}, multiple per cluster"
+        return f"{count} cluster per {den_text}{unit}, multiple per cluster"
     per_str = re.sub(r"\s*(?:-|–|—)\s*", " to ", per_cluster_match.group("count"))
-    return (
-        f"{cluster_match.group('count')} cluster per {den_text}{unit}, "
-        f"{per_str} per cluster"
-    )
+    return f"{count} cluster per {den_text}{unit}, {per_str} per cluster"
 
 
 def _evidence_implies_multiple_per_cluster(text: str) -> bool:
