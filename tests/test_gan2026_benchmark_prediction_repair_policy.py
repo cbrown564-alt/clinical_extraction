@@ -86,4 +86,10 @@ def test_cluster_over_in_window_existing_per_cluster_clause() -> None:
     )
 
 
+def test_upper_bound_inequality_preserves_numeric_rate() -> None:
+    assert repair_prediction_label("≤ 1 per month") == "1 per month"
+    assert repair_prediction_label("up to 2 per week") == "2 per week"
+
+
+
 

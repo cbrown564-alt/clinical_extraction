@@ -189,6 +189,12 @@ def _normalize_quarter_period(text: str) -> str:
 
 def _inequality_to_multiple(text: str) -> str:
     text = re.sub(
+        r"^(?:<=|\u2264|up to|at most|no more than)\s+"
+        r"(?=\d+(?:\s*to\s*\d+)?\s+per\s+)",
+        "",
+        text,
+    )
+    text = re.sub(
         r"\b(?:at least|no less than|more than|over|greater than)\b\s*(\d+(?:\s*to\s*\d+)?)",
         "multiple",
         text,
