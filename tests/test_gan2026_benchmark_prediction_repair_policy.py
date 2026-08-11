@@ -79,3 +79,11 @@ def test_multi_period_denominator_repair() -> None:
     assert repair_prediction_label("every 8 days on average") == "1 per 8 day"
 
 
+def test_cluster_over_in_window_existing_per_cluster_clause() -> None:
+    assert (
+        repair_prediction_label("3 clusters in 6 weeks, 2 to 4 events per cluster")
+        == "3 cluster per 6 week, 2 to 4 per cluster"
+    )
+
+
+

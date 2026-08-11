@@ -577,6 +577,7 @@ def _in_period_count_to_per(text: str) -> str:
 
 def _cluster_over_in_window(text: str) -> str:
     """Project ``N clusters over/in M weeks`` before inequality remaps ``over``."""
+    has_per_cluster = bool(re.search(r"\bper\s+cluster\b", text))
 
     def _replace(match: re.Match[str]) -> str:
         count = match.group("count")
@@ -584,7 +585,7 @@ def _cluster_over_in_window(text: str) -> str:
         unit = match.group("unit")
         unit = re.sub(r"s$", "", unit)
         cadence = f"{count} cluster per {den} {unit}"
-        if count == "1":
+        if count == "1" or has_per_cluster:
             return cadence
         return f"{cadence}, multiple per cluster"
 
