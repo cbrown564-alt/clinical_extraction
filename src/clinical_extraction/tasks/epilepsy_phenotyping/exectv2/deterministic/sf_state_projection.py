@@ -27,6 +27,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalizer import (
+    MONTH_MAP,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.seizure_frequency import (
     frequency_state_faithful,
 )
@@ -667,24 +670,7 @@ def _unit_token(token: str) -> str:
 
 
 def _month_number(token: str) -> str:
-    months = {
-        "january": "1",
-        "february": "2",
-        "march": "3",
-        "april": "4",
-        "may": "5",
-        "june": "6",
-        "july": "7",
-        "august": "8",
-        "september": "9",
-        "october": "10",
-        "november": "11",
-        "novemebr": "11",
-        "december": "12",
-        "devember": "12",
-        "christmas": "12",
-    }
-    return months[token.lower()]
+    return MONTH_MAP[token.lower()]
 
 
 def _copy_mention(mention: Mapping[str, Any]) -> dict[str, Any]:

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import re
 
+from clinical_extraction.tasks.shared.epilepsy.terms import FULL_MONTHS, MONTH_ABBREVIATIONS
+
 _FREQUENCY_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     (
         re.compile(
@@ -33,30 +35,8 @@ _FREQUENCY_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"\b(?:tds|t\.d\.s\.|tid|three\s+times\s+(?:a\s+)?day)\b", re.IGNORECASE), "3"),
 )
 _MONTHS: dict[str, str] = {
-    "january": "1",
-    "jan": "1",
-    "february": "2",
-    "feb": "2",
-    "march": "3",
-    "mar": "3",
-    "april": "4",
-    "apr": "4",
-    "may": "5",
-    "june": "6",
-    "jun": "6",
-    "july": "7",
-    "jul": "7",
-    "august": "8",
-    "aug": "8",
-    "september": "9",
-    "sep": "9",
-    "sept": "9",
-    "october": "10",
-    "oct": "10",
-    "november": "11",
-    "nov": "11",
-    "december": "12",
-    "dec": "12",
+    **{name: str(number) for name, number in FULL_MONTHS.items()},
+    **{name: str(number) for name, number in MONTH_ABBREVIATIONS.items()},
 }
 _MONTH_PATTERN = "|".join(sorted(_MONTHS, key=len, reverse=True))
 

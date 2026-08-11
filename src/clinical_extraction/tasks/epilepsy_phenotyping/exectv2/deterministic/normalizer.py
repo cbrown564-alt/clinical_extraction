@@ -6,7 +6,11 @@ the SeizureFrequency EntitySpec (e.g. "twice" → "2", "months" → "Month").
 
 from __future__ import annotations
 
-from clinical_extraction.tasks.shared.epilepsy.terms import NUMBER_WORDS
+from clinical_extraction.tasks.shared.epilepsy.terms import (
+    FULL_MONTHS,
+    MONTH_ABBREVIATIONS,
+    NUMBER_WORDS,
+)
 
 # ExECTv2 SeizureFrequency word-numbers (guideline v9 List 11). The shared
 # NUMBER_WORDS maps "few"/"several" to a "multiple" sentinel for task 1; the SF
@@ -55,31 +59,21 @@ def normalize_unit(value: str) -> str:
     return _UNIT_MAP.get(value.strip().lower(), value)
 
 
-_MONTH_MAP: dict[str, str] = {
-    "january": "1",
-    "jan": "1",
-    "february": "2",
-    "feb": "2",
-    "march": "3",
-    "mar": "3",
-    "april": "4",
-    "apr": "4",
-    "may": "5",
-    "june": "6",
-    "jun": "6",
-    "july": "7",
-    "jul": "7",
-    "august": "8",
-    "aug": "8",
-    "september": "9",
-    "sep": "9",
-    "sept": "9",
-    "october": "10",
-    "oct": "10",
-    "november": "11",
-    "nov": "11",
-    "december": "12",
-    "dec": "12",
+# Transcription typos for month names observed in this corpus, shared by every
+# ExECTv2 module that normalizes a matched month token (sf_state_projection,
+# statement_parser). Keep new typo aliases here rather than re-adding them
+# per-callsite.
+MONTH_TYPO_ALIASES: dict[str, str] = {
+    "novemebr": "11",
+    "devember": "12",
+    "feburary": "2",
+    "christmas": "12",
+}
+
+MONTH_MAP: dict[str, str] = {
+    **{name: str(number) for name, number in FULL_MONTHS.items()},
+    **{name: str(number) for name, number in MONTH_ABBREVIATIONS.items()},
+    **MONTH_TYPO_ALIASES,
 }
 
 # Regex alternation of month names (longest first so "sept" beats "sep").
@@ -96,8 +90,8 @@ def normalize_month(value: str) -> str:
     examples are internally inconsistent — 'MonthDate = May' vs 'MonthDate = 5';
     the Appendix canonical form is numeric)."""
     lower = value.strip().lower().rstrip(".")
-    if lower in _MONTH_MAP:
-        return _MONTH_MAP[lower]
+    if lower in MONTH_MAP:
+        return MONTH_MAP[lower]
     if lower.isdigit():
         return lower
     return value

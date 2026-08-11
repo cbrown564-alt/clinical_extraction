@@ -5,6 +5,7 @@ import re
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     normalize_frequency_label,
 )
+from clinical_extraction.tasks.shared.epilepsy.terms import FULL_MONTHS
 
 from .selected_evidence_text import (
     format_prediction_rate as _format_prediction_rate,
@@ -110,25 +111,11 @@ def elapsed_months_in_year_context(context_text: str | None) -> int | None:
     if not context_text:
         return None
     text = normalize_frequency_label(context_text)
-    month_names = {
-        "january": 1,
-        "february": 2,
-        "march": 3,
-        "april": 4,
-        "may": 5,
-        "june": 6,
-        "july": 7,
-        "august": 8,
-        "september": 9,
-        "october": 10,
-        "november": 11,
-        "december": 12,
-    }
-    month_pattern = "|".join(month_names)
+    month_pattern = "|".join(FULL_MONTHS)
     match = re.search(
         rf"\b(?:clinic\s+date|sent)\s*:\s*\d{{1,2}}\s+({month_pattern})\s+\d{{4}}\b",
         text,
     )
     if not match:
         return None
-    return month_names[match.group(1)]
+    return FULL_MONTHS[match.group(1)]

@@ -47,6 +47,7 @@ MONTH_ABBREVIATIONS: dict[str, int] = {
     "jul": 7,
     "aug": 8,
     "sep": 9,
+    "sept": 9,
     "oct": 10,
     "nov": 11,
     "dec": 12,

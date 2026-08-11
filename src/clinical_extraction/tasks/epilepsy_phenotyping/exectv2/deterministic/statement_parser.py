@@ -245,15 +245,6 @@ def _forced_cui_mention(
     )
 
 
-def _norm_month(month: str) -> str:
-    lowered = month.lower()
-    if lowered == "novemebr":
-        return "11"
-    if lowered == "feburary":
-        return "2"
-    return normalize_month(month)
-
-
 def _zero_duration_attrs(sentence: str) -> dict[str, str] | None:
     match = _NO_EVENT_DURATION.search(sentence)
     if not match:
@@ -449,7 +440,7 @@ def _global_statement_mentions(text: str) -> list[PredictedMention]:
                     "UpperNumberOfSeizures": match.group("upper"),
                     "NumberOfTimePeriods": "1",
                     "TimePeriod": normalize_unit(match.group("unit")),
-                    "MonthDate": _norm_month(match.group("month")),
+                    "MonthDate": normalize_month(match.group("month")),
                     "YearDate": match.group("year"),
                     "TimeSince_or_TimeOfEvent": "During",
                 },
@@ -518,7 +509,7 @@ def _global_statement_mentions(text: str) -> list[PredictedMention]:
                 "focal to bilateral convulsive seizure",
                 {
                     "NumberOfSeizures": "1",
-                    "MonthDate": _norm_month(match.group("month")),
+                    "MonthDate": normalize_month(match.group("month")),
                     "YearDate": match.group("year"),
                     "TimeSince_or_TimeOfEvent": "During",
                 },
@@ -546,7 +537,7 @@ def _global_statement_mentions(text: str) -> list[PredictedMention]:
                 "seizures",
                 {
                     "NumberOfSeizures": "0",
-                    "MonthDate": _norm_month(match.group("month")),
+                    "MonthDate": normalize_month(match.group("month")),
                     "DayDate": match.group("day"),
                     "TimeSince_or_TimeOfEvent": "Since",
                 },
@@ -622,7 +613,7 @@ def _global_statement_mentions(text: str) -> list[PredictedMention]:
 
     for match in _LAST_SEIZURE_DATE.finditer(text):
         month = match.group("month")
-        normalized_month = _norm_month(month)
+        normalized_month = normalize_month(month)
         attrs = {"NumberOfSeizures": "0", "MonthDate": normalized_month}
         if match.group("day"):
             attrs["DayDate"] = match.group("day")

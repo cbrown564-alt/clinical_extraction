@@ -15,6 +15,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessmen
     _multi_month_bucket_count_to_float,
     _small_number_to_float,
 )
+from clinical_extraction.tasks.shared.epilepsy.terms import FULL_MONTHS, MONTH_ABBREVIATIONS
 
 
 def _extract_frequency_multi_month_bucket_matches(
@@ -760,32 +761,7 @@ def _month_without_year_to_iso(month: str, *, reference_date: str) -> str | None
 
 
 def _month_number(month: str) -> int | None:
-    lookup = {
-        "jan": 1,
-        "january": 1,
-        "feb": 2,
-        "february": 2,
-        "mar": 3,
-        "march": 3,
-        "apr": 4,
-        "april": 4,
-        "may": 5,
-        "jun": 6,
-        "june": 6,
-        "jul": 7,
-        "july": 7,
-        "aug": 8,
-        "august": 8,
-        "sep": 9,
-        "sept": 9,
-        "september": 9,
-        "oct": 10,
-        "october": 10,
-        "nov": 11,
-        "november": 11,
-        "dec": 12,
-        "december": 12,
-    }
+    lookup = {**FULL_MONTHS, **MONTH_ABBREVIATIONS}
     return lookup.get(month.strip().lower())
 
 
