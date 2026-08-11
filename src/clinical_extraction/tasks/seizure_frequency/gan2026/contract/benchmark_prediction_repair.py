@@ -503,7 +503,7 @@ def _fallback_prediction_repair(text: str) -> str:
         if cluster_match and per_cluster_match:
             denominator = (cluster_match.group("den") or "").strip()
             unit = cluster_match.group("unit")
-            den_text = (denominator + " ").strip() if denominator and denominator != "1" else ""
+            den_text = f"{denominator} " if denominator and denominator != "1" else ""
             return (
                 f"{cluster_match.group('count')} cluster per {den_text}{unit}, "
                 f"{per_cluster_match.group('pc')} per cluster"
@@ -518,7 +518,7 @@ def _fallback_prediction_repair(text: str) -> str:
     if match:
         denominator = (match.group("den") or "").strip()
         unit = match.group("unit")
-        den_text = (denominator + " ").strip() if denominator and denominator != "1" else ""
+        den_text = f"{denominator} " if denominator and denominator != "1" else ""
         return f"{match.group('num')} per {den_text}{unit}"
 
     event_per_window = re.search(

@@ -71,3 +71,11 @@ def test_canonicalize_seizure_free_fuzzy_date_and_months() -> None:
     assert repair_prediction_label("seizure free since March") == "seizure free for multiple month"
     assert repair_prediction_label("seizure free for 3 years") == "seizure free for 3 year"
 
+
+def test_multi_period_denominator_repair() -> None:
+    assert repair_prediction_label("every 2 days on average") == "1 per 2 day"
+    assert repair_prediction_label("every 4 weeks, usually over 1–2 days") == "1 per 4 week"
+    assert repair_prediction_label("seizures every other week") == "1 per 2 week"
+    assert repair_prediction_label("every 8 days on average") == "1 per 8 day"
+
+
