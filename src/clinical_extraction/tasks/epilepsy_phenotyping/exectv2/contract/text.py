@@ -16,15 +16,4 @@ def normalize_phrase(text: str) -> str:
     to those surface differences without relying on (drifted) character offsets."""
 
     lowered = text.translate(_QUOTES).replace("-", " ").lower()
-    lowered = lowered.replace("generalized", "generalised")
-    lowered = lowered.replace("cluster of ", " ").replace("clusters of ", " ")
-    lowered = lowered.replace(" without change in awareness", "").replace(
-        " without changes in awareness", ""
-    )
-    normalized = _WHITESPACE.sub(" ", lowered).strip()
-    words = normalized.split()
-    if words:
-        if words[-1] in ("seizures", "absences", "jerks", "convulsions", "attacks", "episodes"):
-            words[-1] = words[-1].rstrip("s")
-        normalized = " ".join(words)
-    return normalized
+    return _WHITESPACE.sub(" ", lowered).strip()
