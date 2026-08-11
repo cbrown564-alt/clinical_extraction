@@ -591,9 +591,7 @@ def is_redundant_diagnosis_residual_addition(
     """True when a dev residual fragment is already covered by a specific concept."""
 
     concept = canonicalize_diagnosis_concept(text)
-    if concept == "generalised tonic clonic seizures" and _SECONDARY_GENERALISED_EVIDENCE.search(
-        evidence
-    ):
+    if concept == "tonic clonic seizures" and _SECONDARY_GENERALISED_EVIDENCE.search(evidence):
         return True
     selected = {canonicalize_diagnosis_concept(item) for item in selected_texts}
     if model_preserving_policy_candidate and _seizure_concept_is_subsumed(
