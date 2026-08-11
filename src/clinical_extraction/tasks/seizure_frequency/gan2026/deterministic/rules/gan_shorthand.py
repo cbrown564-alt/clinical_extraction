@@ -38,42 +38,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_meta
     RuleGroup,
     RuleSpec,
 )
+from clinical_extraction.tasks.shared.epilepsy.terms import NUMBER_WORDS
 
 # Digit-only range token: matches "5", "2-3", "1–2", "4—6" but NOT word numbers
 # like "nine" or "four". Compact shorthand with word numbers is GAN-dataset-specific
 # notation; real clinical notes use digit counts.
 DIGIT_RANGE_TOKEN = r"(?:\d+(?:\s*[-–—]\s*\d+)?)"
-
-# Legacy word-number table and derived tokens are kept for backwards-compatible
-# helper functions only; they are no longer used in rule patterns after
-# de-overfitting.
-NUMBER_WORDS = {
-    "one": "1",
-    "two": "2",
-    "three": "3",
-    "four": "4",
-    "five": "5",
-    "six": "6",
-    "seven": "7",
-    "eight": "8",
-    "nine": "9",
-    "ten": "10",
-    "eleven": "11",
-    "twelve": "12",
-    "thirteen": "13",
-    "fourteen": "14",
-    "fifteen": "15",
-    "sixteen": "16",
-    "seventeen": "17",
-    "eighteen": "18",
-    "nineteen": "19",
-    "single": "1",
-    "once": "1",
-    "twice": "2",
-    "thrice": "3",
-    "several": "multiple",
-    "few": "multiple",
-}
 
 
 def apply_gan_shorthand_rules(

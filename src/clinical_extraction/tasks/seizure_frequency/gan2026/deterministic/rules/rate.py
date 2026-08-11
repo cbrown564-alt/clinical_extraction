@@ -16,53 +16,20 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_meta
     RuleSpec,
 )
 
-NUMBER_WORDS = {
-    "one": "1",
-    "two": "2",
-    "three": "3",
-    "four": "4",
-    "five": "5",
-    "six": "6",
-    "seven": "7",
-    "eight": "8",
-    "nine": "9",
-    "ten": "10",
-    "eleven": "11",
-    "twelve": "12",
-    "thirteen": "13",
-    "fourteen": "14",
-    "fifteen": "15",
-    "sixteen": "16",
-    "seventeen": "17",
-    "eighteen": "18",
-    "nineteen": "19",
-    "single": "1",
-    "once": "1",
-    "twice": "2",
-    "thrice": "3",
-    "several": "multiple",
-    "few": "multiple",
-}
-NUMBER_WORD_PATTERN = "|".join(NUMBER_WORDS)
-NUMBER_VALUE_TOKEN = rf"(?:multiple|\d+|{NUMBER_WORD_PATTERN})"
-NUMBER_TOKEN = (
-    rf"(?:{NUMBER_VALUE_TOKEN}(?:\s+(?:to|or)\s+{NUMBER_VALUE_TOKEN}|"
-    rf"\s*[-–—]\s*{NUMBER_VALUE_TOKEN})?)"
+from ..deterministic_frequency_tokens import (
+    NUMBER_TOKEN,
+    NUMBER_WORDS,
+    UNIT_TOKEN,
 )
-UNIT_TOKEN = r"day|week|month|quarter|year|days|weeks|months|quarters|years"
-WORD_TOKEN = r"[a-z][a-z\-‑–—]*"
-SEIZURE_TERMS = (
-    r"seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|"
-    r"myoclonics?|jerks?|auras?|status epilepticus"
+from ..deterministic_frequency_tokens import (
+    quarter_month_denominator as _quarter_month_denominator,
 )
-QUALIFIED_SEIZURE_TERMS = rf"(?:{WORD_TOKEN}\s+){{0,4}}(?:{SEIZURE_TERMS})"
-SEIZURE_RATE_PHRASE = (
-    rf"(?:(?:tonic-clonic|myoclonic|convulsive|focal|absence|drop|epileptic|"
-    rf"impaired awareness|focal onset|petit mal|brief)\s+){{0,4}}(?:{SEIZURE_TERMS})"
-)
-SEIZURE_DESCRIPTOR_PHRASE = (
-    r"(?:tonic-clonic|myoclonic|convulsive|focal(?:\s+[a-z][a-z-]*){0,3}|"
-    r"absence|drop|epileptic|impaired awareness|focal onset|petit mal|simple partial)"
+from ..deterministic_rate_terms import (
+    QUALIFIED_SEIZURE_TERMS,
+    SEIZURE_DESCRIPTOR_PHRASE,
+    SEIZURE_RATE_PHRASE,
+    SEIZURE_TERMS,
+    WORD_TOKEN,
 )
 
 
@@ -1251,12 +1218,6 @@ def _rate_label(count: str, unit: str, denominator: str | None = None) -> str:
     return f"{count_value} per {denominator_value} {unit_value}"
 
 
-def _quarter_month_denominator(denominator: str | None) -> str:
-    if denominator in {None, "1"}:
-        return "3"
-    if denominator and denominator.isdigit():
-        return str(int(denominator) * 3)
-    return f"3 {denominator}"
 
 
 def _adverbial_period_unit(value: str) -> str:

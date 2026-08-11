@@ -64,6 +64,15 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repa
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families import (
     usual_interval_label_from_events as _usual_interval_label_from_events,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.parse_diagnostics import (
+    extract_json_object as _extract_json_object,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.parse_diagnostics import (
+    has_blocking_parse_issue as _has_blocking_parse_issue,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.parse_diagnostics import (
+    has_repair_note as _has_repair_note,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label,
@@ -1617,38 +1626,8 @@ def _emit_progress_checkpoint(
     print(json.dumps(progress, sort_keys=True), file=sys.stderr, flush=True)
 
 
-def _has_blocking_parse_issue(errors: Any) -> bool:
-    return any(
-        str(error).startswith(
-            (
-                "invalid_json:",
-                "schema_validation_error:",
-                "unscorable_final_label:",
-                "not_run",
-            )
-        )
-        for error in errors or []
-    )
-
-
-def _has_repair_note(errors: Any) -> bool:
-    return any(str(error).startswith("final_label_repaired:") for error in errors or [])
-
-
 def _has_json_dialect_repair(errors: Any) -> bool:
     return any(str(error).startswith("json_dialect_repaired:") for error in errors or [])
-
-
-def _extract_json_object(raw_output: str) -> str:
-    text = raw_output.strip()
-    fenced = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, flags=re.DOTALL)
-    if fenced:
-        return fenced.group(1)
-    first = text.find("{")
-    last = text.rfind("}")
-    if first != -1 and last != -1 and last > first:
-        return text[first : last + 1]
-    return text
 
 
 def _run_metadata(

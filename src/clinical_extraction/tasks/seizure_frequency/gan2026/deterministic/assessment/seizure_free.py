@@ -28,6 +28,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessmen
     _normalization_source_phrase,
     _source_ids_from_candidates,
 )
+from clinical_extraction.tasks.shared.epilepsy.terms import MONTH_NAME_PATTERN
 
 from .burden_normalization import (
     _is_unrenderable_seizure_free_burden,
@@ -273,11 +274,7 @@ def _same_note_antecedent_contexts(
 
 def _antecedent_date_phrases(context: str) -> list[str]:
     phrases: list[str] = []
-    month = (
-        r"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|"
-        r"Jul(?:y)?|Aug(?:ust)?|Sep(?:t|tember)?|Oct(?:ober)?|Nov(?:ember)?|"
-        r"Dec(?:ember)?)"
-    )
+    month = rf"(?:{MONTH_NAME_PATTERN})"
     patterns = [
         rf"\b\d{{1,2}}(?:\s+|-){month}(?:\s+|-)\d{{4}}\b",
         rf"\b\d{{1,2}}(?:\s+|-){month}\b",

@@ -15,7 +15,11 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessmen
     _multi_month_bucket_count_to_float,
     _small_number_to_float,
 )
-from clinical_extraction.tasks.shared.epilepsy.terms import FULL_MONTHS, MONTH_ABBREVIATIONS
+from clinical_extraction.tasks.shared.epilepsy.terms import (
+    FULL_MONTHS,
+    MONTH_ABBREVIATIONS,
+    MONTH_NAME_PATTERN,
+)
 
 
 def _extract_frequency_multi_month_bucket_matches(
@@ -24,11 +28,7 @@ def _extract_frequency_multi_month_bucket_matches(
     reference_date: str | None,
 ) -> list[dict[str, Any]]:
     count_token = r"\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve"
-    month_token = (
-        r"Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|"
-        r"Jul(?:y)?|Aug(?:ust)?|Sep(?:t|tember)?|Oct(?:ober)?|Nov(?:ember)?|"
-        r"Dec(?:ember)?"
-    )
+    month_token = rf"(?:{MONTH_NAME_PATTERN})"
     pattern = re.compile(
         rf"\b(?P<low>{count_token})"
         rf"(?:\s+to\s+(?P<high>{count_token}))?"
@@ -115,11 +115,7 @@ def _extract_frequency_article_month_bucket_matches(
     *,
     reference_date: str | None,
 ) -> list[dict[str, Any]]:
-    month_token = (
-        r"Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|"
-        r"Jul(?:y)?|Aug(?:ust)?|Sep(?:t|tember)?|Oct(?:ober)?|Nov(?:ember)?|"
-        r"Dec(?:ember)?"
-    )
+    month_token = rf"(?:{MONTH_NAME_PATTERN})"
     event_token = r"seizures?|events?|episodes?|absences?|spasms?|attacks?|jerks?"
     pattern = re.compile(
         rf"\b(?:a|an|another)\s+(?:[A-Za-z][A-Za-z-]*\s+){{0,3}}?"
@@ -199,11 +195,7 @@ def _extract_month_mentions(
     *,
     reference_date: str | None,
 ) -> list[dict[str, Any]]:
-    month_token = (
-        r"Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|"
-        r"Jul(?:y)?|Aug(?:ust)?|Sep(?:t|tember)?|Oct(?:ober)?|Nov(?:ember)?|"
-        r"Dec(?:ember)?"
-    )
+    month_token = rf"(?:{MONTH_NAME_PATTERN})"
     pattern = re.compile(
         rf"\b(?P<month>{month_token})(?:\s+(?P<year>\d{{4}}))?\b",
         flags=re.IGNORECASE,

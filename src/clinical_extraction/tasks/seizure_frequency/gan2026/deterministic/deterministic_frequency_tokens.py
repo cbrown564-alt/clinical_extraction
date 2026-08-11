@@ -2,33 +2,7 @@ from __future__ import annotations
 
 import re
 
-NUMBER_WORDS = {
-    "one": "1",
-    "two": "2",
-    "three": "3",
-    "four": "4",
-    "five": "5",
-    "six": "6",
-    "seven": "7",
-    "eight": "8",
-    "nine": "9",
-    "ten": "10",
-    "eleven": "11",
-    "twelve": "12",
-    "thirteen": "13",
-    "fourteen": "14",
-    "fifteen": "15",
-    "sixteen": "16",
-    "seventeen": "17",
-    "eighteen": "18",
-    "nineteen": "19",
-    "single": "1",
-    "once": "1",
-    "twice": "2",
-    "thrice": "3",
-    "several": "multiple",
-    "few": "multiple",
-}
+from clinical_extraction.tasks.shared.epilepsy.terms import NUMBER_WORDS
 
 NUMBER_WORD_PATTERN = "|".join(NUMBER_WORDS)
 NUMBER_VALUE_TOKEN = rf"(?:multiple|\d+|{NUMBER_WORD_PATTERN})"
@@ -48,7 +22,7 @@ def rate_label(count: str, unit: str, denominator: str | None = None) -> str:
         denominator_value = "2"
     if unit_value == "quarter":
         unit_value = "month"
-        denominator_value = _quarter_month_denominator(denominator_value)
+        denominator_value = quarter_month_denominator(denominator_value)
     if denominator_value in {None, "1"}:
         return f"{count_value} per {unit_value}"
     return f"{count_value} per {denominator_value} {unit_value}"
@@ -153,7 +127,7 @@ def adverbial_period_unit(value: str) -> str:
     }[value.lower()]
 
 
-def _quarter_month_denominator(denominator: str | None) -> str:
+def quarter_month_denominator(denominator: str | None) -> str:
     if denominator in {None, "1"}:
         return "3"
     if denominator and denominator.isdigit():
