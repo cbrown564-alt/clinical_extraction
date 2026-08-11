@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract import label_parser as _labels
+from clinical_extraction.tasks.shared.epilepsy.terms import MONTH_NAME_PATTERN
 
 from ..deterministic.rules.benchmark_repair import (
     BenchmarkRepairStep,
@@ -283,10 +284,7 @@ def _canonicalize_seizure_free(text: str) -> str:
         return f"seizure free for {match.group(1)} {match.group(2)}"
     if re.search(r"\b(year|years)\b", text):
         return "seizure free for multiple year"
-    if re.search(
-        r"\b(month|months|jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)\b",
-        text,
-    ):
+    if re.search(rf"\b(months?|{MONTH_NAME_PATTERN})\b", text):
         return "seizure free for multiple month"
     if re.search(r"seizure free since\b", text):
         return "seizure free for multiple month"
