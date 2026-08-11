@@ -23,12 +23,13 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.data import (  # noqa: E402
     load_records_for_split,
     load_split_manifest,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm import hybrid_structured_events
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (  # noqa: E402
+    hybrid_structured_events,
+)
 
 REPORT_DATE = "2026-08-10"
 
@@ -83,7 +84,7 @@ def _git_note() -> dict[str, Any]:
 
 def load_jsonl_rows(path: Path) -> list[dict[str, Any]]:
     rows = []
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         for line in f:
             if line.strip():
                 rows.append(json.loads(line))
@@ -212,14 +213,27 @@ def render_report(artifact: dict[str, Any]) -> str:
         "# Predeclared test450 Holdout Confirmation: Cluster Burden Rule Tuning",
         "",
         f"Date: {REPORT_DATE}  ",
-        f"Artifact: [`experiments/gan2026_cluster_burden_tuning_test450_20260810.json`](../../experiments/gan2026_cluster_burden_tuning_test450_20260810.json)  ",
+        (
+            "Artifact: [`experiments/gan2026_cluster_burden_tuning_test450_20260810.json`]"
+            "(../../experiments/gan2026_cluster_burden_tuning_test450_20260810.json)  "
+        ),
         "",
         "## Executive Summary",
         "",
-        f"Aggregate-only evaluation of **{summary['total_cells']:,}** model×note cells across all six panel models on the locked `test450` split following cluster burden evidence rule tuning.",
+        (
+            f"Aggregate-only evaluation of **{summary['total_cells']:,}** model×note cells "
+            "across all six panel models on the locked `test450` split following cluster "
+            "burden evidence rule tuning."
+        ),
         "",
-        f"- Overall Purist Accuracy:   **{summary['purist_acc']:.4f}** ({summary['purist_correct']}/{summary['total_cells']})",
-        f"- Overall Pragmatic Accuracy: **{summary['pragmatic_acc']:.4f}** ({summary['pragmatic_correct']}/{summary['total_cells']})",
+        (
+            f"- Overall Purist Accuracy:   **{summary['purist_acc']:.4f}** "
+            f"({summary['purist_correct']}/{summary['total_cells']})"
+        ),
+        (
+            f"- Overall Pragmatic Accuracy: **{summary['pragmatic_acc']:.4f}** "
+            f"({summary['pragmatic_correct']}/{summary['total_cells']})"
+        ),
         "",
         "## Per-Model Aggregate Scores on test450",
         "",
@@ -229,21 +243,28 @@ def render_report(artifact: dict[str, Any]) -> str:
 
     for _slug, m in models.items():
         lines.append(
-            f"| {m['model_display']} | {m['total_cells']} | {m['purist_correct']} | **{m['purist_acc']:.4f}** | {m['pragmatic_correct']} | **{m['pragmatic_acc']:.4f}** |"
+            f"| {m['model_display']} | {m['total_cells']} | {m['purist_correct']} | "
+            f"**{m['purist_acc']:.4f}** | {m['pragmatic_correct']} | "
+            f"**{m['pragmatic_acc']:.4f}** |"
         )
 
     lines.extend([
         "",
         "## Claim Boundary",
         "",
-        "Aggregate-only holdout evaluation on locked `test450`. No row-level note text, identifier, or failure was inspected.",
+        (
+            "Aggregate-only holdout evaluation on locked `test450`. No row-level note "
+            "text, identifier, or failure was inspected."
+        ),
     ])
 
     return "\n".join(lines)
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run test450 holdout evaluation for cluster burden rule tuning.")
+    parser = argparse.ArgumentParser(
+        description="Run test450 holdout evaluation for cluster burden rule tuning."
+    )
     parser.add_argument(
         "--json-out",
         type=Path,
@@ -252,7 +273,10 @@ def main() -> None:
     parser.add_argument(
         "--report-out",
         type=Path,
-        default=REPO_ROOT / "docs/research/gan2026_cluster_burden_tuning_test450_confirmation_2026-08-10.md",
+        default=(
+            REPO_ROOT
+            / "docs/research/gan2026_cluster_burden_tuning_test450_confirmation_2026-08-10.md"
+        ),
     )
     args = parser.parse_args()
 

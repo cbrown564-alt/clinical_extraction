@@ -12,8 +12,17 @@
   "oracle_scope": "producer row, final clinical mention fields, scorer view/count, first owner/failure; runtime stage contract is checked independently against the Decision 0048 manifest",
   "outward_identity_allowlist": ["active_method", "method_id", "pipeline_family", "run_id", "source_method_id", "source_pipeline_family", "scored_view"],
   "normalized_sha256": "081b6a66e38f4cd13aac407e2f654ac7d5803c34e8b755d771daa31c4bc68a55",
-  "independent_prechange_oracle_sha256": "923ef2389a6f65f3f8b98cc4558e97a85d424185d79135b4527ef54330e54530",
+  "independent_prechange_oracle_sha256": "f6210158b8ae26cd4c756df24296d56b6a87eb473e815e29fce2039a1bc6744c",
   "superseded_oracles": [
+    {
+      "sha256": "923ef2389a6f65f3f8b98cc4558e97a85d424185d79135b4527ef54330e54530",
+      "held_until": "2026-08-11",
+      "superseded_by": "disclosed override landing the dead Diagnosis subsumption-guard fix",
+      "change": "is_redundant_diagnosis_residual_addition's subsumption guard compared against \"generalised tonic clonic seizures\", a string canonicalize_diagnosis_concept can never produce (it always strips \"generalised\"), so the guard was unreachable dead code. Making the comparison reachable rescues 15 dev140 cells and loses 4, all on one letter (EA0021) where gold wants both the plain and \"secondary generalised\" tonic-clonic labels simultaneously.",
+      "why": "The predeclared dev140 fix study REFUTED landing this by its own strict \"zero help lost\" criterion, but the user reviewed the specific EA0021-shaped regression and made an explicit, informed decision to land it anyway because the net dev140 gain was judged worth the disclosed tradeoff. An informational test59 check (not a Phase 2 confirmation, since Phase 1 had already failed) found the fix currently holdout-inert: 0/352 cells changed, no test59 letter triggers this heading pattern.",
+      "evidence": "commit 41165adc2153d724e8c38b00a72e5981023f741a (fix(exectv2): land dead subsumption-guard fix by explicit disclosed override)",
+      "scope_note": "This oracle no longer certifies parity with the pre-fix Diagnosis subsumption-guard behavior. It now pins the post-fix assembly for exectv2_llm_with_rules; SeizureFrequency, Prescription and Investigations parity is unaffected."
+    },
     {
       "sha256": "8f19d9aa627fb72b5e4c8bb365ac6a995c46300ccd306f9a7fd46646932acbdf",
       "held_until": "2026-08-10",

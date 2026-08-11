@@ -71,8 +71,9 @@ def _fixed_is_redundant(
     """Same as the shipped function, with the one dead comparison corrected."""
 
     concept = canonicalize_diagnosis_concept(text)
-    if concept == "tonic clonic seizures" and diagnosis_dictionary._SECONDARY_GENERALISED_EVIDENCE.search(
-        evidence
+    if (
+        concept == "tonic clonic seizures"
+        and diagnosis_dictionary._SECONDARY_GENERALISED_EVIDENCE.search(evidence)
     ):
         return True
     selected = {canonicalize_diagnosis_concept(item) for item in selected_texts}
@@ -178,7 +179,11 @@ def build_artifact() -> dict[str, Any]:
         precision = tp / (tp + fp) if tp + fp else 0.0
         recall = tp / (tp + fn) if tp + fn else 0.0
         f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
-        return {"precision": round(precision, 4), "recall": round(recall, 4), "micro_f1": round(f1, 4)}
+        return {
+            "precision": round(precision, 4),
+            "recall": round(recall, 4),
+            "micro_f1": round(f1, 4),
+        }
 
     by_model: dict[str, Any] = {}
     for slug in per_model_n:
@@ -236,7 +241,8 @@ def main() -> None:
     for cell in artifact["cells"]:
         print(
             f"  CHANGED {cell['model_slug']} {cell['letter_id']} {cell['effect']} "
-            f"baseline={cell['baseline_keys']} candidate={cell['candidate_keys']} gold={cell['gold_keys']}"
+            f"baseline={cell['baseline_keys']} candidate={cell['candidate_keys']} "
+            f"gold={cell['gold_keys']}"
         )
 
 

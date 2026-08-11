@@ -19,7 +19,7 @@ import argparse
 import importlib.util
 import json
 import subprocess
-from collections import Counter, defaultdict
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -28,7 +28,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
     AblationConfig,
-    RuleGroup,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
@@ -279,7 +278,7 @@ def build_decomposition_audit() -> dict[str, Any]:
 
     # Load baseline model rows
     model_rows: dict[str, list[dict[str, Any]]] = {}
-    for slug, display in hs.MODEL_SPECS:
+    for slug, _display in hs.MODEL_SPECS:
         rows = hs._read_jsonl(hs.GAN_LLM_ONLY_DIR / f"{slug}--llm_with_rules.jsonl")
         model_rows[slug] = rows
 
@@ -342,7 +341,7 @@ def build_decomposition_audit() -> dict[str, Any]:
 
         exemplars: list[dict[str, Any]] = []
 
-        for slug, display in hs.MODEL_SPECS:
+        for slug, _display in hs.MODEL_SPECS:
             model_baseline_p = 0
             model_loo_p = 0
             model_cells_count = 0
@@ -379,8 +378,10 @@ def build_decomposition_audit() -> dict[str, Any]:
                     model_changed_counts[slug] += 1
                     effect = "neutral_change"
                     # Note: LOO removes the rule.
-                    # If LOO is correct but baseline was wrong -> Removing rule HELPS (Rule was harmful)
-                    # If LOO is wrong but baseline was correct -> Removing rule HARMS (Rule was helpful)
+                    # If LOO is correct but baseline was wrong -> Removing rule HELPS
+                    # (Rule was harmful)
+                    # If LOO is wrong but baseline was correct -> Removing rule HARMS
+                    # (Rule was helpful)
                     if loo_p and not base_p:
                         help_count += 1  # Removing rule helped (Rule was harmful)
                         effect = "rescue_if_removed"
@@ -414,7 +415,8 @@ def build_decomposition_audit() -> dict[str, Any]:
         pragmatic_delta = pragmatic_acc - baseline_pragmatic_acc
 
         # Verdict logic for LOO removal
-        # If removing rule raises or keeps accuracy (delta >= 0) and harms <= rescues -> Remove candidate
+        # If removing rule raises or keeps accuracy (delta >= 0) and harms <= rescues
+        # -> Remove candidate
         if purist_delta > 0.0005:
             verdict = "REMOVE (Rule is Net Harmful)"
         elif purist_delta < -0.002:
@@ -450,7 +452,10 @@ def build_decomposition_audit() -> dict[str, Any]:
     return {
         "schema_version": "gan2026.rule_decomposition_and_mechanism_audit.v1",
         "date": REPORT_DATE,
-        "protocol": "docs/research/gan2026_rule_decomposition_and_mechanism_audit_protocol_2026-08-10.md",
+        "protocol": (
+            "docs/research/gan2026_rule_decomposition_and_mechanism_audit_protocol_"
+            "2026-08-10.md"
+        ),
         "git": _git_note(),
         "dataset": "Gan 2026 Seizure Frequency",
         "split": "dev750 (validation)",
@@ -476,19 +481,38 @@ def render_markdown_report(artifact: dict[str, Any]) -> str:
         "",
         f"Date: {REPORT_DATE}  ",
         "Status: development leave-one-out study complete  ",
-        "Protocol: [predeclared protocol](gan2026_rule_decomposition_and_mechanism_audit_protocol_2026-08-10.md)  ",
-        "Artifact: [`experiments/gan2026_rule_decomposition_and_mechanism_audit_20260810.json`](../../experiments/gan2026_rule_decomposition_and_mechanism_audit_20260810.json)",
+        (
+            "Protocol: [predeclared protocol]"
+            "(gan2026_rule_decomposition_and_mechanism_audit_protocol_2026-08-10.md)  "
+        ),
+        (
+            "Artifact: [`experiments/gan2026_rule_decomposition_and_mechanism_audit_20260810.json`]"
+            "(../../experiments/gan2026_rule_decomposition_and_mechanism_audit_20260810.json)"
+        ),
         "",
         "## Executive Summary",
         "",
-        f"Ordered no-call replay of **{summary['total_cells']:,}** model×note cells across the six retained panel models on Gan `dev750`.",
-        f"Baseline Purist label accuracy: **{summary['baseline_purist_acc']:.4f}**; Pragmatic accuracy: **{summary['baseline_pragmatic_acc']:.4f}**.",
+        (
+            f"Ordered no-call replay of **{summary['total_cells']:,}** model×note cells "
+            "across the six retained panel models on Gan `dev750`."
+        ),
+        (
+            f"Baseline Purist label accuracy: **{summary['baseline_purist_acc']:.4f}**; "
+            f"Pragmatic accuracy: **{summary['baseline_pragmatic_acc']:.4f}**."
+        ),
         "",
-        "Each post-processing repair rule was ablated in leave-one-out (LOO) mode to isolate its individual clinical effect (`help`, `harm`, accuracy delta, and per-model sign checks).",
+        (
+            "Each post-processing repair rule was ablated in leave-one-out (LOO) mode to "
+            "isolate its individual clinical effect (`help`, `harm`, accuracy delta, and "
+            "per-model sign checks)."
+        ),
         "",
         "## Leave-One-Out Repair Stage Decomposition",
         "",
-        "| Stage ID | Description | Cells Changed | Removal Rescue | Removal Harm | Purist Acc Δ | Verdict |",
+        (
+            "| Stage ID | Description | Cells Changed | Removal Rescue | Removal Harm | "
+            "Purist Acc Δ | Verdict |"
+        ),
         "| --- | --- | ---: | ---: | ---: | ---: | --- |",
     ]
 
@@ -497,14 +521,19 @@ def render_markdown_report(artifact: dict[str, Any]) -> str:
         p_delta = st["purist_delta_if_removed"]
         delta_str = f"+{p_delta:.4f}" if p_delta > 0 else f"{p_delta:.4f}"
         lines.append(
-            f"| `{stage_id}` | {st['description']} | {st['changed_cells']} | {st['removal_help_count']} | {st['removal_harm_count']} | {delta_str} | **{st['verdict']}** |"
+            f"| `{stage_id}` | {st['description']} | {st['changed_cells']} | "
+            f"{st['removal_help_count']} | {st['removal_harm_count']} | {delta_str} | "
+            f"**{st['verdict']}** |"
         )
 
     lines.extend([
         "",
         "## Per-Model Accuracy Sign Checks (Purist Δ if Stage Removed)",
         "",
-        "| Stage ID | GPT-5.6 Sol | GPT-5.6 Luna | GPT-4.1-mini | DeepSeek V4 | Qwen 3.6 | Gemma 4 |",
+        (
+            "| Stage ID | GPT-5.6 Sol | GPT-5.6 Luna | GPT-4.1-mini | DeepSeek V4 | "
+            "Qwen 3.6 | Gemma 4 |"
+        ),
         "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
     ])
 
@@ -512,23 +541,52 @@ def render_markdown_report(artifact: dict[str, Any]) -> str:
         st = stages[stage_id]
         m = st["per_model_purist_deltas"]
         lines.append(
-            f"| `{stage_id}` | {m.get('gpt56sol', 0.0):+.4f} | {m.get('gpt56luna', 0.0):+.4f} | {m.get('gpt41mini', 0.0):+.4f} | {m.get('deepseek_v4_flash', 0.0):+.4f} | {m.get('qwen36_35b', 0.0):+.4f} | {m.get('gemma4_26b', 0.0):+.4f} |"
+            f"| `{stage_id}` | {m.get('gpt56sol', 0.0):+.4f} | "
+            f"{m.get('gpt56luna', 0.0):+.4f} | {m.get('gpt41mini', 0.0):+.4f} | "
+            f"{m.get('deepseek_v4_flash', 0.0):+.4f} | {m.get('qwen36_35b', 0.0):+.4f} | "
+            f"{m.get('gemma4_26b', 0.0):+.4f} |"
         )
 
     lines.extend([
         "",
         "## Audit Findings & Recommended Actions",
         "",
-        "1. **`repair.selected_evidence` (Evidence Reconcile)**: Crucial stage. Removing it causes mass accuracy loss across all 6 models (Purist Δ -0.3478). **KEEP**.",
-        "2. **`repair.monthly_diary` (Monthly Diary Log)**: Highly effective clinical selection rule (+0.1293 Purist lift). **KEEP**.",
-        "3. **`repair.breakthrough` (Breakthrough Status)**: Removing this rule **IMPROVES** Purist accuracy (+0.0022), eliminating 10 false-positive unknown/seizure-free over-fires with zero harm. **REMOVE**.",
-        "4. **`repair.elapsed_anchor` (Elapsed Date Anchor)**: Solid free-interval derivation (+0.0162 Purist lift). **KEEP**.",
-        "5. **`repair.usual_interval` & `repair.dated_sequence`**: Positive secondary repairs. **KEEP**.",
-        "6. **Inert / Zero-Fire Stages**: `repair.typical_over_ytd`, `repair.non_epileptic`, `repair.residual_jerk`, `repair.post_change_burst` show 0 cell changes on `dev750`. Retain as structural guards or prune for code simplicity.",
+        (
+            "1. **`repair.selected_evidence` (Evidence Reconcile)**: Crucial stage. "
+            "Removing it causes mass accuracy loss across all 6 models (Purist Δ "
+            "-0.3478). **KEEP**."
+        ),
+        (
+            "2. **`repair.monthly_diary` (Monthly Diary Log)**: Highly effective "
+            "clinical selection rule (+0.1293 Purist lift). **KEEP**."
+        ),
+        (
+            "3. **`repair.breakthrough` (Breakthrough Status)**: Removing this rule "
+            "**IMPROVES** Purist accuracy (+0.0022), eliminating 10 false-positive "
+            "unknown/seizure-free over-fires with zero harm. **REMOVE**."
+        ),
+        (
+            "4. **`repair.elapsed_anchor` (Elapsed Date Anchor)**: Solid free-interval "
+            "derivation (+0.0162 Purist lift). **KEEP**."
+        ),
+        (
+            "5. **`repair.usual_interval` & `repair.dated_sequence`**: Positive "
+            "secondary repairs. **KEEP**."
+        ),
+        (
+            "6. **Inert / Zero-Fire Stages**: `repair.typical_over_ytd`, "
+            "`repair.non_epileptic`, `repair.residual_jerk`, `repair.post_change_burst` "
+            "show 0 cell changes on `dev750`. Retain as structural guards or prune for "
+            "code simplicity."
+        ),
         "",
         "## Claim Boundary",
         "",
-        "Development leave-one-out decomposition on Gan `dev750` across 6 retained structured model sidecars. Ordered no-call replay. `test450` remains locked and uninspected.",
+        (
+            "Development leave-one-out decomposition on Gan `dev750` across 6 retained "
+            "structured model sidecars. Ordered no-call replay. `test450` remains "
+            "locked and uninspected."
+        ),
     ])
 
     return "\n".join(lines)
@@ -541,12 +599,18 @@ def main() -> None:
     parser.add_argument(
         "--json-out",
         type=Path,
-        default=REPO_ROOT / "experiments/gan2026_rule_decomposition_and_mechanism_audit_20260810.json",
+        default=(
+            REPO_ROOT
+            / "experiments/gan2026_rule_decomposition_and_mechanism_audit_20260810.json"
+        ),
     )
     parser.add_argument(
         "--report-out",
         type=Path,
-        default=REPO_ROOT / "docs/research/gan2026_rule_decomposition_and_mechanism_audit_2026-08-10.md",
+        default=(
+            REPO_ROOT
+            / "docs/research/gan2026_rule_decomposition_and_mechanism_audit_2026-08-10.md"
+        ),
     )
     args = parser.parse_args()
 

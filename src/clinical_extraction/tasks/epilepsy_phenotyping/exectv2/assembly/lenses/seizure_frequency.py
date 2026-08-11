@@ -15,18 +15,13 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lens_ops im
     LensPolicy,
     LensResult,
     evidence_is_grounded,
-    finding_with_text_attributes,
     source_for_residual,
-    text_counts,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     SEIZURE_FREQUENCY,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import (
     normalize_phrase,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
-    standard_dictionary as sd,
 )
 
 from .base import SeizureFrequencyLens, ThinArtifactLens

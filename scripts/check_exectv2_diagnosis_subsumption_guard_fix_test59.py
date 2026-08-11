@@ -38,7 +38,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
     annotation_from_mapping,
     clinical_headline_scores,
-    headline_keys,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -78,8 +77,9 @@ def _fixed_is_redundant(
     model_preserving_policy_candidate: bool = False,
 ) -> bool:
     concept = canonicalize_diagnosis_concept(text)
-    if concept == "tonic clonic seizures" and diagnosis_dictionary._SECONDARY_GENERALISED_EVIDENCE.search(
-        evidence
+    if (
+        concept == "tonic clonic seizures"
+        and diagnosis_dictionary._SECONDARY_GENERALISED_EVIDENCE.search(evidence)
     ):
         return True
     selected = {canonicalize_diagnosis_concept(item) for item in selected_texts}

@@ -144,7 +144,9 @@ def _dedup_keys(mentions: list[dict[str, Any]]) -> list[tuple[Any, str]]:
     return list(dict.fromkeys(_mention_key(m) for m in mentions))
 
 
-def _apply_guard(mentions: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+def _apply_guard(
+    mentions: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """Return (candidate_sf_mentions, per-mention classification records)."""
 
     kept: list[dict[str, Any]] = []
@@ -170,7 +172,9 @@ def _apply_guard(mentions: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], 
     return kept, records
 
 
-def _mentions_with_field(letter_id: str, note_text: str, mentions: list[dict[str, Any]]) -> ExectLetter:
+def _mentions_with_field(
+    letter_id: str, note_text: str, mentions: list[dict[str, Any]]
+) -> ExectLetter:
     return ExectLetter(
         letter_id=letter_id,
         note_text=note_text,
@@ -270,7 +274,10 @@ def build_artifact() -> dict[str, Any]:
                 model_classification_counts[record["classification"]] += 1
                 pooled_classification_counts[record["classification"]] += 1
 
-            baseline_row = {"gold_mentions": row["gold_mentions"], "predicted_mentions": row["predicted_mentions"]}
+            baseline_row = {
+                "gold_mentions": row["gold_mentions"],
+                "predicted_mentions": row["predicted_mentions"],
+            }
             candidate_row = {
                 "gold_mentions": row["gold_mentions"],
                 "predicted_mentions": other_mentions + candidate_sf,
@@ -324,7 +331,9 @@ def build_artifact() -> dict[str, Any]:
 
             # Missed-unknown diagnostic arm.
             missing_unknown_keys = [
-                key for key in gold_keys_full if key not in set(pred_keys_full) and key[1] == "unknown"
+                key
+                for key in gold_keys_full
+                if key not in set(pred_keys_full) and key[1] == "unknown"
             ]
             if missing_unknown_keys:
                 model_missed_unknown_before += len(missing_unknown_keys)
@@ -332,10 +341,15 @@ def build_artifact() -> dict[str, Any]:
                 # Candidate: insert an unknown-state mention for each dropped
                 # active-rate mention's type_key, if that recovers a missing
                 # unknown key.
+                active_rate_pred_mentions = [
+                    mm
+                    for mm in pred_mentions
+                    if _frequency_state(annotation_from_mapping(mm).attributes) == "active-rate"
+                ]
                 inferred_type_keys = {
                     _frequency_type_key(annotation_from_mapping(m))
                     for m, rec in zip(
-                        [mm for mm in pred_mentions if _frequency_state(annotation_from_mapping(mm).attributes) == "active-rate"],
+                        active_rate_pred_mentions,
                         records,
                         strict=False,
                     )
@@ -430,7 +444,9 @@ def build_artifact() -> dict[str, Any]:
         "pooled_rescue_cells": pooled_rescue,
         "pooled_harm_cells": pooled_harm,
         "pooled_neutral_changed_cells": pooled_neutral,
-        "pooled_baseline_exact_rate": round(pooled_baseline_exact / pooled_n, 4) if pooled_n else None,
+        "pooled_baseline_exact_rate": (
+            round(pooled_baseline_exact / pooled_n, 4) if pooled_n else None
+        ),
         "pooled_guard_exact_rate": round(pooled_guard_exact / pooled_n, 4) if pooled_n else None,
         "pooled_baseline_micro": pooled_baseline_micro,
         "pooled_guard_micro": pooled_guard_micro,
@@ -467,7 +483,10 @@ def main() -> None:
     print(f"Wrote {args.output}")
     print(f"pooled_extra_active_rate_keys={artifact['pooled_extra_active_rate_keys']}")
     print(f"pooled_active_rate_evidence_classification={artifact['pooled_active_rate_evidence_classification']}")
-    print(f"pooled_rescue={artifact['pooled_rescue_cells']} pooled_harm={artifact['pooled_harm_cells']}")
+    print(
+        f"pooled_rescue={artifact['pooled_rescue_cells']} "
+        f"pooled_harm={artifact['pooled_harm_cells']}"
+    )
     print(f"pooled_exactness_delta={artifact['development_selection']['pooled_exactness_delta']}")
     print(f"pooled_micro_f1_delta={artifact['development_selection']['pooled_micro_f1_delta']}")
     print(f"development_selection_met={artifact['development_selection']['met']}")

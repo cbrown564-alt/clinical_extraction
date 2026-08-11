@@ -27,15 +27,13 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    label_to_frequency_record,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.data import (  # noqa: E402
     load_records_for_split,
     load_split_manifest,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm import hybrid_structured_events
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (  # noqa: E402
+    hybrid_structured_events,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 REPORT_DATE = "2026-08-10"
@@ -91,7 +89,7 @@ def _git_note() -> dict[str, Any]:
 
 def load_jsonl_rows(path: Path) -> list[dict[str, Any]]:
     rows = []
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         for line in f:
             if line.strip():
                 rows.append(json.loads(line))
@@ -214,7 +212,10 @@ def run_holdout_confirmation() -> dict[str, Any]:
     return {
         "schema_version": "gan2026.minor_rules_pruning_test450_confirmation.v1",
         "date": REPORT_DATE,
-        "protocol": "docs/research/gan2026_minor_rules_pruning_test450_confirmation_protocol_2026-08-10.md",
+        "protocol": (
+            "docs/research/gan2026_minor_rules_pruning_test450_confirmation_protocol_"
+            "2026-08-10.md"
+        ),
         "git": _git_note(),
         "dataset": "Gan 2026 Seizure Frequency",
         "split": "test450 (locked aggregate-only split)",
@@ -230,7 +231,11 @@ def run_holdout_confirmation() -> dict[str, Any]:
             "pruned_pragmatic_acc": round(overall_p_pragmatic, 4),
             "pragmatic_delta": round(overall_p_pragmatic - overall_b_pragmatic, 4),
             "confirmed": confirmed,
-            "status": "CONFIRMED (Simplification Retains/Improves Accuracy)" if confirmed else "REJECTED",
+            "status": (
+                "CONFIRMED (Simplification Retains/Improves Accuracy)"
+                if confirmed
+                else "REJECTED"
+            ),
         },
         "per_model_results": model_stats,
         "claim_boundary": (
@@ -249,47 +254,80 @@ def render_report(artifact: dict[str, Any]) -> str:
         "",
         f"Date: {REPORT_DATE}  ",
         f"Status: **{summary['status']}**  ",
-        "Protocol: [predeclared protocol](gan2026_minor_rules_pruning_test450_confirmation_protocol_2026-08-10.md)  ",
-        f"Artifact: [`experiments/gan2026_minor_rules_pruning_test450_20260810.json`](../../experiments/gan2026_minor_rules_pruning_test450_20260810.json)",
+        (
+            "Protocol: [predeclared protocol]"
+            "(gan2026_minor_rules_pruning_test450_confirmation_protocol_2026-08-10.md)  "
+        ),
+        (
+            "Artifact: [`experiments/gan2026_minor_rules_pruning_test450_20260810.json`]"
+            "(../../experiments/gan2026_minor_rules_pruning_test450_20260810.json)"
+        ),
         "",
         "## Executive Summary",
         "",
-        f"Predeclared aggregate-only replay of **{summary['total_cells']:,}** model×note cells across the six panel models on the locked `test450` split.",
-        f"Pruned rules: `repair.typical_over_ytd` and `repair.non_epileptic`.",
+        (
+            f"Predeclared aggregate-only replay of **{summary['total_cells']:,}** "
+            "model×note cells across the six panel models on the locked `test450` split."
+        ),
+        "Pruned rules: `repair.typical_over_ytd` and `repair.non_epileptic`.",
         "",
-        f"- Overall Baseline Purist Acc: **{summary['baseline_purist_acc']:.4f}** ({summary['baseline_purist_correct']}/{summary['total_cells']})",
-        f"- Overall Pruned Purist Acc:   **{summary['pruned_purist_acc']:.4f}** ({summary['pruned_purist_correct']}/{summary['total_cells']})",
+        (
+            f"- Overall Baseline Purist Acc: **{summary['baseline_purist_acc']:.4f}** "
+            f"({summary['baseline_purist_correct']}/{summary['total_cells']})"
+        ),
+        (
+            f"- Overall Pruned Purist Acc:   **{summary['pruned_purist_acc']:.4f}** "
+            f"({summary['pruned_purist_correct']}/{summary['total_cells']})"
+        ),
         f"- **Purist Delta**:            **{summary['purist_delta']:+.4f}**",
         f"- Result:                      **{summary['status']}**",
         "",
         "## Per-Model Aggregate Scores on test450",
         "",
-        "| Model | Baseline Purist Acc | Pruned Purist Acc | Purist Delta | Baseline Pragmatic Acc | Pruned Pragmatic Acc |",
+        (
+            "| Model | Baseline Purist Acc | Pruned Purist Acc | Purist Delta | "
+            "Baseline Pragmatic Acc | Pruned Pragmatic Acc |"
+        ),
         "| --- | ---: | ---: | ---: | ---: | ---: |",
     ]
 
-    for slug, m in models.items():
+    for _slug, m in models.items():
         lines.append(
-            f"| {m['model_display']} | {m['baseline_purist_acc']:.4f} ({m['baseline_purist_correct']}/450) | {m['pruned_purist_acc']:.4f} ({m['pruned_purist_correct']}/450) | **{m['purist_delta']:+.4f}** | {m['baseline_pragmatic_acc']:.4f} | {m['pruned_pragmatic_acc']:.4f} |"
+            f"| {m['model_display']} | {m['baseline_purist_acc']:.4f} "
+            f"({m['baseline_purist_correct']}/450) | {m['pruned_purist_acc']:.4f} "
+            f"({m['pruned_purist_correct']}/450) | **{m['purist_delta']:+.4f}** | "
+            f"{m['baseline_pragmatic_acc']:.4f} | {m['pruned_pragmatic_acc']:.4f} |"
         )
 
     lines.extend([
         "",
         "## Conclusion & Recommendation",
         "",
-        f"Ablating the two smallest minor-effect rules (`repair.typical_over_ytd` and `repair.non_epileptic`) passed the predeclared holdout confirmation on `test450` with a net Purist accuracy delta of **{summary['purist_delta']:+.4f}**.",
-        "Simplifying the pipeline by removing these rules maintains clinical extraction accuracy while reducing deterministic code complexity.",
+        (
+            "Ablating the two smallest minor-effect rules (`repair.typical_over_ytd` and "
+            "`repair.non_epileptic`) passed the predeclared holdout confirmation on "
+            f"`test450` with a net Purist accuracy delta of **{summary['purist_delta']:+.4f}**."
+        ),
+        (
+            "Simplifying the pipeline by removing these rules maintains clinical "
+            "extraction accuracy while reducing deterministic code complexity."
+        ),
         "",
         "## Claim Boundary",
         "",
-        "Aggregate-only holdout confirmation on locked `test450`. No row-level note text, identifier, or failure was inspected.",
+        (
+            "Aggregate-only holdout confirmation on locked `test450`. No row-level note "
+            "text, identifier, or failure was inspected."
+        ),
     ])
 
     return "\n".join(lines)
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run test450 holdout confirmation for minor rules pruning.")
+    parser = argparse.ArgumentParser(
+        description="Run test450 holdout confirmation for minor rules pruning."
+    )
     parser.add_argument(
         "--json-out",
         type=Path,
@@ -298,7 +336,10 @@ def main() -> None:
     parser.add_argument(
         "--report-out",
         type=Path,
-        default=REPO_ROOT / "docs/research/gan2026_minor_rules_pruning_test450_confirmation_2026-08-10.md",
+        default=(
+            REPO_ROOT
+            / "docs/research/gan2026_minor_rules_pruning_test450_confirmation_2026-08-10.md"
+        ),
     )
     args = parser.parse_args()
 

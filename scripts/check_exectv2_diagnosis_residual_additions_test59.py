@@ -71,7 +71,9 @@ def _dev140_reference_firing_rate() -> float:
 
     letters = list(load_letters_for_split("dev"))
     fires = sum(
-        1 for letter in letters if diagnosis_dictionary.diagnosis_residual_additions(letter.note_text)
+        1
+        for letter in letters
+        if diagnosis_dictionary.diagnosis_residual_additions(letter.note_text)
     )
     return fires / len(letters) if letters else 0.0
 

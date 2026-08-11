@@ -23,7 +23,6 @@ from .base import (
 from .diagnosis import DiagnosisDictionaryLens, DiagnosisHeadingRecoveryLens
 from .investigations import InvestigationsDictionaryLens
 from .prescription import PrescriptionDictionaryLens
-from .seizure_frequency import SeizureFrequencyDictionaryLens
 
 
 def lens_from_manifest(config: LensManifest) -> EntityLens:
