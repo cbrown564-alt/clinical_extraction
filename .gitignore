@@ -1,6 +1,7 @@
 .DS_Store
 Thumbs.db
 Desktop.ini
+~$*
 .env
 .venv/
 __pycache__/
