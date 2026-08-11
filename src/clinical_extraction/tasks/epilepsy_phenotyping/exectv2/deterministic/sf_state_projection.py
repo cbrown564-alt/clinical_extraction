@@ -342,6 +342,43 @@ def _repair_state_mention(mention: Mapping[str, Any]) -> dict[str, Any] | Mappin
         repaired_attrs["TimeSince_or_TimeOfEvent"] = "During"
         changed = True
 
+    # Rule 4: Active rate mention with historical onset framing -> Strip onset YearDate / Age
+    has_onset = (
+        "started in" in lower_evidence
+        or "since age" in lower_evidence
+        or "since 20" in lower_evidence
+    )
+    if num_sz and num_sz != "0" and has_duration and has_onset:
+        repaired_attrs.pop("TimeSince_or_TimeOfEvent", None)
+        repaired_attrs.pop("YearDate", None)
+        repaired_attrs.pop("AgeLower", None)
+        changed = True
+
+    # Rule 5: Seizure-free mention (NumberOfSeizures == '0') -> TimeSince_or_TimeOfEvent is Since
+    if num_sz == "0" and tso == "During":
+        repaired_attrs["TimeSince_or_TimeOfEvent"] = "Since"
+        changed = True
+
+    # Rule 7: Strip FrequencyChange from concrete numeric count mentions
+    has_count = any(
+        k in attrs
+        for k in ("NumberOfSeizures", "LowerNumberOfSeizures", "UpperNumberOfSeizures")
+    )
+    if has_count and "FrequencyChange" in repaired_attrs:
+        repaired_attrs.pop("FrequencyChange")
+        changed = True
+
+    # Rule 8: Strip TimePeriod & NumberOfTimePeriods when PointInTime is present
+    if point and "TimePeriod" in repaired_attrs:
+        repaired_attrs.pop("TimePeriod", None)
+        repaired_attrs.pop("NumberOfTimePeriods", None)
+        changed = True
+
+    # Rule 9: Strip TimeSince_or_TimeOfEvent when DayDate is present
+    if "DayDate" in attrs and "TimeSince_or_TimeOfEvent" in repaired_attrs:
+        repaired_attrs.pop("TimeSince_or_TimeOfEvent", None)
+        changed = True
+
     if changed:
         repaired = _copy_mention(mention)
         repaired["attributes"] = repaired_attrs

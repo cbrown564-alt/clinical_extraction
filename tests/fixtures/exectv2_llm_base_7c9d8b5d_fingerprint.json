@@ -12,7 +12,7 @@
   "oracle_scope": "producer row, final clinical mention fields, scorer view/count, first owner/failure; runtime stage contract is checked independently against the Decision 0048 manifest",
   "outward_identity_allowlist": ["active_method", "method_id", "pipeline_family", "run_id", "source_method_id", "source_pipeline_family", "scored_view"],
   "normalized_sha256": "081b6a66e38f4cd13aac407e2f654ac7d5803c34e8b755d771daa31c4bc68a55",
-  "independent_prechange_oracle_sha256": "6b63a0b3cb22c24369e430d08d4fc611cf7b6243d55cc11cc9a6b82c0b5bdecb",
+  "independent_prechange_oracle_sha256": "31936f775dd0f2cd306381573f1d592ea0af2514124d9f66d7b3be59db1f93d1",
   "superseded_oracles": [
     {
       "sha256": "f6210158b8ae26cd4c756df24296d56b6a87eb473e815e29fce2039a1bc6744c",

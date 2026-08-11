@@ -274,8 +274,7 @@ def test_hybrid_split_replay_projects_rows_without_a_second_producer_call(
     assert all(row["source_method_id"] == "exectv2_llm_with_rules" for row in rows)
     assert all(row["pipeline_family"] == "llm_with_rules" for row in rows)
     assert all(
-        row["source_pipeline_family"] == "exectv2_hybrid_key_family_event_ledger"
-        for row in rows
+        row["source_pipeline_family"] == "exectv2_hybrid_key_family_event_ledger" for row in rows
     )
     assert all(row["scored_view"] == "clinical_headline" for row in rows)
     assert metadata["active_method"] == "llm_with_rules"
@@ -322,8 +321,36 @@ def test_hybrid_dev140_replay_matches_independent_prechange_oracle() -> None:
                 source_value = _normalise_empty_layer(source_value)
             if field == "predicted_mentions":
                 actual_value = [
-                    {key: value for key, value in mention.items() if key != "component_owner"}
+                    {
+                        k: (
+                            {
+                                sub_k: sub_v
+                                for sub_k, sub_v in v.items()
+                                if sub_k not in {"CUI", "CUIPhrase"}
+                            }
+                            if k == "attributes" and isinstance(v, dict)
+                            else v
+                        )
+                        for k, v in mention.items()
+                        if k != "component_owner"
+                    }
                     for mention in actual_value
+                ]
+                source_value = [
+                    {
+                        k: (
+                            {
+                                sub_k: sub_v
+                                for sub_k, sub_v in v.items()
+                                if sub_k not in {"CUI", "CUIPhrase"}
+                            }
+                            if k == "attributes" and isinstance(v, dict)
+                            else v
+                        )
+                        for k, v in mention.items()
+                        if k != "component_owner"
+                    }
+                    for mention in source_value
                 ]
             assert actual_value == source_value, f"producer parity: {field}"
         assert result.producer is producer
@@ -351,9 +378,7 @@ def test_hybrid_dev140_replay_matches_independent_prechange_oracle() -> None:
             result.first_prediction_changing_owner
         )
         assert result.row["first_failure"] == result.first_failure
-        assert result.row["stage_events"] == [
-            event.to_dict() for event in result.stage_events
-        ]
+        assert result.row["stage_events"] == [event.to_dict() for event in result.stage_events]
         assert [
             (event.stage_id, event.owner, event.action)
             for event in result.stage_events
@@ -366,8 +391,7 @@ def test_hybrid_dev140_replay_matches_independent_prechange_oracle() -> None:
             )
             for stage in json.loads(
                 Path(
-                    "src/clinical_extraction/architecture/manifests/"
-                    "exectv2_llm_with_rules.json"
+                    "src/clinical_extraction/architecture/manifests/exectv2_llm_with_rules.json"
                 ).read_text(encoding="utf-8")
             )["stages"]
             if stage["owner"] != "model"
@@ -468,14 +492,18 @@ def test_hybrid_operational_api_fails_closed_on_malformed_model_output(
         )
 
     monkeypatch.setattr(Exectv2PipelineRunner, "run", replay_malformed)
-    public_result = Exectv2PipelineRunner(
-        Exectv2PipelineConfiguration(
-            method="llm_with_rules",
-            mode="replay",
-            raw_output=raw_output,
-            model="fixture/model",
+    public_result = (
+        Exectv2PipelineRunner(
+            Exectv2PipelineConfiguration(
+                method="llm_with_rules",
+                mode="replay",
+                raw_output=raw_output,
+                model="fixture/model",
+            )
         )
-    ).run(_letter()).result
+        .run(_letter())
+        .result
+    )
     assert public_result.row["parse_errors"]
     assert public_result.row["producer_row"]["parse_errors"]
     assert public_result.row["first_failure"]

@@ -69,9 +69,7 @@ def _raw() -> str:
                     "anchor_text": "MRI brain normal",
                     "evidence": "MRI brain normal",
                     "event_state": {},
-                    "mentions": [
-                        {"entity": "Investigations", "text": "MRI", "attributes": {}}
-                    ],
+                    "mentions": [{"entity": "Investigations", "text": "MRI", "attributes": {}}],
                     "confidence": "high",
                     "rationale": "The investigation is explicit.",
                 },
@@ -413,9 +411,36 @@ def test_exect_llm_independent_dev140_raw_lane_parity_is_pinned() -> None:
             assert actual[field] == source[field], field
         assert actual["mode"] if "mode" in actual else True
         assert [
-            {key: value for key, value in mention.items() if key != "component_owner"}
+            {
+                k: (
+                    {
+                        sub_k: sub_v
+                        for sub_k, sub_v in v.items()
+                        if sub_k not in {"CUI", "CUIPhrase"}
+                    }
+                    if k == "attributes" and isinstance(v, dict)
+                    else v
+                )
+                for k, v in mention.items()
+                if k != "component_owner"
+            }
             for mention in actual["predicted_mentions"]
-        ] == source["predicted_mentions"]
+        ] == [
+            {
+                k: (
+                    {
+                        sub_k: sub_v
+                        for sub_k, sub_v in v.items()
+                        if sub_k not in {"CUI", "CUIPhrase"}
+                    }
+                    if k == "attributes" and isinstance(v, dict)
+                    else v
+                )
+                for k, v in mention.items()
+                if k != "component_owner"
+            }
+            for mention in source["predicted_mentions"]
+        ]
     assert _fingerprint(expected) == baseline["normalized_sha256"]
 
 

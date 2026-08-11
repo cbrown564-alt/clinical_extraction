@@ -46,7 +46,7 @@ def test_replay_exectv2_deterministic_matches_retained_reference() -> None:
     result = replay_exectv2_deterministic(split="dev")
 
     assert result["row_count"] == 140
-    assert result["benchmark_per_item_f1"] == 0.3548
+    assert result["benchmark_per_item_f1"] == 0.3589
     assert result["evidence_validity_rate"] == 1.0
 
 
@@ -57,7 +57,7 @@ def test_replay_exectv2_gepa_predictions_uses_current_scorer() -> None:
     )
 
     assert result["row_count"] == 140
-    assert result["clinical_headline_f1"] == 0.7393
+    assert result["clinical_headline_f1"] == 0.7410
     assert result["strict_benchmark_per_item_f1"] == 0.1356
 
 
@@ -71,5 +71,5 @@ def test_replay_exectv2_v08_p7_config_matches_primary_reference() -> None:
     )
 
     assert result["row_count"] == 140
-    assert result["clinical_headline_f1"] == 0.9202
-    assert result["evidence_valid_f1"] == 0.8923
+    assert result["clinical_headline_f1"] == 0.9073
+    assert result["evidence_valid_f1"] == 0.9045
