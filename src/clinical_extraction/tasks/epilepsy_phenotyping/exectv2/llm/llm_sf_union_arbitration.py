@@ -22,8 +22,14 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities import (
     run_all9_on_letters,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_mention_state import (
+    mention_seizure_state as _state,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.sf_replay_scoring import (
     summarize_sf_rows,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.artifact_io import (
+    first_value as _first_value,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     write_jsonl_rows as write_jsonl,
@@ -99,11 +105,6 @@ _REWRITE_UP_TO_RANGE_RE = re.compile(
     re.IGNORECASE,
 )
 
-
-def read_rows(path: Path) -> list[dict[str, Any]]:
-    return [
-        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
-    ]
 
 
 def deterministic_rows_from_letters(
@@ -413,19 +414,6 @@ def _rewrite(mention: Mapping[str, Any]) -> tuple[dict[str, Any], str | None]:
     return copied, None
 
 
-def _state(mention: Mapping[str, Any]) -> str:
-    attrs = dict(mention.get("attributes") or {})
-    values = [
-        attrs.get("NumberOfSeizures"),
-        attrs.get("LowerNumberOfSeizures"),
-        attrs.get("UpperNumberOfSeizures"),
-    ]
-    if any(value == "0" for value in values if value is not None):
-        return "seizure-free"
-    if any(value for value in values):
-        return "active-rate"
-    return "unknown"
-
 
 def _dedupe_mentions(mentions: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
     seen: set[tuple[str, str, str]] = set()
@@ -486,13 +474,6 @@ def _action_counts(rows: Sequence[Mapping[str, Any]]) -> dict[str, int]:
             counts[str(action.get("rule_id", "unknown"))] += 1
     return dict(counts)
 
-
-def _first_value(rows: Sequence[Mapping[str, Any]], key: str) -> Any:
-    for row in rows:
-        value = row.get(key)
-        if value:
-            return value
-    return None
 
 
 def _score_row(label: str, score: Mapping[str, Any]) -> str:

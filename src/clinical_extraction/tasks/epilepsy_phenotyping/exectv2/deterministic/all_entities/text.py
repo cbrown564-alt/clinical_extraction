@@ -2,38 +2,10 @@
 
 from __future__ import annotations
 
-import re
-
 from clinical_extraction.tasks.shared.epilepsy.terms import FULL_MONTHS, MONTH_ABBREVIATIONS
 
-_FREQUENCY_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
-    (
-        re.compile(
-            r"\b(?:prn|p\.r\.n\.|as\s+required|when\s+required|as\s+needed|"
-            r"rescue|for\s+seizure\s+clusters?)\b",
-            re.IGNORECASE,
-        ),
-        "As_Required",
-    ),
-    (
-        re.compile(
-            r"\b(?:bd|b\.d\.|twice\s+(?:a\s+)?day|twice\s+aday|"
-            r"twice\s+daily|twice\s+today)\b",
-            re.IGNORECASE,
-        ),
-        "2",
-    ),
-    (
-        re.compile(
-            r"\b(?:od|o\.d\.|once\s+(?:a\s+)?day|once\s+daily|daily|mane|nocte|"
-            r"nightly|morning|afternoon|evening|am|pm|at\s+night|"
-            r"in\s+the\s+(?:morning|afternoon|night|evening)|on|nokte)\b",
-            re.IGNORECASE,
-        ),
-        "1",
-    ),
-    (re.compile(r"\b(?:tds|t\.d\.s\.|tid|three\s+times\s+(?:a\s+)?day)\b", re.IGNORECASE), "3"),
-)
+from ..conventions.shared import _FREQUENCY_PATTERNS
+
 _MONTHS: dict[str, str] = {
     **{name: str(number) for name, number in FULL_MONTHS.items()},
     **{name: str(number) for name, number in MONTH_ABBREVIATIONS.items()},

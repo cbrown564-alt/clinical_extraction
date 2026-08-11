@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 from collections import Counter
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
+
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.artifact_io import (
+    sha256_file,
+)
 
 LEDGER_SCHEMA = "exectv2_diagnosis_resolution_ledger_v1"
 
@@ -84,9 +87,9 @@ def build_review_ledger(
     summary = {
         "schema_version": LEDGER_SCHEMA,
         "audit_jsonl": str(audit_jsonl),
-        "audit_sha256": _sha256(audit_jsonl),
+        "audit_sha256": sha256_file(audit_jsonl),
         "completed_overlay_json": str(completed_overlay_json),
-        "completed_overlay_sha256": _sha256(completed_overlay_json),
+        "completed_overlay_sha256": sha256_file(completed_overlay_json),
         "review_row_count": len(ledger),
         "triage_counts": dict(sorted(triage_counts.items())),
         "mechanism_counts": dict(sorted(mechanism_counts.items())),
@@ -129,9 +132,6 @@ def _mechanism(triage: str, rule_ids: list[str]) -> str:
     )
     return next((value for value in priorities if value in mechanisms), "pattern_unclassified")
 
-
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _write_jsonl(path: Path | None, rows: list[dict[str, Any]]) -> None:

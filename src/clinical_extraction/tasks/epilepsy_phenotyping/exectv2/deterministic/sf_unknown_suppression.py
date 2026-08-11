@@ -8,7 +8,6 @@ and are logged as named `seizure_frequency` deterministic rules.
 
 from __future__ import annotations
 
-import json
 import re
 from collections import Counter
 from collections.abc import Mapping, Sequence
@@ -17,6 +16,16 @@ from typing import Any
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     SEIZURE_FREQUENCY,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_mention_state import (
+    mention_seizure_state as _state,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.artifact_io import (
+    first_value as _first_value,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.artifact_io import (
+    # scripts/run_exectv2_2call_model_swap.py calls this as sf_suppression.read_rows.
+    read_rows as read_rows,
 )
 
 SUPPRESSION_VERSION = "exectv2_hybrid_sf_unknown_suppression_v0.7"
@@ -48,11 +57,6 @@ _CONTEXTUAL_OR_HISTORICAL_CHANGE_RE = re.compile(
     re.IGNORECASE,
 )
 
-
-def read_rows(path: Path) -> list[dict[str, Any]]:
-    return [
-        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
-    ]
 
 
 def suppress_rows(rows: Sequence[Mapping[str, Any]]) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -217,19 +221,6 @@ def _suppression_rule(mention: Mapping[str, Any]) -> str | None:
     return None
 
 
-def _state(mention: Mapping[str, Any]) -> str:
-    attrs = dict(mention.get("attributes") or {})
-    values = [
-        attrs.get("NumberOfSeizures"),
-        attrs.get("LowerNumberOfSeizures"),
-        attrs.get("UpperNumberOfSeizures"),
-    ]
-    if any(value == "0" for value in values if value is not None):
-        return "seizure-free"
-    if any(value for value in values):
-        return "active-rate"
-    return "unknown"
-
 
 def _copy_mention(mention: Mapping[str, Any]) -> dict[str, Any]:
     return {
@@ -259,13 +250,6 @@ def _action_counts(rows: Sequence[Mapping[str, Any]]) -> dict[str, int]:
             counts[str(action.get("rule_id", "unknown"))] += 1
     return dict(counts)
 
-
-def _first_value(rows: Sequence[Mapping[str, Any]], key: str) -> Any:
-    for row in rows:
-        value = row.get(key)
-        if value:
-            return value
-    return None
 
 
 def _success_gate(

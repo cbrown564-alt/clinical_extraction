@@ -18,6 +18,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     diagnosis_decomposer as decomposer,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.artifact_io import (
+    sha256_file,
     write_artifact_bundle,
 )
 
@@ -98,10 +99,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             ),
             "dspy_cache": args.dspy_cache,
             "prompt_payloads_sha256": _prompt_payloads_sha256(rows),
-            "prompt_corpus_sha256": _sha256(
+            "prompt_corpus_sha256": sha256_file(
                 Path(decomposer.prompt_loader.__file__).parent / "corpus.yaml"
             ),
-            "candidate_rules_sha256": _sha256(
+            "candidate_rules_sha256": sha256_file(
                 Path(decomposer.prompt_loader.__file__).parent
                 / "resolution_candidate_rules.yaml"
             ),
@@ -123,10 +124,6 @@ def main(argv: Sequence[str] | None = None) -> int:
 def _prompt_payloads_sha256(rows: Sequence[Mapping[str, Any]]) -> str:
     payload = "\n".join(str(row.get("prompt_input_json", "")) for row in rows)
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
-
-
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _runtime_usage() -> dict[str, Any]:

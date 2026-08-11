@@ -15,8 +15,14 @@ import re
 from ..contract.entities import SEIZURE_FREQUENCY
 from ..contract.prediction import PredictedMention
 from .candidates import AnchorCandidate
-from .lexicon import assign_cui
-from .normalizer import MONTH_NAME_PATTERN, normalize_count, normalize_month, normalize_unit
+from .lexicon import attach_cui as _with_cui
+from .normalizer import (
+    MONTH_NAME_PATTERN,
+    normalize_count,
+    normalize_month,
+    normalize_unit,
+    since_date_attrs,
+)
 from .rule_metadata import DEFAULT_ABLATION, ExtractionContext
 from .sf_surface_registry.adapters.extraction import (
     SEIZURE_TYPE_ANCHOR_RULE,
@@ -77,13 +83,6 @@ _ADVERB_MAP = {
     "yearly": ("1", "1", "Year"),
     "annually": ("1", "1", "Year"),
 }
-
-
-def _with_cui(text: str, attrs: dict[str, str]) -> dict[str, str]:
-    cui = assign_cui(text)
-    if cui is None:
-        return attrs
-    return {**attrs, "CUI": cui, "CUIPhrase": text}
 
 
 def _first_anchor(line: str) -> tuple[str, tuple[int, int]] | None:
@@ -151,25 +150,14 @@ def _last_event_date_attrs(line: str) -> dict[str, str] | None:
     match = _LAST_EVENT_DATE.search(line)
     if not match:
         return None
-    month = match.groupdict().get("month")
-    day = match.groupdict().get("day")
-    year = match.groupdict().get("year")
-    christmas = match.groupdict().get("christmas")
-    christmas_qualifier = match.groupdict().get("christmas_qualifier")
-    if christmas:
-        month = "December"
-        if christmas_qualifier and christmas_qualifier.lower() == "day":
-            day = "25"
-    if not (month or year):
-        return None
-    attrs = {"NumberOfSeizures": "0", "TimeSince_or_TimeOfEvent": "Since"}
-    if day:
-        attrs["DayDate"] = day
-    if month:
-        attrs["MonthDate"] = normalize_month(month)
-    if year:
-        attrs["YearDate"] = year
-    return attrs
+    groups = match.groupdict()
+    return since_date_attrs(
+        day=groups.get("day"),
+        month=groups.get("month"),
+        year=groups.get("year"),
+        christmas=groups.get("christmas"),
+        christmas_qualifier=groups.get("christmas_qualifier"),
+    )
 
 
 def _rate_attrs(line: str) -> dict[str, str] | None:

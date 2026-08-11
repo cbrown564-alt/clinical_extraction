@@ -29,6 +29,7 @@ from ..normalizer import (
     normalize_count,
     normalize_month,
     normalize_unit,
+    since_date_attrs,
 )
 from ..rule_metadata import (
     ExtractionContext,
@@ -283,29 +284,14 @@ def _build_last_seizure_date(
 
 
 def _last_event_date_attrs(match: re.Match[str]) -> dict[str, str] | None:
-    month = match.groupdict().get("month")
-    year = match.groupdict().get("year")
-    day = match.groupdict().get("day")
-    christmas = match.groupdict().get("christmas")
-    christmas_qualifier = match.groupdict().get("christmas_qualifier")
-    if christmas:
-        month = "December"
-        if christmas_qualifier and christmas_qualifier.lower() == "day":
-            day = "25"
-    if not (month or year):
-        return None
-
-    attrs: dict[str, str] = {
-        "NumberOfSeizures": "0",
-        "TimeSince_or_TimeOfEvent": "Since",
-    }
-    if day:
-        attrs["DayDate"] = day
-    if month:
-        attrs["MonthDate"] = normalize_month(month)
-    if year:
-        attrs["YearDate"] = year
-    return attrs
+    groups = match.groupdict()
+    return since_date_attrs(
+        day=groups.get("day"),
+        month=groups.get("month"),
+        year=groups.get("year"),
+        christmas=groups.get("christmas"),
+        christmas_qualifier=groups.get("christmas_qualifier"),
+    )
 
 
 def _build_last_event_date(

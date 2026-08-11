@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 import subprocess
 import sys
@@ -30,6 +29,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.benchmark_co
     PAPER_PER_ITEM_F1,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.artifact_io import (
+    sha256_file,
     write_artifact_bundle,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match import (
@@ -281,7 +281,7 @@ def write_deterministic_dev140_reproduction(
             "pyyaml": version("pyyaml"),
         },
         split_manifest=DEFAULT_SPLIT_MANIFEST.as_posix(),
-        split_manifest_sha256=_sha256(DEFAULT_SPLIT_MANIFEST),
+        split_manifest_sha256=sha256_file(DEFAULT_SPLIT_MANIFEST),
     )
     json_text = json.dumps(report, indent=2, sort_keys=True) + "\n"
     markdown = render_published_metric_report(report, json_path=out_json.as_posix())
@@ -445,9 +445,6 @@ def _cuis(annotations: Sequence[Any]) -> set[str]:
 def _feature_bundles(annotations: Sequence[Any]) -> set[tuple[tuple[str, str], ...]]:
     return {tuple(sorted(evaluated_attributes(annotation).items())) for annotation in annotations}
 
-
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _git_revision() -> str:

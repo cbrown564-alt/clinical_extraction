@@ -2,12 +2,32 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 import os
 import tempfile
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
+
+
+def sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def read_rows(path: Path) -> list[dict[str, Any]]:
+    return [
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
+    ]
+
+
+def first_value(rows: Sequence[Mapping[str, Any]], key: str) -> Any:
+    for row in rows:
+        value = row.get(key)
+        if value:
+            return value
+    return None
 
 
 @contextmanager

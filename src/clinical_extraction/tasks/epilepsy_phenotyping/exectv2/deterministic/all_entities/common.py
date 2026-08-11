@@ -14,6 +14,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     WHEN_DIAGNOSED,
 )
 
+from ..overlap import _overlaps as _overlaps
 from ..rule_metadata import Portability, RuleGroup
 
 _OWNER_PREFIX = "deterministic"
@@ -47,10 +48,6 @@ def _sentence_window(text: str, start: int, end: int) -> str:
     right_candidates = [idx for idx in (text.find(".", end), text.find("\n", end)) if idx != -1]
     right = min(right_candidates) if right_candidates else len(text)
     return text[left + 1 : right].strip(" ,;")
-
-
-def _overlaps(left: tuple[int, int], right: tuple[int, int]) -> bool:
-    return left[0] < right[1] and right[0] < left[1]
 
 
 def _owner(

@@ -14,7 +14,7 @@ from ..contract.entities import SEIZURE_FREQUENCY
 from ..contract.prediction import PredictedMention
 from .candidates import AnchorCandidate
 from .frequency_section import _last_event_date_attrs, _rate_attrs
-from .lexicon import assign_cui
+from .lexicon import attach_cui as _with_cui
 from .normalizer import MONTH_NAME_PATTERN, normalize_count, normalize_month, normalize_unit
 from .rule_metadata import DEFAULT_ABLATION, ExtractionContext
 from .sf_surface_registry.adapters.extraction import (
@@ -195,13 +195,6 @@ _MANAGEMENT_TITRATION = re.compile(
     re.IGNORECASE,
 )
 _GENERIC_REFERENCE_ANCHORS = {"seizure", "seizures"}
-
-
-def _with_cui(text: str, attrs: dict[str, str]) -> dict[str, str]:
-    cui = assign_cui(text)
-    if cui is None:
-        return attrs
-    return {**attrs, "CUI": cui, "CUIPhrase": text}
 
 
 def _anchors(sentence: str) -> list[tuple[str, tuple[int, int]]]:

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 from collections import Counter
 from collections.abc import Mapping, Sequence, Set
@@ -25,6 +24,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_en
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.diagnosis_interpretation_audit import (  # noqa: E501
     decompose_method,
     diagnosis_concepts,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.artifact_io import (
+    sha256_file,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     score_concept_identity,
@@ -479,11 +481,8 @@ def _residual_record(
 
 
 def _path_record(path: Path) -> dict[str, str]:
-    return {"path": str(path).replace("\\", "/"), "sha256": _sha256(path)}
+    return {"path": str(path).replace("\\", "/"), "sha256": sha256_file(path)}
 
-
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _render_markdown(report: Mapping[str, Any], *, json_path: Path) -> str:

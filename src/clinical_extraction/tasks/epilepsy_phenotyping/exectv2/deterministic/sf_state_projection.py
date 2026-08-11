@@ -9,7 +9,6 @@ ownership conventions.
 
 from __future__ import annotations
 
-import json
 import re
 from collections import Counter
 from collections.abc import Mapping, Sequence
@@ -29,6 +28,13 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalizer import (
     MONTH_MAP,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.artifact_io import (
+    first_value as _first_value,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.artifact_io import (
+    # scripts/run_exectv2_2call_model_swap.py calls this as sf_projection.read_rows.
+    read_rows as read_rows,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.seizure_frequency import (
     frequency_state_faithful,
@@ -88,11 +94,6 @@ _WORD_NUMBER: dict[str, str] = {
     "ten": "10",
 }
 
-
-def read_rows(path: Path) -> list[dict[str, Any]]:
-    return [
-        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
-    ]
 
 
 def project_rows(
@@ -717,13 +718,6 @@ def _action_counts(rows: Sequence[Mapping[str, Any]]) -> dict[str, int]:
             counts[str(action.get("rule_id", "unknown"))] += 1
     return dict(counts)
 
-
-def _first_value(rows: Sequence[Mapping[str, Any]], key: str) -> Any:
-    for row in rows:
-        value = row.get(key)
-        if value:
-            return value
-    return None
 
 
 def _slice_row(label: str, score: Mapping[str, Any]) -> str:

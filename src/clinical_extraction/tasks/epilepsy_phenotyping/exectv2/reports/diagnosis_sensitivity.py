@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 from collections import Counter
 from collections.abc import Callable, Mapping
 from pathlib import Path
 from typing import Any
+
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.artifact_io import (
+    sha256_file,
+)
 
 SENSITIVITY_SCHEMA = "exectv2_diagnosis_sensitivity_v1"
 
@@ -108,9 +111,9 @@ def build_sensitivity_report(
         "fixed_primary_scorer": audit.get("scorer"),
         "primary_result_changed": False,
         "ledger_jsonl": str(ledger_jsonl),
-        "ledger_sha256": _sha256(ledger_jsonl),
+        "ledger_sha256": sha256_file(ledger_jsonl),
         "audit_summary_json": str(audit_summary_json),
-        "audit_summary_sha256": _sha256(audit_summary_json),
+        "audit_summary_sha256": sha256_file(audit_summary_json),
         "fixed_reproduction": "passed",
         "views": views,
         "claim_boundary": (
@@ -171,6 +174,3 @@ def _adjusted_scores(
         "f1": f1,
     }
 
-
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()

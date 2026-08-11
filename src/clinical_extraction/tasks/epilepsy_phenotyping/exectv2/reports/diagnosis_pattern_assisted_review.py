@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 import re
 from collections import Counter, defaultdict
@@ -10,6 +9,10 @@ from collections.abc import Iterable, Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.artifact_io import (
+    sha256_file,
+)
 
 OVERLAY_SCHEMA = "exectv2_diagnosis_review_overlay_v1"
 SUMMARY_SCHEMA = "exectv2_diagnosis_pattern_assisted_review_v1"
@@ -207,9 +210,9 @@ def build_pattern_assisted_review(
         "schema_version": SUMMARY_SCHEMA,
         "generated_at": now,
         "audit_jsonl": str(audit_jsonl),
-        "audit_sha256": _sha256(audit_jsonl),
+        "audit_sha256": sha256_file(audit_jsonl),
         "manual_overlay_json": str(manual_overlay_json),
-        "manual_overlay_sha256": _sha256(manual_overlay_json),
+        "manual_overlay_sha256": sha256_file(manual_overlay_json),
         "audit_row_count": len(rows),
         "manual_decision_count": len(manual_decisions),
         "automatic_decision_count": automatic_count,
@@ -492,9 +495,6 @@ def _calibration_summary(
         "contradictions": contradicted,
     }
 
-
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _write_json(path: Path | None, payload: Mapping[str, Any]) -> None:

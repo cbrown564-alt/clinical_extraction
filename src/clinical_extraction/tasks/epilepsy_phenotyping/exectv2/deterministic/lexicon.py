@@ -153,3 +153,11 @@ def assign_cui(phrase: str) -> str | None:
     unknown phrase returns None — the mention is then emitted without a CUI
     rather than guessing, keeping the lexicon's precision intact."""
     return PHRASE_TO_CUI.get(normalize_phrase(phrase))
+
+
+def attach_cui(text: str, attrs: dict[str, str]) -> dict[str, str]:
+    """Add CUI/CUIPhrase to ``attrs`` when ``text`` resolves to a known CUI."""
+    cui = assign_cui(text)
+    if cui is None:
+        return attrs
+    return {**attrs, "CUI": cui, "CUIPhrase": text}

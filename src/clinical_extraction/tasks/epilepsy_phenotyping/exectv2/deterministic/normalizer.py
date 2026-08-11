@@ -100,3 +100,33 @@ def normalize_month(value: str) -> str:
 def clean_span(text: str) -> str:
     """Strip trailing sentence-ending punctuation from a matched span."""
     return text.strip(" .;:\n\t")
+
+
+def since_date_attrs(
+    *,
+    day: str | None,
+    month: str | None,
+    year: str | None,
+    christmas: str | None,
+    christmas_qualifier: str | None,
+) -> dict[str, str] | None:
+    """Build NumberOfSeizures=0/Since attrs from a matched last-event date.
+
+    ``christmas`` normalizes to December (day 25 if ``christmas_qualifier`` is
+    "day"), matching how "last event ... Christmas" phrasing is scored.
+    """
+    if christmas:
+        month = "December"
+        if christmas_qualifier and christmas_qualifier.lower() == "day":
+            day = "25"
+    if not (month or year):
+        return None
+
+    attrs: dict[str, str] = {"NumberOfSeizures": "0", "TimeSince_or_TimeOfEvent": "Since"}
+    if day:
+        attrs["DayDate"] = day
+    if month:
+        attrs["MonthDate"] = normalize_month(month)
+    if year:
+        attrs["YearDate"] = year
+    return attrs
