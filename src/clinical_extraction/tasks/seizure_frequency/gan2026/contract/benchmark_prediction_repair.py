@@ -270,14 +270,22 @@ def _canonicalize_seizure_free(text: str) -> str:
     text = text.replace("sz free", "seizure free").replace("sz-free", "seizure free")
     match = re.search(
         r"seizure free(?:\s*for)?\s*"
-        r"(\d+(?:\.\d+)?(?:\s*to\s*\d+(?:\.\d+)?)?)\s*(month|year)s?\b",
+        r"(\d+(?:\.\d+)?(?:\s*to\s*\d+(?:\.\d+)?)?|multiple)\s*(month|year)s?\b",
         text,
     )
     if match:
         return f"seizure free for {match.group(1)} {match.group(2)}"
-    if re.search(r"seizure free since\b", text):
+    if re.search(r"\b(year|years)\b", text):
         return "seizure free for multiple year"
+    if re.search(
+        r"\b(month|months|jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)\b",
+        text,
+    ):
+        return "seizure free for multiple month"
+    if re.search(r"seizure free since\b", text):
+        return "seizure free for multiple month"
     return "seizure free for multiple year"
+
 
 
 def _fix_cluster_block(text: str) -> str:

@@ -58,3 +58,16 @@ def test_underscore_separated_model_labels_are_format_repaired() -> None:
     assert repair_prediction_label("multiple_per_day") == "multiple per day"
     assert repair_prediction_label("multiple_per_week") == "multiple per week"
     assert repair_prediction_label("twice_per_year") == "2 per year"
+
+
+def test_canonicalize_seizure_free_fuzzy_date_and_months() -> None:
+    assert (
+        repair_prediction_label("seizure free since shortly after 10 Jul")
+        == "seizure free for multiple month"
+    )
+    assert repair_prediction_label("seizure free for multiple months") == (
+        "seizure free for multiple month"
+    )
+    assert repair_prediction_label("seizure free since March") == "seizure free for multiple month"
+    assert repair_prediction_label("seizure free for 3 years") == "seizure free for 3 year"
+
