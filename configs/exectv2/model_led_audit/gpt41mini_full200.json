@@ -36,7 +36,7 @@
       "Prescription": {"producer": "structured_key_family_event_ledger", "lens": "prescription_dictionary_v09", "source_lane": "model_structured_prescription", "ownership_label": "named_model_prescription_plus_shared_rules", "portability": "clinical_epilepsy"},
       "Investigations": {"producer": "structured_key_family_event_ledger", "lens": "investigations_result_v01", "source_lane": "model_structured_investigations", "ownership_label": "named_model_investigations", "portability": "clinical_epilepsy"}
     },
-    "views": ["raw_candidate", "evidence_valid", "clinical_headline", "fidelity_companion", "benchmark_cui"]
+    "views": ["raw_candidate", "post_lens", "clinical_headline", "fidelity_companion", "benchmark_cui"]
   },
   "outputs": {"json": "experiments/exectv2_model_led_gpt41mini_full200_audit.json", "jsonl": "experiments/exectv2_model_led_gpt41mini_full200_audit.jsonl", "markdown": "docs/experiments/exectv2/reliability/exectv2_model_led_gpt41mini_full200_audit.md"}
 }

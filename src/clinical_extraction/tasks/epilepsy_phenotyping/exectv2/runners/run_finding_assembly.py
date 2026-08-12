@@ -98,7 +98,7 @@ def main() -> None:
     print(f"Candidate: {manifest.candidate_id}  rows={report['row_count']}", flush=True)
     print(f"Gate decision: {report['gate_decision']['decision']}", flush=True)
     _print_surface("headline_target", ladder["headline_target"])
-    _print_surface("evidence_valid_score", ladder["evidence_valid_score"])
+    _print_surface("post_lens_score", ladder["post_lens_score"])
     benchmark = ladder["benchmark"]
     print(
         f"\nBenchmark raw={benchmark['raw']:.4f} "

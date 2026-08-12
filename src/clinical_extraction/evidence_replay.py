@@ -121,10 +121,12 @@ def replay_exectv2_finding_assembly(path: Path) -> dict[str, int | float]:
 
     run = build_finding_assembly(load_finding_assembly_manifest(path))
     ladder = run.report["score_ladder"]
+    post_lens_f1 = float(ladder["post_lens_score"]["overall"]["f1"])
     return {
         "row_count": int(run.report["row_count"]),
         "clinical_headline_f1": float(ladder["headline_target"]["overall"]["f1"]),
-        "evidence_valid_f1": float(ladder["evidence_valid_score"]["overall"]["f1"]),
+        "post_lens_f1": post_lens_f1,
+        "evidence_valid_f1": post_lens_f1,
         "benchmark_cui_f1": float(ladder["benchmark"]["after_cui_projection"]),
     }
 

@@ -358,7 +358,7 @@ def _write_config(
             },
             "views": [
                 "raw_candidate",
-                "evidence_valid",
+                "post_lens",
                 "clinical_headline",
                 "fidelity_companion",
                 "benchmark_cui",

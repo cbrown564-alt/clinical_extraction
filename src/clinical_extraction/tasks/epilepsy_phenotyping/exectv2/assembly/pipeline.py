@@ -252,7 +252,7 @@ def render_finding_assembly_markdown(
     ]
     view_to_surface = {
         "raw_candidate": "raw_lane_score",
-        "evidence_valid": "evidence_valid_score",
+        "post_lens": "post_lens_score",
         "benchmark_cui": "cui_projection_companion",
         "clinical_headline": "headline_target",
     }

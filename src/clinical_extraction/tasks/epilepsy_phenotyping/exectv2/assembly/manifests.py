@@ -96,7 +96,10 @@ def manifest_from_mapping(payload: Mapping[str, Any]) -> FindingAssemblyManifest
         claim_boundary=str(payload.get("claim_boundary", "")),
         producers=producers,
         lenses=lenses,
-        views=tuple(str(view) for view in _required_sequence(payload, "views")),
+        views=tuple(
+            _canonicalize_assembly_view_id(str(view))
+            for view in _required_sequence(payload, "views")
+        ),
         baseline_producer=str(payload.get("baseline_producer", "")),
         focused_comparator_artifact=Path(str(comparator)) if comparator else None,
         promotion_decision=str(
@@ -120,6 +123,19 @@ def _load_payload(path: Path) -> Mapping[str, Any]:
     if not isinstance(payload, Mapping):
         raise ValueError(f"{path} did not contain a mapping manifest")
     return payload
+
+
+def _canonicalize_assembly_view_id(view_id: str) -> str:
+    """Accept the retired score-view id in saved manifests.
+
+    Keep this mapping local so manifest loading does not import the scoring
+    view builder. The boolean ``evidence_valid`` field and the materialized
+    ``prediction_surfaces.evidence_valid`` surface are not view ids.
+    """
+
+    if view_id == "evidence_valid":
+        return "post_lens"
+    return view_id
 
 
 def _required_mapping(payload: Mapping[str, Any], key: str) -> Mapping[str, Mapping[str, Any]]:

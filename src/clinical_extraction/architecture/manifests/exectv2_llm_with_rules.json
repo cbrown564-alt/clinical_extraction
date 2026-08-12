@@ -322,7 +322,7 @@
       "stage_id": "exect.llm_with_rules.materialize_views",
       "runtime_action": "materialize_scoring_views",
       "name": "Materialize the score views",
-      "operation": "Build the named prediction views - raw candidate, evidence valid, and clinical fact recovery - from the same assembled findings.",
+      "operation": "Build the named prediction views - raw candidate, post-lens assembled findings, and clinical fact recovery - from the same assembled findings.",
       "owner": "deterministic",
       "rule_category": "benchmark_format",
       "effect_class": "benchmark_projection",

@@ -9,6 +9,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly import (
     ProducerManifest,
     build_finding_assembly,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.manifests import (
+    manifest_from_mapping,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
@@ -41,11 +44,40 @@ def test_manifest_driven_assembly_preserves_sources_and_views(tmp_path: Path) ->
     assert run.stores["EA1"].findings(entity="SeizureFrequency")
     assert run.report["finding_views"] == [
         "raw_candidate",
-        "evidence_valid",
+        "post_lens",
         "clinical_headline",
         "fidelity_companion",
         "benchmark_cui",
     ]
+    assert run.views["post_lens"].view_id == "post_lens"
+    assert run.report["score_ladder"]["post_lens_score"] == run.report["score_ladder"][
+        "evidence_valid_score"
+    ]
+
+
+def test_manifest_remaps_retired_evidence_valid_score_view() -> None:
+    payload = {
+        "candidate_id": "alias_check",
+        "split": "dev",
+        "row_count": 1,
+        "claim_boundary": "dev_only_component_evidence",
+        "producers": {
+            "control": {
+                "kind": "saved_jsonl",
+                "artifact": "control.jsonl",
+                "ownership_label": "control",
+            }
+        },
+        "lenses": {
+            "Diagnosis": {
+                "producer": "control",
+                "lens": "diagnosis_hierarchy_negation_v01",
+            }
+        },
+        "views": ["raw_candidate", "evidence_valid", "clinical_headline"],
+    }
+    manifest = manifest_from_mapping(payload)
+    assert manifest.views == ("raw_candidate", "post_lens", "clinical_headline")
 
 
 def test_assembly_sf_lens_applies_state_adjudication_without_expanding_mentions(
@@ -226,7 +258,7 @@ def _manifest(
         },
         views=(
             "raw_candidate",
-            "evidence_valid",
+            "post_lens",
             "clinical_headline",
             "fidelity_companion",
             "benchmark_cui",

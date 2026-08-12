@@ -28,12 +28,29 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.reporting im
     architecture_report,
 )
 
+POST_LENS_VIEW_ID = "post_lens"
+POST_LENS_SCORE_KEY = "post_lens_score"
+LEGACY_POST_LENS_VIEW_ID = "evidence_valid"
+LEGACY_POST_LENS_SCORE_KEY = "evidence_valid_score"
+
 
 @dataclass(frozen=True)
 class FindingViewResult:
     view_id: str
     predictions: tuple[PredictedLetter, ...]
     summary: Mapping[str, Any]
+
+
+def canonicalize_assembly_view_id(view_id: str) -> str:
+    """Map the retired score-view id onto the current name.
+
+    The boolean ``evidence_valid`` field and the materialized
+    ``prediction_surfaces.evidence_valid`` surface are unchanged.
+    """
+
+    if view_id == LEGACY_POST_LENS_VIEW_ID:
+        return POST_LENS_VIEW_ID
+    return view_id
 
 
 def predictions_from_rows(
@@ -74,7 +91,7 @@ def build_scoring_views(
     scored_predictions: Sequence[PredictedLetter],
     materialized_predictions: Mapping[str, Sequence[PredictedLetter]] | None = None,
 ) -> tuple[dict[str, FindingViewResult], dict[str, Any], dict[str, Any]]:
-    """Render raw, evidence-valid, headline, fidelity, and benchmark/CUI views."""
+    """Render raw, post-lens, headline, fidelity, and benchmark/CUI views."""
 
     raw_arch = architecture_report(
         name=f"{candidate_name}_raw",
@@ -109,9 +126,13 @@ def build_scoring_views(
             for entity in TARGET_INDICATORS
         },
     }
+    post_lens_score = _target_surface(scored_arch, projected=False)
     score_ladder = {
         "raw_lane_score": _target_surface(raw_arch, projected=False),
-        "evidence_valid_score": _target_surface(scored_arch, projected=False),
+        POST_LENS_SCORE_KEY: post_lens_score,
+        # Compatibility alias: this scores post-lens mentions, not the
+        # quote-validity filter. Frozen reports still look up this key.
+        LEGACY_POST_LENS_SCORE_KEY: post_lens_score,
         "cui_projection_companion": _target_surface(projected_arch, projected=False),
         "headline_target": _target_surface(scored_arch, projected=True),
         "benchmark": benchmark,
@@ -135,10 +156,15 @@ def build_scoring_views(
             predictions=tuple(raw_predictions),
             summary=score_ladder["raw_lane_score"],
         ),
-        "evidence_valid": FindingViewResult(
-            view_id="evidence_valid",
+        POST_LENS_VIEW_ID: FindingViewResult(
+            view_id=POST_LENS_VIEW_ID,
             predictions=tuple(scored_predictions),
-            summary=score_ladder["evidence_valid_score"],
+            summary=post_lens_score,
+        ),
+        LEGACY_POST_LENS_VIEW_ID: FindingViewResult(
+            view_id=LEGACY_POST_LENS_VIEW_ID,
+            predictions=tuple(scored_predictions),
+            summary=post_lens_score,
         ),
         "clinical_headline": FindingViewResult(
             view_id="clinical_headline",

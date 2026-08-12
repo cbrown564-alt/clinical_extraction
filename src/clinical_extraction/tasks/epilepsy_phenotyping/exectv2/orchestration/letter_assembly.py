@@ -394,7 +394,7 @@ def _manifest_payload(
                 "portability": "clinical_epilepsy",
             },
         },
-        "views": ["raw_candidate", "evidence_valid", "clinical_headline"],
+        "views": ["raw_candidate", "post_lens", "clinical_headline"],
         "diagnosis_policy_variant": config.diagnosis_policy_variant,
         "prescription_policy_variant": config.prescription_policy_variant,
     }

@@ -6,6 +6,7 @@ import json
 import subprocess
 import tempfile
 from collections import Counter, defaultdict
+from collections.abc import Mapping, Sequence
 from dataclasses import replace
 from pathlib import Path
 from typing import Any
@@ -378,24 +379,37 @@ def _review_tags() -> dict[str, list[dict[str, Any]]]:
     return dict(tags)
 
 
+def _ladder_layer(ladder: Mapping[str, Any], keys: Sequence[str]) -> Mapping[str, Any]:
+    for key in keys:
+        if key in ladder:
+            return ladder[key]
+    raise KeyError(f"score ladder missing any of {list(keys)}")
+
+
 def _score_layers(
     comparator_report: dict[str, Any],
     candidate_report: dict[str, Any],
 ) -> dict[str, Any]:
     layers = {
-        "raw_candidate": "raw_lane_score",
-        "evidence_valid": "evidence_valid_score",
-        "clinical_headline": "headline_target",
+        "raw_candidate": ("raw_lane_score",),
+        "post_lens": ("post_lens_score", "evidence_valid_score"),
+        "clinical_headline": ("headline_target",),
     }
     result = {}
-    for output_name, report_name in layers.items():
-        comparator = comparator_report["score_ladder"][report_name]["by_indicator"][DIAGNOSIS.name]
-        candidate = candidate_report["score_ladder"][report_name]["by_indicator"][DIAGNOSIS.name]
-        result[output_name] = {
-            "comparator": dict(comparator),
-            "candidate": dict(candidate),
-            "f1_delta": round(float(candidate["f1"]) - float(comparator["f1"]), 4),
+    for output_name, report_names in layers.items():
+        comparator = _ladder_layer(comparator_report["score_ladder"], report_names)
+        candidate = _ladder_layer(candidate_report["score_ladder"], report_names)
+        layer = {
+            "comparator": dict(comparator["by_indicator"][DIAGNOSIS.name]),
+            "candidate": dict(candidate["by_indicator"][DIAGNOSIS.name]),
+            "f1_delta": round(
+                float(candidate["by_indicator"][DIAGNOSIS.name]["f1"])
+                - float(comparator["by_indicator"][DIAGNOSIS.name]["f1"]),
+                4,
+            ),
         }
+        result[output_name] = layer
+    result["evidence_valid"] = result["post_lens"]
     return result
 
 
@@ -481,11 +495,11 @@ def _read_jsonl(path: Path) -> list[dict[str, Any]]:
 def render_report(payload: dict[str, Any]) -> str:
     headline = payload["score_layers"]["clinical_headline"]
     raw = payload["score_layers"]["raw_candidate"]
-    evidence = payload["score_layers"]["evidence_valid"]
+    evidence = payload["score_layers"]["post_lens"]
     directions = payload["directions"]
     mechanisms = payload["mechanism_summary"]["correct_to_wrong_types"]
     raw_row = _metric_row("Raw candidate", raw)
-    evidence_row = _metric_row("Evidence valid", evidence)
+    evidence_row = _metric_row("Post-lens", evidence)
     headline_row = _metric_row("Clinical headline", headline)
     return "\n".join(
         [
