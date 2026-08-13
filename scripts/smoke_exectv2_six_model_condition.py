@@ -6,7 +6,9 @@ import argparse
 import json
 from pathlib import Path
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import load_letters
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
+    load_letters_for_split,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
 )
@@ -37,7 +39,7 @@ def main() -> None:
         raise SystemExit(json.dumps(architecture, sort_keys=True))
 
     structured_runner.build_dspy_lm = build_six_model_lm
-    letters = load_letters()[: args.rows]
+    letters = load_letters_for_split("dev")[: args.rows]
     structured_rows, structured_meta = structured.run_split(
         letters,
         split="dev140_smoke",
