@@ -344,7 +344,20 @@ def build_exect() -> dict[str, Any]:
 
 def gan_markdown(data: dict[str, Any]) -> str:
     why = {"ordinary_point_rate": "One countable rate; the main Gan mass.", "cluster_burden": "Cluster grammar must preserve both cluster frequency and seizures per cluster.", "seizure_free": "The note supports a quiet interval rather than an active rate.", "range_rate": "Both ends of a rate range matter.", "unknown_sentinel": "The gold answer withholds a rate.", "no_reference_sentinel": "The note has no usable seizure-frequency reference.", "unresolved_multiple": "The note says multiple, without a count that should be invented."}
-    lines = ["# Gan 2026 category-cut representative examples", "", "Real development letters, with two examples for the dominant ordinary-rate bucket and one for each other gold-defined bucket. The examples explain the aggregate category cut; they do not estimate category performance on their own.", "", f"Split: `{data['split']}` · LLM model: `{data['model']}` · rules baseline: retained deterministic artifact.", "", "## How to read the cases", "", "The excerpt is the smallest source window covering the gold or method evidence. `correct` means Purist-correct for Gan; it is not a clinical-validation judgment.", ""]
+    lines = [
+        "# Gan 2026 category-cut representative examples",
+        "",
+        "Paper-library role: detailed development examples; use the [row-evidence workbook](artifacts/paper_source_row_evidence_2026-08-10.xlsx) for filtering.",
+        "",
+        "Real development letters, with two examples for the dominant ordinary-rate bucket and one for each other gold-defined bucket. The examples explain the aggregate category cut; they do not estimate category performance on their own.",
+        "",
+        f"Split: `{data['split']}` · LLM model: `{data['model']}` · rules baseline: retained deterministic artifact.",
+        "",
+        "## How to read the cases",
+        "",
+        "The excerpt is the smallest source window covering the gold or method evidence. `correct` means Purist-correct for Gan; it is not a clinical-validation judgment.",
+        "",
+    ]
     for bucket, items in data["examples"].items():
         lines += [f"## `{bucket}`", "", why[bucket], ""]
         for number, item in enumerate(items, start=1):
@@ -381,13 +394,32 @@ def gan_markdown(data: dict[str, Any]) -> str:
                     "text and still differ in selection, representation, or canonical "
                     "rendering."
                 )
+            if item["row_id"] == 4402:
+                lines += [
+                    "",
+                    "Hybrid is a no-call calendar-log replay on the saved span. Older "
+                    "hybrid panels still store `14 per 14 month`.",
+                ]
             lines += ["", lesson, ""]
     lines += ["## Boundary", "", "These are `dev750` examples only. The reports use real synthetic clinical letters and retained predictions, but they are explanatory slices, not holdout evidence or clinical validation. See the [category-cut performance report](six_model_category_cut_performance_2026-08-06.md) for aggregate results and the [protocol](category_cut_representative_examples_protocol_2026-08-08.md) for provenance.", ""]
     return "\n".join(lines)
 
 
 def exect_markdown(data: dict[str, Any]) -> str:
-    lines = ["# ExECTv2 within-family category examples", "", "Real development examples for every observed gold-defined subtype inside Diagnosis, SeizureFrequency, Prescription, and Investigations. Whole-letter composition buckets are not the category surface.", "", f"Split: `{data['split']}` · LLM model: `{data['model']}` · rules baseline: regenerated deterministic four-family artifact.", "", "## How to read the cases", "", "Each case shows only the named clinical family. `LLM` is the saved raw model lane; `LLM with rules` is the saved post-family-rules prediction. `match` means the complete family-level headline keys equal gold on that letter; it is not a clinical-validation judgment.", ""]
+    lines = [
+        "# ExECTv2 within-family category examples",
+        "",
+        "Paper-library role: detailed development examples; use the [row-evidence workbook](artifacts/paper_source_row_evidence_2026-08-10.xlsx) for filtering.",
+        "",
+        "Real development examples for every observed gold-defined subtype inside Diagnosis, SeizureFrequency, Prescription, and Investigations. Whole-letter composition buckets are not the category surface.",
+        "",
+        f"Split: `{data['split']}` · LLM model: `{data['model']}` · rules baseline: regenerated deterministic four-family artifact.",
+        "",
+        "## How to read the cases",
+        "",
+        "Each case shows only the named clinical family. `LLM` is the saved raw model lane; `LLM with rules` is the saved post-family-rules prediction. `match` means the complete family-level headline keys equal gold on that letter; it is not a clinical-validation judgment.",
+        "",
+    ]
     for family, subtypes in data["examples"].items():
         lines += [f"## {family}", ""]
         for subtype, item in subtypes.items():
