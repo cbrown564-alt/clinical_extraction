@@ -4,38 +4,6 @@
   "claim_boundary": "Gan validation750 is inspectable development evidence. Hybrid cells are the 13 Aug current-stack no-call replay; LLM-only cells are the July 18 comparison tree. Only exact, trace-valid 750-row conditions are replayable; test450 is excluded.",
   "families": [
     {
-      "value": "gan2026_validation750_gemini37flash_llm_with_rules",
-      "run_id": "gan2026_validation750_gemini37flash_llm_with_rules",
-      "label": "Gemini 3.7 Flash",
-      "display_label": "Gemini 3.7 Flash · LLM + rules",
-      "model_label": "Gemini 3.7 Flash",
-      "executable": false,
-      "kind": "llm_with_rules",
-      "active_method": "llm_with_rules",
-      "architecture_family": "llm_with_rules",
-      "pipeline_family": "llm_with_rules",
-      "model": "gemini/gemini-3.7-flash",
-      "comparison_role": "winner",
-      "availability": "replay",
-      "evidence_scope": "validation750_row_level",
-      "has_replay_artifact": true,
-      "split": "validation750",
-      "prompt_version": "gan2026_hybrid_structured_events_v0.7",
-      "repair_mode": "hybrid_full_stack",
-      "run_count": 1,
-      "progress": {
-        "completed_rows": 750,
-        "expected_rows": 750
-      },
-      "metrics": {
-        "row_count": 750,
-        "purist_correct": 676,
-        "purist_accuracy": 0.9013,
-        "pragmatic_correct": 696,
-        "pragmatic_accuracy": 0.928
-      }
-    },
-    {
       "value": "gan2026_validation750_gpt56luna_llm_with_rules",
       "run_id": "gan2026_validation750_gpt56luna_llm_with_rules",
       "label": "GPT-5.6 Luna",
@@ -65,6 +33,38 @@
         "purist_accuracy": 0.8867,
         "pragmatic_correct": 685,
         "pragmatic_accuracy": 0.9133
+      }
+    },
+    {
+      "value": "gan2026_validation750_gemini37flash_llm_with_rules",
+      "run_id": "gan2026_validation750_gemini37flash_llm_with_rules",
+      "label": "Gemini 3.7 Flash",
+      "display_label": "Gemini 3.7 Flash · LLM + rules",
+      "model_label": "Gemini 3.7 Flash",
+      "executable": false,
+      "kind": "llm_with_rules",
+      "active_method": "llm_with_rules",
+      "architecture_family": "llm_with_rules",
+      "pipeline_family": "llm_with_rules",
+      "model": "gemini/gemini-3.7-flash",
+      "comparison_role": "winner",
+      "availability": "replay",
+      "evidence_scope": "validation750_row_level",
+      "has_replay_artifact": true,
+      "split": "validation750",
+      "prompt_version": "gan2026_hybrid_structured_events_v0.7",
+      "repair_mode": "hybrid_full_stack",
+      "run_count": 1,
+      "progress": {
+        "completed_rows": 750,
+        "expected_rows": 750
+      },
+      "metrics": {
+        "row_count": 750,
+        "purist_correct": 676,
+        "purist_accuracy": 0.9013,
+        "pragmatic_correct": 696,
+        "pragmatic_accuracy": 0.928
       }
     },
     {
@@ -196,32 +196,6 @@
       }
     },
     {
-      "value": "gan2026_validation750_gemini37flash_llm_only",
-      "run_id": "gan2026_validation750_gemini37flash_llm_only",
-      "label": "Gemini 3.7 Flash",
-      "display_label": "Gemini 3.7 Flash · in progress",
-      "model_label": "Gemini 3.7 Flash",
-      "executable": false,
-      "kind": "llm",
-      "active_method": "llm",
-      "architecture_family": "llm",
-      "pipeline_family": "llm",
-      "model": "gemini/gemini-3.7-flash",
-      "comparison_role": "diagnostic",
-      "availability": "not_retained",
-      "evidence_scope": "incomplete_not_served",
-      "has_replay_artifact": false,
-      "split": "validation750",
-      "prompt_version": "gan2026_llm_only_canonical_pipeline_v0.8",
-      "repair_mode": "model_selected_evidence_benchmark_adapter",
-      "run_count": 0,
-      "progress": {
-        "completed_rows": 0,
-        "expected_rows": 750
-      },
-      "unavailable_reason": "This condition is incomplete; partial validation rows are not served."
-    },
-    {
       "value": "gan2026_validation750_gpt56luna_llm_only",
       "run_id": "gan2026_validation750_gpt56luna_llm_only",
       "label": "GPT-5.6 Luna",
@@ -251,6 +225,38 @@
         "purist_accuracy": 0.744,
         "pragmatic_correct": 580,
         "pragmatic_accuracy": 0.7733
+      }
+    },
+    {
+      "value": "gan2026_validation750_gemini37flash_llm_only",
+      "run_id": "gan2026_validation750_gemini37flash_llm_only",
+      "label": "Gemini 3.7 Flash",
+      "display_label": "Gemini 3.7 Flash · LLM only",
+      "model_label": "Gemini 3.7 Flash",
+      "executable": false,
+      "kind": "llm",
+      "active_method": "llm",
+      "architecture_family": "llm",
+      "pipeline_family": "llm",
+      "model": "gemini/gemini-3.7-flash",
+      "comparison_role": "diagnostic",
+      "availability": "replay",
+      "evidence_scope": "validation750_row_level",
+      "has_replay_artifact": true,
+      "split": "validation750",
+      "prompt_version": "gan2026_llm_only_canonical_pipeline_v0.8",
+      "repair_mode": "model_selected_evidence_benchmark_adapter",
+      "run_count": 1,
+      "progress": {
+        "completed_rows": 750,
+        "expected_rows": 750
+      },
+      "metrics": {
+        "row_count": 750,
+        "purist_correct": 578,
+        "purist_accuracy": 0.7707,
+        "pragmatic_correct": 607,
+        "pragmatic_accuracy": 0.8093
       }
     },
     {
