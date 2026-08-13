@@ -109,11 +109,7 @@ export function GanErrorGallery() {
     <SurfaceLayout
       variant="fill"
       header={
-        <SurfaceHeader
-          surface="gallery"
-          dataset={gan2026Dataset}
-          description="Residual seizure-frequency errors grouped by type, with severity, evidence, and run-to-run comparison. Populated from the runs selected in Aggregate Performance."
-        />
+        <SurfaceHeader surface="gallery" dataset={gan2026Dataset} />
       }
     >
       <div className="min-h-0 flex-1 overflow-y-auto">

@@ -7,8 +7,7 @@ import { useArchitectUrlSync } from "@/lib/hooks";
 import StageStrip from "@/components/architect/StageStrip";
 import StageInspector from "@/components/architect/StageInspector";
 import ArchitectNoteRenderer from "@/components/architect/ArchitectNoteRenderer";
-import { gan2026Dataset } from "@/lib/datasets/gan2026";
-import { SurfaceHeader, SurfaceLayout, SurfaceLink, ExplorerBody } from "@/components/surface";
+import { SurfaceLayout, ExplorerBody } from "@/components/surface";
 import { isGanAggregateRunId } from "@/lib/ganPipelineOptions";
 
 function PatientNoteMeta({ aggregateOnly }: { aggregateOnly: boolean }) {
@@ -81,22 +80,7 @@ export function GanExampleExplorer() {
   const selectedRunId = useArchitectStore((state) => state.selectedRunId);
   const aggregateOnly = isGanAggregateRunId(selectedRunId);
   return (
-    <SurfaceLayout
-      variant="fill"
-      header={
-        <SurfaceHeader
-          surface="workbench"
-          dataset={gan2026Dataset}
-          description="Trace one note through the pipeline stage by stage: candidates, normalisation, selection, repair, and scoring."
-          right={
-            <>
-              <SurfaceLink surface="observatory" datasetId="gan2026" label="Aggregate" />
-              <SurfaceLink surface="gallery" datasetId="gan2026" label="Errors" />
-            </>
-          }
-        />
-      }
-    >
+    <SurfaceLayout variant="fill">
       <TraceControls />
       <StageStrip />
       <ExplorerBody

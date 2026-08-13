@@ -189,11 +189,7 @@ export default function ReportBuilder() {
     <SurfaceLayout
       variant="fill"
       header={
-        <SurfaceHeader
-          surface="observatory"
-          dataset={gan2026Dataset}
-          description="Compare pipeline runs side by side: strict/lenient label match, micro-F1, and the validation→test generalisation gap."
-        />
+        <SurfaceHeader surface="observatory" dataset={gan2026Dataset} />
       }
     >
       {/* Tab bar */}

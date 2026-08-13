@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { FileText, Layers3 } from "lucide-react";
 import LetterRenderer from "@/components/observatory/LetterRenderer";
-import { exectv2Dataset, EXECTV2_FAMILIES } from "@/lib/datasets";
+import { EXECTV2_FAMILIES } from "@/lib/datasets";
 import type {
   Exectv2Entity,
   Exectv2LetterRecord,
@@ -11,13 +11,11 @@ import type {
   Exectv2RunSummary,
 } from "@/lib/types";
 import {
-  SurfaceHeader,
   SurfaceLayout,
   SurfaceLoading,
   SurfaceError,
   SurfaceEmpty,
   MetricChips,
-  SurfaceLink,
   ControlBar,
   ControlField,
   ControlSelect,
@@ -362,7 +360,7 @@ export default function Exectv2ExampleExplorer() {
 
   if (!selectedRun || !selectedLetter) {
     return (
-      <SurfaceLayout variant="fill" header={<SurfaceHeader surface="workbench" dataset={exectv2Dataset} />}>
+      <SurfaceLayout variant="fill">
         <div className="p-5">
           <SurfaceEmpty message="No ExECTv2 architectures available." />
         </div>
@@ -383,26 +381,7 @@ export default function Exectv2ExampleExplorer() {
     }));
 
   return (
-    <SurfaceLayout
-      variant="fill"
-      header={
-        <SurfaceHeader
-          surface="workbench"
-          dataset={exectv2Dataset}
-          description="How a prediction matures per family, with evidence highlighting on the source letter."
-          right={
-            <>
-              <MetricChips chips={runMetricChips(selectedRun)} />
-              <span className="rounded border border-success/25 bg-success/10 px-2 py-1 text-[11px] font-medium text-success">
-                exact evidence {formatMetricValue(selectedRun.operational.exact_evidence_rate, "rate")}
-              </span>
-              <SurfaceLink surface="observatory" datasetId="exectv2" params={{ runs: selectedRun.run_id }} label="Aggregate" />
-              <SurfaceLink surface="gallery" datasetId="exectv2" params={{ runs: selectedRun.run_id }} label="Errors" />
-            </>
-          }
-        />
-      }
-    >
+    <SurfaceLayout variant="fill">
       {/* Control bar – specimen (letter) on the left, variant (architecture) on the right */}
       <ControlBar
         left={
@@ -446,6 +425,10 @@ export default function Exectv2ExampleExplorer() {
             <Exectv2ModeBadge run={selectedRun} />
             <span className="rounded border border-border bg-surface-raised px-1.5 py-0.5 font-mono text-[11px] text-muted">
               {selectedRun.split} / {selectedRun.row_count}
+            </span>
+            <MetricChips chips={runMetricChips(selectedRun)} />
+            <span className="rounded border border-success/25 bg-success/10 px-2 py-1 text-[11px] font-medium text-success">
+              exact evidence {formatMetricValue(selectedRun.operational.exact_evidence_rate, "rate")}
             </span>
           </ControlField>
         }

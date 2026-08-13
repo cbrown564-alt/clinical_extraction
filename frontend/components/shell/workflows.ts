@@ -3,6 +3,7 @@ import {
   AlertTriangle,
   BarChart3,
   Boxes,
+  CheckCircle2,
   ClipboardCheck,
   FileCheck,
   FileText,
@@ -60,10 +61,16 @@ export const APP_WORKFLOWS: AppWorkflow[] = [
     destinations: [
       { href: "/gold-audit", label: "Gold audit", scope: "dataset", Icon: FileCheck },
       {
-        href: "/clinical-review",
-        label: "Clinical review",
+        href: "/qualified-review",
+        label: "Correctness",
         scope: "exectv2",
         Icon: ClipboardCheck,
+      },
+      {
+        href: "/semantic-support-review",
+        label: "Semantic support",
+        scope: "exectv2",
+        Icon: CheckCircle2,
       },
       {
         href: "/gold-noise",
@@ -75,8 +82,10 @@ export const APP_WORKFLOWS: AppWorkflow[] = [
   },
 ];
 
+const REVIEW_PATHS = new Set(["/clinical-review", "/qualified-review", "/semantic-support-review"]);
+
 export function workflowForPath(pathname: string): AppWorkflow {
-  if (["/clinical-review", "/qualified-review", "/semantic-support-review"].includes(pathname)) {
+  if (REVIEW_PATHS.has(pathname)) {
     return APP_WORKFLOWS.find((workflow) => workflow.id === "assure") ?? APP_WORKFLOWS[0];
   }
   return (
@@ -87,6 +96,11 @@ export function workflowForPath(pathname: string): AppWorkflow {
 }
 
 export function destinationForPath(pathname: string): AppDestination | undefined {
+  if (pathname === "/clinical-review") {
+    return APP_WORKFLOWS.flatMap((workflow) => workflow.destinations).find(
+      (destination) => destination.href === "/semantic-support-review"
+    );
+  }
   return APP_WORKFLOWS.flatMap((workflow) => workflow.destinations).find(
     (destination) => destination.href === pathname
   );

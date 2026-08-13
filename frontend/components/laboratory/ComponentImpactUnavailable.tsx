@@ -14,11 +14,7 @@ export default function ComponentImpactUnavailable({
     <SurfaceLayout
       variant="report"
       header={
-        <SurfaceHeader
-          surface="laboratory"
-          dataset={dataset}
-          description="Component-impact ladder is not available for this dataset on the supervisor path."
-        />
+        <SurfaceHeader surface="laboratory" dataset={dataset} />
       }
     >
       <section className="rounded-md border border-border bg-surface p-5">

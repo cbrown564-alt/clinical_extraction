@@ -11,7 +11,7 @@ interface SurfaceLayoutProps {
    * (workbench split panes).
    */
   variant: SurfaceVariant;
-  /** The shared {@link SurfaceHeader}, pinned above the body. */
+  /** Optional report title bar. Fill/workspace surfaces omit this. */
   header?: ReactNode;
   /** Max content width for the `report` variant. */
   maxWidth?: number;
