@@ -33,7 +33,9 @@ values and adjudication rule are in the
 
 If Gan LLM and LLM-with-rules controls in the workbench say “not retained”,
 the explorer is looking for complete July 18 `validation750` row files under
-`scratch/validation/gan2026_six_model_comparison_20260718/`. See
+`experiments/gan2026_six_model_validation_20260718/`. ExECT `dev140` is the
+separate catalog built from
+`experiments/exectv2_six_model_single_call_*_dev140_20260715.*`. See
 [the artifact check](../docs/runbooks/gan_workbench_validation_replay_artifacts.md).
 
 The API builds its disposable local trace index on first start. Reviewer decisions and

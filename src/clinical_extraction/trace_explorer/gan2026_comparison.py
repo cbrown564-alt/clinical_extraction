@@ -1,8 +1,11 @@
 """Discover governed Gan validation750 artifacts for the trace explorer.
 
 Only complete rows from the predeclared six-model validation comparison are
-replayable. Partial conditions remain visible as progress metadata but their
-rows are never served.
+replayable. The configured tree is
+`experiments/gan2026_six_model_validation_20260718/`. Nested leftover
+scratch paths are still accepted if a config points there. Partial
+conditions remain visible as progress metadata but their rows are never
+served.
 """
 
 from __future__ import annotations
@@ -64,7 +67,7 @@ def discover_gan2026_validation_runs(
             configured_condition = configured[condition.slug]
             if configured_condition["model"] != condition.route:
                 raise ValueError(f"configured model mismatch for {condition.slug}")
-            path = artifact_root / condition.slug / method_name / "validation750.rows.jsonl"
+            path = _condition_rows_path(artifact_root, condition.slug, method_name)
             inspection = _inspect_rows(
                 path,
                 expected_indices=expected_indices,
@@ -120,6 +123,15 @@ def discover_gan2026_validation_runs(
         registry_entries=tuple(registry),
         replay_artifacts=artifacts,
     )
+
+
+def _condition_rows_path(artifact_root: Path, slug: str, method_name: str) -> Path:
+    """Resolve a cell under either the nested scratch tree or the retained flat tree."""
+
+    nested = artifact_root / slug / method_name / "validation750.rows.jsonl"
+    if nested.is_file():
+        return nested
+    return artifact_root / f"{slug}--{method_name}.jsonl"
 
 
 def _inspect_rows(

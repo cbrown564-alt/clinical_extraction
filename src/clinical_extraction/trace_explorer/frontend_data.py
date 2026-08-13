@@ -187,7 +187,12 @@ class FrontendDataStore:
         config = json.loads(config_path.read_text(encoding="utf-8"))
         repo_root = config_path.parent.parent.parent
         artifact_root = repo_root / str(config["artifact_root"])
-        paths = [config_path, *artifact_root.glob("*/*/validation750.rows.jsonl")]
+        paths = [
+            config_path,
+            *artifact_root.glob("*/*/validation750.rows.jsonl"),
+            *artifact_root.glob("*--llm_only.jsonl"),
+            *artifact_root.glob("*--llm_with_rules.jsonl"),
+        ]
         return tuple(
             sorted(
                 (str(path.resolve()), path.stat().st_size, path.stat().st_mtime_ns)
