@@ -1,0 +1,35 @@
+{
+  "protocol": "docs/research/gan2026/gemini37flash_llm_only_dev750_test450_protocol_2026-08-13.md",
+  "decision": "docs/decisions/0051-gemini-37-flash-succeeds-gpt41mini-six-model-slot.md",
+  "dataset": "Gan 2026",
+  "split_manifest": "gan2026_split_v1",
+  "model": "gemini/gemini-3.7-flash",
+  "slug": "gemini37flash",
+  "thinking": "reasoning_effort=low",
+  "temperature": 0,
+  "max_tokens": 16000,
+  "dspy_cache": false,
+  "method": {
+    "method": "llm_only",
+    "pipeline": "llm",
+    "prompt_version": "gan2026_llm_only_canonical_pipeline_v0.8",
+    "repair_mode": "model_selected_evidence_benchmark_adapter"
+  },
+  "cells": {
+    "dev750": {
+      "split": "validation",
+      "row_count": 750,
+      "row_policy": "development_row_level",
+      "jsonl": "experiments/gan2026_six_model_validation_20260718/gemini37flash--llm_only.jsonl",
+      "markdown": "experiments/gan2026_six_model_llm_only_gemini37flash_20260813/validation750.report.md"
+    },
+    "test450": {
+      "split": "test",
+      "row_count": 450,
+      "row_policy": "aggregate_only",
+      "jsonl": "scratch/holdout/gemini37flash_llm_only_20260813/gan_test450/sealed_rows.jsonl",
+      "markdown": "scratch/holdout/gemini37flash_llm_only_20260813/gan_test450/aggregate.md"
+    }
+  },
+  "claim_boundary": "Successor-roster Gan llm-only cells. Not a rewrite of Decision 0050/0052 hybrid fills, Decision 0046 Sol identity, or GPT-4.1-mini scores. test450 is aggregate-only."
+}
