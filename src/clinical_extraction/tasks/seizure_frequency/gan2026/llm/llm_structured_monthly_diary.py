@@ -318,6 +318,14 @@ def _monthly_diary_span_months(
 
 
 def _event_text(event: StructuredMonthlyDiaryEventLike) -> str:
-    return " ".join(
-        part for part in (event.evidence, event.raw_value, event.time_window, event.notes) if part
-    ).lower()
+    parts: list[str] = []
+    seen: set[str] = set()
+    for part in (event.evidence, event.raw_value, event.time_window, event.notes):
+        if not part:
+            continue
+        key = part.lower().strip()
+        if key in seen:
+            continue
+        seen.add(key)
+        parts.append(part)
+    return " ".join(parts).lower()

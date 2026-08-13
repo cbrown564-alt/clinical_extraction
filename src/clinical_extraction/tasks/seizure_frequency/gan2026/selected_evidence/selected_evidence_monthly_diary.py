@@ -87,20 +87,39 @@ def _date_list_diary_label_from_selected_evidence(text: str) -> str | None:
 
 
 def _calendar_log_label_from_selected_evidence(text: str) -> str | None:
-    entries = re.findall(
-        r"\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s*x\s*(\d+)\b",
+    month = r"jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec"
+    counts_by_month: dict[tuple[str, int | None], int] = {}
+    last_year: int | None = None
+    for match in re.finditer(
+        rf"(?:(?P<year>\d{{4}})\s*:)|\b(?P<month>{month})[a-z]*\s*x\s*(?P<count>\d+)\b",
         text,
-    )
-    if len(entries) < 2:
-        entries = re.findall(
-            r"\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)"
-            r"[a-z]*\s*:\s*(\d+)\s+days?\b",
+        flags=re.IGNORECASE,
+    ):
+        if match.group("year"):
+            last_year = int(match.group("year"))
+            continue
+        month_key = match.group("month").lower()[:3]
+        counts_by_month.setdefault((month_key, last_year), int(match.group("count")))
+    if len(counts_by_month) < 2:
+        counts_by_month = {}
+        last_year = None
+        for match in re.finditer(
+            rf"(?:(?P<year>\d{{4}})\s*:)|\b(?P<month>{month})"
+            r"[a-z]*\s*:\s*(?P<count>\d+)\s+days?\b",
             text,
-        )
-    if len(entries) < 2:
+            flags=re.IGNORECASE,
+        ):
+            if match.group("year") and match.group("month") is None:
+                last_year = int(match.group("year"))
+                continue
+            if match.group("month") is None:
+                continue
+            month_key = match.group("month").lower()[:3]
+            counts_by_month.setdefault((month_key, last_year), int(match.group("count")))
+    if len(counts_by_month) < 2:
         return None
     return format_prediction_rate(
-        f"{sum(int(value) for value in entries)} per {len(entries)}",
+        f"{sum(counts_by_month.values())} per {len(counts_by_month)}",
         "month",
     )
 

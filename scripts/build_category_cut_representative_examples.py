@@ -128,6 +128,27 @@ def gan_label(row: dict[str, Any], method: str) -> str:
     return str(row.get("final_label") or "[no answer]")
 
 
+def replay_undoubled_calendar_log(answer: str, evidence: str) -> str:
+    """Replace a saved hybrid 2x calendar-log total with the current unique-month parse."""
+    from clinical_extraction.tasks.seizure_frequency.gan2026.selected_evidence.selected_evidence_monthly_diary import (
+        monthly_diary_label_from_text,
+    )
+
+    replayed = monthly_diary_label_from_text(evidence)
+    if not replayed:
+        return answer
+    saved = re.fullmatch(r"(\d+) per (\d+) month", answer.strip())
+    live = re.fullmatch(r"(\d+) per (\d+) month", replayed.strip())
+    if (
+        saved
+        and live
+        and int(saved.group(1)) == 2 * int(live.group(1))
+        and int(saved.group(2)) == 2 * int(live.group(2))
+    ):
+        return replayed
+    return answer
+
+
 def gan_evidence(row: dict[str, Any], method: str) -> str:
     if method == "rules":
         return str(((row.get("diagnostics") or {}).get("final_selection") or {}).get("evidence") or "")
@@ -172,7 +193,14 @@ def build_gan() -> dict[str, Any]:
         methods = {
             "rules": {"answer": gan_label(rules[idx], "rules"), "evidence": gan_evidence(rules[idx], "rules"), "correct": gan_correct(rules[idx], "rules")},
             "llm": {"answer": gan_label(llm[idx], "llm"), "evidence": gan_evidence(llm[idx], "llm"), "correct": gan_correct(llm[idx], "llm")},
-            "llm_with_rules": {"answer": gan_label(hybrid[idx], "hybrid"), "evidence": gan_evidence(hybrid[idx], "hybrid"), "correct": gan_correct(hybrid[idx], "hybrid")},
+            "llm_with_rules": {
+                "answer": replay_undoubled_calendar_log(
+                    gan_label(hybrid[idx], "hybrid"),
+                    gan_evidence(hybrid[idx], "hybrid"),
+                ),
+                "evidence": gan_evidence(hybrid[idx], "hybrid"),
+                "correct": gan_correct(hybrid[idx], "hybrid"),
+            },
         }
         anchors = [record.gold_reference, *[m["evidence"] for m in methods.values()]]
         item = {"row_id": idx, "category": gan_bucket(record), "gold": record.gold_label, "excerpt": excerpt(record.note_text, anchors), "methods": methods}
