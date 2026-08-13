@@ -364,14 +364,14 @@
     {
       "stage_id": "gan.llm_with_rules.repair.elapsed_anchor",
       "name": "Repair 10 - elapsed since anchor",
-      "operation": "Derive a seizure-free duration from the elapsed time since the last dated event, unless the sustained seizure-free guard preserves the existing label.",
+      "operation": "When the selected answer is seizure-free since a dated anchor, count months from that date to the clinic date. A last-event rate rewrite can still be computed and then withheld by the sustained seizure-free guard.",
       "owner": "deterministic",
       "rule_category": "seizure_frequency",
       "effect_class": "clinical_meaning",
       "input_type": "StructuredExtractionRecord plus current label plus note text",
-      "input_example": "'last seizure was in March' in a letter dated September",
+      "input_example": "'Seizure-free since 27 March 2024' in a letter dated 29 September 2024",
       "output_type": "repaired label (str)",
-      "output_example": "a seizure-free label over the elapsed window",
+      "output_example": "seizure free for 6 month",
       "implementation": {
         "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
         "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:elapsed_since_anchor_label_from_events"
@@ -380,7 +380,7 @@
       "trace_fields": [
         "row_trace.deterministic_semantic.events"
       ],
-      "paper_wording": "A deterministic repair converts an elapsed interval since the last dated seizure into a seizure-free window."
+      "paper_wording": "A deterministic repair converts a seizure-free since-date into a month duration against the clinic date."
     },
     {
       "stage_id": "gan.llm_with_rules.scorable_label_check",

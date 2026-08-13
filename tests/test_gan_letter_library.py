@@ -63,19 +63,16 @@ def test_diary_letter_recomputes_the_span_rate():
     assert str(fired[0].output_value) == "4 per 6 month"
 
 
-def test_seizure_free_letter_surfaces_the_preservation_standdown():
+def test_seizure_free_letter_surfaces_elapsed_since_date_duration():
     free = build_gan_letter_library()[1]
     runs = _runs_by_method(free)
 
-    # Every method is right on this letter; the interest is what the repair
-    # layer declines to do.
     assert all(run.correct is True for run in runs.values())
 
     hybrid = runs["gan2026_llm_with_rules"]
     elapsed = _repair_observations(hybrid, "elapsed_anchor")
     assert len(elapsed) == 1
     obs = elapsed[0]
-    assert obs.changed is False
-    assert str(obs.input_value) == str(obs.output_value)
-    assert "computed 1 per 15 month" in obs.note
-    assert "withheld by the preservation rule" in obs.note
+    assert obs.changed is True
+    assert str(obs.input_value) == "seizure free for multiple month"
+    assert str(obs.output_value) == "seizure free for 15 month"

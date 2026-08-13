@@ -6,6 +6,10 @@ import re
 from collections.abc import Sequence
 from typing import Protocol
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.temporal import (
+    ParsedMonthDate,
+    month_span_floor,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_temporal import (
     clinic_date,
     clinic_month_year,
@@ -15,6 +19,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_temp
     elapsed_months,
     elapsed_months_from_nearest_event_date,
     elapsed_months_from_nearest_event_date_precise,
+    event_date,
     event_month_year,
     event_text,
     month_number,
@@ -268,12 +273,86 @@ def post_change_burst_label_from_events(
     return f"{count} per {duration}"
 
 
+_SEIZURE_FREE_SINCE_DATE = re.compile(
+    r"\b(?:seizure[-\s]free|remission|no\s+(?:events?|seizures?))\s+since\s+"
+    r"(?P<date>\d{1,2}\s+[a-z]+\s+\d{4}|"
+    r"\d{1,2}[-/]\d{1,2}[-/]\d{2,4}|"
+    r"\d{1,2}[-/][a-z]+[-/]\d{2,4}|"
+    r"[a-z]+\s+\d{4})\b",
+    re.IGNORECASE,
+)
+_NUMERIC_SEIZURE_FREE = re.compile(
+    r"^seizure free for \d+(?:\.\d+)?(?: to \d+(?:\.\d+)?)? (?:month|year)$"
+)
+
+
+def _seizure_free_since_date_duration_label(
+    extraction: StructuredRepairExtractionLike,
+    repaired_label: str,
+    *,
+    note_text: str | None,
+) -> str | None:
+    """Turn 'seizure-free since <date>' into a clinic-anchored month duration."""
+    if not (repaired_label or "").lower().startswith("seizure free"):
+        return None
+    if _NUMERIC_SEIZURE_FREE.fullmatch((repaired_label or "").strip()):
+        return None
+    clinic = clinic_date(note_text or "")
+    if clinic is None:
+        return None
+    joined = " ".join(
+        part
+        for part in (
+            repaired_label,
+            extraction.selection.final_label,
+            extraction.selection.evidence,
+            extraction.selection.rationale,
+            *(
+                " ".join(
+                    piece
+                    for piece in (event.evidence, event.raw_value, event.time_window)
+                    if piece
+                )
+                for event in extraction.events
+                if event.kind in {"seizure_free", "last_event_only"}
+            ),
+        )
+        if part
+    )
+    since_match = _SEIZURE_FREE_SINCE_DATE.search(joined)
+    if since_match is None:
+        return None
+    date_text = since_match.group("date")
+    start = event_date(date_text, clinic=clinic)
+    if start is not None:
+        start_parsed = ParsedMonthDate(start.year, start.month, start.day)
+    else:
+        month_year = event_month_year(date_text, clinic_year=clinic.year)
+        if month_year is None:
+            return None
+        start_parsed = ParsedMonthDate(month_year[1], month_year[0])
+    months = month_span_floor(
+        start_parsed,
+        ParsedMonthDate(clinic.year, clinic.month, clinic.day),
+    )
+    if months is None:
+        return None
+    return f"seizure free for {months} month"
+
+
 def elapsed_since_anchor_label_from_events(
     extraction: StructuredRepairExtractionLike,
     repaired_label: str,
     *,
     note_text: str | None = None,
 ) -> str | None:
+    duration_label = _seizure_free_since_date_duration_label(
+        extraction,
+        repaired_label,
+        note_text=note_text,
+    )
+    if duration_label:
+        return duration_label
     clinic = clinic_month_year(note_text or "")
     if clinic is None:
         return None

@@ -318,10 +318,9 @@ GAN_FREE_NOTE_TEXT = (
 )
 GAN_FREE_GOLD_LABEL = "seizure free since March 2025"
 
-# Fixture standing in for one LLM-with-rules structured call. Here the model
-# is right: it selects the sustained seizure-free event. The interest is what
-# the repair layer declines to do - the elapsed-anchor family computes a
-# benchmark rate and the preservation rule withholds it.
+# Fixture standing in for one LLM-with-rules structured call. The model
+# selects the sustained seizure-free event. Elapsed-anchor then converts
+# "since March 2025" plus the clinic date into a month duration.
 GAN_FREE_HYBRID_RAW_OUTPUT = json.dumps(
     {
         "events": [
@@ -372,17 +371,15 @@ GAN_FREE_SPEC = GanCaseSpec(
     gold=GAN_FREE_GOLD_LABEL,
     gold_reference="He has remained seizure-free since March 2025",
     gold_note=(
-        "A stated sustained seizure-free period is the answer. The "
-        "elapsed-anchor repair can express the same fact as a benchmark rate "
-        "('1 per 15 month'), but the preservation rule keeps the model's "
-        "well-supported seizure-free answer instead - watch the repair walk "
-        "normalize the phrasing and then decline to fire."
+        "A stated sustained seizure-free period is the answer. Format repair "
+        "first turns 'since March 2025' into a vague month window; "
+        "elapsed-anchor then counts clinic date minus that anchor and "
+        "writes 'seizure free for 15 month'."
     ),
     story=(
-        "The model is right, and the repair layer shows both halves of its "
-        "judgement: one family normalizes the phrasing, then the "
-        "elapsed-anchor family computes a rate and a preservation rule "
-        "withholds it."
+        "The model is right about seizure freedom. Repair then does the "
+        "date arithmetic the model left implicit: since March 2025, "
+        "seen in June 2026, is fifteen months."
     ),
     card_why={
         "rules": (
@@ -394,21 +391,18 @@ GAN_FREE_SPEC = GanCaseSpec(
             "shows the method can also be right."
         ),
         "llm_with_rules": (
-            "One family normalizes the phrasing; the elapsed-anchor family "
-            "computes a benchmark rate and a preservation rule withholds it. "
-            "Both halves of repair judgement."
+            "Selected-evidence first makes the phrasing scorable. "
+            "Elapsed-anchor then turns the since-date into a month duration "
+            "against the clinic date."
         ),
     },
-    mechanism_title="When the repair layer stands down",
+    mechanism_title="Elapsed since-date becomes a duration",
     mechanism=(
-        "The model selects the seizure-free statement - correctly, for once. "
-        "The selected-evidence repair still normalizes the phrasing "
-        "('seizure free since March 2025' becomes 'seizure free for multiple "
-        "year'), and then the elapsed-anchor family computes the benchmark "
-        "rate '1 per 15 month' from the anchor date. A preservation rule "
-        "withholds it: the model's sustained seizure-free answer is well "
-        "supported, so the rewrite is declined. Repairs are gated by what "
-        "they would destroy."
+        "The model selects the seizure-free statement. Selected-evidence "
+        "canonicalizes 'since March 2025' to 'seizure free for multiple "
+        "month'. Elapsed-anchor then subtracts that month from the clinic "
+        "date (12 June 2026) and rewrites the label to "
+        "'seizure free for 15 month'."
     ),
     hybrid_raw_output=GAN_FREE_HYBRID_RAW_OUTPUT,
     llm_only_raw_output=GAN_FREE_LLM_ONLY_RAW_OUTPUT,

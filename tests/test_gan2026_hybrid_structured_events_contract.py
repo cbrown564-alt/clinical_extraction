@@ -111,6 +111,50 @@ def test_parse_structured_json_can_compute_final_label_from_selected_event() -> 
     assert errors == []
 
 
+def test_elapsed_anchor_converts_seizure_free_since_date_to_month_duration() -> None:
+    evidence = (
+        "Seizure-free since 27 March 2024 as per patient and collateral reports."
+    )
+    raw = json.dumps(
+        {
+            "events": [
+                {
+                    "event_id": "e1",
+                    "kind": "seizure_free",
+                    "raw_value": "seizure free since 27 March 2024",
+                    "applies_to": "seizures",
+                    "time_window": "since 27 March 2024",
+                    "temporality": "current",
+                    "assertion_status": "asserted",
+                    "evidence": evidence,
+                    "notes": None,
+                }
+            ],
+            "selection": {
+                "selected_event_ids": ["e1"],
+                "final_kind": "seizure_free",
+                "final_label": "seizure free since 27 March 2024",
+                "evidence": evidence,
+                "confidence": "high",
+                "rationale": "The note states seizure freedom since 27 March 2024.",
+            },
+        }
+    )
+    note = (
+        "Clinic Date: 29 September 2024\n"
+        "Seizure-free since 27 March 2024 as per patient and collateral reports."
+    )
+
+    extraction, _, errors = parse_structured_json(raw, note_text=note)
+
+    assert extraction is not None
+    assert extraction.selection.final_label == "seizure free for 6 month"
+    assert any(
+        "seizure free for 6 month" in str(error) and "final_label_repaired" in str(error)
+        for error in errors
+    )
+
+
 def test_run_split_reuses_raw_outputs_without_new_call(tmp_path: Path) -> None:
     reuse_path = tmp_path / "prior.jsonl"
     reuse_path.write_text(
