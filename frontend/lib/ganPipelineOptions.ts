@@ -8,7 +8,6 @@ const MODEL_ORDER = [
   "deepseek/deepseek-v4-flash",
   "ollama_chat/qwen3.6:35b",
   "ollama_chat/gemma4:26b",
-  "openai/gpt-4.1-mini",
 ];
 
 const GROUPS: Array<{ method: ActiveMethod; label: string }> = [

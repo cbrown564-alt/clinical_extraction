@@ -51,19 +51,33 @@ class RetainedModelRun:
     slug: str
     label: str
     model: str
+    package_date: str = "20260715"
 
     @property
     def summary_name(self) -> str:
-        return f"exectv2_six_model_single_call_{self.slug}_dev140_20260715.json"
+        return (
+            f"exectv2_six_model_single_call_{self.slug}_dev140_{self.package_date}.json"
+        )
 
     @property
     def rows_name(self) -> str:
-        return f"exectv2_six_model_single_call_{self.slug}_dev140_20260715.jsonl"
+        return (
+            f"exectv2_six_model_single_call_{self.slug}_dev140_{self.package_date}.jsonl"
+        )
+
+    @property
+    def display_date(self) -> str:
+        return f"{self.package_date[:4]}-{self.package_date[4:6]}-{self.package_date[6:]}"
 
 
 RETAINED_MODEL_RUNS: tuple[RetainedModelRun, ...] = (
-    RetainedModelRun("gpt41mini", "GPT-4.1-mini", "openai/gpt-4.1-mini"),
     RetainedModelRun("gpt56luna", "GPT-5.6 Luna", "openai/gpt-5.6-luna"),
+    RetainedModelRun(
+        "gemini37flash",
+        "Gemini 3.7 Flash",
+        "gemini/gemini-3.7-flash",
+        package_date="20260813",
+    ),
     RetainedModelRun("gpt56sol", "GPT-5.6 Sol", "openai/gpt-5.6-sol"),
     RetainedModelRun(
         "deepseek_v4_flash",
@@ -199,7 +213,7 @@ def _model_run(
     "pipeline_family": "exectv2_model_led_key_family_event_ledger",
         "split": "dev140",
         "row_count": 140,
-        "date": "2026-07-15",
+        "date": retained.display_date,
         "decision": "control" if is_final else "diagnostic",
         "promotion_decision": "winning-mode comparison" if is_final else "raw comparator",
         "claim_boundary": MODEL_CLAIM_BOUNDARY,

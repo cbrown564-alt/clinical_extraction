@@ -84,6 +84,9 @@ def test_gan_hybrid_workbench_serves_current_stack_dev750_rows(
     sol = next(family for family in families.json()["families"] if family["run_id"] == run_id)
     assert sol["availability"] == "replay"
     assert sol["metrics"]["purist_correct"] == 671
+    models = {family["model"] for family in families.json()["families"]}
+    assert "gemini/gemini-3.7-flash" in models
+    assert "openai/gpt-4.1-mini" not in models
 
     artifact = client.get(f"/artifacts/{run_id}", params={"limit": 1})
     assert artifact.status_code == 200

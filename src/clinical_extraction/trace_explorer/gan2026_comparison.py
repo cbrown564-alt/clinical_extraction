@@ -25,8 +25,8 @@ class ModelCondition:
 
 
 MODEL_CONDITIONS = (
-    ModelCondition("gpt41mini", "openai/gpt-4.1-mini", "GPT-4.1-mini"),
     ModelCondition("gpt56luna", "openai/gpt-5.6-luna", "GPT-5.6 Luna"),
+    ModelCondition("gemini37flash", "gemini/gemini-3.7-flash", "Gemini 3.7 Flash"),
     ModelCondition("gpt56sol", "openai/gpt-5.6-sol", "GPT-5.6 Sol"),
     ModelCondition(
         "deepseek_v4_flash",
