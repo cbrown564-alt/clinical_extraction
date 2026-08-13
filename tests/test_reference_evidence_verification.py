@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "docs" / "experiments" / "retained_evidence_manifest.json"
 
 
+@pytest.mark.deep
 def test_all_six_retained_reference_cells_replay_without_model_calls() -> None:
     results = verify_reference_cells(load_retained_evidence_manifest(MANIFEST), repo_root=ROOT)
 

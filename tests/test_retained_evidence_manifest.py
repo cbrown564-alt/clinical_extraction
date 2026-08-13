@@ -8,6 +8,9 @@ import pytest
 import yaml
 
 from clinical_extraction.core.retained_evidence import (
+    _validate_architecture_freeze,
+    _validate_artifact,
+    is_content_addressed_retained_path,
     load_retained_evidence_manifest,
     validate_retained_evidence_manifest,
 )
@@ -25,14 +28,46 @@ def test_committed_retained_evidence_manifest_is_valid() -> None:
     )
 
 
+def test_content_addressed_paths_are_sealed_results_and_splits() -> None:
+    assert is_content_addressed_retained_path(
+        "experiments/example_rows.jsonl", retrieval="git_path"
+    )
+    assert is_content_addressed_retained_path(
+        "experiments/example_report.json", retrieval="git_path"
+    )
+    assert is_content_addressed_retained_path(
+        "data/ExECTv2 (2025)/splits/exectv2_split_v1.json", retrieval="git_path"
+    )
+    assert is_content_addressed_retained_path(
+        "experiments/large_rows.jsonl", retrieval="git_lfs"
+    )
+    assert not is_content_addressed_retained_path(
+        "configs/exectv2/finding_assembly/example.yaml", retrieval="git_path"
+    )
+    assert not is_content_addressed_retained_path(
+        "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/match.py",
+        retrieval="git_path",
+    )
+    assert not is_content_addressed_retained_path(
+        ".github/workflows/ci.yml", retrieval="git_path"
+    )
+    assert not is_content_addressed_retained_path(
+        "docs/canon/10_paper_provenance.md", retrieval="git_path"
+    )
+    assert not is_content_addressed_retained_path(
+        "pyproject.toml", retrieval="git_path"
+    )
+
+
 def test_retained_evidence_manifest_detects_hash_drift(tmp_path: Path) -> None:
-    artifact = tmp_path / "artifact.json"
+    artifact = tmp_path / "experiments" / "artifact.jsonl"
+    artifact.parent.mkdir(parents=True)
     artifact.write_text("{}\n", encoding="utf-8")
     manifest = deepcopy(load_retained_evidence_manifest(MANIFEST))
     first = manifest["reference_cells"][0]
     first["artifacts"] = [
         {
-            "path": "artifact.json",
+            "path": "experiments/artifact.jsonl",
             "sha256": hashlib.sha256(artifact.read_bytes()).hexdigest(),
             "bytes": artifact.stat().st_size + 1,
             "retrieval": "git_path",
@@ -45,6 +80,66 @@ def test_retained_evidence_manifest_detects_hash_drift(tmp_path: Path) -> None:
             repo_root=tmp_path,
             registry_path=REGISTRY,
         )
+
+
+def test_living_artifact_hash_drift_is_ignored(tmp_path: Path) -> None:
+    path = tmp_path / "configs" / "live.yaml"
+    path.parent.mkdir(parents=True)
+    path.write_text("views:\n  - post_lens\n", encoding="utf-8")
+    _validate_artifact(
+        {
+            "path": "configs/live.yaml",
+            "sha256": "0" * 64,
+            "bytes": 1,
+            "retrieval": "git_path",
+        },
+        record_id="example",
+        repo_root=tmp_path,
+        seen_artifacts={},
+    )
+
+
+def test_living_artifact_without_hash_is_presence_only(tmp_path: Path) -> None:
+    path = tmp_path / "docs" / "note.md"
+    path.parent.mkdir(parents=True)
+    path.write_text("note\n", encoding="utf-8")
+    _validate_artifact(
+        {"path": "docs/note.md", "retrieval": "git_path"},
+        record_id="example",
+        repo_root=tmp_path,
+        seen_artifacts={},
+    )
+
+
+def test_missing_living_artifact_still_fails(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="retained artifact is missing"):
+        _validate_artifact(
+            {"path": "configs/missing.yaml", "retrieval": "git_path"},
+            record_id="example",
+            repo_root=tmp_path,
+            seen_artifacts={},
+        )
+
+
+def test_living_freeze_policy_hash_drift_is_ignored(tmp_path: Path) -> None:
+    manifest = load_retained_evidence_manifest(MANIFEST)
+    freeze = deepcopy(manifest["architecture_freeze"])
+    policy_root = tmp_path
+    for policy in freeze["policy_files"]:
+        path = policy_root / policy["path"]
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("changed\n", encoding="utf-8")
+        if is_content_addressed_retained_path(policy["path"], retrieval="git_path"):
+            policy["sha256"] = hashlib.sha256(b"changed\n").hexdigest()
+            policy["bytes"] = len("changed\n")
+        else:
+            policy["sha256"] = "0" * 64
+            policy["bytes"] = 1
+    _validate_architecture_freeze(
+        freeze,
+        reference_cell_ids=set(freeze["reference_cell_ids"]),
+        repo_root=policy_root,
+    )
 
 
 def test_architecture_freeze_covers_every_reference_cell_and_policy_role() -> None:

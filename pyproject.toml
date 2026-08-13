@@ -46,6 +46,7 @@ target-version = "py311"
 extend-exclude = [
   "data",
   "literature",
+  "scripts",
   # Standalone supervisor delivery trees; linted separately from the research package.
   "handoff",
 ]

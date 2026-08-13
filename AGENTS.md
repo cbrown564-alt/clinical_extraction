@@ -22,6 +22,6 @@ Do not add another roadmap, status board, evidence register, or research canon. 
 
 Use the project skills whose descriptions match the task; their procedures and trigger rules belong in the skills, not here. Model-facing prompts, schemas, and field descriptions require the plain-language prompt audit.
 
-Run focused tests while iterating. Before a broad completion claim, activate `.venv` and run the relevant combination of `python -m pytest`, `ruff check .`, and `mypy src`. Do not run expensive model calls, inspect locked data, or regenerate broad artifacts merely to update documentation.
+Run focused tests while iterating. Before a broad completion claim, activate `.venv` and run the relevant combination of `python -m pytest`, `ruff check src tests`, and `mypy src`. Do not run expensive model calls, inspect locked data, or regenerate broad artifacts merely to update documentation.
 
 Pytest tiers follow [Decision 0049](docs/decisions/0049-pytest-research-validity-firewall.md): plain `pytest` is the always-on research-validity firewall (`-m "not deep"`). Use `pytest -m deep` only for the capped deep allowlist. New always-on cases must pass always-on admission and should replace or narrow an existing case for the same obligation. Terms: `CONTEXT.md` Verification.

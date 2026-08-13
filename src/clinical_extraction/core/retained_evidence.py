@@ -81,6 +81,37 @@ _TEXT_ARTIFACT_SUFFIXES = {
     ".yaml",
     ".yml",
 }
+_SEALED_RESULT_ROOTS = {"experiments"}
+_SEALED_RESULT_SUFFIXES = {".json", ".jsonl"}
+_SPLIT_MANIFEST_PARENT = "splits"
+_SPLIT_MANIFEST_ROOT = "data"
+
+
+def is_content_addressed_retained_path(
+    path_text: str, *, retrieval: str | None = None
+) -> bool:
+    """Return whether always-on validation hashes this retained path.
+
+    Content-addressed files are sealed result artifacts and split manifests.
+    Living source, configs, prompts, docs, and CI files are path-presence only.
+    """
+
+    if retrieval == "git_lfs":
+        return True
+    relative = Path(path_text)
+    suffix = relative.suffix.lower()
+    parts = relative.parts
+    if not parts or parts[0] == "..":
+        return False
+    if suffix == ".jsonl":
+        return True
+    if (
+        suffix == ".json"
+        and parts[0] == _SPLIT_MANIFEST_ROOT
+        and _SPLIT_MANIFEST_PARENT in parts
+    ):
+        return True
+    return parts[0] in _SEALED_RESULT_ROOTS and suffix in _SEALED_RESULT_SUFFIXES
 
 
 def load_retained_evidence_manifest(path: Path) -> Mapping[str, Any]:
@@ -95,7 +126,7 @@ def load_retained_evidence_manifest(path: Path) -> Mapping[str, Any]:
 def validate_retained_evidence_manifest(
     manifest: Mapping[str, Any], *, repo_root: Path, registry_path: Path
 ) -> None:
-    """Validate reference-cell coverage, provenance fields, paths, and hashes."""
+    """Validate reference-cell coverage, provenance fields, and sealed hashes."""
 
     if manifest.get("schema_version") != "retained-evidence-v3":
         raise ValueError("schema_version must be retained-evidence-v3")
@@ -188,17 +219,20 @@ def _validate_architecture_freeze(
         if path_text in paths:
             raise ValueError(f"duplicate frozen policy path: {path_text}")
         paths.add(path_text)
-        digest = _nonempty_text(policy, "sha256")
-        size = policy.get("bytes")
-        if len(digest) != 64 or any(character not in "0123456789abcdef" for character in digest):
-            raise ValueError(f"invalid frozen policy sha256: {path_text}")
-        if not isinstance(size, int) or isinstance(size, bool) or size < 0:
-            raise ValueError(f"invalid frozen policy byte size: {path_text}")
         path = _repo_file(repo_root, path_text, context="frozen policy")
         if not path.is_file():
             raise ValueError(f"frozen policy path is missing: {path_text}")
-        if _artifact_fingerprint(path) != (digest, size):
-            raise ValueError(f"frozen policy hash or size drift: {path_text}")
+        if is_content_addressed_retained_path(path_text, retrieval="git_path"):
+            digest = _nonempty_text(policy, "sha256")
+            size = policy.get("bytes")
+            if len(digest) != 64 or any(
+                character not in "0123456789abcdef" for character in digest
+            ):
+                raise ValueError(f"invalid frozen policy sha256: {path_text}")
+            if not isinstance(size, int) or isinstance(size, bool) or size < 0:
+                raise ValueError(f"invalid frozen policy byte size: {path_text}")
+            if _artifact_fingerprint(path) != (digest, size):
+                raise ValueError(f"frozen policy hash or size drift: {path_text}")
     if roles != _FREEZE_POLICY_ROLES:
         raise ValueError("architecture_freeze.policy_files must cover every policy role")
 
@@ -366,25 +400,26 @@ def _validate_artifact(
     if not isinstance(artifact, Mapping):
         raise ValueError(f"artifact in {record_id} must be an object")
     path_text = _nonempty_text(artifact, "path")
-    digest = _nonempty_text(artifact, "sha256")
-    size = artifact.get("bytes")
     retrieval = artifact.get("retrieval")
     if retrieval not in {"git_path", "git_lfs"}:
         raise ValueError(f"artifact retrieval in {record_id} must be git_path or git_lfs")
-
-    if len(digest) != 64 or any(char not in "0123456789abcdef" for char in digest):
-        raise ValueError(f"invalid sha256 for {path_text}")
-    if not isinstance(size, int) or isinstance(size, bool) or size < 0:
-        raise ValueError(f"invalid byte size for {path_text}")
 
     path = _repo_file(repo_root, path_text, context="artifact")
     if not path.is_file():
         raise ValueError(f"retained artifact is missing: {path_text}")
 
-    actual = _artifact_fingerprint(path)
-    expected = (digest, size)
-    if actual != expected:
-        raise ValueError(f"retained artifact hash or size drift: {path_text}")
+    content_addressed = is_content_addressed_retained_path(path_text, retrieval=retrieval)
+    expected: tuple[str, int] | None = None
+    if content_addressed:
+        digest = _nonempty_text(artifact, "sha256")
+        size = artifact.get("bytes")
+        if len(digest) != 64 or any(char not in "0123456789abcdef" for char in digest):
+            raise ValueError(f"invalid sha256 for {path_text}")
+        if not isinstance(size, int) or isinstance(size, bool) or size < 0:
+            raise ValueError(f"invalid byte size for {path_text}")
+        expected = (digest, size)
+        if _artifact_fingerprint(path) != expected:
+            raise ValueError(f"retained artifact hash or size drift: {path_text}")
     if retrieval == "git_lfs":
         lfs_oid = artifact.get("lfs_oid")
         if (
@@ -394,10 +429,11 @@ def _validate_artifact(
             or any(char not in "0123456789abcdef" for char in lfs_oid[7:])
         ):
             raise ValueError(f"invalid LFS object id: {path_text}")
-    prior = seen_artifacts.get(path_text)
-    if prior is not None and prior != expected:
-        raise ValueError(f"conflicting retained metadata for {path_text}")
-    seen_artifacts[path_text] = expected
+    if expected is not None:
+        prior = seen_artifacts.get(path_text)
+        if prior is not None and prior != expected:
+            raise ValueError(f"conflicting retained metadata for {path_text}")
+        seen_artifacts[path_text] = expected
 
 
 def _artifact_fingerprint(path: Path) -> tuple[str, int]:

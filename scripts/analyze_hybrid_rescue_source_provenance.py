@@ -166,7 +166,7 @@ def _classify_gan_rescue(
 ) -> str:
     selected_ids = set(extraction.selection.selected_event_ids)
     matching_ids: list[str] = []
-    for event, norm in zip(extraction.events, normalized):
+    for event, norm in zip(extraction.events, normalized, strict=True):
         candidates = [
             event.raw_value,
             getattr(norm, "normalized_label", None),
