@@ -50,7 +50,7 @@ export default function RootLayout({
             fallback={
               <header
                 aria-label="Application"
-                className="h-[89px] shrink-0 border-b border-border bg-surface shadow-sm"
+                className="h-10 shrink-0 border-b border-border bg-surface"
               />
             }
           >

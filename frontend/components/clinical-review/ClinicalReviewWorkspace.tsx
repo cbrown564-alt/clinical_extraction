@@ -1,14 +1,14 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { CheckCircle2, FileCheck2, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import QualifiedReviewWorkspace from "@/components/qualified-review/QualifiedReviewWorkspace";
 import SemanticSupportReviewWorkspace from "@/components/semantic-support-review/SemanticSupportReviewWorkspace";
 
 type ReviewTask = "correctness" | "semantic";
 
 export default function ClinicalReviewWorkspace({ defaultTask = "semantic" }: { defaultTask?: ReviewTask }) {
-  const [task, setTask] = useState<ReviewTask>(defaultTask);
+  const task = defaultTask;
   const [reviewerInput, setReviewerInput] = useState("");
   const [reviewerId, setReviewerId] = useState("");
 
@@ -56,18 +56,12 @@ export default function ClinicalReviewWorkspace({ defaultTask = "semantic" }: { 
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col">
-      <nav className="flex shrink-0 gap-1 border-b border-[var(--color-border)] bg-[var(--color-surface-raised)] px-3 py-2" aria-label="Clinical review task">
-        <button type="button" aria-pressed={task === "correctness"} onClick={() => setTask("correctness")} className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-xs font-semibold ${task === "correctness" ? "bg-[var(--color-foreground)] text-[var(--color-background)]" : "text-[var(--color-muted)] hover:text-[var(--color-foreground)]"}`}>
-          <FileCheck2 className="h-4 w-4" /> Correctness review
-        </button>
-        <button type="button" aria-pressed={task === "semantic"} onClick={() => setTask("semantic")} className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-xs font-semibold ${task === "semantic" ? "bg-[var(--color-foreground)] text-[var(--color-background)]" : "text-[var(--color-muted)] hover:text-[var(--color-foreground)]"}`}>
-          <CheckCircle2 className="h-4 w-4" /> Semantic support
-        </button>
-      </nav>
-      <div className="min-h-0 flex-1">
-        {task === "correctness" ? <QualifiedReviewWorkspace reviewerId={reviewerId} /> : <SemanticSupportReviewWorkspace reviewerId={reviewerId} />}
-      </div>
+    <div className="h-full min-h-0">
+      {task === "correctness" ? (
+        <QualifiedReviewWorkspace reviewerId={reviewerId} />
+      ) : (
+        <SemanticSupportReviewWorkspace reviewerId={reviewerId} />
+      )}
     </div>
   );
 }

@@ -16,7 +16,6 @@ export interface ComponentImpactSurfaceConfig<TAblation, TTransitions> {
   fetchTransitions: () => Promise<TTransitions>;
   adaptLadder: (data: TAblation) => ComponentLadder;
   dataset: DatasetDescriptor;
-  description: string;
   errorTitle: string;
   resolveSelectedId: (
     ladder: ComponentLadder,
@@ -88,7 +87,6 @@ export function createComponentImpactSurface<TAblation, TTransitions>(
       <ComponentLadderSurface
         ladder={ladder}
         dataset={config.dataset}
-        description={config.description}
         selectedArchitectureId={selectedId}
         onSelectArchitecture={(id) => {
           if (onArchitectureChange) {

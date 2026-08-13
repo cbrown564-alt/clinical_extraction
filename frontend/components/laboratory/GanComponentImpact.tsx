@@ -24,7 +24,6 @@ export default createComponentImpactSurface<
   fetchTransitions: fetchGan2026ComponentTransitions,
   adaptLadder: adaptGan2026Ladder,
   dataset: gan2026Dataset,
-  description: "How strict label-match accuracy builds up across each architecture's pipeline stages.",
   errorTitle: "Gan component data failed to load",
   resolveSelectedId: (ladder, activeId) => {
     const fromState = ladder.architectures.find((a) => a.id === activeId);

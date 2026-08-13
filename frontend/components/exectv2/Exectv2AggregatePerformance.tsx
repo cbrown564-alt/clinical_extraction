@@ -194,7 +194,6 @@ export default function Exectv2AggregatePerformance() {
         <SurfaceHeader
           surface="observatory"
           dataset={exectv2Dataset}
-          description="Clinical mention F1 by family across the selected architecture set. Select architectures to compare; the set flows into the Error Gallery."
           right={
             <>
               <span className="rounded border border-border bg-surface-raised px-2 py-0.5 text-[11px] text-muted">

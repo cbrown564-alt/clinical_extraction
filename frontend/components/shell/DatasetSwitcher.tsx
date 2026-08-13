@@ -85,17 +85,14 @@ export default function DatasetSwitcher() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         onKeyDown={onTriggerKeyDown}
-        className="flex min-h-9 items-center gap-2 rounded-md border border-border bg-surface-raised px-2.5 py-1.5 text-left transition-colors hover:bg-surface"
+        className="flex min-h-7 items-center gap-1.5 rounded-md px-2 py-1 text-left transition-colors hover:bg-surface-raised"
         aria-label={`Dataset: ${descriptor.label}. Switch dataset`}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={open ? listboxId : undefined}
       >
         <Database className="h-3.5 w-3.5 text-muted" />
-        <div className="leading-tight">
-          <span className="hidden text-[11px] font-medium uppercase tracking-wider text-muted sm:block">Dataset</span>
-          <span className="block text-xs font-semibold text-foreground">{descriptor.label}</span>
-        </div>
+        <span className="hidden text-xs font-semibold text-foreground sm:inline">{descriptor.label}</span>
         <ChevronDown className={`hidden h-3.5 w-3.5 text-muted transition-transform sm:block ${open ? "rotate-180" : ""}`} />
       </button>
 

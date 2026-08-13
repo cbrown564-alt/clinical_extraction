@@ -430,7 +430,6 @@ export interface WorkedExampleConfig {
 export interface ComponentLadderSurfaceProps {
   ladder: ComponentLadder;
   dataset: DatasetDescriptor;
-  description: string;
   selectedArchitectureId?: string;
   onSelectArchitecture: (id: string) => void;
   /** Extra header actions (cross-surface links, live-run controls). */
@@ -449,7 +448,6 @@ export interface ComponentLadderSurfaceProps {
 export default function ComponentLadderSurface({
   ladder,
   dataset,
-  description,
   selectedArchitectureId,
   onSelectArchitecture,
   headerRight,
@@ -494,7 +492,6 @@ export default function ComponentLadderSurface({
     <SurfaceHeader
       surface="laboratory"
       dataset={dataset}
-      description={description}
       right={
         <>
           {ladder.architectures.length > 1 && selected && (

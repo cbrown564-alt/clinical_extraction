@@ -374,7 +374,6 @@ export default function Exectv2ErrorGallery() {
         <SurfaceHeader
           surface="gallery"
           dataset={exectv2Dataset}
-          description="Mention-level residuals derived from gold↔predicted matching across the selected architectures. Each row links to its letter in the Example Explorer."
           right={
             <>
               <span className="rounded border border-border bg-surface-raised px-2 py-0.5 text-[11px] text-muted">
