@@ -78,7 +78,15 @@ _THEME_TAG_RE = re.compile(
     r"predominantly daytime|waxing and waning|fluctuates|"
     r"therapeutic levels|symptom-free intervals|"
     r"stable seizure control|seizure events (?:persist|continue)|"
-    r"injury related|only with)\b",
+    r"injury related|only with|rare brief|nocturnal predominance|"
+    r"sleep onset|alcohol intake|stress-related|photosensitive|"
+    r"flicker exposure|skipping meals|jet lag|"
+    r"clustering followed by quiescence|late luteal|work days|"
+    r"partial response|tolerability-limited|autonomic spells|"
+    r"behavioral arrest|home video|not captured on eeg|"
+    r"spells concerning|second half of the night|"
+    r"semiology evolving|nocturnal hypermotor|"
+    r"unclear direction)\b",
     re.IGNORECASE,
 )
 _DATE_RE = re.compile(
@@ -106,10 +114,68 @@ _RANGE_RE = re.compile(
     re.IGNORECASE,
 )
 _COUNT_PER_RE = re.compile(
+    rf"\b(?:\d+|{_NUMBER_WORDS})\s+per\s+"
+    rf"(?:(?:\d+|{_NUMBER_WORDS})\s+)?(?:{_UNITS})\b|"
+    rf"\b(?:once|twice|thrice)\s+(?:per|a|an|/)\s+(?:{_UNITS})\b|"
     rf"\b(?:\d+|{_NUMBER_WORDS})\s+"
-    rf"(?:seizures?|events?|episodes?|spells?|absences?|attacks?|times?)?\s*"
-    rf"(?:per|a|an|/|each)\s+(?:{_UNITS}|month|day|week|year)\b|"
-    rf"\b(?:once|twice|thrice)\s+(?:per|a|an|/)\s+(?:{_UNITS})\b",
+    rf"(?:[\w-]+\s+){{0,4}}"
+    rf"(?:seizures?|events?|episodes?|spells?|absences?|attacks?|times?)\s+"
+    rf"(?:per|a|an|/|each)\s+(?:\d+\s+)?(?:{_UNITS}|month|day|week|year)\b",
+    re.IGNORECASE,
+)
+_MONTH_NAME = (
+    r"(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|"
+    r"jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|"
+    r"dec(?:ember)?)"
+)
+_MONTH_BY_MONTH_RE = re.compile(
+    rf"\b(?:in|so far in)\s+{_MONTH_NAME}\b.{{0,80}}\b(?:in|and)\s+{_MONTH_NAME}\b|"
+    rf"\b{_MONTH_NAME}\b.{{0,40}}\b(?:in|and)\s+{_MONTH_NAME}\b.{{0,20}}"
+    rf"\b(?:in|and)\s+{_MONTH_NAME}\b",
+    re.IGNORECASE | re.DOTALL,
+)
+_DATED_EVENT_SEQUENCE_RE = re.compile(
+    r"\b(?:first|initial)\s+(?:seizure|event)\b|"
+    r"\bfirst experienced a seizure\b",
+    re.IGNORECASE,
+)
+_SECOND_EVENT_RE = re.compile(
+    r"\b(?:second|next|third)\s+(?:seizure|event)\b|"
+    r"\bnext seizure came\b|"
+    r"\bsecond and third event\b",
+    re.IGNORECASE,
+)
+_POST_CHANGE_BURST_RE = re.compile(
+    rf"\b(?:withdrew from|stopped on|discontinued)\b.{{0,120}}"
+    rf"\b(?:had|experienced)\s+(?:\d+|{_NUMBER_WORDS}|multiple)\s+seizures?\b",
+    re.IGNORECASE | re.DOTALL,
+)
+_LAST_THEN_QUIET_RE = re.compile(
+    r"\blast (?:reported |such )?(?:event|episode|seizure)\b.{0,80}"
+    r"\b(?:stable|well|no further|remained|since then|has been)\b",
+    re.IGNORECASE | re.DOTALL,
+)
+_QUIET_THEN_BREAKTHROUGH_RE = re.compile(
+    r"\bseizure[-\s]?free for\b.{0,40}\buntil\b",
+    re.IGNORECASE,
+)
+_CLUSTER_PARAPHRASE_RE = re.compile(
+    r"\b(?:batches|day of clustering|day with multiple events|"
+    r"followed by a day with multiple|in a brief series|"
+    r"run of (?:\d+|{_NUMBER_WORDS}) seizures?)\b",
+    re.IGNORECASE,
+)
+_ELECTROGRAPHIC_RE = re.compile(
+    r"\belectrographic seizures\b|\b~\s*\d+\s*/\s*h\b|\b\d+\s*/\s*h\b",
+    re.IGNORECASE,
+)
+_COUPLE_WINDOW_RE = re.compile(
+    rf"\ba couple of\b.{{0,40}}\b(?:last|past|this)\s+(?:{_UNITS})\b",
+    re.IGNORECASE,
+)
+_LAST_MAJOR_PLUS_SINCE_RE = re.compile(
+    r"\blast tonic[-\s]?clonic\b.{0,60}\bsince then\b|"
+    r"\bno further tonic[-\s]?clonic\b.{0,60}\balthough\b",
     re.IGNORECASE,
 )
 _HEDGE_RE = re.compile(
@@ -156,7 +222,16 @@ CONSTRUCTION_ORDER = (
     "clinical_shorthand",
     "slash_or_fraction_rate",
     "diary_or_calendar_log",
+    "month_by_month_count",
     "cluster_structure",
+    "cluster_paraphrase",
+    "electrographic_rate",
+    "post_change_burst",
+    "dated_event_sequence",
+    "last_event_then_quiet",
+    "quiet_then_breakthrough",
+    "last_major_plus_since",
+    "couple_in_window",
     "summed_type_counts_in_window",
     "count_in_named_window",
     "interseizure_interval",
@@ -194,9 +269,42 @@ CONSTRUCTION_DEFINITIONS = {
         "A month-by-month or dated count list that must be aggregated into "
         "one windowed rate."
     ),
+    "month_by_month_count": (
+        "Separate month names each with a count, which gold sums into one "
+        "window: 'In Oct … 2 … In Nov … 5' → 8 per 2 month."
+    ),
     "cluster_structure": (
-        "The reference describes clusters. Gold usually needs the two-part "
+        "The source describes clusters. Gold usually needs the two-part "
         "N cluster per T, M per cluster grammar."
+    ),
+    "cluster_paraphrase": (
+        "Cluster meaning without the word cluster: batches, a day of multiple "
+        "events, or a run of seizures after a quiet interval."
+    ),
+    "electrographic_rate": (
+        "EEG or device hourly burden, usually golded as multiple per day."
+    ),
+    "post_change_burst": (
+        "A counted burst at a medication change, then a quiet interval. Gold "
+        "often uses the burst count over a later window."
+    ),
+    "dated_event_sequence": (
+        "A first event on one date and a later event on another. Gold is the "
+        "count over the span between them."
+    ),
+    "last_event_then_quiet": (
+        "A last-event date plus a statement that the patient has been stable "
+        "since. Gold is often 1 per month or 1 per N month."
+    ),
+    "quiet_then_breakthrough": (
+        "A seizure-free interval ended by a later event: 'seizure-free for 4 "
+        "months until … two Thursdays ago'."
+    ),
+    "last_major_plus_since": (
+        "A last major seizure date plus residual smaller events since then."
+    ),
+    "couple_in_window": (
+        "'A couple of' events in a named window, usually golded as multiple."
     ),
     "summed_type_counts_in_window": (
         "Two or more typed counts in one window that gold adds together: "
@@ -331,8 +439,26 @@ def _classify_construction(reference: str, gold_label: str) -> str:
         return "slash_or_fraction_rate"
     if _DIARY_RE.search(ref):
         return "diary_or_calendar_log"
+    if _MONTH_BY_MONTH_RE.search(ref):
+        return "month_by_month_count"
     if _CLUSTER_RE.search(ref):
         return "cluster_structure"
+    if _CLUSTER_PARAPHRASE_RE.search(ref):
+        return "cluster_paraphrase"
+    if _ELECTROGRAPHIC_RE.search(ref):
+        return "electrographic_rate"
+    if _POST_CHANGE_BURST_RE.search(ref):
+        return "post_change_burst"
+    if _DATED_EVENT_SEQUENCE_RE.search(ref) and _SECOND_EVENT_RE.search(ref):
+        return "dated_event_sequence"
+    if _LAST_THEN_QUIET_RE.search(ref):
+        return "last_event_then_quiet"
+    if _QUIET_THEN_BREAKTHROUGH_RE.search(ref):
+        return "quiet_then_breakthrough"
+    if _LAST_MAJOR_PLUS_SINCE_RE.search(ref):
+        return "last_major_plus_since"
+    if _COUPLE_WINDOW_RE.search(ref):
+        return "couple_in_window"
     if _SUMMED_TYPES_RE.search(ref) and re.search(r"\b(?:last|past|month|week|year)\b", low):
         return "summed_type_counts_in_window"
     if _INTERVAL_RE.search(ref):
@@ -403,8 +529,24 @@ def _classify_transform(
         return "assert_no_reference"
     if construction == "diary_or_calendar_log":
         return "diary_window_aggregation"
-    if construction == "cluster_structure":
+    if construction == "month_by_month_count":
+        return "diary_window_aggregation"
+    if construction in {"cluster_structure", "cluster_paraphrase"}:
         return "cluster_two_part_render"
+    if construction == "electrographic_rate":
+        return "vague_to_multiple_sentinel"
+    if construction == "post_change_burst":
+        return "burst_then_quiet_to_rate"
+    if construction == "dated_event_sequence":
+        return "dated_sequence_to_rate"
+    if construction == "last_event_then_quiet":
+        return "last_event_to_rate"
+    if construction == "quiet_then_breakthrough":
+        return "quiet_interval_as_denominator"
+    if construction == "last_major_plus_since":
+        return "residual_events_since_major"
+    if construction == "couple_in_window":
+        return "vague_to_multiple_sentinel"
     if construction == "seizure_free_since_date":
         return "date_elapsed_arithmetic"
     if construction == "qualitative_control":
@@ -452,6 +594,169 @@ def _classify_transform(
     return "other_semantic_map"
 
 
+_STOPWORDS = {
+    "the",
+    "a",
+    "an",
+    "and",
+    "or",
+    "of",
+    "to",
+    "in",
+    "on",
+    "for",
+    "with",
+    "has",
+    "had",
+    "have",
+    "been",
+    "was",
+    "were",
+    "this",
+    "that",
+    "from",
+    "after",
+    "before",
+    "she",
+    "he",
+    "her",
+    "his",
+    "they",
+    "their",
+    "but",
+}
+_FREQ_HINT_RE = re.compile(
+    r"seizure|cluster|per |daily|weekly|monthly|nightly|bimonth|quarter|"
+    r"seizure-free|seizure free|frequency|diary|interval|yesterday|"
+    r"awakening|every |batch|recurrence|event-free",
+    re.IGNORECASE,
+)
+
+
+def _content_tokens(text: str) -> set[str]:
+    return {
+        token
+        for token in re.findall(r"[a-z0-9]+", text.lower())
+        if token not in _STOPWORDS and len(token) > 1
+    }
+
+
+def _sentences(text: str) -> list[str]:
+    parts = re.split(r"(?<=[.!?])\s+|\n+", text)
+    return [part.strip() for part in parts if part.strip()]
+
+
+def _usable_letter_sentence(sent: str) -> bool:
+    compact = sent.strip()
+    if len(compact) < 24:
+        return False
+    if re.fullmatch(r"[\d\s/-]+", compact):
+        return False
+    if re.search(
+        r"\b(?:clinic date|sent:|hospital no|nhs no\.?|dob:)\b",
+        compact,
+        re.I,
+    ):
+        return False
+    if re.match(r"^\d{6,}$", compact):
+        return False
+    if re.search(
+        r"\b(?:flat|close|road|street|lane|hospital|denmark hill)\b",
+        compact,
+        re.I,
+    ) and not _FREQ_HINT_RE.search(compact):
+        return False
+    return True
+
+
+def _find_span(note: str, needle: str) -> str | None:
+    if not needle:
+        return None
+    idx = note.find(needle)
+    if idx >= 0:
+        return note[idx : idx + len(needle)]
+    idx = note.lower().find(needle.lower())
+    if idx >= 0:
+        return note[idx : idx + len(needle)]
+    collapsed_note = re.sub(r"\s+", " ", note)
+    collapsed_needle = re.sub(r"\s+", " ", needle).strip()
+    idx = collapsed_note.lower().find(collapsed_needle.lower())
+    if idx >= 0:
+        return collapsed_note[idx : idx + len(collapsed_needle)]
+    return None
+
+
+def recover_letter_span(
+    note_text: str,
+    reference: str,
+    gold_label: str,
+) -> tuple[str, str]:
+    """Return (span, recovery_method) from the letter. Never uses test rows."""
+    in_letter = _find_span(note_text, reference)
+    if in_letter:
+        return in_letter, "official_reference_in_letter"
+
+    if _PROMPT_RE.search(reference) or gold_label == "no seizure frequency reference":
+        return "", "admin_or_no_frequency_letter"
+
+    for length in (80, 48, 28):
+        head = reference[:length].strip()
+        if len(head) < 20:
+            continue
+        found = _find_span(note_text, head)
+        if found:
+            idx = note_text.lower().find(head.lower())
+            end = min(len(note_text), idx + max(len(reference), 200))
+            window = re.sub(r"\s+", " ", note_text[idx:end]).strip()
+            return window[:400], "reference_prefix_in_letter"
+
+    ref_tokens = _content_tokens(reference)
+    gold_nums = set(re.findall(r"\d+", gold_label))
+    cadence = bool(_CADENCE_ONLY_RE.match(reference.strip()))
+    best: tuple[int, str] | None = None
+    for sent in _sentences(note_text):
+        if not _usable_letter_sentence(sent):
+            continue
+        sent_tokens = _content_tokens(sent)
+        overlap = len(ref_tokens & sent_tokens)
+        num_hit = sum(1 for number in gold_nums if number in sent)
+        freq = 1 if _FREQ_HINT_RE.search(sent) else 0
+        if freq == 0 and overlap < 3 and num_hit == 0:
+            continue
+        score = overlap * 2 + num_hit * 3 + freq * 2
+        if re.search(r"\b\d+\s*mg\b|\btwice daily\b|\bb\.d\.", sent, re.I):
+            score -= 8
+            continue
+        token = reference.strip().lower()
+        if cadence and token in {"monthly", "bimonthly", "quarterly"}:
+            if re.search(r"\b(?:month|week)\b", sent, re.I) or _EVERY_N_RE.search(sent):
+                score += 6
+        elif cadence and token == "weekly" and re.search(r"\bweek", sent, re.I):
+            score += 6
+        elif cadence and token in {"daily", "nightly", "every day", "every night"}:
+            if re.search(r"\b(?:day|night|evening)\b", sent, re.I):
+                score += 6
+        elif cadence and (_ADJECTIVE_CADENCE_RE.search(sent) or _EVERY_N_RE.search(sent)):
+            score += 4
+        if gold_label.lower().startswith("seizure free") and _FREE_DURATION_RE.search(
+            sent
+        ):
+            score += 4
+        if "cluster" in gold_label.lower() and (
+            _CLUSTER_RE.search(sent) or _CLUSTER_PARAPHRASE_RE.search(sent)
+        ):
+            score += 4
+        if score > 0 and (best is None or score > best[0]):
+            best = (score, sent)
+
+    if best is None:
+        return "", "no_span_recovered"
+    span = re.sub(r"\s+", " ", best[1]).strip()[:400]
+    if best[0] >= 5:
+        return span, "scored_frequency_sentence"
+    return span, "weak_frequency_sentence"
+
+
 def _flags(reference: str, gold_label: str, note_text: str) -> dict[str, bool]:
     ref = reference
     return {
@@ -475,10 +780,17 @@ def _flags(reference: str, gold_label: str, note_text: str) -> dict[str, bool]:
 def _row_payload(record: Any, split: str) -> dict[str, Any]:
     reference = (record.gold_reference or "").strip()
     status = _reference_status(reference, record.note_text)
-    construction = _classify_construction(reference, record.gold_label)
+    recovered, recovery_method = recover_letter_span(
+        record.note_text,
+        reference,
+        record.gold_label,
+    )
+    official_construction = _classify_construction(reference, record.gold_label)
+    evidence_for_class = recovered if recovered else reference
+    construction = _classify_construction(evidence_for_class, record.gold_label)
     transform = _classify_transform(
         gold_label=record.gold_label,
-        reference=reference,
+        reference=evidence_for_class,
         construction=construction,
         reference_status=status,
     )
@@ -488,6 +800,8 @@ def _row_payload(record: Any, split: str) -> dict[str, Any]:
         "split": split,
         "gold_label": record.gold_label,
         "gold_reference": reference,
+        "recovered_letter_span": recovered,
+        "span_recovery_method": recovery_method,
         "gold_label_kind": kind,
         "gold_bucket": _gan_bucket(kind, record.gold_label),
         "gold_template": _label_template(record.gold_label),
@@ -495,6 +809,7 @@ def _row_payload(record: Any, split: str) -> dict[str, Any]:
         "boundary_band": boundary_band(record.gold_monthly_frequency),
         "reference_status": status,
         "source_construction": construction,
+        "official_reference_construction": official_construction,
         "transform": transform,
         "flags": _flags(reference, record.gold_label, record.note_text),
         "row_ok": record.row_ok,
@@ -523,6 +838,7 @@ def _group_examples(
                 "split": row["split"],
                 "gold_label": row["gold_label"],
                 "gold_reference": row["gold_reference"],
+                "recovered_letter_span": row["recovered_letter_span"],
                 "reference_status": row["reference_status"],
             }
         )
@@ -542,6 +858,7 @@ def build_inventory() -> dict[str, Any]:
     construction_c = Counter(row["source_construction"] for row in rows)
     transform_c = Counter(row["transform"] for row in rows)
     status_c = Counter(row["reference_status"] for row in rows)
+    recovery_c = Counter(row["span_recovery_method"] for row in rows)
     bucket_c = Counter(row["gold_bucket"] for row in rows)
 
     refs_by_label: dict[str, list[str]] = defaultdict(list)
@@ -591,7 +908,10 @@ def build_inventory() -> dict[str, Any]:
                 "letter span on most rows, but it can also be a compressed "
                 "annotation token, a paraphrase, or a generation prompt."
             ),
-            "taxonomy": "first-cut draft for review; constructions are mutually exclusive",
+            "taxonomy": (
+                "source_construction is assigned from the recovered letter "
+                "span when one exists, otherwise from gold_reference"
+            ),
         },
         "summary": {
             "n_rows": len(rows),
@@ -608,6 +928,12 @@ def build_inventory() -> dict[str, Any]:
                 1 for row in rows if row["flags"]["gold_label_in_note"]
             ),
             "reference_status_counts": dict(status_c),
+            "span_recovery_method_counts": dict(recovery_c),
+            "n_other_paraphrase": construction_c.get("other_paraphrase", 0),
+            "other_paraphrase_share": round(
+                construction_c.get("other_paraphrase", 0) / max(len(rows), 1),
+                4,
+            ),
             "construction_counts": dict(construction_c),
             "transform_counts": dict(transform_c),
             "bucket_counts": dict(bucket_c),
@@ -640,6 +966,8 @@ def write_catalog_markdown(inventory: dict[str, Any], path: Path) -> None:
         "Every distinct official `gold_reference` for every gold label on Gan",
         "`train` + `validation` (1,050 rows). Locked `test` rows were not loaded.",
         "References are the dataset field; they are not always a verbatim letter span.",
+        "Recovered letter spans live in the",
+        "[workbook](../artifacts/gan_gold_phrase_variants_2026-08-13.xlsx).",
         "This catalog is exhaustive for development gold strings. It is not a",
         "performance table and not a holdout sample.",
         "",
@@ -669,12 +997,164 @@ def write_catalog_markdown(inventory: dict[str, Any], path: Path) -> None:
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
-def write_outputs(inventory: dict[str, Any], output_path: Path, catalog_path: Path) -> None:
+def _xlsx_escape(text: str) -> str:
+    return (
+        text.replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+    )
+
+
+def _sheet_xml(headers: list[str], rows: list[list[Any]]) -> str:
+    def cell(column: int, row_number: int, value: Any) -> str:
+        ref = f"{chr(ord('A') + column)}{row_number}"
+        if isinstance(value, int) and not isinstance(value, bool):
+            return f'<c r="{ref}" t="n"><v>{value}</v></c>'
+        if isinstance(value, float):
+            return f'<c r="{ref}" t="n"><v>{value}</v></c>'
+        text = _xlsx_escape("" if value is None else str(value))
+        return f'<c r="{ref}" t="inlineStr"><is><t xml:space="preserve">{text}</t></is></c>'
+
+    lines = [
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
+        '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">',
+        "<sheetData>",
+    ]
+    header_cells = "".join(cell(i, 1, name) for i, name in enumerate(headers))
+    lines.append(f'<row r="1">{header_cells}</row>')
+    for offset, row in enumerate(rows, start=2):
+        body = "".join(cell(i, offset, value) for i, value in enumerate(row))
+        lines.append(f'<row r="{offset}">{body}</row>')
+    lines.extend(["</sheetData>", "</worksheet>"])
+    return "\n".join(lines)
+
+
+def write_xlsx(path: Path, inventory: dict[str, Any]) -> None:
+    import zipfile
+
+    headers = [
+        "source_row_index",
+        "split",
+        "gold_label",
+        "gold_reference",
+        "recovered_letter_span",
+        "span_recovery_method",
+        "source_construction",
+        "official_reference_construction",
+        "transform",
+        "gold_template",
+        "gold_bucket",
+        "gold_label_kind",
+        "boundary_band",
+        "reference_status",
+        "gold_monthly_frequency",
+        "row_ok",
+    ]
+    body = [
+        [
+            row["source_row_index"],
+            row["split"],
+            row["gold_label"],
+            row["gold_reference"],
+            row["recovered_letter_span"],
+            row["span_recovery_method"],
+            row["source_construction"],
+            row["official_reference_construction"],
+            row["transform"],
+            row["gold_template"],
+            row["gold_bucket"],
+            row["gold_label_kind"],
+            row["boundary_band"],
+            row["reference_status"],
+            row["gold_monthly_frequency"],
+            row["row_ok"],
+        ]
+        for row in inventory["rows"]
+    ]
+    construction_headers = ["source_construction", "n_rows", "share", "definition"]
+    construction_rows = []
+    n_rows = inventory["summary"]["n_rows"]
+    counts = inventory["summary"]["construction_counts"]
+    for name, count in Counter(counts).most_common():
+        construction_rows.append(
+            [
+                name,
+                count,
+                round(count / n_rows, 4),
+                inventory["construction_definitions"].get(name, ""),
+            ]
+        )
+
+    workbook = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+ xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+<sheets>
+<sheet name="rows" sheetId="1" r:id="rId1"/>
+<sheet name="constructions" sheetId="2" r:id="rId2"/>
+</sheets>
+</workbook>
+"""
+    pkg_ns = "http://schemas.openxmlformats.org/package/2006/relationships"
+    od_ns = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+    rels = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        f'<Relationships xmlns="{pkg_ns}">'
+        f'<Relationship Id="rId1" Type="{od_ns}/officeDocument" '
+        'Target="xl/workbook.xml"/>'
+        "</Relationships>"
+    )
+    wb_rels = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        f'<Relationships xmlns="{pkg_ns}">'
+        f'<Relationship Id="rId1" Type="{od_ns}/worksheet" '
+        'Target="worksheets/sheet1.xml"/>'
+        f'<Relationship Id="rId2" Type="{od_ns}/worksheet" '
+        'Target="worksheets/sheet2.xml"/>'
+        "</Relationships>"
+    )
+    ss_main = (
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"
+    )
+    ss_sheet = (
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"
+    )
+    content_types = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+        '<Default Extension="rels" '
+        'ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+        '<Default Extension="xml" ContentType="application/xml"/>'
+        f'<Override PartName="/xl/workbook.xml" ContentType="{ss_main}"/>'
+        f'<Override PartName="/xl/worksheets/sheet1.xml" ContentType="{ss_sheet}"/>'
+        f'<Override PartName="/xl/worksheets/sheet2.xml" ContentType="{ss_sheet}"/>'
+        "</Types>"
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("[Content_Types].xml", content_types)
+        archive.writestr("_rels/.rels", rels)
+        archive.writestr("xl/workbook.xml", workbook)
+        archive.writestr("xl/_rels/workbook.xml.rels", wb_rels)
+        archive.writestr("xl/worksheets/sheet1.xml", _sheet_xml(headers, body))
+        archive.writestr(
+            "xl/worksheets/sheet2.xml",
+            _sheet_xml(construction_headers, construction_rows),
+        )
+
+
+def write_outputs(
+    inventory: dict[str, Any],
+    output_path: Path,
+    catalog_path: Path,
+    workbook_path: Path,
+) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     payload = json.dumps(inventory, indent=2, ensure_ascii=True) + "\n"
     output_path.write_text(payload, encoding="utf-8")
     catalog_path.parent.mkdir(parents=True, exist_ok=True)
     write_catalog_markdown(inventory, catalog_path)
+    write_xlsx(workbook_path, inventory)
 
 
 def main() -> None:
@@ -697,12 +1177,24 @@ def main() -> None:
             / "gan_gold_phrase_variant_catalog_2026-08-13.md"
         ),
     )
+    parser.add_argument(
+        "--workbook",
+        type=Path,
+        default=(
+            REPO_ROOT
+            / "docs"
+            / "research"
+            / "artifacts"
+            / "gan_gold_phrase_variants_2026-08-13.xlsx"
+        ),
+    )
     args = parser.parse_args()
     inventory = build_inventory()
-    write_outputs(inventory, args.output, args.catalog)
+    write_outputs(inventory, args.output, args.catalog, args.workbook)
     summary = inventory["summary"]
     print(f"wrote {args.output}")
     print(f"wrote {args.catalog}")
+    print(f"wrote {args.workbook}")
     print(f"rows={summary['n_rows']} labels={summary['n_unique_labels']} "
           f"refs={summary['n_unique_references']} templates={summary['n_unique_templates']}")
     print("constructions:")
@@ -714,6 +1206,14 @@ def main() -> None:
     print("reference status:")
     for name, n in Counter(summary["reference_status_counts"]).most_common():
         print(f"  {n:4d}  {name}")
+    print("span recovery:")
+    for name, n in Counter(summary["span_recovery_method_counts"]).most_common():
+        print(f"  {n:4d}  {name}")
+    print(
+        "other_paraphrase="
+        f"{summary['n_other_paraphrase']} "
+        f"({summary['other_paraphrase_share']:.1%})"
+    )
 
 
 if __name__ == "__main__":
