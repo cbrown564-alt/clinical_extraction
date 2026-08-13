@@ -18,6 +18,7 @@ import re
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
+from xml.etree import ElementTree as ET
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import load_records_for_split
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import boundary_band
@@ -383,8 +384,34 @@ CONSTRUCTION_DEFINITIONS = {
 }
 
 
+def _cluster_template(label: str) -> str:
+    """Collapse cluster gold into unit x per-cluster-burden templates.
+
+    Digit counts, 1-vs-N periods, period ranges, and cluster-count ranges
+    are dropped. ``N cluster per 3 to 4 week, 2 to 4 per cluster`` and
+    ``1 cluster per week, 4 per cluster`` therefore share a template.
+    """
+    text = label.lower()
+    if re.search(r"\bdays?\b", text):
+        unit = "day"
+    elif re.search(r"\bweeks?\b", text):
+        unit = "week"
+    else:
+        unit = "month"
+    if re.search(r"\bmultiple per cluster\b", text):
+        burden = "multiple per cluster"
+    elif re.search(r"\bto\b.+\bper cluster\b", text):
+        burden = "range per cluster"
+    else:
+        burden = "N per cluster"
+    return f"cluster per {unit}, {burden}"
+
+
 def _label_template(label: str) -> str:
-    return re.sub(r"\b\d+(?:\.\d+)?\b", "N", label.lower().strip())
+    text = label.lower().strip()
+    if "cluster" in text and not text.startswith("unknown"):
+        return _cluster_template(text)
+    return re.sub(r"\b\d+(?:\.\d+)?\b", "N", text)
 
 
 def _gan_bucket(kind: str, label: str) -> str:
@@ -1030,8 +1057,143 @@ def _sheet_xml(headers: list[str], rows: list[list[Any]]) -> str:
     return "\n".join(lines)
 
 
+def _workbook_has_user_layout(path: Path) -> bool:
+    import zipfile
+
+    if not path.exists():
+        return False
+    with zipfile.ZipFile(path) as archive:
+        names = set(archive.namelist())
+    return any(name.startswith("xl/pivotTables/") for name in names)
+
+
+def _shared_strings(sst_xml: str) -> list[str]:
+    ns = {"m": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
+    root = ET.fromstring(sst_xml)
+    values: list[str] = []
+    for item in root.findall("m:si", ns):
+        values.append(
+            "".join(
+                node.text or ""
+                for node in item.iter(
+                    "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}t"
+                )
+            )
+        )
+    return values
+
+
+def _append_shared_strings(sst_xml: str, new_values: list[str]) -> str:
+    if not new_values:
+        return sst_xml
+    count_match = re.search(r'\bcount="(\d+)"', sst_xml)
+    unique_match = re.search(r'\buniqueCount="(\d+)"', sst_xml)
+    if not count_match or not unique_match:
+        raise ValueError("sharedStrings.xml is missing count attributes")
+    old_unique = int(unique_match.group(1))
+    sst_xml = sst_xml.replace(
+        f'count="{count_match.group(1)}"',
+        f'count="{int(count_match.group(1)) + len(new_values)}"',
+        1,
+    )
+    sst_xml = sst_xml.replace(
+        f'uniqueCount="{unique_match.group(1)}"',
+        f'uniqueCount="{old_unique + len(new_values)}"',
+        1,
+    )
+    extras = "".join(f"<si><t>{_xlsx_escape(value)}</t></si>" for value in new_values)
+    return sst_xml.replace("</sst>", extras + "</sst>", 1)
+
+
+def _patch_gold_templates_in_workbook(path: Path, inventory: dict[str, Any]) -> None:
+    """Update gold_template values without rewriting pivot, hidden cols, or order."""
+    import zipfile
+
+    by_index = {row["source_row_index"]: row["gold_template"] for row in inventory["rows"]}
+    with zipfile.ZipFile(path) as archive:
+        sst_xml = archive.read("xl/sharedStrings.xml").decode("utf-8")
+        sheet_xml = archive.read("xl/worksheets/sheet2.xml").decode("utf-8")
+        other_files = {
+            name: archive.read(name)
+            for name in archive.namelist()
+            if name not in {"xl/sharedStrings.xml", "xl/worksheets/sheet2.xml"}
+        }
+
+    strings = _shared_strings(sst_xml)
+    index_of = {value: i for i, value in enumerate(strings)}
+    pending: list[str] = []
+
+    def sst_index(value: str) -> int:
+        if value in index_of:
+            return index_of[value]
+        index_of[value] = len(strings) + len(pending)
+        pending.append(value)
+        return index_of[value]
+
+    ns = {"m": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
+    sheet = ET.fromstring(sheet_xml)
+    header = sheet.find("m:sheetData/m:row", ns)
+    if header is None:
+        raise ValueError("rows sheet has no header")
+    columns: dict[str, str] = {}
+    for cell in header:
+        ref = cell.attrib.get("r", "")
+        letter = re.match(r"[A-Z]+", ref)
+        value_node = cell.find("m:v", ns)
+        if letter is None or value_node is None or value_node.text is None:
+            continue
+        if cell.attrib.get("t") == "s":
+            columns[strings[int(value_node.text)]] = letter.group(0)
+    if "source_row_index" not in columns or "gold_template" not in columns:
+        raise ValueError("rows sheet is missing source_row_index or gold_template")
+    index_col = columns["source_row_index"]
+    template_col = columns["gold_template"]
+
+    replacements: dict[str, int] = {}
+    for row in sheet.findall("m:sheetData/m:row", ns)[1:]:
+        cells = {}
+        for cell in row:
+            ref = cell.attrib.get("r", "")
+            match = re.match(r"([A-Z]+)(\d+)", ref)
+            if match:
+                cells[match.group(1)] = cell
+        index_cell = cells.get(index_col)
+        template_cell = cells.get(template_col)
+        if index_cell is None or template_cell is None:
+            continue
+        index_text = index_cell.findtext("{http://schemas.openxmlformats.org/spreadsheetml/2006/main}v")
+        if index_text is None:
+            continue
+        source_row_index = int(float(index_text))
+        template = by_index.get(source_row_index)
+        if template is None:
+            continue
+        replacements[template_cell.attrib["r"]] = sst_index(template)
+
+    sst_xml = _append_shared_strings(sst_xml, pending)
+    for ref, new_index in replacements.items():
+        sheet_xml = re.sub(
+            rf'(<c r="{ref}"[^>]*>\s*<v>)(\d+)(</v>)',
+            rf"\g<1>{new_index}\g<3>",
+            sheet_xml,
+            count=1,
+        )
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        for name, payload in other_files.items():
+            archive.writestr(name, payload)
+        archive.writestr("xl/sharedStrings.xml", sst_xml)
+        archive.writestr("xl/worksheets/sheet2.xml", sheet_xml)
+
+
 def write_xlsx(path: Path, inventory: dict[str, Any]) -> None:
     import zipfile
+
+    if _workbook_has_user_layout(path):
+        _patch_gold_templates_in_workbook(path, inventory)
+        return
+
 
     headers = [
         "source_row_index",
