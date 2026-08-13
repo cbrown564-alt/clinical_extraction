@@ -32,7 +32,10 @@ values and adjudication rule are in the
 [review protocol](../../docs/experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md).
 
 If Gan LLM and LLM-with-rules controls in the workbench say “not retained”,
-the explorer is looking for complete July 18 `validation750` row files under
+the explorer is looking for complete `validation750` row files. Hybrid cells
+come from
+`experiments/gan2026_six_model_current_stack_dev750_replay_20260813/`;
+LLM-only cells come from
 `experiments/gan2026_six_model_validation_20260718/`. ExECT `dev140` is the
 separate catalog built from
 `experiments/exectv2_six_model_single_call_*_dev140_20260715.*`. See

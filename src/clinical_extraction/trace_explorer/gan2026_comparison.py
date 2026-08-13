@@ -1,11 +1,10 @@
 """Discover governed Gan validation750 artifacts for the trace explorer.
 
-Only complete rows from the predeclared six-model validation comparison are
-replayable. The configured tree is
-`experiments/gan2026_six_model_validation_20260718/`. Nested leftover
-scratch paths are still accepted if a config points there. Partial
-conditions remain visible as progress metadata but their rows are never
-served.
+Hybrid (`llm_with_rules`) cells prefer the current-stack no-call replay tree
+when `hybrid_artifact_root` is set. LLM-only cells stay on the July 18
+comparison tree. Nested leftover scratch paths are still accepted if a
+config points there. Partial conditions remain visible as progress
+metadata but their rows are never served.
 """
 
 from __future__ import annotations
@@ -54,7 +53,13 @@ def discover_gan2026_validation_runs(
     """Build the selector and replay allowlist from exact validation750 outputs."""
 
     config = _object(config_path)
-    artifact_root = config_path.parent.parent.parent / str(config["artifact_root"])
+    repo_root = config_path.parent.parent.parent
+    artifact_root = repo_root / str(config["artifact_root"])
+    hybrid_root = (
+        repo_root / str(config["hybrid_artifact_root"])
+        if config.get("hybrid_artifact_root")
+        else None
+    )
     configured = {str(item["slug"]): item for item in config["conditions"]}
     methods = {str(item["method"]): item for item in config["methods"]}
     families: list[dict[str, Any]] = []
@@ -67,7 +72,12 @@ def discover_gan2026_validation_runs(
             configured_condition = configured[condition.slug]
             if configured_condition["model"] != condition.route:
                 raise ValueError(f"configured model mismatch for {condition.slug}")
-            path = _condition_rows_path(artifact_root, condition.slug, method_name)
+            path = _condition_rows_path(
+                artifact_root,
+                condition.slug,
+                method_name,
+                hybrid_root=hybrid_root,
+            )
             inspection = _inspect_rows(
                 path,
                 expected_indices=expected_indices,
@@ -91,7 +101,9 @@ def discover_gan2026_validation_runs(
                     "artifact_paths": [
                         path.relative_to(config_path.parent.parent.parent).as_posix()
                     ],
-                    "date": "2026-07-19",
+                    "date": (
+                        "2026-08-13" if method_name == "llm_with_rules" else "2026-07-19"
+                    ),
                     "decision": "development_comparison",
                     "mode": "replay",
                     "model": condition.route,
@@ -112,11 +124,13 @@ def discover_gan2026_validation_runs(
     families.append(_rules_only_family())
     return GanValidationDiscovery(
         catalog={
-            "generated_on": "2026-07-19",
+            "generated_on": "2026-08-13",
             "source_artifact": config["protocol"],
             "claim_boundary": (
-                "Gan validation750 is inspectable development evidence. Only exact, "
-                "trace-valid 750-row conditions are replayable; test450 is excluded."
+                "Gan validation750 is inspectable development evidence. Hybrid cells "
+                "are the 13 Aug current-stack no-call replay; LLM-only cells are the "
+                "July 18 comparison tree. Only exact, trace-valid 750-row conditions "
+                "are replayable; test450 is excluded."
             ),
             "families": families,
         },
@@ -125,13 +139,32 @@ def discover_gan2026_validation_runs(
     )
 
 
-def _condition_rows_path(artifact_root: Path, slug: str, method_name: str) -> Path:
-    """Resolve a cell under either the nested scratch tree or the retained flat tree."""
+def _condition_rows_path(
+    artifact_root: Path,
+    slug: str,
+    method_name: str,
+    *,
+    hybrid_root: Path | None = None,
+) -> Path:
+    """Resolve a cell under the current-stack hybrid tree or the July 18 tree."""
 
-    nested = artifact_root / slug / method_name / "validation750.rows.jsonl"
-    if nested.is_file():
-        return nested
-    return artifact_root / f"{slug}--{method_name}.jsonl"
+    roots: list[Path] = []
+    if method_name == "llm_with_rules" and hybrid_root is not None:
+        roots.append(hybrid_root)
+    roots.append(artifact_root)
+    candidates: list[Path] = []
+    for root in roots:
+        candidates.extend(
+            (
+                root / slug / "validation750.rows.jsonl",
+                root / slug / method_name / "validation750.rows.jsonl",
+                root / f"{slug}--{method_name}.jsonl",
+            )
+        )
+    for path in candidates:
+        if path.is_file():
+            return path
+    return candidates[0]
 
 
 def _inspect_rows(

@@ -27,7 +27,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import hybrid_struc
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = REPO_ROOT / "experiments/gan2026_six_model_current_stack_dev750_replay_20260813"
-SCRATCH_DIR = REPO_ROOT / "scratch/validation/gan2026_six_model_current_stack_dev750_20260813"
+ROWS_DIR = OUT_DIR
 PROTOCOL = (
     "docs/research/gan2026/six_model_current_stack_dev750_replay_protocol_2026-08-13.md"
 )
@@ -192,11 +192,11 @@ def _replay(
     if any(not value.strip() for value in raw_outputs.values()):
         raise ValueError(f"{slug} has empty raw outputs")
 
-    scratch = SCRATCH_DIR / slug
-    rows_path = scratch / "validation750.rows.jsonl"
+    cell_dir = ROWS_DIR / slug
+    rows_path = cell_dir / "validation750.rows.jsonl"
     if rows_path.exists() and not overwrite:
         replay_rows = load_jsonl_rows(rows_path)
-        return source_rows, replay_rows, {"reused_scratch": True, "rows_path": rows_path}
+        return source_rows, replay_rows, {"reused_rows": True, "rows_path": rows_path}
 
     hybrid_structured_events.set_active_prompt_version(prompt_version)
     manifest = load_split_manifest()
@@ -217,10 +217,10 @@ def _replay(
         ),
         progress_every=150,
     )
-    scratch.mkdir(parents=True, exist_ok=True)
+    cell_dir.mkdir(parents=True, exist_ok=True)
     hybrid_structured_events.write_jsonl(replay_rows, rows_path)
     return source_rows, replay_rows, {
-        "reused_scratch": False,
+        "reused_rows": False,
         "rows_path": rows_path,
         "metadata_summary": metadata.get("summary"),
     }
@@ -244,7 +244,7 @@ def _model_payload(
         "prompt_version": prompt_version,
         "source_artifact": source.relative_to(REPO_ROOT).as_posix(),
         "source_sha256": _sha256(source),
-        "scratch_rows": extra["rows_path"].relative_to(REPO_ROOT).as_posix(),
+        "replay_rows": extra["rows_path"].relative_to(REPO_ROOT).as_posix(),
         "before": before,
         "after": after,
         "delta_purist": after["purist"] - before["purist"],

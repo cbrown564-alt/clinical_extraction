@@ -1,7 +1,7 @@
 {
-  "generated_on": "2026-07-19",
+  "generated_on": "2026-08-13",
   "source_artifact": "docs/experiments/gan2026/gan2026_six_model_validation_comparison_protocol_2026-07-18.md",
-  "claim_boundary": "Gan validation750 is inspectable development evidence. Only exact, trace-valid 750-row conditions are replayable; test450 is excluded.",
+  "claim_boundary": "Gan validation750 is inspectable development evidence. Hybrid cells are the 13 Aug current-stack no-call replay; LLM-only cells are the July 18 comparison tree. Only exact, trace-valid 750-row conditions are replayable; test450 is excluded.",
   "families": [
     {
       "value": "gan2026_validation750_gpt41mini_llm_with_rules",
@@ -29,10 +29,10 @@
       },
       "metrics": {
         "row_count": 750,
-        "purist_correct": 653,
-        "purist_accuracy": 0.8707,
-        "pragmatic_correct": 674,
-        "pragmatic_accuracy": 0.8987
+        "purist_correct": 663,
+        "purist_accuracy": 0.884,
+        "pragmatic_correct": 684,
+        "pragmatic_accuracy": 0.912
       }
     },
     {
@@ -61,10 +61,10 @@
       },
       "metrics": {
         "row_count": 750,
-        "purist_correct": 646,
-        "purist_accuracy": 0.8613,
-        "pragmatic_correct": 669,
-        "pragmatic_accuracy": 0.892
+        "purist_correct": 665,
+        "purist_accuracy": 0.8867,
+        "pragmatic_correct": 685,
+        "pragmatic_accuracy": 0.9133
       }
     },
     {
@@ -93,10 +93,10 @@
       },
       "metrics": {
         "row_count": 750,
-        "purist_correct": 655,
-        "purist_accuracy": 0.8733,
-        "pragmatic_correct": 672,
-        "pragmatic_accuracy": 0.896
+        "purist_correct": 671,
+        "purist_accuracy": 0.8947,
+        "pragmatic_correct": 687,
+        "pragmatic_accuracy": 0.916
       }
     },
     {
@@ -125,10 +125,10 @@
       },
       "metrics": {
         "row_count": 750,
-        "purist_correct": 643,
-        "purist_accuracy": 0.8573,
-        "pragmatic_correct": 664,
-        "pragmatic_accuracy": 0.8853
+        "purist_correct": 653,
+        "purist_accuracy": 0.8707,
+        "pragmatic_correct": 674,
+        "pragmatic_accuracy": 0.8987
       }
     },
     {
@@ -157,10 +157,10 @@
       },
       "metrics": {
         "row_count": 750,
-        "purist_correct": 667,
-        "purist_accuracy": 0.8893,
-        "pragmatic_correct": 683,
-        "pragmatic_accuracy": 0.9107
+        "purist_correct": 675,
+        "purist_accuracy": 0.9,
+        "pragmatic_correct": 693,
+        "pragmatic_accuracy": 0.924
       }
     },
     {
@@ -189,10 +189,10 @@
       },
       "metrics": {
         "row_count": 750,
-        "purist_correct": 646,
-        "purist_accuracy": 0.8613,
-        "pragmatic_correct": 674,
-        "pragmatic_accuracy": 0.8987
+        "purist_correct": 659,
+        "purist_accuracy": 0.8787,
+        "pragmatic_correct": 684,
+        "pragmatic_accuracy": 0.912
       }
     },
     {

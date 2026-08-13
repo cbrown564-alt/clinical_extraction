@@ -72,5 +72,6 @@
       "max_tokens": 16000
     }
   ],
-  "artifact_root": "experiments/gan2026_six_model_validation_20260718"
+  "artifact_root": "experiments/gan2026_six_model_validation_20260718",
+  "hybrid_artifact_root": "experiments/gan2026_six_model_current_stack_dev750_replay_20260813"
 }

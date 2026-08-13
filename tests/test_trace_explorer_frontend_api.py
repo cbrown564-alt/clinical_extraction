@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -72,6 +73,38 @@ def test_locked_test_records_are_not_enumerable(client: TestClient) -> None:
     error = guessed.json()["error"]
     assert "79" not in error["message"]
     assert error["details"] == {}
+
+
+def test_gan_hybrid_workbench_serves_current_stack_dev750_rows(
+    client: TestClient,
+) -> None:
+    run_id = "gan2026_validation750_gpt56sol_llm_with_rules"
+    families = client.get("/pipeline-families")
+    assert families.status_code == 200
+    sol = next(family for family in families.json()["families"] if family["run_id"] == run_id)
+    assert sol["availability"] == "replay"
+    assert sol["metrics"]["purist_correct"] == 671
+
+    artifact = client.get(f"/artifacts/{run_id}", params={"limit": 1})
+    assert artifact.status_code == 200
+    path = artifact.json()["artifact_path"]
+    assert path.startswith(
+        "experiments/gan2026_six_model_current_stack_dev750_replay_20260813/"
+    )
+
+    row_path = Path(path)
+    found: dict | None = None
+    with row_path.open(encoding="utf-8") as handle:
+        for line in handle:
+            value = json.loads(line)
+            if int(value["source_row_index"]) == 446:
+                found = value
+                break
+    assert found is not None
+    assert found["structured_record"]["selection"]["final_label"] == "2 per week"
+    assert found["row_trace"]["model_prediction"]["record"]["selection"]["final_label"] == (
+        "up to 2 per week"
+    )
 
 
 def test_saved_artifact_replay_is_allowlisted_and_bounded(client: TestClient) -> None:
