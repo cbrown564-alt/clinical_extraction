@@ -19,12 +19,13 @@ const ACTIVE_METHOD_ALIASES: Readonly<Record<string, string>> = {
 };
 
 const MODEL_ORDER = [
-  "openai/gpt-4.1-mini",
   "openai/gpt-5.6-luna",
+  "gemini/gemini-3.7-flash",
   "openai/gpt-5.6-sol",
   "deepseek/deepseek-v4-flash",
   "ollama_chat/qwen3.6:35b",
   "ollama_chat/gemma4:26b",
+  "openai/gpt-4.1-mini",
 ] as const;
 
 const GROUPS: ReadonlyArray<{

@@ -55,6 +55,7 @@ def render_report(scorecard: Mapping[str, Any]) -> str:
 
     model_labels = {
         "openai/gpt-4.1-mini": "GPT-4.1-mini",
+        "gemini/gemini-3.7-flash": "Gemini 3.7 Flash",
         "openai/gpt-5.6-luna": "GPT-5.6 Luna",
         "openai/gpt-5.6-sol": "GPT-5.6 Sol",
         "deepseek/deepseek-v4-flash": "DeepSeek V4 Flash",

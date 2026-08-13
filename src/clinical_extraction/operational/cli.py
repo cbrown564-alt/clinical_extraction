@@ -93,7 +93,10 @@ def _add_runtime_arguments(parser: argparse.ArgumentParser) -> None:
     )
     parser.add_argument(
         "--model",
-        help="provider/model identifier; use vllm/<model> for vLLM chat-template settings",
+        help=(
+            "provider/model identifier; use vllm/<model> for vLLM chat-template "
+            "settings or gemini/<model> for Google Gemini"
+        ),
     )
     parser.add_argument("--timeout", type=float, default=300.0)
 

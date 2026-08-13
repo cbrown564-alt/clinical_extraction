@@ -6,6 +6,9 @@ import os
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 
+GEMINI_PREFIX = "gemini/"
+GEMINI_OPENAI_BASE = "https://generativelanguage.googleapis.com/v1beta/openai"
+
 
 @dataclass(frozen=True)
 class RuntimeConfig:
@@ -51,15 +54,25 @@ class RuntimeConfig:
             resolved_model = clinical_model or vllm_model or "deepseek-v4-flash"
             if vllm_model and "/" not in resolved_model:
                 resolved_model = f"vllm/{resolved_model}"
+        if resolved_model.startswith(GEMINI_PREFIX):
+            if not resolved_base:
+                resolved_base = GEMINI_OPENAI_BASE
+            if not resolved_key:
+                resolved_key = (
+                    values.get("GEMINI_API_KEY", "").strip()
+                    or values.get("GOOGLE_API_KEY", "").strip()
+                )
         if not resolved_base:
             raise ValueError(
-                "No endpoint configured. Set CLINICAL_LLM_BASE_URL or pass --base-url."
+                "No endpoint configured. Set CLINICAL_LLM_BASE_URL or pass --base-url. "
+                "gemini/<model> routes default to Google's OpenAI-compatible endpoint."
             )
         if not resolved_key and resolved_model.startswith("vllm/"):
             resolved_key = "EMPTY"
         if not resolved_key:
             raise ValueError(
                 "No API key configured. Set CLINICAL_LLM_API_KEY or pass --api-key. "
+                "gemini/<model> routes also accept GEMINI_API_KEY or GOOGLE_API_KEY. "
                 "Keyless vLLM routes use the vllm/<served-model> identifier."
             )
         if "/" not in resolved_model:

@@ -63,6 +63,18 @@ def test_runtime_defaults_to_empty_api_key_for_keyless_vllm() -> None:
     assert runtime.model == "vllm/deepseek-v4-flash"
 
 
+def test_runtime_accepts_gemini_key_without_explicit_base_url() -> None:
+    runtime = RuntimeConfig.from_environment(
+        environment={"GEMINI_API_KEY": "gemini-secret"},
+        model="gemini/gemini-3.7-flash",
+    )
+
+    assert runtime.base_url == "https://generativelanguage.googleapis.com/v1beta/openai"
+    assert runtime.model == "gemini/gemini-3.7-flash"
+    assert runtime.api_model == "gemini-3.7-flash"
+    assert runtime.api_key == "gemini-secret"
+
+
 def test_runtime_still_requires_api_key_for_non_vllm_provider() -> None:
     with pytest.raises(ValueError, match="No API key configured"):
         RuntimeConfig.from_environment(
