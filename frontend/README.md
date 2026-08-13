@@ -31,6 +31,11 @@ reviewer-separated revision history. The semantic task's governing allowed
 values and adjudication rule are in the
 [review protocol](../../docs/experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md).
 
+If Gan LLM and LLM-with-rules controls in the workbench say “not retained”,
+the explorer is looking for complete July 18 `validation750` row files under
+`scratch/validation/gan2026_six_model_comparison_20260718/`. See
+[the artifact check](../docs/runbooks/gan_workbench_validation_replay_artifacts.md).
+
 The API builds its disposable local trace index on first start. Reviewer decisions and
 their immutable revisions are stored separately in `.trace_explorer/reviews.sqlite3`;
 the evidence substrate is never mutated. The fixture files under `public` are an
