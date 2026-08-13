@@ -16,6 +16,13 @@ ARTIFACTS = (
     ROOT / "experiments/exectv2_prescription_lens_v10_holdout_20260810.json",
     ROOT / "experiments/six_model_holdout_category_aggregates_20260806.json",
     ROOT / "experiments/gan2026_rules_only_test450_20260810.json",
+    ROOT
+    / "experiments/six_model_current_stack_remaining_cells_replay_20260813/replay_summary.json",
+    ROOT
+    / "experiments/six_model_current_stack_primary_panel_20260813/panel_aggregate.json",
+    ROOT / "experiments/current_stack/latest/replay_summary.json",
+    ROOT / "experiments/current_stack/latest/panel_aggregate.json",
+    ROOT / "experiments/current_stack/latest/fills.json",
 )
 FORBIDDEN_KEYS = {
     "letter_id", "letter_ids", "source_row_index", "source_row_indices",

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 from typing import Any
@@ -12,7 +13,7 @@ from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.ticker import FormatStrFormatter
 
 ROOT = Path(__file__).resolve().parents[1]
-PANEL = ROOT / "experiments/six_model_final_panel_20260803/panel_aggregate.json"
+PANEL = ROOT / "experiments/current_stack/latest/panel_aggregate.json"
 AA_SNAPSHOT = ROOT / "experiments/six_model_external_capability_cost_snapshot_20260731.json"
 OUTPUT = ROOT / "docs/research/assets/six_model_comparison_2026-07-18"
 
@@ -605,9 +606,12 @@ def _cost_frontier(
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--panel", type=Path, default=PANEL)
+    args = parser.parse_args()
     _style()
     OUTPUT.mkdir(parents=True, exist_ok=True)
-    panel = _read(PANEL)
+    panel = _read(args.panel)
     aa = _read(AA_SNAPSHOT)
     by_model = {row["model"]: row for row in panel["conditions"]}
     aa_by_name = {row["roster_display_name"]: row for row in aa["models"]}
