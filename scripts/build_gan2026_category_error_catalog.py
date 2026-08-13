@@ -2,7 +2,7 @@
 """Gan 2026 full a_priori-bucket error catalog with examples.
 
 No new model calls. No locked-test row inspection. See
-docs/research/gan2026/gan2026_category_error_catalog_protocol_2026-08-06.md.
+docs/research/gan2026/category_error_catalog_protocol_2026-08-06.md.
 """
 
 from __future__ import annotations
@@ -527,7 +527,7 @@ def render_report(artifact: dict[str, Any]) -> str:
         f"Date: {REPORT_DATE}  ",
         "Status: development catalog with pipeline ablation reading  ",
         "Protocol: [gan category error catalog protocol]"
-        "(gan2026_category_error_catalog_protocol_2026-08-06.md)  ",
+        "(category_error_catalog_protocol_2026-08-06.md)  ",
         "Parent: [category-cut performance]"
         "(six_model_category_cut_performance_2026-08-06.md)  ",
         "Companions: [task-shape framework]"
@@ -949,7 +949,7 @@ def build_artifact() -> dict[str, Any]:
     return {
         "schema_version": "gan2026.category_error_catalog.v1",
         "date": REPORT_DATE,
-        "protocol": "docs/research/gan2026/gan2026_category_error_catalog_protocol_2026-08-06.md",
+        "protocol": "docs/research/gan2026/category_error_catalog_protocol_2026-08-06.md",
         "parent_category_cut": (
             "docs/research/shared/six_model_category_cut_performance_2026-08-06.md"
         ),
@@ -992,7 +992,7 @@ def main() -> None:
         "--report",
         type=Path,
         default=REPO_ROOT
-        / "docs/research/gan2026/gan2026_category_error_catalog_2026-08-06.md",
+        / "docs/research/gan2026/category_error_catalog_2026-08-06.md",
     )
     args = parser.parse_args()
     artifact = build_artifact()

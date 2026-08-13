@@ -27,7 +27,7 @@ ARCHITECTURE_REPORT = (
     / "research"
     / "gan2026"
     / "architecture"
-    / "gan2026_simplest_near_ceiling_architecture_results_2026-06-16.md"
+    / "simplest_near_ceiling_architecture_results_2026-06-16.md"
 )
 REGISTRY = ROOT / "experiments" / "registry.jsonl"
 

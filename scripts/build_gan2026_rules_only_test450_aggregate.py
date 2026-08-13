@@ -1,10 +1,10 @@
 """Gate B: Gan 2026 rules-only aggregate on the locked test450 holdout split.
 
 Protocol:
-docs/research/gan2026/gan2026_rules_only_test450_aggregate_protocol_2026-08-10.md
+docs/research/gan2026/rules_only_test450_aggregate_protocol_2026-08-10.md
 
 Precondition (Gate A) passed 2026-08-11:
-docs/research/gan2026/gan2026_rules_only_validation750_gate_a_rerun_2026-08-11.md
+docs/research/gan2026/rules_only_validation750_gate_a_rerun_2026-08-11.md
 
 Deterministic rules-only pipeline, zero model calls. Row-level output
 (`source_row_index`, `diagnostics`, `final_label`, `reference.gold_label`) is
@@ -27,12 +27,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import load_record
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners.split import run_split
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-PROTOCOL = "docs/research/gan2026/gan2026_rules_only_test450_aggregate_protocol_2026-08-10.md"
-GATE_A = "docs/research/gan2026/gan2026_rules_only_validation750_gate_a_rerun_2026-08-11.md"
+PROTOCOL = "docs/research/gan2026/rules_only_test450_aggregate_protocol_2026-08-10.md"
+GATE_A = "docs/research/gan2026/rules_only_validation750_gate_a_rerun_2026-08-11.md"
 SEALED_ROOT = REPO_ROOT / "scratch/holdout/gan2026_rules_only_test450_20260810"
 SEALED_PATH = SEALED_ROOT / "rows.jsonl"
 OUT_JSON = REPO_ROOT / "experiments/gan2026_rules_only_test450_20260810.json"
-OUT_MD = REPO_ROOT / "docs/research/gan2026/gan2026_rules_only_test450_aggregate_2026-08-10.md"
+OUT_MD = REPO_ROOT / "docs/research/gan2026/rules_only_test450_aggregate_2026-08-10.md"
 EXPECTED_ROW_COUNT = 450
 
 
@@ -230,7 +230,7 @@ def _render_markdown(payload: dict[str, Any]) -> str:
         "`rendered` uses the rules lane's own convention "
         "(`final_label != \"unknown\"`); the LLM lanes use a different "
         "convention (non-null `comparison` block). See "
-        "`gan2026_rules_only_reference_refresh_2026-08-10.md`.",
+        "`rules_only_reference_refresh_2026-08-10.md`.",
         "",
         "## Method",
         "",

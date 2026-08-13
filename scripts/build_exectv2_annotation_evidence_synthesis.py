@@ -41,7 +41,7 @@ BLIND_REVIEW_PATH = Path(
     "docs/experiments/exectv2/reliability/"
     "exectv2_gold_quality_adjudication_blind_replication_2026-07-01.md"
 )
-GUIDELINES_PATH = Path("docs/research/exectv2/exectv2_annotation_guidelines_v9_extracted.md")
+GUIDELINES_PATH = Path("docs/research/exectv2/annotation_guidelines_v9_extracted.md")
 DX_RESOLUTION_LEDGER_PATH = Path(
     "experiments/exectv2_diagnosis_resolution_ledger_dev140_20260714.jsonl"
 )

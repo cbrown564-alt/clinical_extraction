@@ -2,7 +2,7 @@
 """Gan 2026 llm_with_rules band + first-changer stage ablation.
 
 No new model calls. No locked-test row inspection. See
-docs/research/gan2026/gan2026_hybrid_stage_ablation_protocol_2026-08-06.md.
+docs/research/gan2026/hybrid_stage_ablation_protocol_2026-08-06.md.
 """
 
 from __future__ import annotations
@@ -633,10 +633,10 @@ def build_artifact() -> dict[str, Any]:
         "schema_version": "gan2026.hybrid_stage_ablation.v1",
         "date": REPORT_DATE,
         "protocol": (
-            "docs/research/gan2026/gan2026_hybrid_stage_ablation_protocol_2026-08-06.md"
+            "docs/research/gan2026/hybrid_stage_ablation_protocol_2026-08-06.md"
         ),
         "parent_catalog": (
-            "docs/research/gan2026/gan2026_category_error_catalog_2026-08-06.md"
+            "docs/research/gan2026/category_error_catalog_2026-08-06.md"
         ),
         "git": _git_note(),
         "dataset": "Gan 2026",
@@ -690,8 +690,8 @@ def render_report(artifact: dict[str, Any]) -> str:
         f"Date: {REPORT_DATE}  ",
         "Status: development stage ablation inside hybrid only  ",
         "Protocol: [hybrid stage ablation protocol]"
-        "(gan2026_hybrid_stage_ablation_protocol_2026-08-06.md)  ",
-        "Parent: [category error catalog](gan2026_category_error_catalog_2026-08-06.md)  ",
+        "(hybrid_stage_ablation_protocol_2026-08-06.md)  ",
+        "Parent: [category error catalog](category_error_catalog_2026-08-06.md)  ",
         "Companions: [task-shape framework](task_shape_framework_2026-08-06.md), "
         "[architecture stage diagram](../architecture/diagrams/gan2026_llm_with_rules_stages.md)  ",
         "Artifact: "
@@ -731,7 +731,7 @@ def render_report(artifact: dict[str, Any]) -> str:
         "",
         "## Why this document exists",
         "",
-        "The [category error catalog](gan2026_category_error_catalog_2026-08-06.md) "
+        "The [category error catalog](category_error_catalog_2026-08-06.md) "
         "contrasts `llm` vs `llm_with_rules`. This sibling stays on hybrid only "
         "and splits the deterministic stack into bands and named repair families.",
         "",
@@ -982,7 +982,7 @@ def render_report(artifact: dict[str, Any]) -> str:
             "| --- | --- |",
             "| Band mode tables and family examples | JSON artifact |",
             "| llm vs hybrid mode catalog | "
-            "[category error catalog](gan2026_category_error_catalog_2026-08-06.md) |",
+            "[category error catalog](category_error_catalog_2026-08-06.md) |",
             "| Stage ownership definitions | "
             "[llm_with_rules stages]"
             "(../architecture/diagrams/gan2026_llm_with_rules_stages.md) |",
@@ -1027,7 +1027,7 @@ def main() -> None:
         "--report",
         type=Path,
         default=REPO_ROOT
-        / f"docs/research/gan2026/gan2026_hybrid_stage_ablation_{REPORT_DATE}.md",
+        / f"docs/research/gan2026/hybrid_stage_ablation_{REPORT_DATE}.md",
     )
     args = parser.parse_args()
 

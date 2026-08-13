@@ -12,7 +12,7 @@ Outputs ONLY aggregate scores. No row-level test inspection.
 
 Generates:
   - experiments/gan2026_minor_rules_pruning_test450_20260810.json
-  - docs/research/gan2026/gan2026_minor_rules_pruning_test450_confirmation_2026-08-10.md
+  - docs/research/gan2026/minor_rules_pruning_test450_confirmation_2026-08-10.md
 """
 
 from __future__ import annotations
@@ -213,7 +213,7 @@ def run_holdout_confirmation() -> dict[str, Any]:
         "schema_version": "gan2026.minor_rules_pruning_test450_confirmation.v1",
         "date": REPORT_DATE,
         "protocol": (
-            "docs/research/gan2026/gan2026_minor_rules_pruning_test450_confirmation_protocol_"
+            "docs/research/gan2026/minor_rules_pruning_test450_confirmation_protocol_"
             "2026-08-10.md"
         ),
         "git": _git_note(),
@@ -256,7 +256,7 @@ def render_report(artifact: dict[str, Any]) -> str:
         f"Status: **{summary['status']}**  ",
         (
             "Protocol: [predeclared protocol]"
-            "(gan2026_minor_rules_pruning_test450_confirmation_protocol_2026-08-10.md)  "
+            "(minor_rules_pruning_test450_confirmation_protocol_2026-08-10.md)  "
         ),
         (
             "Artifact: [`experiments/gan2026_minor_rules_pruning_test450_20260810.json`]"
@@ -338,7 +338,7 @@ def main() -> None:
         type=Path,
         default=(
             REPO_ROOT
-            / "docs/research/gan2026/gan2026_minor_rules_pruning_test450_confirmation_2026-08-10.md"
+            / "docs/research/gan2026/minor_rules_pruning_test450_confirmation_2026-08-10.md"
         ),
     )
     args = parser.parse_args()

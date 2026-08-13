@@ -27,7 +27,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL = (
     "docs/research/"
-    "exectv2_diagnosis_residual_additions_mechanism_audit_protocol_2026-08-10.md"
+    "diagnosis_residual_additions_mechanism_audit_protocol_2026-08-10.md"
 )
 OUT = (
     REPO_ROOT

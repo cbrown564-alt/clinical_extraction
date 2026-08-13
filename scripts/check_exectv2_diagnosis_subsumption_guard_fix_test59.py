@@ -3,7 +3,7 @@
 
 Predeclared Phase 1 (dev140) REFUTED this fix per the strict "zero help
 lost" kill criterion -- see docs/research/
-exectv2_diagnosis_residual_additions_subsumption_guard_fix_2026-08-11.md.
+diagnosis_residual_additions_subsumption_guard_fix_2026-08-11.md.
 This script is run for disclosure only, ahead of a user decision to land the
 fix despite that result: it measures how the fix behaves on held-out notes
 before shipping. It does not re-run or override the predeclared Phase 1
@@ -43,7 +43,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_hea
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL = (
     "docs/research/"
-    "exectv2_diagnosis_residual_additions_subsumption_guard_fix_protocol_2026-08-11.md"
+    "diagnosis_residual_additions_subsumption_guard_fix_protocol_2026-08-11.md"
 )
 OUT = (
     REPO_ROOT

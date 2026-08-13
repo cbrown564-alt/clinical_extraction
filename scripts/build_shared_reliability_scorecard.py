@@ -30,7 +30,7 @@ from clinical_extraction.core.shared_reliability_schema import (
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = Path("docs/experiments/retained_evidence_manifest.json")
 OUTPUT_JSON = Path("experiments/shared_reliability_scorecard_20260718.json")
-OUTPUT_REPORT = Path("docs/research/shared/shared_reliability_scorecard_2026-07-18.md")
+OUTPUT_REPORT = Path("docs/research/shared/reliability_scorecard_2026-07-18.md")
 REVIEW_SUBSTRATE = Path(
     "experiments/exectv2_semantic_support_review_substrate_dev140_20260718.json"
 )

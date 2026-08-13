@@ -24,7 +24,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_hea
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL = (
     "docs/research/"
-    "exectv2_family_lens_rule_decomposition_test59_confirmation_protocol_2026-08-10.md"
+    "family_lens_rule_decomposition_test59_confirmation_protocol_2026-08-10.md"
 )
 OUT = REPO_ROOT / "experiments" / "exectv2_family_lens_rule_decomposition_test59_20260810.json"
 

@@ -21,13 +21,13 @@ PARENTS = {
     "task_shape_framework": "docs/research/shared/task_shape_framework_2026-08-06.md",
     "category_cut": "docs/research/shared/six_model_category_cut_performance_2026-08-06.md",
     "category_cut_artifact": f"experiments/six_model_category_cut_performance_{DATE_STAMP}.json",
-    "gan_catalog": "docs/research/gan2026/gan2026_category_error_catalog_2026-08-06.md",
+    "gan_catalog": "docs/research/gan2026/category_error_catalog_2026-08-06.md",
     "gan_catalog_artifact": f"experiments/gan2026_category_error_catalog_{DATE_STAMP}.json",
-    "exect_catalog": "docs/research/exectv2/exectv2_family_error_catalog_2026-08-06.md",
+    "exect_catalog": "docs/research/exectv2/family_error_catalog_2026-08-06.md",
     "exect_catalog_artifact": f"experiments/exectv2_family_error_catalog_{DATE_STAMP}.json",
-    "gan_stage": "docs/research/gan2026/gan2026_hybrid_stage_ablation_2026-08-06.md",
+    "gan_stage": "docs/research/gan2026/hybrid_stage_ablation_2026-08-06.md",
     "gan_stage_artifact": f"experiments/gan2026_hybrid_stage_ablation_{DATE_STAMP}.json",
-    "exect_stage": "docs/research/exectv2/exectv2_hybrid_stage_ablation_2026-08-06.md",
+    "exect_stage": "docs/research/exectv2/hybrid_stage_ablation_2026-08-06.md",
     "exect_stage_artifact": f"experiments/exectv2_hybrid_stage_ablation_{DATE_STAMP}.json",
     "hard_slice": "docs/research/shared/six_model_hard_slice_error_modes_2026-08-06.md",
     "hard_slice_artifact": f"experiments/six_model_hard_slice_error_modes_{DATE_STAMP}.json",
@@ -469,10 +469,10 @@ def render_report(artifact: dict[str, Any]) -> str:
         "(cross_task_hybrid_mechanism_synthesis_protocol_2026-08-06.md)  ",
         "Parents: [task-shape](task_shape_framework_2026-08-06.md), "
         "[category-cut](six_model_category_cut_performance_2026-08-06.md), "
-        "[Gan catalog](gan2026_category_error_catalog_2026-08-06.md), "
-        "[Gan stage ablation](gan2026_hybrid_stage_ablation_2026-08-06.md), "
-        "[ExECT catalog](exectv2_family_error_catalog_2026-08-06.md), "
-        "[ExECT stage ablation](exectv2_hybrid_stage_ablation_2026-08-06.md)  ",
+        "[Gan catalog](category_error_catalog_2026-08-06.md), "
+        "[Gan stage ablation](hybrid_stage_ablation_2026-08-06.md), "
+        "[ExECT catalog](family_error_catalog_2026-08-06.md), "
+        "[ExECT stage ablation](hybrid_stage_ablation_2026-08-06.md)  ",
         "Artifact: "
         f"[`experiments/cross_task_hybrid_mechanism_synthesis_{DATE_STAMP}.json`]"
         f"(../../experiments/cross_task_hybrid_mechanism_synthesis_{DATE_STAMP}.json)",
@@ -815,10 +815,10 @@ def render_report(artifact: dict[str, Any]) -> str:
             "1. Keep operational primary on the fixed vLLM dev10 endpoint task "
             "(unchanged by this synthesis).",
             "2. Done: ExECT Prescription lens on/off counterfactual — "
-            "[report](exectv2_prescription_lens_counterfactual_2026-08-06.md) "
+            "[report](prescription_lens_counterfactual_2026-08-06.md) "
             "(mixed metric split; no default rewrite).",
             "3. Done: Gan `unknown_sentinel` clinical-selection harm catalog — "
-            "[report](gan2026_unknown_sentinel_clinical_harm_2026-08-06.md).",
+            "[report](unknown_sentinel_clinical_harm_2026-08-06.md).",
             "4. Optional sealed holdout category aggregates under protocol.",
             "5. Do not authorize repair or lens rewrites from this packaging "
             "page alone.",
@@ -829,12 +829,12 @@ def render_report(artifact: dict[str, Any]) -> str:
             "| --- | --- |",
             "| Machine-readable synthesis tables | JSON artifact |",
             "| Gan stage ledger | [Gan hybrid stage ablation]"
-            "(gan2026_hybrid_stage_ablation_2026-08-06.md) |",
+            "(hybrid_stage_ablation_2026-08-06.md) |",
             "| ExECT stage ledger | [ExECT hybrid stage ablation]"
-            "(exectv2_hybrid_stage_ablation_2026-08-06.md) |",
+            "(hybrid_stage_ablation_2026-08-06.md) |",
             "| Full error-mode catalogs | "
-            "[Gan](gan2026_category_error_catalog_2026-08-06.md), "
-            "[ExECT](exectv2_family_error_catalog_2026-08-06.md) |",
+            "[Gan](category_error_catalog_2026-08-06.md), "
+            "[ExECT](family_error_catalog_2026-08-06.md) |",
             "| Regenerate this page | "
             "`python scripts/build_cross_task_hybrid_mechanism_synthesis.py` |",
             "",

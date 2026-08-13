@@ -2,7 +2,7 @@
 """Aggregate-only test59 study for `diagnosis_residual_additions`.
 
 Predeclared in docs/research/
-exectv2_diagnosis_residual_additions_compensation_removal_protocol_2026-08-11.md.
+diagnosis_residual_additions_compensation_removal_protocol_2026-08-11.md.
 
 Two measurements, both no-call, aggregate-only:
 
@@ -43,7 +43,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_hea
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL = (
     "docs/research/"
-    "exectv2_diagnosis_residual_additions_compensation_removal_protocol_2026-08-11.md"
+    "diagnosis_residual_additions_compensation_removal_protocol_2026-08-11.md"
 )
 OUT = (
     REPO_ROOT

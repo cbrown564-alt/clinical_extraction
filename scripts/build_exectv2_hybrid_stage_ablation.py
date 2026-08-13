@@ -2,7 +2,7 @@
 """ExECTv2 llm_with_rules band + first-changer stage ablation.
 
 True ordered no-call replay from retained structured sidecars. See
-docs/research/exectv2/exectv2_hybrid_stage_ablation_protocol_2026-08-06.md.
+docs/research/exectv2/hybrid_stage_ablation_protocol_2026-08-06.md.
 """
 
 from __future__ import annotations
@@ -729,10 +729,10 @@ def build_artifact() -> dict[str, Any]:
         "schema_version": "exectv2.hybrid_stage_ablation.v1",
         "date": REPORT_DATE,
         "protocol": (
-            "docs/research/exectv2/exectv2_hybrid_stage_ablation_protocol_2026-08-06.md"
+            "docs/research/exectv2/hybrid_stage_ablation_protocol_2026-08-06.md"
         ),
         "parent_catalog": (
-            "docs/research/exectv2/exectv2_family_error_catalog_2026-08-06.md"
+            "docs/research/exectv2/family_error_catalog_2026-08-06.md"
         ),
         "git": _git_note(),
         "dataset": "ExECTv2",
@@ -793,12 +793,12 @@ def render_report(artifact: dict[str, Any]) -> str:
         f"Date: {REPORT_DATE}  ",
         "Status: development stage ablation inside hybrid only  ",
         "Protocol: [hybrid stage ablation protocol]"
-        "(exectv2_hybrid_stage_ablation_protocol_2026-08-06.md)  ",
-        "Parent: [family error catalog](exectv2_family_error_catalog_2026-08-06.md)  ",
+        "(hybrid_stage_ablation_protocol_2026-08-06.md)  ",
+        "Parent: [family error catalog](family_error_catalog_2026-08-06.md)  ",
         "Companions: [task-shape framework](task_shape_framework_2026-08-06.md), "
         "[architecture stage diagram]"
         "(../architecture/diagrams/exectv2_llm_with_rules_stages.md), "
-        "[Gan peer](gan2026_hybrid_stage_ablation_2026-08-06.md)  ",
+        "[Gan peer](hybrid_stage_ablation_2026-08-06.md)  ",
         "Artifact: "
         f"[`experiments/exectv2_hybrid_stage_ablation_{DATE_STAMP}.json`]"
         f"(../../experiments/exectv2_hybrid_stage_ablation_{DATE_STAMP}.json)",
@@ -848,7 +848,7 @@ def render_report(artifact: dict[str, Any]) -> str:
             "",
             "## Why this document exists",
             "",
-            "The [family error catalog](exectv2_family_error_catalog_2026-08-06.md) "
+            "The [family error catalog](family_error_catalog_2026-08-06.md) "
             "contrasts model lane vs after family rules. This sibling stays on "
             "hybrid only and splits the deterministic stack into bands and named "
             "stages under true ordered replay.",
@@ -1108,12 +1108,12 @@ def render_report(artifact: dict[str, Any]) -> str:
             "| --- | --- |",
             "| Band mode tables and stage examples | JSON artifact |",
             "| llm vs hybrid mode catalog | "
-            "[family error catalog](exectv2_family_error_catalog_2026-08-06.md) |",
+            "[family error catalog](family_error_catalog_2026-08-06.md) |",
             "| Stage ownership definitions | "
             "[llm_with_rules stages]"
             "(../architecture/diagrams/exectv2_llm_with_rules_stages.md) |",
             "| Gan peer report | "
-            "[Gan hybrid stage ablation](gan2026_hybrid_stage_ablation_2026-08-06.md) |",
+            "[Gan hybrid stage ablation](hybrid_stage_ablation_2026-08-06.md) |",
             "| Regenerate | `python scripts/build_exectv2_hybrid_stage_ablation.py` |",
             "",
             "## Method",
@@ -1163,7 +1163,7 @@ def main() -> None:
         "--report",
         type=Path,
         default=REPO_ROOT
-        / f"docs/research/exectv2/exectv2_hybrid_stage_ablation_{REPORT_DATE}.md",
+        / f"docs/research/exectv2/hybrid_stage_ablation_{REPORT_DATE}.md",
     )
     args = parser.parse_args()
 

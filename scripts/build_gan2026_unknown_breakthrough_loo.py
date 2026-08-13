@@ -2,7 +2,7 @@
 """Gan unknown-gold leave-one-family-out for repair.breakthrough.
 
 No new model calls. Study-local omit via replay_row; production defaults
-unchanged. See docs/research/gan2026/gan2026_unknown_breakthrough_loo_protocol_2026-08-06.md.
+unchanged. See docs/research/gan2026/unknown_breakthrough_loo_protocol_2026-08-06.md.
 """
 
 from __future__ import annotations
@@ -328,10 +328,10 @@ def build_artifact() -> dict[str, Any]:
         "study_id": "gan2026_unknown_breakthrough_loo",
         "date": REPORT_DATE,
         "protocol": (
-            "docs/research/gan2026/gan2026_unknown_breakthrough_loo_protocol_2026-08-06.md"
+            "docs/research/gan2026/unknown_breakthrough_loo_protocol_2026-08-06.md"
         ),
         "parent_report": (
-            "docs/research/gan2026/gan2026_unknown_sentinel_clinical_harm_2026-08-06.md"
+            "docs/research/gan2026/unknown_sentinel_clinical_harm_2026-08-06.md"
         ),
         "git": _git_note(),
         "scope": {
@@ -461,9 +461,9 @@ def write_report(artifact: dict[str, Any]) -> str:
         f"Date: {REPORT_DATE}  ",
         "Status: development leave-one-family-out necessity check  ",
         "Protocol: [unknown breakthrough LOO protocol]"
-        "(gan2026_unknown_breakthrough_loo_protocol_2026-08-06.md)  ",
+        "(unknown_breakthrough_loo_protocol_2026-08-06.md)  ",
         "Parent: [unknown_sentinel clinical harm]"
-        "(gan2026_unknown_sentinel_clinical_harm_2026-08-06.md)  ",
+        "(unknown_sentinel_clinical_harm_2026-08-06.md)  ",
         "Artifact: "
         f"[`experiments/gan2026_unknown_breakthrough_loo_{DATE_STAMP}.json`]"
         f"(../../experiments/gan2026_unknown_breakthrough_loo_{DATE_STAMP}.json)",
@@ -640,7 +640,7 @@ def main() -> None:
         "--report",
         type=Path,
         default=REPO_ROOT
-        / f"docs/research/gan2026/gan2026_unknown_breakthrough_loo_{REPORT_DATE}.md",
+        / f"docs/research/gan2026/unknown_breakthrough_loo_{REPORT_DATE}.md",
     )
     args = parser.parse_args()
 

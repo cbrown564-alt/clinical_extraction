@@ -2,7 +2,7 @@
 """Dev140 Phase-1 check for the dead subsumption-guard fix.
 
 Predeclared in docs/research/
-exectv2_diagnosis_residual_additions_subsumption_guard_fix_protocol_2026-08-11.md.
+diagnosis_residual_additions_subsumption_guard_fix_protocol_2026-08-11.md.
 
 `is_redundant_diagnosis_residual_addition` compares
 `canonicalize_diagnosis_concept(text) == "generalised tonic clonic seizures"`,
@@ -38,7 +38,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL = (
     "docs/research/"
-    "exectv2_diagnosis_residual_additions_subsumption_guard_fix_protocol_2026-08-11.md"
+    "diagnosis_residual_additions_subsumption_guard_fix_protocol_2026-08-11.md"
 )
 OUT = (
     REPO_ROOT

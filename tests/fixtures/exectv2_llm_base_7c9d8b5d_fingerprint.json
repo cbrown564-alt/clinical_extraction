@@ -56,7 +56,7 @@
       "superseded_by": "intentional Diagnosis, SeizureFrequency, and Investigations family lens simplification",
       "change": "Removed Diagnosis residual additions, simplified SeizureFrequency and Investigations to pass-through adapters following dev140 LOO decomposition and test59 holdout confirmation.",
       "why": "The LOO decomposition measured these assembly lens rules as zero-fire or dev-fitted, and the frozen test59 confirmation verified zero changed cells on holdout data.",
-      "evidence": "docs/research/exectv2/exectv2_family_lens_rule_decomposition_2026-08-10.md; docs/research/exectv2/exectv2_family_lens_rule_decomposition_test59_confirmation_2026-08-10.md",
+      "evidence": "docs/research/exectv2/family_lens_rule_decomposition_2026-08-10.md; docs/research/exectv2/family_lens_rule_decomposition_test59_confirmation_2026-08-10.md",
       "scope_note": "The fixture continues to pin the current no-call replay against the saved dev140 sidecars; the superseded hash is retained as historical evidence only."
     },
     {
@@ -65,7 +65,7 @@
       "superseded_by": "intentional Prescription lens simplification (v09 -> v10)",
       "change": "Removed two net-harmful sub-rules from PrescriptionDictionaryLens: the planned/historical noise drop (is_prescription_convention_noise plus its explicit-current guards) and the dictionary residual regimen additions. Normalization and regimen splitting are unchanged.",
       "why": "Measured on dev140 across six models by leave-one-out replay: the noise drop deleted 46 gold-supported regimens to remove 53 spurious ones, and residual additions produced 18 correct against 22 spurious. Removing both lifts Prescription letter exactness 0.8108 -> 0.8337 and micro F1 0.9175 -> 0.9182.",
-      "evidence": "docs/research/exectv2/exectv2_prescription_lens_rule_decomposition_2026-08-10.md",
+      "evidence": "docs/research/exectv2/prescription_lens_rule_decomposition_2026-08-10.md",
       "scope_note": "This oracle no longer certifies parity with the pre-Decision-0048 implementation for Prescription. It now pins the post-simplification assembly. Diagnosis, SeizureFrequency and Investigations parity is unaffected."
     },
     {
@@ -74,7 +74,7 @@
       "superseded_by": "intentional Diagnosis and Investigations lens simplification",
       "change": "Removed zero-fire Diagnosis heading-recovery and generic-companion hooks and replaced the zero-fire Investigations dictionary pass with a behavior-preserving adapter; prompt-side residual providers remain available.",
       "why": "The predeclared dev140 decomposition found zero score movement for all selected dead hooks, and the frozen six-rule Diagnosis-plus-Investigations test59 bundle changed zero of 352 scored cells with exactness and micro-F1 deltas of 0.0000.",
-      "evidence": "docs/research/exectv2/exectv2_family_lens_rule_decomposition_2026-08-10.md; docs/research/exectv2/exectv2_family_lens_rule_decomposition_test59_confirmation_protocol_2026-08-10.md",
+      "evidence": "docs/research/exectv2/family_lens_rule_decomposition_2026-08-10.md; docs/research/exectv2/family_lens_rule_decomposition_test59_confirmation_protocol_2026-08-10.md",
       "scope_note": "The fixture continues to pin the current no-call replay against the saved dev140 sidecars; the superseded hash is retained as historical evidence only."
     },
     {
@@ -83,7 +83,7 @@
       "superseded_by": "completion of the confirmed Diagnosis dead-hook cleanup",
       "change": "Removed the standalone post-selection Diagnosis attribute-repair pass while retaining attribute normalization required when constructing rewritten or added findings.",
       "why": "The predeclared decomposition measured the standalone attribute-repair arm as zero-fire; the narrower code change now matches the frozen six-rule deletion bundle without removing helper behavior needed by active rewrites and additions.",
-      "evidence": "docs/research/exectv2/exectv2_family_lens_rule_decomposition_2026-08-10.md; docs/research/exectv2/exectv2_family_lens_rule_decomposition_test59_confirmation_2026-08-10.md",
+      "evidence": "docs/research/exectv2/family_lens_rule_decomposition_2026-08-10.md; docs/research/exectv2/family_lens_rule_decomposition_test59_confirmation_2026-08-10.md",
       "scope_note": "The superseded hash is retained as historical evidence only."
     }
   ]

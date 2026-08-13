@@ -2,7 +2,7 @@
 """Gan unknown_sentinel clinical-selection / free-interval harm audit.
 
 No new model calls. See
-docs/research/gan2026/gan2026_unknown_sentinel_clinical_harm_protocol_2026-08-06.md.
+docs/research/gan2026/unknown_sentinel_clinical_harm_protocol_2026-08-06.md.
 """
 
 from __future__ import annotations
@@ -260,7 +260,7 @@ def build_artifact() -> dict[str, Any]:
         "schema_version": "gan2026.unknown_sentinel_clinical_harm.v1",
         "date": REPORT_DATE,
         "protocol": (
-            "docs/research/gan2026/gan2026_unknown_sentinel_clinical_harm_protocol_2026-08-06.md"
+            "docs/research/gan2026/unknown_sentinel_clinical_harm_protocol_2026-08-06.md"
         ),
         "parent_synthesis": (
             "docs/research/shared/cross_task_hybrid_mechanism_synthesis_2026-08-06.md"
@@ -320,11 +320,11 @@ def render_report(artifact: dict[str, Any]) -> str:
         f"Date: {REPORT_DATE}  ",
         "Status: development residual audit on unknown gold  ",
         "Protocol: [unknown_sentinel clinical harm protocol]"
-        "(gan2026_unknown_sentinel_clinical_harm_protocol_2026-08-06.md)  ",
+        "(unknown_sentinel_clinical_harm_protocol_2026-08-06.md)  ",
         "Parent: [cross-task hybrid mechanism synthesis]"
         "(cross_task_hybrid_mechanism_synthesis_2026-08-06.md)  ",
         "Companion: [Gan hybrid stage ablation]"
-        "(gan2026_hybrid_stage_ablation_2026-08-06.md)  ",
+        "(hybrid_stage_ablation_2026-08-06.md)  ",
         f"Artifact: [`experiments/gan2026_unknown_sentinel_clinical_harm_{DATE_STAMP}.json`]"
         f"(../../experiments/gan2026_unknown_sentinel_clinical_harm_{DATE_STAMP}.json)",
         "",
@@ -494,7 +494,7 @@ def main() -> None:
         "--report",
         type=Path,
         default=REPO_ROOT
-        / f"docs/research/gan2026/gan2026_unknown_sentinel_clinical_harm_{REPORT_DATE}.md",
+        / f"docs/research/gan2026/unknown_sentinel_clinical_harm_{REPORT_DATE}.md",
     )
     args = parser.parse_args()
     artifact = build_artifact()

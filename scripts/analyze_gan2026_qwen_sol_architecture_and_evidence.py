@@ -35,10 +35,10 @@ ARCHITECTURE_JSON = ROOT / "experiments/gan2026_qwen_sol_architecture_interactio
 EVIDENCE_JSON = ROOT / "experiments/gan2026_dev750_exact_evidence_and_repair_20260727.json"
 ARCHITECTURE_REPORT = (
     ROOT
-    / "docs/research/gan2026/gan2026_qwen_sol_architecture_interaction_report_2026-07-27.md"
+    / "docs/research/gan2026/qwen_sol_architecture_interaction_report_2026-07-27.md"
 )
 EVIDENCE_REPORT = (
-    ROOT / "docs/research/gan2026/gan2026_dev750_exact_evidence_and_repair_report_2026-07-27.md"
+    ROOT / "docs/research/gan2026/dev750_exact_evidence_and_repair_report_2026-07-27.md"
 )
 
 MODELS = {

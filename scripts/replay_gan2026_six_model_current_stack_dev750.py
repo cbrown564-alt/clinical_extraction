@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """No-call replay of retained six-model Gan hybrid raw outputs through HEAD.
 
-See docs/research/gan2026/gan2026_six_model_current_stack_dev750_replay_protocol_2026-08-13.md.
+See docs/research/gan2026/six_model_current_stack_dev750_replay_protocol_2026-08-13.md.
 Zero model calls. Development split only.
 """
 
@@ -29,7 +29,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = REPO_ROOT / "experiments/gan2026_six_model_current_stack_dev750_replay_20260813"
 SCRATCH_DIR = REPO_ROOT / "scratch/validation/gan2026_six_model_current_stack_dev750_20260813"
 PROTOCOL = (
-    "docs/research/gan2026/gan2026_six_model_current_stack_dev750_replay_protocol_2026-08-13.md"
+    "docs/research/gan2026/six_model_current_stack_dev750_replay_protocol_2026-08-13.md"
 )
 
 MODELS = [

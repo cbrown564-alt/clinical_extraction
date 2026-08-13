@@ -39,8 +39,8 @@ except ModuleNotFoundError:  # Direct ``python scripts/...`` execution.
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT_JSON = ROOT / "experiments/category_cut_representative_examples_20260808.json"
-GAN_REPORT = ROOT / "docs/research/gan2026/gan2026_category_cut_representative_examples_2026-08-08.md"
-EXECT_REPORT = ROOT / "docs/research/exectv2/exectv2_category_cut_representative_examples_2026-08-08.md"
+GAN_REPORT = ROOT / "docs/research/gan2026/category_cut_representative_examples_2026-08-08.md"
+EXECT_REPORT = ROOT / "docs/research/exectv2/category_cut_representative_examples_2026-08-08.md"
 GAN_RULES = ROOT / "experiments/gan2026_three_way_comparison_validation750_deterministic_canonical_pipeline_gpt41mini_2026-06-07.jsonl"
 GAN_LLM = ROOT / "experiments/gan2026_six_model_validation_20260718/gpt56sol--llm_only.jsonl"
 GAN_HYBRID = ROOT / "experiments/gan2026_matched_v05_dev750_attribution_20260727.json"

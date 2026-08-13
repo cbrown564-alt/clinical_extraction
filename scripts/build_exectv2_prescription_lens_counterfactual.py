@@ -2,7 +2,7 @@
 """ExECTv2 Prescription lens default-on vs thin identity counterfactual.
 
 No new model calls. Study-local arms only; production defaults unchanged.
-See docs/research/exectv2/exectv2_prescription_lens_counterfactual_protocol_2026-08-06.md.
+See docs/research/exectv2/prescription_lens_counterfactual_protocol_2026-08-06.md.
 """
 
 from __future__ import annotations
@@ -433,7 +433,7 @@ def build_artifact() -> dict[str, Any]:
         "schema_version": "exectv2.prescription_lens_counterfactual.v1",
         "date": REPORT_DATE,
         "protocol": (
-            "docs/research/exectv2/exectv2_prescription_lens_counterfactual_protocol_2026-08-06.md"
+            "docs/research/exectv2/prescription_lens_counterfactual_protocol_2026-08-06.md"
         ),
         "parent_synthesis": (
             "docs/research/shared/cross_task_hybrid_mechanism_synthesis_2026-08-06.md"
@@ -546,11 +546,11 @@ def render_report(artifact: dict[str, Any]) -> str:
         f"Date: {REPORT_DATE}  ",
         "Status: development no-call counterfactual  ",
         "Protocol: [Prescription lens counterfactual protocol]"
-        "(exectv2_prescription_lens_counterfactual_protocol_2026-08-06.md)  ",
+        "(prescription_lens_counterfactual_protocol_2026-08-06.md)  ",
         "Parent: [cross-task hybrid mechanism synthesis]"
         "(cross_task_hybrid_mechanism_synthesis_2026-08-06.md)  ",
         "Companion: [ExECT hybrid stage ablation]"
-        "(exectv2_hybrid_stage_ablation_2026-08-06.md)  ",
+        "(hybrid_stage_ablation_2026-08-06.md)  ",
         f"Artifact: [`experiments/exectv2_prescription_lens_counterfactual_{DATE_STAMP}.json`]"
         f"(../../experiments/exectv2_prescription_lens_counterfactual_{DATE_STAMP}.json)",
         "",
@@ -697,7 +697,7 @@ def main() -> None:
         "--report",
         type=Path,
         default=REPO_ROOT
-        / f"docs/research/exectv2/exectv2_prescription_lens_counterfactual_{REPORT_DATE}.md",
+        / f"docs/research/exectv2/prescription_lens_counterfactual_{REPORT_DATE}.md",
     )
     args = parser.parse_args()
     artifact = build_artifact()

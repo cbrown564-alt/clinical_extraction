@@ -37,7 +37,7 @@ class PrescriptionDictionaryLens(ThinArtifactLens):
     It deliberately does **not** delete model-selected regimens that read as
     planned/historical, and does **not** add dictionary residual regimens. Both
     rules were measured net-harmful on dev140 across six models: see
-    ``docs/research/exectv2/exectv2_prescription_lens_rule_decomposition_2026-08-10.md``.
+    ``docs/research/exectv2/prescription_lens_rule_decomposition_2026-08-10.md``.
     """
 
     def reconcile(

@@ -2,7 +2,7 @@
 """ExECTv2 within-family error catalog with examples.
 
 No new model calls. No locked-test row inspection. See
-docs/research/exectv2/exectv2_family_error_catalog_protocol_2026-08-06.md.
+docs/research/exectv2/family_error_catalog_protocol_2026-08-06.md.
 """
 
 from __future__ import annotations
@@ -486,13 +486,13 @@ def render_report(artifact: dict[str, Any]) -> str:
         "Correction: within-family categories adopted 2026-08-08",
         "Status: development catalog with subtype and pipeline ablation reading",
         "Protocol: [exect family error catalog protocol]"
-        "(exectv2_family_error_catalog_protocol_2026-08-06.md)",
+        "(family_error_catalog_protocol_2026-08-06.md)",
         "Parent: [category-cut performance]"
         "(six_model_category_cut_performance_2026-08-06.md)",
         "Companions: [task-shape framework]"
         "(task_shape_framework_2026-08-06.md), "
         "[hard-slice modes](six_model_hard_slice_error_modes_2026-08-06.md), "
-        "[Gan error catalog](gan2026_category_error_catalog_2026-08-06.md)",
+        "[Gan error catalog](category_error_catalog_2026-08-06.md)",
         f"Artifact: [`experiments/exectv2_family_error_catalog_{DATE_STAMP}.json`]"
         f"(../../experiments/exectv2_family_error_catalog_{DATE_STAMP}.json)",
         "",
@@ -832,7 +832,7 @@ def render_report(artifact: dict[str, Any]) -> str:
             "[category-cut](six_model_category_cut_performance_2026-08-06.md) |",
             "| Peer Gan ablation catalog | "
             "[Gan category error catalog]"
-            "(gan2026_category_error_catalog_2026-08-06.md) |",
+            "(category_error_catalog_2026-08-06.md) |",
             "| Regenerate this page + artifact | "
             "`python scripts/build_exectv2_family_error_catalog.py` |",
             "",
@@ -904,7 +904,7 @@ def build_artifact() -> dict[str, Any]:
     return {
         "schema_version": "exectv2.family_error_catalog.v2",
         "date": REPORT_DATE,
-        "protocol": "docs/research/exectv2/exectv2_family_error_catalog_protocol_2026-08-06.md",
+        "protocol": "docs/research/exectv2/family_error_catalog_protocol_2026-08-06.md",
         "parent_category_cut": (
             "docs/research/shared/six_model_category_cut_performance_2026-08-06.md"
         ),
@@ -944,7 +944,7 @@ def main() -> None:
     parser.add_argument(
         "--report",
         type=Path,
-        default=REPO_ROOT / "docs/research/exectv2/exectv2_family_error_catalog_2026-08-06.md",
+        default=REPO_ROOT / "docs/research/exectv2/family_error_catalog_2026-08-06.md",
     )
     args = parser.parse_args()
     artifact = build_artifact()

@@ -47,9 +47,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_hea
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-PROTOCOL = "docs/research/exectv2/exectv2_family_lens_rule_decomposition_protocol_2026-08-10.md"
+PROTOCOL = "docs/research/exectv2/family_lens_rule_decomposition_protocol_2026-08-10.md"
 OUT = REPO_ROOT / "experiments" / "exectv2_family_lens_rule_decomposition_20260810.json"
-REPORT = REPO_ROOT / "docs/research/exectv2/exectv2_family_lens_rule_decomposition_2026-08-10.md"
+REPORT = REPO_ROOT / "docs/research/exectv2/family_lens_rule_decomposition_2026-08-10.md"
 FAMILIES = ("Diagnosis", "SeizureFrequency", "Investigations")
 
 RULES: dict[str, tuple[str, ...]] = {
@@ -500,7 +500,7 @@ def render_report(artifact: dict[str, Any]) -> str:
         "Date: 2026-08-10  ",
         "Status: development leave-one-out no-call replay  ",
         "Protocol: [predeclared protocol]("
-        "exectv2_family_lens_rule_decomposition_protocol_2026-08-10.md)  ",
+        "family_lens_rule_decomposition_protocol_2026-08-10.md)  ",
         "Artifact: `experiments/exectv2_family_lens_rule_decomposition_20260810.json`",
         "",
         "## Plain answer",
