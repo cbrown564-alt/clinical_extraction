@@ -80,5 +80,5 @@
       "status": "reuse_retained_sidecar"
     }
   ],
-  "artifact_root": "scratch/validation/gan2026_successor_gemini37flash_20260813"
+  "artifact_root": "experiments/gan2026_six_model_current_stack_dev750_replay_20260813"
 }
