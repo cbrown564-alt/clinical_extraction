@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 PROTOCOL_PATH = Path(
-    "docs/research/six_model_open_mechanism_questions_abc_protocol_2026-08-03.md"
+    "docs/research/shared/six_model_open_mechanism_questions_abc_protocol_2026-08-03.md"
 )
 OUTPUT_PATH = Path("experiments/six_model_open_mechanism_questions_abc_20260803.json")
 FINAL_PANEL = Path("experiments/six_model_final_panel_20260803/panel_aggregate.json")
@@ -25,7 +25,7 @@ SF_OVERINFERENCE = Path(
     "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json"
 )
 GAN_V05 = Path("experiments/gan2026_matched_v05_dev750_panel_20260727.json")
-REPORT_PATH = Path("docs/research/six_model_comparison_report_2026-07-18.md")
+REPORT_PATH = Path("docs/research/shared/six_model_comparison_report_2026-07-18.md")
 
 SLUGS = (
     "gpt41mini",

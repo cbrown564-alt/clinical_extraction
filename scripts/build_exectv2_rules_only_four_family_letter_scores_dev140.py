@@ -42,7 +42,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_hea
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DATE_STAMP = "20260806"
 REPORT_DATE = "2026-08-06"
-PROTOCOL = "docs/research/six_model_category_cut_protocol_2026-08-06.md"
+PROTOCOL = "docs/research/shared/six_model_category_cut_protocol_2026-08-06.md"
 DECISION_0046 = "docs/decisions/0046-exect-primary-method-comparison-boundary.md"
 EXPECTED_HEADLINE_F1 = 0.8160
 OUT_JSONL = (

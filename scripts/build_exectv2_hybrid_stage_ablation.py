@@ -2,7 +2,7 @@
 """ExECTv2 llm_with_rules band + first-changer stage ablation.
 
 True ordered no-call replay from retained structured sidecars. See
-docs/research/exectv2_hybrid_stage_ablation_protocol_2026-08-06.md.
+docs/research/exectv2/exectv2_hybrid_stage_ablation_protocol_2026-08-06.md.
 """
 
 from __future__ import annotations
@@ -729,10 +729,10 @@ def build_artifact() -> dict[str, Any]:
         "schema_version": "exectv2.hybrid_stage_ablation.v1",
         "date": REPORT_DATE,
         "protocol": (
-            "docs/research/exectv2_hybrid_stage_ablation_protocol_2026-08-06.md"
+            "docs/research/exectv2/exectv2_hybrid_stage_ablation_protocol_2026-08-06.md"
         ),
         "parent_catalog": (
-            "docs/research/exectv2_family_error_catalog_2026-08-06.md"
+            "docs/research/exectv2/exectv2_family_error_catalog_2026-08-06.md"
         ),
         "git": _git_note(),
         "dataset": "ExECTv2",
@@ -1163,7 +1163,7 @@ def main() -> None:
         "--report",
         type=Path,
         default=REPO_ROOT
-        / f"docs/research/exectv2_hybrid_stage_ablation_{REPORT_DATE}.md",
+        / f"docs/research/exectv2/exectv2_hybrid_stage_ablation_{REPORT_DATE}.md",
     )
     args = parser.parse_args()
 

@@ -2,7 +2,7 @@
 """Package paper claim-boundary wording against C16 / Decision 0046.
 
 No model calls. No score-fill rewrite. See
-docs/research/paper_claim_boundary_hybrid_mechanism_c16_0046_protocol_2026-08-06.md.
+docs/research/shared/paper_claim_boundary_hybrid_mechanism_c16_0046_protocol_2026-08-06.md.
 """
 
 from __future__ import annotations
@@ -38,7 +38,7 @@ def build_artifact() -> dict[str, Any]:
         "artifact_id": "paper.claim_boundary.hybrid_mechanism_c16_0046.v1",
         "date": REPORT_DATE,
         "protocol": (
-            "docs/research/paper_claim_boundary_hybrid_mechanism_c16_0046_"
+            "docs/research/shared/paper_claim_boundary_hybrid_mechanism_c16_0046_"
             "protocol_2026-08-06.md"
         ),
         "git": _git_note(),
@@ -81,9 +81,9 @@ def build_artifact() -> dict[str, Any]:
                     "generalization; does not rewrite C16 or Decision 0046 fills."
                 ),
                 "evidence_owners": [
-                    "docs/research/gan2026_hybrid_stage_ablation_2026-08-06.md",
-                    "docs/research/exectv2_hybrid_stage_ablation_2026-08-06.md",
-                    "docs/research/cross_task_hybrid_mechanism_synthesis_2026-08-06.md",
+                    "docs/research/gan2026/gan2026_hybrid_stage_ablation_2026-08-06.md",
+                    "docs/research/exectv2/exectv2_hybrid_stage_ablation_2026-08-06.md",
+                    "docs/research/shared/cross_task_hybrid_mechanism_synthesis_2026-08-06.md",
                 ],
                 "recommendation": "accept_into_canon",
             },
@@ -103,9 +103,9 @@ def build_artifact() -> dict[str, Any]:
                     "change Decision 0046 or C16 headlines."
                 ),
                 "evidence_owners": [
-                    "docs/research/gan2026_unknown_sentinel_clinical_harm_2026-08-06.md",
-                    "docs/research/gan2026_unknown_breakthrough_loo_2026-08-06.md",
-                    "docs/research/exectv2_prescription_lens_counterfactual_2026-08-06.md",
+                    "docs/research/gan2026/gan2026_unknown_sentinel_clinical_harm_2026-08-06.md",
+                    "docs/research/gan2026/gan2026_unknown_breakthrough_loo_2026-08-06.md",
+                    "docs/research/exectv2/exectv2_prescription_lens_counterfactual_2026-08-06.md",
                 ],
                 "recommendation": "accept_into_canon",
             },
@@ -410,7 +410,7 @@ def main() -> None:
         type=Path,
         default=REPO_ROOT
         / (
-            "docs/research/paper_claim_boundary_hybrid_mechanism_c16_0046_"
+            "docs/research/shared/paper_claim_boundary_hybrid_mechanism_c16_0046_"
             f"{REPORT_DATE}.md"
         ),
     )

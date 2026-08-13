@@ -72,7 +72,7 @@
       "governing_test": "tests/test_gan2026_pipeline_v1_selection.py",
       "trace_fields": ["diagnostics.final_selection"],
       "paper_wording": "A deterministic selection policy chooses one current event and renders the final label.",
-      "notes": "This stage owns the prediction. The competing-rate policies catalogued in docs/research/clinical_selection_policy_catalog_2026-07-31.md fire here."
+      "notes": "This stage owns the prediction. The competing-rate policies catalogued in docs/research/shared/clinical_selection_policy_catalog_2026-07-31.md fire here."
     },
     {
       "stage_id": "gan.rules.evidence_trace_check",
@@ -129,6 +129,6 @@
   ],
   "evidence_owners": [
     "docs/canon/06_gan_clinical_policy.md",
-    "docs/research/clinical_selection_policy_catalog_2026-07-31.md"
+    "docs/research/shared/clinical_selection_policy_catalog_2026-07-31.md"
   ]
 }

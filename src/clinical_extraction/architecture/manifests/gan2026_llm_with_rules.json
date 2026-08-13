@@ -254,7 +254,7 @@
         "row_trace.deterministic_semantic.events"
       ],
       "paper_wording": "A deterministic repair prefers a stated typical recurring rate over a year-to-date total.",
-      "notes": "Policy A1 in docs/research/clinical_selection_policy_catalog_2026-07-31.md. Unlike its neighbours this repair is not gated by a repair_config flag; it runs whenever its precondition holds."
+      "notes": "Policy A1 in docs/research/shared/clinical_selection_policy_catalog_2026-07-31.md. Unlike its neighbours this repair is not gated by a repair_config flag; it runs whenever its precondition holds."
     },
     {
       "stage_id": "gan.llm_with_rules.repair.breakthrough",
@@ -471,7 +471,7 @@
   ],
   "evidence_owners": [
     "docs/canon/06_gan_clinical_policy.md",
-    "docs/research/six_model_comparison_report_2026-07-18.md",
-    "docs/research/clinical_selection_policy_catalog_2026-07-31.md"
+    "docs/research/shared/six_model_comparison_report_2026-07-18.md",
+    "docs/research/shared/clinical_selection_policy_catalog_2026-07-31.md"
   ]
 }

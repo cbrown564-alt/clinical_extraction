@@ -1,6 +1,6 @@
 """Predeclared holdout baseline refresh script for Gan test450 and ExECT test60.
 
-Protocol: docs/research/holdout_baseline_refresh_protocol_2026-08-11.md
+Protocol: docs/research/shared/holdout_baseline_refresh_protocol_2026-08-11.md
 Row policy: aggregate-only (Phase C holdout security firewall).
 """
 
@@ -30,9 +30,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import load_record
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners.split import run_split
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-PROTOCOL = "docs/research/holdout_baseline_refresh_protocol_2026-08-11.md"
+PROTOCOL = "docs/research/shared/holdout_baseline_refresh_protocol_2026-08-11.md"
 OUT_JSON = REPO_ROOT / "experiments/holdout_baseline_refresh_20260811.json"
-OUT_MD = REPO_ROOT / "docs/research/holdout_baseline_refresh_2026-08-11.md"
+OUT_MD = REPO_ROOT / "docs/research/shared/holdout_baseline_refresh_2026-08-11.md"
 
 
 def main() -> None:

@@ -16,7 +16,7 @@ Outputs ONLY aggregate scores. No row-level test inspection or failure leakage.
 
 Generates:
   - experiments/gan2026_cluster_burden_tuning_v2_test450_20260811.json
-  - docs/research/gan2026_cluster_burden_tuning_v2_test450_confirmation_2026-08-11.md
+  - docs/research/gan2026/gan2026_cluster_burden_tuning_v2_test450_confirmation_2026-08-11.md
 """
 
 from __future__ import annotations
@@ -284,7 +284,7 @@ def main() -> None:
         type=Path,
         default=(
             REPO_ROOT
-            / "docs/research/gan2026_cluster_burden_tuning_v2_test450_confirmation_2026-08-11.md"
+            / "docs/research/gan2026/gan2026_cluster_burden_tuning_v2_test450_confirmation_2026-08-11.md"
         ),
     )
     args = parser.parse_args()

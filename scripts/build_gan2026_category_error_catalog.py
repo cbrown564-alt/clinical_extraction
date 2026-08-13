@@ -2,7 +2,7 @@
 """Gan 2026 full a_priori-bucket error catalog with examples.
 
 No new model calls. No locked-test row inspection. See
-docs/research/gan2026_category_error_catalog_protocol_2026-08-06.md.
+docs/research/gan2026/gan2026_category_error_catalog_protocol_2026-08-06.md.
 """
 
 from __future__ import annotations
@@ -949,9 +949,9 @@ def build_artifact() -> dict[str, Any]:
     return {
         "schema_version": "gan2026.category_error_catalog.v1",
         "date": REPORT_DATE,
-        "protocol": "docs/research/gan2026_category_error_catalog_protocol_2026-08-06.md",
+        "protocol": "docs/research/gan2026/gan2026_category_error_catalog_protocol_2026-08-06.md",
         "parent_category_cut": (
-            "docs/research/six_model_category_cut_performance_2026-08-06.md"
+            "docs/research/shared/six_model_category_cut_performance_2026-08-06.md"
         ),
         "call_mode": "saved_output_no_call",
         "text_policy": "development_selected_evidence_spans_only",
@@ -992,7 +992,7 @@ def main() -> None:
         "--report",
         type=Path,
         default=REPO_ROOT
-        / "docs/research/gan2026_category_error_catalog_2026-08-06.md",
+        / "docs/research/gan2026/gan2026_category_error_catalog_2026-08-06.md",
     )
     args = parser.parse_args()
     artifact = build_artifact()

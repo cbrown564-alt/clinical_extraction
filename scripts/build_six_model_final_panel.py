@@ -441,7 +441,7 @@ def main() -> None:
                 "\\", "/"
             ),
             "deepseek_v4_flash_0731": str(DEEPSEEK_0731.relative_to(ROOT)).replace("\\", "/"),
-            "report": "docs/research/six_model_comparison_report_2026-07-18.md",
+            "report": "docs/research/shared/six_model_comparison_report_2026-07-18.md",
             "builder": "scripts/build_six_model_final_panel.py",
         },
     }

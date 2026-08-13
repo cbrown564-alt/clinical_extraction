@@ -271,7 +271,7 @@
         "provenance[].action"
       ],
       "paper_wording": "A deterministic Prescription transform normalizes drug and dose surfaces and splits explicitly stated uneven daily regimens. It neither removes nor adds regimen findings.",
-      "notes": "The active policy variant is 'default' (decision 0045). Decision 0040 requires bounded correction here rather than deterministic substitution: the rules may correct the model, they may not replace it as the producer. v10 (2026-08-10): this transform no longer deletes model-selected regimens that read as planned or historical, and no longer adds dictionary residual regimens; both rules were measured net-harmful on dev140 across six models and were removed rather than guarded, so the stage can now only reshape a model finding, never remove or invent one. See docs/research/exectv2_prescription_lens_rule_decomposition_2026-08-10.md."
+      "notes": "The active policy variant is 'default' (decision 0045). Decision 0040 requires bounded correction here rather than deterministic substitution: the rules may correct the model, they may not replace it as the producer. v10 (2026-08-10): this transform no longer deletes model-selected regimens that read as planned or historical, and no longer adds dictionary residual regimens; both rules were measured net-harmful on dev140 across six models and were removed rather than guarded, so the stage can now only reshape a model finding, never remove or invent one. See docs/research/exectv2/exectv2_prescription_lens_rule_decomposition_2026-08-10.md."
     },
     {
       "stage_id": "exect.llm_with_rules.lens.investigations",
@@ -388,6 +388,6 @@
     "docs/decisions/0040-final-exect-llm-with-rules-family-ownership.md",
     "docs/decisions/0041-single-call-exect-model-comparison.md",
     "docs/decisions/0045-exect-default-policy-not-joint-combined.md",
-    "docs/research/six_model_comparison_report_2026-07-18.md"
+    "docs/research/shared/six_model_comparison_report_2026-07-18.md"
   ]
 }

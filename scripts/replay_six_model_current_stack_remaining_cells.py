@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """No-call current-stack replay of the three remaining six-model hybrid cells.
 
-See docs/research/six_model_current_stack_remaining_cells_replay_protocol_2026-08-13.md.
+See docs/research/shared/six_model_current_stack_remaining_cells_replay_protocol_2026-08-13.md.
 Zero model calls. Gan test450 and ExECT test60 are aggregate-only.
 """
 
@@ -39,7 +39,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = REPO_ROOT / "experiments/six_model_current_stack_remaining_cells_replay_20260813"
 SCRATCH_DIR = REPO_ROOT / "scratch/validation/six_model_current_stack_remaining_cells_20260813"
 PROTOCOL = (
-    "docs/research/six_model_current_stack_remaining_cells_replay_protocol_2026-08-13.md"
+    "docs/research/shared/six_model_current_stack_remaining_cells_replay_protocol_2026-08-13.md"
 )
 
 MODELS = [

@@ -385,9 +385,9 @@ def build_artifact() -> dict[str, Any]:
         "schema_version": "six_model.hard_slice_error_mode_examples.v1",
         "date": REPORT_DATE,
         "protocol": (
-            "docs/research/six_model_hard_slice_error_mode_examples_protocol_2026-08-06.md"
+            "docs/research/shared/six_model_hard_slice_error_mode_examples_protocol_2026-08-06.md"
         ),
-        "parent_report": "docs/research/six_model_hard_slice_error_modes_2026-08-06.md",
+        "parent_report": "docs/research/shared/six_model_hard_slice_error_modes_2026-08-06.md",
         "parent_artifact": f"experiments/six_model_hard_slice_error_modes_{DATE_STAMP}.json",
         "call_mode": "saved_output_no_call",
         "text_policy": (

@@ -1,7 +1,7 @@
 """Generate the two main empirical figures for the six-model comparison report.
 
 The values are copied from the retained reports cited in
-docs/research/six_model_comparison_report_2026-07-18.md. This script does not
+docs/research/shared/six_model_comparison_report_2026-07-18.md. This script does not
 read locked row-level data or call a model.
 """
 

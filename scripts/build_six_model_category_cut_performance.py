@@ -2,7 +2,7 @@
 """Cut retained six-model development performance by gold task categories.
 
 No new model calls. No locked-test row inspection. See
-docs/research/six_model_category_cut_protocol_2026-08-06.md.
+docs/research/shared/six_model_category_cut_protocol_2026-08-06.md.
 """
 
 from __future__ import annotations
@@ -972,8 +972,8 @@ def build_artifact() -> dict[str, Any]:
     return {
         "artifact_id": "six_model.category_cut_performance.v2",
         "date": REPORT_DATE,
-        "protocol": "docs/research/six_model_category_cut_protocol_2026-08-06.md",
-        "parent_framework": "docs/research/task_shape_framework_2026-08-06.md",
+        "protocol": "docs/research/shared/six_model_category_cut_protocol_2026-08-06.md",
+        "parent_framework": "docs/research/shared/task_shape_framework_2026-08-06.md",
         "claim_boundary": (
             "Development category cuts from retained no-call artifacts, now "
             "including the single-system rules surface beside six-model llm and "

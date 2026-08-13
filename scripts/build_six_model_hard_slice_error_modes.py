@@ -2,7 +2,7 @@
 """Error-mode drill-down inside six-model hard slices.
 
 No new model calls. No locked-test row inspection. See
-docs/research/six_model_hard_slice_error_modes_protocol_2026-08-06.md.
+docs/research/shared/six_model_hard_slice_error_modes_protocol_2026-08-06.md.
 """
 
 from __future__ import annotations
@@ -676,9 +676,9 @@ def build_artifact() -> dict[str, Any]:
     return {
         "schema_version": "six_model.hard_slice_error_modes.v1",
         "date": REPORT_DATE,
-        "protocol": "docs/research/six_model_hard_slice_error_modes_protocol_2026-08-06.md",
+        "protocol": "docs/research/shared/six_model_hard_slice_error_modes_protocol_2026-08-06.md",
         "parent_category_cut": (
-            "docs/research/six_model_category_cut_performance_2026-08-06.md"
+            "docs/research/shared/six_model_category_cut_performance_2026-08-06.md"
         ),
         "call_mode": "saved_output_no_call",
         "git": _git_note(),

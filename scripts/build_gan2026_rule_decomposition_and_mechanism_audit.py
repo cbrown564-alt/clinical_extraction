@@ -8,7 +8,7 @@ and gold support) for every hybrid repair stage and deterministic rule group.
 
 Generates:
   - experiments/gan2026_rule_decomposition_and_mechanism_audit_20260810.json
-  - docs/research/gan2026_rule_decomposition_and_mechanism_audit_2026-08-10.md
+  - docs/research/gan2026/gan2026_rule_decomposition_and_mechanism_audit_2026-08-10.md
 
 No model calls. No locked test row inspection.
 """
@@ -453,7 +453,7 @@ def build_decomposition_audit() -> dict[str, Any]:
         "schema_version": "gan2026.rule_decomposition_and_mechanism_audit.v1",
         "date": REPORT_DATE,
         "protocol": (
-            "docs/research/gan2026_rule_decomposition_and_mechanism_audit_protocol_"
+            "docs/research/gan2026/gan2026_rule_decomposition_and_mechanism_audit_protocol_"
             "2026-08-10.md"
         ),
         "git": _git_note(),
@@ -609,7 +609,7 @@ def main() -> None:
         type=Path,
         default=(
             REPO_ROOT
-            / "docs/research/gan2026_rule_decomposition_and_mechanism_audit_2026-08-10.md"
+            / "docs/research/gan2026/gan2026_rule_decomposition_and_mechanism_audit_2026-08-10.md"
         ),
     )
     args = parser.parse_args()

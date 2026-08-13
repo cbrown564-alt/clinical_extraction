@@ -2,7 +2,7 @@
 """Prescription lens v10 vs v09 confirmation on the sealed ExECT test59 holdout.
 
 Predeclared protocol:
-docs/research/exectv2_prescription_lens_v10_holdout_confirmation_protocol_2026-08-10.md
+docs/research/exectv2/exectv2_prescription_lens_v10_holdout_confirmation_protocol_2026-08-10.md
 
 Machine-only scoring under the Decision 0046 Phase C pattern. Zero model calls:
 an ordered no-call replay of retained ``*_structured.jsonl`` holdout sidecars

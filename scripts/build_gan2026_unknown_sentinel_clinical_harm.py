@@ -2,7 +2,7 @@
 """Gan unknown_sentinel clinical-selection / free-interval harm audit.
 
 No new model calls. See
-docs/research/gan2026_unknown_sentinel_clinical_harm_protocol_2026-08-06.md.
+docs/research/gan2026/gan2026_unknown_sentinel_clinical_harm_protocol_2026-08-06.md.
 """
 
 from __future__ import annotations
@@ -260,10 +260,10 @@ def build_artifact() -> dict[str, Any]:
         "schema_version": "gan2026.unknown_sentinel_clinical_harm.v1",
         "date": REPORT_DATE,
         "protocol": (
-            "docs/research/gan2026_unknown_sentinel_clinical_harm_protocol_2026-08-06.md"
+            "docs/research/gan2026/gan2026_unknown_sentinel_clinical_harm_protocol_2026-08-06.md"
         ),
         "parent_synthesis": (
-            "docs/research/cross_task_hybrid_mechanism_synthesis_2026-08-06.md"
+            "docs/research/shared/cross_task_hybrid_mechanism_synthesis_2026-08-06.md"
         ),
         "git": _git_note(),
         "dataset": "Gan 2026",
@@ -494,7 +494,7 @@ def main() -> None:
         "--report",
         type=Path,
         default=REPO_ROOT
-        / f"docs/research/gan2026_unknown_sentinel_clinical_harm_{REPORT_DATE}.md",
+        / f"docs/research/gan2026/gan2026_unknown_sentinel_clinical_harm_{REPORT_DATE}.md",
     )
     args = parser.parse_args()
     artifact = build_artifact()

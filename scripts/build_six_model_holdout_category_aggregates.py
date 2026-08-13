@@ -3,8 +3,8 @@
 
 Machine-only scoring of sealed prediction ledgers. Public outputs stay
 aggregate-only. See
-docs/research/six_model_holdout_category_aggregates_protocol_2026-08-06.md and
-docs/research/six_model_holdout_category_aggregates_unlock_protocol_2026-08-06.md.
+docs/research/shared/six_model_holdout_category_aggregates_protocol_2026-08-06.md and
+docs/research/shared/six_model_holdout_category_aggregates_unlock_protocol_2026-08-06.md.
 """
 
 from __future__ import annotations
@@ -862,13 +862,13 @@ def build_artifact() -> dict[str, Any]:
         "artifact_id": "six_model.holdout_category_aggregates.v2",
         "date": REPORT_DATE,
         "protocol": (
-            "docs/research/six_model_holdout_category_aggregates_protocol_2026-08-06.md"
+            "docs/research/shared/six_model_holdout_category_aggregates_protocol_2026-08-06.md"
         ),
         "unlock_protocol": (
-            "docs/research/six_model_holdout_category_aggregates_unlock_protocol_2026-08-06.md"
+            "docs/research/shared/six_model_holdout_category_aggregates_unlock_protocol_2026-08-06.md"
         ),
         "parent_report": (
-            "docs/research/six_model_category_cut_performance_2026-08-06.md"
+            "docs/research/shared/six_model_category_cut_performance_2026-08-06.md"
         ),
         "git": _git_note(),
         "lens_thresholds": {
@@ -1303,7 +1303,7 @@ def main() -> None:
         "--report",
         type=Path,
         default=REPO_ROOT
-        / f"docs/research/six_model_holdout_category_aggregates_{REPORT_DATE}.md",
+        / f"docs/research/shared/six_model_holdout_category_aggregates_{REPORT_DATE}.md",
     )
     args = parser.parse_args()
 

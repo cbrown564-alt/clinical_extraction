@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Cross-task hybrid mechanism synthesis from retained 2026-08-06 artifacts.
 
-See docs/research/cross_task_hybrid_mechanism_synthesis_protocol_2026-08-06.md.
+See docs/research/shared/cross_task_hybrid_mechanism_synthesis_protocol_2026-08-06.md.
 No model calls; reads parent JSON only.
 """
 
@@ -18,18 +18,18 @@ DATE_STAMP = "20260806"
 REPORT_DATE = "2026-08-06"
 
 PARENTS = {
-    "task_shape_framework": "docs/research/task_shape_framework_2026-08-06.md",
-    "category_cut": "docs/research/six_model_category_cut_performance_2026-08-06.md",
+    "task_shape_framework": "docs/research/shared/task_shape_framework_2026-08-06.md",
+    "category_cut": "docs/research/shared/six_model_category_cut_performance_2026-08-06.md",
     "category_cut_artifact": f"experiments/six_model_category_cut_performance_{DATE_STAMP}.json",
-    "gan_catalog": "docs/research/gan2026_category_error_catalog_2026-08-06.md",
+    "gan_catalog": "docs/research/gan2026/gan2026_category_error_catalog_2026-08-06.md",
     "gan_catalog_artifact": f"experiments/gan2026_category_error_catalog_{DATE_STAMP}.json",
-    "exect_catalog": "docs/research/exectv2_family_error_catalog_2026-08-06.md",
+    "exect_catalog": "docs/research/exectv2/exectv2_family_error_catalog_2026-08-06.md",
     "exect_catalog_artifact": f"experiments/exectv2_family_error_catalog_{DATE_STAMP}.json",
-    "gan_stage": "docs/research/gan2026_hybrid_stage_ablation_2026-08-06.md",
+    "gan_stage": "docs/research/gan2026/gan2026_hybrid_stage_ablation_2026-08-06.md",
     "gan_stage_artifact": f"experiments/gan2026_hybrid_stage_ablation_{DATE_STAMP}.json",
-    "exect_stage": "docs/research/exectv2_hybrid_stage_ablation_2026-08-06.md",
+    "exect_stage": "docs/research/exectv2/exectv2_hybrid_stage_ablation_2026-08-06.md",
     "exect_stage_artifact": f"experiments/exectv2_hybrid_stage_ablation_{DATE_STAMP}.json",
-    "hard_slice": "docs/research/six_model_hard_slice_error_modes_2026-08-06.md",
+    "hard_slice": "docs/research/shared/six_model_hard_slice_error_modes_2026-08-06.md",
     "hard_slice_artifact": f"experiments/six_model_hard_slice_error_modes_{DATE_STAMP}.json",
 }
 
@@ -118,7 +118,7 @@ def build_artifact() -> dict[str, Any]:
         "schema_version": "cross_task.hybrid_mechanism_synthesis.v1",
         "date": REPORT_DATE,
         "protocol": (
-            "docs/research/cross_task_hybrid_mechanism_synthesis_protocol_2026-08-06.md"
+            "docs/research/shared/cross_task_hybrid_mechanism_synthesis_protocol_2026-08-06.md"
         ),
         "git": _git_meta(),
         "call_mode": "saved_output_no_call_synthesis",
@@ -868,7 +868,7 @@ def main() -> None:
         "--report",
         type=Path,
         default=REPO_ROOT
-        / f"docs/research/cross_task_hybrid_mechanism_synthesis_{REPORT_DATE}.md",
+        / f"docs/research/shared/cross_task_hybrid_mechanism_synthesis_{REPORT_DATE}.md",
     )
     args = parser.parse_args()
 

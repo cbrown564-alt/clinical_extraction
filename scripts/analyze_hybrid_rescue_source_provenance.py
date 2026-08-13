@@ -2,7 +2,7 @@
 """Classify first-rescues by whether the model already captured the answer.
 
 No new model calls. Development splits only. See
-docs/research/hybrid_rescue_source_provenance_protocol_2026-08-13.md.
+docs/research/shared/hybrid_rescue_source_provenance_protocol_2026-08-13.md.
 """
 
 from __future__ import annotations
@@ -30,8 +30,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_e
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DATE_STAMP = "20260813"
-PROTOCOL = "docs/research/hybrid_rescue_source_provenance_protocol_2026-08-13.md"
-REPORT = REPO_ROOT / "docs/research/hybrid_rescue_source_provenance_2026-08-13.md"
+PROTOCOL = "docs/research/shared/hybrid_rescue_source_provenance_protocol_2026-08-13.md"
+REPORT = REPO_ROOT / "docs/research/shared/hybrid_rescue_source_provenance_2026-08-13.md"
 ARTIFACT = REPO_ROOT / "experiments" / f"hybrid_rescue_source_provenance_{DATE_STAMP}.json"
 EXAMPLES_PER_CLASS = 2
 

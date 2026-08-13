@@ -235,7 +235,7 @@ def main() -> None:
             "docs/experiments/gan2026/"
             "gan2026_deepseek_unknown_competence_protocol_2026-07-31.md"
         ),
-        "thread": "docs/research/gan2026_deepseek_unknown_competence_thread_2026-07-31.md",
+        "thread": "docs/research/gan2026/gan2026_deepseek_unknown_competence_thread_2026-07-31.md",
         "dataset": "Gan 2026 synthetic clinical letters",
         "split": "validation750",
         "split_manifest": "gan2026_split_v1",

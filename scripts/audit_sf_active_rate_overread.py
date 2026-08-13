@@ -2,7 +2,7 @@
 """Audit and prototype an active-rate over-read guard for ExECTv2 SeizureFrequency.
 
 Development-only, no-call replay over the six retained dev140 sidecars. See
-docs/research/exectv2_sf_active_rate_overread_guard_protocol_2026-08-11.md.
+docs/research/exectv2/exectv2_sf_active_rate_overread_guard_protocol_2026-08-11.md.
 
 The guard classifies the (already evidence-gated) ``evidence`` string of each
 predicted SeizureFrequency mention whose state is ``active-rate`` into one of
@@ -37,7 +37,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.seizure_freq
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-PROTOCOL = "docs/research/exectv2_sf_active_rate_overread_guard_protocol_2026-08-11.md"
+PROTOCOL = "docs/research/exectv2/exectv2_sf_active_rate_overread_guard_protocol_2026-08-11.md"
 DATE_STAMP = "20260811"
 REPORT_DATE = "2026-08-11"
 

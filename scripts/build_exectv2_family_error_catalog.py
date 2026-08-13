@@ -2,7 +2,7 @@
 """ExECTv2 within-family error catalog with examples.
 
 No new model calls. No locked-test row inspection. See
-docs/research/exectv2_family_error_catalog_protocol_2026-08-06.md.
+docs/research/exectv2/exectv2_family_error_catalog_protocol_2026-08-06.md.
 """
 
 from __future__ import annotations
@@ -904,9 +904,9 @@ def build_artifact() -> dict[str, Any]:
     return {
         "schema_version": "exectv2.family_error_catalog.v2",
         "date": REPORT_DATE,
-        "protocol": "docs/research/exectv2_family_error_catalog_protocol_2026-08-06.md",
+        "protocol": "docs/research/exectv2/exectv2_family_error_catalog_protocol_2026-08-06.md",
         "parent_category_cut": (
-            "docs/research/six_model_category_cut_performance_2026-08-06.md"
+            "docs/research/shared/six_model_category_cut_performance_2026-08-06.md"
         ),
         "call_mode": "saved_output_no_call",
         "text_policy": "development_saved_mention_texts_only",
@@ -944,7 +944,7 @@ def main() -> None:
     parser.add_argument(
         "--report",
         type=Path,
-        default=REPO_ROOT / "docs/research/exectv2_family_error_catalog_2026-08-06.md",
+        default=REPO_ROOT / "docs/research/exectv2/exectv2_family_error_catalog_2026-08-06.md",
     )
     args = parser.parse_args()
     artifact = build_artifact()

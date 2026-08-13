@@ -2,7 +2,7 @@
 """Gan 2026 llm_with_rules band + first-changer stage ablation.
 
 No new model calls. No locked-test row inspection. See
-docs/research/gan2026_hybrid_stage_ablation_protocol_2026-08-06.md.
+docs/research/gan2026/gan2026_hybrid_stage_ablation_protocol_2026-08-06.md.
 """
 
 from __future__ import annotations
@@ -633,10 +633,10 @@ def build_artifact() -> dict[str, Any]:
         "schema_version": "gan2026.hybrid_stage_ablation.v1",
         "date": REPORT_DATE,
         "protocol": (
-            "docs/research/gan2026_hybrid_stage_ablation_protocol_2026-08-06.md"
+            "docs/research/gan2026/gan2026_hybrid_stage_ablation_protocol_2026-08-06.md"
         ),
         "parent_catalog": (
-            "docs/research/gan2026_category_error_catalog_2026-08-06.md"
+            "docs/research/gan2026/gan2026_category_error_catalog_2026-08-06.md"
         ),
         "git": _git_note(),
         "dataset": "Gan 2026",
@@ -1027,7 +1027,7 @@ def main() -> None:
         "--report",
         type=Path,
         default=REPO_ROOT
-        / f"docs/research/gan2026_hybrid_stage_ablation_{REPORT_DATE}.md",
+        / f"docs/research/gan2026/gan2026_hybrid_stage_ablation_{REPORT_DATE}.md",
     )
     args = parser.parse_args()
 

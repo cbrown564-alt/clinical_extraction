@@ -30,7 +30,7 @@ does not use a model.
 
 Scores are not interchangeable across tasks. Full six-model ranks, development
 scores, and claim limits are in the
-[comparison report](docs/research/six_model_comparison_report_2026-07-18.md)
+[comparison report](docs/research/shared/six_model_comparison_report_2026-07-18.md)
 and [paper claim status](docs/canon/10_paper_provenance.md).
 
 ## Two tasks, three methods
