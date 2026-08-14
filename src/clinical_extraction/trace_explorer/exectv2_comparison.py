@@ -15,8 +15,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection import (
+    project_cuis,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedLetter,
+    PredictedMention,
     to_exect_letter,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
@@ -26,6 +30,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
     rules,
+    structured_one_call,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.naming import (
     RULES_METHOD_ALIASES,
@@ -188,14 +193,42 @@ def _model_run(
     is_final = active_method_lane == "llm_with_rules"
     surface = _mapping(_mapping(summary["score_ladder"])[score_key])
     lane_diagnostics = _mapping(summary["lane_diagnostics"])
-    letters = [
-        _frontend_letter(
-            gold=gold_by_id[str(row["letter_id"])],
-            predicted=_list_of_mappings(row.get(source_key)),
-            source_model=retained.model,
-        )
-        for row in rows
-    ]
+    if is_final:
+        # Re-run HEAD deterministic assembly on raw outputs for current stack repairs.
+        letters = []
+        for row in rows:
+            gold = gold_by_id[str(row["letter_id"])]
+            raw_out = row.get("raw_output")
+            if raw_out:
+                producer = structured_one_call.produce_structured_letter(
+                    gold,
+                    model=retained.model,
+                    mode="prompt-only",
+                    raw_output=raw_out,
+                    split="dev140",
+                )
+                result = structured_one_call.run_llm_with_rules_letter(gold, producer)
+                predicted_mentions_payload = [
+                    m.model_dump(mode="json") for m in result.prediction.mentions
+                ]
+            else:
+                predicted_mentions_payload = _list_of_mappings(row.get(source_key))
+            letters.append(
+                _frontend_letter(
+                    gold=gold,
+                    predicted=predicted_mentions_payload,
+                    source_model=retained.model,
+                )
+            )
+    else:
+        letters = [
+            _frontend_letter(
+                gold=gold_by_id[str(row["letter_id"])],
+                predicted=_list_of_mappings(row.get(source_key)),
+                source_model=retained.model,
+            )
+            for row in rows
+        ]
     mode_label = "LLM + rules" if is_final else "LLM only"
     run_id = (
         f"exectv2_winning_mode_{retained.slug}_"
@@ -363,6 +396,35 @@ def _compact_letters(runs: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     return {"shared_letters": shared_letters, "runs": compact_runs}
 
 
+def _project_predicted_cuis(
+    predicted: Sequence[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    """Attach known CUI/CUIPhrase values that assembly residuals may omit."""
+
+    letter = PredictedLetter(
+        letter_id="frontend",
+        mentions=tuple(
+            PredictedMention(
+                entity=str(item.get("entity") or ""),
+                text=str(item.get("text") or ""),
+                attributes=_string_mapping(item.get("attributes")),
+                evidence=str(item.get("evidence") or item.get("text") or ""),
+                component_owner=str(item.get("component_owner") or ""),
+            )
+            for item in predicted
+        ),
+    )
+    projected = {id(before): after for before, after in zip(
+        letter.mentions, project_cuis(letter).mentions, strict=True
+    )}
+    out: list[dict[str, Any]] = []
+    for item, mention in zip(predicted, letter.mentions, strict=True):
+        payload = dict(item)
+        payload["attributes"] = dict(projected[id(mention)].attributes)
+        out.append(payload)
+    return out
+
+
 def _frontend_letter(
     *,
     gold: ExectLetter,
@@ -371,7 +433,9 @@ def _frontend_letter(
 ) -> dict[str, Any]:
     gold_payloads = [_annotation_mapping(annotation) for annotation in gold.annotations]
     gold_payloads = [item for item in gold_payloads if item["entity"] in FAMILIES]
-    predicted_payloads = [item for item in predicted if str(item.get("entity")) in FAMILIES]
+    predicted_payloads = _project_predicted_cuis(
+        [item for item in predicted if str(item.get("entity")) in FAMILIES]
+    )
     gold_mentions = [
         _frontend_mention(
             item,

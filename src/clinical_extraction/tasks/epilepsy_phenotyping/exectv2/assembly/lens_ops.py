@@ -15,6 +15,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.clinical_fi
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.finding_store import (
     ClinicalFindingStore,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection import (
+    attach_benchmark_concept,
+    diagnosis_concept,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import DIAGNOSIS
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
@@ -171,7 +175,11 @@ def diagnosis_finding_with_text(
         attributes=attributes,
     )
     attributes.setdefault("DiagCategory", diagnosis_category_for_concept(text))
-    attributes["CUIPhrase"] = text
+    concept = diagnosis_concept(text)
+    if concept is not None:
+        attributes = attach_benchmark_concept(attributes, concept)
+    else:
+        attributes["CUIPhrase"] = text
     source = FindingSource(
         producer_id=finding.source.producer_id,
         artifact_path=finding.source.artifact_path,
@@ -225,6 +233,9 @@ def diagnosis_added_finding(
         "Certainty": "5",
         "Negation": "Affirmed",
     }
+    concept = diagnosis_concept(text)
+    if concept is not None:
+        attributes = attach_benchmark_concept(attributes, concept)
     return ClinicalFinding(
         finding_id=(
             f"{store.letter_id}:{policy.producer_id}:Diagnosis:lens:{lens_id}:"

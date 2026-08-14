@@ -4,6 +4,16 @@ from __future__ import annotations
 
 import json
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.clinical_finding import (
+    FindingSource,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.finding_store import (
+    ClinicalFindingStore,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lens_ops import (
+    LensPolicy,
+    diagnosis_added_finding,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     diagnosis_decomposer as decomposer,
@@ -173,3 +183,39 @@ def test_write_report_includes_diagnosis_span_summary(tmp_path) -> None:
     text = path.read_text(encoding="utf-8")
     assert "Heading/Narrative Decomposer" in text
     assert "Diagnosis spans" in text
+
+
+def test_diagnosis_residual_gtcs_receives_benchmark_cui() -> None:
+    """Hybrid residual additions must attach CUI after the model-lane projection."""
+
+    note = (
+        "Diagnosis: Complex partial seizures with secondary generalised tonic clonic seizures"
+    )
+    source = FindingSource(
+        producer_id="gpt56sol_structured_model_facts",
+        artifact_path="test.jsonl",
+        pipeline_family="exectv2_structured_direct",
+        model="openai/gpt-5.6-sol",
+        prompt_version="test",
+        mode="replay",
+        ownership_label="gpt56sol_structured_model_facts",
+        source_lane="model",
+    )
+    store = ClinicalFindingStore("EA0021", note_text=note)
+    store.register_source(source)
+    finding = diagnosis_added_finding(
+        store,
+        text="generalised tonic clonic seizures",
+        evidence=note,
+        selected=[],
+        policy=LensPolicy(
+            producer_id=source.producer_id,
+            source_lane="model",
+            ownership_label=source.ownership_label,
+            portability="benchmark_format",
+        ),
+        lens_id="diagnosis_convention_dictionary_v09",
+    )
+    assert finding is not None
+    assert finding.attributes.get("CUI") == "C0494475"
+    assert finding.attributes.get("CUIPhrase") == "generalised-tonic-clonic-seizures"
