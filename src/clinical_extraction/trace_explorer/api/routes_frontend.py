@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
 from typing import Any, Literal
 
 from fastapi import APIRouter, Query
@@ -326,26 +325,6 @@ def gold_audit_decisions(
     return {"dataset": dataset, "decisions": decisions, "count": len(decisions)}
 
 
-@router.get("/gold-audit/next")
-def gold_audit_next(
-    data: FrontendDataDependency,
-    reviews: ReviewStoreDependency,
-    split: str = "dev750",
-    dataset: DatasetId = "gan2026",
-) -> dict[str, Any]:
-    rows = gold_audit_rows(data, reviews, split, dataset).get("rows")
-    next_row = next(
-        (row for row in rows if isinstance(row, dict) and not row.get("has_decision")),
-        None,
-    ) if isinstance(rows, list) else None
-    return {
-        "dataset": dataset,
-        "split": split,
-        "row": next_row,
-        "message": None if next_row is not None else "All rows adjudicated.",
-    }
-
-
 @router.post("/gold-audit/decide")
 def gold_audit_decide(
     decision: GoldAuditDecision,
@@ -360,15 +339,6 @@ def gold_audit_decide(
         raise not_found()
     saved = reviews.save(f"gold:{decision.dataset}", identity, payload)
     return {"status": "saved", "decision": saved}
-
-
-@router.get("/meta")
-def meta() -> dict[str, Any]:
-    return {
-        "git": {"branch": None, "commit": None, "dirty": True, "remote_url": None},
-        "observatory_version": "trace-explorer.v1",
-        "timestamp": datetime.now(UTC).isoformat(),
-    }
 
 
 def _check_record_split(split: str) -> None:

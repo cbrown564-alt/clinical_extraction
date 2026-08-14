@@ -2,4 +2,3 @@
 export * from "./shared";
 export * from "./observatory";
 export * from "./exectv2";
-export * from "./gan2026";

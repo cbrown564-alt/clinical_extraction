@@ -59,29 +59,6 @@ export interface RunNoteResponse {
   result: PipelineResult;
 }
 
-export interface RulePayload {
-  rule_id: string;
-  group: string;
-  portability: string;
-  description: string;
-  regex_preview: string;
-  provenance: string | null;
-  examples: Array<{
-    text: string;
-    expected_label: string | null;
-    expected_evidence: string | null;
-    anti_example: boolean;
-    note: string | null;
-  }>;
-  has_exclusions: boolean;
-}
-
-export interface RulesResponse {
-  groups: string[];
-  portability: string[];
-  rules: RulePayload[];
-}
-
 export interface AblationConfigPayload {
   enabled_groups?: string[] | null;
   enabled_portability?: string[] | null;
@@ -106,20 +83,6 @@ export interface HighlightSpan {
   ruleGroup?: string | null;
   portability?: string | null;
   tooltip?: string;
-}
-
-export interface SplitRecord {
-  source_row_index: number;
-  gold_label: string;
-  gold_reference: string;
-  row_ok: boolean;
-  note_preview: string;
-}
-
-export interface SplitRecordsResponse {
-  split: string;
-  count: number;
-  records: SplitRecord[];
 }
 
 export interface CatalogLetter {
@@ -388,126 +351,6 @@ export interface LLMArtifactRow {
   reference: {
     gold_label: string;
   };
-}
-
-// ── Category metrics (shared by observatory + laboratory) ──
-
-export interface CategoryMetrics {
-  tp: number;
-  fp: number;
-  fn: number;
-  precision: number;
-  recall: number;
-  f1: number;
-  support: number;
-}
-
-// ── Laboratory (Phase 4) ──
-
-export interface RunAblationResponse {
-  split: string;
-  pipeline: string;
-  row_count: number;
-  ablation_config: AblationConfigPayload;
-  summary: {
-    total: number;
-    purist: {
-      accuracy: number;
-      f1: number;
-      precision: number;
-      recall: number;
-      per_label: Record<string, CategoryMetrics>;
-    };
-    pragmatic: {
-      accuracy: number;
-      f1: number;
-      precision: number;
-      recall: number;
-      per_label: Record<string, CategoryMetrics>;
-    };
-  };
-  rows: Array<{
-    source_row_index: number;
-    prediction_label: string;
-    gold_label: string;
-    purist_predicted_category: string;
-    purist_gold_category: string;
-    pragmatic_predicted_category: string;
-    pragmatic_gold_category: string;
-    evidence_valid: boolean;
-  }>;
-}
-
-export interface PromptPolicy {
-  policy_id: string;
-  controlled_variable: string;
-  portability: string;
-  status: string;
-  description: string;
-}
-
-export interface PromptPayload {
-  module: string;
-  prompt_version: string;
-  policy_taxonomy: PromptPolicy[];
-  policy_ids: string[];
-}
-
-export interface PromptsResponse {
-  prompts: PromptPayload[];
-}
-
-export interface PromptTemplateResponse {
-  module: string;
-  prompt_version: string;
-  system_hint: string | null;
-  user_hint: string | null;
-  output_schema_hint: string | null;
-  build_prompt_signature: string | null;
-  policy_taxonomy: PromptPolicy[];
-}
-
-// ── Error taxonomy ──
-
-export interface TagErrorResponse {
-  error_type: "correct" | "false_negative" | "false_positive" | "over_estimate" | "under_estimate" | "near_miss";
-  severity: number;
-  severity_level: "none" | "near" | "moderate" | "significant" | "severe";
-}
-
-export interface ErrorTaxonomySchemaResponse {
-  error_types: Array<{ id: string; description: string }>;
-  severity: { description: string; levels: string[] };
-}
-
-// ── Hard slices ──
-
-export interface HardSliceDefinition {
-  slice_name: string;
-  component_focus: string;
-  membership_rule: string;
-  primary_metric: string;
-}
-
-export interface HardSliceDefinitionsResponse {
-  slices: HardSliceDefinition[];
-}
-
-export interface HardSliceMembershipResponse {
-  rows: Array<{ source_row_index: number | null; hidden_families: string[] }>;
-}
-
-// ── Meta / git ──
-
-export interface MetaResponse {
-  git: {
-    branch: string | null;
-    commit: string | null;
-    dirty: boolean;
-    remote_url: string | null;
-  };
-  observatory_version: string;
-  timestamp: string;
 }
 
 // ── Artifact rows for additional pipeline families ──

@@ -98,12 +98,6 @@ export function postGoldAuditDecision(decision: import("../types").GoldAuditDeci
   });
 }
 
-export function fetchGoldAuditNext(dataset: DatasetId = "gan2026") {
-  return request<import("../types").GoldAuditNextResponse>(
-    `/gold-audit/next?dataset=${dataset}`
-  );
-}
-
 export function fetchSemanticSupportReviewPackets(reviewerId: string) {
   const params = new URLSearchParams({ reviewer_id: reviewerId });
   return request<import("../types").SemanticSupportReviewPacketsResponse>(
@@ -134,6 +128,4 @@ export function fetchSemanticSupportReviewExport(reviewerId: string) {
   );
 }
 
-export function fetchMeta() {
-  return request<import("../types").MetaResponse>("/meta");
-}
+
