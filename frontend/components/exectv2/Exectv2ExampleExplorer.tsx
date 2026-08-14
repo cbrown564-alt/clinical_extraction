@@ -183,7 +183,9 @@ function HeadlineStatusBadge({ status }: { status: Exectv2Mention["headline_stat
 }
 
 function MentionRow({ mention }: { mention: Exectv2Mention }) {
-  const attrs = Object.entries(mention.attributes).slice(0, 6);
+  const attrs = Object.entries(mention.attributes)
+    .sort(([left], [right]) => left.localeCompare(right, undefined, { sensitivity: "base" }))
+    .slice(0, 6);
   const deduplicated = mention.headline_status === "deduplicated";
   return (
     <div className={`border-b border-border/60 px-3 py-2 last:border-b-0 ${deduplicated ? "opacity-60" : ""}`}>
