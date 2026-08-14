@@ -14,7 +14,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
 
 DIAGNOSIS_STANDALONE_NOISE: frozenset[str] = frozenset(
     {
+        "absence",
         "absence like seizures",
+        "absence seizure",
         "absence seizures",
         "absences",
         "convulsive seizures",
@@ -39,7 +41,9 @@ DIAGNOSIS_CONVENTION_ALIAS_REPAIRS: dict[str, str] = {
     "focal cortical dysplasia": "symptomatic structural focal epilepsy",
     "focal cortical dysplasia right temporal lobe": "symptomatic structural focal epilepsy",
     "focal dyscognitive seizures": "dyscognitive seizures",
+    "focal frontal lobe seizure": "frontal lobe seizures",
     "focal frontal lobe seizures": "frontal lobe seizures",
+    "focal to bilateral seizure": "focal to bilateral convulsive seizures",
     "focal to bilateral seizures": "focal to bilateral convulsive seizures",
     "grand mal seizure": "grand mal",
     "right hippocampal sclerosis": "temporal lobe epilepsy",

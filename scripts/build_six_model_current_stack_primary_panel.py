@@ -25,6 +25,7 @@ OUT_DIR = ROOT / "experiments/six_model_current_stack_primary_panel_20260813"
 OUT_JSON = OUT_DIR / "panel_aggregate.json"
 
 SLUG_BY_MODEL = {
+    "gemini/gemini-3.7-flash": "gemini37flash",
     "openai/gpt-4.1-mini": "gpt41mini",
     "openai/gpt-5.6-luna": "gpt56luna",
     "openai/gpt-5.6-sol": "gpt56sol",
@@ -58,15 +59,12 @@ def main() -> None:
     gan_test = replay["gan2026_test450"]["models"]
     exect_dev = replay["exectv2_dev140"]["models"]
     exect_test = replay["exectv2_test60"]["models"]
-    deepseek = replay["deepseek_v4_flash_0731"]
 
     for condition in panel["conditions"]:
-        slug = SLUG_BY_MODEL[condition["model"]]
-        gan_cell = (
-            deepseek["gan2026_test450"]
-            if slug == "deepseek_v4_flash"
-            else gan_test[slug]
-        )
+        slug = SLUG_BY_MODEL.get(condition["model"])
+        if not slug or slug not in gan_test:
+            continue
+        gan_cell = gan_test[slug]
         condition["gan2026"]["test450"]["llm_with_rules_purist_accuracy"] = round(
             gan_cell["after"]["purist"] / 450, 4
         )
@@ -76,11 +74,7 @@ def main() -> None:
         condition["exectv2"]["dev140"]["llm_with_rules_clinical_fact_f1"] = exect_dev[
             slug
         ]["after_four_family_f1"]
-        test_cell = (
-            deepseek["exectv2_test60"]
-            if slug == "deepseek_v4_flash"
-            else exect_test[slug]
-        )
+        test_cell = exect_test[slug]
         condition["exectv2"]["test60"]["llm_with_rules_clinical_fact_f1"] = test_cell[
             "after_four_family_f1"
         ]

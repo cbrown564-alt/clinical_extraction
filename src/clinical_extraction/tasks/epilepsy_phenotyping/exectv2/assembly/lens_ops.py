@@ -171,6 +171,7 @@ def diagnosis_finding_with_text(
         attributes=attributes,
     )
     attributes.setdefault("DiagCategory", diagnosis_category_for_concept(text))
+    attributes["CUIPhrase"] = text
     source = FindingSource(
         producer_id=finding.source.producer_id,
         artifact_path=finding.source.artifact_path,

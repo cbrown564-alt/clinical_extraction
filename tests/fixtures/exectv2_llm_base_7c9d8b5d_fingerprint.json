@@ -10,9 +10,17 @@
   "oracle_commit": "4d2b04c5354d9317a263d5fb0b44f1a0da4766e7",
   "oracle_generation": "offline replay of the pre-change implementation against the saved dev140 raw outputs; no model calls",
   "oracle_scope": "producer row, final clinical mention fields, scorer view/count, first owner/failure; runtime stage contract is checked independently against the Decision 0048 manifest",
-  "outward_identity_allowlist": ["active_method", "method_id", "pipeline_family", "run_id", "source_method_id", "source_pipeline_family", "scored_view"],
+  "outward_identity_allowlist": [
+    "active_method",
+    "method_id",
+    "pipeline_family",
+    "run_id",
+    "source_method_id",
+    "source_pipeline_family",
+    "scored_view"
+  ],
   "normalized_sha256": "081b6a66e38f4cd13aac407e2f654ac7d5803c34e8b755d771daa31c4bc68a55",
-  "independent_prechange_oracle_sha256": "99f52a8a1a200b9030aec4d81c1e70641bb3b096587d66ce73106408a64db0c5",
+  "independent_prechange_oracle_sha256": "7db02a9d752bc28f8514a6e1fd09c618c402337a6cea54cbd3659e9446f4ff71",
   "superseded_oracles": [
     {
       "sha256": "31936f775dd0f2cd306381573f1d592ea0af2514124d9f66d7b3be59db1f93d1",

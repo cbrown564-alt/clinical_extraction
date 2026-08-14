@@ -182,44 +182,269 @@ function HeadlineStatusBadge({ status }: { status: Exectv2Mention["headline_stat
   return null;
 }
 
-function MentionRow({ mention }: { mention: Exectv2Mention }) {
-  const attrs = Object.entries(mention.attributes)
-    .sort(([left], [right]) => left.localeCompare(right, undefined, { sensitivity: "base" }))
-    .slice(0, 6);
-  const deduplicated = mention.headline_status === "deduplicated";
+/**
+ * Alignment matching logic between gold and predicted mentions for a family.
+ * Computes exact/semantic true positives (paired), false negatives (gold misses),
+ * and false positives (extra predictions / duplicates).
+ */
+interface MentionPair {
+  type: "matched";
+  gold: Exectv2Mention;
+  predicted: Exectv2Mention;
+}
+interface UnmatchedGold {
+  type: "missed_gold";
+  gold: Exectv2Mention;
+}
+interface UnmatchedPred {
+  type: "extra_predicted";
+  predicted: Exectv2Mention;
+}
+type ComparisonGroup = MentionPair | UnmatchedGold | UnmatchedPred;
+
+function normalizeConceptString(str?: string): string {
+  if (!str) return "";
+  return str
+    .toLowerCase()
+    .replace(/[-_]+/g, " ")
+    .replace(/[^\w\s]/g, "")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+function alignFamilyMentions(
+  gold: Exectv2Mention[],
+  predicted: Exectv2Mention[]
+): ComparisonGroup[] {
+  const goldPool = [...gold];
+  const predPool = [...predicted];
+  const groups: ComparisonGroup[] = [];
+
+  // Helper to extract identifiers for a mention
+  const getKeys = (m: Exectv2Mention) => ({
+    cui: m.attributes["CUI"]?.trim(),
+    cuiPhrase: normalizeConceptString(m.attributes["CUIPhrase"]),
+    text: normalizeConceptString(m.text),
+  });
+
+  // 1. Match by CUI (exact UMLS concept match)
+  for (let i = goldPool.length - 1; i >= 0; i--) {
+    const g = goldPool[i];
+    const gKeys = getKeys(g);
+    if (!gKeys.cui) continue;
+
+    const predIdx = predPool.findIndex((p) => {
+      const pKeys = getKeys(p);
+      return pKeys.cui && pKeys.cui === gKeys.cui;
+    });
+
+    if (predIdx !== -1) {
+      const [matchedPred] = predPool.splice(predIdx, 1);
+      goldPool.splice(i, 1);
+      groups.push({
+        type: "matched",
+        gold: g,
+        predicted: matchedPred,
+      });
+    }
+  }
+
+  // 2. Match by CUIPhrase or Normalized Text exact match
+  for (let i = goldPool.length - 1; i >= 0; i--) {
+    const g = goldPool[i];
+    const gKeys = getKeys(g);
+
+    const predIdx = predPool.findIndex((p) => {
+      const pKeys = getKeys(p);
+      if (gKeys.cuiPhrase && pKeys.cuiPhrase && gKeys.cuiPhrase === pKeys.cuiPhrase) return true;
+      if (gKeys.text && pKeys.text && gKeys.text === pKeys.text) return true;
+      if (gKeys.cuiPhrase && pKeys.text && gKeys.cuiPhrase === pKeys.text) return true;
+      if (gKeys.text && pKeys.cuiPhrase && gKeys.text === pKeys.cuiPhrase) return true;
+      return false;
+    });
+
+    if (predIdx !== -1) {
+      const [matchedPred] = predPool.splice(predIdx, 1);
+      goldPool.splice(i, 1);
+      groups.push({
+        type: "matched",
+        gold: g,
+        predicted: matchedPred,
+      });
+    }
+  }
+
+  // 3. Partial/Fuzzy overlap match on remaining
+  for (let i = goldPool.length - 1; i >= 0; i--) {
+    const g = goldPool[i];
+    const gKeys = getKeys(g);
+    const gTarget = gKeys.cuiPhrase || gKeys.text;
+
+    const predIdx = predPool.findIndex((p) => {
+      const pKeys = getKeys(p);
+      const pTarget = pKeys.cuiPhrase || pKeys.text;
+      if (!gTarget || !pTarget || gTarget.length < 4 || pTarget.length < 4) return false;
+      return pTarget.includes(gTarget) || gTarget.includes(pTarget);
+    });
+
+    if (predIdx !== -1) {
+      const [matchedPred] = predPool.splice(predIdx, 1);
+      goldPool.splice(i, 1);
+      groups.push({
+        type: "matched",
+        gold: g,
+        predicted: matchedPred,
+      });
+    }
+  }
+
+  // 4. Remaining gold are false negatives (missed)
+  for (const g of goldPool) {
+    groups.push({ type: "missed_gold", gold: g });
+  }
+
+  // 5. Remaining predicted are false positives (extra / duplicate)
+  for (const p of predPool) {
+    groups.push({ type: "extra_predicted", predicted: p });
+  }
+
+  return groups;
+}
+
+/** Compact attribute diff table comparing gold vs predicted key-value pairs */
+function AttributeDiffTable({
+  goldAttrs = {},
+  predAttrs = {},
+}: {
+  goldAttrs?: Record<string, string>;
+  predAttrs?: Record<string, string>;
+}) {
+  const allKeys = Array.from(
+    new Set([...Object.keys(goldAttrs), ...Object.keys(predAttrs)])
+  ).sort(([left], [right]) => left.localeCompare(right, undefined, { sensitivity: "base" }));
+
+  if (allKeys.length === 0) return null;
+
   return (
-    <div className={`border-b border-border/60 px-3 py-2 last:border-b-0 ${deduplicated ? "opacity-60" : ""}`}>
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p
-            className={`truncate text-xs font-semibold text-foreground ${deduplicated ? "line-through decoration-muted/60" : ""}`}
-            title={mention.text}
-          >
-            {mention.text || "(blank mention)"}
-          </p>
+    <div className="mt-2.5 overflow-hidden rounded border border-border/70 bg-surface-raised/40 text-[11px]">
+      <table className="w-full border-collapse text-left">
+        <thead>
+          <tr className="border-b border-border/70 bg-surface-raised font-mono text-[10px] uppercase tracking-wider text-muted">
+            <th className="px-2 py-1 font-medium">Attribute</th>
+            <th className="px-2 py-1 font-medium">Gold</th>
+            <th className="px-2 py-1 font-medium">Predicted</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-border/40 font-mono">
+          {allKeys.map((key) => {
+            const gVal = goldAttrs[key];
+            const pVal = predAttrs[key];
+            const isMatch = gVal !== undefined && pVal !== undefined && gVal === pVal;
+            const isDiff = gVal !== undefined && pVal !== undefined && gVal !== pVal;
+            const isMissingInPred = gVal !== undefined && pVal === undefined;
+            const isExtraInPred = gVal === undefined && pVal !== undefined;
+
+            return (
+              <tr
+                key={key}
+                className={
+                  isDiff
+                    ? "bg-error/5"
+                    : isExtraInPred
+                    ? "bg-deterministic-alt/5"
+                    : isMissingInPred
+                    ? "bg-llm/5"
+                    : undefined
+                }
+              >
+                <td className="px-2 py-1 text-muted">{key}</td>
+                <td className="px-2 py-1 text-foreground">
+                  {gVal ?? <span className="text-muted/40">—</span>}
+                </td>
+                <td className="px-2 py-1">
+                  {pVal ?? <span className="text-muted/40">—</span>}
+                  {isMatch && <span className="ml-1 text-success font-sans">✓</span>}
+                  {isDiff && <span className="ml-1 text-error font-sans font-bold">≠</span>}
+                  {isExtraInPred && (
+                    <span className="ml-1 text-[9px] font-sans text-deterministic-alt">
+                      (extra)
+                    </span>
+                  )}
+                  {isMissingInPred && (
+                    <span className="ml-1 text-[9px] font-sans text-llm">(missed)</span>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function MentionRow({
+  mention,
+  label = mention.source === "gold" ? "Gold" : "Predicted",
+  badgeTone,
+}: {
+  mention: Exectv2Mention;
+  label?: string;
+  badgeTone?: string;
+}) {
+  const attrs = Object.entries(mention.attributes).sort(([left], [right]) =>
+    left.localeCompare(right, undefined, { sensitivity: "base" })
+  );
+  const deduplicated = mention.headline_status === "deduplicated";
+
+  return (
+    <div
+      className={`border-b border-border/60 px-3 py-2.5 last:border-b-0 ${
+        deduplicated ? "opacity-60" : ""
+      }`}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5">
+            {badgeTone && (
+              <span className={`rounded px-1.5 py-0.2 text-[10px] font-semibold uppercase ${badgeTone}`}>
+                {label}
+              </span>
+            )}
+            <p
+              className={`truncate text-xs font-semibold text-foreground ${
+                deduplicated ? "line-through decoration-muted/60" : ""
+              }`}
+              title={mention.text}
+            >
+              {mention.text || "(blank mention)"}
+            </p>
+          </div>
           <p className="mt-1 line-clamp-2 text-[11px] leading-snug text-muted" title={mention.evidence}>
             {mention.evidence || "No evidence text"}
           </p>
         </div>
         <span
-          className={`shrink-0 rounded px-1.5 py-0.5 text-[11px] font-medium ${
+          className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium ${
             mention.evidence_valid ? "bg-success/10 text-success" : "bg-error/10 text-error"
           }`}
         >
           {mention.evidence_valid ? "exact" : "invalid"}
         </span>
       </div>
+
       {mention.headline_status && (
-        <div className="mt-2">
+        <div className="mt-1.5">
           <HeadlineStatusBadge status={mention.headline_status} />
         </div>
       )}
+
       {attrs.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1">
           {attrs.map(([key, value]) => (
             <span
               key={`${mention.id}:${key}`}
-              className="rounded border border-border bg-surface-raised px-1.5 py-0.5 font-mono text-[11px] text-muted"
+              className="rounded border border-border bg-surface-raised px-1.5 py-0.5 font-mono text-[10px] text-muted"
               title={`${key}: ${value}`}
             >
               {key}: {value}
@@ -227,8 +452,9 @@ function MentionRow({ mention }: { mention: Exectv2Mention }) {
           ))}
         </div>
       )}
+
       {(mention.component_owner || mention.source_lane) && (
-        <p className="mt-2 truncate font-mono text-[11px] text-muted">
+        <p className="mt-1.5 truncate font-mono text-[10px] text-muted">
           {mention.component_owner || "owner unknown"}
           {mention.source_lane ? ` / ${mention.source_lane}` : ""}
         </p>
@@ -237,52 +463,201 @@ function MentionRow({ mention }: { mention: Exectv2Mention }) {
   );
 }
 
+/** Matched Concept Row with unified header and side-by-side or attribute diff */
+function MatchedGroupCard({
+  pair,
+}: {
+  pair: MentionPair;
+}) {
+  const { gold, predicted } = pair;
+  const deduplicated = predicted.headline_status === "deduplicated";
+
+  return (
+    <div className="rounded-md border border-border bg-surface p-3 transition-colors hover:border-foreground/20">
+      <div className="flex items-center justify-between border-b border-border/50 pb-2">
+        <div className="flex items-center gap-2">
+          <span className="rounded bg-success/10 px-1.5 py-0.5 text-[10px] font-semibold text-success uppercase tracking-wider">
+            Matched Concept
+          </span>
+          <h4 className="text-xs font-semibold text-foreground">
+            {predicted.text || gold.text}
+          </h4>
+        </div>
+        <span
+          className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium ${
+            predicted.evidence_valid ? "bg-success/10 text-success" : "bg-error/10 text-error"
+          }`}
+        >
+          {predicted.evidence_valid ? "evidence valid" : "invalid evidence"}
+        </span>
+      </div>
+
+      <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-2">
+        <div className="rounded bg-surface-raised/40 p-2 text-xs">
+          <div className="font-mono text-[10px] font-semibold uppercase tracking-wider text-muted">
+            Gold Mention
+          </div>
+          <p className="mt-1 font-semibold text-foreground">{gold.text}</p>
+          <p className="mt-0.5 text-[11px] leading-snug text-muted">{gold.evidence || "No evidence"}</p>
+        </div>
+        <div className={`rounded bg-surface-raised/40 p-2 text-xs ${deduplicated ? "opacity-60" : ""}`}>
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-muted">
+              Predicted Mention
+            </span>
+            {predicted.headline_status && (
+              <HeadlineStatusBadge status={predicted.headline_status} />
+            )}
+          </div>
+          <p className="mt-1 font-semibold text-foreground">{predicted.text}</p>
+          <p className="mt-0.5 text-[11px] leading-snug text-muted">{predicted.evidence || "No evidence"}</p>
+          {(predicted.component_owner || predicted.source_lane) && (
+            <p className="mt-1 font-mono text-[10px] text-muted">
+              {predicted.component_owner || "owner unknown"}
+              {predicted.source_lane ? ` / ${predicted.source_lane}` : ""}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <AttributeDiffTable goldAttrs={gold.attributes} predAttrs={predicted.attributes} />
+    </div>
+  );
+}
+
 function FamilyPanel({
   family,
   letter,
+  viewMode,
 }: {
   family: Exectv2Entity;
   letter: Exectv2LetterRecord;
+  viewMode: "matched" | "raw";
 }) {
   const gold = letter.gold_mentions.filter((m) => m.entity === family);
   const predicted = letter.predicted_mentions.filter((m) => m.entity === family);
-  // Counts are the headline-unit counts (deduplicated mentions excluded), so the
-  // panel header agrees with the headline chips rather than the raw multiset of
-  // rendered rows below it.
   const goldUnits = letter.family_counts.gold[family];
   const predictedUnits = letter.family_counts.predicted[family];
+
+  const alignedGroups = useMemo(() => alignFamilyMentions(gold, predicted), [gold, predicted]);
+
+  const matched = alignedGroups.filter((g): g is MentionPair => g.type === "matched");
+  const missedGold = alignedGroups.filter((g): g is UnmatchedGold => g.type === "missed_gold");
+  const extraPred = alignedGroups.filter((g): g is UnmatchedPred => g.type === "extra_predicted");
+
   return (
     <section className={`overflow-hidden rounded-md border ${familyTint(family)}`}>
-      <div className="flex items-center justify-between border-b border-border/60 px-3 py-2">
-        <h3 className="text-xs font-semibold text-foreground">{familyLabel(family)}</h3>
+      <div className="flex items-center justify-between border-b border-border/60 bg-surface px-3 py-2">
+        <div className="flex items-center gap-2">
+          <h3 className="text-xs font-semibold text-foreground">{familyLabel(family)}</h3>
+          {viewMode === "matched" && (
+            <div className="flex items-center gap-1 text-[11px] text-muted">
+              <span className="text-success font-medium">{matched.length} matched</span>
+              {missedGold.length > 0 && (
+                <>
+                  <span>•</span>
+                  <span className="text-llm font-medium">{missedGold.length} missed</span>
+                </>
+              )}
+              {extraPred.length > 0 && (
+                <>
+                  <span>•</span>
+                  <span className="text-deterministic-alt font-medium">{extraPred.length} extra</span>
+                </>
+              )}
+            </div>
+          )}
+        </div>
         <div className="flex items-center gap-1 font-mono text-[11px] text-muted">
           <span>G {goldUnits}</span>
           <span>/</span>
           <span>P {predictedUnits}</span>
         </div>
       </div>
-      <div className="grid grid-cols-1 divide-y divide-border/60 bg-surface md:grid-cols-2 md:divide-x md:divide-y-0">
-        <div>
-          <div className="border-b border-border/60 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted">
-            Gold
-          </div>
-          {gold.length === 0 ? (
-            <div className="px-3 py-4 text-xs text-muted">No gold mentions</div>
+
+      {viewMode === "matched" ? (
+        <div className="space-y-3 bg-surface/50 p-3">
+          {alignedGroups.length === 0 ? (
+            <div className="py-4 text-center text-xs text-muted">No mentions for this family</div>
           ) : (
-            gold.map((mention) => <MentionRow key={mention.id} mention={mention} />)
+            <>
+              {/* Matched True Positives */}
+              {matched.length > 0 && (
+                <div className="space-y-2">
+                  {matched.map((pair) => (
+                    <MatchedGroupCard
+                      key={`matched-${pair.gold.id}-${pair.predicted.id}`}
+                      pair={pair}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Missed Gold Mentions (FN) */}
+              {missedGold.length > 0 && (
+                <div className="rounded-md border border-llm/30 bg-llm/5 p-2.5">
+                  <div className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-llm">
+                    Missed Gold Mentions ({missedGold.length})
+                  </div>
+                  <div className="divide-y divide-llm/15 rounded border border-llm/20 bg-surface">
+                    {missedGold.map((item) => (
+                      <MentionRow
+                        key={`missed-${item.gold.id}`}
+                        mention={item.gold}
+                        label="Missed Gold"
+                        badgeTone="bg-llm/15 text-llm"
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Extra Predictions / Duplicates (FP) */}
+              {extraPred.length > 0 && (
+                <div className="rounded-md border border-deterministic-alt/30 bg-deterministic-alt/5 p-2.5">
+                  <div className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-deterministic-alt">
+                    Extra / Duplicate Predictions ({extraPred.length})
+                  </div>
+                  <div className="divide-y divide-deterministic-alt/15 rounded border border-deterministic-alt/20 bg-surface">
+                    {extraPred.map((item) => (
+                      <MentionRow
+                        key={`extra-${item.predicted.id}`}
+                        mention={item.predicted}
+                        label="Extra Pred"
+                        badgeTone="bg-deterministic-alt/15 text-deterministic-alt"
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
-        <div>
-          <div className="border-b border-border/60 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted">
-            Predicted
+      ) : (
+        /* Raw 2-column view */
+        <div className="grid grid-cols-1 divide-y divide-border/60 bg-surface md:grid-cols-2 md:divide-x md:divide-y-0">
+          <div>
+            <div className="border-b border-border/60 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted">
+              Gold
+            </div>
+            {gold.length === 0 ? (
+              <div className="px-3 py-4 text-xs text-muted">No gold mentions</div>
+            ) : (
+              gold.map((mention) => <MentionRow key={mention.id} mention={mention} />)
+            )}
           </div>
-          {predicted.length === 0 ? (
-            <div className="px-3 py-4 text-xs text-muted">No predicted mentions</div>
-          ) : (
-            predicted.map((mention) => <MentionRow key={mention.id} mention={mention} />)
-          )}
+          <div>
+            <div className="border-b border-border/60 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted">
+              Predicted
+            </div>
+            {predicted.length === 0 ? (
+              <div className="px-3 py-4 text-xs text-muted">No predicted mentions</div>
+            ) : (
+              predicted.map((mention) => <MentionRow key={mention.id} mention={mention} />)
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 }
@@ -295,28 +670,62 @@ function FamilyInspector({
   letter: Exectv2LetterRecord;
   activeFamily: FamilyFilter;
 }) {
+  const [viewMode, setViewMode] = useState<"matched" | "raw">("matched");
   const families = activeFamily === "all" ? FAMILY_IDS : [activeFamily];
   const descriptor = activeFamily === "all" ? null : familyDescriptor(activeFamily);
+
   return (
     <div className="flex h-full flex-col">
-      {/* Compact inspector header, mirroring Gan's StageInspector */}
+      {/* Compact inspector header with view switcher */}
       <div className="shrink-0 border-b border-border bg-surface px-4 py-2">
-        <div className="flex items-center gap-2">
-          <Layers3 className="h-3.5 w-3.5 text-muted" />
-          <h3 className="text-xs font-semibold text-foreground">
-            {activeFamily === "all" ? "All families" : familyLabel(activeFamily)}
-          </h3>
-          <span className="text-[11px] text-muted">
-            {descriptor
-              ? "Gold vs predicted mentions for this family."
-              : "Gold vs predicted mentions across all four families."}
-          </span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Layers3 className="h-3.5 w-3.5 text-muted" />
+            <h3 className="text-xs font-semibold text-foreground">
+              {activeFamily === "all" ? "All families" : familyLabel(activeFamily)}
+            </h3>
+            <span className="hidden text-[11px] text-muted sm:inline">
+              {descriptor
+                ? "Gold vs predicted mentions for this family."
+                : "Gold vs predicted mentions across all four families."}
+            </span>
+          </div>
+
+          <div className="flex items-center rounded-md border border-border bg-surface-raised p-0.5 text-[11px]">
+            <button
+              type="button"
+              onClick={() => setViewMode("matched")}
+              className={`rounded px-2 py-0.5 font-medium transition-colors ${
+                viewMode === "matched"
+                  ? "bg-surface font-semibold text-foreground shadow-xs"
+                  : "text-muted hover:text-foreground"
+              }`}
+            >
+              Matched Diff
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("raw")}
+              className={`rounded px-2 py-0.5 font-medium transition-colors ${
+                viewMode === "raw"
+                  ? "bg-surface font-semibold text-foreground shadow-xs"
+                  : "text-muted hover:text-foreground"
+              }`}
+            >
+              Raw Lists
+            </button>
+          </div>
         </div>
       </div>
       {/* Panels */}
       <div className="flex-1 space-y-3 overflow-y-auto p-4">
         {families.map((family) => (
-          <FamilyPanel key={family} family={family} letter={letter} />
+          <FamilyPanel
+            key={family}
+            family={family}
+            letter={letter}
+            viewMode={viewMode}
+          />
         ))}
       </div>
     </div>

@@ -43,7 +43,7 @@ PROTOCOL = (
 )
 
 MODELS = [
-    ("gpt41mini", "openai/gpt-4.1-mini", "GPT-4.1-mini", 0.0, 10_000),
+    ("gemini37flash", "gemini/gemini-3.7-flash", "Gemini 3.7 Flash", 0.0, 16_000),
     ("gpt56luna", "openai/gpt-5.6-luna", "GPT-5.6 Luna", 1.0, 10_000),
     ("gpt56sol", "openai/gpt-5.6-sol", "GPT-5.6 Sol", 0.0, 10_000),
     ("deepseek_v4_flash", "deepseek/deepseek-v4-flash", "DeepSeek V4 Flash", 0.0, 32_000),
@@ -70,26 +70,33 @@ def _source_path(cell_id: str, slug: str, field: str) -> Path:
 
 
 def _model_source_map(cell_id: str, field: str) -> dict[str, Path]:
-    """Paths for the six roster slugs (not the extra *_0731 inventory keys)."""
+    """Paths for the six active roster slugs (mapping deepseek_v4_flash to 0731 holdouts)."""
 
     roster = {slug for slug, *_rest in MODELS}
-    return {
-        slug: path
-        for slug, path in _cell_paths(cell_id, field).items()
-        if slug in roster
-    }
+    paths: dict[str, Path] = {}
+    sources = _inventory()["cells"][cell_id]["sources"]
+    for slug in roster:
+        if cell_id in {"gan_test450", "exect_test60"} and slug == "deepseek_v4_flash" and "deepseek_v4_flash_0731" in sources:
+            spec = sources["deepseek_v4_flash_0731"]
+        elif slug in sources:
+            spec = sources[slug]
+        else:
+            continue
+        if field in spec:
+            paths[slug] = REPO_ROOT / spec[field]
+    return paths
 
 GAN_STORED_BEFORE = {
-    "gpt41mini": {"purist": 361, "pragmatic": 379, "parse_missing": 4},
+    "gemini37flash": {"purist": 373, "pragmatic": 385, "parse_missing": 0},
     "gpt56luna": {"purist": 362, "pragmatic": 375, "parse_missing": 3},
     "gpt56sol": {"purist": 373, "pragmatic": 384, "parse_missing": 0},
-    "deepseek_v4_flash": {"purist": 344, "pragmatic": 366, "parse_missing": 3},
+    "deepseek_v4_flash": {"purist": 368, "pragmatic": 377, "parse_missing": 0},
     "qwen36_35b": {"purist": 362, "pragmatic": 384, "parse_missing": 2},
     "gemma4_26b": {"purist": 355, "pragmatic": 374, "parse_missing": 2},
 }
 
 GAN_FINAL_PANEL_TEST450 = {
-    "gpt41mini": {"purist_accuracy": 0.82, "pragmatic_accuracy": 0.8578},
+    "gemini37flash": {"purist_accuracy": 0.8289, "pragmatic_accuracy": 0.8556},
     "gpt56luna": {"purist_accuracy": 0.8089, "pragmatic_accuracy": 0.84},
     "gpt56sol": {"purist_accuracy": 0.8467, "pragmatic_accuracy": 0.8711},
     "deepseek_v4_flash": {"purist_accuracy": 0.8178, "pragmatic_accuracy": 0.8378},
@@ -98,7 +105,7 @@ GAN_FINAL_PANEL_TEST450 = {
 }
 
 EXECT_DEV140_PUBLISHED = {
-    "gpt41mini": 0.8202,
+    "gemini37flash": 0.9010,
     "gpt56luna": 0.8832,
     "gpt56sol": 0.8920,
     "deepseek_v4_flash": 0.8994,
@@ -107,7 +114,7 @@ EXECT_DEV140_PUBLISHED = {
 }
 
 EXECT_TEST60_PUBLISHED = {
-    "gpt41mini": 0.7572,
+    "gemini37flash": 0.8459,
     "gpt56luna": 0.7950,
     "gpt56sol": 0.8047,
     "deepseek_v4_flash": 0.8118,
@@ -639,7 +646,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--cell",
-        choices=("gan_test450", "exect_dev140", "exect_test60", "deepseek_0731", "all"),
+        choices=("gan_test450", "exect_dev140", "exect_test60", "all"),
         default="all",
     )
     parser.add_argument("--overwrite", action="store_true")
@@ -650,7 +657,6 @@ def main() -> None:
         OUT_DIR = args.out_dir
     if args.scratch_dir is not None:
         SCRATCH_DIR = args.scratch_dir
-    SCRATCH_DIR = args.scratch_dir
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     missing = []
@@ -662,13 +668,6 @@ def main() -> None:
         wanted_paths.extend(_cell_paths("exect_dev140", "assembly").values())
     if args.cell in {"exect_test60", "all"}:
         wanted_paths.extend(_cell_paths("exect_test60", "structured").values())
-    if args.cell in {"deepseek_0731", "all"}:
-        wanted_paths.extend(
-            (
-                _source_path("gan_test450", "deepseek_v4_flash_0731", "path"),
-                _source_path("exect_test60", "deepseek_v4_flash_0731", "structured"),
-            )
-        )
     for path in wanted_paths:
         if not path.is_file():
             missing.append(path.as_posix())
@@ -716,8 +715,6 @@ def main() -> None:
             published=EXECT_TEST60_PUBLISHED,
             record_letter_transitions=False,
         )
-    if args.cell in {"deepseek_0731", "all"}:
-        summary["deepseek_v4_flash_0731"] = replay_deepseek_0731(overwrite=args.overwrite)
 
     summary["generated_at_utc"] = datetime.now(UTC).isoformat()
     summary["git"] = _git_note()
