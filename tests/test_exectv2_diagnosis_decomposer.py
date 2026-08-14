@@ -14,6 +14,15 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lens_ops im
     LensPolicy,
     diagnosis_added_finding,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection import (
+    diagnosis_concept,
+    project_cuis,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import DIAGNOSIS
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
+    PredictedLetter,
+    PredictedMention,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     diagnosis_decomposer as decomposer,
@@ -219,3 +228,30 @@ def test_diagnosis_residual_gtcs_receives_benchmark_cui() -> None:
     assert finding is not None
     assert finding.attributes.get("CUI") == "C0494475"
     assert finding.attributes.get("CUIPhrase") == "generalised-tonic-clonic-seizures"
+
+
+def test_genetic_and_primary_generalised_epilepsy_share_cui_keep_surface() -> None:
+    genetic = diagnosis_concept("genetic generalised epilepsy")
+    primary = diagnosis_concept("primary generalised epilepsy")
+    assert genetic is not None and primary is not None
+    assert genetic.cui == primary.cui == "C0270850"
+    assert genetic.cui_phrase == "genetic-generalised-epilepsy"
+    assert primary.cui_phrase == "primary-generalised-epilepsy"
+    projected = project_cuis(
+        PredictedLetter(
+            letter_id="EA0200",
+            mentions=(
+                PredictedMention(
+                    entity=DIAGNOSIS.name,
+                    text="genetic generalised epilepsy",
+                    attributes={
+                        "CUI": "C0270850",
+                        "CUIPhrase": "primary-generalised-epilepsy",
+                        "DiagCategory": "Epilepsy",
+                    },
+                    evidence="Diagnosis: genetic generalised epilepsy",
+                ),
+            ),
+        )
+    )
+    assert projected.mentions[0].attributes["CUIPhrase"] == "genetic-generalised-epilepsy"

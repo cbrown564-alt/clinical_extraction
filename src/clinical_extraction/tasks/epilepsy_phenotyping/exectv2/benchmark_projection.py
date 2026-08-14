@@ -216,7 +216,11 @@ _DIAGNOSIS_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = (
     ),
     (
         BenchmarkConcept("Epilepsy", "C0270850", "primary-generalised-epilepsy"),
-        ("primary generalised epilepsy", "genetic generalised epilepsy"),
+        ("primary generalised epilepsy",),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C0270850", "genetic-generalised-epilepsy"),
+        ("genetic generalised epilepsy",),
     ),
     (
         BenchmarkConcept("Epilepsy", "C0014548", "generalised-epilepsy"),
@@ -671,11 +675,14 @@ def project_cuis(prediction: PredictedLetter) -> PredictedLetter:
 
 
 def _project_mention_cui(mention: PredictedMention) -> PredictedMention:
-    if "CUI" in mention.attributes:
-        return mention
-
     concept = _concept_for_mention(mention)
     if concept is None:
+        return mention
+    existing = mention.attributes
+    if (
+        existing.get("CUI") == concept.cui
+        and existing.get("CUIPhrase") == concept.cui_phrase
+    ):
         return mention
 
     canonical_key = _canonical_key_for_entity(mention.entity)
