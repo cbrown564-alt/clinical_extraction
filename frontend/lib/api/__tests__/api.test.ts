@@ -1,6 +1,5 @@
 import { fetchJson } from "../client";
-import { fetchHealth } from "../index";
-import { runAblation } from "../index";
+import { fetchHealth, fetchLetters } from "../index";
 
 describe("api/client", () => {
   it("throws on non-ok HTTP responses", async () => {
@@ -26,16 +25,16 @@ describe("api/client", () => {
     );
   });
 
-  it("sends the canonical rules pipeline for an ablation request", async () => {
+  it("requests the shared letter catalog", async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ pipeline: "rules" }),
+      json: async () => ({ dataset: "gan2026", count: 750, letters: [] }),
     }) as unknown as typeof fetch;
 
-    await runAblation({ split: "validation", pipeline: "rules" });
+    await fetchLetters("gan2026");
     expect(global.fetch).toHaveBeenCalledWith(
-      "/api/run/ablation",
-      expect.objectContaining({ body: JSON.stringify({ split: "validation", pipeline: "rules" }) })
+      "/api/datasets/gan2026/letters",
+      expect.objectContaining({ headers: { "Content-Type": "application/json" } })
     );
   });
 });

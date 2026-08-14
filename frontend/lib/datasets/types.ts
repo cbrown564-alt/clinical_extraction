@@ -12,11 +12,7 @@
 export type DatasetId = "gan2026" | "exectv2";
 
 /** A stable review surface, keyed by its route segment. */
-export type ExplorerSurface =
-  | "workbench"
-  | "observatory"
-  | "laboratory"
-  | "gallery";
+export type ExplorerSurface = "workbench" | "gold-audit";
 
 /**
  * A colour tone from the design system. Drives tints/borders so each dataset
@@ -34,9 +30,7 @@ export type DatasetTone =
 /** Which surfaces a dataset can populate. */
 export interface DatasetSurfaceSupport {
   workbench: boolean;
-  observatory: boolean;
-  laboratory: boolean;
-  gallery: boolean;
+  "gold-audit": boolean;
 }
 
 /** A task family/sub-task within a dataset (e.g. a Gan category view or an ExECTv2 entity). */

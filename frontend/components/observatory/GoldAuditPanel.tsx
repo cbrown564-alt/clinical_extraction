@@ -11,18 +11,9 @@ import {
   ShieldCheck,
   X,
 } from "lucide-react";
-import {
-  fetchGoldAuditDecisions,
-  fetchGoldAuditRows,
-  fetchRecord,
-  postGoldAuditDecision,
-} from "@/lib/api";
+import { fetchGoldAuditDecisions, fetchGoldAuditRows, postGoldAuditDecision } from "@/lib/api";
 import { useActiveDataset } from "@/lib/datasets";
-import type {
-  FullRecordResponse,
-  GoldAuditDecision,
-  GoldAuditRow,
-} from "@/lib/types";
+import type { GoldAuditDecision, GoldAuditRow } from "@/lib/types";
 import { splitLabel } from "@/lib/plainLanguageLabels";
 import LetterRenderer from "./LetterRenderer";
 
@@ -31,10 +22,6 @@ const SIMPLE_CLASSES = [
   { value: "ambiguous" as const, label: "Ambiguous", shortcut: "2", icon: HelpCircle },
   { value: "wrong" as const, label: "Wrong", shortcut: "3", icon: X },
 ];
-
-const ASSERTION_STATUSES = ["present", "negated", "historical", "future", "uncertain", "unsupported"] as const;
-const ENTAILMENT_OPTIONS = ["entailed", "plausible", "ambiguous", "contradicted", "absent"] as const;
-const CONFIDENCE_OPTIONS = ["low", "medium", "high"] as const;
 
 function rowId(row: GoldAuditRow): string {
   return row.audit_id ?? String(row.source_row_index);
@@ -58,10 +45,9 @@ function badgeStyle(value?: string | null): string {
   return "border-llm/25 bg-llm/10 text-llm";
 }
 
-function exactHighlight(text: string, span: string, offset?: number) {
-  let start = typeof offset === "number" && text.slice(offset, offset + span.length) === span
-    ? offset
-    : text.indexOf(span);
+function exactHighlight(text: string, span: string) {
+  if (!span) return [];
+  let start = text.indexOf(span);
   if (start < 0) start = text.toLowerCase().indexOf(span.toLowerCase());
   return start < 0
     ? []
@@ -108,7 +94,7 @@ export default function GoldAuditPanel() {
 
 function DatasetGoldAuditPanel({ datasetId }: { datasetId: "gan2026" | "exectv2" }) {
   const isExect = datasetId === "exectv2";
-  const split = isExect ? "full200" : "validation";
+  const split = isExect ? "dev140" : "dev750";
   const queryClient = useQueryClient();
   const [mode, setMode] = useState<"queue" | "reviewed">("queue");
   const [queueOpen, setQueueOpen] = useState(true);
@@ -116,21 +102,16 @@ function DatasetGoldAuditPanel({ datasetId }: { datasetId: "gan2026" | "exectv2"
   const [simpleClass, setSimpleClass] = useState<"correct" | "ambiguous" | "wrong" | null>(null);
   const [notes, setNotes] = useState("");
   const [correctedGoldLabel, setCorrectedGoldLabel] = useState("");
-  const [assertionStatus, setAssertionStatus] = useState<GoldAuditDecision["assertion_status"]>(null);
-  const [attributeEntailment, setAttributeEntailment] = useState<GoldAuditDecision["attribute_entailment"]>(null);
-  const [factBoundaries, setFactBoundaries] = useState("");
-  const [clinicalInterpretation, setClinicalInterpretation] = useState("");
-  const [reviewerRationale, setReviewerRationale] = useState("");
-  const [reviewConfidence, setReviewConfidence] = useState<GoldAuditDecision["review_confidence"]>(null);
   const [auditor, setAuditor] = useState("maintainer");
 
   const rowsQuery = useQuery({
-    queryKey: ["gold-audit-rows", datasetId, split],
-    queryFn: () => fetchGoldAuditRows(split, datasetId),
+    queryKey: ["gold-audit-rows", datasetId],
+    queryFn: () => fetchGoldAuditRows(datasetId),
   });
+
   const decisionsQuery = useQuery({
-    queryKey: ["gold-audit-decisions", datasetId, split],
-    queryFn: () => fetchGoldAuditDecisions(split, datasetId),
+    queryKey: ["gold-audit-decisions", datasetId],
+    queryFn: () => fetchGoldAuditDecisions(datasetId),
   });
 
   const decisionsMap = useMemo(
@@ -138,16 +119,21 @@ function DatasetGoldAuditPanel({ datasetId }: { datasetId: "gan2026" | "exectv2"
     [decisionsQuery.data?.decisions]
   );
 
+  const rawRows = useMemo(() => rowsQuery.data?.rows ?? [], [rowsQuery.data?.rows]);
+
   const sortedRows = useMemo(() => {
-    const rows = [...(rowsQuery.data?.rows ?? [])];
+    const rows = [...rawRows];
     rows.sort((a, b) => {
       const aDone = decisionsMap.has(rowId(a));
       const bDone = decisionsMap.has(rowId(b));
       if (aDone !== bDone) return aDone ? 1 : -1;
-      return (b.priority_score ?? 0) - (a.priority_score ?? 0);
+      if (!isExect) {
+        return Number(a.source_row_index ?? 0) - Number(b.source_row_index ?? 0);
+      }
+      return (a.queue_position ?? 0) - (b.queue_position ?? 0);
     });
     return rows;
-  }, [decisionsMap, rowsQuery.data?.rows]);
+  }, [decisionsMap, isExect, rawRows]);
 
   const visibleRows = useMemo(() => {
     if (mode === "reviewed") return sortedRows.filter((row) => decisionsMap.has(rowId(row)));
@@ -160,27 +146,16 @@ function DatasetGoldAuditPanel({ datasetId }: { datasetId: "gan2026" | "exectv2"
   }, [currentId, decisionsMap, visibleRows]);
 
   const existing = currentRow ? decisionsMap.get(rowId(currentRow)) : undefined;
-  const ganSourceIndex = currentRow?.source_row_index == null ? null : Number(currentRow.source_row_index);
-  const fullRecord = useQuery<FullRecordResponse>({
-    queryKey: ["record", datasetId, split, ganSourceIndex],
-    queryFn: () => fetchRecord(split, ganSourceIndex!),
-    enabled: !isExect && ganSourceIndex != null,
-  });
 
   useEffect(() => {
     if (!currentRow) return;
     // A keyed record switch intentionally initializes the editable review draft.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    /* eslint-disable react-hooks/set-state-in-effect -- reset draft on letter change */
     setSimpleClass(existing?.simple_class ?? null);
     setNotes(existing?.notes ?? "");
     setCorrectedGoldLabel(existing?.corrected_gold_label ?? "");
-    setAssertionStatus(existing?.assertion_status ?? null);
-    setAttributeEntailment(existing?.attribute_entailment ?? null);
-    setFactBoundaries(existing?.fact_boundaries ?? "");
-    setClinicalInterpretation(existing?.clinical_interpretation ?? "");
-    setReviewerRationale(existing?.reviewer_rationale ?? "");
-    setReviewConfidence(existing?.review_confidence ?? null);
     setAuditor(existing?.auditor ?? "maintainer");
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [currentRow, existing]);
 
   const saveMutation = useMutation({
@@ -200,45 +175,27 @@ function DatasetGoldAuditPanel({ datasetId }: { datasetId: "gan2026" | "exectv2"
     if (index >= 0 && index < visibleRows.length - 1) setCurrentId(rowId(visibleRows[index + 1]));
   }, [currentRow, visibleRows]);
 
-  const canSave = isExect
-    ? Boolean(assertionStatus && attributeEntailment && reviewConfidence && auditor.trim())
-    : Boolean(simpleClass);
+  const canSave = Boolean(simpleClass);
 
   const handleSave = useCallback(() => {
     if (!currentRow || !canSave) return;
-    const base = { dataset: datasetId, split, auditor: auditor.trim() } as GoldAuditDecision;
-    const decision: GoldAuditDecision = isExect
-      ? {
-          ...base,
-          audit_id: rowId(currentRow),
-          assertion_status: assertionStatus,
-          attribute_entailment: attributeEntailment,
-          fact_boundaries: factBoundaries || null,
-          clinical_interpretation: clinicalInterpretation || null,
-          reviewer_rationale: reviewerRationale || null,
-          review_confidence: reviewConfidence,
-        }
-      : {
-          ...base,
-          source_row_index: Number(currentRow.source_row_index),
-          simple_class: simpleClass,
-          rq10_class: null,
-          notes,
-          corrected_gold_label: correctedGoldLabel || null,
-          benchmark_convention_flag: false,
-          all_system_fail: false,
-          exact_evidence_but_scorer_wrong: false,
-          clinically_defensible_alternative: false,
-          likely_gold_defect: false,
-        };
-    saveMutation.mutate(decision);
-  }, [assertionStatus, attributeEntailment, auditor, canSave, clinicalInterpretation, correctedGoldLabel, currentRow, datasetId, factBoundaries, isExect, notes, reviewConfidence, reviewerRationale, simpleClass, split, saveMutation]);
+    saveMutation.mutate({
+      dataset: datasetId,
+      split,
+      auditor: auditor.trim(),
+      audit_id: rowId(currentRow),
+      source_row_index: currentRow.source_row_index == null ? null : Number(currentRow.source_row_index),
+      simple_class: simpleClass,
+      notes,
+      corrected_gold_label: correctedGoldLabel || null,
+    });
+  }, [auditor, canSave, correctedGoldLabel, currentRow, datasetId, notes, saveMutation, simpleClass, split]);
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement;
       if (["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
-      if (!isExect && ["1", "2", "3"].includes(event.key)) {
+      if (["1", "2", "3"].includes(event.key)) {
         event.preventDefault();
         setSimpleClass(SIMPLE_CLASSES[Number(event.key) - 1].value);
       } else if ((event.key === "j" || event.key === "ArrowRight") && !event.metaKey && !event.ctrlKey) {
@@ -248,17 +205,14 @@ function DatasetGoldAuditPanel({ datasetId }: { datasetId: "gan2026" | "exectv2"
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [goNext, isExect]);
+  }, [goNext]);
 
   const sourceText = isExect
     ? currentRow?.full_letter_text ?? currentRow?.source_context ?? ""
-    : fullRecord.data?.note_text ?? currentRow?.note_text_single_line?.replace(/\\n/g, "\n") ?? "";
+    : currentRow?.note_text_single_line?.replace(/\\n/g, "\n") ?? "";
   const highlights = useMemo(() => {
     if (!currentRow) return [];
-    if (isExect) {
-      return exactHighlight(sourceText, currentRow.source_span ?? "", currentRow.span_offsets?.[0]);
-    }
-    return exactHighlight(sourceText, currentRow.gold_reference ?? "");
+    return exactHighlight(sourceText, isExect ? currentRow.source_span ?? "" : currentRow.gold_reference ?? "");
   }, [currentRow, isExect, sourceText]);
 
   if (rowsQuery.isLoading || decisionsQuery.isLoading) {
@@ -276,7 +230,7 @@ function DatasetGoldAuditPanel({ datasetId }: { datasetId: "gan2026" | "exectv2"
 
   const id = rowId(currentRow);
   const decided = decisionsMap.size;
-  const total = rowsQuery.data?.total ?? 0;
+  const total = rowsQuery.data?.total ?? rawRows.length;
   const progress = total ? decided / total : 0;
   const currentIndex = visibleRows.findIndex((row) => rowId(row) === id);
 
@@ -315,11 +269,11 @@ function DatasetGoldAuditPanel({ datasetId }: { datasetId: "gan2026" | "exectv2"
 
         <div className="flex items-center gap-2 text-[11px]">
           <span className="rounded border border-deterministic/20 bg-deterministic/10 px-2 py-1 font-medium text-deterministic">
-            {isExect ? "ExECTv2 · blinded full200" : `Gan 2026 · ${splitLabel("validation750")}`}
+            {isExect ? splitLabel("dev140") : splitLabel("validation750")}
           </span>
           {existing && (
-            <span className={`rounded border px-2 py-1 font-medium capitalize ${badgeStyle(existing.review_confidence ?? existing.simple_class)}`}>
-              {existing.review_confidence ? `${existing.review_confidence} confidence` : existing.simple_class}
+            <span className={`rounded border px-2 py-1 font-medium capitalize ${badgeStyle(existing.simple_class)}`}>
+              {existing.simple_class}
             </span>
           )}
         </div>
@@ -338,7 +292,6 @@ function DatasetGoldAuditPanel({ datasetId }: { datasetId: "gan2026" | "exectv2"
           <aside className="flex max-h-48 w-full shrink-0 flex-col border-b border-border bg-surface lg:max-h-none lg:w-64 lg:border-b-0 lg:border-r">
             <div className="flex items-center justify-between border-b border-border px-3 py-2">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">{mode} ({visibleRows.length})</span>
-              <span className="text-[11px] text-muted">priority ordered</span>
             </div>
             <div className="min-h-0 flex-1 overflow-y-auto">
               {visibleRows.map((row) => {
@@ -353,12 +306,12 @@ function DatasetGoldAuditPanel({ datasetId }: { datasetId: "gan2026" | "exectv2"
                     <div className="flex items-center gap-2">
                       {decision ? <Check className="h-3 w-3 text-success" /> : <span className="h-2 w-2 rounded-full border border-border" />}
                       <span className="min-w-0 flex-1 truncate text-xs font-medium text-foreground">
-                        {isExect ? `${row.letter_id} · ${row.entity}` : row.gold_label}
+                        {isExect ? row.letter_id : row.gold_label}
                       </span>
                     </div>
                     <div className="mt-1 flex items-center justify-between pl-5 text-[11px] text-muted">
-                      <span className="font-mono">{isExect ? itemId.slice(0, 8) : `#${row.source_row_index}`}</span>
-                      {decision && <span className="capitalize">{decision.review_confidence ?? decision.simple_class}</span>}
+                      <span className="font-mono">{isExect ? row.gold_label : `#${row.source_row_index}`}</span>
+                      {decision && <span className="capitalize">{decision.simple_class}</span>}
                     </div>
                   </button>
                 );
@@ -373,22 +326,17 @@ function DatasetGoldAuditPanel({ datasetId }: { datasetId: "gan2026" | "exectv2"
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="text-lg font-semibold text-foreground">
-                    {isExect ? currentRow.source_span : currentRow.gold_label}
+                    {isExect ? currentRow.letter_id : currentRow.gold_label}
                   </h1>
                   {existing && <span className="rounded border border-success/25 bg-success/10 px-2 py-0.5 text-[11px] font-medium text-success">Reviewed</span>}
                 </div>
                 <p className="mt-1 text-xs text-muted">
-                  {isExect
-                    ? `${currentRow.letter_id} · ${currentRow.entity} · fact ${id}`
-                    : currentRow.gold_reference}
+                  {isExect ? currentRow.gold_label : currentRow.gold_reference}
                 </p>
               </div>
               <div className="text-right text-[11px] text-muted">
                 {isExect ? (
-                  <>
-                    <p>Full source letter</p>
-                    <p className="text-foreground">Gold attributes and predictions hidden</p>
-                  </>
+                  <p>Development letter</p>
                 ) : (
                   <>
                     <p>Kind: <span className="text-foreground">{currentRow.gold_label_kind}</span></p>
@@ -403,11 +351,9 @@ function DatasetGoldAuditPanel({ datasetId }: { datasetId: "gan2026" | "exectv2"
 
         <aside className="flex w-full shrink-0 flex-col border-t border-border bg-surface lg:w-[360px] lg:border-l lg:border-t-0">
           <div className="border-b border-border px-4 py-3">
-            <h2 className="text-xs font-semibold text-foreground">{isExect ? "Independent source review" : "Audit decision"}</h2>
+            <h2 className="text-xs font-semibold text-foreground">Audit decision</h2>
             <p className="mt-1 text-[11px] leading-relaxed text-muted">
-              {isExect
-                ? "Judge the source before consulting stored gold, predictions, scores, or issue leads. Confidence is your certainty in this review."
-                : "Classify the gold reference and record any ambiguity or correction."}
+              Classify the gold reference and record any ambiguity or correction.
             </p>
           </div>
 
@@ -420,54 +366,16 @@ function DatasetGoldAuditPanel({ datasetId }: { datasetId: "gan2026" | "exectv2"
                 className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs text-foreground focus:border-deterministic focus:outline-2 focus:outline-deterministic/20"
               />
             </label>
-
-            {isExect ? (
-              <>
-                <ChoiceGroup label="Assertion status" options={ASSERTION_STATUSES} value={assertionStatus ?? null} onChange={setAssertionStatus} />
-                <ChoiceGroup label="Attribute entailment" options={ENTAILMENT_OPTIONS} value={attributeEntailment ?? null} onChange={setAttributeEntailment} />
-                <ChoiceGroup label="Reviewer confidence" options={CONFIDENCE_OPTIONS} value={reviewConfidence ?? null} onChange={setReviewConfidence} />
-                <label className="block space-y-1.5">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Fact boundaries</span>
-                  <select
-                    value={factBoundaries}
-                    onChange={(event) => setFactBoundaries(event.target.value)}
-                    className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs text-foreground focus:border-deterministic focus:outline-2 focus:outline-deterministic/20"
-                  >
-                    <option value="">Not recorded</option>
-                    <option value="correct">Correct</option>
-                    <option value="too_narrow">Too narrow</option>
-                    <option value="too_broad">Too broad</option>
-                    <option value="merged_facts">Merged facts</option>
-                    <option value="duplicated_fact">Duplicated fact</option>
-                    <option value="unclear">Unclear</option>
-                  </select>
-                </label>
-                <label className="block space-y-1.5">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Clinical interpretation</span>
-                  <textarea value={clinicalInterpretation} onChange={(event) => setClinicalInterpretation(event.target.value)} placeholder="Record temporality, current status, or clinical meaning…" className="h-24 w-full resize-y rounded-lg border border-border bg-surface px-3 py-2 text-xs text-foreground placeholder:text-muted focus:border-deterministic focus:outline-2 focus:outline-deterministic/20" />
-                </label>
-                <label className="block space-y-1.5">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Reviewer rationale</span>
-                  <textarea value={reviewerRationale} onChange={(event) => setReviewerRationale(event.target.value)} placeholder="Cite the source language supporting your verdict…" className="h-28 w-full resize-y rounded-lg border border-border bg-surface px-3 py-2 text-xs text-foreground placeholder:text-muted focus:border-deterministic focus:outline-2 focus:outline-deterministic/20" />
-                </label>
-              </>
-            ) : (
-              <>
-                <ChoiceGroup label="Gold assessment" options={SIMPLE_CLASSES.map((item) => item.value)} value={simpleClass} onChange={setSimpleClass} />
-                <label className="block space-y-1.5">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Review notes</span>
-                  <textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Describe ambiguity or error…" className="h-32 w-full resize-y rounded-lg border border-border bg-surface px-3 py-2 text-xs text-foreground placeholder:text-muted focus:border-deterministic focus:outline-2 focus:outline-deterministic/20" />
-                </label>
-                <label className="block space-y-1.5">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Corrected gold label</span>
-                  <input value={correctedGoldLabel} onChange={(event) => setCorrectedGoldLabel(event.target.value)} placeholder="Optional correction" className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs text-foreground placeholder:text-muted focus:border-deterministic focus:outline-2 focus:outline-deterministic/20" />
-                </label>
-                {currentRow.predicted_simple_class && (
-                  <div className="rounded-lg border border-border bg-surface-raised p-3 text-[11px] text-muted">
-                    Queue model: <span className="font-medium text-foreground">{currentRow.predicted_simple_class}</span> at {Math.round((currentRow.prediction_confidence ?? 0) * 100)}% confidence. This ranks review order only.
-                  </div>
-                )}
-              </>
+            <ChoiceGroup label="Gold assessment" options={SIMPLE_CLASSES.map((item) => item.value)} value={simpleClass} onChange={setSimpleClass} />
+            <label className="block space-y-1.5">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Review notes</span>
+              <textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Describe ambiguity or error…" className="h-32 w-full resize-y rounded-lg border border-border bg-surface px-3 py-2 text-xs text-foreground placeholder:text-muted focus:border-deterministic focus:outline-2 focus:outline-deterministic/20" />
+            </label>
+            {!isExect && (
+              <label className="block space-y-1.5">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Corrected gold label</span>
+                <input value={correctedGoldLabel} onChange={(event) => setCorrectedGoldLabel(event.target.value)} placeholder="Optional correction" className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs text-foreground placeholder:text-muted focus:border-deterministic focus:outline-2 focus:outline-deterministic/20" />
+              </label>
             )}
           </div>
 

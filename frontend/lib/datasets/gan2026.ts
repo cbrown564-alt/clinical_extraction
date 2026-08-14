@@ -17,13 +17,11 @@ export const gan2026Dataset: DatasetDescriptor = {
   specimenLabelPlural: "notes",
   runLabel: "pipeline run",
   defaultSurface: "workbench",
-  defaultSplit: "validation",
-  splits: ["validation", "test", "synthetic"],
+  defaultSplit: "dev750",
+  splits: ["dev750"],
   supports: {
     workbench: true,
-    observatory: true,
-    laboratory: true,
-    gallery: true,
+    "gold-audit": true,
   },
   tone: "llm",
   families: [

@@ -11,8 +11,11 @@
  */
 
 import type { RegistryEntry } from "@/lib/types";
-import { laneForRun } from "@/lib/observatoryLanes";
 import { hasReplayableArtifact } from "@/lib/registryArtifacts";
+
+function isProductionWinner(entry: RegistryEntry): boolean {
+  return Boolean(entry.registry_roles?.includes("production_winner"));
+}
 
 /** Bare family names historically accepted by the architect URL (?pipeline=…). */
 export const KNOWN_PIPELINE_FAMILIES = new Set<string>([
@@ -54,7 +57,7 @@ export function resolveFamilyDefaultRun(
   );
   if (inFamily.length === 0) return null;
 
-  const production = inFamily.find((r) => laneForRun(r) === "production");
+  const production = inFamily.find(isProductionWinner);
   if (production) return production.run_id;
 
   const test = inFamily.find((r) => (r.split ?? "").includes("test"));

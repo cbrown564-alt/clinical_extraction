@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import {
   FileText,
   AlertCircle,
-  Film,
 } from "lucide-react";
 import { useArchitectStore } from "@/lib/stores";
 import {
@@ -50,9 +49,8 @@ export default function TraceControls() {
     selectedRunId,
     pipelineFamily,
     ablationConfig,
-    replayRowIndex,
+    replayRunId,
     setNoteText,
-    setSplit,
     setSourceRowIndex,
     setSelectedRunId,
     setTrace,
@@ -83,7 +81,6 @@ export default function TraceControls() {
   const isAggregateOnly =
     selectedOption?.availability === "aggregate_only" ||
     isGanAggregateRunId(selectedRunId);
-  const selectedAggregateMetrics = selectedOption?.metrics;
   const isLive = isLiveFamily(pipelineFamily);
   const isReplay = !isLive && !isAggregateOnly;
   const overallScore = useMemo(
@@ -127,19 +124,8 @@ export default function TraceControls() {
     }
   }, [pipelineOptions, pipelineFamily, requestedRunId, selectedRunId, setSelectedRunId]);
 
-  // When pipeline family changes to non-deterministic, auto-load replay artifacts
-  useEffect(() => {
-    if (isLive || isAggregateOnly) {
-      setReplayArtifactRows(null);
-      setReplayRunId(null);
-      setReplayRowIndex(null);
-      setIsLoading(false);
-      setError(null);
-      return;
-    }
-
-    let cancelled = false;
-    async function loadReplay() {
+  const loadReplayLetter = useCallback(
+    async (letterIndex: number) => {
       setIsLoading(true);
       setError(null);
       try {
@@ -147,42 +133,53 @@ export default function TraceControls() {
         const matchingRun = registry.runs.find((r) => r.run_id === selectedRunId);
         if (!matchingRun) {
           setError(`No replay artifact found for ${selectedRunId}`);
-          setIsLoading(false);
           return;
         }
         const replayPath = firstReplayableArtifactPath(matchingRun.artifact_paths);
         if (!replayPath) {
           setError(`No replay artifact found for ${selectedRunId}`);
-          setIsLoading(false);
           return;
         }
-        const artifact = await fetchArtifact(matchingRun.run_id, replayPath, 100);
-        if (!cancelled) {
-          setReplayRunId(matchingRun.run_id);
-          setReplayArtifactRows(artifact.content as unknown[]);
+        const [record, artifact] = await Promise.all([
+          fetchRecord("validation", letterIndex),
+          fetchArtifact(matchingRun.run_id, replayPath, undefined, String(letterIndex)),
+        ]);
+        const row = artifact.content[0];
+        if (!row) {
+          setError(`No replay row for letter ${letterIndex}`);
+          return;
         }
+        setNoteText(record.note_text);
+        setSourceRowIndex(letterIndex);
+        setReplayRunId(matchingRun.run_id);
+        setReplayArtifactRows([row]);
+        setReplayRowIndex(0);
+        if (!isReplaySupported(pipelineFamily)) {
+          setError(
+            `Replay not yet supported for ${pipelineFamily}. The artifact format for this family is not yet mapped to the trace viewer.`
+          );
+          return;
+        }
+        setTrace(adaptTrace(row, pipelineFamily, record));
       } catch (e) {
-        if (!cancelled) {
-          setError(e instanceof Error ? e.message : "Failed to load replay");
-        }
+        setError(e instanceof Error ? e.message : "Failed to load replay letter");
       } finally {
-        if (!cancelled) setIsLoading(false);
+        setIsLoading(false);
       }
-    }
-    loadReplay();
-    return () => {
-      cancelled = true;
-    };
-  }, [
-    selectedRunId,
-    isLive,
-    isAggregateOnly,
-    setError,
-    setIsLoading,
-    setReplayArtifactRows,
-    setReplayRunId,
-    setReplayRowIndex,
-  ]);
+    },
+    [
+      pipelineFamily,
+      selectedRunId,
+      setError,
+      setIsLoading,
+      setNoteText,
+      setReplayArtifactRows,
+      setReplayRowIndex,
+      setReplayRunId,
+      setSourceRowIndex,
+      setTrace,
+    ]
+  );
 
   const handleRun = useCallback(() => {
     if (!noteText.trim()) return;
@@ -228,47 +225,6 @@ export default function TraceControls() {
     setError,
   ]);
 
-  const handleLoadReplayRow = useCallback(
-    async (rowIndex: number) => {
-      const rows = useArchitectStore.getState().replayArtifactRows;
-      if (!rows || rowIndex < 0 || rowIndex >= rows.length) return;
-
-      const row = rows[rowIndex];
-      const rowSourceIndex =
-        (row as { source_row_index?: number }).source_row_index ??
-        sourceRowIndex ??
-        0;
-      const rowSplit =
-        (row as { split?: string }).split ?? split ?? "validation";
-
-      setIsLoading(true);
-      setError(null);
-      try {
-        const record = await fetchRecord(rowSplit, rowSourceIndex);
-        setNoteText(record.note_text);
-        setSplit(rowSplit);
-        setSourceRowIndex(rowSourceIndex);
-        setReplayRowIndex(rowIndex);
-
-        let trace;
-        if (isReplaySupported(pipelineFamily)) {
-          trace = adaptTrace(row, pipelineFamily, record);
-        } else {
-          setError(`Replay not yet supported for ${pipelineFamily}. The artifact format for this family is not yet mapped to the trace viewer.`);
-          setIsLoading(false);
-          return;
-        }
-        setTrace(trace);
-      } catch (e) {
-        setError(e instanceof Error ? e.message : "Failed to load replay row");
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [pipelineFamily, sourceRowIndex, split, setNoteText, setSplit, setSourceRowIndex, setTrace, setIsLoading, setError, setReplayRowIndex]
-  );
-
-  const replayRows = useArchitectStore((s) => s.replayArtifactRows);
   const isLoading = useArchitectStore((s) => s.isLoading);
   const error = useArchitectStore((s) => s.error);
   const trace = useArchitectStore((s) => s.trace);
@@ -284,23 +240,24 @@ export default function TraceControls() {
     }
   }, [isLive, noteText, recordQuery.data, sourceRowIndex, split, handleRun, trace, isLoading]);
 
-  // Auto-select replay row matching sourceRowIndex when artifacts load
   useEffect(() => {
-    if (
-      !isLive &&
-      replayRows &&
-      replayRows.length > 0 &&
-      sourceRowIndex !== null &&
-      replayRowIndex === null
-    ) {
-      const matchIndex = replayRows.findIndex(
-        (r) => (r as { source_row_index?: number }).source_row_index === sourceRowIndex
-      );
-      if (matchIndex !== -1) {
-        handleLoadReplayRow(matchIndex);
-      }
-    }
-  }, [isLive, replayRows, sourceRowIndex, replayRowIndex, handleLoadReplayRow]);
+    if (!isReplay || sourceRowIndex === null || isAggregateOnly) return;
+    const currentTraceMatches =
+      Boolean(trace) &&
+      replayRunId === selectedRunId &&
+      trace?.sourceRowIndex === sourceRowIndex;
+    if (currentTraceMatches || isLoading) return;
+    void loadReplayLetter(sourceRowIndex);
+  }, [
+    isAggregateOnly,
+    isLoading,
+    isReplay,
+    loadReplayLetter,
+    replayRunId,
+    selectedRunId,
+    sourceRowIndex,
+    trace,
+  ]);
 
   return (
     <ControlBar
@@ -343,8 +300,7 @@ export default function TraceControls() {
             </ControlSelect>
           </ControlField>
 
-          {/* Letter selector – dataset mode (live) */}
-          {isLive && (
+          {!isAggregateOnly && (
             <ControlField label="Letter" htmlFor="architect-row-select" icon={<FileText className="h-3 w-3 text-muted" />}>
               <ControlSelect
                 id="architect-row-select"
@@ -364,35 +320,6 @@ export default function TraceControls() {
                     {r.source_row_index} · {r.gold_label}
                   </option>
                 ))}
-              </ControlSelect>
-            </ControlField>
-          )}
-
-          {/* Letter selector – replay mode */}
-          {isReplay && replayRows && replayRows.length > 0 && (
-            <ControlField label="Letter" htmlFor="architect-replay-row-select" icon={<Film className="h-3 w-3 text-muted" />}>
-              <ControlSelect
-                id="architect-replay-row-select"
-                aria-label="Replay letter"
-                className="min-w-0 flex-1 sm:min-w-[160px] sm:flex-none"
-                value={replayRowIndex ?? ""}
-                onChange={(e) => {
-                  if (e.target.value)
-                    handleLoadReplayRow(parseInt(e.target.value, 10));
-                }}
-              >
-                <option value="">Load replay letter…</option>
-                {replayRows.map((row, idx) => {
-                  const r = row as {
-                    source_row_index?: number;
-                    reference?: { gold_label?: string };
-                  };
-                  return (
-                    <option key={idx} value={idx}>
-                      Letter {r.source_row_index ?? idx} · {r.reference?.gold_label ?? "?"}
-                    </option>
-                  );
-                })}
               </ControlSelect>
             </ControlField>
           )}

@@ -20,16 +20,18 @@ npm ci
 npm run dev
 ```
 
-Open [http://127.0.0.1:3000/workbench](http://127.0.0.1:3000/workbench).
+Open [http://127.0.0.1:3000/workbench](http://127.0.0.1:3000/workbench)
+or [http://127.0.0.1:3000/gold-audit](http://127.0.0.1:3000/gold-audit).
+Both surfaces list the Gan `dev750` notes and the ExECT `dev140` letters.
 
 For ExECTv2 clinical review, open
-[http://127.0.0.1:3000/clinical-review](http://127.0.0.1:3000/clinical-review).
-Each reviewer uses one assigned ID and switches inside the workspace between
-Correctness review and Semantic support. Both tasks use the same queue,
-extraction-to-source comparison, full-letter context, optional notes, and
-reviewer-separated revision history. The semantic task's governing allowed
+[http://127.0.0.1:3000/semantic-support-review](http://127.0.0.1:3000/semantic-support-review).
+Each reviewer uses one assigned ID for the blinded Semantic support review queue.
+The review workspace features extraction-to-source comparison, full-letter context,
+optional notes, and reviewer-separated revision history. The governing allowed
 values and adjudication rule are in the
 [review protocol](../../docs/experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md).
+
 
 If Gan LLM and LLM-with-rules controls in the workbench say “not retained”,
 the explorer is looking for complete `validation750` row files. Hybrid cells

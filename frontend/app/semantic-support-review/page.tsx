@@ -7,5 +7,6 @@ export const metadata: Metadata = {
 };
 
 export default function SemanticSupportReviewPage() {
-  return <ClinicalReviewWorkspace defaultTask="semantic" />;
+  return <ClinicalReviewWorkspace />;
 }
+

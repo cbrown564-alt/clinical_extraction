@@ -2,13 +2,9 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { ShieldCheck } from "lucide-react";
-import QualifiedReviewWorkspace from "@/components/qualified-review/QualifiedReviewWorkspace";
 import SemanticSupportReviewWorkspace from "@/components/semantic-support-review/SemanticSupportReviewWorkspace";
 
-type ReviewTask = "correctness" | "semantic";
-
-export default function ClinicalReviewWorkspace({ defaultTask = "semantic" }: { defaultTask?: ReviewTask }) {
-  const task = defaultTask;
+export default function ClinicalReviewWorkspace() {
   const [reviewerInput, setReviewerInput] = useState("");
   const [reviewerId, setReviewerId] = useState("");
 
@@ -38,7 +34,7 @@ export default function ClinicalReviewWorkspace({ defaultTask = "semantic" }: { 
             <section>
               <p className="qr-kicker flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-[var(--qr-accent)]" />Independent clinical review</p>
               <h1 className="qr-display mt-5 max-w-xl text-4xl leading-tight text-[var(--qr-ink)]">Review extracted clinical findings against their source.</h1>
-              <p className="mt-4 max-w-xl text-sm leading-relaxed text-[var(--qr-mute)]">Use one reviewer identity for the correctness and semantic-support queues. Other reviewers’ decisions remain hidden.</p>
+              <p className="mt-4 max-w-xl text-sm leading-relaxed text-[var(--qr-mute)]">Use one reviewer identity for the semantic-support queue. Other reviewers’ decisions remain hidden.</p>
             </section>
             <form onSubmit={startSession} className="ssr-session-card">
               <p className="qr-kicker">Begin a blinded queue</p>
@@ -57,11 +53,8 @@ export default function ClinicalReviewWorkspace({ defaultTask = "semantic" }: { 
 
   return (
     <div className="h-full min-h-0">
-      {task === "correctness" ? (
-        <QualifiedReviewWorkspace reviewerId={reviewerId} />
-      ) : (
-        <SemanticSupportReviewWorkspace reviewerId={reviewerId} />
-      )}
+      <SemanticSupportReviewWorkspace reviewerId={reviewerId} />
     </div>
   );
 }
+

@@ -25,12 +25,10 @@ export const exectv2Dataset: DatasetDescriptor = {
   runLabel: "architecture",
   defaultSurface: "workbench",
   defaultSplit: "dev140",
-  splits: ["dev140", "dev25"],
+  splits: ["dev140"],
   supports: {
     workbench: true,
-    observatory: true,
-    laboratory: false,
-    gallery: true,
+    "gold-audit": true,
   },
   tone: "deterministic",
   families: EXECTV2_FAMILIES,
@@ -169,9 +167,7 @@ export const exectv2Dataset: DatasetDescriptor = {
     },
   ],
   claimBoundaries: [
-    "ExECT dev (25) diagnostic",
     "ExECT dev (140) control",
-    "ExECT full (200) — not authorized here",
     "Holdout — not authorized here",
   ],
 };

@@ -95,6 +95,11 @@ def test_gan_hybrid_workbench_serves_current_stack_dev750_rows(
         "experiments/gan2026_six_model_current_stack_dev750_replay_20260813/"
     )
 
+    selected = client.get(f"/artifacts/{run_id}", params={"letter_id": "446"})
+    assert selected.status_code == 200
+    assert len(selected.json()["content"]) == 1
+    assert int(selected.json()["content"][0]["source_row_index"]) == 446
+
     row_path = Path(path)
     found: dict | None = None
     with row_path.open(encoding="utf-8") as handle:
@@ -121,15 +126,50 @@ def test_saved_artifact_replay_is_allowlisted_and_bounded(client: TestClient) ->
     assert "not-a-real-run" not in missing.text
 
 
+def test_letter_catalogs_cover_the_development_splits(client: TestClient) -> None:
+    gan = client.get("/datasets/gan2026/letters")
+    assert gan.status_code == 200
+    gan_body = gan.json()
+    assert gan_body["dataset"] == "gan2026"
+    assert gan_body["split"] == "dev750"
+    assert gan_body["count"] == 750
+    assert gan_body["letters"][0]["id"] == "10"
+
+    gan_letter = client.get("/datasets/gan2026/letters/10")
+    assert gan_letter.status_code == 200
+    assert "KINGS NEUROSCIENCES CENTRE" in gan_letter.json()["note_text"]
+
+    records = client.get("/records/validation")
+    assert records.status_code == 200
+    assert records.json()["count"] == 750
+
+    exect = client.get("/datasets/exectv2/letters")
+    assert exect.status_code == 200
+    exect_body = exect.json()
+    assert exect_body["dataset"] == "exectv2"
+    assert exect_body["split"] == "dev140"
+    assert exect_body["count"] == 140
+    letter_ids = {letter["id"] for letter in exect_body["letters"]}
+    assert "EA0002" in letter_ids
+    assert len(letter_ids) == 140
+
+
 def test_review_queues_and_writes_enforce_development_row_policy(client: TestClient) -> None:
+    gan_rows = client.get("/gold-audit/rows", params={"dataset": "gan2026"})
+    assert gan_rows.status_code == 200
+    assert gan_rows.json()["total"] == 750
+    assert {row["source_row_index"] for row in gan_rows.json()["rows"][:3]} == {
+        "10",
+        "40",
+        "79",
+    }
+
     exect_rows = client.get("/gold-audit/rows", params={"dataset": "exectv2"})
     assert exect_rows.status_code == 200
-    assert {row["letter_id"] for row in exect_rows.json()["rows"]} == {"EA0002"}
-
-    packets = client.get("/qualified-review/packets")
-    assert packets.status_code == 200
-    assert packets.json()["packets"]
-    assert all(packet["letter_id"] != "EA0032" for packet in packets.json()["packets"])
+    assert exect_rows.json()["total"] == 140
+    assert {row["letter_id"] for row in exect_rows.json()["rows"]} == {
+        letter["id"] for letter in client.get("/datasets/exectv2/letters").json()["letters"]
+    }
 
     locked = client.post(
         "/gold-audit/decide",

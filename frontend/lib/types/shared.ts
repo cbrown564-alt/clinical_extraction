@@ -122,6 +122,37 @@ export interface SplitRecordsResponse {
   records: SplitRecord[];
 }
 
+export interface CatalogLetter {
+  id: string;
+  dataset: "gan2026" | "exectv2";
+  split: string;
+  label: string;
+  preview: string;
+  gold_summary: string;
+  gold_reference?: string;
+  has_gold_reference: boolean;
+  row_ok?: boolean;
+}
+
+export interface LetterCatalogResponse {
+  dataset: "gan2026" | "exectv2";
+  split: string;
+  count: number;
+  letters: CatalogLetter[];
+}
+
+export interface DatasetRunsResponse {
+  dataset: "gan2026" | "exectv2";
+  split: string;
+  runs: PipelineFamilyItem[];
+}
+
+export interface DatasetRunResponse {
+  dataset: "gan2026" | "exectv2";
+  split: string;
+  run: PipelineFamilyItem;
+}
+
 export interface FullRecordResponse {
   split: string;
   source_row_index: number;
