@@ -191,33 +191,30 @@ export default function SourceDocument({
 }) {
   const cleanText = useMemo(() => unescapeText(text), [text]);
   const segments = useMemo(() => buildSegments(cleanText, spans), [cleanText, spans]);
-  const hasSpans = spans.length > 0;
 
   return (
     <div className="relative rounded-xl border border-border bg-surface p-5 shadow-sm">
       <div className="note-text text-foreground">
-        {!hasSpans
-          ? formatAsLetter(cleanText)
-          : segments.map((seg, i) => {
-              const content = cleanText.slice(seg.start, seg.end);
-              if (seg.spans.length === 0) {
-                return <span key={i}>{withBreaks(content)}</span>;
-              }
-              const primary = seg.spans[0];
-              const mark = (
-                <mark className={`span-highlight ${TONE_CLASS[primary.tone]}`} title={primary.label}>
-                  {withBreaks(content)}
-                </mark>
-              );
-              if (primary.ruleId || primary.tooltip) {
-                return (
-                  <SpanTooltip key={i} span={primary}>
-                    {mark}
-                  </SpanTooltip>
-                );
-              }
-              return <span key={i}>{mark}</span>;
-            })}
+        {segments.map((seg, i) => {
+          const content = cleanText.slice(seg.start, seg.end);
+          if (seg.spans.length === 0) {
+            return <span key={i}>{withBreaks(content)}</span>;
+          }
+          const primary = seg.spans[0];
+          const mark = (
+            <mark className={`span-highlight ${TONE_CLASS[primary.tone]}`} title={primary.label}>
+              {withBreaks(content)}
+            </mark>
+          );
+          if (primary.ruleId || primary.tooltip) {
+            return (
+              <SpanTooltip key={i} span={primary}>
+                {mark}
+              </SpanTooltip>
+            );
+          }
+          return <span key={i}>{mark}</span>;
+        })}
       </div>
       {children}
     </div>

@@ -1,6 +1,31 @@
 import type { TraceItem, StageScore, StageRepair } from "../types";
 
 /**
+ * Canonical semantic kind mapping across all model and deterministic pipelines.
+ * Standardizes 'rate', 'frequency', 'frequency_rate' -> 'frequency_rate',
+ * 'seizure_free' -> 'seizure_free', 'unknown' -> 'unknown_frequency', etc.
+ */
+export function canonicalSemanticKind(kind: string | null | undefined, label?: string | null): string {
+  const k = (kind ?? "").toLowerCase().trim();
+  const l = (label ?? "").toLowerCase().trim();
+
+  if (k === "frequency_rate" || k === "rate" || k === "frequency") return "frequency_rate";
+  if (k === "cluster_frequency" || k === "cluster") return "cluster_frequency";
+  if (k === "seizure_free" || l.startsWith("seizure free")) return "seizure_free";
+  if (k === "unknown_frequency" || k === "unknown" || l === "unknown") return "unknown_frequency";
+  if (k === "no_reference" || k === "no_seizure_frequency_reference" || l.includes("no seizure") || l.includes("no reference")) return "no_reference";
+  if (k === "unresolved_multiple") return "unresolved_multiple";
+  if (k === "last_event_only") return "last_event_only";
+
+  if (l.includes("per day") || l.includes("per week") || l.includes("per month") || l.includes("per year")) return "frequency_rate";
+  if (l.startsWith("seizure free")) return "seizure_free";
+  if (l === "unknown") return "unknown_frequency";
+  if (l.includes("no seizure") || l.includes("no reference")) return "no_reference";
+
+  return k || "frequency_rate";
+}
+
+/**
  * Find the character span of an evidence string within a note text.
  * Returns exact match first, then case-insensitive fallback.
  */

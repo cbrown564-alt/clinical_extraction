@@ -26,7 +26,7 @@ import {
   type MetricChip,
   type HighlightTone,
 } from "@/components/surface";
-import { groupExectv2Runs, resolveExectv2RunId } from "@/lib/exectv2RunOptions";
+import { exectv2OptionLabel, groupExectv2Runs, resolveExectv2RunId } from "@/lib/exectv2RunOptions";
 import {
   compactRunLabel,
   useExectv2Run,
@@ -382,56 +382,51 @@ export default function Exectv2ExampleExplorer() {
 
   return (
     <SurfaceLayout variant="fill">
-      {/* Control bar – specimen (letter) on the left, variant (architecture) on the right */}
+      {/* Control bar – method on far left, letter picker next, metrics on the right */}
       <ControlBar
         left={
-          <ControlField label="Letter" htmlFor="exect-letter-select" icon={<FileText className="h-3 w-3 text-muted" />}>
-            <ControlSelect
-              id="exect-letter-select"
-              value={selectedLetter.letter_id}
-              onChange={(event) => set({ letter: event.target.value })}
-              className="min-w-0 flex-1 sm:min-w-[200px] sm:flex-none"
-            >
-              {selectedRun.letters.map((letter) => {
-                const totals = headlineTotals(letter);
-                return (
-                  <option key={letter.letter_id} value={letter.letter_id}>
-                    {letter.letter_id} – {totals.predicted}P / {totals.gold}G
-                  </option>
-                );
-              })}
-            </ControlSelect>
-          </ControlField>
-        }
-        right={
-          <ControlField label="Architecture" htmlFor="exect-architecture-select" icon={<Layers3 className="h-3 w-3 text-muted" />}>
-            <ControlSelect
-              id="exect-architecture-select"
-              value={selectedRun.run_id}
-              title={selectedRun.claim_boundary}
-              onChange={(event) => set({ run: event.target.value })}
-              className="min-w-0 flex-1 sm:min-w-[200px] sm:flex-none"
-            >
-              {runGroups.map((group) => (
-                <optgroup key={group.method} label={group.label}>
-                  {group.runs.map((run) => (
-                    <option key={run.run_id} value={run.run_id}>
-                      {compactRunLabel(run)} · {run.model}
+          <>
+            <ControlField label="Method" htmlFor="exect-method-select">
+              <Exectv2ModeBadge run={selectedRun} />
+              <ControlSelect
+                id="exect-method-select"
+                value={selectedRun.run_id}
+                title={selectedRun.claim_boundary}
+                onChange={(event) => set({ run: event.target.value })}
+                className="min-w-0 flex-1 sm:min-w-[220px] sm:flex-none"
+              >
+                {runGroups.map((group) => (
+                  <optgroup key={group.method} label={group.label}>
+                    {group.runs.map((run) => (
+                      <option key={run.run_id} value={run.run_id}>
+                        {exectv2OptionLabel(run)}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </ControlSelect>
+            </ControlField>
+
+            <ControlField label="Letter" htmlFor="exect-letter-select" icon={<FileText className="h-3 w-3 text-muted" />}>
+              <ControlSelect
+                id="exect-letter-select"
+                value={selectedLetter.letter_id}
+                onChange={(event) => set({ letter: event.target.value })}
+                className="min-w-0 flex-1 sm:min-w-[200px] sm:flex-none"
+              >
+                {selectedRun.letters.map((letter) => {
+                  const totals = headlineTotals(letter);
+                  return (
+                    <option key={letter.letter_id} value={letter.letter_id}>
+                      {letter.letter_id} – {totals.predicted}P / {totals.gold}G
                     </option>
-                  ))}
-                </optgroup>
-              ))}
-            </ControlSelect>
-            <Exectv2ModeBadge run={selectedRun} />
-            <span className="rounded border border-border bg-surface-raised px-1.5 py-0.5 font-mono text-[11px] text-muted">
-              {selectedRun.split} / {selectedRun.row_count}
-            </span>
-            <MetricChips chips={runMetricChips(selectedRun)} />
-            <span className="rounded border border-success/25 bg-success/10 px-2 py-1 text-[11px] font-medium text-success">
-              exact evidence {formatMetricValue(selectedRun.operational.exact_evidence_rate, "rate")}
-            </span>
-          </ControlField>
+                  );
+                })}
+              </ControlSelect>
+            </ControlField>
+          </>
         }
+        right={<MetricChips chips={runMetricChips(selectedRun)} />}
       />
 
       {/* Lens strip – family filter */}

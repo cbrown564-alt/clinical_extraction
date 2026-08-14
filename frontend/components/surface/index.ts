@@ -24,6 +24,7 @@ export {
   metricTone,
   F1Cell,
   DecisionBadge,
+  MethodBadge,
   SurfaceLink,
   type MetricFormat,
 } from "./atoms";

@@ -19,9 +19,9 @@ const ACTIVE_METHOD_ALIASES: Readonly<Record<string, string>> = {
 };
 
 const MODEL_ORDER = [
+  "openai/gpt-5.6-sol",
   "openai/gpt-5.6-luna",
   "gemini/gemini-3.7-flash",
-  "openai/gpt-5.6-sol",
   "deepseek/deepseek-v4-flash",
   "ollama_chat/qwen3.6:35b",
   "ollama_chat/gemma4:26b",
@@ -79,6 +79,15 @@ export function exectv2RunActiveMethod(run: Exectv2RunSummary): ActiveMethod {
     return method;
   }
   return "llm_with_rules";
+}
+
+export function exectv2OptionLabel(run: Exectv2RunSummary): string {
+  const method = exectv2RunActiveMethod(run);
+  if (method === "rules") {
+    return "Deterministic rules";
+  }
+  const base = run.label.split(/\s*·\s*|\s+-\s+/)[0].trim();
+  return base || run.model;
 }
 
 /** Resolve only exact canonical or explicitly retained aliases. */

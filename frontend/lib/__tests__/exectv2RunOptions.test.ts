@@ -1,4 +1,5 @@
 import {
+  exectv2OptionLabel,
   exectv2RunActiveMethod,
   groupExectv2Runs,
   hydrateExectv2Run,
@@ -15,9 +16,9 @@ import actualRunsJson from "../../public/mock-data/exectv2/runs.json";
 const actualRuns = actualRunsJson as unknown as Exectv2RunsWireResponse;
 
 const MODELS = [
+  "openai/gpt-5.6-sol",
   "openai/gpt-5.6-luna",
   "gemini/gemini-3.7-flash",
-  "openai/gpt-5.6-sol",
   "deepseek/deepseek-v4-flash",
   "ollama_chat/qwen3.6:35b",
   "ollama_chat/gemma4:26b",
@@ -246,5 +247,26 @@ describe("ExECTv2 architecture options", () => {
       },
     });
     expect(hydratedSingle.letters[0]).toEqual(hydrated.runs[0].letters[0]);
+  });
+
+  it("formats option labels with just the model name or Deterministic rules", () => {
+    expect(
+      exectv2OptionLabel({
+        ...run("llm_with_rules", MODELS[0], 0),
+        label: "GPT-5.6 Luna · LLM + rules",
+      })
+    ).toBe("GPT-5.6 Luna");
+    expect(
+      exectv2OptionLabel({
+        ...run("llm", MODELS[1], 1),
+        label: "Gemini 3.7 Flash · LLM only",
+      })
+    ).toBe("Gemini 3.7 Flash");
+    expect(
+      exectv2OptionLabel({
+        ...run("rules", "(model-independent)", 0),
+        label: "Deterministic all-9 · Rules only",
+      })
+    ).toBe("Deterministic rules");
   });
 });

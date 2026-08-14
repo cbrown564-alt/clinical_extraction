@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Unit tests for active trace adapters.
  */
 
@@ -277,12 +277,12 @@ describe("adaptTrace", () => {
 
     expect(trace.extract.items).toHaveLength(1);
     expect(trace.extract.items[0]).toMatchObject({
-      kind: "llm_decision",
+      kind: "frequency_rate",
       rawValue: "up to 4 per day",
     });
     expect(trace.normalise.items).toHaveLength(1);
     expect(trace.normalise.items[0]).toMatchObject({
-      kind: "deterministic_adapter",
+      kind: "frequency_rate",
       rawValue: "up to 4 per day",
       normalizedValue: "4 per day",
       portability: "benchmark_format",

@@ -72,10 +72,31 @@ function getSpansForStage(
 
   if (activeStage === "normalise") {
     for (const c of candidates) {
-      if (c.start_char != null && c.end_char != null) {
+      let start = c.start_char ?? -1;
+      let end = c.end_char ?? -1;
+
+      // Fallback: search for evidence text when char spans are missing
+      const searchTarget = c.evidence || c.raw_value;
+      if ((start < 0 || end <= start) && searchTarget && text) {
+        const exactPos = text.indexOf(searchTarget);
+        if (exactPos >= 0) {
+          start = exactPos;
+          end = exactPos + searchTarget.length;
+        } else {
+          const lowerText = text.toLowerCase();
+          const lowerTarget = searchTarget.toLowerCase();
+          const ciPos = lowerText.indexOf(lowerTarget);
+          if (ciPos >= 0) {
+            start = ciPos;
+            end = ciPos + searchTarget.length;
+          }
+        }
+      }
+
+      if (start >= 0 && end > start) {
         spans.push({
-          start: c.start_char,
-          end: c.end_char,
+          start,
+          end,
           kind: "deterministic-alt",
           label: c.raw_value ?? c.evidence,
           ruleId: c.rule_id,

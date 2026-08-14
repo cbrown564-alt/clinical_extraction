@@ -90,7 +90,9 @@ and reads no locked rows).
 ## Try the demo
 
 The frontend is the main interactive demonstration. From the repository root,
-use two terminals:
+use two terminals.
+
+Windows PowerShell:
 
 ```powershell
 # Terminal 1: local Python API
@@ -98,6 +100,18 @@ use two terminals:
 
 # Terminal 2: Next.js frontend
 Set-Location frontend
+npm ci                 # first run only
+npm run dev
+```
+
+macOS or Linux:
+
+```sh
+# Terminal 1: local Python API
+.venv/bin/python -m clinical_extraction.trace_explorer.api.app
+
+# Terminal 2: Next.js frontend
+cd frontend
 npm ci                 # first run only
 npm run dev
 ```

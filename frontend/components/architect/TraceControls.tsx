@@ -1,25 +1,14 @@
 "use client";
 
-import { useEffect, useCallback, useMemo, useState } from "react";
+import { useEffect, useCallback, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import {
-  Play,
-  Database,
   FileText,
-  Loader2,
   AlertCircle,
-  RotateCcw,
   Film,
-  BarChart3,
-  Pencil,
-  X,
-  Blend,
-  Bot,
-  Braces,
 } from "lucide-react";
 import { useArchitectStore } from "@/lib/stores";
 import {
-  useRules,
   useRecords,
   useRecord,
   usePipelineFamilies,
@@ -29,15 +18,19 @@ import { fetchRegistry, fetchArtifact, fetchRecord } from "@/lib/api";
 import { firstReplayableArtifactPath } from "@/lib/registryArtifacts";
 import { adaptDeterministicTrace, adaptTrace, isReplaySupported } from "@/lib/traceAdapter";
 import {
+  ganOverallScore,
   ganPipelineOptionLabel,
   groupGanPipelineOptions,
   isGanAggregateRunId,
   resolveGanPipelineOption,
 } from "@/lib/ganPipelineOptions";
-import { activeMethodLabel } from "@/lib/plainLanguageLabels";
-import RuleConfigPanel from "./RuleConfigPanel";
-
-const SPLITS = ["train", "validation", "test"];
+import {
+  ControlBar,
+  ControlField,
+  ControlSelect,
+  MethodBadge,
+  MetricChips,
+} from "@/components/surface";
 
 function isDeterministicFamily(family: string): boolean {
   return family === "rules" || family === "rules_only" || family.includes("deterministic");
@@ -70,16 +63,10 @@ export default function TraceControls() {
     setReplayRowIndex,
   } = useArchitectStore();
 
-
-
   const runNote = useRunNote();
-  const rulesQuery = useRules();
-  const recordsQuery = useRecords(split);
-  const recordQuery = useRecord(split, sourceRowIndex);
+  const recordsQuery = useRecords("validation");
+  const recordQuery = useRecord("validation", sourceRowIndex);
   const familiesQuery = usePipelineFamilies();
-
-  const [showCustomNoteEditor, setShowCustomNoteEditor] = useState(false);
-  const [customNoteDraft, setCustomNoteDraft] = useState("");
 
   const pipelineOptions = useMemo(
     () => familiesQuery.data?.families ?? [],
@@ -99,6 +86,10 @@ export default function TraceControls() {
   const selectedAggregateMetrics = selectedOption?.metrics;
   const isLive = isLiveFamily(pipelineFamily);
   const isReplay = !isLive && !isAggregateOnly;
+  const overallScore = useMemo(
+    () => ganOverallScore(selectedOption),
+    [selectedOption]
+  );
 
   // When dataset record loads, update note text
   useEffect(() => {
@@ -213,7 +204,7 @@ export default function TraceControls() {
             data,
             noteText,
             sourceRowIndex ?? 0,
-            split ?? "unknown"
+            split ?? "validation"
           );
           setTrace(trace);
           setIsLoading(false);
@@ -286,7 +277,7 @@ export default function TraceControls() {
   useEffect(() => {
     if (isLive && noteText && recordQuery.data && !isLoading) {
       // Check if the current trace matches the selected index and split
-      const currentTraceMatches = trace && trace.sourceRowIndex === sourceRowIndex && trace.split === split && trace.noteText === noteText;
+      const currentTraceMatches = trace && trace.sourceRowIndex === sourceRowIndex && trace.split === (split ?? "validation") && trace.noteText === noteText;
       if (!currentTraceMatches) {
         handleRun();
       }
@@ -311,284 +302,126 @@ export default function TraceControls() {
     }
   }, [isLive, replayRows, sourceRowIndex, replayRowIndex, handleLoadReplayRow]);
 
-  const handleOpenCustomNote = () => {
-    setCustomNoteDraft(noteText);
-    setShowCustomNoteEditor(true);
-  };
-
-  const handleSaveCustomNote = () => {
-    setNoteText(customNoteDraft);
-    setSplit(null);
-    setSourceRowIndex(null);
-    setShowCustomNoteEditor(false);
-  };
-
   return (
-    <div className="shrink-0 border-b border-border bg-surface">
-      {/* Single compact row */}
-      <div className="flex flex-wrap items-center gap-3 px-4 py-2">
-        {/* Specimen selector – dataset mode (live) */}
-        {isLive && (
-          <div className="flex items-center gap-1.5">
-            <Database className="h-3 w-3 text-muted" />
-            <select
-              aria-label="Dataset split"
-              className="rounded-md border border-border bg-surface px-2 py-1 text-xs text-foreground outline-none focus:border-deterministic"
-              value={split ?? ""}
-              onChange={(e) => setSplit(e.target.value || null)}
-            >
-              <option value="">Split…</option>
-              {SPLITS.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-            <select
-              aria-label="Dataset row"
-              className="rounded-md border border-border bg-surface px-2 py-1 text-xs text-foreground outline-none focus:border-deterministic disabled:opacity-50"
-              value={sourceRowIndex ?? ""}
-              onChange={(e) =>
-                setSourceRowIndex(
-                  e.target.value ? parseInt(e.target.value, 10) : null
-                )
-              }
-              disabled={!recordsQuery.data}
-            >
-              <option value="">Row…</option>
-              {recordsQuery.data?.records.map((r) => (
-                <option key={r.source_row_index} value={r.source_row_index}>
-                  {r.source_row_index} · {r.gold_label}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {/* Specimen selector – replay mode */}
-        {isReplay && replayRows && replayRows.length > 0 && (
-          <div className="flex items-center gap-1.5">
-            <Film className="h-3 w-3 text-muted" />
-            <select
-              aria-label="Replay row"
-              className="rounded-md border border-border bg-surface px-2 py-1 text-xs text-foreground outline-none focus:border-hybrid min-w-[160px]"
-              value={replayRowIndex ?? ""}
+    <ControlBar
+      left={
+        <>
+          {/* Method selection on the far left */}
+          <ControlField label="Method" htmlFor="architect-method-select">
+            {selectedOption?.kind && (
+              <MethodBadge method={selectedOption.kind} />
+            )}
+            <ControlSelect
+              id="architect-method-select"
+              className="min-w-0 flex-1 sm:min-w-[220px] sm:flex-none"
+              value={selectedRunId}
               onChange={(e) => {
-                if (e.target.value)
-                  handleLoadReplayRow(parseInt(e.target.value, 10));
+                const option = pipelineOptions.find((opt) => opt.run_id === e.target.value);
+                if (option) {
+                  setSelectedRunId(option.run_id, option.pipeline_family);
+                }
               }}
             >
-              <option value="">Load replay row…</option>
-              {replayRows.map((row, idx) => {
-                const r = row as {
-                  source_row_index?: number;
-                  reference?: { gold_label?: string };
-                };
-                return (
-                  <option key={idx} value={idx}>
-                    Row {r.source_row_index ?? idx} · {r.reference?.gold_label ?? "?"}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-        )}
+              {pipelineGroups.map((group) => (
+                <optgroup key={group.method} label={group.label}>
+                  {group.options.map((opt) => (
+                    <option
+                      key={opt.run_id}
+                      value={opt.run_id}
+                      disabled={opt.availability === "not_retained"}
+                    >
+                      {ganPipelineOptionLabel(opt.label)}
+                      {opt.availability === "aggregate_only"
+                        ? " · aggregate only"
+                        : opt.availability === "not_retained"
+                          ? " · not retained"
+                          : ""}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </ControlSelect>
+          </ControlField>
 
-        {isReplay && isLoading && (
-          <div className="flex items-center gap-1 text-xs text-muted">
-            <Loader2 className="h-3 w-3 animate-spin" />
-            Loading…
-          </div>
-        )}
-
-        {/* Error */}
-        {error && (
-          <div className="flex items-center gap-1 rounded-md border border-error/20 bg-error/5 px-2 py-1 text-xs text-error max-w-xs truncate shrink-0">
-            <AlertCircle className="h-3 w-3 shrink-0" />
-            <span className="truncate">{error}</span>
-          </div>
-        )}
-
-        {/* Spacer */}
-        <div className="flex-1" />
-
-        {/* Pipeline family */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          <label htmlFor="architect-pipeline-select" className="text-[11px] font-semibold uppercase tracking-wide text-muted">
-            Pipeline
-          </label>
-          {selectedOption?.kind && (
-            <span
-              className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[11px] font-medium ${
-                selectedOption.kind === "llm_with_rules"
-                  ? "border-hybrid/25 bg-hybrid/8 text-hybrid"
-                  : selectedOption.kind === "llm"
-                    ? "border-llm/25 bg-llm/8 text-llm"
-                    : "border-deterministic/25 bg-deterministic/8 text-deterministic"
-              }`}
-            >
-              {selectedOption.kind === "llm_with_rules" ? (
-                <Blend className="h-3 w-3" aria-hidden="true" />
-              ) : selectedOption.kind === "llm" ? (
-                <Bot className="h-3 w-3" aria-hidden="true" />
-              ) : (
-                <Braces className="h-3 w-3" aria-hidden="true" />
-              )}
-              {activeMethodLabel(selectedOption.kind)}
-            </span>
-          )}
-          <select
-            id="architect-pipeline-select"
-            className="rounded-md border border-border bg-surface px-2 py-1 text-xs text-foreground outline-none focus:border-deterministic min-w-[220px]"
-            value={selectedRunId}
-            onChange={(e) => {
-              const option = pipelineOptions.find((opt) => opt.run_id === e.target.value);
-              if (option) {
-                setSelectedRunId(option.run_id, option.pipeline_family);
-              }
-            }}
-          >
-            {pipelineGroups.map((group) => (
-              <optgroup key={group.method} label={group.label}>
-                {group.options.map((opt) => (
-                  <option
-                    key={opt.run_id}
-                    value={opt.run_id}
-                    disabled={opt.availability === "not_retained"}
-                  >
-                    {ganPipelineOptionLabel(opt.label)}
-                    {opt.availability === "aggregate_only"
-                      ? " · aggregate only"
-                      : opt.availability === "not_retained"
-                        ? " · not retained"
-                        : ""}
+          {/* Letter selector – dataset mode (live) */}
+          {isLive && (
+            <ControlField label="Letter" htmlFor="architect-row-select" icon={<FileText className="h-3 w-3 text-muted" />}>
+              <ControlSelect
+                id="architect-row-select"
+                aria-label="Dataset letter"
+                className="min-w-0 flex-1 sm:min-w-[160px] sm:flex-none"
+                value={sourceRowIndex ?? ""}
+                onChange={(e) =>
+                  setSourceRowIndex(
+                    e.target.value ? parseInt(e.target.value, 10) : null
+                  )
+                }
+                disabled={!recordsQuery.data}
+              >
+                <option value="">Letter…</option>
+                {recordsQuery.data?.records.map((r) => (
+                  <option key={r.source_row_index} value={r.source_row_index}>
+                    {r.source_row_index} · {r.gold_label}
                   </option>
                 ))}
-              </optgroup>
-            ))}
-          </select>
-        </div>
+              </ControlSelect>
+            </ControlField>
+          )}
 
-        {/* Paste custom note */}
-        {!isAggregateOnly && (
-          <button
-            type="button"
-            onClick={handleOpenCustomNote}
-            className="flex items-center justify-center rounded-md border border-border bg-surface p-1.5 text-muted transition-colors hover:text-foreground shrink-0"
-            aria-label="Paste custom clinical note"
-            aria-expanded={showCustomNoteEditor}
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </button>
-        )}
-
-        {/* Reset */}
-        {trace && (
-          <button
-            type="button"
-            onClick={() => useArchitectStore.getState().reset()}
-            className="flex items-center justify-center rounded-md border border-border bg-surface p-1.5 text-muted transition-colors hover:text-foreground shrink-0"
-            aria-label="Reset trace"
-          >
-            <RotateCcw className="h-3.5 w-3.5" />
-          </button>
-        )}
-
-        {/* Rule panel toggle (deterministic only) */}
-        {isLive && rulesQuery.data && (
-          <div className="shrink-0">
-            <RuleConfigPanel />
-          </div>
-        )}
-
-        {/* Primary action / status */}
-        {isLive ? (
-          <button
-            type="button"
-            onClick={handleRun}
-            disabled={isLoading || !noteText.trim()}
-            className="flex items-center gap-1.5 rounded-md bg-deterministic px-3 py-1.5 text-xs font-semibold text-surface transition-colors hover:bg-deterministic/90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
-          >
-            {isLoading ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <Play className="h-3.5 w-3.5" />
-            )}
-            Run
-          </button>
-        ) : isAggregateOnly && selectedAggregateMetrics ? (
-          <div className="flex items-center gap-2 rounded-md border border-hybrid/20 bg-hybrid/5 px-2.5 py-1 text-xs text-hybrid shrink-0">
-            <BarChart3 className="h-3.5 w-3.5" />
-            <span className="font-medium">
-              Purist {selectedAggregateMetrics.purist_correct}/{selectedAggregateMetrics.row_count}
-            </span>
-            <span className="text-muted">·</span>
-            <span className="font-medium">
-              Pragmatic {selectedAggregateMetrics.pragmatic_correct}/{selectedAggregateMetrics.row_count}
-            </span>
-          </div>
-        ) : replayRows && replayRows.length > 0 ? (
-          null
-        ) : isLoading ? (
-          <span className="flex items-center gap-1 text-xs text-muted shrink-0">
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            Loading…
-          </span>
-        ) : (
-          <span className="flex items-center gap-1 text-xs text-error shrink-0">
-            <AlertCircle className="h-3.5 w-3.5" />
-            No replay artifact
-          </span>
-        )}
-      </div>
-
-      {showCustomNoteEditor && (
-        <section className="border-t border-border bg-surface-raised/40 px-4 py-4" aria-labelledby="custom-note-title">
-          <div className="mx-auto max-w-3xl">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <FileText className="h-4 w-4 text-muted" />
-                <h3 id="custom-note-title" className="text-sm font-semibold text-foreground">Custom clinical note</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowCustomNoteEditor(false)}
-                className="rounded-sm text-muted transition-colors hover:text-foreground"
-                aria-label="Close custom note editor"
+          {/* Letter selector – replay mode */}
+          {isReplay && replayRows && replayRows.length > 0 && (
+            <ControlField label="Letter" htmlFor="architect-replay-row-select" icon={<Film className="h-3 w-3 text-muted" />}>
+              <ControlSelect
+                id="architect-replay-row-select"
+                aria-label="Replay letter"
+                className="min-w-0 flex-1 sm:min-w-[160px] sm:flex-none"
+                value={replayRowIndex ?? ""}
+                onChange={(e) => {
+                  if (e.target.value)
+                    handleLoadReplayRow(parseInt(e.target.value, 10));
+                }}
               >
-                <X className="h-4 w-4" />
-              </button>
+                <option value="">Load replay letter…</option>
+                {replayRows.map((row, idx) => {
+                  const r = row as {
+                    source_row_index?: number;
+                    reference?: { gold_label?: string };
+                  };
+                  return (
+                    <option key={idx} value={idx}>
+                      Letter {r.source_row_index ?? idx} · {r.reference?.gold_label ?? "?"}
+                    </option>
+                  );
+                })}
+              </ControlSelect>
+            </ControlField>
+          )}
+        </>
+      }
+      right={
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Error */}
+          {error && (
+            <div className="flex items-center gap-1 rounded-md border border-error/20 bg-error/5 px-2 py-1 text-xs text-error max-w-xs truncate shrink-0">
+              <AlertCircle className="h-3 w-3 shrink-0" />
+              <span className="truncate">{error}</span>
             </div>
-            <label htmlFor="custom-note-text" className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-muted">
-              Clinical note text
-            </label>
-            <textarea
-              id="custom-note-text"
-              className="min-h-[160px] w-full resize-y rounded-md border border-border bg-surface px-3 py-2 font-serif text-sm text-foreground outline-none focus:border-deterministic focus:ring-1 focus:ring-deterministic/20"
-              placeholder="Paste clinical note text here…"
-              value={customNoteDraft}
-              onChange={(e) => setCustomNoteDraft(e.target.value)}
+          )}
+
+          {overallScore !== null && overallScore !== undefined && (
+            <MetricChips
+              chips={[
+                {
+                  label: "Overall",
+                  value: overallScore,
+                  format: "f1",
+                  shade: true,
+                },
+              ]}
             />
-            <div className="mt-3 flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setShowCustomNoteEditor(false)}
-                className="rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-surface-raised"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleSaveCustomNote}
-                disabled={!customNoteDraft.trim()}
-                className="rounded-md bg-deterministic px-3 py-1.5 text-xs font-semibold text-surface transition-colors hover:bg-deterministic/90 disabled:opacity-50"
-              >
-                Load note
-              </button>
-            </div>
-          </div>
-        </section>
-      )}
-    </div>
+          )}
+        </div>
+      }
+    />
   );
 }

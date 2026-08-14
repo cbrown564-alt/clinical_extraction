@@ -4,7 +4,7 @@ import type {
   FullRecordResponse,
   TraceItem,
 } from "../types";
-import { findEvidenceSpan, buildScoreFromComparison, buildScoreFromLayers, buildSchemaRepair } from "./utils";
+import { findEvidenceSpan, buildScoreFromComparison, buildScoreFromLayers, buildSchemaRepair, canonicalSemanticKind } from "./utils";
 
 export function adaptEventsTrace(
   row: EventsArtifactRow,
@@ -21,7 +21,7 @@ export function adaptEventsTrace(
     const span = evt.evidence ? findEvidenceSpan(record.note_text, evt.evidence) : null;
     return {
       id: evt.event_id || `event_${idx}`,
-      kind: evt.kind,
+      kind: canonicalSemanticKind(evt.kind, evt.raw_phrase || evt.raw_value || evt.evidence),
       rawValue: evt.raw_phrase || evt.raw_value || evt.evidence,
       normalizedValue: evt.model_normalized_clinical_label || undefined,
       evidence: evt.evidence,
@@ -40,34 +40,62 @@ export function adaptEventsTrace(
   // Normalise stage: use normalized_events if available, otherwise fall back to events
   const normaliseItems: TraceItem[] =
     normalizedEvents.length > 0
-      ? normalizedEvents.map((n) => ({
-          id: n.event_id,
-          kind: n.semantic_kind,
-          rawValue: n.normalized_label,
-          normalizedValue: n.normalized_label,
-          evidence: n.normalized_label,
-          startChar: null,
-          endChar: null,
-          metadata: {
-            monthly_frequency: n.monthly_frequency,
-            validation_errors: n.validation_errors,
-          },
-        }))
-      : events
-          .filter((e) => e.model_normalized_clinical_label)
-          .map((evt, idx) => ({
-            id: evt.event_id || `event_${idx}`,
-            kind: evt.kind,
-            rawValue: evt.raw_phrase || evt.raw_value || evt.evidence,
-            normalizedValue: evt.model_normalized_clinical_label,
-            evidence: evt.evidence,
-            startChar: null,
-            endChar: null,
+      ? normalizedEvents.map((n) => {
+          const matchingEvt = events.find((e) => e.event_id === n.event_id);
+          const rawStr =
+            matchingEvt?.raw_phrase ??
+            matchingEvt?.raw_value ??
+            matchingEvt?.evidence ??
+            n.normalized_label;
+          const evText = matchingEvt?.evidence ?? matchingEvt?.raw_phrase ?? matchingEvt?.raw_value ?? n.normalized_label;
+          const span = evText ? findEvidenceSpan(record.note_text, evText) : null;
+          return {
+            id: n.event_id,
+            kind: canonicalSemanticKind(matchingEvt?.kind ?? n.semantic_kind, n.normalized_label),
+            rawValue: rawStr,
+            normalizedValue: n.normalized_label,
+            evidence: evText,
+            startChar: span?.start ?? null,
+            endChar: span?.end ?? null,
+            ruleId: matchingEvt?.kind ? `normalize_${matchingEvt.kind}` : "normalize_frequency_label",
+            ruleGroup: matchingEvt?.kind,
             metadata: {
-              temporality: evt.temporality,
-              assertion_status: evt.assertion_status,
+              original_label: rawStr,
+              monthly_frequency: Math.round(n.monthly_frequency),
+              ...(n.validation_errors && n.validation_errors.length > 0
+                ? { validation_errors: n.validation_errors }
+                : {}),
             },
-          }));
+          };
+        })
+      : events.map((evt, idx) => {
+          const rawStr =
+            evt.raw_phrase ??
+            evt.raw_value ??
+            evt.evidence ??
+            evt.model_normalized_clinical_label;
+          const normStr =
+            evt.model_normalized_clinical_label ??
+            (typeof evt.clinical_quantity === "string" ? evt.clinical_quantity : undefined) ??
+            evt.kind;
+          const evText = evt.evidence ?? evt.raw_phrase ?? evt.raw_value ?? "";
+          const span = evText ? findEvidenceSpan(record.note_text, evText) : null;
+          return {
+            id: evt.event_id || `event_${idx}`,
+            kind: canonicalSemanticKind(evt.kind, typeof normStr === "string" ? normStr : undefined),
+            rawValue: typeof rawStr === "string" ? rawStr : String(rawStr ?? ""),
+            normalizedValue: typeof normStr === "string" ? normStr : String(normStr ?? ""),
+            evidence: evText,
+            startChar: span?.start ?? null,
+            endChar: span?.end ?? null,
+            ruleId: evt.kind ? `normalize_${evt.kind}` : "normalize_frequency_label",
+            ruleGroup: evt.kind,
+            metadata: {
+              original_label: typeof rawStr === "string" ? rawStr : String(rawStr ?? ""),
+              monthly_frequency: 0,
+            },
+          };
+        });
 
   // Select stage: from selection or final_answer
   const selectFinalLabel =

@@ -10,7 +10,41 @@ import {
   type ExplorerSurface,
   type MetricDescriptor,
 } from "@/lib/datasets";
+import { Blend, Bot, Braces } from "lucide-react";
+import { activeMethodLabel } from "@/lib/plainLanguageLabels";
+import type { ActiveMethod } from "@/lib/types";
 import { SURFACE_META, SURFACE_TONE_ACTIVE } from "./meta";
+
+// ── Method badge ─────────────────────────────────────────────────────
+
+const METHOD_CLASSES: Record<ActiveMethod, string> = {
+  llm_with_rules: "border-hybrid/25 bg-hybrid/8 text-hybrid",
+  llm: "border-llm/25 bg-llm/8 text-llm",
+  rules: "border-deterministic/25 bg-deterministic/8 text-deterministic",
+};
+
+export function MethodBadge({
+  method,
+  className = "",
+}: {
+  method: ActiveMethod;
+  className?: string;
+}) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1 shrink-0 rounded border px-1.5 py-0.5 text-[11px] font-medium ${METHOD_CLASSES[method]} ${className}`}
+    >
+      {method === "llm_with_rules" ? (
+        <Blend className="h-3 w-3" aria-hidden="true" />
+      ) : method === "llm" ? (
+        <Bot className="h-3 w-3" aria-hidden="true" />
+      ) : (
+        <Braces className="h-3 w-3" aria-hidden="true" />
+      )}
+      {activeMethodLabel(method)}
+    </span>
+  );
+}
 
 // ── Metric formatting ────────────────────────────────────────────────
 
@@ -25,7 +59,7 @@ export function formatMetricValue(
   if (typeof value !== "number" || Number.isNaN(value)) return "–";
   switch (format) {
     case "f1":
-      return value.toFixed(opts.digits ?? 3);
+      return value.toFixed(opts.digits ?? 2);
     case "rate":
       return opts.asPercent
         ? `${(value * 100).toFixed(opts.digits ?? 1)}%`
@@ -47,7 +81,7 @@ export function metricTone(value: number | null | undefined): string {
 export function F1Cell({
   value,
   lead = false,
-  digits = 3,
+  digits = 2,
 }: {
   value: number | null | undefined;
   lead?: boolean;

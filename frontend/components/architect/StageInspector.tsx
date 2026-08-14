@@ -63,42 +63,188 @@ function stageEvidence(stage: TraceStage, trace: NonNullable<ReturnType<typeof u
   }
 }
 
-function ItemCard({ item }: { item: TraceItem }) {
-  const hasSpan = item.startChar !== null && item.endChar !== null;
+function resolveNormalisationRule(item: TraceItem): { rule: string; description?: string } {
+  const ruleId = item.ruleId;
+  const raw = (item.rawValue ?? item.evidence ?? "").toLowerCase();
+  const norm = (item.normalizedValue ?? "").toLowerCase();
+
+  if (raw.includes("≤") || raw.includes("<=") || raw.includes("up to") || raw.includes("at most")) {
+    return {
+      rule: "upper_bound_rate_normalisation",
+      description: "upper bound quantifier → category upper limit (×30 for daily)",
+    };
+  }
+  if (raw.includes("most day") || raw.includes("most of the days") || raw.includes("nearly every day")) {
+    return {
+      rule: "frequent_episodes_to_daily_rate",
+      description: "idiomatic frequent episodes → daily frequency band (1 per day)",
+    };
+  }
+  if (raw.includes("daily") || raw.includes("per day") || norm.includes("day")) {
+    return {
+      rule: "per_day_to_monthly_rate",
+      description: "daily frequency × 30 days/month",
+    };
+  }
+  if (raw.includes("week") || norm.includes("week")) {
+    return {
+      rule: "per_week_to_monthly_rate",
+      description: "weekly frequency × 4.33 weeks/month",
+    };
+  }
+  if (raw.includes("year") || norm.includes("year")) {
+    return {
+      rule: "per_year_to_monthly_rate",
+      description: "yearly frequency ÷ 12 months/year",
+    };
+  }
+  if (raw.includes("month") || norm.includes("month")) {
+    return {
+      rule: "per_month_rate",
+      description: "monthly frequency rate (1:1)",
+    };
+  }
+  if (raw.includes("free") || norm.includes("free")) {
+    return {
+      rule: "seizure_free_to_zero",
+      description: "seizure free interval → 0 monthly frequency",
+    };
+  }
+  if (norm.includes("unknown") || raw.includes("unknown")) {
+    return {
+      rule: "unknown_frequency_sentinel",
+      description: "unquantified reference → sentinel 1000",
+    };
+  }
+  if (norm.includes("no seizure") || raw.includes("no seizure") || raw.includes("no reference")) {
+    return {
+      rule: "no_reference_sentinel",
+      description: "absence of frequency evidence → sentinel 1000",
+    };
+  }
+  return {
+    rule: ruleId && ruleId !== "normalize_frequency_label" ? ruleId : "label_to_frequency_record",
+    description: "standard category lookup",
+  };
+}
+
+function ItemCard({ item, stage }: { item: TraceItem; stage?: TraceStage }) {
+  const isNormalise = stage === "normalise";
+  const metadata = { ...item.metadata };
+  const rawMonthly = metadata.monthly_frequency;
+  const monthlyFreq =
+    typeof rawMonthly === "number" ? Math.round(rawMonthly) : undefined;
+  const validationErrors = Array.isArray(metadata.validation_errors)
+    ? metadata.validation_errors.filter((e) => Boolean(e))
+    : [];
+  const ruleInfo = isNormalise ? resolveNormalisationRule(item) : null;
+
   return (
-    <div className="rounded-lg border border-border bg-surface p-3 space-y-1.5">
+    <div className="rounded-lg border border-border bg-surface p-3 space-y-2">
       <div className="flex items-center gap-2">
-        <span className="rounded bg-surface-raised px-1.5 py-0 text-[11px] font-mono text-muted border border-border">
+        <span className="rounded bg-surface-raised px-1.5 py-0.5 text-[11px] font-mono text-muted border border-border">
           {item.id}
         </span>
         <span className="text-xs font-medium text-foreground">{item.kind}</span>
-        {item.ruleId && (
-          <span className="text-[11px] font-mono text-deterministic">{item.ruleId}</span>
+        {!isNormalise && item.ruleId && (
+          <span className="rounded bg-deterministic/10 px-1.5 py-0.5 text-[11px] font-mono font-medium text-deterministic">
+            {item.ruleId}
+          </span>
         )}
       </div>
-      {item.rawValue && (
-        <div className="text-sm text-foreground">{item.rawValue}</div>
+
+      {isNormalise ? (
+        <>
+          {item.normalizedValue && (
+            <div className="text-sm font-medium text-deterministic-alt">
+              {item.normalizedValue}
+            </div>
+          )}
+          {item.evidence && (
+            <div className="text-xs italic text-muted">
+              &quot;{item.evidence}&quot;
+            </div>
+          )}
+          <div className="rounded-md border border-border bg-surface-raised/40 p-2.5 font-mono text-[11.5px] leading-relaxed space-y-1">
+            {item.rawValue && (
+              <div>
+                <span className="text-muted">original_label:    </span>
+                <span className="text-foreground/90">&quot;{item.rawValue}&quot;</span>
+              </div>
+            )}
+            {monthlyFreq !== undefined && (
+              <div>
+                <span className="text-muted">monthly_frequency:  </span>
+                <span className="text-foreground/90">{monthlyFreq}</span>
+              </div>
+            )}
+            {ruleInfo && (
+              <>
+                <div>
+                  <span className="text-muted">rule:               </span>
+                  <span className="text-foreground/90">{ruleInfo.rule}</span>
+                </div>
+                {ruleInfo.description && (
+                  <div>
+                    <span className="text-muted">rule_description:  </span>
+                    <span className="text-muted/80">{ruleInfo.description}</span>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </>
+      ) : (
+        <>
+          {item.rawValue && (
+            <div className="text-sm font-medium text-deterministic">{item.rawValue}</div>
+          )}
+          {item.normalizedValue && item.normalizedValue !== item.rawValue && (
+            <div className="text-sm text-deterministic-alt">
+              → {item.normalizedValue}
+            </div>
+          )}
+          {item.evidence && (
+            <div className="text-xs italic text-muted">
+              &quot;{item.evidence}&quot;
+            </div>
+          )}
+        </>
       )}
-      {item.normalizedValue && item.normalizedValue !== item.rawValue && (
-        <div className="text-sm text-deterministic-alt">
-          → {item.normalizedValue}
+
+      {validationErrors.length > 0 && (
+        <div className="rounded border border-error/20 bg-error/5 p-2 text-xs text-error font-mono">
+          <span className="font-semibold">validation_errors:</span> {validationErrors.join("; ")}
         </div>
       )}
-      {hasSpan && (
-        <div className="text-[11px] text-muted font-mono">
-          chars {item.startChar}–{item.endChar}
-        </div>
-      )}
-      {item.evidence && (
-        <div className="text-xs italic text-muted">
-          &quot;{item.evidence}&quot;
-        </div>
-      )}
-      {item.metadata && Object.keys(item.metadata).length > 0 && (
-        <div className="mt-1">
-          <JsonTree data={item.metadata} />
-        </div>
-      )}
+
+      {(() => {
+        const extraMeta = { ...metadata };
+        if (isNormalise) {
+          delete extraMeta.original_label;
+          delete extraMeta.monthly_frequency;
+          delete extraMeta.validation_errors;
+        } else {
+          if (Array.isArray(extraMeta.validation_errors) && extraMeta.validation_errors.length === 0) {
+            delete extraMeta.validation_errors;
+          }
+        }
+        const entries = Object.entries(extraMeta);
+        if (entries.length === 0) return null;
+
+        return (
+          <div className="rounded-md border border-border bg-surface-raised/40 p-2.5 font-mono text-[11.5px] leading-relaxed space-y-1">
+            {entries.map(([key, val]) => (
+              <div key={key}>
+                <span className="text-muted">{key}: </span>
+                <span className="text-foreground/90">
+                  {typeof val === "string" ? `"${val}"` : typeof val === "number" || typeof val === "boolean" ? String(val) : JSON.stringify(val)}
+                </span>
+              </div>
+            ))}
+          </div>
+        );
+      })()}
     </div>
   );
 }
@@ -149,7 +295,7 @@ export default function StageInspector() {
               </div>
             ) : (
               trace.extract.items.map((item) => (
-                <ItemCard key={item.id} item={item} />
+                <ItemCard key={item.id} item={item} stage="extract" />
               ))
             )}
           </>
@@ -163,55 +309,61 @@ export default function StageInspector() {
               </div>
             ) : (
               trace.normalise.items.map((item) => (
-                <ItemCard key={item.id} item={item} />
+                <ItemCard key={item.id} item={item} stage="normalise" />
               ))
             )}
           </>
         )}
 
         {activeStage === "select" && (
-          <div className="space-y-3">
-            <div className="rounded-lg border border-hybrid/20 bg-hybrid/5 p-4 space-y-2">
-              <div className="text-xs font-semibold uppercase tracking-wide text-hybrid">Final Label</div>
-              <div className="text-lg font-semibold text-foreground">{trace.select.finalLabel}</div>
+          <div className="rounded-lg border border-border bg-surface p-3 space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="rounded bg-hybrid/10 px-1.5 py-0.5 text-[11px] font-mono font-medium text-hybrid border border-hybrid/20">
+                select
+              </span>
+              {trace.select.selectedIds && trace.select.selectedIds.length > 0 && (
+                <span className="text-xs font-mono text-muted">
+                  selected: {trace.select.selectedIds.join(", ")}
+                </span>
+              )}
+            </div>
+
+            <div className="text-sm font-medium text-hybrid">
+              {trace.select.finalLabel}
+            </div>
+
+            {trace.select.evidence && (
+              <div className="text-xs italic text-muted">
+                &quot;{trace.select.evidence}&quot;
+              </div>
+            )}
+
+            <div className="rounded-md border border-border bg-surface-raised/40 p-2.5 font-mono text-[11.5px] leading-relaxed space-y-1">
               {trace.select.monthlyFrequency !== undefined && (
-                <div className="text-sm text-muted">
-                  Monthly frequency: <span className="font-mono">{trace.select.monthlyFrequency.toFixed(2)}</span>
+                <div>
+                  <span className="text-muted">monthly_frequency: </span>
+                  <span className="text-foreground/90">{Math.round(trace.select.monthlyFrequency)}</span>
+                </div>
+              )}
+              {trace.select.selectedIds && trace.select.selectedIds.length > 0 && (
+                <div>
+                  <span className="text-muted">selected_ids:      </span>
+                  <span className="text-foreground/90">{JSON.stringify(trace.select.selectedIds)}</span>
+                </div>
+              )}
+              {trace.select.rejectedIds && trace.select.rejectedIds.length > 0 && (
+                <div>
+                  <span className="text-muted">rejected_ids:      </span>
+                  <span className="text-foreground/90">{JSON.stringify(trace.select.rejectedIds)}</span>
+                </div>
+              )}
+              {trace.select.rationale && (
+                <div>
+                  <span className="text-muted">rationale:         </span>
+                  <span className="text-foreground/90">&quot;{trace.select.rationale}&quot;</span>
                 </div>
               )}
             </div>
-            <div className="rounded-lg border border-border bg-surface p-3 space-y-1">
-              <div className="text-xs font-semibold uppercase tracking-wide text-muted">Rationale</div>
-              <div className="text-sm text-foreground leading-relaxed">{trace.select.rationale}</div>
-            </div>
-            <div className="rounded-lg border border-border bg-surface p-3 space-y-1">
-              <div className="text-xs font-semibold uppercase tracking-wide text-muted">Evidence</div>
-              <div className="text-sm text-foreground italic">&quot;{trace.select.evidence}&quot;</div>
-            </div>
-            {trace.select.selectedIds && trace.select.selectedIds.length > 0 && (
-              <div className="rounded-lg border border-border bg-surface p-3">
-                <div className="text-xs font-semibold uppercase tracking-wide text-muted mb-1">Selected IDs</div>
-                <div className="flex flex-wrap gap-1">
-                  {trace.select.selectedIds.map((id) => (
-                    <span key={id} className="rounded bg-success/10 px-2 py-0.5 text-xs font-mono text-success border border-success/20">
-                      {id}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-            {trace.select.rejectedIds && trace.select.rejectedIds.length > 0 && (
-              <div className="rounded-lg border border-border bg-surface p-3">
-                <div className="text-xs font-semibold uppercase tracking-wide text-muted mb-1">Rejected IDs</div>
-                <div className="flex flex-wrap gap-1">
-                  {trace.select.rejectedIds.map((id) => (
-                    <span key={id} className="rounded bg-error/10 px-2 py-0.5 text-xs font-mono text-error border border-error/20">
-                      {id}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         )}
 
@@ -262,34 +414,66 @@ export default function StageInspector() {
         )}
 
         {activeStage === "score" && (
-          <div className="space-y-3">
-            <div className={`rounded-lg border p-4 space-y-2 ${trace.score.match ? "border-success/20 bg-success/5" : "border-error/20 bg-error/5"}`}>
-              <div className="flex items-center gap-2">
+          <div className="rounded-lg border border-border bg-surface p-3 space-y-2">
+            <div className="flex items-center gap-2">
+              <span
+                className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] font-mono font-medium border ${
+                  trace.score.match
+                    ? "bg-success/10 text-success border-success/20"
+                    : "bg-error/10 text-error border-error/20"
+                }`}
+              >
                 {trace.score.match ? (
-                  <CheckCircle className="h-4 w-4 text-success" />
+                  <CheckCircle className="h-3 w-3" />
                 ) : (
-                  <AlertCircle className="h-4 w-4 text-error" />
+                  <AlertCircle className="h-3 w-3" />
                 )}
-                <span className={`text-sm font-semibold ${trace.score.match ? "text-success" : "text-error"}`}>
-                  {trace.score.match ? "Correct" : "Incorrect"}
+                {trace.score.match ? "correct" : "incorrect"}
+              </span>
+            </div>
+
+            <div className="flex items-baseline gap-2">
+              <span
+                className={`text-sm font-medium ${
+                  trace.score.match ? "text-success" : "text-error"
+                }`}
+              >
+                {trace.score.predictedLabel}
+              </span>
+              {!trace.score.match && (
+                <span className="text-xs text-muted">
+                  (gold: <span className="font-mono text-foreground">{trace.score.goldLabel}</span>)
+                </span>
+              )}
+            </div>
+
+            {trace.select.evidence && (
+              <div className="text-xs italic text-muted">
+                &quot;{trace.select.evidence}&quot;
+              </div>
+            )}
+
+            <div className="rounded-md border border-border bg-surface-raised/40 p-2.5 font-mono text-[11.5px] leading-relaxed space-y-1">
+              <div>
+                <span className="text-muted">predicted_label: </span>
+                <span className="text-foreground/90">&quot;{trace.score.predictedLabel}&quot;</span>
+              </div>
+              <div>
+                <span className="text-muted">gold_label:      </span>
+                <span className="text-foreground/90">&quot;{trace.score.goldLabel}&quot;</span>
+              </div>
+              <div>
+                <span className="text-muted">label_match:     </span>
+                <span className={trace.score.match ? "text-success" : "text-error"}>
+                  {String(trace.score.match)}
                 </span>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <div className="text-[11px] uppercase tracking-wide text-muted">Predicted</div>
-                  <div className="text-sm font-medium text-foreground">{trace.score.predictedLabel}</div>
-                </div>
-                <div>
-                  <div className="text-[11px] uppercase tracking-wide text-muted">Gold</div>
-                  <div className="text-sm font-medium text-foreground">{trace.score.goldLabel}</div>
-                </div>
+              <div>
+                <span className="text-muted">evidence_valid:  </span>
+                <span className={trace.score.evidenceValid ? "text-success" : "text-error"}>
+                  {String(trace.score.evidenceValid)}
+                </span>
               </div>
-            </div>
-            <div className="rounded-lg border border-border bg-surface p-3">
-              <div className="text-xs font-semibold uppercase tracking-wide text-muted mb-1">Evidence Valid</div>
-              <span className={`text-sm font-medium ${trace.score.evidenceValid ? "text-success" : "text-error"}`}>
-                {trace.score.evidenceValid ? "Yes" : "No"}
-              </span>
             </div>
           </div>
         )}

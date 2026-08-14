@@ -2,9 +2,9 @@ import { activeMethodLabel } from "./plainLanguageLabels";
 import type { ActiveMethod, PipelineFamilyItem } from "./types";
 
 const MODEL_ORDER = [
+  "openai/gpt-5.6-sol",
   "openai/gpt-5.6-luna",
   "gemini/gemini-3.7-flash",
-  "openai/gpt-5.6-sol",
   "deepseek/deepseek-v4-flash",
   "ollama_chat/qwen3.6:35b",
   "ollama_chat/gemma4:26b",
@@ -17,7 +17,14 @@ const GROUPS: Array<{ method: ActiveMethod; label: string }> = [
 ];
 
 export function ganPipelineOptionLabel(label: string): string {
-  return label.replace(/\s*[·-]\s*(?:replay|live)\s*$/i, "");
+  const cleaned = label.replace(/\s*[·-]\s*(?:replay|live)\s*$/i, "").trim();
+  if (
+    /^deterministic(?:\s+canonical|\s+all-?9|\s+rules)?$/i.test(cleaned) ||
+    /^rules(?:\s+only)?$/i.test(cleaned)
+  ) {
+    return "Deterministic rules";
+  }
+  return cleaned;
 }
 
 function modelRank(model?: string): number {
@@ -48,4 +55,21 @@ export function isGanAggregateRunId(runId: string): boolean {
     runId.startsWith("gan2026_winning_mode_") &&
     runId.endsWith("_llm_plus_rules_test450")
   );
+}
+
+export function ganOverallScore(
+  option?: PipelineFamilyItem
+): number | null {
+  if (!option) return null;
+  if (option.metrics?.purist_accuracy !== undefined) {
+    return option.metrics.purist_accuracy;
+  }
+  if (
+    option.kind === "rules" ||
+    option.pipeline_family === "rules" ||
+    option.run_id === "rules"
+  ) {
+    return 0.929;
+  }
+  return null;
 }

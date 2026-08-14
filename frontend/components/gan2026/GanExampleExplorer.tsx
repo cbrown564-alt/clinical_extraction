@@ -16,13 +16,13 @@ function PatientNoteMeta({ aggregateOnly }: { aggregateOnly: boolean }) {
   const sourceRowIndex = useArchitectStore((s) => s.sourceRowIndex);
 
   if (aggregateOnly) {
-    return <span className="text-[11px] text-muted">test450 · rows sealed</span>;
+    return <span className="text-[11px] text-muted">test450 · letters sealed</span>;
   }
 
   if (!trace) {
     return (
       <span className="text-[11px] text-muted">
-        No patient note loaded
+        No letter loaded
       </span>
     );
   }
@@ -36,7 +36,7 @@ function PatientNoteMeta({ aggregateOnly }: { aggregateOnly: boolean }) {
       )}
       {sourceRowIndex !== null && (
         <span className="rounded bg-surface-raised px-1 py-0 font-mono text-[11px] text-muted border border-border">
-          row {sourceRowIndex}
+          letter {sourceRowIndex}
         </span>
       )}
       {trace.goldLabel && (
@@ -66,8 +66,8 @@ function AggregateInspector() {
         <div className="mt-3 flex items-start gap-2 text-xs leading-5 text-muted">
           <LockKeyhole className="mt-0.5 h-3.5 w-3.5 shrink-0" />
           <p>
-            Row identifiers, notes, predictions, and traces remain sealed. Choose
-            Deterministic canonical for an inspectable validation trace.
+            Letter identifiers, notes, predictions, and traces remain sealed. Choose
+            Deterministic rules for an inspectable validation trace.
           </p>
         </div>
       </div>
@@ -84,16 +84,16 @@ export function GanExampleExplorer() {
       <TraceControls />
       <StageStrip />
       <ExplorerBody
-        sourceLabel="Patient Note"
+        sourceLabel="Letter"
         sourceMeta={<PatientNoteMeta aggregateOnly={aggregateOnly} />}
         source={
           <ArchitectNoteRenderer
             emptyState={
               aggregateOnly
                 ? {
-                    title: "Row-level evidence is sealed",
+                    title: "Letter-level evidence is sealed",
                     description:
-                      "This condition supports aggregate comparison only. Choose Deterministic canonical to inspect a validation note.",
+                      "This condition supports aggregate comparison only. Choose Deterministic rules to inspect a validation letter.",
                   }
                 : undefined
             }
