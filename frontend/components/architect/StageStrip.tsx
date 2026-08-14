@@ -95,6 +95,48 @@ function stageSummary(stage: TraceStage, trace: Trace): React.ReactNode {
   }
 }
 
+function stageSummaryText(stage: TraceStage, trace: Trace): string {
+  switch (stage) {
+    case "extract": {
+      const count = trace.extract.items.length;
+      if (count === 0) return "No candidates";
+      if (trace.extract.items.every((item) => item.kind === "llm_decision")) {
+        return `Model decision · ${trace.extract.items[0].rawValue ?? ""}`.trim();
+      }
+      const groups = Array.from(new Set(trace.extract.items.map((i) => i.ruleGroup).filter(Boolean)));
+      return groups.length > 0
+        ? `${count} candidate${count !== 1 ? "s" : ""} · ${groups.length} group${groups.length !== 1 ? "s" : ""}`
+        : `${count} candidate${count !== 1 ? "s" : ""}`;
+    }
+    case "normalise": {
+      const count = trace.normalise.items.length;
+      if (count === 0) return "No events";
+      const firstLabel = trace.normalise.items[0]?.normalizedValue ?? trace.normalise.items[0]?.rawValue;
+      return firstLabel ? `${count} event${count !== 1 ? "s" : ""} · ${firstLabel}` : `${count} event${count !== 1 ? "s" : ""}`;
+    }
+    case "select": {
+      if (trace.select.isDistinctStage === false) return "Combined with Extract";
+      const label = trace.select.finalLabel ?? "";
+      const count = trace.select.selectedIds?.length ?? 0;
+      return count > 0 ? `${label} · ${count} selected` : label;
+    }
+    case "repair": {
+      const changes = trace.repair?.changes.length ?? 0;
+      if (changes === 0) return "No changes";
+      if (trace.repair?.repairType) return trace.repair.repairType;
+      const before = trace.repair?.beforeLabel;
+      const after = trace.repair?.afterLabel;
+      return before && after
+        ? `${changes} change${changes !== 1 ? "s" : ""} · ${before} → ${after}`
+        : `${changes} change${changes !== 1 ? "s" : ""}`;
+    }
+    case "score": {
+      const predicted = trace.score.predictedLabel ?? "";
+      return trace.score.match ? `Match · ${predicted}` : `Mismatch · ${predicted}`;
+    }
+  }
+}
+
 function stageCount(stage: TraceStage, trace: Trace): number {
   switch (stage) {
     case "extract":
@@ -122,6 +164,7 @@ export default function StageStrip() {
     icon: stage.icon,
     count: trace ? stageCount(stage.id, trace) : undefined,
     sublabel: trace ? stageSummary(stage.id, trace) : "Awaiting trace",
+    title: trace ? stageSummaryText(stage.id, trace) : undefined,
     disabled: stage.id === "select" && trace?.select.isDistinctStage === false,
   }));
 

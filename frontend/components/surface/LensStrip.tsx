@@ -21,6 +21,8 @@ export interface LensItem {
   disabled?: boolean;
   /** Fixed-width (no flex-grow) – e.g. the "All families" lead button. */
   fixed?: boolean;
+  /** Full label shown on hover when the visible sublabel is truncated. */
+  title?: string;
 }
 
 /** Solid active fill per tone. Fixed strings so Tailwind can extract them. */
@@ -58,17 +60,18 @@ export default function LensStrip({
 }) {
   return (
     <div className="min-w-0 shrink-0 overflow-x-auto border-b border-border bg-surface px-4 py-2">
-      <div className="flex w-max min-w-full items-stretch gap-1.5">
+      <div className="flex w-full min-w-0 items-stretch gap-1.5">
         {items.map((item) => {
           const isActive = item.id === activeId;
           const interactive = enabled && !item.disabled;
-          const width = item.fixed ? "min-w-[96px]" : "min-w-[120px] flex-1";
+          const width = item.fixed ? "w-auto shrink-0" : "min-w-0 flex-1";
           return (
             <button
               key={item.id}
+              title={item.title}
               onClick={() => interactive && onSelect(item.id)}
               disabled={!interactive}
-              className={`flex flex-col justify-center gap-0.5 rounded-md border px-3 py-1.5 text-left transition-colors ${width} ${
+              className={`flex min-w-0 flex-col justify-center gap-0.5 overflow-hidden rounded-md border px-3 py-1.5 text-left transition-colors ${width} ${
                 isActive
                   ? SOLID[item.tone]
                   : interactive
@@ -76,12 +79,12 @@ export default function LensStrip({
                   : "border-border/60 bg-surface-raised/50 text-muted cursor-default"
               }`}
             >
-              <div className="flex items-center gap-1.5">
+              <div className="flex min-w-0 items-center gap-1.5">
                 {item.icon}
-                <span className="text-xs font-semibold">{item.label}</span>
+                <span className="truncate text-xs font-semibold">{item.label}</span>
                 {item.count !== undefined && (
                   <span
-                    className={`ml-0.5 rounded-full px-1.5 py-0 text-[11px] font-semibold ${
+                    className={`ml-0.5 shrink-0 rounded-full px-1.5 py-0 text-[11px] font-semibold ${
                       isActive ? "bg-surface/25 text-surface" : "bg-surface-raised text-muted"
                     }`}
                   >
@@ -90,7 +93,7 @@ export default function LensStrip({
                 )}
               </div>
               {item.sublabel !== undefined && (
-                <div className={`text-[11px] leading-tight ${isActive ? "text-surface/90" : "text-muted"}`}>
+                <div className={`min-w-0 truncate text-[11px] leading-tight ${isActive ? "text-surface/90" : "text-muted"}`}>
                   {item.sublabel}
                 </div>
               )}
