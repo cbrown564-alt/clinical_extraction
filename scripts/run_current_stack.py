@@ -13,6 +13,7 @@ import json
 import shutil
 import subprocess
 import sys
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -120,22 +121,54 @@ def _attach_source_meta(
     return cell
 
 
+def _source_artifact(cell: Mapping[str, Any] | None) -> str:
+    if not cell:
+        return ""
+    return str(cell.get("source_artifact") or "")
+
+
+def _is_deepseek_0731(cell: Mapping[str, Any] | None) -> bool:
+    source = _source_artifact(cell)
+    return "0731" in source or source.endswith("deepseek_v4_flash_0731.jsonl")
+
+
+def _selected_deepseek_holdout(replay: dict[str, Any]) -> dict[str, Any] | None:
+    legacy = replay.get("deepseek_v4_flash_0731")
+    if isinstance(legacy, dict) and "gan2026_test450" in legacy:
+        return legacy
+    gan = ((replay.get("gan2026_test450") or {}).get("models") or {}).get(
+        "deepseek_v4_flash"
+    )
+    ex_test = ((replay.get("exectv2_test60") or {}).get("models") or {}).get(
+        "deepseek_v4_flash"
+    )
+    if _is_deepseek_0731(gan) and _is_deepseek_0731(ex_test):
+        return {"gan2026_test450": gan, "exectv2_test60": ex_test}
+    return None
+
+
+def _has_selected_deepseek_0731(replay: dict[str, Any]) -> bool:
+    return _selected_deepseek_holdout(replay) is not None
+
+
 def extract_fills(replay: dict[str, Any]) -> dict[str, Any]:
     gan = replay["gan2026_test450"]["models"]
     ex_dev = replay["exectv2_dev140"]["models"]
     ex_test = replay["exectv2_test60"]["models"]
-    deepseek = replay["deepseek_v4_flash_0731"]
+    deepseek = _selected_deepseek_holdout(replay)
+    if deepseek is None:
+        raise ValueError("replay_summary has no selected DeepSeek 0731 holdout cell")
     gan_selected = {
         slug: _gan_rate(cell)
         for slug, cell in gan.items()
-        if slug != "deepseek_v4_flash"
+        if slug != "deepseek_v4_flash" or not _is_deepseek_0731(cell)
     }
     gan_selected["deepseek_v4_flash"] = _gan_rate(deepseek["gan2026_test450"])
     gan_selected["deepseek_v4_flash"]["provider_revision"] = "DeepSeek-V4-Flash-0731"
     test60 = {
         slug: _exect_rate(cell)
         for slug, cell in ex_test.items()
-        if slug != "deepseek_v4_flash"
+        if slug != "deepseek_v4_flash" or not _is_deepseek_0731(cell)
     }
     test60["deepseek_v4_flash"] = _exect_rate(deepseek["exectv2_test60"])
     test60["deepseek_v4_flash"]["provider_revision"] = "DeepSeek-V4-Flash-0731"
@@ -179,8 +212,22 @@ def extract_fills(replay: dict[str, Any]) -> dict[str, Any]:
             "gan_sol_n": 450,
         },
         "pre0731_not_selected": {
-            "gan_test450_deepseek": _gan_rate(gan["deepseek_v4_flash"]),
-            "exect_test60_deepseek": _exect_rate(ex_test["deepseek_v4_flash"]),
+            key: value
+            for key, value in (
+                (
+                    "gan_test450_deepseek",
+                    None
+                    if _is_deepseek_0731(gan.get("deepseek_v4_flash"))
+                    else _gan_rate(gan["deepseek_v4_flash"]),
+                ),
+                (
+                    "exect_test60_deepseek",
+                    None
+                    if _is_deepseek_0731(ex_test.get("deepseek_v4_flash"))
+                    else _exect_rate(ex_test["deepseek_v4_flash"]),
+                ),
+            )
+            if value is not None
         },
     }
 
@@ -220,6 +267,8 @@ def _write_checklist(fills: dict[str, Any], sources: dict[str, Any], path: Path)
     ]
     labels = {row["slug"]: row["label"] for row in sources["models"]}
     for slug in order:
+        if slug not in gan or slug not in ex_test:
+            continue
         gan_cell = gan[slug]
         lines.append(
             f"| {labels[slug]} | {ex_test[slug]['f1']} | "
@@ -252,8 +301,8 @@ def stage_assemble() -> int:
         print(f"missing {replay_path.relative_to(REPO_ROOT)}; run measure first")
         return 2
     replay = json.loads(replay_path.read_text(encoding="utf-8"))
-    if "deepseek_v4_flash_0731" not in replay:
-        print("replay_summary has no deepseek_v4_flash_0731 cell; run measure --cell all")
+    if not _has_selected_deepseek_0731(replay):
+        print("replay_summary has no selected DeepSeek 0731 holdout cell; run measure --cell all")
         return 2
     LATEST.mkdir(parents=True, exist_ok=True)
     fills = extract_fills(replay)
