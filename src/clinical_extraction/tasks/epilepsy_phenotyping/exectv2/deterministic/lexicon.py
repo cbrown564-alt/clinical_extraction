@@ -42,7 +42,12 @@ normalize_phrase; ..."
 
 from __future__ import annotations
 
+import re
+
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
+
+_CLUSTER_OF_SEIZURES_RE = re.compile(r"\bclusters?\s+of\s+seizures?\b", re.I)
+_GENERLISED_RE = re.compile(r"generlised", re.I)
 
 # CUI → normalized concept-phrase variants observed in gold (canonical phrase
 # first). Counts in comments are gold-mention frequencies, 2026-06-10 corpus.
@@ -115,6 +120,11 @@ SF_CUI_LEXICON: dict[str, tuple[str, ...]] = {
     "C4316903": ("typical absences",),
 }
 
+GENERIC_SEIZURE_CUI = "C0036572"
+GENERIC_SEIZURE_FREE_CUI = "C1299590"
+GENERIC_SF_CUIS = frozenset({GENERIC_SEIZURE_CUI, GENERIC_SEIZURE_FREE_CUI})
+GENERIC_SF_PHRASES = frozenset({"seizure", "seizures", "seizure free", "seizure-free"})
+
 # Bare tokens that appear under more than one CUI in gold (truncation
 # artifacts). Listed here so the inversion below resolves them deterministically
 # to the dominant CUI rather than depending on dict ordering.
@@ -151,8 +161,17 @@ def assign_cui(phrase: str) -> str | None:
     ``phrase`` is normalized with the same ``normalize_phrase`` scoring uses, so
     surface variation (hyphens, quotes, case, whitespace) does not matter. An
     unknown phrase returns None — the mention is then emitted without a CUI
-    rather than guessing, keeping the lexicon's precision intact."""
-    return PHRASE_TO_CUI.get(normalize_phrase(phrase))
+    rather than guessing, keeping the lexicon's precision intact.
+
+    Scoring ``normalize_phrase`` strips ``cluster of ``, which would collapse
+    ``cluster of seizures`` onto generic ``C0036572``. Cluster phrasing is
+    therefore resolved before that strip. The typo ``generlised`` is folded
+    onto the existing ``generalised`` map. Neither step guesses a sibling type.
+    """
+    if _CLUSTER_OF_SEIZURES_RE.search(phrase):
+        return "C3203523"
+    folded = _GENERLISED_RE.sub("generalised", phrase)
+    return PHRASE_TO_CUI.get(normalize_phrase(folded))
 
 
 def attach_cui(text: str, attrs: dict[str, str]) -> dict[str, str]:

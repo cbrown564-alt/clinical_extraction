@@ -5,15 +5,24 @@ SeizureFrequency state-adjudicator output. It does not call a model and it does
 not inspect gold labels while projecting a row. Rules are deliberately finite
 and ablatable because they change prediction-bearing SeizureFrequency state or
 ownership conventions.
+
+The row walk is one design with two phases:
+
+1. State and generic-to-named ownership run on the model's mentions and
+   candidate spans, before CUI assignment.
+2. After CUI assignment, the landed extra-AR ownership passes in
+   ``_OWNERSHIP_PASSES`` run in listed order. Single last-event duration
+   (v0.10) is a state-pass rewrite that uses
+   ``sf_last_event_duration.last_event_duration``, not an ownership pass.
 """
 
 from __future__ import annotations
 
 import re
 from collections import Counter
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, NamedTuple
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection import (
     project_cuis,
@@ -26,8 +35,36 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    sf_bare_count_active_rate as bare_count,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    sf_cui_phrase_preserve as cui_phrase_preserve,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    sf_dated_cluster as dated_cluster,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    sf_drugchange_before as drugchange_before,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    sf_last_event_duration as last_event,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    sf_lifetime_oneoff as lifetime_oneoff,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    sf_named_last_week_generic as named_last_week,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.lexicon import (
+    GENERIC_SF_CUIS,
+    GENERIC_SF_PHRASES,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalizer import (
     MONTH_MAP,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_umbrella_clone import (
+    apply_umbrella_clone_drop,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.artifact_io import (
     first_value as _first_value,
@@ -40,13 +77,60 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.seizure_freq
     frequency_state_faithful,
 )
 
-PROJECTION_VERSION = "exectv2_hybrid_sf_state_projection_v0.6"
+PROJECTION_VERSION = "exectv2_hybrid_sf_state_projection_v0.14"
 PIPELINE_FAMILY = "exectv2_hybrid_sf_state_projection"
 COMPONENT_OWNER = "deterministic_sf_state_ownership_projection"
 
 ProjectionAblation = Literal["none", "state", "ownership", "combined"]
+_OwnershipApply = Callable[
+    [Sequence[Mapping[str, Any]]],
+    tuple[list[dict[str, Any]], list[dict[str, str]]],
+]
 
-_GENERIC_CUIS = {"C0036572", "C1299590"}
+
+class _OwnershipPass(NamedTuple):
+    apply: _OwnershipApply
+    kind: Literal["drop", "repair"]
+    rule_id: str | None = None
+
+
+def _apply_cui_phrase_bundle(
+    mentions: Sequence[Mapping[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, str]]]:
+    return cui_phrase_preserve.apply_cui_phrase_preserve(mentions, arm="bundle")
+
+
+# Landed extra-AR ownership passes after CUI assignment, oldest first.
+_OWNERSHIP_PASSES: tuple[_OwnershipPass, ...] = (
+    _OwnershipPass(apply_umbrella_clone_drop, "drop", "ownership.drop_umbrella_clone"),
+    _OwnershipPass(_apply_cui_phrase_bundle, "repair"),
+    _OwnershipPass(
+        bare_count.apply_bare_count_active_rate_drop,
+        "drop",
+        "ownership.drop_bare_count_active_rate",
+    ),
+    _OwnershipPass(
+        lifetime_oneoff.apply_lifetime_oneoff_active_rate_drop,
+        "drop",
+        "ownership.drop_lifetime_oneoff_active_rate",
+    ),
+    _OwnershipPass(
+        dated_cluster.apply_dated_cluster_next_to_free_drop,
+        "drop",
+        "ownership.drop_dated_cluster_next_to_free",
+    ),
+    _OwnershipPass(
+        named_last_week.apply_named_last_week_generic_retarget,
+        "repair",
+        "ownership.retarget_last_week_named_to_generic",
+    ),
+    _OwnershipPass(
+        drugchange_before.apply_drugchange_before_sibling_drop,
+        "drop",
+        "ownership.drop_drugchange_before_if_other_active_rate",
+    ),
+)
+
 _UNLABELLED_EVENT_RE = re.compile(
     r"\b(attacks?|episodes?|events?|turns?|stares?|blackouts?|loss of consciousness)\b",
     re.IGNORECASE,
@@ -93,21 +177,6 @@ _ONSET_FRAMING_RE = re.compile(
     r")\b",
     re.IGNORECASE,
 )
-_WORD_NUMBER: dict[str, str] = {
-    "one": "1",
-    "two": "2",
-    "three": "3",
-    "four": "4",
-    "five": "5",
-    "six": "6",
-    "seven": "7",
-    "eight": "8",
-    "nine": "9",
-    "ten": "10",
-}
-
-
-
 def project_rows(
     rows: Sequence[Mapping[str, Any]],
     *,
@@ -144,6 +213,8 @@ def project_row(row: Mapping[str, Any], *, ablation: ProjectionAblation) -> dict
     mentions = _dedupe_exact_mentions(mentions)
     predicted = _project_mentions(str(row["letter_id"]), mentions)
     projected_mentions = [_mention_to_row(m) for m in predicted.mentions]
+    if ablation in {"ownership", "combined"}:
+        projected_mentions = _apply_landed_ownership_passes(projected_mentions, actions)
 
     out = dict(row)
     out["source_prompt_version"] = row.get("prompt_version")
@@ -175,7 +246,7 @@ def write_report(
     unknown = summary.get("clinical_recovery", {}).get("unknown", {})
     action_counts = metadata.get("projection_action_counts", {})
     lines = [
-        "# ExECTv2 SeizureFrequency State/Ownership Projection v0.6",
+        "# ExECTv2 SeizureFrequency State/Ownership Projection v0.14",
         "",
         f"- JSONL: `{jsonl_path}`",
         f"- Projection version: `{metadata.get('projection_version')}`",
@@ -231,6 +302,19 @@ def write_report(
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def _apply_landed_ownership_passes(
+    mentions: list[dict[str, Any]],
+    actions: list[dict[str, str]],
+) -> list[dict[str, Any]]:
+    working = mentions
+    for stage in _OWNERSHIP_PASSES:
+        working, records = stage.apply(working)
+        for record in records:
+            rule_id = stage.rule_id or f"ownership.{record['action']}"
+            actions.append(_action(rule_id, stage.kind, record))
+    return working
+
+
 def _apply_state_projection(
     row: Mapping[str, Any],
     mentions: list[dict[str, Any]],
@@ -244,7 +328,11 @@ def _apply_state_projection(
             continue
         repaired = _repair_state_mention(mention)
         if repaired is not mention:
-            actions.append(_action("state.last_event_active_to_seizure_free", "repair", mention))
+            if _state(mention) == "active-rate" and _state(repaired) == "seizure-free":
+                rule_id = "state.last_event_active_to_seizure_free"
+            else:
+                rule_id = "state.temporal_direction"
+            actions.append(_action(rule_id, "repair", mention))
         kept.append(dict(repaired))
 
     for candidate in row.get("candidate_spans", []):
@@ -413,16 +501,38 @@ def _repair_state_mention(mention: Mapping[str, Any]) -> dict[str, Any] | Mappin
             repaired,
             "Deterministic state projection aligns temporal direction.",
         )
+        if _is_single_last_event(repaired, evidence):
+            return _rewrite_last_event(repaired, evidence)
         return repaired
 
     if _state(mention) != "active-rate":
         return mention
-    duration = _last_event_duration(evidence)
+    duration = last_event.last_event_duration(evidence)
     if duration is None:
         return mention
+    return _rewrite_last_event(mention, evidence)
+
+
+def _is_single_last_event(mention: Mapping[str, Any], evidence: str) -> bool:
+    if _state(mention) != "active-rate":
+        return False
+    if last_event.last_event_duration(evidence) is None:
+        return False
+    attrs = dict(mention.get("attributes") or {})
+    if str(attrs.get("NumberOfSeizures") or "") != "1":
+        return False
+    return bool(re.search(r"\b(single|last)\b", evidence.lower()))
+
+
+def _rewrite_last_event(mention: Mapping[str, Any], evidence: str) -> dict[str, Any]:
+    duration = last_event.last_event_duration(evidence)
+    if duration is None:
+        return dict(mention)
     number, unit = duration
     repaired = _copy_mention(mention)
-    repaired["text"] = "seizure" if "seizure" in normalize_phrase(evidence).split() else "seizures"
+    repaired["text"] = (
+        "seizure" if "seizure" in normalize_phrase(evidence).split() else "seizures"
+    )
     repaired["attributes"] = {
         "NumberOfSeizures": "0",
         "NumberOfTimePeriods": number,
@@ -505,7 +615,7 @@ def _seizure_free_attrs(evidence: str) -> list[tuple[dict[str, str], str]]:
             attrs["PointInTime"] = point
             attrs["TimeSince_or_TimeOfEvent"] = "Since"
         out.append((attrs, "state.seizure_free_point_anchor"))
-    duration = _last_event_duration(evidence)
+    duration = last_event.last_event_duration(evidence)
     if duration is not None:
         number, unit = duration
         out.append(
@@ -525,20 +635,6 @@ def _seizure_free_attrs(evidence: str) -> list[tuple[dict[str, str], str]]:
             attrs["TimeSince_or_TimeOfEvent"] = "Since"
         out.append((attrs, "state.seizure_free_last_event_date"))
     return out
-
-
-def _last_event_duration(evidence: str) -> tuple[str, str] | None:
-    lower = evidence.lower()
-    if not re.search(r"\b(last|single|about|ago)\b", lower):
-        return None
-    match = re.search(
-        r"\b(?P<num>\d+|one|two|three|four|five|six|seven|eight|nine|ten)\s+"
-        r"(?P<unit>weeks?|months?|years?)\s+ago\b",
-        lower,
-    )
-    if not match:
-        return None
-    return (_number_token(match.group("num")), _unit_token(match.group("unit")))
 
 
 def _last_event_date_attrs(evidence: str) -> dict[str, str]:
@@ -596,7 +692,7 @@ def _new_mention(
         "attributes": dict(attrs),
         "evidence": evidence,
         "confidence": "medium",
-        "rationale": f"Deterministic v0.6 projection: {rule_id}.",
+        "rationale": f"Deterministic v0.7 projection: {rule_id}.",
     }
 
 
@@ -642,14 +738,9 @@ def _state(mention: Mapping[str, Any]) -> str:
 def _is_generic_type(mention: Mapping[str, Any]) -> bool:
     attrs = dict(mention.get("attributes") or {})
     cui = attrs.get("CUI")
-    if cui in _GENERIC_CUIS:
+    if cui in GENERIC_SF_CUIS:
         return True
-    return normalize_phrase(str(mention.get("text", ""))) in {
-        "seizure",
-        "seizures",
-        "seizure free",
-        "seizure-free",
-    }
+    return normalize_phrase(str(mention.get("text", ""))) in GENERIC_SF_PHRASES
 
 
 def _has_equivalent_state_mention(
@@ -763,19 +854,6 @@ def _point_in_time(lower: str) -> str | None:
     if re.search(r"\blast year\b", lower):
         return "Last_Year"
     return None
-
-
-def _number_token(token: str) -> str:
-    return _WORD_NUMBER.get(token.lower(), token)
-
-
-def _unit_token(token: str) -> str:
-    lower = token.lower()
-    if lower.startswith("week"):
-        return "Week"
-    if lower.startswith("month"):
-        return "Month"
-    return "Year"
 
 
 def _month_number(token: str) -> str:

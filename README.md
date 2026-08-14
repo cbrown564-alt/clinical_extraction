@@ -17,7 +17,7 @@ does not use a model.
 
 | Method | Gan 2026 | ExECTv2 |
 | --- | ---: | ---: |
-| LLM with rules | 0.84 | 0.82 |
+| LLM with rules | 0.84 | 0.83 |
 | LLM only | 0.74 | 0.78 |
 | Rules only | 0.73 | 0.72 |
 

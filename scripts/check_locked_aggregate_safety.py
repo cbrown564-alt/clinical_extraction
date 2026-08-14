@@ -23,6 +23,17 @@ ARTIFACTS = (
     ROOT / "experiments/current_stack/latest/replay_summary.json",
     ROOT / "experiments/current_stack/latest/panel_aggregate.json",
     ROOT / "experiments/current_stack/latest/fills.json",
+    ROOT / "experiments/exectv2_sf_split_decomposition_20260814.json",
+    ROOT / "experiments/exectv2_sf_umbrella_clone_drop_test60_20260814.json",
+    ROOT / "experiments/exectv2_sf_cui_phrase_preserve_test60_20260814.json",
+    ROOT / "experiments/exectv2_sf_bare_count_active_rate_drop_test60_20260814.json",
+    ROOT / "experiments/exectv2_sf_last_event_duration_complete_test60_20260814.json",
+    ROOT / "experiments/exectv2_sf_single_last_event_duration_test60_20260814.json",
+    ROOT / "experiments/exectv2_sf_lifetime_oneoff_active_rate_drop_test60_20260814.json",
+    ROOT / "experiments/exectv2_sf_dated_cluster_next_to_free_test60_20260814.json",
+    ROOT / "experiments/exectv2_sf_named_last_week_generic_test60_20260814.json",
+    ROOT / "experiments/exectv2_sf_drugchange_before_sibling_test60_20260814.json",
+    ROOT / "experiments/exectv2_gemini37flash_llm_only_raw_lane_20260814.json",
 )
 FORBIDDEN_KEYS = {
     "letter_id", "letter_ids", "source_row_index", "source_row_indices",

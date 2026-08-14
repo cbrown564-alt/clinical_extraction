@@ -1,3 +1,7 @@
+from scripts.build_exectv2_sf_split_decomposition import (
+    letter_profile,
+    same_type_multi_state,
+)
 from scripts.build_six_model_category_cut_performance import _score_exect_subtype
 from scripts.exectv2_within_family_categories import (
     family_subtypes,
@@ -52,6 +56,55 @@ def test_seizure_frequency_zero_count_is_seizure_free_not_a_rate() -> None:
             TimePeriod="Month",
         )
     ) == ("numeric_cadence_rate",)
+
+
+def test_sf_letter_profiles_are_gold_state_sets() -> None:
+    assert letter_profile([]) == "empty"
+    assert (
+        letter_profile(
+            [_mention("SeizureFrequency", NumberOfSeizures="2", TimePeriod="Month")]
+        )
+        == "active_rate_only"
+    )
+    assert (
+        letter_profile([_mention("SeizureFrequency", FrequencyChange="Increased")])
+        == "unknown_only"
+    )
+    assert (
+        letter_profile(
+            [
+                _mention("SeizureFrequency", NumberOfSeizures="2", TimePeriod="Month"),
+                _mention("SeizureFrequency", FrequencyChange="Increased"),
+            ]
+        )
+        == "mixed"
+    )
+
+
+def test_sf_same_type_multi_state_requires_two_states_on_one_cui() -> None:
+    shared = {"CUI": "C0036572"}
+    assert same_type_multi_state(
+        [
+            _mention(
+                "SeizureFrequency",
+                NumberOfSeizures="2",
+                TimePeriod="Month",
+                **shared,
+            ),
+            _mention("SeizureFrequency", FrequencyChange="Increased", **shared),
+        ]
+    )
+    assert not same_type_multi_state(
+        [
+            _mention(
+                "SeizureFrequency",
+                NumberOfSeizures="2",
+                TimePeriod="Month",
+                CUI="C0036572",
+            ),
+            _mention("SeizureFrequency", FrequencyChange="Increased", CUI="C0014544"),
+        ]
+    )
 
 
 def test_prescription_categories_keep_rescue_separate_from_complete_regimens() -> None:

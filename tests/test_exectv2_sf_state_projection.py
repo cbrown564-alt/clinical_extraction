@@ -77,13 +77,45 @@ def test_state_projection_repairs_single_event_duration_to_seizure_free() -> Non
     assert attrs["TimePeriod"] == "Week"
 
 
+def test_state_projection_completes_single_last_event_after_temporal_alignment() -> None:
+    row = _row(
+        predicted_mentions=[
+            {
+                "entity": "SeizureFrequency",
+                "text": "seizure",
+                "attributes": {
+                    "NumberOfSeizures": "1",
+                    "NumberOfTimePeriods": "3",
+                    "TimePeriod": "Week",
+                    "TimeSince_or_TimeOfEvent": "During",
+                },
+                "evidence": "She reports having a single seizure some 3 weeks ago.",
+            }
+        ]
+    )
+
+    projected = projection.project_row(row, ablation="state")
+    attrs = projected["predicted_mentions"][0]["attributes"]
+    rule_ids = [action["rule_id"] for action in projected["projection_actions"]]
+
+    assert attrs["NumberOfSeizures"] == "0"
+    assert attrs["NumberOfTimePeriods"] == "3"
+    assert attrs["TimePeriod"] == "Week"
+    assert "TimeSince_or_TimeOfEvent" not in attrs
+    assert "state.last_event_active_to_seizure_free" in rule_ids
+
+
 def test_ownership_projection_assigns_named_count_to_named_type() -> None:
     row = _row(
         predicted_mentions=[
             {
                 "entity": "SeizureFrequency",
                 "text": "seizures",
-                "attributes": {"CUI": "C0036572", "NumberOfSeizures": "2"},
+                "attributes": {
+                    "CUI": "C0036572",
+                    "NumberOfSeizures": "2",
+                    "TimePeriod": "Year",
+                },
                 "evidence": "She has had 2 generalised tonic clonic seizures this year.",
             }
         ]
@@ -94,6 +126,299 @@ def test_ownership_projection_assigns_named_count_to_named_type() -> None:
     assert projected["predicted_mentions"][0]["text"] == "generalised tonic clonic seizures"
     assert projected["predicted_mentions"][0]["attributes"]["CUI"] == "C0494475"
     assert projected["projection_actions"][0]["rule_id"] == "ownership.generic_active_to_named"
+
+
+def test_combined_drops_generic_clone_after_last_event_conversion() -> None:
+    span = "focal to bilateral seizures 2 events in total, last event 10 years ago."
+    row = _row(
+        predicted_mentions=[
+            {
+                "entity": "SeizureFrequency",
+                "text": "focal to bilateral seizures",
+                "attributes": {"NumberOfSeizures": "2"},
+                "evidence": span,
+            },
+            {
+                "entity": "SeizureFrequency",
+                "text": "focal to bilateral seizures",
+                "attributes": {
+                    "NumberOfSeizures": "0",
+                    "NumberOfTimePeriods": "10",
+                    "TimePeriod": "Year",
+                },
+                "evidence": span,
+            },
+        ]
+    )
+
+    projected = projection.project_row(row, ablation="combined")
+    cuis = [mention["attributes"].get("CUI") for mention in projected["predicted_mentions"]]
+    rule_ids = [action["rule_id"] for action in projected["projection_actions"]]
+
+    assert "C0036572" not in cuis
+    assert "C0877017" in cuis
+    assert "ownership.drop_umbrella_clone" in rule_ids
+
+
+def test_combined_preserves_cluster_and_generlised_cuis() -> None:
+    row = _row(
+        predicted_mentions=[
+            {
+                "entity": "SeizureFrequency",
+                "text": "cluster of seizures",
+                "attributes": {"NumberOfSeizures": "3", "TimePeriod": "Day"},
+                "evidence": "cluster of seizures",
+            },
+            {
+                "entity": "SeizureFrequency",
+                "text": "generlised tonic clonic seizure",
+                "attributes": {"NumberOfSeizures": "1", "TimePeriod": "Year"},
+                "evidence": "generlised tonic clonic seizure",
+            },
+        ]
+    )
+
+    projected = projection.project_row(row, ablation="combined")
+    by_text = {
+        mention["text"]: mention["attributes"].get("CUI")
+        for mention in projected["predicted_mentions"]
+    }
+
+    assert by_text["cluster of seizures"] == "C3203523"
+    assert by_text["generlised tonic clonic seizure"] == "C0494475"
+    assert projected["projection_version"].endswith("v0.14")
+
+
+def test_combined_drops_bare_count_active_rate() -> None:
+    row = _row(
+        predicted_mentions=[
+            {
+                "entity": "SeizureFrequency",
+                "text": "seizures",
+                "attributes": {"NumberOfSeizures": "3", "CUI": "C0036572"},
+                "evidence": "three seizures",
+            },
+            {
+                "entity": "SeizureFrequency",
+                "text": "seizures",
+                "attributes": {
+                    "NumberOfSeizures": "0",
+                    "NumberOfTimePeriods": "2",
+                    "TimePeriod": "Year",
+                    "CUI": "C0036572",
+                },
+                "evidence": "seizure free for 2 years",
+            },
+        ]
+    )
+
+    projected = projection.project_row(row, ablation="combined")
+    states = [
+        mention["attributes"].get("NumberOfSeizures")
+        for mention in projected["predicted_mentions"]
+    ]
+    rule_ids = [action["rule_id"] for action in projected["projection_actions"]]
+
+    assert "3" not in states
+    assert "0" in states
+    assert "ownership.drop_bare_count_active_rate" in rule_ids
+
+
+def test_combined_drops_lifetime_oneoff_active_rate() -> None:
+    row = _row(
+        predicted_mentions=[
+            {
+                "entity": "SeizureFrequency",
+                "text": "secondarily generalised seizures",
+                "attributes": {
+                    "NumberOfSeizures": "1",
+                    "AgeLower": "22",
+                    "AgeUnit": "Year",
+                    "CUI": "C0270838",
+                },
+                "evidence": (
+                    "She has only every had one secondarily generalised "
+                    "seizures which happend when she was 22."
+                ),
+            },
+            {
+                "entity": "SeizureFrequency",
+                "text": "seizures",
+                "attributes": {
+                    "NumberOfSeizures": "0",
+                    "NumberOfTimePeriods": "5",
+                    "TimePeriod": "Year",
+                    "CUI": "C0036572",
+                },
+                "evidence": "seizure free for 5 years",
+            },
+        ]
+    )
+
+    projected = projection.project_row(row, ablation="combined")
+    cuis = [mention["attributes"].get("CUI") for mention in projected["predicted_mentions"]]
+    rule_ids = [action["rule_id"] for action in projected["projection_actions"]]
+
+    assert "C0270838" not in cuis
+    assert "C0036572" in cuis
+    assert "ownership.drop_lifetime_oneoff_active_rate" in rule_ids
+
+
+def test_combined_drops_generic_dated_cluster_next_to_free() -> None:
+    row = _row(
+        predicted_mentions=[
+            {
+                "entity": "SeizureFrequency",
+                "text": "seizures",
+                "attributes": {
+                    "NumberOfSeizures": "0",
+                    "PointInTime": "LastClinic",
+                    "TimeSince_or_TimeOfEvent": "Since",
+                    "CUI": "C0036572",
+                },
+                "evidence": "Since I last saw John he has not had any more seizures",
+            },
+            {
+                "entity": "SeizureFrequency",
+                "text": "seizures",
+                "attributes": {
+                    "NumberOfSeizures": "3",
+                    "NumberOfTimePeriods": "1",
+                    "TimePeriod": "Day",
+                    "TimeSince_or_TimeOfEvent": "During",
+                    "MonthDate": "12",
+                    "CUI": "C0036572",
+                },
+                "evidence": (
+                    "he did have a cluster of three seizures in a "
+                    "24-hr period in Devember"
+                ),
+            },
+        ]
+    )
+
+    projected = projection.project_row(row, ablation="combined")
+    states = [
+        mention["attributes"].get("NumberOfSeizures")
+        for mention in projected["predicted_mentions"]
+    ]
+    rule_ids = [action["rule_id"] for action in projected["projection_actions"]]
+
+    assert "3" not in states
+    assert "0" in states
+    assert "ownership.drop_dated_cluster_next_to_free" in rule_ids
+
+
+def test_combined_retargets_named_last_week_to_generic() -> None:
+    row = _row(
+        predicted_mentions=[
+            {
+                "entity": "SeizureFrequency",
+                "text": "focal dyscognitive seizures",
+                "attributes": {
+                    "FrequencyChange": "Frequent",
+                    "CUI": "C0270834",
+                },
+                "evidence": "She gets frequent focal dyscognitive seizures in clusters.",
+            },
+            {
+                "entity": "SeizureFrequency",
+                "text": "focal dyscognitive seizures",
+                "attributes": {
+                    "LowerNumberOfSeizures": "10",
+                    "UpperNumberOfSeizures": "15",
+                    "PointInTime": "Last_Week",
+                    "TimeSince_or_TimeOfEvent": "During",
+                    "CUI": "C0270834",
+                },
+                "evidence": (
+                    "Last week she had around 10-15 of these seizures over 2 days."
+                ),
+            },
+        ]
+    )
+
+    projected = projection.project_row(row, ablation="combined")
+    cuis_by_point = {
+        mention["attributes"].get("PointInTime"): mention["attributes"].get("CUI")
+        for mention in projected["predicted_mentions"]
+    }
+    rule_ids = [action["rule_id"] for action in projected["projection_actions"]]
+
+    assert cuis_by_point["Last_Week"] == "C0036572"
+    assert "C0270834" in {
+        mention["attributes"].get("CUI") for mention in projected["predicted_mentions"]
+    }
+    assert "ownership.retarget_last_week_named_to_generic" in rule_ids
+
+
+def test_combined_drops_drugchange_before_when_other_rate_exists() -> None:
+    row = _row(
+        predicted_mentions=[
+            {
+                "entity": "SeizureFrequency",
+                "text": "focal motor seizures",
+                "attributes": {
+                    "LowerNumberOfSeizures": "2",
+                    "UpperNumberOfSeizures": "3",
+                    "NumberOfTimePeriods": "1",
+                    "TimePeriod": "Month",
+                    "CUI": "C0016399",
+                },
+                "evidence": "Focal motor seizures, (left arm jerks) 2-3 per month",
+            },
+            {
+                "entity": "SeizureFrequency",
+                "text": "focal seizures",
+                "attributes": {
+                    "NumberOfSeizures": "1",
+                    "PointInTime": "DrugChange",
+                    "TimeSince_or_TimeOfEvent": "Since",
+                    "CUI": "C0751495",
+                },
+                "evidence": (
+                    "The focal seizures were occurring more frequently, "
+                    "perhaps once per day before the carbamazepine was introduced."
+                ),
+            },
+        ]
+    )
+
+    projected = projection.project_row(row, ablation="combined")
+    cuis = [mention["attributes"].get("CUI") for mention in projected["predicted_mentions"]]
+    rule_ids = [action["rule_id"] for action in projected["projection_actions"]]
+
+    assert "C0751495" not in cuis
+    assert "C0016399" in cuis
+    assert "ownership.drop_drugchange_before_if_other_active_rate" in rule_ids
+
+
+def test_combined_keeps_lone_drugchange_before_active_rate() -> None:
+    row = _row(
+        predicted_mentions=[
+            {
+                "entity": "SeizureFrequency",
+                "text": "focal seizures",
+                "attributes": {
+                    "NumberOfSeizures": "1",
+                    "PointInTime": "DrugChange",
+                    "TimeSince_or_TimeOfEvent": "Since",
+                    "CUI": "C0751495",
+                },
+                "evidence": (
+                    "The focal seizures were occurring more frequently, "
+                    "perhaps once per day before the carbamazepine was introduced."
+                ),
+            }
+        ]
+    )
+
+    projected = projection.project_row(row, ablation="combined")
+    cuis = [mention["attributes"].get("CUI") for mention in projected["predicted_mentions"]]
+    rule_ids = [action["rule_id"] for action in projected["projection_actions"]]
+
+    assert "C0751495" in cuis
+    assert "ownership.drop_drugchange_before_if_other_active_rate" not in rule_ids
 
 
 def test_project_rows_reports_ablation_metadata() -> None:

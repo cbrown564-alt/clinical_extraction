@@ -95,7 +95,7 @@ def _gan_rate(cell: dict[str, Any]) -> dict[str, Any]:
 
 
 def _exect_rate(cell: dict[str, Any]) -> dict[str, Any]:
-    return {
+    payload = {
         "f1": cell["after_four_family_f1"],
         "by_family": {
             family: float(score["f1"])
@@ -103,6 +103,21 @@ def _exect_rate(cell: dict[str, Any]) -> dict[str, Any]:
         },
         "source": cell.get("source_artifact"),
     }
+    for key in ("call_mode", "thinking", "provider_revision"):
+        if cell.get(key):
+            payload[key] = cell[key]
+    return payload
+
+
+def _attach_source_meta(
+    cell: dict[str, Any], spec: dict[str, Any] | None
+) -> dict[str, Any]:
+    if not spec:
+        return cell
+    for key in ("selected", "role", "call_mode", "thinking", "provider_revision"):
+        if key in spec and spec[key] not in (None, ""):
+            cell[key] = spec[key]
+    return cell
 
 
 def extract_fills(replay: dict[str, Any]) -> dict[str, Any]:
@@ -124,16 +139,37 @@ def extract_fills(replay: dict[str, Any]) -> dict[str, Any]:
     }
     test60["deepseek_v4_flash"] = _exect_rate(deepseek["exectv2_test60"])
     test60["deepseek_v4_flash"]["provider_revision"] = "DeepSeek-V4-Flash-0731"
+    previous_fills_path = LATEST / "fills.json"
+    if previous_fills_path.is_file():
+        previous = json.loads(previous_fills_path.read_text(encoding="utf-8"))
+        previous_gan = ((previous.get("hybrid") or {}).get("gan_test450") or {})
+        if "gemini37flash" in previous_gan and "gemini37flash" not in gan_selected:
+            gan_selected["gemini37flash"] = previous_gan["gemini37flash"]
     sol_gan = gan_selected["gpt56sol"]["purist_rate"]
     sol_exect = test60["gpt56sol"]["f1"]
+    sources = _load_sources()
+    gan_specs = sources["cells"]["gan_test450"]["sources"]
+    dev_specs = sources["cells"]["exect_dev140"]["sources"]
+    test_specs = sources["cells"]["exect_test60"]["sources"]
+    for slug, cell in gan_selected.items():
+        spec = gan_specs.get(f"{slug}_0731") or gan_specs.get(slug)
+        _attach_source_meta(cell, spec)
+    ex_dev_fills = {
+        slug: _attach_source_meta(_exect_rate(cell), dev_specs.get(slug))
+        for slug, cell in ex_dev.items()
+    }
+    for slug, cell in test60.items():
+        spec = test_specs.get(f"{slug}_0731") or test_specs.get(slug)
+        _attach_source_meta(cell, spec)
     return {
         "schema_version": "current_stack.fills.v1",
         "generated_at_utc": datetime.now(UTC).isoformat(),
         "decision": "docs/decisions/0050-current-stack-hybrid-primary-fills.md",
+        "six_model_slot_amendment": "docs/decisions/0052-gemini-37-flash-holdout-six-model-slot.md",
         "method_identity_model": "gpt56sol",
         "hybrid": {
             "gan_test450": gan_selected,
-            "exect_dev140": {slug: _exect_rate(cell) for slug, cell in ex_dev.items()},
+            "exect_dev140": ex_dev_fills,
             "exect_test60": test60,
         },
         "glance_2dp": {
@@ -174,12 +210,13 @@ def _write_checklist(fills: dict[str, Any], sources: dict[str, Any], path: Path)
         "| --- | ---: | ---: |",
     ]
     order = [
+        "gemini37flash",
         "gpt56sol",
         "deepseek_v4_flash",
         "gpt56luna",
         "qwen36_35b",
-        "gpt41mini",
         "gemma4_26b",
+        "gpt41mini",
     ]
     labels = {row["slug"]: row["label"] for row in sources["models"]}
     for slug in order:
