@@ -195,10 +195,12 @@ def _model_run(
     lane_diagnostics = _mapping(summary["lane_diagnostics"])
     if is_final:
         # Re-run HEAD deterministic assembly on raw outputs for current stack repairs.
+        structured_by_id = _structured_rows_by_id(rows_path)
         letters = []
         for row in rows:
             gold = gold_by_id[str(row["letter_id"])]
-            raw_out = row.get("raw_output")
+            structured = structured_by_id.get(str(row["letter_id"]), {})
+            raw_out = row.get("raw_output") or structured.get("raw_output")
             if raw_out:
                 producer = structured_one_call.produce_structured_letter(
                     gold,
@@ -394,6 +396,20 @@ def _compact_letters(runs: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         ]
         compact_runs.append(compact)
     return {"shared_letters": shared_letters, "runs": compact_runs}
+
+
+def _structured_rows_by_id(rows_path: Path) -> dict[str, Mapping[str, Any]]:
+    """Load the sibling structured jsonl used for no-call HEAD reassembly."""
+
+    path = Path(rows_path)
+    structured_name = path.name.replace(".jsonl", "_structured.jsonl")
+    candidates = [path.with_name(structured_name)]
+    if not path.is_absolute():
+        candidates.append(Path.cwd() / path.with_name(structured_name))
+    for candidate in candidates:
+        if candidate.is_file():
+            return {str(row["letter_id"]): row for row in _read_jsonl(candidate)}
+    return {}
 
 
 def _project_predicted_cuis(

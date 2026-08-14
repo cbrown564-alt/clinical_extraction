@@ -18,6 +18,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.finding_sto
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection import (
     attach_benchmark_concept,
     diagnosis_concept,
+    diagnosis_fragment_concept,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import DIAGNOSIS
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
@@ -175,7 +176,7 @@ def diagnosis_finding_with_text(
         attributes=attributes,
     )
     attributes.setdefault("DiagCategory", diagnosis_category_for_concept(text))
-    concept = diagnosis_concept(text)
+    concept = diagnosis_concept(text) or diagnosis_fragment_concept(text)
     if concept is not None:
         attributes = attach_benchmark_concept(attributes, concept)
     else:
@@ -233,9 +234,11 @@ def diagnosis_added_finding(
         "Certainty": "5",
         "Negation": "Affirmed",
     }
-    concept = diagnosis_concept(text)
+    concept = diagnosis_concept(text) or diagnosis_fragment_concept(text)
     if concept is not None:
         attributes = attach_benchmark_concept(attributes, concept)
+        if concept.canonical in {"Epilepsy", "MultipleSeizures", "SingleSeizure"}:
+            attributes["DiagCategory"] = concept.canonical
     return ClinicalFinding(
         finding_id=(
             f"{store.letter_id}:{policy.producer_id}:Diagnosis:lens:{lens_id}:"

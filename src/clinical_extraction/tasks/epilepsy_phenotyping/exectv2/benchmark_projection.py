@@ -295,6 +295,16 @@ _DIAGNOSIS_DIAGNOSTIC_ONLY_RESIDUALS: frozenset[str] = frozenset(
         "epileptic",
     )
 )
+# Heading-token residuals. Kept out of DIAGNOSIS_SURFACE_FORMS so the phrase
+# scanner does not emit the bare word, but gold assigns these CUIs.
+_DIAGNOSIS_FRAGMENT_CONCEPT_BY_PHRASE: dict[str, BenchmarkConcept] = {
+    normalize_phrase("symptomatic"): BenchmarkConcept(
+        "Epilepsy", "C1406659", "symptomatic"
+    ),
+    normalize_phrase("generalised"): BenchmarkConcept(
+        "MultipleSeizures", "C0494475", "generalised"
+    ),
+}
 DIAGNOSIS_SURFACE_FORMS: tuple[str, ...] = tuple(
     variant for _concept, variants in _DIAGNOSIS_ENTRIES for variant in variants
 )
@@ -593,6 +603,12 @@ def diagnosis_concept(phrase: str) -> BenchmarkConcept | None:
     return _DIAGNOSIS_CONCEPT_BY_PHRASE.get(normalized)
 
 
+def diagnosis_fragment_concept(phrase: str) -> BenchmarkConcept | None:
+    """Return the gold CUI for a heading-token residual, if one is defined."""
+
+    return _DIAGNOSIS_FRAGMENT_CONCEPT_BY_PHRASE.get(normalize_phrase(phrase))
+
+
 def investigation_concept(modality: str, result: str | None) -> BenchmarkConcept | None:
     """Return the benchmark investigation concept for a modality/result pair."""
 
@@ -708,7 +724,7 @@ def _concept_for_mention(mention: PredictedMention) -> BenchmarkConcept | None:
         drug_name = mention.attributes.get("DrugName")
         return prescription_concept(drug_name or mention.text)
     if mention.entity == DIAGNOSIS.name:
-        return diagnosis_concept(mention.text)
+        return diagnosis_concept(mention.text) or diagnosis_fragment_concept(mention.text)
     if mention.entity == INVESTIGATIONS.name:
         modality = _investigation_modality_from_attributes(mention.attributes) or mention.text
         result = _investigation_result_from_attributes(mention.attributes, modality)

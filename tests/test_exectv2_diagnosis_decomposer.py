@@ -16,6 +16,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lens_ops im
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection import (
     diagnosis_concept,
+    diagnosis_fragment_concept,
     project_cuis,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import DIAGNOSIS
@@ -255,3 +256,15 @@ def test_genetic_and_primary_generalised_epilepsy_share_cui_keep_surface() -> No
         )
     )
     assert projected.mentions[0].attributes["CUIPhrase"] == "genetic-generalised-epilepsy"
+
+
+def test_heading_fragment_residuals_keep_gold_cuis() -> None:
+    assert diagnosis_concept("symptomatic") is None
+    assert diagnosis_concept("generalised") is None
+    symptomatic = diagnosis_fragment_concept("symptomatic")
+    generalised = diagnosis_fragment_concept("generalised")
+    assert symptomatic is not None and generalised is not None
+    assert symptomatic.cui == "C1406659"
+    assert symptomatic.cui_phrase == "symptomatic"
+    assert generalised.cui == "C0494475"
+    assert generalised.cui_phrase == "generalised"
