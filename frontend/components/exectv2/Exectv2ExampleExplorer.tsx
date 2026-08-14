@@ -212,6 +212,15 @@ function normalizeConceptString(str?: string): string {
     .replace(/\s+/g, " ");
 }
 
+function attributeValuesMatch(key: string, gold?: string, predicted?: string): boolean {
+  if (gold === undefined || predicted === undefined) return false;
+  if (gold === predicted) return true;
+  if (key === "CUIPhrase") {
+    return normalizeConceptString(gold) === normalizeConceptString(predicted);
+  }
+  return false;
+}
+
 function alignFamilyMentions(
   gold: Exectv2Mention[],
   predicted: Exectv2Mention[]
@@ -339,8 +348,9 @@ function AttributeDiffTable({
           {allKeys.map((key) => {
             const gVal = goldAttrs[key];
             const pVal = predAttrs[key];
-            const isMatch = gVal !== undefined && pVal !== undefined && gVal === pVal;
-            const isDiff = gVal !== undefined && pVal !== undefined && gVal !== pVal;
+            const isMatch = attributeValuesMatch(key, gVal, pVal);
+            const isDiff =
+              gVal !== undefined && pVal !== undefined && !isMatch;
             const isMissingInPred = gVal !== undefined && pVal === undefined;
             const isExtraInPred = gVal === undefined && pVal !== undefined;
 
