@@ -11,11 +11,12 @@ import { preserveWorkbenchDataset } from "./architectUrl";
 import {
   runNote,
   fetchHealth,
-  fetchRecords,
-  fetchRecord,
+  fetchLetters,
+  fetchLetter,
   fetchPipelineFamilies,
   fetchRegistry,
 } from "./api";
+import type { DatasetId } from "./datasets/types";
 import type { RunNoteResponse, TraceStage } from "./types";
 import { useArchitectStore } from "./stores";
 import {
@@ -32,20 +33,19 @@ export function useHealth() {
   });
 }
 
-export function useRecords(split: string | null) {
+export function useLetters(dataset: DatasetId) {
   return useQuery({
-    queryKey: ["records", split],
-    queryFn: () => fetchRecords(split!),
-    enabled: !!split,
+    queryKey: ["letters", dataset],
+    queryFn: () => fetchLetters(dataset),
     staleTime: 5 * 60 * 1000,
   });
 }
 
-export function useRecord(split: string | null, sourceRowIndex: number | null) {
+export function useLetter(dataset: "gan2026", letterId: string | null) {
   return useQuery({
-    queryKey: ["record", split, sourceRowIndex],
-    queryFn: () => fetchRecord(split!, sourceRowIndex!),
-    enabled: !!split && sourceRowIndex !== null,
+    queryKey: ["letter", dataset, letterId],
+    queryFn: () => fetchLetter(dataset, letterId!),
+    enabled: Boolean(letterId),
     staleTime: 5 * 60 * 1000,
   });
 }

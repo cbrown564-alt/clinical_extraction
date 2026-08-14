@@ -28,19 +28,22 @@ export function fetchLetters(dataset: DatasetId) {
   return request<import("../types").LetterCatalogResponse>(`/datasets/${dataset}/letters`);
 }
 
+export function fetchLetter(dataset: "gan2026", letterId: string): Promise<import("../types").FullRecordResponse>;
+export function fetchLetter(dataset: "exectv2", letterId: string): Promise<import("../types").Exectv2SharedLetterRecord>;
 export function fetchLetter(dataset: DatasetId, letterId: string) {
-  return request<import("../types").FullRecordResponse | import("../types").Exectv2SharedLetterRecord>(
+  return request(
     `/datasets/${dataset}/letters/${encodeURIComponent(letterId)}`
   );
 }
 
+export function fetchRuns(dataset: "exectv2"): Promise<import("../types").Exectv2RunsResponse>;
+export function fetchRuns(dataset: "gan2026"): Promise<import("../types").DatasetRunsResponse>;
 export function fetchRuns(dataset: DatasetId) {
-  if (dataset === "exectv2") {
-    return request<import("../types").Exectv2RunsResponse>("/datasets/exectv2/runs");
-  }
-  return request<import("../types").DatasetRunsResponse>(`/datasets/${dataset}/runs`);
+  return request(`/datasets/${dataset}/runs`);
 }
 
+export function fetchRun(dataset: "exectv2", runId: string): Promise<import("../types").Exectv2RunSummary>;
+export function fetchRun(dataset: "gan2026", runId: string): Promise<import("../types").DatasetRunResponse>;
 export function fetchRun(dataset: DatasetId, runId: string) {
   if (dataset === "exectv2") {
     return request<import("../types").Exectv2RunWireResponse>(
@@ -49,18 +52,6 @@ export function fetchRun(dataset: DatasetId, runId: string) {
   }
   return request<import("../types").DatasetRunResponse>(
     `/datasets/${dataset}/runs/${encodeURIComponent(runId)}`
-  );
-}
-
-/** @deprecated Use fetchLetters("gan2026") */
-export function fetchRecords(split: string) {
-  return request<import("../types").SplitRecordsResponse>(`/records/${split}`);
-}
-
-/** @deprecated Use fetchLetter("gan2026", id) */
-export function fetchRecord(split: string, sourceRowIndex: number) {
-  return request<import("../types").FullRecordResponse>(
-    `/records/${split}/${sourceRowIndex}`
   );
 }
 
@@ -86,16 +77,6 @@ export function fetchArtifact(
   return request<import("../types").ArtifactResponse>(
     `/artifacts/${runId}${query ? "?" + query : ""}`
   );
-}
-
-/** @deprecated Use fetchRuns("exectv2") */
-export function fetchExectv2Runs() {
-  return fetchRuns("exectv2") as Promise<import("../types").Exectv2RunsResponse>;
-}
-
-/** @deprecated Use fetchRun("exectv2", runId) */
-export function fetchExectv2Run(runId: string) {
-  return fetchRun("exectv2", runId) as Promise<import("../types").Exectv2RunSummary>;
 }
 
 export function fetchGoldAuditRows(dataset: DatasetId = "gan2026") {

@@ -8,12 +8,12 @@ import {
 } from "lucide-react";
 import { useArchitectStore } from "@/lib/stores";
 import {
-  useRecords,
-  useRecord,
+  useLetters,
+  useLetter,
   usePipelineFamilies,
   useRunNote,
 } from "@/lib/hooks";
-import { fetchRegistry, fetchArtifact, fetchRecord } from "@/lib/api";
+import { fetchRegistry, fetchArtifact, fetchLetter } from "@/lib/api";
 import { firstReplayableArtifactPath } from "@/lib/registryArtifacts";
 import { adaptDeterministicTrace, adaptTrace, isReplaySupported } from "@/lib/traceAdapter";
 import {
@@ -62,8 +62,11 @@ export default function TraceControls() {
   } = useArchitectStore();
 
   const runNote = useRunNote();
-  const recordsQuery = useRecords("validation");
-  const recordQuery = useRecord("validation", sourceRowIndex);
+  const lettersQuery = useLetters("gan2026");
+  const recordQuery = useLetter(
+    "gan2026",
+    sourceRowIndex === null ? null : String(sourceRowIndex)
+  );
   const familiesQuery = usePipelineFamilies();
 
   const pipelineOptions = useMemo(
@@ -141,7 +144,7 @@ export default function TraceControls() {
           return;
         }
         const [record, artifact] = await Promise.all([
-          fetchRecord("validation", letterIndex),
+          fetchLetter("gan2026", String(letterIndex)),
           fetchArtifact(matchingRun.run_id, replayPath, undefined, String(letterIndex)),
         ]);
         const row = artifact.content[0];
@@ -312,12 +315,12 @@ export default function TraceControls() {
                     e.target.value ? parseInt(e.target.value, 10) : null
                   )
                 }
-                disabled={!recordsQuery.data}
+                disabled={!lettersQuery.data}
               >
                 <option value="">Letter…</option>
-                {recordsQuery.data?.records.map((r) => (
-                  <option key={r.source_row_index} value={r.source_row_index}>
-                    {r.source_row_index} · {r.gold_label}
+                {lettersQuery.data?.letters.map((letter) => (
+                  <option key={letter.id} value={letter.id}>
+                    {letter.id} · {letter.label}
                   </option>
                 ))}
               </ControlSelect>

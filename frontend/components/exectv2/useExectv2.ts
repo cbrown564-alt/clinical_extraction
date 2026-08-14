@@ -3,15 +3,15 @@
 import { useCallback, useMemo } from "react";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { fetchExectv2Run, fetchExectv2Runs } from "@/lib/api";
+import { fetchRun, fetchRuns } from "@/lib/api";
 import { DATASET_PARAM } from "@/lib/datasets";
 import { exectv2RunActiveMethod, resolveExectv2RunId, sortExectv2Runs } from "@/lib/exectv2RunOptions";
 import type { Exectv2RunSummary } from "@/lib/types";
 
 export function useExectv2Runs() {
   const query = useQuery({
-    queryKey: ["exectv2-runs"],
-    queryFn: fetchExectv2Runs,
+    queryKey: ["runs", "exectv2"],
+    queryFn: () => fetchRuns("exectv2"),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -25,8 +25,8 @@ export function useExectv2Runs() {
 
 export function useExectv2Run(runId: string | undefined) {
   return useQuery({
-    queryKey: ["exectv2-run", runId],
-    queryFn: () => fetchExectv2Run(runId as string),
+    queryKey: ["run", "exectv2", runId],
+    queryFn: () => fetchRun("exectv2", runId as string),
     enabled: Boolean(runId),
     staleTime: 5 * 60 * 1000,
   });
@@ -35,8 +35,8 @@ export function useExectv2Run(runId: string | undefined) {
 export function useExectv2RunDetails(runIds: string[]) {
   const queries = useQueries({
     queries: runIds.map((runId) => ({
-      queryKey: ["exectv2-run", runId],
-      queryFn: () => fetchExectv2Run(runId),
+      queryKey: ["run", "exectv2", runId],
+      queryFn: () => fetchRun("exectv2", runId),
       staleTime: 5 * 60 * 1000,
     })),
   });
