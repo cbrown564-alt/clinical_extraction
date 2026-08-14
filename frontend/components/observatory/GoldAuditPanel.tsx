@@ -11,7 +11,7 @@ import {
   ShieldCheck,
   X,
 } from "lucide-react";
-import { fetchGoldAuditDecisions, fetchGoldAuditRows, postGoldAuditDecision } from "@/lib/api";
+import { fetchGoldAuditDecisions, fetchGoldAuditRows, fetchLetter, postGoldAuditDecision } from "@/lib/api";
 import { useActiveDataset } from "@/lib/datasets";
 import type { GoldAuditDecision, GoldAuditRow } from "@/lib/types";
 import { splitLabel } from "@/lib/plainLanguageLabels";
@@ -146,6 +146,20 @@ function DatasetGoldAuditPanel({ datasetId }: { datasetId: "gan2026" | "exectv2"
   }, [currentId, decisionsMap, visibleRows]);
 
   const existing = currentRow ? decisionsMap.get(rowId(currentRow)) : undefined;
+  const currentLetterId = currentRow
+    ? (isExect ? currentRow.letter_id : currentRow.source_row_index)
+    : null;
+
+  const ganLetterQuery = useQuery({
+    queryKey: ["letter", "gan2026", currentLetterId],
+    queryFn: () => fetchLetter("gan2026", String(currentLetterId)),
+    enabled: !isExect && currentLetterId != null,
+  });
+  const exectLetterQuery = useQuery({
+    queryKey: ["letter", "exectv2", currentLetterId],
+    queryFn: () => fetchLetter("exectv2", String(currentLetterId)),
+    enabled: isExect && Boolean(currentLetterId),
+  });
 
   useEffect(() => {
     if (!currentRow) return;
@@ -208,12 +222,18 @@ function DatasetGoldAuditPanel({ datasetId }: { datasetId: "gan2026" | "exectv2"
   }, [goNext]);
 
   const sourceText = isExect
-    ? currentRow?.full_letter_text ?? currentRow?.source_context ?? ""
-    : currentRow?.note_text_single_line?.replace(/\\n/g, "\n") ?? "";
-  const highlights = useMemo(() => {
-    if (!currentRow) return [];
-    return exactHighlight(sourceText, isExect ? currentRow.source_span ?? "" : currentRow.gold_reference ?? "");
-  }, [currentRow, isExect, sourceText]);
+    ? exectLetterQuery.data?.letter_text ?? ""
+    : ganLetterQuery.data?.note_text ?? "";
+  const highlightSpan = isExect
+    ? exectLetterQuery.data?.gold_mentions?.[0]?.evidence
+      || exectLetterQuery.data?.gold_mentions?.[0]?.text
+      || currentRow?.source_span
+      || ""
+    : currentRow?.gold_reference ?? "";
+  const highlights = useMemo(
+    () => (currentRow ? exactHighlight(sourceText, highlightSpan) : []),
+    [currentRow, highlightSpan, sourceText]
+  );
 
   if (rowsQuery.isLoading || decisionsQuery.isLoading) {
     return <div className="flex h-full items-center justify-center text-sm text-muted">Loading gold audit queue…</div>;

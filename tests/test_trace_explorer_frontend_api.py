@@ -163,10 +163,13 @@ def test_review_queues_and_writes_enforce_development_row_policy(client: TestCli
         "40",
         "79",
     }
+    assert "note_text_single_line" not in gan_rows.json()["rows"][0]
+    assert "note_text" not in gan_rows.json()["rows"][0]
 
     exect_rows = client.get("/gold-audit/rows", params={"dataset": "exectv2"})
     assert exect_rows.status_code == 200
     assert exect_rows.json()["total"] == 140
+    assert "full_letter_text" not in exect_rows.json()["rows"][0]
     assert {row["letter_id"] for row in exect_rows.json()["rows"]} == {
         letter["id"] for letter in client.get("/datasets/exectv2/letters").json()["letters"]
     }

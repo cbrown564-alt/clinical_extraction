@@ -583,8 +583,8 @@ class FrontendDataStore:
             "has_gold_reference": mention_count > 0,
         }
 
-    def _gan_gold_audit_row(self, index: int, record: Any) -> dict[str, Any]:
-        detail = self.record("validation", int(record.source_row_index)) or {}
+    @staticmethod
+    def _gan_gold_audit_row(index: int, record: Any) -> dict[str, Any]:
         return {
             "audit_id": str(record.source_row_index),
             "source_row_index": str(record.source_row_index),
@@ -595,7 +595,6 @@ class FrontendDataStore:
             "gold_reference": record.gold_reference or "",
             "row_ok": str(bool(record.row_ok)),
             "reference_found_in_note": str(bool(record.gold_reference)),
-            "note_text_single_line": (detail.get("note_text") or "").replace("\n", "\\n"),
         }
 
     @staticmethod
@@ -612,8 +611,6 @@ class FrontendDataStore:
             "split": "dev140",
             "letter_id": letter_id,
             "entity": "letter",
-            "full_letter_text": letter.get("letter_text"),
-            "source_context": evidence,
             "source_span": evidence,
             "gold_label": f"{len(mentions)} gold mention{'s' if len(mentions) != 1 else ''}",
         }
