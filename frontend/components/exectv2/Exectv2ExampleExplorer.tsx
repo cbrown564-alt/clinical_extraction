@@ -36,6 +36,13 @@ import {
 import { lastRuleActionLabel } from "@/lib/plainLanguageLabels";
 import { displayPredictedEvidence } from "@/lib/predictedQuote";
 import {
+  alignFamilyMentions,
+  attributeValuesMatch,
+  type MentionPair,
+  type UnmatchedGold,
+  type UnmatchedPred,
+} from "@/lib/exectv2AlignMentions";
+import {
   compactRunLabel,
   useExectv2Run,
   useExectv2Runs,
@@ -230,145 +237,6 @@ function HeadlineStatusBadge({ status }: { status: Exectv2Mention["headline_stat
     );
   }
   return null;
-}
-
-/**
- * Alignment matching logic between gold and predicted mentions for a family.
- * Computes exact/semantic true positives (paired), false negatives (gold misses),
- * and false positives (extra predictions / duplicates).
- */
-interface MentionPair {
-  type: "matched";
-  gold: Exectv2Mention;
-  predicted: Exectv2Mention;
-}
-interface UnmatchedGold {
-  type: "missed_gold";
-  gold: Exectv2Mention;
-}
-interface UnmatchedPred {
-  type: "extra_predicted";
-  predicted: Exectv2Mention;
-}
-type ComparisonGroup = MentionPair | UnmatchedGold | UnmatchedPred;
-
-function normalizeConceptString(str?: string): string {
-  if (!str) return "";
-  return str
-    .toLowerCase()
-    .replace(/[-_]+/g, " ")
-    .replace(/[^\w\s]/g, "")
-    .trim()
-    .replace(/\s+/g, " ");
-}
-
-function attributeValuesMatch(key: string, gold?: string, predicted?: string): boolean {
-  if (gold === undefined || predicted === undefined) return false;
-  if (gold === predicted) return true;
-  if (gold.toLowerCase() === predicted.toLowerCase()) return true;
-  if (key === "CUIPhrase") {
-    return normalizeConceptString(gold) === normalizeConceptString(predicted);
-  }
-  return false;
-}
-
-function alignFamilyMentions(
-  gold: Exectv2Mention[],
-  predicted: Exectv2Mention[]
-): ComparisonGroup[] {
-  const goldPool = [...gold];
-  const predPool = [...predicted];
-  const groups: ComparisonGroup[] = [];
-
-  // Helper to extract identifiers for a mention
-  const getKeys = (m: Exectv2Mention) => ({
-    cui: m.attributes["CUI"]?.trim(),
-    cuiPhrase: normalizeConceptString(m.attributes["CUIPhrase"]),
-    text: normalizeConceptString(m.text),
-  });
-
-  // 1. Match by CUI (exact UMLS concept match)
-  for (let i = goldPool.length - 1; i >= 0; i--) {
-    const g = goldPool[i];
-    const gKeys = getKeys(g);
-    if (!gKeys.cui) continue;
-
-    const predIdx = predPool.findIndex((p) => {
-      const pKeys = getKeys(p);
-      return pKeys.cui && pKeys.cui === gKeys.cui;
-    });
-
-    if (predIdx !== -1) {
-      const [matchedPred] = predPool.splice(predIdx, 1);
-      goldPool.splice(i, 1);
-      groups.push({
-        type: "matched",
-        gold: g,
-        predicted: matchedPred,
-      });
-    }
-  }
-
-  // 2. Match by CUIPhrase or Normalized Text exact match
-  for (let i = goldPool.length - 1; i >= 0; i--) {
-    const g = goldPool[i];
-    const gKeys = getKeys(g);
-
-    const predIdx = predPool.findIndex((p) => {
-      const pKeys = getKeys(p);
-      if (gKeys.cuiPhrase && pKeys.cuiPhrase && gKeys.cuiPhrase === pKeys.cuiPhrase) return true;
-      if (gKeys.text && pKeys.text && gKeys.text === pKeys.text) return true;
-      if (gKeys.cuiPhrase && pKeys.text && gKeys.cuiPhrase === pKeys.text) return true;
-      if (gKeys.text && pKeys.cuiPhrase && gKeys.text === pKeys.cuiPhrase) return true;
-      return false;
-    });
-
-    if (predIdx !== -1) {
-      const [matchedPred] = predPool.splice(predIdx, 1);
-      goldPool.splice(i, 1);
-      groups.push({
-        type: "matched",
-        gold: g,
-        predicted: matchedPred,
-      });
-    }
-  }
-
-  // 3. Partial/Fuzzy overlap match on remaining
-  for (let i = goldPool.length - 1; i >= 0; i--) {
-    const g = goldPool[i];
-    const gKeys = getKeys(g);
-    const gTarget = gKeys.cuiPhrase || gKeys.text;
-
-    const predIdx = predPool.findIndex((p) => {
-      const pKeys = getKeys(p);
-      const pTarget = pKeys.cuiPhrase || pKeys.text;
-      if (!gTarget || !pTarget || gTarget.length < 4 || pTarget.length < 4) return false;
-      return pTarget.includes(gTarget) || gTarget.includes(pTarget);
-    });
-
-    if (predIdx !== -1) {
-      const [matchedPred] = predPool.splice(predIdx, 1);
-      goldPool.splice(i, 1);
-      groups.push({
-        type: "matched",
-        gold: g,
-        predicted: matchedPred,
-      });
-    }
-  }
-
-  // 4. Remaining gold are false negatives (missed)
-  for (const g of goldPool) {
-    groups.push({ type: "missed_gold", gold: g });
-  }
-
-  // 5. Remaining predicted are false positives (extra / duplicate)
-  for (const p of predPool) {
-    groups.push({ type: "extra_predicted", predicted: p });
-  }
-
-  return groups;
 }
 
 /** Compact attribute diff table comparing gold vs predicted key-value pairs */
