@@ -253,7 +253,7 @@ NO_EVENTS_FOR_DURATION_RULE = RuleSpec(
         rf"\b(?P<evidence>no\s+(?:events,\s+warnings,\s+or\s+auras|"
         rf"spell-like\s+events\s+suggestive\s+of\s+seizures)\s+"
         rf"(?:for\s+over|for|over)\s+(?:the\s+past\s+)?(?P<count>{NUMBER_TOKEN})\s+"
-        rf"(?P<unit>months?|years?))\b",
+        rf"(?P<unit>days?|weeks?|months?|years?))\b",
         re.IGNORECASE,
     ),
     build=_build_no_events_for_duration,
@@ -274,9 +274,9 @@ SEIZURE_FREE_DURATION_STATUS_RULE = RuleSpec(
     description="Seizure-free interval or zero recorded rate with explicit duration.",
     pattern=re.compile(
         rf"\b(?P<evidence>seizure(?:[-\u2010-\u2015]|\s)free\s+interval\s+"
-        rf"extends\s+to\s+(?P<count>{NUMBER_TOKEN})\s+(?P<unit>months?|years?)|"
+        rf"extends\s+to\s+(?P<count>{NUMBER_TOKEN})\s+(?P<unit>days?|weeks?|months?|years?)|"
         rf"recorded\s+seizure\s+rate\s+at\s+zero\s+over\s+the\s+last\s+"
-        rf"(?P<zero_count>{NUMBER_TOKEN})\s+(?P<zero_unit>months?|years?))\b",
+        rf"(?P<zero_count>{NUMBER_TOKEN})\s+(?P<zero_unit>days?|weeks?|months?|years?))\b",
         re.IGNORECASE,
     ),
     build=_build_duration_status,
@@ -343,7 +343,7 @@ GENERIC_SEIZURE_FREE_RULE = RuleSpec(
     pattern=re.compile(
         rf"\b(?:seizure(?:[-\u2010-\u2015]|\s)free|free of (?:{SEIZURE_TERMS})|"
         rf"no (?:further )?(?:{SEIZURE_TERMS})).{{0,80}}?"
-        rf"(?:(?P<count>{NUMBER_TOKEN})\s+(?P<unit>months|month|years|year)|"
+        rf"(?:(?P<count>{NUMBER_TOKEN})\s+(?P<unit>days?|weeks?|months?|years?)|"
         r"several years|long duration|since\b)",
         re.IGNORECASE,
     ),

@@ -174,7 +174,7 @@ def extract_rate_candidates(
         )
 
     no_seizures_then_count = re.compile(
-        rf"\bno\s+(?:{SEIZURE_TERMS})\s+for\s+nearly\s+a\s+(?P<unit>year|month)"
+        rf"\bno\s+(?:{SEIZURE_TERMS})\s+for\s+nearly\s+a\s+(?P<unit>year|month|week)"
         rf".{{0,180}}?\bleading\s+to\s+(?P<count>{NUMBER_TOKEN})\s+"
         rf"(?:{QUALIFIED_SEIZURE_TERMS})\b"
         rf"(?:\s+(?:{NUMBER_TOKEN})\s+\w+days?\s+ago)?",
@@ -191,7 +191,7 @@ def extract_rate_candidates(
 
     no_seizures_then_single_breakthrough = re.compile(
         rf"\b(?P<evidence>no\s+(?:{SEIZURE_TERMS})\s+for\s+nearly\s+a\s+"
-        rf"(?P<unit>year|month).{{0,160}}?\bleading\s+to\s+a\s+"
+        rf"(?P<unit>year|month|week).{{0,160}}?\bleading\s+to\s+a\s+"
         rf"(?:{QUALIFIED_SEIZURE_TERMS})(?:\s+{NUMBER_TOKEN}\s+\w+\s+ago)?)\b",
         re.IGNORECASE,
     )
@@ -206,7 +206,7 @@ def extract_rate_candidates(
 
     no_seizures_then_precursor_count = re.compile(
         rf"\b(?P<evidence>did\s+not\s+have\s+(?:{SEIZURE_TERMS})\s+for\s+"
-        rf"over\s+(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>months?|years?),?\s+"
+        rf"over\s+(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>days?|weeks?|months?|years?),?\s+"
         rf"but\s+then\s+reported\s+(?P<count>{NUMBER_TOKEN})\s+"
         rf"(?:{QUALIFIED_SEIZURE_TERMS})(?:\s+{NUMBER_TOKEN}\s+\w+\s+ago)?,\s+"
         rf"each\s+preceded\s+by\s+myoclonic\s+jerks)\b",

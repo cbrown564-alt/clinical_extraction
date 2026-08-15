@@ -282,7 +282,7 @@ _SEIZURE_FREE_SINCE_DATE = re.compile(
     re.IGNORECASE,
 )
 _NUMERIC_SEIZURE_FREE = re.compile(
-    r"^seizure free for \d+(?:\.\d+)?(?: to \d+(?:\.\d+)?)? (?:month|year)$"
+    r"^seizure free for \d+(?:\.\d+)?(?: to \d+(?:\.\d+)?)? (?:day|week|month|year)$"
 )
 
 
@@ -780,11 +780,15 @@ def _seizure_free_duration_from_events(
         if event.assertion_status != "asserted" or event.temporality not in {"current", "recent"}:
             continue
         text = small_number_words_to_digits(text)
-        match = re.search(r"\b(?:for\s+)?(?P<count>\d+)\s+(?P<unit>month|year)s?\b", text)
+        match = re.search(r"\b(?:for\s+)?(?P<count>\d+)\s+(?P<unit>day|week|month|year)s?\b", text)
         if match:
             return f"{match.group('count')} {match.group('unit')}"
         if re.search(r"\b(?:nearly|almost|about|around)?\s*a\s+year\b", text):
             return "1 year"
+        if re.search(r"\b(?:nearly|almost|about|around)?\s*a\s+month\b", text):
+            return "1 month"
+        if re.search(r"\b(?:nearly|almost|about|around)?\s*a\s+week\b", text):
+            return "1 week"
     return None
 
 

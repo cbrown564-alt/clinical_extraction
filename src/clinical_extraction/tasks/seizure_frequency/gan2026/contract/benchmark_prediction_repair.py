@@ -24,7 +24,7 @@ ALLOWED_PREDICTION_PATTERNS = (
     re.compile(r"^no seizure frequency reference$"),
     re.compile(
         r"^seizure free for (?:multiple|\d+(?:\.\d+)?(?: to \d+(?:\.\d+)?)?) "
-        r"(?:month|year)$"
+        r"(?:day|week|month|year)$"
     ),
     re.compile(
         r"^(?:multiple|\d+(?: to \d+)?) per "
@@ -237,7 +237,7 @@ def _canonicalize_seizure_free(text: str) -> str:
     text = text.replace("sz free", "seizure free").replace("sz-free", "seizure free")
     match = re.search(
         r"seizure free(?:\s*for)?\s*"
-        r"(\d+(?:\.\d+)?(?:\s*to\s*\d+(?:\.\d+)?)?|multiple)\s*(month|year)s?\b",
+        r"(\d+(?:\.\d+)?(?:\s*to\s*\d+(?:\.\d+)?)?|multiple)\s*(day|week|month|year)s?\b",
         text,
     )
     if match:
@@ -246,6 +246,10 @@ def _canonicalize_seizure_free(text: str) -> str:
         return "seizure free for multiple year"
     if re.search(rf"\b(months?|{MONTH_NAME_PATTERN})\b", text):
         return "seizure free for multiple month"
+    if re.search(r"\b(week|weeks)\b", text):
+        return "seizure free for multiple week"
+    if re.search(r"\b(day|days)\b", text):
+        return "seizure free for multiple day"
     if re.search(r"seizure free since\b", text):
         return "seizure free for multiple month"
     return "seizure free for multiple year"
@@ -582,7 +586,7 @@ def _final_allowed_format_repair(text: str) -> str:
     if _is_allowed_prediction_format(text):
         return text
     if text.startswith("seizure free"):
-        if re.search(r"\b(month|year)\b", text) is None:
+        if re.search(r"\b(day|week|month|year)\b", text) is None:
             return "seizure free for multiple year"
     elif "per " in text and not re.search(r"\b(day|week|month|year)\b", text):
         text = re.sub(r"per\s+\S+\b", "per month", text)
