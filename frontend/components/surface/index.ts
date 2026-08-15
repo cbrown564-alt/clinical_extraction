@@ -18,7 +18,13 @@ export {
   type RenderSpan,
   type HighlightTone,
 } from "./SourceDocument";
-export { ControlBar, ControlField, ControlSelect, LetterPicker } from "./ExplorerControls";
+export {
+  ControlBar,
+  ControlField,
+  ControlSelect,
+  ControlCombobox,
+  LetterPicker,
+} from "./ExplorerControls";
 export {
   formatMetricValue,
   metricTone,

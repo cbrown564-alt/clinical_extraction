@@ -15,6 +15,7 @@ import {
   adjacentPickerValue,
   filterPickerItems,
   highlightedPickerIndex,
+  stepPickerIndex,
   type PickerItem,
 } from "@/lib/controlPicker";
 
@@ -73,7 +74,7 @@ export function ControlField({
   );
 }
 
-/** The single `<select>` styling both explorers use, so pickers never drift. */
+/** Native `<select>` styling, kept for short ungrouped pickers. */
 export function ControlSelect({
   className = "",
   ...props
@@ -89,23 +90,7 @@ export function ControlSelect({
 const controlButtonClass =
   "rounded-md border border-border bg-surface px-1 py-1 text-muted outline-none hover:bg-surface-raised hover:text-foreground focus:border-deterministic disabled:opacity-30";
 
-/**
- * Searchable letter picker with prev/next.
- *
- * Native `<select>` menus are OS-drawn and crop against the chrome when the
- * catalog is long. This combobox opens a scrollable panel under the trigger
- * and lets you jump by typing an id. Prev/next walk the full catalog in order
- * and stop at the ends.
- */
-export function LetterPicker({
-  id,
-  items,
-  value,
-  onChange,
-  disabled = false,
-  placeholder = "Letter…",
-  className = "",
-}: {
+export type ControlComboboxProps = {
   id: string;
   items: readonly PickerItem[];
   value: string;
@@ -113,7 +98,30 @@ export function LetterPicker({
   disabled?: boolean;
   placeholder?: string;
   className?: string;
-}) {
+  /** Singular noun used in aria labels and empty/search copy (`letter`, `method`). */
+  noun?: string;
+  title?: string;
+};
+
+/**
+ * Searchable catalog picker with prev/next.
+ *
+ * Native `<select>` menus are OS-drawn and crop against the chrome when the
+ * catalog is long. This combobox opens a scrollable panel under the trigger
+ * and lets you jump by typing. Prev/next walk the full catalog in order,
+ * skip disabled items, and stop at the ends.
+ */
+export function ControlCombobox({
+  id,
+  items,
+  value,
+  onChange,
+  disabled = false,
+  placeholder,
+  className = "",
+  noun = "item",
+  title,
+}: ControlComboboxProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [highlighted, setHighlighted] = useState(-1);
@@ -132,6 +140,9 @@ export function LetterPicker({
   const selected = items.find((item) => item.value === value);
   const prevValue = disabled ? null : adjacentPickerValue(items, value, -1);
   const nextValue = disabled ? null : adjacentPickerValue(items, value, 1);
+  const closedPlaceholder = placeholder ?? `${noun.charAt(0).toUpperCase()}${noun.slice(1)}…`;
+  const nounPlural = `${noun}s`;
+  const nounLabel = noun.charAt(0).toUpperCase() + noun.slice(1);
 
   useEffect(() => {
     if (catalogKeyRef.current === catalogKey) return;
@@ -174,6 +185,8 @@ export function LetterPicker({
   }
 
   function choose(next: string) {
+    const item = items.find((entry) => entry.value === next);
+    if (!item || item.disabled) return;
     onChange(next);
     close();
     triggerRef.current?.focus();
@@ -198,22 +211,16 @@ export function LetterPicker({
   function onSearchKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      if (filtered.length === 0) return;
-      setHighlighted((index) =>
-        index < 0 ? 0 : Math.min(index + 1, filtered.length - 1)
-      );
+      setHighlighted((index) => stepPickerIndex(filtered, index, 1));
     } else if (event.key === "ArrowUp") {
       event.preventDefault();
-      if (filtered.length === 0) return;
-      setHighlighted((index) =>
-        index < 0 ? filtered.length - 1 : Math.max(index - 1, 0)
-      );
+      setHighlighted((index) => stepPickerIndex(filtered, index, -1));
     } else if (event.key === "Home") {
       event.preventDefault();
-      if (filtered.length > 0) setHighlighted(0);
+      setHighlighted(highlightedPickerIndex(filtered, ""));
     } else if (event.key === "End") {
       event.preventDefault();
-      if (filtered.length > 0) setHighlighted(filtered.length - 1);
+      setHighlighted(stepPickerIndex(filtered, filtered.length, -1));
     } else if (event.key === "Enter") {
       event.preventDefault();
       const item = highlighted >= 0 ? filtered[highlighted] : undefined;
@@ -240,7 +247,7 @@ export function LetterPicker({
     <div ref={rootRef} className={`relative flex min-w-0 items-center gap-0.5 ${className}`}>
       <button
         type="button"
-        aria-label="Previous letter"
+        aria-label={`Previous ${noun}`}
         disabled={!prevValue}
         onClick={() => prevValue && onChange(prevValue)}
         className={controlButtonClass}
@@ -259,10 +266,11 @@ export function LetterPicker({
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={open ? listboxId : undefined}
-        aria-label={selected ? `Letter ${selected.label}` : "Choose letter"}
+        title={title}
+        aria-label={selected ? `${nounLabel} ${selected.label}` : `Choose ${noun}`}
       >
         <span className={`min-w-0 flex-1 truncate ${selected ? "" : "text-muted"}`}>
-          {selected?.label ?? (value || placeholder)}
+          {selected?.label ?? (value || closedPlaceholder)}
         </span>
         <ChevronDown
           className={`h-3 w-3 shrink-0 text-muted transition-transform ${open ? "rotate-180" : ""}`}
@@ -271,7 +279,7 @@ export function LetterPicker({
 
       <button
         type="button"
-        aria-label="Next letter"
+        aria-label={`Next ${noun}`}
         disabled={!nextValue}
         onClick={() => nextValue && onChange(nextValue)}
         className={controlButtonClass}
@@ -287,8 +295,8 @@ export function LetterPicker({
               value={query}
               onChange={(event) => onQueryChange(event.target.value)}
               onKeyDown={onSearchKeyDown}
-              placeholder="Search letters…"
-              aria-label="Search letters"
+              placeholder={`Search ${nounPlural}…`}
+              aria-label={`Search ${nounPlural}`}
               role="combobox"
               aria-autocomplete="list"
               aria-expanded="true"
@@ -302,36 +310,56 @@ export function LetterPicker({
           <div
             id={listboxId}
             role="listbox"
-            aria-label="Letters"
+            aria-label={nounLabel}
             className="max-h-[min(22rem,50vh)] overflow-y-auto"
           >
             {filtered.length === 0 ? (
-              <div className="px-3 py-2 text-[11px] text-muted">No letters match</div>
+              <div className="px-3 py-2 text-[11px] text-muted">No {nounPlural} match</div>
             ) : (
-              filtered.map((item, index) => (
-                <button
-                  key={item.value}
-                  ref={(node) => {
-                    optionRefs.current[index] = node;
-                  }}
-                  type="button"
-                  role="option"
-                  id={optionId(index)}
-                  tabIndex={-1}
-                  aria-selected={item.value === value}
-                  onMouseEnter={() => setHighlighted(index)}
-                  onClick={() => choose(item.value)}
-                  className={`flex w-full px-2.5 py-1.5 text-left text-xs ${
-                    index === highlighted ? "bg-deterministic/8" : "hover:bg-surface-raised"
-                  } ${item.value === value ? "font-medium text-foreground" : "text-foreground"}`}
-                >
-                  {item.label}
-                </button>
-              ))
+              filtered.map((item, index) => {
+                const showGroup = Boolean(item.group) && item.group !== filtered[index - 1]?.group;
+                return (
+                  <div key={item.value}>
+                    {showGroup && (
+                      <div className="px-2.5 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wide text-muted">
+                        {item.group}
+                      </div>
+                    )}
+                    <button
+                      ref={(node) => {
+                        optionRefs.current[index] = node;
+                      }}
+                      type="button"
+                      role="option"
+                      id={optionId(index)}
+                      tabIndex={-1}
+                      disabled={item.disabled}
+                      aria-disabled={item.disabled || undefined}
+                      aria-selected={item.value === value}
+                      onMouseEnter={() => setHighlighted(index)}
+                      onClick={() => choose(item.value)}
+                      className={`flex w-full px-2.5 py-1.5 text-left text-xs ${
+                        item.disabled
+                          ? "cursor-not-allowed text-muted opacity-50"
+                          : index === highlighted
+                            ? "bg-deterministic/8 text-foreground"
+                            : "text-foreground hover:bg-surface-raised"
+                      } ${!item.disabled && item.value === value ? "font-medium" : ""}`}
+                    >
+                      {item.label}
+                    </button>
+                  </div>
+                );
+              })
             )}
           </div>
         </div>
       )}
     </div>
   );
+}
+
+/** Letter catalog picker. Same control as methods, with letter copy. */
+export function LetterPicker(props: Omit<ControlComboboxProps, "noun">) {
+  return <ControlCombobox {...props} noun="letter" />;
 }

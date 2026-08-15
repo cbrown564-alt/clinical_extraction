@@ -26,7 +26,7 @@ import {
 import {
   ControlBar,
   ControlField,
-  ControlSelect,
+  ControlCombobox,
   LetterPicker,
   MethodBadge,
   MetricChips,
@@ -272,6 +272,25 @@ export default function TraceControls() {
     [lettersQuery.data]
   );
 
+  const methodItems = useMemo(
+    () =>
+      pipelineGroups.flatMap((group) =>
+        group.options.map((opt) => ({
+          value: opt.run_id,
+          label:
+            ganPipelineOptionLabel(opt.label) +
+            (opt.availability === "aggregate_only"
+              ? " · aggregate only"
+              : opt.availability === "not_retained"
+                ? " · not retained"
+                : ""),
+          group: group.label,
+          disabled: opt.availability === "not_retained",
+        }))
+      ),
+    [pipelineGroups]
+  );
+
   return (
     <ControlBar
       left={
@@ -281,36 +300,19 @@ export default function TraceControls() {
             {selectedOption?.kind && (
               <MethodBadge method={selectedOption.kind} />
             )}
-            <ControlSelect
+            <ControlCombobox
               id="architect-method-select"
-              className="min-w-0 flex-1 sm:min-w-[220px] sm:flex-none"
+              noun="method"
+              className="min-w-0 flex-1 sm:min-w-[240px] sm:flex-none"
+              items={methodItems}
               value={selectedRunId}
-              onChange={(e) => {
-                const option = pipelineOptions.find((opt) => opt.run_id === e.target.value);
+              onChange={(runId) => {
+                const option = pipelineOptions.find((opt) => opt.run_id === runId);
                 if (option) {
                   setSelectedRunId(option.run_id, option.pipeline_family);
                 }
               }}
-            >
-              {pipelineGroups.map((group) => (
-                <optgroup key={group.method} label={group.label}>
-                  {group.options.map((opt) => (
-                    <option
-                      key={opt.run_id}
-                      value={opt.run_id}
-                      disabled={opt.availability === "not_retained"}
-                    >
-                      {ganPipelineOptionLabel(opt.label)}
-                      {opt.availability === "aggregate_only"
-                        ? " · aggregate only"
-                        : opt.availability === "not_retained"
-                          ? " · not retained"
-                          : ""}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </ControlSelect>
+            />
           </ControlField>
 
           {!isAggregateOnly && (

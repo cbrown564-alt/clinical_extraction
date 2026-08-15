@@ -2,6 +2,7 @@ import {
   adjacentPickerValue,
   filterPickerItems,
   highlightedPickerIndex,
+  stepPickerIndex,
 } from "../controlPicker";
 
 const items = [
@@ -34,6 +35,20 @@ describe("filterPickerItems", () => {
   it("returns an empty list when nothing matches", () => {
     expect(filterPickerItems(items, "zzz")).toEqual([]);
   });
+
+  it("matches a group label so a method family can be found by name", () => {
+    const grouped = [
+      { value: "sol-hybrid", label: "GPT-5.6 Sol", group: "LLM with rules" },
+      { value: "sol-llm", label: "GPT-5.6 Sol", group: "LLM only" },
+      { value: "rules", label: "Deterministic rules", group: "Rules only" },
+    ];
+    expect(filterPickerItems(grouped, "rules only").map((item) => item.value)).toEqual([
+      "rules",
+    ]);
+    expect(filterPickerItems(grouped, "llm only").map((item) => item.value)).toEqual([
+      "sol-llm",
+    ]);
+  });
 });
 
 describe("adjacentPickerValue", () => {
@@ -51,6 +66,17 @@ describe("adjacentPickerValue", () => {
     expect(adjacentPickerValue(items, "EA0000", 1)).toBeNull();
     expect(adjacentPickerValue([], "EA0195", 1)).toBeNull();
   });
+
+  it("skips disabled items so prev/next never land on an unselectable method", () => {
+    const methods = [
+      { value: "hybrid", label: "Sol + rules" },
+      { value: "llm", label: "Sol only", disabled: true },
+      { value: "rules", label: "Deterministic rules" },
+    ];
+    expect(adjacentPickerValue(methods, "hybrid", 1)).toBe("rules");
+    expect(adjacentPickerValue(methods, "rules", -1)).toBe("hybrid");
+    expect(adjacentPickerValue(methods, "hybrid", -1)).toBeNull();
+  });
 });
 
 describe("highlightedPickerIndex", () => {
@@ -61,5 +87,33 @@ describe("highlightedPickerIndex", () => {
   it("falls back to the first match, or -1 when the list is empty", () => {
     expect(highlightedPickerIndex(filterPickerItems(items, "200"), "EA0195")).toBe(0);
     expect(highlightedPickerIndex([], "EA0195")).toBe(-1);
+  });
+
+  it("does not highlight a disabled current value", () => {
+    const methods = [
+      { value: "hybrid", label: "Sol + rules", disabled: true },
+      { value: "rules", label: "Deterministic rules" },
+    ];
+    expect(highlightedPickerIndex(methods, "hybrid")).toBe(1);
+    expect(highlightedPickerIndex(methods.map((item) => ({ ...item, disabled: true })), "hybrid")).toBe(-1);
+  });
+});
+
+describe("stepPickerIndex", () => {
+  const methods = [
+    { value: "a", label: "A" },
+    { value: "b", label: "B", disabled: true },
+    { value: "c", label: "C" },
+  ];
+
+  it("steps to the next enabled item and stays put at the end", () => {
+    expect(stepPickerIndex(methods, 0, 1)).toBe(2);
+    expect(stepPickerIndex(methods, 2, 1)).toBe(2);
+    expect(stepPickerIndex(methods, -1, 1)).toBe(0);
+  });
+
+  it("steps backward over disabled items", () => {
+    expect(stepPickerIndex(methods, 2, -1)).toBe(0);
+    expect(stepPickerIndex(methods, -1, -1)).toBe(2);
   });
 });

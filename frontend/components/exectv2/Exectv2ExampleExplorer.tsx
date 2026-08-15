@@ -18,7 +18,7 @@ import {
   MetricChips,
   ControlBar,
   ControlField,
-  ControlSelect,
+  ControlCombobox,
   LetterPicker,
   ExplorerBody,
   LensStrip,
@@ -779,6 +779,18 @@ export default function Exectv2ExampleExplorer() {
     });
   }, [selectedRun]);
 
+  const methodItems = useMemo(
+    () =>
+      runGroups.flatMap((group) =>
+        group.runs.map((run) => ({
+          value: run.run_id,
+          label: exectv2OptionLabel(run),
+          group: group.label,
+        }))
+      ),
+    [runGroups]
+  );
+
   if (isLoading || selectedRunQuery.isLoading) {
     return <SurfaceLoading message="Loading ExECTv2 data…" />;
   }
@@ -821,23 +833,15 @@ export default function Exectv2ExampleExplorer() {
           <>
             <ControlField label="Method" htmlFor="exect-method-select">
               <Exectv2ModeBadge run={selectedRun} />
-              <ControlSelect
+              <ControlCombobox
                 id="exect-method-select"
+                noun="method"
+                items={methodItems}
                 value={selectedRun.run_id}
                 title={selectedRun.claim_boundary}
-                onChange={(event) => set({ run: event.target.value })}
-                className="min-w-0 flex-1 sm:min-w-[220px] sm:flex-none"
-              >
-                {runGroups.map((group) => (
-                  <optgroup key={group.method} label={group.label}>
-                    {group.runs.map((run) => (
-                      <option key={run.run_id} value={run.run_id}>
-                        {exectv2OptionLabel(run)}
-                      </option>
-                    ))}
-                  </optgroup>
-                ))}
-              </ControlSelect>
+                onChange={(run) => set({ run })}
+                className="min-w-0 flex-1 sm:min-w-[240px] sm:flex-none"
+              />
             </ControlField>
 
             <ControlField label="Letter" htmlFor="exect-letter-select" icon={<FileText className="h-3 w-3 text-muted" />}>
