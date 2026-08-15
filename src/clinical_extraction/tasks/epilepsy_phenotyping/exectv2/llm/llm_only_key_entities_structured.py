@@ -23,6 +23,7 @@ from .pipelines.key_entities_structured import (
     PROMPT_VERSION_V0_9_24,
     PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX,
     PROMPT_VERSION_V0_9_25_LUNA_SF_STATE,
+    PROMPT_VERSION_V10,
     PUBLISHED_PER_ENTITY_ITEM_F1,
     QWEN_COMPACT_PROMPT_VERSION,
     DspyKeyEntitiesStructuredExtractor,

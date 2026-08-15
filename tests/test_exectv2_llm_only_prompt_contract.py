@@ -469,3 +469,36 @@ def test_qwen_compact_prompt_profile_keeps_schema_with_shorter_payload() -> None
         "EEG_Performed": "Yes",
         "EEG_Results": "Abnormal",
     }
+
+
+def test_v10_contract_drops_ledger_examples_and_later_rules() -> None:
+    original = structured.PROMPT_VERSION
+    try:
+        structured.set_active_prompt_version(structured.PROMPT_VERSION_V10)
+        payload = json.loads(structured.build_prompt_input(_LETTER))
+    finally:
+        structured.set_active_prompt_version(original)
+
+    assert payload["prompt_version"] == structured.PROMPT_VERSION_V10
+    assert payload["prompt_version"] != structured.PROMPT_VERSION
+    assert "architecture" not in payload
+    assert "decision_procedure" not in payload
+    assert "candidate_evidence_ledger" not in payload
+    assert "event_lane_guide" not in payload
+    assert "worked_examples" not in payload
+    assert "extra_clinical_guidance" not in payload
+    assert "candidate_evidence_ledger" not in payload["task"]
+    assert len(payload["clinical_rules"]) == 12
+    assert "First classify each candidate_evidence_ledger item" not in " ".join(
+        payload["clinical_rules"]
+    )
+    assert "clinical_events" in payload["output_schema"]
+    assert set(payload["family_guidance"]) == {
+        "medication",
+        "diagnosis",
+        "seizure_frequency",
+        "investigation",
+    }
+    assert "DiagCategory" in payload["attribute_vocabulary"][DIAGNOSIS.name]
+    assert payload["letter_id"] == "TEST001"
+    assert payload["letter_text"] == _NOTE

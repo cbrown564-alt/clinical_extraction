@@ -17,6 +17,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
 )
 
 PROMPT_VERSION_V0_9_24 = "exectv2_hybrid_key_family_event_ledger_v0.9.24"
+PROMPT_VERSION_V10 = "exectv2_hybrid_key_family_event_ledger_v10"
 PROMPT_VERSION_V0_9_25_LUNA_SF_STATE = (
     "exectv2_hybrid_key_family_event_ledger_v0.9.25_luna_sf_state"
 )
@@ -24,12 +25,14 @@ PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX = (
     "exectv2_hybrid_key_family_event_ledger_v0.9.25_luna_sf_boundary_dx"
 )
 # Primary prompt version for the frozen six-model panel. Luna v0.9.25 variants
-# are development candidates only; they must not replace v0.9.24 in place.
+# and the v10 contract study are development candidates only; they must not
+# replace v0.9.24 in place.
 PROMPT_VERSION = PROMPT_VERSION_V0_9_24
 QWEN_COMPACT_PROMPT_VERSION = "exectv2_hybrid_key_family_event_ledger_v0.9.24_qwen_compact"
 _SUPPORTED_FULL_PROMPT_VERSIONS = frozenset(
     {
         PROMPT_VERSION_V0_9_24,
+        PROMPT_VERSION_V10,
         PROMPT_VERSION_V0_9_25_LUNA_SF_STATE,
         PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX,
     }

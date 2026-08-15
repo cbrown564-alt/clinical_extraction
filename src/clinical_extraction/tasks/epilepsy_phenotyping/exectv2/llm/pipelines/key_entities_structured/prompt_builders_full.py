@@ -9,6 +9,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLet
 from .constants import (
     PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX,
     PROMPT_VERSION_V0_9_25_LUNA_SF_STATE,
+    PROMPT_VERSION_V10,
     PromptProfile,
     prompt_version_for,
 )
@@ -41,6 +42,8 @@ def build_full_prompt_input(
         prompt_profile,
         prompt_version=prompt_version,
     )
+    if selected_prompt_version == PROMPT_VERSION_V10:
+        return _build_v10_prompt_input(letter, selected_prompt_version)
     payload = {
         "prompt_version": selected_prompt_version,
         "task": (
@@ -116,3 +119,115 @@ def _luna_extra_guidance(prompt_version: str) -> tuple[str, ...]:
     if prompt_version == PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX:
         return LUNA_SF_BOUNDARY_DX_GUIDANCE
     return ()
+
+
+_V10_TASK = (
+    "Read the clinical letter once. Build a compact list of clinical events "
+    "for medication, diagnosis, seizure frequency, and investigations. Each "
+    "event may render one or more entity mentions when the same clinical fact "
+    "validly belongs to more than one requested family."
+)
+
+_V10_FAMILY_GUIDANCE = {
+    "medication": (
+        "anti-seizure medication events; render Prescription with DrugName, "
+        "DrugDose, DoseUnit, and Frequency when stated."
+    ),
+    "diagnosis": (
+        "epilepsy, focal epilepsy, seizure disorder, or named seizure types; "
+        "render DiagCategory, Certainty, and Negation when supported."
+    ),
+    "seizure_frequency": (
+        "how often a seizure type occurs, including seizure-free duration, "
+        "ranges, cluster cadence, dated counts, and frequency change."
+    ),
+    "investigation": (
+        "EEG, MRI, CT, telemetry; render performed / result / type attributes."
+    ),
+}
+
+_V10_CLINICAL_RULES = [
+    (
+        "Use one event per medication, diagnostic concept, seizure-rate "
+        "statement, or test."
+    ),
+    "Both anchor_text and evidence must be exact substrings of the letter.",
+    "Every rendered mention text must be an exact substring of the letter.",
+    (
+        "Named seizure types can render both Diagnosis and SeizureFrequency "
+        "when the letter states both the type and a rate or seizure-free state."
+    ),
+    (
+        "Do not force a single entity if the same fact belongs to more than "
+        "one requested family; render each valid entity separately."
+    ),
+    (
+        "For diagnosis, split compound seizure clauses into atomic diagnostic "
+        "concepts when the letter names more than one seizure type."
+    ),
+    (
+        "SeizureFrequency mention text is the seizure-type anchor; counts and "
+        "dates live in event_state or attributes."
+    ),
+    (
+        "Medication mention text is the drug name where possible; dose and "
+        "frequency live in attributes."
+    ),
+    (
+        "Use one investigation event per modality; performed, result, and type "
+        "live in attributes."
+    ),
+    "Do not invent CUI values.",
+    'If nothing requested is present, return {"clinical_events": []}.',
+    "Return exactly one JSON object. Do not wrap it in markdown fences.",
+]
+
+
+def _build_v10_prompt_input(letter: ExectLetter, prompt_version: str) -> str:
+    payload = {
+        "prompt_version": prompt_version,
+        "task": _V10_TASK,
+        "output_schema": {
+            "clinical_events": [
+                {
+                    "family": (
+                        "medication | diagnosis | seizure_frequency | investigation"
+                    ),
+                    "anchor_text": (
+                        "Short exact substring naming the clinical event. Use the "
+                        "family guidance below."
+                    ),
+                    "evidence": (
+                        "Exact clause or sentence copied from the letter that "
+                        "supports the event and all rendered mentions."
+                    ),
+                    "event_state": (
+                        "Source-near state for clinical reasoning, such as "
+                        "medication dose/frequency, diagnostic assertion, "
+                        "seizure rate, or test result. Values must be strings."
+                    ),
+                    "mentions": [
+                        {
+                            "entity": (
+                                "One of Prescription, Diagnosis, "
+                                "SeizureFrequency, Investigations."
+                            ),
+                            "text": (
+                                "Short exact substring used for scoring this "
+                                "entity."
+                            ),
+                            "attributes": "Only attributes legal for that entity.",
+                        }
+                    ],
+                    "confidence": "low | medium | high",
+                    "rationale": "One brief sentence explaining the event.",
+                }
+            ]
+        },
+        "family_guidance": dict(_V10_FAMILY_GUIDANCE),
+        "attribute_vocabulary": _attribute_vocabulary(),
+        "clinical_rules": list(_V10_CLINICAL_RULES),
+        "letter_id": letter.letter_id,
+        "letter_text": letter.note_text,
+    }
+    return json.dumps(payload, ensure_ascii=False, sort_keys=True)
