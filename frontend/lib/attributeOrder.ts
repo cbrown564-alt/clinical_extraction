@@ -16,8 +16,8 @@ const FAMILY_PAYLOAD_ORDER: Record<string, readonly string[]> = {
   Diagnosis: ["DiagCategory"],
   Prescription: ["DrugName", "DrugDose", "DoseUnit", "Frequency"],
   Investigations: [
-    "CT_Performed",
     "CT_Results",
+    "CT_Performed",
     "EEG_Performed",
     "EEG_Results",
     "EEG_Type",

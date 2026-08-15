@@ -48,6 +48,12 @@ describe("sortedAttributeKeys", () => {
     ]);
   });
 
+  it("puts CT results before performed", () => {
+    expect(
+      sortedAttributeKeys(["CT_Performed", "CUI", "CT_Results", "CUIPhrase"], "Investigations")
+    ).toEqual(["CUI", "CUIPhrase", "CT_Results", "CT_Performed"]);
+  });
+
   it("ranks identity, primary, payload, and qualifier separately", () => {
     expect(attributeRank("CUI", "Diagnosis")).toBe("identity");
     expect(attributeRank("DiagCategory", "Diagnosis")).toBe("primary");
