@@ -104,9 +104,9 @@ function attributeNameClass(rank: AttributeRank, family: string): string {
   return "text-muted";
 }
 
-function attributeValueClass(rank: AttributeRank): string {
+function attributeValueClass(rank: AttributeRank, family: string): string {
   if (rank === "identity" || rank === "qualifier") return "text-muted";
-  if (rank === "primary") return "text-foreground font-medium";
+  if (rank === "primary") return `${familyTextClass(family)} font-medium`;
   return "text-foreground";
 }
 
@@ -409,7 +409,7 @@ function AttributeDiffTable({
             const isExtraInPred = gVal === undefined && pVal !== undefined;
             const rank = attributeRank(key, family);
             const nameTone = attributeNameClass(rank, family);
-            const valueTone = attributeValueClass(rank);
+            const valueTone = attributeValueClass(rank, family);
 
             return (
               <tr
@@ -538,7 +538,7 @@ function MentionRow({
             return (
               <span
                 key={`${mention.id}:${key}`}
-                className={`rounded border border-border bg-surface-raised px-1.5 py-0.5 font-mono text-[10px] ${attributeValueClass(rank)}`}
+                className={`rounded border border-border bg-surface-raised px-1.5 py-0.5 font-mono text-[10px] ${attributeValueClass(rank, mention.entity)}`}
                 title={`${key}: ${value}`}
               >
                 {key}: {value}
