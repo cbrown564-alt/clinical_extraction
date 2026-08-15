@@ -467,7 +467,7 @@ def diagnosis_convention_attribute_repairs(
     return repaired
 
 
-_Finding = TypeVar("_Finding", bound=Mapping[str, Any])
+_Finding = TypeVar("_Finding")
 
 _JME_SYNDROME = "juvenile myoclonic epilepsy"
 _JME_COVERED_PHENOTYPES = frozenset(

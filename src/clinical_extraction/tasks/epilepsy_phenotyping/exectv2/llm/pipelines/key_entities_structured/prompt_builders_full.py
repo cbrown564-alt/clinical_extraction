@@ -787,12 +787,30 @@ def _build_v17_prompt_input(letter: ExectLetter) -> str:
                                 "One of Prescription, Diagnosis, "
                                 "SeizureFrequency, Investigations."
                             ),
-                            "text": "Short exact substring used for scoring.",
+                            "text": "Short exact substring for this mention.",
                             "attributes": "Only attributes legal for that entity.",
                         }
                     ],
                     "confidence": "Optional. low | medium | high",
                     "rationale": "Optional. One short sentence.",
+                }
+            ],
+            "patient_history": [
+                {
+                    "span": (
+                        "Exact short span diverted from the Diagnosis or "
+                        "SeizureFrequency answer."
+                    ),
+                    "kind": (
+                        "unclassified_event | non_epileptic_event | febrile_event | "
+                        "generic_jerk_or_absence | comorbidity"
+                    ),
+                }
+            ],
+            "medication_history": [
+                {
+                    "span": "Exact short span diverted from the Prescription answer.",
+                    "kind": "planned_medication | past_medication",
                 }
             ]
         },
@@ -802,4 +820,28 @@ def _build_v17_prompt_input(letter: ExectLetter) -> str:
         "worked_examples": load_v16_shape_examples(),
         "letter_text": letter.note_text,
     }
+    payload["clinical_rules"] = [
+        *payload["clinical_rules"],
+        (
+            "Use patient_history as a sink instead of Diagnosis or SeizureFrequency "
+            "for unrelated events: events, episodes, collapses, blackouts, TLOC, "
+            "seizure-like events; explicit NES or dissociative events; febrile events "
+            "whether affirmed or denied; generic jerks or absences only when they "
+            "are not a named epileptic type; and anxiety, depression, alcohol, "
+            "migraine, or headache leaking into Diagnosis."
+        ),
+        (
+            "Do not put named seizure types, seizure-free statements, numbered "
+            "current rates, current anti-seizure medicines, or completed tests in "
+            "patient_history. A generic seizure with a real rate and a last-event "
+            "zero for a type the patient has remain SeizureFrequency facts; "
+            "do not divert them."
+        ),
+        (
+            "Use medication_history instead of Prescription for planned, requested, "
+            "future, stopped, or previously tried medicines. Keep current medicines "
+            "in the Prescription family."
+        ),
+        "Sink entries are logged only and are not clinical_events or output mentions.",
+    ]
     return json.dumps(payload, ensure_ascii=False)

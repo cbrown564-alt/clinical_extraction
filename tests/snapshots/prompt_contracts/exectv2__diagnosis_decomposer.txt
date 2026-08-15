@@ -1,7 +1,5 @@
 {
   "attribute_vocabulary": {
-    "CUI": "Do not emit this; deterministic projection fills it later.",
-    "CUIPhrase": "Do not emit this; deterministic projection fills it later.",
     "Certainty": [
       "1",
       "2",
@@ -28,7 +26,6 @@
     "Return only Diagnosis mentions. Do not emit Prescription, SF, or Investigations.",
     "Every final evidence value must be an exact substring of the letter.",
     "Diagnosis text may be a normalized core clinical concept phrase even when the source expresses it with hedging, punctuation, abbreviation, or discontinuous wording. The evidence must still be exact.",
-    "Do not emit CUI or CUIPhrase; projection is a separate deterministic layer.",
     "Render only the core clinical concept span in text. Strip section labels, dashes, hedging words, 'single' in simple single-seizure phrases, and explanatory context. Do not strip 'alone' from an epilepsy-with-generalised-tonic-clonic-seizures-alone syndrome.",
     "Diagnosis clinical recovery is multi-concept. If an exact evidence span explicitly contains the word epilepsy, emit a generic 'epilepsy' mention with the certainty carried by that word even when the same span also supports focal, generalised, symptomatic structural, JME, or another more specific epilepsy concept.",
     "For diagnosis headings such as 'epilepsy - probable focal' or 'Epilepsy - unclassified, possibly generalised', emit both the explicit generic epilepsy concept with Certainty='5' and the uncertain specific concept with Certainty='4' or '3'.",

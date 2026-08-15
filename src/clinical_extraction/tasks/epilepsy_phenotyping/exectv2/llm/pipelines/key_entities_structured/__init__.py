@@ -87,7 +87,9 @@ from .prompt_content import (
     high_priority_evidence_ledger_for_letter,
 )
 from .records import (
+    MedicationHistoryRecord,
     MentionForEvidence,
+    PatientHistoryRecord,
     RenderedMentionRecord,
     StructuredClinicalEvent,
     StructuredExtractionRecord,
@@ -123,6 +125,8 @@ __all__ = [
     "KEY_ENTITY_ITEM_F1_TARGET",
     "KEY_ENTITY_NAMES",
     "MentionForEvidence",
+    "MedicationHistoryRecord",
+    "PatientHistoryRecord",
     "PIPELINE_FAMILY",
     "PROMPT_VERSION",
     "PROMPT_VERSION_V0_9_24",

@@ -316,7 +316,13 @@ def test_hybrid_dev140_replay_matches_independent_prechange_oracle() -> None:
         for field in BASELINE_FIELDS:
             actual_value = producer.row.get(field)
             source_value = source.get(field)
-            if field in {"initial_parse_errors", "format_retry_output", "format_retry_notes"}:
+            if field == "prompt_input_json":
+                continue
+            if field in {
+                "initial_parse_errors",
+                "format_retry_output",
+                "format_retry_notes",
+            }:
                 actual_value = _normalise_empty_layer(actual_value)
                 source_value = _normalise_empty_layer(source_value)
             if field == "predicted_mentions":
@@ -399,7 +405,13 @@ def test_hybrid_dev140_replay_matches_independent_prechange_oracle() -> None:
         parity.append(
             {
                 "letter_id": letter.letter_id,
-                "producer": dict(producer.row),
+                # Prompt rendering has its own snapshots and may change
+                # without changing replayed clinical output.
+                "producer": {
+                    key: value
+                    for key, value in producer.row.items()
+                    if key != "prompt_input_json"
+                },
                 "prediction": [
                     _clinical_mention(mention) for mention in result.prediction.mentions
                 ],

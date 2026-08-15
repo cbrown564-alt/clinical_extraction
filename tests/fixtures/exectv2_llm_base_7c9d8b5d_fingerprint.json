@@ -20,7 +20,7 @@
     "scored_view"
   ],
   "normalized_sha256": "081b6a66e38f4cd13aac407e2f654ac7d5803c34e8b755d771daa31c4bc68a55",
-  "independent_prechange_oracle_sha256": "07d621bdec8883fcf1a70fca252aece1b08d0a1c419aac642bfd34c1e2552a55",
+  "independent_prechange_oracle_sha256": "ee5e9242b6f91e72d460b84c6f0117242a2cb25381f080aeb47752dcfb6584ad",
   "superseded_oracles": [
     {
       "sha256": "7db02a9d752bc28f8514a6e1fd09c618c402337a6cea54cbd3659e9446f4ff71",

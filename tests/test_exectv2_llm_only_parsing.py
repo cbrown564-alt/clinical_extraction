@@ -51,6 +51,36 @@ def test_parse_structured_events_coerces_nested_values() -> None:
     assert any("coerced_attribute_value" in error for error in errors)
 
 
+def test_sink_fields_are_parsed_but_never_flattened_into_scored_mentions() -> None:
+    raw = json.dumps(
+        {
+            "clinical_events": [],
+            "patient_history": [
+                {"span": "blackouts", "kind": "unclassified_event"},
+                {"span": "migraine", "kind": "comorbidity"},
+            ],
+            "medication_history": [
+                {"span": "previously tried levetiracetam", "kind": "past_medication"},
+                {"span": "plan to start lamotrigine", "kind": "planned_medication"},
+            ],
+        }
+    )
+
+    record, errors = structured.parse_structured_events_json(raw)
+
+    assert errors == []
+    assert record is not None
+    assert [item.model_dump() for item in record.patient_history] == [
+        {"span": "blackouts", "kind": "unclassified_event"},
+        {"span": "migraine", "kind": "comorbidity"},
+    ]
+    assert [item.model_dump() for item in record.medication_history] == [
+        {"span": "previously tried levetiracetam", "kind": "past_medication"},
+        {"span": "plan to start lamotrigine", "kind": "planned_medication"},
+    ]
+    assert structured.flatten_events(record) == []
+
+
 def test_parse_structured_events_drops_unknown_event_family_without_coercion() -> None:
     raw = json.dumps(
         {

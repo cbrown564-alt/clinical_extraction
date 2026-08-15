@@ -876,7 +876,24 @@ def test_v17_contract_removes_metadata_and_preserves_semantic_order() -> None:
     assert "letter_id" not in payload
     assert payload["letter_text"] == _LETTER.note_text
     assert len(payload["worked_examples"]) == 8
+    schema = payload["output_schema"]
+    assert set(schema) == {"clinical_events", "patient_history", "medication_history"}
+    assert schema["patient_history"][0]["kind"].split(" | ") == [
+        "unclassified_event",
+        "non_epileptic_event",
+        "febrile_event",
+        "generic_jerk_or_absence",
+        "comorbidity",
+    ]
+    assert schema["medication_history"][0]["kind"] == (
+        "planned_medication | past_medication"
+    )
     instructions = _prompt_fields_without_letter(payload).lower()
+    assert "instead of diagnosis or seizurefrequency" in instructions
+    assert "generic seizure with a real rate" in instructions
+    assert "last-event zero" in instructions
+    assert "instead of prescription" in instructions
+    assert "not clinical_events or output mentions" in instructions
     assert "source-near" not in instructions
     assert "benchmark" not in instructions
     assert "scored" not in instructions

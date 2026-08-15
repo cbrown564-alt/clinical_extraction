@@ -192,6 +192,12 @@ def produce_structured_letter(
         "structured_events": [
             event.model_dump() for event in (record.clinical_events if record else [])
         ],
+        "patient_history": [
+            item.model_dump() for item in (record.patient_history if record else [])
+        ],
+        "medication_history": [
+            item.model_dump() for item in (record.medication_history if record else [])
+        ],
         "predicted_mentions": [_mention_to_row(mention) for mention in projected.mentions],
         "gold_mentions": [],
     }

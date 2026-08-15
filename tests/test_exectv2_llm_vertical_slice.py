@@ -405,6 +405,9 @@ def test_exect_llm_independent_dev140_raw_lane_parity_is_pinned() -> None:
                 "initial_parse_errors",
                 "format_retry_output",
                 "format_retry_notes",
+                # The rendered request is intentionally allowed to evolve;
+                # prompt contract snapshots own that surface.
+                "prompt_input_json",
                 "predicted_mentions",
             }:
                 continue

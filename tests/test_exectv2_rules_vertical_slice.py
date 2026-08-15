@@ -108,7 +108,7 @@ def test_exect_rules_active_runner_matches_governed_independent_dev_base_fingerp
             }
         )
 
-    assert expected["source_commit"] == "264237bd"
+    assert expected["source_commit"] == "e903c9e3"
     assert expected["row_count"] == 140
     assert len(letters) == expected["row_count"]
     assert _fingerprint(extraction) == expected["extraction_sha256"]

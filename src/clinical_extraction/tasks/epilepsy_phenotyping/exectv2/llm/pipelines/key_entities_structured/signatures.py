@@ -1,7 +1,4 @@
-"""DSPy signature and module for the structured-event extractor.
-
-Pure relocation from ``llm_only_key_entities_structured``. No logic changes.
-"""
+"""DSPy signature, request adapter, and module for structured-event extraction."""
 
 from __future__ import annotations
 

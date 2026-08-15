@@ -314,6 +314,8 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
 
     n_mentions_raw = sum(int(r.get("n_mentions_raw", 0)) for r in rows)
     n_evidence_invalid = sum(int(r.get("n_evidence_invalid", 0)) for r in rows)
+    n_patient_history = sum(len(r.get("patient_history", [])) for r in rows)
+    n_medication_history = sum(len(r.get("medication_history", [])) for r in rows)
     gold_letters = _reconstruct_letters(rows, key="gold_mentions")
     pred_letters = _reconstruct_letters(rows, key="predicted_mentions")
 
@@ -347,6 +349,8 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
         ),
         "n_events_raw": sum(int(r.get("n_events_raw", 0)) for r in rows),
         "n_mentions_raw": n_mentions_raw,
+        "n_patient_history": n_patient_history,
+        "n_medication_history": n_medication_history,
         "n_mentions_scored": sum(int(r.get("n_mentions_scored", 0)) for r in rows),
         "n_evidence_invalid": n_evidence_invalid,
         "evidence_validity_rate": (
@@ -411,6 +415,8 @@ def write_report(
             f"- Format retries rejected: {summary.get('format_retries_rejected', 0)}",
             f"- Clinical events raw: {summary.get('n_events_raw', 0)}",
             f"- Mentions raw: {summary.get('n_mentions_raw', 0)}",
+            f"- Patient-history sink entries: {summary.get('n_patient_history', 0)}",
+            f"- Medication-history sink entries: {summary.get('n_medication_history', 0)}",
             f"- Mentions scored: {summary.get('n_mentions_scored', 0)}",
             f"- Evidence-invalid dropped: {summary.get('n_evidence_invalid', 0)}",
             f"- Evidence validity rate: {summary.get('evidence_validity_rate', 0.0):.4f}",

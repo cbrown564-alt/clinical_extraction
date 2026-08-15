@@ -6,8 +6,6 @@
   },
   "attribute_vocabulary": {
     "Diagnosis": {
-      "CUI": "UMLS CUI only if explicitly available; otherwise omit.",
-      "CUIPhrase": "Clean phrase only if explicitly available; otherwise omit.",
       "Certainty": [
         "1",
         "2",
@@ -36,8 +34,6 @@
         "Normal",
         "Unknown"
       ],
-      "CUI": "UMLS CUI only if explicitly available; otherwise omit.",
-      "CUIPhrase": "Clean phrase only if explicitly available; otherwise omit.",
       "EEG_Performed": [
         "No",
         "Yes"
@@ -63,8 +59,6 @@
       ]
     },
     "Prescription": {
-      "CUI": "UMLS CUI only if explicitly available; otherwise omit.",
-      "CUIPhrase": "Clean phrase only if explicitly available; otherwise omit.",
       "DoseUnit": [
         "g",
         "mg"
@@ -85,8 +79,6 @@
         "Year"
       ],
       "AgeUpper": "string copied or normalized from the letter.",
-      "CUI": "UMLS CUI only if explicitly available; otherwise omit.",
-      "CUIPhrase": "Clean phrase only if explicitly available; otherwise omit.",
       "Certainty": [
         "1",
         "2",
@@ -212,7 +204,7 @@
     "For diagnosis, use DiagCategory='Epilepsy' for epilepsy syndromes or diagnoses. Use DiagCategory='SingleSeizure' for one singular named seizure event such as 'focal seizure'. Use DiagCategory='MultipleSeizures' for plural named seizure types such as 'focal seizures' or 'generalised tonic clonic seizures', and for phrases that represent multiple seizure types or recurrent seizures as a category.",
     "Keep plural seizure-type wording plural in Diagnosis text. Source phrases such as 'absence like seizures' or 'absence-like seizures' render as plural Diagnosis text with DiagCategory='MultipleSeizures', not singular 'absence like seizure'.",
     "For seizure frequency, mention text is only the seizure-type anchor; do not include counts, dates, or the words 'seizure frequency' in text. event_state and attributes carry counts, periods, dates, and changes.",
-    "Never emit a SeizureFrequency mention with empty attributes, only Negation, or only CUI/CUIPhrase. A valid SeizureFrequency mention must include a frequency-state attribute such as NumberOfSeizures, LowerNumberOfSeizures, FrequencyChange, TimeSince_or_TimeOfEvent, PointInTime, DayDate, MonthDate, YearDate, AgeLower, or AgeUpper.",
+    "Never emit a SeizureFrequency mention with empty attributes or only Negation. A valid SeizureFrequency mention must include a frequency-state attribute such as NumberOfSeizures, LowerNumberOfSeizures, FrequencyChange, TimeSince_or_TimeOfEvent, PointInTime, DayDate, MonthDate, YearDate, AgeLower, or AgeUpper.",
     "For SeizureFrequency anchors, use the generic seizure phrase when the count refers to seizures generally; use a named seizure type only when the count explicitly belongs to that type.",
     "SF recall: Seizure type and frequency headings are high-value evidence. If a heading says 'seizures every 3 to 4 weeks', 'several seizures since last clinic', '2 generalised tonic clonic seizures 2014', or a named seizure type plus a date, render a SeizureFrequency mention for that anchor even when the count is approximate or dated. Do not replace a heading frequency with a later vague narrative estimate unless the later statement is an explicit newer quantified correction.",
     "When a seizure-frequency heading names a plural seizure type followed only by a year or date, treat it as one dated occurrence of that named type unless another count is attached to that same type. For example, 'absence like seizures 2014' has NumberOfSeizures='1', YearDate='2014', and TimeSince_or_TimeOfEvent='During'.",
@@ -259,8 +251,7 @@
     "Phrases such as 'EEG did show temporal slowing', 'EEG has shown spike and wave', or 'MRI does show signal change' are completed abnormal investigation results.",
     "For investigation text, use the shortest exact modality phrase: 'MRI scan' if those words occur together, otherwise 'MRI'; likewise 'EEG' or 'CT'. Do not include dates or results in text.",
     "Only include EEG_Type when the letter explicitly says sleep-deprived EEG or video telemetry. Do not default a plain EEG to Standard.",
-    "Every rendered mention object must include both entity and text. Do not emit projection-only companion mentions such as objects with only CUI/CUIPhrase attributes; omit CUI and CUIPhrase unless they are explicitly available in the source.",
-    "Do not invent CUI values. If a CUI is not explicitly available, omit it.",
+    "Every rendered mention object must include both entity and text.",
     "If no requested findings are present, return {\"clinical_events\": []}.",
     "Return exactly one JSON object. No markdown code fences."
   ],

@@ -39,12 +39,42 @@ class StructuredClinicalEvent(BaseModel):
     rationale: str = ""
 
 
+PatientHistoryKind = Literal[
+    "unclassified_event",
+    "non_epileptic_event",
+    "febrile_event",
+    "generic_jerk_or_absence",
+    "comorbidity",
+]
+MedicationHistoryKind = Literal["planned_medication", "past_medication"]
+
+
+class PatientHistoryRecord(BaseModel):
+    """Unscored SF/Dx spillover retained for diversion diagnostics."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    span: str
+    kind: PatientHistoryKind
+
+
+class MedicationHistoryRecord(BaseModel):
+    """Unscored planned or past medication retained for diversion diagnostics."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    span: str
+    kind: MedicationHistoryKind
+
+
 class StructuredExtractionRecord(BaseModel):
     """Structured output for one letter."""
 
     model_config = ConfigDict(extra="ignore")
 
     clinical_events: list[StructuredClinicalEvent] = []
+    patient_history: list[PatientHistoryRecord] = []
+    medication_history: list[MedicationHistoryRecord] = []
 
 
 class MentionForEvidence(BaseModel):

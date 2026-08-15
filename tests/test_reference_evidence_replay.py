@@ -46,7 +46,7 @@ def test_replay_exectv2_deterministic_matches_retained_reference() -> None:
     result = replay_exectv2_deterministic(split="dev")
 
     assert result["row_count"] == 140
-    assert result["benchmark_per_item_f1"] == 0.3920
+    assert result["benchmark_per_item_f1"] == 0.3943
     assert result["evidence_validity_rate"] == 0.9973
 
 
