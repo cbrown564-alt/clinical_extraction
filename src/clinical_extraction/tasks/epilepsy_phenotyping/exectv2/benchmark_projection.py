@@ -125,7 +125,10 @@ _DIAGNOSIS_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = (
         ("symptomatic epilepsy",),
     ),
     (
-        BenchmarkConcept("Epilepsy", "C0014547", "symptomatic structural focal epilepsy"),
+        # Gold uses C0472349 for this CUIPhrase (13/13 dev140 mentions), not
+        # focal-epilepsy C0014547. C0472349 is also gold for "symptomatic
+        # focal epilepsy"; keep distinct CUIPhrase surfaces.
+        BenchmarkConcept("Epilepsy", "C0472349", "symptomatic structural focal epilepsy"),
         ("symptomatic structural focal epilepsy",),
     ),
     (

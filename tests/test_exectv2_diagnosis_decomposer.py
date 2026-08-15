@@ -25,6 +25,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    standard_dictionary as sd,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     diagnosis_decomposer as decomposer,
 )
@@ -229,6 +232,54 @@ def test_diagnosis_residual_gtcs_receives_benchmark_cui() -> None:
     assert finding is not None
     assert finding.attributes.get("CUI") == "C0494475"
     assert finding.attributes.get("CUIPhrase") == "generalised-tonic-clonic-seizures"
+
+
+def test_symptomatic_structural_focal_epilepsy_uses_gold_cui() -> None:
+    """Gold CUI for this phrase is C0472349, not focal-epilepsy C0014547."""
+
+    structural = diagnosis_concept("symptomatic structural focal epilepsy")
+    hyphenated = diagnosis_concept("symptomatic-structural-focal-epilepsy")
+    symptomatic_focal = diagnosis_concept("symptomatic focal epilepsy")
+    focal = diagnosis_concept("focal epilepsy")
+    assert structural is not None and hyphenated is not None
+    assert symptomatic_focal is not None and focal is not None
+    assert structural.cui == hyphenated.cui == "C0472349"
+    assert structural.cui_phrase == "symptomatic structural focal epilepsy"
+    assert symptomatic_focal.cui == "C0472349"
+    assert symptomatic_focal.cui_phrase == "symptomatic-focal-epilepsy"
+    assert focal.cui == "C0014547"
+
+    target = sd.diagnosis_convention_target(
+        "Symptomatic structural epilepsy",
+        "Diagnosis: Symptomatic structural epilepsy",
+    )
+    assert target == "symptomatic structural focal epilepsy"
+    rewritten = diagnosis_concept(target)
+    assert rewritten is not None
+    assert rewritten.cui == "C0472349"
+
+    projected = project_cuis(
+        PredictedLetter(
+            letter_id="EA0133",
+            mentions=(
+                PredictedMention(
+                    entity=DIAGNOSIS.name,
+                    text="symptomatic structural focal epilepsy",
+                    attributes={
+                        "CUI": "C0014547",
+                        "CUIPhrase": "symptomatic structural focal epilepsy",
+                        "DiagCategory": "Epilepsy",
+                    },
+                    evidence="Diagnosis: Symptomatic structural epilepsy",
+                ),
+            ),
+        )
+    )
+    assert projected.mentions[0].attributes["CUI"] == "C0472349"
+    assert (
+        projected.mentions[0].attributes["CUIPhrase"]
+        == "symptomatic structural focal epilepsy"
+    )
 
 
 def test_genetic_and_primary_generalised_epilepsy_share_cui_keep_surface() -> None:
