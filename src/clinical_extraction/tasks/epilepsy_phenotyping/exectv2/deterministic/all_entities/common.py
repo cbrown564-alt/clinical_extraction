@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     BIRTH_HISTORY,
     DIAGNOSIS,
@@ -25,10 +27,10 @@ def _sentence_start(text: str, start: int) -> int:
 
 
 def _canonical_modality(surface: str) -> str:
-    upper = surface.upper()
-    if upper.startswith("EEG"):
+    upper = re.sub(r"[\s-]+", " ", surface).upper()
+    if upper.startswith("EEG") or upper.startswith("VEEG") or upper.startswith("VIDEO EEG"):
         return "EEG"
-    if upper.startswith("MRI"):
+    if upper.startswith("MR"):
         return "MRI"
     return "CT"
 
