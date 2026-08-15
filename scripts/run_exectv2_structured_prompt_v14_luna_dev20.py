@@ -5,6 +5,8 @@
 alone.
 """
 
+# ruff: noqa: E501
+
 from __future__ import annotations
 
 import argparse
@@ -276,17 +278,127 @@ def run_study(
 
 
 def _render_report(artifact: Mapping[str, Any]) -> str:
-    del artifact
-    return (
-        "# Luna `dev20` test of ExECT v14 SF roles\n\n"
-        "Date: 2026-08-15\n"
-        "Status: protocol frozen; live arm not run\n"
-        f"Protocol: [{PROTOCOL}]({Path(PROTOCOL).name})\n"
-        "Model: `openai/gpt-5.6-luna`\n"
-        "Sample: frozen 20 letters from ExECT `dev140`; `test60` not touched\n\n"
-        "## Boundary\n\n"
-        "Not `test60`. Not a selected prompt. Not a fill.\n"
+    live = bool(artifact["live"])
+    decision = artifact["decision"]
+    sample = artifact["sample"]
+    ctrl = artifact["arms"]["v0924_head"]
+    mech = artifact["arms"]["v13_head"]
+    cand = artifact["arms"].get("v14_live")
+    bands = "\n".join(
+        f"- **{band}:** {', '.join(ids)}" for band, ids in sample["bands"].items()
     )
+    if not live:
+        status = "no-call check complete; live arm not run"
+        verdict = (
+            "Live Luna is not authorized by the protocol alone. "
+            "The two no-call arms are scored through HEAD."
+        )
+        live_tables = (
+            "Live arm not run. `v14_live` scores, the topology decision, "
+            "and paired deltas versus `v0924_head` / `v13_head` are absent."
+        )
+    else:
+        status = f"complete; {decision['verdict']}"
+        verdict = (
+            f"**{decision['verdict']}.** This is not a promotion and not a "
+            "benchmark score. Failures: "
+            + (", ".join(decision.get("failures") or ["none"]) + ".")
+        )
+        vs_ctrl = artifact["comparison"]["v14_live_minus_v0924_head"]
+        vs_mech = artifact["comparison"]["v14_live_minus_v13_head"]
+        raw = vs_ctrl["surfaces"]["raw"]
+        hybrid = vs_ctrl["surfaces"]["hybrid"]
+        hybrid_v13 = vs_mech["surfaces"]["hybrid"]
+        live_tables = f"""## Headline F1 on the 20-letter pool
+
+| Surface | v0.9.24 HEAD | v13 HEAD | v14 live | v14 − v0.9.24 | v14 − v13 |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| raw | {ctrl["raw_headline_f1"]:.4f} | {mech["raw_headline_f1"]:.4f} | {cand["raw_headline_f1"]:.4f} | {raw["headline_f1_delta"]:+.4f} | {vs_mech["surfaces"]["raw"]["headline_f1_delta"]:+.4f} |
+| hybrid | {ctrl["hybrid_headline_f1"]:.4f} | {mech["hybrid_headline_f1"]:.4f} | {cand["hybrid_headline_f1"]:.4f} | {hybrid["headline_f1_delta"]:+.4f} | {hybrid_v13["headline_f1_delta"]:+.4f} |
+
+## Family F1 delta (hybrid)
+
+| Family | v14 − v0.9.24 | v14 − v13 |
+| :--- | ---: | ---: |
+| Diagnosis | {hybrid["family_f1_delta"]["Diagnosis"]:+.4f} | {hybrid_v13["family_f1_delta"]["Diagnosis"]:+.4f} |
+| SeizureFrequency | {hybrid["family_f1_delta"]["SeizureFrequency"]:+.4f} | {hybrid_v13["family_f1_delta"]["SeizureFrequency"]:+.4f} |
+| Prescription | {hybrid["family_f1_delta"]["Prescription"]:+.4f} | {hybrid_v13["family_f1_delta"]["Prescription"]:+.4f} |
+| Investigations | {hybrid["family_f1_delta"]["Investigations"]:+.4f} | {hybrid_v13["family_f1_delta"]["Investigations"]:+.4f} |
+
+## Four-family letter-exact wins / losses (v14 vs v0.9.24)
+
+| Surface | wins | losses | net |
+| :--- | ---: | ---: | ---: |
+| raw | {raw["four_family_letter_exact_wins"]} | {raw["four_family_letter_exact_losses"]} | {raw["four_family_letter_exact_net"]} |
+| hybrid | {hybrid["four_family_letter_exact_wins"]} | {hybrid["four_family_letter_exact_losses"]} | {hybrid["four_family_letter_exact_net"]} |
+
+## SF encoding rewrites on model NumberOfSeizures
+
+| Arm | several | few | range split | interval → 1 |
+| :--- | ---: | ---: | ---: | ---: |
+| v0.9.24 HEAD | {ctrl["sf_encoding_rewrites"]["several"]} | {ctrl["sf_encoding_rewrites"]["few"]} | {ctrl["sf_encoding_rewrites"]["range_split"]} | {ctrl["sf_encoding_rewrites"]["interval_missing_1"]} |
+| v13 HEAD | {mech["sf_encoding_rewrites"]["several"]} | {mech["sf_encoding_rewrites"]["few"]} | {mech["sf_encoding_rewrites"]["range_split"]} | {mech["sf_encoding_rewrites"]["interval_missing_1"]} |
+| v14 live | {cand["sf_encoding_rewrites"]["several"]} | {cand["sf_encoding_rewrites"]["few"]} | {cand["sf_encoding_rewrites"]["range_split"]} | {cand["sf_encoding_rewrites"]["interval_missing_1"]} |
+"""
+    return f"""# Luna `dev20` test of ExECT v14 SF roles
+
+Date: 2026-08-15
+Status: {status}
+Protocol: [structured_prompt_v14_luna_dev20_protocol_2026-08-15.md](structured_prompt_v14_luna_dev20_protocol_2026-08-15.md)
+Model: `{artifact["model"]}`
+Sample: frozen 20 letters from ExECT `dev140` (same IDs as v10–v13); `test60` not touched
+
+## Verdict
+
+{verdict}
+
+This study cannot promote v14 or change a fill.
+
+## Frozen sample
+
+Copied from the v10 freeze. Lowest `letter_id` within each band;
+`EA0133` forced into hard. Not redrawn after scoring.
+
+{bands}
+
+Letter IDs: {", ".join(sample["letter_ids"])}
+
+## Conditions
+
+| Item | Value |
+| :--- | :--- |
+| Control | no-call reuse of the 15 Jul Luna `v0.9.24` structured sidecar through HEAD |
+| Mechanism | no-call reuse of the saved v13 `dev20` structured sidecar through HEAD |
+| Candidate | {"live Luna, `exectv2_hybrid_key_family_event_ledger_v14`, then HEAD" if live else "not run"} |
+| Profile | `full` |
+| Repair | default / default |
+| Scorer | four-family `clinical_headline` unit keys; family-local letter exactness |
+| Gold at prompt-build time | forbidden |
+| Holdout | not touched |
+| Default `PROMPT_VERSION` after run | `{artifact["default_prompt_version"]}` |
+
+## No-call HEAD baselines on this cut
+
+| Arm | raw F1 | hybrid F1 | hybrid four-family exact | SF several→N | SF few→N |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| v0924_head | {ctrl["raw_headline_f1"]:.4f} | {ctrl["hybrid_headline_f1"]:.4f} | {ctrl["hybrid_four_family_letter_exact"]}/20 | {ctrl["sf_encoding_rewrites"]["several"]} | {ctrl["sf_encoding_rewrites"]["few"]} |
+| v13_head | {mech["raw_headline_f1"]:.4f} | {mech["hybrid_headline_f1"]:.4f} | {mech["hybrid_four_family_letter_exact"]}/20 | {mech["sf_encoding_rewrites"]["several"]} | {mech["sf_encoding_rewrites"]["few"]} |
+
+{live_tables}
+
+## Quality counts
+
+| Arm | schema | parse | illegal enum | inexact evidence |
+| :--- | ---: | ---: | ---: | ---: |
+| v0924_head | {ctrl["quality"]["schema"]} | {ctrl["quality"]["parse"]} | {ctrl["quality"]["illegal_enum"]} | {ctrl["quality"]["inexact_evidence"]} |
+| v13_head | {mech["quality"]["schema"]} | {mech["quality"]["parse"]} | {mech["quality"]["illegal_enum"]} | {mech["quality"]["inexact_evidence"]} |{"" if cand is None else chr(10) + f"| v14_live | {cand['quality']['schema']} | {cand['quality']['parse']} | {cand['quality']['illegal_enum']} | {cand['quality']['inexact_evidence']} |"}
+
+## Boundary
+
+Not `test60`. Not a selected prompt. Not a six-model claim. Parser, evidence
+gate, attribute gate, and the Phase 3–5 hybrid codebook stayed at HEAD; only
+the model-facing JSON changes on the v14 arm. v14 is not `PROMPT_VERSION`.
+"""
 
 
 if __name__ == "__main__":
