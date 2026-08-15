@@ -818,6 +818,55 @@ def test_v15_contract_adds_candidate_spans_without_codebook() -> None:
     assert len(payload["clinical_rules"]) == 15
 
 
+def test_v16_contract_is_v13_plus_eight_synthetic_shapes() -> None:
+    original = structured.PROMPT_VERSION
+    try:
+        structured.set_active_prompt_version(structured.PROMPT_VERSION_V16)
+        payload_str = structured.build_prompt_input(_LETTER)
+        payload = json.loads(payload_str)
+    finally:
+        structured.set_active_prompt_version(original)
+
+    leaked = [phrase for phrase in FORBIDDEN_PHRASES if phrase in payload_str]
+    assert leaked == []
+    assert payload["prompt_version"] == structured.PROMPT_VERSION_V16
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+    assert "architecture" not in payload
+    assert "candidate_evidence_ledger" not in payload
+    examples = payload["worked_examples"]
+    assert len(examples) == 8
+    assert {item["id"] for item in examples} == {
+        "am_pm_split",
+        "none_since_named_type",
+        "named_type_not_generic",
+        "typed_rate_and_return_companion",
+        "please_start_not_current",
+        "jme_without_jerk_diagnosis",
+        "remote_lifetime_is_seizure_free",
+        "seizure_like_not_current_rate",
+    }
+    blob = json.dumps(examples)
+    assert "Williams" not in blob
+    assert "probable focal" not in blob
+    assert "last clinic appointment" not in blob
+    joined = " ".join(payload["clinical_rules"]) + " " + payload["task"]
+    assert "several" not in joined.lower()
+    assert "couple" not in joined.lower()
+    assert "LastClinic" not in joined
+    assert len(payload["clinical_rules"]) == 14
+
+
+def test_v13_dev140_payload_check_does_not_change_default() -> None:
+    from scripts.run_exectv2_structured_prompt_v13_luna_dev140 import verify_payload
+
+    before = structured.PROMPT_VERSION
+    payload = verify_payload()
+    assert payload["ok"] is True
+    assert payload["prompt_version"] == structured.PROMPT_VERSION_V13
+    assert payload["n_letters"] == 140
+    assert structured.PROMPT_VERSION == before == structured.PROMPT_VERSION_V0_9_24
+
+
 def test_v15_dev20_payload_check_does_not_change_default() -> None:
     from scripts.run_exectv2_structured_prompt_v15_luna_dev20 import verify_payload
 

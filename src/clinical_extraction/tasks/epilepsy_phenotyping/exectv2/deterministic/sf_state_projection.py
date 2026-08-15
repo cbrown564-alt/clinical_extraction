@@ -20,6 +20,9 @@ The row walk is one design with two phases:
    history, driving without a duration frame). v0.17 adds bare episode.
    v0.18 recodes last-event / none-since mentions whose count is missing,
    ``no``, ``none``, or a year token to ``NumberOfSeizures='0'`` + Since.
+   v0.19 widens last-event ``0`` to negated-since / remote lifetime ranges
+   and keeps a named-CUI bare count when the only leftover sibling is
+   generic ``C0036572``.
 """
 
 from __future__ import annotations
@@ -89,7 +92,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.seizure_freq
     frequency_state_faithful,
 )
 
-PROJECTION_VERSION = "exectv2_hybrid_sf_state_projection_v0.18"
+PROJECTION_VERSION = "exectv2_hybrid_sf_state_projection_v0.19"
 PIPELINE_FAMILY = "exectv2_hybrid_sf_state_projection"
 COMPONENT_OWNER = "deterministic_sf_state_ownership_projection"
 
@@ -263,7 +266,7 @@ def write_report(
     unknown = summary.get("clinical_recovery", {}).get("unknown", {})
     action_counts = metadata.get("projection_action_counts", {})
     lines = [
-        "# ExECTv2 SeizureFrequency State/Ownership Projection v0.18",
+        "# ExECTv2 SeizureFrequency State/Ownership Projection v0.19",
         "",
         f"- JSONL: `{jsonl_path}`",
         f"- Projection version: `{metadata.get('projection_version')}`",

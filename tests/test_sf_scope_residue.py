@@ -137,10 +137,71 @@ def test_planned_start_regimen_is_gold_free() -> None:
         evidence="he starts levetiracetam at a dose of 250mg once-a-day",
         attributes={"DrugName": "levetiracetam"},
     )
+    assert rx.is_planned_start_prescription(
+        "lamotrigine",
+        evidence="Medications: to start lamotrigine, as detailed below",
+        attributes={"DrugName": "lamotrigine", "DrugDose": "25"},
+    )
+    assert rx.is_planned_start_prescription(
+        "eslicarbazepine",
+        evidence="I will start eslicarbazepine 400mg increasing to 800mg after 1 week",
+        attributes={
+            "DrugName": "eslicarbazepine",
+            "DrugDose": "400mg increasing to 800mg after 1 week",
+        },
+    )
     assert not rx.is_planned_start_prescription(
         "lamotrigine",
         evidence="Current anti-epileptic medication: lamotrigine 75mg bd",
         attributes={"DrugName": "lamotrigine"},
+    )
+    assert not rx.is_planned_start_prescription(
+        "lamotrigine",
+        evidence="Lamotrigine 50mg am, 75mg pm increasing by 25mg increments every 2 weeks",
+        attributes={
+            "DrugName": "lamotrigine",
+            "DrugDose": "50mg am, 75mg pm increasing by 25mg increments every 2 weeks",
+        },
+    )
+
+
+def test_fused_am_pm_drugdose_splits_into_two_once_daily_mentions() -> None:
+    rows = rx.split_daily_dose_regimen(
+        "Epilim",
+        evidence=(
+            "He is on Epilim 300 mg in the morning and 600 mg in the evening "
+            "and carbamazepine 300mg bd."
+        ),
+        attributes={
+            "DrugName": "epilim",
+            "DrugDose": "300 mg in the morning and 600 mg in the evening",
+            "DoseUnit": "mg",
+            "Frequency": "2",
+        },
+    )
+    assert [row[1]["DrugDose"] for row in rows] == ["300", "600"]
+    assert {row[1]["Frequency"] for row in rows} == {"1"}
+
+
+def test_jme_covers_sibling_jerk_and_absence() -> None:
+    kept = [
+        {"text": "juvenile myoclonic epilepsy", "attributes": {"DiagCategory": "Epilepsy"}},
+        {"text": "tonic clonic seizures", "attributes": {"DiagCategory": "MultipleSeizures"}},
+        {"text": "myoclonic jerk", "attributes": {"DiagCategory": "MultipleSeizures"}},
+        {"text": "absences", "attributes": {"DiagCategory": "MultipleSeizures"}},
+    ]
+    after = dx.drop_syndrome_covered_phenotypes(kept)
+    assert [item["text"] for item in after] == [
+        "juvenile myoclonic epilepsy",
+        "tonic clonic seizures",
+    ]
+
+
+def test_singular_myoclonic_jerk_is_standalone_noise() -> None:
+    assert dx.is_diagnosis_convention_noise(
+        "myoclonic jerk",
+        evidence="generalised tonic clonic seizures with myoclonic jerks, possible JME",
+        diag_category="MultipleSeizures",
     )
 
 

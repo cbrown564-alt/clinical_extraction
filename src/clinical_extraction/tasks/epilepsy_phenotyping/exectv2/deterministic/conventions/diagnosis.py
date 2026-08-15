@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping, Sequence
-from typing import Any
+from typing import Any, TypeVar
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
@@ -26,6 +26,7 @@ DIAGNOSIS_STANDALONE_NOISE: frozenset[str] = frozenset(
         "jerks",
         "learning difficulties",
         "multiple seizures",
+        "myoclonic jerk",
         "myoclonic jerks",
         "myoclonus",
         "nonepileptic events",
@@ -464,6 +465,42 @@ def diagnosis_convention_attribute_repairs(
         repaired["Certainty"] = "5"
         repaired["Negation"] = "Affirmed"
     return repaired
+
+
+_Finding = TypeVar("_Finding", bound=Mapping[str, Any])
+
+_JME_SYNDROME = "juvenile myoclonic epilepsy"
+_JME_COVERED_PHENOTYPES = frozenset(
+    {
+        "absence",
+        "absence like seizures",
+        "absence seizure",
+        "absence seizures",
+        "absences",
+        "myoclonic jerk",
+        "myoclonic jerks",
+        "myoclonus",
+    }
+)
+
+
+def _finding_text(item: Any) -> str:
+    if isinstance(item, Mapping):
+        return str(item.get("text") or "")
+    return str(getattr(item, "text", "") or "")
+
+
+def drop_syndrome_covered_phenotypes(findings: Sequence[_Finding]) -> list[_Finding]:
+    """Drop jerk/absence Diagnosis siblings when JME is already emitted."""
+
+    concepts = {canonicalize_diagnosis_concept(_finding_text(item)) for item in findings}
+    if _JME_SYNDROME not in concepts:
+        return list(findings)
+    return [
+        item
+        for item in findings
+        if canonicalize_diagnosis_concept(_finding_text(item)) not in _JME_COVERED_PHENOTYPES
+    ]
 
 
 def is_diagnosis_convention_noise(

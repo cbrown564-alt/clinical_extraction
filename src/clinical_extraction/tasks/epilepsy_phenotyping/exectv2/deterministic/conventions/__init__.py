@@ -18,6 +18,7 @@ from .diagnosis import (
     diagnosis_convention_target,
     diagnosis_residual_addition_category,
     diagnosis_residual_additions,
+    drop_syndrome_covered_phenotypes,
     is_diagnosis_convention_noise,
     is_redundant_diagnosis_residual_addition,
 )
@@ -55,6 +56,7 @@ __all__ = [
     "diagnosis_convention_target",
     "diagnosis_residual_addition_category",
     "diagnosis_residual_additions",
+    "drop_syndrome_covered_phenotypes",
     "dose_from_text",
     "frequency_code",
     "investigation_convention_attribute_repairs",

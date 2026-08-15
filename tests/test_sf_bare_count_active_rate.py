@@ -53,6 +53,29 @@ def test_keeps_seizure_free_zero_count() -> None:
     assert actions == []
 
 
+def test_keeps_named_bare_count_when_only_generic_active_rate_remains() -> None:
+    mentions = [
+        _sf(
+            "generalised tonic clonic seizure",
+            CUI="C0494475",
+            CUIPhrase="generalised tonic clonic seizure",
+            NumberOfSeizures="1",
+        ),
+        _sf(
+            "seizure",
+            CUI="C0036572",
+            CUIPhrase="seizure",
+            NumberOfSeizures="1",
+            PointInTime="Last_Year",
+            TimePeriod="Year",
+            TimeSince_or_TimeOfEvent="Since",
+        ),
+    ]
+    after, actions = apply_bare_count_active_rate_drop(mentions)
+    assert [m["attributes"].get("CUI") for m in after] == ["C0494475", "C0036572"]
+    assert actions == []
+
+
 def test_drops_bare_lower_bound() -> None:
     mentions = [_sf("seizures", LowerNumberOfSeizures="2")]
     after, actions = apply_bare_count_active_rate_drop(mentions)

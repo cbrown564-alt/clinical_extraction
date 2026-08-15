@@ -20,7 +20,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
 )
 
 COMPONENT_OWNER = "deterministic_sf_attribute_encoding"
-ENCODING_VERSION = "exectv2_hybrid_sf_attribute_encoding_v0.2"
+ENCODING_VERSION = "exectv2_hybrid_sf_attribute_encoding_v0.3"
 
 _RANGE_IN_FIELD_RE = re.compile(
     r"^\s*(?P<low>\d+)\s*(?:-|–|to|or)\s*(?P<high>\d+)\s*$",
@@ -37,7 +37,17 @@ _SEIZURE_WORD_RE = re.compile(r"\bseizures?\b", re.IGNORECASE)
 _SEIZURE_FREQUENCY_TEXT_RE = re.compile(r"^\s*seizure\s+frequency\s*$", re.IGNORECASE)
 _LAST_EVENT_CUE_RE = re.compile(
     r"\b(last seizure|last seizures|last event|has had none since|none since|"
-    r"no further|seizure[- ]free since|no seizures?)\b",
+    r"no further|not had any further|has not had any(?: further)?|"
+    r"seizure[- ]free since|no seizures?|no absences)\b",
+    re.IGNORECASE,
+)
+_REMOTE_SINCE_RE = re.compile(
+    r"\bsince (?:her |his |the )?(?:early )?(?:teenage(?: years)?|teens|"
+    r"childhood|adolescence|school years)\b",
+    re.IGNORECASE,
+)
+_LAST_CLINIC_FRAME_RE = re.compile(
+    r"\blast clinic\b",
     re.IGNORECASE,
 )
 _BLANK_LAST_EVENT_COUNT = frozenset({"", "no", "none", "n/a", "na"})
@@ -154,20 +164,36 @@ def _complete_last_event_zero(
         for part in (str(mention.get("text") or ""), str(mention.get("evidence") or ""))
         if part
     )
-    if not _LAST_EVENT_CUE_RE.search(haystack):
-        return mention
     attrs = dict(mention.get("attributes") or {})
+    last_clinic = bool(
+        attrs.get("PointInTime") == "LastClinic" or _LAST_CLINIC_FRAME_RE.search(haystack)
+    )
+    remote_since = bool(_REMOTE_SINCE_RE.search(haystack))
+    last_event = bool(_LAST_EVENT_CUE_RE.search(haystack))
+    if not last_event and not remote_since:
+        return mention
     raw = str(attrs.get("NumberOfSeizures") or "").strip()
     already_free = raw == "0" and attrs.get("TimeSince_or_TimeOfEvent") == "Since"
     if already_free:
         return mention
     year_as_count = bool(_YEAR_RE.fullmatch(raw))
-    if raw not in _BLANK_LAST_EVENT_COUNT and not year_as_count and raw != "0":
+    has_range = bool(attrs.get("LowerNumberOfSeizures") or attrs.get("UpperNumberOfSeizures"))
+    blank_or_year = raw in _BLANK_LAST_EVENT_COUNT or year_as_count or raw == "0"
+    if last_clinic and not blank_or_year:
+        return mention
+    if last_clinic and has_range:
+        return mention
+    range_or_remote = remote_since and (has_range or not blank_or_year)
+    last_event_range = last_event and has_range and not last_clinic
+    if not blank_or_year and not range_or_remote and not last_event_range:
         return mention
     repaired = _copy_mention(mention)
     new_attrs = dict(attrs)
     new_attrs["NumberOfSeizures"] = "0"
     new_attrs["TimeSince_or_TimeOfEvent"] = "Since"
+    if range_or_remote or has_range:
+        new_attrs.pop("LowerNumberOfSeizures", None)
+        new_attrs.pop("UpperNumberOfSeizures", None)
     if year_as_count and not new_attrs.get("YearDate"):
         new_attrs["YearDate"] = raw
     repaired["attributes"] = new_attrs

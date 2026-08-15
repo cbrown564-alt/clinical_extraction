@@ -104,6 +104,8 @@ class DiagnosisDictionaryLens(ThinArtifactLens):
                 continue
             kept.append(current)
 
+        kept = list(sd.drop_syndrome_covered_phenotypes(kept))
+
         added: list[ClinicalFinding] = []
         addition_rule_categories: list[str] = []
         for text, evidence in sd.diagnosis_residual_additions(

@@ -5,6 +5,9 @@ from __future__ import annotations
 import json
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.prompts.key_entities.loader import (
+    load_v16_shape_examples,
+)
 
 from .constants import (
     PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX,
@@ -15,6 +18,7 @@ from .constants import (
     PROMPT_VERSION_V13,
     PROMPT_VERSION_V14,
     PROMPT_VERSION_V15,
+    PROMPT_VERSION_V16,
     PromptProfile,
     prompt_version_for,
 )
@@ -59,6 +63,8 @@ def build_full_prompt_input(
         return _build_v14_prompt_input(letter, selected_prompt_version)
     if selected_prompt_version == PROMPT_VERSION_V15:
         return _build_v15_prompt_input(letter, selected_prompt_version)
+    if selected_prompt_version == PROMPT_VERSION_V16:
+        return _build_v16_prompt_input(letter, selected_prompt_version)
     payload = {
         "prompt_version": selected_prompt_version,
         "task": (
@@ -703,6 +709,49 @@ def _build_v15_prompt_input(letter: ExectLetter, prompt_version: str) -> str:
         "attribute_vocabulary": _attribute_vocabulary(),
         "clinical_rules": list(_V15_CLINICAL_RULES),
         "candidate_spans": _v15_candidate_spans(letter),
+        "letter_id": letter.letter_id,
+        "letter_text": letter.note_text,
+    }
+    return json.dumps(payload, ensure_ascii=False, sort_keys=True)
+
+
+def _build_v16_prompt_input(letter: ExectLetter, prompt_version: str) -> str:
+    payload = {
+        "prompt_version": prompt_version,
+        "task": _V13_TASK,
+        "output_schema": {
+            "clinical_events": [
+                {
+                    "family": (
+                        "medication | diagnosis | seizure_frequency | investigation"
+                    ),
+                    "anchor_text": "Short exact substring naming the clinical event.",
+                    "evidence": (
+                        "Exact clause or sentence copied from the letter."
+                    ),
+                    "event_state": (
+                        "Optional. Short source-near state. Scored values live "
+                        "in mention attributes."
+                    ),
+                    "mentions": [
+                        {
+                            "entity": (
+                                "One of Prescription, Diagnosis, "
+                                "SeizureFrequency, Investigations."
+                            ),
+                            "text": "Short exact substring used for scoring.",
+                            "attributes": "Only attributes legal for that entity.",
+                        }
+                    ],
+                    "confidence": "Optional. low | medium | high",
+                    "rationale": "Optional. One short sentence.",
+                }
+            ]
+        },
+        "family_guidance": dict(_V13_FAMILY_GUIDANCE),
+        "attribute_vocabulary": _attribute_vocabulary(),
+        "clinical_rules": list(_V13_CLINICAL_RULES),
+        "worked_examples": load_v16_shape_examples(),
         "letter_id": letter.letter_id,
         "letter_text": letter.note_text,
     }

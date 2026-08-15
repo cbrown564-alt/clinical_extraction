@@ -91,3 +91,17 @@ def load_dedup_fact_guidance() -> list[str]:
 def load_qwen_compact_worked_examples() -> list[dict[str, Any]]:
     """Return worked examples for the qwen_compact structured prompt profile."""
     return _load_qwen_compact_worked_examples_cached()
+
+
+@lru_cache(maxsize=1)
+def _load_v16_shape_examples_cached() -> list[dict[str, Any]]:
+    path = _PACKAGE_DIR / "structured_shape_examples_v16.yaml"
+    payload = _read_yaml(path)
+    if not isinstance(payload, list):
+        raise ValueError(f"{path} must contain a list of shape examples")
+    return payload
+
+
+def load_v16_shape_examples() -> list[dict[str, Any]]:
+    """Return the eight synthetic v16 shape examples."""
+    return _load_v16_shape_examples_cached()

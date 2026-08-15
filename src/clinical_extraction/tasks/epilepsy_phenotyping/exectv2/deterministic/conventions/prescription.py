@@ -96,12 +96,34 @@ _NON_ANTIEPILEPTIC_DRUGS = frozenset(
 
 
 _PLANNED_START_RE = re.compile(
-    r"\b(?:to\s+start|starts\s+\S+(?:\s+\S+){0,6}\s+at\s+a\s+dose)\b",
+    r"\b(?:to\s+start|please\s+start|will\s+start|"
+    r"starts\s+\S+(?:\s+\S+){0,6}\s+at\s+a\s+dose|"
+    r"start(?:ing)?\s+(?:her\s+|him\s+|the\s+patient\s+)?on)\b",
     re.IGNORECASE,
+)
+_TITRATION_PLAN_RE = re.compile(
+    r"\bincreasing\s+(?:after|to|by)\b",
+    re.IGNORECASE,
+)
+_CURRENT_AM_PM_RE = re.compile(
+    r"\b\d+(?:\.\d+)?\s*(?:mg|mgs)?\s*"
+    r"(?:am|mane|in\s+the\s+morning|morning)\b"
+    r".{0,40}?"
+    r"\b\d+(?:\.\d+)?\s*(?:mg|mgs)?\s*"
+    r"(?:pm|nocte|in\s+the\s+evening|evening|night)\b",
+    re.IGNORECASE | re.DOTALL,
 )
 _CURRENT_REGIMEN_CUE_RE = re.compile(
     r"\b(?:current(?:ly)?\s+(?:taking|on|antiepileptic)|taking\s+\d+)\b",
     re.IGNORECASE,
+)
+_FUSED_AM_PM_DOSE_RE = re.compile(
+    r"(?P<morning>\d+(?:\.\d+)?)\s*(?:mg|mgs)?\s*"
+    r"(?:in\s+the\s+morning|morning|am|mane)\b"
+    r".{0,40}?"
+    r"(?P<evening>\d+(?:\.\d+)?)\s*(?:mg|mgs)?\s*"
+    r"(?:in\s+the\s+evening|evening|pm|nocte|night)\b",
+    re.IGNORECASE | re.DOTALL,
 )
 
 
@@ -113,11 +135,15 @@ def is_planned_start_prescription(
 ) -> bool:
     """True for a start/titration plan that is not a current-taking statement."""
 
-    del attributes
-    surface = " ".join(part for part in (text, evidence) if part)
-    if not _PLANNED_START_RE.search(surface):
+    dose = str(attributes.get("DrugDose") or "")
+    surface = " ".join(part for part in (text, evidence, dose) if part)
+    if _CURRENT_REGIMEN_CUE_RE.search(surface):
         return False
-    return _CURRENT_REGIMEN_CUE_RE.search(surface) is None
+    if _PLANNED_START_RE.search(surface):
+        return True
+    if _TITRATION_PLAN_RE.search(surface) and not _CURRENT_AM_PM_RE.search(surface):
+        return True
+    return False
 
 
 def is_non_antiepileptic_prescription(
@@ -180,6 +206,17 @@ def split_daily_dose_regimen(
     dose tokens and each token is followed by a once-daily time marker such as
     ``mane``, ``nocte``, ``morning`` or ``afternoon``.
     """
+
+    fused = _FUSED_AM_PM_DOSE_RE.search(str(attributes.get("DrugDose") or ""))
+    if fused is not None:
+        rows: list[tuple[str, dict[str, Any], str]] = []
+        for dose in (fused.group("morning"), fused.group("evening")):
+            attrs = dict(attributes)
+            attrs["DrugDose"] = normalize_dose_value(dose)
+            attrs["DoseUnit"] = normalize_dose_unit(str(attributes.get("DoseUnit") or "mg"))
+            attrs["Frequency"] = "1"
+            rows.append((text, attrs, "split_fused_am_pm_drugdose"))
+        return rows
 
     if "/" in text:
         slash_match = _SLASH_DAILY_DOSE_SEQUENCE_RE.search(text)
