@@ -431,7 +431,12 @@ function MentionRow({
               {mention.text || "(blank mention)"}
             </p>
           </div>
-          <p className="mt-1 line-clamp-2 text-[11px] leading-snug text-muted" title={mention.evidence}>
+          <p
+            className={`mt-1 line-clamp-2 text-[11px] leading-snug text-muted ${
+              mention.source === "predicted" ? "italic" : ""
+            }`}
+            title={mention.evidence}
+          >
             {mention.evidence || "No evidence text"}
           </p>
         </div>
@@ -521,7 +526,7 @@ function MatchedGroupCard({
             )}
           </div>
           <p className="mt-1 font-semibold text-foreground">{predicted.text}</p>
-          <p className="mt-0.5 text-[11px] leading-snug text-muted">{predicted.evidence || "No evidence"}</p>
+          <p className="mt-0.5 text-[11px] italic leading-snug text-muted">{predicted.evidence || "No evidence"}</p>
           {(predicted.component_owner || predicted.source_lane) && (
             <p className="mt-1 font-mono text-[10px] text-muted">
               {predicted.component_owner || "owner unknown"}
