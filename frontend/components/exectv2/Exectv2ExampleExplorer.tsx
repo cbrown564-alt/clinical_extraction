@@ -28,7 +28,7 @@ import {
   type HighlightTone,
 } from "@/components/surface";
 import { exectv2OptionLabel, groupExectv2Runs, resolveExectv2RunId } from "@/lib/exectv2RunOptions";
-import { compareAttributeKeys, sortedAttributeKeys } from "@/lib/attributeOrder";
+import { isIdentityAttributeKey, sortedAttributeKeys } from "@/lib/attributeOrder";
 import { lastRuleActionLabel } from "@/lib/plainLanguageLabels";
 import { displayPredictedEvidence } from "@/lib/predictedQuote";
 import {
@@ -372,6 +372,8 @@ function AttributeDiffTable({
               gVal !== undefined && pVal !== undefined && !isMatch;
             const isMissingInPred = gVal !== undefined && pVal === undefined;
             const isExtraInPred = gVal === undefined && pVal !== undefined;
+            const isIdentity = isIdentityAttributeKey(key);
+            const valueTone = isIdentity ? "text-muted" : "text-foreground";
 
             return (
               <tr
@@ -386,13 +388,23 @@ function AttributeDiffTable({
                     : undefined
                 }
               >
-                <td className="px-2 py-1 text-muted">{key}</td>
-                <td className="px-2 py-1 text-foreground">
+                <td className={`px-2 py-1 ${isIdentity ? "text-muted/70" : "text-muted"}`}>
+                  {key}
+                </td>
+                <td className={`px-2 py-1 ${valueTone}`}>
                   {gVal ?? <span className="text-muted/40">—</span>}
                 </td>
-                <td className="px-2 py-1">
+                <td className={`px-2 py-1 ${valueTone}`}>
                   {pVal ?? <span className="text-muted/40">—</span>}
-                  {isMatch && <span className="ml-1 text-success font-sans">✓</span>}
+                  {isMatch && (
+                    <span
+                      className={`ml-1 font-sans ${
+                        isIdentity ? "text-success/60" : "text-success"
+                      }`}
+                    >
+                      ✓
+                    </span>
+                  )}
                   {isDiff && <span className="ml-1 text-error font-sans font-bold">≠</span>}
                   {isExtraInPred && (
                     <span className="ml-1 text-[9px] font-sans text-deterministic-alt">
@@ -423,9 +435,10 @@ function MentionRow({
   label?: string;
   badgeTone?: string;
 }) {
-  const attrs = Object.entries(mention.attributes).sort(([left], [right]) =>
-    compareAttributeKeys(left, right)
-  );
+  const attrs = sortedAttributeKeys(Object.keys(mention.attributes)).flatMap((key) => {
+    const value = mention.attributes[key];
+    return value === undefined ? [] : [[key, value] as const];
+  });
   const deduplicated = mention.headline_status === "deduplicated";
   const evidenceText =
     mention.source === "predicted"
