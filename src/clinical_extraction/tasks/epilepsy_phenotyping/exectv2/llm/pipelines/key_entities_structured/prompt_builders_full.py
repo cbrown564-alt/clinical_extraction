@@ -11,6 +11,7 @@ from .constants import (
     PROMPT_VERSION_V0_9_25_LUNA_SF_STATE,
     PROMPT_VERSION_V10,
     PROMPT_VERSION_V11,
+    PROMPT_VERSION_V12,
     PromptProfile,
     prompt_version_for,
 )
@@ -47,6 +48,8 @@ def build_full_prompt_input(
         return _build_v10_prompt_input(letter, selected_prompt_version)
     if selected_prompt_version == PROMPT_VERSION_V11:
         return _build_v11_prompt_input(letter, selected_prompt_version)
+    if selected_prompt_version == PROMPT_VERSION_V12:
+        return _build_v12_prompt_input(letter, selected_prompt_version)
     payload = {
         "prompt_version": selected_prompt_version,
         "task": (
@@ -357,6 +360,134 @@ def _build_v11_prompt_input(letter: ExectLetter, prompt_version: str) -> str:
         "family_guidance": dict(_V11_FAMILY_GUIDANCE),
         "attribute_vocabulary": _attribute_vocabulary(),
         "clinical_rules": list(_V11_CLINICAL_RULES),
+        "letter_id": letter.letter_id,
+        "letter_text": letter.note_text,
+    }
+    return json.dumps(payload, ensure_ascii=False, sort_keys=True)
+
+
+_V12_TASK = (
+    "Read the clinical letter once. Extract current clinical events for "
+    "medication, diagnosis, seizure frequency, and investigations. Each event "
+    "may render one or more entity mentions when the same fact belongs to more "
+    "than one requested family. Prefer current epileptic facts over plans, "
+    "remote history, driving advice, and non-epilepsy drugs."
+)
+
+_V12_FAMILY_GUIDANCE = {
+    "medication": (
+        "Find current anti-seizure medication statements. Render Prescription "
+        "with DrugName, DrugDose, DoseUnit, and Frequency when the letter "
+        "states them. Mention text is the drug name, or the short regimen "
+        "span when that is all the letter gives. Do not emit a planned start, "
+        "a previous titration step, or a drug that is not an anti-seizure "
+        "medicine."
+    ),
+    "diagnosis": (
+        "Find named epileptic diagnoses and named seizure types. Render "
+        "Diagnosis with DiagCategory, Certainty, and Negation. Mention text "
+        "is the core concept span. Do not also emit a bare symptom word as a "
+        "diagnosis when a named seizure type already covers that fact."
+    ),
+    "seizure_frequency": (
+        "Find how often a seizure type occurs now, including current "
+        "seizure-free duration, ranges, clusters, dated counts, and frequency "
+        "change. Mention text is the seizure-type anchor. Put counts and dates "
+        "in attributes. Choose the named type when the count belongs to that "
+        "type; otherwise use the generic seizure span. Do not emit driving, "
+        "licence, counselling, or risk language as frequency. Do not emit "
+        "remote childhood or febrile history as a current rate. Do not emit a "
+        "body-part or symptom word as a second rate when a named type already "
+        "carries that count. If the letter also has a separate qualitative "
+        "statement that seizures have returned or changed without a count, "
+        "emit that companion on the generic seizure span."
+    ),
+    "investigation": (
+        "Find completed EEG, MRI, CT, or telemetry statements. Render "
+        "performed, result, and type attributes when the letter states them. "
+        "One event per modality. Do not emit planned or discussed tests."
+    ),
+}
+
+_V12_CLINICAL_RULES = [
+    *_V11_CLINICAL_RULES,
+    (
+        "Emit only current epileptic frequency, current anti-seizure regimen, "
+        "completed tests, and named current diagnoses."
+    ),
+    (
+        "Do not emit driving, licence, counselling, risk, or well-controlled "
+        "language as SeizureFrequency."
+    ),
+    (
+        "Do not emit remote childhood or febrile history as a current "
+        "SeizureFrequency rate."
+    ),
+    (
+        "One SeizureFrequency rate per seizure type. Do not also emit a "
+        "body-part or symptom word as a second rate when a named type already "
+        "carries that count."
+    ),
+    (
+        "If the letter has both a typed current rate and a separate "
+        "qualitative statement that seizures have returned or changed without "
+        "a count, also emit the qualitative companion on the generic seizure "
+        "span with a change or time attribute."
+    ),
+    (
+        "Current anti-seizure regimen only. Do not emit planned starts, "
+        "if-further instructions, previous titration steps, or non-epilepsy "
+        "drugs."
+    ),
+    (
+        "Completed tests only. Do not emit planned or discussed tests."
+    ),
+]
+
+
+def _build_v12_prompt_input(letter: ExectLetter, prompt_version: str) -> str:
+    payload = {
+        "prompt_version": prompt_version,
+        "task": _V12_TASK,
+        "output_schema": {
+            "clinical_events": [
+                {
+                    "family": (
+                        "medication | diagnosis | seizure_frequency | investigation"
+                    ),
+                    "anchor_text": (
+                        "Short exact substring naming the clinical event. Use the "
+                        "family guidance below."
+                    ),
+                    "evidence": (
+                        "Exact clause or sentence copied from the letter that "
+                        "supports the event and all rendered mentions."
+                    ),
+                    "event_state": (
+                        "Source-near state such as dose, diagnostic assertion, "
+                        "seizure rate, or test result. Values must be strings."
+                    ),
+                    "mentions": [
+                        {
+                            "entity": (
+                                "One of Prescription, Diagnosis, "
+                                "SeizureFrequency, Investigations."
+                            ),
+                            "text": (
+                                "Short exact substring used for scoring this "
+                                "entity."
+                            ),
+                            "attributes": "Only attributes legal for that entity.",
+                        }
+                    ],
+                    "confidence": "low | medium | high",
+                    "rationale": "One brief sentence explaining the event.",
+                }
+            ]
+        },
+        "family_guidance": dict(_V12_FAMILY_GUIDANCE),
+        "attribute_vocabulary": _attribute_vocabulary(),
+        "clinical_rules": list(_V12_CLINICAL_RULES),
         "letter_id": letter.letter_id,
         "letter_text": letter.note_text,
     }

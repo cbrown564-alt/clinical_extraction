@@ -633,3 +633,39 @@ def test_v11_dev20_topology_decision_thresholds() -> None:
         "hybrid Diagnosis F1 drop -0.08",
         "hybrid net four-family letter-exact losses 3",
     ]
+
+
+def test_v12_contract_is_current_scope_leftover_without_codebook() -> None:
+    original = structured.PROMPT_VERSION
+    try:
+        structured.set_active_prompt_version(structured.PROMPT_VERSION_V12)
+        payload_str = structured.build_prompt_input(_LETTER)
+        payload = json.loads(payload_str)
+    finally:
+        structured.set_active_prompt_version(original)
+
+    leaked = [phrase for phrase in FORBIDDEN_PHRASES if phrase in payload_str]
+    assert leaked == []
+    assert payload["prompt_version"] == structured.PROMPT_VERSION_V12
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+    assert "architecture" not in payload
+    assert "worked_examples" not in payload
+    joined = " ".join(payload["clinical_rules"]) + " " + payload["task"]
+    assert "several" not in joined.lower()
+    assert "couple" not in joined.lower()
+    assert "LastClinic" not in joined
+    assert "driving" in joined.lower()
+    assert "Completed tests only" in joined
+    assert "current anti-seizure" in joined
+    assert "Do not invent CUI" in joined
+
+
+def test_v12_dev20_payload_check_does_not_change_default() -> None:
+    from scripts.run_exectv2_structured_prompt_v12_luna_dev20 import verify_payload
+
+    before = structured.PROMPT_VERSION
+    payload = verify_payload()
+    assert payload["ok"] is True
+    assert payload["prompt_version"] == structured.PROMPT_VERSION_V12
+    assert payload["default_prompt_version"] == structured.PROMPT_VERSION_V0_9_24
+    assert structured.PROMPT_VERSION == before == structured.PROMPT_VERSION_V0_9_24
