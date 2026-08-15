@@ -12,6 +12,7 @@ from .constants import (
     PROMPT_VERSION_V10,
     PROMPT_VERSION_V11,
     PROMPT_VERSION_V12,
+    PROMPT_VERSION_V13,
     PromptProfile,
     prompt_version_for,
 )
@@ -50,6 +51,8 @@ def build_full_prompt_input(
         return _build_v11_prompt_input(letter, selected_prompt_version)
     if selected_prompt_version == PROMPT_VERSION_V12:
         return _build_v12_prompt_input(letter, selected_prompt_version)
+    if selected_prompt_version == PROMPT_VERSION_V13:
+        return _build_v13_prompt_input(letter, selected_prompt_version)
     payload = {
         "prompt_version": selected_prompt_version,
         "task": (
@@ -488,6 +491,68 @@ def _build_v12_prompt_input(letter: ExectLetter, prompt_version: str) -> str:
         "family_guidance": dict(_V12_FAMILY_GUIDANCE),
         "attribute_vocabulary": _attribute_vocabulary(),
         "clinical_rules": list(_V12_CLINICAL_RULES),
+        "letter_id": letter.letter_id,
+        "letter_text": letter.note_text,
+    }
+    return json.dumps(payload, ensure_ascii=False, sort_keys=True)
+
+
+_V13_TASK = (
+    "Read the clinical letter once. Extract current epileptic diagnoses, "
+    "current seizure frequency, current anti-seizure medication, and completed "
+    "EEG, MRI, CT, or telemetry. Copy only exact substrings from the letter. "
+    "The same fact may render more than one family when the letter states both."
+)
+
+_V13_FAMILY_GUIDANCE = dict(_V11_FAMILY_GUIDANCE)
+
+_V13_CLINICAL_RULES = [
+    *_V11_CLINICAL_RULES,
+    (
+        "Counts, dates, and doses belong in attributes. You may copy the "
+        "letter's own words into those fields, including approximate counts. "
+        "Do not leave a SeizureFrequency mention without a frequency-state "
+        "attribute."
+    ),
+]
+
+
+def _build_v13_prompt_input(letter: ExectLetter, prompt_version: str) -> str:
+    payload = {
+        "prompt_version": prompt_version,
+        "task": _V13_TASK,
+        "output_schema": {
+            "clinical_events": [
+                {
+                    "family": (
+                        "medication | diagnosis | seizure_frequency | investigation"
+                    ),
+                    "anchor_text": "Short exact substring naming the clinical event.",
+                    "evidence": (
+                        "Exact clause or sentence copied from the letter."
+                    ),
+                    "event_state": (
+                        "Optional. Short source-near state. Scored values live "
+                        "in mention attributes."
+                    ),
+                    "mentions": [
+                        {
+                            "entity": (
+                                "One of Prescription, Diagnosis, "
+                                "SeizureFrequency, Investigations."
+                            ),
+                            "text": "Short exact substring used for scoring.",
+                            "attributes": "Only attributes legal for that entity.",
+                        }
+                    ],
+                    "confidence": "Optional. low | medium | high",
+                    "rationale": "Optional. One short sentence.",
+                }
+            ]
+        },
+        "family_guidance": dict(_V13_FAMILY_GUIDANCE),
+        "attribute_vocabulary": _attribute_vocabulary(),
+        "clinical_rules": list(_V13_CLINICAL_RULES),
         "letter_id": letter.letter_id,
         "letter_text": letter.note_text,
     }
