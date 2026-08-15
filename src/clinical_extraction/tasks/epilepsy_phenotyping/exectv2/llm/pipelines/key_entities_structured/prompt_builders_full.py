@@ -198,7 +198,6 @@ _V10_CLINICAL_RULES = [
         "Use one investigation event per modality; performed, result, and type "
         "live in attributes."
     ),
-    "Do not invent CUI values.",
     'If nothing requested is present, return {"clinical_events": []}.',
     "Return exactly one JSON object. Do not wrap it in markdown fences.",
 ]
@@ -324,8 +323,7 @@ _V11_CLINICAL_RULES = [
         "live in attributes."
     ),
     (
-        "Every rendered mention must include entity and text. Do not invent "
-        "CUI values. If a CUI is not stated, omit it."
+        "Every rendered mention must include entity and text."
     ),
     'If nothing requested is present, return {"clinical_events": []}.',
     "Return exactly one JSON object. Do not wrap it in markdown fences.",

@@ -433,7 +433,7 @@ def test_qwen_compact_prompt_profile_keeps_schema_with_shorter_payload() -> None
     assert "NumberOfSeizures='1', YearDate='2014'" in rules
     assert "do not default unrelated modalities to No" in rules
     assert "both entity and text" in rules
-    assert "Do not invent CUI values" in rules
+    assert "CUI" not in rules
     assert compact["candidate_evidence_ledger"]
     heading_example = next(
         example
@@ -488,7 +488,7 @@ def test_v10_contract_drops_ledger_examples_and_later_rules() -> None:
     assert "worked_examples" not in payload
     assert "extra_clinical_guidance" not in payload
     assert "candidate_evidence_ledger" not in payload["task"]
-    assert len(payload["clinical_rules"]) == 12
+    assert len(payload["clinical_rules"]) == 11
     assert "First classify each candidate_evidence_ledger item" not in " ".join(
         payload["clinical_rules"]
     )
@@ -532,7 +532,7 @@ def test_v11_contract_is_leftover_extraction_job_without_codebook() -> None:
     assert "awaiting" not in joined.lower()
     assert "LastClinic" not in joined
     assert "focal epilepsy-Probable" not in joined
-    assert "Do not invent CUI" in joined
+    assert "CUI" not in joined
     assert set(payload["family_guidance"]) == {
         "medication",
         "diagnosis",
@@ -657,7 +657,7 @@ def test_v12_contract_is_current_scope_leftover_without_codebook() -> None:
     assert "driving" in joined.lower()
     assert "Completed tests only" in joined
     assert "current anti-seizure" in joined
-    assert "Do not invent CUI" in joined
+    assert "CUI" not in joined
 
 
 def test_v12_dev20_payload_check_does_not_change_default() -> None:
@@ -694,7 +694,7 @@ def test_v13_contract_is_short_extraction_job_without_scope_sermon() -> None:
     assert "driving" not in joined.lower()
     assert "Completed tests only" not in joined
     assert "letter's own words" in joined
-    assert "Do not invent CUI" in joined
+    assert "CUI" not in joined
     assert len(payload["clinical_rules"]) == 14
     assert payload["family_guidance"] == {
         "medication": (
@@ -854,6 +854,49 @@ def test_v16_contract_is_v13_plus_eight_synthetic_shapes() -> None:
     assert "couple" not in joined.lower()
     assert "LastClinic" not in joined
     assert len(payload["clinical_rules"]) == 14
+
+
+def _prompt_fields_without_letter(payload: dict) -> str:
+    return json.dumps(
+        {key: value for key, value in payload.items() if key != "letter_text"}
+    )
+
+
+def test_no_prompt_version_mentions_cui() -> None:
+    original = structured.PROMPT_VERSION
+    versions = [
+        structured.PROMPT_VERSION_V0_9_24,
+        structured.PROMPT_VERSION_V10,
+        structured.PROMPT_VERSION_V11,
+        structured.PROMPT_VERSION_V12,
+        structured.PROMPT_VERSION_V13,
+        structured.PROMPT_VERSION_V14,
+        structured.PROMPT_VERSION_V15,
+        structured.PROMPT_VERSION_V16,
+        structured.PROMPT_VERSION_V0_9_25_LUNA_SF_STATE,
+        structured.PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX,
+    ]
+    try:
+        for version in versions:
+            structured.set_active_prompt_version(version)
+            payload = json.loads(structured.build_prompt_input(_LETTER))
+            blob = _prompt_fields_without_letter(payload).lower()
+            assert "cui" not in blob, version
+            assert "umls" not in blob, version
+            vocab = payload["attribute_vocabulary"]
+            for family_vocab in vocab.values():
+                assert "CUI" not in family_vocab
+                assert "CUIPhrase" not in family_vocab
+        compact = json.loads(
+            structured.build_prompt_input(_LETTER, prompt_profile="qwen_compact")
+        )
+        compact_blob = _prompt_fields_without_letter(compact).lower()
+        assert "cui" not in compact_blob
+        assert "umls" not in compact_blob
+    finally:
+        structured.set_active_prompt_version(original)
+
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
 
 
 def test_v13_dev140_payload_check_does_not_change_default() -> None:

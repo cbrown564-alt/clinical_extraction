@@ -82,7 +82,8 @@ def test_build_prompt_input_includes_decomposition_contract() -> None:
     rules = " ".join(payload["clinical_rules"])
     assert "candidate spans as a clinical checklist" in rules
     assert "explicitly ask: does this contain the word epilepsy" in rules
-    assert "Do not emit CUI or CUIPhrase" in rules
+    assert "CUI" not in rules
+    assert "CUI" not in json.dumps(payload.get("attribute_vocabulary") or {})
 
 
 def test_resolution_candidate_prompt_is_explicit_and_opt_in() -> None:

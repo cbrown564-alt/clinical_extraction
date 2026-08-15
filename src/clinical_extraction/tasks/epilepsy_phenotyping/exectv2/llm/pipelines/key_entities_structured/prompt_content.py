@@ -373,11 +373,9 @@ def _attribute_vocabulary() -> dict[str, dict[str, Any]]:
         spec = ENTITY_REGISTRY[entity_name]
         attrs: dict[str, Any] = {}
         for attr in sorted(spec.legal_attributes):
-            if attr == "CUI":
-                attrs[attr] = "UMLS CUI only if explicitly available; otherwise omit."
-            elif attr == "CUIPhrase":
-                attrs[attr] = "Clean phrase only if explicitly available; otherwise omit."
-            elif attr in spec.closed_vocab:
+            if attr in {"CUI", "CUIPhrase"}:
+                continue
+            if attr in spec.closed_vocab:
                 attrs[attr] = sorted(spec.closed_vocab[attr])
             else:
                 attrs[attr] = "string copied or normalized from the letter."

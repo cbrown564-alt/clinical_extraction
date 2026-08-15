@@ -4,7 +4,6 @@ clinical_rules:
 - Every final evidence value must be an exact substring of the letter.
 - Diagnosis text may be a normalized core clinical concept phrase even when the source expresses it with
   hedging, punctuation, abbreviation, or discontinuous wording. The evidence must still be exact.
-- Do not emit CUI or CUIPhrase; projection is a separate deterministic layer.
 - Render only the core clinical concept span in text. Strip section labels, dashes, hedging words, 'single'
   in simple single-seizure phrases, and explanatory context. Do not strip 'alone' from an epilepsy-with-generalised-tonic-clonic-seizures-alone
   syndrome.

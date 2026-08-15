@@ -49,7 +49,7 @@ def _build_qwen_compact_prompt_input(letter: ExectLetter) -> str:
                                 "Prescription | Diagnosis | SeizureFrequency | Investigations"
                             ),
                             "text": "short source-near scoring text",
-                            "attributes": "legal attributes only; omit CUI/CUIPhrase",
+                            "attributes": "legal attributes only",
                         }
                     ],
                     "confidence": "low | medium | high",
@@ -212,8 +212,7 @@ def _build_qwen_compact_prompt_input(letter: ExectLetter) -> str:
                 "CT_Performed='No'; a planned MR brain/EEG should emit no mention."
             ),
             (
-                "Every rendered mention object must include both entity and text. "
-                "Never emit projection-only CUI/CUIPhrase companion objects."
+                "Every rendered mention object must include both entity and text."
             ),
             (
                 "Exhaustiveness pass before final JSON: reread Diagnosis, "
@@ -265,7 +264,6 @@ def _build_qwen_compact_prompt_input(letter: ExectLetter) -> str:
                 "Keppra/Levetiracetam, Tegretol/Carbamazepine, Clobazam PRN or "
                 "night doses, and bracketed regimen fragments like '200mg BD'."
             ),
-            "Do not invent CUI values; omit CUI and CUIPhrase.",
             'If no requested findings are present, return {"clinical_events": []}.',
         ],
         "worked_examples": _qwen_compact_examples(),

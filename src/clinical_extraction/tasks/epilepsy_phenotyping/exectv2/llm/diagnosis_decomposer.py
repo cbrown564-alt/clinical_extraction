@@ -149,8 +149,8 @@ def _attribute_vocabulary() -> dict[str, Any]:
     vocabulary: dict[str, Any] = {}
     for attribute in sorted(spec.legal_attributes):
         if attribute in {"CUI", "CUIPhrase"}:
-            vocabulary[attribute] = "Do not emit this; deterministic projection fills it later."
-        elif attribute in spec.closed_vocab:
+            continue
+        if attribute in spec.closed_vocab:
             vocabulary[attribute] = sorted(spec.closed_vocab[attribute])
         else:
             vocabulary[attribute] = "string copied or normalized from the letter."

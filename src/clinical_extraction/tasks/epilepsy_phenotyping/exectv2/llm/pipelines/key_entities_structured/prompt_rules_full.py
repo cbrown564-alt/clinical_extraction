@@ -183,8 +183,8 @@ def _clinical_rules() -> list[str | tuple[str, ...]]:
             "event_state and attributes carry counts, periods, dates, and changes."
         ),
         (
-            "Never emit a SeizureFrequency mention with empty attributes, only "
-            "Negation, or only CUI/CUIPhrase. A valid SeizureFrequency mention "
+            "Never emit a SeizureFrequency mention with empty attributes or only "
+            "Negation. A valid SeizureFrequency mention "
             "must include a frequency-state attribute such as NumberOfSeizures, "
             "LowerNumberOfSeizures, FrequencyChange, TimeSince_or_TimeOfEvent, "
             "PointInTime, DayDate, MonthDate, YearDate, AgeLower, or AgeUpper."
@@ -454,12 +454,8 @@ def _clinical_rules() -> list[str | tuple[str, ...]]:
             "EEG or video telemetry. Do not default a plain EEG to Standard."
         ),
         (
-            "Every rendered mention object must include both entity and text. "
-            "Do not emit projection-only companion mentions such as objects with "
-            "only CUI/CUIPhrase attributes; omit CUI and CUIPhrase unless they "
-            "are explicitly available in the source."
+            "Every rendered mention object must include both entity and text."
         ),
-        "Do not invent CUI values. If a CUI is not explicitly available, omit it.",
         'If no requested findings are present, return {"clinical_events": []}.',
         "Return exactly one JSON object. No markdown code fences.",
     ]
