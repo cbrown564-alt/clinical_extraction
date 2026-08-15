@@ -414,12 +414,15 @@ def extract_seizure_frequency(
             if not _is_bare_nonzero_count(merged)
         )
     )
-    associated_keys = {_mention_key(m) for m in associated_mentions}
+    kept_associated_mentions = tuple(
+        m for m in associated_mentions if _should_keep_mention(m)
+    )
+    associated_keys = {_mention_key(m) for m in kept_associated_mentions}
     structured_candidates = (*frequency_section_mentions(text), *statement_mentions(text))
     structured_mentions = tuple(
         mention for mention in structured_candidates if _mention_key(mention) not in associated_keys
     )
-    mentions = (*associated_mentions, *structured_mentions)
+    mentions = (*kept_associated_mentions, *structured_mentions)
     mentions = (*mentions, *_projection_alias_mentions(mentions))
     mentions = tuple(mention for mention in mentions if _should_keep_mention(mention))
     return PredictedLetter(

@@ -68,7 +68,9 @@ _NORMAL = re.compile(
     r"did\s+not\s+show\s+any\s+epileptic(?:\s+activity)?|"
     r"normal\s+apart\s+from|"
     r"no\s+epileptiform|no\s+EEG\s+changes|"
-    r"failed\s+to\s+alter)\b",
+    r"failed\s+to\s+alter|"
+    r"(?:non[-\s]*epileptic|psychogenic|dissociative|functional|pnes|nead).{0,60}"
+    r"(?:confirmed|shown)\s+(?:on|by|in)\s+(?:an?\s+)?(?:EEG|video[-\s]*EEG|VEEG))\b",
     re.IGNORECASE,
 )
 # List 9 finding language, minus standalone words that fire on ordinary clinic

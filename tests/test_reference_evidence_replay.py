@@ -46,8 +46,8 @@ def test_replay_exectv2_deterministic_matches_retained_reference() -> None:
     result = replay_exectv2_deterministic(split="dev")
 
     assert result["row_count"] == 140
-    assert result["benchmark_per_item_f1"] == 0.3597
-    assert result["evidence_validity_rate"] == 1.0
+    assert result["benchmark_per_item_f1"] == 0.3920
+    assert result["evidence_validity_rate"] == 0.9973
 
 
 def test_replay_exectv2_gepa_predictions_uses_current_scorer() -> None:

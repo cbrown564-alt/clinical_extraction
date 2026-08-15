@@ -20,8 +20,17 @@
     "scored_view"
   ],
   "normalized_sha256": "081b6a66e38f4cd13aac407e2f654ac7d5803c34e8b755d771daa31c4bc68a55",
-  "independent_prechange_oracle_sha256": "7db02a9d752bc28f8514a6e1fd09c618c402337a6cea54cbd3659e9446f4ff71",
+  "independent_prechange_oracle_sha256": "07d621bdec8883fcf1a70fca252aece1b08d0a1c419aac642bfd34c1e2552a55",
   "superseded_oracles": [
+    {
+      "sha256": "7db02a9d752bc28f8514a6e1fd09c618c402337a6cea54cbd3659e9446f4ff71",
+      "held_until": "2026-08-15",
+      "superseded_by": "Rules-Only Parity Campaign (Phases E1–E5)",
+      "change": "Targeted refinements across Investigations (PNES EEG confirmation), Prescription (future/titration plan and initiation filters), and SeizureFrequency (statement parser recovery from unkept bare-zero associated mentions).",
+      "why": "Measured on dev140: four-family headline F1 rises 0.8982 -> 0.9042.",
+      "evidence": "docs/research/exectv2/rules_only_campaign_e5_remeasure_2026-08-15.md",
+      "scope_note": "Post-parity-campaign hybrid vertical slice."
+    },
     {
       "sha256": "31936f775dd0f2cd306381573f1d592ea0af2514124d9f66d7b3be59db1f93d1",
       "held_until": "2026-08-11",

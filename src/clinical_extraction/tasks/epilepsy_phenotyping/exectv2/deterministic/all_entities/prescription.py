@@ -58,7 +58,11 @@ _PRESCRIPTION_PLAN_CONTEXT = re.compile(
 _PRESCRIPTION_FUTURE_LEFT_CONTEXT = re.compile(
     r"\b(?:should\s+be\s+increased|so\s+that\s+(?:he|she|they)\s+is\s+on|"
     r"suggest\s+adding|suggested\s+adding|suggest\s+introducing|"
-    r"suggested\s+introducing|to\s+start\s+treatment\s+with)\b",
+    r"suggested\s+introducing|to\s+start\s+treatment\s+with|"
+    r"to\s+start\b|commence\s+(?:him|her|them)?\s*(?:on|of)|"
+    r"suggest\s+we\s+start|suggest\s+maybe|"
+    r"please\s+(?:can\s+you\s+)?prescribe|"
+    r"Plan\s*:\s*Week|\bWeek\s+\d+\s*(?:&|and)\s*(?:Continue|Week))\b",
     re.IGNORECASE,
 )
 _PRESCRIPTION_WEIGHT_BASED_CONTEXT = re.compile(

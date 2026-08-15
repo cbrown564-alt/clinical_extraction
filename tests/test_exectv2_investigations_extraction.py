@@ -185,3 +185,12 @@ def test_occipital_focus_is_abnormal_eeg() -> None:
     )
     assert attrs["MRI"]["MRI_Results"] == "Normal"
     assert attrs["EEG"]["EEG_Results"] == "Abnormal"
+
+
+def test_pnes_confirmed_on_eeg_is_normal() -> None:
+    attrs = _by_modality(
+        "She has been diagnosed with non epileptic psychogenic seizures "
+        "which is confirmed on EEG."
+    )
+    assert attrs["EEG"]["EEG_Results"] == "Normal"
+

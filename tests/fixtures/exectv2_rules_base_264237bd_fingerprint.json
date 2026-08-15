@@ -9,11 +9,21 @@
   "canonicalization": "one compact sorted-key UTF-8 JSON object per letter joined by LF; SHA-256",
   "extraction_scope": "letter_id plus complete all-nine prediction model dump, including mention order, text, attributes, evidence, diagnostics, and provenance fields",
   "prediction_projection_trace_scope": "letter_id plus complete prediction, Decision 0046 primary comparison projection, and every stage event including owners, actions, inputs, outputs, rule categories, and changed flags",
-  "extraction_sha256": "a6c45acdd750d8e5f29e9e913543953ce66e27341b3a1d8600f16b245f574ef2",
-  "prediction_projection_trace_sha256": "002a38ace9933a9b5e22f02959957440169e03f904220a6080dbe48f973c99ba",
+  "extraction_sha256": "5ec216fd4600dd075a45ad9b11799962b7f91f5a4238c80ced504536e2e03121",
+  "prediction_projection_trace_sha256": "9f0256119d4b8712016dca740e3809893c2daa6c49ded6decbeb94f3b3421903",
   "sol_reported_extraction_anchor": "0bba18...96ebf",
   "sol_reported_prediction_projection_trace_anchor": "6af972...aa420",
   "superseded_oracles": [
+    {
+      "extraction_sha256": "a6c45acdd750d8e5f29e9e913543953ce66e27341b3a1d8600f16b245f574ef2",
+      "prediction_projection_trace_sha256": "002a38ace9933a9b5e22f02959957440169e03f904220a6080dbe48f973c99ba",
+      "held_until": "2026-08-15",
+      "superseded_by": "Rules-Only Parity Campaign (Phases E1–E5)",
+      "change": "Targeted refinements across Investigations (PNES EEG confirmation), Prescription (future/titration plan and initiation filters), and SeizureFrequency (statement parser recovery from unkept bare-zero associated mentions).",
+      "why": "Measured on dev140: four-family headline F1 rises 0.8982 -> 0.9042 (Prescription 0.9615 -> 0.9780, Investigations 0.9579 -> 0.9618, SeizureFrequency 0.8333 -> 0.8402). Test60 holdout rises 0.7918 -> 0.7937 (SeizureFrequency 0.5797 -> 0.5899).",
+      "evidence": "docs/research/exectv2/rules_only_campaign_e5_remeasure_2026-08-15.md",
+      "scope_note": "Rules-only standalone extractors."
+    },
     {
       "extraction_sha256": "77b80c2c8c511acdf601c56576170c6afa5256096b6a16db32c3ca4113c6944a",
       "prediction_projection_trace_sha256": "c01ae894347dc77b6a5bf8136a67c30830cd05c847ae55d99c083cda4758009d",
