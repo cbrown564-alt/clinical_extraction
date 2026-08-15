@@ -231,6 +231,7 @@ function normalizeConceptString(str?: string): string {
 function attributeValuesMatch(key: string, gold?: string, predicted?: string): boolean {
   if (gold === undefined || predicted === undefined) return false;
   if (gold === predicted) return true;
+  if (gold.toLowerCase() === predicted.toLowerCase()) return true;
   if (key === "CUIPhrase") {
     return normalizeConceptString(gold) === normalizeConceptString(predicted);
   }
