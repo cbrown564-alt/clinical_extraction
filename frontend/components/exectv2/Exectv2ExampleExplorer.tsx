@@ -28,6 +28,7 @@ import {
   type HighlightTone,
 } from "@/components/surface";
 import { exectv2OptionLabel, groupExectv2Runs, resolveExectv2RunId } from "@/lib/exectv2RunOptions";
+import { compareAttributeKeys, sortedAttributeKeys } from "@/lib/attributeOrder";
 import { lastRuleActionLabel } from "@/lib/plainLanguageLabels";
 import { displayPredictedEvidence } from "@/lib/predictedQuote";
 import {
@@ -345,9 +346,10 @@ function AttributeDiffTable({
   goldAttrs?: Record<string, string>;
   predAttrs?: Record<string, string>;
 }) {
-  const allKeys = Array.from(
-    new Set([...Object.keys(goldAttrs), ...Object.keys(predAttrs)])
-  ).sort(([left], [right]) => left.localeCompare(right, undefined, { sensitivity: "base" }));
+  const allKeys = sortedAttributeKeys([
+    ...Object.keys(goldAttrs),
+    ...Object.keys(predAttrs),
+  ]);
 
   if (allKeys.length === 0) return null;
 
@@ -422,7 +424,7 @@ function MentionRow({
   badgeTone?: string;
 }) {
   const attrs = Object.entries(mention.attributes).sort(([left], [right]) =>
-    left.localeCompare(right, undefined, { sensitivity: "base" })
+    compareAttributeKeys(left, right)
   );
   const deduplicated = mention.headline_status === "deduplicated";
   const evidenceText =
