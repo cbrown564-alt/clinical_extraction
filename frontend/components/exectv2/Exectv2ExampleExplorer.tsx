@@ -28,6 +28,7 @@ import {
   type HighlightTone,
 } from "@/components/surface";
 import { exectv2OptionLabel, groupExectv2Runs, resolveExectv2RunId } from "@/lib/exectv2RunOptions";
+import { displayPredictedEvidence } from "@/lib/predictedQuote";
 import {
   compactRunLabel,
   useExectv2Run,
@@ -396,10 +397,12 @@ function AttributeDiffTable({
 
 function MentionRow({
   mention,
+  spans = [],
   label = mention.source === "gold" ? "Gold" : "Predicted",
   badgeTone,
 }: {
   mention: Exectv2Mention;
+  spans?: Exectv2LetterRecord["evidence_spans"];
   label?: string;
   badgeTone?: string;
 }) {
@@ -407,6 +410,10 @@ function MentionRow({
     left.localeCompare(right, undefined, { sensitivity: "base" })
   );
   const deduplicated = mention.headline_status === "deduplicated";
+  const evidenceText =
+    mention.source === "predicted"
+      ? displayPredictedEvidence(mention, spans)
+      : mention.evidence;
 
   return (
     <div
@@ -435,9 +442,9 @@ function MentionRow({
             className={`mt-1 line-clamp-2 text-[11px] leading-snug text-muted ${
               mention.source === "predicted" ? "italic" : ""
             }`}
-            title={mention.evidence}
+            title={evidenceText}
           >
-            {mention.evidence || "No evidence text"}
+            {evidenceText || "No evidence text"}
           </p>
         </div>
         <span
@@ -482,11 +489,14 @@ function MentionRow({
 /** Matched Concept Row with unified header and side-by-side or attribute diff */
 function MatchedGroupCard({
   pair,
+  spans = [],
 }: {
   pair: MentionPair;
+  spans?: Exectv2LetterRecord["evidence_spans"];
 }) {
   const { gold, predicted } = pair;
   const deduplicated = predicted.headline_status === "deduplicated";
+  const predictedQuote = displayPredictedEvidence(predicted, spans);
 
   return (
     <div className="rounded-md border border-border bg-surface p-3 transition-colors hover:border-foreground/20">
@@ -526,7 +536,7 @@ function MatchedGroupCard({
             )}
           </div>
           <p className="mt-1 font-semibold text-foreground">{predicted.text}</p>
-          <p className="mt-0.5 text-[11px] italic leading-snug text-muted">{predicted.evidence || "No evidence"}</p>
+          <p className="mt-0.5 text-[11px] italic leading-snug text-muted">{predictedQuote || "No evidence"}</p>
           {(predicted.component_owner || predicted.source_lane) && (
             <p className="mt-1 font-mono text-[10px] text-muted">
               {predicted.component_owner || "owner unknown"}
@@ -604,6 +614,7 @@ function FamilyPanel({
                     <MatchedGroupCard
                       key={`matched-${pair.gold.id}-${pair.predicted.id}`}
                       pair={pair}
+                      spans={letter.evidence_spans}
                     />
                   ))}
                 </div>
@@ -620,6 +631,7 @@ function FamilyPanel({
                       <MentionRow
                         key={`missed-${item.gold.id}`}
                         mention={item.gold}
+                        spans={letter.evidence_spans}
                         label="Missed Gold"
                         badgeTone="bg-llm/15 text-llm"
                       />
@@ -639,6 +651,7 @@ function FamilyPanel({
                       <MentionRow
                         key={`extra-${item.predicted.id}`}
                         mention={item.predicted}
+                        spans={letter.evidence_spans}
                         label="Extra Pred"
                         badgeTone="bg-deterministic-alt/15 text-deterministic-alt"
                       />
@@ -659,7 +672,9 @@ function FamilyPanel({
             {gold.length === 0 ? (
               <div className="px-3 py-4 text-xs text-muted">No gold mentions</div>
             ) : (
-              gold.map((mention) => <MentionRow key={mention.id} mention={mention} />)
+              gold.map((mention) => (
+                <MentionRow key={mention.id} mention={mention} spans={letter.evidence_spans} />
+              ))
             )}
           </div>
           <div>
@@ -669,7 +684,13 @@ function FamilyPanel({
             {predicted.length === 0 ? (
               <div className="px-3 py-4 text-xs text-muted">No predicted mentions</div>
             ) : (
-              predicted.map((mention) => <MentionRow key={mention.id} mention={mention} />)
+              predicted.map((mention) => (
+                <MentionRow
+                  key={mention.id}
+                  mention={mention}
+                  spans={letter.evidence_spans}
+                />
+              ))
             )}
           </div>
         </div>
