@@ -35,6 +35,8 @@ export interface Exectv2Mention {
    * baseline. Empty when the finding is still the producer's unchanged fact.
    */
   last_rule_action?: string;
+  /** Plain sentence for that action, including before/after when recorded. */
+  last_rule_label?: string;
 }
 
 export interface Exectv2EvidenceSpan {

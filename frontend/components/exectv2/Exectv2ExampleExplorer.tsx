@@ -162,7 +162,7 @@ function runMetricChips(run: Exectv2RunSummary): MetricChip[] {
  * `Distinct-Assertion Duplicate`).
  */
 function LastRuleActionLine({ mention }: { mention: Exectv2Mention }) {
-  const label = lastRuleActionLabel(mention.last_rule_action);
+  const label = mention.last_rule_label || lastRuleActionLabel(mention.last_rule_action);
   if (!label) return null;
   return (
     <p

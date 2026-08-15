@@ -509,6 +509,23 @@ _BASELINE_PROVENANCE_ACTIONS = frozenset(
 )
 
 
+def last_diverging_provenance_event(
+    mention: Mapping[str, Any],
+) -> Mapping[str, Any] | None:
+    """Return the last provenance event that changed this mention, else None."""
+
+    events = mention.get("provenance")
+    if not isinstance(events, Sequence) or isinstance(events, (str, bytes)):
+        return None
+    for event in reversed(events):
+        if not isinstance(event, Mapping):
+            continue
+        action = str(event.get("action") or "").strip()
+        if action and action not in _BASELINE_PROVENANCE_ACTIONS:
+            return event
+    return None
+
+
 def last_diverging_provenance_action(mention: Mapping[str, Any]) -> str:
     """Return the last rule action that changed this mention, else empty.
 
@@ -516,16 +533,79 @@ def last_diverging_provenance_action(mention: Mapping[str, Any]) -> str:
     events fire on every finding, so they are treated as baseline.
     """
 
-    events = mention.get("provenance")
-    if not isinstance(events, Sequence) or isinstance(events, (str, bytes)):
+    event = last_diverging_provenance_event(mention)
+    if event is None:
         return ""
-    for event in reversed(events):
-        if not isinstance(event, Mapping):
+    return str(event.get("action") or "").strip()
+
+
+def last_rule_label(mention: Mapping[str, Any]) -> str:
+    """Plain sentence for the last diverging rule, with before/after when known."""
+
+    event = last_diverging_provenance_event(mention)
+    if event is None:
+        return ""
+    action = str(event.get("action") or "").strip()
+    detail = event.get("detail")
+    detail_map = detail if isinstance(detail, Mapping) else {}
+    if action == "normalized_prescription_from_dictionary":
+        changes = _format_attribute_changes(detail_map)
+        if changes:
+            return f"Dictionary {changes}"
+        return "Dictionary normalized this regimen"
+    if action == "split_prescription_regimen_from_dictionary":
+        source = str(detail_map.get("source_text") or "").strip()
+        target = str(detail_map.get("target_text") or "").strip()
+        after = detail_map.get("after_attributes")
+        after_map = after if isinstance(after, Mapping) else {}
+        dose = f"{after_map.get('DrugDose', '')}{after_map.get('DoseUnit', '')}".strip()
+        piece = target or dose
+        if source and piece:
+            return f"Dictionary split “{source}” into this dose ({piece})"
+        if piece:
+            return f"Dictionary split the regimen into this dose ({piece})"
+        return "Dictionary split this regimen"
+    if action == "rewrote_diagnosis_convention_from_dictionary":
+        source = str(detail_map.get("source_text") or "").strip()
+        target = str(detail_map.get("target_text") or "").strip()
+        if source and target:
+            return f"Dictionary rewrote “{source}” to “{target}”"
+        return "Dictionary rewrote the diagnosis wording"
+    if action == "added_diagnosis_residual_from_dictionary":
+        target = str(detail_map.get("target_text") or "").strip()
+        if target:
+            return f"Dictionary added “{target}” from the letter"
+        return "Dictionary added this diagnosis"
+    if action == "added_sf_residual_convention_from_dictionary":
+        target = str(detail_map.get("target_text") or "").strip()
+        if target:
+            return f"Dictionary added “{target}” from the letter"
+        return "Dictionary added this seizure-frequency fact"
+    return action.replace("_", " ")
+
+
+def _format_attribute_changes(detail: Mapping[str, Any]) -> str:
+    raw = detail.get("attribute_changes")
+    if not isinstance(raw, Sequence) or isinstance(raw, (str, bytes)):
+        return ""
+    parts: list[str] = []
+    for item in raw:
+        if not isinstance(item, Mapping):
             continue
-        action = str(event.get("action") or "").strip()
-        if action and action not in _BASELINE_PROVENANCE_ACTIONS:
-            return action
-    return ""
+        name = str(item.get("attribute") or "").strip()
+        before = str(item.get("before") or "").strip()
+        after = str(item.get("after") or "").strip()
+        if not name or not after:
+            continue
+        if before:
+            parts.append(f"set {name} from {before} to {after}")
+        else:
+            parts.append(f"set {name} to {after}")
+    if not parts:
+        return ""
+    if len(parts) == 1:
+        return parts[0]
+    return ", ".join(parts[:-1]) + f", and {parts[-1]}"
 
 
 def _frontend_mention(
@@ -560,6 +640,7 @@ def _frontend_mention(
         "status": source,
         "headline_status": "",
         "last_rule_action": last_diverging_provenance_action(mention),
+        "last_rule_label": last_rule_label(mention),
     }
 
 

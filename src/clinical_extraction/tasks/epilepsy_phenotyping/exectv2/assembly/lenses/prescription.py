@@ -61,7 +61,10 @@ class PrescriptionDictionaryLens(ThinArtifactLens):
         normalized = 0
         split_regimens = 0
         for finding in selected:
-            attrs = dict(finding.attributes)
+            before_attrs = {
+                str(key): str(value) for key, value in dict(finding.attributes).items()
+            }
+            attrs = dict(before_attrs)
             changed = False
             repaired_attrs = sd.prescription_convention_attribute_repairs(
                 finding.text,
@@ -99,6 +102,9 @@ class PrescriptionDictionaryLens(ThinArtifactLens):
             )
             if split_rows:
                 for index, (text, split_attrs, rule) in enumerate(split_rows):
+                    after_attrs = {
+                        str(key): str(value) for key, value in dict(split_attrs).items()
+                    }
                     out.append(
                         finding_with_text_attributes(
                             finding,
@@ -110,13 +116,24 @@ class PrescriptionDictionaryLens(ThinArtifactLens):
                                 action="split_prescription_regimen_from_dictionary",
                                 owner="standard_dictionary",
                                 portability="clinical_epilepsy",
-                                detail={"lens_id": self.lens_id, "rule": rule},
+                                detail={
+                                    "lens_id": self.lens_id,
+                                    "rule": rule,
+                                    "source_text": finding.text,
+                                    "target_text": text,
+                                    "before_attributes": before_attrs,
+                                    "after_attributes": after_attrs,
+                                    "attribute_changes": _attribute_changes(
+                                        before_attrs, after_attrs
+                                    ),
+                                },
                             ),
                         )
                     )
                 split_regimens += 1
                 continue
             if changed:
+                after_attrs = {str(key): str(value) for key, value in attrs.items()}
                 finding = finding_with_text_attributes(
                     finding,
                     text=finding.text,
@@ -127,7 +144,16 @@ class PrescriptionDictionaryLens(ThinArtifactLens):
                         action="normalized_prescription_from_dictionary",
                         owner="standard_dictionary",
                         portability="clinical_epilepsy",
-                        detail={"lens_id": self.lens_id},
+                        detail={
+                            "lens_id": self.lens_id,
+                            "source_text": finding.text,
+                            "target_text": finding.text,
+                            "before_attributes": before_attrs,
+                            "after_attributes": after_attrs,
+                            "attribute_changes": _attribute_changes(
+                                before_attrs, after_attrs
+                            ),
+                        },
                     ),
                 )
                 normalized += 1
@@ -160,6 +186,18 @@ class PrescriptionDictionaryLens(ThinArtifactLens):
                 "prescription_policy_variant": variant,
             },
         )
+
+
+def _attribute_changes(
+    before: dict[str, str], after: dict[str, str]
+) -> list[dict[str, str]]:
+    changes: list[dict[str, str]] = []
+    for key in sorted(set(before) | set(after)):
+        old = before.get(key, "")
+        new = after.get(key, "")
+        if old != new:
+            changes.append({"attribute": key, "before": old, "after": new})
+    return changes
 
 
 __all__ = [
