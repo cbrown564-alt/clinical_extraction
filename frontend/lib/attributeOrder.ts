@@ -47,7 +47,14 @@ const FAMILY_PAYLOAD_ORDER: Record<string, readonly string[]> = {
 const FAMILY_PRIMARY_KEYS: Record<string, readonly string[]> = {
   Diagnosis: ["DiagCategory"],
   Prescription: ["DrugName"],
-  SeizureFrequency: ["FrequencyChange", "NumberOfSeizures", "LowerNumberOfSeizures"],
+  SeizureFrequency: [
+    "FrequencyChange",
+    "NumberOfSeizures",
+    "LowerNumberOfSeizures",
+    "UpperNumberOfSeizures",
+    "LowerNumberOfTimePeriods",
+    "UpperNumberOfTimePeriods",
+  ],
   Investigations: ["CT_Results", "EEG_Results", "MRI_Results"],
 };
 

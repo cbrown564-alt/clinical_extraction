@@ -53,5 +53,9 @@ describe("sortedAttributeKeys", () => {
     expect(attributeRank("DiagCategory", "Diagnosis")).toBe("primary");
     expect(attributeRank("DrugDose", "Prescription")).toBe("payload");
     expect(attributeRank("Negation", "Diagnosis")).toBe("qualifier");
+    expect(attributeRank("LowerNumberOfSeizures", "SeizureFrequency")).toBe("primary");
+    expect(attributeRank("UpperNumberOfSeizures", "SeizureFrequency")).toBe("primary");
+    expect(attributeRank("LowerNumberOfTimePeriods", "SeizureFrequency")).toBe("primary");
+    expect(attributeRank("UpperNumberOfTimePeriods", "SeizureFrequency")).toBe("primary");
   });
 });
