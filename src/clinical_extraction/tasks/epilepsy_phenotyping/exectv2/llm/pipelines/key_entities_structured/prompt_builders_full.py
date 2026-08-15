@@ -19,6 +19,7 @@ from .constants import (
     PROMPT_VERSION_V14,
     PROMPT_VERSION_V15,
     PROMPT_VERSION_V16,
+    PROMPT_VERSION_V17,
     PromptProfile,
     prompt_version_for,
 )
@@ -65,6 +66,8 @@ def build_full_prompt_input(
         return _build_v15_prompt_input(letter, selected_prompt_version)
     if selected_prompt_version == PROMPT_VERSION_V16:
         return _build_v16_prompt_input(letter, selected_prompt_version)
+    if selected_prompt_version == PROMPT_VERSION_V17:
+        return _build_v17_prompt_input(letter)
     payload = {
         "prompt_version": selected_prompt_version,
         "task": (
@@ -754,3 +757,49 @@ def _build_v16_prompt_input(letter: ExectLetter, prompt_version: str) -> str:
         "letter_text": letter.note_text,
     }
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
+
+
+def _build_v17_prompt_input(letter: ExectLetter) -> str:
+    """Build v16's clinical contract without model-facing run metadata.
+
+    Dict insertion order is the designed semantic order. Do not sort these keys:
+    the task leads, supporting instructions follow, and the current letter ends
+    the request after the synthetic examples.
+    """
+
+    payload = {
+        "task": _V13_TASK,
+        "output_schema": {
+            "clinical_events": [
+                {
+                    "family": (
+                        "medication | diagnosis | seizure_frequency | investigation"
+                    ),
+                    "anchor_text": "Short exact substring naming the clinical event.",
+                    "evidence": "Exact clause or sentence copied from the letter.",
+                    "event_state": (
+                        "Optional. Short state matching the letter's wording and "
+                        "context. Put answer values in mention attributes."
+                    ),
+                    "mentions": [
+                        {
+                            "entity": (
+                                "One of Prescription, Diagnosis, "
+                                "SeizureFrequency, Investigations."
+                            ),
+                            "text": "Short exact substring used for scoring.",
+                            "attributes": "Only attributes legal for that entity.",
+                        }
+                    ],
+                    "confidence": "Optional. low | medium | high",
+                    "rationale": "Optional. One short sentence.",
+                }
+            ]
+        },
+        "family_guidance": dict(_V13_FAMILY_GUIDANCE),
+        "attribute_vocabulary": _attribute_vocabulary(),
+        "clinical_rules": list(_V13_CLINICAL_RULES),
+        "worked_examples": load_v16_shape_examples(),
+        "letter_text": letter.note_text,
+    }
+    return json.dumps(payload, ensure_ascii=False)

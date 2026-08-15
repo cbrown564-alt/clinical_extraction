@@ -856,6 +856,87 @@ def test_v16_contract_is_v13_plus_eight_synthetic_shapes() -> None:
     assert len(payload["clinical_rules"]) == 14
 
 
+def test_v17_contract_removes_metadata_and_preserves_semantic_order() -> None:
+    payload_str = structured.build_prompt_input(
+        _LETTER,
+        prompt_version=structured.PROMPT_VERSION_V17,
+    )
+    payload = json.loads(payload_str)
+
+    assert list(payload) == [
+        "task",
+        "output_schema",
+        "family_guidance",
+        "attribute_vocabulary",
+        "clinical_rules",
+        "worked_examples",
+        "letter_text",
+    ]
+    assert "prompt_version" not in payload
+    assert "letter_id" not in payload
+    assert payload["letter_text"] == _LETTER.note_text
+    assert len(payload["worked_examples"]) == 8
+    instructions = _prompt_fields_without_letter(payload).lower()
+    assert "source-near" not in instructions
+    assert "benchmark" not in instructions
+    assert "scored" not in instructions
+
+
+def test_v17_uses_minimal_system_message_in_rendered_model_request() -> None:
+    payload_str = structured.build_prompt_input(
+        _LETTER,
+        prompt_version=structured.PROMPT_VERSION_V17,
+    )
+    program = structured.DspyKeyEntitiesStructuredExtractor(
+        prompt_version=structured.PROMPT_VERSION_V17
+    )
+    messages = program.render_messages(prompt_input_json=payload_str)
+
+    assert messages[0] == {
+        "role": "system",
+        "content": (
+            "Extract structured clinical events from the supplied clinical letter. "
+            "Return the requested output fields exactly."
+        ),
+    }
+    assert messages[1]["role"] == "user"
+    assert messages[1]["content"].count(payload_str) == 1
+    assert "prompt_version" not in messages[1]["content"]
+    assert "letter_id" not in messages[1]["content"]
+
+
+def test_v16_keeps_legacy_model_message_contract() -> None:
+    payload_str = structured.build_prompt_input(
+        _LETTER,
+        prompt_version=structured.PROMPT_VERSION_V16,
+    )
+    program = structured.DspyKeyEntitiesStructuredExtractor(
+        prompt_version=structured.PROMPT_VERSION_V16
+    )
+    messages = program.render_messages(prompt_input_json=payload_str)
+
+    assert messages[0]["content"].startswith("Your input fields are:")
+    assert json.loads(payload_str)["prompt_version"] == structured.PROMPT_VERSION_V16
+
+
+def test_v17_keeps_prompt_identity_in_research_record() -> None:
+    original = structured.PROMPT_VERSION
+    try:
+        structured.set_active_prompt_version(structured.PROMPT_VERSION_V17)
+        rows, _ = structured.run_split(
+            [_LETTER],
+            split="dev",
+            model="not-called",
+            temperature=0.0,
+            max_tokens=900,
+            mode="prompt-only",
+        )
+    finally:
+        structured.set_active_prompt_version(original)
+
+    assert rows[0]["prompt_version"] == structured.PROMPT_VERSION_V17
+
+
 def _prompt_fields_without_letter(payload: dict) -> str:
     return json.dumps(
         {key: value for key, value in payload.items() if key != "letter_text"}
@@ -873,6 +954,7 @@ def test_no_prompt_version_mentions_cui() -> None:
         structured.PROMPT_VERSION_V14,
         structured.PROMPT_VERSION_V15,
         structured.PROMPT_VERSION_V16,
+        structured.PROMPT_VERSION_V17,
         structured.PROMPT_VERSION_V0_9_25_LUNA_SF_STATE,
         structured.PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX,
     ]
