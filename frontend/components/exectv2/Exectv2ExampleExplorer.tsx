@@ -28,7 +28,11 @@ import {
   type HighlightTone,
 } from "@/components/surface";
 import { exectv2OptionLabel, groupExectv2Runs, resolveExectv2RunId } from "@/lib/exectv2RunOptions";
-import { isIdentityAttributeKey, sortedAttributeKeys } from "@/lib/attributeOrder";
+import {
+  attributeRank,
+  sortedAttributeKeys,
+  type AttributeRank,
+} from "@/lib/attributeOrder";
 import { lastRuleActionLabel } from "@/lib/plainLanguageLabels";
 import { displayPredictedEvidence } from "@/lib/predictedQuote";
 import {
@@ -75,6 +79,35 @@ function familyDescriptor(family: Exectv2Entity) {
 
 function familyLabel(family: string): string {
   return EXECTV2_FAMILIES.find((f) => f.id === family)?.label ?? family;
+}
+
+function familyTextClass(family: string): string {
+  switch (familyDescriptor(family as Exectv2Entity)?.tone) {
+    case "deterministic":
+      return "text-deterministic";
+    case "deterministic-alt":
+      return "text-deterministic-alt";
+    case "llm":
+      return "text-llm";
+    case "success":
+      return "text-success";
+    case "hybrid":
+      return "text-hybrid";
+    default:
+      return "text-foreground";
+  }
+}
+
+function attributeNameClass(rank: AttributeRank, family: string): string {
+  if (rank === "identity" || rank === "qualifier") return "text-muted/70";
+  if (rank === "primary") return `${familyTextClass(family)} font-medium`;
+  return "text-muted";
+}
+
+function attributeValueClass(rank: AttributeRank): string {
+  if (rank === "identity" || rank === "qualifier") return "text-muted";
+  if (rank === "primary") return "text-foreground font-medium";
+  return "text-foreground";
 }
 
 function familyTint(family: string): string {
@@ -340,16 +373,18 @@ function alignFamilyMentions(
 
 /** Compact attribute diff table comparing gold vs predicted key-value pairs */
 function AttributeDiffTable({
+  family,
   goldAttrs = {},
   predAttrs = {},
 }: {
+  family: string;
   goldAttrs?: Record<string, string>;
   predAttrs?: Record<string, string>;
 }) {
-  const allKeys = sortedAttributeKeys([
-    ...Object.keys(goldAttrs),
-    ...Object.keys(predAttrs),
-  ]);
+  const allKeys = sortedAttributeKeys(
+    [...Object.keys(goldAttrs), ...Object.keys(predAttrs)],
+    family
+  );
 
   if (allKeys.length === 0) return null;
 
@@ -372,8 +407,9 @@ function AttributeDiffTable({
               gVal !== undefined && pVal !== undefined && !isMatch;
             const isMissingInPred = gVal !== undefined && pVal === undefined;
             const isExtraInPred = gVal === undefined && pVal !== undefined;
-            const isIdentity = isIdentityAttributeKey(key);
-            const valueTone = isIdentity ? "text-muted" : "text-foreground";
+            const rank = attributeRank(key, family);
+            const nameTone = attributeNameClass(rank, family);
+            const valueTone = attributeValueClass(rank);
 
             return (
               <tr
@@ -388,9 +424,7 @@ function AttributeDiffTable({
                     : undefined
                 }
               >
-                <td className={`px-2 py-1 ${isIdentity ? "text-muted/70" : "text-muted"}`}>
-                  {key}
-                </td>
+                <td className={`px-2 py-1 ${nameTone}`}>{key}</td>
                 <td className={`px-2 py-1 ${valueTone}`}>
                   {gVal ?? <span className="text-muted/40">—</span>}
                 </td>
@@ -399,7 +433,9 @@ function AttributeDiffTable({
                   {isMatch && (
                     <span
                       className={`ml-1 font-sans ${
-                        isIdentity ? "text-success/60" : "text-success"
+                        rank === "identity" || rank === "qualifier"
+                          ? "text-success/60"
+                          : "text-success"
                       }`}
                     >
                       ✓
@@ -435,7 +471,10 @@ function MentionRow({
   label?: string;
   badgeTone?: string;
 }) {
-  const attrs = sortedAttributeKeys(Object.keys(mention.attributes)).flatMap((key) => {
+  const attrs = sortedAttributeKeys(
+    Object.keys(mention.attributes),
+    mention.entity
+  ).flatMap((key) => {
     const value = mention.attributes[key];
     return value === undefined ? [] : [[key, value] as const];
   });
@@ -494,15 +533,18 @@ function MentionRow({
 
       {attrs.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1">
-          {attrs.map(([key, value]) => (
-            <span
-              key={`${mention.id}:${key}`}
-              className="rounded border border-border bg-surface-raised px-1.5 py-0.5 font-mono text-[10px] text-muted"
-              title={`${key}: ${value}`}
-            >
-              {key}: {value}
-            </span>
-          ))}
+          {attrs.map(([key, value]) => {
+            const rank = attributeRank(key, mention.entity);
+            return (
+              <span
+                key={`${mention.id}:${key}`}
+                className={`rounded border border-border bg-surface-raised px-1.5 py-0.5 font-mono text-[10px] ${attributeValueClass(rank)}`}
+                title={`${key}: ${value}`}
+              >
+                {key}: {value}
+              </span>
+            );
+          })}
         </div>
       )}
 
@@ -566,7 +608,11 @@ function MatchedGroupCard({
         </div>
       </div>
 
-      <AttributeDiffTable goldAttrs={gold.attributes} predAttrs={predicted.attributes} />
+      <AttributeDiffTable
+        family={gold.entity}
+        goldAttrs={gold.attributes}
+        predAttrs={predicted.attributes}
+      />
     </div>
   );
 }
