@@ -13,6 +13,7 @@ from .constants import (
     PROMPT_VERSION_V11,
     PROMPT_VERSION_V12,
     PROMPT_VERSION_V13,
+    PROMPT_VERSION_V14,
     PromptProfile,
     prompt_version_for,
 )
@@ -53,6 +54,8 @@ def build_full_prompt_input(
         return _build_v12_prompt_input(letter, selected_prompt_version)
     if selected_prompt_version == PROMPT_VERSION_V13:
         return _build_v13_prompt_input(letter, selected_prompt_version)
+    if selected_prompt_version == PROMPT_VERSION_V14:
+        return _build_v14_prompt_input(letter, selected_prompt_version)
     payload = {
         "prompt_version": selected_prompt_version,
         "task": (
@@ -553,6 +556,76 @@ def _build_v13_prompt_input(letter: ExectLetter, prompt_version: str) -> str:
         "family_guidance": dict(_V13_FAMILY_GUIDANCE),
         "attribute_vocabulary": _attribute_vocabulary(),
         "clinical_rules": list(_V13_CLINICAL_RULES),
+        "letter_id": letter.letter_id,
+        "letter_text": letter.note_text,
+    }
+    return json.dumps(payload, ensure_ascii=False, sort_keys=True)
+
+
+_V14_TASK = (
+    "Read the clinical letter once. Extract current epileptic diagnoses, "
+    "current seizure frequency, current anti-seizure medication, and completed "
+    "EEG, MRI, CT, or telemetry. Copy only exact substrings from the letter. "
+    "The same fact may render more than one family when the letter states both."
+)
+
+_V14_SF_GUIDANCE = (
+    "Fill every SeizureFrequency role the letter states. An empty role is "
+    "allowed. current_rate: a count, range, interval, cluster, or dated count "
+    "that is happening now. seizure_free: last event, none since, no further, "
+    "or no seizures since a stated time; mention text is the type in that "
+    "clause; set NumberOfSeizures to 0 and TimeSince_or_TimeOfEvent to Since. "
+    "change_companion: returned, worse, or improved without a count; mention "
+    "text is always the generic seizure span. Mention text must be an exact "
+    "letter substring that is generic seizure or seizures, or a named seizure "
+    "type that appears in the evidence. If the count clause contains a named "
+    "type, that type is the mention. Put counts and dates in attributes."
+)
+
+_V14_FAMILY_GUIDANCE = {
+    **dict(_V11_FAMILY_GUIDANCE),
+    "seizure_frequency": _V14_SF_GUIDANCE,
+}
+
+_V14_CLINICAL_RULES = list(_V13_CLINICAL_RULES)
+
+
+def _build_v14_prompt_input(letter: ExectLetter, prompt_version: str) -> str:
+    payload = {
+        "prompt_version": prompt_version,
+        "task": _V14_TASK,
+        "output_schema": {
+            "clinical_events": [
+                {
+                    "family": (
+                        "medication | diagnosis | seizure_frequency | investigation"
+                    ),
+                    "anchor_text": "Short exact substring naming the clinical event.",
+                    "evidence": (
+                        "Exact clause or sentence copied from the letter."
+                    ),
+                    "event_state": (
+                        "Optional. Short source-near state. Scored values live "
+                        "in mention attributes."
+                    ),
+                    "mentions": [
+                        {
+                            "entity": (
+                                "One of Prescription, Diagnosis, "
+                                "SeizureFrequency, Investigations."
+                            ),
+                            "text": "Short exact substring used for scoring.",
+                            "attributes": "Only attributes legal for that entity.",
+                        }
+                    ],
+                    "confidence": "Optional. low | medium | high",
+                    "rationale": "Optional. One short sentence.",
+                }
+            ]
+        },
+        "family_guidance": dict(_V14_FAMILY_GUIDANCE),
+        "attribute_vocabulary": _attribute_vocabulary(),
+        "clinical_rules": list(_V14_CLINICAL_RULES),
         "letter_id": letter.letter_id,
         "letter_text": letter.note_text,
     }

@@ -20,7 +20,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
 )
 
 COMPONENT_OWNER = "deterministic_sf_attribute_encoding"
-ENCODING_VERSION = "exectv2_hybrid_sf_attribute_encoding_v0.1"
+ENCODING_VERSION = "exectv2_hybrid_sf_attribute_encoding_v0.2"
 
 _RANGE_IN_FIELD_RE = re.compile(
     r"^\s*(?P<low>\d+)\s*(?:-|–|to|or)\s*(?P<high>\d+)\s*$",
@@ -37,9 +37,10 @@ _SEIZURE_WORD_RE = re.compile(r"\bseizures?\b", re.IGNORECASE)
 _SEIZURE_FREQUENCY_TEXT_RE = re.compile(r"^\s*seizure\s+frequency\s*$", re.IGNORECASE)
 _LAST_EVENT_CUE_RE = re.compile(
     r"\b(last seizure|last seizures|last event|has had none since|none since|"
-    r"no further|seizure[- ]free since)\b",
+    r"no further|seizure[- ]free since|no seizures?)\b",
     re.IGNORECASE,
 )
+_BLANK_LAST_EVENT_COUNT = frozenset({"", "no", "none", "n/a", "na"})
 _LAST_CLINIC_RE = re.compile(
     r"\bsince (?:her |his |the )?last clinic\b",
     re.IGNORECASE,
@@ -62,6 +63,7 @@ def apply_sf_attribute_encoding(
             ("encoding.word_number", _rewrite_word_number),
             ("encoding.range_split", _rewrite_range),
             ("encoding.interval_completer", _complete_interval),
+            ("encoding.last_event_zero", _complete_last_event_zero),
             ("encoding.last_clinic_frame", _complete_last_clinic),
             ("encoding.dated_heading_count", _complete_dated_heading),
             ("encoding.mention_text_cleanup", _cleanup_mention_text),
@@ -133,6 +135,42 @@ def _complete_interval(mention: Mapping[str, Any]) -> dict[str, Any] | Mapping[s
     else:
         attrs["NumberOfTimePeriods"] = match.group("high")
     repaired["attributes"] = attrs
+    repaired["component_owner"] = COMPONENT_OWNER
+    return repaired
+
+
+def _complete_last_event_zero(
+    mention: Mapping[str, Any],
+) -> dict[str, Any] | Mapping[str, Any]:
+    """Map last-event / none-since language to NumberOfSeizures=0.
+
+    Applies only to already-emitted mentions. Does not invent events.
+    Fires when the count is missing, a negation word, or a year token
+    parked in NumberOfSeizures.
+    """
+
+    haystack = " ".join(
+        part
+        for part in (str(mention.get("text") or ""), str(mention.get("evidence") or ""))
+        if part
+    )
+    if not _LAST_EVENT_CUE_RE.search(haystack):
+        return mention
+    attrs = dict(mention.get("attributes") or {})
+    raw = str(attrs.get("NumberOfSeizures") or "").strip()
+    already_free = raw == "0" and attrs.get("TimeSince_or_TimeOfEvent") == "Since"
+    if already_free:
+        return mention
+    year_as_count = bool(_YEAR_RE.fullmatch(raw))
+    if raw not in _BLANK_LAST_EVENT_COUNT and not year_as_count and raw != "0":
+        return mention
+    repaired = _copy_mention(mention)
+    new_attrs = dict(attrs)
+    new_attrs["NumberOfSeizures"] = "0"
+    new_attrs["TimeSince_or_TimeOfEvent"] = "Since"
+    if year_as_count and not new_attrs.get("YearDate"):
+        new_attrs["YearDate"] = raw
+    repaired["attributes"] = new_attrs
     repaired["component_owner"] = COMPONENT_OWNER
     return repaired
 
