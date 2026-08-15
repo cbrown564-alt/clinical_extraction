@@ -28,6 +28,7 @@ import {
   type HighlightTone,
 } from "@/components/surface";
 import { exectv2OptionLabel, groupExectv2Runs, resolveExectv2RunId } from "@/lib/exectv2RunOptions";
+import { lastRuleActionLabel } from "@/lib/plainLanguageLabels";
 import { displayPredictedEvidence } from "@/lib/predictedQuote";
 import {
   compactRunLabel,
@@ -160,6 +161,19 @@ function runMetricChips(run: Exectv2RunSummary): MetricChip[] {
  * is genuinely counted. See CONTEXT.md (`Redundant-Convention Duplicate`,
  * `Distinct-Assertion Duplicate`).
  */
+function LastRuleActionLine({ mention }: { mention: Exectv2Mention }) {
+  const label = lastRuleActionLabel(mention.last_rule_action);
+  if (!label) return null;
+  return (
+    <p
+      className="mt-1.5 text-[11px] leading-snug text-muted"
+      title={mention.last_rule_action}
+    >
+      {label}
+    </p>
+  );
+}
+
 function HeadlineStatusBadge({ status }: { status: Exectv2Mention["headline_status"] }) {
   if (status === "deduplicated") {
     return (
@@ -476,12 +490,7 @@ function MentionRow({
         </div>
       )}
 
-      {(mention.component_owner || mention.source_lane) && (
-        <p className="mt-1.5 truncate font-mono text-[10px] text-muted">
-          {mention.component_owner || "owner unknown"}
-          {mention.source_lane ? ` / ${mention.source_lane}` : ""}
-        </p>
-      )}
+      <LastRuleActionLine mention={mention} />
     </div>
   );
 }
@@ -537,12 +546,7 @@ function MatchedGroupCard({
           </div>
           <p className="mt-1 font-semibold text-foreground">{predicted.text}</p>
           <p className="mt-0.5 text-[11px] italic leading-snug text-muted">{predictedQuote || "No evidence"}</p>
-          {(predicted.component_owner || predicted.source_lane) && (
-            <p className="mt-1 font-mono text-[10px] text-muted">
-              {predicted.component_owner || "owner unknown"}
-              {predicted.source_lane ? ` / ${predicted.source_lane}` : ""}
-            </p>
-          )}
+          <LastRuleActionLine mention={predicted} />
         </div>
       </div>
 

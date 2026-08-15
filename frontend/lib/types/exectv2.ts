@@ -30,6 +30,11 @@ export interface Exectv2Mention {
    * per occurrence (same concept repeated at distinct offsets); "" otherwise.
    */
   headline_status: "" | "deduplicated" | "distinct_assertion";
+  /**
+   * Last assembly action that changed this mention away from the model
+   * baseline. Empty when the finding is still the producer's unchanged fact.
+   */
+  last_rule_action?: string;
 }
 
 export interface Exectv2EvidenceSpan {

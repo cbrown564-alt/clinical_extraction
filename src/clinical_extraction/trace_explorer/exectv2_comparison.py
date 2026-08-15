@@ -210,9 +210,13 @@ def _model_run(
                     split="dev140",
                 )
                 result = structured_one_call.run_llm_with_rules_letter(gold, producer)
-                predicted_mentions_payload = [
-                    m.model_dump(mode="json") for m in result.prediction.mentions
-                ]
+                predicted_mentions_payload = _list_of_mappings(
+                    result.row.get("predicted_mentions")
+                )
+                if not predicted_mentions_payload:
+                    predicted_mentions_payload = [
+                        m.model_dump(mode="json") for m in result.prediction.mentions
+                    ]
             else:
                 predicted_mentions_payload = _list_of_mappings(row.get(source_key))
             letters.append(
@@ -491,6 +495,39 @@ def _frontend_letter(
     }
 
 
+# Assembly always appends a wrap-up event even when the mention is unchanged.
+# Those events, plus the producer emission, are the hybrid baseline and are
+# not useful on the review card.
+_BASELINE_PROVENANCE_ACTIONS = frozenset(
+    {
+        "emitted_raw_candidate",
+        "emitted_scored_candidate",
+        "selected_saved_artifact_mentions",
+        "applied_standard_dictionary_prescription_repair",
+        "applied_standard_dictionary_diagnosis_repair",
+    }
+)
+
+
+def last_diverging_provenance_action(mention: Mapping[str, Any]) -> str:
+    """Return the last rule action that changed this mention, else empty.
+
+    Gold mentions and unchanged model findings stay blank. The wrap-up lens
+    events fire on every finding, so they are treated as baseline.
+    """
+
+    events = mention.get("provenance")
+    if not isinstance(events, Sequence) or isinstance(events, (str, bytes)):
+        return ""
+    for event in reversed(events):
+        if not isinstance(event, Mapping):
+            continue
+        action = str(event.get("action") or "").strip()
+        if action and action not in _BASELINE_PROVENANCE_ACTIONS:
+            return action
+    return ""
+
+
 def _frontend_mention(
     mention: Mapping[str, Any],
     *,
@@ -522,6 +559,7 @@ def _frontend_mention(
         "attributes": attributes,
         "status": source,
         "headline_status": "",
+        "last_rule_action": last_diverging_provenance_action(mention),
     }
 
 

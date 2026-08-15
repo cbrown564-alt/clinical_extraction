@@ -115,6 +115,27 @@ export function splitLabel(split: string | undefined | null): string {
   return deSnake(split);
 }
 
+/**
+ * Last diverging assembly action on an ExECT mention. Empty string when the
+ * finding is still the model (or rules-only) baseline.
+ */
+export function lastRuleActionLabel(action: string | undefined | null): string {
+  if (!action) return "";
+  const LABELS: Record<string, string> = {
+    normalized_prescription_from_dictionary:
+      "Dictionary normalized this regimen",
+    split_prescription_regimen_from_dictionary:
+      "Dictionary split this regimen",
+    rewrote_diagnosis_convention_from_dictionary:
+      "Dictionary rewrote the diagnosis wording",
+    added_diagnosis_residual_from_dictionary:
+      "Dictionary added this diagnosis",
+    added_sf_residual_convention_from_dictionary:
+      "Dictionary added this seizure-frequency fact",
+  };
+  return LABELS[action] ?? deSnake(action);
+}
+
 /** De-snake_case a codename into Title Case words. */
 function deSnake(value: string): string {
   return value
