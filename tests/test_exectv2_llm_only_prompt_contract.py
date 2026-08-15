@@ -502,3 +502,43 @@ def test_v10_contract_drops_ledger_examples_and_later_rules() -> None:
     assert "DiagCategory" in payload["attribute_vocabulary"][DIAGNOSIS.name]
     assert payload["letter_id"] == "TEST001"
     assert payload["letter_text"] == _NOTE
+
+
+def test_v11_contract_is_leftover_extraction_job_without_codebook() -> None:
+    original = structured.PROMPT_VERSION
+    try:
+        structured.set_active_prompt_version(structured.PROMPT_VERSION_V11)
+        payload_str = structured.build_prompt_input(_LETTER)
+        payload = json.loads(payload_str)
+    finally:
+        structured.set_active_prompt_version(original)
+
+    leaked = [phrase for phrase in FORBIDDEN_PHRASES if phrase in payload_str]
+    assert leaked == []
+    assert payload["prompt_version"] == structured.PROMPT_VERSION_V11
+    assert payload["prompt_version"] != structured.PROMPT_VERSION
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+    assert "architecture" not in payload
+    assert "decision_procedure" not in payload
+    assert "candidate_evidence_ledger" not in payload
+    assert "event_lane_guide" not in payload
+    assert "worked_examples" not in payload
+    assert "extra_clinical_guidance" not in payload
+    assert "candidate_evidence_ledger" not in payload["task"]
+    joined = " ".join(payload["clinical_rules"])
+    assert "several" not in joined.lower()
+    assert "couple" not in joined.lower()
+    assert "probable temporal" not in joined.lower()
+    assert "awaiting" not in joined.lower()
+    assert "LastClinic" not in joined
+    assert "focal epilepsy-Probable" not in joined
+    assert "Do not invent CUI" in joined
+    assert set(payload["family_guidance"]) == {
+        "medication",
+        "diagnosis",
+        "seizure_frequency",
+        "investigation",
+    }
+    assert "DiagCategory" in payload["attribute_vocabulary"][DIAGNOSIS.name]
+    assert payload["letter_id"] == "TEST001"
+    assert payload["letter_text"] == _NOTE

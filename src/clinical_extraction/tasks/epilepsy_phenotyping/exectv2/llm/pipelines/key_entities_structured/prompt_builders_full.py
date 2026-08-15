@@ -10,6 +10,7 @@ from .constants import (
     PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX,
     PROMPT_VERSION_V0_9_25_LUNA_SF_STATE,
     PROMPT_VERSION_V10,
+    PROMPT_VERSION_V11,
     PromptProfile,
     prompt_version_for,
 )
@@ -44,6 +45,8 @@ def build_full_prompt_input(
     )
     if selected_prompt_version == PROMPT_VERSION_V10:
         return _build_v10_prompt_input(letter, selected_prompt_version)
+    if selected_prompt_version == PROMPT_VERSION_V11:
+        return _build_v11_prompt_input(letter, selected_prompt_version)
     payload = {
         "prompt_version": selected_prompt_version,
         "task": (
@@ -227,6 +230,133 @@ def _build_v10_prompt_input(letter: ExectLetter, prompt_version: str) -> str:
         "family_guidance": dict(_V10_FAMILY_GUIDANCE),
         "attribute_vocabulary": _attribute_vocabulary(),
         "clinical_rules": list(_V10_CLINICAL_RULES),
+        "letter_id": letter.letter_id,
+        "letter_text": letter.note_text,
+    }
+    return json.dumps(payload, ensure_ascii=False, sort_keys=True)
+
+
+_V11_TASK = (
+    "Read the clinical letter once. Extract current clinical events for "
+    "medication, diagnosis, seizure frequency, and investigations. Each event "
+    "may render one or more entity mentions when the same fact belongs to more "
+    "than one requested family."
+)
+
+_V11_FAMILY_GUIDANCE = {
+    "medication": (
+        "Find current anti-seizure medication statements. Render Prescription "
+        "with DrugName, DrugDose, DoseUnit, and Frequency when the letter "
+        "states them. Mention text is the drug name, or the short regimen "
+        "span when that is all the letter gives."
+    ),
+    "diagnosis": (
+        "Find named epileptic diagnoses and named seizure types. Render "
+        "Diagnosis with DiagCategory, Certainty, and Negation. Mention text "
+        "is the core concept span."
+    ),
+    "seizure_frequency": (
+        "Find how often a seizure type occurs now, including seizure-free "
+        "duration, ranges, clusters, dated counts, and frequency change. "
+        "Mention text is the seizure-type anchor. Put counts and dates in "
+        "attributes. Choose the named type when the count belongs to that "
+        "type; otherwise use the generic seizure span."
+    ),
+    "investigation": (
+        "Find completed EEG, MRI, CT, or telemetry statements. Render "
+        "performed, result, and type attributes when the letter states them. "
+        "One event per modality."
+    ),
+}
+
+_V11_CLINICAL_RULES = [
+    (
+        "Use one event per medication, diagnostic concept, seizure-rate "
+        "statement, or test."
+    ),
+    "Both anchor_text and evidence must be exact substrings of the letter.",
+    "Every rendered mention text must be an exact substring of the letter.",
+    (
+        "Named seizure types can render both Diagnosis and SeizureFrequency "
+        "when the letter states both the type and a rate or seizure-free state."
+    ),
+    (
+        "Do not force a single entity if the same fact belongs to more than "
+        "one requested family; render each valid entity separately."
+    ),
+    (
+        "For diagnosis, split compound seizure clauses into atomic diagnostic "
+        "concepts when the letter names more than one seizure type."
+    ),
+    (
+        "SeizureFrequency mention text is the seizure-type anchor; counts and "
+        "dates live in event_state or attributes."
+    ),
+    (
+        "A SeizureFrequency mention must include a frequency-state attribute "
+        "such as NumberOfSeizures, a lower/upper count, FrequencyChange, or a "
+        "time frame."
+    ),
+    (
+        "Medication mention text is the drug name where possible; dose and "
+        "frequency live in attributes."
+    ),
+    (
+        "Use one investigation event per modality; performed, result, and type "
+        "live in attributes."
+    ),
+    (
+        "Every rendered mention must include entity and text. Do not invent "
+        "CUI values. If a CUI is not stated, omit it."
+    ),
+    'If nothing requested is present, return {"clinical_events": []}.',
+    "Return exactly one JSON object. Do not wrap it in markdown fences.",
+]
+
+
+def _build_v11_prompt_input(letter: ExectLetter, prompt_version: str) -> str:
+    payload = {
+        "prompt_version": prompt_version,
+        "task": _V11_TASK,
+        "output_schema": {
+            "clinical_events": [
+                {
+                    "family": (
+                        "medication | diagnosis | seizure_frequency | investigation"
+                    ),
+                    "anchor_text": (
+                        "Short exact substring naming the clinical event. Use the "
+                        "family guidance below."
+                    ),
+                    "evidence": (
+                        "Exact clause or sentence copied from the letter that "
+                        "supports the event and all rendered mentions."
+                    ),
+                    "event_state": (
+                        "Source-near state such as dose, diagnostic assertion, "
+                        "seizure rate, or test result. Values must be strings."
+                    ),
+                    "mentions": [
+                        {
+                            "entity": (
+                                "One of Prescription, Diagnosis, "
+                                "SeizureFrequency, Investigations."
+                            ),
+                            "text": (
+                                "Short exact substring used for scoring this "
+                                "entity."
+                            ),
+                            "attributes": "Only attributes legal for that entity.",
+                        }
+                    ],
+                    "confidence": "low | medium | high",
+                    "rationale": "One brief sentence explaining the event.",
+                }
+            ]
+        },
+        "family_guidance": dict(_V11_FAMILY_GUIDANCE),
+        "attribute_vocabulary": _attribute_vocabulary(),
+        "clinical_rules": list(_V11_CLINICAL_RULES),
         "letter_id": letter.letter_id,
         "letter_text": letter.note_text,
     }
