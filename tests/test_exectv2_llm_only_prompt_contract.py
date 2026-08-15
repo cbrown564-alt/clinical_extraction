@@ -542,3 +542,94 @@ def test_v11_contract_is_leftover_extraction_job_without_codebook() -> None:
     assert "DiagCategory" in payload["attribute_vocabulary"][DIAGNOSIS.name]
     assert payload["letter_id"] == "TEST001"
     assert payload["letter_text"] == _NOTE
+
+
+def test_v11_dev20_payload_check_does_not_change_default() -> None:
+    from scripts.run_exectv2_structured_prompt_v11_luna_dev20 import verify_payload
+
+    before = structured.PROMPT_VERSION
+    payload = verify_payload()
+    assert payload["ok"] is True
+    assert payload["prompt_version"] == structured.PROMPT_VERSION_V11
+    assert payload["default_prompt_version"] == structured.PROMPT_VERSION_V0_9_24
+    assert structured.PROMPT_VERSION == before == structured.PROMPT_VERSION_V0_9_24
+
+
+def test_v11_dev20_sf_encoding_rewrite_buckets() -> None:
+    from scripts.run_exectv2_structured_prompt_v11_luna_dev20 import (
+        count_sf_encoding_rewrites,
+    )
+
+    mentions = [
+        {
+            "entity": SEIZURE_FREQUENCY.name,
+            "text": "several seizures",
+            "evidence": "several seizures since the last clinic",
+            "attributes": {"NumberOfSeizures": "several"},
+        },
+        {
+            "entity": SEIZURE_FREQUENCY.name,
+            "text": "a few seizures",
+            "evidence": "a few seizures per year",
+            "attributes": {"NumberOfSeizures": "few"},
+        },
+        {
+            "entity": SEIZURE_FREQUENCY.name,
+            "text": "seizures",
+            "evidence": "seizures 2-4 per month",
+            "attributes": {"NumberOfSeizures": "2-4"},
+        },
+        {
+            "entity": SEIZURE_FREQUENCY.name,
+            "text": "seizures",
+            "evidence": "seizures every 3 weeks",
+            "attributes": {},
+        },
+        {
+            "entity": DIAGNOSIS.name,
+            "text": "epilepsy",
+            "evidence": "epilepsy",
+            "attributes": {},
+        },
+    ]
+    assert count_sf_encoding_rewrites(mentions) == {
+        "several": 1,
+        "few": 1,
+        "range_split": 1,
+        "interval_missing_1": 1,
+        "other_word_number": 0,
+    }
+
+
+def test_v11_dev20_topology_decision_thresholds() -> None:
+    from scripts.run_exectv2_structured_prompt_v11_luna_dev20 import topology_failures
+
+    sufficient = {
+        "headline_f1_delta": -0.049,
+        "family_f1_delta": {
+            "Diagnosis": -0.079,
+            "SeizureFrequency": 0.01,
+            "Prescription": 0.0,
+            "Investigations": -0.02,
+        },
+        "four_family_letter_exact_wins": 1,
+        "four_family_letter_exact_losses": 3,
+    }
+    assert topology_failures(sufficient) == []
+
+    missing = {
+        "headline_f1_delta": -0.05,
+        "family_f1_delta": {
+            "Diagnosis": -0.08,
+            "SeizureFrequency": 0.0,
+            "Prescription": 0.0,
+            "Investigations": 0.0,
+        },
+        "four_family_letter_exact_wins": 0,
+        "four_family_letter_exact_losses": 3,
+    }
+    assert topology_failures(missing) == [
+        "hybrid four-family F1 drop -0.05",
+        "hybrid Diagnosis F1 drop -0.08",
+        "hybrid net four-family letter-exact losses 3",
+    ]
