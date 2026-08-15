@@ -9,6 +9,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
     PROMPT_VERSION,
+    PROMPT_VERSION_FINAL,
     StructuredExtractionRecord,
     StructuredRepairConfig,
     build_prompt_input,
@@ -71,6 +72,30 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     assert "gold_label" not in json.dumps(prompt)
     assert "candidate_events" not in prompt
     assert "deterministic_final_selection" not in prompt
+
+
+def test_build_prompt_input_final_strips_internal_envelope() -> None:
+    record = _record()
+    baseline = json.loads(build_prompt_input(record, prompt_version=PROMPT_VERSION))
+    prompt = json.loads(
+        build_prompt_input(record, prompt_version=PROMPT_VERSION_FINAL)
+    )
+    blob = json.dumps(prompt)
+
+    assert PROMPT_VERSION_FINAL == "gan2026_hybrid_structured_events_final"
+    assert "prompt_version" not in prompt
+    assert "source_row_index" not in prompt
+    assert "Gan 2026" not in blob
+    assert "LLM-only" not in blob
+    assert "gan2026_hybrid_structured_events" not in blob
+    assert prompt["task"] == (
+        "Read the clinical note. Extract seizure-frequency facts as slim "
+        "events, then select the current burden."
+    )
+    assert prompt["instructions"] == baseline["instructions"]
+    assert prompt["event_schema"] == baseline["event_schema"]
+    assert prompt["selection_schema"] == baseline["selection_schema"]
+    assert prompt["note_text"] == record.note_text
 
 
 def test_parse_structured_json_quarantines_schema_invalid_unselected_event() -> None:

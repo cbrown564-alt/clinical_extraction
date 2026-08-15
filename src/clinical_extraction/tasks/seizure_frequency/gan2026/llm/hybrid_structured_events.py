@@ -110,11 +110,15 @@ PROMPT_VERSION_V0_8_LUNA_CURRENT = (
 PROMPT_VERSION_V0_8_DEEPSEEK_UNKNOWN = (
     "gan2026_hybrid_structured_events_v0.8_deepseek_unknown"
 )
+PROMPT_VERSION_FINAL = "gan2026_hybrid_structured_events_final"
 # Primary prompt version. v0.5 is the shortest shared cross-model task and the
 # only version selected for paper-facing llm_with_rules comparisons. v0.6 and
 # v0.7 remain selectable for historical replay and prompt-interaction studies.
 # v0.8 Luna and DeepSeek variants are development candidates; they must not
-# replace the frozen six-model v0.5 panel.
+# replace the frozen six-model v0.5 panel. `final` is the Decision 0053
+# envelope-hygiene payload: same 13 instructions as v0.5, without the
+# model-facing task/version/row-index identity strings. It is not the
+# selected comparison prompt until a matched panel exists.
 PROMPT_VERSION = PROMPT_VERSION_V0_5
 ROW_TRACE_SCHEMA_VERSION = "gan2026.row_trace.v1"
 _SUPPORTED_PROMPT_VERSIONS = frozenset(
@@ -125,7 +129,12 @@ _SUPPORTED_PROMPT_VERSIONS = frozenset(
         PROMPT_VERSION_V0_8_LUNA_RATE,
         PROMPT_VERSION_V0_8_LUNA_CURRENT,
         PROMPT_VERSION_V0_8_DEEPSEEK_UNKNOWN,
+        PROMPT_VERSION_FINAL,
     }
+)
+_FINAL_TASK = (
+    "Read the clinical note. Extract seizure-frequency facts as slim "
+    "events, then select the current burden."
 )
 
 
@@ -702,6 +711,10 @@ def build_prompt_input(
         instructions = payload["instructions"]
         assert isinstance(instructions, list)
         instructions[-1:-1] = list(_DEEPSEEK_UNKNOWN_INSTRUCTIONS)
+    if selected_prompt_version == PROMPT_VERSION_FINAL:
+        payload["task"] = _FINAL_TASK
+        payload.pop("prompt_version", None)
+        payload.pop("source_row_index", None)
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
 
 
