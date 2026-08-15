@@ -14,6 +14,7 @@ from .constants import (
     PROMPT_VERSION_V12,
     PROMPT_VERSION_V13,
     PROMPT_VERSION_V14,
+    PROMPT_VERSION_V15,
     PromptProfile,
     prompt_version_for,
 )
@@ -56,6 +57,8 @@ def build_full_prompt_input(
         return _build_v13_prompt_input(letter, selected_prompt_version)
     if selected_prompt_version == PROMPT_VERSION_V14:
         return _build_v14_prompt_input(letter, selected_prompt_version)
+    if selected_prompt_version == PROMPT_VERSION_V15:
+        return _build_v15_prompt_input(letter, selected_prompt_version)
     payload = {
         "prompt_version": selected_prompt_version,
         "task": (
@@ -626,6 +629,80 @@ def _build_v14_prompt_input(letter: ExectLetter, prompt_version: str) -> str:
         "family_guidance": dict(_V14_FAMILY_GUIDANCE),
         "attribute_vocabulary": _attribute_vocabulary(),
         "clinical_rules": list(_V14_CLINICAL_RULES),
+        "letter_id": letter.letter_id,
+        "letter_text": letter.note_text,
+    }
+    return json.dumps(payload, ensure_ascii=False, sort_keys=True)
+
+
+_V15_TASK = (
+    "Read the clinical letter once. Use candidate_spans as possible evidence; "
+    "accept, reject, or encode each span. Extract current epileptic diagnoses, "
+    "current seizure frequency, current anti-seizure medication, and completed "
+    "EEG, MRI, CT, or telemetry. You may add a fact that is not listed if the "
+    "letter states it. Copy only exact substrings from the letter. The same "
+    "fact may render more than one family when the letter states both."
+)
+
+_V15_CLINICAL_RULES = [
+    *_V14_CLINICAL_RULES,
+    (
+        "candidate_spans are possible evidence only. Do not emit a span "
+        "unless the letter supports that family. You may emit a stated fact "
+        "that is not listed."
+    ),
+]
+
+
+def _v15_candidate_spans(letter: ExectLetter) -> list[dict[str, str]]:
+    rows = candidate_evidence_ledger_for_letter(letter)
+    return [
+        {
+            "family": str(row.get("family") or ""),
+            "evidence": str(row.get("evidence") or ""),
+            "anchor_hint": str(row.get("anchor_hint") or ""),
+        }
+        for row in rows
+    ]
+
+
+def _build_v15_prompt_input(letter: ExectLetter, prompt_version: str) -> str:
+    payload = {
+        "prompt_version": prompt_version,
+        "task": _V15_TASK,
+        "output_schema": {
+            "clinical_events": [
+                {
+                    "family": (
+                        "medication | diagnosis | seizure_frequency | investigation"
+                    ),
+                    "anchor_text": "Short exact substring naming the clinical event.",
+                    "evidence": (
+                        "Exact clause or sentence copied from the letter."
+                    ),
+                    "event_state": (
+                        "Optional. Short source-near state. Scored values live "
+                        "in mention attributes."
+                    ),
+                    "mentions": [
+                        {
+                            "entity": (
+                                "One of Prescription, Diagnosis, "
+                                "SeizureFrequency, Investigations."
+                            ),
+                            "text": "Short exact substring used for scoring.",
+                            "attributes": "Only attributes legal for that entity.",
+                        }
+                    ],
+                    "confidence": "Optional. low | medium | high",
+                    "rationale": "Optional. One short sentence.",
+                }
+            ]
+        },
+        "family_guidance": dict(_V14_FAMILY_GUIDANCE),
+        "attribute_vocabulary": _attribute_vocabulary(),
+        "clinical_rules": list(_V15_CLINICAL_RULES),
+        "candidate_spans": _v15_candidate_spans(letter),
         "letter_id": letter.letter_id,
         "letter_text": letter.note_text,
     }
