@@ -60,7 +60,15 @@ class PrescriptionDictionaryLens(ThinArtifactLens):
         out: list[ClinicalFinding] = []
         normalized = 0
         split_regimens = 0
+        dropped_non_asm = 0
         for finding in selected:
+            if sd.is_non_antiepileptic_prescription(
+                finding.text,
+                evidence=finding.evidence or finding.text,
+                attributes=finding.attributes,
+            ):
+                dropped_non_asm += 1
+                continue
             before_attrs = {
                 str(key): str(value) for key, value in dict(finding.attributes).items()
             }
@@ -170,6 +178,7 @@ class PrescriptionDictionaryLens(ThinArtifactLens):
                 "source_lane": policy.source_lane,
                 "normalized_count": normalized,
                 "split_regimen_count": split_regimens,
+                "dropped_non_antiepileptic_count": dropped_non_asm,
                 "prescription_policy_variant": variant,
             },
         )
@@ -182,6 +191,7 @@ class PrescriptionDictionaryLens(ThinArtifactLens):
                 "lens_id": self.lens_id,
                 "normalized_dictionary_findings": normalized,
                 "split_regimen_dictionary_findings": split_regimens,
+                "dropped_non_antiepileptic_findings": dropped_non_asm,
                 "selected_findings": len(final_findings),
                 "prescription_policy_variant": variant,
             },

@@ -28,6 +28,7 @@ from .investigations import (
     is_pending_investigation,
 )
 from .prescription import (
+    is_non_antiepileptic_prescription,
     prescription_convention_attribute_repairs,
     prescription_residual_additions,
     split_daily_dose_regimen,
@@ -59,6 +60,7 @@ __all__ = [
     "investigation_residual_additions",
     "is_diagnosis_convention_noise",
     "is_investigation_convention_noise",
+    "is_non_antiepileptic_prescription",
     "is_pending_investigation",
     "is_redundant_diagnosis_residual_addition",
     "is_sf_convention_noise",

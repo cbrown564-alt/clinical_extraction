@@ -81,6 +81,36 @@ _PRESCRIPTION_RESIDUAL_NAME_ALIASES = {
     "sodiumvalproate": "sodium-valproate",
     "tegretol-retard": "carbamazepine",
 }
+_NON_ANTIEPILEPTIC_DRUGS = frozenset(
+    {
+        "amitriptyline",
+        "citalopram",
+        "fluoxetine",
+        "mirtazapine",
+        "olanzapine",
+        "risperidone",
+        "sertraline",
+        "venlafaxine",
+    }
+)
+
+
+def is_non_antiepileptic_prescription(
+    text: str,
+    *,
+    evidence: str,
+    attributes: Mapping[str, Any],
+) -> bool:
+    """True for a closed list of non-epilepsy drugs. Does not read gold."""
+
+    del text, evidence
+    attrs = {str(key): str(value) for key, value in attributes.items()}
+    name = normalize_drug_name(attrs.get("DrugName") or "") or normalize_phrase(
+        attrs.get("DrugName") or ""
+    )
+    return name.replace(" ", "-") in _NON_ANTIEPILEPTIC_DRUGS or name in _NON_ANTIEPILEPTIC_DRUGS
+
+
 _DOSE_RANGE_FIELD_RE = re.compile(
     r"^\s*(?P<low>\d+(?:\.\d+)?)\s*(?:mg|mgs)?\s*(?:to|-|–)\s*"
     r"(?P<high>\d+(?:\.\d+)?)\s*(?:mg|mgs)?\s*$",

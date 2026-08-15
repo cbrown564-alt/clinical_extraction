@@ -15,7 +15,9 @@ The row walk is one design with two phases:
    (v0.10) is a state-pass rewrite that uses
    ``sf_last_event_duration.last_event_duration``, not an ownership pass.
    v0.15 applies List 11 / range / interval / dated-heading encoding on
-   emitted mentions before those state repairs.
+   emitted mentions before those state repairs. v0.16 adds gold-free
+   leftover-scope drops (bare symptom token, febrile history, driving
+   without a duration frame).
 """
 
 from __future__ import annotations
@@ -61,6 +63,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     sf_named_last_week_generic as named_last_week,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    sf_scope_residue as scope_residue,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.lexicon import (
     GENERIC_SF_CUIS,
     GENERIC_SF_PHRASES,
@@ -82,7 +87,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.seizure_freq
     frequency_state_faithful,
 )
 
-PROJECTION_VERSION = "exectv2_hybrid_sf_state_projection_v0.15"
+PROJECTION_VERSION = "exectv2_hybrid_sf_state_projection_v0.16"
 PIPELINE_FAMILY = "exectv2_hybrid_sf_state_projection"
 COMPONENT_OWNER = "deterministic_sf_state_ownership_projection"
 
@@ -133,6 +138,11 @@ _OWNERSHIP_PASSES: tuple[_OwnershipPass, ...] = (
         drugchange_before.apply_drugchange_before_sibling_drop,
         "drop",
         "ownership.drop_drugchange_before_if_other_active_rate",
+    ),
+    _OwnershipPass(
+        scope_residue.apply_scope_residue_drop,
+        "drop",
+        "ownership.drop_scope_residue",
     ),
 )
 
@@ -251,7 +261,7 @@ def write_report(
     unknown = summary.get("clinical_recovery", {}).get("unknown", {})
     action_counts = metadata.get("projection_action_counts", {})
     lines = [
-        "# ExECTv2 SeizureFrequency State/Ownership Projection v0.15",
+        "# ExECTv2 SeizureFrequency State/Ownership Projection v0.16",
         "",
         f"- JSONL: `{jsonl_path}`",
         f"- Projection version: `{metadata.get('projection_version')}`",

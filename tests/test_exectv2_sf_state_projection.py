@@ -186,7 +186,7 @@ def test_combined_preserves_cluster_and_generlised_cuis() -> None:
 
     assert by_text["cluster of seizures"] == "C3203523"
     assert by_text["generlised tonic clonic seizure"] == "C0494475"
-    assert projected["projection_version"].endswith("v0.15")
+    assert projected["projection_version"].endswith("v0.16")
 
 
 def test_combined_drops_bare_count_active_rate() -> None:

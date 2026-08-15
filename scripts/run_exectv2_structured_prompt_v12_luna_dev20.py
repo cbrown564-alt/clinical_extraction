@@ -47,6 +47,17 @@ V11_STRUCTURED = (
     REPO_ROOT
     / "experiments/exectv2_structured_prompt_v11_luna_dev20_20260815/v11_live/structured.jsonl"
 )
+V12_STRUCTURED = (
+    REPO_ROOT
+    / "experiments/exectv2_structured_prompt_v12_luna_dev20_20260815/v12_live/structured.jsonl"
+)
+REMEASURE_DIR = (
+    REPO_ROOT / "experiments/exectv2_scope_residue_remeasure_luna_dev20_20260815"
+)
+REMEASURE_REPORT = (
+    REPO_ROOT
+    / "docs/research/exectv2/scope_residue_remeasure_luna_dev20_2026-08-15.md"
+)
 V0924_STRUCTURED = (
     REPO_ROOT
     / "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715_structured.jsonl"
@@ -110,7 +121,21 @@ def main(argv: Sequence[str] | None = None) -> None:
     run_parser.add_argument("--overwrite", action="store_true")
     run_parser.add_argument("--progress-every", type=int, default=1)
     run_parser.add_argument("--api-base")
+    rem = sub.add_parser(
+        "remeasure",
+        help="No-call remasure of saved v0924/v11/v12 raws through HEAD.",
+    )
+    rem.add_argument("--overwrite", action="store_true")
     args = parser.parse_args(argv)
+    if args.command == "remeasure":
+        print(
+            json.dumps(
+                remasure_saved(overwrite=args.overwrite),
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return
     if args.command == "check":
         print(
             json.dumps(
@@ -328,6 +353,154 @@ def run_study(
     }
 
 
+def remasure_saved(*, overwrite: bool = False) -> dict[str, Any]:
+    """Replay the three saved sidecars through current HEAD. Zero model calls."""
+
+    sample = json.loads(V10_SAMPLE.read_text(encoding="utf-8"))
+    letters = [
+        letter
+        for letter in load_letters_for_split("dev")
+        if letter.letter_id in set(FROZEN_IDS)
+    ]
+    letters.sort(key=lambda item: item.letter_id)
+    REMEASURE_DIR.mkdir(parents=True, exist_ok=True)
+    started = datetime.now(UTC).isoformat()
+    original_dir = v10_run.STUDY_DIR
+    original_control = v10_run.CONTROL_STRUCTURED
+    original_reason = v10_run.ESCALATION_REASON
+    original_assembly = v10_run._arm_assembly
+    try:
+        v10_run.STUDY_DIR = REMEASURE_DIR
+        v10_run.ESCALATION_REASON = (
+            "No-call remasure of leftover-scope hybrid drops on saved Luna "
+            "dev20 sidecars"
+        )
+        v10_run._arm_assembly = _patched_arm_assembly
+        v10_run.CONTROL_STRUCTURED = V0924_STRUCTURED
+        control = _run_enriched_arm(
+            slug="v0924_head",
+            prompt_version=structured.PROMPT_VERSION_V0_9_24,
+            letters=letters,
+            call_mode="saved_structured_no_call",
+            overwrite=overwrite,
+            progress_every=1,
+            api_base=None,
+        )
+        v10_run.CONTROL_STRUCTURED = V11_STRUCTURED
+        mechanism = _run_enriched_arm(
+            slug="v11_head",
+            prompt_version=structured.PROMPT_VERSION_V11,
+            letters=letters,
+            call_mode="saved_structured_no_call",
+            overwrite=overwrite,
+            progress_every=1,
+            api_base=None,
+        )
+        v10_run.CONTROL_STRUCTURED = V12_STRUCTURED
+        candidate = _run_enriched_arm(
+            slug="v12_head",
+            prompt_version=structured.PROMPT_VERSION_V12,
+            letters=letters,
+            call_mode="saved_structured_no_call",
+            overwrite=overwrite,
+            progress_every=1,
+            api_base=None,
+        )
+    finally:
+        v10_run.STUDY_DIR = original_dir
+        v10_run.CONTROL_STRUCTURED = original_control
+        v10_run.ESCALATION_REASON = original_reason
+        v10_run._arm_assembly = original_assembly
+
+    versus_control = _compare_pair(control, candidate, letters)
+    versus_mechanism = _compare_pair(mechanism, candidate, letters)
+    versus_v11_ctrl = _compare_pair(control, mechanism, letters)
+    artifact: dict[str, Any] = {
+        "schema_version": "exectv2.scope_residue_remeasure_luna_dev20.v1",
+        "generated_on": "2026-08-15",
+        "model": MODEL,
+        "split": "dev140",
+        "row_count": 20,
+        "sample": sample,
+        "live": False,
+        "model_calls": 0,
+        "projection_version": "exectv2_hybrid_sf_state_projection_v0.16",
+        "started_utc": started,
+        "finished_utc": datetime.now(UTC).isoformat(),
+        "letter_ids": list(FROZEN_IDS),
+        "default_prompt_version": structured.PROMPT_VERSION,
+        "arms": {
+            "v0924_head": control["summary"],
+            "v11_head": mechanism["summary"],
+            "v12_head": candidate["summary"],
+        },
+        "comparison": {
+            "v11_head_minus_v0924_head": versus_v11_ctrl,
+            "v12_head_minus_v0924_head": versus_control,
+            "v12_head_minus_v11_head": versus_mechanism,
+        },
+        "decision": decide_topology(versus_control, versus_mechanism),
+        "claim_boundary": (
+            "No-call remasure of gold-free leftover-scope drops on frozen "
+            "Luna dev20 sidecars. Not holdout and not a fill promotion."
+        ),
+    }
+    artifact["decision"]["note"] = (
+        "v0.16 leftover-scope drops on saved raws. Not a reason to land "
+        "v12 as PROMPT_VERSION."
+    )
+    out = REMEASURE_DIR / "comparison.json"
+    out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    REMEASURE_REPORT.write_text(_render_remeasure_report(artifact), encoding="utf-8")
+    return {
+        "artifact": out.relative_to(REPO_ROOT).as_posix(),
+        "report": REMEASURE_REPORT.relative_to(REPO_ROOT).as_posix(),
+        "model_calls": 0,
+        "decision": artifact["decision"],
+    }
+
+
+def _render_remeasure_report(artifact: Mapping[str, Any]) -> str:
+    ctrl = artifact["arms"]["v0924_head"]
+    mech = artifact["arms"]["v11_head"]
+    cand = artifact["arms"]["v12_head"]
+    vs_ctrl = artifact["comparison"]["v12_head_minus_v0924_head"]
+    vs_mech = artifact["comparison"]["v12_head_minus_v11_head"]
+    hybrid = vs_ctrl["surfaces"]["hybrid"]
+    hybrid_v11 = vs_mech["surfaces"]["hybrid"]
+    decision = artifact["decision"]
+    return f"""# No-call remasure of leftover-scope hybrid drops
+
+Date: 2026-08-15
+Status: complete; {decision["verdict"]}
+Sidecars: frozen Luna `dev20` `v0.9.24` / v11 / v12 structured JSONL
+Stack: HEAD including `sf_state_projection` v0.16 scope-residue drops
+Model calls: 0. `test60` not touched.
+
+## Verdict
+
+**{decision["verdict"]}.** Failures: {", ".join(decision.get("failures") or ["none"])}.
+This remasure does not promote v12 or change a selected fill.
+
+## Hybrid headline on the 20-letter pool
+
+| Arm | hybrid F1 | four-family exact | SF F1 |
+| :--- | ---: | ---: | ---: |
+| v0924_head | {ctrl["hybrid_headline_f1"]:.4f} | {ctrl["hybrid_four_family_letter_exact"]}/20 | {ctrl["hybrid_family_f1"]["SeizureFrequency"]:.4f} |
+| v11_head | {mech["hybrid_headline_f1"]:.4f} | {mech["hybrid_four_family_letter_exact"]}/20 | {mech["hybrid_family_f1"]["SeizureFrequency"]:.4f} |
+| v12_head | {cand["hybrid_headline_f1"]:.4f} | {cand["hybrid_four_family_letter_exact"]}/20 | {cand["hybrid_family_f1"]["SeizureFrequency"]:.4f} |
+
+v12 − v0.9.24 hybrid headline {hybrid["headline_f1_delta"]:+.4f}; SF {hybrid["family_f1_delta"]["SeizureFrequency"]:+.4f}; net four-family exact {hybrid["four_family_letter_exact_net"]:+d}.
+v12 − v11 hybrid headline {hybrid_v11["headline_f1_delta"]:+.4f}.
+
+## Boundary
+
+Gold-free predicates only (bare `clumsy`/`jerk(s)`, febrile history mention
+text, generic driving-without-frame, closed non-ASM drug list, Diagnosis
+standalone `jerk(s)`). Not `test60`. Not a fill.
+"""
+
+
 def _patched_arm_assembly(slug: str, structured_path: Path, sf_final_path: Path) -> Any:
     cfg = _ORIGINAL_ARM_ASSEMBLY(slug, structured_path, sf_final_path)
     return replace(
@@ -358,7 +531,7 @@ def _run_enriched_arm(
         progress_every=progress_every,
         api_base=api_base,
     )
-    structured_path = STUDY_DIR / slug / "structured.jsonl"
+    structured_path = v10_run.STUDY_DIR / slug / "structured.jsonl"
     structured_rows = {
         str(row["letter_id"]): row for row in v10_run._read_jsonl(structured_path)
     }
@@ -375,7 +548,7 @@ def _run_enriched_arm(
             }
         )
     metrics = _letter_metrics(letters, letter_rows, structured_rows, slug, prompt_version, call_mode)
-    v10_run.write_jsonl(metrics, STUDY_DIR / slug / "letter_metrics.jsonl")
+    v10_run.write_jsonl(metrics, v10_run.STUDY_DIR / slug / "letter_metrics.jsonl")
     quality = _quality_counts(list(structured_rows.values()))
     encoding = _arm_encoding_counts(list(structured_rows.values()))
     raw_prf = _surface_prf(letter_rows, "raw_keys")

@@ -22,6 +22,8 @@ DIAGNOSIS_STANDALONE_NOISE: frozenset[str] = frozenset(
         "convulsive seizures",
         "convulsive seizure",
         "dissociative seizures",
+        "jerk",
+        "jerks",
         "learning difficulties",
         "multiple seizures",
         "myoclonic jerks",
