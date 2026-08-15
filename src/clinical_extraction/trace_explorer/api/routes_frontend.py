@@ -121,6 +121,8 @@ def dataset_letter(
     letter_id: str,
     data: FrontendDataDependency,
 ) -> dict[str, Any]:
+    if data.is_locked_letter(dataset, letter_id):
+        raise aggregate_only()
     payload = data.letter(dataset, letter_id)
     if payload is None:
         raise not_found()
@@ -156,6 +158,8 @@ def records(split: str, data: FrontendDataDependency) -> dict[str, Any]:
 @router.get("/records/{split}/{source_row_index}")
 def record(split: str, source_row_index: int, data: FrontendDataDependency) -> dict[str, Any]:
     _check_record_split(split)
+    if data.is_locked_letter("gan2026", str(source_row_index)):
+        raise aggregate_only()
     payload = data.record(split, source_row_index)
     if payload is None:
         raise not_found()
@@ -171,6 +175,8 @@ def artifact(
     letter_id: str | None = Query(default=None),
 ) -> dict[str, Any]:
     del artifact_path
+    if letter_id is not None and data.is_locked_letter_id(letter_id):
+        raise aggregate_only()
     payload = data.artifact(run_id, limit=limit, letter_id=letter_id)
     if payload is None:
         raise not_found()
@@ -342,7 +348,7 @@ def gold_audit_decide(
 
 
 def _check_record_split(split: str) -> None:
-    if split in {"test", "test450"}:
+    if split in {"test", "test450", "test60", "holdout", "full200", "full-200"}:
         raise aggregate_only()
     if split not in {"validation", "validation750", "dev750"}:
         raise not_found()

@@ -28,12 +28,25 @@ describe("api/client", () => {
   it("requests the shared letter catalog", async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ dataset: "gan2026", count: 750, letters: [] }),
+      json: async () => ({
+        dataset: "exectv2",
+        split: "dev140",
+        count: 2,
+        letters: [
+          { id: "EA0002", split: "dev140" },
+          { id: "EA0001", split: "test60" },
+        ],
+      }),
     }) as unknown as typeof fetch;
 
-    await fetchLetters("gan2026");
+    await expect(fetchLetters("exectv2")).resolves.toEqual({
+      dataset: "exectv2",
+      split: "dev140",
+      count: 1,
+      letters: [{ id: "EA0002", split: "dev140" }],
+    });
     expect(global.fetch).toHaveBeenCalledWith(
-      "/api/datasets/gan2026/letters",
+      "/api/datasets/exectv2/letters",
       expect.objectContaining({ headers: { "Content-Type": "application/json" } })
     );
   });

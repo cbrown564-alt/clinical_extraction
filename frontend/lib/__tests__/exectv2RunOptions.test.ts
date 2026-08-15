@@ -249,6 +249,76 @@ describe("ExECTv2 architecture options", () => {
     expect(hydratedSingle.letters[0]).toEqual(hydrated.runs[0].letters[0]);
   });
 
+  it("drops test60 letters while hydrating a run", () => {
+    const wire = {
+      generated_on: "2026-07-18",
+      source_index: "protocol.md",
+      shared_letters: [
+        {
+          letter_id: "EA0002",
+          split: "dev",
+          stage: "dev140",
+          letter_text: "Diagnosis: focal epilepsy",
+          gold_mentions: [],
+          gold_family_counts: {
+            Diagnosis: 1,
+            SeizureFrequency: 0,
+            Prescription: 0,
+            Investigations: 0,
+          },
+          evidence_spans: [],
+        },
+        {
+          letter_id: "EA0001",
+          split: "test60",
+          stage: "test60",
+          letter_text: "REDACTED",
+          gold_mentions: [],
+          gold_family_counts: {
+            Diagnosis: 0,
+            SeizureFrequency: 0,
+            Prescription: 0,
+            Investigations: 0,
+          },
+          evidence_spans: [],
+        },
+      ],
+      run: {
+        ...run("llm_with_rules", MODELS[0], 0),
+        letters: [
+          {
+            letter_id: "EA0002",
+            split: "dev",
+            stage: "dev140",
+            predicted_mentions: [],
+            predicted_family_counts: {
+              Diagnosis: 1,
+              SeizureFrequency: 0,
+              Prescription: 0,
+              Investigations: 0,
+            },
+            evidence_spans: [],
+          },
+          {
+            letter_id: "EA0001",
+            split: "test60",
+            stage: "test60",
+            predicted_mentions: [],
+            predicted_family_counts: {
+              Diagnosis: 0,
+              SeizureFrequency: 0,
+              Prescription: 0,
+              Investigations: 0,
+            },
+            evidence_spans: [],
+          },
+        ],
+      },
+    };
+    const hydrated = hydrateExectv2Run(wire);
+    expect(hydrated.letters.map((letter) => letter.letter_id)).toEqual(["EA0002"]);
+  });
+
   it("formats option labels with just the model name or Deterministic rules", () => {
     expect(
       exectv2OptionLabel({

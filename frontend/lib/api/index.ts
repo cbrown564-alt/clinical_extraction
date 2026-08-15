@@ -1,4 +1,5 @@
 import { fetchJson } from "./client";
+import { filterBrowsableLetters } from "@/lib/datasets/splits";
 import { hydrateExectv2Run } from "@/lib/exectv2RunOptions";
 import type { DatasetId } from "@/lib/datasets/types";
 
@@ -25,7 +26,12 @@ export function fetchHealth() {
 }
 
 export function fetchLetters(dataset: DatasetId) {
-  return request<import("../types").LetterCatalogResponse>(`/datasets/${dataset}/letters`);
+  return request<import("../types").LetterCatalogResponse>(
+    `/datasets/${dataset}/letters`
+  ).then((payload) => {
+    const letters = filterBrowsableLetters(payload.letters);
+    return { ...payload, letters, count: letters.length };
+  });
 }
 
 export function fetchLetter(dataset: "gan2026", letterId: string): Promise<import("../types").FullRecordResponse>;
@@ -82,7 +88,10 @@ export function fetchArtifact(
 export function fetchGoldAuditRows(dataset: DatasetId = "gan2026") {
   return request<import("../types").GoldAuditRowsResponse>(
     `/gold-audit/rows?dataset=${dataset}`
-  );
+  ).then((payload) => {
+    const rows = filterBrowsableLetters(payload.rows ?? []);
+    return { ...payload, rows, total: rows.length };
+  });
 }
 
 export function fetchGoldAuditDecisions(dataset: DatasetId = "gan2026") {

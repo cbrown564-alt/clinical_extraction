@@ -1,3 +1,4 @@
+import { isBrowsableSplit } from "./datasets/splits";
 import { activeMethodLabel } from "./plainLanguageLabels";
 import type {
   ActiveMethod,
@@ -155,24 +156,32 @@ function hydrateRun(
 ): Exectv2RunSummary {
   return {
     ...run,
-    letters: run.letters.map((letter) => {
+    letters: run.letters.flatMap((letter) => {
+      if (!isBrowsableSplit(letter.split)) {
+        return [];
+      }
       const shared = sharedById.get(letter.letter_id);
       if (!shared) {
         throw new Error(`Missing shared ExECTv2 letter ${letter.letter_id}`);
       }
-      return {
-        letter_id: letter.letter_id,
-        split: letter.split,
-        stage: letter.stage,
-        letter_text: shared.letter_text,
-        gold_mentions: shared.gold_mentions,
-        predicted_mentions: letter.predicted_mentions,
-        family_counts: {
-          gold: shared.gold_family_counts,
-          predicted: letter.predicted_family_counts,
+      if (!isBrowsableSplit(shared.split)) {
+        return [];
+      }
+      return [
+        {
+          letter_id: letter.letter_id,
+          split: letter.split,
+          stage: letter.stage,
+          letter_text: shared.letter_text,
+          gold_mentions: shared.gold_mentions,
+          predicted_mentions: letter.predicted_mentions,
+          family_counts: {
+            gold: shared.gold_family_counts,
+            predicted: letter.predicted_family_counts,
+          },
+          evidence_spans: [...letter.evidence_spans, ...shared.evidence_spans],
         },
-        evidence_spans: [...letter.evidence_spans, ...shared.evidence_spans],
-      };
+      ];
     }),
   };
 }

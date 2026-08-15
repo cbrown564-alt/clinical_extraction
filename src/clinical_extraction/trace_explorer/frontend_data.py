@@ -7,6 +7,9 @@ import json
 from pathlib import Path
 from typing import Any, Literal
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
+    DEFAULT_SPLIT_MANIFEST as EXECT_SPLIT_MANIFEST,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.naming import (
     LLM_METHOD_ALIASES,
     LLM_WITH_RULES_METHOD_ALIASES,
@@ -14,7 +17,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.naming impor
     UNOWNED_RULES_ALIASES,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
+    DEFAULT_SPLIT_MANIFEST_PATH as GAN_SPLIT_MANIFEST,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     load_records_for_split,
+    load_split_manifest,
 )
 from clinical_extraction.trace_explorer.gan2026_comparison import (
     GanValidationDiscovery,
@@ -44,6 +51,19 @@ _SPLIT_TO_DATASET: dict[str, DatasetId] = {
     "dev": "exectv2",
 }
 
+# Official manifests own the browsable letter set. Payload split labels are not trusted.
+_LOCKED_SPLIT_KEYS = frozenset(
+    {
+        "test",
+        "test60",
+        "test450",
+        "holdout",
+        "full",
+        "full200",
+        "lockedtest",
+    }
+)
+
 
 class FrontendDataStore:
     """Read only the explicit resources used by the live frontend surfaces."""
@@ -71,6 +91,8 @@ class FrontendDataStore:
         }
         self._gan_fingerprint: tuple[tuple[str, int, int], ...] = ()
         self._gan_validation = self._discover_gan_validation()
+        self._gan_dev_ids, self._gan_holdout_ids = _gan_split_ids(self._repo_root)
+        self._exect_dev_ids, self._exect_holdout_ids = _exect_split_ids(self._repo_root)
 
     @staticmethod
     def _resolve_repo_root(frontend_data_root: Path) -> Path:
@@ -121,8 +143,19 @@ class FrontendDataStore:
             "letters": letters,
         }
 
+    def is_locked_letter(self, dataset: str, letter_id: str) -> bool:
+        dataset_id = self._require_dataset(dataset)
+        if dataset_id == "exectv2":
+            return str(letter_id) in self._exect_holdout_ids
+        return str(letter_id) in self._gan_holdout_ids
+
+    def is_locked_letter_id(self, letter_id: str) -> bool:
+        return str(letter_id) in self._exect_holdout_ids or str(letter_id) in self._gan_holdout_ids
+
     def letter(self, dataset: str, letter_id: str) -> dict[str, Any] | None:
         dataset_id = self._require_dataset(dataset)
+        if self.is_locked_letter(dataset_id, letter_id):
+            return None
         if dataset_id == "gan2026":
             try:
                 source_row_index = int(letter_id)
@@ -157,6 +190,10 @@ class FrontendDataStore:
 
     def record(self, split: str, source_row_index: int) -> dict[str, Any] | None:
         if _SPLIT_TO_DATASET.get(split) != "gan2026":
+            return None
+        if self.is_locked_letter("gan2026", str(source_row_index)):
+            return None
+        if str(source_row_index) not in self._gan_dev_ids:
             return None
         path = self._validation_records.get(source_row_index)
         if path is not None:
@@ -209,6 +246,8 @@ class FrontendDataStore:
         letter_id: str | None = None,
     ) -> dict[str, Any] | None:
         self._refresh_gan_validation()
+        if letter_id is not None and self.is_locked_letter_id(letter_id):
+            return None
         if self._gan_validation is not None:
             replay_path = self._gan_validation.replay_artifacts.get(run_id)
             if replay_path is not None:
@@ -346,21 +385,24 @@ class FrontendDataStore:
     def exectv2_run(self, run_id: str) -> dict[str, Any] | None:
         payload = self._exectv2_payload
         runs = payload.get("runs")
-        shared_letters = payload.get("shared_letters")
-        if not isinstance(runs, list) or not isinstance(shared_letters, list):
+        if not isinstance(runs, list) or not isinstance(payload.get("shared_letters"), list):
             raise ValueError("ExECTv2 runs resource is malformed")
         canonical_runs = [
             self._canonical_exect_run(run) for run in runs if isinstance(run, dict)
         ]
         matches = [run for run in canonical_runs if self._exect_run_matches(run, run_id)]
         if len(matches) == 1:
+            run = matches[0]
+            run_letters = run.get("letters")
+            if isinstance(run_letters, list):
+                run = {**run, "letters": self._filter_exect_letters(run_letters)}
             return {
                 "generated_on": payload.get("generated_on"),
                 "source_index": payload.get("source_index"),
                 "dataset": "exectv2",
                 "split": "dev140",
-                "shared_letters": shared_letters,
-                "run": matches[0],
+                "shared_letters": self._exect_shared_letters(),
+                "run": run,
             }
         return None
 
@@ -542,7 +584,11 @@ class FrontendDataStore:
 
     def _gan_records(self) -> list[Any]:
         return sorted(
-            self._validation_dataset_records.values(),
+            (
+                record
+                for record in self._validation_dataset_records.values()
+                if str(record.source_row_index) in self._gan_dev_ids
+            ),
             key=lambda item: int(item.source_row_index),
         )
 
@@ -550,7 +596,21 @@ class FrontendDataStore:
         shared_letters = self._exectv2_payload.get("shared_letters")
         if not isinstance(shared_letters, list):
             raise ValueError("ExECTv2 shared letters are unavailable")
-        return [letter for letter in shared_letters if isinstance(letter, dict)]
+        return self._filter_exect_letters(
+            [letter for letter in shared_letters if isinstance(letter, dict)]
+        )
+
+    def _filter_exect_letters(self, letters: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        return [letter for letter in letters if self._exect_letter_is_browsable(letter)]
+
+    def _exect_letter_is_browsable(self, letter: dict[str, Any]) -> bool:
+        letter_id = str(letter.get("letter_id") or letter.get("id") or "")
+        if not letter_id or letter_id in self._exect_holdout_ids:
+            return False
+        if letter_id not in self._exect_dev_ids:
+            return False
+        split = str(letter.get("split") or "")
+        return not _is_locked_split_name(split)
 
     @staticmethod
     def _gan_letter_summary(record: Any) -> dict[str, Any]:
@@ -632,3 +692,26 @@ class FrontendDataStore:
         if not resolved.is_relative_to(self.root) or not resolved.is_file():
             raise ValueError("frontend resource is outside the approved data root")
         return json.loads(resolved.read_text(encoding="utf-8"))
+
+
+def _is_locked_split_name(split: str) -> bool:
+    key = "".join(character for character in split.casefold() if character.isalnum())
+    return key in _LOCKED_SPLIT_KEYS
+
+
+def _gan_split_ids(repo_root: Path) -> tuple[frozenset[str], frozenset[str]]:
+    manifest = load_split_manifest(repo_root / GAN_SPLIT_MANIFEST)
+    splits = manifest["splits"]
+    return (
+        frozenset(str(index) for index in splits["validation"]["source_row_indices"]),
+        frozenset(str(index) for index in splits["test"]["source_row_indices"]),
+    )
+
+
+def _exect_split_ids(repo_root: Path) -> tuple[frozenset[str], frozenset[str]]:
+    manifest = json.loads((repo_root / EXECT_SPLIT_MANIFEST).read_text(encoding="utf-8"))
+    splits = manifest["splits"]
+    return (
+        frozenset(str(letter_id) for letter_id in splits["dev"]["letter_ids"]),
+        frozenset(str(letter_id) for letter_id in splits["test"]["letter_ids"]),
+    )

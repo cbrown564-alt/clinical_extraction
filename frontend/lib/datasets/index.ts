@@ -16,6 +16,7 @@ export {
   resolveDatasetId,
   surfaceHref,
 } from "./url";
+export { filterBrowsableLetters, isBrowsableSplit } from "./splits";
 export { useActiveDataset, useDatasetNavigation } from "./useDataset";
 export {
   exectv2RuntimeAdapter,

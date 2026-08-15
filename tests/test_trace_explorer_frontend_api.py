@@ -7,6 +7,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from clinical_extraction.trace_explorer.api.app import create_app
+from clinical_extraction.trace_explorer.frontend_data import FrontendDataStore
 from clinical_extraction.trace_explorer.index import build_index
 
 TRACE_FIXTURE = (
@@ -17,6 +18,19 @@ TRACE_FIXTURE = (
     / "syn_014.json"
 )
 FRONTEND_FIXTURES = Path("frontend") / "public" / "mock-data"
+EXECT_SPLIT_MANIFEST = Path("data") / "ExECTv2 (2025)" / "splits" / "exectv2_split_v2.json"
+GAN_SPLIT_MANIFEST = Path("data") / "Gan (2026)" / "splits" / "gan2026_split_v1.json"
+
+
+def _official_split_ids() -> tuple[set[str], set[str], set[str], set[str]]:
+    gan = json.loads(GAN_SPLIT_MANIFEST.read_text(encoding="utf-8"))
+    exect = json.loads(EXECT_SPLIT_MANIFEST.read_text(encoding="utf-8"))
+    return (
+        {str(index) for index in gan["splits"]["test"]["source_row_indices"]},
+        {str(letter_id) for letter_id in exect["splits"]["test"]["letter_ids"]},
+        {str(index) for index in gan["splits"]["validation"]["source_row_indices"]},
+        {str(letter_id) for letter_id in exect["splits"]["dev"]["letter_ids"]},
+    )
 
 
 @pytest.fixture()
@@ -63,10 +77,11 @@ def test_frontend_catalog_and_read_only_surfaces_use_the_live_api(client: TestCl
 
 
 def test_locked_test_records_are_not_enumerable(client: TestClient) -> None:
-    response = client.get("/records/test")
-    assert response.status_code == 403
-    assert response.json()["error"]["code"] == "aggregate_only"
-    assert "source_row_index" not in response.text
+    for split in ("test", "test450", "test60"):
+        response = client.get(f"/records/{split}")
+        assert response.status_code == 403
+        assert response.json()["error"]["code"] == "aggregate_only"
+        assert "source_row_index" not in response.text
 
     guessed = client.get("/records/test/79")
     assert guessed.status_code == 403
@@ -127,6 +142,8 @@ def test_saved_artifact_replay_is_allowlisted_and_bounded(client: TestClient) ->
 
 
 def test_letter_catalogs_cover_the_development_splits(client: TestClient) -> None:
+    gan_holdout, exect_holdout, gan_dev, exect_dev = _official_split_ids()
+
     gan = client.get("/datasets/gan2026/letters")
     assert gan.status_code == 200
     gan_body = gan.json()
@@ -134,6 +151,9 @@ def test_letter_catalogs_cover_the_development_splits(client: TestClient) -> Non
     assert gan_body["split"] == "dev750"
     assert gan_body["count"] == 750
     assert gan_body["letters"][0]["id"] == "10"
+    gan_ids = {letter["id"] for letter in gan_body["letters"]}
+    assert gan_ids == gan_dev
+    assert gan_ids.isdisjoint(gan_holdout)
 
     gan_letter = client.get("/datasets/gan2026/letters/10")
     assert gan_letter.status_code == 200
@@ -151,7 +171,31 @@ def test_letter_catalogs_cover_the_development_splits(client: TestClient) -> Non
     assert exect_body["count"] == 140
     letter_ids = {letter["id"] for letter in exect_body["letters"]}
     assert "EA0002" in letter_ids
+    assert letter_ids == exect_dev
+    assert letter_ids.isdisjoint(exect_holdout)
     assert len(letter_ids) == 140
+
+
+def test_holdout_letters_are_not_fetchable(client: TestClient) -> None:
+    gan_holdout, exect_holdout, _, _ = _official_split_ids()
+    gan_test_id = next(iter(sorted(gan_holdout, key=int)))
+    exect_test_id = next(iter(sorted(exect_holdout)))
+
+    gan = client.get(f"/datasets/gan2026/letters/{gan_test_id}")
+    assert gan.status_code == 403
+    assert gan.json()["error"]["code"] == "aggregate_only"
+    assert gan_test_id not in gan.text
+
+    exect = client.get(f"/datasets/exectv2/letters/{exect_test_id}")
+    assert exect.status_code == 403
+    assert exect.json()["error"]["code"] == "aggregate_only"
+    assert exect_test_id not in exect.text
+
+    run = client.get("/datasets/exectv2/runs/rules")
+    assert run.status_code == 200
+    shared_ids = {letter["letter_id"] for letter in run.json()["shared_letters"]}
+    assert exect_test_id not in shared_ids
+    assert len(shared_ids) == 140
 
 
 def test_review_queues_and_writes_enforce_development_row_policy(client: TestClient) -> None:
@@ -186,6 +230,10 @@ def test_review_queues_and_writes_enforce_development_row_policy(client: TestCli
     assert locked.status_code == 403
     assert locked.json()["error"]["code"] == "aggregate_only"
 
+    _, exect_holdout, _, _ = _official_split_ids()
+    gold_ids = {row["letter_id"] for row in exect_rows.json()["rows"]}
+    assert gold_ids.isdisjoint(exect_holdout)
+
 
 def test_run_note_executes_the_real_deterministic_pipeline(client: TestClient) -> None:
     response = client.post(
@@ -206,3 +254,29 @@ def test_run_note_executes_the_real_deterministic_pipeline(client: TestClient) -
     assert body["result"]["output"]["final_value"] == "4 per day"
     assert body["result"]["diagnostics"]["candidate_events"]
     assert body["result"]["diagnostics"]["evidence_valid"] is True
+
+
+def test_frontend_store_drops_holdout_ids_even_when_payloads_include_them() -> None:
+    _, exect_holdout, _, _ = _official_split_ids()
+    holdout_id = next(iter(sorted(exect_holdout)))
+    store = FrontendDataStore(FRONTEND_FIXTURES)
+    store._exectv2_payload = {
+        **store._exectv2_payload,
+        "shared_letters": [
+            *store._exect_shared_letters(),
+            {
+                "letter_id": holdout_id,
+                "split": "test60",
+                "letter_text": "REDACTED",
+                "gold_mentions": [],
+            },
+        ],
+    }
+
+    catalog_ids = {letter["id"] for letter in store.letters("exectv2")["letters"]}
+    shared_ids = {letter["letter_id"] for letter in store._exect_shared_letters()}
+    assert holdout_id not in catalog_ids
+    assert holdout_id not in shared_ids
+    assert store.is_locked_letter("exectv2", holdout_id)
+    assert store.letter("exectv2", holdout_id) is None
+    assert len(catalog_ids) == 140

@@ -5,6 +5,8 @@
 import { DATASETS, DEFAULT_DATASET, datasetSupports, getDataset } from "../registry";
 import { parseDatasetId, resolveDatasetId, surfaceHref, DATASET_PARAM } from "../url";
 import { exectv2Dataset } from "../exectv2";
+import { gan2026Dataset } from "../gan2026";
+import { filterBrowsableLetters, isBrowsableSplit } from "../splits";
 import {
   exectv2RuntimeAdapter,
   gan2026RuntimeAdapter,
@@ -43,6 +45,13 @@ describe("dataset descriptors", () => {
     ]);
     expect(exectv2Dataset.specimenLabel).toBe("letter");
   });
+
+  it("datasets only browse development letters", () => {
+    expect(gan2026Dataset.splits).toEqual(["dev750"]);
+    expect(exectv2Dataset.splits).toEqual(["dev140"]);
+    expect(gan2026Dataset.defaultSplit).toBe("dev750");
+    expect(exectv2Dataset.defaultSplit).toBe("dev140");
+  });
 });
 
 describe("dataset url handling", () => {
@@ -72,6 +81,30 @@ describe("dataset url handling", () => {
   it("getDataset falls back to the default for unknown ids", () => {
     // @ts-expect-error intentional invalid id
     expect(getDataset("bogus").id).toBe(DEFAULT_DATASET);
+  });
+});
+
+describe("browsable letter splits", () => {
+  it("keeps only Gan dev750 and ExECT dev140 aliases", () => {
+    expect(isBrowsableSplit("dev750")).toBe(true);
+    expect(isBrowsableSplit("dev140")).toBe(true);
+    expect(isBrowsableSplit("validation")).toBe(true);
+    expect(isBrowsableSplit("dev")).toBe(true);
+    expect(isBrowsableSplit("test60")).toBe(false);
+    expect(isBrowsableSplit("test450")).toBe(false);
+    expect(isBrowsableSplit("test")).toBe(false);
+    expect(isBrowsableSplit("full200")).toBe(false);
+  });
+
+  it("drops holdout letters from mixed catalogs", () => {
+    expect(
+      filterBrowsableLetters([
+        { id: "10", split: "dev750" },
+        { id: "31", split: "test450" },
+        { id: "EA0002", split: "dev140" },
+        { id: "EA0001", split: "test60" },
+      ]).map((letter) => letter.id)
+    ).toEqual(["10", "EA0002"]);
   });
 });
 
