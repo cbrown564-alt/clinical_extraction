@@ -19,6 +19,7 @@ import {
   ControlBar,
   ControlField,
   ControlSelect,
+  LetterPicker,
   ExplorerBody,
   LensStrip,
   formatMetricValue,
@@ -767,6 +768,17 @@ export default function Exectv2ExampleExplorer() {
     );
   }, [get, selectedRun]);
 
+  const letterItems = useMemo(() => {
+    if (!selectedRun) return [];
+    return selectedRun.letters.map((letter) => {
+      const totals = headlineTotals(letter);
+      return {
+        value: letter.letter_id,
+        label: `${letter.letter_id} – ${totals.predicted}P / ${totals.gold}G`,
+      };
+    });
+  }, [selectedRun]);
+
   if (isLoading || selectedRunQuery.isLoading) {
     return <SurfaceLoading message="Loading ExECTv2 data…" />;
   }
@@ -829,21 +841,13 @@ export default function Exectv2ExampleExplorer() {
             </ControlField>
 
             <ControlField label="Letter" htmlFor="exect-letter-select" icon={<FileText className="h-3 w-3 text-muted" />}>
-              <ControlSelect
+              <LetterPicker
                 id="exect-letter-select"
+                items={letterItems}
                 value={selectedLetter.letter_id}
-                onChange={(event) => set({ letter: event.target.value })}
-                className="min-w-0 flex-1 sm:min-w-[200px] sm:flex-none"
-              >
-                {selectedRun.letters.map((letter) => {
-                  const totals = headlineTotals(letter);
-                  return (
-                    <option key={letter.letter_id} value={letter.letter_id}>
-                      {letter.letter_id} – {totals.predicted}P / {totals.gold}G
-                    </option>
-                  );
-                })}
-              </ControlSelect>
+                onChange={(letter) => set({ letter })}
+                className="min-w-0 flex-1 sm:min-w-[240px] sm:flex-none"
+              />
             </ControlField>
           </>
         }

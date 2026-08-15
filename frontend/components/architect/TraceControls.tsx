@@ -27,6 +27,7 @@ import {
   ControlBar,
   ControlField,
   ControlSelect,
+  LetterPicker,
   MethodBadge,
   MetricChips,
 } from "@/components/surface";
@@ -262,6 +263,15 @@ export default function TraceControls() {
     trace,
   ]);
 
+  const letterItems = useMemo(
+    () =>
+      lettersQuery.data?.letters.map((letter) => ({
+        value: String(letter.id),
+        label: `${letter.id} · ${letter.label}`,
+      })) ?? [],
+    [lettersQuery.data]
+  );
+
   return (
     <ControlBar
       left={
@@ -305,25 +315,17 @@ export default function TraceControls() {
 
           {!isAggregateOnly && (
             <ControlField label="Letter" htmlFor="architect-row-select" icon={<FileText className="h-3 w-3 text-muted" />}>
-              <ControlSelect
+              <LetterPicker
                 id="architect-row-select"
-                aria-label="Dataset letter"
-                className="min-w-0 flex-1 sm:min-w-[160px] sm:flex-none"
-                value={sourceRowIndex ?? ""}
-                onChange={(e) =>
-                  setSourceRowIndex(
-                    e.target.value ? parseInt(e.target.value, 10) : null
-                  )
+                items={letterItems}
+                value={sourceRowIndex === null ? "" : String(sourceRowIndex)}
+                onChange={(next) =>
+                  setSourceRowIndex(next ? parseInt(next, 10) : null)
                 }
                 disabled={!lettersQuery.data}
-              >
-                <option value="">Letter…</option>
-                {lettersQuery.data?.letters.map((letter) => (
-                  <option key={letter.id} value={letter.id}>
-                    {letter.id} · {letter.label}
-                  </option>
-                ))}
-              </ControlSelect>
+                placeholder="Letter…"
+                className="min-w-0 flex-1 sm:min-w-[200px] sm:flex-none"
+              />
             </ControlField>
           )}
         </>
