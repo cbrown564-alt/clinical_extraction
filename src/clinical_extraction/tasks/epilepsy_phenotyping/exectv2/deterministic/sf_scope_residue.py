@@ -14,7 +14,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import
     normalize_phrase,
 )
 
-BARE_SYMPTOM_TOKENS = frozenset({"clumsy", "jerk", "jerks"})
+BARE_SYMPTOM_TOKENS = frozenset({"clumsy", "jerk", "jerks", "episode", "episodes"})
 _FEBRILE_RE = re.compile(r"\bfebrile\s+(?:seizures?|convulsions?)\b", re.IGNORECASE)
 _DRIVING_RE = re.compile(r"\b(?:driving|licence|license|dvla)\b", re.IGNORECASE)
 _GENERIC_SF_PHRASES = frozenset(

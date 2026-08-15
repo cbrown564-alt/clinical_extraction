@@ -438,10 +438,10 @@ def test_diagnosis_heading_templates_split_collapsed_spans() -> None:
 
     assert (
         dx.diagnosis_convention_target(
-            "epilepsy probable focal",
+            "epilepsy – probable focal",
             "Diagnosis: epilepsy – probable focal",
         )
-        == "epilepsy"
+        == "focal epilepsy"
     )
     heading = "Diagnosis: epilepsy – probable focal\n"
     added = [text for text, _evidence in dx.diagnosis_residual_additions(heading)]
@@ -466,6 +466,19 @@ def test_pending_investigation_is_dropped_without_completed_result() -> None:
         evidence="EEG 2012 generalised spike and wave.",
         attributes={"EEG_Performed": "Yes", "EEG_Results": "Abnormal"},
     )
+    repaired = inv.investigation_convention_attribute_repairs(
+        "previous CT scan from 2017",
+        evidence="There was a previous CT scan from 2017 showing a left hemisphere infarct",
+        attributes={
+            "CT_Performed": "Yes",
+            "CT_Results": "Abnormal",
+            "EEG_Performed": "No",
+            "MRI_Performed": "No",
+        },
+    )
+    assert repaired.get("CT_Performed") == "Yes"
+    assert "EEG_Performed" not in repaired
+    assert "MRI_Performed" not in repaired
 
 
 def test_prescription_keeps_current_dose_not_target_range() -> None:

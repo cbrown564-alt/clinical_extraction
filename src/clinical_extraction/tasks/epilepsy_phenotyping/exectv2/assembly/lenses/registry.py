@@ -37,6 +37,10 @@ def lens_from_manifest(config: LensManifest) -> EntityLens:
             INVESTIGATIONS.name,
             "investigations_convention_dictionary_v09",
         ): InvestigationsDictionaryLens,
+        (
+            INVESTIGATIONS.name,
+            "investigations_result_v01",
+        ): InvestigationsDictionaryLens,
     }
     legacy_diagnosis_dictionary_lens_ids = frozenset(
         {

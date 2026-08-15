@@ -55,7 +55,7 @@ DIAGNOSIS_CONVENTION_ALIAS_REPAIRS: dict[str, str] = {
 
 DIAGNOSIS_SURFACE_CONVENTION_REPAIRS: dict[str, str] = {
     "epilepsy due to perinatal insult": "epilepsy",
-    "epilepsy probable focal": "epilepsy",
+    "epilepsy probable focal": "focal epilepsy",
     "epilepsy probable focal onset": "focal epilepsy",
     "focal epilepsy probable temporal": "focal epilepsy",
     "epilepsy with generalised tonic chronic seizures alone": (
@@ -412,7 +412,7 @@ def diagnosis_convention_target(text: str, evidence: str) -> str | None:
     (alias repair first, then residual benchmark).
     """
 
-    surface = normalize_phrase(text)
+    surface = normalize_phrase(text.replace("–", " ").replace("—", " ").replace("-", " "))
     if surface == "epilepsy" and re.search(r"\bintractable epilepsy\b", evidence, re.IGNORECASE):
         return "intractable epilepsy"
     surface_target = DIAGNOSIS_SURFACE_CONVENTION_REPAIRS.get(surface)

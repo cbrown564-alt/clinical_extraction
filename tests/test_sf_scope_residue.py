@@ -22,6 +22,26 @@ def _sf(text: str, evidence: str | None = None, **attrs: str) -> dict:
     }
 
 
+def test_drops_bare_episode_token() -> None:
+    mentions = [
+        _sf(
+            "episodes",
+            "The frequency of these appears to be increasing to almost daily.",
+            FrequencyChange="Increased",
+            TimePeriod="Day",
+        ),
+        _sf(
+            "seizures",
+            "He has not had any further seizures since his last appointment.",
+            NumberOfSeizures="0",
+            TimeSince_or_TimeOfEvent="Since",
+        ),
+    ]
+    after, actions = residue.apply_scope_residue_drop(mentions)
+    assert [m["text"] for m in after] == ["seizures"]
+    assert actions[0]["reason"] == "bare_symptom_token"
+
+
 def test_drops_bare_clumsy_and_jerks_but_keeps_myoclonic_jerks() -> None:
     mentions = [
         _sf("clumsy", "he has been “clumsy”, particularly early in the morning"),
@@ -108,6 +128,19 @@ def test_diagnosis_standalone_noise_includes_bare_jerk() -> None:
         "juvenile myoclonic epilepsy",
         evidence="juvenile myoclonic epilepsy",
         diag_category="Epilepsy",
+    )
+
+
+def test_planned_start_regimen_is_gold_free() -> None:
+    assert rx.is_planned_start_prescription(
+        "levetiracetam",
+        evidence="he starts levetiracetam at a dose of 250mg once-a-day",
+        attributes={"DrugName": "levetiracetam"},
+    )
+    assert not rx.is_planned_start_prescription(
+        "lamotrigine",
+        evidence="Current anti-epileptic medication: lamotrigine 75mg bd",
+        attributes={"DrugName": "lamotrigine"},
     )
 
 

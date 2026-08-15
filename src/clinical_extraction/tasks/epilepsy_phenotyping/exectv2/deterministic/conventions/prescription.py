@@ -95,6 +95,31 @@ _NON_ANTIEPILEPTIC_DRUGS = frozenset(
 )
 
 
+_PLANNED_START_RE = re.compile(
+    r"\b(?:to\s+start|starts\s+\S+(?:\s+\S+){0,6}\s+at\s+a\s+dose)\b",
+    re.IGNORECASE,
+)
+_CURRENT_REGIMEN_CUE_RE = re.compile(
+    r"\b(?:current(?:ly)?\s+(?:taking|on|antiepileptic)|taking\s+\d+)\b",
+    re.IGNORECASE,
+)
+
+
+def is_planned_start_prescription(
+    text: str,
+    *,
+    evidence: str,
+    attributes: Mapping[str, Any],
+) -> bool:
+    """True for a start/titration plan that is not a current-taking statement."""
+
+    del attributes
+    surface = " ".join(part for part in (text, evidence) if part)
+    if not _PLANNED_START_RE.search(surface):
+        return False
+    return _CURRENT_REGIMEN_CUE_RE.search(surface) is None
+
+
 def is_non_antiepileptic_prescription(
     text: str,
     *,

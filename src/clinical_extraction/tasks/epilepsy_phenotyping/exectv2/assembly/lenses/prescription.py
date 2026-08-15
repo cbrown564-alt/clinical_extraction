@@ -66,6 +66,10 @@ class PrescriptionDictionaryLens(ThinArtifactLens):
                 finding.text,
                 evidence=finding.evidence or finding.text,
                 attributes=finding.attributes,
+            ) or sd.is_planned_start_prescription(
+                finding.text,
+                evidence=finding.evidence or finding.text,
+                attributes=finding.attributes,
             ):
                 dropped_non_asm += 1
                 continue
