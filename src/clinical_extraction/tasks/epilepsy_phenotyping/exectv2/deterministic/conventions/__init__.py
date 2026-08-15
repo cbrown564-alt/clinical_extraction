@@ -25,6 +25,7 @@ from .investigations import (
     investigation_convention_attribute_repairs,
     investigation_residual_additions,
     is_investigation_convention_noise,
+    is_pending_investigation,
 )
 from .prescription import (
     prescription_convention_attribute_repairs,
@@ -58,6 +59,7 @@ __all__ = [
     "investigation_residual_additions",
     "is_diagnosis_convention_noise",
     "is_investigation_convention_noise",
+    "is_pending_investigation",
     "is_redundant_diagnosis_residual_addition",
     "is_sf_convention_noise",
     "normalize_dose_unit",

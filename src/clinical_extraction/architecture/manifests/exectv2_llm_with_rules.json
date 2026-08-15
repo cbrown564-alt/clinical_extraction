@@ -134,7 +134,7 @@
       "stage_id": "exect.llm_with_rules.sf_state_projection",
       "runtime_action": "project_seizure_frequency_state",
       "name": "Project seizure-frequency facts into the state representation",
-      "operation": "Convert the model's seizure-frequency facts into the state and ownership representation the ExECT scorer expects, adding state attributes and named-type ownership the model did not supply.",
+      "operation": "Convert the model's seizure-frequency facts into the state and ownership representation the ExECT scorer expects, including List 11 / range / interval / last-event encoding on emitted mentions, adding state attributes and named-type ownership the model did not supply.",
       "owner": "deterministic",
       "rule_category": "seizure_frequency",
       "effect_class": "clinical_meaning",

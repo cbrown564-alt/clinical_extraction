@@ -53,7 +53,9 @@ DIAGNOSIS_CONVENTION_ALIAS_REPAIRS: dict[str, str] = {
 
 DIAGNOSIS_SURFACE_CONVENTION_REPAIRS: dict[str, str] = {
     "epilepsy due to perinatal insult": "epilepsy",
+    "epilepsy probable focal": "epilepsy",
     "epilepsy probable focal onset": "focal epilepsy",
+    "focal epilepsy probable temporal": "focal epilepsy",
     "epilepsy with generalised tonic chronic seizures alone": (
         "epilepsy with generalised tonic clonic seizures alone"
     ),
@@ -212,6 +214,17 @@ RESIDUAL_SOURCE_CONCEPT_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     (
         re.compile(r"Diagnosis:\s*Epilepsy,\s*probable focal onset", re.IGNORECASE),
         "focal epilepsy",
+    ),
+    (
+        re.compile(r"Diagnosis:\s*epilepsy\s*[-–]\s*probable\s+focal\b", re.IGNORECASE),
+        "focal epilepsy",
+    ),
+    (
+        re.compile(
+            r"Diagnosis:\s*focal epilepsy\s*[-–]\s*Probable\s+temporal\b",
+            re.IGNORECASE,
+        ),
+        "temporal lobe epilepsy",
     ),
     (
         re.compile(r"seizures every 3 to 4 weeks,\s*possibly focal onset", re.IGNORECASE),

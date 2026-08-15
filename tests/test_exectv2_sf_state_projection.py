@@ -186,7 +186,7 @@ def test_combined_preserves_cluster_and_generlised_cuis() -> None:
 
     assert by_text["cluster of seizures"] == "C3203523"
     assert by_text["generlised tonic clonic seizure"] == "C0494475"
-    assert projected["projection_version"].endswith("v0.14")
+    assert projected["projection_version"].endswith("v0.15")
 
 
 def test_combined_drops_bare_count_active_rate() -> None:
@@ -440,6 +440,92 @@ def test_project_rows_reports_ablation_metadata() -> None:
     assert metadata["projection_version"] == projection.PROJECTION_VERSION
     assert metadata["ablation"] == "combined"
     assert metadata["projection_action_counts"]["state.drop_unlabelled_active_rate"] == 1
+
+
+def test_state_projection_applies_prompt_convention_encoding_pack() -> None:
+    """List 11 / range / interval / last-event / dated heading / text cleanup.
+
+    One governing case for the Phase 3 encoding pack. Internal rows are
+    synthetic plus permitted dev20 shapes, not a scoreboard.
+    """
+
+    cases = (
+        (
+            "seizures",
+            {"NumberOfSeizures": "several"},
+            "several seizures since the last clinic appointment",
+            {"NumberOfSeizures": "3", "PointInTime": "LastClinic"},
+        ),
+        (
+            "seizures",
+            {"NumberOfSeizures": "2-4"},
+            "she has 2-4 seizures",
+            {"LowerNumberOfSeizures": "2", "UpperNumberOfSeizures": "4"},
+        ),
+        (
+            "focal seizures",
+            {},
+            "focal seizures with altered awareness every 3 weeks",
+            {"NumberOfSeizures": "1", "NumberOfTimePeriods": "3", "TimePeriod": "Week"},
+        ),
+        (
+            "Generalised tonic clonic seizure",
+            {},
+            "Generalised tonic clonic seizure-last event July 2016.",
+            {
+                "NumberOfSeizures": "0",
+                "MonthDate": "7",
+                "YearDate": "2016",
+                "TimeSince_or_TimeOfEvent": "Since",
+            },
+        ),
+        (
+            "absence like seizures",
+            {"YearDate": "2014"},
+            "absence like seizures 2014",
+            {
+                "NumberOfSeizures": "1",
+                "YearDate": "2014",
+                "TimeSince_or_TimeOfEvent": "During",
+            },
+        ),
+        (
+            "seizure frequency",
+            {"NumberOfTimePeriods": "4", "TimePeriod": "Week"},
+            "the seizure frequency is roughly every 4 weeks",
+            {"NumberOfSeizures": "1", "text": "seizure"},
+        ),
+    )
+    for text, attrs, evidence, expected in cases:
+        row = _row(
+            predicted_mentions=[
+                {
+                    "entity": "SeizureFrequency",
+                    "text": text,
+                    "attributes": dict(attrs),
+                    "evidence": evidence,
+                }
+            ]
+        )
+        projected = projection.project_row(row, ablation="state")
+        mention = projected["predicted_mentions"][0]
+        got = dict(mention["attributes"])
+        got["text"] = mention["text"]
+        for key, value in expected.items():
+            assert got.get(key) == value, (evidence, key, got.get(key), value)
+
+    coincided = _row(
+        predicted_mentions=[
+            {
+                "entity": "SeizureFrequency",
+                "text": "seizure",
+                "attributes": {"NumberOfSeizures": "1"},
+                "evidence": "His last seizure coincided with forgetting to take his medication.",
+            }
+        ]
+    )
+    projected = projection.project_row(coincided, ablation="state")
+    assert projected["predicted_mentions"][0]["attributes"].get("NumberOfSeizures") != "0"
 
 
 def test_temporal_direction_alignment_rules() -> None:

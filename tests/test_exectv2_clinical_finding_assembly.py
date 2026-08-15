@@ -429,3 +429,56 @@ def _inv_attrs() -> dict[str, str]:
 def _write_jsonl(path: Path, rows: list[dict]) -> Path:
     path.write_text("\n".join(json.dumps(row) for row in rows) + "\n", encoding="utf-8")
     return path
+
+
+def test_diagnosis_heading_templates_split_collapsed_spans() -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.conventions import (
+        diagnosis as dx,
+    )
+
+    assert (
+        dx.diagnosis_convention_target(
+            "epilepsy probable focal",
+            "Diagnosis: epilepsy – probable focal",
+        )
+        == "epilepsy"
+    )
+    heading = "Diagnosis: epilepsy – probable focal\n"
+    added = [text for text, _evidence in dx.diagnosis_residual_additions(heading)]
+    assert "focal epilepsy" in added
+    temporal = "Diagnosis: focal epilepsy-Probable temporal\n"
+    added_temporal = [text for text, _evidence in dx.diagnosis_residual_additions(temporal)]
+    assert "temporal lobe epilepsy" in added_temporal
+
+
+def test_pending_investigation_is_dropped_without_completed_result() -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.conventions import (
+        investigations as inv,
+    )
+
+    assert inv.is_pending_investigation(
+        "EEG",
+        evidence="We are awaiting an EEG appointment for her.",
+        attributes={"EEG_Performed": "No"},
+    )
+    assert not inv.is_pending_investigation(
+        "EEG",
+        evidence="EEG 2012 generalised spike and wave.",
+        attributes={"EEG_Performed": "Yes", "EEG_Results": "Abnormal"},
+    )
+
+
+def test_prescription_keeps_current_dose_not_target_range() -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.conventions import (
+        prescription as rx,
+    )
+
+    repaired = rx.prescription_convention_attribute_repairs(
+        "Lamotrigine 75mg to 125mg",
+        evidence=(
+            "Currently Lamotrigine 75mg bd to increase over the following "
+            "weeks to 125mg bd"
+        ),
+        attributes={"DrugName": "lamotrigine", "DrugDose": "75 to 125", "DoseUnit": "mg"},
+    )
+    assert repaired["DrugDose"] == "75"

@@ -14,6 +14,8 @@ The row walk is one design with two phases:
    ``_OWNERSHIP_PASSES`` run in listed order. Single last-event duration
    (v0.10) is a state-pass rewrite that uses
    ``sf_last_event_duration.last_event_duration``, not an ownership pass.
+   v0.15 applies List 11 / range / interval / dated-heading encoding on
+   emitted mentions before those state repairs.
 """
 
 from __future__ import annotations
@@ -35,6 +37,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    sf_attribute_encoding as sf_encoding,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     sf_bare_count_active_rate as bare_count,
 )
@@ -77,7 +82,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.seizure_freq
     frequency_state_faithful,
 )
 
-PROJECTION_VERSION = "exectv2_hybrid_sf_state_projection_v0.14"
+PROJECTION_VERSION = "exectv2_hybrid_sf_state_projection_v0.15"
 PIPELINE_FAMILY = "exectv2_hybrid_sf_state_projection"
 COMPONENT_OWNER = "deterministic_sf_state_ownership_projection"
 
@@ -246,7 +251,7 @@ def write_report(
     unknown = summary.get("clinical_recovery", {}).get("unknown", {})
     action_counts = metadata.get("projection_action_counts", {})
     lines = [
-        "# ExECTv2 SeizureFrequency State/Ownership Projection v0.14",
+        "# ExECTv2 SeizureFrequency State/Ownership Projection v0.15",
         "",
         f"- JSONL: `{jsonl_path}`",
         f"- Projection version: `{metadata.get('projection_version')}`",
@@ -320,8 +325,21 @@ def _apply_state_projection(
     mentions: list[dict[str, Any]],
     actions: list[dict[str, str]],
 ) -> list[dict[str, Any]]:
+    mentions, encoding_actions = sf_encoding.apply_sf_attribute_encoding(mentions)
+    for record in encoding_actions:
+        actions.append(
+            _action(
+                str(record.get("rule_id") or "encoding.sf_attribute"),
+                "repair",
+                {"text": record.get("text", ""), "evidence": ""},
+            )
+        )
     kept: list[dict[str, Any]] = []
     for mention in mentions:
+        dated_free = _rewrite_dated_last_event(mention)
+        if dated_free is not mention:
+            actions.append(_action("state.last_event_date_to_seizure_free", "repair", mention))
+            mention = _copy_mention(dated_free)
         drop_rule = _state_drop_rule(mention, mentions)
         if drop_rule:
             actions.append(_action(drop_rule, "drop", mention))
@@ -511,6 +529,91 @@ def _repair_state_mention(mention: Mapping[str, Any]) -> dict[str, Any] | Mappin
     if duration is None:
         return mention
     return _rewrite_last_event(mention, evidence)
+
+
+_COINCIDED_LAST_EVENT_RE = re.compile(
+    r"\b(coincided with|previous seizure was a year ago)\b",
+    re.IGNORECASE,
+)
+_TEENAGE_LAST_EVENT_RE = re.compile(
+    r"\blast seizures?\b.{0,80}\bteenage years\b",
+    re.IGNORECASE,
+)
+_NONE_SINCE_CUE_RE = re.compile(
+    r"\b(has had none since|none since|seizure[- ]free since)\b",
+    re.IGNORECASE,
+)
+
+
+def _rewrite_dated_last_event(mention: Mapping[str, Any]) -> dict[str, Any] | Mapping[str, Any]:
+    """Map last-event / none-since dates to NumberOfSeizures=0 even without model 1."""
+
+    evidence = str(mention.get("evidence") or "")
+    attrs = dict(mention.get("attributes") or {})
+    already_free = attrs.get("NumberOfSeizures") == "0" and attrs.get(
+        "TimeSince_or_TimeOfEvent"
+    ) == "Since"
+    if already_free and any(attrs.get(key) for key in ("YearDate", "MonthDate", "AgeLower")):
+        return mention
+
+    if _TEENAGE_LAST_EVENT_RE.search(evidence):
+        repaired = _copy_mention(mention)
+        new_attrs = {
+            "NumberOfSeizures": "0",
+            "AgeLower": "13",
+            "AgeUpper": "19",
+            "AgeUnit": "Year",
+            "TimeSince_or_TimeOfEvent": "Since",
+        }
+        for keep in ("CUI", "CUIPhrase", "Certainty", "Negation"):
+            if attrs.get(keep):
+                new_attrs[keep] = str(attrs[keep])
+        repaired["attributes"] = new_attrs
+        repaired["rationale"] = _append_rationale(
+            repaired,
+            "Deterministic state projection treats last seizures in teenage years as seizure-free.",
+        )
+        return repaired
+
+    date_attrs = _last_event_date_attrs(evidence)
+    if not date_attrs and _NONE_SINCE_CUE_RE.search(evidence):
+        date_attrs = _calendar_date_attrs(evidence)
+    if not date_attrs:
+        return mention
+    if _COINCIDED_LAST_EVENT_RE.search(evidence) and not re.search(
+        r"\blast event\b", evidence, re.IGNORECASE
+    ):
+        return mention
+    if not date_attrs.get("YearDate") and not date_attrs.get("MonthDate"):
+        return mention
+
+    repaired = _copy_mention(mention)
+    new_attrs = {"NumberOfSeizures": "0", **date_attrs, "TimeSince_or_TimeOfEvent": "Since"}
+    for keep in ("CUI", "CUIPhrase", "Certainty", "Negation"):
+        if attrs.get(keep):
+            new_attrs[keep] = str(attrs[keep])
+    repaired["attributes"] = new_attrs
+    repaired["rationale"] = _append_rationale(
+        repaired,
+        "Deterministic state projection treats a dated last-event as seizure-free.",
+    )
+    return repaired
+
+
+def _calendar_date_attrs(evidence: str) -> dict[str, str]:
+    lower = evidence.lower()
+    attrs: dict[str, str] = {}
+    month_match = re.search(
+        r"\b(january|february|march|april|may|june|july|august|"
+        r"september|october|november|novemebr|december|devember|christmas)\b",
+        lower,
+    )
+    if month_match:
+        attrs["MonthDate"] = _month_number(month_match.group(1))
+    year_match = re.search(r"\b(20\d{2}|19\d{2})\b", lower)
+    if year_match:
+        attrs["YearDate"] = year_match.group(1)
+    return attrs
 
 
 def _is_single_last_event(mention: Mapping[str, Any], evidence: str) -> bool:

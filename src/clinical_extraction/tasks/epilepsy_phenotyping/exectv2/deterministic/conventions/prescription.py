@@ -81,6 +81,16 @@ _PRESCRIPTION_RESIDUAL_NAME_ALIASES = {
     "sodiumvalproate": "sodium-valproate",
     "tegretol-retard": "carbamazepine",
 }
+_DOSE_RANGE_FIELD_RE = re.compile(
+    r"^\s*(?P<low>\d+(?:\.\d+)?)\s*(?:mg|mgs)?\s*(?:to|-|–)\s*"
+    r"(?P<high>\d+(?:\.\d+)?)\s*(?:mg|mgs)?\s*$",
+    re.IGNORECASE,
+)
+_CURRENT_DOSE_RE = re.compile(
+    r"\bcurrently\b.{0,100}?(?P<current>\d+(?:\.\d+)?)\s*(?:mg|mgs)\b",
+    re.IGNORECASE | re.DOTALL,
+)
+
 _PRESCRIPTION_RESIDUAL_TARGET_KEYS: frozenset[tuple[str, str, str, str, str]] = frozenset(
     {
         ("ordinary", "brivaracetam", "100", "mg", "2"),
@@ -188,6 +198,30 @@ def prescription_convention_attribute_repairs(
         repaired["Frequency"] = frequency
     elif not repaired.get("Frequency") and frequency is not None:
         repaired["Frequency"] = frequency
+    repaired = _prefer_current_dose_over_range(text, evidence=evidence, attributes=repaired)
+    return repaired
+
+
+def _prefer_current_dose_over_range(
+    text: str,
+    *,
+    evidence: str,
+    attributes: Mapping[str, str],
+) -> dict[str, str]:
+    """Keep the current single dose when the model wrote a current-to-target range."""
+
+    repaired = {str(key): str(value) for key, value in attributes.items()}
+    range_match = _DOSE_RANGE_FIELD_RE.fullmatch(str(repaired.get("DrugDose") or ""))
+    if range_match is None:
+        return repaired
+    surface = " ".join(part for part in (text, evidence) if part)
+    current_match = _CURRENT_DOSE_RE.search(surface)
+    if current_match is None:
+        return repaired
+    current = current_match.group("current")
+    if current != range_match.group("low"):
+        return repaired
+    repaired["DrugDose"] = current
     return repaired
 
 

@@ -24,6 +24,15 @@ _PLANNED_INVESTIGATION_EVIDENCE = re.compile(
     r"with\s+the\s+results)\b",
     re.IGNORECASE,
 )
+_PENDING_INVESTIGATION_CUE = re.compile(
+    r"\b(?:"
+    r"will\s+(?:arrange|request|have|organise|organize)|"
+    r"arrang(?:e|ing)|request(?:ed|ing)?|await(?:ed|ing)|appointment|"
+    r"suggest(?:ed|ing)?|recommend(?:ed|ing)?|should\s+update|chase|"
+    r"up\s+to\s+date|not\s+yet\s+(?:performed|received)|planned|pending"
+    r")\b",
+    re.IGNORECASE,
+)
 _EXPLICIT_NO_TEST_CUE = re.compile(
     r"\b(?:no|never|not|without|had\s+not|has\s+not|have\s+not|hasn't|haven't)\b",
     re.IGNORECASE,
@@ -78,6 +87,29 @@ def investigation_convention_attribute_repairs(
         if result_key is not None and repaired.get(result_key) == "Unknown":
             repaired.pop(result_key, None)
     return repaired
+
+
+def is_pending_investigation(
+    text: str,
+    *,
+    evidence: str,
+    attributes: Mapping[str, Any],
+) -> bool:
+    """True when the mention is only a planned/awaited test, not a completed one."""
+
+    repaired = {str(key): str(value) for key, value in attributes.items()}
+    scoring_attrs = _investigation_scoring_attributes(repaired)
+    surface = " ".join(part for part in (text, evidence) if part)
+    if not _PENDING_INVESTIGATION_CUE.search(surface):
+        return False
+    if _has_positive_investigation(scoring_attrs):
+        return False
+    has_result_cue = _INVESTIGATION_NORMAL_RESULT_CUE.search(
+        surface
+    ) or _INVESTIGATION_ABNORMAL_RESULT_CUE.search(surface)
+    if has_result_cue:
+        return False
+    return True
 
 
 def is_investigation_convention_noise(
