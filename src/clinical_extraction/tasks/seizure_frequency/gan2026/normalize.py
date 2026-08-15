@@ -21,6 +21,7 @@ from .deterministic.rules.benchmark_repair import (
     apply_benchmark_repair_rules,
 )
 from .selected_evidence.selected_evidence_derivation import (
+    blocks_inexact_span_family_rewrite,
     prediction_label_from_selected_evidence,
     should_prefer_selected_evidence_label,
 )
@@ -195,6 +196,13 @@ def repair_prediction_label_with_evidence(
         evidence,
         evidence_label,
     ):
+        if blocks_inexact_span_family_rewrite(
+            raw_repaired=raw_repaired,
+            evidence=evidence,
+            evidence_label=evidence_label,
+            context_text=context_text,
+        ):
+            return raw_repaired
         return repair_prediction_label(evidence_label, ablation_config)
     return raw_repaired
 

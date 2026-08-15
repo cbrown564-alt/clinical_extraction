@@ -35,7 +35,14 @@ CURRENT_STACK_DIR = (
 )
 FILLS_PATH = REPO_ROOT / "experiments/current_stack/latest/fills.json"
 PANEL_PATH = REPO_ROOT / "experiments/current_stack/latest/panel_aggregate.json"
-JULY18_DIR = REPO_ROOT / "experiments/gan2026_six_model_validation_20260718"
+V05_DEV750_DIR = (
+    REPO_ROOT / "scratch/validation/gan2026_matched_v05_dev750_20260727"
+)
+V05_PROMPT = "gan2026_hybrid_structured_events_v0.5"
+V05_MINI = (
+    CURRENT_STACK_DIR / "gpt41mini_v05_june07" / "validation750.rows.jsonl"
+)
+V05_GEMINI = CURRENT_STACK_DIR / "gemini37flash" / "validation750.rows.jsonl"
 EXAMPLES_PER_KEY = 2
 
 _ABLATION_PATH = REPO_ROOT / "scripts/build_gan2026_hybrid_stage_ablation.py"
@@ -52,19 +59,19 @@ if _HS_SPEC is None or _HS_SPEC.loader is None:
 hs = importlib.util.module_from_spec(_HS_SPEC)
 _HS_SPEC.loader.exec_module(hs)
 
-V07_MODELS = (
-    ("gpt41mini", "GPT-4.1-mini", "v0.7"),
-    ("gpt56luna", "GPT-5.6 Luna", "v0.7"),
-    ("gpt56sol", "GPT-5.6 Sol", "v0.7"),
-    ("deepseek_v4_flash", "DeepSeek V4 Flash", "v0.7"),
-    ("qwen36_35b", "Qwen 3.6:35B", "v0.7"),
-    ("gemma4_26b", "Gemma 4 26B", "v0.7"),
+V05_MODELS = (
+    ("gpt41mini", "GPT-4.1-mini", "v0.5"),
+    ("gpt56luna", "GPT-5.6 Luna", "v0.5"),
+    ("gpt56sol", "GPT-5.6 Sol", "v0.5"),
+    ("deepseek_v4_flash", "DeepSeek V4 Flash", "v0.5"),
+    ("qwen36_35b", "Qwen 3.6:35B", "v0.5"),
+    ("gemma4_26b", "Gemma 4 26B", "v0.5"),
+    ("gemini37flash", "Gemini 3.7 Flash", "v0.5"),
 )
-GEMINI = ("gemini37flash", "Gemini 3.7 Flash", "v0.5")
-ALL_MODELS = (*V07_MODELS, GEMINI)
-V07_SLUGS = tuple(slug for slug, _, _ in V07_MODELS)
+ALL_MODELS = V05_MODELS
+V05_SLUGS = tuple(slug for slug, _, _ in V05_MODELS)
 FOCUS_SLUG = "qwen36_35b"
-PEER_V07_SLUGS = tuple(slug for slug in V07_SLUGS if slug != FOCUS_SLUG)
+PEER_V05_SLUGS = tuple(slug for slug in V05_SLUGS if slug != FOCUS_SLUG)
 
 REPAIR_STAGE_ORDER = ablation.REPAIR_STAGE_ORDER
 BAND_ORDER = ablation.BAND_ORDER
@@ -114,16 +121,48 @@ def _load_json(path: Path) -> dict[str, Any]:
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
-    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line]
+    return [
+        json.loads(line)
+        for line in path.read_text(encoding="utf-8-sig").splitlines()
+        if line
+    ]
 
 
 def _source_path(slug: str) -> Path:
     if slug == "gemini37flash":
-        return CURRENT_STACK_DIR / "gemini37flash" / "validation750.rows.jsonl"
-    july = JULY18_DIR / f"{slug}--llm_with_rules.jsonl"
-    if july.is_file():
-        return july
-    return CURRENT_STACK_DIR / slug / "validation750.rows.jsonl"
+        return V05_GEMINI
+    scratch = V05_DEV750_DIR / slug / "validation750.rows.jsonl"
+    if scratch.is_file():
+        return scratch
+    if slug == "gpt41mini":
+        return V05_MINI
+    raise FileNotFoundError(
+        f"matched v0.5 dev750 raw missing for {slug}: "
+        f"{scratch.relative_to(REPO_ROOT).as_posix()} "
+        "(Decision 0043; do not fall back to July 18 v0.7)"
+    )
+
+
+def _prompt_versions(path: Path) -> set[str]:
+    return {str(row.get("prompt_version") or "") for row in _read_jsonl(path)}
+
+
+def _available_models() -> tuple[tuple[str, str, str], ...]:
+    found: list[tuple[str, str, str]] = []
+    for slug, display, prompt in ALL_MODELS:
+        try:
+            path = _source_path(slug)
+        except FileNotFoundError:
+            continue
+        if not path.is_file():
+            continue
+        versions = _prompt_versions(path)
+        if versions != {V05_PROMPT}:
+            raise SystemExit(
+                f"{path.relative_to(REPO_ROOT).as_posix()} prompt {versions} != {V05_PROMPT}"
+            )
+        found.append((slug, display, prompt))
+    return tuple(found)
 
 
 def _label_kind(label: str | None) -> str | None:
@@ -336,6 +375,10 @@ def _cell_example(
 def build_artifact() -> dict[str, Any]:
     gold_index = hs._gan_gold_index()
     published = _published_holdout_aggregates()
+    models = _available_models()
+    if not models:
+        raise SystemExit("no matched v0.5 dev750 sources found")
+    missing = [slug for slug, _, _ in ALL_MODELS if slug not in {item[0] for item in models}]
 
     per_model: dict[str, dict[str, Any]] = {}
     stage_by_model: dict[str, dict[str, dict[str, int]]] = {}
@@ -346,7 +389,7 @@ def build_artifact() -> dict[str, Any]:
     sol_representation_ok: dict[int, bool] = {}
     qwen_cells: dict[int, dict[str, Any]] = {}
 
-    for slug, display, prompt in ALL_MODELS:
+    for slug, display, prompt in models:
         rows = _read_jsonl(_source_path(slug))
         acc = _empty_model_acc()
         stages = {stage: _empty_stage_stats() for stage in REPAIR_STAGE_ORDER}
@@ -507,9 +550,14 @@ def build_artifact() -> dict[str, Any]:
     overfire: list[dict[str, Any]] = []
     for stage in REPAIR_STAGE_ORDER:
         peer_rates = []
-        for slug in PEER_V07_SLUGS:
+        peer_slugs = [
+            slug for slug, _, _ in models if slug != FOCUS_SLUG and slug in per_model
+        ]
+        for slug in peer_slugs:
             n = max(per_model[slug]["replayable"], 1)
             peer_rates.append(stage_by_model[slug][stage]["fires"] / n)
+        if FOCUS_SLUG not in per_model:
+            break
         qwen_n = max(per_model[FOCUS_SLUG]["replayable"], 1)
         qwen_fires = stage_by_model[FOCUS_SLUG][stage]["fires"]
         qwen_rate = qwen_fires / qwen_n
@@ -530,7 +578,7 @@ def build_artifact() -> dict[str, Any]:
     arms: dict[str, Any] = {}
     for arm in ARMS:
         arm_models: dict[str, dict[str, int]] = {}
-        for slug, _display, _prompt in ALL_MODELS:
+        for slug, _display, _prompt in models:
             rows = _read_jsonl(_source_path(slug))
             correct = 0
             replayable = 0
@@ -577,7 +625,7 @@ def build_artifact() -> dict[str, Any]:
 
     cliffs: dict[str, Any] = {}
     hybrid_holdout = published["hybrid_test450"]
-    for slug, _display, prompt in ALL_MODELS:
+    for slug, _display, prompt in models:
         dev_n = per_model[slug]["replayable"]
         dev_correct = per_model[slug]["final_purist"]
         hold = hybrid_holdout.get(slug) or {}
@@ -685,9 +733,11 @@ def build_artifact() -> dict[str, Any]:
                 "first_changer_classes": dict(class_by_model[slug]),
                 "stages": stage_by_model[slug],
             }
-            for slug, display, prompt in ALL_MODELS
+            for slug, display, prompt in models
         },
-        "overfire_vs_v07_peer_median": overfire,
+        "missing_v05_sources": missing,
+        "prompt_identity": V05_PROMPT,
+        "overfire_vs_v05_peer_median": overfire,
         "qwen_peer_competence": {
             "qwen_representation_rescues": qwen_rescues_total,
             "qwen_rescues_where_sol_already_correct_at_representation": (
@@ -698,62 +748,8 @@ def build_artifact() -> dict[str, Any]:
         "published_holdout_aggregates": published,
         "generalization_cliffs": cliffs,
         "examples": {key: value for key, value in examples.items()},
-        "post_hoc_design_probe": {
-            "name": "inexact_span_family_rewrite_block",
-            "status": "post_hoc_not_predeclared",
-            "predicate": (
-                "Skip repair.selected_evidence only when the selected span is "
-                "not an exact source substring and the derived evidence label "
-                "would change an already-parsed FrequencyLabelKind."
-            ),
-            "models": _post_hoc_inexact_family_block(gold_index),
-        },
     }
     return payload
-
-
-def _post_hoc_inexact_family_block(gold_index: dict[int, dict[str, Any]]) -> dict[str, Any]:
-    parsed = {str(kind) for kind in FrequencyLabelKind}
-    out: dict[str, Any] = {}
-    for slug, _display, _prompt in ALL_MODELS:
-        rescue = harm = 0
-        replayable = 0
-        for row in _read_jsonl(_source_path(slug)):
-            gold = str(gold_index[int(row["source_row_index"])]["gold_label"])
-            seed = ablation.replay_row(row)
-            if seed is None or not seed.get("replayable"):
-                continue
-            replayable += 1
-            _model_label, evidence, note = _selection_and_note(row)
-            exact = bool(evidence and note and evidence_is_substring(note, evidence))
-            derived = _evidence_mod.prediction_label_from_selected_evidence(
-                evidence or "", note
-            )
-            before_kind = _label_kind(seed.get("resolved"))
-            after_kind = _label_kind(derived) if derived else None
-            family_change = (
-                derived is not None
-                and before_kind in parsed
-                and after_kind in parsed
-                and before_kind != after_kind
-            )
-            omit = (
-                frozenset({"repair.selected_evidence"})
-                if (not exact) and family_change
-                else frozenset()
-            )
-            replay = seed if not omit else ablation.replay_row(row, omit_stages=omit)
-            base_ok = _purist_ok(seed.get("final"), gold)
-            arm_ok = _purist_ok(replay.get("final"), gold)
-            rescue += int(arm_ok and not base_ok)
-            harm += int(base_ok and not arm_ok)
-        out[slug] = {
-            "replayable": replayable,
-            "vs_baseline_rescue": rescue,
-            "vs_baseline_harm": harm,
-            "net": rescue - harm,
-        }
-    return out
 
 
 def main() -> None:
@@ -765,19 +761,20 @@ def main() -> None:
     payload = build_artifact()
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    qwen = payload["models"][FOCUS_SLUG]
+    qwen = payload["models"].get(FOCUS_SLUG)
     print(
         json.dumps(
             {
                 "status": "pass",
                 "output": args.output.relative_to(REPO_ROOT).as_posix(),
-                "qwen_replayable": qwen["replayable"],
-                "qwen_model_final": qwen["model_final_purist"],
-                "qwen_representation": qwen["representation_purist"],
-                "qwen_final": qwen["final_purist"],
+                "prompt_identity": payload.get("prompt_identity"),
+                "models": sorted(payload["models"]),
+                "missing_v05_sources": payload.get("missing_v05_sources"),
+                "qwen_replayable": None if qwen is None else qwen["replayable"],
+                "qwen_final": None if qwen is None else qwen["final_purist"],
                 "overfire_flags": [
                     row["stage"]
-                    for row in payload["overfire_vs_v07_peer_median"]
+                    for row in payload.get("overfire_vs_v05_peer_median") or []
                     if row["overfire_flag"]
                 ],
             },

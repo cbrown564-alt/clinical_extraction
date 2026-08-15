@@ -91,5 +91,52 @@ def test_upper_bound_inequality_preserves_numeric_rate() -> None:
     assert repair_prediction_label("up to 2 per week") == "2 per week"
 
 
+def test_inexact_span_does_not_rewrite_unknown_to_a_rate() -> None:
+    note = (
+        "She has been better over the past seven months. There is also an "
+        "unrelated mention of variable events in the distant past."
+    )
+    paraphrase = "one or three seizures last month"
+    assert paraphrase not in note
+    assert (
+        repair_prediction_label_with_evidence(
+            "unknown",
+            paraphrase,
+            context_text=note,
+        )
+        == "unknown"
+    )
+
+
+def test_exact_span_may_still_rewrite_unknown_to_the_quoted_rate() -> None:
+    quote = "one or three seizures last month"
+    note = f"She reports {quote} and no further events since."
+    assert (
+        repair_prediction_label_with_evidence(
+            "unknown",
+            quote,
+            context_text=note,
+        )
+        == "1 to 3 per month"
+    )
+
+
+def test_inexact_span_may_still_render_the_same_parsed_family() -> None:
+    note = (
+        "Current pattern is seizures every other week, typically overnight, "
+        "with post-ictal tiredness the following morning."
+    )
+    paraphrase = "the current pattern is roughly fortnightly"
+    assert paraphrase not in note
+    assert (
+        repair_prediction_label_with_evidence(
+            "1 per 2 weeks",
+            paraphrase,
+            context_text=note,
+        )
+        == "1 per 2 week"
+    )
+
+
 
 

@@ -34,6 +34,7 @@ ARTIFACTS = (
     ROOT / "experiments/exectv2_sf_named_last_week_generic_test60_20260814.json",
     ROOT / "experiments/exectv2_sf_drugchange_before_sibling_test60_20260814.json",
     ROOT / "experiments/exectv2_gemini37flash_llm_only_raw_lane_20260814.json",
+    ROOT / "experiments/gan2026_inexact_span_family_rewrite_test450_20260815.json",
 )
 FORBIDDEN_KEYS = {
     "letter_id", "letter_ids", "source_row_index", "source_row_indices",

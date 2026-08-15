@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import re
 
+from clinical_extraction.core.evidence import evidence_is_substring
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+    FrequencyLabelKind,
+    label_to_frequency_record,
     normalize_frequency_label,
 )
 
@@ -32,10 +35,52 @@ from .selected_evidence_window import (
 )
 
 __all__ = [
+    "blocks_inexact_span_family_rewrite",
     "evidence_describes_current_non_epileptic_events",
+    "parsed_frequency_kind",
     "prediction_label_from_selected_evidence",
     "should_prefer_selected_evidence_label",
 ]
+
+
+def parsed_frequency_kind(label: str | None) -> str | None:
+    """Return a parsed Gan kind, or None when the label is empty or unparsed."""
+
+    if label is None or not str(label).strip():
+        return None
+    try:
+        kind = str(label_to_frequency_record(str(label)).kind)
+    except (TypeError, ValueError):
+        return None
+    if kind not in {item.value for item in FrequencyLabelKind}:
+        return None
+    return kind
+
+
+def blocks_inexact_span_family_rewrite(
+    *,
+    raw_repaired: str,
+    evidence: str,
+    evidence_label: str,
+    context_text: str | None,
+) -> bool:
+    """True when a paraphrase must not change an already-parsed clinical family.
+
+    Format render stays allowed: unparsed source-near labels and same-kind
+    rewrites may still use an inexact quote. Family rewrite
+    (unknown ↔ frequency ↔ seizure-free, and other parsed-kind changes)
+    requires an exact source span.
+    """
+
+    if not context_text or not evidence or not evidence_label:
+        return False
+    if evidence_is_substring(context_text, evidence):
+        return False
+    before = parsed_frequency_kind(raw_repaired)
+    after = parsed_frequency_kind(evidence_label)
+    if before is None or after is None:
+        return False
+    return before != after
 
 
 def prediction_label_from_selected_evidence(
