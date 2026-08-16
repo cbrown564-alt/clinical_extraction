@@ -7,6 +7,7 @@ import json
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.prompts.key_entities.loader import (
     load_v16_shape_examples,
+    load_v26_prompt_payload,
 )
 
 from .constants import (
@@ -26,6 +27,9 @@ from .constants import (
     PROMPT_VERSION_V21,
     PROMPT_VERSION_V22,
     PROMPT_VERSION_V23,
+    PROMPT_VERSION_V24,
+    PROMPT_VERSION_V25,
+    PROMPT_VERSION_V26,
     PromptProfile,
     prompt_version_for,
 )
@@ -86,6 +90,12 @@ def build_full_prompt_input(
         return _build_v22_prompt_input(letter)
     if selected_prompt_version == PROMPT_VERSION_V23:
         return _build_v23_prompt_input(letter)
+    if selected_prompt_version == PROMPT_VERSION_V24:
+        return _build_v24_prompt_input(letter)
+    if selected_prompt_version == PROMPT_VERSION_V25:
+        return _build_v25_prompt_input(letter)
+    if selected_prompt_version == PROMPT_VERSION_V26:
+        return _build_v26_prompt_input(letter)
     payload = {
         "prompt_version": selected_prompt_version,
         "task": (
@@ -959,4 +969,40 @@ def _build_v23_prompt_input(letter: ExectLetter) -> str:
         "into generic seizures; keep a separate generic rate when another clause "
         "states one."
     )
+    return json.dumps(payload, ensure_ascii=False)
+
+
+def _build_v24_prompt_input(letter: ExectLetter) -> str:
+    """Keep v19 and require independent seizure type/state mentions."""
+
+    payload = json.loads(_build_v19_prompt_input(letter))
+    payload["clinical_rules"].append(
+        "For SeizureFrequency, emit one separate mention for each independent "
+        "seizure type and state the letter supports. Keep separate mentions when "
+        "the letter gives different types, timeframes, or states such as active, "
+        "seizure-free, or unknown. Do not collapse those facts into one generic "
+        "seizures mention, and do not omit an unknown state merely because another "
+        "state is also present."
+    )
+    return json.dumps(payload, ensure_ascii=False)
+
+
+def _build_v25_prompt_input(letter: ExectLetter) -> str:
+    """Keep v24 and require specific anchors without phrase-only duplicates."""
+
+    payload = json.loads(_build_v24_prompt_input(letter))
+    payload["clinical_rules"].append(
+        "For each independent SeizureFrequency mention, use the most specific "
+        "seizure-type wording supported by that same clause. If a specific type "
+        "and a generic seizure phrase describe the same fact, keep the specific "
+        "type only. Do not add a phrase-only duplicate unless it represents a "
+        "different type, timeframe, or state."
+    )
+    return json.dumps(payload, ensure_ascii=False)
+
+
+def _build_v26_prompt_input(letter: ExectLetter) -> str:
+    """Emit the frozen v26 instruction payload plus the current letter."""
+
+    payload = {**load_v26_prompt_payload(), "letter_text": letter.note_text}
     return json.dumps(payload, ensure_ascii=False)

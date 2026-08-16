@@ -14,6 +14,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLet
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.prompts.key_entities.loader import (
+    load_v26_prompt_payload,
+)
 from tests.helpers.prompt_hygiene import FORBIDDEN_PHRASES
 
 _NOTE = (
@@ -1055,6 +1058,102 @@ def test_v23_adds_general_cluster_anchor_rule_without_examples_or_metadata() -> 
     assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
 
 
+def test_v24_requires_independent_type_and_state_mentions() -> None:
+    payload = json.loads(
+        structured.build_prompt_input(
+            _LETTER,
+            prompt_version=structured.PROMPT_VERSION_V24,
+        )
+    )
+    instructions = _prompt_fields_without_letter(payload).lower()
+    assert "one separate mention for each independent" in instructions
+    assert "do not collapse those facts into one generic" in instructions
+    assert "do not omit an unknown state" in instructions
+    assert "ea0002" not in instructions
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+
+
+def test_v26_payload_regenerates_committed_corpus() -> None:
+    payload_str = structured.build_prompt_input(
+        _LETTER,
+        prompt_version=structured.PROMPT_VERSION_V26,
+    )
+    payload = json.loads(payload_str)
+    corpus = load_v26_prompt_payload()
+
+    assert list(payload) == [*corpus.keys(), "letter_text"]
+    assert {key: value for key, value in payload.items() if key != "letter_text"} == corpus
+    assert payload["letter_text"] == _LETTER.note_text
+    assert list(payload)[:4] == [
+        "task",
+        "output_schema",
+        "output_schema_notes",
+        "attribute_vocabulary",
+    ]
+    assert list(payload)[4] == "clinical_family_guidance"
+    keys = list(payload)
+    assert keys.index("attribute_vocabulary") < keys.index("clinical_family_guidance")
+    blob = _prompt_fields_without_letter(payload)
+    assert "Clinical Family" not in blob
+    assert "clinical family" in blob.lower()
+    assert "prompt_version" not in payload
+    assert "letter_id" not in payload
+    assert "worked_examples" not in payload
+    assert "entity" not in json.dumps(payload["output_schema"])
+    assert "anchor_text" not in blob
+    assert payload["output_schema"]["clinical_events"][0]["clinical_family"].startswith(
+        "medication"
+    )
+    assert set(payload["clinical_family_guidance"]) == {
+        "medication",
+        "diagnosis",
+        "seizure_frequency",
+        "investigation",
+        "history",
+    }
+    leaked = [phrase for phrase in FORBIDDEN_PHRASES if phrase in payload_str]
+    assert leaked == []
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+
+
+def test_v26_uses_minimal_system_and_v26_output_contract() -> None:
+    payload_str = structured.build_prompt_input(
+        _LETTER,
+        prompt_version=structured.PROMPT_VERSION_V26,
+    )
+    program = structured.DspyKeyEntitiesStructuredExtractor(
+        prompt_version=structured.PROMPT_VERSION_V26
+    )
+    messages = program.render_messages(prompt_input_json=payload_str)
+
+    assert messages[0] == {
+        "role": "system",
+        "content": (
+            "Extract structured clinical events from the supplied clinical letter. "
+            "Return the requested output fields exactly."
+        ),
+    }
+    user_text = str(messages[1]["content"])
+    assert "clinical_family" in user_text
+    assert '"event":' in user_text or '"event": ...' in user_text
+    assert "event_state" not in user_text
+    assert "rationale" not in user_text
+
+
+def test_v25_requires_specific_anchor_and_no_phrase_duplicate() -> None:
+    payload = json.loads(
+        structured.build_prompt_input(
+            _LETTER,
+            prompt_version=structured.PROMPT_VERSION_V25,
+        )
+    )
+    instructions = _prompt_fields_without_letter(payload).lower()
+    assert "most specific seizure-type wording" in instructions
+    assert "do not add a phrase-only duplicate" in instructions
+    assert "ea0002" not in instructions
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+
+
 def _prompt_fields_without_letter(payload: dict) -> str:
     return json.dumps(
         {key: value for key, value in payload.items() if key != "letter_text"}
@@ -1079,6 +1178,7 @@ def test_no_prompt_version_mentions_cui() -> None:
         structured.PROMPT_VERSION_V21,
         structured.PROMPT_VERSION_V22,
         structured.PROMPT_VERSION_V23,
+        structured.PROMPT_VERSION_V26,
         structured.PROMPT_VERSION_V0_9_25_LUNA_SF_STATE,
         structured.PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX,
     ]

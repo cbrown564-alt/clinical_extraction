@@ -267,6 +267,12 @@ def _legacy_run_split(
                 "structured_events": [
                     event.model_dump() for event in (record.clinical_events if record else [])
                 ],
+                "patient_history": [
+                    item.model_dump() for item in (record.patient_history if record else [])
+                ],
+                "medication_history": [
+                    item.model_dump() for item in (record.medication_history if record else [])
+                ],
                 "predicted_mentions": [_mention_to_row(m) for m in predicted_letter.mentions],
                 "gold_mentions": [
                     {"entity": a.entity, "text": a.text, "attributes": dict(a.attributes)}

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -105,3 +106,17 @@ def _load_v16_shape_examples_cached() -> list[dict[str, Any]]:
 def load_v16_shape_examples() -> list[dict[str, Any]]:
     """Return the eight synthetic v16 shape examples."""
     return _load_v16_shape_examples_cached()
+
+
+@lru_cache(maxsize=1)
+def _load_v26_prompt_payload_cached() -> dict[str, Any]:
+    path = _PACKAGE_DIR / "structured_prompt_v26.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError(f"{path} must contain a JSON object")
+    return payload
+
+
+def load_v26_prompt_payload() -> dict[str, Any]:
+    """Return the frozen v26 instruction payload, without a letter."""
+    return _load_v26_prompt_payload_cached()

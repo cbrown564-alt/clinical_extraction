@@ -13,6 +13,9 @@ from .constants import (
     PROMPT_VERSION_V21,
     PROMPT_VERSION_V22,
     PROMPT_VERSION_V23,
+    PROMPT_VERSION_V24,
+    PROMPT_VERSION_V25,
+    PROMPT_VERSION_V26,
     prompt_version_for,
 )
 
@@ -56,24 +59,54 @@ class ExECTv2KeyEntitiesStructuredSignature(dspy.Signature):
     )
 
 
+class ExECTv2KeyEntitiesStructuredSignatureV26(dspy.Signature):
+    """Read one clinical letter and produce structured clinical events.
+
+    Return exactly one JSON object with a 'clinical_events' list. No markdown.
+    """
+
+    prompt_input_json: str = dspy.InputField(
+        desc="JSON containing one clinical letter and task instructions."
+    )
+    extraction_json: str = dspy.OutputField(
+        desc=(
+            'One JSON object: {"clinical_events": [{"clinical_family": ..., '
+            '"event": ..., "evidence": ..., "attributes": {...}}, ...]}.'
+        )
+    )
+
+
+_MINIMAL_SYSTEM_PROMPT_VERSIONS = frozenset(
+    {
+        PROMPT_VERSION_V17,
+        PROMPT_VERSION_V18,
+        PROMPT_VERSION_V19,
+        PROMPT_VERSION_V20,
+        PROMPT_VERSION_V21,
+        PROMPT_VERSION_V22,
+        PROMPT_VERSION_V23,
+        PROMPT_VERSION_V24,
+        PROMPT_VERSION_V25,
+        PROMPT_VERSION_V26,
+    }
+)
+
+
 class DspyKeyEntitiesStructuredExtractor(dspy.Module):
     def __init__(self, *, prompt_version: str | None = None) -> None:
         super().__init__()
         selected_prompt_version = prompt_version or prompt_version_for()
+        self._signature: type[dspy.Signature] = (
+            ExECTv2KeyEntitiesStructuredSignatureV26
+            if selected_prompt_version == PROMPT_VERSION_V26
+            else ExECTv2KeyEntitiesStructuredSignature
+        )
         self._adapter = (
             MinimalSystemChatAdapter()
-            if selected_prompt_version in {
-                PROMPT_VERSION_V17,
-                PROMPT_VERSION_V18,
-                PROMPT_VERSION_V19,
-                PROMPT_VERSION_V20,
-                PROMPT_VERSION_V21,
-                PROMPT_VERSION_V22,
-                PROMPT_VERSION_V23,
-            }
+            if selected_prompt_version in _MINIMAL_SYSTEM_PROMPT_VERSIONS
             else None
         )
-        self.predict = dspy.Predict(ExECTv2KeyEntitiesStructuredSignature)
+        self.predict = dspy.Predict(self._signature)
 
     def forward(self, prompt_input_json: str) -> dspy.Prediction:
         if self._adapter is not None:
@@ -86,7 +119,7 @@ class DspyKeyEntitiesStructuredExtractor(dspy.Module):
 
         adapter = self._adapter or ChatAdapter()
         return adapter.format(
-            ExECTv2KeyEntitiesStructuredSignature,
+            self._signature,
             demos=[],
             inputs={"prompt_input_json": prompt_input_json},
         )

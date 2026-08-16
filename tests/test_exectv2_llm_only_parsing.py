@@ -184,3 +184,74 @@ def test_parse_structured_events_uses_last_complete_payload_after_thinking_leak(
     assert record is not None
     assert errors == []
     assert record.clinical_events[0].anchor_text == "final focal epilepsy"
+
+
+def test_v26_flat_events_map_to_scored_mentions_and_keep_sinks_out() -> None:
+    raw = json.dumps(
+        {
+            "clinical_events": [
+                {
+                    "clinical_family": "medication",
+                    "event": "lamotrigine",
+                    "evidence": "Current medication: lamotrigine 100 mg in the morning.",
+                    "attributes": {
+                        "DrugName": "lamotrigine",
+                        "DrugDose": "100",
+                        "DoseUnit": "mg",
+                        "Frequency": "1",
+                        "Status": "current",
+                    },
+                },
+                {
+                    "clinical_family": "medication",
+                    "event": "lamotrigine",
+                    "evidence": "Please start lamotrigine 25 mg once a day.",
+                    "attributes": {
+                        "DrugName": "lamotrigine",
+                        "DrugDose": "25",
+                        "DoseUnit": "mg",
+                        "Frequency": "1",
+                        "Status": "planned",
+                    },
+                },
+                {
+                    "clinical_family": "history",
+                    "event": "Seizure-like episodes",
+                    "evidence": "Seizure-like episodes several times a week. Not epileptic.",
+                    "attributes": {"Kind": "non_epileptic_event"},
+                },
+                {
+                    "clinical_family": "diagnosis",
+                    "event": "focal epilepsy",
+                    "evidence": "Diagnosis: focal epilepsy.",
+                    "attributes": {
+                        "DiagCategory": "Epilepsy",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                },
+            ]
+        }
+    )
+
+    record, errors = structured.parse_structured_events_json(raw)
+    mentions = structured.flatten_events(record) if record is not None else []
+
+    assert record is not None
+    assert "schema_validation_error" not in " ".join(errors)
+    assert [event.family for event in record.clinical_events] == [
+        "medication",
+        "medication",
+        "history",
+        "diagnosis",
+    ]
+    assert [mention.entity for mention in mentions] == [
+        PRESCRIPTION.name,
+        DIAGNOSIS.name,
+    ]
+    assert mentions[0].text == "lamotrigine"
+    assert "Status" not in mentions[0].attributes
+    assert mentions[0].attributes["DrugDose"] == "100"
+    assert [item.kind for item in record.patient_history] == ["non_epileptic_event"]
+    assert [item.span for item in record.patient_history] == ["Seizure-like episodes"]
+    assert [item.kind for item in record.medication_history] == ["planned_medication"]

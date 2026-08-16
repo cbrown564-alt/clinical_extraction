@@ -31,6 +31,9 @@ PROMPT_VERSION_V20 = "exectv2_hybrid_key_family_event_ledger_v20"
 PROMPT_VERSION_V21 = "exectv2_hybrid_key_family_event_ledger_v21"
 PROMPT_VERSION_V22 = "exectv2_hybrid_key_family_event_ledger_v22"
 PROMPT_VERSION_V23 = "exectv2_hybrid_key_family_event_ledger_v23"
+PROMPT_VERSION_V24 = "exectv2_hybrid_key_family_event_ledger_v24"
+PROMPT_VERSION_V25 = "exectv2_hybrid_key_family_event_ledger_v25"
+PROMPT_VERSION_V26 = "exectv2_hybrid_key_family_event_ledger_v26"
 PROMPT_VERSION_V0_9_25_LUNA_SF_STATE = (
     "exectv2_hybrid_key_family_event_ledger_v0.9.25_luna_sf_state"
 )
@@ -38,7 +41,7 @@ PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX = (
     "exectv2_hybrid_key_family_event_ledger_v0.9.25_luna_sf_boundary_dx"
 )
 # Primary prompt version for the frozen six-model panel. Luna v0.9.25 variants,
-# the v10 contract study, and v11–v21 are development candidates
+# the v10 contract study, and v11–v26 are development candidates
 # only; they must not replace v0.9.24 in place.
 PROMPT_VERSION = PROMPT_VERSION_V0_9_24
 QWEN_COMPACT_PROMPT_VERSION = "exectv2_hybrid_key_family_event_ledger_v0.9.24_qwen_compact"
@@ -59,6 +62,9 @@ _SUPPORTED_FULL_PROMPT_VERSIONS = frozenset(
         PROMPT_VERSION_V21,
         PROMPT_VERSION_V22,
         PROMPT_VERSION_V23,
+        PROMPT_VERSION_V24,
+        PROMPT_VERSION_V25,
+        PROMPT_VERSION_V26,
         PROMPT_VERSION_V0_9_25_LUNA_SF_STATE,
         PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX,
     }
@@ -81,8 +87,23 @@ PUBLISHED_PER_ENTITY_ITEM_F1: dict[str, float] = {
     "Investigations": 0.95,
 }
 
-EventFamily = Literal["medication", "diagnosis", "seizure_frequency", "investigation"]
-ALLOWED_EVENT_FAMILIES = {"medication", "diagnosis", "seizure_frequency", "investigation"}
+EventFamily = Literal[
+    "medication", "diagnosis", "seizure_frequency", "investigation", "history"
+]
+ALLOWED_EVENT_FAMILIES = {
+    "medication",
+    "diagnosis",
+    "seizure_frequency",
+    "investigation",
+    "history",
+}
+FAMILY_TO_ENTITY = {
+    "medication": PRESCRIPTION.name,
+    "diagnosis": DIAGNOSIS.name,
+    "seizure_frequency": SEIZURE_FREQUENCY.name,
+    "investigation": INVESTIGATIONS.name,
+    "history": "History",
+}
 PromptProfile = Literal["full", "qwen_compact"]
 
 _MEDICATION_RE = re.compile(

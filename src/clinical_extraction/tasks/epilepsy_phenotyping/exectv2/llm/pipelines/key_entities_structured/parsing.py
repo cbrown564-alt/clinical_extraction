@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import json
 import re
-from typing import Any
+from typing import Any, cast, get_args
 
 from clinical_extraction.core.json_schema_repair import (
     parse_json_payload_with_schema_repair,
@@ -18,11 +18,19 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_pars
 
 from .constants import (
     ALLOWED_EVENT_FAMILIES,
+    FAMILY_TO_ENTITY,
+    KEY_ENTITY_NAMES,
 )
 from .records import (
+    MedicationHistoryRecord,
     MentionForEvidence,
+    PatientHistoryKind,
+    PatientHistoryRecord,
     StructuredExtractionRecord,
 )
+
+_PATIENT_HISTORY_KINDS = set(get_args(PatientHistoryKind))
+_CURRENT_MEDICATION_STATUS = "current"
 
 
 def parse_structured_events_json(
@@ -47,6 +55,7 @@ def parse_structured_events_json(
         record = StructuredExtractionRecord.model_validate(payload)
     except Exception as exc:
         return None, [f"schema_validation_error: {exc}"]
+    _collect_clinical_family_sinks(record)
     return record, [*structural_notes, *dialect_notes, *coerce_notes]
 
 
@@ -105,8 +114,25 @@ def _coerce_structured_payload(payload: Any) -> tuple[Any, list[str]]:
         if "anchor_text" not in event and "anchor:s_text" in event:
             event["anchor_text"] = event.pop("anchor:s_text")
             notes.append("schema_repaired: anchor:s_text_to_anchor_text")
+        if not str(event.get("family") or "").strip() and event.get("clinical_family"):
+            event["family"] = event["clinical_family"]
+            notes.append(f"schema_repaired: clinical_family_to_family: event[{event_index}]")
+        if "anchor_text" not in event and event.get("event"):
+            event["anchor_text"] = event["event"]
         family = str(event.get("family", ""))
         mentions = event.get("mentions")
+        if "mentions" not in event:
+            event_text = str(event.get("event") or event.get("anchor_text") or "").strip()
+            attrs = event.get("attributes") if isinstance(event.get("attributes"), dict) else {}
+            if event_text:
+                event["mentions"] = [
+                    {
+                        "entity": FAMILY_TO_ENTITY.get(family, ""),
+                        "text": event_text,
+                        "attributes": attrs,
+                    }
+                ]
+                mentions = event["mentions"]
         if family == "reject" and (not isinstance(mentions, list) or not mentions):
             notes.append(f"dropped_no_mention_reject_event: event[{event_index}]")
             continue
@@ -187,15 +213,61 @@ def _stringify_mapping(mapping: Any, *, notes: list[str], prefix: str) -> dict[s
 def flatten_events(record: StructuredExtractionRecord) -> list[MentionForEvidence]:
     mentions: list[MentionForEvidence] = []
     for event in record.clinical_events:
+        if event.family == "history":
+            continue
         for mention in event.mentions:
+            entity = mention.entity or FAMILY_TO_ENTITY.get(event.family, "")
+            if entity not in KEY_ENTITY_NAMES:
+                continue
+            attributes = {str(k): str(v) for k, v in mention.attributes.items()}
+            if entity == FAMILY_TO_ENTITY["medication"]:
+                status = str(
+                    attributes.pop("Status", attributes.pop("status", _CURRENT_MEDICATION_STATUS))
+                    or _CURRENT_MEDICATION_STATUS
+                )
+                if status.lower() != _CURRENT_MEDICATION_STATUS:
+                    continue
             mentions.append(
                 MentionForEvidence(
-                    entity=mention.entity,
+                    entity=entity,
                     text=mention.text,
-                    attributes={str(k): str(v) for k, v in mention.attributes.items()},
+                    attributes=attributes,
                     evidence=event.evidence,
                     confidence=event.confidence,
                     rationale=event.rationale,
                 )
             )
     return mentions
+
+
+def _collect_clinical_family_sinks(record: StructuredExtractionRecord) -> None:
+    """Copy history and non-current medication events onto the diagnostic sinks."""
+
+    patient_history = list(record.patient_history)
+    medication_history = list(record.medication_history)
+    for event in record.clinical_events:
+        if event.family == "history":
+            for mention in event.mentions:
+                raw_kind = str(mention.attributes.get("Kind") or "unclassified_event")
+                kind = (
+                    cast(PatientHistoryKind, raw_kind)
+                    if raw_kind in _PATIENT_HISTORY_KINDS
+                    else "unclassified_event"
+                )
+                patient_history.append(PatientHistoryRecord(span=mention.text, kind=kind))
+        if event.family != "medication":
+            continue
+        for mention in event.mentions:
+            status = str(
+                mention.attributes.get("Status") or mention.attributes.get("status") or ""
+            ).lower()
+            if status == "planned":
+                medication_history.append(
+                    MedicationHistoryRecord(span=mention.text, kind="planned_medication")
+                )
+            elif status == "past":
+                medication_history.append(
+                    MedicationHistoryRecord(span=mention.text, kind="past_medication")
+                )
+    record.patient_history = patient_history
+    record.medication_history = medication_history

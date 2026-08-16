@@ -38,6 +38,9 @@ from .constants import (
     PROMPT_VERSION_V21,
     PROMPT_VERSION_V22,
     PROMPT_VERSION_V23,
+    PROMPT_VERSION_V24,
+    PROMPT_VERSION_V25,
+    PROMPT_VERSION_V26,
     PUBLISHED_PER_ENTITY_ITEM_F1,
     QWEN_COMPACT_PROMPT_VERSION,
     EventFamily,
@@ -120,6 +123,7 @@ from .runner import (
 from .signatures import (
     DspyKeyEntitiesStructuredExtractor,
     ExECTv2KeyEntitiesStructuredSignature,
+    ExECTv2KeyEntitiesStructuredSignatureV26,
 )
 
 __all__ = [
@@ -128,6 +132,7 @@ __all__ = [
     "DspyKeyEntitiesStructuredExtractor",
     "EventFamily",
     "ExECTv2KeyEntitiesStructuredSignature",
+    "ExECTv2KeyEntitiesStructuredSignatureV26",
     "KEY_ENTITY_ITEM_F1_TARGET",
     "KEY_ENTITY_NAMES",
     "MentionForEvidence",
@@ -152,6 +157,9 @@ __all__ = [
     "PROMPT_VERSION_V21",
     "PROMPT_VERSION_V22",
     "PROMPT_VERSION_V23",
+    "PROMPT_VERSION_V24",
+    "PROMPT_VERSION_V25",
+    "PROMPT_VERSION_V26",
     "PUBLISHED_PER_ENTITY_ITEM_F1",
     "PromptProfile",
     "QWEN_COMPACT_PROMPT_VERSION",
