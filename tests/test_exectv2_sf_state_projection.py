@@ -128,6 +128,32 @@ def test_ownership_projection_assigns_named_count_to_named_type() -> None:
     assert projected["projection_actions"][0]["rule_id"] == "ownership.generic_active_to_named"
 
 
+def test_ownership_projection_retargets_generic_surface_to_specific_type_from_evidence() -> None:
+    row = _row(
+        predicted_mentions=[
+            {
+                "entity": "SeizureFrequency",
+                "text": "focal seizures",
+                "attributes": {
+                    "CUI": "C0751495",
+                    "NumberOfSeizures": "1",
+                    "NumberOfTimePeriods": "3",
+                    "TimePeriod": "Week",
+                },
+                "evidence": (
+                    "Seizure type and frequency: focal seizures with altered awareness "
+                    "every 3 weeks"
+                ),
+            }
+        ]
+    )
+
+    projected = projection.project_row(row, ablation="ownership")
+
+    assert projected["predicted_mentions"][0]["text"] == "focal seizures with altered awareness"
+    assert projected["projection_actions"][0]["rule_id"] == "ownership.generic_surface_to_named"
+
+
 def test_combined_drops_generic_clone_after_last_event_conversion() -> None:
     span = "focal to bilateral seizures 2 events in total, last event 10 years ago."
     row = _row(
@@ -745,3 +771,63 @@ def test_rule_8_keeps_time_since_for_a_day_anchored_seizure_free_period() -> Non
     assert attrs["TimeSince_or_TimeOfEvent"] == "Since"
 
 
+def test_v020_retargets_zero_to_explicit_seizure_free_span() -> None:
+    row = _row(
+        predicted_mentions=[
+            {
+                "entity": "SeizureFrequency",
+                "text": "seizures",
+                "attributes": {"NumberOfSeizures": "0", "CUI": "C0036572"},
+                "evidence": "He remains seizure free for three years.",
+            }
+        ]
+    )
+
+    projected = projection.project_row(row, ablation="residuals_v020")
+
+    assert projected["predicted_mentions"][0]["text"] == "seizure free"
+    assert projected["predicted_mentions"][0]["attributes"]["CUI"] == "C1299590"
+    assert "state.retarget_seizure_free_span" in {
+        action["rule_id"] for action in projected["projection_actions"]
+    }
+
+
+def test_v020_drops_stale_before_this_zero_beside_active_rate() -> None:
+    row = _row(
+        predicted_mentions=[
+            {
+                "entity": "SeizureFrequency",
+                "text": "seizures",
+                "attributes": {"NumberOfSeizures": "0"},
+                "evidence": "Before this he had no seizures.",
+            },
+            {
+                "entity": "SeizureFrequency",
+                "text": "seizures",
+                "attributes": {"NumberOfSeizures": "2", "TimePeriod": "Month"},
+                "evidence": "He now has 2 seizures per month.",
+            },
+        ]
+    )
+
+    projected = projection.project_row(row, ablation="residuals_v020")
+
+    assert len(projected["predicted_mentions"]) == 1
+    assert projected["predicted_mentions"][0]["attributes"]["NumberOfSeizures"] == "2"
+
+
+def test_v020_drops_explicit_never_had_resemblance_negative() -> None:
+    row = _row(
+        predicted_mentions=[
+            {
+                "entity": "SeizureFrequency",
+                "text": "seizures",
+                "attributes": {"NumberOfSeizures": "0"},
+                "evidence": "He has never had seizures resembling absences.",
+            }
+        ]
+    )
+
+    projected = projection.project_row(row, ablation="residuals_v020")
+
+    assert projected["predicted_mentions"] == []
