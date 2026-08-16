@@ -1,12 +1,15 @@
-"""Leave-one-out prune of ExECT v0.9.24 on the frozen Luna dev20 sample."""
+"""Leave-one-out / cheap-stack prune checks for ExECT v0.9.24 on Luna dev20.
+
+Live remasure helpers that lived in the structured-prompt zoo runners were
+pruned with that zoo. Payload contract checks for the retained cheap-stack
+slot remain here. Recover the deleted runners from git history to remasure.
+"""
 
 from __future__ import annotations
 
 import argparse
 import json
 from collections.abc import Mapping, Sequence
-from dataclasses import replace
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -17,8 +20,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
 )
-from scripts import run_exectv2_structured_prompt_v10_luna_dev20 as v10_run
-from scripts import run_exectv2_structured_prompt_v13_luna_dev20 as v13
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 LEAVE_ONE_OUT_STUDY_DIR = (
@@ -75,10 +76,32 @@ SF_EXAMPLES_REPORT = (
 CHEAP_STACK_REPORT = (
     REPO_ROOT / "docs/research/exectv2/v0924_cheap_stack_luna_dev20_2026-08-16.md"
 )
-STUDY_DIR = LEAVE_ONE_OUT_STUDY_DIR
-PROTOCOL = LEAVE_ONE_OUT_PROTOCOL
-REPORT_PATH = LEAVE_ONE_OUT_REPORT
+STUDY_DIR = CHEAP_STACK_STUDY_DIR
+PROTOCOL = CHEAP_STACK_PROTOCOL
+REPORT_PATH = CHEAP_STACK_REPORT
 MODEL = "openai/gpt-5.6-luna"
+FROZEN_IDS = (
+    "EA0002",
+    "EA0004",
+    "EA0005",
+    "EA0006",
+    "EA0007",
+    "EA0008",
+    "EA0009",
+    "EA0010",
+    "EA0011",
+    "EA0012",
+    "EA0015",
+    "EA0016",
+    "EA0047",
+    "EA0074",
+    "EA0093",
+    "EA0120",
+    "EA0131",
+    "EA0133",
+    "EA0154",
+    "EA0158",
+)
 SERIES_ORDER: tuple[str, ...] = ()
 CUMULATIVE_ARMS: tuple[str, ...] = ()
 SCOPE_CLUSTER_ARMS: tuple[str, ...] = ()
@@ -176,16 +199,15 @@ def verify_payload() -> dict[str, Any]:
     return {
         "ok": True,
         "default_prompt_version": structured.PROMPT_VERSION,
-        "letter_ids": list(v13.FROZEN_IDS),
+        "letter_ids": list(FROZEN_IDS),
         "protocol": PROTOCOL,
         "arms": checks,
     }
 
 
 def check_study(*, overwrite: bool = False) -> dict[str, Any]:
-    payload = verify_payload()
-    scored = run_study(arms=(), live=False, overwrite=overwrite)
-    return {**payload, **scored, "model_calls": 0}
+    del overwrite
+    return verify_payload()
 
 
 def run_study(
@@ -196,107 +218,27 @@ def run_study(
     progress_every: int = 1,
     api_base: str | None = None,
 ) -> dict[str, Any]:
+    del overwrite, progress_every, api_base
     verify_payload()
-    letters = _letters()
     _select_study(arms)
-    STUDY_DIR.mkdir(parents=True, exist_ok=True)
-    started = datetime.now(UTC).isoformat()
-    original_dir = v10_run.STUDY_DIR
-    original_control = v10_run.CONTROL_STRUCTURED
-    original_reason = v10_run.ESCALATION_REASON
-    original_assembly = v10_run._arm_assembly
-    scored: dict[str, dict[str, Any]] = {}
-    try:
-        v10_run.STUDY_DIR = STUDY_DIR
-        v10_run.CONTROL_STRUCTURED = v13.V0924_STRUCTURED
-        v10_run.ESCALATION_REASON = (
-            "Predeclared Luna-only ExECT v0.9.24 leave-one-out prune under " + PROTOCOL
+    if live:
+        raise RuntimeError(
+            "Live v0.9.24 prune remasure helpers were pruned with the ExECT "
+            "prompt zoo. Recover run_exectv2_structured_prompt_v10_luna_dev20.py "
+            "and run_exectv2_structured_prompt_v13_luna_dev20.py from git history "
+            "to remasure; retained cheap-stack comparison.json stays the answer."
         )
-        v10_run._arm_assembly = _patched_arm_assembly
-        scored["v0924_head"] = v13._run_enriched_arm(
-            slug="v0924_head",
-            prompt_version=structured.PROMPT_VERSION_V0_9_24,
-            letters=letters,
-            call_mode="saved_structured_no_call",
-            overwrite=overwrite,
-            progress_every=progress_every,
-            api_base=api_base,
-        )
-        if live:
-            for arm in arms:
-                scored[arm] = v13._run_enriched_arm(
-                    slug=arm,
-                    prompt_version=ARM_VERSIONS[arm],
-                    letters=letters,
-                    call_mode="live",
-                    overwrite=overwrite,
-                    progress_every=progress_every,
-                    api_base=api_base,
-                )
-    finally:
-        v10_run.STUDY_DIR = original_dir
-        v10_run.CONTROL_STRUCTURED = original_control
-        v10_run.ESCALATION_REASON = original_reason
-        v10_run._arm_assembly = original_assembly
-
-    control = scored["v0924_head"]
     previous = _load_previous_artifact()
-    artifact: dict[str, Any] = {
-        "schema_version": "exectv2.v0924_prompt_ablation_luna_dev20.v1",
-        "generated_on": "2026-08-16",
-        "protocol": PROTOCOL,
-        "model": MODEL,
-        "split": "dev140",
-        "row_count": 20,
-        "letter_ids": list(v13.FROZEN_IDS),
-        "contamination_letters": list(CONTAMINATION_LETTERS),
-        "repair_policy": {
-            "diagnosis_policy_variant": "default",
-            "prescription_policy_variant": "default",
-        },
-        "started_utc": previous.get("started_utc", started),
-        "finished_utc": datetime.now(UTC).isoformat(),
-        "live": True if previous.get("live") or live else live,
-        "model_calls": int(previous.get("model_calls") or 0) + (20 * len(arms) if live else 0),
-        "default_prompt_version": structured.PROMPT_VERSION,
-        "requested_arms": list(dict.fromkeys([*previous.get("requested_arms", []), *arms])),
-        "arms": {
-            **previous.get("arms", {}),
-            **{name: payload["summary"] for name, payload in scored.items()},
-        },
-        "comparison": dict(previous.get("comparison", {})),
-        "decision": dict(previous.get("decision", {})),
-        "claim_boundary": _claim_boundary(),
-    }
-    for arm in arms:
-        versus = v13._compare_pair(control, scored[arm], letters)
-        artifact["comparison"][f"{arm}_minus_v0924_head"] = versus
-        hybrid = versus["surfaces"]["hybrid"]
-        failures = v13.topology_failures(hybrid)
-        artifact["decision"][arm] = {
-            "status": "scored" if live else "live_not_run",
-            "verdict": (
-                "load_bearing"
-                if failures
-                else "low_value"
-                if live
-                else None
-            ),
-            "failures": failures,
-            "headline_f1_delta": hybrid["headline_f1_delta"],
-            "family_f1_delta": hybrid["family_f1_delta"],
-            "four_family_letter_exact_net": hybrid["four_family_letter_exact_net"],
-        }
-    out = STUDY_DIR / "comparison.json"
-    out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    if _should_write_stub_report():
-        REPORT_PATH.write_text(_render_report(artifact), encoding="utf-8")
+    if not previous:
+        raise RuntimeError(
+            f"no retained comparison artifact at {STUDY_DIR / 'comparison.json'}"
+        )
     return {
-        "artifact": out.relative_to(REPO_ROOT).as_posix(),
+        "artifact": (STUDY_DIR / "comparison.json").relative_to(REPO_ROOT).as_posix(),
         "report": REPORT_PATH.relative_to(REPO_ROOT).as_posix(),
-        "live": live,
-        "model_calls": artifact["model_calls"],
-        "decision": artifact["decision"],
+        "live": bool(previous.get("live")),
+        "model_calls": int(previous.get("model_calls") or 0),
+        "decision": previous.get("decision", {}),
         "default_prompt_version": structured.PROMPT_VERSION,
     }
 
@@ -323,7 +265,7 @@ def _select_study(arms: Sequence[str]) -> None:
         PROTOCOL = SF_EXAMPLES_PROTOCOL
         REPORT_PATH = SF_EXAMPLES_REPORT
         return
-    if any(arm in CHEAP_STACK_ARMS for arm in arms):
+    if any(arm in CHEAP_STACK_ARMS for arm in arms) or not arms:
         STUDY_DIR = CHEAP_STACK_STUDY_DIR
         PROTOCOL = CHEAP_STACK_PROTOCOL
         REPORT_PATH = CHEAP_STACK_REPORT
@@ -347,25 +289,14 @@ def _load_previous_artifact() -> dict[str, Any]:
 
 
 def _letters() -> list[Any]:
-    frozen = set(v13.FROZEN_IDS)
+    frozen = set(FROZEN_IDS)
     letters = [
         letter for letter in load_letters_for_split("dev") if letter.letter_id in frozen
     ]
     letters.sort(key=lambda item: item.letter_id)
-    if [letter.letter_id for letter in letters] != sorted(v13.FROZEN_IDS):
-        raise RuntimeError("the frozen v13-v19 20-letter sample is unavailable or changed")
+    if [letter.letter_id for letter in letters] != sorted(FROZEN_IDS):
+        raise RuntimeError("the frozen 20-letter Luna sample is unavailable or changed")
     return letters
-
-
-def _patched_arm_assembly(slug: str, structured_path: Path, sf_final_path: Path) -> Any:
-    cfg = v13._ORIGINAL_ARM_ASSEMBLY(slug, structured_path, sf_final_path)
-    return replace(
-        cfg,
-        candidate_id=f"exectv2_v0924_ablation_luna_dev20_{slug}",
-        split="dev",
-        row_count=20,
-        claim_boundary=_claim_boundary(),
-    )
 
 
 def _claim_boundary() -> str:
