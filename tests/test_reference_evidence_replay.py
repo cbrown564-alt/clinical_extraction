@@ -4,8 +4,8 @@ import json
 from pathlib import Path
 
 from clinical_extraction.evidence_replay import (
+    replay_current_stack_primary,
     replay_exectv2_deterministic,
-    replay_exectv2_finding_assembly,
     replay_exectv2_saved_predictions,
     replay_gan_saved_comparisons,
 )
@@ -61,16 +61,11 @@ def test_replay_exectv2_gepa_predictions_uses_current_scorer() -> None:
     assert result["strict_benchmark_per_item_f1"] == 0.1356
 
 
-def test_replay_exectv2_v08_p7_config_matches_primary_reference() -> None:
-    result = replay_exectv2_finding_assembly(
-        ROOT
-        / "configs"
-        / "exectv2"
-        / "finding_assembly"
-        / "exectv2_holistic_finding_assembly_v08_p7_dev140.yaml"
-    )
+def test_replay_current_stack_primary_matches_living_fills() -> None:
+    result = replay_current_stack_primary(ROOT)
 
-    assert result["row_count"] == 140
-    assert result["clinical_headline_f1"] == 0.9171
-    assert result["post_lens_f1"] == 0.9124
-    assert result["evidence_valid_f1"] == 0.9124
+    assert result["gan_sol_hybrid_purist"] == 381
+    assert result["exect_sol_hybrid_dev140_f1"] == 0.9119
+    assert result["exect_sol_hybrid_test60_f1"] == 0.8302
+    assert result["exect_rules_dev140_f1"] == 0.9042
+    assert result["exect_rules_test60_f1"] == 0.7937

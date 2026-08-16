@@ -32,14 +32,13 @@ values and adjudication rule are in the
 [review protocol](../../docs/experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md).
 
 
-If Gan LLM and LLM-with-rules controls in the workbench say “not retained”,
-the explorer is looking for complete `validation750` row files. Hybrid cells
-come from
-`experiments/gan2026_six_model_current_stack_dev750_replay_20260813/`;
-LLM-only cells come from
-`experiments/gan2026_six_model_validation_20260718/`. ExECT `dev140` is the
-separate catalog built from
-`experiments/exectv2_six_model_single_call_*_dev140_20260715.*`. See
+Gan `dev750` row-level explorer trees were retired with the 16 Aug living-stack
+freeze. Hybrid and LLM-only workbench cells stay visible as `not_retained`;
+recover those forests from Git history if a demo is needed. Selected scores
+live in `experiments/current_stack/latest/fills.json`. ExECT `dev140` is the
+separate catalog built from the remaining
+`experiments/exectv2_six_model_single_call_*_dev140_20260715.*` packages
+(Gemini uses the 13 Aug successor pair). See
 [the artifact check](../docs/runbooks/gan_workbench_validation_replay_artifacts.md).
 
 The API builds its disposable local trace index on first start. Reviewer decisions and

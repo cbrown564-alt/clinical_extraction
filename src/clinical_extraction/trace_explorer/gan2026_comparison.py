@@ -1,8 +1,9 @@
 """Discover governed Gan validation750 artifacts for the trace explorer.
 
-Hybrid (`llm_with_rules`) cells prefer the current-stack no-call replay tree
-when `hybrid_artifact_root` is set. LLM-only cells stay on the July 18
-comparison tree. Nested leftover scratch paths are still accepted if a
+Hybrid (`llm_with_rules`) cells prefer a current-stack no-call replay tree
+when `hybrid_artifact_root` is set. Those `dev750` forests were retired in
+the 16 Aug living-stack freeze, so workbench cells stay visible as
+`not_retained`. Nested leftover scratch paths are still accepted if a
 config points there. Partial conditions remain visible as progress
 metadata but their rows are never served.
 """

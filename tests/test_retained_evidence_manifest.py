@@ -5,7 +5,6 @@ from copy import deepcopy
 from pathlib import Path
 
 import pytest
-import yaml
 
 from clinical_extraction.core.retained_evidence import (
     _validate_architecture_freeze,
@@ -159,13 +158,14 @@ def test_architecture_freeze_covers_every_reference_cell_and_policy_role() -> No
         "split",
         "split_runbook",
     }
+    assert freeze["freeze_id"] == "retained_comparison_architecture_20260816"
     assert (
         freeze["model_policy"]["comparison_roster_status"]
-        == "six_of_six_dev140_and_holdout_retained"
+        == "six_of_six_current_stack_retained"
     )
 
 
-def test_hybrid_reference_manifest_keeps_all_finding_assembly_inputs() -> None:
+def test_hybrid_reference_uses_current_stack_primary_fills() -> None:
     manifest = load_retained_evidence_manifest(MANIFEST)
     reference = next(
         record
@@ -173,11 +173,13 @@ def test_hybrid_reference_manifest_keeps_all_finding_assembly_inputs() -> None:
         if record["id"] == "exectv2_hybrid_reference"
     )
     artifact_paths = {artifact["path"] for artifact in reference["artifacts"]}
-    config_path = ROOT / reference["verification"]["inputs"]["path"]
-    config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
-    replay_inputs = {producer["artifact"] for producer in config["producers"].values()}
-
-    assert replay_inputs <= artifact_paths
+    assert reference["verification"]["replay"] == "current_stack_primary"
+    assert "experiments/current_stack/latest/fills.json" in artifact_paths
+    assert "experiments/current_stack/SOURCES.json" in artifact_paths
+    assert not any(
+        path.startswith("experiments/") and ("v08" in path or "2call_no_sf" in path)
+        for path in artifact_paths
+    )
 
 
 def test_retained_manifest_selects_both_six_model_panels() -> None:

@@ -26,6 +26,7 @@ _REPLAY_INPUT_FIELDS = {
     "exectv2_saved_predictions": {"path", "split"},
     "exectv2_finding_assembly": {"path"},
     "gan_saved_comparisons": {"path"},
+    "current_stack_primary": {"fills", "sources", "e5"},
 }
 _REQUIRED_RECORD_FIELDS = {
     "id",
@@ -375,11 +376,15 @@ def _validate_verification(value: object, *, record_id: str, repo_root: Path) ->
         )
     if "split" in required_inputs:
         _nonempty_text(inputs, "split")
-    if "path" in required_inputs:
-        path_text = _nonempty_text(inputs, "path")
+    for path_field in ("path", "fills", "sources", "e5"):
+        if path_field not in required_inputs:
+            continue
+        path_text = _nonempty_text(inputs, path_field)
         path = _repo_file(repo_root, path_text, context="verification input")
         if not path.is_file():
-            raise ValueError(f"verification input is missing in {record_id}: {path_text}")
+            raise ValueError(
+                f"verification input is missing in {record_id}: {path_text}"
+            )
     expected = value.get("expected")
     if not isinstance(expected, Mapping) or not expected:
         raise ValueError(f"verification.expected in {record_id} must be a non-empty object")
