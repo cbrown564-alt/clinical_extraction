@@ -102,6 +102,8 @@ from .records import (
     RenderedMentionRecord,
     StructuredClinicalEvent,
     StructuredExtractionRecord,
+    V26StructuredExtractionRecord,
+    format_retry_schema_for,
 )
 from .runner import (
     _checkpoint_report_path,
@@ -166,7 +168,9 @@ __all__ = [
     "RenderedMentionRecord",
     "StructuredClinicalEvent",
     "StructuredExtractionRecord",
+    "V26StructuredExtractionRecord",
     "build_prompt_input",
+    "format_retry_schema_for",
     "candidate_evidence_ledger_for_letter",
     "flatten_events",
     "high_priority_evidence_ledger_for_letter",

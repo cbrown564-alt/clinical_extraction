@@ -321,3 +321,139 @@ def test_write_report_includes_goal_and_diagnostic_ladder(tmp_path) -> None:
     assert "Goal item F1" in text
     assert "## Key Clinical-Recovery Headlines" in text
     assert "## Diagnostic Scoring Ladder" in text
+
+
+def test_v26_events_project_through_to_predicted_letter() -> None:
+    note = (
+        "Diagnosis: focal epilepsy. "
+        "She has 2 focal seizures per month. "
+        "Current medication: lamotrigine 100 mg in the morning and 200 mg in the evening. "
+        "She previously tried levetiracetam. "
+        "MRI brain was normal."
+    )
+    raw = json.dumps(
+        {
+            "clinical_events": [
+                {
+                    "clinical_family": "diagnosis",
+                    "event": "focal epilepsy",
+                    "evidence": "Diagnosis: focal epilepsy.",
+                    "attributes": {
+                        "DiagCategory": "Epilepsy",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                },
+                {
+                    "clinical_family": "seizure_frequency",
+                    "event": "focal seizures",
+                    "evidence": "She has 2 focal seizures per month.",
+                    "attributes": {
+                        "NumberOfSeizures": "2",
+                        "NumberOfTimePeriods": "1",
+                        "TimePeriod": "Month",
+                    },
+                },
+                {
+                    "clinical_family": "medication",
+                    "event": "lamotrigine",
+                    "evidence": (
+                        "Current medication: lamotrigine 100 mg in the morning "
+                        "and 200 mg in the evening."
+                    ),
+                    "attributes": {
+                        "DrugName": "lamotrigine",
+                        "DrugDose": "100",
+                        "DoseUnit": "mg",
+                        "Frequency": "1",
+                        "Status": "current",
+                    },
+                },
+                {
+                    "clinical_family": "medication",
+                    "event": "lamotrigine",
+                    "evidence": (
+                        "Current medication: lamotrigine 100 mg in the morning "
+                        "and 200 mg in the evening."
+                    ),
+                    "attributes": {
+                        "DrugName": "lamotrigine",
+                        "DrugDose": "200",
+                        "DoseUnit": "mg",
+                        "Frequency": "1",
+                        "Status": "current",
+                    },
+                },
+                {
+                    "clinical_family": "medication",
+                    "event": "levetiracetam",
+                    "evidence": "She previously tried levetiracetam.",
+                    "attributes": {
+                        "DrugName": "levetiracetam",
+                        "Status": "past",
+                    },
+                },
+                {
+                    "clinical_family": "investigation",
+                    "event": "MRI",
+                    "evidence": "MRI brain was normal.",
+                    "attributes": {
+                        "MRI_Performed": "Yes",
+                        "MRI_Results": "Normal",
+                    },
+                },
+                {
+                    "clinical_family": "history",
+                    "event": "tried",
+                    "evidence": "She previously tried levetiracetam.",
+                    "attributes": {"Kind": "unclassified_event"},
+                },
+            ]
+        }
+    )
+
+    record, errors = structured.parse_structured_events_json(raw)
+    assert record is not None
+    assert not any(str(error).startswith("schema_validation_error:") for error in errors)
+
+    mentions = structured.flatten_events(record)
+    letter, warnings = structured.to_predicted_letter(
+        "TEST001",
+        mentions,
+        note_text=note,
+        prompt_version=structured.PROMPT_VERSION_V26,
+    )
+
+    assert [mention.entity for mention in letter.mentions] == [
+        DIAGNOSIS.name,
+        SEIZURE_FREQUENCY.name,
+        PRESCRIPTION.name,
+        PRESCRIPTION.name,
+        INVESTIGATIONS.name,
+    ]
+    assert [mention.text for mention in letter.mentions] == [
+        "focal epilepsy",
+        "focal seizures",
+        "lamotrigine",
+        "lamotrigine",
+        "MRI",
+    ]
+    doses = [
+        mention.attributes.get("DrugDose")
+        for mention in letter.mentions
+        if mention.entity == PRESCRIPTION.name
+    ]
+    assert doses == ["100", "200"]
+    assert all("Status" not in mention.attributes for mention in letter.mentions)
+    sf = next(mention for mention in letter.mentions if mention.entity == SEIZURE_FREQUENCY.name)
+    assert sf.attributes["NumberOfSeizures"] == "2"
+    assert sf.attributes["TimePeriod"] == "Month"
+    investigation = next(
+        mention for mention in letter.mentions if mention.entity == INVESTIGATIONS.name
+    )
+    assert investigation.attributes["MRI_Performed"] == "Yes"
+    assert investigation.attributes["MRI_Results"] == "Normal"
+    assert [item.kind for item in record.medication_history] == ["past_medication"]
+    assert [item.span for item in record.medication_history] == ["levetiracetam"]
+    assert [item.kind for item in record.patient_history] == ["unclassified_event"]
+    assert not any("schema_validation_error" in warning for warning in warnings)

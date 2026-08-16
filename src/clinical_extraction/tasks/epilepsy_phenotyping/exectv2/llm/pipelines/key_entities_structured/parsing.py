@@ -117,8 +117,8 @@ def _coerce_structured_payload(payload: Any) -> tuple[Any, list[str]]:
         if not str(event.get("family") or "").strip() and event.get("clinical_family"):
             event["family"] = event["clinical_family"]
             notes.append(f"schema_repaired: clinical_family_to_family: event[{event_index}]")
-        if "anchor_text" not in event and event.get("event"):
-            event["anchor_text"] = event["event"]
+        if "anchor_text" not in event:
+            event["anchor_text"] = str(event.get("event") or "")
         family = str(event.get("family", ""))
         mentions = event.get("mentions")
         if "mentions" not in event:

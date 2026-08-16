@@ -255,3 +255,44 @@ def test_v26_flat_events_map_to_scored_mentions_and_keep_sinks_out() -> None:
     assert [item.kind for item in record.patient_history] == ["non_epileptic_event"]
     assert [item.span for item in record.patient_history] == ["Seizure-like episodes"]
     assert [item.kind for item in record.medication_history] == ["planned_medication"]
+
+
+def test_v26_missing_event_does_not_fail_the_letter() -> None:
+    raw = json.dumps(
+        {
+            "clinical_events": [
+                {
+                    "clinical_family": "medication",
+                    "evidence": "Current medication: lamotrigine 100 mg.",
+                    "attributes": {
+                        "DrugName": "lamotrigine",
+                        "Status": "current",
+                    },
+                },
+                {
+                    "clinical_family": "diagnosis",
+                    "event": "focal epilepsy",
+                    "evidence": "Diagnosis: focal epilepsy.",
+                    "attributes": {
+                        "DiagCategory": "Epilepsy",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                },
+            ]
+        }
+    )
+
+    record, errors = structured.parse_structured_events_json(raw)
+    mentions = structured.flatten_events(record) if record is not None else []
+
+    assert record is not None
+    assert not any(str(error).startswith("schema_validation_error:") for error in errors)
+    assert [event.family for event in record.clinical_events] == [
+        "medication",
+        "diagnosis",
+    ]
+    assert record.clinical_events[0].anchor_text == ""
+    assert record.clinical_events[0].mentions == []
+    assert [mention.entity for mention in mentions] == [DIAGNOSIS.name]
+    assert mentions[0].text == "focal epilepsy"

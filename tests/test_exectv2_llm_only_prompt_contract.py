@@ -1116,6 +1116,22 @@ def test_v26_payload_regenerates_committed_corpus() -> None:
     assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
 
 
+def test_v26_format_retry_schema_matches_model_facing_contract() -> None:
+    schema = structured.format_retry_schema_for(structured.PROMPT_VERSION_V26)
+    event_schema = schema["$defs"]["V26ClinicalEventRecord"]
+    properties = event_schema["properties"]
+
+    assert list(properties) == ["clinical_family", "event", "evidence", "attributes"]
+    assert "family" not in properties
+    assert "anchor_text" not in properties
+    assert "mentions" not in properties
+    assert "entity" not in properties
+    assert "event_state" not in properties
+    assert "rationale" not in properties
+    default_schema = structured.format_retry_schema_for(structured.PROMPT_VERSION_V0_9_24)
+    assert "StructuredClinicalEvent" in default_schema.get("$defs", {})
+
+
 def test_v26_uses_minimal_system_and_v26_output_contract() -> None:
     payload_str = structured.build_prompt_input(
         _LETTER,

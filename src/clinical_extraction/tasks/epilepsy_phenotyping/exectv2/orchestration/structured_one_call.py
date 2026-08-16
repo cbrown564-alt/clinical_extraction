@@ -49,7 +49,7 @@ from ..llm.pipelines.key_entities_structured.prompt_builders import (
     build_prompt_input,
 )
 from ..llm.pipelines.key_entities_structured.records import (
-    StructuredExtractionRecord,
+    format_retry_schema_for,
 )
 from ..llm.pipelines.key_entities_structured.signatures import (
     DspyKeyEntitiesStructuredExtractor,
@@ -138,7 +138,7 @@ def produce_structured_letter(
             retry_prediction = format_retry_program(
                 retry_input_json=build_format_only_retry_input(
                     malformed_output=raw_text,
-                    schema=StructuredExtractionRecord.model_json_schema(),
+                    schema=format_retry_schema_for(prompt_version),
                 )
             )
             format_retry_output = str(retry_prediction.repaired_json)

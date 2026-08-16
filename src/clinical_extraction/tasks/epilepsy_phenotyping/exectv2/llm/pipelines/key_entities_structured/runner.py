@@ -72,7 +72,7 @@ from .projection import (
 from .prompt_builders import (
     build_prompt_input,
 )
-from .records import StructuredExtractionRecord
+from .records import format_retry_schema_for
 from .signatures import (
     DspyKeyEntitiesStructuredExtractor,
 )
@@ -209,7 +209,7 @@ def _legacy_run_split(
                 retry_prediction = format_retry_program(
                     retry_input_json=build_format_only_retry_input(
                         malformed_output=raw_output,
-                        schema=StructuredExtractionRecord.model_json_schema(),
+                        schema=format_retry_schema_for(prompt_version),
                     )
                 )
                 format_retry_output = str(retry_prediction.repaired_json)
