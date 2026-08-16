@@ -199,3 +199,29 @@ def test_further_prune_arms_are_one_cut_each() -> None:
     assert "cui" not in json.dumps(scaffold).lower()
     assert "cui" not in json.dumps(refuse).lower()
     assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+
+
+def test_stacked_further_prune_applies_all_three_cuts() -> None:
+    cheap = _payload(PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES)
+    stacked = _payload(structured.PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES)
+    cheap_rules = " ".join(cheap["clinical_rules"])
+    stacked_rules = " ".join(stacked["clinical_rules"])
+
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+    assert len(cheap["clinical_rules"]) == 67
+    assert len(stacked["clinical_rules"]) == 54
+    assert "prompt_version" not in stacked
+    assert "letter_id" not in stacked
+    assert len(stacked["decision_procedure"]) == 3
+    assert "categories" in stacked
+    assert stacked["suggested_evidence"]
+    assert _CATEGORY_REPRINT in cheap_rules
+    assert _CATEGORY_REPRINT not in stacked_rules
+    assert _COMBINED_REFUSE in stacked_rules
+    for phrase in _IX_PENDING_DROPPED + _REFUSE_DROPPED:
+        assert phrase in cheap_rules
+        assert phrase not in stacked_rules
+    for phrase in _IX_PENDING_KEPT + _REFUSE_KEPT:
+        assert phrase in stacked_rules
+    assert "cui" not in json.dumps(stacked).lower()
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24

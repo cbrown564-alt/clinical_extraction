@@ -326,8 +326,9 @@ def _replay_arm(
     raws: Mapping[str, str],
     letters: Sequence[ExectLetter],
     call_mode: str,
+    study_dir: Path | None = None,
 ) -> dict[str, Any]:
-    out_dir = STUDY_DIR / slug
+    out_dir = (study_dir or STUDY_DIR) / slug
     structured_path = out_dir / "structured.jsonl"
     assembly_path = out_dir / "assembly.jsonl"
     producer_rows: list[dict[str, Any]] = []
@@ -365,10 +366,12 @@ def _run_candidate(
     api_base: str | None,
     timeout: int,
     progress_every: int,
+    study_dir: Path | None = None,
+    arms: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    spec = ARMS[arm]
+    spec = dict((arms or ARMS)[arm])
     version = spec["version"]
-    out_dir = STUDY_DIR / arm
+    out_dir = (study_dir or STUDY_DIR) / arm
     structured_path = out_dir / "structured.jsonl"
     assembly_path = out_dir / "assembly.jsonl"
     existing = [] if overwrite else _existing_complete_rows(structured_path, version)

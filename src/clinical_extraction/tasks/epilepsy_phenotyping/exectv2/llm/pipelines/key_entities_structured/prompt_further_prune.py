@@ -1,7 +1,8 @@
-"""One-cut further prunes of the cleaned cheap-stack prompt.
+"""Further prunes of the cleaned cheap-stack prompt.
 
 Study-only. Applied after the v0.9.40 structural drop and the language
-pass. Each kind is a separate arm; do not stack them.
+pass. One-cut arms apply a single kind. The stacked arm applies all
+three in order.
 """
 
 from __future__ import annotations
@@ -11,6 +12,7 @@ from typing import Any
 IX_PENDING = "ix_pending"
 SCAFFOLD_REPRINT = "scaffold_reprint"
 REFUSE_CHORUS = "refuse_chorus"
+STACKED_PRUNES = (IX_PENDING, SCAFFOLD_REPRINT, REFUSE_CHORUS)
 
 _IX_PENDING_DROP_PREFIXES = (
     "Completed historical tests and tests with results include Investigations",

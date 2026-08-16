@@ -4,7 +4,7 @@ Pure relocation of the module-level constants from
 ``llm_only_key_entities_structured``. No logic changes.
 
 After the 2026-08-16 prune, the live current-hybrid identities here are
-selected ``v0.9.24`` and cheap-stack ``v0.9.40``. Three study-only
+selected ``v0.9.24`` and cheap-stack ``v0.9.40``. Study-only
 further-prune identities sit beside them; they are not slot 2.
 Mention-unit v2 lives in ``mention_unit.py``, not this registry.
 """
@@ -34,6 +34,9 @@ PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT = (
 PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE = (
     "exectv2_hybrid_key_family_event_ledger_v0.9.43_cheap_collapse_refuse"
 )
+PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.44_cheap_stack_further_prunes"
+)
 # Primary prompt version for the frozen six-model panel and current stack.
 PROMPT_VERSION = PROMPT_VERSION_V0_9_24
 _SUPPORTED_FULL_PROMPT_VERSIONS = frozenset(
@@ -43,6 +46,7 @@ _SUPPORTED_FULL_PROMPT_VERSIONS = frozenset(
         PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT,
         PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT,
         PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE,
+        PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES,
     }
 )
 PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"

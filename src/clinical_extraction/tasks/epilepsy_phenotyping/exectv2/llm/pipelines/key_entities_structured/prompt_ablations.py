@@ -1,7 +1,7 @@
 """Retained cheap-stack drop from the frozen v0.9.24 structured prompt.
 
 ``v0.9.40_drop_encoding_non_sf_all_examples`` is the live cheap slot.
-The v0.9.41–v0.9.43 identities are study-only further prunes of that
+The v0.9.41–v0.9.44 identities are study-only further prunes of that
 slot. Intermediate leave-one-out prune arms are lineage in git history.
 """
 
@@ -14,6 +14,7 @@ from .prompt_further_prune import (
     IX_PENDING,
     REFUSE_CHORUS,
     SCAFFOLD_REPRINT,
+    STACKED_PRUNES,
     apply_further_prune,
 )
 from .prompt_plain_language import apply_plain_language
@@ -29,6 +30,9 @@ PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT = (
 )
 PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE = (
     "exectv2_hybrid_key_family_event_ledger_v0.9.43_cheap_collapse_refuse"
+)
+PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.44_cheap_stack_further_prunes"
 )
 
 # Non-SF encoding rules from the 2026-08-15 convention catalog (16 rules).
@@ -63,7 +67,7 @@ class AblationSpec:
     drop_rule_ids: frozenset[str] = frozenset()
     task: str | None = None
     plain_language: bool = False
-    further_prune: str | None = None
+    further_prunes: tuple[str, ...] = ()
 
 
 ABLATION_SPECS: dict[str, AblationSpec] = {
@@ -78,21 +82,28 @@ ABLATION_SPECS: dict[str, AblationSpec] = {
         drop_examples=True,
         drop_rule_ids=_ENCODING_NON_SF,
         plain_language=True,
-        further_prune=IX_PENDING,
+        further_prunes=(IX_PENDING,),
     ),
     PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT: AblationSpec(
         version=PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT,
         drop_examples=True,
         drop_rule_ids=_ENCODING_NON_SF,
         plain_language=True,
-        further_prune=SCAFFOLD_REPRINT,
+        further_prunes=(SCAFFOLD_REPRINT,),
     ),
     PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE: AblationSpec(
         version=PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE,
         drop_examples=True,
         drop_rule_ids=_ENCODING_NON_SF,
         plain_language=True,
-        further_prune=REFUSE_CHORUS,
+        further_prunes=(REFUSE_CHORUS,),
+    ),
+    PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES: AblationSpec(
+        version=PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES,
+        drop_examples=True,
+        drop_rule_ids=_ENCODING_NON_SF,
+        plain_language=True,
+        further_prunes=STACKED_PRUNES,
     ),
 }
 
@@ -132,6 +143,6 @@ def apply_v0924_ablation(payload: dict[str, Any], spec: AblationSpec) -> dict[st
         ]
     if spec.plain_language:
         ablated = apply_plain_language(ablated)
-    if spec.further_prune is not None:
-        ablated = apply_further_prune(ablated, spec.further_prune)
+    for kind in spec.further_prunes:
+        ablated = apply_further_prune(ablated, kind)
     return ablated
