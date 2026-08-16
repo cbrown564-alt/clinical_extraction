@@ -4,7 +4,7 @@ Protocol:
 docs/research/gan2026/rules_only_test450_aggregate_protocol_2026-08-10.md
 
 Precondition (Gate A) passed 2026-08-11:
-docs/research/gan2026/rules_only_validation750_gate_a_rerun_2026-08-11.md
+docs/research/gan2026/rules_only_validation750_gate_a_2026-08-10.md
 
 Deterministic rules-only pipeline, zero model calls. Row-level output
 (`source_row_index`, `diagnostics`, `final_label`, `reference.gold_label`) is
@@ -28,7 +28,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.runners.split import ru
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL = "docs/research/gan2026/rules_only_test450_aggregate_protocol_2026-08-10.md"
-GATE_A = "docs/research/gan2026/rules_only_validation750_gate_a_rerun_2026-08-11.md"
+GATE_A = "docs/research/gan2026/rules_only_validation750_gate_a_2026-08-10.md"
 SEALED_ROOT = REPO_ROOT / "scratch/holdout/gan2026_rules_only_test450_20260810"
 SEALED_PATH = SEALED_ROOT / "rows.jsonl"
 OUT_JSON = REPO_ROOT / "experiments/gan2026_rules_only_test450_20260810.json"
