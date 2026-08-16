@@ -28,10 +28,10 @@ _ENCODING_NON_SF = frozenset(
         "rule-29",
         "rule-31",
         "rule-32",
-        "rule-33",
-        "rule-37",
-        "rule-38",
-        "rule-48",
+        "rule-68",
+        "rule-78",
+        "rule-79",
+        "rule-80",
     }
 )
 
