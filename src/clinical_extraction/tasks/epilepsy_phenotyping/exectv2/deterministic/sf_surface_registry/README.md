@@ -82,11 +82,8 @@ Run after adding or renaming any `rule_id` in `rules/`, `conventions/seizure_fre
 
 ## CI gates
 
-`tests/test_exectv2_sf_surface_registry.py`:
-
-- No duplicate `rule_id` across catalog files
-- Registry Python + YAML ≤300 LOC (excluding `builders.py` when added)
-- Shadow parity: registry adapter matches legacy on SF rewrite fixtures
+Living SF extra-AR exemplars: `tests/test_sf_extra_ar_exemplars.py`.
+State/ownership projection exemplars: `tests/test_exectv2_sf_state_projection.py`.
 
 ## Quarantine model
 

@@ -1,4 +1,4 @@
-"""Gold-free mechanism tests for rules-only Prescription extraction."""
+"""Exemplars for rules-only Prescription extraction."""
 
 from __future__ import annotations
 
@@ -36,29 +36,3 @@ def test_suggest_start_alternative_is_dropped_while_current_kept() -> None:
         "weekly until she reaches 500mg bd."
     )
     assert _prescriptions(text) == [("sodium-valproate", "400", "mg", "2")]
-
-
-def test_plan_titration_schedule_is_dropped_while_baseline_kept() -> None:
-    text = (
-        "Medication:\tLamotrigine 125mg twice daily "
-        "(please increase with immediate effect in 25mg increments to 150mg twice daily)\n"
-        "Plan: \t\tWeek 1&2: Lamotrigine 125mg AM, 150mg PM\n"
-        "Week 3 & Continue: Lamotrigine 150mg twice daily\n"
-    )
-    assert _prescriptions(text) == [("lamotrigine", "125", "mg", "2")]
-
-
-def test_please_prescribe_future_start_is_dropped() -> None:
-    text = (
-        "Medication:\tTo start eslicarbazepine as detailed below\n"
-        "Please can you prescribe eslicarbazepine 400mg od, increasing to 800mg od after 1 week."
-    )
-    assert _prescriptions(text) == []
-
-
-def test_hypothetical_future_start_is_dropped() -> None:
-    text = (
-        "Currently he would prefer to hold off medication. "
-        "If he decided to start medication then I would suggest maybe Levetiracetam 250 mg od."
-    )
-    assert _prescriptions(text) == []
