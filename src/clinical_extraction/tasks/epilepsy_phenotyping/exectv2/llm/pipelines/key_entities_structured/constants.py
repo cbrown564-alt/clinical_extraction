@@ -25,6 +25,12 @@ PROMPT_VERSION_V14 = "exectv2_hybrid_key_family_event_ledger_v14"
 PROMPT_VERSION_V15 = "exectv2_hybrid_key_family_event_ledger_v15"
 PROMPT_VERSION_V16 = "exectv2_hybrid_key_family_event_ledger_v16"
 PROMPT_VERSION_V17 = "exectv2_hybrid_key_family_event_ledger_v17"
+PROMPT_VERSION_V18 = "exectv2_hybrid_key_family_event_ledger_v18"
+PROMPT_VERSION_V19 = "exectv2_hybrid_key_family_event_ledger_v19"
+PROMPT_VERSION_V20 = "exectv2_hybrid_key_family_event_ledger_v20"
+PROMPT_VERSION_V21 = "exectv2_hybrid_key_family_event_ledger_v21"
+PROMPT_VERSION_V22 = "exectv2_hybrid_key_family_event_ledger_v22"
+PROMPT_VERSION_V23 = "exectv2_hybrid_key_family_event_ledger_v23"
 PROMPT_VERSION_V0_9_25_LUNA_SF_STATE = (
     "exectv2_hybrid_key_family_event_ledger_v0.9.25_luna_sf_state"
 )
@@ -32,7 +38,7 @@ PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX = (
     "exectv2_hybrid_key_family_event_ledger_v0.9.25_luna_sf_boundary_dx"
 )
 # Primary prompt version for the frozen six-model panel. Luna v0.9.25 variants,
-# the v10 contract study, and v11–v17 are development candidates
+# the v10 contract study, and v11–v21 are development candidates
 # only; they must not replace v0.9.24 in place.
 PROMPT_VERSION = PROMPT_VERSION_V0_9_24
 QWEN_COMPACT_PROMPT_VERSION = "exectv2_hybrid_key_family_event_ledger_v0.9.24_qwen_compact"
@@ -47,6 +53,12 @@ _SUPPORTED_FULL_PROMPT_VERSIONS = frozenset(
         PROMPT_VERSION_V15,
         PROMPT_VERSION_V16,
         PROMPT_VERSION_V17,
+        PROMPT_VERSION_V18,
+        PROMPT_VERSION_V19,
+        PROMPT_VERSION_V20,
+        PROMPT_VERSION_V21,
+        PROMPT_VERSION_V22,
+        PROMPT_VERSION_V23,
         PROMPT_VERSION_V0_9_25_LUNA_SF_STATE,
         PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX,
     }

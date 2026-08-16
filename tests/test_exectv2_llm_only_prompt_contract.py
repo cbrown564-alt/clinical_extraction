@@ -954,6 +954,107 @@ def test_v17_keeps_prompt_identity_in_research_record() -> None:
     assert rows[0]["prompt_version"] == structured.PROMPT_VERSION_V17
 
 
+def test_v18_narrows_sink_without_reintroducing_letter_specific_examples() -> None:
+    payload = json.loads(
+        structured.build_prompt_input(
+            _LETTER,
+            prompt_version=structured.PROMPT_VERSION_V18,
+        )
+    )
+    instructions = _prompt_fields_without_letter(payload).lower()
+    assert list(payload) == [
+        "task",
+        "output_schema",
+        "family_guidance",
+        "attribute_vocabulary",
+        "clinical_rules",
+        "worked_examples",
+        "letter_text",
+    ]
+    assert "explicit current count, rate, or seizure-free state" in instructions
+    assert "never had, resembles, and past-only events" in instructions
+    assert "no further named events since a date" in instructions
+    assert "ea0004" not in instructions
+    assert "ea0047" not in instructions
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+
+
+def test_v19_excludes_past_only_events_from_the_current_rate_exception() -> None:
+    payload = json.loads(
+        structured.build_prompt_input(
+            _LETTER,
+            prompt_version=structured.PROMPT_VERSION_V19,
+        )
+    )
+    instructions = _prompt_fields_without_letter(payload).lower()
+    assert "current means present, ongoing, or described as happening now" in instructions
+    assert "dated, historical, or past-only event stays in patient_history" in instructions
+    assert "ea0016" not in instructions
+    assert len(payload["worked_examples"]) == 8
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+
+
+def test_v20_uses_clause_head_and_explicit_seizure_free_span() -> None:
+    payload = json.loads(
+        structured.build_prompt_input(
+            _LETTER,
+            prompt_version=structured.PROMPT_VERSION_V20,
+        )
+    )
+    instructions = _prompt_fields_without_letter(payload).lower()
+    assert "noun phrase it modifies in that clause" in instructions
+    assert "use that exact source phrase as the seizurefrequency anchor" in instructions
+    assert "ea0088" not in instructions
+    assert len(payload["worked_examples"]) == 8
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+
+
+def test_v21_isolates_clause_head_without_explicit_seizure_free_anchor() -> None:
+    payload = json.loads(
+        structured.build_prompt_input(
+            _LETTER,
+            prompt_version=structured.PROMPT_VERSION_V21,
+        )
+    )
+    instructions = _prompt_fields_without_letter(payload).lower()
+    assert "noun phrase it modifies in that clause" in instructions
+    assert "use that exact source phrase as the seizurefrequency anchor" not in instructions
+    assert len(payload["worked_examples"]) == 8
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+
+
+def test_v22_ablates_named_type_shape_without_replacing_it() -> None:
+    payload = json.loads(
+        structured.build_prompt_input(
+            _LETTER,
+            prompt_version=structured.PROMPT_VERSION_V22,
+        )
+    )
+    instructions = _prompt_fields_without_letter(payload).lower()
+    example_ids = {example["id"] for example in payload["worked_examples"]}
+    assert "named_type_not_generic" not in example_ids
+    assert len(payload["worked_examples"]) == 7
+    assert "frontal lobe epilepsy" not in instructions
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+
+
+def test_v23_adds_general_cluster_anchor_rule_without_examples_or_metadata() -> None:
+    payload = json.loads(
+        structured.build_prompt_input(
+            _LETTER,
+            prompt_version=structured.PROMPT_VERSION_V23,
+        )
+    )
+    instructions = _prompt_fields_without_letter(payload).lower()
+    assert len(payload["worked_examples"]) == 8
+    assert "cluster of seizures" in instructions
+    assert "do not collapse that fact into generic seizures" in instructions
+    assert "ea0009" not in instructions
+    assert "prompt_version" not in payload
+    assert "letter_id" not in payload
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+
+
 def _prompt_fields_without_letter(payload: dict) -> str:
     return json.dumps(
         {key: value for key, value in payload.items() if key != "letter_text"}
@@ -972,6 +1073,12 @@ def test_no_prompt_version_mentions_cui() -> None:
         structured.PROMPT_VERSION_V15,
         structured.PROMPT_VERSION_V16,
         structured.PROMPT_VERSION_V17,
+        structured.PROMPT_VERSION_V18,
+        structured.PROMPT_VERSION_V19,
+        structured.PROMPT_VERSION_V20,
+        structured.PROMPT_VERSION_V21,
+        structured.PROMPT_VERSION_V22,
+        structured.PROMPT_VERSION_V23,
         structured.PROMPT_VERSION_V0_9_25_LUNA_SF_STATE,
         structured.PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX,
     ]

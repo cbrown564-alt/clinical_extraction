@@ -20,6 +20,12 @@ from .constants import (
     PROMPT_VERSION_V15,
     PROMPT_VERSION_V16,
     PROMPT_VERSION_V17,
+    PROMPT_VERSION_V18,
+    PROMPT_VERSION_V19,
+    PROMPT_VERSION_V20,
+    PROMPT_VERSION_V21,
+    PROMPT_VERSION_V22,
+    PROMPT_VERSION_V23,
     PromptProfile,
     prompt_version_for,
 )
@@ -68,6 +74,18 @@ def build_full_prompt_input(
         return _build_v16_prompt_input(letter, selected_prompt_version)
     if selected_prompt_version == PROMPT_VERSION_V17:
         return _build_v17_prompt_input(letter)
+    if selected_prompt_version == PROMPT_VERSION_V18:
+        return _build_v18_prompt_input(letter)
+    if selected_prompt_version == PROMPT_VERSION_V19:
+        return _build_v19_prompt_input(letter)
+    if selected_prompt_version == PROMPT_VERSION_V20:
+        return _build_v20_prompt_input(letter)
+    if selected_prompt_version == PROMPT_VERSION_V21:
+        return _build_v21_prompt_input(letter)
+    if selected_prompt_version == PROMPT_VERSION_V22:
+        return _build_v22_prompt_input(letter)
+    if selected_prompt_version == PROMPT_VERSION_V23:
+        return _build_v23_prompt_input(letter)
     payload = {
         "prompt_version": selected_prompt_version,
         "task": (
@@ -844,4 +862,101 @@ def _build_v17_prompt_input(letter: ExectLetter) -> str:
         ),
         "Sink entries are logged only and are not clinical_events or output mentions.",
     ]
+    return json.dumps(payload, ensure_ascii=False)
+
+
+def _build_v18_prompt_input(letter: ExectLetter) -> str:
+    """Keep v17's request shape and narrow the sink contract."""
+
+    payload = json.loads(_build_v17_prompt_input(letter))
+    payload["clinical_rules"] = [
+        *payload["clinical_rules"],
+        (
+            "Patient history is not a general discard bin. If a generic jerk, "
+            "absence, or seizure/event span has an explicit current count, rate, "
+            "or seizure-free state, keep that fact in SeizureFrequency even when "
+            "the wording is generic; divert only the historical or irrelevant "
+            "span."
+        ),
+        (
+            "Distinguish never-had or resemblance wording from no-further wording: "
+            "never had, resembles, and past-only events may go to patient_history, "
+            "but no further named events since a date is a current seizure-free "
+            "SeizureFrequency fact."
+        ),
+    ]
+    return json.dumps(payload, ensure_ascii=False)
+
+
+def _build_v19_prompt_input(letter: ExectLetter) -> str:
+    """Keep v18's sink contract and exclude past-only counted events."""
+
+    payload = json.loads(_build_v18_prompt_input(letter))
+    payload["clinical_rules"].append(
+        "For the current-rate exception, current means present, ongoing, or "
+        "described as happening now. A dated, historical, or past-only event "
+        "stays in patient_history even if it has a count or a named seizure "
+        "type."
+    )
+    return json.dumps(payload, ensure_ascii=False)
+
+
+def _build_v20_prompt_input(letter: ExectLetter) -> str:
+    """Keep v19 and make clause-head frequency binding explicit."""
+
+    payload = json.loads(_build_v19_prompt_input(letter))
+    payload["clinical_rules"].extend(
+        [
+            (
+                "Bind each frequency count or zero to the noun phrase it modifies "
+                "in that clause. Do not use a diagnosis label elsewhere as the "
+                "frequency anchor just because it is more specific."
+            ),
+            (
+                "When the letter explicitly says seizure-free, no seizures, or no "
+                "further seizures, use that exact source phrase as the "
+                "SeizureFrequency anchor and keep the count or duration in "
+                "attributes. Do not replace it with a diagnosis or broader "
+                "seizure span."
+            ),
+        ]
+    )
+    return json.dumps(payload, ensure_ascii=False)
+
+
+def _build_v21_prompt_input(letter: ExectLetter) -> str:
+    """Keep v19 and isolate the clause-local count-binding hypothesis."""
+
+    payload = json.loads(_build_v19_prompt_input(letter))
+    payload["clinical_rules"].append(
+        "Bind each frequency count or zero to the noun phrase it modifies in "
+        "that clause. Do not use a diagnosis label elsewhere as the frequency "
+        "anchor just because it is more specific."
+    )
+    return json.dumps(payload, ensure_ascii=False)
+
+
+def _build_v22_prompt_input(letter: ExectLetter) -> str:
+    """Ablate the v16 named-type shape without adding a replacement example."""
+
+    payload = json.loads(_build_v19_prompt_input(letter))
+    payload["worked_examples"] = [
+        example
+        for example in payload["worked_examples"]
+        if example.get("id") != "named_type_not_generic"
+    ]
+    return json.dumps(payload, ensure_ascii=False)
+
+
+def _build_v23_prompt_input(letter: ExectLetter) -> str:
+    """Keep v19 and make explicit cluster anchors part of the frequency contract."""
+
+    payload = json.loads(_build_v19_prompt_input(letter))
+    payload["clinical_rules"].append(
+        "When a clause explicitly describes a cluster of seizures or a seizure "
+        "cluster and gives a count, date, or timeframe, render the exact cluster "
+        "phrase as its own SeizureFrequency mention. Do not collapse that fact "
+        "into generic seizures; keep a separate generic rate when another clause "
+        "states one."
+    )
     return json.dumps(payload, ensure_ascii=False)

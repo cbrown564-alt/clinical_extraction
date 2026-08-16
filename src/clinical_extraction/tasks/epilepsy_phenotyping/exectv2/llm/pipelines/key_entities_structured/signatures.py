@@ -5,7 +5,16 @@ from __future__ import annotations
 import dspy
 from dspy.adapters.chat_adapter import ChatAdapter
 
-from .constants import PROMPT_VERSION_V17, prompt_version_for
+from .constants import (
+    PROMPT_VERSION_V17,
+    PROMPT_VERSION_V18,
+    PROMPT_VERSION_V19,
+    PROMPT_VERSION_V20,
+    PROMPT_VERSION_V21,
+    PROMPT_VERSION_V22,
+    PROMPT_VERSION_V23,
+    prompt_version_for,
+)
 
 MINIMAL_SYSTEM_MESSAGE = (
     "Extract structured clinical events from the supplied clinical letter. "
@@ -53,7 +62,15 @@ class DspyKeyEntitiesStructuredExtractor(dspy.Module):
         selected_prompt_version = prompt_version or prompt_version_for()
         self._adapter = (
             MinimalSystemChatAdapter()
-            if selected_prompt_version == PROMPT_VERSION_V17
+            if selected_prompt_version in {
+                PROMPT_VERSION_V17,
+                PROMPT_VERSION_V18,
+                PROMPT_VERSION_V19,
+                PROMPT_VERSION_V20,
+                PROMPT_VERSION_V21,
+                PROMPT_VERSION_V22,
+                PROMPT_VERSION_V23,
+            }
             else None
         )
         self.predict = dspy.Predict(ExECTv2KeyEntitiesStructuredSignature)
