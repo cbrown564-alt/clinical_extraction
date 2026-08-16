@@ -3,9 +3,10 @@
 Pure relocation of the module-level constants from
 ``llm_only_key_entities_structured``. No logic changes.
 
-After the 2026-08-16 prune, only the three assigned current-hybrid ExECT
-prompt identities remain live here: selected ``v0.9.24`` and cheap-stack
-``v0.9.40``. Mention-unit v2 lives in ``mention_unit.py``, not this registry.
+After the 2026-08-16 prune, the live current-hybrid identities here are
+selected ``v0.9.24`` and cheap-stack ``v0.9.40``. Three study-only
+further-prune identities sit beside them; they are not slot 2.
+Mention-unit v2 lives in ``mention_unit.py``, not this registry.
 """
 
 from __future__ import annotations
@@ -24,12 +25,24 @@ PROMPT_VERSION_V0_9_24 = "exectv2_hybrid_key_family_event_ledger_v0.9.24"
 PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES = (
     "exectv2_hybrid_key_family_event_ledger_v0.9.40_drop_encoding_non_sf_all_examples"
 )
+PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.41_cheap_drop_ix_pending_repeat"
+)
+PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.42_cheap_drop_scaffold_reprint"
+)
+PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.43_cheap_collapse_refuse"
+)
 # Primary prompt version for the frozen six-model panel and current stack.
 PROMPT_VERSION = PROMPT_VERSION_V0_9_24
 _SUPPORTED_FULL_PROMPT_VERSIONS = frozenset(
     {
         PROMPT_VERSION_V0_9_24,
         PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES,
+        PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT,
+        PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT,
+        PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE,
     }
 )
 PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"

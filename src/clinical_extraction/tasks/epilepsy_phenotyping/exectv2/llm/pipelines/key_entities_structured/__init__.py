@@ -8,7 +8,8 @@ Private helpers (and the ``parse_json_payload_with_schema_repair`` /
 modules import the legacy module as ``structured`` and reach those attributes
 directly.
 
-After the 2026-08-16 prune, only ``v0.9.24`` and cheap-stack ``v0.9.40`` remain.
+After the 2026-08-16 prune, live identities are ``v0.9.24`` and
+cheap-stack ``v0.9.40``. Study-only further-prune IDs sit beside them.
 """
 # ruff: noqa: F401 — thin re-export facade for the legacy ``structured`` API.
 
@@ -25,6 +26,9 @@ from .constants import (
     PROMPT_VERSION,
     PROMPT_VERSION_V0_9_24,
     PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES,
+    PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT,
+    PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT,
+    PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE,
     PUBLISHED_PER_ENTITY_ITEM_F1,
     EventFamily,
     PromptProfile,
@@ -122,6 +126,9 @@ __all__ = [
     "PROMPT_VERSION",
     "PROMPT_VERSION_V0_9_24",
     "PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES",
+    "PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT",
+    "PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT",
+    "PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE",
     "PUBLISHED_PER_ENTITY_ITEM_F1",
     "PromptProfile",
     "RenderedMentionRecord",

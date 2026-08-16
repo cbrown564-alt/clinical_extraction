@@ -29,7 +29,7 @@ class ExECTv2KeyEntitiesStructuredSignature(dspy.Signature):
 class DspyKeyEntitiesStructuredExtractor(dspy.Module):
     def __init__(self, *, prompt_version: str | None = None) -> None:
         super().__init__()
-        del prompt_version  # Call-site compatibility; only v0.9.24 / v0.9.40 remain.
+        del prompt_version  # Call-site compatibility; version is selected globally.
         self._signature: type[dspy.Signature] = ExECTv2KeyEntitiesStructuredSignature
         self.predict = dspy.Predict(self._signature)
 

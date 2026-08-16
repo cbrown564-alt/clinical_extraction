@@ -423,6 +423,9 @@ def test_no_prompt_version_mentions_cui() -> None:
     versions = [
         structured.PROMPT_VERSION_V0_9_24,
         structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES,
+        structured.PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT,
+        structured.PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT,
+        structured.PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE,
     ]
     try:
         for version in versions:

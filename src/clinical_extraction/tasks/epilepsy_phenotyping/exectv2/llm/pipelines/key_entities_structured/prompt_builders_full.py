@@ -1,7 +1,7 @@
 """Full-profile prompt builder for the structured-event extractor.
 
-Only the selected ``v0.9.24`` body and the retained cheap-stack ablation
-``v0.9.40`` remain live. Intermediate prompt versions are not registered.
+The selected ``v0.9.24`` body and retained cheap-stack ``v0.9.40`` remain
+live. Study-only further-prune identities are registered beside them.
 """
 
 from __future__ import annotations

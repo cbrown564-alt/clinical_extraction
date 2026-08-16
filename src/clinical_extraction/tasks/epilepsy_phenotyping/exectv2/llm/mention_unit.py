@@ -43,6 +43,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
 )
 
 from .mention_unit_leftover_form import (
+    LeftoverFormVariant,
     project_leftover_form_investigation,
     project_leftover_form_sf,
 )
@@ -70,7 +71,29 @@ from .shared.mention_pipeline import check_evidence
 
 MENTION_UNIT_PROMPT_VERSION = "exectv2_mention_unit_v2"
 MENTION_UNIT_MODEL = "openai/gpt-5.6-luna"
-MentionUnitEncoder = Literal["landed", "leftover_form"]
+MentionUnitEncoder = Literal[
+    "landed",
+    "leftover_form",
+    "leftover_form_intervening",
+    "leftover_form_intervening_v3",
+    "leftover_form_episodes_v4",
+    "leftover_form_implicit_v4",
+    "leftover_form_last_event_v4",
+    "leftover_form_implicit_period",
+    "leftover_form_casefold",
+    "leftover_form_last_event",
+]
+_LEFTOVER_FORM_VARIANTS: dict[MentionUnitEncoder, LeftoverFormVariant] = {
+    "leftover_form": "v1",
+    "leftover_form_intervening": "intervening",
+    "leftover_form_intervening_v3": "intervening_v3",
+    "leftover_form_episodes_v4": "episodes_v4",
+    "leftover_form_implicit_v4": "implicit_v4",
+    "leftover_form_last_event_v4": "last_event_v4",
+    "leftover_form_implicit_period": "implicit_period",
+    "leftover_form_casefold": "v1",
+    "leftover_form_last_event": "last_event",
+}
 SYSTEM_MESSAGE = (
     "List each diagnosis, seizure-frequency statement, current medicine, "
     "and completed test with a result. Return the requested JSON exactly."
@@ -470,9 +493,10 @@ def materialize_mention_unit(
     candidates: list[PredictedMention] = []
     evidence_invalid = 0
     for index, item in enumerate(record.items):
-        text_valid = bool(item.text and evidence_is_substring(letter.note_text, item.text))
-        evidence_valid = bool(
-            item.evidence and evidence_is_substring(letter.note_text, item.evidence)
+        casefold = encoder == "leftover_form_casefold"
+        text_valid = _span_in_letter(letter.note_text, item.text, casefold=casefold)
+        evidence_valid = _span_in_letter(
+            letter.note_text, item.evidence, casefold=casefold
         )
         semantic_row = {
             "fact_index": index,
@@ -573,6 +597,14 @@ def materialize_mention_unit(
     )
 
 
+def _span_in_letter(note_text: str, span: str, *, casefold: bool) -> bool:
+    if not span:
+        return False
+    if evidence_is_substring(note_text, span):
+        return True
+    return bool(casefold and span.casefold() in note_text.casefold())
+
+
 def _first_text(raw: dict[str, Any], *keys: str) -> Any:
     for key in keys:
         value = raw.get(key)
@@ -636,11 +668,15 @@ def _hybrid_project(
     *,
     encoder: MentionUnitEncoder = "landed",
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], str]:
-    if encoder == "leftover_form" and item.family == SEIZURE_FREQUENCY.name:
+    leftover_variant = _LEFTOVER_FORM_VARIANTS.get(encoder)
+    if leftover_variant is not None and item.family == SEIZURE_FREQUENCY.name:
         return project_leftover_form_sf(
-            text=item.text, evidence=item.evidence, index=index
+            text=item.text,
+            evidence=item.evidence,
+            index=index,
+            variant=leftover_variant,
         )
-    if encoder == "leftover_form" and item.family == INVESTIGATIONS.name:
+    if leftover_variant is not None and item.family == INVESTIGATIONS.name:
         return project_leftover_form_investigation(
             text=item.text, evidence=item.evidence, index=index
         )
