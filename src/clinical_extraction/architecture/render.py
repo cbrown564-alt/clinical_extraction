@@ -697,9 +697,7 @@ def render_index() -> str:
     lines.append(
         "This directory answers one question: what happens to a letter, "
         "stage by stage, in each of the six selected task-method pairs, and "
-        "who owns each change. It was built to close the gaps reported in the "
-        "[pipeline understandability review]"
-        "(../reviews/pipeline-understandability-review-2026-07-30.md)."
+        "who owns each change."
     )
     lines.append("")
     lines.append(

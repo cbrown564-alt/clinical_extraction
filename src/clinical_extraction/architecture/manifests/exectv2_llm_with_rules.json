@@ -374,14 +374,14 @@
     {
       "name": "Historical v08 architecture",
       "role": "historical performance control",
-      "path": "docs/experiments/exectv2/reliability/archive/exectv2_joint_policy_archive_README.md",
+      "path": "docs/decisions/0040-final-exect-llm-with-rules-family-ownership.md",
       "note": "v08 used a deterministic Prescription producer and a Seizure Frequency extractor union. It does NOT meet decision 0040 and is not this method, despite sharing the label 'LLM with rules'."
     },
     {
       "name": "Archived joint bounded policy",
       "role": "rejected candidate or ablation",
-      "path": "docs/experiments/exectv2/reliability/archive/exectv2_joint_policy_archive_README.md",
-      "note": "The combined/combined Diagnosis and Prescription policy. Demoted by decision 0045. Replay scripts removed in the 2026-08-16 scripts prune; recover from git history if needed."
+      "path": "docs/decisions/0045-exect-default-policy-not-joint-combined.md",
+      "note": "The combined/combined Diagnosis and Prescription policy. Demoted by decision 0045. Archive notes and replay scripts were removed in the 2026-08-16 prune; recover from git history if needed."
     }
   ],
   "evidence_owners": [
