@@ -196,7 +196,9 @@ def _legacy_run_split(
                     )
 
         record, parse_errors = (
-            parse_structured_events_json(raw_output) if raw_output else (None, ["not_run"])
+            parse_structured_events_json(raw_output, prompt_version=prompt_version)
+            if raw_output
+            else (None, ["not_run"])
         )
         initial_parse_errors = list(parse_errors)
         assessment = assess_structured_output(
@@ -217,7 +219,7 @@ def _legacy_run_split(
                     raw_output, initial_parse_errors, format_retry_output
                 )
                 retry_record, retry_parse_errors = parse_structured_events_json(
-                    format_retry_output
+                    format_retry_output, prompt_version=prompt_version
                 )
                 format_retry_notes = list(retry_validation.notes)
                 if retry_validation.accepted and retry_record is not None:

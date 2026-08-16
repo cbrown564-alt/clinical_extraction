@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from collections.abc import Mapping
 from pathlib import Path
 
@@ -315,6 +316,7 @@ def _write_sf_structured_direct_artifact(*, source: Path, output: Path, letters:
             for mention in row.get("predicted_mentions", [])
             if str(mention.get("entity")) == SEIZURE_FREQUENCY.name
         ]
+        mentions.extend(_v26_history_last_event_mentions(row))
         rows.append(
             {
                 "letter_id": letter_id,
@@ -362,6 +364,68 @@ def _sf_mention(mention: Mapping[str, object]) -> dict[str, object]:
         "rationale": str(mention.get("rationale", "")),
         "component_owner": "single_gpt_structured_no_sf_adjudicator",
     }
+
+
+def _v26_history_last_event_mentions(row: Mapping[str, object]) -> list[dict[str, object]]:
+    """Promote v26/v27 last-event history spans to seizure-free facts.
+
+    v26/v27 emits a flat ``history`` event for some dated last-event clauses. The
+    history sink is intentionally not scored, but an explicit last-event span
+    is a gold-free clinical signal for ``NumberOfSeizures=0``. Keep this
+    adapter narrow: never-had and resemblance wording remain history.
+    """
+
+    if str(row.get("prompt_version")) not in {
+        structured.PROMPT_VERSION_V26,
+        structured.PROMPT_VERSION_V27,
+    }:
+        return []
+    events = row.get("structured_events")
+    if not isinstance(events, list):
+        return []
+    promoted: list[dict[str, object]] = []
+    for event in events:
+        if not isinstance(event, Mapping) or event.get("family") != "history":
+            continue
+        evidence = str(event.get("evidence") or "")
+        lower = evidence.lower()
+        if re.search(r"\bnever\s+(?:had|experienced)\b|\bresembl\w*\b", lower):
+            continue
+        if not re.search(
+            r"\b(?:last\s+(?:event|seizure|seizures)|no\s+further|none\s+since|"
+            r"not\s+had\s+any\s+since)\b",
+            lower,
+        ):
+            continue
+        text = str(event.get("event") or "").strip()
+        if not text:
+            continue
+        attrs: dict[str, str] = {
+            "NumberOfSeizures": "0",
+            "TimeSince_or_TimeOfEvent": "Since",
+        }
+        month = re.search(
+            r"\b(january|february|march|april|may|june|july|august|september|"
+            r"october|november|december|christmas)\b",
+            lower,
+        )
+        year = re.search(r"\b(?:19|20)\d{2}\b", lower)
+        if month:
+            attrs["MonthDate"] = month.group(1).title()
+        if year:
+            attrs["YearDate"] = year.group(0)
+        promoted.append(
+            {
+                "entity": SEIZURE_FREQUENCY.name,
+                "text": text,
+                "attributes": attrs,
+                "evidence": evidence,
+                "confidence": str(event.get("confidence") or "medium"),
+                "rationale": "v27 history last-event projection",
+                "component_owner": "deterministic_v27_history_projection",
+            }
+        )
+    return promoted
 
 
 def _raw_mention(mention: Mapping[str, object]) -> dict[str, object]:

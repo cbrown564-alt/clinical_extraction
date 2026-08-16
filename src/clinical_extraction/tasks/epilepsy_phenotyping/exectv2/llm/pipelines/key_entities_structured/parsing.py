@@ -20,6 +20,8 @@ from .constants import (
     ALLOWED_EVENT_FAMILIES,
     FAMILY_TO_ENTITY,
     KEY_ENTITY_NAMES,
+    PROMPT_VERSION_V26,
+    PROMPT_VERSION_V27,
 )
 from .records import (
     MedicationHistoryRecord,
@@ -35,6 +37,8 @@ _CURRENT_MEDICATION_STATUS = "current"
 
 def parse_structured_events_json(
     raw_output: str,
+    *,
+    prompt_version: str | None = None,
 ) -> tuple[StructuredExtractionRecord | None, list[str]]:
     extracted = extract_json_object(raw_output)
     extracted, structural_notes = _repair_missing_mention_object_close(extracted)
@@ -50,7 +54,9 @@ def parse_structured_events_json(
             return None, [f"invalid_json: {exc.msg}"]
         dialect_notes = [*dialect_notes, *rationale_notes]
 
-    payload, coerce_notes = _coerce_structured_payload(payload)
+    payload, coerce_notes = _coerce_structured_payload(
+        payload, canonical_v26=prompt_version in {PROMPT_VERSION_V26, PROMPT_VERSION_V27}
+    )
     try:
         record = StructuredExtractionRecord.model_validate(payload)
     except Exception as exc:
@@ -89,7 +95,9 @@ def _strip_non_scored_rationale_fields(raw_payload: str) -> tuple[str, list[str]
     return repaired, ["json_dialect_repaired: stripped_non_scored_rationale"]
 
 
-def _coerce_structured_payload(payload: Any) -> tuple[Any, list[str]]:
+def _coerce_structured_payload(
+    payload: Any, *, canonical_v26: bool = False
+) -> tuple[Any, list[str]]:
     """Coerce event and mention state values to strings and preserve diagnostics."""
 
     notes: list[str] = []
@@ -116,7 +124,8 @@ def _coerce_structured_payload(payload: Any) -> tuple[Any, list[str]]:
             notes.append("schema_repaired: anchor:s_text_to_anchor_text")
         if not str(event.get("family") or "").strip() and event.get("clinical_family"):
             event["family"] = event["clinical_family"]
-            notes.append(f"schema_repaired: clinical_family_to_family: event[{event_index}]")
+            if not canonical_v26:
+                notes.append(f"schema_repaired: clinical_family_to_family: event[{event_index}]")
         if "anchor_text" not in event:
             event["anchor_text"] = str(event.get("event") or "")
         family = str(event.get("family", ""))

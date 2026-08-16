@@ -40,6 +40,7 @@ from .pipelines.key_entities_structured import (
     PROMPT_VERSION_V24,
     PROMPT_VERSION_V25,
     PROMPT_VERSION_V26,
+    PROMPT_VERSION_V27,
     PUBLISHED_PER_ENTITY_ITEM_F1,
     QWEN_COMPACT_PROMPT_VERSION,
     DspyKeyEntitiesStructuredExtractor,

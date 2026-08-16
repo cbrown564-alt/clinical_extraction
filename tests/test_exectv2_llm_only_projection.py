@@ -14,6 +14,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLet
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
 )
+from scripts.run_exectv2_2call_model_swap import _v26_history_last_event_mentions
 
 _NOTE = (
     "She has focal epilepsy with 2 focal seizures per month. "
@@ -22,6 +23,34 @@ _NOTE = (
 )
 
 _LETTER = ExectLetter(letter_id="TEST001", note_text=_NOTE)
+
+
+def test_v26_last_event_history_is_promoted_to_seizure_free() -> None:
+    row = {
+        "prompt_version": structured.PROMPT_VERSION_V26,
+        "structured_events": [
+            {
+                "family": "history",
+                "event": "focal to bilateral convulsive seizures",
+                "evidence": "Focal to bilateral convulsive seizures, last event 2015",
+            },
+            {
+                "family": "history",
+                "event": "focal seizures",
+                "evidence": "No events resembling focal seizures",
+            },
+        ],
+    }
+
+    promoted = _v26_history_last_event_mentions(row)
+
+    assert len(promoted) == 1
+    assert promoted[0]["text"] == "focal to bilateral convulsive seizures"
+    assert promoted[0]["attributes"] == {
+        "NumberOfSeizures": "0",
+        "TimeSince_or_TimeOfEvent": "Since",
+        "YearDate": "2015",
+    }
 
 
 def test_flatten_events_preserves_cross_entity_renderings() -> None:

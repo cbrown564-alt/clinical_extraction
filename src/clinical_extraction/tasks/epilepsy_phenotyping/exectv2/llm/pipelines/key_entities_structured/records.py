@@ -12,6 +12,7 @@ from pydantic import BaseModel, ConfigDict
 
 from .constants import (
     PROMPT_VERSION_V26,
+    PROMPT_VERSION_V27,
     EventFamily,
 )
 
@@ -109,7 +110,7 @@ class V26StructuredExtractionRecord(BaseModel):
 def format_retry_schema_for(prompt_version: str) -> dict[str, Any]:
     """JSON schema advertised to a format-only retry for this prompt version."""
 
-    if prompt_version == PROMPT_VERSION_V26:
+    if prompt_version in {PROMPT_VERSION_V26, PROMPT_VERSION_V27}:
         return V26StructuredExtractionRecord.model_json_schema()
     return StructuredExtractionRecord.model_json_schema()
 

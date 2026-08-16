@@ -8,6 +8,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLet
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.prompts.key_entities.loader import (
     load_v16_shape_examples,
     load_v26_prompt_payload,
+    load_v27_prompt_payload,
 )
 
 from .constants import (
@@ -30,6 +31,7 @@ from .constants import (
     PROMPT_VERSION_V24,
     PROMPT_VERSION_V25,
     PROMPT_VERSION_V26,
+    PROMPT_VERSION_V27,
     PromptProfile,
     prompt_version_for,
 )
@@ -96,6 +98,8 @@ def build_full_prompt_input(
         return _build_v25_prompt_input(letter)
     if selected_prompt_version == PROMPT_VERSION_V26:
         return _build_v26_prompt_input(letter)
+    if selected_prompt_version == PROMPT_VERSION_V27:
+        return _build_v27_prompt_input(letter)
     payload = {
         "prompt_version": selected_prompt_version,
         "task": (
@@ -1005,4 +1009,10 @@ def _build_v26_prompt_input(letter: ExectLetter) -> str:
     """Emit the frozen v26 instruction payload plus the current letter."""
 
     payload = {**load_v26_prompt_payload(), "letter_text": letter.note_text}
+    return json.dumps(payload, ensure_ascii=False)
+
+
+def _build_v27_prompt_input(letter: ExectLetter) -> str:
+    """Emit the revised v27 instruction payload plus the current letter."""
+    payload = {**load_v27_prompt_payload(), "letter_text": letter.note_text}
     return json.dumps(payload, ensure_ascii=False)

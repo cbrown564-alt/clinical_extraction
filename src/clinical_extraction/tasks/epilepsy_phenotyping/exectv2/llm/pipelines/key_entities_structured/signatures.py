@@ -16,6 +16,7 @@ from .constants import (
     PROMPT_VERSION_V24,
     PROMPT_VERSION_V25,
     PROMPT_VERSION_V26,
+    PROMPT_VERSION_V27,
     prompt_version_for,
 )
 
@@ -88,6 +89,7 @@ _MINIMAL_SYSTEM_PROMPT_VERSIONS = frozenset(
         PROMPT_VERSION_V24,
         PROMPT_VERSION_V25,
         PROMPT_VERSION_V26,
+        PROMPT_VERSION_V27,
     }
 )
 
@@ -98,7 +100,7 @@ class DspyKeyEntitiesStructuredExtractor(dspy.Module):
         selected_prompt_version = prompt_version or prompt_version_for()
         self._signature: type[dspy.Signature] = (
             ExECTv2KeyEntitiesStructuredSignatureV26
-            if selected_prompt_version == PROMPT_VERSION_V26
+            if selected_prompt_version in {PROMPT_VERSION_V26, PROMPT_VERSION_V27}
             else ExECTv2KeyEntitiesStructuredSignature
         )
         self._adapter = (

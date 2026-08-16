@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from copy import deepcopy
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -120,3 +121,30 @@ def _load_v26_prompt_payload_cached() -> dict[str, Any]:
 def load_v26_prompt_payload() -> dict[str, Any]:
     """Return the frozen v26 instruction payload, without a letter."""
     return _load_v26_prompt_payload_cached()
+
+
+def load_v27_prompt_payload() -> dict[str, Any]:
+    """Return the revised v27 clinical-family instruction payload."""
+    payload = deepcopy(_load_v26_prompt_payload_cached())
+    diagnosis = payload["clinical_family_guidance"]["diagnosis"]
+    diagnosis["split"] = "Keep the compound diagnosis and add one diagnosis event per named type."
+    diagnosis["do_not"] = [
+        "Write comorbidities such as migraine, headache, anxiety, or depression as "
+        "diagnosis; write them as history."
+    ]
+    sf = payload["clinical_family_guidance"]["seizure_frequency"]
+    for form in sf["forms"]:
+        if form["form"] == "Seizure-free duration":
+            form["use_when"] = "Last event at a stated time or date, or seizure-free for a duration"
+    sf["do"][1] = (
+        "Write any event or named type as seizure frequency when it has an explicit "
+        "count, rate, or seizure-free state. No further named events since a date "
+        "is seizure frequency."
+    )
+    sf["present_versus_historical"] = (
+        "A frequency statement belongs here when it is present, ongoing, or describes "
+        "a last event or seizure-free state. A dated, historical, or past-only count "
+        "belongs in history unless it is a last-event or seizure-free statement. "
+        "Never-had and resemblance wording belong in history."
+    )
+    return payload

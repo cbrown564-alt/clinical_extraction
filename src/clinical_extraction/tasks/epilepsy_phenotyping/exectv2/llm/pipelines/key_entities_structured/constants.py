@@ -34,6 +34,7 @@ PROMPT_VERSION_V23 = "exectv2_hybrid_key_family_event_ledger_v23"
 PROMPT_VERSION_V24 = "exectv2_hybrid_key_family_event_ledger_v24"
 PROMPT_VERSION_V25 = "exectv2_hybrid_key_family_event_ledger_v25"
 PROMPT_VERSION_V26 = "exectv2_hybrid_key_family_event_ledger_v26"
+PROMPT_VERSION_V27 = "exectv2_hybrid_key_family_event_ledger_v27"
 PROMPT_VERSION_V0_9_25_LUNA_SF_STATE = (
     "exectv2_hybrid_key_family_event_ledger_v0.9.25_luna_sf_state"
 )
@@ -65,6 +66,7 @@ _SUPPORTED_FULL_PROMPT_VERSIONS = frozenset(
         PROMPT_VERSION_V24,
         PROMPT_VERSION_V25,
         PROMPT_VERSION_V26,
+        PROMPT_VERSION_V27,
         PROMPT_VERSION_V0_9_25_LUNA_SF_STATE,
         PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX,
     }

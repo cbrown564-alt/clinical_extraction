@@ -1116,6 +1116,35 @@ def test_v26_payload_regenerates_committed_corpus() -> None:
     assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
 
 
+def test_v26_keeps_compound_heads_and_routes_counted_named_events_to_frequency() -> None:
+    payload = json.loads(
+        structured.build_prompt_input(
+            _LETTER,
+            prompt_version=structured.PROMPT_VERSION_V26,
+        )
+    )
+    blob = _prompt_fields_without_letter(payload).lower()
+
+    assert "split a compound seizure clause into one diagnosis event per named type" in blob
+    assert "write a generic seizure as seizure frequency when it has a present count" in blob
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+
+
+def test_v27_revises_compound_heads_and_last_event_frequency_rules() -> None:
+    payload = json.loads(
+        structured.build_prompt_input(
+            _LETTER,
+            prompt_version=structured.PROMPT_VERSION_V27,
+        )
+    )
+    blob = _prompt_fields_without_letter(payload).lower()
+
+    assert "keep the compound diagnosis and add one diagnosis event per named type" in blob
+    assert "any event or named type as seizure frequency when it has an explicit count" in blob
+    assert "last event at a stated time or date" in blob
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+
+
 def test_v26_format_retry_schema_matches_model_facing_contract() -> None:
     schema = structured.format_retry_schema_for(structured.PROMPT_VERSION_V26)
     event_schema = schema["$defs"]["V26ClinicalEventRecord"]
