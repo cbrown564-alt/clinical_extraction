@@ -41,6 +41,18 @@ PROMPT_VERSION_V0_9_34_DROP_SCOPE_DIAGNOSIS = (
 PROMPT_VERSION_V0_9_35_DROP_SCOPE_RX_IX = (
     "exectv2_hybrid_key_family_event_ledger_v0.9.35_drop_scope_rx_ix"
 )
+PROMPT_VERSION_V0_9_36_DROP_ENCODING_NON_SF = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.36_drop_encoding_non_sf"
+)
+PROMPT_VERSION_V0_9_37_DROP_EXAMPLES_NON_SF = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.37_drop_examples_non_sf"
+)
+PROMPT_VERSION_V0_9_38_DROP_EXAMPLES_SF_ENCODING = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.38_drop_examples_sf_encoding"
+)
+PROMPT_VERSION_V0_9_39_DROP_EXAMPLES_SF_SCOPE = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.39_drop_examples_sf_scope"
+)
 
 _SCAFFOLD_TASK = (
     "Read the clinical letter once. Build a compact list of source-near "
@@ -154,6 +166,87 @@ _SCOPE_RX_IX = frozenset(
         "rule-77",
     }
 )
+_ENCODING_NON_SF = frozenset(
+    {
+        "rule-11",
+        "rule-12",
+        "rule-14",
+        "rule-16",
+        "rule-19",
+        "rule-20",
+        "rule-21",
+        "rule-22",
+        "rule-28",
+        "rule-29",
+        "rule-31",
+        "rule-32",
+        "rule-68",
+        "rule-78",
+        "rule-79",
+        "rule-80",
+    }
+)
+_EXAMPLES_NON_SF = frozenset(
+    {
+        "example-01",
+        "example-03",
+        "example-04",
+        "example-05",
+        "example-13",
+        "example-21",
+        "example-22",
+        "example-23",
+        "example-24",
+        "example-25",
+        "example-26",
+        "example-27",
+        "example-28",
+        "example-29",
+        "example-30",
+        "example-31",
+        "example-32",
+        "example-33",
+        "example-34",
+        "example-35",
+        "example-36",
+        "example-37",
+        "example-38",
+        "example-39",
+        "example-40",
+        "example-41",
+    }
+)
+_EXAMPLES_SF_ENCODING = frozenset(
+    {
+        "example-02",
+        "example-06",
+        "example-07",
+        "example-08",
+        "example-09",
+        "example-10",
+        "example-11",
+        "example-12",
+        "example-14",
+        "example-15",
+        "example-16",
+        "example-17",
+        "example-20",
+    }
+)
+_EXAMPLES_SF_SCOPE = frozenset(
+    {
+        "example-18",
+        "example-19",
+        "example-42",
+        "example-43",
+        "example-44",
+        "example-45",
+        "example-46",
+        "example-47",
+        "example-48",
+        "example-49",
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -161,6 +254,7 @@ class AblationSpec:
     version: str
     drop_payload_keys: frozenset[str] = frozenset()
     drop_examples: bool = False
+    drop_example_ids: frozenset[str] = frozenset()
     drop_rule_ids: frozenset[str] = frozenset()
     task: str | None = None
 
@@ -214,11 +308,31 @@ ABLATION_SPECS: dict[str, AblationSpec] = {
         version=PROMPT_VERSION_V0_9_35_DROP_SCOPE_RX_IX,
         drop_rule_ids=_SCOPE_RX_IX,
     ),
+    PROMPT_VERSION_V0_9_36_DROP_ENCODING_NON_SF: AblationSpec(
+        version=PROMPT_VERSION_V0_9_36_DROP_ENCODING_NON_SF,
+        drop_rule_ids=_ENCODING_NON_SF,
+    ),
+    PROMPT_VERSION_V0_9_37_DROP_EXAMPLES_NON_SF: AblationSpec(
+        version=PROMPT_VERSION_V0_9_37_DROP_EXAMPLES_NON_SF,
+        drop_example_ids=_EXAMPLES_NON_SF,
+    ),
+    PROMPT_VERSION_V0_9_38_DROP_EXAMPLES_SF_ENCODING: AblationSpec(
+        version=PROMPT_VERSION_V0_9_38_DROP_EXAMPLES_SF_ENCODING,
+        drop_example_ids=_EXAMPLES_SF_ENCODING,
+    ),
+    PROMPT_VERSION_V0_9_39_DROP_EXAMPLES_SF_SCOPE: AblationSpec(
+        version=PROMPT_VERSION_V0_9_39_DROP_EXAMPLES_SF_SCOPE,
+        drop_example_ids=_EXAMPLES_SF_SCOPE,
+    ),
 }
 
 
 def rule_id_for_index(index: int) -> str:
     return f"rule-{index + 1:02d}"
+
+
+def example_id_for_index(index: int) -> str:
+    return f"example-{index + 1:02d}"
 
 
 def apply_v0924_ablation(payload: dict[str, Any], spec: AblationSpec) -> dict[str, Any]:
@@ -232,6 +346,13 @@ def apply_v0924_ablation(payload: dict[str, Any], spec: AblationSpec) -> dict[st
         ablated.pop(key, None)
     if spec.drop_examples:
         ablated.pop("worked_examples", None)
+    elif spec.drop_example_ids:
+        examples = list(ablated.get("worked_examples") or [])
+        ablated["worked_examples"] = [
+            example
+            for index, example in enumerate(examples)
+            if example_id_for_index(index) not in spec.drop_example_ids
+        ]
     if spec.drop_rule_ids:
         rules = list(ablated["clinical_rules"])
         ablated["clinical_rules"] = [

@@ -30,6 +30,12 @@ CUMULATIVE_STUDY_DIR = (
 SCOPE_CLUSTER_STUDY_DIR = (
     REPO_ROOT / "experiments/exectv2_v0924_scope_cluster_luna_dev20_20260816"
 )
+NON_SF_STUDY_DIR = (
+    REPO_ROOT / "experiments/exectv2_v0924_non_sf_slice_luna_dev20_20260816"
+)
+SF_EXAMPLES_STUDY_DIR = (
+    REPO_ROOT / "experiments/exectv2_v0924_sf_examples_luna_dev20_20260816"
+)
 LEAVE_ONE_OUT_PROTOCOL = (
     "docs/research/exectv2/v0924_prompt_ablation_luna_dev20_protocol_2026-08-16.md"
 )
@@ -39,6 +45,12 @@ CUMULATIVE_PROTOCOL = (
 SCOPE_CLUSTER_PROTOCOL = (
     "docs/research/exectv2/v0924_scope_cluster_luna_dev20_protocol_2026-08-16.md"
 )
+NON_SF_PROTOCOL = (
+    "docs/research/exectv2/v0924_non_sf_slice_luna_dev20_protocol_2026-08-16.md"
+)
+SF_EXAMPLES_PROTOCOL = (
+    "docs/research/exectv2/v0924_sf_examples_luna_dev20_protocol_2026-08-16.md"
+)
 LEAVE_ONE_OUT_REPORT = (
     REPO_ROOT / "docs/research/exectv2/v0924_prompt_ablation_luna_dev20_2026-08-16.md"
 )
@@ -47,6 +59,12 @@ CUMULATIVE_REPORT = (
 )
 SCOPE_CLUSTER_REPORT = (
     REPO_ROOT / "docs/research/exectv2/v0924_scope_cluster_luna_dev20_2026-08-16.md"
+)
+NON_SF_REPORT = (
+    REPO_ROOT / "docs/research/exectv2/v0924_non_sf_slice_luna_dev20_2026-08-16.md"
+)
+SF_EXAMPLES_REPORT = (
+    REPO_ROOT / "docs/research/exectv2/v0924_sf_examples_luna_dev20_2026-08-16.md"
 )
 STUDY_DIR = LEAVE_ONE_OUT_STUDY_DIR
 PROTOCOL = LEAVE_ONE_OUT_PROTOCOL
@@ -68,6 +86,14 @@ SCOPE_CLUSTER_ARMS = (
     "drop_scope_diagnosis",
     "drop_scope_rx_ix",
 )
+NON_SF_ARMS = (
+    "drop_encoding_non_sf",
+    "drop_examples_non_sf",
+)
+SF_EXAMPLE_ARMS = (
+    "drop_examples_sf_encoding",
+    "drop_examples_sf_scope",
+)
 ARM_VERSIONS = {
     "drop_scaffold": structured.PROMPT_VERSION_V0_9_26_DROP_SCAFFOLD,
     "drop_examples": structured.PROMPT_VERSION_V0_9_27_DROP_EXAMPLES,
@@ -81,6 +107,10 @@ ARM_VERSIONS = {
     "drop_scope_sf_keep": structured.PROMPT_VERSION_V0_9_33_DROP_SCOPE_SF_KEEP,
     "drop_scope_diagnosis": structured.PROMPT_VERSION_V0_9_34_DROP_SCOPE_DIAGNOSIS,
     "drop_scope_rx_ix": structured.PROMPT_VERSION_V0_9_35_DROP_SCOPE_RX_IX,
+    "drop_encoding_non_sf": structured.PROMPT_VERSION_V0_9_36_DROP_ENCODING_NON_SF,
+    "drop_examples_non_sf": structured.PROMPT_VERSION_V0_9_37_DROP_EXAMPLES_NON_SF,
+    "drop_examples_sf_encoding": structured.PROMPT_VERSION_V0_9_38_DROP_EXAMPLES_SF_ENCODING,
+    "drop_examples_sf_scope": structured.PROMPT_VERSION_V0_9_39_DROP_EXAMPLES_SF_SCOPE,
 }
 CONTAMINATION_LETTERS = ("EA0004", "EA0010")
 
@@ -92,7 +122,14 @@ def main(argv: Sequence[str] | None = None) -> None:
     check.add_argument("--overwrite", action="store_true")
     run = sub.add_parser("run", help="Score control; live only with --live")
     run.add_argument(
-        "--arm", choices=(*SERIES_ORDER, *CUMULATIVE_ARMS, *SCOPE_CLUSTER_ARMS)
+        "--arm",
+        choices=(
+            *SERIES_ORDER,
+            *CUMULATIVE_ARMS,
+            *SCOPE_CLUSTER_ARMS,
+            *NON_SF_ARMS,
+            *SF_EXAMPLE_ARMS,
+        ),
     )
     run.add_argument("--series", action="store_true", help="Run every leave-one-out arm.")
     run.add_argument("--live", action="store_true")
@@ -179,6 +216,26 @@ def verify_payload() -> dict[str, Any]:
         raise RuntimeError("drop_scope_diagnosis contract drifted")
     if checks["drop_scope_rx_ix"]["n_rules"] != 76:
         raise RuntimeError("drop_scope_rx_ix contract drifted")
+    if (
+        checks["drop_encoding_non_sf"]["n_rules"] != 67
+        or checks["drop_encoding_non_sf"]["n_examples"] != 49
+    ):
+        raise RuntimeError("drop_encoding_non_sf contract drifted")
+    if (
+        checks["drop_examples_non_sf"]["n_examples"] != 23
+        or checks["drop_examples_non_sf"]["n_rules"] != 83
+    ):
+        raise RuntimeError("drop_examples_non_sf contract drifted")
+    if (
+        checks["drop_examples_sf_encoding"]["n_examples"] != 36
+        or checks["drop_examples_sf_encoding"]["n_rules"] != 83
+    ):
+        raise RuntimeError("drop_examples_sf_encoding contract drifted")
+    if (
+        checks["drop_examples_sf_scope"]["n_examples"] != 39
+        or checks["drop_examples_sf_scope"]["n_rules"] != 83
+    ):
+        raise RuntimeError("drop_examples_sf_scope contract drifted")
     return {
         "ok": True,
         "default_prompt_version": structured.PROMPT_VERSION,
@@ -319,6 +376,16 @@ def _select_study(arms: Sequence[str]) -> None:
         PROTOCOL = SCOPE_CLUSTER_PROTOCOL
         REPORT_PATH = SCOPE_CLUSTER_REPORT
         return
+    if any(arm in NON_SF_ARMS for arm in arms):
+        STUDY_DIR = NON_SF_STUDY_DIR
+        PROTOCOL = NON_SF_PROTOCOL
+        REPORT_PATH = NON_SF_REPORT
+        return
+    if any(arm in SF_EXAMPLE_ARMS for arm in arms):
+        STUDY_DIR = SF_EXAMPLES_STUDY_DIR
+        PROTOCOL = SF_EXAMPLES_PROTOCOL
+        REPORT_PATH = SF_EXAMPLES_REPORT
+        return
     STUDY_DIR = LEAVE_ONE_OUT_STUDY_DIR
     PROTOCOL = LEAVE_ONE_OUT_PROTOCOL
     REPORT_PATH = LEAVE_ONE_OUT_REPORT
@@ -370,6 +437,17 @@ def _claim_boundary() -> str:
             "ExECTv2 Luna 20-letter development scope-cluster prune of v0.9.24. "
             "Not holdout, not a selected prompt, and not a Decision 0050 change."
         )
+    if STUDY_DIR == NON_SF_STUDY_DIR:
+        return (
+            "ExECTv2 Luna 20-letter development non-SF encoding/example prune of "
+            "v0.9.24. Not holdout, not a selected prompt, and not a Decision 0050 "
+            "change."
+        )
+    if STUDY_DIR == SF_EXAMPLES_STUDY_DIR:
+        return (
+            "ExECTv2 Luna 20-letter development SF-example split of v0.9.24. "
+            "Not holdout, not a selected prompt, and not a Decision 0050 change."
+        )
     return (
         "ExECTv2 Luna 20-letter development leave-one-out prune of v0.9.24. "
         "Not holdout, not a selected prompt, and not a Decision 0050 change."
@@ -388,6 +466,10 @@ def _render_report(artifact: Mapping[str, Any]) -> str:
         title = "# ExECT `v0.9.24` cumulative prune — GPT-5.6 Luna `dev20`"
     elif STUDY_DIR == SCOPE_CLUSTER_STUDY_DIR:
         title = "# ExECT `v0.9.24` scope-cluster prune — GPT-5.6 Luna `dev20`"
+    elif STUDY_DIR == NON_SF_STUDY_DIR:
+        title = "# ExECT `v0.9.24` non-SF slice prune — GPT-5.6 Luna `dev20`"
+    elif STUDY_DIR == SF_EXAMPLES_STUDY_DIR:
+        title = "# ExECT `v0.9.24` SF-example split — GPT-5.6 Luna `dev20`"
     else:
         title = "# ExECT `v0.9.24` leave-one-out prompt prune — GPT-5.6 Luna `dev20`"
     lines = [
