@@ -42,6 +42,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
     normalize_unit,
 )
 
+from .mention_unit_leftover_form import (
+    project_leftover_form_investigation,
+    project_leftover_form_sf,
+)
 from .pipelines.key_entities_structured import records as structured_records
 from .semantic_inventory import (
     HYBRID_METHOD,
@@ -68,6 +72,7 @@ from .shared.mention_pipeline import check_evidence
 
 MENTION_UNIT_PROMPT_VERSION = "exectv2_mention_unit_v2"
 MENTION_UNIT_MODEL = "openai/gpt-5.6-luna"
+MentionUnitEncoder = Literal["landed", "leftover_form"]
 SYSTEM_MESSAGE = (
     "List each diagnosis, seizure-frequency statement, current medicine, "
     "and completed test with a result. Return the requested JSON exactly."
@@ -457,6 +462,7 @@ def materialize_mention_unit(
     record: MentionUnitRecord,
     *,
     method: Literal["llm", "llm_with_rules"],
+    encoder: MentionUnitEncoder = "landed",
 ) -> InventoryMaterialization:
     """Create semantic and scorer views while retaining every emitted item."""
 
@@ -494,7 +500,7 @@ def materialize_mention_unit(
         if method == LLM_METHOD:
             projected, status, owner = _llm_project(item)
         else:
-            projected, traces, status = _hybrid_project(item, index)
+            projected, traces, status = _hybrid_project(item, index, encoder=encoder)
             rule_trace.extend(traces)
             owner = ""
 
@@ -629,7 +635,17 @@ def _llm_project(item: MentionItem) -> tuple[list[dict[str, Any]], str, str]:
 def _hybrid_project(
     item: MentionItem,
     index: int,
+    *,
+    encoder: MentionUnitEncoder = "landed",
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], str]:
+    if encoder == "leftover_form" and item.family == SEIZURE_FREQUENCY.name:
+        return project_leftover_form_sf(
+            text=item.text, evidence=item.evidence, index=index
+        )
+    if encoder == "leftover_form" and item.family == INVESTIGATIONS.name:
+        return project_leftover_form_investigation(
+            text=item.text, evidence=item.evidence, index=index
+        )
     if item.family == DIAGNOSIS.name:
         phrases = _heading_split_phrases(item.text)
         if phrases:

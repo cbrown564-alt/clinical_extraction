@@ -305,6 +305,7 @@ def test_hybrid_uses_landed_encoder_on_clinical_name_and_evidence() -> None:
     assert by_text["seizure"].attributes["TimePeriod"] == "Week"
     assert by_text["EEG"].entity == "Investigations"
     assert all("trust_item" not in str(trace.get("action", "")) for trace in result.rule_trace)
+    assert all("leftover_form" not in str(trace.get("action", "")) for trace in result.rule_trace)
     assert any(
         "encoding." in str(trace.get("action", "")) or "encoding." in str(trace.get("rule_id", ""))
         for trace in result.rule_trace
