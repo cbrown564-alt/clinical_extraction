@@ -1,9 +1,9 @@
 """Semantic-inventory ExECT research lane.
 
 This module is deliberately parallel to the selected structured-event stack.
-It gives the model a clinical fact contract, then keeps semantic parsing,
-benchmark projection, and attribution visible for the re-evaluation study.
-It does not change the selected ExECT method or its default prompt.
+Fork A asks the model for the current coded four-family inventory, then keeps
+semantic parsing, named hybrid rewrite, benchmark projection, and attribution
+visible. It does not change the selected ExECT method or its default prompt.
 """
 
 from __future__ import annotations
@@ -35,17 +35,15 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities import (
-    diagnosis as diagnosis_rules,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    sf_attribute_encoding as sf_encoding,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities import (
-    investigations as investigation_rules,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    standard_dictionary as sd,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities import (
-    prescription as prescription_rules,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.pipeline import (
-    extract_seizure_frequency,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
+    canonicalize_diagnosis_concept,
+    diagnosis_category_for_concept,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
     parse_json_payload,
@@ -58,8 +56,12 @@ from .pipelines.key_entities_structured import records as structured_records
 
 LLM_METHOD = "llm"
 HYBRID_METHOD = "llm_with_rules"
-SEMANTIC_PROMPT_VERSION = "exectv2_semantic_inventory_v2"
+SEMANTIC_PROMPT_VERSION = "exectv2_semantic_inventory_v3"
 SEMANTIC_MODEL = "openai/gpt-5.6-luna"
+SYSTEM_MESSAGE = (
+    "Extract the current coded clinical inventory from the supplied letter. "
+    "Return the requested JSON exactly."
+)
 SEMANTIC_FAMILIES = (
     DIAGNOSIS.name,
     SEIZURE_FREQUENCY.name,
@@ -94,14 +96,44 @@ _SF_PHRASES = (
     "seizure",
 )
 
-_DOSE_RE = re.compile(r"(?P<dose>\d+(?:\.\d+)?)\s*(?P<unit>mg|mgs|g|grams?)\b", re.I)
 _COUNT_RE = re.compile(r"\b(?P<count>\d+(?:\.\d+)?)\b\s*(?:to|-|–)\s*(?P<upper>\d+(?:\.\d+)?)\b")
 _SINGLE_COUNT_RE = re.compile(r"\b(?P<count>\d+(?:\.\d+)?)\b\s*(?:seizures?|episodes?)\b", re.I)
 _MODALITY_RE = re.compile(r"\b(MRI|CT|EEG)\b", re.I)
+_LAST_EVENT_CUE_RE = re.compile(
+    r"\b(last seizure|last seizures|last event|has had none since|none since|"
+    r"no further|not had any further|has not had any(?: further)?|"
+    r"seizure[- ]free since|no seizures?|no absences)\b",
+    re.IGNORECASE,
+)
+_REMOTE_TIMEFRAME_RE = re.compile(
+    r"\b(?:teenage(?: years)?|teens|childhood|adolescence|school years)\b",
+    re.IGNORECASE,
+)
+_SEIZURE_FREE_RE = re.compile(r"seizure\s*-?free|no further seizures", re.I)
+
+_LLM_ATTRIBUTE_SCHEMA = {
+    "concept": "Named diagnosis or seizure-type phrase.",
+    "certainty": "certain, probable, possible, or uncertain.",
+    "negation": "affirmed or negated.",
+    "type": "Seizure type when this is a rate or last-event fact.",
+    "state": "current, historical, seizure-free, or last-event.",
+    "count": "Number of seizures when the letter states a number.",
+    "lower_count": "Lower count when the letter states a range.",
+    "upper_count": "Upper count when the letter states a range.",
+    "period": "day, week, month, or year when the letter states a rate basis.",
+    "timeframe": "When the rate or last event applies.",
+    "name": "Drug name or investigation name.",
+    "dose": "Dose amount when stated.",
+    "unit": "Dose unit when stated.",
+    "schedule": "How often the drug is taken.",
+    "status": "current, planned, past, or completed.",
+    "result": "normal, abnormal, or unknown for a completed test.",
+    "action": "continue, start, stop, or change.",
+}
 
 
 class SemanticFact(BaseModel):
-    """One atomic model-emitted fact."""
+    """One model-emitted coded inventory item."""
 
     model_config = ConfigDict(extra="ignore")
 
@@ -137,10 +169,7 @@ class InventoryMaterialization:
 
 
 def _system_message() -> str:
-    return (
-        "Extract atomic clinical facts from the supplied clinical letter. "
-        "Return the requested JSON exactly."
-    )
+    return SYSTEM_MESSAGE
 
 
 class SemanticInventoryChatAdapter(ChatAdapter):
@@ -158,7 +187,7 @@ class SemanticInventoryChatAdapter(ChatAdapter):
 
 
 class SemanticInventorySignature(dspy.Signature):
-    """Read one clinical letter and return atomic facts with semantic fields."""
+    """Read one clinical letter and return the current coded inventory."""
 
     prompt_input_json: str = dspy.InputField(
         desc="JSON containing one clinical letter and the extraction instructions."
@@ -203,52 +232,51 @@ def build_inventory_prompt(
     if method == LLM_METHOD:
         fact_schema: dict[str, Any] = {
             "family": "Diagnosis | SeizureFrequency | Prescription | Investigations",
-            "event": "Complete natural-language statement of one atomic fact.",
+            "event": "One current coded fact in ordinary clinical language.",
             "evidence": "Exact clause copied from the letter that supports this fact.",
-            "attributes": {
-                "Diagnosis": "Use concept, certainty, negation, temporality, and scope.",
-                "SeizureFrequency": (
-                    "Use type, state, count, lower_count, upper_count, period, "
-                    "timeframe, change, and point_in_time."
-                ),
-                "Prescription": "Use name, dose, unit, schedule, purpose, action, and status.",
-                "Investigations": "Use name, status, result, type, and date.",
-            },
+            "attributes": dict(_LLM_ATTRIBUTE_SCHEMA),
         }
         task = (
-            "Read the letter once. Return every distinct atomic clinical fact in the four "
-            "families. Preserve current, historical, planned, resolved, negated, and uncertain "
-            "facts separately when the letter states them. Multiple facts may share evidence. "
-            "Use natural clinical fields, not scorer field names."
+            "Read the letter once. Return the current coded inventory for the four "
+            "families. If a family has no current coded item, return nothing for that "
+            "family. Multiple facts may share evidence."
         )
     else:
         fact_schema = {
             "family": "Diagnosis | SeizureFrequency | Prescription | Investigations",
-            "event": "Complete natural-language statement of one atomic fact.",
+            "event": "One current coded fact in ordinary clinical language.",
             "evidence": "Exact clause copied from the letter that supports this fact.",
         }
         task = (
-            "Read the letter once. Return every distinct atomic clinical fact in the four "
-            "families. Preserve current, historical, planned, resolved, negated, and uncertain "
-            "facts separately when the letter states them. Multiple facts may share evidence. "
-            "Return only family, event, and evidence; do not return clinical attributes."
+            "Read the letter once. Return the current coded inventory for the four "
+            "families. If a family has no current coded item, return nothing for that "
+            "family. Multiple facts may share evidence. Return only family, event, "
+            "and evidence; do not return clinical attributes."
         )
     payload = {
         "task": task,
         "output_schema": {"facts": [fact_schema]},
         "family_guidance": {
             "Diagnosis": (
-                "Epilepsy, seizure-disorder, and named seizure-type diagnoses. "
-                "Do not label unrelated comorbidity, cause, history, or medication "
-                "as Diagnosis."
+                "Named epilepsy and seizure-type diagnoses that apply to the patient "
+                "now. Put seizure types here when they are diagnoses. Do not add "
+                "clumsiness, collapse, aura descriptions, or unrelated illness."
             ),
             "SeizureFrequency": (
-                "Rates, counts, seizure-free states, last events, type, and temporal scope."
+                "Current rates, counts, and seizure-free states. Encode a last event "
+                "as a zero-count current fact. Use the named seizure type when the "
+                "letter names one; otherwise use seizures. Do not add symptoms that "
+                "have no rate or last-event statement."
             ),
             "Prescription": (
-                "Medication, dose, unit, schedule, purpose, action, and active or planned status."
+                "Current drug regimens. Include a planned change only when it "
+                "replaces or continues a current regimen. Do not add a planned-only "
+                "drug that has not started."
             ),
-            "Investigations": "Investigation, completed or planned status, result, type, and date.",
+            "Investigations": (
+                "Completed tests and their results. Do not add planned or requested "
+                "tests."
+            ),
         },
         "letter_text": letter.note_text,
     }
@@ -326,14 +354,29 @@ def _coerce_text(value: Any, errors: list[str], field_name: str) -> str:
     return text
 
 
-def _stringify_attributes(value: Any, errors: list[str], index: int) -> dict[str, str]:
+def _flatten_attribute_object(value: Any, errors: list[str], index: int) -> dict[str, Any]:
     if value is None:
         return {}
     if not isinstance(value, dict):
         errors.append(f"schema_validation_error: fact[{index}].attributes must be an object")
         return {}
+    working = dict(value)
+    for key in list(working):
+        family = _normalize_family(key)
+        nested = working[key]
+        if family is None or not isinstance(nested, dict):
+            continue
+        working.pop(key)
+        errors.append(f"unwrapped_nested_family_attributes: fact[{index}].{key}")
+        for nested_key, nested_value in nested.items():
+            working.setdefault(nested_key, nested_value)
+    return working
+
+
+def _stringify_attributes(value: Any, errors: list[str], index: int) -> dict[str, str]:
+    working = _flatten_attribute_object(value, errors, index)
     result: dict[str, str] = {}
-    for key, raw_value in value.items():
+    for key, raw_value in working.items():
         if raw_value is None:
             continue
         string_value = str(raw_value)
@@ -376,14 +419,11 @@ def materialize_inventory(
             continue
 
         if method == LLM_METHOD:
-            attributes = _llm_attributes_to_legacy(fact)
-            text = _fact_text(fact)
-            if fact.family == PRESCRIPTION.name and _is_noncurrent_prescription(fact):
-                text = ""
-            owner = "model.semantic_inventory"
+            attributes, text, status, owner = _llm_project(fact)
         elif fact.family in disabled_rule_families:
             attributes = {}
             text = ""
+            status = "ablation_disabled"
             owner = f"ablation.disabled_rules.{fact.family}"
             rule_trace.append(
                 {
@@ -398,42 +438,29 @@ def materialize_inventory(
                 }
             )
         else:
-            parsed = _parse_emitted_fact(fact)
-            attributes = parsed["attributes"]
-            text = parsed["text"]
-            rule_trace.append(
-                {
-                    "fact_index": index,
-                    "rule_category": parsed["rule_category"],
-                    "action": parsed["action"],
-                    "evidence": fact.evidence,
-                    "before": {},
-                    "after": dict(attributes),
-                    "changed": bool(attributes),
-                    "first_prediction_changing_owner": "deterministic" if attributes else None,
-                }
-            )
-            warnings.extend(f"fact[{index}]: {warning}" for warning in parsed["warnings"])
-            owner = f"deterministic.semantic_inventory_rules.{fact.family}"
+            attributes, text, status, owner, traces = _hybrid_project_fact(fact, index=index)
+            rule_trace.extend(traces)
 
         semantic_row["legacy_attributes"] = dict(attributes)
         semantic_row["scorer_text"] = text
-        if fact.family == PRESCRIPTION.name and _is_noncurrent_prescription(fact):
-            semantic_row["projection_status"] = "semantic_only_noncurrent_status"
-        else:
-            semantic_row["projection_status"] = "materialized" if text and attributes else "partial"
+        semantic_row["projection_status"] = status
         semantic_facts.append(semantic_row)
         if not text:
             warnings.append(f"fact[{index}]: no_scorer_text")
             continue
-        mention = PredictedMention(
-            entity=fact.family,
-            text=text,
-            attributes=attributes,
-            evidence=fact.evidence,
-            component_owner=owner,
+        candidates.append(
+            PredictedMention(
+                entity=fact.family,
+                text=text,
+                attributes=attributes,
+                evidence=fact.evidence,
+                component_owner=owner,
+            )
         )
-        candidates.append(mention)
+
+    if method == HYBRID_METHOD:
+        candidates, letter_traces = _apply_hybrid_letter_rules(letter, candidates)
+        rule_trace.extend(letter_traces)
 
     evidence_mentions, invalid_mentions, evidence_warnings = check_evidence(
         [
@@ -481,30 +508,275 @@ def materialize_inventory(
     )
 
 
+def _llm_project(fact: SemanticFact) -> tuple[dict[str, str], str, str, str]:
+    attributes = _llm_attributes_to_legacy(fact)
+    text = _fact_text(fact)
+    owner = "model.semantic_inventory"
+    if fact.family == PRESCRIPTION.name and _is_noncurrent_prescription(fact):
+        return attributes, "", "semantic_only_noncurrent_status", owner
+    if fact.family == INVESTIGATIONS.name and _is_pending_investigation_text(
+        text, fact.evidence, attributes
+    ):
+        return attributes, "", "semantic_only_pending_investigation", owner
+    status = "materialized" if text and attributes else "partial"
+    return attributes, text, status, owner
+
+
+def _hybrid_project_fact(
+    fact: SemanticFact, *, index: int
+) -> tuple[dict[str, str], str, str, str, list[dict[str, Any]]]:
+    parsed = _parse_event_and_evidence(fact)
+    attributes = dict(parsed["attributes"])
+    text = parsed["text"]
+    traces = [
+        _trace(
+            index=index,
+            category=parsed["rule_category"],
+            action=parsed["action"],
+            evidence=fact.evidence,
+            after=dict(attributes),
+            changed=bool(attributes),
+        )
+    ]
+    owner = f"deterministic.semantic_inventory_rules.{fact.family}"
+    status = "materialized" if text and attributes else "partial"
+
+    if fact.family == SEIZURE_FREQUENCY.name:
+        encoded, actions = sf_encoding.apply_sf_attribute_encoding(
+            [
+                {
+                    "entity": fact.family,
+                    "text": text,
+                    "attributes": attributes,
+                    "evidence": fact.evidence,
+                }
+            ]
+        )
+        mention = encoded[0]
+        attributes = {str(key): str(value) for key, value in mention.get("attributes", {}).items()}
+        text = str(mention.get("text") or text)
+        for action in actions:
+            traces.append(
+                _trace(
+                    index=index,
+                    category="seizure_frequency",
+                    action=str(action.get("rule_id") or action.get("action") or ""),
+                    evidence=fact.evidence,
+                    after=dict(attributes),
+                    changed=True,
+                )
+            )
+        rewritten = sd.sf_convention_rewrite(
+            text, evidence=fact.evidence, attributes=attributes
+        )
+        if rewritten is not None:
+            text, new_attrs, rule_id = rewritten
+            attributes = {str(key): str(value) for key, value in new_attrs.items()}
+            traces.append(
+                _trace(
+                    index=index,
+                    category="seizure_frequency",
+                    action=rule_id,
+                    evidence=fact.evidence,
+                    after=dict(attributes),
+                    changed=True,
+                )
+            )
+        if sd.is_sf_convention_noise(
+            text, evidence=fact.evidence, attributes=attributes
+        ) or _is_uncoded_sf_phenomenology(text, fact.evidence, attributes):
+            traces.append(
+                _trace(
+                    index=index,
+                    category="seizure_frequency",
+                    action="suppress_uncoded_or_noise_sf",
+                    evidence=fact.evidence,
+                    after={},
+                    changed=True,
+                )
+            )
+            return attributes, "", "semantic_only_uncoded_phenomenology", owner, traces
+    elif fact.family == DIAGNOSIS.name:
+        target = sd.diagnosis_convention_target(text, fact.evidence)
+        if target and target != text:
+            text = target
+            attributes = sd.diagnosis_convention_attribute_repairs(
+                text, evidence=fact.evidence, attributes=attributes
+            )
+            traces.append(
+                _trace(
+                    index=index,
+                    category="benchmark_format",
+                    action="diagnosis_convention_rewrite",
+                    evidence=fact.evidence,
+                    after={"text": text, **attributes},
+                    changed=True,
+                )
+            )
+        if sd.is_diagnosis_convention_noise(
+            text,
+            evidence=fact.evidence,
+            diag_category=attributes.get("DiagCategory"),
+        ):
+            traces.append(
+                _trace(
+                    index=index,
+                    category="benchmark_format",
+                    action="suppress_diagnosis_convention_noise",
+                    evidence=fact.evidence,
+                    after={},
+                    changed=True,
+                )
+            )
+            return attributes, "", "semantic_only_diagnosis_noise", owner, traces
+    elif fact.family == PRESCRIPTION.name:
+        attributes = sd.prescription_convention_attribute_repairs(
+            text, evidence=fact.evidence, attributes=attributes
+        )
+        if sd.is_planned_start_prescription(
+            text, evidence=fact.evidence, attributes=attributes
+        ) or sd.is_non_antiepileptic_prescription(
+            text, evidence=fact.evidence, attributes=attributes
+        ):
+            traces.append(
+                _trace(
+                    index=index,
+                    category="clinical_epilepsy",
+                    action="suppress_noncurrent_or_non_epilepsy_prescription",
+                    evidence=fact.evidence,
+                    after=dict(attributes),
+                    changed=True,
+                )
+            )
+            return attributes, "", "semantic_only_noncurrent_status", owner, traces
+    elif fact.family == INVESTIGATIONS.name:
+        attributes = sd.investigation_convention_attribute_repairs(
+            text, evidence=fact.evidence, attributes=attributes
+        )
+        if _is_pending_investigation_text(text, fact.evidence, attributes):
+            traces.append(
+                _trace(
+                    index=index,
+                    category="clinical_epilepsy",
+                    action="suppress_pending_investigation",
+                    evidence=fact.evidence,
+                    after=dict(attributes),
+                    changed=True,
+                )
+            )
+            return attributes, "", "semantic_only_pending_investigation", owner, traces
+
+    status = "materialized" if text and attributes else "partial"
+    return attributes, text, status, owner, traces
+
+
+def _apply_hybrid_letter_rules(
+    letter: ExectLetter,
+    mentions: list[PredictedMention],
+) -> tuple[list[PredictedMention], list[dict[str, Any]]]:
+    traces: list[dict[str, Any]] = []
+    diagnoses = [mention for mention in mentions if mention.entity == DIAGNOSIS.name]
+    others = [mention for mention in mentions if mention.entity != DIAGNOSIS.name]
+    filtered = list(sd.drop_syndrome_covered_phenotypes(diagnoses))
+    if len(filtered) != len(diagnoses):
+        traces.append(
+            _trace(
+                index=-1,
+                category="clinical_epilepsy",
+                action="drop_syndrome_covered_phenotypes",
+                evidence="",
+                after={"kept": [mention.text for mention in filtered]},
+                changed=True,
+            )
+        )
+    working = [*filtered, *others]
+    selected_texts = [mention.text for mention in working if mention.entity == DIAGNOSIS.name]
+    selected_concepts = {canonicalize_diagnosis_concept(text) for text in selected_texts}
+    for text, evidence in sd.diagnosis_residual_additions(letter.note_text):
+        concept = canonicalize_diagnosis_concept(text)
+        if concept in selected_concepts:
+            continue
+        if sd.is_redundant_diagnosis_residual_addition(
+            text, evidence=evidence, selected_texts=selected_texts
+        ):
+            continue
+        attributes = {
+            "DiagCategory": diagnosis_category_for_concept(text),
+            "Certainty": "5",
+            "Negation": "Affirmed",
+        }
+        working.append(
+            PredictedMention(
+                entity=DIAGNOSIS.name,
+                text=text,
+                attributes=attributes,
+                evidence=evidence,
+                component_owner="deterministic.semantic_inventory_rules.Diagnosis.residual",
+            )
+        )
+        selected_texts.append(text)
+        selected_concepts.add(concept)
+        traces.append(
+            _trace(
+                index=-1,
+                category=sd.diagnosis_residual_addition_category(text, evidence),
+                action="diagnosis_residual_addition",
+                evidence=evidence,
+                after={"text": text, **attributes},
+                changed=True,
+            )
+        )
+    return working, traces
+
+
+def _trace(
+    *,
+    index: int,
+    category: str,
+    action: str,
+    evidence: str,
+    after: dict[str, Any],
+    changed: bool,
+) -> dict[str, Any]:
+    return {
+        "fact_index": index,
+        "rule_category": category,
+        "action": action,
+        "evidence": evidence,
+        "before": {},
+        "after": after,
+        "changed": changed,
+        "first_prediction_changing_owner": "deterministic" if changed else None,
+    }
+
+
 def _fact_text(fact: SemanticFact) -> str:
     """Select a source-near phrase for scorer projection without adding facts."""
 
     source = f"{fact.event} {fact.evidence}"
     if fact.family == PRESCRIPTION.name:
         return (
-            _longest_surface(source, PRESCRIPTION_SURFACE_FORMS)
+            _longest_surface(fact.event, PRESCRIPTION_SURFACE_FORMS)
+            or _longest_surface(source, PRESCRIPTION_SURFACE_FORMS)
             or fact.attributes.get("name", "")
             or fact.event.strip()
         )
     if fact.family == DIAGNOSIS.name:
         return (
-            _longest_surface(source, DIAGNOSIS_SURFACE_FORMS)
+            _longest_surface(fact.event, DIAGNOSIS_SURFACE_FORMS)
+            or _longest_surface(source, DIAGNOSIS_SURFACE_FORMS)
             or fact.attributes.get("concept", "")
             or fact.event.strip()
         )
     if fact.family == SEIZURE_FREQUENCY.name:
         return (
-            _longest_surface(source, _SF_PHRASES)
+            _longest_surface(fact.event, _SF_PHRASES)
+            or _longest_surface(source, _SF_PHRASES)
             or str(fact.attributes.get("type", ""))
             or fact.event.strip()
         )
-    modality = _modality(source)
-    return modality or str(fact.attributes.get("name", "")) or fact.event.strip()
+    modality = _modality(fact.event) or _modality(source)
+    return modality or str(fact.attributes.get("name", "")).upper() or fact.event.strip()
 
 
 def _longest_surface(source: str, surfaces: tuple[str, ...] | list[str]) -> str:
@@ -522,44 +794,47 @@ def _llm_attributes_to_legacy(fact: SemanticFact) -> dict[str, str]:
     attrs = {
         str(key).lower(): str(value) for key, value in fact.attributes.items() if value is not None
     }
+    source = f"{fact.event} {fact.evidence}"
     if fact.family == DIAGNOSIS.name:
         concept = attrs.get("concept") or attrs.get("diagnosis") or _fact_text(fact)
         result = {
-            "DiagCategory": _diagnosis_category(concept, attrs.get("type", "")),
+            "DiagCategory": diagnosis_category_for_concept(concept),
             "Certainty": _certainty(attrs.get("certainty", "")),
             "Negation": _negation(attrs.get("negation", attrs.get("assertion", ""))),
         }
         return {key: value for key, value in result.items() if value}
     if fact.family == PRESCRIPTION.name:
-        result: dict[str, str] = {}
-        if attrs.get("name") or attrs.get("medication") or attrs.get("drug"):
-            result["DrugName"] = attrs.get("name") or attrs.get("medication") or attrs.get("drug")
-        if attrs.get("dose") or attrs.get("amount"):
-            result["DrugDose"] = attrs.get("dose") or attrs.get("amount")
+        mapped: dict[str, str] = {}
+        drug_name = attrs.get("name") or attrs.get("medication") or attrs.get("drug") or ""
+        if drug_name:
+            mapped["DrugName"] = drug_name
+        dose_value = attrs.get("dose") or attrs.get("amount") or ""
+        if dose_value:
+            mapped["DrugDose"] = dose_value
         if attrs.get("unit"):
-            result["DoseUnit"] = _dose_unit(attrs["unit"])
+            mapped["DoseUnit"] = _dose_unit(attrs["unit"])
         schedule = attrs.get("schedule") or attrs.get("frequency") or attrs.get("dose_frequency")
         if schedule:
-            result["Frequency"] = _frequency(schedule)
-        return {key: value for key, value in result.items() if value}
+            mapped["Frequency"] = _frequency(schedule)
+        return {key: value for key, value in mapped.items() if value}
     if fact.family == INVESTIGATIONS.name:
         modality = (
             attrs.get("name")
             or attrs.get("modality")
             or attrs.get("investigation")
-            or _modality(f"{fact.event} {fact.evidence}")
+            or _modality(source)
         ).upper()
-        result = attrs.get("result", attrs.get("finding", "")).strip().lower()
+        finding = attrs.get("result", attrs.get("finding", "")).strip().lower()
         legacy: dict[str, str] = {}
-        if modality in {"MRI", "CT", "EEG"}:
-            if attrs.get("status", "").lower() not in {"planned", "requested", "future"}:
-                legacy[f"{modality}_Performed"] = "Yes"
-            if result in {"normal", "abnormal", "unknown"}:
-                legacy[f"{modality}_Results"] = result.title()
+        pending_status = attrs.get("status", "").lower() in {"planned", "requested", "future"}
+        if modality in {"MRI", "CT", "EEG"} and not pending_status:
+            legacy[f"{modality}_Performed"] = "Yes"
+            if finding in {"normal", "abnormal", "unknown"}:
+                legacy[f"{modality}_Results"] = finding.title()
             if attrs.get("type") and modality == "EEG":
                 legacy["EEG_Type"] = attrs["type"]
         return legacy
-    return _sf_attributes_to_legacy(attrs)
+    return _sf_attributes_to_legacy(attrs, source=source)
 
 
 def _is_noncurrent_prescription(fact: SemanticFact) -> bool:
@@ -567,7 +842,33 @@ def _is_noncurrent_prescription(fact: SemanticFact) -> bool:
     return status in {"planned", "past", "historical", "stopped", "discontinued", "resolved"}
 
 
-def _sf_attributes_to_legacy(attrs: dict[str, str]) -> dict[str, str]:
+def _is_pending_investigation_text(
+    text: str, evidence: str, attributes: dict[str, str]
+) -> bool:
+    return sd.is_pending_investigation(text, evidence=evidence, attributes=attributes)
+
+
+def _is_uncoded_sf_phenomenology(
+    text: str, evidence: str, attributes: dict[str, str]
+) -> bool:
+    if any(
+        attributes.get(key)
+        for key in (
+            "NumberOfSeizures",
+            "LowerNumberOfSeizures",
+            "UpperNumberOfSeizures",
+            "TimePeriod",
+            "NumberOfTimePeriods",
+        )
+    ):
+        return False
+    source = f"{text} {evidence}"
+    if _LAST_EVENT_CUE_RE.search(source) or _SEIZURE_FREE_RE.search(source):
+        return False
+    return not bool(_longest_surface(source, _SF_PHRASES))
+
+
+def _sf_attributes_to_legacy(attrs: dict[str, str], *, source: str = "") -> dict[str, str]:
     key_map = {
         "count": "NumberOfSeizures",
         "frequency": "NumberOfSeizures",
@@ -577,8 +878,6 @@ def _sf_attributes_to_legacy(attrs: dict[str, str]) -> dict[str, str]:
         "lower_period": "LowerNumberOfTimePeriods",
         "upper_period": "UpperNumberOfTimePeriods",
         "period": "TimePeriod",
-        "timeframe": "TimeSince_or_TimeOfEvent",
-        "temporal_scope": "TimeSince_or_TimeOfEvent",
         "change": "FrequencyChange",
         "direction": "FrequencyChange",
         "point_in_time": "PointInTime",
@@ -590,19 +889,18 @@ def _sf_attributes_to_legacy(attrs: dict[str, str]) -> dict[str, str]:
         "age_unit": "AgeUnit",
     }
     legacy = {key_map[key]: value for key, value in attrs.items() if key in key_map and value}
-    state = attrs.get("state", attrs.get("status", "")).lower()
-    if state in {"seizure-free", "seizure free", "none", "zero"}:
+    state = attrs.get("state", attrs.get("status", "")).lower().replace("_", "-")
+    remote = bool(_REMOTE_TIMEFRAME_RE.search(f"{attrs.get('timeframe', '')} {source}"))
+    last_event = bool(_LAST_EVENT_CUE_RE.search(source)) or state in {
+        "last-event",
+        "seizure-free",
+        "seizure free",
+        "none",
+        "zero",
+    }
+    if last_event or (state == "historical" and remote):
         legacy.setdefault("NumberOfSeizures", "0")
     return legacy
-
-
-def _diagnosis_category(concept: str, kind: str) -> str:
-    normalized = (kind or concept).lower()
-    if "single" in normalized or "one" in normalized:
-        return "SingleSeizure"
-    if "multiple" in normalized or "seizure" in normalized and "epilepsy" not in normalized:
-        return "MultipleSeizures"
-    return "Epilepsy"
 
 
 def _certainty(value: str) -> str:
@@ -619,7 +917,7 @@ def _certainty(value: str) -> str:
 
 
 def _negation(value: str) -> str:
-    if value.lower() in {"negated", "否定", "no", "not", "absent"}:
+    if value.lower() in {"negated", "no", "not", "absent"}:
         return "Negated"
     return "Affirmed"
 
@@ -630,97 +928,68 @@ def _dose_unit(value: str) -> str:
 
 
 def _frequency(value: str) -> str:
-    lowered = value.lower().replace("-", " ")
-    if lowered in {"prn", "as required", "as needed", "rescue"}:
-        return "As_Required"
-    if any(token in lowered for token in ("three", "tid", "tds", "thrice")):
-        return "3"
-    if any(token in lowered for token in ("four", "qid", "qds")):
-        return "4"
-    if any(token in lowered for token in ("twice", "bd", "bid", "two")):
-        return "2"
-    if any(token in lowered for token in ("once", "daily", "od", "mane", "nocte", "nightly")):
-        return "1"
+    mapped = sd.frequency_code(value)
+    if mapped:
+        return mapped
     return value if value in {"1", "2", "3", "As_Required"} else ""
 
 
-def _parse_emitted_fact(fact: SemanticFact) -> dict[str, Any]:
-    """Parse only the event and exact evidence emitted for one fact."""
+def _parse_event_and_evidence(fact: SemanticFact) -> dict[str, Any]:
+    """Parse only the emitted event and its exact evidence. No letter extractors."""
 
-    local = ExectLetter(letter_id="semantic-local", note_text=fact.evidence)
-    candidates: list[PredictedMention]
-    if fact.family == DIAGNOSIS.name:
-        candidates = list(diagnosis_rules._extract_diagnoses(fact.evidence))
-        category = "clinical_epilepsy"
-    elif fact.family == PRESCRIPTION.name:
-        candidates = list(prescription_rules._extract_prescriptions(fact.evidence))
-        category = "clinical_epilepsy"
-    elif fact.family == INVESTIGATIONS.name:
-        candidates = list(investigation_rules._extract_investigations(fact.evidence))
-        category = "clinical_epilepsy"
-    else:
-        candidates = list(extract_seizure_frequency(local).mentions)
-        category = "seizure_frequency"
-    chosen = _choose_candidate(candidates, fact.event)
-    if chosen is not None:
-        return {
-            "text": chosen.text,
-            "attributes": dict(chosen.attributes),
-            "rule_category": category,
-            "action": "parse_emitted_event_and_exact_evidence",
-            "warnings": [],
-        }
-    fallback = _fallback_rule_parse(fact)
-    return {
-        "text": fallback[0],
-        "attributes": fallback[1],
-        "rule_category": category,
-        "action": "bounded_fallback_parse_of_emitted_event_and_evidence",
-        "warnings": ["rule_parse_no_named_candidate"] if not fallback[1] else [],
-    }
-
-
-def _choose_candidate(candidates: list[PredictedMention], event: str) -> PredictedMention | None:
-    if not candidates:
-        return None
-    event_tokens = {token for token in re.findall(r"[a-z0-9]+", event.lower()) if len(token) > 2}
-    ranked = sorted(
-        candidates,
-        key=lambda mention: (
-            len(event_tokens & set(re.findall(r"[a-z0-9]+", mention.text.lower()))),
-            len(mention.attributes),
-            len(mention.text),
-        ),
-        reverse=True,
-    )
-    return ranked[0]
-
-
-def _fallback_rule_parse(fact: SemanticFact) -> tuple[str, dict[str, str]]:
     source = f"{fact.event} {fact.evidence}"
     if fact.family == DIAGNOSIS.name:
-        phrase = _longest_surface(source, DIAGNOSIS_SURFACE_FORMS)
+        phrase = (
+            _longest_surface(fact.event, DIAGNOSIS_SURFACE_FORMS)
+            or _longest_surface(source, DIAGNOSIS_SURFACE_FORMS)
+            or fact.event.strip()
+        )
         concept = diagnosis_concept(phrase) if phrase else None
-        attrs = {"DiagCategory": "Epilepsy", "Certainty": "5", "Negation": "Affirmed"}
+        dx_attrs = {
+            "DiagCategory": diagnosis_category_for_concept(phrase),
+            "Certainty": "5",
+            "Negation": "Affirmed",
+        }
         if concept:
-            attrs.update({"CUI": concept.cui, "CUIPhrase": concept.cui_phrase})
-        return phrase or fact.event.strip(), attrs if phrase else {}
+            dx_attrs.update({"CUI": concept.cui, "CUIPhrase": concept.cui_phrase})
+        return {
+            "text": phrase,
+            "attributes": dx_attrs if phrase else {},
+            "rule_category": "clinical_epilepsy",
+            "action": "parse_emitted_event_and_exact_evidence",
+        }
     if fact.family == PRESCRIPTION.name:
-        phrase = _longest_surface(source, PRESCRIPTION_SURFACE_FORMS)
-        dose = _DOSE_RE.search(source)
-        attrs = {"DrugName": phrase} if phrase else {}
+        phrase = _longest_surface(fact.event, PRESCRIPTION_SURFACE_FORMS) or _longest_surface(
+            source, PRESCRIPTION_SURFACE_FORMS
+        )
+        drug = sd.normalize_drug_name(phrase) if phrase else None
+        rx_attrs = {"DrugName": drug or phrase} if phrase else {}
+        dose = sd.dose_from_text(fact.event) or sd.dose_from_text(source)
         if dose:
-            attrs.update(
-                {"DrugDose": dose.group("dose"), "DoseUnit": _dose_unit(dose.group("unit"))}
-            )
-        schedule = _frequency(source)
+            rx_attrs["DrugDose"] = dose[0]
+            rx_attrs["DoseUnit"] = dose[1]
+        schedule = sd.frequency_code(fact.event) or sd.frequency_code(source)
         if schedule:
-            attrs["Frequency"] = schedule
-        return phrase or fact.event.strip(), attrs
+            rx_attrs["Frequency"] = schedule
+        return {
+            "text": drug or phrase or fact.event.strip(),
+            "attributes": rx_attrs,
+            "rule_category": "clinical_epilepsy",
+            "action": "parse_emitted_event_and_exact_evidence",
+        }
     if fact.family == INVESTIGATIONS.name:
-        modality = _modality(source)
+        modality = _modality(fact.event) or _modality(source)
+        if modality and sd.is_pending_investigation(
+            modality, evidence=source, attributes={}
+        ):
+            return {
+                "text": modality,
+                "attributes": {},
+                "rule_category": "clinical_epilepsy",
+                "action": "parse_emitted_event_and_exact_evidence",
+            }
         result_match = re.search(r"\b(normal|abnormal|negative|unremarkable)\b", source, re.I)
-        result = (
+        finding = (
             "Normal"
             if result_match
             and result_match.group(1).lower() in {"normal", "negative", "unremarkable"}
@@ -728,24 +997,40 @@ def _fallback_rule_parse(fact: SemanticFact) -> tuple[str, dict[str, str]]:
             if result_match
             else "Unknown"
         )
-        attrs = {f"{modality}_Performed": "Yes", f"{modality}_Results": result} if modality else {}
-        return modality or fact.event.strip(), attrs
-    phrase = _longest_surface(source, _SF_PHRASES) or fact.event.strip()
-    attrs: dict[str, str] = {}
-    range_match = _COUNT_RE.search(source)
-    single = _SINGLE_COUNT_RE.search(source)
+        inv_attrs = (
+            {f"{modality}_Performed": "Yes", f"{modality}_Results": finding} if modality else {}
+        )
+        return {
+            "text": modality or fact.event.strip(),
+            "attributes": inv_attrs,
+            "rule_category": "clinical_epilepsy",
+            "action": "parse_emitted_event_and_exact_evidence",
+        }
+    phrase = (
+        _longest_surface(fact.event, _SF_PHRASES)
+        or _longest_surface(source, _SF_PHRASES)
+        or fact.event.strip()
+    )
+    sf_attrs: dict[str, str] = {}
+    range_match = _COUNT_RE.search(fact.event) or _COUNT_RE.search(source)
+    single = _SINGLE_COUNT_RE.search(fact.event) or _SINGLE_COUNT_RE.search(source)
     if range_match:
-        attrs.update(
+        sf_attrs.update(
             {
                 "LowerNumberOfSeizures": range_match.group("count"),
                 "UpperNumberOfSeizures": range_match.group("upper"),
             }
         )
     elif single:
-        attrs["NumberOfSeizures"] = single.group("count")
-    if re.search(r"seizure\s*-?free|no further seizures", source, re.I):
-        attrs["NumberOfSeizures"] = "0"
-    return phrase, attrs
+        sf_attrs["NumberOfSeizures"] = single.group("count")
+    if _SEIZURE_FREE_RE.search(source):
+        sf_attrs["NumberOfSeizures"] = "0"
+    return {
+        "text": phrase,
+        "attributes": sf_attrs,
+        "rule_category": "seizure_frequency",
+        "action": "parse_emitted_event_and_exact_evidence",
+    }
 
 
 __all__ = [
@@ -755,6 +1040,7 @@ __all__ = [
     "LLM_METHOD",
     "SEMANTIC_MODEL",
     "SEMANTIC_PROMPT_VERSION",
+    "SYSTEM_MESSAGE",
     "SemanticFact",
     "SemanticInventoryExtractor",
     "SemanticInventoryRecord",

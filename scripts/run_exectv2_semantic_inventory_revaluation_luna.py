@@ -28,6 +28,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.semantic_invento
     LLM_METHOD,
     SEMANTIC_MODEL,
     SEMANTIC_PROMPT_VERSION,
+    SYSTEM_MESSAGE,
     InventoryMaterialization,
     SemanticInventoryExtractor,
     build_inventory_prompt,
@@ -52,8 +53,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
 ROOT = Path(__file__).resolve().parents[1]
-PROTOCOL = "docs/research/exectv2/semantic_inventory_revaluation_luna_2026-08-16_protocol.md"
-REPORT = ROOT / "docs/research/exectv2/semantic_inventory_revaluation_luna_2026-08-16.md"
+PROTOCOL = "docs/research/exectv2/semantic_inventory_v3_fork_a_luna_dev20_protocol_2026-08-16.md"
+REPORT = ROOT / "docs/research/exectv2/semantic_inventory_v3_fork_a_luna_dev20_2026-08-16.md"
 DEV20_IDS = (
     "EA0002",
     "EA0004",
@@ -198,7 +199,7 @@ def _load_letters(split: str) -> list[ExectLetter]:
 
 
 def _study_dir(split: str) -> Path:
-    return ROOT / f"experiments/exectv2_semantic_inventory_revaluation_luna_{split}_20260816"
+    return ROOT / f"experiments/exectv2_semantic_inventory_v3_fork_a_luna_{split}_20260816"
 
 
 def _load_controls(split: str) -> dict[str, dict[str, Any]]:
@@ -231,7 +232,7 @@ def _verify_prompt_contracts(letter: ExectLetter) -> None:
         )
         if messages[0] != {
             "role": "system",
-            "content": "Extract atomic clinical facts from the supplied clinical letter. Return the requested JSON exactly.",
+            "content": SYSTEM_MESSAGE,
         }:
             raise RuntimeError("semantic system message drifted")
 
