@@ -27,17 +27,26 @@ LEAVE_ONE_OUT_STUDY_DIR = (
 CUMULATIVE_STUDY_DIR = (
     REPO_ROOT / "experiments/exectv2_v0924_cumulative_prune_luna_dev20_20260816"
 )
+SCOPE_CLUSTER_STUDY_DIR = (
+    REPO_ROOT / "experiments/exectv2_v0924_scope_cluster_luna_dev20_20260816"
+)
 LEAVE_ONE_OUT_PROTOCOL = (
     "docs/research/exectv2/v0924_prompt_ablation_luna_dev20_protocol_2026-08-16.md"
 )
 CUMULATIVE_PROTOCOL = (
     "docs/research/exectv2/v0924_cumulative_prune_luna_dev20_protocol_2026-08-16.md"
 )
+SCOPE_CLUSTER_PROTOCOL = (
+    "docs/research/exectv2/v0924_scope_cluster_luna_dev20_protocol_2026-08-16.md"
+)
 LEAVE_ONE_OUT_REPORT = (
     REPO_ROOT / "docs/research/exectv2/v0924_prompt_ablation_luna_dev20_2026-08-16.md"
 )
 CUMULATIVE_REPORT = (
     REPO_ROOT / "docs/research/exectv2/v0924_cumulative_prune_luna_dev20_2026-08-16.md"
+)
+SCOPE_CLUSTER_REPORT = (
+    REPO_ROOT / "docs/research/exectv2/v0924_scope_cluster_luna_dev20_2026-08-16.md"
 )
 STUDY_DIR = LEAVE_ONE_OUT_STUDY_DIR
 PROTOCOL = LEAVE_ONE_OUT_PROTOCOL
@@ -53,6 +62,12 @@ CUMULATIVE_ARMS = (
     "drop_scaffold_examples",
     "drop_scaffold_examples_encoding",
 )
+SCOPE_CLUSTER_ARMS = (
+    "drop_scope_sf_refuse",
+    "drop_scope_sf_keep",
+    "drop_scope_diagnosis",
+    "drop_scope_rx_ix",
+)
 ARM_VERSIONS = {
     "drop_scaffold": structured.PROMPT_VERSION_V0_9_26_DROP_SCAFFOLD,
     "drop_examples": structured.PROMPT_VERSION_V0_9_27_DROP_EXAMPLES,
@@ -62,6 +77,10 @@ ARM_VERSIONS = {
     "drop_scaffold_examples_encoding": (
         structured.PROMPT_VERSION_V0_9_31_DROP_SCAFFOLD_EXAMPLES_ENCODING
     ),
+    "drop_scope_sf_refuse": structured.PROMPT_VERSION_V0_9_32_DROP_SCOPE_SF_REFUSE,
+    "drop_scope_sf_keep": structured.PROMPT_VERSION_V0_9_33_DROP_SCOPE_SF_KEEP,
+    "drop_scope_diagnosis": structured.PROMPT_VERSION_V0_9_34_DROP_SCOPE_DIAGNOSIS,
+    "drop_scope_rx_ix": structured.PROMPT_VERSION_V0_9_35_DROP_SCOPE_RX_IX,
 }
 CONTAMINATION_LETTERS = ("EA0004", "EA0010")
 
@@ -72,7 +91,9 @@ def main(argv: Sequence[str] | None = None) -> None:
     check = sub.add_parser("check", help="Verify ablation payloads and score the control.")
     check.add_argument("--overwrite", action="store_true")
     run = sub.add_parser("run", help="Score control; live only with --live")
-    run.add_argument("--arm", choices=(*SERIES_ORDER, *CUMULATIVE_ARMS))
+    run.add_argument(
+        "--arm", choices=(*SERIES_ORDER, *CUMULATIVE_ARMS, *SCOPE_CLUSTER_ARMS)
+    )
     run.add_argument("--series", action="store_true", help="Run every leave-one-out arm.")
     run.add_argument("--live", action="store_true")
     run.add_argument("--overwrite", action="store_true")
@@ -150,6 +171,14 @@ def verify_payload() -> dict[str, Any]:
         or checks["drop_scaffold_examples_encoding"]["n_rules"] != 50
     ):
         raise RuntimeError("drop_scaffold_examples_encoding contract drifted")
+    if checks["drop_scope_sf_refuse"]["n_rules"] != 76:
+        raise RuntimeError("drop_scope_sf_refuse contract drifted")
+    if checks["drop_scope_sf_keep"]["n_rules"] != 79:
+        raise RuntimeError("drop_scope_sf_keep contract drifted")
+    if checks["drop_scope_diagnosis"]["n_rules"] != 76:
+        raise RuntimeError("drop_scope_diagnosis contract drifted")
+    if checks["drop_scope_rx_ix"]["n_rules"] != 76:
+        raise RuntimeError("drop_scope_rx_ix contract drifted")
     return {
         "ok": True,
         "default_prompt_version": structured.PROMPT_VERSION,
@@ -285,6 +314,11 @@ def _select_study(arms: Sequence[str]) -> None:
         PROTOCOL = CUMULATIVE_PROTOCOL
         REPORT_PATH = CUMULATIVE_REPORT
         return
+    if any(arm in SCOPE_CLUSTER_ARMS for arm in arms):
+        STUDY_DIR = SCOPE_CLUSTER_STUDY_DIR
+        PROTOCOL = SCOPE_CLUSTER_PROTOCOL
+        REPORT_PATH = SCOPE_CLUSTER_REPORT
+        return
     STUDY_DIR = LEAVE_ONE_OUT_STUDY_DIR
     PROTOCOL = LEAVE_ONE_OUT_PROTOCOL
     REPORT_PATH = LEAVE_ONE_OUT_REPORT
@@ -331,6 +365,11 @@ def _claim_boundary() -> str:
             "ExECTv2 Luna 20-letter development cumulative prune of v0.9.24. "
             "Not holdout, not a selected prompt, and not a Decision 0050 change."
         )
+    if STUDY_DIR == SCOPE_CLUSTER_STUDY_DIR:
+        return (
+            "ExECTv2 Luna 20-letter development scope-cluster prune of v0.9.24. "
+            "Not holdout, not a selected prompt, and not a Decision 0050 change."
+        )
     return (
         "ExECTv2 Luna 20-letter development leave-one-out prune of v0.9.24. "
         "Not holdout, not a selected prompt, and not a Decision 0050 change."
@@ -345,11 +384,12 @@ def _should_write_stub_report() -> bool:
 
 def _render_report(artifact: Mapping[str, Any]) -> str:
     ctrl = artifact["arms"]["v0924_head"]
-    title = (
-        "# ExECT `v0.9.24` cumulative prune — GPT-5.6 Luna `dev20`"
-        if STUDY_DIR == CUMULATIVE_STUDY_DIR
-        else "# ExECT `v0.9.24` leave-one-out prompt prune — GPT-5.6 Luna `dev20`"
-    )
+    if STUDY_DIR == CUMULATIVE_STUDY_DIR:
+        title = "# ExECT `v0.9.24` cumulative prune — GPT-5.6 Luna `dev20`"
+    elif STUDY_DIR == SCOPE_CLUSTER_STUDY_DIR:
+        title = "# ExECT `v0.9.24` scope-cluster prune — GPT-5.6 Luna `dev20`"
+    else:
+        title = "# ExECT `v0.9.24` leave-one-out prompt prune — GPT-5.6 Luna `dev20`"
     lines = [
         title,
         "",

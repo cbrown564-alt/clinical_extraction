@@ -1232,6 +1232,10 @@ def test_no_prompt_version_mentions_cui() -> None:
         structured.PROMPT_VERSION_V0_9_29_DROP_SCOPE_RULES,
         structured.PROMPT_VERSION_V0_9_30_DROP_SCAFFOLD_EXAMPLES,
         structured.PROMPT_VERSION_V0_9_31_DROP_SCAFFOLD_EXAMPLES_ENCODING,
+        structured.PROMPT_VERSION_V0_9_32_DROP_SCOPE_SF_REFUSE,
+        structured.PROMPT_VERSION_V0_9_33_DROP_SCOPE_SF_KEEP,
+        structured.PROMPT_VERSION_V0_9_34_DROP_SCOPE_DIAGNOSIS,
+        structured.PROMPT_VERSION_V0_9_35_DROP_SCOPE_RX_IX,
     ]
     try:
         for version in versions:

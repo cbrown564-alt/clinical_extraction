@@ -21,6 +21,18 @@ PROMPT_VERSION_V0_9_30_DROP_SCAFFOLD_EXAMPLES = (
 PROMPT_VERSION_V0_9_31_DROP_SCAFFOLD_EXAMPLES_ENCODING = (
     structured.PROMPT_VERSION_V0_9_31_DROP_SCAFFOLD_EXAMPLES_ENCODING
 )
+PROMPT_VERSION_V0_9_32_DROP_SCOPE_SF_REFUSE = (
+    structured.PROMPT_VERSION_V0_9_32_DROP_SCOPE_SF_REFUSE
+)
+PROMPT_VERSION_V0_9_33_DROP_SCOPE_SF_KEEP = (
+    structured.PROMPT_VERSION_V0_9_33_DROP_SCOPE_SF_KEEP
+)
+PROMPT_VERSION_V0_9_34_DROP_SCOPE_DIAGNOSIS = (
+    structured.PROMPT_VERSION_V0_9_34_DROP_SCOPE_DIAGNOSIS
+)
+PROMPT_VERSION_V0_9_35_DROP_SCOPE_RX_IX = (
+    structured.PROMPT_VERSION_V0_9_35_DROP_SCOPE_RX_IX
+)
 
 _LETTER = ExectLetter(
     letter_id="TEST001",
@@ -39,6 +51,9 @@ _SCAFFOLD_KEYS = (
 _LEDGER_RULE = "First classify each candidate_evidence_ledger item"
 _ENCODING_RULE = "LowerNumberOfSeizures and UpperNumberOfSeizures"
 _SCOPE_RULE = "Do not add a generic epilepsy companion"
+_SF_REFUSE_RULE = "Do not render SeizureFrequency for generic events"
+_SF_KEEP_RULE = "seizures since the age of 13"
+_RX_IX_RULE = "ECG is not an ExECTv2 target investigation"
 _EXAMPLE_09 = "several seizures since the last clinic appointment"
 
 
@@ -143,6 +158,54 @@ def test_cumulative_scaffold_examples_encoding_keeps_scope() -> None:
     assert _ENCODING_RULE not in rules
     assert _SCOPE_RULE in rules
     assert len(payload["clinical_rules"]) == 50
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+
+
+def test_drop_scope_sf_refuse_keeps_other_scope_clusters() -> None:
+    payload = _payload(PROMPT_VERSION_V0_9_32_DROP_SCOPE_SF_REFUSE)
+    rules = " ".join(payload["clinical_rules"])
+    assert _SF_REFUSE_RULE not in rules
+    assert _SF_KEEP_RULE in rules
+    assert _SCOPE_RULE in rules
+    assert _RX_IX_RULE in rules
+    assert _ENCODING_RULE in rules
+    assert len(payload["clinical_rules"]) == 76
+    assert len(payload["worked_examples"]) == 49
+    for key in _SCAFFOLD_KEYS:
+        assert key in payload
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+
+
+def test_drop_scope_sf_keep_keeps_other_scope_clusters() -> None:
+    payload = _payload(PROMPT_VERSION_V0_9_33_DROP_SCOPE_SF_KEEP)
+    rules = " ".join(payload["clinical_rules"])
+    assert _SF_KEEP_RULE not in rules
+    assert _SF_REFUSE_RULE in rules
+    assert _SCOPE_RULE in rules
+    assert _RX_IX_RULE in rules
+    assert len(payload["clinical_rules"]) == 79
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+
+
+def test_drop_scope_diagnosis_keeps_sf_and_rx_ix() -> None:
+    payload = _payload(PROMPT_VERSION_V0_9_34_DROP_SCOPE_DIAGNOSIS)
+    rules = " ".join(payload["clinical_rules"])
+    assert _SCOPE_RULE not in rules
+    assert _SF_REFUSE_RULE in rules
+    assert _SF_KEEP_RULE in rules
+    assert _RX_IX_RULE in rules
+    assert len(payload["clinical_rules"]) == 76
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+
+
+def test_drop_scope_rx_ix_keeps_sf_and_diagnosis() -> None:
+    payload = _payload(PROMPT_VERSION_V0_9_35_DROP_SCOPE_RX_IX)
+    rules = " ".join(payload["clinical_rules"])
+    assert _RX_IX_RULE not in rules
+    assert _SCOPE_RULE in rules
+    assert _SF_REFUSE_RULE in rules
+    assert _SF_KEEP_RULE in rules
+    assert len(payload["clinical_rules"]) == 76
     assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
 
 

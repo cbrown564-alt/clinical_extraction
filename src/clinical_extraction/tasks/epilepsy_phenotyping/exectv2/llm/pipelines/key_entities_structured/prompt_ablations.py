@@ -29,6 +29,18 @@ PROMPT_VERSION_V0_9_30_DROP_SCAFFOLD_EXAMPLES = (
 PROMPT_VERSION_V0_9_31_DROP_SCAFFOLD_EXAMPLES_ENCODING = (
     "exectv2_hybrid_key_family_event_ledger_v0.9.31_drop_scaffold_examples_encoding"
 )
+PROMPT_VERSION_V0_9_32_DROP_SCOPE_SF_REFUSE = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.32_drop_scope_sf_refuse"
+)
+PROMPT_VERSION_V0_9_33_DROP_SCOPE_SF_KEEP = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.33_drop_scope_sf_keep"
+)
+PROMPT_VERSION_V0_9_34_DROP_SCOPE_DIAGNOSIS = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.34_drop_scope_diagnosis"
+)
+PROMPT_VERSION_V0_9_35_DROP_SCOPE_RX_IX = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.35_drop_scope_rx_ix"
+)
 
 _SCAFFOLD_TASK = (
     "Read the clinical letter once. Build a compact list of source-near "
@@ -108,6 +120,40 @@ _SCOPE_RULES = frozenset(
         "rule-77",
     }
 )
+_SCOPE_SF_REFUSE = frozenset(
+    {
+        "rule-41",
+        "rule-42",
+        "rule-43",
+        "rule-44",
+        "rule-45",
+        "rule-46",
+        "rule-59",
+    }
+)
+_SCOPE_SF_KEEP = frozenset({"rule-47", "rule-57", "rule-60", "rule-61"})
+_SCOPE_DIAGNOSIS = frozenset(
+    {
+        "rule-15",
+        "rule-17",
+        "rule-18",
+        "rule-24",
+        "rule-25",
+        "rule-26",
+        "rule-30",
+    }
+)
+_SCOPE_RX_IX = frozenset(
+    {
+        "rule-66",
+        "rule-72",
+        "rule-73",
+        "rule-74",
+        "rule-75",
+        "rule-76",
+        "rule-77",
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -151,6 +197,22 @@ ABLATION_SPECS: dict[str, AblationSpec] = {
         drop_examples=True,
         drop_rule_ids=_JUNK_LEDGER_RULES | _ENCODING_RULES,
         task=_SCAFFOLD_TASK,
+    ),
+    PROMPT_VERSION_V0_9_32_DROP_SCOPE_SF_REFUSE: AblationSpec(
+        version=PROMPT_VERSION_V0_9_32_DROP_SCOPE_SF_REFUSE,
+        drop_rule_ids=_SCOPE_SF_REFUSE,
+    ),
+    PROMPT_VERSION_V0_9_33_DROP_SCOPE_SF_KEEP: AblationSpec(
+        version=PROMPT_VERSION_V0_9_33_DROP_SCOPE_SF_KEEP,
+        drop_rule_ids=_SCOPE_SF_KEEP,
+    ),
+    PROMPT_VERSION_V0_9_34_DROP_SCOPE_DIAGNOSIS: AblationSpec(
+        version=PROMPT_VERSION_V0_9_34_DROP_SCOPE_DIAGNOSIS,
+        drop_rule_ids=_SCOPE_DIAGNOSIS,
+    ),
+    PROMPT_VERSION_V0_9_35_DROP_SCOPE_RX_IX: AblationSpec(
+        version=PROMPT_VERSION_V0_9_35_DROP_SCOPE_RX_IX,
+        drop_rule_ids=_SCOPE_RX_IX,
     ),
 }
 
