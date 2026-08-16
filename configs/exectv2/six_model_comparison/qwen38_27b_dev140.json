@@ -1,0 +1,111 @@
+{
+  "candidate_id": "exectv2_six_model_single_call_qwen38_27b_dev140",
+  "model": "ollama_chat/qwen3.8:27b",
+  "model_label": "Qwen 3.8 27B",
+  "architecture_core_id": "exectv2_decision_0041_six_model_single_call_dev140_v1",
+  "architecture_contract": "decision_0040_model_led",
+  "diagnosis_resolution_candidate": true,
+  "replay_source_revision": "working_tree_2026-08-14_qwen38_27b_candidate",
+  "calls_per_letter": 1,
+  "runtime": "ollama_native_chat_think_false",
+  "runtime_metadata": {
+    "provider": "Ollama",
+    "endpoint": "http://localhost:11434",
+    "ollama_version": "0.32.13",
+    "tag": "qwen3.8:27b",
+    "digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+    "parameter_size": "27.3B",
+    "quantization": "Q4_K_M",
+    "thinking": "disabled_with_think_false",
+    "structured_output_mode": "native_schema_constraint",
+    "native_schema_constraint": "enforced",
+    "structured_probe_date": "2026-08-14",
+    "num_ctx": 32768,
+    "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+    "cache_mode": "disabled",
+    "study_protocol": "docs/research/shared/qwen38_27b_candidate_protocol_2026-08-14.md"
+  },
+  "prompt_profile": "full",
+  "temperature": 0,
+  "max_tokens": {
+    "structured_key_family_event_ledger": 16000
+  },
+  "live_call_components": [
+    "structured_key_family_event_ledger"
+  ],
+  "replayed_components": [
+    "sf_structured_direct_adapter",
+    "sf_state_projection",
+    "sf_unknown_suppression",
+    "prescription_dictionary_lens",
+    "finding_assembly"
+  ],
+  "claim_boundary": "ExECTv2 dev140 reserved Qwen 3.8 27B candidate. Not a Decision 0051 roster swap and not a rewrite of Qwen 3.6:35B.",
+  "run_command": ".venv\\Scripts\\python.exe scripts/run_exectv2_six_model_comparison.py --config configs/exectv2/six_model_comparison/qwen38_27b_dev140.json --no-dspy-cache --generated-on 2026-08-14",
+  "assembly": {
+    "candidate_id": "exectv2_six_model_single_call_qwen38_27b_dev140",
+    "pipeline_family": "exectv2_decision_0041_six_model_single_call_dev140",
+    "ownership": "component_attributed_model_led_single_call_live",
+    "split": "dev140",
+    "row_count": 140,
+    "claim_boundary": "ExECTv2 dev140 Qwen 3.8 27B reserved candidate only.",
+    "baseline_producer": "structured_key_family_event_ledger",
+    "promotion_decision": "qwen38-27b-candidate-dev140-readout",
+    "producers": {
+      "structured_key_family_event_ledger": {
+        "kind": "saved_jsonl",
+        "artifact": "experiments/exectv2_six_model_single_call_qwen38_27b_dev140_20260814_structured.jsonl",
+        "ownership_label": "qwen38_27b_structured_model_facts",
+        "source_lane": "model_structured_key_families"
+      },
+      "sf_model_projection_suppression": {
+        "kind": "saved_jsonl",
+        "artifact": "experiments/exectv2_six_model_single_call_qwen38_27b_dev140_20260814_sf_unknown_suppression.jsonl",
+        "ownership_label": "qwen38_27b_sf_model_plus_projection_suppression",
+        "source_lane": "model_sf_projection_suppression"
+      }
+    },
+    "lenses": {
+      "Diagnosis": {
+        "producer": "structured_key_family_event_ledger",
+        "lens": "diagnosis_heading_recovery_residual_benchmark_v05",
+        "source_lane": "model_structured_diagnosis",
+        "ownership_label": "named_model_structured_diagnosis_plus_rules",
+        "portability": "benchmark_format"
+      },
+      "SeizureFrequency": {
+        "producer": "sf_model_projection_suppression",
+        "lens": "sf_state_projection_suppression_v01",
+        "source_lane": "model_sf_projection_suppression",
+        "ownership_label": "named_model_sf_plus_projection_suppression",
+        "portability": "seizure_frequency"
+      },
+      "Prescription": {
+        "producer": "structured_key_family_event_ledger",
+        "lens": "prescription_dictionary_v09",
+        "source_lane": "model_structured_prescription",
+        "ownership_label": "named_model_prescription_plus_shared_rules",
+        "portability": "clinical_epilepsy"
+      },
+      "Investigations": {
+        "producer": "structured_key_family_event_ledger",
+        "lens": "investigations_result_v01",
+        "source_lane": "model_structured_investigations",
+        "ownership_label": "named_model_investigations",
+        "portability": "clinical_epilepsy"
+      }
+    },
+    "views": [
+      "raw_candidate",
+      "post_lens",
+      "clinical_headline",
+      "fidelity_companion",
+      "benchmark_cui"
+    ]
+  },
+  "outputs": {
+    "json": "experiments/exectv2_six_model_single_call_qwen38_27b_dev140_20260814.json",
+    "jsonl": "experiments/exectv2_six_model_single_call_qwen38_27b_dev140_20260814.jsonl",
+    "markdown": "docs/experiments/exectv2/reliability/exectv2_six_model_single_call_qwen38_27b_dev140_2026-08-14.md"
+  }
+}
