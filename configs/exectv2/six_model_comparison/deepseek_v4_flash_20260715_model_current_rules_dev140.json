@@ -31,7 +31,7 @@
     "finding_assembly"
   ],
   "claim_boundary": "No-call current-rules reassembly of the retained 2026-07-15 DeepSeek ExECTv2 structured outputs on dev140. Development comparator only; not a new model call, holdout, or panel replacement.",
-  "run_command": ".venv\\Scripts\\python.exe scripts/replay_exectv2_deepseek_v4_flash_20260715_current_rules_dev140.py",
+  "run_command": "removed in the 2026-08-16 scripts prune; recover scripts/replay_exectv2_deepseek_v4_flash_20260715_current_rules_dev140.py from git history",
   "assembly": {
     "candidate_id": "exectv2_deepseek_v4_flash_20260715_model_current_rules_dev140",
     "pipeline_family": "exectv2_decision_0041_six_model_single_call_dev140",

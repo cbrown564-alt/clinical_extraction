@@ -31,7 +31,7 @@
     "finding_assembly"
   ],
   "claim_boundary": "ExECTv2 dev140 no-call GPT-4.1-mini single-call Diagnosis ablation under decision 0040; not holdout, published-benchmark reproduction, clinical validation, or evidence for other models.",
-  "run_command": ".venv\\Scripts\\python.exe scripts/check_exectv2_gpt41mini_single_call_diagnosis_ablation.py",
+  "run_command": "removed in the 2026-08-16 scripts prune; recover scripts/check_exectv2_gpt41mini_single_call_diagnosis_ablation.py from git history",
   "assembly": {
     "candidate_id": "exectv2_gpt41mini_single_call_diagnosis_dev140",
     "pipeline_family": "exectv2_decision_0040_gpt41mini_single_call_diagnosis_dev140",

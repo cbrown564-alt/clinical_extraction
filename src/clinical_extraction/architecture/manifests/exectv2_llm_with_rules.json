@@ -380,8 +380,8 @@
     {
       "name": "Archived joint bounded policy",
       "role": "rejected candidate or ablation",
-      "path": "scripts/check_exectv2_joint_bounded_policy_replay.py",
-      "note": "The combined/combined Diagnosis and Prescription policy. Demoted by decision 0045; requires an explicit opt-in flag."
+      "path": "docs/experiments/exectv2/reliability/archive/exectv2_joint_policy_archive_README.md",
+      "note": "The combined/combined Diagnosis and Prescription policy. Demoted by decision 0045. Replay scripts removed in the 2026-08-16 scripts prune; recover from git history if needed."
     }
   ],
   "evidence_owners": [
