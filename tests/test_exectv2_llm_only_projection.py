@@ -25,9 +25,9 @@ _NOTE = (
 _LETTER = ExectLetter(letter_id="TEST001", note_text=_NOTE)
 
 
-def test_v26_last_event_history_is_promoted_to_seizure_free() -> None:
+def test_history_last_event_is_promoted_to_seizure_free_for_legacy_v26_rows() -> None:
     row = {
-        "prompt_version": structured.PROMPT_VERSION_V26,
+        "prompt_version": "exectv2_hybrid_key_family_event_ledger_v26",
         "structured_events": [
             {
                 "family": "history",
@@ -352,7 +352,7 @@ def test_write_report_includes_goal_and_diagnostic_ladder(tmp_path) -> None:
     assert "## Diagnostic Scoring Ladder" in text
 
 
-def test_v26_events_project_through_to_predicted_letter() -> None:
+def test_clinical_family_events_project_through_to_predicted_letter() -> None:
     note = (
         "Diagnosis: focal epilepsy. "
         "She has 2 focal seizures per month. "
@@ -450,7 +450,7 @@ def test_v26_events_project_through_to_predicted_letter() -> None:
         "TEST001",
         mentions,
         note_text=note,
-        prompt_version=structured.PROMPT_VERSION_V26,
+        prompt_version=structured.PROMPT_VERSION_V0_9_24,
     )
 
     assert [mention.entity for mention in letter.mentions] == [

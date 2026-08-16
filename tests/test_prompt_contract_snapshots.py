@@ -11,9 +11,6 @@ import pytest
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    diagnosis_decomposer as exectv2_diagnosis,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as exectv2_structured,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
@@ -71,9 +68,6 @@ PROMPT_BUILDERS: dict[str, Callable[[], str | dict[str, object]]] = {
     ),
     "exectv2__structured_key_families": lambda: exectv2_structured.build_prompt_input(
         _exect_letter()
-    ),
-    "exectv2__diagnosis_decomposer": lambda: exectv2_diagnosis.build_prompt_input(
-        _exect_letter(), []
     ),
 }
 

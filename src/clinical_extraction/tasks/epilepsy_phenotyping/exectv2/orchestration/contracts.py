@@ -102,7 +102,7 @@ def deep_thaw(value: Any) -> Any:
 class StructuredMethodConfig:
     """Immutable selected policy for the one-call ExECT method pair."""
 
-    prompt_profile: Literal["full", "qwen_compact"] = "full"
+    prompt_profile: Literal["full"] = "full"
     diagnosis_policy_variant: str = "default"
     prescription_policy_variant: str = "default"
     sf_projection_ablation: Literal["none", "state", "ownership", "combined"] = "combined"
@@ -155,13 +155,13 @@ class StructuredMethodConfig:
 
     @classmethod
     def selected(
-        cls, *, prompt_profile: Literal["full", "qwen_compact"] = "full"
+        cls, *, prompt_profile: Literal["full"] = "full"
     ) -> StructuredMethodConfig:
         return cls(prompt_profile=prompt_profile)
 
     @classmethod
     def archived_combined(
-        cls, *, prompt_profile: Literal["full", "qwen_compact"] = "full"
+        cls, *, prompt_profile: Literal["full"] = "full"
     ) -> StructuredMethodConfig:
         return cls(
             prompt_profile=prompt_profile,

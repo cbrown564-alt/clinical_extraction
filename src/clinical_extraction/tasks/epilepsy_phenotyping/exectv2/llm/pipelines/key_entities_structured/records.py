@@ -10,11 +10,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict
 
-from .constants import (
-    PROMPT_VERSION_V26,
-    PROMPT_VERSION_V27,
-    EventFamily,
-)
+from .constants import EventFamily
 
 
 class RenderedMentionRecord(BaseModel):
@@ -79,39 +75,10 @@ class StructuredExtractionRecord(BaseModel):
     medication_history: list[MedicationHistoryRecord] = []
 
 
-V26ClinicalFamily = Literal[
-    "medication",
-    "diagnosis",
-    "seizure_frequency",
-    "investigation",
-    "history",
-]
-
-
-class V26ClinicalEventRecord(BaseModel):
-    """Model-facing v26 event. Internal parse still coerces to StructuredClinicalEvent."""
-
-    model_config = ConfigDict(extra="ignore")
-
-    clinical_family: V26ClinicalFamily
-    event: str = ""
-    evidence: str = ""
-    attributes: dict[str, Any] = {}
-
-
-class V26StructuredExtractionRecord(BaseModel):
-    """Model-facing v26 payload used for format-retry schema only."""
-
-    model_config = ConfigDict(extra="ignore")
-
-    clinical_events: list[V26ClinicalEventRecord] = []
-
-
 def format_retry_schema_for(prompt_version: str) -> dict[str, Any]:
     """JSON schema advertised to a format-only retry for this prompt version."""
 
-    if prompt_version in {PROMPT_VERSION_V26, PROMPT_VERSION_V27}:
-        return V26StructuredExtractionRecord.model_json_schema()
+    del prompt_version  # Only the canonical structured schema remains live.
     return StructuredExtractionRecord.model_json_schema()
 
 

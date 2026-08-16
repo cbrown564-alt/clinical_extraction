@@ -28,9 +28,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import
     sf_unknown_suppression as sf_suppression,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    diagnosis_decomposer as dx_decomposer,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
@@ -39,6 +36,14 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_p
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports import model_swap
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     write_jsonl_rows as write_jsonl,
+)
+
+# Historical v26/v27 identities retained only for replay of saved artifacts.
+_LEGACY_V26_PROMPT_VERSIONS = frozenset(
+    {
+        "exectv2_hybrid_key_family_event_ledger_v26",
+        "exectv2_hybrid_key_family_event_ledger_v27",
+    }
 )
 
 
@@ -245,26 +250,14 @@ def _run_diagnosis(
     jsonl_path: Path,
     args: argparse.Namespace,
 ) -> None:
+    del letters, structured_rows, config
     if jsonl_path.exists() and args.resume:
         print(f"Reusing Diagnosis decomposer artifact: {jsonl_path.as_posix()}")
-    rows, meta = dx_decomposer.run_split(
-        letters,
-        draft_rows=structured_rows,
-        split=config.assembly.split,
-        model=config.model,
-        temperature=config.temperature,
-        max_tokens=int(config.max_tokens.get("diagnosis_decomposer", 2600)),
-        mode="live",
-        dspy_cache=not args.no_dspy_cache,
-        api_base=args.api_base,
-        progress_every=args.progress_every,
-        checkpoint_jsonl_path=jsonl_path,
-        checkpoint_report_path=jsonl_path.with_suffix(".md"),
-        resume=args.resume,
-        prompt_profile=config.prompt_profile,  # type: ignore[arg-type]
+        return
+    raise SystemExit(
+        "Live diagnosis_decomposer calls were removed. Use Diagnosis producer "
+        "'structured_key_family_event_ledger', or --resume with an existing artifact."
     )
-    write_jsonl(rows, jsonl_path)
-    dx_decomposer.write_report(rows, meta, jsonl_path.with_suffix(".md"), jsonl_path=jsonl_path)
 
 
 def _run_model_led_sf_chain(
@@ -375,10 +368,7 @@ def _v26_history_last_event_mentions(row: Mapping[str, object]) -> list[dict[str
     adapter narrow: never-had and resemblance wording remain history.
     """
 
-    if str(row.get("prompt_version")) not in {
-        structured.PROMPT_VERSION_V26,
-        structured.PROMPT_VERSION_V27,
-    }:
+    if str(row.get("prompt_version")) not in _LEGACY_V26_PROMPT_VERSIONS:
         return []
     events = row.get("structured_events")
     if not isinstance(events, list):

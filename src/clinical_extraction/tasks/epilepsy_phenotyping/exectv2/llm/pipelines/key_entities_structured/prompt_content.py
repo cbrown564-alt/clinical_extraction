@@ -18,7 +18,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import
     standard_dictionary as sd,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.prompts.key_entities.loader import (
-    load_qwen_compact_worked_examples,
     load_worked_examples,
 )
 
@@ -32,10 +31,6 @@ from .constants import (
     _SEIZURE_STATE_RE,
     KEY_ENTITY_NAMES,
 )
-
-
-def _qwen_compact_examples() -> list[dict[str, Any]]:
-    return load_qwen_compact_worked_examples()
 
 
 def high_priority_evidence_ledger_for_letter(letter: ExectLetter) -> list[dict[str, Any]]:

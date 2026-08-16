@@ -35,6 +35,8 @@ def test_model_swap_config_parity_allows_only_model_adapter_differences(
         model="openai/gpt-4.1-mini",
         model_label="GPT-4.1-mini",
         artifact=shared_rows,
+        single_call_diagnosis=True,
+        model_led=True,
     )
     qwen = _write_config(
         tmp_path,
@@ -42,7 +44,9 @@ def test_model_swap_config_parity_allows_only_model_adapter_differences(
         model="ollama/qwen3.6:35b",
         model_label="Qwen 3.6 35B",
         artifact=tmp_path / "missing_qwen.jsonl",
-        prompt_profile="qwen_compact",
+        prompt_profile="full",
+        single_call_diagnosis=True,
+        model_led=True,
     )
 
     configs = [model_swap.load_model_swap_config(path) for path in (gpt, qwen)]
@@ -52,7 +56,6 @@ def test_model_swap_config_parity_allows_only_model_adapter_differences(
     assert parity["component_graph_identical"] is True
     assert parity["shared_signature"]["live_call_components"] == [
         "structured_key_family_event_ledger",
-        "diagnosis_decomposer",
     ]
     assert parity["adapter_differences"] == {
         "swap_gpt": {
@@ -64,7 +67,7 @@ def test_model_swap_config_parity_allows_only_model_adapter_differences(
         "swap_qwen": {
             "model": "ollama/qwen3.6:35b",
             "model_label": "Qwen 3.6 35B",
-            "prompt_profile": "qwen_compact",
+            "prompt_profile": "full",
             "runtime": "openai_chat",
         },
     }

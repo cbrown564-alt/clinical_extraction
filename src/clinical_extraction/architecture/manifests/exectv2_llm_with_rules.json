@@ -218,7 +218,7 @@
         "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/diagnosis.py",
         "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.diagnosis:DiagnosisDictionaryLens"
       },
-      "governing_test": "tests/test_exectv2_diagnosis_decomposer.py",
+      "governing_test": "tests/test_exectv2_clinical_finding_assembly.py",
       "trace_fields": [
         "lanes.Diagnosis.lens_diagnostics",
         "provenance[].action"

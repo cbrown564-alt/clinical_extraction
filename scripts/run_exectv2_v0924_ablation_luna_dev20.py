@@ -79,48 +79,13 @@ STUDY_DIR = LEAVE_ONE_OUT_STUDY_DIR
 PROTOCOL = LEAVE_ONE_OUT_PROTOCOL
 REPORT_PATH = LEAVE_ONE_OUT_REPORT
 MODEL = "openai/gpt-5.6-luna"
-SERIES_ORDER = (
-    "drop_scaffold",
-    "drop_examples",
-    "drop_encoding",
-    "drop_scope",
-)
-CUMULATIVE_ARMS = (
-    "drop_scaffold_examples",
-    "drop_scaffold_examples_encoding",
-)
-SCOPE_CLUSTER_ARMS = (
-    "drop_scope_sf_refuse",
-    "drop_scope_sf_keep",
-    "drop_scope_diagnosis",
-    "drop_scope_rx_ix",
-)
-NON_SF_ARMS = (
-    "drop_encoding_non_sf",
-    "drop_examples_non_sf",
-)
-SF_EXAMPLE_ARMS = (
-    "drop_examples_sf_encoding",
-    "drop_examples_sf_scope",
-)
+SERIES_ORDER: tuple[str, ...] = ()
+CUMULATIVE_ARMS: tuple[str, ...] = ()
+SCOPE_CLUSTER_ARMS: tuple[str, ...] = ()
+NON_SF_ARMS: tuple[str, ...] = ()
+SF_EXAMPLE_ARMS: tuple[str, ...] = ()
 CHEAP_STACK_ARMS = ("drop_encoding_non_sf_all_examples",)
 ARM_VERSIONS = {
-    "drop_scaffold": structured.PROMPT_VERSION_V0_9_26_DROP_SCAFFOLD,
-    "drop_examples": structured.PROMPT_VERSION_V0_9_27_DROP_EXAMPLES,
-    "drop_encoding": structured.PROMPT_VERSION_V0_9_28_DROP_ENCODING_RULES,
-    "drop_scope": structured.PROMPT_VERSION_V0_9_29_DROP_SCOPE_RULES,
-    "drop_scaffold_examples": structured.PROMPT_VERSION_V0_9_30_DROP_SCAFFOLD_EXAMPLES,
-    "drop_scaffold_examples_encoding": (
-        structured.PROMPT_VERSION_V0_9_31_DROP_SCAFFOLD_EXAMPLES_ENCODING
-    ),
-    "drop_scope_sf_refuse": structured.PROMPT_VERSION_V0_9_32_DROP_SCOPE_SF_REFUSE,
-    "drop_scope_sf_keep": structured.PROMPT_VERSION_V0_9_33_DROP_SCOPE_SF_KEEP,
-    "drop_scope_diagnosis": structured.PROMPT_VERSION_V0_9_34_DROP_SCOPE_DIAGNOSIS,
-    "drop_scope_rx_ix": structured.PROMPT_VERSION_V0_9_35_DROP_SCOPE_RX_IX,
-    "drop_encoding_non_sf": structured.PROMPT_VERSION_V0_9_36_DROP_ENCODING_NON_SF,
-    "drop_examples_non_sf": structured.PROMPT_VERSION_V0_9_37_DROP_EXAMPLES_NON_SF,
-    "drop_examples_sf_encoding": structured.PROMPT_VERSION_V0_9_38_DROP_EXAMPLES_SF_ENCODING,
-    "drop_examples_sf_scope": structured.PROMPT_VERSION_V0_9_39_DROP_EXAMPLES_SF_SCOPE,
     "drop_encoding_non_sf_all_examples": (
         structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES
     ),
@@ -202,54 +167,6 @@ def verify_payload() -> dict[str, Any]:
         structured.set_active_prompt_version(before)
     if structured.PROMPT_VERSION != structured.PROMPT_VERSION_V0_9_24:
         raise RuntimeError("ablation check changed the live default")
-    if checks["drop_scaffold"]["has_scaffold"] or checks["drop_scaffold"]["n_rules"] != 79:
-        raise RuntimeError("drop_scaffold contract drifted")
-    if checks["drop_examples"]["n_examples"] != 0 or checks["drop_examples"]["n_rules"] != 83:
-        raise RuntimeError("drop_examples contract drifted")
-    if checks["drop_encoding"]["n_rules"] != 54:
-        raise RuntimeError("drop_encoding contract drifted")
-    if checks["drop_scope"]["n_rules"] != 58:
-        raise RuntimeError("drop_scope contract drifted")
-    if (
-        checks["drop_scaffold_examples"]["has_scaffold"]
-        or checks["drop_scaffold_examples"]["n_examples"] != 0
-        or checks["drop_scaffold_examples"]["n_rules"] != 79
-    ):
-        raise RuntimeError("drop_scaffold_examples contract drifted")
-    if (
-        checks["drop_scaffold_examples_encoding"]["has_scaffold"]
-        or checks["drop_scaffold_examples_encoding"]["n_examples"] != 0
-        or checks["drop_scaffold_examples_encoding"]["n_rules"] != 50
-    ):
-        raise RuntimeError("drop_scaffold_examples_encoding contract drifted")
-    if checks["drop_scope_sf_refuse"]["n_rules"] != 76:
-        raise RuntimeError("drop_scope_sf_refuse contract drifted")
-    if checks["drop_scope_sf_keep"]["n_rules"] != 79:
-        raise RuntimeError("drop_scope_sf_keep contract drifted")
-    if checks["drop_scope_diagnosis"]["n_rules"] != 76:
-        raise RuntimeError("drop_scope_diagnosis contract drifted")
-    if checks["drop_scope_rx_ix"]["n_rules"] != 76:
-        raise RuntimeError("drop_scope_rx_ix contract drifted")
-    if (
-        checks["drop_encoding_non_sf"]["n_rules"] != 67
-        or checks["drop_encoding_non_sf"]["n_examples"] != 49
-    ):
-        raise RuntimeError("drop_encoding_non_sf contract drifted")
-    if (
-        checks["drop_examples_non_sf"]["n_examples"] != 23
-        or checks["drop_examples_non_sf"]["n_rules"] != 83
-    ):
-        raise RuntimeError("drop_examples_non_sf contract drifted")
-    if (
-        checks["drop_examples_sf_encoding"]["n_examples"] != 36
-        or checks["drop_examples_sf_encoding"]["n_rules"] != 83
-    ):
-        raise RuntimeError("drop_examples_sf_encoding contract drifted")
-    if (
-        checks["drop_examples_sf_scope"]["n_examples"] != 39
-        or checks["drop_examples_sf_scope"]["n_rules"] != 83
-    ):
-        raise RuntimeError("drop_examples_sf_scope contract drifted")
     if (
         checks["drop_encoding_non_sf_all_examples"]["n_examples"] != 0
         or checks["drop_encoding_non_sf_all_examples"]["n_rules"] != 67

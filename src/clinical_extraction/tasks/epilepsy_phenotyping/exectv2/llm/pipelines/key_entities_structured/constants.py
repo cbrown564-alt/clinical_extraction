@@ -2,6 +2,10 @@
 
 Pure relocation of the module-level constants from
 ``llm_only_key_entities_structured``. No logic changes.
+
+After the 2026-08-16 prune, only the three assigned current-hybrid ExECT
+prompt identities remain live here: selected ``v0.9.24`` and cheap-stack
+``v0.9.40``. Mention-unit v2 lives in ``mention_unit.py``, not this registry.
 """
 
 from __future__ import annotations
@@ -17,117 +21,14 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
 )
 
 PROMPT_VERSION_V0_9_24 = "exectv2_hybrid_key_family_event_ledger_v0.9.24"
-PROMPT_VERSION_V10 = "exectv2_hybrid_key_family_event_ledger_v10"
-PROMPT_VERSION_V11 = "exectv2_hybrid_key_family_event_ledger_v11"
-PROMPT_VERSION_V12 = "exectv2_hybrid_key_family_event_ledger_v12"
-PROMPT_VERSION_V13 = "exectv2_hybrid_key_family_event_ledger_v13"
-PROMPT_VERSION_V14 = "exectv2_hybrid_key_family_event_ledger_v14"
-PROMPT_VERSION_V15 = "exectv2_hybrid_key_family_event_ledger_v15"
-PROMPT_VERSION_V16 = "exectv2_hybrid_key_family_event_ledger_v16"
-PROMPT_VERSION_V17 = "exectv2_hybrid_key_family_event_ledger_v17"
-PROMPT_VERSION_V18 = "exectv2_hybrid_key_family_event_ledger_v18"
-PROMPT_VERSION_V19 = "exectv2_hybrid_key_family_event_ledger_v19"
-PROMPT_VERSION_V20 = "exectv2_hybrid_key_family_event_ledger_v20"
-PROMPT_VERSION_V21 = "exectv2_hybrid_key_family_event_ledger_v21"
-PROMPT_VERSION_V22 = "exectv2_hybrid_key_family_event_ledger_v22"
-PROMPT_VERSION_V23 = "exectv2_hybrid_key_family_event_ledger_v23"
-PROMPT_VERSION_V24 = "exectv2_hybrid_key_family_event_ledger_v24"
-PROMPT_VERSION_V25 = "exectv2_hybrid_key_family_event_ledger_v25"
-PROMPT_VERSION_V26 = "exectv2_hybrid_key_family_event_ledger_v26"
-PROMPT_VERSION_V27 = "exectv2_hybrid_key_family_event_ledger_v27"
-PROMPT_VERSION_V0_9_25_LUNA_SF_STATE = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.25_luna_sf_state"
-)
-PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.25_luna_sf_boundary_dx"
-)
-PROMPT_VERSION_V0_9_26_DROP_SCAFFOLD = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.26_drop_scaffold"
-)
-PROMPT_VERSION_V0_9_27_DROP_EXAMPLES = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.27_drop_examples"
-)
-PROMPT_VERSION_V0_9_28_DROP_ENCODING_RULES = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.28_drop_encoding_rules"
-)
-PROMPT_VERSION_V0_9_29_DROP_SCOPE_RULES = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.29_drop_scope_rules"
-)
-PROMPT_VERSION_V0_9_30_DROP_SCAFFOLD_EXAMPLES = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.30_drop_scaffold_examples"
-)
-PROMPT_VERSION_V0_9_31_DROP_SCAFFOLD_EXAMPLES_ENCODING = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.31_drop_scaffold_examples_encoding"
-)
-PROMPT_VERSION_V0_9_32_DROP_SCOPE_SF_REFUSE = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.32_drop_scope_sf_refuse"
-)
-PROMPT_VERSION_V0_9_33_DROP_SCOPE_SF_KEEP = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.33_drop_scope_sf_keep"
-)
-PROMPT_VERSION_V0_9_34_DROP_SCOPE_DIAGNOSIS = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.34_drop_scope_diagnosis"
-)
-PROMPT_VERSION_V0_9_35_DROP_SCOPE_RX_IX = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.35_drop_scope_rx_ix"
-)
-PROMPT_VERSION_V0_9_36_DROP_ENCODING_NON_SF = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.36_drop_encoding_non_sf"
-)
-PROMPT_VERSION_V0_9_37_DROP_EXAMPLES_NON_SF = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.37_drop_examples_non_sf"
-)
-PROMPT_VERSION_V0_9_38_DROP_EXAMPLES_SF_ENCODING = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.38_drop_examples_sf_encoding"
-)
-PROMPT_VERSION_V0_9_39_DROP_EXAMPLES_SF_SCOPE = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.39_drop_examples_sf_scope"
-)
 PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES = (
     "exectv2_hybrid_key_family_event_ledger_v0.9.40_drop_encoding_non_sf_all_examples"
 )
-# Primary prompt version for the frozen six-model panel. Luna v0.9.25 variants,
-# the v10 contract study, and v11–v26 are development candidates
-# only; they must not replace v0.9.24 in place.
+# Primary prompt version for the frozen six-model panel and current stack.
 PROMPT_VERSION = PROMPT_VERSION_V0_9_24
-QWEN_COMPACT_PROMPT_VERSION = "exectv2_hybrid_key_family_event_ledger_v0.9.24_qwen_compact"
 _SUPPORTED_FULL_PROMPT_VERSIONS = frozenset(
     {
         PROMPT_VERSION_V0_9_24,
-        PROMPT_VERSION_V10,
-        PROMPT_VERSION_V11,
-        PROMPT_VERSION_V12,
-        PROMPT_VERSION_V13,
-        PROMPT_VERSION_V14,
-        PROMPT_VERSION_V15,
-        PROMPT_VERSION_V16,
-        PROMPT_VERSION_V17,
-        PROMPT_VERSION_V18,
-        PROMPT_VERSION_V19,
-        PROMPT_VERSION_V20,
-        PROMPT_VERSION_V21,
-        PROMPT_VERSION_V22,
-        PROMPT_VERSION_V23,
-        PROMPT_VERSION_V24,
-        PROMPT_VERSION_V25,
-        PROMPT_VERSION_V26,
-        PROMPT_VERSION_V27,
-        PROMPT_VERSION_V0_9_25_LUNA_SF_STATE,
-        PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX,
-        PROMPT_VERSION_V0_9_26_DROP_SCAFFOLD,
-        PROMPT_VERSION_V0_9_27_DROP_EXAMPLES,
-        PROMPT_VERSION_V0_9_28_DROP_ENCODING_RULES,
-        PROMPT_VERSION_V0_9_29_DROP_SCOPE_RULES,
-        PROMPT_VERSION_V0_9_30_DROP_SCAFFOLD_EXAMPLES,
-        PROMPT_VERSION_V0_9_31_DROP_SCAFFOLD_EXAMPLES_ENCODING,
-        PROMPT_VERSION_V0_9_32_DROP_SCOPE_SF_REFUSE,
-        PROMPT_VERSION_V0_9_33_DROP_SCOPE_SF_KEEP,
-        PROMPT_VERSION_V0_9_34_DROP_SCOPE_DIAGNOSIS,
-        PROMPT_VERSION_V0_9_35_DROP_SCOPE_RX_IX,
-        PROMPT_VERSION_V0_9_36_DROP_ENCODING_NON_SF,
-        PROMPT_VERSION_V0_9_37_DROP_EXAMPLES_NON_SF,
-        PROMPT_VERSION_V0_9_38_DROP_EXAMPLES_SF_ENCODING,
-        PROMPT_VERSION_V0_9_39_DROP_EXAMPLES_SF_SCOPE,
         PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES,
     }
 )
@@ -166,7 +67,7 @@ FAMILY_TO_ENTITY = {
     "investigation": INVESTIGATIONS.name,
     "history": "History",
 }
-PromptProfile = Literal["full", "qwen_compact"]
+PromptProfile = Literal["full"]
 
 _MEDICATION_RE = re.compile(
     r"\b("
@@ -222,13 +123,8 @@ def prompt_version_for(
 ) -> str:
     """Resolve the prompt identity for a profile and optional override."""
 
-    if profile == "qwen_compact":
-        if prompt_version is not None and prompt_version != QWEN_COMPACT_PROMPT_VERSION:
-            raise ValueError(
-                "qwen_compact profile only supports "
-                f"{QWEN_COMPACT_PROMPT_VERSION!r}, got {prompt_version!r}"
-            )
-        return QWEN_COMPACT_PROMPT_VERSION
+    if profile != "full":
+        raise ValueError(f"unsupported prompt profile {profile!r}; expected 'full'")
     selected = prompt_version or PROMPT_VERSION
     if selected not in _SUPPORTED_FULL_PROMPT_VERSIONS:
         raise ValueError(
