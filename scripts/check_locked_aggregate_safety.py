@@ -10,31 +10,13 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 ARTIFACTS = (
     ROOT / "experiments/gan2026_matched_v05_test450_aggregate_20260716.json",
-    ROOT / "experiments/gan2026_six_model_llm_only_test450_20260801/panel_aggregate.json",
     ROOT / "experiments/exectv2_six_model_test60_stage_panel_20260801/panel_aggregate.json",
     ROOT / "experiments/exectv2_rules_only_four_family_clinical_headline_test60_20260801.json",
-    ROOT / "experiments/exectv2_prescription_lens_v10_holdout_20260810.json",
     ROOT / "experiments/six_model_holdout_category_aggregates_20260806.json",
     ROOT / "experiments/gan2026_rules_only_test450_20260810.json",
-    ROOT
-    / "experiments/six_model_current_stack_remaining_cells_replay_20260813/replay_summary.json",
-    ROOT
-    / "experiments/six_model_current_stack_primary_panel_20260813/panel_aggregate.json",
     ROOT / "experiments/current_stack/latest/replay_summary.json",
     ROOT / "experiments/current_stack/latest/panel_aggregate.json",
     ROOT / "experiments/current_stack/latest/fills.json",
-    ROOT / "experiments/exectv2_sf_split_decomposition_20260814.json",
-    ROOT / "experiments/exectv2_sf_umbrella_clone_drop_test60_20260814.json",
-    ROOT / "experiments/exectv2_sf_cui_phrase_preserve_test60_20260814.json",
-    ROOT / "experiments/exectv2_sf_bare_count_active_rate_drop_test60_20260814.json",
-    ROOT / "experiments/exectv2_sf_last_event_duration_complete_test60_20260814.json",
-    ROOT / "experiments/exectv2_sf_single_last_event_duration_test60_20260814.json",
-    ROOT / "experiments/exectv2_sf_lifetime_oneoff_active_rate_drop_test60_20260814.json",
-    ROOT / "experiments/exectv2_sf_dated_cluster_next_to_free_test60_20260814.json",
-    ROOT / "experiments/exectv2_sf_named_last_week_generic_test60_20260814.json",
-    ROOT / "experiments/exectv2_sf_drugchange_before_sibling_test60_20260814.json",
-    ROOT / "experiments/exectv2_gemini37flash_llm_only_raw_lane_20260814.json",
-    ROOT / "experiments/gan2026_inexact_span_family_rewrite_test450_20260815.json",
 )
 FORBIDDEN_KEYS = {
     "letter_id", "letter_ids", "source_row_index", "source_row_indices",
