@@ -21,7 +21,6 @@ export function resolveDatasetId(raw: string | null | undefined): DatasetId {
 /** Route segment for each stable surface. */
 const SURFACE_PATHS: Record<ExplorerSurface, string> = {
   workbench: "/workbench",
-  "gold-audit": "/gold-audit",
 };
 
 /**

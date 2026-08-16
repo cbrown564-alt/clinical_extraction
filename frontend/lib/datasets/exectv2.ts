@@ -28,7 +28,6 @@ export const exectv2Dataset: DatasetDescriptor = {
   splits: ["dev140"],
   supports: {
     workbench: true,
-    "gold-audit": true,
   },
   tone: "deterministic",
   families: EXECTV2_FAMILIES,

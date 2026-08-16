@@ -24,7 +24,7 @@ import type {
   SemanticSupportReviewDecision,
   SemanticSupportReviewPacket,
 } from "@/lib/types";
-import LetterRenderer from "@/components/observatory/LetterRenderer";
+import LetterRenderer from "@/components/surface/LetterRenderer";
 import {
   clinicalSupportFromShortcut,
   presentConclusionFields,

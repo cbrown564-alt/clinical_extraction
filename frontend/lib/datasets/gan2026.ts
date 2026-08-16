@@ -21,7 +21,6 @@ export const gan2026Dataset: DatasetDescriptor = {
   splits: ["dev750"],
   supports: {
     workbench: true,
-    "gold-audit": true,
   },
   tone: "llm",
   families: [

@@ -107,7 +107,9 @@ def main() -> None:
         if not letter.entities(FAMILY)
     }
     v2_by_letter = _extras_by_letter(_load_rows(V2_ROWS), empty_gold)
-    v4_by_letter = _extras_by_letter(_load_rows(V4_ROWS), empty_gold)
+    v4_by_letter = (
+        _extras_by_letter(_load_rows(V4_ROWS), empty_gold) if V4_ROWS.exists() else {}
+    )
 
     catalog: list[dict[str, Any]] = []
     for letter_id, mentions in sorted(v2_by_letter.items()):

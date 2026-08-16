@@ -20,10 +20,8 @@ function ids(items: Array<{ id: string }>): string[] {
 describe("dataset descriptors", () => {
   it("both datasets declare supported surfaces", () => {
     expect(datasetSupports("gan2026", "workbench")).toBe(true);
-    expect(datasetSupports("gan2026", "gold-audit")).toBe(true);
 
     expect(datasetSupports("exectv2", "workbench")).toBe(true);
-    expect(datasetSupports("exectv2", "gold-audit")).toBe(true);
   });
 
   it("metric, component, and error class ids are unique and non-empty per dataset", () => {

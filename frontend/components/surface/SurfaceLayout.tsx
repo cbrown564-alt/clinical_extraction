@@ -6,7 +6,7 @@ type SurfaceVariant = "fill" | "report";
 
 interface SurfaceLayoutProps {
   /**
-   * `report` – a centered, document-style scroll column (observatory, laboratory,
+   * `report` – a centered, document-style scroll column (report surfaces,
    * gallery). `fill` – children own the remaining height and their own scroll
    * (workbench split panes).
    */
@@ -25,7 +25,7 @@ interface SurfaceLayoutProps {
  *
  * Owns the one decision that made Gan feel like an "app" and ExECTv2 feel like a
  * "report": each surface picks a variant *once*, and both datasets honour it.
- * Workbench is `fill`; observatory / laboratory / gallery are `report`.
+ * Workbench is `fill`; report surfaces use `report`.
  */
 export default function SurfaceLayout({
   variant,

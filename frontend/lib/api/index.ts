@@ -85,27 +85,6 @@ export function fetchArtifact(
   );
 }
 
-export function fetchGoldAuditRows(dataset: DatasetId = "gan2026") {
-  return request<import("../types").GoldAuditRowsResponse>(
-    `/gold-audit/rows?dataset=${dataset}`
-  ).then((payload) => {
-    const rows = filterBrowsableLetters(payload.rows ?? []);
-    return { ...payload, rows, total: rows.length };
-  });
-}
-
-export function fetchGoldAuditDecisions(dataset: DatasetId = "gan2026") {
-  return request<import("../types").GoldAuditDecisionsResponse>(
-    `/gold-audit/decisions?dataset=${dataset}`
-  );
-}
-
-export function postGoldAuditDecision(decision: import("../types").GoldAuditDecision) {
-  return request<import("../types").GoldAuditDecisionResponse>("/gold-audit/decide", {
-    method: "POST",
-    body: JSON.stringify(decision),
-  });
-}
 
 export function fetchSemanticSupportReviewPackets(reviewerId: string) {
   const params = new URLSearchParams({ reviewer_id: reviewerId });

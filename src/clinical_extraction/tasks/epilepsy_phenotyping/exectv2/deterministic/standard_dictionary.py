@@ -19,9 +19,9 @@ that call into here (see ``assembly/lenses.py``).
 
 Provenance: the diagnosis convention/residual tables are migrated verbatim from
 the v04/v05 ``DiagnosisConventionAliasLens`` / ``DiagnosisResidualBenchmarkLens``
-logic; the SF rewrites from ``llm_sf_union_arbitration._rewrite``; the
-prescription primitives mirror ``deterministic.all_entities``. Parity with those
-sources is the floor and is guarded by tests.
+logic; the SF rewrites come from the retired hybrid SF-union arbitration lane;
+the prescription primitives mirror ``deterministic.all_entities``. Parity with
+those sources is the floor and is guarded by tests.
 
 Implementation is split across ``conventions/``; this module re-exports the
 public API for backward compatibility.

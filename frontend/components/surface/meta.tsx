@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  FileCheck,
   FileText,
   type LucideIcon,
 } from "lucide-react";
@@ -23,16 +22,9 @@ export const SURFACE_META: Record<ExplorerSurface, SurfaceMeta> = {
     tone: "deterministic",
     Icon: FileText,
   },
-  "gold-audit": {
-    surface: "gold-audit",
-    label: "Gold audit",
-    href: "/gold-audit",
-    tone: "llm",
-    Icon: FileCheck,
-  },
 };
 
-export const SURFACE_ORDER: ExplorerSurface[] = ["workbench", "gold-audit"];
+export const SURFACE_ORDER: ExplorerSurface[] = ["workbench"];
 
 export const SURFACE_TONE_ACTIVE: Record<DatasetTone, string> = {
   deterministic: "bg-deterministic/10 text-deterministic border-deterministic/20",

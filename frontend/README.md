@@ -21,7 +21,6 @@ npm run dev
 ```
 
 Open [http://127.0.0.1:3000/workbench](http://127.0.0.1:3000/workbench)
-or [http://127.0.0.1:3000/gold-audit](http://127.0.0.1:3000/gold-audit).
 Both surfaces list the Gan `dev750` notes and the ExECT `dev140` letters.
 
 For ExECTv2 clinical review, open

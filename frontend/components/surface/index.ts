@@ -18,6 +18,7 @@ export {
   type RenderSpan,
   type HighlightTone,
 } from "./SourceDocument";
+export { default as LetterRenderer } from "./LetterRenderer";
 export {
   ControlBar,
   ControlField,

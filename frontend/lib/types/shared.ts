@@ -231,7 +231,7 @@ export type ClinicalTask = "gan2026" | "exectv2";
 /**
  * Observatory lane for a registry entry, derived from `registry_roles`.
  * Production = promoted architecture; ceiling/floor = comparators shown for
- * context. See `frontend/lib/observatoryLanes.ts`.
+ * context.
  */
 export type LaneId = "production" | "ceiling" | "floor";
 

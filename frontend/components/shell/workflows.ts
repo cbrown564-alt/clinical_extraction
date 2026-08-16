@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { CheckCircle2, FileCheck, FileText } from "lucide-react";
+import { CheckCircle2, FileText } from "lucide-react";
 
 export type DestinationScope = "dataset" | "exectv2";
 
@@ -16,12 +16,6 @@ export const APP_DESTINATIONS: AppDestination[] = [
     label: "Workbench",
     scope: "dataset",
     Icon: FileText,
-  },
-  {
-    href: "/gold-audit",
-    label: "Gold audit",
-    scope: "dataset",
-    Icon: FileCheck,
   },
   {
     href: "/semantic-support-review",

@@ -36,10 +36,8 @@ function toTone(kind: string): HighlightTone | null {
 }
 
 /**
- * Thin adapter over the shared {@link SourceDocument}. Kept as a named surface
- * for the observatory gold-audit panel and the ExECTv2 explorer, which pass
- * pre-resolved highlight tones (ExECTv2 resolves them from the family so the
- * letter matches the lens strip).
+ * Thin adapter over the shared {@link SourceDocument}. Used by the ExECTv2
+ * explorer and semantic-support review, which pass pre-resolved highlight tones.
  */
 export default function LetterRenderer({ text, highlights = [], children }: LetterRendererProps) {
   const spans: RenderSpan[] = [];

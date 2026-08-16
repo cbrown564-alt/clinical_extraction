@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { FileText, Layers3 } from "lucide-react";
-import LetterRenderer from "@/components/observatory/LetterRenderer";
+import LetterRenderer from "@/components/surface/LetterRenderer";
 import { EXECTV2_FAMILIES } from "@/lib/datasets";
 import type {
   Exectv2Entity,

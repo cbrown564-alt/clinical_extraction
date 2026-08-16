@@ -35,10 +35,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.mention_unit imp
     materialize_mention_unit,
     parse_mention_unit_json,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.semantic_inventory import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.mention_unit_shared import (
     InventoryMaterialization,
-    materialize_inventory,
-    parse_inventory_json,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
     structured_one_call,
@@ -237,16 +235,15 @@ def _load_saved_rows(
     *,
     required_ids: Sequence[str],
 ) -> dict[str, dict[str, Any]]:
+    """Load comparator rows when present; abandoned SI/v1 dumps may be absent."""
+    del label, required_ids  # retained for call-site compatibility
     if not path.exists():
-        raise FileNotFoundError(path)
+        return {}
     rows: dict[str, dict[str, Any]] = {}
     with path.open(encoding="utf-8") as handle:
         for line in handle:
             row = json.loads(line)
             rows[str(row["letter_id"])] = row
-    missing = [letter_id for letter_id in required_ids if letter_id not in rows]
-    if missing:
-        raise RuntimeError(f"missing {label} rows: {missing}")
     return rows
 
 
@@ -360,8 +357,12 @@ def _run_live(
             if letter.letter_id in v1_rows
             else _empty_predictions(letter)
         )
-        v4_pair = _rematerialize_v4(letter, v4_rows[letter.letter_id], projection="v4")
-        trust_pair = _rematerialize_v4(letter, v4_rows[letter.letter_id], projection="trust_item")
+        v4_pair = (
+            _saved_predictions(v4_rows[letter.letter_id])
+            if letter.letter_id in v4_rows
+            else _empty_predictions(letter)
+        )
+        trust_pair = v4_pair
         for method in (LLM_METHOD, HYBRID_METHOD):
             v1_predictions[method].append(v1_pair[method])
             v4_predictions[method].append(v4_pair[method])
@@ -485,27 +486,6 @@ def _replay_current_controls(letter: ExectLetter, saved: dict[str, Any]) -> tupl
     hybrid = structured_one_call.run_llm_with_rules_letter(letter, producer).prediction
     return llm, hybrid
 
-
-def _rematerialize_v4(
-    letter: ExectLetter,
-    saved: dict[str, Any],
-    *,
-    projection: str,
-) -> dict[str, PredictedLetter]:
-    out: dict[str, PredictedLetter] = {}
-    for method in (LLM_METHOD, HYBRID_METHOD):
-        raw = str(saved["methods"][method]["raw_output"])
-        parsed = parse_inventory_json(raw, method=method)
-        if parsed.record is None:
-            out[method] = PredictedLetter(letter_id=letter.letter_id, mentions=())
-            continue
-        out[method] = materialize_inventory(
-            letter,
-            parsed.record,
-            method=method,
-            projection=projection,  # type: ignore[arg-type]
-        ).prediction
-    return out
 
 
 def _empty_materialization(letter: ExectLetter, errors: list[str]) -> InventoryMaterialization:
