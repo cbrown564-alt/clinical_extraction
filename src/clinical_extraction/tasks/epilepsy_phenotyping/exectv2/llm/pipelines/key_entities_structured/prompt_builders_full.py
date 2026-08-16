@@ -35,6 +35,7 @@ from .constants import (
     PromptProfile,
     prompt_version_for,
 )
+from .prompt_ablations import ABLATION_SPECS, apply_v0924_ablation
 from .prompt_content import (
     _attribute_vocabulary,
     _decision_procedure,
@@ -163,6 +164,10 @@ def build_full_prompt_input(
         "letter_id": letter.letter_id,
         "letter_text": letter.note_text,
     }
+    spec = ABLATION_SPECS.get(selected_prompt_version)
+    if spec is not None:
+        payload = apply_v0924_ablation(payload, spec)
+        return json.dumps(payload, ensure_ascii=False, sort_keys=True)
     extra = _luna_extra_guidance(selected_prompt_version)
     if extra:
         payload["extra_clinical_guidance"] = list(extra)

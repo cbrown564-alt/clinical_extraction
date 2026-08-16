@@ -41,6 +41,18 @@ PROMPT_VERSION_V0_9_25_LUNA_SF_STATE = (
 PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX = (
     "exectv2_hybrid_key_family_event_ledger_v0.9.25_luna_sf_boundary_dx"
 )
+PROMPT_VERSION_V0_9_26_DROP_SCAFFOLD = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.26_drop_scaffold"
+)
+PROMPT_VERSION_V0_9_27_DROP_EXAMPLES = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.27_drop_examples"
+)
+PROMPT_VERSION_V0_9_28_DROP_ENCODING_RULES = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.28_drop_encoding_rules"
+)
+PROMPT_VERSION_V0_9_29_DROP_SCOPE_RULES = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.29_drop_scope_rules"
+)
 # Primary prompt version for the frozen six-model panel. Luna v0.9.25 variants,
 # the v10 contract study, and v11–v26 are development candidates
 # only; they must not replace v0.9.24 in place.
@@ -69,6 +81,10 @@ _SUPPORTED_FULL_PROMPT_VERSIONS = frozenset(
         PROMPT_VERSION_V27,
         PROMPT_VERSION_V0_9_25_LUNA_SF_STATE,
         PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX,
+        PROMPT_VERSION_V0_9_26_DROP_SCAFFOLD,
+        PROMPT_VERSION_V0_9_27_DROP_EXAMPLES,
+        PROMPT_VERSION_V0_9_28_DROP_ENCODING_RULES,
+        PROMPT_VERSION_V0_9_29_DROP_SCOPE_RULES,
     }
 )
 PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"
