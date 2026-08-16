@@ -155,6 +155,12 @@ def normalize_drug_name(surface: str) -> str | None:
     if resolved != key:
         concept = PRESCRIPTION_CONCEPT_BY_PHRASE.get(resolved)
         return concept.canonical if concept is not None else None
+    formulation = re.match(r"^(valproate|sodium valproate)\s+as\s+(.+)$", key)
+    if formulation:
+        base = normalize_phrase(formulation.group(1))
+        concept = PRESCRIPTION_CONCEPT_BY_PHRASE.get(base)
+        if concept is not None:
+            return concept.canonical
     return None
 
 

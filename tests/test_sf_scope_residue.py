@@ -131,6 +131,18 @@ def test_diagnosis_standalone_noise_includes_bare_jerk() -> None:
     )
 
 
+def test_diagnosis_comorbidity_noise_includes_episodic_migraine() -> None:
+    assert dx.is_diagnosis_convention_noise(
+        "Episodic migraine",
+        evidence="Diagnosis: Episodic migraine",
+        diag_category="Epilepsy",
+    )
+
+
+def test_compound_valproate_formulation_normalizes_to_base_drug() -> None:
+    assert rx.normalize_drug_name("Valproate as Episenta") == "sodium-valproate"
+
+
 def test_planned_start_regimen_is_gold_free() -> None:
     assert rx.is_planned_start_prescription(
         "levetiracetam",

@@ -105,6 +105,7 @@ DIAGNOSIS_RESIDUAL_CONVENTION_NOISE: frozenset[str] = frozenset(
         "left frontal lobe focal cortical dysplasia",
         "longstanding epilepsy",
         "migraine",
+        "episodic migraine",
         "minor seizures",
         "neurocysticercosis",
         "nocturnal generalised tonic clonic seizures",
