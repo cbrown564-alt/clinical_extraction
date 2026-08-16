@@ -1,8 +1,9 @@
-"""Mention-unit v1 ExECT research lane.
+"""Mention-unit v2 ExECT research lane.
 
-Both methods emit exact letter spans. The llm lane also fills family-specific
-coding fields. Hybrid may rewrite, project, or suppress that item only. It
-does not search the letter or change the selected ExECT method.
+Both methods copy a clinical name from the letter. The llm lane also fills
+family-specific number fields. Hybrid leftover words stay in evidence.
+Hybrid may rewrite, project, or suppress that item only. It does not search
+the letter or change the selected ExECT method.
 """
 
 from __future__ import annotations
@@ -31,8 +32,14 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    sf_attribute_encoding as sf_encoding,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
     diagnosis_category_for_concept,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalizer import (
+    normalize_unit,
 )
 
 from .pipelines.key_entities_structured import records as structured_records
@@ -51,16 +58,19 @@ from .semantic_inventory import (
     _sf_attributes_to_legacy,
     _stringify_attributes,
 )
-from .semantic_inventory_rules import _heading_split_phrases, project_hybrid_event
-from .semantic_inventory_trust import project_trust_hybrid
+from .semantic_inventory_rules import (
+    _heading_split_phrases,
+    _is_uncoded_phenomenology,
+    project_hybrid_event,
+)
 from .shared.json_parse import parse_json_payload
 from .shared.mention_pipeline import check_evidence
 
-MENTION_UNIT_PROMPT_VERSION = "exectv2_mention_unit_v1"
+MENTION_UNIT_PROMPT_VERSION = "exectv2_mention_unit_v2"
 MENTION_UNIT_MODEL = "openai/gpt-5.6-luna"
 SYSTEM_MESSAGE = (
-    "Extract the current mentions as exact letter spans. "
-    "Return the requested JSON exactly."
+    "List each diagnosis, seizure-frequency statement, current medicine, "
+    "and completed test with a result. Return the requested JSON exactly."
 )
 _LLM_CODING_FIELDS = {
     DIAGNOSIS.name: ("certainty", "negation"),
@@ -68,18 +78,148 @@ _LLM_CODING_FIELDS = {
         "count",
         "lower_count",
         "upper_count",
+        "period_count",
+        "lower_period",
+        "upper_period",
         "period",
         "state",
+        "change",
+        "since_or_during",
+        "point_in_time",
+        "month",
+        "year",
     ),
     PRESCRIPTION.name: ("dose", "unit", "schedule", "status"),
     INVESTIGATIONS.name: ("result", "status"),
 }
-_SHARED_ITEM_KEYS = frozenset({"family", "text", "evidence", "attributes"})
+_SHARED_ITEM_KEYS = frozenset(
+    {
+        "clinical_family",
+        "clinical_name",
+        "evidence",
+        "attributes",
+        "family",
+        "text",
+        "event",
+    }
+)
 _MODALITY_NAMES = frozenset({"MRI", "CT", "EEG"})
+_FREQUENCY_CHANGE = frozenset(
+    {"Decreased", "Frequent", "Increased", "Infrequent", "Same"}
+)
+_POINT_IN_TIME = {
+    "birthday": "Birthday",
+    "drug change": "DrugChange",
+    "drugchange": "DrugChange",
+    "last clinic": "LastClinic",
+    "lastclinic": "LastClinic",
+    "last month": "Last_Month",
+    "last_month": "Last_Month",
+    "last week": "Last_Week",
+    "last_week": "Last_Week",
+    "last year": "Last_Year",
+    "last_year": "Last_Year",
+    "surgery": "Surgery",
+}
+_SHARED_OPENING = (
+    "Read the letter once. Return one list that follows the schema. Each row "
+    "has a clinical family, a clinical name, and evidence.\n\n"
+    "The list has four clinical families:\n\n"
+    "- Diagnosis: a named epilepsy or seizure type the letter applies to this "
+    "patient, including in history.\n"
+    "- SeizureFrequency: a frequency statement — a rate, dated count, last "
+    "event, change, or seizure-free duration — including past ones.\n"
+    "- Prescription: a current anti-seizure medicine.\n"
+    "- Investigations: a completed MRI, CT, or EEG with a result.\n\n"
+    "In clinical name, write the diagnosis type, the seizure words, the drug, "
+    "or MRI / CT / EEG."
+)
+_LLM_CONTINUE = (
+    "If the letter says “2 to 3 focal seizures a week”, the clinical name is "
+    "focal seizures. The “2 to 3” and the “week” go in the number fields, not "
+    "in clinical name.\n"
+    "In evidence, copy the shortest part of the letter that supports that row.\n"
+    "If there is a rate, a date, or seizure freedom, use the form table."
+)
+_HYBRID_CONTINUE = (
+    "If the letter says “2 to 3 focal seizures a week”, the clinical name is "
+    "focal seizures. The “2 to 3” and the “week” stay in evidence, not in "
+    "clinical name.\n"
+    "In evidence, copy the shortest part of the letter that supports that row, "
+    "including the number, date, dose, or result."
+)
+_SHARED_CLOSER = (
+    "If a clinical family has nothing, skip it. If the same type is both a "
+    "diagnosis and a frequency statement, write two rows. They may share evidence."
+)
+_SELECTION_CUES = (
+    "Copy the clinical name from the letter. If a clinical family has "
+    "nothing to list, skip it.",
+    "Bare absences or myoclonic jerks are not a diagnosis. Named absence "
+    "seizures or myoclonic seizures are.",
+    "Do not list epilepsy from driving, counselling, or a general "
+    "discussion unless the letter attaches it to this patient.",
+    "A named type with a count of 0 is still a diagnosis, and also a "
+    "seizure-frequency row with count 0. That is two rows. They may share "
+    "evidence.",
+    "List every frequency statement, including past ones: a rate, a dated "
+    "count, a last event, a change, or a seizure-free duration. The "
+    "clinical name may be seizures, a named type, absences, or myoclonic "
+    "jerks. Do not use events, episodes, or slang. Do not list a seizure "
+    "story that has no frequency.",
+    "List a completed MRI, CT, or EEG only when the letter states a "
+    "result. Do not guess the EEG type.",
+    "Current anti-seizure medicines only. Rescue may lack a dose. If the "
+    "letter says the same dose and does not state the dose, leave the "
+    "drug out.",
+)
+_FORM_TABLE = (
+    {
+        "when": "A single count over a time unit, including every 3 weeks",
+        "fill": "count, period_count, period — every 3 weeks is 1 / 3 / week",
+    },
+    {
+        "when": "A count range",
+        "fill": "lower_count, upper_count, plus the same time or date fields",
+    },
+    {
+        "when": "A time-unit range",
+        "fill": "count, lower_period, upper_period, period",
+    },
+    {
+        "when": "A count in a stated month or year",
+        "fill": (
+            "count (or the range), date fields, since_or_during=during. "
+            "Do not invent period=month unless the letter says per month"
+        ),
+    },
+    {
+        "when": "No further / none / not had any since a date",
+        "fill": "count=0, since_or_during=since, date fields",
+    },
+    {
+        "when": "Seizure-free for a duration, or last event a stated time ago",
+        "fill": "count=0, period_count, period",
+    },
+    {
+        "when": "A count since last clinic or a drug change",
+        "fill": "count, since_or_during=since, point_in_time",
+    },
+    {
+        "when": "Returned, worse, improved, frequent, or infrequent, with no count",
+        "fill": "change only",
+    },
+)
+_CLOSED_VALUES = {
+    "period": ["day", "week", "month", "year"],
+    "since_or_during": ["since", "during"],
+    "change": ["decreased", "frequent", "increased", "infrequent", "same"],
+    "approximate_counts": {"couple": 2, "few": 2, "several": 3},
+}
 
 
 class MentionItem(BaseModel):
-    """One model-emitted mention unit."""
+    """One model-emitted clinical-name row."""
 
     model_config = ConfigDict(extra="ignore")
 
@@ -90,7 +230,7 @@ class MentionItem(BaseModel):
 
 
 class MentionUnitRecord(BaseModel):
-    """The mention-unit envelope after transport parsing."""
+    """The clinical-name envelope after transport parsing."""
 
     model_config = ConfigDict(extra="ignore")
 
@@ -108,7 +248,7 @@ class MentionUnitParseResult:
     forbidden_fields: list[dict[str, Any]] = field(default_factory=list)
 
 
-class MentionUnitChatAdapter(ChatAdapter):
+class ClinicalNameChatAdapter(ChatAdapter):
     """Keep DSPy's parser while using a short, plain system message."""
 
     def format(
@@ -122,8 +262,8 @@ class MentionUnitChatAdapter(ChatAdapter):
         return messages
 
 
-class MentionUnitSignature(dspy.Signature):
-    """Read one clinical letter and return the current mention units."""
+class ClinicalNameListSignature(dspy.Signature):
+    """Read one clinical letter and return the requested JSON list."""
 
     prompt_input_json: str = dspy.InputField(
         desc="JSON containing one clinical letter and the extraction instructions."
@@ -134,15 +274,15 @@ class MentionUnitSignature(dspy.Signature):
 
 
 class MentionUnitExtractor(dspy.Module):
-    """One-call model program for either mention-unit method contract."""
+    """One-call model program for either clinical-name method contract."""
 
     def __init__(self, *, method: Literal["llm", "llm_with_rules"]) -> None:
         super().__init__()
         if method not in {LLM_METHOD, HYBRID_METHOD}:
             raise ValueError(f"unknown mention-unit method: {method!r}")
         self.method = method
-        self.predict = dspy.Predict(MentionUnitSignature)
-        self._adapter = MentionUnitChatAdapter()
+        self.predict = dspy.Predict(ClinicalNameListSignature)
+        self._adapter = ClinicalNameChatAdapter()
 
     def forward(self, prompt_input_json: str) -> dspy.Prediction:
         with dspy.context(adapter=self._adapter):
@@ -150,7 +290,7 @@ class MentionUnitExtractor(dspy.Module):
 
     def render_messages(self, *, prompt_input_json: str) -> list[dict[str, object]]:
         return self._adapter.format(
-            MentionUnitSignature,
+            ClinicalNameListSignature,
             demos=[],
             inputs={"prompt_input_json": prompt_input_json},
         )
@@ -165,90 +305,83 @@ def build_mention_unit_prompt(
 
     if method not in {LLM_METHOD, HYBRID_METHOD}:
         raise ValueError(f"unknown mention-unit method: {method!r}")
+    continue_text = _LLM_CONTINUE if method == LLM_METHOD else _HYBRID_CONTINUE
+    task = "\n".join((_SHARED_OPENING, continue_text, _SHARED_CLOSER))
     if method == LLM_METHOD:
         item_schema: Any = [
             {
-                "family": "Diagnosis",
-                "text": "Exact named epilepsy or seizure span copied from the letter.",
-                "evidence": "Exact letter span that supports this mention.",
+                "clinical_family": "Diagnosis",
+                "clinical_name": "The named epilepsy or seizure type copied from the letter.",
+                "evidence": "The shortest supporting sentence from the letter.",
                 "certainty": "certain, probable, possible, or uncertain.",
                 "negation": "affirmed or negated.",
             },
             {
-                "family": "SeizureFrequency",
-                "text": "Exact seizure, absence, or myoclonic-jerk span copied from the letter.",
-                "evidence": "Exact letter span that supports this mention.",
+                "clinical_family": "SeizureFrequency",
+                "clinical_name": (
+                    "The seizure, absence, or myoclonic-jerk words copied from the letter."
+                ),
+                "evidence": "The shortest supporting sentence from the letter.",
                 "count": "Number of seizures when the letter states a number.",
                 "lower_count": "Lower count when the letter states a range.",
                 "upper_count": "Upper count when the letter states a range.",
+                "period_count": "How many time units the count covers, such as 3 in every 3 weeks.",
+                "lower_period": "Lower time-unit count when the letter states a range.",
+                "upper_period": "Upper time-unit count when the letter states a range.",
                 "period": "day, week, month, or year when the letter states a rate basis.",
-                "state": "current, historical, seizure-free, or last-event.",
+                "state": "historical, seizure-free, or last-event when the letter states that.",
+                "change": "decreased, frequent, increased, infrequent, or same.",
+                "since_or_during": "since or during.",
+                "point_in_time": "last clinic, drug change, or another stated anchor.",
+                "month": "Month number or name when the letter states a month.",
+                "year": "Year when the letter states a year.",
             },
             {
-                "family": "Prescription",
-                "text": "Exact drug or compact regimen span copied from the letter.",
-                "evidence": "Exact letter span that supports this mention.",
+                "clinical_family": "Prescription",
+                "clinical_name": "The drug or compact regimen copied from the letter.",
+                "evidence": "The shortest supporting sentence from the letter.",
                 "dose": "Dose amount when stated.",
                 "unit": "Dose unit when stated.",
                 "schedule": "How often the drug is taken.",
                 "status": "current, planned, past, or completed.",
             },
             {
-                "family": "Investigations",
-                "text": "Exact completed MRI, CT, or EEG span copied from the letter.",
-                "evidence": "Exact letter span that supports this mention.",
+                "clinical_family": "Investigations",
+                "clinical_name": "MRI, CT, or EEG copied from the letter.",
+                "evidence": "The shortest supporting sentence from the letter.",
                 "result": "normal, abnormal, or unknown when the letter states a result.",
                 "status": "completed or planned.",
             },
         ]
-        task = (
-            "Read the letter once. Return one list of current mentions. Each item "
-            "is an exact letter span. If a family has no current mention, return "
-            "nothing for that family. One item is one mention. A fact that belongs "
-            "to two families is two items; they may share evidence. For each item, "
-            "also fill only the coding fields for that family."
-        )
-    else:
-        item_schema = {
-            "family": "Diagnosis | SeizureFrequency | Prescription | Investigations",
-            "text": "Exact letter span for this mention.",
-            "evidence": "Exact letter span that supports this mention.",
+        payload = {
+            "task": task,
+            "output_schema": {"items": item_schema},
+            "form_table": list(_FORM_TABLE),
+            "selection_cues": list(_SELECTION_CUES),
+            "closed_values": _CLOSED_VALUES,
+            "letter_text": letter.note_text,
         }
-        task = (
-            "Read the letter once. Return one list of current mentions. Each item "
-            "is an exact letter span. If a family has no current mention, return "
-            "nothing for that family. One item is one mention. A fact that belongs "
-            "to two families is two items; they may share evidence. Return only "
-            "family, text, and evidence."
-        )
-    payload = {
-        "task": task,
-        "output_schema": {"items": item_schema},
-        "family_guidance": {
-            "Diagnosis": (
-                "Bare absences or myoclonic jerks are not diagnosis mentions. "
-                "Named absence seizures or myoclonic seizures are. Do not emit "
-                "epilepsy from driving, counselling, or a general discussion "
-                "unless the letter attaches it to this patient. A named type "
-                "with a zero count is still an affirmed diagnosis mention."
-            ),
-            "SeizureFrequency": (
-                "May use seizures, a named type, absences, or myoclonic jerks. "
-                "Do not use events, episodes, or slang. A named type with a "
-                "zero count is a seizure-frequency item of 0."
-            ),
-            "Prescription": (
-                "Current anti-seizure regimens only. Rescue may lack a dose. "
-                "If the sentence says same dose and does not state the dose, "
-                "omit the drug."
-            ),
-            "Investigations": (
-                "Emit a completed MRI, CT, or EEG only when the letter states "
-                "a result. Do not assume EEG type."
-            ),
-        },
-        "letter_text": letter.note_text,
-    }
+    else:
+        payload = {
+            "task": task,
+            "output_schema": {
+                "items": {
+                    "clinical_family": (
+                        "Diagnosis | SeizureFrequency | Prescription | Investigations"
+                    ),
+                    "clinical_name": (
+                        "The diagnosis type, seizure words, drug, or MRI / CT / EEG "
+                        "copied from the letter."
+                    ),
+                    "evidence": (
+                        "The shortest supporting sentence from the letter, including "
+                        "the number, date, dose, or result."
+                    ),
+                }
+            },
+            "selection_cues": list(_SELECTION_CUES),
+            "letter_text": letter.note_text,
+        }
     return json.dumps(payload, ensure_ascii=False)
 
 
@@ -293,23 +426,19 @@ def parse_mention_unit_json(
             errors.append(f"schema_validation_error: item[{index}] must be an object")
             continue
         raw = dict(raw_item)
-        family = _normalize_family(raw.get("family"))
+        family = _normalize_family(raw.get("clinical_family") or raw.get("family"))
         if family is None:
             errors.append(f"dropped_unknown_family: item[{index}]")
             continue
         text = _coerce_text(
-            raw.get("text") if raw.get("text") not in {None, ""} else raw.get("event"),
+            _first_text(raw, "clinical_name", "text", "event"),
             errors,
-            f"item[{index}].text",
+            f"item[{index}].clinical_name",
         )
-        if not raw.get("text") and raw.get("event"):
-            errors.append(f"missing_text_used_event: item[{index}]")
+        if not raw.get("clinical_name") and (raw.get("text") or raw.get("event")):
+            errors.append(f"missing_clinical_name_used_text: item[{index}]")
         evidence = _coerce_text(raw.get("evidence"), errors, f"item[{index}].evidence")
-        extra = sorted(
-            str(key)
-            for key in raw
-            if key not in _SHARED_ITEM_KEYS and key != "event"
-        )
+        extra = sorted(str(key) for key in raw if key not in _SHARED_ITEM_KEYS)
         if method == HYBRID_METHOD:
             if extra:
                 forbidden.append({"item_index": index, "fields": extra})
@@ -344,7 +473,9 @@ def materialize_mention_unit(
         semantic_row = {
             "fact_index": index,
             "family": item.family,
+            "clinical_family": item.family,
             "text": item.text,
+            "clinical_name": item.text,
             "evidence": item.evidence,
             "text_valid": text_valid,
             "evidence_valid": evidence_valid,
@@ -438,6 +569,14 @@ def materialize_mention_unit(
     )
 
 
+def _first_text(raw: dict[str, Any], *keys: str) -> Any:
+    for key in keys:
+        value = raw.get(key)
+        if value not in {None, ""}:
+            return value
+    return ""
+
+
 def _llm_coding_fields(
     family: str,
     raw: dict[str, Any],
@@ -528,26 +667,69 @@ def _hybrid_project(
     if item.family == PRESCRIPTION.name:
         return project_hybrid_event(
             family=item.family,
-            event=item.text,
+            event=f"{item.text} {item.evidence}".strip(),
             evidence=item.evidence,
             index=index,
             dual_family=False,
         )
+    if item.family == INVESTIGATIONS.name:
+        return project_hybrid_event(
+            family=item.family,
+            event=f"{item.text} {item.evidence}".strip(),
+            evidence=item.evidence,
+            index=index,
+            dual_family=False,
+        )
+    return _hybrid_sf_project(item, index)
+
+
+def _hybrid_sf_project(
+    item: MentionItem,
+    index: int,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], str]:
     haystack = f"{item.text} {item.evidence}".strip()
-    projected, traces, status = project_trust_hybrid(
-        family=item.family,
-        event=haystack,
-        evidence=item.evidence,
-        index=index,
-    )
-    if item.family == SEIZURE_FREQUENCY.name:
-        rewritten: list[dict[str, Any]] = []
-        for row in projected:
-            mention = dict(row)
-            mention["text"] = item.text
-            rewritten.append(mention)
-        return rewritten, traces, status
-    return projected, traces, status
+    traces: list[dict[str, Any]] = []
+    if _is_uncoded_phenomenology(haystack, {}):
+        traces.append(
+            {
+                "fact_index": index,
+                "rule_category": "seizure_frequency",
+                "action": "suppress_uncoded_or_noise_sf",
+                "evidence": item.evidence,
+                "before": {"text": item.text},
+                "after": {},
+                "changed": True,
+                "first_prediction_changing_owner": "deterministic",
+            }
+        )
+        return [], traces, "semantic_only_uncoded_phenomenology"
+    seed = {
+        "entity": SEIZURE_FREQUENCY.name,
+        "text": item.text.strip(),
+        "attributes": {},
+        "evidence": item.evidence,
+    }
+    rewritten, actions = sf_encoding.apply_sf_attribute_encoding([seed])
+    for action in actions:
+        traces.append(
+            {
+                "fact_index": index,
+                "rule_category": "seizure_frequency",
+                "action": str(action.get("rule_id") or action.get("action") or ""),
+                "evidence": item.evidence,
+                "before": {"text": item.text},
+                "after": dict(rewritten[0].get("attributes", {})) if rewritten else {},
+                "changed": True,
+                "first_prediction_changing_owner": "deterministic",
+            }
+        )
+    mentions: list[dict[str, Any]] = []
+    for row in rewritten:
+        mention = dict(row)
+        mention["evidence"] = item.evidence
+        mention.setdefault("component_owner", "deterministic_sf_attribute_encoding")
+        mentions.append(mention)
+    return mentions, traces, "materialized" if mentions else "partial"
 
 
 def _adapter_text(item: MentionItem) -> str:
@@ -595,7 +777,36 @@ def _llm_legacy(item: MentionItem, text: str) -> dict[str, str]:
         if finding in {"normal", "abnormal", "unknown"}:
             legacy[f"{text}_Results"] = finding.title()
         return legacy
-    return _sf_attributes_to_legacy(attrs, source=source)
+    legacy = _sf_attributes_to_legacy(attrs, source=source)
+    since = attrs.get("since_or_during", "").strip().title()
+    if since in {"Since", "During"}:
+        legacy.setdefault("TimeSince_or_TimeOfEvent", since)
+    if "TimePeriod" in legacy:
+        legacy["TimePeriod"] = normalize_unit(legacy["TimePeriod"])
+    change = str(legacy.get("FrequencyChange") or "").strip().title()
+    if change in _FREQUENCY_CHANGE:
+        legacy["FrequencyChange"] = change
+    point = _point_in_time(attrs.get("point_in_time", ""))
+    if point:
+        legacy["PointInTime"] = point
+    return legacy
+
+
+def _point_in_time(value: str) -> str:
+    raw = value.strip()
+    if not raw:
+        return ""
+    if raw in {
+        "Birthday",
+        "DrugChange",
+        "LastClinic",
+        "Last_Month",
+        "Last_Week",
+        "Last_Year",
+        "Surgery",
+    }:
+        return raw
+    return _POINT_IN_TIME.get(raw.lower().replace("-", " ")) or ""
 
 
 def _is_noncurrent(attributes: dict[str, Any]) -> bool:

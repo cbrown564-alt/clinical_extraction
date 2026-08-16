@@ -1,4 +1,4 @@
-"""Run the predeclared ExECT mention-unit v1 Luna study on frozen dev20."""
+"""Run the predeclared ExECT mention-unit v2 Luna study on frozen dev20."""
 
 # ruff: noqa: E501
 
@@ -58,9 +58,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
 ROOT = Path(__file__).resolve().parents[1]
-PROTOCOL = "docs/research/exectv2/mention_unit_v1_fork_a_luna_dev20_protocol_2026-08-16.md"
-REPORT = ROOT / "docs/research/exectv2/mention_unit_v1_fork_a_luna_dev20_2026-08-16.md"
-STUDY_DIR = ROOT / "experiments/exectv2_mention_unit_v1_luna_dev20_20260816"
+PROTOCOL = "docs/research/exectv2/mention_unit_v2_fork_a_luna_dev20_protocol_2026-08-16.md"
+REPORT = ROOT / "docs/research/exectv2/mention_unit_v2_fork_a_luna_dev20_2026-08-16.md"
+STUDY_DIR = ROOT / "experiments/exectv2_mention_unit_v2_luna_dev20_20260816"
+V1_ROWS = ROOT / "experiments/exectv2_mention_unit_v1_luna_dev20_20260816" / "rows.jsonl"
 V4_ROWS = (
     ROOT / "experiments/exectv2_semantic_inventory_v4_fork_a_luna_dev20_20260816" / "rows.jsonl"
 )
@@ -103,11 +104,6 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--progress-every", type=int, default=5)
     parser.add_argument("--overwrite", action="store_true")
     args = parser.parse_args(argv)
-    if MENTION_UNIT_PROMPT_VERSION != "exectv2_mention_unit_v1":
-        raise SystemExit(
-            "this runner is frozen to mention-unit v1; "
-            "use scripts/run_exectv2_mention_unit_v2_luna.py"
-        )
     if args.split != "dev20":
         raise SystemExit("this protocol authorizes frozen dev20 only")
 
@@ -120,7 +116,7 @@ def main(argv: Sequence[str] | None = None) -> None:
 
     if not args.live:
         artifact = {
-            "schema_version": "exectv2.mention_unit_v1.v1",
+            "schema_version": "exectv2.mention_unit_v2.v1",
             "status": "prompt_checked_live_not_run",
             "protocol": PROTOCOL,
             "split": "dev20",
@@ -137,10 +133,12 @@ def main(argv: Sequence[str] | None = None) -> None:
         return
 
     controls = _load_controls()
-    v4_rows = _load_v4_rows()
-    candidate_results, control_results, v4_results, trust_results, rows, operational = _run_live(
+    v1_rows = _load_saved_rows(V1_ROWS, "v1")
+    v4_rows = _load_saved_rows(V4_ROWS, "v4")
+    candidate_results, control_results, v1_results, v4_results, trust_results, rows, operational = _run_live(
         letters,
         controls,
+        v1_rows,
         v4_rows,
         api_base=args.api_base,
         timeout=args.timeout,
@@ -149,6 +147,8 @@ def main(argv: Sequence[str] | None = None) -> None:
     summaries = {
         "control_llm": _score_method(letters, control_results[LLM_METHOD]),
         "control_llm_with_rules": _score_method(letters, control_results[HYBRID_METHOD]),
+        "mention_unit_v1_llm": _score_method(letters, v1_results[LLM_METHOD]),
+        "mention_unit_v1_llm_with_rules": _score_method(letters, v1_results[HYBRID_METHOD]),
         "v4_llm": _score_method(letters, v4_results[LLM_METHOD]),
         "v4_llm_with_rules": _score_method(letters, v4_results[HYBRID_METHOD]),
         "trust_item_llm": _score_method(letters, trust_results[LLM_METHOD]),
@@ -156,10 +156,10 @@ def main(argv: Sequence[str] | None = None) -> None:
         LLM_METHOD: _score_method(letters, candidate_results[LLM_METHOD]),
         HYBRID_METHOD: _score_method(letters, candidate_results[HYBRID_METHOD]),
     }
-    stop = _stop_checks(letters, rows, v4_results, trust_results)
-    emission = _emission_census(letters, rows, v4_rows)
+    stop = _stop_checks(letters, rows, v1_results, v4_results, trust_results)
+    emission = _emission_census(letters, rows, v1_rows, v4_rows)
     artifact: dict[str, Any] = {
-        "schema_version": "exectv2.mention_unit_v1.v1",
+        "schema_version": "exectv2.mention_unit_v2.v1",
         "status": "complete",
         "protocol": PROTOCOL,
         "split": "dev20",
@@ -173,19 +173,20 @@ def main(argv: Sequence[str] | None = None) -> None:
         "controls": {
             "llm": "saved_current_stack_v0.9.24_replay",
             "llm_with_rules": "saved_current_stack_v0.9.24_replay",
+            "mention_unit_v1": "saved_mention_unit_v1_dev20_raws",
             "v4": "saved_fork_a_dev20_default_projection",
             "trust_item": "saved_fork_a_dev20_trust_item_rematerialization",
         },
         "methods": summaries,
         "operational": operational,
         "stop_checks": stop,
-        "gold_span_emission": emission,
+        "gold_wording_emission": emission,
         "provenance": _provenance(),
         "started_utc": started,
         "finished_utc": datetime.now(UTC).isoformat(),
         "row_policy": "development rows permitted; test60 sealed",
         "claim_boundary": (
-            "GPT-5.6 Luna ExECT mention-unit development result on frozen dev20. "
+            "GPT-5.6 Luna ExECT mention-unit v2 development result on frozen dev20. "
             "Headline F1 is context. test60 was not inspected. Decision 0050 is unchanged."
         ),
     }
@@ -224,32 +225,55 @@ def _load_controls() -> dict[str, dict[str, Any]]:
     return controls
 
 
-def _load_v4_rows() -> dict[str, dict[str, Any]]:
-    if not V4_ROWS.exists():
-        raise FileNotFoundError(V4_ROWS)
+def _load_saved_rows(path: Path, label: str) -> dict[str, dict[str, Any]]:
+    if not path.exists():
+        raise FileNotFoundError(path)
     rows: dict[str, dict[str, Any]] = {}
-    with V4_ROWS.open(encoding="utf-8") as handle:
+    with path.open(encoding="utf-8") as handle:
         for line in handle:
             row = json.loads(line)
             rows[str(row["letter_id"])] = row
     missing = [letter_id for letter_id in DEV20_IDS if letter_id not in rows]
     if missing:
-        raise RuntimeError(f"missing v4 fork-A rows: {missing}")
+        raise RuntimeError(f"missing {label} rows: {missing}")
     return rows
 
 
 def _verify_prompt_contracts(letter: ExectLetter) -> None:
+    banned = (
+        "mention",
+        "span",
+        "coding fields",
+        "this method",
+        "return only",
+        "list 2",
+        "list 9",
+        "list 11",
+        "named type not generic",
+        "gold",
+        "scorer",
+        "prompt_version",
+        "letter_id",
+    )
     for method in (LLM_METHOD, HYBRID_METHOD):
         payload = json.loads(build_mention_unit_prompt(letter, method=method))
-        if list(payload) != ["task", "output_schema", "family_guidance", "letter_text"]:
+        expected = (
+            ["task", "output_schema", "form_table", "selection_cues", "closed_values", "letter_text"]
+            if method == LLM_METHOD
+            else ["task", "output_schema", "selection_cues", "letter_text"]
+        )
+        if list(payload) != expected:
             raise RuntimeError(f"{method} prompt top-level order drifted")
         serialized = json.dumps(
             {key: value for key, value in payload.items() if key != "letter_text"}
         ).lower()
-        if "prompt_version" in serialized or "letter_id" in serialized or "gold" in serialized:
-            raise RuntimeError(f"{method} prompt leaked research metadata")
-        if "list 9" in serialized or "list 11" in serialized or "named type not generic" in serialized:
-            raise RuntimeError(f"{method} prompt dumped a closed table or v16 cue")
+        for term in banned:
+            if term in serialized:
+                raise RuntimeError(f"{method} prompt leaked {term!r}")
+        if method == LLM_METHOD and "period_count" not in json.dumps(payload["output_schema"]).lower():
+            raise RuntimeError("llm schema omitted period_count")
+        if method == HYBRID_METHOD and "stay in evidence" not in str(payload["task"]).lower():
+            raise RuntimeError("hybrid prompt does not teach leftover words as evidence")
         if method == HYBRID_METHOD and "attributes" in json.dumps(payload["output_schema"]).lower():
             raise RuntimeError("hybrid model schema exposes clinical attributes")
         program = MentionUnitExtractor(method=method)
@@ -258,11 +282,16 @@ def _verify_prompt_contracts(letter: ExectLetter) -> None:
         )
         if messages[0] != {"role": "system", "content": SYSTEM_MESSAGE}:
             raise RuntimeError("mention-unit system message drifted")
+        rendered = json.dumps(messages).lower()
+        for term in ("mention", "span", "coding fields", "this method", "return only"):
+            if term in rendered:
+                raise RuntimeError(f"rendered {method} payload leaked {term!r}")
 
 
 def _run_live(
     letters: list[ExectLetter],
     controls: dict[str, dict[str, Any]],
+    v1_rows: dict[str, dict[str, Any]],
     v4_rows: dict[str, dict[str, Any]],
     *,
     api_base: str | None,
@@ -273,11 +302,13 @@ def _run_live(
     dict[str, list[Any]],
     dict[str, list[Any]],
     dict[str, list[Any]],
+    dict[str, list[Any]],
     list[dict[str, Any]],
     dict[str, Any],
 ]:
     candidate_predictions: dict[str, list[Any]] = {LLM_METHOD: [], HYBRID_METHOD: []}
     control_predictions: dict[str, list[Any]] = {LLM_METHOD: [], HYBRID_METHOD: []}
+    v1_predictions: dict[str, list[Any]] = {LLM_METHOD: [], HYBRID_METHOD: []}
     v4_predictions: dict[str, list[Any]] = {LLM_METHOD: [], HYBRID_METHOD: []}
     trust_predictions: dict[str, list[Any]] = {LLM_METHOD: [], HYBRID_METHOD: []}
     rows: list[dict[str, Any]] = []
@@ -313,9 +344,11 @@ def _run_live(
         control_llm, control_hybrid = _replay_current_controls(letter, controls[letter.letter_id])
         control_predictions[LLM_METHOD].append(control_llm)
         control_predictions[HYBRID_METHOD].append(control_hybrid)
+        v1_pair = _saved_predictions(v1_rows[letter.letter_id])
         v4_pair = _rematerialize_v4(letter, v4_rows[letter.letter_id], projection="v4")
         trust_pair = _rematerialize_v4(letter, v4_rows[letter.letter_id], projection="trust_item")
         for method in (LLM_METHOD, HYBRID_METHOD):
+            v1_predictions[method].append(v1_pair[method])
             v4_predictions[method].append(v4_pair[method])
             trust_predictions[method].append(trust_pair[method])
         row: dict[str, Any] = {
@@ -327,6 +360,8 @@ def _run_live(
             "comparators": {
                 "control_llm": control_llm.model_dump(mode="json"),
                 "control_llm_with_rules": control_hybrid.model_dump(mode="json"),
+                "mention_unit_v1_llm": v1_pair[LLM_METHOD].model_dump(mode="json"),
+                "mention_unit_v1_llm_with_rules": v1_pair[HYBRID_METHOD].model_dump(mode="json"),
                 "v4_llm": v4_pair[LLM_METHOD].model_dump(mode="json"),
                 "v4_llm_with_rules": v4_pair[HYBRID_METHOD].model_dump(mode="json"),
                 "trust_item_llm": trust_pair[LLM_METHOD].model_dump(mode="json"),
@@ -382,11 +417,19 @@ def _run_live(
     return (
         candidate_predictions,
         control_predictions,
+        v1_predictions,
         v4_predictions,
         trust_predictions,
         rows,
         operational,
     )
+
+
+def _saved_predictions(saved: dict[str, Any]) -> dict[str, PredictedLetter]:
+    return {
+        method: PredictedLetter.model_validate(saved["methods"][method]["prediction"])
+        for method in (LLM_METHOD, HYBRID_METHOD)
+    }
 
 
 def _replay_current_controls(letter: ExectLetter, saved: dict[str, Any]) -> tuple[Any, Any]:
@@ -515,12 +558,16 @@ def _nontarget_mentions(predictions: Sequence[Any]) -> list[dict[str, str]]:
 def _stop_checks(
     letters: list[ExectLetter],
     rows: list[dict[str, Any]],
+    v1_results: dict[str, list[Any]],
     v4_results: dict[str, list[Any]],
     trust_results: dict[str, list[Any]],
 ) -> dict[str, Any]:
     candidate_empty = {
         method: _empty_gold_extras(letters, [PredictedLetter.model_validate(row["methods"][method]["prediction"]) for row in rows])
         for method in (LLM_METHOD, HYBRID_METHOD)
+    }
+    v1_empty = {
+        method: _empty_gold_extras(letters, v1_results[method]) for method in (LLM_METHOD, HYBRID_METHOD)
     }
     v4_empty = {
         method: _empty_gold_extras(letters, v4_results[method]) for method in (LLM_METHOD, HYBRID_METHOD)
@@ -541,6 +588,7 @@ def _stop_checks(
     sf_rise = any(
         candidate_empty[method]["mention_counts"]["SeizureFrequency"]
         > max(
+            v1_empty[method]["mention_counts"]["SeizureFrequency"],
             v4_empty[method]["mention_counts"]["SeizureFrequency"],
             trust_empty[method]["mention_counts"]["SeizureFrequency"],
         )
@@ -553,9 +601,10 @@ def _stop_checks(
         "hybrid_growth_from_unused_letter": growth,
         "verdict": "revise" if revise else "mechanically_clean",
         "baselines": {
+            "mention_unit_v1": v1_empty,
             "v4": v4_empty,
             "trust_item": trust_empty,
-            "mention_unit": candidate_empty,
+            "mention_unit_v2": candidate_empty,
         },
     }
 
@@ -599,16 +648,21 @@ def _hybrid_growth(letters: list[ExectLetter], rows: list[dict[str, Any]]) -> li
 def _emission_census(
     letters: list[ExectLetter],
     rows: list[dict[str, Any]],
+    v1_rows: dict[str, dict[str, Any]],
     v4_rows: dict[str, dict[str, Any]],
 ) -> dict[str, Any]:
     census: dict[str, Any] = {"families": {}, "letters": []}
     totals = {
         family: {
             "gold_units": 0,
-            "mention_unit_llm_exact": 0,
-            "mention_unit_hybrid_exact": 0,
-            "mention_unit_llm_read": 0,
-            "mention_unit_hybrid_read": 0,
+            "mention_unit_v2_llm_exact": 0,
+            "mention_unit_v2_hybrid_exact": 0,
+            "mention_unit_v2_llm_read": 0,
+            "mention_unit_v2_hybrid_read": 0,
+            "mention_unit_v1_llm_exact": 0,
+            "mention_unit_v1_hybrid_exact": 0,
+            "mention_unit_v1_llm_read": 0,
+            "mention_unit_v1_hybrid_read": 0,
             "v4_llm_exact": 0,
             "v4_hybrid_exact": 0,
             "v4_llm_read": 0,
@@ -617,6 +671,7 @@ def _emission_census(
         for family in FAMILIES
     }
     for letter, row in zip(letters, rows, strict=True):
+        v1 = v1_rows[letter.letter_id]
         v4 = v4_rows[letter.letter_id]
         letter_row: dict[str, Any] = {"letter_id": letter.letter_id, "families": {}}
         for family in FAMILIES:
@@ -627,22 +682,28 @@ def _emission_census(
                 }
                 for annotation in letter.entities(family)
             ]
-            mu_llm = _carrier_texts(row["methods"][LLM_METHOD], "text")
-            mu_hybrid = _carrier_texts(row["methods"][HYBRID_METHOD], "text")
+            mu_llm = _carrier_texts(row["methods"][LLM_METHOD], "clinical_name")
+            mu_hybrid = _carrier_texts(row["methods"][HYBRID_METHOD], "clinical_name")
+            v1_llm = _carrier_texts(v1["methods"][LLM_METHOD], "text")
+            v1_hybrid = _carrier_texts(v1["methods"][HYBRID_METHOD], "text")
             v4_llm = _v4_carrier_texts(v4["methods"][LLM_METHOD])
             v4_hybrid = _v4_carrier_texts(v4["methods"][HYBRID_METHOD])
             family_row = {
                 "gold_units": gold_units,
-                "mention_unit_llm": _span_matches(gold_units, mu_llm),
-                "mention_unit_hybrid": _span_matches(gold_units, mu_hybrid),
+                "mention_unit_v2_llm": _span_matches(gold_units, mu_llm),
+                "mention_unit_v2_hybrid": _span_matches(gold_units, mu_hybrid),
+                "mention_unit_v1_llm": _span_matches(gold_units, v1_llm),
+                "mention_unit_v1_hybrid": _span_matches(gold_units, v1_hybrid),
                 "v4_llm": _span_matches(gold_units, v4_llm),
                 "v4_hybrid": _span_matches(gold_units, v4_hybrid),
             }
             letter_row["families"][family] = family_row
             totals[family]["gold_units"] += len(gold_units)
             for key, matched in (
-                ("mention_unit_llm", family_row["mention_unit_llm"]),
-                ("mention_unit_hybrid", family_row["mention_unit_hybrid"]),
+                ("mention_unit_v2_llm", family_row["mention_unit_v2_llm"]),
+                ("mention_unit_v2_hybrid", family_row["mention_unit_v2_hybrid"]),
+                ("mention_unit_v1_llm", family_row["mention_unit_v1_llm"]),
+                ("mention_unit_v1_hybrid", family_row["mention_unit_v1_hybrid"]),
                 ("v4_llm", family_row["v4_llm"]),
                 ("v4_hybrid", family_row["v4_hybrid"]),
             ):
@@ -654,11 +715,12 @@ def _emission_census(
 
 
 def _carrier_texts(method_row: dict[str, Any], field: str) -> list[str]:
-    return [
-        str(fact.get(field) or "")
-        for fact in method_row.get("semantic_facts", [])
-        if fact.get(field)
-    ]
+    texts: list[str] = []
+    for fact in method_row.get("semantic_facts", []):
+        value = fact.get(field) or fact.get("clinical_name") or fact.get("text")
+        if value:
+            texts.append(str(value))
+    return texts
 
 
 def _v4_carrier_texts(method_row: dict[str, Any]) -> list[str]:
@@ -739,7 +801,7 @@ def _public_artifact_summary(artifact: dict[str, Any]) -> dict[str, Any]:
             "model_calls",
             "methods",
             "stop_checks",
-            "gold_span_emission",
+            "gold_wording_emission",
             "claim_boundary",
         )
         if key in artifact
@@ -749,7 +811,7 @@ def _public_artifact_summary(artifact: dict[str, Any]) -> dict[str, Any]:
 def _render_report(artifact: dict[str, Any]) -> str:
     methods = artifact["methods"]
     lines = [
-        "# ExECT mention-unit v1 — GPT-5.6 Luna `dev20`",
+        "# ExECT mention-unit v2 — GPT-5.6 Luna `dev20`",
         "",
         "Date: 2026-08-16  ",
         "Status: complete; GPT-5.6 Luna candidate measured",
