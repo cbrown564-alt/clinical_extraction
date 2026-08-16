@@ -24,7 +24,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
     normalize_count,
     normalize_unit,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.semantic_inventory_rules import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.mention_unit_shared import (
     _is_pending_investigation,
     _is_uncoded_phenomenology,
 )

@@ -35,9 +35,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
-    sf_attribute_encoding as sf_encoding,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     standard_dictionary as sd,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
@@ -50,15 +47,27 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_p
     check_evidence,
 )
 
+from .mention_unit_shared import (
+    HYBRID_METHOD,
+    LLM_METHOD,
+    InventoryMaterialization,
+    _apply_hybrid_letter_rules,
+    _certainty,
+    _coerce_text,
+    _dose_unit,
+    _frequency,
+    _negation,
+    _normalize_family,
+    _sf_attributes_to_legacy,
+    _stringify_attributes,
+    project_hybrid_event,
+)
 from .pipelines.key_entities_structured import records as structured_records
-from .semantic_inventory_rules import project_hybrid_event
 from .semantic_inventory_trust import (
     project_trust_hybrid,
     project_trust_llm_mentions,
 )
 
-LLM_METHOD = "llm"
-HYBRID_METHOD = "llm_with_rules"
 SEMANTIC_PROMPT_VERSION = "exectv2_semantic_inventory_v4"
 SEMANTIC_MODEL = "openai/gpt-5.6-luna"
 SYSTEM_MESSAGE = (
@@ -71,16 +80,6 @@ SEMANTIC_FAMILIES = (
     PRESCRIPTION.name,
     INVESTIGATIONS.name,
 )
-
-_FAMILY_ALIASES = {
-    "diagnosis": DIAGNOSIS.name,
-    "seizure_frequency": SEIZURE_FREQUENCY.name,
-    "seizurefrequency": SEIZURE_FREQUENCY.name,
-    "prescription": PRESCRIPTION.name,
-    "medication": PRESCRIPTION.name,
-    "investigation": INVESTIGATIONS.name,
-    "investigations": INVESTIGATIONS.name,
-}
 
 _SF_PHRASES = (
     "focal seizures with altered awareness",
@@ -100,17 +99,6 @@ _SF_PHRASES = (
 )
 
 _MODALITY_RE = re.compile(r"\b(MRI|CT|EEG)\b", re.I)
-_LAST_EVENT_CUE_RE = re.compile(
-    r"\b(last seizure|last seizures|last event|has had none since|none since|"
-    r"no further|not had any further|has not had any(?: further)?|"
-    r"seizure[- ]free since|no seizures?|no absences)\b",
-    re.IGNORECASE,
-)
-_REMOTE_TIMEFRAME_RE = re.compile(
-    r"\b(?:teenage(?: years)?|teens|childhood|adolescence|school years)\b",
-    re.IGNORECASE,
-)
-_SEIZURE_FREE_RE = re.compile(r"seizure\s*-?free|no further seizures", re.I)
 
 _LLM_ATTRIBUTE_SCHEMA = {
     "concept": "Named diagnosis or seizure-type phrase.",
@@ -157,16 +145,6 @@ class InventoryParseResult:
     record: SemanticInventoryRecord | None
     errors: list[str] = field(default_factory=list)
     forbidden_fields: list[dict[str, Any]] = field(default_factory=list)
-
-
-@dataclass(frozen=True)
-class InventoryMaterialization:
-    prediction: PredictedLetter
-    semantic_facts: list[dict[str, Any]]
-    rule_trace: list[dict[str, Any]]
-    warnings: list[str]
-    evidence_invalid: int
-    parse_failures: list[str] = field(default_factory=list)
 
 
 def _system_message() -> str:
@@ -339,51 +317,6 @@ def parse_inventory_json(
             )
         )
     return InventoryParseResult(SemanticInventoryRecord(facts=facts), errors, forbidden)
-
-
-def _normalize_family(value: Any) -> str | None:
-    return _FAMILY_ALIASES.get(str(value or "").strip().lower().replace(" ", "_"))
-
-
-def _coerce_text(value: Any, errors: list[str], field_name: str) -> str:
-    if value is None:
-        return ""
-    text = str(value)
-    if text != value:
-        errors.append(f"coerced_text: {field_name}")
-    return text
-
-
-def _flatten_attribute_object(value: Any, errors: list[str], index: int) -> dict[str, Any]:
-    if value is None:
-        return {}
-    if not isinstance(value, dict):
-        errors.append(f"schema_validation_error: fact[{index}].attributes must be an object")
-        return {}
-    working = dict(value)
-    for key in list(working):
-        family = _normalize_family(key)
-        nested = working[key]
-        if family is None or not isinstance(nested, dict):
-            continue
-        working.pop(key)
-        errors.append(f"unwrapped_nested_family_attributes: fact[{index}].{key}")
-        for nested_key, nested_value in nested.items():
-            working.setdefault(nested_key, nested_value)
-    return working
-
-
-def _stringify_attributes(value: Any, errors: list[str], index: int) -> dict[str, str]:
-    working = _flatten_attribute_object(value, errors, index)
-    result: dict[str, str] = {}
-    for key, raw_value in working.items():
-        if raw_value is None:
-            continue
-        string_value = str(raw_value)
-        if string_value != raw_value:
-            errors.append(f"coerced_attribute_value: fact[{index}].{key}")
-        result[str(key)] = string_value
-    return result
 
 
 def materialize_inventory(
@@ -588,87 +521,6 @@ def _llm_project(fact: SemanticFact) -> tuple[dict[str, str], str, str, str]:
     return attributes, text, status, owner
 
 
-def _apply_hybrid_letter_rules(
-    mentions: list[PredictedMention],
-) -> tuple[list[PredictedMention], list[dict[str, Any]]]:
-    traces: list[dict[str, Any]] = []
-    diagnoses = [mention for mention in mentions if mention.entity == DIAGNOSIS.name]
-    others = [mention for mention in mentions if mention.entity != DIAGNOSIS.name]
-    filtered = list(sd.drop_syndrome_covered_phenotypes(diagnoses))
-    if len(filtered) != len(diagnoses):
-        traces.append(
-            _trace(
-                index=-1,
-                category="clinical_epilepsy",
-                action="drop_syndrome_covered_phenotypes",
-                evidence="",
-                after={"kept": [mention.text for mention in filtered]},
-                changed=True,
-            )
-        )
-    working = [*filtered, *others]
-    encoded: list[PredictedMention] = []
-    for mention in working:
-        if mention.entity != SEIZURE_FREQUENCY.name:
-            encoded.append(mention)
-            continue
-        rewritten, actions = sf_encoding.apply_sf_attribute_encoding(
-            [
-                {
-                    "entity": mention.entity,
-                    "text": mention.text,
-                    "attributes": dict(mention.attributes),
-                    "evidence": mention.evidence,
-                }
-            ]
-        )
-        row = rewritten[0]
-        encoded.append(
-            PredictedMention(
-                entity=mention.entity,
-                text=str(row.get("text") or mention.text),
-                attributes={
-                    str(key): str(value) for key, value in row.get("attributes", {}).items()
-                },
-                evidence=mention.evidence,
-                component_owner=mention.component_owner,
-            )
-        )
-        for action in actions:
-            traces.append(
-                _trace(
-                    index=-1,
-                    category="seizure_frequency",
-                    action=str(action.get("rule_id") or action.get("action") or ""),
-                    evidence=mention.evidence,
-                    after=dict(encoded[-1].attributes),
-                    changed=True,
-                )
-            )
-    return encoded, traces
-
-
-def _trace(
-    *,
-    index: int,
-    category: str,
-    action: str,
-    evidence: str,
-    after: dict[str, Any],
-    changed: bool,
-) -> dict[str, Any]:
-    return {
-        "fact_index": index,
-        "rule_category": category,
-        "action": action,
-        "evidence": evidence,
-        "before": {},
-        "after": after,
-        "changed": changed,
-        "first_prediction_changing_owner": "deterministic" if changed else None,
-    }
-
-
 def _fact_text(fact: SemanticFact) -> str:
     """Select a source-near phrase for scorer projection without adding facts."""
 
@@ -761,72 +613,6 @@ def _is_pending_investigation_text(
     text: str, evidence: str, attributes: dict[str, str]
 ) -> bool:
     return sd.is_pending_investigation(text, evidence=text or evidence, attributes=attributes)
-
-
-def _sf_attributes_to_legacy(attrs: dict[str, str], *, source: str = "") -> dict[str, str]:
-    key_map = {
-        "count": "NumberOfSeizures",
-        "frequency": "NumberOfSeizures",
-        "lower_count": "LowerNumberOfSeizures",
-        "upper_count": "UpperNumberOfSeizures",
-        "period_count": "NumberOfTimePeriods",
-        "lower_period": "LowerNumberOfTimePeriods",
-        "upper_period": "UpperNumberOfTimePeriods",
-        "period": "TimePeriod",
-        "change": "FrequencyChange",
-        "direction": "FrequencyChange",
-        "point_in_time": "PointInTime",
-        "day": "DayDate",
-        "month": "MonthDate",
-        "year": "YearDate",
-        "age_lower": "AgeLower",
-        "age_upper": "AgeUpper",
-        "age_unit": "AgeUnit",
-    }
-    legacy = {key_map[key]: value for key, value in attrs.items() if key in key_map and value}
-    state = attrs.get("state", attrs.get("status", "")).lower().replace("_", "-")
-    remote = bool(_REMOTE_TIMEFRAME_RE.search(f"{attrs.get('timeframe', '')} {source}"))
-    last_event = bool(_LAST_EVENT_CUE_RE.search(source)) or state in {
-        "last-event",
-        "seizure-free",
-        "seizure free",
-        "none",
-        "zero",
-    }
-    if last_event or (state == "historical" and remote):
-        legacy.setdefault("NumberOfSeizures", "0")
-    return legacy
-
-
-def _certainty(value: str) -> str:
-    mapping = {
-        "certain": "5",
-        "confirmed": "5",
-        "probable": "4",
-        "likely": "4",
-        "possible": "3",
-        "uncertain": "2",
-        "unknown": "1",
-    }
-    return mapping.get(value.lower(), value if value in {"1", "2", "3", "4", "5"} else "5")
-
-
-def _negation(value: str) -> str:
-    if value.lower() in {"negated", "no", "not", "absent"}:
-        return "Negated"
-    return "Affirmed"
-
-
-def _dose_unit(value: str) -> str:
-    lowered = value.lower().replace("milligrams", "mg").replace("grams", "g")
-    return "g" if lowered.startswith("g") and not lowered.startswith("mg") else "mg"
-
-
-def _frequency(value: str) -> str:
-    mapped = sd.frequency_code(value)
-    if mapped:
-        return mapped
-    return value if value in {"1", "2", "3", "As_Required"} else ""
 
 
 __all__ = [
