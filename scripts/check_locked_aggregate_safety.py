@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ARTIFACTS = (
     ROOT / "experiments/gan2026_matched_v05_test450_aggregate_20260716.json",
     ROOT / "experiments/exectv2_six_model_test60_stage_panel_20260801/panel_aggregate.json",
-    ROOT / "experiments/exectv2_rules_only_four_family_clinical_headline_test60_20260801.json",
+    ROOT / "experiments/exectv2_rules_only_four_family_clinical_headline_test60_20260815.json",
     ROOT / "experiments/six_model_holdout_category_aggregates_20260806.json",
     ROOT / "experiments/gan2026_rules_only_test450_20260810.json",
     ROOT / "experiments/current_stack/latest/replay_summary.json",
