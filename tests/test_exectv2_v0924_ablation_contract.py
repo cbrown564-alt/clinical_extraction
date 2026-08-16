@@ -15,6 +15,12 @@ PROMPT_VERSION_V0_9_28_DROP_ENCODING_RULES = (
     structured.PROMPT_VERSION_V0_9_28_DROP_ENCODING_RULES
 )
 PROMPT_VERSION_V0_9_29_DROP_SCOPE_RULES = structured.PROMPT_VERSION_V0_9_29_DROP_SCOPE_RULES
+PROMPT_VERSION_V0_9_30_DROP_SCAFFOLD_EXAMPLES = (
+    structured.PROMPT_VERSION_V0_9_30_DROP_SCAFFOLD_EXAMPLES
+)
+PROMPT_VERSION_V0_9_31_DROP_SCAFFOLD_EXAMPLES_ENCODING = (
+    structured.PROMPT_VERSION_V0_9_31_DROP_SCAFFOLD_EXAMPLES_ENCODING
+)
 
 _LETTER = ExectLetter(
     letter_id="TEST001",
@@ -112,6 +118,32 @@ def test_ablation_check_does_not_change_default() -> None:
     assert payload["ok"] is True
     assert payload["default_prompt_version"] == structured.PROMPT_VERSION_V0_9_24
     assert structured.PROMPT_VERSION == before == structured.PROMPT_VERSION_V0_9_24
+
+
+def test_cumulative_scaffold_examples_keeps_scope_and_encoding() -> None:
+    payload = _payload(PROMPT_VERSION_V0_9_30_DROP_SCAFFOLD_EXAMPLES)
+    for key in _SCAFFOLD_KEYS:
+        assert key not in payload
+    assert "worked_examples" not in payload
+    assert _EXAMPLE_09 not in json.dumps(payload)
+    rules = " ".join(payload["clinical_rules"])
+    assert _LEDGER_RULE not in rules
+    assert _ENCODING_RULE in rules
+    assert _SCOPE_RULE in rules
+    assert len(payload["clinical_rules"]) == 79
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+
+
+def test_cumulative_scaffold_examples_encoding_keeps_scope() -> None:
+    payload = _payload(PROMPT_VERSION_V0_9_31_DROP_SCAFFOLD_EXAMPLES_ENCODING)
+    for key in _SCAFFOLD_KEYS:
+        assert key not in payload
+    assert "worked_examples" not in payload
+    rules = " ".join(payload["clinical_rules"])
+    assert _ENCODING_RULE not in rules
+    assert _SCOPE_RULE in rules
+    assert len(payload["clinical_rules"]) == 50
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
 
 
 def test_each_ablation_is_leave_one_out() -> None:

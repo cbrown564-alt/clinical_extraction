@@ -1230,6 +1230,8 @@ def test_no_prompt_version_mentions_cui() -> None:
         structured.PROMPT_VERSION_V0_9_27_DROP_EXAMPLES,
         structured.PROMPT_VERSION_V0_9_28_DROP_ENCODING_RULES,
         structured.PROMPT_VERSION_V0_9_29_DROP_SCOPE_RULES,
+        structured.PROMPT_VERSION_V0_9_30_DROP_SCAFFOLD_EXAMPLES,
+        structured.PROMPT_VERSION_V0_9_31_DROP_SCAFFOLD_EXAMPLES_ENCODING,
     ]
     try:
         for version in versions:

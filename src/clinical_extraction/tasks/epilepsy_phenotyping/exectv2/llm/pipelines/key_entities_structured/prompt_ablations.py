@@ -23,6 +23,12 @@ PROMPT_VERSION_V0_9_28_DROP_ENCODING_RULES = (
 PROMPT_VERSION_V0_9_29_DROP_SCOPE_RULES = (
     "exectv2_hybrid_key_family_event_ledger_v0.9.29_drop_scope_rules"
 )
+PROMPT_VERSION_V0_9_30_DROP_SCAFFOLD_EXAMPLES = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.30_drop_scaffold_examples"
+)
+PROMPT_VERSION_V0_9_31_DROP_SCAFFOLD_EXAMPLES_ENCODING = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.31_drop_scaffold_examples_encoding"
+)
 
 _SCAFFOLD_TASK = (
     "Read the clinical letter once. Build a compact list of source-near "
@@ -131,6 +137,20 @@ ABLATION_SPECS: dict[str, AblationSpec] = {
     PROMPT_VERSION_V0_9_29_DROP_SCOPE_RULES: AblationSpec(
         version=PROMPT_VERSION_V0_9_29_DROP_SCOPE_RULES,
         drop_rule_ids=_SCOPE_RULES,
+    ),
+    PROMPT_VERSION_V0_9_30_DROP_SCAFFOLD_EXAMPLES: AblationSpec(
+        version=PROMPT_VERSION_V0_9_30_DROP_SCAFFOLD_EXAMPLES,
+        drop_payload_keys=_SCAFFOLD_KEYS,
+        drop_examples=True,
+        drop_rule_ids=_JUNK_LEDGER_RULES,
+        task=_SCAFFOLD_TASK,
+    ),
+    PROMPT_VERSION_V0_9_31_DROP_SCAFFOLD_EXAMPLES_ENCODING: AblationSpec(
+        version=PROMPT_VERSION_V0_9_31_DROP_SCAFFOLD_EXAMPLES_ENCODING,
+        drop_payload_keys=_SCAFFOLD_KEYS,
+        drop_examples=True,
+        drop_rule_ids=_JUNK_LEDGER_RULES | _ENCODING_RULES,
+        task=_SCAFFOLD_TASK,
     ),
 }
 

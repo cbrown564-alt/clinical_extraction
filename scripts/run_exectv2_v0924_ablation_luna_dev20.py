@@ -21,9 +21,27 @@ from scripts import run_exectv2_structured_prompt_v10_luna_dev20 as v10_run
 from scripts import run_exectv2_structured_prompt_v13_luna_dev20 as v13
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-STUDY_DIR = REPO_ROOT / "experiments/exectv2_v0924_ablation_luna_dev20_20260816"
-PROTOCOL = "docs/research/exectv2/v0924_prompt_ablation_luna_dev20_protocol_2026-08-16.md"
-REPORT_PATH = REPO_ROOT / "docs/research/exectv2/v0924_prompt_ablation_luna_dev20_2026-08-16.md"
+LEAVE_ONE_OUT_STUDY_DIR = (
+    REPO_ROOT / "experiments/exectv2_v0924_ablation_luna_dev20_20260816"
+)
+CUMULATIVE_STUDY_DIR = (
+    REPO_ROOT / "experiments/exectv2_v0924_cumulative_prune_luna_dev20_20260816"
+)
+LEAVE_ONE_OUT_PROTOCOL = (
+    "docs/research/exectv2/v0924_prompt_ablation_luna_dev20_protocol_2026-08-16.md"
+)
+CUMULATIVE_PROTOCOL = (
+    "docs/research/exectv2/v0924_cumulative_prune_luna_dev20_protocol_2026-08-16.md"
+)
+LEAVE_ONE_OUT_REPORT = (
+    REPO_ROOT / "docs/research/exectv2/v0924_prompt_ablation_luna_dev20_2026-08-16.md"
+)
+CUMULATIVE_REPORT = (
+    REPO_ROOT / "docs/research/exectv2/v0924_cumulative_prune_luna_dev20_2026-08-16.md"
+)
+STUDY_DIR = LEAVE_ONE_OUT_STUDY_DIR
+PROTOCOL = LEAVE_ONE_OUT_PROTOCOL
+REPORT_PATH = LEAVE_ONE_OUT_REPORT
 MODEL = "openai/gpt-5.6-luna"
 SERIES_ORDER = (
     "drop_scaffold",
@@ -31,11 +49,19 @@ SERIES_ORDER = (
     "drop_encoding",
     "drop_scope",
 )
+CUMULATIVE_ARMS = (
+    "drop_scaffold_examples",
+    "drop_scaffold_examples_encoding",
+)
 ARM_VERSIONS = {
     "drop_scaffold": structured.PROMPT_VERSION_V0_9_26_DROP_SCAFFOLD,
     "drop_examples": structured.PROMPT_VERSION_V0_9_27_DROP_EXAMPLES,
     "drop_encoding": structured.PROMPT_VERSION_V0_9_28_DROP_ENCODING_RULES,
     "drop_scope": structured.PROMPT_VERSION_V0_9_29_DROP_SCOPE_RULES,
+    "drop_scaffold_examples": structured.PROMPT_VERSION_V0_9_30_DROP_SCAFFOLD_EXAMPLES,
+    "drop_scaffold_examples_encoding": (
+        structured.PROMPT_VERSION_V0_9_31_DROP_SCAFFOLD_EXAMPLES_ENCODING
+    ),
 }
 CONTAMINATION_LETTERS = ("EA0004", "EA0010")
 
@@ -46,7 +72,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     check = sub.add_parser("check", help="Verify ablation payloads and score the control.")
     check.add_argument("--overwrite", action="store_true")
     run = sub.add_parser("run", help="Score control; live only with --live")
-    run.add_argument("--arm", choices=SERIES_ORDER)
+    run.add_argument("--arm", choices=(*SERIES_ORDER, *CUMULATIVE_ARMS))
     run.add_argument("--series", action="store_true", help="Run every leave-one-out arm.")
     run.add_argument("--live", action="store_true")
     run.add_argument("--overwrite", action="store_true")
@@ -112,6 +138,18 @@ def verify_payload() -> dict[str, Any]:
         raise RuntimeError("drop_encoding contract drifted")
     if checks["drop_scope"]["n_rules"] != 58:
         raise RuntimeError("drop_scope contract drifted")
+    if (
+        checks["drop_scaffold_examples"]["has_scaffold"]
+        or checks["drop_scaffold_examples"]["n_examples"] != 0
+        or checks["drop_scaffold_examples"]["n_rules"] != 79
+    ):
+        raise RuntimeError("drop_scaffold_examples contract drifted")
+    if (
+        checks["drop_scaffold_examples_encoding"]["has_scaffold"]
+        or checks["drop_scaffold_examples_encoding"]["n_examples"] != 0
+        or checks["drop_scaffold_examples_encoding"]["n_rules"] != 50
+    ):
+        raise RuntimeError("drop_scaffold_examples_encoding contract drifted")
     return {
         "ok": True,
         "default_prompt_version": structured.PROMPT_VERSION,
@@ -137,6 +175,7 @@ def run_study(
 ) -> dict[str, Any]:
     verify_payload()
     letters = _letters()
+    _select_study(arms)
     STUDY_DIR.mkdir(parents=True, exist_ok=True)
     started = datetime.now(UTC).isoformat()
     original_dir = v10_run.STUDY_DIR
@@ -204,10 +243,7 @@ def run_study(
         },
         "comparison": dict(previous.get("comparison", {})),
         "decision": dict(previous.get("decision", {})),
-        "claim_boundary": (
-            "ExECTv2 Luna 20-letter development leave-one-out prune of v0.9.24. "
-            "Not holdout, not a selected prompt, and not a Decision 0050 change."
-        ),
+        "claim_boundary": _claim_boundary(),
     }
     for arm in arms:
         versus = v13._compare_pair(control, scored[arm], letters)
@@ -230,7 +266,8 @@ def run_study(
         }
     out = STUDY_DIR / "comparison.json"
     out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    REPORT_PATH.write_text(_render_report(artifact), encoding="utf-8")
+    if _should_write_stub_report():
+        REPORT_PATH.write_text(_render_report(artifact), encoding="utf-8")
     return {
         "artifact": out.relative_to(REPO_ROOT).as_posix(),
         "report": REPORT_PATH.relative_to(REPO_ROOT).as_posix(),
@@ -239,6 +276,18 @@ def run_study(
         "decision": artifact["decision"],
         "default_prompt_version": structured.PROMPT_VERSION,
     }
+
+
+def _select_study(arms: Sequence[str]) -> None:
+    global STUDY_DIR, PROTOCOL, REPORT_PATH
+    if any(arm in CUMULATIVE_ARMS for arm in arms):
+        STUDY_DIR = CUMULATIVE_STUDY_DIR
+        PROTOCOL = CUMULATIVE_PROTOCOL
+        REPORT_PATH = CUMULATIVE_REPORT
+        return
+    STUDY_DIR = LEAVE_ONE_OUT_STUDY_DIR
+    PROTOCOL = LEAVE_ONE_OUT_PROTOCOL
+    REPORT_PATH = LEAVE_ONE_OUT_REPORT
 
 
 def _load_previous_artifact() -> dict[str, Any]:
@@ -272,16 +321,37 @@ def _patched_arm_assembly(slug: str, structured_path: Path, sf_final_path: Path)
         candidate_id=f"exectv2_v0924_ablation_luna_dev20_{slug}",
         split="dev",
         row_count=20,
-        claim_boundary=(
-            "ExECTv2 Luna v0.9.24 leave-one-out prune on the frozen 20-letter sample."
-        ),
+        claim_boundary=_claim_boundary(),
     )
+
+
+def _claim_boundary() -> str:
+    if STUDY_DIR == CUMULATIVE_STUDY_DIR:
+        return (
+            "ExECTv2 Luna 20-letter development cumulative prune of v0.9.24. "
+            "Not holdout, not a selected prompt, and not a Decision 0050 change."
+        )
+    return (
+        "ExECTv2 Luna 20-letter development leave-one-out prune of v0.9.24. "
+        "Not holdout, not a selected prompt, and not a Decision 0050 change."
+    )
+
+
+def _should_write_stub_report() -> bool:
+    if not REPORT_PATH.exists():
+        return True
+    return "Executive result" not in REPORT_PATH.read_text(encoding="utf-8")
 
 
 def _render_report(artifact: Mapping[str, Any]) -> str:
     ctrl = artifact["arms"]["v0924_head"]
+    title = (
+        "# ExECT `v0.9.24` cumulative prune — GPT-5.6 Luna `dev20`"
+        if STUDY_DIR == CUMULATIVE_STUDY_DIR
+        else "# ExECT `v0.9.24` leave-one-out prompt prune — GPT-5.6 Luna `dev20`"
+    )
     lines = [
-        "# ExECT `v0.9.24` leave-one-out prompt prune — GPT-5.6 Luna `dev20`",
+        title,
         "",
         "Date: 2026-08-16",
         f"Status: {'live arms scored' if artifact['live'] else 'no-call check; live not run'}",
