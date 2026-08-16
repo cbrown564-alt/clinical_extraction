@@ -31,8 +31,8 @@ def _letter(note: str, letter_id: str = "EA0002") -> ExectLetter:
     return ExectLetter(letter_id=letter_id, note_text=note)
 
 
-def test_prompt_version_is_fork_a_v3() -> None:
-    assert SEMANTIC_PROMPT_VERSION == "exectv2_semantic_inventory_v3"
+def test_prompt_version_is_fork_a_v4() -> None:
+    assert SEMANTIC_PROMPT_VERSION == "exectv2_semantic_inventory_v4"
 
 
 def test_prompt_contracts_keep_metadata_out_and_separate_method_shapes() -> None:
@@ -56,9 +56,11 @@ def test_prompt_contracts_keep_metadata_out_and_separate_method_shapes() -> None
     assert "SeizureFrequency" not in attributes
     assert "attributes" not in json.dumps(hybrid["output_schema"])
     assert "every distinct atomic" not in llm["task"].lower()
-    assert "coded" in llm["task"].lower()
-    assert "last event" in json.dumps(llm["family_guidance"]).lower()
+    assert "one list" in llm["task"].lower()
+    assert "attributes" in llm["task"].lower()
+    assert "last" in json.dumps(llm["family_guidance"]).lower()
     assert "completed" in json.dumps(llm["family_guidance"]).lower()
+    assert "clumsiness" in json.dumps(llm["family_guidance"]).lower()
 
 
 def test_rendered_payload_stays_plain_and_metadata_free() -> None:
@@ -69,7 +71,7 @@ def test_rendered_payload_stays_plain_and_metadata_free() -> None:
     )
     rendered = json.dumps(messages).lower()
     assert messages[0]["role"] == "system"
-    assert "coded" in str(messages[0]["content"]).lower()
+    assert "current" in str(messages[0]["content"]).lower()
     for term in _BANNED_PROMPT_TERMS:
         assert term not in rendered
 
@@ -331,7 +333,7 @@ def test_llm_keeps_noncurrent_prescription_in_the_semantic_trace() -> None:
     assert result.prediction.mentions == ()
 
 
-def test_hybrid_adds_bounded_diagnosis_residual_from_the_letter() -> None:
+def test_hybrid_does_not_add_letter_level_diagnosis_residual() -> None:
     letter = _letter(
         "Diagnosis: epilepsy – probable focal\nShe has juvenile myoclonic epilepsy."
     )
@@ -352,9 +354,8 @@ def test_hybrid_adds_bounded_diagnosis_residual_from_the_letter() -> None:
     result = materialize_inventory(letter, parsed.record, method=HYBRID_METHOD)
 
     texts = {mention.text.lower() for mention in result.prediction.mentions}
-    assert "juvenile myoclonic epilepsy" in texts
-    assert "focal epilepsy" in texts
-    assert any(trace.get("action") == "diagnosis_residual_addition" for trace in result.rule_trace)
+    assert texts == {"juvenile myoclonic epilepsy"}
+    assert all(trace.get("action") != "diagnosis_residual_addition" for trace in result.rule_trace)
 
 
 def test_llm_does_not_inherit_hybrid_residual_recovery() -> None:
@@ -381,3 +382,124 @@ def test_llm_does_not_inherit_hybrid_residual_recovery() -> None:
     texts = {mention.text.lower() for mention in result.prediction.mentions}
     assert texts == {"juvenile myoclonic epilepsy"}
     assert result.rule_trace == []
+
+
+def test_hybrid_splits_heading_event_and_ignores_later_types_in_evidence() -> None:
+    letter = _letter(
+        "Diagnosis: focal epilepsy-Probable temporal. "
+        "In March she had 2 to 3 of her focal seizures. "
+        "four secondary generalised seizures."
+    )
+    raw = json.dumps(
+        {
+            "facts": [
+                {
+                    "family": "Diagnosis",
+                    "event": "focal epilepsy, probably temporal",
+                    "evidence": (
+                        "Diagnosis: focal epilepsy-Probable temporal. "
+                        "In March she had 2 to 3 of her focal seizures. "
+                        "four secondary generalised seizures."
+                    ),
+                }
+            ]
+        }
+    )
+    parsed = parse_inventory_json(raw, method=HYBRID_METHOD)
+    assert parsed.record is not None
+
+    result = materialize_inventory(letter, parsed.record, method=HYBRID_METHOD)
+
+    texts = sorted(mention.text.lower() for mention in result.prediction.mentions)
+    entities = {mention.entity for mention in result.prediction.mentions}
+    assert entities == {"Diagnosis"}
+    assert texts == ["focal epilepsy", "temporal lobe epilepsy"]
+    assert any(trace.get("action") == "convention_split_heading" for trace in result.rule_trace)
+
+
+def test_hybrid_dual_codes_a_typed_rate_event() -> None:
+    letter = _letter(
+        "In March she had 2 to 3 of her focal seizures without change in awareness."
+    )
+    raw = json.dumps(
+        {
+            "facts": [
+                {
+                    "family": "SeizureFrequency",
+                    "event": (
+                        "In March she had 2 to 3 of her focal seizures "
+                        "without change in awareness"
+                    ),
+                    "evidence": (
+                        "In March she had 2 to 3 of her focal seizures "
+                        "without change in awareness."
+                    ),
+                }
+            ]
+        }
+    )
+    parsed = parse_inventory_json(raw, method=HYBRID_METHOD)
+    assert parsed.record is not None
+
+    result = materialize_inventory(letter, parsed.record, method=HYBRID_METHOD)
+
+    by_entity = {mention.entity: mention for mention in result.prediction.mentions}
+    assert set(by_entity) == {"Diagnosis", "SeizureFrequency"}
+    assert by_entity["Diagnosis"].text.lower() == "focal seizures"
+    assert by_entity["SeizureFrequency"].attributes["LowerNumberOfSeizures"] == "2"
+    assert by_entity["SeizureFrequency"].attributes["UpperNumberOfSeizures"] == "3"
+    assert any(trace.get("action") == "dual_family_reuse" for trace in result.rule_trace)
+
+
+def test_hybrid_closed_table_rewrites_an_event_phrase() -> None:
+    letter = _letter("Diagnosis: Symptomatic structural epilepsy secondary to tuberous sclerosis")
+    raw = json.dumps(
+        {
+            "facts": [
+                {
+                    "family": "Diagnosis",
+                    "event": "symptomatic structural epilepsy",
+                    "evidence": (
+                        "Diagnosis: Symptomatic structural epilepsy "
+                        "secondary to tuberous sclerosis"
+                    ),
+                }
+            ]
+        }
+    )
+    parsed = parse_inventory_json(raw, method=HYBRID_METHOD)
+    assert parsed.record is not None
+
+    result = materialize_inventory(letter, parsed.record, method=HYBRID_METHOD)
+
+    texts = [mention.text.lower() for mention in result.prediction.mentions]
+    assert texts == ["symptomatic structural focal epilepsy"]
+    assert all("focal motor" not in text for text in texts)
+    assert any(trace.get("action") == "closed_table_rewrite" for trace in result.rule_trace)
+
+
+def test_hybrid_parses_dose_from_the_event_not_a_second_drug_in_evidence() -> None:
+    letter = _letter(
+        "Previous antiepileptic medication: lamotrigine and carbamazepine. "
+        "Current antiepileptic medication: levetiracetam 500 mg twice a day."
+    )
+    raw = json.dumps(
+        {
+            "facts": [
+                {
+                    "family": "Prescription",
+                    "event": "lamotrigine",
+                    "evidence": "Previous antiepileptic medication: lamotrigine and carbamazepine.",
+                }
+            ]
+        }
+    )
+    parsed = parse_inventory_json(raw, method=HYBRID_METHOD)
+    assert parsed.record is not None
+
+    result = materialize_inventory(letter, parsed.record, method=HYBRID_METHOD)
+
+    assert result.prediction.mentions == () or (
+        result.prediction.mentions[0].attributes["DrugName"] == "lamotrigine"
+        and "carbamazepine" not in result.prediction.mentions[0].attributes.get("DrugName", "")
+    )

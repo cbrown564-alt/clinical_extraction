@@ -53,8 +53,14 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
 ROOT = Path(__file__).resolve().parents[1]
-PROTOCOL = "docs/research/exectv2/semantic_inventory_v3_fork_a_luna_dev20_protocol_2026-08-16.md"
-REPORT = ROOT / "docs/research/exectv2/semantic_inventory_v3_fork_a_luna_dev20_2026-08-16.md"
+PROTOCOL = (
+    "docs/research/exectv2/"
+    "semantic_inventory_v4_projection_damage_luna_dev140_protocol_2026-08-16.md"
+)
+REPORT = (
+    ROOT
+    / "docs/research/exectv2/semantic_inventory_v4_projection_damage_luna_dev140_2026-08-16.md"
+)
 DEV20_IDS = (
     "EA0002",
     "EA0004",
@@ -92,6 +98,8 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--progress-every", type=int, default=10)
     parser.add_argument("--overwrite", action="store_true")
     args = parser.parse_args(argv)
+    if args.split == "test60":
+        raise SystemExit("this diagnostic does not authorize test60")
 
     letters = _load_letters(args.split)
     study_dir = _study_dir(args.split)
@@ -199,7 +207,9 @@ def _load_letters(split: str) -> list[ExectLetter]:
 
 
 def _study_dir(split: str) -> Path:
-    return ROOT / f"experiments/exectv2_semantic_inventory_v3_fork_a_luna_{split}_20260816"
+    return ROOT / (
+        f"experiments/exectv2_semantic_inventory_v4_projection_damage_luna_{split}_20260816"
+    )
 
 
 def _load_controls(split: str) -> dict[str, dict[str, Any]]:
@@ -487,7 +497,7 @@ def _public_artifact_summary(artifact: dict[str, Any]) -> dict[str, Any]:
 def _render_report(artifact: dict[str, Any], split: str) -> str:
     methods = artifact["methods"]
     lines = [
-        "# ExECT semantic inventory and hybrid re-evaluation",
+        "# ExECT v4 projection-damage catalog — GPT-5.6 Luna",
         "",
         "Date: 2026-08-16  ",
         "Status: complete; GPT-5.6 Luna candidate measured",

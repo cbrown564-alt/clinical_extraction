@@ -359,3 +359,9 @@ def _collapse_same_result(
         seen.add(key)
         kept.append(mention)
     return tuple(kept)
+
+
+def investigation_result_from_span(text: str) -> str | None:
+    """Classify List 9 finding language on an already-selected span."""
+
+    return _investigation_result(text, modality="")
