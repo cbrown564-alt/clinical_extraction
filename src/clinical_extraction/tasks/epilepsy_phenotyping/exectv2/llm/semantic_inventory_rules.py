@@ -86,6 +86,7 @@ def project_hybrid_event(
     event: str,
     evidence: str,
     index: int,
+    dual_family: bool = True,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], str]:
     """Return mention dicts, traces, and a projection status from one event."""
 
@@ -121,7 +122,7 @@ def project_hybrid_event(
             if mention is None:
                 continue
             mentions.append(mention)
-        if _has_typed_rate(event):
+        if dual_family and _has_typed_rate(event):
             sf_mention = _seizure_frequency_mention(event)
             if sf_mention is not None:
                 mentions.append(sf_mention)
@@ -206,7 +207,7 @@ def project_hybrid_event(
     )
     mentions.append(mention)
     type_phrase = _longest_surface(event, _DUAL_FAMILY_TYPES)
-    if type_phrase:
+    if dual_family and type_phrase:
         dx = _diagnosis_mention(type_phrase, event)
         if dx is not None:
             mentions.append(dx)
