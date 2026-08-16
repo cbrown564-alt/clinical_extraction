@@ -43,18 +43,14 @@ CHEAP_STACK_STUDY_DIR = (
 LEAVE_ONE_OUT_PROTOCOL = (
     "docs/research/exectv2/v0924_prompt_ablation_luna_dev20_protocol_2026-08-16.md"
 )
-CUMULATIVE_PROTOCOL = (
-    "docs/research/exectv2/v0924_cumulative_prune_luna_dev20_protocol_2026-08-16.md"
-)
-SCOPE_CLUSTER_PROTOCOL = (
-    "docs/research/exectv2/v0924_scope_cluster_luna_dev20_protocol_2026-08-16.md"
-)
-NON_SF_PROTOCOL = (
-    "docs/research/exectv2/v0924_non_sf_slice_luna_dev20_protocol_2026-08-16.md"
-)
-SF_EXAMPLES_PROTOCOL = (
-    "docs/research/exectv2/v0924_sf_examples_luna_dev20_protocol_2026-08-16.md"
-)
+# Sibling prune protocols were removed in the 2026-08-16 docs cut.
+# Remasure writes the leave-one-out family owner; recover dated
+# sibling protocols from git history if a closed comparison.json
+# pointer must be reproduced exactly.
+CUMULATIVE_PROTOCOL = LEAVE_ONE_OUT_PROTOCOL
+SCOPE_CLUSTER_PROTOCOL = LEAVE_ONE_OUT_PROTOCOL
+NON_SF_PROTOCOL = LEAVE_ONE_OUT_PROTOCOL
+SF_EXAMPLES_PROTOCOL = LEAVE_ONE_OUT_PROTOCOL
 CHEAP_STACK_PROTOCOL = (
     "docs/research/exectv2/v0924_cheap_stack_luna_dev20_protocol_2026-08-16.md"
 )
@@ -184,7 +180,14 @@ def verify_payload() -> dict[str, Any]:
                 "prompt_version": version,
                 "n_rules": len(payload["clinical_rules"]),
                 "n_examples": len(payload.get("worked_examples") or []),
-                "has_scaffold": "architecture" in payload,
+                "has_scaffold": all(
+                    key in payload
+                    for key in (
+                        "decision_procedure",
+                        "suggested_evidence",
+                        "categories",
+                    )
+                ),
             }
     finally:
         structured.set_active_prompt_version(before)

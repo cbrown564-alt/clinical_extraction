@@ -69,16 +69,14 @@ Use the registry adapters directly:
 The checked-in rule index enumerates all `rule_id` values across the three
 stacks for duplicate-ID CI gates and catalog scaffolding.
 
-```bash
-python scripts/generate_sf_surface_rule_index.py
-```
+The checked-in YAML is the living index. The generator
+`scripts/generate_sf_surface_rule_index.py` was removed in the 2026-08-16
+scripts prune; recover it from git history if a rule ID is added or renamed.
 
-**Outputs:**
+**Outputs (checked in):**
 
 - `docs/plans/sf_surface_rule_index.yaml` — 135 unique rule IDs (47 extract + 41 convention + 47 projection)
 - `sf_surface_registry/catalog/convention_rewrite.yaml` — Stack B rewrite stubs
-
-Run after adding or renaming any `rule_id` in `rules/`, `conventions/seizure_frequency.py`, or `target_projection/`.
 
 ## CI gates
 
