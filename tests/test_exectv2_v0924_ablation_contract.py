@@ -45,6 +45,9 @@ PROMPT_VERSION_V0_9_38_DROP_EXAMPLES_SF_ENCODING = (
 PROMPT_VERSION_V0_9_39_DROP_EXAMPLES_SF_SCOPE = (
     structured.PROMPT_VERSION_V0_9_39_DROP_EXAMPLES_SF_SCOPE
 )
+PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES = (
+    structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES
+)
 
 _LETTER = ExectLetter(
     letter_id="TEST001",
@@ -277,6 +280,22 @@ def test_drop_examples_sf_scope_keeps_sf_encoding_examples() -> None:
     assert _EXAMPLE_37 in blob
     assert len(payload["worked_examples"]) == 39
     assert len(payload["clinical_rules"]) == 83
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+
+
+def test_cheap_stack_drops_non_sf_encoding_and_all_examples() -> None:
+    payload = _payload(PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES)
+    assert "worked_examples" not in payload
+    assert _EXAMPLE_09 not in json.dumps(payload)
+    rules = " ".join(payload["clinical_rules"])
+    assert _DX_ENCODING_RULE not in rules
+    assert _IX_ENCODING_RULE not in rules
+    assert _ENCODING_RULE in rules
+    assert _SF_REFUSE_RULE in rules
+    assert _SCOPE_RULE in rules
+    assert len(payload["clinical_rules"]) == 67
+    for key in _SCAFFOLD_KEYS:
+        assert key in payload
     assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
 
 

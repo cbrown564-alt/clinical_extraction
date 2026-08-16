@@ -36,6 +36,9 @@ NON_SF_STUDY_DIR = (
 SF_EXAMPLES_STUDY_DIR = (
     REPO_ROOT / "experiments/exectv2_v0924_sf_examples_luna_dev20_20260816"
 )
+CHEAP_STACK_STUDY_DIR = (
+    REPO_ROOT / "experiments/exectv2_v0924_cheap_stack_luna_dev20_20260816"
+)
 LEAVE_ONE_OUT_PROTOCOL = (
     "docs/research/exectv2/v0924_prompt_ablation_luna_dev20_protocol_2026-08-16.md"
 )
@@ -51,6 +54,9 @@ NON_SF_PROTOCOL = (
 SF_EXAMPLES_PROTOCOL = (
     "docs/research/exectv2/v0924_sf_examples_luna_dev20_protocol_2026-08-16.md"
 )
+CHEAP_STACK_PROTOCOL = (
+    "docs/research/exectv2/v0924_cheap_stack_luna_dev20_protocol_2026-08-16.md"
+)
 LEAVE_ONE_OUT_REPORT = (
     REPO_ROOT / "docs/research/exectv2/v0924_prompt_ablation_luna_dev20_2026-08-16.md"
 )
@@ -65,6 +71,9 @@ NON_SF_REPORT = (
 )
 SF_EXAMPLES_REPORT = (
     REPO_ROOT / "docs/research/exectv2/v0924_sf_examples_luna_dev20_2026-08-16.md"
+)
+CHEAP_STACK_REPORT = (
+    REPO_ROOT / "docs/research/exectv2/v0924_cheap_stack_luna_dev20_2026-08-16.md"
 )
 STUDY_DIR = LEAVE_ONE_OUT_STUDY_DIR
 PROTOCOL = LEAVE_ONE_OUT_PROTOCOL
@@ -94,6 +103,7 @@ SF_EXAMPLE_ARMS = (
     "drop_examples_sf_encoding",
     "drop_examples_sf_scope",
 )
+CHEAP_STACK_ARMS = ("drop_encoding_non_sf_all_examples",)
 ARM_VERSIONS = {
     "drop_scaffold": structured.PROMPT_VERSION_V0_9_26_DROP_SCAFFOLD,
     "drop_examples": structured.PROMPT_VERSION_V0_9_27_DROP_EXAMPLES,
@@ -111,6 +121,9 @@ ARM_VERSIONS = {
     "drop_examples_non_sf": structured.PROMPT_VERSION_V0_9_37_DROP_EXAMPLES_NON_SF,
     "drop_examples_sf_encoding": structured.PROMPT_VERSION_V0_9_38_DROP_EXAMPLES_SF_ENCODING,
     "drop_examples_sf_scope": structured.PROMPT_VERSION_V0_9_39_DROP_EXAMPLES_SF_SCOPE,
+    "drop_encoding_non_sf_all_examples": (
+        structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES
+    ),
 }
 CONTAMINATION_LETTERS = ("EA0004", "EA0010")
 
@@ -129,6 +142,7 @@ def main(argv: Sequence[str] | None = None) -> None:
             *SCOPE_CLUSTER_ARMS,
             *NON_SF_ARMS,
             *SF_EXAMPLE_ARMS,
+            *CHEAP_STACK_ARMS,
         ),
     )
     run.add_argument("--series", action="store_true", help="Run every leave-one-out arm.")
@@ -236,6 +250,12 @@ def verify_payload() -> dict[str, Any]:
         or checks["drop_examples_sf_scope"]["n_rules"] != 83
     ):
         raise RuntimeError("drop_examples_sf_scope contract drifted")
+    if (
+        checks["drop_encoding_non_sf_all_examples"]["n_examples"] != 0
+        or checks["drop_encoding_non_sf_all_examples"]["n_rules"] != 67
+        or not checks["drop_encoding_non_sf_all_examples"]["has_scaffold"]
+    ):
+        raise RuntimeError("drop_encoding_non_sf_all_examples contract drifted")
     return {
         "ok": True,
         "default_prompt_version": structured.PROMPT_VERSION,
@@ -386,6 +406,11 @@ def _select_study(arms: Sequence[str]) -> None:
         PROTOCOL = SF_EXAMPLES_PROTOCOL
         REPORT_PATH = SF_EXAMPLES_REPORT
         return
+    if any(arm in CHEAP_STACK_ARMS for arm in arms):
+        STUDY_DIR = CHEAP_STACK_STUDY_DIR
+        PROTOCOL = CHEAP_STACK_PROTOCOL
+        REPORT_PATH = CHEAP_STACK_REPORT
+        return
     STUDY_DIR = LEAVE_ONE_OUT_STUDY_DIR
     PROTOCOL = LEAVE_ONE_OUT_PROTOCOL
     REPORT_PATH = LEAVE_ONE_OUT_REPORT
@@ -448,6 +473,11 @@ def _claim_boundary() -> str:
             "ExECTv2 Luna 20-letter development SF-example split of v0.9.24. "
             "Not holdout, not a selected prompt, and not a Decision 0050 change."
         )
+    if STUDY_DIR == CHEAP_STACK_STUDY_DIR:
+        return (
+            "ExECTv2 Luna 20-letter development cheap-slice stack of v0.9.24. "
+            "Not holdout, not a selected prompt, and not a Decision 0050 change."
+        )
     return (
         "ExECTv2 Luna 20-letter development leave-one-out prune of v0.9.24. "
         "Not holdout, not a selected prompt, and not a Decision 0050 change."
@@ -470,6 +500,8 @@ def _render_report(artifact: Mapping[str, Any]) -> str:
         title = "# ExECT `v0.9.24` non-SF slice prune — GPT-5.6 Luna `dev20`"
     elif STUDY_DIR == SF_EXAMPLES_STUDY_DIR:
         title = "# ExECT `v0.9.24` SF-example split — GPT-5.6 Luna `dev20`"
+    elif STUDY_DIR == CHEAP_STACK_STUDY_DIR:
+        title = "# ExECT `v0.9.24` cheap-slice stack — GPT-5.6 Luna `dev20`"
     else:
         title = "# ExECT `v0.9.24` leave-one-out prompt prune — GPT-5.6 Luna `dev20`"
     lines = [

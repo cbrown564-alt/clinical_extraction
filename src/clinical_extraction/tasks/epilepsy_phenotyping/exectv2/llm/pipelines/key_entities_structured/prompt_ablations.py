@@ -53,6 +53,9 @@ PROMPT_VERSION_V0_9_38_DROP_EXAMPLES_SF_ENCODING = (
 PROMPT_VERSION_V0_9_39_DROP_EXAMPLES_SF_SCOPE = (
     "exectv2_hybrid_key_family_event_ledger_v0.9.39_drop_examples_sf_scope"
 )
+PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.40_drop_encoding_non_sf_all_examples"
+)
 
 _SCAFFOLD_TASK = (
     "Read the clinical letter once. Build a compact list of source-near "
@@ -323,6 +326,11 @@ ABLATION_SPECS: dict[str, AblationSpec] = {
     PROMPT_VERSION_V0_9_39_DROP_EXAMPLES_SF_SCOPE: AblationSpec(
         version=PROMPT_VERSION_V0_9_39_DROP_EXAMPLES_SF_SCOPE,
         drop_example_ids=_EXAMPLES_SF_SCOPE,
+    ),
+    PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES: AblationSpec(
+        version=PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES,
+        drop_examples=True,
+        drop_rule_ids=_ENCODING_NON_SF,
     ),
 }
 

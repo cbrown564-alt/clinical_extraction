@@ -83,6 +83,9 @@ PROMPT_VERSION_V0_9_38_DROP_EXAMPLES_SF_ENCODING = (
 PROMPT_VERSION_V0_9_39_DROP_EXAMPLES_SF_SCOPE = (
     "exectv2_hybrid_key_family_event_ledger_v0.9.39_drop_examples_sf_scope"
 )
+PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.40_drop_encoding_non_sf_all_examples"
+)
 # Primary prompt version for the frozen six-model panel. Luna v0.9.25 variants,
 # the v10 contract study, and v11–v26 are development candidates
 # only; they must not replace v0.9.24 in place.
@@ -125,6 +128,7 @@ _SUPPORTED_FULL_PROMPT_VERSIONS = frozenset(
         PROMPT_VERSION_V0_9_37_DROP_EXAMPLES_NON_SF,
         PROMPT_VERSION_V0_9_38_DROP_EXAMPLES_SF_ENCODING,
         PROMPT_VERSION_V0_9_39_DROP_EXAMPLES_SF_SCOPE,
+        PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES,
     }
 )
 PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"
