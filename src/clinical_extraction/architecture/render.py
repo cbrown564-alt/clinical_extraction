@@ -771,10 +771,9 @@ def render_index() -> str:
     lines.append("")
     lines.append(
         "Scores, claim strength, and evidence freshness are owned elsewhere: "
-        "`PROJECT_STATUS.md` for current evidence, `docs/canon/` for governing "
-        "claims, and `docs/plans/ACTIVE_ROADMAP.md` for sequence. This layer "
-        "explains mechanism only, and links to those owners rather than "
-        "restating them."
+        "`PROJECT_STATUS.md` for current evidence and `docs/paper/` for "
+        "methods and claims. This layer explains mechanism only, and links "
+        "to those owners rather than restating them."
     )
     lines.append("")
     return "\n".join(lines)

@@ -128,7 +128,7 @@
     }
   ],
   "evidence_owners": [
-    "docs/canon/06_gan_clinical_policy.md",
-    "docs/research/shared/clinical_selection_policy_catalog_2026-07-31.md"
+    "docs/paper/methods.md",
+    "docs/paper/claims.md"
   ]
 }

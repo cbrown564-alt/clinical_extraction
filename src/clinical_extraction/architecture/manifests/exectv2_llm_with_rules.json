@@ -372,22 +372,21 @@
       "note": "Adds endpoint handling and live assembly around the same stages. Not a separate method; it must not drift from this manifest."
     },
     {
-      "name": "Historical v08 architecture",
-      "role": "historical performance control",
-      "path": "docs/decisions/0040-final-exect-llm-with-rules-family-ownership.md",
-      "note": "v08 used a deterministic Prescription producer and a Seizure Frequency extractor union. It does NOT meet decision 0040 and is not this method, despite sharing the label 'LLM with rules'."
+      "name": "Cited Compact hybrid",
+      "role": "paper identity",
+      "path": "docs/paper/decisions/exect-compact-is-the-cited-hybrid.md",
+      "note": "Compact is the paper ExECT hybrid. Full ledger is the control. Mention encoder is out."
     },
     {
-      "name": "Archived joint bounded policy",
-      "role": "rejected candidate or ablation",
-      "path": "docs/decisions/0045-exect-default-policy-not-joint-combined.md",
-      "note": "The combined/combined Diagnosis and Prescription policy. Demoted by decision 0045. Archive notes and replay scripts were removed in the 2026-08-16 prune; recover from git history if needed."
+      "name": "Closed numbered series",
+      "role": "historical pointer",
+      "path": "docs/history/decisions.md",
+      "note": "0040/0041/0045 family-ownership and no-joint locks. Recover the full files from git."
     }
   ],
   "evidence_owners": [
-    "docs/decisions/0040-final-exect-llm-with-rules-family-ownership.md",
-    "docs/decisions/0041-single-call-exect-model-comparison.md",
-    "docs/decisions/0045-exect-default-policy-not-joint-combined.md",
-    "docs/research/shared/six_model_comparison_report_2026-07-18.md"
+    "docs/paper/decisions/exect-compact-is-the-cited-hybrid.md",
+    "docs/paper/methods.md",
+    "docs/paper/claims.md"
   ]
 }

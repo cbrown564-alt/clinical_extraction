@@ -6,7 +6,7 @@ Gan 2026 and ExECTv2 have different data and claim boundaries. Read `PROJECT_STA
 
 ## Document owners
 
-Use `README.md` for the repository map, `docs/paper/README.md` for paper methods and claims, `docs/NAVIGATION.md` for the paper source library, and `PROJECT_STATUS.md` for current work. Then read the relevant owner. The paper-final cut is [`docs/plans/paper_final_repo_scope_2026-08-17.md`](docs/plans/paper_final_repo_scope_2026-08-17.md).
+Use `README.md` for the repository map, `docs/paper/README.md` for paper methods and claims, `docs/NAVIGATION.md` for the paper source library, and `PROJECT_STATUS.md` for current work. Then read the relevant owner. The paper-final cut is [`docs/plans/paper_final_repo_scope_2026-08-17.md`](docs/plans/paper_final_repo_scope_2026-08-17.md). Closed numbered decisions are [`docs/history/decisions.md`](docs/history/decisions.md).
 
 Do not add another roadmap, status board, evidence register, or research canon. Keep detailed results in their existing artifact or log; update `PROJECT_STATUS.md` only after its evidence owner.
 

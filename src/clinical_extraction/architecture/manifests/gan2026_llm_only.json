@@ -176,7 +176,7 @@
     }
   ],
   "evidence_owners": [
-    "docs/canon/06_gan_clinical_policy.md",
-    "docs/research/shared/six_model_comparison_report_2026-07-18.md"
+    "docs/paper/methods.md",
+    "docs/paper/claims.md"
   ]
 }

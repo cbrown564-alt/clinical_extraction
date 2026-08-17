@@ -20,6 +20,6 @@ Holdout raws keep only replay keys. Do not inspect `test450` or
 
 Still missing:
 
-- Qwen 3.8 Compact (`exect_llm_with_rules`)
+- Qwen 3.8 Compact (`exect_llm_with_rules`) `dev140` and `test60`
 - Cleaned Gan hybrid (`gan_llm_with_rules`) six-model panel
 - Qwen 3.8 Gan LLM-only

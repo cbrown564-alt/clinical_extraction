@@ -21,12 +21,14 @@ does not use a model.
 
 | Method | Gan 2026 | ExECTv2 |
 | --- | ---: | ---: |
-| LLM with rules | 0.84 | 0.80 |
+| LLM with rules | — | 0.80 |
 | LLM only | 0.74 | 0.77 |
 | Rules only | 0.73 | 0.79 |
 
 - **Gan 2026:** Purist accuracy on the locked `test450` split (one current
-  seizure-frequency label per letter).
+  seizure-frequency label per letter). The cited hybrid is the cleaned
+  request; that holdout is not on disk yet. Do not read an enveloped
+  `v0.5` score into the hybrid cell.
 - **ExECTv2:** de-duplicated clinical fact F1 on the locked `test60` split
   (diagnosis, seizure frequency, prescriptions, and investigations). The
   hybrid and LLM-only rows are the same Compact ledger call. This is

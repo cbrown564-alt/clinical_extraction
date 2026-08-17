@@ -179,7 +179,8 @@
     }
   ],
   "evidence_owners": [
-    "docs/canon/08_gepa.md",
-    "docs/canon/07_exect_plan11.md"
+    "docs/paper/decisions/exect-compact-is-the-cited-hybrid.md",
+    "docs/paper/methods.md",
+    "docs/paper/claims.md"
   ]
 }
