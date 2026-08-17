@@ -128,7 +128,9 @@ def test_build_dspy_lm_routes_gemini_through_openai_compatible_endpoint(
         return object()
 
     monkeypatch.setattr(llm_config.dspy, "LM", fake_lm)
+    monkeypatch.setattr(llm_config, "_load_repo_dotenv_if_needed", lambda: None)
     monkeypatch.setenv("GEMINI_API_KEY", "gemini-secret")
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.delenv("GEMINI_REASONING_EFFORT", raising=False)
 
     llm_config.build_dspy_lm(
@@ -152,11 +154,50 @@ def test_build_dspy_lm_routes_gemini_through_openai_compatible_endpoint(
     }
 
 
+def test_build_dspy_lm_routes_gemini_through_openrouter_when_key_present(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict[str, Any] = {}
+
+    def fake_lm(model: str, **kwargs: Any) -> object:
+        captured["model"] = model
+        captured.update(kwargs)
+        return object()
+
+    monkeypatch.setattr(llm_config.dspy, "LM", fake_lm)
+    monkeypatch.setattr(llm_config, "_load_repo_dotenv_if_needed", lambda: None)
+    monkeypatch.setenv("OPENROUTER_API_KEY", "openrouter-secret")
+    monkeypatch.setenv("GEMINI_API_KEY", "gemini-secret")
+    monkeypatch.delenv("GEMINI_REASONING_EFFORT", raising=False)
+
+    llm_config.build_dspy_lm(
+        "gemini/gemini-3.7-flash",
+        temperature=0.0,
+        max_tokens=16_000,
+        cache=False,
+        timeout=300,
+    )
+
+    assert captured == {
+        "model": "openai/google/gemini-3.7-flash",
+        "temperature": 0.0,
+        "max_tokens": 16_000,
+        "cache": False,
+        "num_retries": 2,
+        "timeout": 300,
+        "api_key": "openrouter-secret",
+        "api_base": llm_config.OPENROUTER_OPENAI_BASE,
+        "extra_body": {"reasoning": {"effort": "low"}},
+    }
+
+
 def test_gemini_reasoning_effort_is_read_from_environment(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     captured: dict[str, Any] = {}
+    monkeypatch.setattr(llm_config, "_load_repo_dotenv_if_needed", lambda: None)
     monkeypatch.setenv("GEMINI_API_KEY", "gemini-secret")
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.setenv("GEMINI_REASONING_EFFORT", "medium")
     monkeypatch.setattr(
         llm_config.dspy,
@@ -177,7 +218,9 @@ def test_gemini_reasoning_effort_is_read_from_environment(
 def test_gemini_route_rejects_unsupported_reasoning_effort(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.setattr(llm_config, "_load_repo_dotenv_if_needed", lambda: None)
     monkeypatch.setenv("GEMINI_API_KEY", "gemini-secret")
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.setenv("GEMINI_REASONING_EFFORT", "minimal")
     monkeypatch.setattr(llm_config.dspy, "LM", lambda *_args, **_kwargs: object())
 
@@ -193,10 +236,11 @@ def test_gemini_route_rejects_unsupported_reasoning_effort(
 def test_gemini_route_requires_an_api_key(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
     monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.setattr(llm_config, "_load_repo_dotenv_if_needed", lambda: None)
     monkeypatch.setattr(llm_config.dspy, "LM", lambda *_args, **_kwargs: object())
 
-    with pytest.raises(ValueError, match="GEMINI_API_KEY"):
+    with pytest.raises(ValueError, match="OPENROUTER_API_KEY"):
         llm_config.build_dspy_lm(
             "gemini/gemini-3.7-flash",
             temperature=0.0,

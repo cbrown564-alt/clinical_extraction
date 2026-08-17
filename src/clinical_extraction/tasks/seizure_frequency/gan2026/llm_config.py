@@ -14,6 +14,8 @@ OLLAMA_CHAT_PREFIX = "ollama_chat/"
 VLLM_PREFIX = "vllm/"
 GEMINI_PREFIX = "gemini/"
 GEMINI_OPENAI_BASE = "https://generativelanguage.googleapis.com/v1beta/openai/"
+OPENROUTER_OPENAI_BASE = "https://openrouter.ai/api/v1"
+OPENROUTER_GEMINI_PROVIDER = "google"
 GEMINI_ALLOWED_REASONING_EFFORT = frozenset({"low", "medium", "high"})
 GEMINI_DEFAULT_REASONING_EFFORT = "low"
 
@@ -51,16 +53,35 @@ def build_dspy_lm(
         return dspy.LM(model, **kwargs)
     if model.startswith(GEMINI_PREFIX):
         _load_repo_dotenv_if_needed()
-        model = "openai/" + model.removeprefix(GEMINI_PREFIX)
-        api_base = api_base or GEMINI_OPENAI_BASE
-        kwargs["api_key"] = api_key or _gemini_api_key_from_environment()
-        if not kwargs["api_key"]:
-            raise ValueError(
-                "gemini/<model> routes require GEMINI_API_KEY or GOOGLE_API_KEY."
+        use_openrouter = _gemini_uses_openrouter(api_base)
+        if use_openrouter:
+            model = (
+                "openai/"
+                + OPENROUTER_GEMINI_PROVIDER
+                + "/"
+                + model.removeprefix(GEMINI_PREFIX)
             )
-        kwargs["extra_body"] = {
-            "reasoning_effort": _gemini_reasoning_effort_from_environment(),
-        }
+            api_base = api_base or OPENROUTER_OPENAI_BASE
+            kwargs["api_key"] = api_key or _openrouter_api_key_from_environment()
+            if not kwargs["api_key"]:
+                raise ValueError(
+                    "gemini/<model> OpenRouter routes require OPENROUTER_API_KEY."
+                )
+            kwargs["extra_body"] = {
+                "reasoning": {"effort": _gemini_reasoning_effort_from_environment()},
+            }
+        else:
+            model = "openai/" + model.removeprefix(GEMINI_PREFIX)
+            api_base = api_base or GEMINI_OPENAI_BASE
+            kwargs["api_key"] = api_key or _gemini_api_key_from_environment()
+            if not kwargs["api_key"]:
+                raise ValueError(
+                    "gemini/<model> routes require OPENROUTER_API_KEY, "
+                    "GEMINI_API_KEY, or GOOGLE_API_KEY."
+                )
+            kwargs["extra_body"] = {
+                "reasoning_effort": _gemini_reasoning_effort_from_environment(),
+            }
     if model.startswith(VLLM_PREFIX):
         model = "openai/" + model.removeprefix(VLLM_PREFIX)
         api_base = api_base or os.environ.get("VLLM_BASE_URL")
@@ -93,6 +114,16 @@ def _gemini_api_key_from_environment() -> str:
     )
 
 
+def _openrouter_api_key_from_environment() -> str:
+    return os.environ.get("OPENROUTER_API_KEY", "").strip()
+
+
+def _gemini_uses_openrouter(api_base: str | None) -> bool:
+    if api_base:
+        return "openrouter.ai" in api_base
+    return bool(_openrouter_api_key_from_environment())
+
+
 def _gemini_reasoning_effort_from_environment() -> str:
     effort = os.environ.get(
         "GEMINI_REASONING_EFFORT", GEMINI_DEFAULT_REASONING_EFFORT
@@ -104,8 +135,6 @@ def _gemini_reasoning_effort_from_environment() -> str:
 
 
 def _load_repo_dotenv_if_needed() -> None:
-    if _gemini_api_key_from_environment():
-        return
     try:
         from dotenv import load_dotenv
     except ImportError:
