@@ -35,8 +35,8 @@ def test_ablation_payload_check_does_not_change_default() -> None:
     payload = verify_payload()
     assert payload["ok"] is True
     assert payload["control"] == structured.COMPACT_LEDGER
-    assert payload["default_prompt_version"] == structured.FULL_LEDGER
-    assert structured.PROMPT_VERSION == before == structured.FULL_LEDGER
+    assert payload["default_prompt_version"] == structured.COMPACT_LEDGER
+    assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER
 
 
 def test_cheap_when_new_compact_bars_hold() -> None:

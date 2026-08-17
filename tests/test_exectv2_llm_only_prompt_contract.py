@@ -26,12 +26,14 @@ _LETTER = ExectLetter(letter_id="TEST001", note_text=_NOTE)
 
 
 def test_prompt_hygiene_and_four_family_schema() -> None:
-    payload_str = structured.build_prompt_input(_LETTER)
+    payload_str = structured.build_prompt_input(
+        _LETTER, prompt_version=structured.FULL_LEDGER
+    )
     leaked = [phrase for phrase in FORBIDDEN_PHRASES if phrase in payload_str]
     assert leaked == []
 
     payload = json.loads(payload_str)
-    assert payload["prompt_version"] == structured.PROMPT_VERSION
+    assert payload["prompt_version"] == structured.FULL_LEDGER
     assert set(payload["attribute_vocabulary"]) == {
         PRESCRIPTION.name,
         DIAGNOSIS.name,
@@ -39,7 +41,6 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         INVESTIGATIONS.name,
     }
     assert "clinical_events" in payload["output_schema"]
-    assert payload["prompt_version"] == structured.FULL_LEDGER
     assert payload["architecture"]["name"] == "single hybrid key-family event ledger"
     assert payload["candidate_evidence_ledger"]
     assert payload["decision_procedure"]
@@ -433,6 +434,8 @@ def test_no_prompt_version_mentions_cui() -> None:
         structured.FULL_LEDGER_DROP_EXAMPLES,
         structured.FULL_LEDGER_DROP_ENCODING_NON_SF,
         structured.COMPACT_LEDGER_FURTHER_PRUNE,
+        structured.COMPACT_LEDGER_PLUS_ENCODING,
+        structured.COMPACT_LEDGER_PLUS_ENCODING_EXAMPLES,
     ]
     try:
         for version in versions:
@@ -448,7 +451,7 @@ def test_no_prompt_version_mentions_cui() -> None:
     finally:
         structured.set_active_prompt_version(original)
 
-    assert structured.PROMPT_VERSION == structured.FULL_LEDGER
+    assert structured.PROMPT_VERSION == structured.COMPACT_LEDGER
 
 
 def test_format_retry_schema_is_canonical_structured_record() -> None:

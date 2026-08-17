@@ -237,7 +237,7 @@ def verify_study(*, split: str = "dev140") -> dict[str, Any]:
     payload = verify_payload()
     if tuple(MODELS) != tuple(item["slug"] for item in SUCCESSOR_SIX_MODELS):
         raise RuntimeError("Compact ledger roster drifted from SUCCESSOR_SIX_MODELS")
-    if structured.PROMPT_VERSION != structured.FULL_LEDGER:
+    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
         raise RuntimeError("payload check changed the live default")
     if split == "test60":
         missing = [
@@ -309,7 +309,7 @@ def run_model(
     work_root.mkdir(parents=True, exist_ok=True)
     public_root.mkdir(parents=True, exist_ok=True)
     started = datetime.now(UTC).isoformat()
-    if structured.PROMPT_VERSION != structured.FULL_LEDGER:
+    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
         raise RuntimeError("live default drifted before the run")
 
     previous_model = cheap_stack.MODEL
@@ -338,7 +338,7 @@ def run_model(
             out_dir=work_root / CANDIDATE_ARM,
             split=split,
         )
-        if structured.PROMPT_VERSION != structured.FULL_LEDGER:
+        if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
             raise RuntimeError("candidate arm left the live default changed")
         versus = _compare_pair(control, candidate, letters)
         hybrid = versus["surfaces"]["hybrid"]

@@ -37,8 +37,8 @@ def test_cheap_stack_payload_check_does_not_change_default() -> None:
     assert payload["n_rules"] == 67
     assert payload["n_examples"] == 0
     assert payload["has_scaffold"] is True
-    assert payload["default_prompt_version"] == structured.FULL_LEDGER
-    assert structured.PROMPT_VERSION == before == structured.FULL_LEDGER
+    assert payload["default_prompt_version"] == structured.COMPACT_LEDGER
+    assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER
 
 
 def test_low_value_when_all_stop_bars_hold() -> None:

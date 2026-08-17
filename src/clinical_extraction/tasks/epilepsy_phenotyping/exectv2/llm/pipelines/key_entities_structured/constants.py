@@ -46,8 +46,12 @@ PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME = (
 FULL_LEDGER_DROP_EXAMPLES = "exectv2_full_ledger_drop_examples"
 FULL_LEDGER_DROP_ENCODING_NON_SF = "exectv2_full_ledger_drop_encoding_non_sf"
 COMPACT_LEDGER_FURTHER_PRUNE = "exectv2_compact_ledger_further_prune"
-# Primary prompt version for the frozen six-model panel and current stack.
-PROMPT_VERSION = FULL_LEDGER
+COMPACT_LEDGER_PLUS_ENCODING = "exectv2_compact_ledger_plus_encoding"
+COMPACT_LEDGER_PLUS_ENCODING_EXAMPLES = (
+    "exectv2_compact_ledger_plus_encoding_examples"
+)
+# Live default after Decision 0057. Decision 0050 fills stay Full ledger.
+PROMPT_VERSION = COMPACT_LEDGER
 _SUPPORTED_FULL_PROMPT_VERSIONS = frozenset(
     {
         FULL_LEDGER,
@@ -62,6 +66,8 @@ _SUPPORTED_FULL_PROMPT_VERSIONS = frozenset(
         FULL_LEDGER_DROP_EXAMPLES,
         FULL_LEDGER_DROP_ENCODING_NON_SF,
         COMPACT_LEDGER_FURTHER_PRUNE,
+        COMPACT_LEDGER_PLUS_ENCODING,
+        COMPACT_LEDGER_PLUS_ENCODING_EXAMPLES,
     }
 )
 PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"

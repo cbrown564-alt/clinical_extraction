@@ -1,7 +1,7 @@
-"""Luna dev140 Compact-ledger ablation.
+"""Luna dev140 Compact add-back: encoding, then encoding plus examples.
 
-Replay Full ledger and current Compact. Live-generate authored Compact
-and the three study arms. Score every arm against authored Compact.
+Replay living Compact. Live-generate the two add-back arms. Score each
+add-back against Compact. Compact stays the live default.
 """
 
 from __future__ import annotations
@@ -45,46 +45,23 @@ from scripts.run_exectv2_v0924_cheap_stack_luna_dev140 import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
-PROTOCOL = "docs/research/exectv2/compact_ledger_luna_dev140_ablation_protocol_2026-08-17.md"
-STUDY_DIR = ROOT / "experiments/exectv2_compact_ledger_luna_dev140_ablation_20260817"
-FULL_STRUCTURED = (
-    ROOT / "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715_structured.jsonl"
-)
-CURRENT_COMPACT_STRUCTURED = (
+PROTOCOL = "docs/research/exectv2/compact_ledger_addback_luna_dev140_protocol_2026-08-17.md"
+STUDY_DIR = ROOT / "experiments/exectv2_compact_ledger_addback_luna_dev140_20260817"
+COMPACT_STRUCTURED = (
     ROOT
-    / "experiments/exectv2_v0924_cheap_stack_luna_dev140_20260816"
-    / "drop_encoding_non_sf_all_examples"
+    / "experiments/exectv2_compact_ledger_luna_dev140_ablation_20260817"
+    / "compact_ledger"
     / "structured.jsonl"
 )
 MODEL = "openai/gpt-5.6-luna"
-HEADLINE_DROP_LIMIT = 0.02
-FAMILY_DROP_LIMIT = 0.04
-NET_LOSS_LIMIT = 3
-CONTROL_ARM = "compact_ledger"
+CONTROL_ARM = "compact"
 REPLAY_ARMS = {
-    "full_ledger": (structured.FULL_LEDGER, FULL_STRUCTURED),
-    "compact_current": (
-        structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES,
-        CURRENT_COMPACT_STRUCTURED,
-    ),
+    CONTROL_ARM: (structured.COMPACT_LEDGER, COMPACT_STRUCTURED),
 }
 LIVE_ARMS = {
-    CONTROL_ARM: structured.COMPACT_LEDGER,
-    "drop_examples": structured.FULL_LEDGER_DROP_EXAMPLES,
-    "drop_encoding_non_sf": structured.FULL_LEDGER_DROP_ENCODING_NON_SF,
-    "compact_further_prune": structured.COMPACT_LEDGER_FURTHER_PRUNE,
+    "plus_encoding": structured.COMPACT_LEDGER_PLUS_ENCODING,
+    "plus_encoding_examples": structured.COMPACT_LEDGER_PLUS_ENCODING_EXAMPLES,
 }
-COMPACT_AUTHORED_KEYS = (
-    "task",
-    "output_schema",
-    "decision_procedure",
-    "family_guidance",
-    "attribute_vocabulary",
-    "categories",
-    "clinical_rules",
-    "suggested_evidence",
-    "letter_text",
-)
 
 
 def main(argv: Sequence[str] | None = None) -> None:
@@ -97,7 +74,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument(
         "--only-arm",
         choices=tuple(LIVE_ARMS),
-        help="Generate one live arm. Replay arms always run when scoring.",
+        help="Generate one live arm. Compact replay always runs when scoring.",
     )
     args = parser.parse_args(argv)
     if args.live:
@@ -120,64 +97,45 @@ def main(argv: Sequence[str] | None = None) -> None:
 
 
 def verify_payload() -> dict[str, Any]:
-    letter = ExectLetter(letter_id="EA0002", note_text="placeholder")
+    letter = ExectLetter(letter_id="EA0133", note_text="placeholder")
     before = structured.PROMPT_VERSION
     try:
         compact_raw = structured.build_prompt_input(
             letter, prompt_version=structured.COMPACT_LEDGER
         )
         compact = json.loads(compact_raw)
-        current = json.loads(
-            structured.build_prompt_input(
-                letter,
-                prompt_version=(
-                    structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES
-                ),
-            )
+        plus_encoding_raw = structured.build_prompt_input(
+            letter, prompt_version=structured.COMPACT_LEDGER_PLUS_ENCODING
         )
-        drop_examples = json.loads(
-            structured.build_prompt_input(
-                letter, prompt_version=structured.FULL_LEDGER_DROP_EXAMPLES
-            )
+        plus_encoding = json.loads(plus_encoding_raw)
+        plus_both_raw = structured.build_prompt_input(
+            letter, prompt_version=structured.COMPACT_LEDGER_PLUS_ENCODING_EXAMPLES
         )
-        drop_encoding = json.loads(
-            structured.build_prompt_input(
-                letter, prompt_version=structured.FULL_LEDGER_DROP_ENCODING_NON_SF
-            )
-        )
-        further = json.loads(
-            structured.build_prompt_input(
-                letter, prompt_version=structured.COMPACT_LEDGER_FURTHER_PRUNE
-            )
-        )
-        if list(compact) != list(COMPACT_AUTHORED_KEYS):
-            raise RuntimeError(f"Compact key order drifted: {list(compact)}")
+        plus_both = json.loads(plus_both_raw)
         if "letter_id" in compact or "prompt_version" in compact:
             raise RuntimeError("Compact still emits research metadata")
         if len(compact["clinical_rules"]) != 67 or "worked_examples" in compact:
             raise RuntimeError("Compact content drifted")
-        if "letter_id" not in current or current.get("prompt_version") != (
-            structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES
-        ):
-            raise RuntimeError("current Compact ablation lost its replay dump")
-        if "letter_id" in drop_examples or "worked_examples" in drop_examples:
-            raise RuntimeError("drop_examples drifted")
-        if len(drop_encoding["clinical_rules"]) != 67:
-            raise RuntimeError("drop_encoding_non_sf rule count drifted")
-        if "letter_id" in drop_encoding or "letter_id" in further:
-            raise RuntimeError("study arm still emits letter_id")
-        if list(drop_examples)[0] != "task" or list(further)[-1] != "letter_text":
-            raise RuntimeError("study arm key order drifted")
+        if not compact["task"].startswith("Read the clinical letter once"):
+            raise RuntimeError("Compact lost its language pass")
+        if "letter_id" in plus_encoding or "worked_examples" in plus_encoding:
+            raise RuntimeError("plus_encoding drifted")
+        if len(plus_encoding["clinical_rules"]) != 83:
+            raise RuntimeError("plus_encoding rule count drifted")
+        if plus_encoding["task"] != compact["task"]:
+            raise RuntimeError("plus_encoding left Compact language")
+        if "letter_id" in plus_both or len(plus_both.get("worked_examples") or []) != 49:
+            raise RuntimeError("plus_encoding_examples drifted")
+        if len(plus_both["clinical_rules"]) != 83:
+            raise RuntimeError("plus_encoding_examples rule count drifted")
+        if plus_both["task"] != compact["task"]:
+            raise RuntimeError("plus_encoding_examples left Compact language")
+        if list(plus_encoding)[0] != "task" or list(plus_both)[-1] != "letter_text":
+            raise RuntimeError("add-back key order drifted")
         payload_chars = {
-            "compact_ledger": len(compact_raw),
-            "compact_current": len(
-                structured.build_prompt_input(
-                    letter,
-                    prompt_version=(
-                        structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES
-                    ),
-                )
-            ),
+            "compact": len(compact_raw),
+            "plus_encoding": len(plus_encoding_raw),
+            "plus_encoding_examples": len(plus_both_raw),
         }
     finally:
         structured.set_active_prompt_version(before)
@@ -192,25 +150,10 @@ def verify_payload() -> dict[str, Any]:
     }
 
 
-def topology_failures(hybrid: Mapping[str, Any]) -> list[str]:
-    failures: list[str] = []
-    delta = float(hybrid["headline_f1_delta"])
-    if delta <= -HEADLINE_DROP_LIMIT:
-        failures.append(f"hybrid four-family F1 drop {delta}")
-    for family, family_delta in dict(hybrid["family_f1_delta"]).items():
-        if float(family_delta) <= -FAMILY_DROP_LIMIT:
-            failures.append(f"hybrid {family} F1 drop {family_delta}")
-    losses = int(hybrid["four_family_letter_exact_losses"])
-    wins = int(hybrid["four_family_letter_exact_wins"])
-    if losses - wins >= NET_LOSS_LIMIT:
-        failures.append(f"hybrid net four-family letter-exact losses {losses - wins}")
-    return failures
-
-
-def decide_arm(hybrid: Mapping[str, Any], quality: Mapping[str, Any]) -> str:
+def decide_arm(quality: Mapping[str, Any]) -> str:
     if int(quality.get("parse") or 0) or int(quality.get("schema") or 0):
         return "revise"
-    return "load_bearing" if topology_failures(hybrid) else "cheap"
+    return "descriptive"
 
 
 def run_study(
@@ -222,7 +165,7 @@ def run_study(
     progress_every: int = 1,
     only_arm: str | None = None,
 ) -> dict[str, Any]:
-    verify_payload()
+    lengths = verify_payload()
     if not live:
         raise RuntimeError("run_study requires live=True")
     load_dotenv(ROOT / ".env", override=False)
@@ -235,11 +178,7 @@ def run_study(
     scored: dict[str, Any] = {}
     for slug, (version, sidecar) in REPLAY_ARMS.items():
         scored[slug] = _run_replay(slug, version, sidecar, letters)
-    live_slugs = [CONTROL_ARM]
-    if only_arm is None:
-        live_slugs.extend(slug for slug in LIVE_ARMS if slug != CONTROL_ARM)
-    elif only_arm != CONTROL_ARM:
-        live_slugs.append(only_arm)
+    live_slugs = list(LIVE_ARMS) if only_arm is None else [only_arm]
     for slug in live_slugs:
         scored[slug] = _run_live(
             slug,
@@ -265,14 +204,11 @@ def run_study(
         versus = _compare_pair(control, arm, letters)
         hybrid = versus["surfaces"]["hybrid"]
         quality = arm["summary"]["quality"]
-        verdict = (
-            "descriptive" if slug == "full_ledger" else decide_arm(hybrid, quality)
-        )
+        verdict = decide_arm(quality)
         comparison[f"{slug}_minus_{CONTROL_ARM}"] = versus
         decision[slug] = {
             "status": "scored",
             "verdict": verdict,
-            "failures": [] if verdict == "descriptive" else topology_failures(hybrid),
             "headline_f1_delta": hybrid["headline_f1_delta"],
             "family_f1_delta": hybrid["family_f1_delta"],
             "four_family_letter_exact_net": hybrid["four_family_letter_exact_net"],
@@ -280,7 +216,7 @@ def run_study(
         changed[slug] = _changed_rows(control, arm, letters)
 
     artifact = {
-        "schema_version": "exectv2.compact_ledger_luna_dev140_ablation.v1",
+        "schema_version": "exectv2.compact_ledger_addback_luna_dev140.v1",
         "generated_on": "2026-08-17",
         "protocol": PROTOCOL,
         "model": MODEL,
@@ -298,14 +234,15 @@ def run_study(
         ),
         "default_prompt_version": structured.PROMPT_VERSION,
         "control_arm": CONTROL_ARM,
+        "payload_chars": lengths["payload_chars"],
         "arms": {slug: arm["summary"] for slug, arm in scored.items()},
         "comparison": comparison,
         "decision": decision,
         "changed_rows": changed,
         "provenance": _provenance(),
         "claim_boundary": (
-            "ExECTv2 Luna 140-letter Compact-ledger ablation. Not holdout, "
-            "not six-model transfer, and not a Decision 0050 change."
+            "ExECTv2 Luna 140-letter Compact add-back. Not holdout, "
+            "not six-model transfer, and not a Decision 0050 fill change."
         ),
     }
     out = STUDY_DIR / "comparison.json"
@@ -316,6 +253,7 @@ def run_study(
         "model_calls": artifact["model_calls"],
         "decision": artifact["decision"],
         "default_prompt_version": structured.PROMPT_VERSION,
+        "payload_chars": artifact["payload_chars"],
     }
 
 
