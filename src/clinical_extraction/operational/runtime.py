@@ -5,9 +5,11 @@ from __future__ import annotations
 import os
 from collections.abc import Mapping
 from dataclasses import dataclass, field
+from pathlib import Path
 
 GEMINI_PREFIX = "gemini/"
 GEMINI_OPENAI_BASE = "https://generativelanguage.googleapis.com/v1beta/openai"
+OPENROUTER_OPENAI_BASE = "https://openrouter.ai/api/v1"
 
 
 @dataclass(frozen=True)
@@ -33,7 +35,11 @@ class RuntimeConfig:
         max_tokens: int = 16000,
         timeout_seconds: float = 300.0,
     ) -> RuntimeConfig:
-        values = os.environ if environment is None else environment
+        if environment is None:
+            _load_repo_dotenv()
+            values = os.environ
+        else:
+            values = environment
         resolved_base = (
             base_url
             if base_url is not None
@@ -55,24 +61,34 @@ class RuntimeConfig:
             if vllm_model and "/" not in resolved_model:
                 resolved_model = f"vllm/{resolved_model}"
         if resolved_model.startswith(GEMINI_PREFIX):
+            openrouter_key = values.get("OPENROUTER_API_KEY", "").strip()
+            google_key = (
+                values.get("GEMINI_API_KEY", "").strip()
+                or values.get("GOOGLE_API_KEY", "").strip()
+            )
             if not resolved_base:
-                resolved_base = GEMINI_OPENAI_BASE
+                if openrouter_key:
+                    resolved_base = OPENROUTER_OPENAI_BASE
+                else:
+                    resolved_base = GEMINI_OPENAI_BASE
             if not resolved_key:
-                resolved_key = (
-                    values.get("GEMINI_API_KEY", "").strip()
-                    or values.get("GOOGLE_API_KEY", "").strip()
-                )
+                if "openrouter.ai" in resolved_base:
+                    resolved_key = openrouter_key
+                else:
+                    resolved_key = google_key
         if not resolved_base:
             raise ValueError(
                 "No endpoint configured. Set CLINICAL_LLM_BASE_URL or pass --base-url. "
-                "gemini/<model> routes default to Google's OpenAI-compatible endpoint."
+                "gemini/<model> routes default to OpenRouter when OPENROUTER_API_KEY "
+                "is set, otherwise Google's OpenAI-compatible endpoint."
             )
         if not resolved_key and resolved_model.startswith("vllm/"):
             resolved_key = "EMPTY"
         if not resolved_key:
             raise ValueError(
                 "No API key configured. Set CLINICAL_LLM_API_KEY or pass --api-key. "
-                "gemini/<model> routes also accept GEMINI_API_KEY or GOOGLE_API_KEY. "
+                "gemini/<model> routes also accept OPENROUTER_API_KEY, "
+                "GEMINI_API_KEY, or GOOGLE_API_KEY. "
                 "Keyless vLLM routes use the vllm/<served-model> identifier."
             )
         if "/" not in resolved_model:
@@ -91,6 +107,18 @@ class RuntimeConfig:
         """Return the provider model name without DSPy's routing prefix."""
 
         return self.model.split("/", 1)[1] if "/" in self.model else self.model
+
+
+def _load_repo_dotenv() -> None:
+    try:
+        from dotenv import load_dotenv
+    except ImportError:
+        return
+    from clinical_extraction.core.paths import discover_repo_root
+
+    env_file = discover_repo_root(start=Path(__file__), require_src=True) / ".env"
+    if env_file.is_file():
+        load_dotenv(env_file, override=False)
 
 
 def _resolve_alias(values: Mapping[str, str], primary: str, alias: str) -> str:

@@ -465,6 +465,7 @@ def _score_arm(
     letters: Sequence[ExectLetter],
     structured_path: Path,
     assembly_path: Path,
+    model: str | None = None,
 ) -> dict[str, Any]:
     structured_rows = load_jsonl_rows(structured_path)
     if len(structured_rows) != len(letters):
@@ -478,6 +479,7 @@ def _score_arm(
         prompt_version=prompt_version,
         arm=slug,
         call_mode=call_mode,
+        model=model or MODEL,
     )
     write_jsonl_rows(letter_rows, structured_path.parent / "letter_family.jsonl")
     metrics = _letter_metrics(
@@ -532,6 +534,7 @@ def _letter_family_rows(
     prompt_version: str,
     arm: str,
     call_mode: str,
+    model: str | None = None,
 ) -> list[dict[str, Any]]:
     structured_rows = {
         str(row["letter_id"]): row for row in load_jsonl_rows(structured_path)
@@ -592,7 +595,7 @@ def _letter_family_rows(
                     "raw_keys": _counter_rows(raw_keys),
                     "hybrid_keys": _counter_rows(hybrid_keys),
                     "gold_keys": _counter_rows(gold_keys),
-                    "model": MODEL,
+                    "model": model or MODEL,
                     "repair_policy": "default/default",
                     "replay_mode": call_mode,
                 }

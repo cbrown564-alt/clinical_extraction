@@ -1,7 +1,8 @@
 """Full-profile prompt builder for the structured-event extractor.
 
 The selected Full-ledger body and Compact-ledger cut remain live.
-Study-only further-prune identities are registered beside them.
+Study-only further-prune identities, including ``v0.9.44``, are
+registered beside them.
 """
 
 from __future__ import annotations

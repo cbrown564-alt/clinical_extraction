@@ -5,9 +5,9 @@ Pure relocation of the module-level constants from
 
 After Decision 0056, the public names and machine identities are Full
 ledger and Compact ledger. The older ``v0.9.24`` / ``v0.9.40`` strings
-remain replay aliases. Study-only further-prune identities sit beside
-them; they are not Compact ledger. Mention encoder lives in
-``mention_unit.py``, not this registry.
+remain replay aliases. Study-only further-prune identities, including
+``v0.9.44``, sit beside them; they are not Compact ledger. Mention
+encoder lives in ``mention_unit.py``, not this registry.
 """
 
 from __future__ import annotations

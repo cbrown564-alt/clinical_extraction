@@ -10,8 +10,8 @@ directly.
 
 After Decision 0056, public names and machine identities are Full
 ledger and Compact ledger. The older ``v0.9.24`` / ``v0.9.40``
-strings remain replay aliases. Study-only further-prune IDs sit
-beside them.
+strings remain replay aliases. Study-only further-prune IDs,
+including ``v0.9.44``, sit beside them.
 """
 # ruff: noqa: F401 — thin re-export facade for the legacy ``structured`` API.
 

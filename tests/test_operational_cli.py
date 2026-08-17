@@ -75,6 +75,21 @@ def test_runtime_accepts_gemini_key_without_explicit_base_url() -> None:
     assert runtime.api_key == "gemini-secret"
 
 
+def test_runtime_prefers_openrouter_for_gemini_when_key_present() -> None:
+    runtime = RuntimeConfig.from_environment(
+        environment={
+            "OPENROUTER_API_KEY": "openrouter-secret",
+            "GEMINI_API_KEY": "gemini-secret",
+        },
+        model="gemini/gemini-3.7-flash",
+    )
+
+    assert runtime.base_url == "https://openrouter.ai/api/v1"
+    assert runtime.model == "gemini/gemini-3.7-flash"
+    assert runtime.api_model == "gemini-3.7-flash"
+    assert runtime.api_key == "openrouter-secret"
+
+
 def test_runtime_still_requires_api_key_for_non_vllm_provider() -> None:
     with pytest.raises(ValueError, match="No API key configured"):
         RuntimeConfig.from_environment(
