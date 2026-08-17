@@ -28,7 +28,7 @@ pytestmark = pytest.mark.local_corpus
 
 
 def _exect_dev140_controls() -> dict[str, object]:
-    sources = json.loads((ROOT / "experiments/current_stack/SOURCES.json").read_text())
+    sources = json.loads((ROOT / "paper_experiments/current_stack/SOURCES.json").read_text())
     return sources["cells"]["exect_dev140"]["sources"]
 
 
@@ -93,7 +93,7 @@ def test_test60_verify_is_aggregate_only_for_authorized_hosted_models() -> None:
 
 
 def test_test60_controls_are_selected_current_stack_sidecars() -> None:
-    sources = json.loads((ROOT / "experiments/current_stack/SOURCES.json").read_text())
+    sources = json.loads((ROOT / "paper_experiments/current_stack/SOURCES.json").read_text())
     test_sources = sources["cells"]["exect_test60"]["sources"]
     assert TEST60_CONTROLS["deepseek_v4_flash"] == (
         ROOT / test_sources["deepseek_v4_flash_0731"]["structured"]

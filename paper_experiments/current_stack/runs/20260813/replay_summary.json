@@ -1,0 +1,1331 @@
+{
+  "schema_version": "six_model.current_stack_remaining_cells_replay.v1",
+  "generated_at_utc": "2026-08-13T13:30:56.484006+00:00",
+  "protocol": "docs/research/shared/six_model_current_stack_remaining_cells_replay_protocol_2026-08-13.md",
+  "git": {
+    "commit": "bca5f1b17bdfab84c90966fe637e6e03205ed633",
+    "dirty_tree": true
+  },
+  "method": "llm_with_rules",
+  "call_mode": "saved_raw_or_structured_no_call",
+  "claim_boundary": "No-call current-repair readout. Gan test450 uses v0.5 saved raw. ExECT uses v0.9.24 structured sidecars through HEAD default/default. Holdout cells are aggregate-only. Does not rewrite Decision 0046/0047 or C16 holdout fills.",
+  "exectv2_dev140": {
+    "split": "dev140",
+    "split_machine": "dev",
+    "row_policy": "development_review_permitted",
+    "assembly": "StructuredMethodConfig.selected default/default",
+    "models": {
+      "gpt41mini": {
+        "slug": "gpt41mini",
+        "model": "openai/gpt-4.1-mini",
+        "label": "GPT-4.1-mini",
+        "source_artifact": "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715_structured.jsonl",
+        "source_sha256": "03b9d538611e8460239bd5ae3148d0285c0803d9a72dd732492508bd921ea05d",
+        "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+        "letters": 140,
+        "empty_structured_events": 2,
+        "unreplayable": 0,
+        "published_hybrid_f1": 0.8202,
+        "after_four_family_f1": 0.816,
+        "after_four_family": {
+          "precision": 0.8113,
+          "recall": 0.8207,
+          "f1": 0.816,
+          "tp": 659,
+          "precision_tp": 658,
+          "recall_tp": 659,
+          "fp": 153,
+          "fn": 144,
+          "pred_count": 811,
+          "gold_count": 803
+        },
+        "after_by_family": {
+          "Diagnosis": {
+            "tp": 249,
+            "precision_tp": 248,
+            "recall_tp": 249,
+            "fp": 48,
+            "fn": 44,
+            "pred_count": 296,
+            "gold_count": 293,
+            "precision": 0.8378,
+            "recall": 0.8498,
+            "f1": 0.8438
+          },
+          "SeizureFrequency": {
+            "tp": 119,
+            "precision_tp": 119,
+            "recall_tp": 119,
+            "fp": 58,
+            "fn": 49,
+            "pred_count": 177,
+            "gold_count": 168,
+            "precision": 0.6723,
+            "recall": 0.7083,
+            "f1": 0.6899
+          },
+          "Prescription": {
+            "tp": 180,
+            "precision_tp": 180,
+            "recall_tp": 180,
+            "fp": 34,
+            "fn": 26,
+            "pred_count": 214,
+            "gold_count": 206,
+            "precision": 0.8411,
+            "recall": 0.8738,
+            "f1": 0.8571
+          },
+          "Investigations": {
+            "tp": 111,
+            "precision_tp": 111,
+            "recall_tp": 111,
+            "fp": 13,
+            "fn": 25,
+            "pred_count": 124,
+            "gold_count": 136,
+            "precision": 0.8952,
+            "recall": 0.8162,
+            "f1": 0.8538
+          }
+        },
+        "delta_f1_vs_published": -0.0042,
+        "transitions": {
+          "all_family_key_exact_rescue": 4,
+          "all_family_key_exact_harm": 5,
+          "all_family_key_exact_unchanged": 131
+        },
+        "changed_letters_path": "experiments/six_model_current_stack_remaining_cells_replay_20260813/exect_dev140_gpt41mini_changed_letters.jsonl"
+      },
+      "gpt56luna": {
+        "slug": "gpt56luna",
+        "model": "openai/gpt-5.6-luna",
+        "label": "GPT-5.6 Luna",
+        "source_artifact": "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715_structured.jsonl",
+        "source_sha256": "f01bd0be77e94d8bf9cf37b76a5d0abd87d0c0390ec273bbbcaf7986f4e714fc",
+        "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+        "letters": 140,
+        "empty_structured_events": 2,
+        "unreplayable": 0,
+        "published_hybrid_f1": 0.8832,
+        "after_four_family_f1": 0.8848,
+        "after_four_family": {
+          "precision": 0.8943,
+          "recall": 0.8755,
+          "f1": 0.8848,
+          "tp": 703,
+          "precision_tp": 702,
+          "recall_tp": 703,
+          "fp": 83,
+          "fn": 100,
+          "pred_count": 785,
+          "gold_count": 803
+        },
+        "after_by_family": {
+          "Diagnosis": {
+            "tp": 260,
+            "precision_tp": 259,
+            "recall_tp": 260,
+            "fp": 36,
+            "fn": 33,
+            "pred_count": 295,
+            "gold_count": 293,
+            "precision": 0.878,
+            "recall": 0.8874,
+            "f1": 0.8826
+          },
+          "SeizureFrequency": {
+            "tp": 129,
+            "precision_tp": 129,
+            "recall_tp": 129,
+            "fp": 34,
+            "fn": 39,
+            "pred_count": 163,
+            "gold_count": 168,
+            "precision": 0.7914,
+            "recall": 0.7679,
+            "f1": 0.7795
+          },
+          "Prescription": {
+            "tp": 193,
+            "precision_tp": 193,
+            "recall_tp": 193,
+            "fp": 7,
+            "fn": 13,
+            "pred_count": 200,
+            "gold_count": 206,
+            "precision": 0.965,
+            "recall": 0.9369,
+            "f1": 0.9507
+          },
+          "Investigations": {
+            "tp": 121,
+            "precision_tp": 121,
+            "recall_tp": 121,
+            "fp": 6,
+            "fn": 15,
+            "pred_count": 127,
+            "gold_count": 136,
+            "precision": 0.9528,
+            "recall": 0.8897,
+            "f1": 0.9202
+          }
+        },
+        "delta_f1_vs_published": 0.0016,
+        "transitions": {
+          "all_family_key_exact_rescue": 9,
+          "all_family_key_exact_harm": 6,
+          "all_family_key_exact_unchanged": 125
+        },
+        "changed_letters_path": "experiments/six_model_current_stack_remaining_cells_replay_20260813/exect_dev140_gpt56luna_changed_letters.jsonl"
+      },
+      "gpt56sol": {
+        "slug": "gpt56sol",
+        "model": "openai/gpt-5.6-sol",
+        "label": "GPT-5.6 Sol",
+        "source_artifact": "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715_structured.jsonl",
+        "source_sha256": "1b173d9085c172c5ffd1b320e4178d999432e112a42707cec8b283b6e697351b",
+        "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+        "letters": 140,
+        "empty_structured_events": 2,
+        "unreplayable": 0,
+        "published_hybrid_f1": 0.892,
+        "after_four_family_f1": 0.8895,
+        "after_four_family": {
+          "precision": 0.8911,
+          "recall": 0.8879,
+          "f1": 0.8895,
+          "tp": 713,
+          "precision_tp": 712,
+          "recall_tp": 713,
+          "fp": 87,
+          "fn": 90,
+          "pred_count": 799,
+          "gold_count": 803
+        },
+        "after_by_family": {
+          "Diagnosis": {
+            "tp": 262,
+            "precision_tp": 261,
+            "recall_tp": 262,
+            "fp": 45,
+            "fn": 31,
+            "pred_count": 306,
+            "gold_count": 293,
+            "precision": 0.8529,
+            "recall": 0.8942,
+            "f1": 0.8731
+          },
+          "SeizureFrequency": {
+            "tp": 132,
+            "precision_tp": 132,
+            "recall_tp": 132,
+            "fp": 31,
+            "fn": 36,
+            "pred_count": 163,
+            "gold_count": 168,
+            "precision": 0.8098,
+            "recall": 0.7857,
+            "f1": 0.7976
+          },
+          "Prescription": {
+            "tp": 195,
+            "precision_tp": 195,
+            "recall_tp": 195,
+            "fp": 6,
+            "fn": 11,
+            "pred_count": 201,
+            "gold_count": 206,
+            "precision": 0.9701,
+            "recall": 0.9466,
+            "f1": 0.9582
+          },
+          "Investigations": {
+            "tp": 124,
+            "precision_tp": 124,
+            "recall_tp": 124,
+            "fp": 5,
+            "fn": 12,
+            "pred_count": 129,
+            "gold_count": 136,
+            "precision": 0.9612,
+            "recall": 0.9118,
+            "f1": 0.9358
+          }
+        },
+        "delta_f1_vs_published": -0.0025,
+        "transitions": {
+          "all_family_key_exact_rescue": 9,
+          "all_family_key_exact_harm": 6,
+          "all_family_key_exact_unchanged": 125
+        },
+        "changed_letters_path": "experiments/six_model_current_stack_remaining_cells_replay_20260813/exect_dev140_gpt56sol_changed_letters.jsonl"
+      },
+      "deepseek_v4_flash": {
+        "slug": "deepseek_v4_flash",
+        "model": "deepseek/deepseek-v4-flash",
+        "label": "DeepSeek V4 Flash",
+        "source_artifact": "experiments/exectv2_deepseek_v4_flash_0731_update_dev140_20260731_structured.jsonl",
+        "source_sha256": "f1f7e74532b1c5e856d225ab708fdae5bcd87cb5791fc83da43cc9ecb73dbe07",
+        "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+        "letters": 140,
+        "empty_structured_events": 2,
+        "unreplayable": 0,
+        "published_hybrid_f1": 0.8994,
+        "after_four_family_f1": 0.8999,
+        "after_four_family": {
+          "precision": 0.9044,
+          "recall": 0.8954,
+          "f1": 0.8999,
+          "tp": 719,
+          "precision_tp": 719,
+          "recall_tp": 719,
+          "fp": 76,
+          "fn": 84,
+          "pred_count": 795,
+          "gold_count": 803
+        },
+        "after_by_family": {
+          "Diagnosis": {
+            "tp": 267,
+            "precision_tp": 267,
+            "recall_tp": 267,
+            "fp": 45,
+            "fn": 26,
+            "pred_count": 312,
+            "gold_count": 293,
+            "precision": 0.8558,
+            "recall": 0.9113,
+            "f1": 0.8826
+          },
+          "SeizureFrequency": {
+            "tp": 133,
+            "precision_tp": 133,
+            "recall_tp": 133,
+            "fp": 24,
+            "fn": 35,
+            "pred_count": 157,
+            "gold_count": 168,
+            "precision": 0.8471,
+            "recall": 0.7917,
+            "f1": 0.8185
+          },
+          "Prescription": {
+            "tp": 194,
+            "precision_tp": 194,
+            "recall_tp": 194,
+            "fp": 5,
+            "fn": 12,
+            "pred_count": 199,
+            "gold_count": 206,
+            "precision": 0.9749,
+            "recall": 0.9417,
+            "f1": 0.958
+          },
+          "Investigations": {
+            "tp": 125,
+            "precision_tp": 125,
+            "recall_tp": 125,
+            "fp": 2,
+            "fn": 11,
+            "pred_count": 127,
+            "gold_count": 136,
+            "precision": 0.9843,
+            "recall": 0.9191,
+            "f1": 0.9506
+          }
+        },
+        "delta_f1_vs_published": 0.0005,
+        "transitions": {
+          "all_family_key_exact_rescue": 8,
+          "all_family_key_exact_harm": 7,
+          "all_family_key_exact_unchanged": 125
+        },
+        "changed_letters_path": "experiments/six_model_current_stack_remaining_cells_replay_20260813/exect_dev140_deepseek_v4_flash_changed_letters.jsonl"
+      },
+      "qwen36_35b": {
+        "slug": "qwen36_35b",
+        "model": "ollama_chat/qwen3.6:35b",
+        "label": "Qwen 3.6:35B",
+        "source_artifact": "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715_structured.jsonl",
+        "source_sha256": "87166ab5ff5f0eb89d042d216fc0206a44597f272f0900ae5eb8b448c5aa2b12",
+        "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+        "letters": 140,
+        "empty_structured_events": 0,
+        "unreplayable": 0,
+        "published_hybrid_f1": 0.8571,
+        "after_four_family_f1": 0.8442,
+        "after_four_family": {
+          "precision": 0.8378,
+          "recall": 0.8506,
+          "f1": 0.8442,
+          "tp": 683,
+          "precision_tp": 682,
+          "recall_tp": 683,
+          "fp": 132,
+          "fn": 120,
+          "pred_count": 814,
+          "gold_count": 803
+        },
+        "after_by_family": {
+          "Diagnosis": {
+            "tp": 256,
+            "precision_tp": 255,
+            "recall_tp": 256,
+            "fp": 43,
+            "fn": 37,
+            "pred_count": 298,
+            "gold_count": 293,
+            "precision": 0.8557,
+            "recall": 0.8737,
+            "f1": 0.8646
+          },
+          "SeizureFrequency": {
+            "tp": 117,
+            "precision_tp": 117,
+            "recall_tp": 117,
+            "fp": 51,
+            "fn": 51,
+            "pred_count": 168,
+            "gold_count": 168,
+            "precision": 0.6964,
+            "recall": 0.6964,
+            "f1": 0.6964
+          },
+          "Prescription": {
+            "tp": 193,
+            "precision_tp": 193,
+            "recall_tp": 193,
+            "fp": 34,
+            "fn": 13,
+            "pred_count": 227,
+            "gold_count": 206,
+            "precision": 0.8502,
+            "recall": 0.9369,
+            "f1": 0.8915
+          },
+          "Investigations": {
+            "tp": 117,
+            "precision_tp": 117,
+            "recall_tp": 117,
+            "fp": 4,
+            "fn": 19,
+            "pred_count": 121,
+            "gold_count": 136,
+            "precision": 0.9669,
+            "recall": 0.8603,
+            "f1": 0.9105
+          }
+        },
+        "delta_f1_vs_published": -0.0129,
+        "transitions": {
+          "all_family_key_exact_rescue": 4,
+          "all_family_key_exact_harm": 9,
+          "all_family_key_exact_unchanged": 127
+        },
+        "changed_letters_path": "experiments/six_model_current_stack_remaining_cells_replay_20260813/exect_dev140_qwen36_35b_changed_letters.jsonl"
+      },
+      "gemma4_26b": {
+        "slug": "gemma4_26b",
+        "model": "ollama_chat/gemma4:26b",
+        "label": "Gemma 4 26B",
+        "source_artifact": "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715_structured.jsonl",
+        "source_sha256": "187d01666bf1ae27aa8c64df77933706963d4338ca1546558c69a6361084f98b",
+        "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+        "letters": 140,
+        "empty_structured_events": 2,
+        "unreplayable": 0,
+        "published_hybrid_f1": 0.8016,
+        "after_four_family_f1": 0.7988,
+        "after_four_family": {
+          "precision": 0.786,
+          "recall": 0.812,
+          "f1": 0.7988,
+          "tp": 652,
+          "precision_tp": 639,
+          "recall_tp": 652,
+          "fp": 174,
+          "fn": 151,
+          "pred_count": 813,
+          "gold_count": 803
+        },
+        "after_by_family": {
+          "Diagnosis": {
+            "tp": 252,
+            "precision_tp": 239,
+            "recall_tp": 252,
+            "fp": 50,
+            "fn": 41,
+            "pred_count": 289,
+            "gold_count": 293,
+            "precision": 0.827,
+            "recall": 0.8601,
+            "f1": 0.8432
+          },
+          "SeizureFrequency": {
+            "tp": 112,
+            "precision_tp": 112,
+            "recall_tp": 112,
+            "fp": 83,
+            "fn": 56,
+            "pred_count": 195,
+            "gold_count": 168,
+            "precision": 0.5744,
+            "recall": 0.6667,
+            "f1": 0.6171
+          },
+          "Prescription": {
+            "tp": 185,
+            "precision_tp": 185,
+            "recall_tp": 185,
+            "fp": 24,
+            "fn": 21,
+            "pred_count": 209,
+            "gold_count": 206,
+            "precision": 0.8852,
+            "recall": 0.8981,
+            "f1": 0.8916
+          },
+          "Investigations": {
+            "tp": 103,
+            "precision_tp": 103,
+            "recall_tp": 103,
+            "fp": 17,
+            "fn": 33,
+            "pred_count": 120,
+            "gold_count": 136,
+            "precision": 0.8583,
+            "recall": 0.7574,
+            "f1": 0.8047
+          }
+        },
+        "delta_f1_vs_published": -0.0028,
+        "transitions": {
+          "all_family_key_exact_rescue": 2,
+          "all_family_key_exact_harm": 5,
+          "all_family_key_exact_unchanged": 133
+        },
+        "changed_letters_path": "experiments/six_model_current_stack_remaining_cells_replay_20260813/exect_dev140_gemma4_26b_changed_letters.jsonl"
+      }
+    }
+  },
+  "exectv2_test60": {
+    "split": "test60",
+    "split_machine": "test",
+    "row_policy": "aggregate_only",
+    "assembly": "StructuredMethodConfig.selected default/default",
+    "models": {
+      "gpt41mini": {
+        "slug": "gpt41mini",
+        "model": "openai/gpt-4.1-mini",
+        "label": "GPT-4.1-mini",
+        "source_artifact": "scratch/holdout/exectv2_test60/gpt41mini/gpt41mini_structured.jsonl",
+        "source_sha256": "cdc29964389c75e3d10584d61adf024731c43111f2fc46ecfb05e870054dd26f",
+        "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+        "letters": 59,
+        "empty_structured_events": 0,
+        "unreplayable": 0,
+        "published_hybrid_f1": 0.7572,
+        "after_four_family_f1": 0.7613,
+        "after_four_family": {
+          "precision": 0.7697,
+          "recall": 0.753,
+          "f1": 0.7613,
+          "tp": 247,
+          "precision_tp": 244,
+          "recall_tp": 247,
+          "fp": 73,
+          "fn": 81,
+          "pred_count": 317,
+          "gold_count": 328
+        },
+        "after_by_family": {
+          "Diagnosis": {
+            "tp": 100,
+            "precision_tp": 97,
+            "recall_tp": 100,
+            "fp": 19,
+            "fn": 22,
+            "pred_count": 116,
+            "gold_count": 122,
+            "precision": 0.8362,
+            "recall": 0.8197,
+            "f1": 0.8279
+          },
+          "SeizureFrequency": {
+            "tp": 36,
+            "precision_tp": 36,
+            "recall_tp": 36,
+            "fp": 34,
+            "fn": 38,
+            "pred_count": 70,
+            "gold_count": 74,
+            "precision": 0.5143,
+            "recall": 0.4865,
+            "f1": 0.5
+          },
+          "Prescription": {
+            "tp": 71,
+            "precision_tp": 71,
+            "recall_tp": 71,
+            "fp": 19,
+            "fn": 14,
+            "pred_count": 90,
+            "gold_count": 85,
+            "precision": 0.7889,
+            "recall": 0.8353,
+            "f1": 0.8114
+          },
+          "Investigations": {
+            "tp": 40,
+            "precision_tp": 40,
+            "recall_tp": 40,
+            "fp": 1,
+            "fn": 7,
+            "pred_count": 41,
+            "gold_count": 47,
+            "precision": 0.9756,
+            "recall": 0.8511,
+            "f1": 0.9091
+          }
+        },
+        "delta_f1_vs_published": 0.0041
+      },
+      "gpt56luna": {
+        "slug": "gpt56luna",
+        "model": "openai/gpt-5.6-luna",
+        "label": "GPT-5.6 Luna",
+        "source_artifact": "scratch/holdout/exectv2_test60/gpt56luna/gpt56luna_structured.jsonl",
+        "source_sha256": "5e5915a31a34b53faa70899f5cf485f5db4df5e79750c1a1b4423cba9943b45a",
+        "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+        "letters": 59,
+        "empty_structured_events": 0,
+        "unreplayable": 0,
+        "published_hybrid_f1": 0.795,
+        "after_four_family_f1": 0.8089,
+        "after_four_family": {
+          "precision": 0.8361,
+          "recall": 0.7835,
+          "f1": 0.8089,
+          "tp": 257,
+          "precision_tp": 255,
+          "recall_tp": 257,
+          "fp": 50,
+          "fn": 71,
+          "pred_count": 305,
+          "gold_count": 328
+        },
+        "after_by_family": {
+          "Diagnosis": {
+            "tp": 102,
+            "precision_tp": 100,
+            "recall_tp": 102,
+            "fp": 18,
+            "fn": 20,
+            "pred_count": 118,
+            "gold_count": 122,
+            "precision": 0.8475,
+            "recall": 0.8361,
+            "f1": 0.8417
+          },
+          "SeizureFrequency": {
+            "tp": 38,
+            "precision_tp": 38,
+            "recall_tp": 38,
+            "fp": 25,
+            "fn": 36,
+            "pred_count": 63,
+            "gold_count": 74,
+            "precision": 0.6032,
+            "recall": 0.5135,
+            "f1": 0.5547
+          },
+          "Prescription": {
+            "tp": 75,
+            "precision_tp": 75,
+            "recall_tp": 75,
+            "fp": 5,
+            "fn": 10,
+            "pred_count": 80,
+            "gold_count": 85,
+            "precision": 0.9375,
+            "recall": 0.8824,
+            "f1": 0.9091
+          },
+          "Investigations": {
+            "tp": 42,
+            "precision_tp": 42,
+            "recall_tp": 42,
+            "fp": 2,
+            "fn": 5,
+            "pred_count": 44,
+            "gold_count": 47,
+            "precision": 0.9545,
+            "recall": 0.8936,
+            "f1": 0.9231
+          }
+        },
+        "delta_f1_vs_published": 0.0139
+      },
+      "gpt56sol": {
+        "slug": "gpt56sol",
+        "model": "openai/gpt-5.6-sol",
+        "label": "GPT-5.6 Sol",
+        "source_artifact": "scratch/holdout/exectv2_test60_sol_credit_v2/gpt56sol/gpt56sol_structured.jsonl",
+        "source_sha256": "74899f8e2fc7cad367e850329e59e7bb024289c28e92b97ac61aeafb0b9d2173",
+        "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+        "letters": 59,
+        "empty_structured_events": 0,
+        "unreplayable": 0,
+        "published_hybrid_f1": 0.8047,
+        "after_four_family_f1": 0.8196,
+        "after_four_family": {
+          "precision": 0.8349,
+          "recall": 0.8049,
+          "f1": 0.8196,
+          "tp": 264,
+          "precision_tp": 263,
+          "recall_tp": 264,
+          "fp": 52,
+          "fn": 64,
+          "pred_count": 315,
+          "gold_count": 328
+        },
+        "after_by_family": {
+          "Diagnosis": {
+            "tp": 103,
+            "precision_tp": 102,
+            "recall_tp": 103,
+            "fp": 20,
+            "fn": 19,
+            "pred_count": 122,
+            "gold_count": 122,
+            "precision": 0.8361,
+            "recall": 0.8443,
+            "f1": 0.8401
+          },
+          "SeizureFrequency": {
+            "tp": 43,
+            "precision_tp": 43,
+            "recall_tp": 43,
+            "fp": 23,
+            "fn": 31,
+            "pred_count": 66,
+            "gold_count": 74,
+            "precision": 0.6515,
+            "recall": 0.5811,
+            "f1": 0.6143
+          },
+          "Prescription": {
+            "tp": 76,
+            "precision_tp": 76,
+            "recall_tp": 76,
+            "fp": 5,
+            "fn": 9,
+            "pred_count": 81,
+            "gold_count": 85,
+            "precision": 0.9383,
+            "recall": 0.8941,
+            "f1": 0.9157
+          },
+          "Investigations": {
+            "tp": 42,
+            "precision_tp": 42,
+            "recall_tp": 42,
+            "fp": 4,
+            "fn": 5,
+            "pred_count": 46,
+            "gold_count": 47,
+            "precision": 0.913,
+            "recall": 0.8936,
+            "f1": 0.9032
+          }
+        },
+        "delta_f1_vs_published": 0.0149
+      },
+      "deepseek_v4_flash": {
+        "slug": "deepseek_v4_flash",
+        "model": "deepseek/deepseek-v4-flash",
+        "label": "DeepSeek V4 Flash",
+        "source_artifact": "scratch/holdout/exectv2_test60/deepseek_v4_flash/deepseek_v4_flash_structured.jsonl",
+        "source_sha256": "385668322993900e7386a7e3b433d85a168b0bd24724ae2a6d069b2381c00649",
+        "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+        "letters": 59,
+        "empty_structured_events": 0,
+        "unreplayable": 0,
+        "published_hybrid_f1": 0.8118,
+        "after_four_family_f1": 0.802,
+        "after_four_family": {
+          "precision": 0.8247,
+          "recall": 0.7805,
+          "f1": 0.802,
+          "tp": 256,
+          "precision_tp": 254,
+          "recall_tp": 256,
+          "fp": 54,
+          "fn": 72,
+          "pred_count": 308,
+          "gold_count": 328
+        },
+        "after_by_family": {
+          "Diagnosis": {
+            "tp": 99,
+            "precision_tp": 97,
+            "recall_tp": 99,
+            "fp": 20,
+            "fn": 23,
+            "pred_count": 117,
+            "gold_count": 122,
+            "precision": 0.8291,
+            "recall": 0.8115,
+            "f1": 0.8202
+          },
+          "SeizureFrequency": {
+            "tp": 39,
+            "precision_tp": 39,
+            "recall_tp": 39,
+            "fp": 24,
+            "fn": 35,
+            "pred_count": 63,
+            "gold_count": 74,
+            "precision": 0.619,
+            "recall": 0.527,
+            "f1": 0.5693
+          },
+          "Prescription": {
+            "tp": 77,
+            "precision_tp": 77,
+            "recall_tp": 77,
+            "fp": 7,
+            "fn": 8,
+            "pred_count": 84,
+            "gold_count": 85,
+            "precision": 0.9167,
+            "recall": 0.9059,
+            "f1": 0.9112
+          },
+          "Investigations": {
+            "tp": 41,
+            "precision_tp": 41,
+            "recall_tp": 41,
+            "fp": 3,
+            "fn": 6,
+            "pred_count": 44,
+            "gold_count": 47,
+            "precision": 0.9318,
+            "recall": 0.8723,
+            "f1": 0.9011
+          }
+        },
+        "delta_f1_vs_published": -0.0098
+      },
+      "qwen36_35b": {
+        "slug": "qwen36_35b",
+        "model": "ollama_chat/qwen3.6:35b",
+        "label": "Qwen 3.6:35B",
+        "source_artifact": "scratch/local_queue/qwen36_35b_exect/test60/qwen36_35b/qwen36_35b_structured.jsonl",
+        "source_sha256": "aad3c07d9ad1d0374bd329e6ffb0579e923c7b38b0a827301f89b142e4c398f9",
+        "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+        "letters": 59,
+        "empty_structured_events": 0,
+        "unreplayable": 0,
+        "published_hybrid_f1": 0.7872,
+        "after_four_family_f1": 0.7892,
+        "after_four_family": {
+          "precision": 0.7742,
+          "recall": 0.8049,
+          "f1": 0.7892,
+          "tp": 264,
+          "precision_tp": 264,
+          "recall_tp": 264,
+          "fp": 77,
+          "fn": 64,
+          "pred_count": 341,
+          "gold_count": 328
+        },
+        "after_by_family": {
+          "Diagnosis": {
+            "tp": 103,
+            "precision_tp": 103,
+            "recall_tp": 103,
+            "fp": 25,
+            "fn": 19,
+            "pred_count": 128,
+            "gold_count": 122,
+            "precision": 0.8047,
+            "recall": 0.8443,
+            "f1": 0.824
+          },
+          "SeizureFrequency": {
+            "tp": 46,
+            "precision_tp": 46,
+            "recall_tp": 46,
+            "fp": 34,
+            "fn": 28,
+            "pred_count": 80,
+            "gold_count": 74,
+            "precision": 0.575,
+            "recall": 0.6216,
+            "f1": 0.5974
+          },
+          "Prescription": {
+            "tp": 76,
+            "precision_tp": 76,
+            "recall_tp": 76,
+            "fp": 13,
+            "fn": 9,
+            "pred_count": 89,
+            "gold_count": 85,
+            "precision": 0.8539,
+            "recall": 0.8941,
+            "f1": 0.8736
+          },
+          "Investigations": {
+            "tp": 39,
+            "precision_tp": 39,
+            "recall_tp": 39,
+            "fp": 5,
+            "fn": 8,
+            "pred_count": 44,
+            "gold_count": 47,
+            "precision": 0.8864,
+            "recall": 0.8298,
+            "f1": 0.8571
+          }
+        },
+        "delta_f1_vs_published": 0.002
+      },
+      "gemma4_26b": {
+        "slug": "gemma4_26b",
+        "model": "ollama_chat/gemma4:26b",
+        "label": "Gemma 4 26B",
+        "source_artifact": "scratch/local_queue/gemma4_26b_exect/test60/gemma4_26b/gemma4_26b_structured.jsonl",
+        "source_sha256": "b931ba113fe87d2b6efe15b30639d6786c7db65d65f55edf609c89e9cca9ff69",
+        "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+        "letters": 59,
+        "empty_structured_events": 2,
+        "unreplayable": 0,
+        "published_hybrid_f1": 0.7169,
+        "after_four_family_f1": 0.7392,
+        "after_four_family": {
+          "precision": 0.7405,
+          "recall": 0.7378,
+          "f1": 0.7392,
+          "tp": 242,
+          "precision_tp": 234,
+          "recall_tp": 242,
+          "fp": 82,
+          "fn": 86,
+          "pred_count": 316,
+          "gold_count": 328
+        },
+        "after_by_family": {
+          "Diagnosis": {
+            "tp": 97,
+            "precision_tp": 89,
+            "recall_tp": 97,
+            "fp": 21,
+            "fn": 25,
+            "pred_count": 110,
+            "gold_count": 122,
+            "precision": 0.8091,
+            "recall": 0.7951,
+            "f1": 0.802
+          },
+          "SeizureFrequency": {
+            "tp": 38,
+            "precision_tp": 38,
+            "recall_tp": 38,
+            "fp": 38,
+            "fn": 36,
+            "pred_count": 76,
+            "gold_count": 74,
+            "precision": 0.5,
+            "recall": 0.5135,
+            "f1": 0.5067
+          },
+          "Prescription": {
+            "tp": 72,
+            "precision_tp": 72,
+            "recall_tp": 72,
+            "fp": 16,
+            "fn": 13,
+            "pred_count": 88,
+            "gold_count": 85,
+            "precision": 0.8182,
+            "recall": 0.8471,
+            "f1": 0.8324
+          },
+          "Investigations": {
+            "tp": 35,
+            "precision_tp": 35,
+            "recall_tp": 35,
+            "fp": 7,
+            "fn": 12,
+            "pred_count": 42,
+            "gold_count": 47,
+            "precision": 0.8333,
+            "recall": 0.7447,
+            "f1": 0.7865
+          }
+        },
+        "delta_f1_vs_published": 0.0223
+      }
+    }
+  },
+  "gan2026_test450": {
+    "split": "test450",
+    "split_machine": "test",
+    "row_policy": "aggregate_only",
+    "prompt_version": "gan2026_hybrid_structured_events_v0.5",
+    "repair_mode": "hybrid_full_stack",
+    "models": {
+      "gpt41mini": {
+        "slug": "gpt41mini",
+        "model": "openai/gpt-4.1-mini",
+        "label": "GPT-4.1-mini",
+        "prompt_version": "gan2026_hybrid_structured_events_v0.5",
+        "source_artifact": "scratch/holdout/gan2026_matched_v05/gpt41mini/rows.jsonl",
+        "source_sha256": "7ef20cf70d8d753883ab2d23fdaa38cca0ccbfb9838938a30d6cbc43f676ebb8",
+        "reused_scratch": false,
+        "before": {
+          "rows": 450,
+          "purist": 361,
+          "pragmatic": 379,
+          "parse_missing": 4
+        },
+        "after": {
+          "rows": 450,
+          "purist": 374,
+          "pragmatic": 390,
+          "parse_missing": 2
+        },
+        "delta_purist": 13,
+        "delta_pragmatic": 11,
+        "transitions": {
+          "purist_wrong_to_correct": 17,
+          "purist_correct_to_wrong": 4,
+          "pragmatic_wrong_to_correct": 16,
+          "pragmatic_correct_to_wrong": 5,
+          "parse_missing_rescued": 2
+        },
+        "historical_not_same_raw": {
+          "final_panel_20260803": {
+            "purist_accuracy": 0.82,
+            "pragmatic_accuracy": 0.8578
+          },
+          "cluster_v2_pooled_purist": 0.8074
+        }
+      },
+      "gpt56luna": {
+        "slug": "gpt56luna",
+        "model": "openai/gpt-5.6-luna",
+        "label": "GPT-5.6 Luna",
+        "prompt_version": "gan2026_hybrid_structured_events_v0.5",
+        "source_artifact": "scratch/holdout/gan2026_matched_v05/gpt56luna/rows.jsonl",
+        "source_sha256": "292169c5a3c0f786ace2e9505e40e026c2b55a4cb0a1d73401d8c925a4de06de",
+        "reused_scratch": false,
+        "before": {
+          "rows": 450,
+          "purist": 362,
+          "pragmatic": 375,
+          "parse_missing": 3
+        },
+        "after": {
+          "rows": 450,
+          "purist": 366,
+          "pragmatic": 378,
+          "parse_missing": 2
+        },
+        "delta_purist": 4,
+        "delta_pragmatic": 3,
+        "transitions": {
+          "purist_wrong_to_correct": 11,
+          "purist_correct_to_wrong": 7,
+          "pragmatic_wrong_to_correct": 10,
+          "pragmatic_correct_to_wrong": 7,
+          "parse_missing_rescued": 1
+        },
+        "historical_not_same_raw": {
+          "final_panel_20260803": {
+            "purist_accuracy": 0.8089,
+            "pragmatic_accuracy": 0.84
+          },
+          "cluster_v2_pooled_purist": 0.8074
+        }
+      },
+      "gpt56sol": {
+        "slug": "gpt56sol",
+        "model": "openai/gpt-5.6-sol",
+        "label": "GPT-5.6 Sol",
+        "prompt_version": "gan2026_hybrid_structured_events_v0.5",
+        "source_artifact": "scratch/holdout/gan2026_matched_v05/gpt56sol/rows.jsonl",
+        "source_sha256": "cb34099969fe3a0709accf3605993cae11ee0faa87c85b5865bf032cf85e7d00",
+        "reused_scratch": false,
+        "before": {
+          "rows": 450,
+          "purist": 373,
+          "pragmatic": 384,
+          "parse_missing": 0
+        },
+        "after": {
+          "rows": 450,
+          "purist": 380,
+          "pragmatic": 391,
+          "parse_missing": 0
+        },
+        "delta_purist": 7,
+        "delta_pragmatic": 7,
+        "transitions": {
+          "purist_wrong_to_correct": 17,
+          "purist_correct_to_wrong": 10,
+          "pragmatic_wrong_to_correct": 17,
+          "pragmatic_correct_to_wrong": 10,
+          "parse_missing_rescued": 0
+        },
+        "historical_not_same_raw": {
+          "final_panel_20260803": {
+            "purist_accuracy": 0.8467,
+            "pragmatic_accuracy": 0.8711
+          },
+          "cluster_v2_pooled_purist": 0.8074
+        }
+      },
+      "deepseek_v4_flash": {
+        "slug": "deepseek_v4_flash",
+        "model": "deepseek/deepseek-v4-flash",
+        "label": "DeepSeek V4 Flash",
+        "prompt_version": "gan2026_hybrid_structured_events_v0.5",
+        "source_artifact": "scratch/holdout/gan2026_matched_v05/deepseek_v4_flash/rows.jsonl",
+        "source_sha256": "10a202c70f46c3ee0ee2b145c1fc5df972955a367a726639ea854d90912d057d",
+        "reused_scratch": false,
+        "before": {
+          "rows": 450,
+          "purist": 344,
+          "pragmatic": 366,
+          "parse_missing": 3
+        },
+        "after": {
+          "rows": 450,
+          "purist": 348,
+          "pragmatic": 368,
+          "parse_missing": 2
+        },
+        "delta_purist": 4,
+        "delta_pragmatic": 2,
+        "transitions": {
+          "purist_wrong_to_correct": 12,
+          "purist_correct_to_wrong": 8,
+          "pragmatic_wrong_to_correct": 12,
+          "pragmatic_correct_to_wrong": 10,
+          "parse_missing_rescued": 1
+        },
+        "historical_not_same_raw": {
+          "final_panel_20260803": {
+            "purist_accuracy": 0.8178,
+            "pragmatic_accuracy": 0.8378
+          },
+          "cluster_v2_pooled_purist": 0.8074
+        }
+      },
+      "qwen36_35b": {
+        "slug": "qwen36_35b",
+        "model": "ollama_chat/qwen3.6:35b",
+        "label": "Qwen 3.6:35B",
+        "prompt_version": "gan2026_hybrid_structured_events_v0.5",
+        "source_artifact": "scratch/holdout/gan2026_matched_v05_local/qwen36_35b/rows.jsonl",
+        "source_sha256": "662417af3a6a380c238f6e41cd686478b4ef56d9e510bab215ca0c12517f94fb",
+        "reused_scratch": false,
+        "before": {
+          "rows": 450,
+          "purist": 362,
+          "pragmatic": 384,
+          "parse_missing": 2
+        },
+        "after": {
+          "rows": 450,
+          "purist": 364,
+          "pragmatic": 384,
+          "parse_missing": 1
+        },
+        "delta_purist": 2,
+        "delta_pragmatic": 0,
+        "transitions": {
+          "purist_wrong_to_correct": 11,
+          "purist_correct_to_wrong": 9,
+          "pragmatic_wrong_to_correct": 10,
+          "pragmatic_correct_to_wrong": 10,
+          "parse_missing_rescued": 1
+        },
+        "historical_not_same_raw": {
+          "final_panel_20260803": {
+            "purist_accuracy": 0.8,
+            "pragmatic_accuracy": 0.8444
+          },
+          "cluster_v2_pooled_purist": 0.8074
+        }
+      },
+      "gemma4_26b": {
+        "slug": "gemma4_26b",
+        "model": "ollama_chat/gemma4:26b",
+        "label": "Gemma 4 26B",
+        "prompt_version": "gan2026_hybrid_structured_events_v0.5",
+        "source_artifact": "scratch/holdout/gan2026_matched_v05_local/gemma4_26b/rows.jsonl",
+        "source_sha256": "cc0fc6d7824eb9f11e7a859bfd51503142a86ae85fd80408ab2d41bc0cc83407",
+        "reused_scratch": false,
+        "before": {
+          "rows": 450,
+          "purist": 355,
+          "pragmatic": 374,
+          "parse_missing": 2
+        },
+        "after": {
+          "rows": 450,
+          "purist": 359,
+          "pragmatic": 376,
+          "parse_missing": 1
+        },
+        "delta_purist": 4,
+        "delta_pragmatic": 2,
+        "transitions": {
+          "purist_wrong_to_correct": 12,
+          "purist_correct_to_wrong": 8,
+          "pragmatic_wrong_to_correct": 11,
+          "pragmatic_correct_to_wrong": 9,
+          "parse_missing_rescued": 1
+        },
+        "historical_not_same_raw": {
+          "final_panel_20260803": {
+            "purist_accuracy": 0.7911,
+            "pragmatic_accuracy": 0.8333
+          },
+          "cluster_v2_pooled_purist": 0.8074
+        }
+      }
+    },
+    "pooled": {
+      "rows": 2700,
+      "before_purist": 2157,
+      "after_purist": 2191,
+      "delta_purist": 34,
+      "before_pragmatic": 2262,
+      "after_pragmatic": 2287,
+      "delta_pragmatic": 25,
+      "before_parse_missing": 14,
+      "after_parse_missing": 8,
+      "purist_wrong_to_correct": 80,
+      "purist_correct_to_wrong": 46,
+      "pragmatic_wrong_to_correct": 76,
+      "pragmatic_correct_to_wrong": 51
+    }
+  },
+  "deepseek_v4_flash_0731": {
+    "gan2026_test450": {
+      "slug": "deepseek_v4_flash",
+      "model": "deepseek/deepseek-v4-flash",
+      "label": "DeepSeek V4 Flash",
+      "provider_revision": "DeepSeek-V4-Flash-0731",
+      "prompt_version": "gan2026_hybrid_structured_events_v0.5",
+      "source_artifact": "scratch/holdout/gan2026_test450_deepseek_v4_flash_0731_20260731/llm_with_rules/rows.jsonl",
+      "source_sha256": "1350863a829b63e8d08bdb32bff6c23c272ba8b953c5ad1537d9162c31646f42",
+      "reused_scratch": false,
+      "before": {
+        "rows": 450,
+        "purist": 368,
+        "pragmatic": 377,
+        "parse_missing": 0
+      },
+      "after": {
+        "rows": 450,
+        "purist": 366,
+        "pragmatic": 375,
+        "parse_missing": 0
+      },
+      "delta_purist": -2,
+      "delta_pragmatic": -2,
+      "transitions": {
+        "purist_wrong_to_correct": 4,
+        "purist_correct_to_wrong": 6,
+        "pragmatic_wrong_to_correct": 4,
+        "pragmatic_correct_to_wrong": 6,
+        "parse_missing_rescued": 0
+      }
+    },
+    "exectv2_test60": {
+      "slug": "deepseek_v4_flash",
+      "model": "deepseek/deepseek-v4-flash",
+      "label": "DeepSeek V4 Flash",
+      "source_artifact": "scratch/holdout/exectv2_test60_deepseek_v4_flash_0731_20260731/deepseek_v4_flash/deepseek_v4_flash_structured.jsonl",
+      "source_sha256": "9ec1a3ed9a9f9679c3e045e7d8510e498fe2a09f18535eac5581a10b3b2faf2a",
+      "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+      "letters": 59,
+      "empty_structured_events": 0,
+      "unreplayable": 0,
+      "published_hybrid_f1": 0.8118,
+      "after_four_family_f1": 0.8223,
+      "after_four_family": {
+        "precision": 0.8339,
+        "recall": 0.811,
+        "f1": 0.8223,
+        "tp": 266,
+        "precision_tp": 266,
+        "recall_tp": 266,
+        "fp": 53,
+        "fn": 62,
+        "pred_count": 319,
+        "gold_count": 328
+      },
+      "after_by_family": {
+        "Diagnosis": {
+          "tp": 105,
+          "precision_tp": 105,
+          "recall_tp": 105,
+          "fp": 21,
+          "fn": 17,
+          "pred_count": 126,
+          "gold_count": 122,
+          "precision": 0.8333,
+          "recall": 0.8607,
+          "f1": 0.8468
+        },
+        "SeizureFrequency": {
+          "tp": 43,
+          "precision_tp": 43,
+          "recall_tp": 43,
+          "fp": 24,
+          "fn": 31,
+          "pred_count": 67,
+          "gold_count": 74,
+          "precision": 0.6418,
+          "recall": 0.5811,
+          "f1": 0.6099
+        },
+        "Prescription": {
+          "tp": 76,
+          "precision_tp": 76,
+          "recall_tp": 76,
+          "fp": 6,
+          "fn": 9,
+          "pred_count": 82,
+          "gold_count": 85,
+          "precision": 0.9268,
+          "recall": 0.8941,
+          "f1": 0.9102
+        },
+        "Investigations": {
+          "tp": 42,
+          "precision_tp": 42,
+          "recall_tp": 42,
+          "fp": 2,
+          "fn": 5,
+          "pred_count": 44,
+          "gold_count": 47,
+          "precision": 0.9545,
+          "recall": 0.8936,
+          "f1": 0.9231
+        }
+      },
+      "delta_f1_vs_published": 0.0105
+    }
+  }
+}

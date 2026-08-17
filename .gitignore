@@ -25,6 +25,7 @@ node_modules/
 .skills/
 
 # Local-only research corpus, lab notebook, and derived dumps.
+# Paper-facing fills live in tracked paper_experiments/.
 # Frontend Demo UI mock-data stays tracked under frontend/public/mock-data/.
 /data/
 /docs/

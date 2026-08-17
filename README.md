@@ -178,8 +178,9 @@ examples/                  Pinned walkthrough inputs, including the vLLM Gan let
 configs/                   Pipeline and model configuration
 tests/                     Contract and behavior checks
 scripts/                   CLI helpers and experiment runners
+paper_experiments/         Tracked paper fills and selected no-call replay JSON
 ```
 
 A local research checkout may also have `data/`, `docs/`, `experiments/`,
 `literature/`, and `media/`. Those trees are gitignored and are not part of a
-public clone.
+public clone. Paper-facing fills are in `paper_experiments/`.

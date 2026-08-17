@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SOURCES = REPO_ROOT / "experiments/current_stack/SOURCES.json"
+SOURCES = REPO_ROOT / "paper_experiments/current_stack/SOURCES.json"
 OUT = REPO_ROOT / "experiments/current_stack/sidecars"
 
 

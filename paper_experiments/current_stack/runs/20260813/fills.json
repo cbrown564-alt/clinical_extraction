@@ -1,0 +1,210 @@
+{
+  "schema_version": "current_stack.fills.v1",
+  "generated_at_utc": "2026-08-13T13:38:46.903045+00:00",
+  "decision": "docs/decisions/0050-current-stack-hybrid-primary-fills.md",
+  "method_identity_model": "gpt56sol",
+  "hybrid": {
+    "gan_test450": {
+      "gpt41mini": {
+        "purist": 374,
+        "pragmatic": 390,
+        "n": 450,
+        "purist_rate": 0.8311,
+        "pragmatic_rate": 0.8667,
+        "source": "scratch/holdout/gan2026_matched_v05/gpt41mini/rows.jsonl"
+      },
+      "gpt56luna": {
+        "purist": 366,
+        "pragmatic": 378,
+        "n": 450,
+        "purist_rate": 0.8133,
+        "pragmatic_rate": 0.84,
+        "source": "scratch/holdout/gan2026_matched_v05/gpt56luna/rows.jsonl"
+      },
+      "gpt56sol": {
+        "purist": 380,
+        "pragmatic": 391,
+        "n": 450,
+        "purist_rate": 0.8444,
+        "pragmatic_rate": 0.8689,
+        "source": "scratch/holdout/gan2026_matched_v05/gpt56sol/rows.jsonl"
+      },
+      "qwen36_35b": {
+        "purist": 364,
+        "pragmatic": 384,
+        "n": 450,
+        "purist_rate": 0.8089,
+        "pragmatic_rate": 0.8533,
+        "source": "scratch/holdout/gan2026_matched_v05_local/qwen36_35b/rows.jsonl"
+      },
+      "gemma4_26b": {
+        "purist": 359,
+        "pragmatic": 376,
+        "n": 450,
+        "purist_rate": 0.7978,
+        "pragmatic_rate": 0.8356,
+        "source": "scratch/holdout/gan2026_matched_v05_local/gemma4_26b/rows.jsonl"
+      },
+      "deepseek_v4_flash": {
+        "purist": 366,
+        "pragmatic": 375,
+        "n": 450,
+        "purist_rate": 0.8133,
+        "pragmatic_rate": 0.8333,
+        "source": "scratch/holdout/gan2026_test450_deepseek_v4_flash_0731_20260731/llm_with_rules/rows.jsonl",
+        "provider_revision": "DeepSeek-V4-Flash-0731"
+      }
+    },
+    "exect_dev140": {
+      "gpt41mini": {
+        "f1": 0.816,
+        "by_family": {
+          "Diagnosis": 0.8438,
+          "SeizureFrequency": 0.6899,
+          "Prescription": 0.8571,
+          "Investigations": 0.8538
+        },
+        "source": "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715_structured.jsonl"
+      },
+      "gpt56luna": {
+        "f1": 0.8848,
+        "by_family": {
+          "Diagnosis": 0.8826,
+          "SeizureFrequency": 0.7795,
+          "Prescription": 0.9507,
+          "Investigations": 0.9202
+        },
+        "source": "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715_structured.jsonl"
+      },
+      "gpt56sol": {
+        "f1": 0.8895,
+        "by_family": {
+          "Diagnosis": 0.8731,
+          "SeizureFrequency": 0.7976,
+          "Prescription": 0.9582,
+          "Investigations": 0.9358
+        },
+        "source": "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715_structured.jsonl"
+      },
+      "deepseek_v4_flash": {
+        "f1": 0.8999,
+        "by_family": {
+          "Diagnosis": 0.8826,
+          "SeizureFrequency": 0.8185,
+          "Prescription": 0.958,
+          "Investigations": 0.9506
+        },
+        "source": "experiments/exectv2_deepseek_v4_flash_0731_update_dev140_20260731_structured.jsonl"
+      },
+      "qwen36_35b": {
+        "f1": 0.8442,
+        "by_family": {
+          "Diagnosis": 0.8646,
+          "SeizureFrequency": 0.6964,
+          "Prescription": 0.8915,
+          "Investigations": 0.9105
+        },
+        "source": "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715_structured.jsonl"
+      },
+      "gemma4_26b": {
+        "f1": 0.7988,
+        "by_family": {
+          "Diagnosis": 0.8432,
+          "SeizureFrequency": 0.6171,
+          "Prescription": 0.8916,
+          "Investigations": 0.8047
+        },
+        "source": "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715_structured.jsonl"
+      }
+    },
+    "exect_test60": {
+      "gpt41mini": {
+        "f1": 0.7613,
+        "by_family": {
+          "Diagnosis": 0.8279,
+          "SeizureFrequency": 0.5,
+          "Prescription": 0.8114,
+          "Investigations": 0.9091
+        },
+        "source": "scratch/holdout/exectv2_test60/gpt41mini/gpt41mini_structured.jsonl"
+      },
+      "gpt56luna": {
+        "f1": 0.8089,
+        "by_family": {
+          "Diagnosis": 0.8417,
+          "SeizureFrequency": 0.5547,
+          "Prescription": 0.9091,
+          "Investigations": 0.9231
+        },
+        "source": "scratch/holdout/exectv2_test60/gpt56luna/gpt56luna_structured.jsonl"
+      },
+      "gpt56sol": {
+        "f1": 0.8196,
+        "by_family": {
+          "Diagnosis": 0.8401,
+          "SeizureFrequency": 0.6143,
+          "Prescription": 0.9157,
+          "Investigations": 0.9032
+        },
+        "source": "scratch/holdout/exectv2_test60_sol_credit_v2/gpt56sol/gpt56sol_structured.jsonl"
+      },
+      "qwen36_35b": {
+        "f1": 0.7892,
+        "by_family": {
+          "Diagnosis": 0.824,
+          "SeizureFrequency": 0.5974,
+          "Prescription": 0.8736,
+          "Investigations": 0.8571
+        },
+        "source": "scratch/local_queue/qwen36_35b_exect/test60/qwen36_35b/qwen36_35b_structured.jsonl"
+      },
+      "gemma4_26b": {
+        "f1": 0.7392,
+        "by_family": {
+          "Diagnosis": 0.802,
+          "SeizureFrequency": 0.5067,
+          "Prescription": 0.8324,
+          "Investigations": 0.7865
+        },
+        "source": "scratch/local_queue/gemma4_26b_exect/test60/gemma4_26b/gemma4_26b_structured.jsonl"
+      },
+      "deepseek_v4_flash": {
+        "f1": 0.8223,
+        "by_family": {
+          "Diagnosis": 0.8468,
+          "SeizureFrequency": 0.6099,
+          "Prescription": 0.9102,
+          "Investigations": 0.9231
+        },
+        "source": "scratch/holdout/exectv2_test60_deepseek_v4_flash_0731_20260731/deepseek_v4_flash/deepseek_v4_flash_structured.jsonl",
+        "provider_revision": "DeepSeek-V4-Flash-0731"
+      }
+    }
+  },
+  "glance_2dp": {
+    "gan_sol_llm_with_rules": 0.84,
+    "exect_sol_llm_with_rules": 0.82,
+    "gan_sol_purist": 380,
+    "gan_sol_n": 450
+  },
+  "pre0731_not_selected": {
+    "gan_test450_deepseek": {
+      "purist": 348,
+      "pragmatic": 368,
+      "n": 450,
+      "purist_rate": 0.7733,
+      "pragmatic_rate": 0.8178,
+      "source": "scratch/holdout/gan2026_matched_v05/deepseek_v4_flash/rows.jsonl"
+    },
+    "exect_test60_deepseek": {
+      "f1": 0.802,
+      "by_family": {
+        "Diagnosis": 0.8202,
+        "SeizureFrequency": 0.5693,
+        "Prescription": 0.9112,
+        "Investigations": 0.9011
+      },
+      "source": "scratch/holdout/exectv2_test60/deepseek_v4_flash/deepseek_v4_flash_structured.jsonl"
+    }
+  }
+}

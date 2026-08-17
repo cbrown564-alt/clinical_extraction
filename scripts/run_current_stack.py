@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-STACK = REPO_ROOT / "experiments/current_stack"
+STACK = REPO_ROOT / "paper_experiments/current_stack"
 SOURCES = STACK / "SOURCES.json"
 LATEST = STACK / "latest"
 RUNS = STACK / "runs"

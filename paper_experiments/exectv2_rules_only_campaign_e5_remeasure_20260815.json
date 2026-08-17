@@ -1,0 +1,35 @@
+{
+  "schema_version": "exectv2.rules_only_parity_campaign_e5_remeasure.v1",
+  "date": "2026-08-15",
+  "campaign_phase": "E5",
+  "dev140": {
+    "letters": 140,
+    "four_family_headline_f1": 0.9042,
+    "investigations_f1": 0.9618,
+    "prescription_f1": 0.9780,
+    "diagnosis_f1": 0.8633,
+    "seizure_frequency_f1": 0.8402
+  },
+  "test60": {
+    "letters": 59,
+    "four_family_headline_f1": 0.7937,
+    "investigations_f1": 0.8706,
+    "prescription_f1": 0.8395,
+    "diagnosis_f1": 0.8550,
+    "seizure_frequency_f1": 0.5899
+  },
+  "baseline_dev140": {
+    "four_family_headline_f1": 0.8982,
+    "investigations_f1": 0.9579,
+    "prescription_f1": 0.9615,
+    "diagnosis_f1": 0.8633,
+    "seizure_frequency_f1": 0.8333
+  },
+  "baseline_test60": {
+    "four_family_headline_f1": 0.7918,
+    "investigations_f1": 0.8706,
+    "prescription_f1": 0.8395,
+    "diagnosis_f1": 0.8550,
+    "seizure_frequency_f1": 0.5797
+  }
+}

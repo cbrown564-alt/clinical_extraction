@@ -13,7 +13,7 @@ from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.ticker import FormatStrFormatter
 
 ROOT = Path(__file__).resolve().parents[1]
-PANEL = ROOT / "experiments/current_stack/latest/panel_aggregate.json"
+PANEL = ROOT / "paper_experiments/current_stack/latest/panel_aggregate.json"
 AA_SNAPSHOT = ROOT / "experiments/six_model_external_capability_cost_snapshot_20260731.json"
 OUTPUT = ROOT / "docs/research/assets/six_model_comparison_2026-07-18"
 

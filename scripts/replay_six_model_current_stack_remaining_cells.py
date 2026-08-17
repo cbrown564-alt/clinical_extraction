@@ -53,7 +53,7 @@ MODELS = [
 
 def _inventory() -> dict[str, Any]:
     return json.loads(
-        (REPO_ROOT / "experiments/current_stack/SOURCES.json").read_text(encoding="utf-8")
+        (REPO_ROOT / "paper_experiments/current_stack/SOURCES.json").read_text(encoding="utf-8")
     )
 
 

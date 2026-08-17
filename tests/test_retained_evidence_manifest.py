@@ -176,8 +176,8 @@ def test_hybrid_reference_uses_current_stack_primary_fills() -> None:
     )
     artifact_paths = {artifact["path"] for artifact in reference["artifacts"]}
     assert reference["verification"]["replay"] == "current_stack_primary"
-    assert "experiments/current_stack/latest/fills.json" in artifact_paths
-    assert "experiments/current_stack/SOURCES.json" in artifact_paths
+    assert "paper_experiments/current_stack/latest/fills.json" in artifact_paths
+    assert "paper_experiments/current_stack/SOURCES.json" in artifact_paths
     assert not any(
         path.startswith("experiments/") and ("v08" in path or "2call_no_sf" in path)
         for path in artifact_paths

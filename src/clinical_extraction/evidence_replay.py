@@ -112,10 +112,13 @@ def replay_exectv2_saved_predictions(path: Path, *, split: str) -> dict[str, int
 def replay_current_stack_primary(repo_root: Path) -> dict[str, int | float]:
     """Read living Decision 0050 / 0046 fills without inspecting holdout rows."""
 
-    fills = _load_json_object(repo_root / "experiments/current_stack/latest/fills.json")
-    sources = _load_json_object(repo_root / "experiments/current_stack/SOURCES.json")
+    fills = _load_json_object(
+        repo_root / "paper_experiments/current_stack/latest/fills.json"
+    )
+    sources = _load_json_object(repo_root / "paper_experiments/current_stack/SOURCES.json")
     e5 = _load_json_object(
-        repo_root / "experiments/exectv2_rules_only_campaign_e5_remeasure_20260815.json"
+        repo_root
+        / "paper_experiments/exectv2_rules_only_campaign_e5_remeasure_20260815.json"
     )
     hybrid = fills["hybrid"]
     unchanged = sources["unchanged_primary_fills"]
