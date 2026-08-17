@@ -22,6 +22,7 @@ node_modules/
 .trace_explorer/
 
 .worktrees/
+.skills/
 
 # Local-only research corpus, lab notebook, and derived dumps.
 # Frontend Demo UI mock-data stays tracked under frontend/public/mock-data/.
