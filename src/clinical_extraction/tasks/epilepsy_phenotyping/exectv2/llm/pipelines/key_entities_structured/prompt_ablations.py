@@ -19,6 +19,7 @@ from .constants import (
     COMPACT_LEDGER_FURTHER_PRUNE,
     COMPACT_LEDGER_PLUS_ENCODING,
     COMPACT_LEDGER_PLUS_ENCODING_EXAMPLES,
+    EXECT_LLM_WITH_RULES,
     FULL_LEDGER_DROP_ENCODING_NON_SF,
     FULL_LEDGER_DROP_EXAMPLES,
     PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME,
@@ -130,6 +131,7 @@ def dump_model_facing_payload(
 
 
 ABLATION_SPECS: dict[str, AblationSpec] = {
+    EXECT_LLM_WITH_RULES: _compact_spec(EXECT_LLM_WITH_RULES, authored_order=True),
     COMPACT_LEDGER: _compact_spec(COMPACT_LEDGER, authored_order=True),
     COMPACT_LEDGER_PLUS_ENCODING: AblationSpec(
         version=COMPACT_LEDGER_PLUS_ENCODING,

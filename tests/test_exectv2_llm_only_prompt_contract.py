@@ -423,7 +423,9 @@ def test_no_prompt_version_mentions_cui() -> None:
     original = structured.PROMPT_VERSION
     versions = [
         structured.FULL_LEDGER,
+        structured.EXECT_FULL_LEDGER,
         structured.COMPACT_LEDGER,
+        structured.EXECT_LLM_WITH_RULES,
         structured.PROMPT_VERSION_V0_9_24,
         structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES,
         structured.PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT,
@@ -452,6 +454,32 @@ def test_no_prompt_version_mentions_cui() -> None:
         structured.set_active_prompt_version(original)
 
     assert structured.PROMPT_VERSION == structured.COMPACT_LEDGER
+
+
+def test_paper_names_are_aliases_of_compact_and_full() -> None:
+    compact = json.loads(
+        structured.build_prompt_input(
+            _LETTER, prompt_version=structured.COMPACT_LEDGER
+        )
+    )
+    paper_compact = json.loads(
+        structured.build_prompt_input(
+            _LETTER, prompt_version=structured.EXECT_LLM_WITH_RULES
+        )
+    )
+    assert compact == paper_compact
+
+    full = json.loads(
+        structured.build_prompt_input(_LETTER, prompt_version=structured.FULL_LEDGER)
+    )
+    paper_full = json.loads(
+        structured.build_prompt_input(
+            _LETTER, prompt_version=structured.EXECT_FULL_LEDGER
+        )
+    )
+    full.pop("prompt_version")
+    paper_full.pop("prompt_version")
+    assert full == paper_full
 
 
 def test_format_retry_schema_is_canonical_structured_record() -> None:

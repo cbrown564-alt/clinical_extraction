@@ -3,11 +3,12 @@
 Pure relocation of the module-level constants from
 ``llm_only_key_entities_structured``. No logic changes.
 
-After Decision 0056, the public names and machine identities are Full
-ledger and Compact ledger. The older ``v0.9.24`` / ``v0.9.40`` strings
-remain replay aliases. Study-only further-prune identities, including
-``v0.9.44``, sit beside them; they are not Compact ledger. Mention
-encoder lives in ``mention_unit.py``, not this registry.
+Paper names ``exect_llm_with_rules`` and ``exect_full_ledger`` are
+aliases of Compact and Full. The older ``exectv2_*`` strings remain
+the live default and replay aliases until paper cells are rewritten.
+Study-only further-prune identities, including ``v0.9.44``, sit
+beside them; they are not Compact ledger. Mention encoder lives in
+``mention_unit.py``, not this registry.
 """
 
 from __future__ import annotations
@@ -22,6 +23,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     SEIZURE_FREQUENCY,
 )
 
+EXECT_LLM_WITH_RULES = "exect_llm_with_rules"
+EXECT_FULL_LEDGER = "exect_full_ledger"
 FULL_LEDGER = "exectv2_full_ledger"
 COMPACT_LEDGER = "exectv2_compact_ledger"
 PROMPT_VERSION_V0_9_24 = "exectv2_hybrid_key_family_event_ledger_v0.9.24"
@@ -54,6 +57,8 @@ COMPACT_LEDGER_PLUS_ENCODING_EXAMPLES = (
 PROMPT_VERSION = COMPACT_LEDGER
 _SUPPORTED_FULL_PROMPT_VERSIONS = frozenset(
     {
+        EXECT_LLM_WITH_RULES,
+        EXECT_FULL_LEDGER,
         FULL_LEDGER,
         COMPACT_LEDGER,
         PROMPT_VERSION_V0_9_24,
