@@ -12,7 +12,13 @@ from typing import Any
 IX_PENDING = "ix_pending"
 SCAFFOLD_REPRINT = "scaffold_reprint"
 REFUSE_CHORUS = "refuse_chorus"
+COMBO_CLINICAL_NAME = "combo_clinical_name"
 STACKED_PRUNES = (IX_PENDING, SCAFFOLD_REPRINT, REFUSE_CHORUS)
+COMBO_NAME_SENTENCE = (
+    'If the letter says "2 to 3 focal seizures a week", the mention text is '
+    "focal seizures. The \"2 to 3\" and the \"week\" go in attributes, not in "
+    "mention text."
+)
 
 _IX_PENDING_DROP_PREFIXES = (
     "Completed historical tests and tests with results include Investigations",
@@ -89,6 +95,11 @@ def apply_further_prune(payload: dict[str, Any], kind: str) -> dict[str, Any]:
         )
         rules.insert(insert_at, _COMBINED_REFUSE)
         pruned["clinical_rules"] = rules
+        return pruned
+    if kind == COMBO_CLINICAL_NAME:
+        task = str(pruned["task"]).rstrip()
+        if COMBO_NAME_SENTENCE not in task:
+            pruned["task"] = f"{task} {COMBO_NAME_SENTENCE}"
         return pruned
     raise ValueError(f"unsupported further prune {kind!r}")
 

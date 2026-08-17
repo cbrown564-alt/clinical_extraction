@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from .prompt_further_prune import (
+    COMBO_CLINICAL_NAME,
     IX_PENDING,
     REFUSE_CHORUS,
     SCAFFOLD_REPRINT,
@@ -33,6 +34,9 @@ PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE = (
 )
 PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES = (
     "exectv2_hybrid_key_family_event_ledger_v0.9.44_cheap_stack_further_prunes"
+)
+PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.40_combo_clinical_name"
 )
 
 # Non-SF encoding rules from the 2026-08-15 convention catalog (16 rules).
@@ -104,6 +108,13 @@ ABLATION_SPECS: dict[str, AblationSpec] = {
         drop_rule_ids=_ENCODING_NON_SF,
         plain_language=True,
         further_prunes=STACKED_PRUNES,
+    ),
+    PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME: AblationSpec(
+        version=PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME,
+        drop_examples=True,
+        drop_rule_ids=_ENCODING_NON_SF,
+        plain_language=True,
+        further_prunes=(COMBO_CLINICAL_NAME,),
     ),
 }
 

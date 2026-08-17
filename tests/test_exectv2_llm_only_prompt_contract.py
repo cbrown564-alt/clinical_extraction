@@ -427,6 +427,7 @@ def test_no_prompt_version_mentions_cui() -> None:
         structured.PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT,
         structured.PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE,
         structured.PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES,
+        structured.PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME,
     ]
     try:
         for version in versions:

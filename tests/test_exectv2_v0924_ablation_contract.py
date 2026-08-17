@@ -201,6 +201,28 @@ def test_further_prune_arms_are_one_cut_each() -> None:
     assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
 
 
+_COMBO_NAME_SENTENCE = (
+    'If the letter says "2 to 3 focal seizures a week", the mention text is '
+    "focal seizures. The \"2 to 3\" and the \"week\" go in attributes, not in "
+    "mention text."
+)
+
+
+def test_combo_clinical_name_adds_one_sentence_to_cheap_stack() -> None:
+    cheap = _payload(PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES)
+    payload = _payload(structured.PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME)
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+    assert payload["prompt_version"] == structured.PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME
+    assert _COMBO_NAME_SENTENCE not in cheap["task"]
+    assert cheap["task"] in payload["task"]
+    assert payload["task"].endswith(_COMBO_NAME_SENTENCE)
+    assert payload["clinical_rules"] == cheap["clinical_rules"]
+    assert payload["family_guidance"] == cheap["family_guidance"]
+    assert "worked_examples" not in payload
+    assert _COMBO_NAME_SENTENCE not in json.dumps(cheap)
+    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+
+
 def test_stacked_further_prune_applies_all_three_cuts() -> None:
     cheap = _payload(PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES)
     stacked = _payload(structured.PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES)

@@ -37,6 +37,9 @@ PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE = (
 PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES = (
     "exectv2_hybrid_key_family_event_ledger_v0.9.44_cheap_stack_further_prunes"
 )
+PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME = (
+    "exectv2_hybrid_key_family_event_ledger_v0.9.40_combo_clinical_name"
+)
 # Primary prompt version for the frozen six-model panel and current stack.
 PROMPT_VERSION = PROMPT_VERSION_V0_9_24
 _SUPPORTED_FULL_PROMPT_VERSIONS = frozenset(
@@ -47,6 +50,7 @@ _SUPPORTED_FULL_PROMPT_VERSIONS = frozenset(
         PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT,
         PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE,
         PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES,
+        PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME,
     }
 )
 PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"
