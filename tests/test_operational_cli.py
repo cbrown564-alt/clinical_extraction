@@ -132,7 +132,7 @@ def test_score_projection_maps_unknown_without_gold_comparison() -> None:
     assert "gold_purist_category" not in projection
 
 
-def test_run_gan_notes_includes_normalized_events_and_score_projection(
+def test_run_gan_notes_includes_score_projection(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     fake_result = SimpleNamespace(
@@ -148,11 +148,6 @@ def test_run_gan_notes_includes_normalized_events_and_score_projection(
                 {
                     "event_id": "evt_1",
                     "normalized_label": "2 per month",
-                    "semantic_kind": "frequency",
-                    "monthly_frequency": 2.0,
-                    "yearly_bounds": [24.0, 24.0],
-                    "repair_applied": False,
-                    "validation_errors": [],
                 }
             ],
         },
@@ -171,7 +166,7 @@ def test_run_gan_notes_includes_normalized_events_and_score_projection(
         ),
     )
 
-    assert rows[0]["normalized_events"][0]["normalized_label"] == "2 per month"
+    assert "normalized_events" not in rows[0]
     assert rows[0]["score_projection"]["purist_category"] == (
         "seizure_freq_more1mon_less1week"
     )

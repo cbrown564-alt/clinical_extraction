@@ -70,7 +70,6 @@ def run_gan_notes(notes: Sequence[InputNote], runtime: RuntimeConfig) -> list[di
                     },
                     "parse_errors": result.diagnostics.get("parse_errors", []),
                     "structured_record": result.diagnostics.get("structured_record"),
-                    "normalized_events": result.diagnostics.get("normalized_events") or [],
                     "score_projection": score_projection(result.output.final_value),
                 }
             )

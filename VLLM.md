@@ -1,23 +1,27 @@
 # Run against a local vLLM server
+
 This walkthrough runs the selected Gan seizure-frequency pipeline
 (`llm_with_rules`) against your own data.
 
 It also includes a worked example for three synthetic clinic letters. The letters are
-fixed in [`examples/vllm_gan_three_letters.jsonl`](examples/vllm_gan_three_letters.jsonl),
+fixed in `[examples/vllm_gan_three_letters.jsonl](examples/vllm_gan_three_letters.jsonl)`,
 so anyone can repeat the same input. 
+
 ## What you need
+
 1. The package installed in the repository virtual environment (see the
-   [Setup](#setup)).
+  [Setup](#setup)).
 2. An OpenAI-compatible vLLM server. The value after `vllm/` must match the
-   model name returned by the server's `/v1/models` endpoint.
+  model name returned by the server's `/v1/models` endpoint.
 
 This example uses `http://127.0.0.1:8000/v1` and `vllm/deepseek-v4-flash`.
 
-Replace the host and the name after `vllm/` with your own. `--api-key` is
-needed only when the server requires one; a `vllm/<served-model>` identifier
+Replace the host and the name after `vllm/` with your own. `--api-key` is  
+needed only when the server requires one; a `vllm/<served-model>` identifier  
 defaults to the keyless placeholder `EMPTY`.
-## 
+
 ## Setup
+
 Windows PowerShell:
 
 ```powershell
@@ -33,8 +37,9 @@ python3.11 -m venv .venv
 source .venv/bin/activate
 python -m pip install .
 ```
-## 
+
 ## Run against a local vLLM server
+
 Install the package, then probe an OpenAI-compatible server before processing
 notes. A `vllm/<served-model>` identifier defaults to the keyless placeholder
 `EMPTY`, so `--api-key` is not required for an unauthenticated local server:
@@ -75,13 +80,16 @@ clinical-extract gan \
 
 ## The three letters
 
-| id | What the letter states |
-| --- | --- |
+
+| id            | What the letter states                                                         |
+| ------------- | ------------------------------------------------------------------------------ |
 | `vllm-gan-01` | A current typical rate ("two focal seizures a month") and a year-to-date count |
-| `vllm-gan-02` | Sustained seizure freedom since a calendar month |
-| `vllm-gan-03` | Medication and investigations only; no frequency statement |
+| `vllm-gan-02` | Sustained seizure freedom since a calendar month                               |
+| `vllm-gan-03` | Medication and investigations only; no frequency statement                     |
+
 
 Each line of the JSONL is one object with `id` and `text`.
+
 ## Run Gan on the three letters
 
 ```sh
@@ -124,17 +132,6 @@ Each output line keeps the input `id`. A successful row looks like this:
     "events": [],
     "selection": {}
   },
-  "normalized_events": [
-    {
-      "event_id": "evt_1",
-      "normalized_label": "2 per month",
-      "semantic_kind": "frequency",
-      "monthly_frequency": 2.03,
-      "yearly_bounds": [24.33, 24.33],
-      "repair_applied": false,
-      "validation_errors": []
-    }
-  ],
   "score_projection": {
     "normalized_label": "2 per month",
     "kind": "frequency",
@@ -146,15 +143,16 @@ Each output line keeps the input `id`. A successful row looks like this:
 }
 ```
 
-| Field | Meaning |
-| --- | --- |
-| `prediction.seizure_frequency` | The current frequency label the pipeline selected |
-| `prediction.evidence` | Supporting text the pipeline cited from the letter |
-| `prediction.rationale` | Why that label was selected |
-| `parse_errors` | Format problems from the model call, if any |
-| `structured_record` | Extracted events and the chosen selection, after repair |
-| `normalized_events` | Deterministic monthly-frequency parse of each event |
-| `score_projection` | The selected label mapped into Gan Purist and Pragmatic categories. This is not a gold comparison and not a benchmark score. |
+
+| Field                          | Meaning                                                                                                                      |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| `prediction.seizure_frequency` | The current frequency label the pipeline selected                                                                            |
+| `prediction.evidence`          | Supporting text the pipeline cited from the letter                                                                           |
+| `prediction.rationale`         | Why that label was selected                                                                                                  |
+| `parse_errors`                 | Format problems from the model call, if any                                                                                  |
+| `structured_record`            | Extracted events and the chosen selection, after repair                                                                      |
+| `score_projection`             | The selected label mapped into Gan Purist and Pragmatic categories. This is not a gold comparison and not a benchmark score. |
+
 
 A failed note uses `"status": "error"` and an `error` object instead of a
 usable prediction:
