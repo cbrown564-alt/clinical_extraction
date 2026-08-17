@@ -1,0 +1,20 @@
+{
+  "model_slug": "qwen38_27b",
+  "model": "ollama_chat/qwen3.8:27b",
+  "program": "gan2026_hybrid_structured_events_v0.5",
+  "split": "test450",
+  "split_machine": "test",
+  "n": 450,
+  "row_count": 450,
+  "row_policy": "aggregate_only",
+  "id_field": "source_row_index",
+  "replay_fields": [
+    "source_row_index",
+    "prompt_version",
+    "raw_output"
+  ],
+  "empty_raw_count": 0,
+  "source": "scratch/holdout/qwen38_27b_20260814/gan_test450/sealed_rows.jsonl",
+  "call_mode": "live_2026-08-15",
+  "rows": "rows.jsonl"
+}

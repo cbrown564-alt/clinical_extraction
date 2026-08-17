@@ -10,14 +10,21 @@ Rules-only peers are the E5 remasure. Replay procedure:
 
 | Path | What it is |
 | --- | --- |
+| `local_raws.json` | Inventory of Gemma 4 / Qwen 3.8 replayable raws |
 | `current_stack/latest/fills.json` | Selected six-model hybrid fills |
 | `current_stack/SOURCES.json` | Inventory for those fills |
 | `current_stack/latest/panel_aggregate.json` | Panel companion |
 | `exectv2_rules_only_campaign_e5_remeasure_20260815.json` | ExECT rules-only E5 headline |
 | `exectv2_rules_only_four_family_clinical_headline_test60_20260815.json` | E5 test60 companion |
 | `exectv2_compact_ledger/gemma4_26b/` | Gemma Compact remasure, both splits, raw and hybrid |
+| `gan2026_hybrid_structured_events_v0.5/` | Gemma and Qwen 3.8 Gan hybrid v0.5 raws |
+| `gan2026_llm_only_canonical_pipeline_v0.8/` | Gemma Gan LLM-only v0.8 raws |
 
-Holdout raw sidecars from the old current-stack LFS pointers stay local.
-Gemma Compact `test60` sidecars here are stripped to `letter_id`,
-`prompt_version`, and `raw_output`. Do not inspect those letters.
-Qwen 3.8 Compact cells are still local and incomplete.
+Holdout raws are stripped to replay keys only (`source_row_index` or
+`letter_id`, `prompt_version`, `raw_output`). Do not inspect `test450`
+or `test60` rows.
+
+Still missing, still to run:
+
+- Qwen 3.8 Compact (`dev140`, then aggregate-only `test60`)
+- Qwen 3.8 Gan `gan2026_llm_only_canonical_pipeline_v0.8` (`dev750` and `test450`)

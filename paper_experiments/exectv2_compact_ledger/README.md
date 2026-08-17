@@ -1,8 +1,8 @@
 # Compact ledger local cells
 
 Living Compact (`exectv2_compact_ledger`) is the ExECT live default.
-These files are the local-model remasure for the six-model comparison.
-Qwen 3.8 is not here yet.
+These files are the local-model remasure. Qwen 3.8 is still missing
+(`dev140` was 8/140 on 2026-08-17; `test60` has not started).
 
 Gemma 4 26B is complete on `dev140` and aggregate-only `test60`. Each
 comparison records LLM-only (`raw_*`) and LLM-with-rules (`hybrid_*`).

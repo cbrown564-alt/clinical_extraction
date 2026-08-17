@@ -178,7 +178,7 @@ examples/                  Pinned walkthrough inputs, including the vLLM Gan let
 configs/                   Pipeline and model configuration
 tests/                     Contract and behavior checks
 scripts/                   CLI helpers and experiment runners
-paper_experiments/         Tracked paper fills and selected no-call replay JSON
+paper_experiments/         Tracked paper fills and replayable local raws
 ```
 
 A local research checkout may also have `data/`, `docs/`, `experiments/`,

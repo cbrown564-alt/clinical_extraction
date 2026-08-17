@@ -1,0 +1,20 @@
+{
+  "model_slug": "gemma4_26b",
+  "model": "ollama_chat/gemma4:26b",
+  "program": "gan2026_hybrid_structured_events_v0.5",
+  "split": "dev750",
+  "split_machine": "validation",
+  "n": 750,
+  "row_count": 750,
+  "row_policy": "development_review_permitted",
+  "id_field": "source_row_index",
+  "replay_fields": [
+    "source_row_index",
+    "prompt_version",
+    "raw_output"
+  ],
+  "empty_raw_count": 0,
+  "source": "scratch/validation/gan2026_matched_v05_dev750_20260727/gemma4_26b/validation750.rows.jsonl",
+  "call_mode": "live_2026-07-28",
+  "rows": "rows.jsonl"
+}
