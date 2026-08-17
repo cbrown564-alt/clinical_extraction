@@ -104,6 +104,18 @@ _NONCURRENT_RE = re.compile(
     r"\b(previous|past|historical|planned|future|requested|stopped|discontinued)\b",
     re.I,
 )
+_RX_FUTURE_PLAN_RE = re.compile(
+    r"\b(?:please\s+start|to\s+start|start(?:ing)?|commence|"
+    r"increas(?:e|ing)|to\s+increase|reduc(?:e|ing)|to\s+reduce|"
+    r"every\s+(?:two\s+)?weeks|every\s+fortnight|target\s+dose)\b",
+    re.I,
+)
+_RX_ONCE_DAILY_PAIR_RE = re.compile(
+    r"(?P<dose>\d+(?:\.\d+)?)\s*(?P<unit>mg|mgs|mgms|milligrams?|milligrammes?|g|grams?)"
+    r"(?:\s+in\s+the)?\s+"
+    r"(?P<tod>mane|nocte|nokte|morning|evening|afternoon|am|pm)\b",
+    re.I,
+)
 
 
 @dataclass(frozen=True)
@@ -510,6 +522,59 @@ def _diagnosis_mention(phrase: str, event: str) -> dict[str, Any] | None:
     return {"entity": DIAGNOSIS.name, "text": phrase, "attributes": attributes}
 
 
+def project_rx_split_once_daily(
+    *,
+    name: str,
+    evidence: str,
+    index: int,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], str] | None:
+    """Split one emitted current unequal once-daily pair into two mentions.
+
+    Gold-free: both doses must already sit in the emitted name plus evidence,
+    each bound to a once-daily time-of-day cue. Truncate at a future-plan cue
+    so titration tails are not split. Does not search the letter.
+    """
+
+    event = f"{name} {evidence}".strip()
+    if _NONCURRENT_RE.search(event):
+        return None
+    future = _RX_FUTURE_PLAN_RE.search(event)
+    head = event[: future.start()] if future else event
+    pairs = list(_RX_ONCE_DAILY_PAIR_RE.finditer(head))
+    if len(pairs) < 2:
+        return None
+    seed = _prescription_mention(name) or _prescription_mention(event)
+    if seed is None:
+        return None
+    drug = str(seed["text"])
+    mentions = [
+        {
+            "entity": PRESCRIPTION.name,
+            "text": drug,
+            "attributes": {
+                "DrugName": drug,
+                "DrugDose": match.group("dose"),
+                "DoseUnit": sd.normalize_dose_unit(match.group("unit")),
+                "Frequency": "1",
+            },
+        }
+        for match in pairs[:2]
+    ]
+    traces = [
+        _event_rule_trace(
+            index=index,
+            category="clinical_epilepsy",
+            action="leftover_form.rx_split_once_daily",
+            after={
+                "doses": [mention["attributes"]["DrugDose"] for mention in mentions]
+            },
+        )
+    ]
+    return _finalize(
+        mentions, traces, family=PRESCRIPTION.name, evidence=evidence, status="materialized"
+    )
+
+
 def _prescription_mention(event: str) -> dict[str, Any] | None:
     phrase = _longest_surface(event, PRESCRIPTION_SURFACE_FORMS)
     if not phrase:
@@ -634,4 +699,5 @@ __all__ = [
     "_sf_attributes_to_legacy",
     "_stringify_attributes",
     "project_hybrid_event",
+    "project_rx_split_once_daily",
 ]

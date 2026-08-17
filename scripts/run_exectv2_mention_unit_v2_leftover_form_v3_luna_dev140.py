@@ -23,10 +23,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.mention_unit imp
     HYBRID_METHOD,
     LLM_METHOD,
     MENTION_UNIT_PROMPT_VERSION,
-    MentionUnitEncoder,
     materialize_mention_unit,
     parse_mention_unit_json,
 )
+
+MentionUnitEncoder = str
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.mention_unit_leftover_form import (
     ENCODER_VERSION_V3,
     leftover_recovered_count_is_guard_failure,

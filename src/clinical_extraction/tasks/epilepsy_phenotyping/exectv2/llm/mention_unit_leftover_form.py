@@ -1,14 +1,13 @@
-"""Leftover-form encoder for mention-unit v2 hybrid remasure.
+"""Form recovery parse for mention-unit hybrid remasure.
 
-Parses leftover count, period, and investigation-result words from that
-item's clinical_name plus evidence. Does not search the letter or change
-the landed encoder.
+Reads leftover count, period, and investigation-result words from that
+item's name plus evidence. Does not search the letter.
 """
 
 from __future__ import annotations
 
 import re
-from typing import Any, Literal
+from typing import Any
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     INVESTIGATIONS,
@@ -29,25 +28,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.mention_unit_sha
     _is_uncoded_phenomenology,
 )
 
-ENCODER_VERSION = "exectv2_mention_unit_leftover_form_v1"
+ENCODER_VERSION = "exectv2_mention_unit_leftover_form"
 ENCODER_VERSION_V2 = "exectv2_mention_unit_leftover_form_v2"
 ENCODER_VERSION_V3 = "exectv2_mention_unit_leftover_form_v3"
 ENCODER_VERSION_V4 = "exectv2_mention_unit_leftover_form_v4"
-COMPONENT_OWNER = "deterministic_mention_unit_leftover_form"
-LeftoverFormVariant = Literal[
-    "v1",
-    "intervening",
-    "intervening_v3",
-    "episodes_v4",
-    "implicit_v4",
-    "last_event_v4",
-    "fortnight_v10",
-    "returned_v11",
-    "implicit_v12",
-    "absences_v13",
-    "implicit_period",
-    "last_event",
-]
+COMPONENT_OWNER = "deterministic_form_recovery"
 
 _MODALITY_RE = re.compile(r"\b(MRI|CT|EEG)\b", re.I)
 _EXPLICIT_RESULT_RE = re.compile(r"\b(normal|abnormal|negative|unremarkable)\b", re.I)
@@ -92,27 +77,10 @@ _PERIOD_RE = re.compile(
     re.I,
 )
 _SEIZURE_FREE_RE = re.compile(r"seizure\s*-?free|no further seizures", re.I)
-_RETURNED_RE = re.compile(
-    r"\b(?:have|has)\s+(?:returned|come\s+back)\b|"
-    r"\bseizures?\s+(?:have\s+)?returned\b",
-    re.I,
-)
-_SEIZURE_FREE_WIDE_RE = re.compile(
-    r"seizure\s*-?free|seizures\s+free|seizrue\s+free|no further seizures",
-    re.I,
-)
 _LAST_EVENT_CUE_RE = re.compile(
     r"\b(last seizure|last seizures|last event|has had none since|none since|"
     r"no further|not had any further|has not had any(?: further)?|"
     r"seizure[- ]free since|no seizures?|no absences)\b",
-    re.IGNORECASE,
-)
-_LAST_EVENT_CUE_WIDE_RE = re.compile(
-    r"\b(last seizure|last seizures|last event|has had none since|none since|"
-    r"no further|not had any further|has not had any(?: further)?|"
-    r"seizure[- ]free since|no seizures?|no absences|"
-    r"(?:seizures?|events?|episodes?)\s+last\s+(?:month|week|year)|"
-    r"no events? since)\b",
     re.IGNORECASE,
 )
 _BARE_EVERY_PERIOD_RE = re.compile(
@@ -157,36 +125,6 @@ _MONTH_NAME_RE = (
     r"(?:january|february|march|april|may|june|july|august|september|"
     r"october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|sept|oct|nov|dec)"
 )
-_EPISODE_RANGE_RE = re.compile(
-    rf"\b(?P<word>{_WORD_RE}|\d+(?:\.\d+)?)\s+(?:or|to|-|–)\s+"
-    rf"(?P<upper>{_WORD_RE}|\d+(?:\.\d+)?)\s+"
-    r"(?:further\s+)?(?:events?|episodes?)\b",
-    re.I,
-)
-_EPISODE_DIGIT_RE = re.compile(
-    r"\b(?P<count>\d+(?:\.\d+)?)\b(?:\s+\w+){0,4}\s+(?:events?|episodes?)\b",
-    re.I,
-)
-_EPISODE_WORD_RE = re.compile(
-    rf"\b(?P<word>{_WORD_RE})\b(?:\s+\w+){{0,4}}\s+(?:events?|episodes?)\b",
-    re.I,
-)
-_EVENT_THEN_COUNT_RE = re.compile(
-    rf"(?:events?|episodes?)\b.{{0,40}}?\b(?P<word>{_WORD_RE}|\d+(?:\.\d+)?)\b",
-    re.I,
-)
-_COLLAPSE_EPISODE_RE = re.compile(
-    r"\b(?:collapse|faint(?:ing)?|fall|syncop(?:e|al))\b",
-    re.I,
-)
-_STOPPED_EPISODES_RE = re.compile(
-    r"\b(?:stopp(?:ed|ing)|has stopped|have stopped)\s+(?:the\s+)?(?:episodes?|events?)\b",
-    re.I,
-)
-_CLUSTER_COUNT_RE = re.compile(
-    rf"\bcluster of\s+(?:{_WORD_RE}|\d+(?:\.\d+)?)\b",
-    re.I,
-)
 _IMPLICIT_AGO_RE = re.compile(rf"\b(?:a\s+)?{_TIME_UNIT_RE}\s+ago\b", re.I)
 _IMPLICIT_RATE_RE = re.compile(
     rf"\b(?:{_WORD_RE}|\d+(?:\.\d+)?)\s+(?:or\s+(?:{_WORD_RE}|\d+(?:\.\d+)?)\s+)?"
@@ -223,13 +161,10 @@ def project_leftover_form_sf(
     text: str,
     evidence: str,
     index: int,
-    variant: LeftoverFormVariant = "v1",
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], str]:
     haystack = f"{text} {evidence}".strip()
     traces: list[dict[str, Any]] = []
-    seed_attrs, count_action, period_action = leftover_sf_attributes(
-        haystack, variant=variant
-    )
+    seed_attrs, count_action, period_action = leftover_sf_attributes(haystack)
     seed = {
         "entity": SEIZURE_FREQUENCY.name,
         "text": text.strip(),
@@ -243,11 +178,7 @@ def project_leftover_form_sf(
         str(key): str(value)
         for key, value in (raw_attrs if isinstance(raw_attrs, dict) else {}).items()
     }
-    should_zero = (
-        _last_event_v4_zero(evidence)
-        if variant == "last_event_v4"
-        else _zero_state(haystack, variant=variant)
-    )
+    should_zero = _zero_state(haystack)
     if should_zero and not _has_count(attrs):
         attrs["NumberOfSeizures"] = "0"
         attrs.setdefault("TimeSince_or_TimeOfEvent", "Since")
@@ -255,21 +186,7 @@ def project_leftover_form_sf(
         traces.append(
             _trace(
                 index=index,
-                action="leftover_form.sf_zero",
-                evidence=evidence,
-                before={"text": text},
-                after=dict(attrs),
-            )
-        )
-    if variant == "returned_v11" and _returned_after_freedom(haystack):
-        attrs.pop("NumberOfSeizures", None)
-        attrs.pop("TimeSince_or_TimeOfEvent", None)
-        attrs["FrequencyChange"] = "Increased"
-        mention["attributes"] = attrs
-        traces.append(
-            _trace(
-                index=index,
-                action="leftover_form.sf_returned_change",
+                action="form_recovery.sf_zero",
                 evidence=evidence,
                 before={"text": text},
                 after=dict(attrs),
@@ -306,11 +223,11 @@ def project_leftover_form_sf(
             )
         )
     if _is_uncoded_phenomenology(haystack, attrs):
-        if variant == "absences_v13" and _keep_absences(text, evidence):
+        if _keep_absences(text, evidence):
             traces.append(
                 _trace(
                     index=index,
-                    action="leftover_form.sf_absences_keep",
+                    action="form_recovery.sf_absences_keep",
                     evidence=evidence,
                     before={"text": text},
                     after=dict(attrs),
@@ -360,7 +277,7 @@ def project_leftover_form_investigation(
         traces.append(
             _trace(
                 index=index,
-                action="leftover_form.ix_result",
+                action="form_recovery.ix_result",
                 evidence=evidence,
                 before={"text": text},
                 after=dict(attributes),
@@ -376,21 +293,16 @@ def project_leftover_form_investigation(
     return [mention], traces, "materialized"
 
 
-def leftover_sf_attributes(
-    haystack: str, *, variant: LeftoverFormVariant = "v1"
-) -> tuple[dict[str, str], str, str]:
+def leftover_sf_attributes(haystack: str) -> tuple[dict[str, str], str, str]:
     attributes: dict[str, str] = {}
     count_action = ""
     period_action = ""
-    early_zero = variant != "last_event_v4" and _zero_state(
-        haystack, variant=variant
-    )
-    if _EVERY_PERIOD_RE.search(haystack) or early_zero:
+    if _EVERY_PERIOD_RE.search(haystack) or _zero_state(haystack):
         period = _leftover_period(haystack)
         if period and not _EVERY_PERIOD_RE.search(haystack):
             attributes["TimePeriod"] = period
             attributes["NumberOfTimePeriods"] = "1"
-            period_action = "leftover_form.sf_period"
+            period_action = "form_recovery.sf_period"
         return attributes, count_action, period_action
     range_match = _COUNT_RANGE_RE.search(haystack)
     digit_period = _DIGIT_PERIOD_RE.search(haystack)
@@ -400,65 +312,39 @@ def leftover_sf_attributes(
     if range_match:
         attributes["LowerNumberOfSeizures"] = range_match.group("count")
         attributes["UpperNumberOfSeizures"] = range_match.group("upper")
-        count_action = "leftover_form.sf_count"
+        count_action = "form_recovery.sf_count"
     elif digit_period:
         attributes["NumberOfSeizures"] = digit_period.group("count")
-        count_action = "leftover_form.sf_count"
+        count_action = "form_recovery.sf_count"
     elif digit_seizure:
         attributes["NumberOfSeizures"] = digit_seizure.group("count")
-        count_action = "leftover_form.sf_count"
+        count_action = "form_recovery.sf_count"
     elif word_period and not _duration_year_count(haystack, word_period.group("word")):
         mapped = normalize_count(word_period.group("word"))
         if mapped.isdigit():
             attributes["NumberOfSeizures"] = mapped
-            count_action = "leftover_form.sf_count"
+            count_action = "form_recovery.sf_count"
     elif word_seizure and not _duration_year_count(haystack, word_seizure.group("word")):
         mapped = normalize_count(word_seizure.group("word"))
         if mapped.isdigit():
             attributes["NumberOfSeizures"] = mapped
-            count_action = "leftover_form.sf_count"
-    elif variant == "intervening":
-        attributes, count_action, period_action = _intervening_form(haystack)
-    elif variant in {
-        "intervening_v3",
-        "episodes_v4",
-        "implicit_v4",
-        "last_event_v4",
-        "fortnight_v10",
-        "returned_v11",
-        "implicit_v12",
-        "absences_v13",
-    }:
-        if variant == "episodes_v4":
-            attributes, count_action, period_action = _episode_form(haystack)
-        if not _has_count(attributes):
-            attributes, count_action, period_action = _intervening_form(
-                haystack, guarded=True
-            )
+            count_action = "form_recovery.sf_count"
+    else:
+        attributes, count_action, period_action = _intervening_form(
+            haystack, guarded=True
+        )
     period = _leftover_period(haystack)
-    if variant in {"implicit_period", "implicit_v4", "implicit_v12", "absences_v13"}:
-        bare = _bare_every_period(haystack)
-        if bare:
-            period = bare
+    bare = _bare_every_period(haystack)
+    if bare:
+        period = bare
     if period:
         attributes["TimePeriod"] = period
         attributes.setdefault("NumberOfTimePeriods", "1")
-        period_action = period_action or "leftover_form.sf_period"
-        if variant == "implicit_period" and not _has_count(attributes):
+        period_action = period_action or "form_recovery.sf_period"
+        if not _has_count(attributes) and not _implicit_period_blocked(haystack):
             attributes["NumberOfSeizures"] = "1"
-            count_action = count_action or "leftover_form.sf_count"
-        if (
-            variant in {"implicit_v4", "implicit_v12", "absences_v13"}
-            and not _has_count(attributes)
-            and not _implicit_period_blocked(haystack)
-        ):
-            attributes["NumberOfSeizures"] = "1"
-            count_action = count_action or "leftover_form.sf_count"
-    if variant in {"fortnight_v10", "implicit_v12", "absences_v13"}:
-        attributes, count_action, period_action = _fortnight_form(
-            haystack, attributes, count_action, period_action
-        )
-    return attributes, count_action, period_action
+            count_action = count_action or "form_recovery.sf_count"
+    return _fortnight_form(haystack, attributes, count_action, period_action)
 
 
 def leftover_investigation_result(haystack: str) -> tuple[str, bool]:
@@ -500,27 +386,16 @@ def _fortnight_form(
         return attributes, count_action, period_action
     attributes["TimePeriod"] = "Week"
     attributes["NumberOfTimePeriods"] = "2"
-    period_action = "leftover_form.sf_fortnight"
+    period_action = "form_recovery.sf_fortnight"
     if not _has_count(attributes):
         mapped = _mapped_count(match.group("count"))
         if mapped:
             attributes["NumberOfSeizures"] = mapped
-            count_action = count_action or "leftover_form.sf_count"
+            count_action = count_action or "form_recovery.sf_count"
     return attributes, count_action, period_action
 
 
-def _returned_after_freedom(haystack: str) -> bool:
-    return bool(_SEIZURE_FREE_RE.search(haystack) and _RETURNED_RE.search(haystack))
-
-
-def _zero_state(haystack: str, *, variant: LeftoverFormVariant = "v1") -> bool:
-    if variant == "returned_v11" and _returned_after_freedom(haystack):
-        return False
-    if variant == "last_event":
-        return bool(
-            _LAST_EVENT_CUE_WIDE_RE.search(haystack)
-            or _SEIZURE_FREE_WIDE_RE.search(haystack)
-        )
+def _zero_state(haystack: str) -> bool:
     return bool(_LAST_EVENT_CUE_RE.search(haystack) or _SEIZURE_FREE_RE.search(haystack))
 
 
@@ -559,56 +434,8 @@ def leftover_recovered_count_is_guard_failure(haystack: str, token: str) -> bool
     return found and not unguarded
 
 
-def _episode_form(haystack: str) -> tuple[dict[str, str], str, str]:
-    if _COLLAPSE_EPISODE_RE.search(haystack) or _STOPPED_EPISODES_RE.search(haystack):
-        return {}, "", ""
-    attributes: dict[str, str] = {}
-    range_match = _first_intervening_match(
-        _EPISODE_RANGE_RE, haystack, "word", guarded=True
-    )
-    if range_match is not None:
-        lower = _mapped_count(range_match.group("word"))
-        upper = _mapped_count(range_match.group("upper"))
-        if lower and upper:
-            attributes["LowerNumberOfSeizures"] = lower
-            attributes["UpperNumberOfSeizures"] = upper
-            return attributes, "leftover_form.sf_count", ""
-    digit = _first_intervening_match(
-        _EPISODE_DIGIT_RE, haystack, "count", guarded=True
-    )
-    if digit is not None:
-        attributes["NumberOfSeizures"] = digit.group("count")
-        return attributes, "leftover_form.sf_count", ""
-    word = _first_intervening_match(
-        _EPISODE_WORD_RE, haystack, "word", guarded=True
-    )
-    if word is not None:
-        mapped = _mapped_count(word.group("word"))
-        if mapped:
-            attributes["NumberOfSeizures"] = mapped
-            return attributes, "leftover_form.sf_count", ""
-    later = _first_intervening_match(
-        _EVENT_THEN_COUNT_RE, haystack, "word", guarded=True
-    )
-    if later is not None:
-        mapped = _mapped_count(later.group("word"))
-        if mapped:
-            attributes["NumberOfSeizures"] = mapped
-            return attributes, "leftover_form.sf_count", ""
-    return attributes, "", ""
-
-
 def _implicit_period_blocked(haystack: str) -> bool:
     return bool(_IMPLICIT_AGO_RE.search(haystack) or _IMPLICIT_RATE_RE.search(haystack))
-
-
-def _last_event_v4_zero(evidence: str) -> bool:
-    if _CLUSTER_COUNT_RE.search(evidence):
-        return False
-    return bool(
-        _LAST_EVENT_CUE_WIDE_RE.search(evidence)
-        or _SEIZURE_FREE_WIDE_RE.search(evidence)
-    )
 
 
 def _intervening_form(
@@ -624,7 +451,7 @@ def _intervening_form(
             attributes["NumberOfSeizures"] = mapped
             attributes["TimePeriod"] = normalize_unit(times.group("unit"))
             attributes["NumberOfTimePeriods"] = "1"
-            return attributes, "leftover_form.sf_count", "leftover_form.sf_period"
+            return attributes, "form_recovery.sf_count", "form_recovery.sf_period"
     window = _first_intervening_match(
         _IN_THE_LAST_RE, haystack, "word", guarded=guarded
     )
@@ -637,7 +464,7 @@ def _intervening_form(
             attributes["NumberOfTimePeriods"] = (
                 _mapped_count(period_n) if period_n else "1"
             )
-            return attributes, "leftover_form.sf_count", "leftover_form.sf_period"
+            return attributes, "form_recovery.sf_count", "form_recovery.sf_period"
     since = _first_intervening_match(
         _COUNT_SINCE_RE, haystack, "word", guarded=guarded
     )
@@ -646,13 +473,13 @@ def _intervening_form(
         if mapped:
             attributes["NumberOfSeizures"] = mapped
             attributes["TimeSince_or_TimeOfEvent"] = "Since"
-            return attributes, "leftover_form.sf_count", ""
+            return attributes, "form_recovery.sf_count", ""
     digit = _first_intervening_match(
         _INTERVENING_DIGIT_SEIZURE_RE, haystack, "count", guarded=guarded
     )
     if digit is not None:
         attributes["NumberOfSeizures"] = digit.group("count")
-        return attributes, "leftover_form.sf_count", ""
+        return attributes, "form_recovery.sf_count", ""
     word = _first_intervening_match(
         _INTERVENING_WORD_SEIZURE_RE, haystack, "word", guarded=guarded
     )
@@ -660,7 +487,7 @@ def _intervening_form(
         mapped = _mapped_count(word.group("word"))
         if mapped:
             attributes["NumberOfSeizures"] = mapped
-            return attributes, "leftover_form.sf_count", ""
+            return attributes, "form_recovery.sf_count", ""
     later = _first_intervening_match(
         _SEIZURE_THEN_COUNT_RE, haystack, "word", guarded=guarded
     )
@@ -668,7 +495,7 @@ def _intervening_form(
         mapped = _mapped_count(later.group("word"))
         if mapped:
             attributes["NumberOfSeizures"] = mapped
-            return attributes, "leftover_form.sf_count", ""
+            return attributes, "form_recovery.sf_count", ""
     return attributes, "", ""
 
 
@@ -752,7 +579,7 @@ def _trace(
     return {
         "fact_index": index,
         "rule_category": "seizure_frequency"
-        if action.startswith("leftover_form.sf") or action.startswith("encoding.")
+        if action.startswith("form_recovery.sf") or action.startswith("encoding.")
         or action == "suppress_uncoded_or_noise_sf"
         else "clinical_epilepsy",
         "action": action,

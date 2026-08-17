@@ -18,6 +18,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.mention_unit imp
     CUE5_ARM_VERSIONS,
     HYBRID_METHOD,
     LLM_METHOD,
+    MENTION_ENCODER_PROMPT,
     MENTION_UNIT_PROMPT_VERSION,
     MentionUnitExtractor,
     build_mention_unit_prompt,
@@ -88,8 +89,9 @@ def _payload_without_letter(method: str) -> dict[str, object]:
     return {key: value for key, value in payload.items() if key != "letter_text"}
 
 
-def test_prompt_version_is_mention_unit_v2() -> None:
-    assert MENTION_UNIT_PROMPT_VERSION == "exectv2_mention_unit_v2"
+def test_prompt_version_is_mention_encoder() -> None:
+    assert MENTION_UNIT_PROMPT_VERSION == "exectv2_mention_encoder"
+    assert MENTION_ENCODER_PROMPT == "exectv2_mention_encoder"
 
 
 def test_prompt_uses_clinical_name_and_keeps_metadata_out() -> None:
@@ -148,7 +150,7 @@ def test_frozen_v2_cue5_is_unchanged() -> None:
     hybrid = _payload_without_letter(HYBRID_METHOD)
     assert llm["selection_cues"][4] == _FROZEN_CUE5
     assert hybrid["selection_cues"][4] == _FROZEN_CUE5
-    assert MENTION_UNIT_PROMPT_VERSION == "exectv2_mention_unit_v2"
+    assert MENTION_UNIT_PROMPT_VERSION == "exectv2_mention_encoder"
 
 
 def test_cue5_study_arms_append_one_sentence_and_keep_seven_cues() -> None:
@@ -470,7 +472,7 @@ def test_hybrid_splits_a_heading_but_does_not_add_later_letter_types() -> None:
     assert all("secondary" not in text for text in texts)
 
 
-def test_hybrid_uses_landed_encoder_on_clinical_name_and_evidence() -> None:
+def test_hybrid_without_form_recovery_keeps_emitted_names() -> None:
     letter = _letter(
         "Last seizures in teenage years. ECG was normal. EEG in 2012 was normal. "
         "She has a seizure every 3 weeks."

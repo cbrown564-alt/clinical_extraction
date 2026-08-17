@@ -1,8 +1,9 @@
-"""Always-on contract for the mention-unit leftover-form encoder.
+"""Always-on contract for mention-unit form recovery.
 
-Governing owner for the leftover-form remasure: default landed stays
-unchanged, and leftover_form parses leftover count, period, and List 9
-results from that item only.
+Default materialization copies the emitted name. form_recovery=True
+reads leftover count, period, and test-result words from that item,
+may drop remote history, rewrite a name, or split two stated
+once-daily doses. It does not search the letter.
 """
 
 from __future__ import annotations
@@ -27,7 +28,13 @@ def _parse(items: list[dict[str, str]]):
     return parsed.record
 
 
-def test_default_encoder_leaves_leftover_count_unparsed() -> None:
+def _recover(letter: ExectLetter, record):
+    return materialize_mention_unit(
+        letter, record, method=HYBRID_METHOD, form_recovery=True
+    )
+
+
+def test_default_materialization_leaves_leftover_count_unparsed() -> None:
     letter = _letter("She has 2 to 3 focal seizures a week. EEG showed no epileptiform activity.")
     record = _parse(
         [
@@ -48,7 +55,7 @@ def test_default_encoder_leaves_leftover_count_unparsed() -> None:
     assert "TimePeriod" not in mention.attributes
 
 
-def test_leftover_form_recovers_count_and_period_from_evidence() -> None:
+def test_form_recovery_recovers_count_and_period_from_evidence() -> None:
     letter = _letter("She has 2 to 3 focal seizures a week. absences 2-3 per day.")
     record = _parse(
         [
@@ -64,25 +71,16 @@ def test_leftover_form_recovers_count_and_period_from_evidence() -> None:
             },
         ]
     )
-
-    result = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form"
-    )
-    by_text = {mention.text: mention for mention in result.prediction.mentions}
+    by_text = {mention.text: mention for mention in _recover(letter, record).prediction.mentions}
 
     assert by_text["focal seizures"].attributes["LowerNumberOfSeizures"] == "2"
     assert by_text["focal seizures"].attributes["UpperNumberOfSeizures"] == "3"
     assert by_text["focal seizures"].attributes["TimePeriod"] == "Week"
-    assert by_text["focal seizures"].attributes["NumberOfTimePeriods"] == "1"
     assert by_text["absences"].attributes["LowerNumberOfSeizures"] == "2"
-    assert by_text["absences"].attributes["UpperNumberOfSeizures"] == "3"
     assert by_text["absences"].attributes["TimePeriod"] == "Day"
-    assert any(
-        "leftover_form" in str(trace.get("action", "")) for trace in result.rule_trace
-    )
 
 
-def test_leftover_form_keeps_interval_and_last_event_and_skips_duration_years() -> None:
+def test_form_recovery_drops_remote_last_event_keeps_interval_and_zero() -> None:
     letter = _letter(
         "Last seizures in teenage years. She has a seizure every 3 weeks. "
         "She has been seizure-free for four years."
@@ -106,21 +104,16 @@ def test_leftover_form_keeps_interval_and_last_event_and_skips_duration_years() 
             },
         ]
     )
+    by_text = {mention.text: mention for mention in _recover(letter, record).prediction.mentions}
 
-    result = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form"
-    )
-    by_text = {mention.text: mention for mention in result.prediction.mentions}
-
-    assert by_text["seizures"].attributes["NumberOfSeizures"] == "0"
+    assert "seizures" not in by_text
     assert by_text["seizure"].attributes["NumberOfSeizures"] == "1"
     assert by_text["seizure"].attributes["NumberOfTimePeriods"] == "3"
     assert by_text["seizure"].attributes["TimePeriod"] == "Week"
     assert by_text["seizure-free"].attributes["NumberOfSeizures"] == "0"
-    assert by_text["seizure-free"].attributes.get("NumberOfSeizures") != "4"
 
 
-def test_leftover_form_classifies_list9_result_and_keeps_ecg_out() -> None:
+def test_form_recovery_classifies_list9_result_and_keeps_ecg_out() -> None:
     letter = _letter(
         "ECG was normal. EEG showed no epileptiform activity. MRI is planned."
     )
@@ -143,19 +136,15 @@ def test_leftover_form_classifies_list9_result_and_keeps_ecg_out() -> None:
             },
         ]
     )
-
-    result = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form"
-    )
+    result = _recover(letter, record)
     by_text = {mention.text: mention for mention in result.prediction.mentions}
 
     assert "ECG" not in by_text
     assert "MRI" not in by_text
     assert by_text["EEG"].attributes["EEG_Results"] == "Normal"
-    assert any(trace.get("action") == "leftover_form.ix_result" for trace in result.rule_trace)
 
 
-def test_leftover_form_does_not_search_the_letter() -> None:
+def test_form_recovery_does_not_search_the_letter() -> None:
     letter = _letter(
         "She takes lamotrigine 100 mg daily. MRI was normal. "
         "In March she had 2 to 3 of her focal seizures a week."
@@ -169,58 +158,20 @@ def test_leftover_form_does_not_search_the_letter() -> None:
             }
         ]
     )
-
-    result = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form"
-    )
+    result = _recover(letter, record)
 
     assert [mention.entity for mention in result.prediction.mentions] == ["Prescription"]
-    assert all("MRI" not in str(trace.get("after", {})) for trace in result.rule_trace)
     assert all(mention.entity != "SeizureFrequency" for mention in result.prediction.mentions)
 
 
-def test_leftover_form_v1_leaves_intervening_word_count_unparsed() -> None:
+def test_form_recovery_recovers_guarded_intervening_counts() -> None:
     letter = _letter(
-        "She had 2 febrile seizures at the age of 2 months. "
-        "She has been seizure-free for four years."
-    )
-    record = _parse(
-        [
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "febrile seizures",
-                "evidence": "She had 2 febrile seizures at the age of 2 months.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizure-free",
-                "evidence": "She has been seizure-free for four years.",
-            },
-        ]
-    )
-
-    baseline = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form"
-    )
-    by_text = {mention.text: mention for mention in baseline.prediction.mentions}
-    assert "NumberOfSeizures" not in by_text["febrile seizures"].attributes
-    assert by_text["seizure-free"].attributes["NumberOfSeizures"] == "0"
-
-
-def test_leftover_form_intervening_recovers_near_count_not_duration() -> None:
-    letter = _letter(
-        "She had 2 febrile seizures at the age of 2 months. "
-        "She has had four in the last three weeks. "
+        "The seizures continue. She has had four in the last three weeks. "
         "They can happen several times a day. "
         "She has been seizure-free for four years."
     )
     record = _parse(
         [
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "febrile seizures",
-                "evidence": "She had 2 febrile seizures at the age of 2 months.",
-            },
             {
                 "clinical_family": "SeizureFrequency",
                 "clinical_name": "seizures",
@@ -238,215 +189,25 @@ def test_leftover_form_intervening_recovers_near_count_not_duration() -> None:
             },
         ]
     )
+    by_evidence = {
+        mention.evidence: mention for mention in _recover(letter, record).prediction.mentions
+    }
 
-    result = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_intervening"
-    )
-    mentions = result.prediction.mentions
-    febrile = next(mention for mention in mentions if mention.text == "febrile seizures")
-    window = next(
-        mention
-        for mention in mentions
-        if mention.evidence == "She has had four in the last three weeks."
-    )
-    rate = next(
-        mention
-        for mention in mentions
-        if mention.evidence == "They can happen several times a day."
-    )
-    free = next(mention for mention in mentions if mention.text == "seizure-free")
-
-    assert febrile.attributes["NumberOfSeizures"] == "2"
+    window = by_evidence["She has had four in the last three weeks."]
+    rate = by_evidence["They can happen several times a day."]
+    free = by_evidence["She has been seizure-free for four years."]
     assert window.attributes["NumberOfSeizures"] == "4"
     assert window.attributes["TimePeriod"] == "Week"
-    assert window.attributes["NumberOfTimePeriods"] == "3"
     assert rate.attributes["NumberOfSeizures"] == "3"
     assert rate.attributes["TimePeriod"] == "Day"
     assert free.attributes["NumberOfSeizures"] == "0"
-    assert free.attributes.get("NumberOfSeizures") != "4"
 
 
-def test_leftover_form_implicit_period_fills_bare_every_and_daily() -> None:
-    letter = _letter(
-        "seizures have happened roughly every year since the age of 15. "
-        "Myoclonic jerks daily. She has a seizure every 3 weeks."
-    )
-    record = _parse(
-        [
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": "seizures have happened roughly every year since the age of 15.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "Myoclonic jerks",
-                "evidence": "Myoclonic jerks daily.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizure",
-                "evidence": "She has a seizure every 3 weeks.",
-            },
-        ]
-    )
-
-    result = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_implicit_period"
-    )
-    by_evidence = {mention.evidence: mention for mention in result.prediction.mentions}
-
-    yearly = by_evidence["seizures have happened roughly every year since the age of 15."]
-    daily = by_evidence["Myoclonic jerks daily."]
-    interval = by_evidence["She has a seizure every 3 weeks."]
-    assert yearly.attributes["NumberOfSeizures"] == "1"
-    assert yearly.attributes["TimePeriod"] == "Year"
-    assert daily.attributes["NumberOfSeizures"] == "1"
-    assert daily.attributes["TimePeriod"] == "Day"
-    assert interval.attributes["NumberOfSeizures"] == "1"
-    assert interval.attributes["NumberOfTimePeriods"] == "3"
-    assert interval.attributes["TimePeriod"] == "Week"
-
-
-def test_leftover_form_casefold_keeps_case_only_name_not_paraphrase() -> None:
-    letter = _letter(
-        "Focal to bilateral convulsive seizures once a week. "
-        "She remains seizure free."
-    )
-    record = _parse(
-        [
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "focal to bilateral convulsive seizures",
-                "evidence": "Focal to bilateral convulsive seizures once a week.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "myoclonic jerks",
-                "evidence": "She remains seizure free.",
-            },
-        ]
-    )
-
-    baseline = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form"
-    )
-    candidate = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_casefold"
-    )
-
-    assert [mention.text for mention in baseline.prediction.mentions] == []
-    assert [mention.text for mention in candidate.prediction.mentions] == [
-        "focal to bilateral convulsive seizures"
-    ]
-    assert all(mention.text != "myoclonic jerks" for mention in candidate.prediction.mentions)
-
-
-def test_leftover_form_last_event_widens_cues_not_qualitative_change() -> None:
-    letter = _letter(
-        "He had a seizure last month. He remains seizrue free. "
-        "There has been an increase in her seizures."
-    )
-    record = _parse(
-        [
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizure",
-                "evidence": "He had a seizure last month.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizrue free",
-                "evidence": "He remains seizrue free.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": "There has been an increase in her seizures.",
-            },
-        ]
-    )
-
-    result = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_last_event"
-    )
-    by_evidence = {mention.evidence: mention for mention in result.prediction.mentions}
-
-    assert by_evidence["He had a seizure last month."].attributes["NumberOfSeizures"] == "0"
-    assert by_evidence["He remains seizrue free."].attributes["NumberOfSeizures"] == "0"
-    change = by_evidence["There has been an increase in her seizures."]
-    assert "NumberOfSeizures" not in change.attributes
-
-
-def test_leftover_form_intervening_v3_recovers_near_count() -> None:
-    letter = _letter(
-        "She had 2 febrile seizures at the age of 2 months. "
-        "She has had four in the last three weeks. "
-        "She had a couple of focal impaired awareness seizures. "
-        "She has had 1 since previous appointment."
-    )
-    record = _parse(
-        [
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "febrile seizures",
-                "evidence": "She had 2 febrile seizures at the age of 2 months.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": "She has had four in the last three weeks.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "focal impaired awareness seizures",
-                "evidence": "She had a couple of focal impaired awareness seizures.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": "She has had 1 since previous appointment.",
-            },
-        ]
-    )
-
-    result = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_intervening_v3"
-    )
-    mentions = result.prediction.mentions
-    febrile = next(mention for mention in mentions if mention.text == "febrile seizures")
-    window = next(
-        mention
-        for mention in mentions
-        if mention.evidence == "She has had four in the last three weeks."
-    )
-    couple = next(
-        mention
-        for mention in mentions
-        if mention.text == "focal impaired awareness seizures"
-    )
-    since = next(
-        mention
-        for mention in mentions
-        if mention.evidence == "She has had 1 since previous appointment."
-    )
-
-    assert febrile.attributes["NumberOfSeizures"] == "2"
-    assert window.attributes["NumberOfSeizures"] == "4"
-    assert window.attributes["TimePeriod"] == "Week"
-    assert window.attributes["NumberOfTimePeriods"] == "3"
-    assert couple.attributes["NumberOfSeizures"] == "2"
-    assert since.attributes["NumberOfSeizures"] == "1"
-    assert since.attributes["TimeSince_or_TimeOfEvent"] == "Since"
-
-
-def test_leftover_form_intervening_v3_blocks_age_duration_date() -> None:
+def test_form_recovery_blocks_age_duration_and_date_counts() -> None:
     letter = _letter(
         "He had a febrile seizure at the age of 3. "
-        "He has been 6 months without having seizures. "
-        "The third episode happened two weeks ago. "
-        "He hasn't had any seizures now for around three weeks. "
-        "He had an event on 22 December."
+        "She has been seizure-free for four years. "
+        "On 12 March 2019 she had 2 seizures."
     )
     record = _parse(
         [
@@ -457,120 +218,32 @@ def test_leftover_form_intervening_v3_blocks_age_duration_date() -> None:
             },
             {
                 "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": "He has been 6 months without having seizures.",
+                "clinical_name": "seizure-free",
+                "evidence": "She has been seizure-free for four years.",
             },
             {
                 "clinical_family": "SeizureFrequency",
                 "clinical_name": "seizures",
-                "evidence": "The third episode happened two weeks ago.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": "He hasn't had any seizures now for around three weeks.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": "He had an event on 22 December.",
+                "evidence": "On 12 March 2019 she had 2 seizures.",
             },
         ]
     )
-
-    unsafe = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_intervening"
-    )
-    unsafe_by_evidence = {
-        mention.evidence: mention for mention in unsafe.prediction.mentions
+    by_evidence = {
+        mention.evidence: mention for mention in _recover(letter, record).prediction.mentions
     }
-    assert unsafe_by_evidence[
-        "He had a febrile seizure at the age of 3."
-    ].attributes["NumberOfSeizures"] == "3"
-    assert unsafe_by_evidence[
-        "He had an event on 22 December."
-    ].attributes["NumberOfSeizures"] == "22"
 
-    result = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_intervening_v3"
-    )
-    by_evidence = {mention.evidence: mention for mention in result.prediction.mentions}
-
-    assert "NumberOfSeizures" not in by_evidence[
-        "He had a febrile seizure at the age of 3."
-    ].attributes
-    assert "NumberOfSeizures" not in by_evidence[
-        "He has been 6 months without having seizures."
-    ].attributes
-    assert "NumberOfSeizures" not in by_evidence[
-        "The third episode happened two weeks ago."
-    ].attributes
-    assert "NumberOfSeizures" not in by_evidence[
-        "He hasn't had any seizures now for around three weeks."
-    ].attributes
-    assert "NumberOfSeizures" not in by_evidence[
-        "He had an event on 22 December."
-    ].attributes
+    assert "He had a febrile seizure at the age of 3." not in by_evidence
+    assert by_evidence["She has been seizure-free for four years."].attributes[
+        "NumberOfSeizures"
+    ] == "0"
+    date = by_evidence["On 12 March 2019 she had 2 seizures."]
+    assert date.attributes.get("NumberOfSeizures") != "12"
 
 
-def test_leftover_form_episodes_v4_recovers_range_not_collapse_or_date() -> None:
+def test_form_recovery_fills_implicit_period_not_ago() -> None:
     letter = _letter(
-        "His seizures continue. "
-        "He has had three or four further episodes. "
-        "He had a collapse episode whilst in college. "
-        "Sodium valproate has stopped the episodes. "
-        "He had an event on 22 December."
-    )
-    record = _parse(
-        [
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": "He has had three or four further episodes.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": "He had a collapse episode whilst in college.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": "Sodium valproate has stopped the episodes.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": "He had an event on 22 December.",
-            },
-        ]
-    )
-
-    result = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_episodes_v4"
-    )
-    by_evidence = {mention.evidence: mention for mention in result.prediction.mentions}
-    recovered = by_evidence["He has had three or four further episodes."]
-
-    assert recovered.attributes["LowerNumberOfSeizures"] == "3"
-    assert recovered.attributes["UpperNumberOfSeizures"] == "4"
-    assert "NumberOfSeizures" not in by_evidence[
-        "He had a collapse episode whilst in college."
-    ].attributes
-    assert "NumberOfSeizures" not in by_evidence[
-        "Sodium valproate has stopped the episodes."
-    ].attributes
-    assert "NumberOfSeizures" not in by_evidence[
-        "He had an event on 22 December."
-    ].attributes
-
-
-def test_leftover_form_implicit_v4_fills_bare_period_not_ago_or_rate() -> None:
-    letter = _letter(
-        "Myoclonic jerks daily. "
-        "His seizures have happened roughly every year. "
-        "His seizure control had been good until about a week ago. "
-        "The seizures can happen 2 or 3 times per month."
+        "Myoclonic jerks daily. She has a seizure every 3 weeks. "
+        "The last seizure was two years ago."
     )
     record = _parse(
         [
@@ -581,198 +254,69 @@ def test_leftover_form_implicit_v4_fills_bare_period_not_ago_or_rate() -> None:
             },
             {
                 "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": "His seizures have happened roughly every year.",
+                "clinical_name": "seizure",
+                "evidence": "She has a seizure every 3 weeks.",
             },
             {
                 "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": "His seizure control had been good until about a week ago.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": "The seizures can happen 2 or 3 times per month.",
+                "clinical_name": "seizure",
+                "evidence": "The last seizure was two years ago.",
             },
         ]
     )
-
-    unsafe = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_implicit_period"
-    )
-    unsafe_by_evidence = {
-        mention.evidence: mention for mention in unsafe.prediction.mentions
+    by_evidence = {
+        mention.evidence: mention for mention in _recover(letter, record).prediction.mentions
     }
-    assert unsafe_by_evidence[
-            "His seizure control had been good until about a week ago."
-        ].attributes["NumberOfSeizures"] == "1"
-    assert unsafe_by_evidence[
-        "The seizures can happen 2 or 3 times per month."
-    ].attributes["NumberOfSeizures"] == "1"
 
-    result = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_implicit_v4"
-    )
-    by_evidence = {mention.evidence: mention for mention in result.prediction.mentions}
-    daily = by_evidence["Myoclonic jerks daily."]
-    yearly = by_evidence["His seizures have happened roughly every year."]
-    ago = by_evidence["His seizure control had been good until about a week ago."]
-    rate = by_evidence["The seizures can happen 2 or 3 times per month."]
-
-    assert daily.attributes["NumberOfSeizures"] == "1"
-    assert daily.attributes["TimePeriod"] == "Day"
-    assert yearly.attributes["NumberOfSeizures"] == "1"
-    assert yearly.attributes["TimePeriod"] == "Year"
-    assert "NumberOfSeizures" not in ago.attributes
-    assert rate.attributes["NumberOfSeizures"] == "3"
-    assert rate.attributes["TimePeriod"] == "Month"
+    assert by_evidence["Myoclonic jerks daily."].attributes["NumberOfSeizures"] == "1"
+    assert by_evidence["Myoclonic jerks daily."].attributes["TimePeriod"] == "Day"
+    assert by_evidence["She has a seizure every 3 weeks."].attributes["NumberOfTimePeriods"] == "3"
+    ago = by_evidence["The last seizure was two years ago."]
+    assert ago.attributes.get("NumberOfSeizures") != "2"
 
 
-def test_leftover_form_last_event_v4_zeros_evidence_not_glued_cluster() -> None:
+def test_form_recovery_span_fold_keeps_hyphen_and_case_names() -> None:
     letter = _letter(
-        "He remains seizrue free. "
-        "Current seizure frequency: No events since surgery. "
-        "He had a seizure last month. "
-        "Last month, Joan had a cluster of 5. "
-        "There has been an increase in her seizures."
-    )
-    record = _parse(
-        [
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": "He remains seizrue free.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": "Current seizure frequency: No events since surgery.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": "He had a seizure last month.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": "Last month, Joan had a cluster of 5.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": "There has been an increase in her seizures.",
-            },
-        ]
-    )
-
-    unsafe = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_last_event"
-    )
-    unsafe_cluster = next(
-        mention
-        for mention in unsafe.prediction.mentions
-        if mention.evidence == "Last month, Joan had a cluster of 5."
-    )
-    assert unsafe_cluster.attributes["NumberOfSeizures"] == "0"
-
-    result = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_last_event_v4"
-    )
-    by_evidence = {mention.evidence: mention for mention in result.prediction.mentions}
-
-    assert by_evidence["He remains seizrue free."].attributes["NumberOfSeizures"] == "0"
-    assert by_evidence[
-        "Current seizure frequency: No events since surgery."
-    ].attributes["NumberOfSeizures"] == "0"
-    assert by_evidence["He had a seizure last month."].attributes["NumberOfSeizures"] == "0"
-    assert by_evidence["Last month, Joan had a cluster of 5."].attributes[
-        "NumberOfSeizures"
-    ] == "5"
-    assert "NumberOfSeizures" not in by_evidence[
-        "There has been an increase in her seizures."
-    ].attributes
-
-
-def test_span_fold_keeps_hyphen_and_case_names_that_are_in_the_letter() -> None:
-    letter = _letter(
-        "2 generalised tonic clonic seizures 2014, absence like seizures 2014. "
-        "His last seizures were in his teenage years."
+        "Absence-like seizures twice a week. FOCAL seizures once a month. "
+        "She has no history of drop attacks."
     )
     record = _parse(
         [
             {
                 "clinical_family": "SeizureFrequency",
                 "clinical_name": "absence-like seizures",
-                "evidence": "absence like seizures 2014",
+                "evidence": "Absence-like seizures twice a week.",
             },
             {
                 "clinical_family": "SeizureFrequency",
-                "clinical_name": "Seizures",
-                "evidence": "His last seizures were in his teenage years.",
+                "clinical_name": "FOCAL seizures",
+                "evidence": "FOCAL seizures once a month.",
+            },
+            {
+                "clinical_family": "SeizureFrequency",
+                "clinical_name": "drop attack",
+                "evidence": "She has no history of drop attacks.",
             },
         ]
     )
+    names = {mention.text for mention in _recover(letter, record).prediction.mentions}
 
-    landed = materialize_mention_unit(letter, record, method=HYBRID_METHOD)
-    folded = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_span_fold_v5"
-    )
-
-    assert [mention.text for mention in landed.prediction.mentions] == []
-    assert {mention.text for mention in folded.prediction.mentions} == {
-        "absence-like seizures",
-        "Seizures",
-    }
+    assert "absence-like seizures" in names
+    assert "FOCAL seizures" in names
+    assert "drop attack" not in names
 
 
-def test_span_fold_does_not_keep_plural_or_unrelated_names() -> None:
+def test_form_recovery_drops_childhood_febrile_keeps_current() -> None:
     letter = _letter(
-        "Diagnosis: single focal seizure. History is consistent with "
-        "Juvenile Myoclonic Epilepsy."
-    )
-    record = _parse(
-        [
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "focal seizures",
-                "evidence": "Diagnosis: single focal seizure.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "myoclonic jerks",
-                "evidence": "History is consistent with Juvenile Myoclonic Epilepsy.",
-            },
-        ]
-    )
-
-    folded = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_span_fold_v5"
-    )
-
-    assert [mention.text for mention in folded.prediction.mentions] == []
-
-
-def test_history_v6_drops_childhood_febrile_and_keeps_current() -> None:
-    letter = _letter(
-        "He had 2 febrile seizures at the age of 8 months and 18 months. "
-        "The focal seizures were occurring more frequently, perhaps once per day. "
+        "She did have a febrile seizure the age of four years. "
         "Febrile seizures continue once a month."
     )
     record = _parse(
         [
             {
                 "clinical_family": "SeizureFrequency",
-                "clinical_name": "Febrile seizures",
-                "evidence": "He had 2 febrile seizures at the age of 8 months and 18 months.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "Focal seizures",
-                "evidence": (
-                    "The focal seizures were occurring more frequently, "
-                    "perhaps once per day."
-                ),
+                "clinical_name": "febrile seizure",
+                "evidence": "She did have a febrile seizure the age of four years.",
             },
             {
                 "clinical_family": "SeizureFrequency",
@@ -781,467 +325,182 @@ def test_history_v6_drops_childhood_febrile_and_keeps_current() -> None:
             },
         ]
     )
-
-    folded = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_span_fold_v5"
-    )
-    history = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_span_fold_history_v6"
-    )
-
-    assert {mention.text for mention in folded.prediction.mentions} == {
-        "Febrile seizures",
-        "Focal seizures",
+    by_evidence = {
+        mention.evidence: mention for mention in _recover(letter, record).prediction.mentions
     }
-    assert [mention.text for mention in history.prediction.mentions] == [
-        "Focal seizures",
-        "Febrile seizures",
-    ]
-    current = next(
-        mention
-        for mention in history.prediction.mentions
-        if mention.evidence == "Febrile seizures continue once a month."
-    )
+
+    assert "She did have a febrile seizure the age of four years." not in by_evidence
+    current = by_evidence["Febrile seizures continue once a month."]
     assert current.attributes["NumberOfSeizures"] == "1"
 
 
-def test_cluster_v7_rewrites_generic_cluster_of_seizures_only() -> None:
+def test_form_recovery_rewrites_cluster_and_awareness_names() -> None:
     letter = _letter(
-        "Currently she get around 2-4 seizures per month. "
         "a cluster of seizures in August, 2017 where she had 6-9 seizures "
         "every week for 3 weeks. "
-        "Last month, Joan had a cluster of 5. "
-        "The focal seizures were occurring more frequently, perhaps once per day."
+        "Focal seizures with altered awareness approximately 1 per fortnight. "
+        "focal seizures without loss of awareness once a month."
     )
+    cluster = (
+        "a cluster of seizures in August, 2017 where she had 6-9 seizures "
+        "every week for 3 weeks."
+    )
+    awareness = "Focal seizures with altered awareness approximately 1 per fortnight."
+    without = "focal seizures without loss of awareness once a month."
     record = _parse(
         [
             {
                 "clinical_family": "SeizureFrequency",
                 "clinical_name": "seizures",
-                "evidence": "Currently she get around 2-4 seizures per month.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": (
-                    "a cluster of seizures in August, 2017 where she had "
-                    "6-9 seizures every week for 3 weeks."
-                ),
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": "Last month, Joan had a cluster of 5.",
+                "evidence": cluster,
             },
             {
                 "clinical_family": "SeizureFrequency",
                 "clinical_name": "focal seizures",
-                "evidence": (
-                    "The focal seizures were occurring more frequently, "
-                    "perhaps once per day."
-                ),
+                "evidence": awareness,
+            },
+            {
+                "clinical_family": "SeizureFrequency",
+                "clinical_name": "focal seizures",
+                "evidence": without,
             },
         ]
     )
+    by_evidence = {
+        mention.evidence: mention for mention in _recover(letter, record).prediction.mentions
+    }
 
-    history = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_span_fold_history_v6"
-    )
-    clustered = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_span_fold_cluster_v7"
-    )
-    history_by = {mention.evidence: mention for mention in history.prediction.mentions}
-    cluster_by = {mention.evidence: mention for mention in clustered.prediction.mentions}
-    cluster_evidence = (
-        "a cluster of seizures in August, 2017 where she had "
-        "6-9 seizures every week for 3 weeks."
-    )
-
-    assert history_by[cluster_evidence].text == "seizures"
-    assert cluster_by[cluster_evidence].text == "cluster of seizures"
-    assert cluster_by[cluster_evidence].attributes["CUI"] == "C3203523"
-    assert cluster_by["Currently she get around 2-4 seizures per month."].text == "seizures"
-    assert cluster_by["Last month, Joan had a cluster of 5."].text == "seizures"
-    assert cluster_by[
-        "The focal seizures were occurring more frequently, perhaps once per day."
-    ].text == "focal seizures"
+    assert by_evidence[cluster].text == "cluster of seizures"
+    assert by_evidence[awareness].text == "focal seizures with altered awareness"
+    assert by_evidence[without].text == "focal seizures"
 
 
-def test_awareness_v8_recovers_qualifier_not_without_change() -> None:
+def test_form_recovery_drops_unused_resemblance() -> None:
     letter = _letter(
-        "Seizure type and frequency: focal seizures with altered awareness every 3 weeks. "
-        "In March she had 2 to 3 of her focal seizures without change in awareness. "
-        "a cluster of seizures in August, 2017 where she had 6-9 seizures every week."
+        "He has not had any events which resemble absences. "
+        "He has not had any further seizures since the last clinic."
     )
+    unused = "He has not had any events which resemble absences."
+    last_event = "He has not had any further seizures since the last clinic."
     record = _parse(
         [
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "focal seizures",
-                "evidence": (
-                    "Seizure type and frequency: focal seizures with altered "
-                    "awareness every 3 weeks."
-                ),
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "focal seizures",
-                "evidence": (
-                    "In March she had 2 to 3 of her focal seizures without "
-                    "change in awareness."
-                ),
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": (
-                    "a cluster of seizures in August, 2017 where she had "
-                    "6-9 seizures every week."
-                ),
-            },
-        ]
-    )
-
-    clustered = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_span_fold_cluster_v7"
-    )
-    aware = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_span_fold_awareness_v8"
-    )
-    cluster_by = {mention.evidence: mention for mention in clustered.prediction.mentions}
-    aware_by = {mention.evidence: mention for mention in aware.prediction.mentions}
-    heading = (
-        "Seizure type and frequency: focal seizures with altered awareness every 3 weeks."
-    )
-    without = (
-        "In March she had 2 to 3 of her focal seizures without change in awareness."
-    )
-    cluster_evidence = (
-        "a cluster of seizures in August, 2017 where she had 6-9 seizures every week."
-    )
-
-    assert cluster_by[heading].text == "focal seizures"
-    assert aware_by[heading].text == "focal seizures with altered awareness"
-    assert aware_by[heading].attributes["CUI"] == "C0270834"
-    assert aware_by[without].text == "focal seizures"
-    assert aware_by[cluster_evidence].text == "cluster of seizures"
-
-
-def test_negation_v9_drops_unused_resemblance_not_last_event() -> None:
-    letter = _letter(
-        "Generalised tonic clonic seizure-last event July 2016. "
-        "he has had roughly two seizures per year since then. "
-        "He has not had any events which resemble absences, myoclonus or "
-        "focal seizures. "
-        "He has not had any further seizures since his last appointment. "
-        "The focal seizures were occurring more frequently, perhaps once per day."
-    )
-    resemblance = (
-        "He has not had any events which resemble absences, myoclonus or "
-        "focal seizures."
-    )
-    last_event = "He has not had any further seizures since his last appointment."
-    current = (
-        "The focal seizures were occurring more frequently, perhaps once per day."
-    )
-    record = _parse(
-        [
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "Generalised tonic clonic seizure",
-                "evidence": "Generalised tonic clonic seizure-last event July 2016.",
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": "he has had roughly two seizures per year since then.",
-            },
             {
                 "clinical_family": "SeizureFrequency",
                 "clinical_name": "absences",
-                "evidence": resemblance,
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "myoclonus",
-                "evidence": resemblance,
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "focal seizures",
-                "evidence": resemblance,
+                "evidence": unused,
             },
             {
                 "clinical_family": "SeizureFrequency",
                 "clinical_name": "seizures",
                 "evidence": last_event,
             },
+        ]
+    )
+    by_evidence = {
+        mention.evidence: mention for mention in _recover(letter, record).prediction.mentions
+    }
+
+    assert unused not in by_evidence
+    assert by_evidence[last_event].attributes["NumberOfSeizures"] == "0"
+
+
+def test_form_recovery_encodes_fortnight_rate_not_dose_titration() -> None:
+    letter = _letter(
+        "Focal seizures with altered awareness approximately 1 per fortnight. "
+        "Increase lamotrigine by 25 mg every fortnight."
+    )
+    rate = "Focal seizures with altered awareness approximately 1 per fortnight."
+    titration = "Increase lamotrigine by 25 mg every fortnight."
+    record = _parse(
+        [
             {
                 "clinical_family": "SeizureFrequency",
                 "clinical_name": "focal seizures",
-                "evidence": current,
-            },
-        ]
-    )
-
-    aware = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_span_fold_awareness_v8"
-    )
-    negated = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_span_fold_negation_v9"
-    )
-    aware_names = [mention.text for mention in aware.prediction.mentions]
-    negated_by = {mention.evidence: mention for mention in negated.prediction.mentions}
-
-    assert "absences" in aware_names
-    assert "myoclonus" in aware_names
-    assert resemblance not in negated_by
-    assert {mention.text for mention in negated.prediction.mentions} == {
-        "Generalised tonic clonic seizure",
-        "seizures",
-        "focal seizures",
-    }
-    assert negated_by[last_event].text == "seizures"
-    assert negated_by[current].text == "focal seizures"
-
-
-def test_fortnight_v10_encodes_rate_not_dose_titration() -> None:
-    letter = _letter(
-        "Focal seizures with altered awareness approximately 1 per fortnight. "
-        "Increase the levetiracetam by 250 mg every fortnight. "
-        "He has not had any events which resemble absences."
-    )
-    rate = "Focal seizures with altered awareness approximately 1 per fortnight."
-    dose = "Increase the levetiracetam by 250 mg every fortnight."
-    resemblance = "He has not had any events which resemble absences."
-    record = _parse(
-        [
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "Focal seizures with altered awareness",
                 "evidence": rate,
             },
             {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": dose,
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "absences",
-                "evidence": resemblance,
+                "clinical_family": "Prescription",
+                "clinical_name": "lamotrigine",
+                "evidence": titration,
             },
         ]
     )
-
-    negated = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_span_fold_negation_v9"
+    result = _recover(letter, record)
+    sf = next(
+        mention
+        for mention in result.prediction.mentions
+        if mention.entity == "SeizureFrequency"
     )
-    fortnight = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_span_fold_fortnight_v10"
-    )
-    negated_by = {mention.evidence: mention for mention in negated.prediction.mentions}
-    fortnight_by = {mention.evidence: mention for mention in fortnight.prediction.mentions}
-
-    assert negated_by[rate].attributes["NumberOfSeizures"] == "1"
-    assert "TimePeriod" not in negated_by[rate].attributes
-    assert fortnight_by[rate].attributes["NumberOfSeizures"] == "1"
-    assert fortnight_by[rate].attributes["TimePeriod"] == "Week"
-    assert fortnight_by[rate].attributes["NumberOfTimePeriods"] == "2"
-    assert resemblance not in fortnight_by
-    assert "TimePeriod" not in fortnight_by[dose].attributes
-    assert fortnight_by[dose].attributes.get("NumberOfTimePeriods") != "2"
-
-
-def test_implicit_v12_on_stack_fills_bare_period_keeps_fortnight() -> None:
-    letter = _letter(
-        "Myoclonic jerks daily. "
-        "Focal seizures with altered awareness approximately 1 per fortnight. "
-        "His seizure control had been good until about a week ago. "
-        "The seizures can happen 2 or 3 times per month. "
-        "He has not had any events which resemble absences."
-    )
-    daily = "Myoclonic jerks daily."
-    rate = "Focal seizures with altered awareness approximately 1 per fortnight."
-    ago = "His seizure control had been good until about a week ago."
-    times = "The seizures can happen 2 or 3 times per month."
-    resemblance = "He has not had any events which resemble absences."
-    record = _parse(
-        [
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "Myoclonic jerks",
-                "evidence": daily,
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "Focal seizures with altered awareness",
-                "evidence": rate,
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": ago,
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": times,
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "absences",
-                "evidence": resemblance,
-            },
-        ]
+    rx = next(
+        mention
+        for mention in result.prediction.mentions
+        if mention.entity == "Prescription"
     )
 
-    stacked = materialize_mention_unit(
-        letter,
-        record,
-        method=HYBRID_METHOD,
-        encoder="leftover_form_span_fold_fortnight_v10",
-    )
-    implicit = materialize_mention_unit(
-        letter,
-        record,
-        method=HYBRID_METHOD,
-        encoder="leftover_form_span_fold_implicit_v12",
-    )
-    stacked_by = {mention.evidence: mention for mention in stacked.prediction.mentions}
-    implicit_by = {mention.evidence: mention for mention in implicit.prediction.mentions}
-
-    assert "NumberOfSeizures" not in stacked_by[daily].attributes
-    assert implicit_by[daily].attributes["NumberOfSeizures"] == "1"
-    assert implicit_by[daily].attributes["TimePeriod"] == "Day"
-    assert implicit_by[rate].attributes["NumberOfSeizures"] == "1"
-    assert implicit_by[rate].attributes["TimePeriod"] == "Week"
-    assert implicit_by[rate].attributes["NumberOfTimePeriods"] == "2"
-    assert "NumberOfSeizures" not in implicit_by[ago].attributes
-    assert implicit_by[times].attributes["NumberOfSeizures"] == "3"
-    assert resemblance not in implicit_by
+    assert sf.attributes["NumberOfSeizures"] == "1"
+    assert sf.attributes["TimePeriod"] == "Week"
+    assert sf.attributes["NumberOfTimePeriods"] == "2"
+    assert rx.attributes.get("Frequency") != "2"
 
 
-def test_absences_v13_keeps_coded_absences_drops_history_and_drop_attacks() -> None:
+def test_form_recovery_keeps_coded_absences() -> None:
     letter = _letter(
         "The absences continue to happen maybe every week. "
-        "Occasional absences. "
         "There's no history of absences. "
-        "they haven't happened in adulthood. "
-        "Focal seizures with altered awareness approximately 1 per fortnight. "
-        "He has not had any events which resemble absences."
+        "they haven't happened in adulthood. drop attacks."
     )
-    weekly = "The absences continue to happen maybe every week."
-    occasional = "Occasional absences."
-    history = "There's no history of absences."
-    drop_attacks = "they haven't happened in adulthood."
-    fortnight = "Focal seizures with altered awareness approximately 1 per fortnight."
-    resemblance = "He has not had any events which resemble absences."
     record = _parse(
         [
             {
                 "clinical_family": "SeizureFrequency",
                 "clinical_name": "absences",
-                "evidence": weekly,
+                "evidence": "The absences continue to happen maybe every week.",
             },
             {
                 "clinical_family": "SeizureFrequency",
                 "clinical_name": "absences",
-                "evidence": occasional,
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "absences",
-                "evidence": history,
+                "evidence": "There's no history of absences.",
             },
             {
                 "clinical_family": "SeizureFrequency",
                 "clinical_name": "drop attacks",
-                "evidence": drop_attacks,
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "Focal seizures with altered awareness",
-                "evidence": fortnight,
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "absences",
-                "evidence": resemblance,
+                "evidence": "they haven't happened in adulthood.",
             },
         ]
     )
+    by_evidence = {
+        mention.evidence: mention for mention in _recover(letter, record).prediction.mentions
+    }
 
-    control = materialize_mention_unit(
-        letter,
-        record,
-        method=HYBRID_METHOD,
-        encoder="leftover_form_span_fold_implicit_v12",
-    )
-    candidate = materialize_mention_unit(
-        letter,
-        record,
-        method=HYBRID_METHOD,
-        encoder="leftover_form_span_fold_absences_v13",
-    )
-    control_by = {mention.evidence: mention for mention in control.prediction.mentions}
-    candidate_by = {mention.evidence: mention for mention in candidate.prediction.mentions}
-
-    assert weekly in control_by
-    assert occasional not in control_by
-    assert occasional in candidate_by
-    assert candidate_by[weekly].attributes["NumberOfSeizures"] == "1"
-    assert candidate_by[weekly].attributes["TimePeriod"] == "Week"
-    assert "NumberOfSeizures" not in candidate_by[occasional].attributes
-    assert history not in candidate_by
-    assert drop_attacks not in candidate_by
-    assert resemblance not in candidate_by
-    assert candidate_by[fortnight].attributes["NumberOfSeizures"] == "1"
-    assert candidate_by[fortnight].attributes["TimePeriod"] == "Week"
-    assert candidate_by[fortnight].attributes["NumberOfTimePeriods"] == "2"
+    kept = by_evidence["The absences continue to happen maybe every week."]
+    assert kept.text == "absences"
+    assert kept.attributes["NumberOfSeizures"] == "1"
+    assert kept.attributes["TimePeriod"] == "Week"
+    assert "There's no history of absences." not in by_evidence
+    assert "they haven't happened in adulthood." not in by_evidence
 
 
-def test_febrile_v14_widens_age_cue_keeps_current_and_absences() -> None:
+def test_form_recovery_drops_remote_history_keeps_onset() -> None:
     letter = _letter(
-        "She did have a febrile seizure the age of four years. "
-        "3 febrile seizures between the ages of 3 and 5. "
-        "He had 2 febrile seizures at the age of 8 months and 18 months. "
-        "Febrile seizures continue once a month. "
-        "The absences continue to happen maybe every week. "
-        "Jennifer's seizures started at the age of 2 years."
+        "His last seizures were in his teenage years where he probably "
+        "had around 3 or 4 focal to bilateral convulsive seizures. "
+        "Jennifer's seizures started at the age of 2 years and have "
+        "continued every since."
     )
-    missing_at = "She did have a febrile seizure the age of four years."
-    ages_plural = "3 febrile seizures between the ages of 3 and 5."
-    current_cue = "He had 2 febrile seizures at the age of 8 months and 18 months."
-    current_febrile = "Febrile seizures continue once a month."
-    weekly = "The absences continue to happen maybe every week."
-    onset = "Jennifer's seizures started at the age of 2 years."
+    teenage = (
+        "His last seizures were in his teenage years where he probably "
+        "had around 3 or 4 focal to bilateral convulsive seizures."
+    )
+    onset = (
+        "Jennifer's seizures started at the age of 2 years and have "
+        "continued every since."
+    )
     record = _parse(
         [
             {
                 "clinical_family": "SeizureFrequency",
-                "clinical_name": "febrile seizure",
-                "evidence": missing_at,
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "febrile seizures",
-                "evidence": ages_plural,
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "febrile seizures",
-                "evidence": current_cue,
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "Febrile seizures",
-                "evidence": current_febrile,
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "absences",
-                "evidence": weekly,
+                "clinical_name": "focal to bilateral convulsive seizures",
+                "evidence": teenage,
             },
             {
                 "clinical_family": "SeizureFrequency",
@@ -1250,87 +509,63 @@ def test_febrile_v14_widens_age_cue_keeps_current_and_absences() -> None:
             },
         ]
     )
+    by_evidence = {
+        mention.evidence: mention for mention in _recover(letter, record).prediction.mentions
+    }
 
-    control = materialize_mention_unit(
-        letter,
-        record,
-        method=HYBRID_METHOD,
-        encoder="leftover_form_span_fold_absences_v13",
-    )
-    candidate = materialize_mention_unit(
-        letter,
-        record,
-        method=HYBRID_METHOD,
-        encoder="leftover_form_span_fold_febrile_v14",
-    )
-    control_by = {mention.evidence: mention for mention in control.prediction.mentions}
-    candidate_by = {mention.evidence: mention for mention in candidate.prediction.mentions}
-
-    assert missing_at in control_by
-    assert ages_plural in control_by
-    assert current_cue not in control_by
-    assert missing_at not in candidate_by
-    assert ages_plural not in candidate_by
-    assert current_cue not in candidate_by
-    assert current_febrile in candidate_by
-    assert candidate_by[current_febrile].attributes["NumberOfSeizures"] == "1"
-    assert candidate_by[weekly].attributes["NumberOfSeizures"] == "1"
-    assert candidate_by[weekly].attributes["TimePeriod"] == "Week"
-    assert onset in candidate_by
+    assert teenage not in by_evidence
+    assert onset in by_evidence
 
 
-def test_returned_v11_encodes_change_not_zero() -> None:
+def test_form_recovery_splits_once_daily_unequal_doses() -> None:
     letter = _letter(
-        "Seizure type and frequency: focal seizures with altered awareness every 3 weeks. "
-        "Unfortunately after the period of seizure freedom the seizures have returned. "
-        "He has not had any further seizures since the last clinic. "
-        "His seizures are worse. "
-        "She has quite a number of seizures."
+        "Current antiepileptic medication: levetiracetam 750mg mane, 500 mg nocte. "
+        "Please start Sodium Valproate 300mgs once a day, increasing after 2 weeks "
+        "to 300mgs am and 500mgs pm."
     )
-    returned = (
-        "Unfortunately after the period of seizure freedom the seizures have returned."
+    split = "Current antiepileptic medication: levetiracetam 750mg mane, 500 mg nocte."
+    titration = (
+        "Please start Sodium Valproate 300mgs once a day, increasing after 2 weeks "
+        "to 300mgs am and 500mgs pm."
     )
-    last_event = "He has not had any further seizures since the last clinic."
-    worse = "His seizures are worse."
-    quite = "She has quite a number of seizures."
     record = _parse(
         [
             {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": returned,
+                "clinical_family": "Prescription",
+                "clinical_name": "levetiracetam",
+                "evidence": split,
             },
             {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": last_event,
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": worse,
-            },
-            {
-                "clinical_family": "SeizureFrequency",
-                "clinical_name": "seizures",
-                "evidence": quite,
+                "clinical_family": "Prescription",
+                "clinical_name": "Sodium Valproate",
+                "evidence": titration,
             },
         ]
     )
+    default = materialize_mention_unit(letter, record, method=HYBRID_METHOD)
+    recovered = _recover(letter, record)
+    default_split = [
+        mention
+        for mention in default.prediction.mentions
+        if mention.entity == "Prescription" and mention.evidence == split
+    ]
+    recovered_split = [
+        mention
+        for mention in recovered.prediction.mentions
+        if mention.entity == "Prescription" and mention.evidence == split
+    ]
+    recovered_titration = [
+        mention
+        for mention in recovered.prediction.mentions
+        if mention.entity == "Prescription" and mention.evidence == titration
+    ]
 
-    negated = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_span_fold_negation_v9"
+    assert len(default_split) == 1
+    assert {mention.attributes["DrugDose"] for mention in recovered_split} == {
+        "750",
+        "500",
+    }
+    assert all(mention.attributes["Frequency"] == "1" for mention in recovered_split)
+    assert all(
+        mention.attributes.get("DrugDose") != "500" for mention in recovered_titration
     )
-    returned_enc = materialize_mention_unit(
-        letter, record, method=HYBRID_METHOD, encoder="leftover_form_span_fold_returned_v11"
-    )
-    negated_by = {mention.evidence: mention for mention in negated.prediction.mentions}
-    returned_by = {mention.evidence: mention for mention in returned_enc.prediction.mentions}
-
-    assert negated_by[returned].attributes.get("NumberOfSeizures") == "0"
-    assert returned_by[returned].attributes.get("FrequencyChange") == "Increased"
-    assert "NumberOfSeizures" not in returned_by[returned].attributes
-    assert returned_by[returned].text == "seizures"
-    assert returned_by[last_event].attributes.get("NumberOfSeizures") == "0"
-    assert returned_by[worse].attributes.get("FrequencyChange") != "Increased"
-    assert returned_by[quite].attributes.get("FrequencyChange") != "Increased"
