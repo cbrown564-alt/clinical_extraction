@@ -9,7 +9,7 @@ modules import the legacy module as ``structured`` and reach those attributes
 directly.
 
 Public names are Full ledger and Compact ledger, plus paper-name
-aliases. Dump and further-prune identities are gone.
+aliases. Each variant has its own builder.
 """
 # ruff: noqa: F401 — thin re-export facade for the legacy ``structured`` API.
 
@@ -60,11 +60,11 @@ from .projection import (
     _strip_model_supplied_projection_attrs,
     to_predicted_letter,
 )
-from .prompt_ablations import (
-    COMPACT_AUTHORED_KEYS,
-)
 from .prompt_builders import (
     build_prompt_input,
+)
+from .prompt_compact import (
+    COMPACT_AUTHORED_KEYS,
 )
 from .prompt_content import (
     _attribute_vocabulary,

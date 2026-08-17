@@ -7,7 +7,7 @@ pass-throughs are also re-exported because other modules import this module as
 ``structured`` and access those attributes directly.
 
 Public names are Full ledger and Compact ledger, plus paper-name
-aliases. Dump and further-prune identities are gone.
+aliases. Each variant has its own builder.
 """
 # ruff: noqa: F401 — thin re-export facade; all symbols are intentionally re-exported.
 

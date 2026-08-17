@@ -1,6 +1,8 @@
-"""Full-profile prompt builder for the structured-event extractor.
+"""Full-ledger structured prompt.
 
-The selected Full-ledger body and Compact-ledger cut remain live.
+Complete rulebook, encoding fields, and worked examples. Research
+metadata stays in the request. ``exectv2_full_ledger`` and
+``exect_full_ledger`` emit this payload.
 """
 
 from __future__ import annotations
@@ -10,13 +12,9 @@ import json
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 
 from .constants import (
+    FULL_VERSIONS,
     PromptProfile,
     prompt_version_for,
-)
-from .prompt_ablations import (
-    ABLATION_SPECS,
-    apply_v0924_ablation,
-    dump_model_facing_payload,
 )
 from .prompt_content import (
     _attribute_vocabulary,
@@ -37,12 +35,17 @@ def build_full_prompt_input(
     prompt_profile: PromptProfile = "full",
     prompt_version: str | None = None,
 ) -> str:
-    """Build the comprehensive structured-event payload."""
+    """Build the Full-ledger structured-event payload."""
 
     selected_prompt_version = prompt_version_for(
         prompt_profile,
         prompt_version=prompt_version,
     )
+    if selected_prompt_version not in FULL_VERSIONS:
+        raise ValueError(
+            f"Full ledger builder got {selected_prompt_version!r}; "
+            f"expected one of {sorted(FULL_VERSIONS)}"
+        )
     payload = {
         "prompt_version": selected_prompt_version,
         "task": (
@@ -106,8 +109,4 @@ def build_full_prompt_input(
         "letter_id": letter.letter_id,
         "letter_text": letter.note_text,
     }
-    spec = ABLATION_SPECS.get(selected_prompt_version)
-    if spec is not None:
-        payload = apply_v0924_ablation(payload, spec)
-        return dump_model_facing_payload(payload, authored_order=spec.authored_order)
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)

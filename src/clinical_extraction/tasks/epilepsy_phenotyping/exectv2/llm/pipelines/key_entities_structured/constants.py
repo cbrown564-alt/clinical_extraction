@@ -26,16 +26,11 @@ EXECT_LLM_WITH_RULES = "exect_llm_with_rules"
 EXECT_FULL_LEDGER = "exect_full_ledger"
 FULL_LEDGER = "exectv2_full_ledger"
 COMPACT_LEDGER = "exectv2_compact_ledger"
+FULL_VERSIONS = frozenset({FULL_LEDGER, EXECT_FULL_LEDGER})
+COMPACT_VERSIONS = frozenset({COMPACT_LEDGER, EXECT_LLM_WITH_RULES})
 # Live default is Compact. Full stays as the cited comparator.
 PROMPT_VERSION = COMPACT_LEDGER
-_SUPPORTED_FULL_PROMPT_VERSIONS = frozenset(
-    {
-        EXECT_LLM_WITH_RULES,
-        EXECT_FULL_LEDGER,
-        FULL_LEDGER,
-        COMPACT_LEDGER,
-    }
-)
+_SUPPORTED_PROMPT_VERSIONS = FULL_VERSIONS | COMPACT_VERSIONS
 PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"
 COMPONENT_OWNER = "hybrid_key_family_event_ledger"
 
@@ -112,10 +107,10 @@ def set_active_prompt_version(version: str) -> None:
     """Select the full-profile prompt version emitted by build_prompt_input."""
 
     global PROMPT_VERSION
-    if version not in _SUPPORTED_FULL_PROMPT_VERSIONS:
+    if version not in _SUPPORTED_PROMPT_VERSIONS:
         raise ValueError(
             f"unsupported prompt version {version!r}; "
-            f"expected one of {sorted(_SUPPORTED_FULL_PROMPT_VERSIONS)}"
+            f"expected one of {sorted(_SUPPORTED_PROMPT_VERSIONS)}"
         )
     PROMPT_VERSION = version
 
@@ -130,9 +125,9 @@ def prompt_version_for(
     if profile != "full":
         raise ValueError(f"unsupported prompt profile {profile!r}; expected 'full'")
     selected = prompt_version or PROMPT_VERSION
-    if selected not in _SUPPORTED_FULL_PROMPT_VERSIONS:
+    if selected not in _SUPPORTED_PROMPT_VERSIONS:
         raise ValueError(
             f"unsupported prompt version {selected!r}; "
-            f"expected one of {sorted(_SUPPORTED_FULL_PROMPT_VERSIONS)}"
+            f"expected one of {sorted(_SUPPORTED_PROMPT_VERSIONS)}"
         )
     return selected

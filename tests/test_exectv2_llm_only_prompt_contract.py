@@ -446,6 +446,42 @@ def test_no_prompt_version_mentions_cui() -> None:
     assert structured.PROMPT_VERSION == structured.COMPACT_LEDGER
 
 
+def test_compact_is_authored_as_compact() -> None:
+    payload = json.loads(
+        structured.build_prompt_input(
+            _LETTER, prompt_version=structured.COMPACT_LEDGER
+        )
+    )
+    assert list(payload) == list(structured.COMPACT_AUTHORED_KEYS)
+    assert "architecture" not in payload
+    assert "worked_examples" not in payload
+    assert "letter_id" not in payload
+    assert "prompt_version" not in payload
+    assert "candidate_evidence_ledger" not in payload
+    assert "event_lane_guide" not in payload
+    assert len(payload["clinical_rules"]) == 67
+    assert payload["task"].startswith(
+        "Read the clinical letter once. Use the suggested evidence"
+    )
+    assert payload["suggested_evidence"]
+    assert "medication" in payload["categories"]
+
+
+def test_full_is_authored_as_full() -> None:
+    payload = json.loads(
+        structured.build_prompt_input(_LETTER, prompt_version=structured.FULL_LEDGER)
+    )
+    assert payload["prompt_version"] == structured.FULL_LEDGER
+    assert payload["letter_id"] == _LETTER.letter_id
+    assert payload["architecture"]
+    assert payload["worked_examples"]
+    assert payload["candidate_evidence_ledger"]
+    assert payload["event_lane_guide"]
+    assert "suggested_evidence" not in payload
+    assert "categories" not in payload
+    assert len(payload["clinical_rules"]) == 83
+
+
 def test_paper_names_are_aliases_of_compact_and_full() -> None:
     compact = json.loads(
         structured.build_prompt_input(

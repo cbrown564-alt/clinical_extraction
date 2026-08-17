@@ -1,103 +1,12 @@
-"""Plain-language rewrite of the cheap-stack structured prompt.
+"""Compact wording adapters for shared Full-ledger catalog text.
 
-Applies to the Compact cut of the Full-ledger payload. Clinical
-meaning stays; research labels and leftover jargon go.
+Compact authors its own task, schema, procedure, and family guidance.
+These helpers only rewrite shared rule, category, and evidence-row text.
 """
 
 from __future__ import annotations
 
 from typing import Any
-
-_TASK = (
-    "Read the clinical letter once. Use the suggested evidence as a starting "
-    "point, then list the medication, diagnosis, seizure-frequency, and "
-    "investigation facts the letter states. If one fact belongs to more than "
-    "one of those families, include each valid family separately."
-)
-
-_DECISION_PROCEDURE = [
-    (
-        "Scan the whole letter for medication, diagnosis, seizure frequency, "
-        "and investigations. Do not stop at section headers."
-    ),
-    (
-        "Treat suggested-evidence rows as likely supporting sentences, but do "
-        "not include a fact unless the full sentence supports that family."
-    ),
-    "For each suggested row, choose a category, then keep, reject, split, or merge.",
-    (
-        "Write the listed items only after the state is clear from the letter. "
-        "Counts, dates, result status, dose, and certainty belong in "
-        "attributes, not in made-up wording."
-    ),
-    (
-        "Before returning JSON, remove duplicates and remove events whose "
-        "evidence or mention text is not an exact copy from the letter."
-    ),
-]
-
-_FAMILY_GUIDANCE = {
-    "medication": (
-        "Anti-seizure medicines. Include Prescription items with DrugName, "
-        "DrugDose, DoseUnit, and Frequency when stated. Copy the medication "
-        "wording from the letter: the full short regimen when it appears in a "
-        "list, or the drug name alone when that is all the note states."
-    ),
-    "diagnosis": (
-        "Diagnoses such as epilepsy, focal epilepsy, seizure disorder, or "
-        "named seizure types. Include Diagnosis items with DiagCategory, "
-        "Certainty, and Negation. Keep uncertainty words out of the diagnosis "
-        "wording and put them in Certainty. Do not include vague symptoms or "
-        "non-epileptic alternatives unless the letter states they are epileptic "
-        "diagnoses, even when they appear under a Diagnosis or problem-list "
-        "heading."
-    ),
-    "seizure_frequency": (
-        "How often a seizure type occurs, including seizure-free duration, "
-        "ranges, interval rates, cluster counts, dated counts, and frequency "
-        "change. Keep the stated seizure words and time period; do not turn "
-        "them into a guessed rate. Exclude non-epileptic events and blackouts "
-        "unless the letter states they are epileptic seizures."
-    ),
-    "investigation": (
-        "EEG, MRI, CT, telemetry, and related test statements. Include "
-        "Investigations with performed, result, and type attributes only for "
-        "completed tests or tests with a result, not planned repeats or a test "
-        "name with no result."
-    ),
-}
-
-_OUTPUT_SCHEMA = {
-    "clinical_events": [
-        {
-            "family": "medication | diagnosis | seizure_frequency | investigation",
-            "anchor_text": (
-                "Short exact copy from the letter that names the fact. Use the "
-                "family guidance below."
-            ),
-            "evidence": (
-                "Exact clause or sentence copied from the letter that supports "
-                "the event and all of its mentions."
-            ),
-            "event_state": (
-                "The stated state, such as a dose and frequency, a diagnosis, "
-                "a seizure rate, or a test result."
-            ),
-            "mentions": [
-                {
-                    "entity": (
-                        "One of Prescription, Diagnosis, SeizureFrequency, "
-                        "Investigations."
-                    ),
-                    "text": "Short exact copy from the letter for this family.",
-                    "attributes": "Only attributes allowed for that family.",
-                }
-            ],
-            "confidence": "low | medium | high",
-            "rationale": "One brief sentence explaining the event.",
-        }
-    ]
-}
 
 _RULE_PREFIXES = (
     "SF recall: ",
@@ -200,41 +109,6 @@ _RULE_PHRASES = (
     ("Only render ", "Only include "),
     ("already rendered", "already included"),
 )
-
-
-def apply_plain_language(payload: dict[str, Any]) -> dict[str, Any]:
-    """Rewrite cheap-stack model-facing text; drop research-only fields."""
-
-    cleaned = dict(payload)
-    cleaned.pop("architecture", None)
-    cleaned["task"] = _TASK
-    cleaned["decision_procedure"] = list(_DECISION_PROCEDURE)
-    cleaned["family_guidance"] = dict(_FAMILY_GUIDANCE)
-    cleaned["output_schema"] = _OUTPUT_SCHEMA
-    lanes = cleaned.pop("event_lane_guide", None)
-    if lanes is not None:
-        cleaned["categories"] = _clean_categories(lanes)
-    ledger = cleaned.pop("candidate_evidence_ledger", None)
-    if ledger is not None:
-        cleaned["suggested_evidence"] = [_clean_ledger_row(row) for row in ledger]
-    cleaned["clinical_rules"] = [
-        _clean_rule_text(rule) for rule in cleaned["clinical_rules"]
-    ]
-    vocab = cleaned.get("attribute_vocabulary")
-    if isinstance(vocab, dict):
-        cleaned["attribute_vocabulary"] = {
-            entity: {
-                name: (
-                    "string copied from the letter."
-                    if isinstance(value, str) and "normalized" in value
-                    else value
-                )
-                for name, value in attrs.items()
-            }
-            for entity, attrs in vocab.items()
-        }
-    return cleaned
-
 
 _CATEGORY_PHRASES = (
     (
