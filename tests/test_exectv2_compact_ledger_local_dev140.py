@@ -78,8 +78,8 @@ def test_verify_study_uses_authored_compact_and_does_not_change_default() -> Non
     assert payload["protocol"] == PROTOCOL
     assert payload["study_dir"] == STUDY_DIR.relative_to(ROOT).as_posix()
     assert payload["local"] == list(LOCAL_SLUGS)
-    assert payload["default_prompt_version"] == structured.FULL_LEDGER
-    assert structured.PROMPT_VERSION == before == structured.FULL_LEDGER
+    assert payload["default_prompt_version"] == structured.COMPACT_LEDGER
+    assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER
     assert control_path("gemma4_26b", "dev140") == MODELS["gemma4_26b"].control_structured
     assert control_path("qwen38_27b", "dev140") == MODELS["qwen38_27b"].control_structured
 
@@ -100,8 +100,8 @@ def test_test60_verify_is_aggregate_only_living_compact() -> None:
     assert payload["local"] == list(LOCAL_SLUGS)
     assert payload["authored_order"] is True
     assert payload["drops_research_metadata"] is True
-    assert payload["default_prompt_version"] == structured.FULL_LEDGER
+    assert payload["default_prompt_version"] == structured.COMPACT_LEDGER
     assert control_path("gemma4_26b", "test60") == TEST60_CONTROLS["gemma4_26b"]
     assert control_path("qwen38_27b", "test60") == TEST60_CONTROLS["qwen38_27b"]
     assert "test60" not in MODELS["gemma4_26b"].control_structured.as_posix()
-    assert structured.PROMPT_VERSION == before == structured.FULL_LEDGER
+    assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER

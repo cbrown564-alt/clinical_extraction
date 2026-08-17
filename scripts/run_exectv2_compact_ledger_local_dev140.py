@@ -84,7 +84,11 @@ MODELS: dict[str, ModelSpec] = {
     ),
 }
 TEST60_CONTROLS = {
-    "gemma4_26b": ROOT / "experiments/current_stack/sidecars/exect_test60/gemma4_26b.jsonl",
+    "gemma4_26b": (
+        ROOT
+        / "scratch/local_queue/gemma4_26b_exect/test60/gemma4_26b"
+        / "gemma4_26b_structured.jsonl"
+    ),
     "qwen38_27b": (
         ROOT
         / "scratch/holdout/qwen38_27b_20260814/exect_test60/qwen38_27b_structured.jsonl"
@@ -128,10 +132,23 @@ def control_path(slug: str, split: str) -> Path:
     if slug not in MODELS:
         raise ValueError(f"unknown local Compact model {slug}")
     if split == "test60":
-        return TEST60_CONTROLS[slug]
-    if split != "dev140":
+        path = TEST60_CONTROLS[slug]
+    elif split != "dev140":
         raise ValueError(f"unsupported split {split}")
-    return MODELS[slug].control_structured
+    else:
+        path = MODELS[slug].control_structured
+    _reject_lfs_pointer(path)
+    return path
+
+
+def _reject_lfs_pointer(path: Path) -> None:
+    if not path.is_file():
+        return
+    first = path.read_text(encoding="utf-8", errors="replace").splitlines()[:1]
+    if first and first[0].startswith("version https://git-lfs.github.com/spec/v1"):
+        raise RuntimeError(
+            f"{path} is a Git LFS pointer, not a replayable JSONL sidecar"
+        )
 
 
 def verify_study(*, split: str = "dev140", slug: str | None = None) -> dict[str, Any]:
@@ -150,7 +167,7 @@ def verify_study(*, split: str = "dev140", slug: str | None = None) -> dict[str,
             raise RuntimeError("Compact content drifted")
     finally:
         structured.set_active_prompt_version(before)
-    if structured.PROMPT_VERSION != structured.FULL_LEDGER:
+    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
         raise RuntimeError("payload check changed the live default")
     if slug is not None and not control_path(slug, split).is_file():
         raise RuntimeError(
@@ -214,7 +231,7 @@ def run_model(
     work_root.mkdir(parents=True, exist_ok=True)
     public_root.mkdir(parents=True, exist_ok=True)
     started = datetime.now(UTC).isoformat()
-    if structured.PROMPT_VERSION != structured.FULL_LEDGER:
+    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
         raise RuntimeError("live default drifted before the run")
     _require_six_model_credentials(spec)
     sidecar = control_path(slug, split)
@@ -250,7 +267,7 @@ def run_model(
             candidate_version=CANDIDATE_VERSION,
             progress_label="local compact test60" if holdout else "local compact",
         )
-        if structured.PROMPT_VERSION != structured.FULL_LEDGER:
+        if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
             raise RuntimeError("candidate arm left the live default changed")
         quality = candidate["summary"]["quality"]
         arms = {
