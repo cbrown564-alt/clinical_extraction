@@ -534,7 +534,13 @@ def _run_candidate(
     progress_every: int,
     out_dir: Path,
     split: str = "dev140",
+    candidate_version: str | None = None,
+    progress_label: str | None = None,
 ) -> dict[str, Any]:
+    version = candidate_version or CANDIDATE_VERSION
+    label = progress_label or (
+        "compact ledger test60" if split == "test60" else "compact ledger"
+    )
     structured_path = out_dir / "structured.jsonl"
     assembly_path = out_dir / "assembly.jsonl"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -545,17 +551,17 @@ def _run_candidate(
             spec,
             letters,
             arm=CANDIDATE_ARM,
-            prompt_version=CANDIDATE_VERSION,
+            prompt_version=version,
             raws=raws,
             out_dir=out_dir,
             split=split,
         )
-    existing = [] if overwrite else _existing_complete_rows(structured_path, CANDIDATE_VERSION)
+    existing = [] if overwrite else _existing_complete_rows(structured_path, version)
     done = {str(row["letter_id"]) for row in existing}
     todo = [letter for letter in letters if letter.letter_id not in done]
     before = structured.PROMPT_VERSION
     try:
-        structured.set_active_prompt_version(CANDIDATE_VERSION)
+        structured.set_active_prompt_version(version)
         if todo:
             _prepare_live_runtime(spec, api_base=api_base, timeout=timeout)
             program = structured_one_call.DspyKeyEntitiesStructuredExtractor()
@@ -575,7 +581,7 @@ def _run_candidate(
                     config=StructuredMethodConfig.selected(),
                 )
                 row = dict(producer.row)
-                if row.get("prompt_version") != CANDIDATE_VERSION:
+                if row.get("prompt_version") != version:
                     raise RuntimeError(
                         "a test60 letter used the wrong prompt version"
                         if holdout
@@ -590,7 +596,6 @@ def _run_candidate(
                 rows.append(row)
                 write_jsonl_rows(rows, structured_path)
                 if progress_every and index % progress_every == 0:
-                    label = "compact ledger test60" if holdout else "compact ledger"
                     print(
                         f"{spec.slug} {label}: {len(rows)}/{len(letters)} structured",
                         flush=True,
@@ -609,14 +614,14 @@ def _run_candidate(
                 config=StructuredMethodConfig.selected(),
             )
             hybrid = structured_one_call.run_llm_with_rules_letter(letter, producer)
-            assembly_rows.append(_assembly_row(hybrid.row, CANDIDATE_VERSION, "live"))
+            assembly_rows.append(_assembly_row(hybrid.row, version, "live"))
         write_jsonl_rows(existing, structured_path)
         write_jsonl_rows(assembly_rows, assembly_path)
     finally:
         structured.set_active_prompt_version(before)
     return _score_arm(
         slug=CANDIDATE_ARM,
-        prompt_version=CANDIDATE_VERSION,
+        prompt_version=version,
         call_mode="live",
         new_model_calls=len(todo),
         letters=letters,
