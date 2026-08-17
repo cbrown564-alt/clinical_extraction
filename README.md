@@ -167,11 +167,14 @@ For ExECT extraction, replace `gan` with `exect`; its default method is
 one. The value after `vllm/` must exactly match the model name returned by the
 server's `/v1/models` endpoint.
 
+A full Gan walkthrough on three synthetic letters is in [VLLM.md](VLLM.md).
+
 ## Repository layout
 
 ```text
 src/clinical_extraction/   Package: loaders, pipelines, scoring, API
 frontend/                  Interactive workbench and bundled Demo UI fixtures
+examples/                  Pinned walkthrough inputs, including the vLLM Gan letters
 configs/                   Pipeline and model configuration
 tests/                     Contract and behavior checks
 scripts/                   CLI helpers and experiment runners
