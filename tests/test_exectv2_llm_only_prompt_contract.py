@@ -39,7 +39,7 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         INVESTIGATIONS.name,
     }
     assert "clinical_events" in payload["output_schema"]
-    assert "_v0.9" in payload["prompt_version"]
+    assert payload["prompt_version"] == structured.FULL_LEDGER
     assert payload["architecture"]["name"] == "single hybrid key-family event ledger"
     assert payload["candidate_evidence_ledger"]
     assert payload["decision_procedure"]
@@ -421,6 +421,8 @@ def _prompt_fields_without_letter(payload: dict) -> str:
 def test_no_prompt_version_mentions_cui() -> None:
     original = structured.PROMPT_VERSION
     versions = [
+        structured.FULL_LEDGER,
+        structured.COMPACT_LEDGER,
         structured.PROMPT_VERSION_V0_9_24,
         structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES,
         structured.PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT,
@@ -428,6 +430,9 @@ def test_no_prompt_version_mentions_cui() -> None:
         structured.PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE,
         structured.PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES,
         structured.PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME,
+        structured.FULL_LEDGER_DROP_EXAMPLES,
+        structured.FULL_LEDGER_DROP_ENCODING_NON_SF,
+        structured.COMPACT_LEDGER_FURTHER_PRUNE,
     ]
     try:
         for version in versions:
@@ -443,7 +448,7 @@ def test_no_prompt_version_mentions_cui() -> None:
     finally:
         structured.set_active_prompt_version(original)
 
-    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+    assert structured.PROMPT_VERSION == structured.FULL_LEDGER
 
 
 def test_format_retry_schema_is_canonical_structured_record() -> None:

@@ -1,14 +1,87 @@
-"""Contract tests for retained v0.9.24 / v0.9.40 and study-only further prunes."""
+"""Contract tests for Full ledger / Compact ledger and study-only further prunes."""
 
 from __future__ import annotations
 
 import json
+from inspect import signature
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.mention_unit import (
+    MENTION_ENCODER_PROMPT,
+    MENTION_UNIT_PROMPT_VERSION,
+    materialize_mention_unit,
+)
 from scripts.run_exectv2_v0924_ablation_luna_dev20 import verify_payload
+
+
+def test_locked_hybrid_approach_names() -> None:
+    assert structured.FULL_LEDGER == "exectv2_full_ledger"
+    assert structured.COMPACT_LEDGER == "exectv2_compact_ledger"
+    assert structured.PROMPT_VERSION == structured.FULL_LEDGER
+    assert MENTION_ENCODER_PROMPT == "exectv2_mention_encoder"
+    assert MENTION_UNIT_PROMPT_VERSION == MENTION_ENCODER_PROMPT
+    assert signature(materialize_mention_unit).parameters["form_recovery"].default is False
+
+
+def test_legacy_machine_identities_remain_replay_aliases() -> None:
+    assert structured.PROMPT_VERSION_V0_9_24 == (
+        "exectv2_hybrid_key_family_event_ledger_v0.9.24"
+    )
+    assert structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES == (
+        "exectv2_hybrid_key_family_event_ledger_v0.9.40_drop_encoding_non_sf_all_examples"
+    )
+    structured.set_active_prompt_version(structured.PROMPT_VERSION_V0_9_24)
+    try:
+        assert structured.prompt_version_for() == structured.PROMPT_VERSION_V0_9_24
+    finally:
+        structured.set_active_prompt_version(structured.FULL_LEDGER)
+    structured.set_active_prompt_version(
+        structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES
+    )
+    try:
+        assert structured.prompt_version_for() == (
+            structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES
+        )
+    finally:
+        structured.set_active_prompt_version(structured.FULL_LEDGER)
+
+
+def _payload_without_version(version: str) -> dict:
+    payload = json.loads(structured.build_prompt_input(_LETTER, prompt_version=version))
+    payload.pop("prompt_version")
+    return payload
+
+
+def test_ledger_aliases_match_payload_except_identity() -> None:
+    full = json.loads(structured.build_prompt_input(_LETTER, prompt_version=structured.FULL_LEDGER))
+    full_legacy = json.loads(
+        structured.build_prompt_input(
+            _LETTER, prompt_version=structured.PROMPT_VERSION_V0_9_24
+        )
+    )
+    compact = json.loads(
+        structured.build_prompt_input(_LETTER, prompt_version=structured.COMPACT_LEDGER)
+    )
+    compact_legacy = json.loads(
+        structured.build_prompt_input(
+            _LETTER,
+            prompt_version=structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES,
+        )
+    )
+    assert full["prompt_version"] == structured.FULL_LEDGER
+    assert full_legacy["prompt_version"] == structured.PROMPT_VERSION_V0_9_24
+    assert "prompt_version" not in compact
+    assert "letter_id" not in compact
+    assert compact_legacy["prompt_version"] == (
+        structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES
+    )
+    assert _payload_without_version(structured.FULL_LEDGER) == _payload_without_version(
+        structured.PROMPT_VERSION_V0_9_24
+    )
+
 
 PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES = (
     structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES
@@ -67,10 +140,10 @@ def _payload(version: str) -> dict:
     return json.loads(structured.build_prompt_input(_LETTER, prompt_version=version))
 
 
-def test_default_prompt_stays_v0924() -> None:
-    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+def test_default_prompt_is_full_ledger() -> None:
+    assert structured.PROMPT_VERSION == structured.FULL_LEDGER
     payload = json.loads(structured.build_prompt_input(_LETTER))
-    assert payload["prompt_version"] == structured.PROMPT_VERSION_V0_9_24
+    assert payload["prompt_version"] == structured.FULL_LEDGER
     assert len(payload["clinical_rules"]) == 83
     assert len(payload["worked_examples"]) == 49
 
@@ -79,8 +152,79 @@ def test_ablation_check_does_not_change_default() -> None:
     before = structured.PROMPT_VERSION
     payload = verify_payload()
     assert payload["ok"] is True
-    assert payload["default_prompt_version"] == structured.PROMPT_VERSION_V0_9_24
-    assert structured.PROMPT_VERSION == before == structured.PROMPT_VERSION_V0_9_24
+    assert payload["default_prompt_version"] == structured.FULL_LEDGER
+    assert structured.PROMPT_VERSION == before == structured.FULL_LEDGER
+
+
+_COMPACT_AUTHORED_KEYS = (
+    "task",
+    "output_schema",
+    "decision_procedure",
+    "family_guidance",
+    "attribute_vocabulary",
+    "categories",
+    "clinical_rules",
+    "suggested_evidence",
+    "letter_text",
+)
+
+
+def _payload_content(payload: dict) -> dict:
+    return {
+        key: value
+        for key, value in payload.items()
+        if key not in {"letter_id", "prompt_version"}
+    }
+
+
+def test_living_compact_is_authored_order_without_metadata() -> None:
+    raw = structured.build_prompt_input(_LETTER, prompt_version=structured.COMPACT_LEDGER)
+    payload = json.loads(raw)
+    current = _payload(PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES)
+    assert list(payload) == list(_COMPACT_AUTHORED_KEYS)
+    assert "letter_id" not in payload
+    assert "prompt_version" not in payload
+    assert "letter_id" in current
+    assert current["prompt_version"] == PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES
+    assert _payload_content(payload) == _payload_content(current)
+    assert raw.index('"task"') < raw.index('"letter_text"')
+    assert raw.index('"attribute_vocabulary"') < raw.index('"clinical_rules"')
+    assert structured.PROMPT_VERSION == structured.FULL_LEDGER
+
+
+def test_study_arms_use_authored_order_without_metadata() -> None:
+    drop_examples = _payload(structured.FULL_LEDGER_DROP_EXAMPLES)
+    drop_encoding = _payload(structured.FULL_LEDGER_DROP_ENCODING_NON_SF)
+    further = _payload(structured.COMPACT_LEDGER_FURTHER_PRUNE)
+    full = _payload(structured.FULL_LEDGER)
+    compact = _payload(structured.COMPACT_LEDGER)
+
+    assert "letter_id" not in drop_examples
+    assert "prompt_version" not in drop_examples
+    assert "worked_examples" not in drop_examples
+    assert len(drop_examples["clinical_rules"]) == 83
+    assert "architecture" in drop_examples
+    assert list(drop_examples)[0] == "task"
+    assert list(drop_examples)[-1] == "letter_text"
+
+    assert "letter_id" not in drop_encoding
+    assert "prompt_version" not in drop_encoding
+    assert len(drop_encoding["clinical_rules"]) == 67
+    assert len(drop_encoding["worked_examples"]) == 49
+    assert _DX_ENCODING_RULE not in " ".join(drop_encoding["clinical_rules"])
+    assert _ENCODING_RULE in " ".join(drop_encoding["clinical_rules"])
+    assert list(drop_encoding)[0] == "task"
+    assert list(drop_encoding)[-1] == "letter_text"
+
+    assert "letter_id" not in further
+    assert "prompt_version" not in further
+    assert list(further)[0] == "task"
+    assert list(further)[-1] == "letter_text"
+    assert len(further["clinical_rules"]) == 54
+    assert len(further["decision_procedure"]) == 3
+    assert compact["clinical_rules"] != further["clinical_rules"]
+    assert "worked_examples" in full
+    assert structured.PROMPT_VERSION == structured.FULL_LEDGER
 
 
 def test_cheap_stack_drops_non_sf_encoding_and_all_examples() -> None:
@@ -111,7 +255,7 @@ def test_cheap_stack_drops_non_sf_encoding_and_all_examples() -> None:
     assert "anchor_hint" not in row
     assert "architecture" in control
     assert "source-near" in json.dumps(control)
-    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+    assert structured.PROMPT_VERSION == structured.FULL_LEDGER
 
 
 _IX_PENDING_DROPPED = (
@@ -160,7 +304,7 @@ def test_further_prune_arms_are_one_cut_each() -> None:
     scaffold_rules = " ".join(scaffold["clinical_rules"])
     refuse_rules = " ".join(refuse["clinical_rules"])
 
-    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+    assert structured.PROMPT_VERSION == structured.FULL_LEDGER
     assert len(cheap["clinical_rules"]) == 67
     assert cheap["prompt_version"] == PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES
     assert "letter_id" in cheap
@@ -198,7 +342,7 @@ def test_further_prune_arms_are_one_cut_each() -> None:
     assert "cui" not in json.dumps(ix_pending).lower()
     assert "cui" not in json.dumps(scaffold).lower()
     assert "cui" not in json.dumps(refuse).lower()
-    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+    assert structured.PROMPT_VERSION == structured.FULL_LEDGER
 
 
 _COMBO_NAME_SENTENCE = (
@@ -211,7 +355,7 @@ _COMBO_NAME_SENTENCE = (
 def test_combo_clinical_name_adds_one_sentence_to_cheap_stack() -> None:
     cheap = _payload(PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES)
     payload = _payload(structured.PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME)
-    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+    assert structured.PROMPT_VERSION == structured.FULL_LEDGER
     assert payload["prompt_version"] == structured.PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME
     assert _COMBO_NAME_SENTENCE not in cheap["task"]
     assert cheap["task"] in payload["task"]
@@ -220,7 +364,7 @@ def test_combo_clinical_name_adds_one_sentence_to_cheap_stack() -> None:
     assert payload["family_guidance"] == cheap["family_guidance"]
     assert "worked_examples" not in payload
     assert _COMBO_NAME_SENTENCE not in json.dumps(cheap)
-    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+    assert structured.PROMPT_VERSION == structured.FULL_LEDGER
 
 
 def test_stacked_further_prune_applies_all_three_cuts() -> None:
@@ -229,7 +373,7 @@ def test_stacked_further_prune_applies_all_three_cuts() -> None:
     cheap_rules = " ".join(cheap["clinical_rules"])
     stacked_rules = " ".join(stacked["clinical_rules"])
 
-    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+    assert structured.PROMPT_VERSION == structured.FULL_LEDGER
     assert len(cheap["clinical_rules"]) == 67
     assert len(stacked["clinical_rules"]) == 54
     assert "prompt_version" not in stacked
@@ -246,4 +390,4 @@ def test_stacked_further_prune_applies_all_three_cuts() -> None:
     for phrase in _IX_PENDING_KEPT + _REFUSE_KEPT:
         assert phrase in stacked_rules
     assert "cui" not in json.dumps(stacked).lower()
-    assert structured.PROMPT_VERSION == structured.PROMPT_VERSION_V0_9_24
+    assert structured.PROMPT_VERSION == structured.FULL_LEDGER

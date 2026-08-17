@@ -3,10 +3,11 @@
 Pure relocation of the module-level constants from
 ``llm_only_key_entities_structured``. No logic changes.
 
-After the 2026-08-16 prune, the live current-hybrid identities here are
-selected ``v0.9.24`` and cheap-stack ``v0.9.40``. Study-only
-further-prune identities sit beside them; they are not slot 2.
-Mention-unit v2 lives in ``mention_unit.py``, not this registry.
+After Decision 0056, the public names and machine identities are Full
+ledger and Compact ledger. The older ``v0.9.24`` / ``v0.9.40`` strings
+remain replay aliases. Study-only further-prune identities sit beside
+them; they are not Compact ledger. Mention encoder lives in
+``mention_unit.py``, not this registry.
 """
 
 from __future__ import annotations
@@ -21,6 +22,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     SEIZURE_FREQUENCY,
 )
 
+FULL_LEDGER = "exectv2_full_ledger"
+COMPACT_LEDGER = "exectv2_compact_ledger"
 PROMPT_VERSION_V0_9_24 = "exectv2_hybrid_key_family_event_ledger_v0.9.24"
 PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES = (
     "exectv2_hybrid_key_family_event_ledger_v0.9.40_drop_encoding_non_sf_all_examples"
@@ -40,10 +43,15 @@ PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES = (
 PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME = (
     "exectv2_hybrid_key_family_event_ledger_v0.9.40_combo_clinical_name"
 )
+FULL_LEDGER_DROP_EXAMPLES = "exectv2_full_ledger_drop_examples"
+FULL_LEDGER_DROP_ENCODING_NON_SF = "exectv2_full_ledger_drop_encoding_non_sf"
+COMPACT_LEDGER_FURTHER_PRUNE = "exectv2_compact_ledger_further_prune"
 # Primary prompt version for the frozen six-model panel and current stack.
-PROMPT_VERSION = PROMPT_VERSION_V0_9_24
+PROMPT_VERSION = FULL_LEDGER
 _SUPPORTED_FULL_PROMPT_VERSIONS = frozenset(
     {
+        FULL_LEDGER,
+        COMPACT_LEDGER,
         PROMPT_VERSION_V0_9_24,
         PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES,
         PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT,
@@ -51,6 +59,9 @@ _SUPPORTED_FULL_PROMPT_VERSIONS = frozenset(
         PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE,
         PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES,
         PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME,
+        FULL_LEDGER_DROP_EXAMPLES,
+        FULL_LEDGER_DROP_ENCODING_NON_SF,
+        COMPACT_LEDGER_FURTHER_PRUNE,
     }
 )
 PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"

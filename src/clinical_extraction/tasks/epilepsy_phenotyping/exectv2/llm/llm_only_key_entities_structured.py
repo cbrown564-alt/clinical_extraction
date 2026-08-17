@@ -6,8 +6,10 @@ helpers and the ``parse_json_payload_with_schema_repair`` / ``write_jsonl``
 pass-throughs are also re-exported because other modules import this module as
 ``structured`` and access those attributes directly.
 
-After the 2026-08-16 prune, live identities are ``v0.9.24`` and
-cheap-stack ``v0.9.40``. Study-only further-prune IDs sit beside them.
+After Decision 0056, public names and machine identities are Full
+ledger and Compact ledger. The older ``v0.9.24`` / ``v0.9.40``
+strings remain replay aliases. Study-only further-prune IDs sit
+beside them.
 """
 # ruff: noqa: F401 — thin re-export facade; all symbols are intentionally re-exported.
 
@@ -18,7 +20,12 @@ from .pipelines.key_entities_structured import (
     _SEIZURE_STATE_RE,
     _SF_STATE_ATTRS,
     ALLOWED_EVENT_FAMILIES,
+    COMPACT_LEDGER,
+    COMPACT_LEDGER_FURTHER_PRUNE,
     COMPONENT_OWNER,
+    FULL_LEDGER,
+    FULL_LEDGER_DROP_ENCODING_NON_SF,
+    FULL_LEDGER_DROP_EXAMPLES,
     KEY_ENTITY_ITEM_F1_TARGET,
     KEY_ENTITY_NAMES,
     PIPELINE_FAMILY,

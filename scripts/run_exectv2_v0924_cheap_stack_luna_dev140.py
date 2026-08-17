@@ -122,7 +122,7 @@ def verify_payload() -> dict[str, Any]:
             structured.build_prompt_input(letter, prompt_version=CONTROL_VERSION)
         )
         if len(control["clinical_rules"]) != 83 or len(control["worked_examples"]) != 49:
-            raise RuntimeError("v0.9.24 control payload drifted")
+            raise RuntimeError("Full ledger control payload drifted")
         payload = json.loads(
             structured.build_prompt_input(letter, prompt_version=CANDIDATE_VERSION)
         )
@@ -137,7 +137,7 @@ def verify_payload() -> dict[str, Any]:
             raise RuntimeError("drop_encoding_non_sf_all_examples contract drifted")
     finally:
         structured.set_active_prompt_version(before)
-    if structured.PROMPT_VERSION != CONTROL_VERSION:
+    if structured.PROMPT_VERSION != structured.FULL_LEDGER:
         raise RuntimeError("payload check changed the live default")
     return {
         "ok": True,
@@ -193,7 +193,7 @@ def run_study(
     control_raws = _control_raws(letters)
     STUDY_DIR.mkdir(parents=True, exist_ok=True)
     started = datetime.now(UTC).isoformat()
-    if structured.PROMPT_VERSION != CONTROL_VERSION:
+    if structured.PROMPT_VERSION != structured.FULL_LEDGER:
         raise RuntimeError("live default drifted before the run")
 
     control = _run_control(letters, control_raws)
@@ -204,7 +204,7 @@ def run_study(
         timeout=timeout,
         progress_every=progress_every,
     )
-    if structured.PROMPT_VERSION != CONTROL_VERSION:
+    if structured.PROMPT_VERSION != structured.FULL_LEDGER:
         raise RuntimeError("candidate arm left the live default changed")
 
     versus = _compare_pair(control, candidate, letters)

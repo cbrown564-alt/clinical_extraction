@@ -163,11 +163,11 @@ def verify_payload() -> dict[str, Any]:
     try:
         control = json.loads(
             structured.build_prompt_input(
-                letter, prompt_version=structured.PROMPT_VERSION_V0_9_24
+                letter, prompt_version=structured.FULL_LEDGER
             )
         )
         if len(control["clinical_rules"]) != 83 or len(control["worked_examples"]) != 49:
-            raise RuntimeError("v0.9.24 control payload drifted")
+            raise RuntimeError("Full ledger control payload drifted")
         for arm, version in ARM_VERSIONS.items():
             payload = json.loads(
                 structured.build_prompt_input(letter, prompt_version=version)
@@ -191,7 +191,7 @@ def verify_payload() -> dict[str, Any]:
             }
     finally:
         structured.set_active_prompt_version(before)
-    if structured.PROMPT_VERSION != structured.PROMPT_VERSION_V0_9_24:
+    if structured.PROMPT_VERSION != structured.FULL_LEDGER:
         raise RuntimeError("ablation check changed the live default")
     if (
         checks["drop_encoding_non_sf_all_examples"]["n_examples"] != 0

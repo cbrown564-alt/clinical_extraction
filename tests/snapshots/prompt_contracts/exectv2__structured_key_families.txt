@@ -315,7 +315,7 @@
       }
     ]
   },
-  "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+  "prompt_version": "exectv2_full_ledger",
   "task": "Read the clinical letter once. Use the candidate_evidence_ledger as attention scaffolding, then build a compact list of source-near clinical events for medication, diagnosis, seizure frequency, and investigations. Each event may render one or more entity mentions when the same clinical fact validly belongs to more than one requested family.",
   "worked_examples": [
     {

@@ -1,7 +1,7 @@
 """Full-profile prompt builder for the structured-event extractor.
 
-The selected ``v0.9.24`` body and retained cheap-stack ``v0.9.40`` remain
-live. Study-only further-prune identities are registered beside them.
+The selected Full-ledger body and Compact-ledger cut remain live.
+Study-only further-prune identities are registered beside them.
 """
 
 from __future__ import annotations
@@ -14,7 +14,11 @@ from .constants import (
     PromptProfile,
     prompt_version_for,
 )
-from .prompt_ablations import ABLATION_SPECS, apply_v0924_ablation
+from .prompt_ablations import (
+    ABLATION_SPECS,
+    apply_v0924_ablation,
+    dump_model_facing_payload,
+)
 from .prompt_content import (
     _attribute_vocabulary,
     _decision_procedure,
@@ -106,5 +110,5 @@ def build_full_prompt_input(
     spec = ABLATION_SPECS.get(selected_prompt_version)
     if spec is not None:
         payload = apply_v0924_ablation(payload, spec)
-        return json.dumps(payload, ensure_ascii=False, sort_keys=True)
+        return dump_model_facing_payload(payload, authored_order=spec.authored_order)
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)

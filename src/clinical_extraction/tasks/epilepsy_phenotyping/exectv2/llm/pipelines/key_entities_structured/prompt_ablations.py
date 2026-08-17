@@ -1,15 +1,31 @@
-"""Retained cheap-stack drop from the frozen v0.9.24 structured prompt.
+"""Retained Compact-ledger drop from the Full-ledger structured prompt.
 
-``v0.9.40_drop_encoding_non_sf_all_examples`` is the live cheap slot.
-The v0.9.41–v0.9.44 identities are study-only further prunes of that
-slot. Intermediate leave-one-out prune arms are lineage in git history.
+``exectv2_compact_ledger`` is the living Compact identity: authored
+order, no ``letter_id`` or ``prompt_version``. The older ``v0.9.40``
+string keeps the current-run dump so saved raws still replay. The
+v0.9.41–v0.9.44 identities are historical further prunes of that
+current-run dump. Intermediate leave-one-out prune arms are lineage
+in git history.
 """
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from typing import Any
 
+from .constants import (
+    COMPACT_LEDGER,
+    COMPACT_LEDGER_FURTHER_PRUNE,
+    FULL_LEDGER_DROP_ENCODING_NON_SF,
+    FULL_LEDGER_DROP_EXAMPLES,
+    PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME,
+    PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES,
+    PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT,
+    PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT,
+    PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE,
+    PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES,
+)
 from .prompt_further_prune import (
     COMBO_CLINICAL_NAME,
     IX_PENDING,
@@ -19,25 +35,6 @@ from .prompt_further_prune import (
     apply_further_prune,
 )
 from .prompt_plain_language import apply_plain_language
-
-PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.40_drop_encoding_non_sf_all_examples"
-)
-PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.41_cheap_drop_ix_pending_repeat"
-)
-PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.42_cheap_drop_scaffold_reprint"
-)
-PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.43_cheap_collapse_refuse"
-)
-PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.44_cheap_stack_further_prunes"
-)
-PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.40_combo_clinical_name"
-)
 
 # Non-SF encoding rules from the 2026-08-15 convention catalog (16 rules).
 _ENCODING_NON_SF = frozenset(
@@ -62,6 +59,24 @@ _ENCODING_NON_SF = frozenset(
 )
 
 
+AUTHORED_KEY_ORDER = (
+    "task",
+    "architecture",
+    "output_schema",
+    "decision_procedure",
+    "family_guidance",
+    "attribute_vocabulary",
+    "categories",
+    "event_lane_guide",
+    "clinical_rules",
+    "suggested_evidence",
+    "candidate_evidence_ledger",
+    "worked_examples",
+    "letter_text",
+)
+RESEARCH_METADATA_KEYS = frozenset({"letter_id", "prompt_version"})
+
+
 @dataclass(frozen=True)
 class AblationSpec:
     version: str
@@ -72,48 +87,84 @@ class AblationSpec:
     task: str | None = None
     plain_language: bool = False
     further_prunes: tuple[str, ...] = ()
+    authored_order: bool = False
+
+
+def _compact_spec(
+    version: str,
+    *,
+    further_prunes: tuple[str, ...] = (),
+    authored_order: bool = False,
+) -> AblationSpec:
+    return AblationSpec(
+        version=version,
+        drop_examples=True,
+        drop_rule_ids=_ENCODING_NON_SF,
+        plain_language=True,
+        further_prunes=further_prunes,
+        authored_order=authored_order,
+    )
+
+
+def dump_model_facing_payload(
+    payload: dict[str, Any], *, authored_order: bool
+) -> str:
+    """Serialize a structured prompt. Authored order omits research metadata."""
+
+    if not authored_order:
+        return json.dumps(payload, ensure_ascii=False, sort_keys=True)
+    visible = {
+        key: value
+        for key, value in payload.items()
+        if key not in RESEARCH_METADATA_KEYS
+    }
+    ordered: dict[str, Any] = {}
+    for key in AUTHORED_KEY_ORDER:
+        if key in visible:
+            ordered[key] = visible.pop(key)
+    for key in sorted(visible):
+        ordered[key] = visible[key]
+    return json.dumps(ordered, ensure_ascii=False)
 
 
 ABLATION_SPECS: dict[str, AblationSpec] = {
-    PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES: AblationSpec(
-        version=PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES,
+    COMPACT_LEDGER: _compact_spec(COMPACT_LEDGER, authored_order=True),
+    FULL_LEDGER_DROP_EXAMPLES: AblationSpec(
+        version=FULL_LEDGER_DROP_EXAMPLES,
         drop_examples=True,
-        drop_rule_ids=_ENCODING_NON_SF,
-        plain_language=True,
+        authored_order=True,
     ),
-    PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT: AblationSpec(
-        version=PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT,
-        drop_examples=True,
+    FULL_LEDGER_DROP_ENCODING_NON_SF: AblationSpec(
+        version=FULL_LEDGER_DROP_ENCODING_NON_SF,
         drop_rule_ids=_ENCODING_NON_SF,
-        plain_language=True,
+        authored_order=True,
+    ),
+    COMPACT_LEDGER_FURTHER_PRUNE: _compact_spec(
+        COMPACT_LEDGER_FURTHER_PRUNE,
+        further_prunes=STACKED_PRUNES,
+        authored_order=True,
+    ),
+    PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES: _compact_spec(
+        PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES
+    ),
+    PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT: _compact_spec(
+        PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT,
         further_prunes=(IX_PENDING,),
     ),
-    PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT: AblationSpec(
-        version=PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT,
-        drop_examples=True,
-        drop_rule_ids=_ENCODING_NON_SF,
-        plain_language=True,
+    PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT: _compact_spec(
+        PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT,
         further_prunes=(SCAFFOLD_REPRINT,),
     ),
-    PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE: AblationSpec(
-        version=PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE,
-        drop_examples=True,
-        drop_rule_ids=_ENCODING_NON_SF,
-        plain_language=True,
+    PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE: _compact_spec(
+        PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE,
         further_prunes=(REFUSE_CHORUS,),
     ),
-    PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES: AblationSpec(
-        version=PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES,
-        drop_examples=True,
-        drop_rule_ids=_ENCODING_NON_SF,
-        plain_language=True,
+    PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES: _compact_spec(
+        PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES,
         further_prunes=STACKED_PRUNES,
     ),
-    PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME: AblationSpec(
-        version=PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME,
-        drop_examples=True,
-        drop_rule_ids=_ENCODING_NON_SF,
-        plain_language=True,
+    PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME: _compact_spec(
+        PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME,
         further_prunes=(COMBO_CLINICAL_NAME,),
     ),
 }
