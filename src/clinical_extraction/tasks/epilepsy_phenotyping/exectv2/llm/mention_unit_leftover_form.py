@@ -41,6 +41,10 @@ LeftoverFormVariant = Literal[
     "episodes_v4",
     "implicit_v4",
     "last_event_v4",
+    "fortnight_v10",
+    "returned_v11",
+    "implicit_v12",
+    "absences_v13",
     "implicit_period",
     "last_event",
 ]
@@ -88,6 +92,11 @@ _PERIOD_RE = re.compile(
     re.I,
 )
 _SEIZURE_FREE_RE = re.compile(r"seizure\s*-?free|no further seizures", re.I)
+_RETURNED_RE = re.compile(
+    r"\b(?:have|has)\s+(?:returned|come\s+back)\b|"
+    r"\bseizures?\s+(?:have\s+)?returned\b",
+    re.I,
+)
 _SEIZURE_FREE_WIDE_RE = re.compile(
     r"seizure\s*-?free|seizures\s+free|seizrue\s+free|no further seizures",
     re.I,
@@ -190,11 +199,23 @@ _NAMED_PERIODS = {
     "monthly": "Month",
     "yearly": "Year",
 }
+_FORTNIGHT_RATE_RE = re.compile(
+    rf"\b(?P<count>{_WORD_RE}|\d+(?:\.\d+)?)\s+"
+    r"(?:per|a|each|every)\s+fortnights?\b",
+    re.I,
+)
+_DOSE_FORTNIGHT_RE = re.compile(
+    r"\b(?:increas(?:e|ing)|reduc(?:e|ing)|decreas(?:e|ing))\s+by\b.{0,40}"
+    r"\bevery\s+fortnights?\b",
+    re.I,
+)
 _COUNT_KEYS = (
     "NumberOfSeizures",
     "LowerNumberOfSeizures",
     "UpperNumberOfSeizures",
 )
+_ABSENCES_NAME_RE = re.compile(r"\babsences\b", re.I)
+_NEGATED_ABSENCES_HISTORY_RE = re.compile(r"\bno\s+history\s+of\s+absences\b", re.I)
 
 
 def project_leftover_form_sf(
@@ -240,6 +261,20 @@ def project_leftover_form_sf(
                 after=dict(attrs),
             )
         )
+    if variant == "returned_v11" and _returned_after_freedom(haystack):
+        attrs.pop("NumberOfSeizures", None)
+        attrs.pop("TimeSince_or_TimeOfEvent", None)
+        attrs["FrequencyChange"] = "Increased"
+        mention["attributes"] = attrs
+        traces.append(
+            _trace(
+                index=index,
+                action="leftover_form.sf_returned_change",
+                evidence=evidence,
+                before={"text": text},
+                after=dict(attrs),
+            )
+        )
     if count_action:
         traces.append(
             _trace(
@@ -271,16 +306,27 @@ def project_leftover_form_sf(
             )
         )
     if _is_uncoded_phenomenology(haystack, attrs):
-        traces.append(
-            _trace(
-                index=index,
-                action="suppress_uncoded_or_noise_sf",
-                evidence=evidence,
-                before={"text": text},
-                after={},
+        if variant == "absences_v13" and _keep_absences(text, evidence):
+            traces.append(
+                _trace(
+                    index=index,
+                    action="leftover_form.sf_absences_keep",
+                    evidence=evidence,
+                    before={"text": text},
+                    after=dict(attrs),
+                )
             )
-        )
-        return [], traces, "semantic_only_uncoded_phenomenology"
+        else:
+            traces.append(
+                _trace(
+                    index=index,
+                    action="suppress_uncoded_or_noise_sf",
+                    evidence=evidence,
+                    before={"text": text},
+                    after={},
+                )
+            )
+            return [], traces, "semantic_only_uncoded_phenomenology"
     mention["attributes"] = attrs
     mention["evidence"] = evidence
     mention.setdefault("component_owner", COMPONENT_OWNER)
@@ -378,6 +424,10 @@ def leftover_sf_attributes(
         "episodes_v4",
         "implicit_v4",
         "last_event_v4",
+        "fortnight_v10",
+        "returned_v11",
+        "implicit_v12",
+        "absences_v13",
     }:
         if variant == "episodes_v4":
             attributes, count_action, period_action = _episode_form(haystack)
@@ -386,7 +436,7 @@ def leftover_sf_attributes(
                 haystack, guarded=True
             )
     period = _leftover_period(haystack)
-    if variant in {"implicit_period", "implicit_v4"}:
+    if variant in {"implicit_period", "implicit_v4", "implicit_v12", "absences_v13"}:
         bare = _bare_every_period(haystack)
         if bare:
             period = bare
@@ -398,12 +448,16 @@ def leftover_sf_attributes(
             attributes["NumberOfSeizures"] = "1"
             count_action = count_action or "leftover_form.sf_count"
         if (
-            variant == "implicit_v4"
+            variant in {"implicit_v4", "implicit_v12", "absences_v13"}
             and not _has_count(attributes)
             and not _implicit_period_blocked(haystack)
         ):
             attributes["NumberOfSeizures"] = "1"
             count_action = count_action or "leftover_form.sf_count"
+    if variant in {"fortnight_v10", "implicit_v12", "absences_v13"}:
+        attributes, count_action, period_action = _fortnight_form(
+            haystack, attributes, count_action, period_action
+        )
     return attributes, count_action, period_action
 
 
@@ -433,7 +487,35 @@ def _leftover_period(haystack: str) -> str:
     return normalize_unit(match.group("unit"))
 
 
+def _fortnight_form(
+    haystack: str,
+    attributes: dict[str, str],
+    count_action: str,
+    period_action: str,
+) -> tuple[dict[str, str], str, str]:
+    if _DOSE_FORTNIGHT_RE.search(haystack):
+        return attributes, count_action, period_action
+    match = _FORTNIGHT_RATE_RE.search(haystack)
+    if match is None:
+        return attributes, count_action, period_action
+    attributes["TimePeriod"] = "Week"
+    attributes["NumberOfTimePeriods"] = "2"
+    period_action = "leftover_form.sf_fortnight"
+    if not _has_count(attributes):
+        mapped = _mapped_count(match.group("count"))
+        if mapped:
+            attributes["NumberOfSeizures"] = mapped
+            count_action = count_action or "leftover_form.sf_count"
+    return attributes, count_action, period_action
+
+
+def _returned_after_freedom(haystack: str) -> bool:
+    return bool(_SEIZURE_FREE_RE.search(haystack) and _RETURNED_RE.search(haystack))
+
+
 def _zero_state(haystack: str, *, variant: LeftoverFormVariant = "v1") -> bool:
+    if variant == "returned_v11" and _returned_after_freedom(haystack):
+        return False
     if variant == "last_event":
         return bool(
             _LAST_EVENT_CUE_WIDE_RE.search(haystack)
@@ -651,6 +733,12 @@ def _duration_year_count(haystack: str, word: str) -> bool:
 
 def _has_count(attributes: dict[str, str]) -> bool:
     return any(attributes.get(key) for key in _COUNT_KEYS)
+
+
+def _keep_absences(text: str, evidence: str) -> bool:
+    if not _ABSENCES_NAME_RE.search(text):
+        return False
+    return not _NEGATED_ABSENCES_HISTORY_RE.search(evidence)
 
 
 def _trace(

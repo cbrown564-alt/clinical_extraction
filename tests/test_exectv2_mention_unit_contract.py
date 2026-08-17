@@ -10,13 +10,19 @@ from __future__ import annotations
 import json
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
+    llm_only_key_entities_structured as structured,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.mention_unit import (
+    COMBO_ARM_VERSIONS,
+    CUE5_ARM_VERSIONS,
     HYBRID_METHOD,
     LLM_METHOD,
     MENTION_UNIT_PROMPT_VERSION,
     MentionUnitExtractor,
     build_mention_unit_prompt,
     materialize_mention_unit,
+    mention_unit_prompt_version,
     parse_mention_unit_json,
 )
 
@@ -44,6 +50,32 @@ _BANNED_PROMPT_TERMS = (
     "return only",
 )
 _CURRENT_SCOPE_FAMILIES = ("Diagnosis", "SeizureFrequency", "Investigations")
+_FROZEN_CUE5 = (
+    "List every frequency statement, including past ones: a rate, a dated "
+    "count, a last event, a change, or a seizure-free duration. The "
+    "clinical name may be seizures, a named type, absences, or myoclonic "
+    "jerks. Do not use events, episodes, or slang. Do not list a seizure "
+    "story that has no frequency."
+)
+_CUE5_SUFFIXES = {
+    "heading": (
+        "A heading that states a rate or dated count is a frequency "
+        "statement. Do not replace it with a later vague estimate."
+    ),
+    "bare_frame": (
+        "A seizure-free line, or a line that only says the seizures are "
+        "well managed, needs a seizure type or a time frame. Leave it out "
+        "if it has neither."
+    ),
+    "one_row": (
+        "One frequency statement is one row. Do not list both seizures and "
+        "a named type for the same count."
+    ),
+    "no_join": (
+        "If two types share one count, write the type the count belongs to. "
+        "Do not join them as one name."
+    ),
+}
 
 
 def _letter(note: str, letter_id: str = "EA0002") -> ExectLetter:
@@ -109,6 +141,183 @@ def test_current_is_only_on_prescription_and_system_line() -> None:
     assert "current" not in json.dumps(llm["form_table"]).lower()
     assert sum("current" in str(cue).lower() for cue in cues) == 1
     assert "current anti-seizure" in str(cues[6]).lower()
+
+
+def test_frozen_v2_cue5_is_unchanged() -> None:
+    llm = _payload_without_letter(LLM_METHOD)
+    hybrid = _payload_without_letter(HYBRID_METHOD)
+    assert llm["selection_cues"][4] == _FROZEN_CUE5
+    assert hybrid["selection_cues"][4] == _FROZEN_CUE5
+    assert MENTION_UNIT_PROMPT_VERSION == "exectv2_mention_unit_v2"
+
+
+def test_cue5_study_arms_append_one_sentence_and_keep_seven_cues() -> None:
+    letter = _letter("She takes lamotrigine 100 mg daily.")
+    assert tuple(CUE5_ARM_VERSIONS) == ("heading", "bare_frame", "one_row", "no_join")
+    for arm, suffix in _CUE5_SUFFIXES.items():
+        llm = json.loads(build_mention_unit_prompt(letter, method=LLM_METHOD, cue5_arm=arm))
+        hybrid = json.loads(
+            build_mention_unit_prompt(letter, method=HYBRID_METHOD, cue5_arm=arm)
+        )
+        assert len(llm["selection_cues"]) == 7
+        assert llm["selection_cues"][4] == f"{_FROZEN_CUE5} {suffix}"
+        assert hybrid["selection_cues"][4] == llm["selection_cues"][4]
+        frozen = list(_payload_without_letter(LLM_METHOD)["selection_cues"])
+        assert llm["selection_cues"][:4] == frozen[:4]
+        assert llm["selection_cues"][5:] == frozen[5:]
+        serialized = json.dumps(
+            {key: value for key, value in llm.items() if key != "letter_text"}
+        ).lower()
+        for term in _BANNED_PROMPT_TERMS:
+            assert term not in serialized
+        assert "current" not in llm["selection_cues"][4].lower()
+        assert CUE5_ARM_VERSIONS[arm] == f"exectv2_mention_unit_v2_cue5_{arm}"
+
+
+def test_combo_scaffold_adds_cheap_stack_rows_and_keeps_frozen_v2() -> None:
+    letter = _letter(
+        "She takes lamotrigine 100 mg daily. She has two seizures a week."
+    )
+    cheap = json.loads(
+        structured.build_prompt_input(
+            letter,
+            prompt_version=structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES,
+        )
+    )
+    frozen_llm = json.loads(build_mention_unit_prompt(letter, method=LLM_METHOD))
+    frozen_hybrid = json.loads(build_mention_unit_prompt(letter, method=HYBRID_METHOD))
+    llm = json.loads(
+        build_mention_unit_prompt(letter, method=LLM_METHOD, combo_arm="scaffold")
+    )
+    hybrid = json.loads(
+        build_mention_unit_prompt(letter, method=HYBRID_METHOD, combo_arm="scaffold")
+    )
+
+    assert mention_unit_prompt_version() == MENTION_UNIT_PROMPT_VERSION
+    assert mention_unit_prompt_version(combo_arm="scaffold") == (
+        "exectv2_mention_unit_v2_combo_scaffold"
+    )
+    assert COMBO_ARM_VERSIONS["scaffold"] == "exectv2_mention_unit_v2_combo_scaffold"
+    assert list(frozen_llm) == [
+        "task",
+        "output_schema",
+        "form_table",
+        "selection_cues",
+        "closed_values",
+        "letter_text",
+    ]
+    assert list(llm) == [
+        "task",
+        "output_schema",
+        "form_table",
+        "selection_cues",
+        "closed_values",
+        "suggested_evidence",
+        "letter_text",
+    ]
+    assert list(hybrid) == [
+        "task",
+        "output_schema",
+        "selection_cues",
+        "suggested_evidence",
+        "letter_text",
+    ]
+    assert llm["task"] == frozen_llm["task"]
+    assert llm["output_schema"] == frozen_llm["output_schema"]
+    assert llm["selection_cues"] == frozen_llm["selection_cues"]
+    assert hybrid["task"] == frozen_hybrid["task"]
+    assert hybrid["output_schema"] == frozen_hybrid["output_schema"]
+    assert hybrid["selection_cues"] == frozen_hybrid["selection_cues"]
+    assert llm["suggested_evidence"] == cheap["suggested_evidence"]
+    assert hybrid["suggested_evidence"] == cheap["suggested_evidence"]
+    assert llm["suggested_evidence"]
+    assert set(llm["suggested_evidence"][0]) == {
+        "family",
+        "evidence",
+        "name_hint",
+        "category",
+    }
+    serialized = json.dumps(
+        {key: value for key, value in llm.items() if key != "letter_text"}
+    ).lower()
+    for term in _BANNED_PROMPT_TERMS:
+        assert term not in serialized
+    assert "candidate_id" not in serialized
+    assert "lane_hint" not in serialized
+    assert "anchor_hint" not in serialized
+    assert "architecture" not in serialized
+
+
+def test_combo_scaffold_cannot_stack_with_cue5() -> None:
+    letter = _letter("She takes lamotrigine 100 mg daily.")
+    try:
+        build_mention_unit_prompt(
+            letter, method=HYBRID_METHOD, cue5_arm="heading", combo_arm="scaffold"
+        )
+    except ValueError as exc:
+        assert "cannot be combined" in str(exc)
+    else:
+        raise AssertionError("cue5 and combo_scaffold stacked")
+
+
+def test_combo_form_guide_adds_llm_form_table_to_hybrid_without_coding_fields() -> None:
+    letter = _letter("She has two seizures a week.")
+    frozen_llm = json.loads(build_mention_unit_prompt(letter, method=LLM_METHOD))
+    frozen_hybrid = json.loads(build_mention_unit_prompt(letter, method=HYBRID_METHOD))
+    llm = json.loads(
+        build_mention_unit_prompt(letter, method=LLM_METHOD, combo_arm="form_guide")
+    )
+    hybrid = json.loads(
+        build_mention_unit_prompt(letter, method=HYBRID_METHOD, combo_arm="form_guide")
+    )
+
+    assert mention_unit_prompt_version() == MENTION_UNIT_PROMPT_VERSION
+    assert mention_unit_prompt_version(combo_arm="form_guide") == (
+        "exectv2_mention_unit_v2_combo_form_guide"
+    )
+    assert COMBO_ARM_VERSIONS == {
+        "scaffold": "exectv2_mention_unit_v2_combo_scaffold",
+        "form_guide": "exectv2_mention_unit_v2_combo_form_guide",
+    }
+    assert list(hybrid) == [
+        "task",
+        "output_schema",
+        "form_table",
+        "selection_cues",
+        "letter_text",
+    ]
+    assert hybrid["form_table"] == frozen_llm["form_table"]
+    assert len(hybrid["form_table"]) == 8
+    assert hybrid["output_schema"] == frozen_hybrid["output_schema"]
+    assert hybrid["selection_cues"] == frozen_hybrid["selection_cues"]
+    assert "count" not in json.dumps(hybrid["output_schema"]).lower()
+    assert "attributes" not in json.dumps(hybrid["output_schema"]).lower()
+    assert "closed_values" not in hybrid
+    assert "stay in evidence" in str(hybrid["task"]).lower()
+    assert "use the form table" in str(hybrid["task"]).lower()
+    assert "leftover" in str(hybrid["task"]).lower()
+    assert llm["form_table"] == frozen_llm["form_table"]
+    assert llm["output_schema"] == frozen_llm["output_schema"]
+    assert llm["selection_cues"] == frozen_llm["selection_cues"]
+    assert llm["task"] == frozen_llm["task"]
+    assert "form_table" not in frozen_hybrid
+    serialized = json.dumps(
+        {key: value for key, value in hybrid.items() if key != "letter_text"}
+    ).lower()
+    for term in _BANNED_PROMPT_TERMS:
+        assert term not in serialized
+
+
+def test_combo_form_guide_cannot_stack_with_cue5() -> None:
+    letter = _letter("She takes lamotrigine 100 mg daily.")
+    try:
+        build_mention_unit_prompt(
+            letter, method=HYBRID_METHOD, cue5_arm="heading", combo_arm="form_guide"
+        )
+    except ValueError as exc:
+        assert "cannot be combined" in str(exc)
+    else:
+        raise AssertionError("cue5 and combo_form_guide stacked")
 
 
 def test_rendered_payload_stays_plain_and_forbids_v1_jargon() -> None:

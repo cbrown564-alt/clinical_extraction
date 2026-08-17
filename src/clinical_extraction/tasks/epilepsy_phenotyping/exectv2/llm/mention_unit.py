@@ -9,6 +9,7 @@ the letter or change the selected ExECT method.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
@@ -34,6 +35,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     sf_attribute_encoding as sf_encoding,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.lexicon import (
+    assign_cui,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
     diagnosis_category_for_concept,
@@ -66,11 +70,48 @@ from .mention_unit_shared import (
     project_hybrid_event,
 )
 from .pipelines.key_entities_structured import records as structured_records
+from .pipelines.key_entities_structured.prompt_content import (
+    candidate_evidence_ledger_for_letter,
+)
+from .pipelines.key_entities_structured.prompt_plain_language import (
+    _clean_ledger_row,
+)
 from .shared.json_parse import parse_json_payload
 from .shared.mention_pipeline import check_evidence
 
 MENTION_UNIT_PROMPT_VERSION = "exectv2_mention_unit_v2"
 MENTION_UNIT_MODEL = "openai/gpt-5.6-luna"
+MentionUnitCue5Arm = Literal["heading", "bare_frame", "one_row", "no_join"]
+MentionUnitComboArm = Literal["scaffold", "form_guide"]
+COMBO_ARM_VERSIONS: dict[MentionUnitComboArm, str] = {
+    "scaffold": "exectv2_mention_unit_v2_combo_scaffold",
+    "form_guide": "exectv2_mention_unit_v2_combo_form_guide",
+}
+CUE5_ARM_VERSIONS: dict[MentionUnitCue5Arm, str] = {
+    "heading": "exectv2_mention_unit_v2_cue5_heading",
+    "bare_frame": "exectv2_mention_unit_v2_cue5_bare_frame",
+    "one_row": "exectv2_mention_unit_v2_cue5_one_row",
+    "no_join": "exectv2_mention_unit_v2_cue5_no_join",
+}
+_CUE5_SUFFIXES: dict[MentionUnitCue5Arm, str] = {
+    "heading": (
+        "A heading that states a rate or dated count is a frequency "
+        "statement. Do not replace it with a later vague estimate."
+    ),
+    "bare_frame": (
+        "A seizure-free line, or a line that only says the seizures are "
+        "well managed, needs a seizure type or a time frame. Leave it out "
+        "if it has neither."
+    ),
+    "one_row": (
+        "One frequency statement is one row. Do not list both seizures and "
+        "a named type for the same count."
+    ),
+    "no_join": (
+        "If two types share one count, write the type the count belongs to. "
+        "Do not join them as one name."
+    ),
+}
 MentionUnitEncoder = Literal[
     "landed",
     "leftover_form",
@@ -79,6 +120,16 @@ MentionUnitEncoder = Literal[
     "leftover_form_episodes_v4",
     "leftover_form_implicit_v4",
     "leftover_form_last_event_v4",
+    "leftover_form_span_fold_v5",
+    "leftover_form_span_fold_history_v6",
+    "leftover_form_span_fold_cluster_v7",
+    "leftover_form_span_fold_awareness_v8",
+    "leftover_form_span_fold_negation_v9",
+    "leftover_form_span_fold_fortnight_v10",
+    "leftover_form_span_fold_returned_v11",
+    "leftover_form_span_fold_implicit_v12",
+    "leftover_form_span_fold_absences_v13",
+    "leftover_form_span_fold_febrile_v14",
     "leftover_form_implicit_period",
     "leftover_form_casefold",
     "leftover_form_last_event",
@@ -90,6 +141,16 @@ _LEFTOVER_FORM_VARIANTS: dict[MentionUnitEncoder, LeftoverFormVariant] = {
     "leftover_form_episodes_v4": "episodes_v4",
     "leftover_form_implicit_v4": "implicit_v4",
     "leftover_form_last_event_v4": "last_event_v4",
+    "leftover_form_span_fold_v5": "intervening_v3",
+    "leftover_form_span_fold_history_v6": "intervening_v3",
+    "leftover_form_span_fold_cluster_v7": "intervening_v3",
+    "leftover_form_span_fold_awareness_v8": "intervening_v3",
+    "leftover_form_span_fold_negation_v9": "intervening_v3",
+    "leftover_form_span_fold_fortnight_v10": "fortnight_v10",
+    "leftover_form_span_fold_returned_v11": "returned_v11",
+    "leftover_form_span_fold_implicit_v12": "implicit_v12",
+    "leftover_form_span_fold_absences_v13": "absences_v13",
+    "leftover_form_span_fold_febrile_v14": "absences_v13",
     "leftover_form_implicit_period": "implicit_period",
     "leftover_form_casefold": "v1",
     "leftover_form_last_event": "last_event",
@@ -174,6 +235,11 @@ _HYBRID_CONTINUE = (
     "In evidence, copy the shortest part of the letter that supports that row, "
     "including the number, date, dose, or result."
 )
+_HYBRID_FORM_GUIDE_CONTINUE = (
+    f"{_HYBRID_CONTINUE}\n"
+    "If there is a rate, a date, or seizure freedom, use the form table to "
+    "know which leftover numbers and dates belong in evidence."
+)
 _SHARED_CLOSER = (
     "If a clinical family has nothing, skip it. If the same type is both a "
     "diagnosis and a frequency statement, write two rows. They may share evidence."
@@ -199,6 +265,45 @@ _SELECTION_CUES = (
     "letter says the same dose and does not state the dose, leave the "
     "drug out.",
 )
+
+
+def selection_cues_for(cue5_arm: MentionUnitCue5Arm | None = None) -> list[str]:
+    """Return the seven cues, optionally with one study-only cue-5 suffix."""
+
+    cues = list(_SELECTION_CUES)
+    if cue5_arm is None:
+        return cues
+    if cue5_arm not in _CUE5_SUFFIXES:
+        raise ValueError(f"unknown mention-unit cue-5 arm: {cue5_arm!r}")
+    cues[4] = f"{cues[4]} {_CUE5_SUFFIXES[cue5_arm]}"
+    return cues
+
+
+def mention_unit_prompt_version(
+    cue5_arm: MentionUnitCue5Arm | None = None,
+    combo_arm: MentionUnitComboArm | None = None,
+) -> str:
+    """Return the frozen v2 identity, or one study-only graft identity."""
+
+    if cue5_arm is not None and combo_arm is not None:
+        raise ValueError("cue5_arm and combo_arm cannot be combined")
+    if combo_arm is not None:
+        if combo_arm not in COMBO_ARM_VERSIONS:
+            raise ValueError(f"unknown mention-unit combo arm: {combo_arm!r}")
+        return COMBO_ARM_VERSIONS[combo_arm]
+    if cue5_arm is None:
+        return MENTION_UNIT_PROMPT_VERSION
+    return CUE5_ARM_VERSIONS[cue5_arm]
+
+
+def cheap_stack_suggested_evidence(letter: ExectLetter) -> list[dict[str, Any]]:
+    """Return the cheap-stack suggested-evidence rows for one letter."""
+
+    return [
+        _clean_ledger_row(row) for row in candidate_evidence_ledger_for_letter(letter)
+    ]
+
+
 _FORM_TABLE = (
     {
         "when": "A single count over a time unit, including every 3 weeks",
@@ -326,13 +431,25 @@ def build_mention_unit_prompt(
     letter: ExectLetter,
     *,
     method: Literal["llm", "llm_with_rules"],
+    cue5_arm: MentionUnitCue5Arm | None = None,
+    combo_arm: MentionUnitComboArm | None = None,
 ) -> str:
     """Build the model-facing payload without research metadata."""
 
     if method not in {LLM_METHOD, HYBRID_METHOD}:
         raise ValueError(f"unknown mention-unit method: {method!r}")
-    continue_text = _LLM_CONTINUE if method == LLM_METHOD else _HYBRID_CONTINUE
+    if cue5_arm is not None and combo_arm is not None:
+        raise ValueError("cue5_arm and combo_arm cannot be combined")
+    if combo_arm is not None and combo_arm not in COMBO_ARM_VERSIONS:
+        raise ValueError(f"unknown mention-unit combo arm: {combo_arm!r}")
+    if method == LLM_METHOD:
+        continue_text = _LLM_CONTINUE
+    elif combo_arm == "form_guide":
+        continue_text = _HYBRID_FORM_GUIDE_CONTINUE
+    else:
+        continue_text = _HYBRID_CONTINUE
     task = "\n".join((_SHARED_OPENING, continue_text, _SHARED_CLOSER))
+    cues = selection_cues_for(cue5_arm)
     if method == LLM_METHOD:
         item_schema: Any = [
             {
@@ -383,31 +500,45 @@ def build_mention_unit_prompt(
             "task": task,
             "output_schema": {"items": item_schema},
             "form_table": list(_FORM_TABLE),
-            "selection_cues": list(_SELECTION_CUES),
+            "selection_cues": cues,
             "closed_values": _CLOSED_VALUES,
             "letter_text": letter.note_text,
         }
     else:
-        payload = {
-            "task": task,
-            "output_schema": {
-                "items": {
-                    "clinical_family": (
-                        "Diagnosis | SeizureFrequency | Prescription | Investigations"
-                    ),
-                    "clinical_name": (
-                        "The diagnosis type, seizure words, drug, or MRI / CT / EEG "
-                        "copied from the letter."
-                    ),
-                    "evidence": (
-                        "The shortest supporting sentence from the letter, including "
-                        "the number, date, dose, or result."
-                    ),
-                }
-            },
-            "selection_cues": list(_SELECTION_CUES),
-            "letter_text": letter.note_text,
+        hybrid_schema = {
+            "items": {
+                "clinical_family": (
+                    "Diagnosis | SeizureFrequency | Prescription | Investigations"
+                ),
+                "clinical_name": (
+                    "The diagnosis type, seizure words, drug, or MRI / CT / EEG "
+                    "copied from the letter."
+                ),
+                "evidence": (
+                    "The shortest supporting sentence from the letter, including "
+                    "the number, date, dose, or result."
+                ),
+            }
         }
+        if combo_arm == "form_guide":
+            payload = {
+                "task": task,
+                "output_schema": hybrid_schema,
+                "form_table": list(_FORM_TABLE),
+                "selection_cues": cues,
+                "letter_text": letter.note_text,
+            }
+        else:
+            payload = {
+                "task": task,
+                "output_schema": hybrid_schema,
+                "selection_cues": cues,
+                "letter_text": letter.note_text,
+            }
+    if combo_arm == "scaffold":
+        letter_text = payload.pop("letter_text")
+        payload["suggested_evidence"] = cheap_stack_suggested_evidence(letter)
+        payload["letter_text"] = letter_text
     return json.dumps(payload, ensure_ascii=False)
 
 
@@ -493,11 +624,9 @@ def materialize_mention_unit(
     candidates: list[PredictedMention] = []
     evidence_invalid = 0
     for index, item in enumerate(record.items):
-        casefold = encoder == "leftover_form_casefold"
-        text_valid = _span_in_letter(letter.note_text, item.text, casefold=casefold)
-        evidence_valid = _span_in_letter(
-            letter.note_text, item.evidence, casefold=casefold
-        )
+        span_mode = _span_mode_for(encoder)
+        text_valid = _span_in_letter(letter.note_text, item.text, mode=span_mode)
+        evidence_valid = _span_in_letter(letter.note_text, item.evidence, mode=span_mode)
         semantic_row = {
             "fact_index": index,
             "family": item.family,
@@ -518,11 +647,77 @@ def materialize_mention_unit(
             warnings.append(f"item[{index}]: text_not_substring")
             semantic_facts.append(semantic_row)
             continue
+        if (
+            encoder
+            in {
+                "leftover_form_span_fold_history_v6",
+                "leftover_form_span_fold_cluster_v7",
+                "leftover_form_span_fold_awareness_v8",
+                "leftover_form_span_fold_negation_v9",
+                "leftover_form_span_fold_fortnight_v10",
+                "leftover_form_span_fold_returned_v11",
+                "leftover_form_span_fold_implicit_v12",
+                "leftover_form_span_fold_absences_v13",
+                "leftover_form_span_fold_febrile_v14",
+            }
+            and item.family == SEIZURE_FREQUENCY.name
+            and _is_childhood_febrile_history(
+                item.text,
+                item.evidence,
+                wide=encoder == "leftover_form_span_fold_febrile_v14",
+            )
+        ):
+            warnings.append(f"item[{index}]: childhood_febrile_history")
+            semantic_facts.append(semantic_row)
+            continue
+        if (
+            encoder
+            in {
+                "leftover_form_span_fold_negation_v9",
+                "leftover_form_span_fold_fortnight_v10",
+                "leftover_form_span_fold_returned_v11",
+                "leftover_form_span_fold_implicit_v12",
+                "leftover_form_span_fold_absences_v13",
+                "leftover_form_span_fold_febrile_v14",
+            }
+            and item.family == SEIZURE_FREQUENCY.name
+            and _is_negated_unused_type(item.evidence)
+        ):
+            warnings.append(f"item[{index}]: negated_unused_type")
+            semantic_facts.append(semantic_row)
+            continue
 
         if method == LLM_METHOD:
             projected, status, owner = _llm_project(item)
         else:
             projected, traces, status = _hybrid_project(item, index, encoder=encoder)
+            if encoder in {
+                "leftover_form_span_fold_cluster_v7",
+                "leftover_form_span_fold_awareness_v8",
+                "leftover_form_span_fold_negation_v9",
+                "leftover_form_span_fold_fortnight_v10",
+                "leftover_form_span_fold_returned_v11",
+                "leftover_form_span_fold_implicit_v12",
+                "leftover_form_span_fold_absences_v13",
+                "leftover_form_span_fold_febrile_v14",
+            }:
+                projected, cluster_traces = _apply_cluster_name(
+                    projected, item, index
+                )
+                traces.extend(cluster_traces)
+            if encoder in {
+                "leftover_form_span_fold_awareness_v8",
+                "leftover_form_span_fold_negation_v9",
+                "leftover_form_span_fold_fortnight_v10",
+                "leftover_form_span_fold_returned_v11",
+                "leftover_form_span_fold_implicit_v12",
+                "leftover_form_span_fold_absences_v13",
+                "leftover_form_span_fold_febrile_v14",
+            }:
+                projected, awareness_traces = _apply_awareness_name(
+                    projected, item, index
+                )
+                traces.extend(awareness_traces)
             rule_trace.extend(traces)
             owner = ""
 
@@ -597,12 +792,169 @@ def materialize_mention_unit(
     )
 
 
-def _span_in_letter(note_text: str, span: str, *, casefold: bool) -> bool:
+_CHILDHOOD_FEBRILE_AGE_RE = re.compile(
+    r"\b(?:at|between)\s+the\s+age\s+of\b.{0,80}?"
+    r"(?:\d+\s+months?|\b1\s+years?|\b[1-5]\b)",
+    re.I | re.S,
+)
+_CHILDHOOD_FEBRILE_AGE_WIDE_RE = re.compile(
+    r"\b(?:(?:at|between)\s+)?the\s+ages?\s+of\b.{0,80}?"
+    r"(?:\d+\s+months?|\b1\s+years?|\b[1-5]\b|"
+    r"\b(?:one|two|three|four|five)\b)",
+    re.I | re.S,
+)
+
+
+def _is_childhood_febrile_history(
+    text: str, evidence: str, *, wide: bool = False
+) -> bool:
+    if "febrile" not in _fold_span(text):
+        return False
+    pattern = _CHILDHOOD_FEBRILE_AGE_WIDE_RE if wide else _CHILDHOOD_FEBRILE_AGE_RE
+    return bool(pattern.search(_fold_span(evidence)))
+
+
+_NEGATED_RESEMBLANCE_RE = re.compile(
+    r"\b(?:has|have)\s+not\s+had\s+any\s+events?\s+which\s+resemble\b",
+    re.I,
+)
+
+
+def _is_negated_unused_type(evidence: str) -> bool:
+    return bool(_NEGATED_RESEMBLANCE_RE.search(_fold_span(evidence)))
+
+
+_CLUSTER_OF_SEIZURES_RE = re.compile(r"\bclusters?\s+of\s+seizures?\b", re.I)
+_GENERIC_SEIZURE_NAMES = frozenset({"seizure", "seizures"})
+_CLUSTER_NAME = "cluster of seizures"
+
+
+def _cluster_name_for(text: str, evidence: str) -> str | None:
+    if _fold_span(text) not in _GENERIC_SEIZURE_NAMES:
+        return None
+    if _CLUSTER_OF_SEIZURES_RE.search(evidence):
+        return _CLUSTER_NAME
+    return None
+
+
+def _apply_cluster_name(
+    projected: list[dict[str, Any]],
+    item: MentionItem,
+    index: int,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    name = _cluster_name_for(item.text, item.evidence)
+    if name is None:
+        return projected, []
+    rewritten: list[dict[str, Any]] = []
+    for row in projected:
+        attrs = {
+            str(key): str(value)
+            for key, value in dict(row.get("attributes") or {}).items()
+        }
+        cui = assign_cui(name)
+        if cui:
+            attrs["CUI"] = cui
+            attrs["CUIPhrase"] = name
+        rewritten.append({**row, "text": name, "attributes": attrs})
+    return rewritten, [
+        {
+            "fact_index": index,
+            "rule_category": "seizure_frequency",
+            "action": "leftover_form.cluster_name",
+            "evidence": item.evidence,
+            "before": {"text": item.text},
+            "after": {"text": name},
+            "changed": True,
+            "first_prediction_changing_owner": "deterministic",
+        }
+    ]
+
+
+_AWARENESS_PHRASE_RE = re.compile(
+    r"\bfocal seizures with (?:altered|impaired) awareness\b|"
+    r"\bfocal impaired awareness seizures\b",
+    re.I,
+)
+_WITHOUT_AWARENESS_RE = re.compile(r"\bwithout\b.{0,40}\bawareness\b", re.I)
+_AWARENESS_NAME = "focal seizures with altered awareness"
+
+
+def _awareness_name_for(text: str, evidence: str) -> str | None:
+    if _fold_span(text) != "focal seizures":
+        return None
+    if _WITHOUT_AWARENESS_RE.search(_fold_span(evidence)):
+        return None
+    if _AWARENESS_PHRASE_RE.search(evidence):
+        return _AWARENESS_NAME
+    return None
+
+
+def _apply_awareness_name(
+    projected: list[dict[str, Any]],
+    item: MentionItem,
+    index: int,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    name = _awareness_name_for(item.text, item.evidence)
+    if name is None:
+        return projected, []
+    rewritten: list[dict[str, Any]] = []
+    for row in projected:
+        attrs = {
+            str(key): str(value)
+            for key, value in dict(row.get("attributes") or {}).items()
+        }
+        cui = assign_cui(name)
+        if cui:
+            attrs["CUI"] = cui
+            attrs["CUIPhrase"] = name
+        rewritten.append({**row, "text": name, "attributes": attrs})
+    return rewritten, [
+        {
+            "fact_index": index,
+            "rule_category": "seizure_frequency",
+            "action": "leftover_form.awareness_name",
+            "evidence": item.evidence,
+            "before": {"text": item.text},
+            "after": {"text": name},
+            "changed": True,
+            "first_prediction_changing_owner": "deterministic",
+        }
+    ]
+
+
+def _span_mode_for(encoder: MentionUnitEncoder) -> str:
+    if encoder in {
+        "leftover_form_span_fold_v5",
+        "leftover_form_span_fold_history_v6",
+        "leftover_form_span_fold_cluster_v7",
+        "leftover_form_span_fold_awareness_v8",
+        "leftover_form_span_fold_negation_v9",
+        "leftover_form_span_fold_fortnight_v10",
+        "leftover_form_span_fold_returned_v11",
+        "leftover_form_span_fold_implicit_v12",
+        "leftover_form_span_fold_absences_v13",
+        "leftover_form_span_fold_febrile_v14",
+    }:
+        return "span_fold"
+    if encoder == "leftover_form_casefold":
+        return "casefold"
+    return "exact"
+
+
+def _fold_span(text: str) -> str:
+    return " ".join(text.casefold().replace("-", " ").split())
+
+
+def _span_in_letter(note_text: str, span: str, *, mode: str) -> bool:
     if not span:
         return False
     if evidence_is_substring(note_text, span):
         return True
-    return bool(casefold and span.casefold() in note_text.casefold())
+    if mode == "casefold":
+        return span.casefold() in note_text.casefold()
+    if mode == "span_fold":
+        return _fold_span(span) in _fold_span(note_text)
+    return False
 
 
 def _first_text(raw: dict[str, Any], *keys: str) -> Any:
@@ -886,8 +1238,12 @@ __all__ = [
     "HYBRID_METHOD",
     "LLM_METHOD",
     "MENTION_UNIT_MODEL",
+    "COMBO_ARM_VERSIONS",
+    "CUE5_ARM_VERSIONS",
     "MENTION_UNIT_PROMPT_VERSION",
     "SYSTEM_MESSAGE",
+    "mention_unit_prompt_version",
+    "selection_cues_for",
     "MentionItem",
     "MentionUnitExtractor",
     "MentionUnitParseResult",
