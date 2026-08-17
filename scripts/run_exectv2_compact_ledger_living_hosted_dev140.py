@@ -1,8 +1,8 @@
-"""Living Compact ledger on hosted Sol, Gemini, and DeepSeek.
+"""Living Compact ledger on hosted Sol, Luna, Gemini, and DeepSeek.
 
 dev140: live remasure of ``exectv2_compact_ledger``. test60: the same
 payload, aggregate-only, with live dumps under scratch/holdout. Gemini
-goes through OpenRouter. The in-flight ``v0.9.40`` cells stay separate.
+goes through OpenRouter. The Compact dump cells stay separate.
 """
 
 from __future__ import annotations
@@ -61,9 +61,10 @@ TEST60_SCRATCH_DIR = (
 )
 CONTROL_VERSION = structured.FULL_LEDGER
 CANDIDATE_VERSION = structured.COMPACT_LEDGER
-HOSTED_SLUGS = ("gpt56sol", "gemini37flash", "deepseek_v4_flash")
+HOSTED_SLUGS = ("gpt56sol", "gpt56luna", "gemini37flash", "deepseek_v4_flash")
 MODELS: dict[str, ModelSpec] = {
     "gpt56sol": SIX_MODELS["gpt56sol"],
+    "gpt56luna": replace(SIX_MODELS["gpt56luna"], candidate_structured=None),
     "gemini37flash": replace(
         SIX_MODELS["gemini37flash"],
         credential_env=("OPENROUTER_API_KEY",),

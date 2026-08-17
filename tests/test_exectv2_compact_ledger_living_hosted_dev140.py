@@ -49,10 +49,16 @@ def test_living_compact_is_the_candidate_and_stays_off_the_dump_study() -> None:
     assert PROTOCOL.endswith("compact_ledger_living_hosted_dev140_protocol_2026-08-17.md")
 
 
-def test_hosted_roster_is_sol_gemini_and_deepseek() -> None:
-    assert HOSTED_SLUGS == ("gpt56sol", "gemini37flash", "deepseek_v4_flash")
+def test_hosted_roster_is_sol_luna_gemini_and_deepseek() -> None:
+    assert HOSTED_SLUGS == (
+        "gpt56sol",
+        "gpt56luna",
+        "gemini37flash",
+        "deepseek_v4_flash",
+    )
     assert tuple(MODELS) == HOSTED_SLUGS
     assert MODELS["gpt56sol"].model == "openai/gpt-5.6-sol"
+    assert MODELS["gpt56luna"].model == "openai/gpt-5.6-luna"
     assert MODELS["gemini37flash"].model == "gemini/gemini-3.7-flash"
     assert MODELS["deepseek_v4_flash"].model == "deepseek/deepseek-v4-flash"
     assert MODELS["deepseek_v4_flash"].provider_revision == "DeepSeek-V4-Flash-0731"
