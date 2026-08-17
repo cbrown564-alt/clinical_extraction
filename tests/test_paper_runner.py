@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 
 from clinical_extraction.paper.cli import run
@@ -14,7 +16,14 @@ from clinical_extraction.paper.exect import (
     verify_compact,
 )
 from clinical_extraction.paper.gan import run_gan, verify_gan
-from clinical_extraction.paper.lm import gemini_api_base
+from clinical_extraction.paper.lm import (
+    AI_GATEWAY_OPENAI_BASE,
+    SOL_MODEL,
+    build_paper_lm,
+    gemini_api_base,
+    resolve_paper_api_base,
+    sol_api_base,
+)
 from clinical_extraction.paper.methods import LIVE_METHODS, gan_machine_split, split_for
 from clinical_extraction.paper.roster import living_models
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
@@ -46,12 +55,39 @@ def test_living_roster_is_the_six_paper_models() -> None:
     assert tuple(MODELS) == tuple(slugs)
     assert HOSTED_SLUGS == ("gpt56sol", "gpt56luna", "gemini37flash", "deepseek_v4_flash")
     assert LOCAL_SLUGS == ("qwen38_27b", "gemma4_26b")
-    assert MODELS["gpt56sol"].model == "openai/gpt-5.6-sol"
+    assert MODELS["gpt56sol"].model == SOL_MODEL
+    assert MODELS["gpt56sol"].credential_env == ("AI_GATEWAY_API_KEY",)
+    assert MODELS["gpt56luna"].credential_env == ("OPENAI_API_KEY",)
     assert MODELS["qwen38_27b"].model == "ollama_chat/qwen3.8:27b"
     assert MODELS["qwen38_27b"].num_ctx == 32768
     assert MODELS["gemma4_26b"].num_ctx == 65536
     assert MODELS["gemini37flash"].credential_env == ("OPENROUTER_API_KEY",)
     assert gemini_api_base(None) == OPENROUTER_OPENAI_BASE
+    assert sol_api_base(None) == AI_GATEWAY_OPENAI_BASE == "https://ai-gateway.vercel.sh/v1"
+    assert resolve_paper_api_base("gpt56sol", None) == AI_GATEWAY_OPENAI_BASE
+    assert resolve_paper_api_base("gpt56luna", None) is None
+
+
+def test_sol_paper_lm_uses_vercel_ai_gateway(monkeypatch: pytest.MonkeyPatch) -> None:
+    captured: dict[str, Any] = {}
+
+    def fake_lm(model: str, **kwargs: Any) -> object:
+        captured["model"] = model
+        captured.update(kwargs)
+        return object()
+
+    monkeypatch.setattr("clinical_extraction.paper.lm.dspy.LM", fake_lm)
+    monkeypatch.setenv("AI_GATEWAY_API_KEY", "gateway-test-key")
+
+    build_paper_lm(SOL_MODEL, temperature=1.0, max_tokens=5000, cache=False)
+
+    assert captured["model"] == SOL_MODEL
+    assert captured["model_type"] == "responses"
+    assert captured["api_base"] == AI_GATEWAY_OPENAI_BASE
+    assert captured["api_key"] == "gateway-test-key"
+    assert captured["temperature"] == 1.0
+    assert captured["max_tokens"] == 5000
+    assert captured["cache"] is False
 
 
 def test_live_methods_are_the_paper_llm_cells() -> None:

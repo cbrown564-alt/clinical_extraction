@@ -22,7 +22,7 @@ from clinical_extraction.paper.exect_score import (
     letters_dev140,
     score_arm,
 )
-from clinical_extraction.paper.lm import build_paper_lm, gemini_api_base
+from clinical_extraction.paper.lm import build_paper_lm, resolve_paper_api_base
 from clinical_extraction.paper.methods import holdout_is_aggregate_only
 from clinical_extraction.paper.roster import living_models
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
@@ -118,7 +118,7 @@ def _spec_for(item: Mapping[str, Any]) -> ModelSpec:
     slug = str(item["slug"])
     hosted = item["route"] == "hosted"
     credentials = {
-        "gpt56sol": ("OPENAI_API_KEY",),
+        "gpt56sol": ("AI_GATEWAY_API_KEY",),
         "gpt56luna": ("OPENAI_API_KEY",),
         "gemini37flash": ("OPENROUTER_API_KEY",),
         "deepseek_v4_flash": ("DEEPSEEK_API_KEY",),
@@ -247,7 +247,7 @@ def run_compact(
     started = datetime.now(UTC).isoformat()
     if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
         raise RuntimeError("live default drifted before the run")
-    resolved_base = gemini_api_base(api_base) if spec.slug == "gemini37flash" else api_base
+    resolved_base = resolve_paper_api_base(spec.slug, api_base)
     control = _run_replay_arm(
         spec,
         letters,

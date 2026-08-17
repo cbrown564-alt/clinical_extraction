@@ -21,7 +21,7 @@ from clinical_extraction.paper.exect import (
     OLLAMA_NUM_CTX_ENV,
     ModelSpec,
 )
-from clinical_extraction.paper.lm import build_paper_lm, gemini_api_base
+from clinical_extraction.paper.lm import build_paper_lm, resolve_paper_api_base
 from clinical_extraction.paper.methods import (
     gan_machine_split,
     gan_row_count,
@@ -164,7 +164,7 @@ def run_gan(
     existing = [] if overwrite else _existing_complete_rows(rows_path, prompt)
     done = {int(row["source_row_index"]) for row in existing}
     todo = [record for record in records if record.source_row_index not in done]
-    resolved_base = gemini_api_base(api_base) if spec.slug == "gemini37flash" else api_base
+    resolved_base = resolve_paper_api_base(spec.slug, api_base)
     max_tokens = MAX_TOKENS[method]
     if todo:
         _prepare_live_runtime(
