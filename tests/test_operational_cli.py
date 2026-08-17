@@ -4,11 +4,13 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
 from clinical_extraction.operational.cli import main
-from clinical_extraction.operational.io import read_notes
+from clinical_extraction.operational.gan import run_gan_notes, score_projection
+from clinical_extraction.operational.io import InputNote, read_notes
 from clinical_extraction.operational.runtime import RuntimeConfig
 
 
@@ -107,6 +109,72 @@ def test_runtime_rejects_disagreeing_endpoint_aliases() -> None:
                 "VLLM_API_KEY": "secret",
             }
         )
+
+
+def test_score_projection_maps_monthly_rate_to_purist_category() -> None:
+    projection = score_projection("2 per month")
+
+    assert projection is not None
+    assert projection["normalized_label"] == "2 per month"
+    assert projection["kind"] == "frequency"
+    assert projection["monthly_frequency"] == pytest.approx(2.03, abs=0.05)
+    assert projection["purist_category"] == "seizure_freq_more1mon_less1week"
+    assert projection["pragmatic_category"] == "seizure_frequent"
+    assert "purist_correct" not in projection
+
+
+def test_score_projection_maps_unknown_without_gold_comparison() -> None:
+    projection = score_projection("unknown")
+
+    assert projection is not None
+    assert projection["kind"] == "unknown"
+    assert projection["purist_category"] == "seizure_freq_unknown"
+    assert "gold_purist_category" not in projection
+
+
+def test_run_gan_notes_includes_normalized_events_and_score_projection(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake_result = SimpleNamespace(
+        output=SimpleNamespace(
+            final_value="2 per month",
+            evidence="two seizures per month",
+            rationale="stated rate",
+        ),
+        diagnostics={
+            "parse_errors": [],
+            "structured_record": {"events": [], "selection": {}},
+            "normalized_events": [
+                {
+                    "event_id": "evt_1",
+                    "normalized_label": "2 per month",
+                    "semantic_kind": "frequency",
+                    "monthly_frequency": 2.0,
+                    "yearly_bounds": [24.0, 24.0],
+                    "repair_applied": False,
+                    "validation_errors": [],
+                }
+            ],
+        },
+    )
+    monkeypatch.setattr(
+        "clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.llm_with_rules.run_record",
+        lambda *args, **kwargs: fake_result,
+    )
+
+    rows = run_gan_notes(
+        [InputNote("n1", "Two seizures per month.")],
+        RuntimeConfig(
+            base_url="http://127.0.0.1:8000/v1",
+            api_key="EMPTY",
+            model="vllm/deepseek-v4-flash",
+        ),
+    )
+
+    assert rows[0]["normalized_events"][0]["normalized_label"] == "2 per month"
+    assert rows[0]["score_projection"]["purist_category"] == (
+        "seizure_freq_more1mon_less1week"
+    )
 
 
 def test_cli_writes_one_result_per_input_note(

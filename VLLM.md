@@ -120,7 +120,29 @@ Each output line keeps the input `id`. A successful row looks like this:
     "rationale": "The stated typical rate is the current frequency."
   },
   "parse_errors": [],
-  "structured_record": {}
+  "structured_record": {
+    "events": [],
+    "selection": {}
+  },
+  "normalized_events": [
+    {
+      "event_id": "evt_1",
+      "normalized_label": "2 per month",
+      "semantic_kind": "frequency",
+      "monthly_frequency": 2.03,
+      "yearly_bounds": [24.33, 24.33],
+      "repair_applied": false,
+      "validation_errors": []
+    }
+  ],
+  "score_projection": {
+    "normalized_label": "2 per month",
+    "kind": "frequency",
+    "monthly_frequency": 2.03,
+    "yearly_bounds": [24.33, 24.33],
+    "purist_category": "seizure_freq_more1mon_less1week",
+    "pragmatic_category": "seizure_frequent"
+  }
 }
 ```
 
@@ -130,7 +152,9 @@ Each output line keeps the input `id`. A successful row looks like this:
 | `prediction.evidence` | Supporting text the pipeline cited from the letter |
 | `prediction.rationale` | Why that label was selected |
 | `parse_errors` | Format problems from the model call, if any |
-| `structured_record` | The structured events the model returned, after repair |
+| `structured_record` | Extracted events and the chosen selection, after repair |
+| `normalized_events` | Deterministic monthly-frequency parse of each event |
+| `score_projection` | The selected label mapped into Gan Purist and Pragmatic categories. This is not a gold comparison and not a benchmark score. |
 
 A failed note uses `"status": "error"` and an `error` object instead of a
 usable prediction:

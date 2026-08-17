@@ -11,6 +11,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
     label_to_frequency_record,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
+from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
+    map_pragmatic,
+    map_purist,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners.config import (
     PipelineConfiguration,
 )
@@ -66,11 +70,34 @@ def run_gan_notes(notes: Sequence[InputNote], runtime: RuntimeConfig) -> list[di
                     },
                     "parse_errors": result.diagnostics.get("parse_errors", []),
                     "structured_record": result.diagnostics.get("structured_record"),
+                    "normalized_events": result.diagnostics.get("normalized_events") or [],
+                    "score_projection": score_projection(result.output.final_value),
                 }
             )
         except Exception as exc:
             output.append(_error_row(note.note_id, runtime.api_model, exc))
     return output
+
+
+def score_projection(final_label: str | None) -> dict[str, Any] | None:
+    """Project a predicted Gan label into scorer categories without gold comparison."""
+
+    if not final_label:
+        return None
+    try:
+        record = label_to_frequency_record(final_label)
+    except ValueError:
+        return None
+    return {
+        "normalized_label": record.normalized_label,
+        "kind": str(record.kind),
+        "monthly_frequency": record.monthly_frequency,
+        "yearly_bounds": (
+            list(record.yearly_bounds) if record.yearly_bounds is not None else None
+        ),
+        "purist_category": str(map_purist(record.monthly_frequency)),
+        "pragmatic_category": str(map_pragmatic(record.monthly_frequency)),
+    }
 
 
 def _error_row(note_id: str, model: str, exc: Exception) -> dict[str, Any]:
