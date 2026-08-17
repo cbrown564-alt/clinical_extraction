@@ -1,0 +1,196 @@
+{
+  "schema_version": "paper_experiments.inventory.v1",
+  "purpose": "Replayable paper cells. Holdout files keep only replay keys.",
+  "strip": {
+    "gan": ["source_row_index", "prompt_version", "raw_output"],
+    "exect": ["letter_id", "prompt_version", "raw_output"]
+  },
+  "present": [
+    {
+      "model_slug": "gpt56sol",
+      "model": "openai/gpt-5.6-sol",
+      "method": "exect_llm_with_rules",
+      "replay_alias": "exectv2_compact_ledger",
+      "split": "dev140",
+      "n": 140,
+      "row_policy": "development_review_permitted",
+      "path": "paper_experiments/exect/exect_llm_with_rules/gpt56sol/dev140/structured.jsonl",
+      "status": "present",
+      "empty_raw_count": 0
+    },
+    {
+      "model_slug": "gpt56sol",
+      "model": "openai/gpt-5.6-sol",
+      "method": "exect_llm_with_rules",
+      "replay_alias": "exectv2_compact_ledger",
+      "split": "test60",
+      "n": 59,
+      "row_policy": "aggregate_only",
+      "path": "paper_experiments/exect/exect_llm_with_rules/gpt56sol/test60/structured.jsonl",
+      "status": "present",
+      "empty_raw_count": 0
+    },
+    {
+      "model_slug": "gpt56luna",
+      "model": "openai/gpt-5.6-luna",
+      "method": "exect_llm_with_rules",
+      "replay_alias": "exectv2_compact_ledger",
+      "split": "dev140",
+      "n": 140,
+      "row_policy": "development_review_permitted",
+      "path": "paper_experiments/exect/exect_llm_with_rules/gpt56luna/dev140/structured.jsonl",
+      "status": "present",
+      "empty_raw_count": 0
+    },
+    {
+      "model_slug": "gpt56luna",
+      "model": "openai/gpt-5.6-luna",
+      "method": "exect_llm_with_rules",
+      "replay_alias": "exectv2_compact_ledger",
+      "split": "test60",
+      "n": 59,
+      "row_policy": "aggregate_only",
+      "path": "paper_experiments/exect/exect_llm_with_rules/gpt56luna/test60/structured.jsonl",
+      "status": "present",
+      "empty_raw_count": 0
+    },
+    {
+      "model_slug": "gemini37flash",
+      "model": "gemini/gemini-3.7-flash",
+      "method": "exect_llm_with_rules",
+      "replay_alias": "exectv2_compact_ledger",
+      "split": "dev140",
+      "n": 140,
+      "row_policy": "development_review_permitted",
+      "path": "paper_experiments/exect/exect_llm_with_rules/gemini37flash/dev140/structured.jsonl",
+      "status": "present",
+      "empty_raw_count": 0
+    },
+    {
+      "model_slug": "gemini37flash",
+      "model": "gemini/gemini-3.7-flash",
+      "method": "exect_llm_with_rules",
+      "replay_alias": "exectv2_compact_ledger",
+      "split": "test60",
+      "n": 59,
+      "row_policy": "aggregate_only",
+      "path": "paper_experiments/exect/exect_llm_with_rules/gemini37flash/test60/structured.jsonl",
+      "status": "present",
+      "empty_raw_count": 0
+    },
+    {
+      "model_slug": "deepseek_v4_flash",
+      "model": "deepseek/deepseek-v4-flash",
+      "method": "exect_llm_with_rules",
+      "replay_alias": "exectv2_compact_ledger",
+      "split": "dev140",
+      "n": 140,
+      "row_policy": "development_review_permitted",
+      "path": "paper_experiments/exect/exect_llm_with_rules/deepseek_v4_flash/dev140/structured.jsonl",
+      "status": "present",
+      "empty_raw_count": 0
+    },
+    {
+      "model_slug": "deepseek_v4_flash",
+      "model": "deepseek/deepseek-v4-flash",
+      "method": "exect_llm_with_rules",
+      "replay_alias": "exectv2_compact_ledger",
+      "split": "test60",
+      "n": 59,
+      "row_policy": "aggregate_only",
+      "path": "paper_experiments/exect/exect_llm_with_rules/deepseek_v4_flash/test60/structured.jsonl",
+      "status": "present",
+      "empty_raw_count": 0
+    },
+    {
+      "model_slug": "gemma4_26b",
+      "model": "ollama_chat/gemma4:26b",
+      "method": "exect_llm_with_rules",
+      "replay_alias": "exectv2_compact_ledger",
+      "split": "dev140",
+      "n": 140,
+      "row_policy": "development_review_permitted",
+      "path": "paper_experiments/exect/exect_llm_with_rules/gemma4_26b/dev140/structured.jsonl",
+      "status": "present",
+      "empty_raw_count": 0
+    },
+    {
+      "model_slug": "gemma4_26b",
+      "model": "ollama_chat/gemma4:26b",
+      "method": "exect_llm_with_rules",
+      "replay_alias": "exectv2_compact_ledger",
+      "split": "test60",
+      "n": 59,
+      "row_policy": "aggregate_only",
+      "path": "paper_experiments/exect/exect_llm_with_rules/gemma4_26b/test60/structured.jsonl",
+      "status": "present",
+      "empty_raw_count": 0
+    },
+    {
+      "model_slug": "gemma4_26b",
+      "model": "ollama_chat/gemma4:26b",
+      "method": "gan_llm_only",
+      "replay_alias": "gan2026_llm_only_canonical_pipeline_v0.8",
+      "split": "dev750",
+      "n": 750,
+      "row_policy": "development_review_permitted",
+      "path": "paper_experiments/gan/gan_llm_only/gemma4_26b/dev750/rows.jsonl",
+      "empty_raw_count": 8,
+      "status": "present"
+    },
+    {
+      "model_slug": "gemma4_26b",
+      "model": "ollama_chat/gemma4:26b",
+      "method": "gan_llm_only",
+      "replay_alias": "gan2026_llm_only_canonical_pipeline_v0.8",
+      "split": "test450",
+      "n": 450,
+      "row_policy": "aggregate_only",
+      "path": "paper_experiments/gan/gan_llm_only/gemma4_26b/test450/rows.jsonl",
+      "empty_raw_count": 0,
+      "status": "present"
+    }
+  ],
+  "missing": [
+    {
+      "model_slug": "qwen38_27b",
+      "model": "ollama_chat/qwen3.8:27b",
+      "method": "exect_llm_with_rules",
+      "split": "dev140",
+      "n": 140,
+      "status": "missing",
+      "note": "Local Compact queue is incomplete. Still to run."
+    },
+    {
+      "model_slug": "qwen38_27b",
+      "model": "ollama_chat/qwen3.8:27b",
+      "method": "exect_llm_with_rules",
+      "split": "test60",
+      "n": 59,
+      "status": "missing",
+      "note": "Aggregate-only after dev140 completes."
+    },
+    {
+      "model_slug": "qwen38_27b",
+      "model": "ollama_chat/qwen3.8:27b",
+      "method": "gan_llm_only",
+      "split": "dev750",
+      "n": 750,
+      "status": "missing"
+    },
+    {
+      "model_slug": "qwen38_27b",
+      "model": "ollama_chat/qwen3.8:27b",
+      "method": "gan_llm_only",
+      "split": "test450",
+      "n": 450,
+      "status": "missing",
+      "note": "Aggregate-only."
+    },
+    {
+      "method": "gan_llm_with_rules",
+      "status": "missing",
+      "note": "Cleaned request. Luna dev750 exists in local scratch only. Five other dev750 models and all six test450 cells are blanks. Do not cite the enveloped v0.5 panel."
+    }
+  ]
+}

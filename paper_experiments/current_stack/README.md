@@ -1,14 +1,12 @@
-# Current-stack hybrid fills
+# Historical current-stack fills
 
-Decision 0050 Full-ledger control for six-model `llm_with_rules`
-no-call scores. Compact ledger is the paper-cited ExECT hybrid
-([Decision 0058](../../docs/decisions/0058-compact-ledger-is-the-paper-cited-exect-hybrid.md)).
-This copy is the tracked paper tree under `paper_experiments/`.
+Full-ledger ExECT control and enveloped Gan hybrid fills. These are
+not the cited paper methods. The cited ExECT hybrid is Compact under
+`exect/exect_llm_with_rules/`. The cited Gan hybrid is the cleaned
+request and is not in this tree yet.
 
 - Inventory: [`SOURCES.json`](SOURCES.json)
 - Numbers: [`latest/fills.json`](latest/fills.json)
-- Procedure: [`docs/runbooks/current_stack_six_model_replay.md`](../../../docs/runbooks/current_stack_six_model_replay.md)
-- Policy: [Decision 0050](../../../docs/decisions/0050-current-stack-hybrid-primary-fills.md)
 
-Holdout raw sidecars stay in local `experiments/current_stack/sidecars/`.
-Do not put letter IDs or note text in `latest/`. Dated copies live under `runs/`.
+Holdout raws stay in local `experiments/current_stack/sidecars/`.
+Do not put letter IDs or note text in `latest/`.

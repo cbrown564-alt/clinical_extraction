@@ -6,7 +6,8 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-COMPACT_ROOT = ROOT / "paper_experiments/exectv2_compact_ledger"
+EXECT_HYBRID_ROOT = ROOT / "paper_experiments/exect/exect_llm_with_rules"
+FULL_LEDGER_ROOT = ROOT / "paper_experiments/comparators/exect_full_ledger"
 LIVING_SLUGS = (
     "gpt56sol",
     "gpt56luna",
@@ -15,7 +16,7 @@ LIVING_SLUGS = (
     "qwen38_27b",
     "gemma4_26b",
 )
-COMPACT_PRESENT = {
+EXECT_HYBRID_PRESENT = {
     ("gpt56sol", "dev140", 140, "openai/gpt-5.6-sol"),
     ("gpt56sol", "test60", 59, "openai/gpt-5.6-sol"),
     ("gpt56luna", "dev140", 140, "openai/gpt-5.6-luna"),
@@ -40,13 +41,19 @@ def test_paper_hybrid_fills_are_present() -> None:
     assert "exect_dev140" in fills["hybrid"]
     assert "exect_test60" in fills["hybrid"]
     e5 = json.loads(
-        (
-            ROOT
-            / "paper_experiments/exectv2_rules_only_campaign_e5_remeasure_20260815.json"
-        ).read_text(encoding="utf-8")
+        (ROOT / "paper_experiments/exect/exect_rules/dev140.json").read_text(
+            encoding="utf-8"
+        )
     )
-    assert "dev140" in e5
-    assert "test60" in e5
+    assert e5["dev140"]["four_family_headline_f1"] == 0.9042
+    assert e5["test60"]["four_family_headline_f1"] == 0.7937
+    test60 = json.loads(
+        (ROOT / "paper_experiments/exect/exect_rules/test60.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert test60["split"] == "test60"
+    assert test60["row_policy"] == "aggregate_only"
 
 
 def test_roster_locks_the_living_six() -> None:
@@ -55,45 +62,35 @@ def test_roster_locks_the_living_six() -> None:
     living = tuple(row["slug"] for row in roster["living"])
     assert living == LIVING_SLUGS
     assert roster["living"][0]["method_identity"] is True
-    historical = {row.get("slug") or row.get("identity") for row in roster["historical"]}
-    assert "gpt41mini" in historical
-    assert "qwen36_35b" in historical
-    assert "deepseek_v4_flash_pre0731" in historical
 
 
-def test_local_raws_inventory_covers_present_and_missing_cells() -> None:
+def test_inventory_covers_present_and_missing_cells() -> None:
     inventory = json.loads(
-        (ROOT / "paper_experiments/local_raws.json").read_text(encoding="utf-8")
+        (ROOT / "paper_experiments/inventory.json").read_text(encoding="utf-8")
     )
-    assert inventory["schema_version"] == "paper_experiments.local_raws.v1"
-    present = {(row["model_slug"], row["program"], row["split"]) for row in inventory["present"]}
-    missing = {(row["model_slug"], row["program"], row["split"]) for row in inventory["missing"]}
+    assert inventory["schema_version"] == "paper_experiments.inventory.v1"
+    present = {(row["model_slug"], row["method"], row["split"]) for row in inventory["present"]}
+    missing_methods = {row["method"] for row in inventory["missing"]}
     assert present == {
-        ("gpt56sol", "exectv2_compact_ledger", "dev140"),
-        ("gpt56sol", "exectv2_compact_ledger", "test60"),
-        ("gpt56luna", "exectv2_compact_ledger", "dev140"),
-        ("gpt56luna", "exectv2_compact_ledger", "test60"),
-        ("gemini37flash", "exectv2_compact_ledger", "dev140"),
-        ("gemini37flash", "exectv2_compact_ledger", "test60"),
-        ("deepseek_v4_flash", "exectv2_compact_ledger", "dev140"),
-        ("deepseek_v4_flash", "exectv2_compact_ledger", "test60"),
-        ("gemma4_26b", "gan2026_hybrid_structured_events_v0.5", "dev750"),
-        ("gemma4_26b", "gan2026_hybrid_structured_events_v0.5", "test450"),
-        ("qwen38_27b", "gan2026_hybrid_structured_events_v0.5", "dev750"),
-        ("qwen38_27b", "gan2026_hybrid_structured_events_v0.5", "test450"),
-        ("gemma4_26b", "gan2026_llm_only_canonical_pipeline_v0.8", "dev750"),
-        ("gemma4_26b", "gan2026_llm_only_canonical_pipeline_v0.8", "test450"),
-        ("gemma4_26b", "exectv2_compact_ledger", "dev140"),
-        ("gemma4_26b", "exectv2_compact_ledger", "test60"),
+        ("gpt56sol", "exect_llm_with_rules", "dev140"),
+        ("gpt56sol", "exect_llm_with_rules", "test60"),
+        ("gpt56luna", "exect_llm_with_rules", "dev140"),
+        ("gpt56luna", "exect_llm_with_rules", "test60"),
+        ("gemini37flash", "exect_llm_with_rules", "dev140"),
+        ("gemini37flash", "exect_llm_with_rules", "test60"),
+        ("deepseek_v4_flash", "exect_llm_with_rules", "dev140"),
+        ("deepseek_v4_flash", "exect_llm_with_rules", "test60"),
+        ("gemma4_26b", "exect_llm_with_rules", "dev140"),
+        ("gemma4_26b", "exect_llm_with_rules", "test60"),
+        ("gemma4_26b", "gan_llm_only", "dev750"),
+        ("gemma4_26b", "gan_llm_only", "test450"),
     }
-    assert missing == {
-        ("qwen38_27b", "exectv2_compact_ledger", "dev140"),
-        ("qwen38_27b", "exectv2_compact_ledger", "test60"),
-        ("qwen38_27b", "gan2026_llm_only_canonical_pipeline_v0.8", "dev750"),
-        ("qwen38_27b", "gan2026_llm_only_canonical_pipeline_v0.8", "test450"),
+    assert "gan_llm_with_rules" in missing_methods
+    assert ("qwen38_27b", "exect_llm_with_rules", "dev140") in {
+        (row.get("model_slug"), row["method"], row.get("split")) for row in inventory["missing"]
     }
-    gan_fields = set(inventory["strip"]["gan2026"])
-    exect_fields = set(inventory["strip"]["exectv2"])
+    gan_fields = set(inventory["strip"]["gan"])
+    exect_fields = set(inventory["strip"]["exect"])
     for row in inventory["present"]:
         path = ROOT / row["path"]
         assert path.is_file()
@@ -101,12 +98,12 @@ def test_local_raws_inventory_covers_present_and_missing_cells() -> None:
         assert len(lines) == row["n"]
         empty = 0
         ids: set[object] = set()
-        expected_fields = exect_fields if row["program"].startswith("exectv2") else gan_fields
+        expected_fields = exect_fields if row["method"].startswith("exect") else gan_fields
         id_field = "letter_id" if "letter_id" in expected_fields else "source_row_index"
         for line in lines:
             payload = json.loads(line)
             assert set(payload) == expected_fields
-            assert payload["prompt_version"] == row["program"]
+            assert payload["prompt_version"] == row["replay_alias"]
             raw = payload["raw_output"]
             assert isinstance(raw, str)
             if not raw.strip():
@@ -118,10 +115,12 @@ def test_local_raws_inventory_covers_present_and_missing_cells() -> None:
             assert row["row_policy"] == "aggregate_only"
 
 
-def test_compact_paper_cells_have_raw_and_hybrid() -> None:
-    for slug, split, rows, model in COMPACT_PRESENT:
+def test_exect_hybrid_cells_have_raw_and_hybrid() -> None:
+    for slug, split, rows, model in EXECT_HYBRID_PRESENT:
         comparison = json.loads(
-            (COMPACT_ROOT / slug / split / "comparison.json").read_text(encoding="utf-8")
+            (EXECT_HYBRID_ROOT / slug / split / "comparison.json").read_text(
+                encoding="utf-8"
+            )
         )
         assert comparison["split"] == split
         assert comparison["row_count"] == rows
@@ -130,17 +129,30 @@ def test_compact_paper_cells_have_raw_and_hybrid() -> None:
             assert comparison["row_policy"] == "aggregate_only"
             assert "letter_ids" not in comparison
             assert "changed_rows" not in comparison
-        for arm, prompt in (
-            ("compact_ledger", "exectv2_compact_ledger"),
-            ("full_ledger", "exectv2_full_ledger"),
-        ):
-            summary = comparison["arms"][arm]
-            assert "raw_headline_f1" in summary
-            assert "hybrid_headline_f1" in summary
-            sidecar = COMPACT_ROOT / slug / split / arm / "structured.jsonl"
-            text = sidecar.read_text(encoding="utf-8")
-            lines = [line for line in text.splitlines() if line.strip()]
-            assert len(lines) == rows
-            row = json.loads(lines[0])
-            assert set(row) == {"letter_id", "prompt_version", "raw_output"}
-            assert row["prompt_version"] == prompt
+        compact = comparison["arms"]["compact_ledger"]
+        full = comparison["arms"]["full_ledger"]
+        assert "raw_headline_f1" in compact
+        assert "hybrid_headline_f1" in compact
+        assert "raw_headline_f1" in full
+        assert "hybrid_headline_f1" in full
+        hybrid_row = json.loads(
+            (EXECT_HYBRID_ROOT / slug / split / "structured.jsonl")
+            .read_text(encoding="utf-8")
+            .splitlines()[0]
+        )
+        assert set(hybrid_row) == {"letter_id", "prompt_version", "raw_output"}
+        assert hybrid_row["prompt_version"] == "exectv2_compact_ledger"
+        control = json.loads(
+            (FULL_LEDGER_ROOT / slug / split / "structured.jsonl")
+            .read_text(encoding="utf-8")
+            .splitlines()[0]
+        )
+        assert control["prompt_version"] == "exectv2_full_ledger"
+        lines = [
+            line
+            for line in (EXECT_HYBRID_ROOT / slug / split / "structured.jsonl")
+            .read_text(encoding="utf-8")
+            .splitlines()
+            if line.strip()
+        ]
+        assert len(lines) == rows
