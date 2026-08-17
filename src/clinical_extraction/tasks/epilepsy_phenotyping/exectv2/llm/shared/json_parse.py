@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import ast
 import json
-import re
 from typing import Any
 
 from clinical_extraction.core.json_schema_repair import (
@@ -28,9 +27,9 @@ def extract_json_object(
     """Extract one JSON object (or array) from model text output."""
 
     text = raw.strip()
-    fenced = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, flags=re.DOTALL)
+    fenced = _extract_fenced_json_object(text)
     if fenced:
-        return fenced.group(1)
+        return fenced
     candidates = _balanced_json_candidates(text)
     valid: list[tuple[int, str]] = []
     for index, candidate in enumerate(candidates):
@@ -91,6 +90,41 @@ def loads_json_or_literal(raw: str) -> tuple[Any | None, list[str]]:
     except json.JSONDecodeError as json_exc:
         return None, [f"invalid_json: {json_exc.msg}"]
     return payload, notes
+
+
+def _extract_fenced_json_object(text: str) -> str | None:
+    """Return the first closed markdown-fenced JSON object, or None.
+
+    An unclosed fence must not scan every ``}`` looking for a closing marker.
+    """
+
+    index = 0
+    while True:
+        fence = text.find("```", index)
+        if fence < 0:
+            return None
+        pos = fence + 3
+        if text.startswith("json", pos):
+            pos += 4
+        pos = _skip_json_whitespace(text, pos)
+        if pos >= len(text) or text[pos] != "{":
+            index = fence + 3
+            continue
+        close = text.find("```", pos)
+        if close < 0:
+            return None
+        inner = text[pos:close].rstrip()
+        last = inner.rfind("}")
+        if last != -1:
+            return inner[: last + 1]
+        index = close + 3
+
+
+def _skip_json_whitespace(text: str, index: int) -> int:
+    length = len(text)
+    while index < length and text[index] in " \t\r\n":
+        index += 1
+    return index
 
 
 def _balanced_json_candidates(text: str) -> list[str]:

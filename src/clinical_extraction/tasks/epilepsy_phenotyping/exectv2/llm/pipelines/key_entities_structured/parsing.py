@@ -6,7 +6,6 @@ Pure relocation from ``llm_only_key_entities_structured``. No logic changes.
 from __future__ import annotations
 
 import json
-import re
 from typing import Any, cast, get_args
 
 from clinical_extraction.core.json_schema_repair import (
@@ -39,18 +38,22 @@ def parse_structured_events_json(
     prompt_version: str | None = None,
 ) -> tuple[StructuredExtractionRecord | None, list[str]]:
     extracted = extract_json_object(raw_output)
-    extracted, structural_notes = _repair_missing_mention_object_close(extracted)
+    structural_notes: list[str] = []
     try:
         payload, dialect_notes = parse_json_payload_with_schema_repair(extracted)
-    except json.JSONDecodeError as exc:
-        repaired_raw, rationale_notes = _strip_non_scored_rationale_fields(extracted)
-        if not rationale_notes:
-            return None, [f"invalid_json: {exc.msg}"]
+    except json.JSONDecodeError:
+        extracted, structural_notes = _repair_missing_mention_object_close(extracted)
         try:
-            payload, dialect_notes = parse_json_payload_with_schema_repair(repaired_raw)
-        except json.JSONDecodeError:
-            return None, [f"invalid_json: {exc.msg}"]
-        dialect_notes = [*dialect_notes, *rationale_notes]
+            payload, dialect_notes = parse_json_payload_with_schema_repair(extracted)
+        except json.JSONDecodeError as exc:
+            repaired_raw, rationale_notes = _strip_non_scored_rationale_fields(extracted)
+            if not rationale_notes:
+                return None, [f"invalid_json: {exc.msg}"]
+            try:
+                payload, dialect_notes = parse_json_payload_with_schema_repair(repaired_raw)
+            except json.JSONDecodeError:
+                return None, [f"invalid_json: {exc.msg}"]
+            dialect_notes = [*dialect_notes, *rationale_notes]
 
     del prompt_version  # Kept for call-site compatibility; only canonical schema remains.
     payload, coerce_notes = _coerce_structured_payload(payload)
@@ -65,31 +68,183 @@ def parse_structured_events_json(
 def _repair_missing_mention_object_close(raw_payload: str) -> tuple[str, list[str]]:
     """Close one mention before a second mention accidentally nested beside it."""
 
-    repaired, count = re.subn(
-        r'("attributes"\s*:\s*\{[^{}]*\})\s*,\s*'
-        r'(\{\s*"entity"\s*:.*?"attributes"\s*:\s*\{[^{}]*\}\s*\})'
-        r'\s*}\s*(\])',
-        r'\1}, \2\3',
-        raw_payload,
-        flags=re.DOTALL,
-    )
-    if not count:
+    matches = _missing_mention_object_close_matches(raw_payload)
+    if not matches:
         return raw_payload, []
-    return repaired, ["json_dialect_repaired: missing_array_object_close"]
+    parts: list[str] = []
+    last = 0
+    for attrs_end, second_start, second_end, bracket_at in matches:
+        parts.append(raw_payload[last:attrs_end])
+        parts.append("}, ")
+        parts.append(raw_payload[second_start:second_end])
+        parts.append("]")
+        last = bracket_at + 1
+    parts.append(raw_payload[last:])
+    return "".join(parts), ["json_dialect_repaired: missing_array_object_close"]
+
+
+def _missing_mention_object_close_matches(
+    raw_payload: str,
+) -> list[tuple[int, int, int, int]]:
+    matches: list[tuple[int, int, int, int]] = []
+    index = 0
+    needle = '"attributes"'
+    while True:
+        found = raw_payload.find(needle, index)
+        if found < 0:
+            return matches
+        cursor = _skip_json_whitespace(raw_payload, found + len(needle))
+        if cursor >= len(raw_payload) or raw_payload[cursor] != ":":
+            index = found + 1
+            continue
+        cursor = _skip_json_whitespace(raw_payload, cursor + 1)
+        if cursor >= len(raw_payload) or raw_payload[cursor] != "{":
+            index = found + 1
+            continue
+        attrs_end = _scan_balanced_json_value(raw_payload, cursor)
+        if attrs_end is None:
+            index = found + 1
+            continue
+        match = _missing_mention_object_close_match(raw_payload, attrs_end)
+        if match is not None:
+            matches.append((attrs_end, *match))
+            index = match[-1] + 1
+            continue
+        index = attrs_end
+
+
+def _missing_mention_object_close_match(
+    raw_payload: str, attrs_end: int
+) -> tuple[int, int, int] | None:
+    cursor = _skip_json_whitespace(raw_payload, attrs_end)
+    if cursor >= len(raw_payload) or raw_payload[cursor] != ",":
+        return None
+    cursor = _skip_json_whitespace(raw_payload, cursor + 1)
+    if cursor >= len(raw_payload) or raw_payload[cursor] != "{":
+        return None
+    second_start = cursor
+    entity_key = _skip_json_whitespace(raw_payload, cursor + 1)
+    if not raw_payload.startswith('"entity"', entity_key):
+        return None
+    second_end = _scan_balanced_json_value(raw_payload, cursor)
+    if second_end is None:
+        return None
+    attributes_key = raw_payload.find('"attributes"', entity_key)
+    if attributes_key < 0 or attributes_key >= second_end:
+        return None
+    after_key = _skip_json_whitespace(raw_payload, attributes_key + len('"attributes"'))
+    if after_key >= len(raw_payload) or raw_payload[after_key] != ":":
+        return None
+    after_key = _skip_json_whitespace(raw_payload, after_key + 1)
+    if after_key >= len(raw_payload) or raw_payload[after_key] != "{":
+        return None
+    nested_attrs_end = _scan_balanced_json_value(raw_payload, after_key)
+    if nested_attrs_end is None:
+        return None
+    after_attrs = _skip_json_whitespace(raw_payload, nested_attrs_end)
+    if after_attrs != second_end - 1 or raw_payload[after_attrs] != "}":
+        return None
+    cursor = _skip_json_whitespace(raw_payload, second_end)
+    if cursor >= len(raw_payload) or raw_payload[cursor] != "}":
+        return None
+    cursor = _skip_json_whitespace(raw_payload, cursor + 1)
+    if cursor >= len(raw_payload) or raw_payload[cursor] != "]":
+        return None
+    return second_start, second_end, cursor
+
+
+def _skip_json_whitespace(raw_payload: str, index: int) -> int:
+    length = len(raw_payload)
+    while index < length and raw_payload[index] in " \t\r\n":
+        index += 1
+    return index
+
+
+def _scan_balanced_json_value(raw_payload: str, start: int) -> int | None:
+    pairs = {"{": "}", "[": "]"}
+    if start >= len(raw_payload) or raw_payload[start] not in pairs:
+        return None
+    stack = [pairs[raw_payload[start]]]
+    in_string = False
+    escaped = False
+    for index in range(start + 1, len(raw_payload)):
+        char = raw_payload[index]
+        if in_string:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_string = False
+            continue
+        if char == '"':
+            in_string = True
+            continue
+        if char in pairs:
+            stack.append(pairs[char])
+            continue
+        if stack and char == stack[-1]:
+            stack.pop()
+            if not stack:
+                return index + 1
+    return None
 
 
 def _strip_non_scored_rationale_fields(raw_payload: str) -> tuple[str, list[str]]:
     """Blank malformed free-text rationale values without touching scored fields."""
 
-    repaired, count = re.subn(
-        r'"rationale"\s*:\s*"(?:\\.|[^"\\])*?(?=\r?\n\s*[}\]])',
-        '"rationale": ""',
-        raw_payload,
-        flags=re.DOTALL,
-    )
+    parts: list[str] = []
+    last = 0
+    count = 0
+    index = 0
+    needle = '"rationale"'
+    while True:
+        found = raw_payload.find(needle, index)
+        if found < 0:
+            break
+        cursor = _skip_json_whitespace(raw_payload, found + len(needle))
+        if cursor >= len(raw_payload) or raw_payload[cursor] != ":":
+            index = found + 1
+            continue
+        cursor = _skip_json_whitespace(raw_payload, cursor + 1)
+        if cursor >= len(raw_payload) or raw_payload[cursor] != '"':
+            index = found + 1
+            continue
+        value_start = cursor + 1
+        scan = value_start
+        escaped = False
+        newline_cut: int | None = None
+        while scan < len(raw_payload):
+            char = raw_payload[scan]
+            if escaped:
+                escaped = False
+                scan += 1
+                continue
+            if char == "\\":
+                escaped = True
+                scan += 1
+                continue
+            if char == '"':
+                newline_cut = None
+                break
+            if char == "\n" and newline_cut is None:
+                after = _skip_json_whitespace(raw_payload, scan + 1)
+                if after < len(raw_payload) and raw_payload[after] in "}]":
+                    newline_cut = scan
+                    break
+            scan += 1
+        if newline_cut is None:
+            index = found + 1
+            continue
+        parts.append(raw_payload[last:found])
+        parts.append('"rationale": ""')
+        last = newline_cut
+        count += 1
+        index = newline_cut
     if count == 0:
         return raw_payload, []
-    return repaired, ["json_dialect_repaired: stripped_non_scored_rationale"]
+    parts.append(raw_payload[last:])
+    return "".join(parts), ["json_dialect_repaired: stripped_non_scored_rationale"]
 
 
 def _coerce_structured_payload(payload: Any) -> tuple[Any, list[str]]:
