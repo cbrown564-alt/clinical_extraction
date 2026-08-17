@@ -48,6 +48,17 @@
       "empty_raw_count": 0
     },
     {
+      "model_slug": "gpt56luna",
+      "model": "openai/gpt-5.6-luna",
+      "program": "exectv2_compact_ledger",
+      "split": "test60",
+      "n": 59,
+      "row_policy": "aggregate_only",
+      "path": "paper_experiments/exectv2_compact_ledger/gpt56luna/test60/compact_ledger/structured.jsonl",
+      "status": "present",
+      "empty_raw_count": 0
+    },
+    {
       "model_slug": "gemini37flash",
       "model": "gemini/gemini-3.7-flash",
       "program": "exectv2_compact_ledger",
@@ -212,15 +223,6 @@
       "n": 59,
       "status": "missing",
       "note": "Not started. test60 is aggregate-only after dev140 completes."
-    },
-    {
-      "model_slug": "gpt56luna",
-      "model": "openai/gpt-5.6-luna",
-      "program": "exectv2_compact_ledger",
-      "split": "test60",
-      "n": 59,
-      "status": "missing",
-      "note": "Living Compact test60 is not on disk. Needed for a complete hosted holdout table."
     },
     {
       "model_slug": "qwen38_27b",

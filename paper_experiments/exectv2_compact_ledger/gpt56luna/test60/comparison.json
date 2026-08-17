@@ -1,0 +1,317 @@
+{
+  "arms": {
+    "compact_ledger": {
+      "assembly_family_f1": {
+        "Diagnosis": 0.7884,
+        "Investigations": 0.9011,
+        "Prescription": 0.9167,
+        "SeizureFrequency": 0.5507
+      },
+      "assembly_headline_f1": 0.7868,
+      "call_mode": "live",
+      "gate_event_count": 76,
+      "hybrid_family_f1": {
+        "Diagnosis": 0.7884,
+        "Investigations": 0.9011,
+        "Prescription": 0.9167,
+        "SeizureFrequency": 0.5507
+      },
+      "hybrid_family_letter_exact": {
+        "Diagnosis": 30,
+        "Investigations": 54,
+        "Prescription": 48,
+        "SeizureFrequency": 27
+      },
+      "hybrid_family_prf": {
+        "Diagnosis": {
+          "f1": 0.7884,
+          "precision": 0.7983,
+          "recall": 0.7787
+        },
+        "Investigations": {
+          "f1": 0.9011,
+          "precision": 0.9318,
+          "recall": 0.8723
+        },
+        "Prescription": {
+          "f1": 0.9167,
+          "precision": 0.9277,
+          "recall": 0.9059
+        },
+        "SeizureFrequency": {
+          "f1": 0.5507,
+          "precision": 0.5938,
+          "recall": 0.5135
+        }
+      },
+      "hybrid_four_family_letter_exact": 13,
+      "hybrid_headline_f1": 0.7868,
+      "hybrid_headline_prf": {
+        "f1": 0.7868,
+        "precision": 0.8097,
+        "recall": 0.7652
+      },
+      "new_model_calls": 59,
+      "prompt_version": "exectv2_compact_ledger",
+      "quality": {
+        "illegal_enum": 0,
+        "inexact_evidence": 1,
+        "parse": 0,
+        "schema": 0
+      },
+      "raw_family_f1": {
+        "Diagnosis": 0.6979,
+        "Investigations": 0.9011,
+        "Prescription": 0.8772,
+        "SeizureFrequency": 0.5556
+      },
+      "raw_family_letter_exact": {
+        "Diagnosis": 28,
+        "Investigations": 54,
+        "Prescription": 47,
+        "SeizureFrequency": 25
+      },
+      "raw_family_prf": {
+        "Diagnosis": {
+          "f1": 0.6979,
+          "precision": 0.7257,
+          "recall": 0.6721
+        },
+        "Investigations": {
+          "f1": 0.9011,
+          "precision": 0.9318,
+          "recall": 0.8723
+        },
+        "Prescription": {
+          "f1": 0.8772,
+          "precision": 0.8721,
+          "recall": 0.8824
+        },
+        "SeizureFrequency": {
+          "f1": 0.5556,
+          "precision": 0.5714,
+          "recall": 0.5405
+        }
+      },
+      "raw_four_family_letter_exact": 11,
+      "raw_headline_f1": 0.7426,
+      "raw_headline_prf": {
+        "f1": 0.7426,
+        "precision": 0.7604,
+        "recall": 0.7256
+      },
+      "raw_mention_count": 327,
+      "scored_mention_count": 326
+    },
+    "full_ledger": {
+      "assembly_family_f1": {
+        "Diagnosis": 0.8033,
+        "Investigations": 0.9231,
+        "Prescription": 0.9091,
+        "SeizureFrequency": 0.5606
+      },
+      "assembly_headline_f1": 0.7974,
+      "call_mode": "saved_structured_no_call",
+      "gate_event_count": 66,
+      "hybrid_family_f1": {
+        "Diagnosis": 0.8033,
+        "Investigations": 0.9231,
+        "Prescription": 0.9091,
+        "SeizureFrequency": 0.5606
+      },
+      "hybrid_family_letter_exact": {
+        "Diagnosis": 34,
+        "Investigations": 54,
+        "Prescription": 48,
+        "SeizureFrequency": 25
+      },
+      "hybrid_family_prf": {
+        "Diagnosis": {
+          "f1": 0.8033,
+          "precision": 0.8205,
+          "recall": 0.7869
+        },
+        "Investigations": {
+          "f1": 0.9231,
+          "precision": 0.9545,
+          "recall": 0.8936
+        },
+        "Prescription": {
+          "f1": 0.9091,
+          "precision": 0.9375,
+          "recall": 0.8824
+        },
+        "SeizureFrequency": {
+          "f1": 0.5606,
+          "precision": 0.6379,
+          "recall": 0.5
+        }
+      },
+      "hybrid_four_family_letter_exact": 13,
+      "hybrid_headline_f1": 0.7974,
+      "hybrid_headline_prf": {
+        "f1": 0.7974,
+        "precision": 0.8361,
+        "recall": 0.7622
+      },
+      "new_model_calls": 0,
+      "prompt_version": "exectv2_full_ledger",
+      "quality": {
+        "illegal_enum": 0,
+        "inexact_evidence": 0,
+        "parse": 0,
+        "schema": 0
+      },
+      "raw_family_f1": {
+        "Diagnosis": 0.7479,
+        "Investigations": 0.9231,
+        "Prescription": 0.9091,
+        "SeizureFrequency": 0.5797
+      },
+      "raw_family_letter_exact": {
+        "Diagnosis": 35,
+        "Investigations": 54,
+        "Prescription": 48,
+        "SeizureFrequency": 23
+      },
+      "raw_family_prf": {
+        "Diagnosis": {
+          "f1": 0.7479,
+          "precision": 0.7672,
+          "recall": 0.7295
+        },
+        "Investigations": {
+          "f1": 0.9231,
+          "precision": 0.9545,
+          "recall": 0.8936
+        },
+        "Prescription": {
+          "f1": 0.9091,
+          "precision": 0.9375,
+          "recall": 0.8824
+        },
+        "SeizureFrequency": {
+          "f1": 0.5797,
+          "precision": 0.625,
+          "recall": 0.5405
+        }
+      },
+      "raw_four_family_letter_exact": 13,
+      "raw_headline_f1": 0.7785,
+      "raw_headline_prf": {
+        "f1": 0.7785,
+        "precision": 0.8092,
+        "recall": 0.75
+      },
+      "raw_mention_count": 320,
+      "scored_mention_count": 320
+    }
+  },
+  "cache": false,
+  "claim_boundary": "ExECTv2 aggregate-only test60 living Compact versus saved Full ledger. Not a selected prompt and not a Decision 0050 change.",
+  "comparison": {
+    "compact_ledger_minus_full_ledger": {
+      "regression_triggers": [],
+      "significant_regression": false,
+      "surfaces": {
+        "hybrid": {
+          "family_f1_delta": {
+            "Diagnosis": -0.0149,
+            "Investigations": -0.022,
+            "Prescription": 0.0076,
+            "SeizureFrequency": -0.0099
+          },
+          "four_family_letter_exact_losses": 4,
+          "four_family_letter_exact_net": 0,
+          "four_family_letter_exact_wins": 4,
+          "headline_f1_delta": -0.0106,
+          "per_family_letter_exact_flips": {
+            "Diagnosis": {
+              "losses": 7,
+              "wins": 3
+            },
+            "Investigations": {
+              "losses": 0,
+              "wins": 0
+            },
+            "Prescription": {
+              "losses": 1,
+              "wins": 1
+            },
+            "SeizureFrequency": {
+              "losses": 2,
+              "wins": 4
+            }
+          }
+        },
+        "raw": {
+          "family_f1_delta": {
+            "Diagnosis": -0.05,
+            "Investigations": -0.022,
+            "Prescription": -0.0319,
+            "SeizureFrequency": -0.0241
+          },
+          "four_family_letter_exact_losses": 4,
+          "four_family_letter_exact_net": -2,
+          "four_family_letter_exact_wins": 2,
+          "headline_f1_delta": -0.0359,
+          "per_family_letter_exact_flips": {
+            "Diagnosis": {
+              "losses": 9,
+              "wins": 2
+            },
+            "Investigations": {
+              "losses": 0,
+              "wins": 0
+            },
+            "Prescription": {
+              "losses": 3,
+              "wins": 2
+            },
+            "SeizureFrequency": {
+              "losses": 1,
+              "wins": 3
+            }
+          }
+        }
+      }
+    }
+  },
+  "decision": {
+    "compact_ledger": {
+      "family_f1_delta": {
+        "Diagnosis": -0.0149,
+        "Investigations": -0.022,
+        "Prescription": 0.0076,
+        "SeizureFrequency": -0.0099
+      },
+      "four_family_letter_exact_net": 0,
+      "headline_f1_delta": -0.0106,
+      "parse": 0,
+      "schema": 0,
+      "status": "scored"
+    }
+  },
+  "default_prompt_version": "exectv2_compact_ledger",
+  "finished_utc": "2026-08-17T19:38:30.520964+00:00",
+  "generated_on": "2026-08-17",
+  "live": true,
+  "max_tokens": 16000,
+  "model": "openai/gpt-5.6-luna",
+  "model_calls": 59,
+  "model_label": "GPT-5.6 Luna",
+  "model_slug": "gpt56luna",
+  "protocol": "docs/research/exectv2/compact_ledger_living_hosted_test60_protocol_2026-08-17.md",
+  "provider_revision": null,
+  "reasoning_effort": null,
+  "repair_policy": {
+    "diagnosis_policy_variant": "default",
+    "prescription_policy_variant": "default"
+  },
+  "row_count": 59,
+  "row_policy": "aggregate_only",
+  "schema_version": "exectv2.compact_ledger_living_hosted_test60.v1",
+  "split": "test60",
+  "started_utc": "2026-08-17T19:27:43.620767+00:00",
+  "temperature": 1.0
+}

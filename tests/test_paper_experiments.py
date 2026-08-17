@@ -19,6 +19,7 @@ COMPACT_PRESENT = {
     ("gpt56sol", "dev140", 140, "openai/gpt-5.6-sol"),
     ("gpt56sol", "test60", 59, "openai/gpt-5.6-sol"),
     ("gpt56luna", "dev140", 140, "openai/gpt-5.6-luna"),
+    ("gpt56luna", "test60", 59, "openai/gpt-5.6-luna"),
     ("gemini37flash", "dev140", 140, "gemini/gemini-3.7-flash"),
     ("gemini37flash", "test60", 59, "gemini/gemini-3.7-flash"),
     ("deepseek_v4_flash", "dev140", 140, "deepseek/deepseek-v4-flash"),
@@ -71,6 +72,7 @@ def test_local_raws_inventory_covers_present_and_missing_cells() -> None:
         ("gpt56sol", "exectv2_compact_ledger", "dev140"),
         ("gpt56sol", "exectv2_compact_ledger", "test60"),
         ("gpt56luna", "exectv2_compact_ledger", "dev140"),
+        ("gpt56luna", "exectv2_compact_ledger", "test60"),
         ("gemini37flash", "exectv2_compact_ledger", "dev140"),
         ("gemini37flash", "exectv2_compact_ledger", "test60"),
         ("deepseek_v4_flash", "exectv2_compact_ledger", "dev140"),
@@ -87,7 +89,6 @@ def test_local_raws_inventory_covers_present_and_missing_cells() -> None:
     assert missing == {
         ("qwen38_27b", "exectv2_compact_ledger", "dev140"),
         ("qwen38_27b", "exectv2_compact_ledger", "test60"),
-        ("gpt56luna", "exectv2_compact_ledger", "test60"),
         ("qwen38_27b", "gan2026_llm_only_canonical_pipeline_v0.8", "dev750"),
         ("qwen38_27b", "gan2026_llm_only_canonical_pipeline_v0.8", "test450"),
     }

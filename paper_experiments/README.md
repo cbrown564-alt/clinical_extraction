@@ -28,5 +28,5 @@ or `test60` rows.
 Still missing, still to run:
 
 - Qwen 3.8 Compact (`dev140`, then aggregate-only `test60`)
-- Luna Compact aggregate-only `test60`
 - Qwen 3.8 Gan `gan2026_llm_only_canonical_pipeline_v0.8` (`dev750` and `test450`)
+- Cleaned Gan hybrid (`gan_llm_with_rules`) six-model panel
