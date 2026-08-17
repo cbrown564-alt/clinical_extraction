@@ -197,7 +197,10 @@ def _find_flexible_whitespace_span(
     if not evidence:
         return None
     suffix = note_text[start:]
-    pattern = "".join(r"\s+" if char.isspace() else re.escape(char) for char in evidence)
+    words = [re.escape(word) for word in evidence.split() if word]
+    if not words:
+        return None
+    pattern = r"\s+".join(words)
     match = re.search(pattern, suffix, flags=re.IGNORECASE)
     if not match:
         return None

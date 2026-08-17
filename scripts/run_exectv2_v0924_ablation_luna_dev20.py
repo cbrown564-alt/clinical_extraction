@@ -191,7 +191,7 @@ def verify_payload() -> dict[str, Any]:
             }
     finally:
         structured.set_active_prompt_version(before)
-    if structured.PROMPT_VERSION != structured.FULL_LEDGER:
+    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
         raise RuntimeError("ablation check changed the live default")
     if (
         checks["drop_encoding_non_sf_all_examples"]["n_examples"] != 0

@@ -126,7 +126,7 @@ def verify_study(*, split: str = "dev140") -> dict[str, Any]:
             raise RuntimeError("Compact content drifted")
     finally:
         structured.set_active_prompt_version(before)
-    if structured.PROMPT_VERSION != structured.FULL_LEDGER:
+    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
         raise RuntimeError("payload check changed the live default")
     if split == "test60":
         missing = [
@@ -198,7 +198,7 @@ def run_model(
     work_root.mkdir(parents=True, exist_ok=True)
     public_root.mkdir(parents=True, exist_ok=True)
     started = datetime.now(UTC).isoformat()
-    if structured.PROMPT_VERSION != structured.FULL_LEDGER:
+    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
         raise RuntimeError("live default drifted before the run")
     resolved_base = _resolved_api_base(spec, api_base)
     _require_six_model_credentials(spec)
@@ -231,7 +231,7 @@ def run_model(
             candidate_version=CANDIDATE_VERSION,
             progress_label="living compact test60" if holdout else "living compact",
         )
-        if structured.PROMPT_VERSION != structured.FULL_LEDGER:
+        if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
             raise RuntimeError("candidate arm left the live default changed")
         versus = _compare_pair(control, candidate, letters)
         hybrid = versus["surfaces"]["hybrid"]

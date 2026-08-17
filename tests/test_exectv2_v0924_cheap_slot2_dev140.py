@@ -9,7 +9,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
 )
 from scripts.run_exectv2_v0924_cheap_slot2_dev140 import (
     CANDIDATE_VERSION,
-    CONTROL_VERSION,
     MODELS,
     model_spec,
     require_credentials,
@@ -27,8 +26,8 @@ def test_slot2_payload_check_does_not_change_default() -> None:
     assert payload["n_examples"] == 0
     assert payload["drops_research_metadata"] is True
     assert payload["prompt_version"] == CANDIDATE_VERSION
-    assert payload["default_prompt_version"] == CONTROL_VERSION
-    assert structured.PROMPT_VERSION == before == CONTROL_VERSION
+    assert payload["default_prompt_version"] == structured.COMPACT_LEDGER
+    assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER
 
 
 def test_three_model_specs_use_saved_same_model_controls() -> None:

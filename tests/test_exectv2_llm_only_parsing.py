@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import time
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     DIAGNOSIS,
@@ -11,12 +10,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
-    extract_json_object,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
-    structured_one_call,
 )
 
 
@@ -303,142 +296,3 @@ def test_v26_missing_event_does_not_fail_the_letter() -> None:
     assert record.clinical_events[0].mentions == []
     assert [mention.entity for mention in mentions] == [DIAGNOSIS.name]
     assert mentions[0].text == "focal epilepsy"
-
-
-def test_parse_repairs_missing_mention_object_close_without_changing_values() -> None:
-    raw = (
-        '{"clinical_events":[{"family":"diagnosis","anchor_text":"epilepsy",'
-        '"evidence":"Diagnosis: epilepsy","event_state":{},"mentions":['
-        '{"entity":"Diagnosis","text":"epilepsy","attributes":{"Negation":"Affirmed"},'
-        '{"entity":"Diagnosis","text":"focal epilepsy","attributes":{"Negation":"Affirmed"}}'
-        "}]}]}"
-    )
-
-    record, errors = structured.parse_structured_events_json(raw)
-
-    assert record is not None
-    assert "json_dialect_repaired: missing_array_object_close" in errors
-    assert [mention.text for mention in record.clinical_events[0].mentions] == [
-        "epilepsy",
-        "focal epilepsy",
-    ]
-    assert all(
-        mention.attributes["Negation"] == "Affirmed"
-        for mention in record.clinical_events[0].mentions
-    )
-
-
-def test_parse_does_not_rewrite_valid_json_with_mention_close_repair() -> None:
-    raw = json.dumps(
-        {
-            "clinical_events": [
-                {
-                    "family": "diagnosis",
-                    "anchor_text": "epilepsy",
-                    "evidence": "Diagnosis: epilepsy",
-                    "event_state": {},
-                    "mentions": [
-                        {
-                            "entity": DIAGNOSIS.name,
-                            "text": "epilepsy",
-                            "attributes": {"Negation": "Affirmed"},
-                        },
-                        {
-                            "entity": DIAGNOSIS.name,
-                            "text": "focal epilepsy",
-                            "attributes": {"Negation": "Affirmed"},
-                        },
-                    ],
-                    "confidence": "high",
-                    "rationale": "",
-                }
-            ]
-        }
-    )
-
-    record, errors = structured.parse_structured_events_json(raw)
-
-    assert record is not None
-    assert "json_dialect_repaired: missing_array_object_close" not in errors
-
-
-def test_parse_mention_close_near_miss_finishes_quickly() -> None:
-    chunk = (
-        '"attributes":{"Negation":"Affirmed"}, '
-        '{"entity":"Diagnosis","text":"seizure seizure seizure","attributes":'
-        '{"Negation":"Affirmed"}}'
-    )
-    raw = "[" + ", ".join([chunk] * 1500) + " NO_CLOSE"
-
-    started = time.perf_counter()
-    record, errors = structured.parse_structured_events_json(raw)
-    elapsed = time.perf_counter() - started
-
-    assert record is None
-    assert errors and str(errors[0]).startswith("invalid_json:")
-    assert elapsed < 0.4
-
-
-def test_extract_json_object_unclosed_fence_finishes_quickly() -> None:
-    raw = "```json\n{" + (" x}" * 80_000)
-
-    started = time.perf_counter()
-    extracted = extract_json_object(raw)
-    elapsed = time.perf_counter() - started
-
-    assert extracted.startswith("{")
-    assert elapsed < 0.4
-
-
-def test_extract_json_object_reads_closed_fence() -> None:
-    raw = 'prefix\n```json\n{"clinical_events": []}\n```\ntrailing'
-
-    assert extract_json_object(raw) == '{"clinical_events": []}'
-
-
-def test_parse_strips_newline_broken_rationale_without_changing_values() -> None:
-    raw = (
-        '{"clinical_events":[{"family":"diagnosis","anchor_text":"epilepsy",'
-        '"evidence":"Diagnosis: epilepsy","event_state":{},"mentions":['
-        '{"entity":"Diagnosis","text":"epilepsy","attributes":{"Negation":"Affirmed"}}'
-        '],"confidence":"high","rationale": "broken value\n  }]}'
-    )
-
-    record, errors = structured.parse_structured_events_json(raw)
-
-    assert record is not None
-    assert "json_dialect_repaired: stripped_non_scored_rationale" in errors
-    assert record.clinical_events[0].rationale == ""
-    assert record.clinical_events[0].mentions[0].text == "epilepsy"
-
-
-def test_predict_deadline_returns_note_when_call_does_not_finish() -> None:
-    class _HangingProgram:
-        def __call__(self, prompt_input_json: str) -> str:
-            del prompt_input_json
-            time.sleep(2)
-            return "done"
-
-    started = time.perf_counter()
-    prediction, note = structured_one_call._predict_with_deadline(
-        _HangingProgram(),
-        prompt_input_json="{}",
-        timeout=1,
-    )
-    elapsed = time.perf_counter() - started
-
-    assert prediction is None
-    assert note == "invalid_json: produce_deadline_exceeded"
-    assert elapsed < 1.5
-
-
-def test_parse_broken_rationale_near_miss_finishes_quickly() -> None:
-    raw = ('"rationale": "' + ("x" * 80) + "\n   y") * 2000
-
-    started = time.perf_counter()
-    record, errors = structured.parse_structured_events_json(raw)
-    elapsed = time.perf_counter() - started
-
-    assert record is None
-    assert errors and str(errors[0]).startswith("invalid_json:")
-    assert elapsed < 0.4

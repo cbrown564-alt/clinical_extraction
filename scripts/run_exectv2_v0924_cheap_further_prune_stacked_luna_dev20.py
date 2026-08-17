@@ -116,7 +116,7 @@ def verify_payload() -> dict[str, Any]:
             raise RuntimeError("stacked arm leaked CUI")
     finally:
         structured.set_active_prompt_version(before)
-    if structured.PROMPT_VERSION != structured.FULL_LEDGER:
+    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
         raise RuntimeError("payload check changed the live default")
     return {
         "ok": True,
@@ -153,7 +153,7 @@ def run_study(
     letters = _letters()
     STUDY_DIR.mkdir(parents=True, exist_ok=True)
     started = datetime.now(UTC).isoformat()
-    if structured.PROMPT_VERSION != structured.FULL_LEDGER:
+    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
         raise RuntimeError("live default drifted before the run")
 
     control = _replay_arm(
@@ -192,7 +192,7 @@ def run_study(
         study_dir=STUDY_DIR,
         arms={STACKED_ARM: STACKED_SPEC},
     )
-    if structured.PROMPT_VERSION != structured.FULL_LEDGER:
+    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
         raise RuntimeError("candidate arm left the live default changed")
 
     versus_cheap = _compare_pair(cheap, candidate, letters)

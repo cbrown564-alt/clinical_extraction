@@ -17,6 +17,8 @@ from typing import Any
 from .constants import (
     COMPACT_LEDGER,
     COMPACT_LEDGER_FURTHER_PRUNE,
+    COMPACT_LEDGER_PLUS_ENCODING,
+    COMPACT_LEDGER_PLUS_ENCODING_EXAMPLES,
     FULL_LEDGER_DROP_ENCODING_NON_SF,
     FULL_LEDGER_DROP_EXAMPLES,
     PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME,
@@ -129,6 +131,17 @@ def dump_model_facing_payload(
 
 ABLATION_SPECS: dict[str, AblationSpec] = {
     COMPACT_LEDGER: _compact_spec(COMPACT_LEDGER, authored_order=True),
+    COMPACT_LEDGER_PLUS_ENCODING: AblationSpec(
+        version=COMPACT_LEDGER_PLUS_ENCODING,
+        drop_examples=True,
+        plain_language=True,
+        authored_order=True,
+    ),
+    COMPACT_LEDGER_PLUS_ENCODING_EXAMPLES: AblationSpec(
+        version=COMPACT_LEDGER_PLUS_ENCODING_EXAMPLES,
+        plain_language=True,
+        authored_order=True,
+    ),
     FULL_LEDGER_DROP_EXAMPLES: AblationSpec(
         version=FULL_LEDGER_DROP_EXAMPLES,
         drop_examples=True,

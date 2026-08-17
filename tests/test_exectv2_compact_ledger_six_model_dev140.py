@@ -69,7 +69,7 @@ def test_verify_study_does_not_change_default_or_authorize_test60() -> None:
     assert payload["test60_authorized"] is False
     assert payload["protocol"] == PROTOCOL
     assert payload["study_dir"] == STUDY_DIR.relative_to(ROOT).as_posix()
-    assert structured.PROMPT_VERSION == before == structured.FULL_LEDGER
+    assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER
 
 
 def test_test60_verify_is_aggregate_only_for_authorized_hosted_models() -> None:
@@ -89,7 +89,7 @@ def test_test60_verify_is_aggregate_only_for_authorized_hosted_models() -> None:
         "gpt56sol",
         "deepseek_v4_flash",
     )
-    assert structured.PROMPT_VERSION == before == structured.FULL_LEDGER
+    assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER
 
 
 def test_test60_controls_are_selected_current_stack_sidecars() -> None:

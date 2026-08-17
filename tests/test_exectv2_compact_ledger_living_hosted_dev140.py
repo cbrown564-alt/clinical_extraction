@@ -84,8 +84,8 @@ def test_verify_study_uses_authored_compact_and_does_not_change_default() -> Non
     assert payload["protocol"] == PROTOCOL
     assert payload["study_dir"] == STUDY_DIR.relative_to(ROOT).as_posix()
     assert payload["hosted"] == list(HOSTED_SLUGS)
-    assert payload["default_prompt_version"] == structured.FULL_LEDGER
-    assert structured.PROMPT_VERSION == before == structured.FULL_LEDGER
+    assert payload["default_prompt_version"] == structured.COMPACT_LEDGER
+    assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER
 
 
 def test_test60_verify_is_aggregate_only_living_compact() -> None:
@@ -104,7 +104,7 @@ def test_test60_verify_is_aggregate_only_living_compact() -> None:
     assert payload["hosted"] == list(HOSTED_SLUGS)
     assert payload["authored_order"] is True
     assert payload["drops_research_metadata"] is True
-    assert payload["default_prompt_version"] == structured.FULL_LEDGER
+    assert payload["default_prompt_version"] == structured.COMPACT_LEDGER
     for slug in HOSTED_SLUGS:
         assert TEST60_CONTROLS[slug].is_file()
-    assert structured.PROMPT_VERSION == before == structured.FULL_LEDGER
+    assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER
