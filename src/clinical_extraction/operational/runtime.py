@@ -35,6 +35,7 @@ class RuntimeConfig:
         max_tokens: int = 16000,
         timeout_seconds: float = 300.0,
     ) -> RuntimeConfig:
+        values: Mapping[str, str]
         if environment is None:
             _load_repo_dotenv()
             values = os.environ

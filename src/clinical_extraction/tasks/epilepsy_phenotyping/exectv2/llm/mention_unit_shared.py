@@ -547,7 +547,9 @@ def project_rx_split_once_daily(
     if seed is None:
         return None
     drug = str(seed["text"])
-    mentions = [
+    selected = pairs[:2]
+    doses = [match.group("dose") for match in selected]
+    mentions: list[dict[str, Any]] = [
         {
             "entity": PRESCRIPTION.name,
             "text": drug,
@@ -558,16 +560,14 @@ def project_rx_split_once_daily(
                 "Frequency": "1",
             },
         }
-        for match in pairs[:2]
+        for match in selected
     ]
     traces = [
         _event_rule_trace(
             index=index,
             category="clinical_epilepsy",
             action="leftover_form.rx_split_once_daily",
-            after={
-                "doses": [mention["attributes"]["DrugDose"] for mention in mentions]
-            },
+            after={"doses": doses},
         )
     ]
     return _finalize(

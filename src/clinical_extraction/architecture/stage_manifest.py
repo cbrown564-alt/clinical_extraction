@@ -21,6 +21,9 @@ from pathlib import Path
 from typing import Any
 
 MANIFEST_DIR = Path(__file__).resolve().parent / "manifests"
+# Gitignored local research trees. A public clone has none of these; existence
+# checks against paths inside them are skipped when the tree is absent.
+LOCAL_RESEARCH_TREES = frozenset({"data", "docs", "experiments"})
 
 
 def repo_root() -> Path:
@@ -386,17 +389,28 @@ def validate_manifest(manifest: MethodManifest, *, root: Path | None = None) -> 
         _check_implementation(f"{prefix}/entry_point", manifest.entry_point, root)
     )
     for related in manifest.related_paths:
+        if _local_research_path_absent(root, related.path):
+            continue
         if not (root / related.path).exists():
             problems.append(
                 f"{prefix}: related path {related.path} does not exist"
             )
     for owner in manifest.evidence_owners:
+        if _local_research_path_absent(root, owner):
+            continue
         if not (root / owner).exists():
             problems.append(f"{prefix}: evidence owner {owner} does not exist")
 
     if not manifest.clinical_meaning_stages:
         problems.append(f"{prefix}: no stage owns the clinical answer")
     return problems
+
+
+def _local_research_path_absent(root: Path, relative: str) -> bool:
+    """True when ``relative`` lives under a missing gitignored research tree."""
+
+    parts = Path(relative).parts
+    return bool(parts) and parts[0] in LOCAL_RESEARCH_TREES and not (root / parts[0]).exists()
 
 
 def _check_implementation(tag: str, impl: Implementation, root: Path) -> list[str]:

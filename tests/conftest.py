@@ -6,14 +6,15 @@ from pathlib import Path
 
 import pytest
 
+from clinical_extraction.architecture.stage_manifest import LOCAL_RESEARCH_TREES
+
 _REPO_ROOT = Path(__file__).resolve().parent.parent
-_LOCAL_CORPUS_ROOTS = ("data", "docs", "experiments")
 
 
 def local_corpus_present() -> bool:
     """True when the gitignored research trees are on disk."""
 
-    return all((_REPO_ROOT / name).is_dir() for name in _LOCAL_CORPUS_ROOTS)
+    return all((_REPO_ROOT / name).is_dir() for name in LOCAL_RESEARCH_TREES)
 
 
 def pytest_collection_modifyitems(
