@@ -15,7 +15,9 @@ Rules-only peers are the E5 remasure. Replay procedure:
 | `current_stack/latest/panel_aggregate.json` | Panel companion |
 | `exectv2_rules_only_campaign_e5_remeasure_20260815.json` | ExECT rules-only E5 headline |
 | `exectv2_rules_only_four_family_clinical_headline_test60_20260815.json` | E5 test60 companion |
+| `exectv2_compact_ledger/gemma4_26b/` | Gemma Compact remasure, both splits, raw and hybrid |
 
-Holdout raw sidecars are still local. The current-stack copies are Git LFS
-pointers, not replayable JSONL, so they are not in this tree. Headline
-no-call replay reads the JSON fills above and does not inspect holdout rows.
+Holdout raw sidecars from the old current-stack LFS pointers stay local.
+Gemma Compact `test60` sidecars here are stripped to `letter_id`,
+`prompt_version`, and `raw_output`. Do not inspect those letters.
+Qwen 3.8 Compact cells are still local and incomplete.
