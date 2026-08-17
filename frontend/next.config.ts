@@ -15,6 +15,10 @@ const nextConfig: NextConfig = {
     ];
   },
   async rewrites() {
+    // Vercel has no loopback Python service. Its bundled route handlers serve
+    // the public mock fixtures instead; local development can still opt into
+    // the full API when the research service is running.
+    if (process.env.VERCEL === "1") return [];
     return [
       {
         source: "/api/:path*",
