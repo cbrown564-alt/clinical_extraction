@@ -61,6 +61,7 @@ pythonpath = ["."]
 addopts = ["-m", "not deep"]
 markers = [
   "deep: optional deep-tier mechanism tables; not part of the default gate (Decision 0049)",
+  "local_corpus: needs gitignored data/, docs/, or experiments/; skipped on a public clone",
 ]
 filterwarnings = [
   "ignore:The 'prefix' argument in InputField/OutputField is deprecated:DeprecationWarning",

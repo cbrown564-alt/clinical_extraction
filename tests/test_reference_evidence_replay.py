@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from clinical_extraction.evidence_replay import (
     replay_current_stack_primary,
     replay_exectv2_deterministic,
@@ -42,6 +44,7 @@ def test_replay_gan_saved_comparisons_counts_total_and_prediction_records(
     }
 
 
+@pytest.mark.local_corpus
 def test_replay_exectv2_deterministic_matches_retained_reference() -> None:
     result = replay_exectv2_deterministic(split="dev")
 
@@ -50,6 +53,7 @@ def test_replay_exectv2_deterministic_matches_retained_reference() -> None:
     assert result["evidence_validity_rate"] == 0.9973
 
 
+@pytest.mark.local_corpus
 def test_replay_exectv2_gepa_predictions_uses_current_scorer() -> None:
     result = replay_exectv2_saved_predictions(
         ROOT / "experiments" / "exectv2_gepa_dedup_gpt41mini_h2mb8_20260628.jsonl",
@@ -61,6 +65,7 @@ def test_replay_exectv2_gepa_predictions_uses_current_scorer() -> None:
     assert result["strict_benchmark_per_item_f1"] == 0.1356
 
 
+@pytest.mark.local_corpus
 def test_replay_current_stack_primary_matches_living_fills() -> None:
     result = replay_current_stack_primary(ROOT)
 

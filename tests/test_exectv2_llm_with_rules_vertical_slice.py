@@ -282,6 +282,7 @@ def test_hybrid_split_replay_projects_rows_without_a_second_producer_call(
     assert metadata["scored_view"] == "clinical_headline"
 
 
+@pytest.mark.local_corpus
 def test_hybrid_dev140_replay_matches_independent_prechange_oracle() -> None:
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
         load_letters_for_split,

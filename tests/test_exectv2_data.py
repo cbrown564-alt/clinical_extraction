@@ -1,9 +1,13 @@
+import pytest
+
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     SEIZURE_FREQUENCY,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     load_letters,
 )
+
+pytestmark = pytest.mark.local_corpus
 
 
 def test_load_letters_smoke() -> None:

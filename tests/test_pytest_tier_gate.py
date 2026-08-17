@@ -33,6 +33,13 @@ def test_deep_marker_is_registered() -> None:
     assert any(str(marker).startswith("deep:") for marker in markers)
 
 
+def test_local_corpus_marker_is_registered() -> None:
+    ini = _pytest_ini_options()
+    markers = ini.get("markers", [])
+    assert isinstance(markers, list)
+    assert any(str(marker).startswith("local_corpus:") for marker in markers)
+
+
 def test_six_cell_reference_replay_is_deep_not_always_on() -> None:
     from tests.test_reference_evidence_verification import (
         test_all_six_retained_reference_cells_replay_without_model_calls as replay,

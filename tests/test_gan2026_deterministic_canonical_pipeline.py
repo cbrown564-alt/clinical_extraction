@@ -1,5 +1,7 @@
 """Stage-contract guard for the retained deterministic Gan pipeline."""
 
+import pytest
+
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     load_records_with_monthly_frequency,
 )
@@ -9,6 +11,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.runner import (
 )
 
 _SAMPLE_SOURCE_ROW_INDICES = {11118, 12383, 5555, 13485, 11434}
+
+pytestmark = pytest.mark.local_corpus
 
 
 def test_deterministic_canonical_pipeline_exposes_the_retained_stage_diagnostics() -> None:

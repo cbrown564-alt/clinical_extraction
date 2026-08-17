@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 
+import pytest
+
 from clinical_extraction.core.six_model_roster import SUCCESSOR_SIX_MODELS
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
@@ -22,8 +24,12 @@ from scripts.run_exectv2_compact_ledger_six_model_dev140 import (
     verify_study,
 )
 
-_SOURCES = json.loads((ROOT / "experiments/current_stack/SOURCES.json").read_text())
-_EXECT_CONTROLS = _SOURCES["cells"]["exect_dev140"]["sources"]
+pytestmark = pytest.mark.local_corpus
+
+
+def _exect_dev140_controls() -> dict[str, object]:
+    sources = json.loads((ROOT / "experiments/current_stack/SOURCES.json").read_text())
+    return sources["cells"]["exect_dev140"]["sources"]
 
 
 def test_roster_matches_successor_six_models() -> None:
@@ -35,8 +41,9 @@ def test_roster_matches_successor_six_models() -> None:
 
 
 def test_controls_are_selected_full_ledger_sidecars() -> None:
+    controls = _exect_dev140_controls()
     for slug, spec in MODELS.items():
-        source = _EXECT_CONTROLS[slug]
+        source = controls[slug]
         assert source["selected"] is True
         assert spec.control_structured == ROOT / source["structured"]
         assert spec.control_structured.is_file()

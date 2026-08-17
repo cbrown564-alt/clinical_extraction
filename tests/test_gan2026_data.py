@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     FrequencyLabelKind,
 )
@@ -12,6 +14,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
 )
 
 DATA_PATH = Path("data/Gan (2026)/synthetic_data_subset_1500.json")
+
+pytestmark = pytest.mark.local_corpus
 
 
 def test_load_records_smoke() -> None:

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from collections import defaultdict
 
+import pytest
+
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     ENTITY_REGISTRY,
     SEIZURE_FREQUENCY,
@@ -50,6 +52,7 @@ def test_registry_has_nine_entities():
     assert set(ENTITY_REGISTRY.keys()) == expected
 
 
+@pytest.mark.local_corpus
 def test_registry_attribute_and_vocab_match_gold():
     schema = _gold_schema()
     assert set(schema) == set(ENTITY_REGISTRY)
@@ -90,6 +93,7 @@ def _gold_to_predicted_letter(letter) -> PredictedLetter:
     )
 
 
+@pytest.mark.local_corpus
 def test_gold_as_predicted_letter_scores_perfect():
     letters = load_letters()
     predicted = [_gold_to_predicted_letter(letter) for letter in letters]

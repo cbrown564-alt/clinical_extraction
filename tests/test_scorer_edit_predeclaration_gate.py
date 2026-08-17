@@ -5,6 +5,8 @@ from __future__ import annotations
 import importlib.util
 from pathlib import Path
 
+import pytest
+
 # Load the gate script by path so the test does not depend on repo root being on
 # sys.path (the `scripts/` dir is not an installed package under pytest).
 _GATE_PATH = (
@@ -54,6 +56,7 @@ def test_guarded_file_with_predeclaration_and_replay_passes() -> None:
     assert any("predeclaration satisfied" in line for line in report)
 
 
+@pytest.mark.local_corpus
 def test_gate_reads_the_real_registry() -> None:
     """The live registry parses and contains the seed-bug hypothesis id."""
 

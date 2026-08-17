@@ -21,6 +21,8 @@ FRONTEND_FIXTURES = Path("frontend") / "public" / "mock-data"
 EXECT_SPLIT_MANIFEST = Path("data") / "ExECTv2 (2025)" / "splits" / "exectv2_split_v2.json"
 GAN_SPLIT_MANIFEST = Path("data") / "Gan (2026)" / "splits" / "gan2026_split_v1.json"
 
+pytestmark = pytest.mark.local_corpus
+
 
 def _official_split_ids() -> tuple[set[str], set[str], set[str], set[str]]:
     gan = json.loads(GAN_SPLIT_MANIFEST.read_text(encoding="utf-8"))

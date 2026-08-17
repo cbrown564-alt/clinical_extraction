@@ -79,6 +79,7 @@ def test_exect_rules_public_runner_routes_aliases_to_canonical_active_runner(mon
     assert all(event.owner and event.action for event in results[0].result.stage_events)
 
 
+@pytest.mark.local_corpus
 def test_exect_rules_active_runner_matches_governed_independent_dev_base_fingerprint() -> None:
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
         load_letters_for_split,

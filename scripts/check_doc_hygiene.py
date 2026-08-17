@@ -6,8 +6,9 @@ Rules enforced
 1. Repository root may contain only AGENTS.md, README.md, CONTEXT.md, and
    PROJECT_STATUS.md as markdown files.
 2. No underscore-prefixed directories at repository root (orphan dumps).
-3. experiments/*.md at repo root must exactly match the retained-evidence
-   allowlist.
+3. When experiments/ is present, experiments/*.md at repo root must exactly
+   match the retained-evidence allowlist. A public clone without that tree
+   skips this check.
 4. Generated output roots must never be tracked.
 
 Run: python scripts/check_doc_hygiene.py
@@ -115,7 +116,7 @@ def _is_file_without_access_error(path: Path) -> bool:
 def check_experiments_root_allowlist(root: Path, allowlist: frozenset[str]) -> list[str]:
     experiments = root / "experiments"
     if not experiments.is_dir():
-        return [f"missing experiments/ directory at {experiments}"]
+        return []
 
     current = frozenset(p.name for p in experiments.glob("*.md"))
     unexpected = sorted(current - allowlist)

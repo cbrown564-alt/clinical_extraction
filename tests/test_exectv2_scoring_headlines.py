@@ -1,5 +1,7 @@
 """Invariant-focused tests for exectv2 scoring headlines."""
 
+import pytest
+
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     DIAGNOSIS,
     SEIZURE_FREQUENCY,
@@ -88,6 +90,7 @@ def test_prescription_clinical_headline_counts_rescue_regimen_without_dose() -> 
     assert score.ordinary_complete.gold_count == 0
 
 
+@pytest.mark.local_corpus
 def test_gold_scored_against_itself_is_perfect() -> None:
     letters = load_letters()
     score = score_entity(letters, letters, SEIZURE_FREQUENCY.name)
@@ -97,6 +100,7 @@ def test_gold_scored_against_itself_is_perfect() -> None:
     assert score.per_letter.tp == 142
 
 
+@pytest.mark.local_corpus
 def test_empty_predictions_score_zero_recall() -> None:
     letters = load_letters()
     empty = [

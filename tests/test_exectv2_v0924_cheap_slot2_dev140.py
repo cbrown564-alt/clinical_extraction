@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
 )
@@ -13,6 +15,8 @@ from scripts.run_exectv2_v0924_cheap_slot2_dev140 import (
     require_credentials,
     verify_payload,
 )
+
+pytestmark = pytest.mark.local_corpus
 
 
 def test_slot2_payload_check_does_not_change_default() -> None:

@@ -375,6 +375,7 @@ def test_exect_llm_split_delegates_checkpoint_resume_and_skips_completed_ids(
     assert counts == {"build": 1, "programs": 1, "calls": 2}
 
 
+@pytest.mark.local_corpus
 def test_exect_llm_independent_dev140_raw_lane_parity_is_pinned() -> None:
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import load_letters_for_split
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.split import run_split

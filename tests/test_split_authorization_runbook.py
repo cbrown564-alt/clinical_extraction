@@ -2,8 +2,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 RUNBOOK = ROOT / "docs/runbooks/gated_blockers_2026-06-18.md"
+
+pytestmark = pytest.mark.local_corpus
 
 
 def test_runbook_keeps_gan_test450_locked() -> None:

@@ -18,6 +18,8 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "docs" / "experiments" / "retained_evidence_manifest.json"
 REGISTRY = ROOT / "experiments" / "registry.jsonl"
 
+pytestmark = pytest.mark.local_corpus
+
 
 def test_committed_retained_evidence_manifest_is_valid() -> None:
     validate_retained_evidence_manifest(

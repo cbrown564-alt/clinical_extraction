@@ -7,6 +7,8 @@ agreeing with each other.
 
 from __future__ import annotations
 
+import pytest
+
 from clinical_extraction.architecture import stage_manifest as sm
 from scripts.build_architecture_docs import build
 
@@ -41,6 +43,7 @@ def test_deterministic_stages_declare_a_rule_category() -> None:
             )
 
 
+@pytest.mark.local_corpus
 def test_published_documents_match_the_pipeline() -> None:
     """The drift gate: docs/architecture/ must match a fresh render."""
 
