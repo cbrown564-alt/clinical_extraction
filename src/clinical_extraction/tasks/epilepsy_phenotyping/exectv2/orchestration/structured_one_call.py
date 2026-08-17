@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import threading
 from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal, cast
@@ -68,32 +67,6 @@ SOURCE_PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"
 CHECKPOINT_SCHEMA_VERSION = "exectv2.checkpoint.v1"
 
 
-def _predict_with_deadline(
-    program: Any,
-    *,
-    prompt_input_json: str,
-    timeout: int | None,
-) -> tuple[Any | None, str | None]:
-    """Run one DSPy predict call, but do not let post-response regex hang the letter."""
-
-    box: dict[str, Any] = {}
-
-    def _run() -> None:
-        try:
-            box["prediction"] = program(prompt_input_json=prompt_input_json)
-        except Exception as exc:
-            box["exc"] = exc
-
-    thread = threading.Thread(target=_run, daemon=True)
-    thread.start()
-    thread.join(float(timeout or 300))
-    if thread.is_alive():
-        return None, "invalid_json: produce_deadline_exceeded"
-    if "exc" in box:
-        raise box["exc"]
-    return box.get("prediction"), None
-
-
 def produce_structured_letter(
     letter: ExectLetter,
     *,
@@ -123,7 +96,6 @@ def produce_structured_letter(
     raw_text = raw_output if raw_output is not None else ""
     reused = raw_output is not None
     call_error: str | None = None
-    parse_deadline_notes: list[str] = []
     if mode == "live" and not reused:
         if program is None:
             dspy.configure(
@@ -139,16 +111,8 @@ def produce_structured_letter(
             )
             program = DspyKeyEntitiesStructuredExtractor()
         try:
-            prediction, deadline_note = _predict_with_deadline(
-                program,
-                prompt_input_json=prompt_input_json,
-                timeout=timeout,
-            )
-            if deadline_note:
-                raw_text = ""
-                parse_deadline_notes = [deadline_note]
-            elif prediction is not None:
-                raw_text = str(prediction.extraction_json)
+            prediction = program(prompt_input_json=prompt_input_json)
+            raw_text = str(prediction.extraction_json)
         except Exception as exc:  # pragma: no cover - live provider behavior.
             call_error = f"{type(exc).__name__}: {exc}"
             if is_terminal_provider_error(call_error):
@@ -164,8 +128,6 @@ def produce_structured_letter(
     record, parse_errors = (
         parse_structured_events_json(raw_text) if raw_text else (None, ["not_run"])
     )
-    if parse_deadline_notes:
-        parse_errors = [*parse_deadline_notes, *parse_errors]
     initial_parse_errors = list(parse_errors)
     assessment = assess_structured_output(raw_text, initial_parse_errors, call_error=call_error)
     format_retry_output = ""
