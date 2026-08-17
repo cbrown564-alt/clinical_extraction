@@ -67,7 +67,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
     write_markdown_report,
 )
 
-PROMPT_VERSION = "gan2026_llm_only_canonical_pipeline_v0.8"
+GAN_LLM_ONLY = "gan_llm_only"
+PROMPT_VERSION_V0_8 = "gan2026_llm_only_canonical_pipeline_v0.8"
+PROMPT_VERSION = GAN_LLM_ONLY
 ROW_TRACE_SCHEMA_VERSION = "gan2026.row_trace.v1"
 DEFAULT_JSONL_PATH = Path(
     "experiments/gan2026_llm_only_canonical_pipeline_validation_gpt41mini_2026-06-07.jsonl"

@@ -100,36 +100,21 @@ _nearest_event_date = llm_structured_temporal.nearest_event_date
 _nearest_event_month_year = llm_structured_temporal.nearest_event_month_year
 _small_number_words_to_digits = llm_structured_temporal.small_number_words_to_digits
 
-PROMPT_VERSION_V0_5 = "gan2026_hybrid_structured_events_v0.5"
-PROMPT_VERSION_V0_6 = "gan2026_hybrid_structured_events_v0.6"
-PROMPT_VERSION_V0_7 = "gan2026_hybrid_structured_events_v0.7"
-PROMPT_VERSION_V0_8_LUNA_RATE = "gan2026_hybrid_structured_events_v0.8_luna_rate"
-PROMPT_VERSION_V0_8_LUNA_CURRENT = (
-    "gan2026_hybrid_structured_events_v0.8_luna_current"
-)
-PROMPT_VERSION_V0_8_DEEPSEEK_UNKNOWN = (
-    "gan2026_hybrid_structured_events_v0.8_deepseek_unknown"
-)
+GAN_LLM_WITH_RULES = "gan_llm_with_rules"
 PROMPT_VERSION_FINAL = "gan2026_hybrid_structured_events_final"
-# Primary prompt version. v0.5 is the shortest shared cross-model task and the
-# only version selected for paper-facing llm_with_rules comparisons. v0.6 and
-# v0.7 remain selectable for historical replay and prompt-interaction studies.
-# v0.8 Luna and DeepSeek variants are development candidates; they must not
-# replace the frozen six-model v0.5 panel. `final` is the Decision 0053
-# envelope-hygiene payload: same 13 instructions as v0.5, without the
-# model-facing task/version/row-index identity strings. It is not the
-# selected comparison prompt until a matched panel exists.
-PROMPT_VERSION = PROMPT_VERSION_V0_5
+PROMPT_VERSION_V0_5 = "gan2026_hybrid_structured_events_v0.5"
+# Paper method: cleaned request. Same 13 instructions as historical v0.5,
+# without the dataset/version/row-index envelope. `final` is a replay alias
+# for existing cleaned cells. v0.5 stays only for historical current-stack
+# replay; it is not the paper method.
+PROMPT_VERSION = GAN_LLM_WITH_RULES
 ROW_TRACE_SCHEMA_VERSION = "gan2026.row_trace.v1"
+_CLEANED_PROMPT_VERSIONS = frozenset({GAN_LLM_WITH_RULES, PROMPT_VERSION_FINAL})
 _SUPPORTED_PROMPT_VERSIONS = frozenset(
     {
-        PROMPT_VERSION_V0_5,
-        PROMPT_VERSION_V0_6,
-        PROMPT_VERSION_V0_7,
-        PROMPT_VERSION_V0_8_LUNA_RATE,
-        PROMPT_VERSION_V0_8_LUNA_CURRENT,
-        PROMPT_VERSION_V0_8_DEEPSEEK_UNKNOWN,
+        GAN_LLM_WITH_RULES,
         PROMPT_VERSION_FINAL,
+        PROMPT_VERSION_V0_5,
     }
 )
 _FINAL_TASK = (
@@ -197,52 +182,6 @@ PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
         "portability": "seizure_frequency",
         "status": "active",
         "description": "Every evidence value must be an exact substring from the note.",
-    },
-    {
-        "policy_id": "se_v0_7.reasoner.countable_fact_conservation",
-        "controlled_variable": "reasoner_countable_fact_conservation_policy",
-        "portability": "seizure_frequency",
-        "status": "active",
-        "description": (
-            "v0.7 adds a silent conservation check before selecting unknown, no_reference, "
-            "or seizure_free over countable frequency, cluster, or dated-window evidence."
-        ),
-    },
-    {
-        "policy_id": "se_v0_8_luna_rate.rate_and_aggregation",
-        "controlled_variable": "luna_rate_aggregation_instruction_policy",
-        "portability": "gan2026_specific",
-        "status": "candidate",
-        "description": (
-            "Luna-only development candidate: extra plain-language instructions for "
-            "count ranges, overall versus subtype totals, cluster cadence with events "
-            "per cluster, and preferring countable period totals over vague rates. "
-            "Schema and repair stack stay frozen at v0.5."
-        ),
-    },
-    {
-        "policy_id": "se_v0_8_luna_current.current_state_boundaries",
-        "controlled_variable": "luna_current_state_boundary_instruction_policy",
-        "portability": "gan2026_specific",
-        "status": "candidate",
-        "description": (
-            "Luna-only development candidate: extra plain-language instructions for "
-            "short quiet intervals, uncertain events, dated counts versus no_reference, "
-            "and when seizure-free should not override a clearer current burden. "
-            "Schema and repair stack stay frozen at v0.5."
-        ),
-    },
-    {
-        "policy_id": "se_v0_8_deepseek_unknown.unknown_selection",
-        "controlled_variable": "deepseek_unknown_selection_instruction_policy",
-        "portability": "gan2026_specific",
-        "status": "candidate",
-        "description": (
-            "DeepSeek hosted development candidate: extra plain-language instructions "
-            "for quiet intervals versus unknown, incomplete or uncertain burden versus "
-            "invented rates, and keeping clear countable rates instead of vague "
-            "multiple labels. Schema and repair stack stay frozen at v0.5."
-        ),
     },
 ]
 DEFAULT_JSONL_PATH = Path(
@@ -628,218 +567,11 @@ def build_prompt_input(
         },
         "note_text": record.note_text,
     }
-    if selected_prompt_version in {PROMPT_VERSION_V0_6, PROMPT_VERSION_V0_7}:
-        instructions = payload["instructions"]
-        assert isinstance(instructions, list)
-        instructions.insert(
-            5,
-            (
-                "When both a frequency_rate or cluster_frequency event and a seizure_free "
-                "event have overlapping or adjacent recent/current windows (e.g. a recent "
-                "burst or monthly/weekly count alongside a 'seizure-free since [date]' or "
-                "'no events so far this month' claim), select the frequency_rate or "
-                "cluster_frequency event, not seizure_free. Only select seizure_free over a "
-                "co-reported recent-window frequency event when the seizure-free interval "
-                "clearly supersedes the entire frequency history — sustained remission of a "
-                "year or more, or an independent 'now well controlled' framing that is not "
-                "merely date arithmetic on the last counted event."
-            ),
-        )
-    if selected_prompt_version == PROMPT_VERSION_V0_7:
-        instructions = payload["instructions"]
-        assert isinstance(instructions, list)
-        instructions[-1:-1] = [
-            (
-                "Use any extra checking silently. The rationale must be one concise "
-                "clinical sentence, not step-by-step reasoning."
-            ),
-            (
-                "Before selecting unknown, no_reference, or seizure_free, run a "
-                "countable-fact check: does the note state a seizure count, a count "
-                "range, a days-with-seizures count, a cluster cadence, events per "
-                "cluster, or a sequence of dated events inside a recent/current window? "
-                "If yes, extract that fact and select it unless it is explicitly negated, "
-                "hypothetical, non-epileptic, or only a possible single event."
-            ),
-            (
-                "Do not demote countable frequency evidence to unknown just because the "
-                "wording is not phrased as an ongoing average. Counts such as 'two "
-                "seizures in February', 'second and third seizure in January', 'four "
-                "morning jerks since 03/2015', or '5 days per month with clusters' are "
-                "frequency_rate or cluster_frequency evidence when the surrounding text "
-                "gives the window."
-            ),
-            (
-                "Preserve the full observed window for dated counts and since-anchor "
-                "counts. If a note counts events since a prior dated seizure or across "
-                "several named months, keep the anchor date and event count in the events "
-                "rather than narrowing the answer to the most recent month."
-            ),
-            (
-                "For cluster language, keep cluster cadence and events-per-cluster "
-                "separate. Select cluster_frequency when both are supported, and do not "
-                "collapse it to unknown or no_reference merely because clusters are "
-                "episodic. If only one side is known, preserve the known side and use "
-                "unknown_frequency only for the missing burden."
-            ),
-            (
-                "Keep the useful remission boundary behavior: select seizure_free when "
-                "the note gives a clear current absence interval and there is no active "
-                "countable seizure-like event in that same or later window."
-            ),
-            (
-                "Do not let a general 'no seizures since review' or 'no tonic-clonic "
-                "seizures' statement erase active auras, jerks, absence clusters, or "
-                "other current seizure-like counts. In that case select the active "
-                "frequency or cluster event."
-            ),
-            (
-                "Use no_reference only when the note truly has no seizure-frequency, "
-                "seizure-free, last-event, or seizure-control evidence. If seizures are "
-                "mentioned but the burden cannot be counted, use unknown_frequency."
-            ),
-        ]
-    if selected_prompt_version == PROMPT_VERSION_V0_8_LUNA_RATE:
-        instructions = payload["instructions"]
-        assert isinstance(instructions, list)
-        instructions[-1:-1] = list(_LUNA_RATE_INSTRUCTIONS)
-    if selected_prompt_version == PROMPT_VERSION_V0_8_LUNA_CURRENT:
-        instructions = payload["instructions"]
-        assert isinstance(instructions, list)
-        instructions[-1:-1] = list(_LUNA_CURRENT_INSTRUCTIONS)
-    if selected_prompt_version == PROMPT_VERSION_V0_8_DEEPSEEK_UNKNOWN:
-        instructions = payload["instructions"]
-        assert isinstance(instructions, list)
-        instructions[-1:-1] = list(_DEEPSEEK_UNKNOWN_INSTRUCTIONS)
-    if selected_prompt_version == PROMPT_VERSION_FINAL:
+    if selected_prompt_version in _CLEANED_PROMPT_VERSIONS:
         payload["task"] = _FINAL_TASK
         payload.pop("prompt_version", None)
         payload.pop("source_row_index", None)
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
-
-
-# Luna-only development candidates. Intentionally instruction-heavier than v0.5
-# because the study tests whether plain-language clinical guidance still moves
-# LLM-only answers under a frozen schema. Keep experiment names, gold labels,
-# and residual taxonomy out of the model-facing text.
-_LUNA_RATE_INSTRUCTIONS = (
-    (
-        "When the note gives a count range such as one to three or 2 to 4 in a "
-        "stated period, keep the full range in the seizure-frequency label "
-        "(for example 1 to 3 per month). Do not collapse the range to one end, "
-        "and do not mark it unresolved_multiple only because the exact count "
-        "inside the range is uncertain."
-    ),
-    (
-        "Prefer a clear count over a stated period, such as 8 in 2 months or "
-        "11 in the past week, over a vague rate such as several times per week "
-        "or multiple per week when both describe the same current burden."
-    ),
-    (
-        "If the note gives an overall current seizure or cluster count and also "
-        "breaks that count down by seizure type, select the overall count. Do "
-        "not replace it with only the most severe or most frequent subtype."
-    ),
-    (
-        "For clusters, keep how often clusters occur and how many events occur "
-        "in a typical cluster. When both are stated, put both in the "
-        "seizure-frequency label, for example 2 cluster per month, 4 per "
-        "cluster. Do not drop the events-per-cluster side when it is present."
-    ),
-    (
-        "A short quiet spell after a recent cluster or recent count does not "
-        "erase that recent countable burden when the cluster or count is still "
-        "the current clinical story. Prefer the recent countable cluster or "
-        "count over a brief seizure-free interval measured from that same "
-        "recent burst."
-    ),
-    (
-        "When clinic or diary totals give a usable recent count, prefer those "
-        "totals over a device hint or a guess from one seizure type alone."
-    ),
-)
-
-_LUNA_CURRENT_INSTRUCTIONS = (
-    (
-        "Do not select seizure_free for a short recent quiet interval of days "
-        "or weeks when the overall current frequency is unclear. In that case "
-        "use unknown_frequency and unknown as the seizure-frequency label."
-    ),
-    (
-        "Do not select seizure_free only because the note mentions long quiet "
-        "stretches, if the note also states a current or yearly seizure rate. "
-        "Select the stated rate when it is still the current clinical burden."
-    ),
-    (
-        "Possible, uncertain, or single questionable events are not enough for "
-        "a frequency answer. Use unknown unless the note states a clear "
-        "countable current rate or cluster pattern."
-    ),
-    (
-        "Keep countable dated counts such as 2 in 6 months or 2 seizures across "
-        "named recent months as frequency_rate evidence. Do not use "
-        "no_reference when such a count exists."
-    ),
-    (
-        "If the note describes recurrent cluster days, for example events every "
-        "4 to 5 days with typically 2 seizures on those days, select "
-        "cluster_frequency and keep both the cluster timing and the typical "
-        "events per cluster. Do not collapse that pattern to unknown only "
-        "because it is not phrased as a smooth average rate."
-    ),
-    (
-        "A vague estimate such as once every few weeks should not override a "
-        "clearer statement that definite seizures have stopped, unless those "
-        "vague events are clearly current epileptic seizures with a usable "
-        "count or rate."
-    ),
-    (
-        "Occasional brief sensations that do not progress, and have no stated "
-        "rate, do not by themselves create a frequency answer. If definite "
-        "seizures have stopped for months, seizure_free may still be correct; "
-        "if the seizure picture is unclear, use unknown."
-    ),
-)
-
-# DeepSeek hosted unknown-competence candidate. Instruction-heavier than v0.5
-# because the study tests whether plain-language unknown/rate boundaries move
-# DeepSeek LLM-only answers. Keep experiment names, gold labels, and residual
-# taxonomy out of the model-facing text.
-_DEEPSEEK_UNKNOWN_INSTRUCTIONS = (
-    (
-        "If the note only mentions a quiet spell of days, weeks, or a few "
-        "months, or a date since the last event, and the current frequency is "
-        "still unclear, use unknown_frequency and unknown. Do not select "
-        "seizure_free unless the note clearly says the patient is currently "
-        "seizure-free or that definite seizures have stopped."
-    ),
-    (
-        "Possible, uncertain, or single questionable events are not enough for "
-        "a frequency answer. Use unknown unless the note states a clear "
-        "countable current rate or cluster pattern."
-    ),
-    (
-        "Do not invent a numeric rate such as 2 per week or 1 cluster per month "
-        "when the note only gives vague, incomplete, or conflicting frequency "
-        "language. Prefer unknown."
-    ),
-    (
-        "When the note gives a clear count or count range with a time period, "
-        "keep that count in the seizure-frequency label. Do not replace it with "
-        "a vague label such as multiple per week or multiple per day."
-    ),
-    (
-        "For clusters, keep how often clusters occur and how many events occur "
-        "in a typical cluster when both are stated. If only the events inside a "
-        "cluster are known and the spacing between clusters is not, use unknown "
-        "or unknown with the known per-cluster count. Do not invent a smooth "
-        "weekly or monthly rate."
-    ),
-    (
-        "Keep countable dated counts such as 2 in 6 months as frequency_rate "
-        "evidence. Do not use no_reference when such a count exists."
-    ),
-)
 
 
 def parse_structured_json(

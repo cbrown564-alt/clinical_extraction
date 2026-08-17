@@ -184,7 +184,7 @@
       "row_policy": "development_review_permitted",
       "prompt": "gan2026_hybrid_structured_events_v0.7",
       "selected_for_primary": false,
-      "note": "Optional development readout. Not the selected v0.5 six-model development panel (decision 0043). Script: scripts/replay_gan2026_six_model_current_stack_dev750.py"
+      "note": "Closed study readout. Not a paper method. The v0.7 runner is gone; recover from git if needed."
     }
   },
   "unchanged_primary_fills": {

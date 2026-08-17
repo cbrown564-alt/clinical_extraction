@@ -3,13 +3,17 @@
 import json
 from pathlib import Path
 
+import pytest
+
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     FrequencyLabelKind,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
+    GAN_LLM_WITH_RULES,
     PROMPT_VERSION,
     PROMPT_VERSION_FINAL,
+    PROMPT_VERSION_V0_5,
     StructuredExtractionRecord,
     StructuredRepairConfig,
     build_prompt_input,
@@ -66,36 +70,60 @@ def _raw_structured(final_label: str | None = "2 per month") -> str:
 
 def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None:
     prompt = json.loads(build_prompt_input(_record()))
-
-    assert prompt["prompt_version"] == PROMPT_VERSION
-    assert prompt["note_text"] == _record().note_text
-    assert "gold_label" not in json.dumps(prompt)
-    assert "candidate_events" not in prompt
-    assert "deterministic_final_selection" not in prompt
-
-
-def test_build_prompt_input_final_strips_internal_envelope() -> None:
-    record = _record()
-    baseline = json.loads(build_prompt_input(record, prompt_version=PROMPT_VERSION))
-    prompt = json.loads(
-        build_prompt_input(record, prompt_version=PROMPT_VERSION_FINAL)
-    )
     blob = json.dumps(prompt)
 
-    assert PROMPT_VERSION_FINAL == "gan2026_hybrid_structured_events_final"
+    assert PROMPT_VERSION == GAN_LLM_WITH_RULES == "gan_llm_with_rules"
     assert "prompt_version" not in prompt
     assert "source_row_index" not in prompt
     assert "Gan 2026" not in blob
     assert "LLM-only" not in blob
-    assert "gan2026_hybrid_structured_events" not in blob
-    assert prompt["task"] == (
+    assert prompt["note_text"] == _record().note_text
+    assert "gold_label" not in blob
+    assert "candidate_events" not in prompt
+    assert "deterministic_final_selection" not in prompt
+
+
+def test_build_prompt_input_final_alias_matches_paper_name() -> None:
+    record = _record()
+    default = json.loads(build_prompt_input(record))
+    alias = json.loads(
+        build_prompt_input(record, prompt_version=PROMPT_VERSION_FINAL)
+    )
+
+    assert PROMPT_VERSION_FINAL == "gan2026_hybrid_structured_events_final"
+    assert default == alias
+    assert default["task"] == (
         "Read the clinical note. Extract seizure-frequency facts as slim "
         "events, then select the current burden."
     )
-    assert prompt["instructions"] == baseline["instructions"]
-    assert prompt["event_schema"] == baseline["event_schema"]
-    assert prompt["selection_schema"] == baseline["selection_schema"]
-    assert prompt["note_text"] == record.note_text
+
+
+def test_build_prompt_input_v05_keeps_historical_envelope() -> None:
+    record = _record()
+    prompt = json.loads(
+        build_prompt_input(record, prompt_version=PROMPT_VERSION_V0_5)
+    )
+
+    assert prompt["prompt_version"] == PROMPT_VERSION_V0_5
+    assert prompt["source_row_index"] == record.source_row_index
+    assert prompt["instructions"] == json.loads(build_prompt_input(record))[
+        "instructions"
+    ]
+
+
+@pytest.mark.parametrize(
+    "version",
+    (
+        "gan2026_hybrid_structured_events_v0.6",
+        "gan2026_hybrid_structured_events_v0.7",
+        "gan2026_hybrid_structured_events_v0.8_luna_rate",
+        "gan2026_hybrid_structured_events_v0.8_luna_current",
+        "gan2026_hybrid_structured_events_v0.8_deepseek_unknown",
+    ),
+)
+def test_build_prompt_input_rejects_deleted_study_versions(version: str) -> None:
+    with pytest.raises(ValueError, match="unsupported prompt version"):
+        build_prompt_input(_record(), prompt_version=version)
 
 
 def test_parse_structured_json_quarantines_schema_invalid_unselected_event() -> None:

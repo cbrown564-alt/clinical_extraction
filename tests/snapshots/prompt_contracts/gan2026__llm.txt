@@ -47,7 +47,7 @@
     "Return exactly one JSON object with no markdown."
   ],
   "note_text": "Clinic note: known focal epilepsy. Two seizures per month over the last year. Last seizure was yesterday. Continues levetiracetam 500mg twice daily. MRI brain reported normal.",
-  "prompt_version": "gan2026_llm_only_canonical_pipeline_v0.8",
+  "prompt_version": "gan_llm_only",
   "source_row_index": 1,
   "task": "Determine a patient's current seizure frequency from one clinical note"
 }

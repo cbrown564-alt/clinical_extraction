@@ -45,7 +45,6 @@
     "Return exactly one JSON object with no markdown."
   ],
   "note_text": "Clinic note: known focal epilepsy. Two seizures per month over the last year. Last seizure was yesterday. Continues levetiracetam 500mg twice daily. MRI brain reported normal.",
-  "prompt_version": "gan2026_hybrid_structured_events_v0.5",
   "selection_schema": {
     "confidence": [
       "low",
@@ -64,6 +63,5 @@
     "rationale": "brief clinical reason for selecting these events",
     "selected_event_ids": "list of selected event_id strings"
   },
-  "source_row_index": 1,
-  "task": "Gan 2026 LLM-only structured-events extraction and clinical selection"
+  "task": "Read the clinical note. Extract seizure-frequency facts as slim events, then select the current burden."
 }
