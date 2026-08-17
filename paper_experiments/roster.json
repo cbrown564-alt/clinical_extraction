@@ -1,0 +1,66 @@
+{
+  "schema_version": "paper_experiments.roster.v1",
+  "decision": "docs/paper/decisions/six-model-roster.md",
+  "living": [
+    {
+      "slug": "gpt56sol",
+      "model": "openai/gpt-5.6-sol",
+      "label": "GPT-5.6 Sol",
+      "route": "hosted",
+      "method_identity": true
+    },
+    {
+      "slug": "gpt56luna",
+      "model": "openai/gpt-5.6-luna",
+      "label": "GPT-5.6 Luna",
+      "route": "hosted"
+    },
+    {
+      "slug": "gemini37flash",
+      "model": "gemini/gemini-3.7-flash",
+      "label": "Gemini 3.7 Flash",
+      "route": "hosted"
+    },
+    {
+      "slug": "deepseek_v4_flash",
+      "model": "deepseek/deepseek-v4-flash",
+      "label": "DeepSeek V4 Flash",
+      "route": "hosted",
+      "provider_revision": "DeepSeek-V4-Flash-0731"
+    },
+    {
+      "slug": "qwen38_27b",
+      "model": "ollama_chat/qwen3.8:27b",
+      "label": "Qwen 3.8 27B",
+      "route": "local"
+    },
+    {
+      "slug": "gemma4_26b",
+      "model": "ollama_chat/gemma4:26b",
+      "label": "Gemma 4 26B",
+      "route": "local"
+    }
+  ],
+  "historical": [
+    {
+      "slug": "gpt41mini",
+      "label": "GPT-4.1-mini",
+      "role": "retired_0039_slot"
+    },
+    {
+      "slug": "deepseek_v4_flash_pre0731",
+      "label": "DeepSeek V4 Flash pre-0731",
+      "role": "superseded_provider_revision"
+    },
+    {
+      "slug": "qwen36_35b",
+      "label": "Qwen 3.6:35B",
+      "role": "full_ledger_current_stack_local_slot"
+    },
+    {
+      "identity": "exectv2_hybrid_key_family_event_ledger_v0.9.40_drop_encoding_non_sf_all_examples",
+      "label": "Compact dump",
+      "role": "historical_compact_request_shape"
+    }
+  ]
+}

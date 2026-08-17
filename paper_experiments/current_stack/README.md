@@ -1,6 +1,8 @@
 # Current-stack hybrid fills
 
-Living machine owner for six-model `llm_with_rules` no-call scores.
+Decision 0050 Full-ledger control for six-model `llm_with_rules`
+no-call scores. Compact ledger is the paper-cited ExECT hybrid
+([Decision 0058](../../docs/decisions/0058-compact-ledger-is-the-paper-cited-exect-hybrid.md)).
 This copy is the tracked paper tree under `paper_experiments/`.
 
 - Inventory: [`SOURCES.json`](SOURCES.json)
