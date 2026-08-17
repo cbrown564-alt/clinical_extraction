@@ -50,13 +50,11 @@ def test_controls_are_selected_full_ledger_sidecars() -> None:
         assert "test60" not in spec.control_structured.as_posix()
 
 
-def test_luna_is_replay_and_hosted_live_slugs_are_fixed() -> None:
-    assert MODELS["gpt56luna"].candidate_structured is not None
-    assert MODELS["gpt56luna"].candidate_structured.is_file()
+def test_no_model_replays_the_deleted_dump_and_hosted_live_slugs_are_fixed() -> None:
     assert HOSTED_LIVE_SLUGS == ("gpt56sol", "gemini37flash", "deepseek_v4_flash")
     assert LOCAL_SLUGS == ("qwen36_35b", "gemma4_26b")
-    for slug in HOSTED_LIVE_SLUGS + LOCAL_SLUGS:
-        assert MODELS[slug].candidate_structured is None
+    for spec in MODELS.values():
+        assert spec.candidate_structured is None
 
 
 def test_verify_study_does_not_change_default_or_authorize_test60() -> None:

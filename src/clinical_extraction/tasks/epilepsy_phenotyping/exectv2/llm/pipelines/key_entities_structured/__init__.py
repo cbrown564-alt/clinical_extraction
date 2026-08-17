@@ -8,10 +8,8 @@ Private helpers (and the ``parse_json_payload_with_schema_repair`` /
 modules import the legacy module as ``structured`` and reach those attributes
 directly.
 
-After Decision 0056, public names and machine identities are Full
-ledger and Compact ledger. The older ``v0.9.24`` / ``v0.9.40``
-strings remain replay aliases. Study-only further-prune IDs,
-including ``v0.9.44``, sit beside them.
+Public names are Full ledger and Compact ledger, plus paper-name
+aliases. Dump and further-prune identities are gone.
 """
 # ruff: noqa: F401 — thin re-export facade for the legacy ``structured`` API.
 
@@ -22,26 +20,14 @@ from .constants import (
     _SEIZURE_STATE_RE,
     ALLOWED_EVENT_FAMILIES,
     COMPACT_LEDGER,
-    COMPACT_LEDGER_FURTHER_PRUNE,
-    COMPACT_LEDGER_PLUS_ENCODING,
-    COMPACT_LEDGER_PLUS_ENCODING_EXAMPLES,
     COMPONENT_OWNER,
     EXECT_FULL_LEDGER,
     EXECT_LLM_WITH_RULES,
     FULL_LEDGER,
-    FULL_LEDGER_DROP_ENCODING_NON_SF,
-    FULL_LEDGER_DROP_EXAMPLES,
     KEY_ENTITY_ITEM_F1_TARGET,
     KEY_ENTITY_NAMES,
     PIPELINE_FAMILY,
     PROMPT_VERSION,
-    PROMPT_VERSION_V0_9_24,
-    PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME,
-    PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES,
-    PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT,
-    PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT,
-    PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE,
-    PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES,
     PUBLISHED_PER_ENTITY_ITEM_F1,
     EventFamily,
     PromptProfile,
@@ -73,6 +59,9 @@ from .projection import (
     _repair_evidence_from_mention_text,
     _strip_model_supplied_projection_attrs,
     to_predicted_letter,
+)
+from .prompt_ablations import (
+    COMPACT_AUTHORED_KEYS,
 )
 from .prompt_builders import (
     build_prompt_input,
@@ -127,16 +116,12 @@ from .signatures import (
 __all__ = [
     "ALLOWED_EVENT_FAMILIES",
     "COMPONENT_OWNER",
+    "COMPACT_AUTHORED_KEYS",
     "COMPACT_LEDGER",
-    "COMPACT_LEDGER_FURTHER_PRUNE",
     "EXECT_FULL_LEDGER",
     "EXECT_LLM_WITH_RULES",
-    "COMPACT_LEDGER_PLUS_ENCODING",
-    "COMPACT_LEDGER_PLUS_ENCODING_EXAMPLES",
     "DspyKeyEntitiesStructuredExtractor",
     "FULL_LEDGER",
-    "FULL_LEDGER_DROP_ENCODING_NON_SF",
-    "FULL_LEDGER_DROP_EXAMPLES",
     "EventFamily",
     "ExECTv2KeyEntitiesStructuredSignature",
     "KEY_ENTITY_ITEM_F1_TARGET",
@@ -146,13 +131,6 @@ __all__ = [
     "PatientHistoryRecord",
     "PIPELINE_FAMILY",
     "PROMPT_VERSION",
-    "PROMPT_VERSION_V0_9_24",
-    "PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES",
-    "PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT",
-    "PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT",
-    "PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE",
-    "PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES",
-    "PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME",
     "PUBLISHED_PER_ENTITY_ITEM_F1",
     "PromptProfile",
     "RenderedMentionRecord",

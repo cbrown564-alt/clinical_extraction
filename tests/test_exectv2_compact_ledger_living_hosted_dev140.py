@@ -24,27 +24,21 @@ from scripts.run_exectv2_compact_ledger_living_hosted_dev140 import (
     verify_study,
 )
 from scripts.run_exectv2_compact_ledger_six_model_dev140 import (
-    CANDIDATE_VERSION as DUMP_CANDIDATE_VERSION,
-)
-from scripts.run_exectv2_compact_ledger_six_model_dev140 import (
-    STUDY_DIR as DUMP_STUDY_DIR,
+    STUDY_DIR as SHARED_STUDY_DIR,
 )
 from scripts.run_exectv2_compact_ledger_six_model_dev140 import (
     TEST60_CONTROLS,
 )
 from scripts.run_exectv2_compact_ledger_six_model_dev140 import (
-    TEST60_STUDY_DIR as DUMP_TEST60_STUDY_DIR,
+    TEST60_STUDY_DIR as SHARED_TEST60_STUDY_DIR,
 )
 
 pytestmark = pytest.mark.local_corpus
 
 
-def test_living_compact_is_the_candidate_and_stays_off_the_dump_study() -> None:
+def test_living_compact_is_the_candidate_and_uses_its_own_study_dir() -> None:
     assert CANDIDATE_VERSION == structured.COMPACT_LEDGER
-    assert DUMP_CANDIDATE_VERSION == (
-        structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES
-    )
-    assert STUDY_DIR != DUMP_STUDY_DIR
+    assert STUDY_DIR != SHARED_STUDY_DIR
     assert STUDY_DIR.name == "exectv2_compact_ledger_living_hosted_dev140_20260817"
     assert PROTOCOL.endswith("compact_ledger_living_hosted_dev140_protocol_2026-08-17.md")
 
@@ -106,7 +100,7 @@ def test_test60_verify_is_aggregate_only_living_compact() -> None:
     assert payload["protocol"] == TEST60_PROTOCOL
     assert payload["study_dir"] == TEST60_STUDY_DIR.relative_to(ROOT).as_posix()
     assert payload["scratch_dir"] == TEST60_SCRATCH_DIR.relative_to(ROOT).as_posix()
-    assert TEST60_STUDY_DIR != DUMP_TEST60_STUDY_DIR
+    assert TEST60_STUDY_DIR != SHARED_TEST60_STUDY_DIR
     assert payload["hosted"] == list(HOSTED_SLUGS)
     assert payload["authored_order"] is True
     assert payload["drops_research_metadata"] is True

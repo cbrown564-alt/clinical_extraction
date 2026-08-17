@@ -183,7 +183,7 @@ def test_combo_scaffold_adds_cheap_stack_rows_and_keeps_frozen_v2() -> None:
     cheap = json.loads(
         structured.build_prompt_input(
             letter,
-            prompt_version=structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES,
+            prompt_version=structured.COMPACT_LEDGER,
         )
     )
     frozen_llm = json.loads(build_mention_unit_prompt(letter, method=LLM_METHOD))

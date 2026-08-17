@@ -1,8 +1,7 @@
-"""Compact ledger versus saved Full ledger on ExECT dev140 and test60.
+"""Shared Compact versus Full ledger runtime for ExECT remasure.
 
-dev140: Luna replays saved cheap-stack raws. Sol, Gemini, and DeepSeek
-are the authorized hosted live cells. Qwen and Gemma stay for a later
-local device.
+Living hosted and local Compact runners import helpers from here.
+Dump replay is gone; every model is a live Compact candidate.
 
 test60: Luna, Sol, Gemini, and DeepSeek are authorized aggregate-only
 cells. Live dumps stay under scratch/holdout. Qwen and Gemma are out
@@ -61,8 +60,8 @@ TEST60_PROTOCOL = (
 STUDY_DIR = ROOT / "experiments/exectv2_compact_ledger_six_model_dev140_20260817"
 TEST60_STUDY_DIR = ROOT / "experiments/exectv2_compact_ledger_six_model_test60_20260817"
 TEST60_SCRATCH_DIR = ROOT / "scratch/holdout/exectv2_compact_ledger_test60_20260817"
-CONTROL_VERSION = structured.PROMPT_VERSION_V0_9_24
-CANDIDATE_VERSION = structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES
+CONTROL_VERSION = structured.FULL_LEDGER
+CANDIDATE_VERSION = structured.COMPACT_LEDGER
 CONTROL_ARM = "full_ledger"
 CANDIDATE_ARM = "compact_ledger"
 OLLAMA_NUM_CTX_ENV = "CLINICAL_EXTRACTION_OLLAMA_NUM_CTX"
@@ -138,10 +137,6 @@ MODELS: dict[str, ModelSpec] = {
         control=(
             "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715"
             "_structured.jsonl"
-        ),
-        candidate=(
-            "experiments/exectv2_v0924_cheap_stack_luna_dev140_20260816/"
-            "drop_encoding_non_sf_all_examples/structured.jsonl"
         ),
         credential_env=("OPENAI_API_KEY",),
     ),
@@ -268,9 +263,6 @@ def verify_study(*, split: str = "dev140") -> dict[str, Any]:
     ]
     if missing:
         raise RuntimeError(f"missing Full ledger controls: {missing}")
-    luna = MODELS["gpt56luna"]
-    if luna.candidate_structured is None or not luna.candidate_structured.is_file():
-        raise RuntimeError("missing saved Luna Compact ledger sidecar")
     return {
         **payload,
         "ok": True,
@@ -281,7 +273,6 @@ def verify_study(*, split: str = "dev140") -> dict[str, Any]:
         "models": [spec.slug for spec in MODELS.values()],
         "hosted_live": list(HOSTED_LIVE_SLUGS),
         "local_later": list(LOCAL_SLUGS),
-        "luna_replay": luna.candidate_structured.relative_to(ROOT).as_posix(),
     }
 
 

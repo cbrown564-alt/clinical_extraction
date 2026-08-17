@@ -30,10 +30,7 @@ from scripts.run_exectv2_compact_ledger_local_dev140 import (
     verify_study,
 )
 from scripts.run_exectv2_compact_ledger_six_model_dev140 import (
-    CANDIDATE_VERSION as DUMP_CANDIDATE_VERSION,
-)
-from scripts.run_exectv2_compact_ledger_six_model_dev140 import (
-    STUDY_DIR as DUMP_STUDY_DIR,
+    STUDY_DIR as SHARED_STUDY_DIR,
 )
 
 pytestmark = pytest.mark.local_corpus
@@ -41,9 +38,7 @@ pytestmark = pytest.mark.local_corpus
 
 def test_living_compact_queue_is_gemma_then_qwen38() -> None:
     assert CANDIDATE_VERSION == structured.COMPACT_LEDGER
-    assert DUMP_CANDIDATE_VERSION == (
-        structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES
-    )
+    assert STUDY_DIR != SHARED_STUDY_DIR
     assert LOCAL_SLUGS == ("gemma4_26b", "qwen38_27b")
     assert tuple(MODELS) == LOCAL_SLUGS
     assert QUEUE == (
@@ -59,7 +54,6 @@ def test_living_compact_queue_is_gemma_then_qwen38() -> None:
     assert MODELS["gemma4_26b"].num_ctx == 65536
     assert "qwen38_27b" not in {item["slug"] for item in SUCCESSOR_SIX_MODELS}
     assert STUDY_DIR != HOSTED_STUDY_DIR
-    assert STUDY_DIR != DUMP_STUDY_DIR
     assert STUDY_DIR.name == "exectv2_compact_ledger_local_dev140_20260817"
     assert PROTOCOL.endswith("compact_ledger_local_gemma_qwen38_protocol_2026-08-17.md")
 

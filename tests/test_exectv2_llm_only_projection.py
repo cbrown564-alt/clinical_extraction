@@ -450,7 +450,7 @@ def test_clinical_family_events_project_through_to_predicted_letter() -> None:
         "TEST001",
         mentions,
         note_text=note,
-        prompt_version=structured.PROMPT_VERSION_V0_9_24,
+        prompt_version=structured.FULL_LEDGER,
     )
 
     assert [mention.entity for mention in letter.mentions] == [

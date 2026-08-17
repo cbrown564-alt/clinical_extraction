@@ -22,9 +22,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
 )
 from scripts import run_exectv2_v0924_cheap_stack_luna_dev140 as cheap_stack
-from scripts.run_exectv2_compact_ledger_luna_dev140_ablation import (
-    COMPACT_AUTHORED_KEYS,
-)
 from scripts.run_exectv2_compact_ledger_six_model_dev140 import (
     CANDIDATE_ARM,
     CONTROL_ARM,
@@ -159,7 +156,7 @@ def verify_study(*, split: str = "dev140", slug: str | None = None) -> dict[str,
             letter, prompt_version=CANDIDATE_VERSION
         )
         compact = json.loads(compact_raw)
-        if list(compact) != list(COMPACT_AUTHORED_KEYS):
+        if list(compact) != list(structured.COMPACT_AUTHORED_KEYS):
             raise RuntimeError(f"Compact key order drifted: {list(compact)}")
         if "letter_id" in compact or "prompt_version" in compact:
             raise RuntimeError("Compact still emits research metadata")

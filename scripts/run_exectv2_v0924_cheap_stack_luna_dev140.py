@@ -1,8 +1,6 @@
-"""Authorized cheap-stack transfer of ExECT v0.9.24 on Luna dev140.
+"""Shared scoring helpers for Compact versus Full ledger remasure.
 
-Recovers the live remasure path from the pruned v10/v13 helpers: one
-structured hybrid call per letter, saved v0.9.24 replayed through HEAD
-assembly, candidate produced live after set_active_prompt_version.
+Living Compact runners import compare/score helpers from here.
 """
 
 from __future__ import annotations
@@ -63,8 +61,8 @@ CHEAP_STACK_DEV20 = (
 )
 MODEL = "openai/gpt-5.6-luna"
 CANDIDATE_ARM = "drop_encoding_non_sf_all_examples"
-CANDIDATE_VERSION = structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES
-CONTROL_VERSION = structured.PROMPT_VERSION_V0_9_24
+CANDIDATE_VERSION = structured.COMPACT_LEDGER
+CONTROL_VERSION = structured.FULL_LEDGER
 FAMILIES = ("Diagnosis", "SeizureFrequency", "Prescription", "Investigations")
 FROZEN_DEV20_IDS = (
     "EA0002",
@@ -126,15 +124,15 @@ def verify_payload() -> dict[str, Any]:
         payload = json.loads(
             structured.build_prompt_input(letter, prompt_version=CANDIDATE_VERSION)
         )
-        if payload["prompt_version"] != CANDIDATE_VERSION:
-            raise RuntimeError(f"cheap stack emitted {payload['prompt_version']}")
+        if "prompt_version" in payload or "letter_id" in payload:
+            raise RuntimeError("Compact still emits research metadata")
         if "cui" in json.dumps(payload).lower():
-            raise RuntimeError("cheap stack leaked CUI")
+            raise RuntimeError("Compact leaked CUI")
         n_rules = len(payload["clinical_rules"])
         n_examples = len(payload.get("worked_examples") or [])
         has_scaffold = all(key in payload for key in SCAFFOLD_KEYS)
         if n_rules != 67 or n_examples != 0 or not has_scaffold:
-            raise RuntimeError("drop_encoding_non_sf_all_examples contract drifted")
+            raise RuntimeError("Compact contract drifted")
     finally:
         structured.set_active_prompt_version(before)
     if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:

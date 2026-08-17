@@ -6,10 +6,8 @@ helpers and the ``parse_json_payload_with_schema_repair`` / ``write_jsonl``
 pass-throughs are also re-exported because other modules import this module as
 ``structured`` and access those attributes directly.
 
-After Decision 0056, public names and machine identities are Full
-ledger and Compact ledger. The older ``v0.9.24`` / ``v0.9.40``
-strings remain replay aliases. Study-only further-prune IDs sit
-beside them.
+Public names are Full ledger and Compact ledger, plus paper-name
+aliases. Dump and further-prune identities are gone.
 """
 # ruff: noqa: F401 — thin re-export facade; all symbols are intentionally re-exported.
 
@@ -20,27 +18,16 @@ from .pipelines.key_entities_structured import (
     _SEIZURE_STATE_RE,
     _SF_STATE_ATTRS,
     ALLOWED_EVENT_FAMILIES,
+    COMPACT_AUTHORED_KEYS,
     COMPACT_LEDGER,
-    COMPACT_LEDGER_FURTHER_PRUNE,
-    COMPACT_LEDGER_PLUS_ENCODING,
-    COMPACT_LEDGER_PLUS_ENCODING_EXAMPLES,
     COMPONENT_OWNER,
     EXECT_FULL_LEDGER,
     EXECT_LLM_WITH_RULES,
     FULL_LEDGER,
-    FULL_LEDGER_DROP_ENCODING_NON_SF,
-    FULL_LEDGER_DROP_EXAMPLES,
     KEY_ENTITY_ITEM_F1_TARGET,
     KEY_ENTITY_NAMES,
     PIPELINE_FAMILY,
     PROMPT_VERSION,
-    PROMPT_VERSION_V0_9_24,
-    PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME,
-    PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES,
-    PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT,
-    PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT,
-    PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE,
-    PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES,
     PUBLISHED_PER_ENTITY_ITEM_F1,
     DspyKeyEntitiesStructuredExtractor,
     EventFamily,

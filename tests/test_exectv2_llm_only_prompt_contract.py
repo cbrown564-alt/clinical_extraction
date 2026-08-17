@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 
+import pytest
+
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     DIAGNOSIS,
     INVESTIGATIONS,
@@ -426,18 +428,6 @@ def test_no_prompt_version_mentions_cui() -> None:
         structured.EXECT_FULL_LEDGER,
         structured.COMPACT_LEDGER,
         structured.EXECT_LLM_WITH_RULES,
-        structured.PROMPT_VERSION_V0_9_24,
-        structured.PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES,
-        structured.PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT,
-        structured.PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT,
-        structured.PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE,
-        structured.PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES,
-        structured.PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME,
-        structured.FULL_LEDGER_DROP_EXAMPLES,
-        structured.FULL_LEDGER_DROP_ENCODING_NON_SF,
-        structured.COMPACT_LEDGER_FURTHER_PRUNE,
-        structured.COMPACT_LEDGER_PLUS_ENCODING,
-        structured.COMPACT_LEDGER_PLUS_ENCODING_EXAMPLES,
     ]
     try:
         for version in versions:
@@ -482,7 +472,31 @@ def test_paper_names_are_aliases_of_compact_and_full() -> None:
     assert full == paper_full
 
 
+@pytest.mark.parametrize(
+    "version",
+    (
+        "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+        "exectv2_hybrid_key_family_event_ledger_v0.9.40_drop_encoding_non_sf_all_examples",
+        "exectv2_hybrid_key_family_event_ledger_v0.9.41_cheap_drop_ix_pending_repeat",
+        "exectv2_hybrid_key_family_event_ledger_v0.9.42_cheap_drop_scaffold_reprint",
+        "exectv2_hybrid_key_family_event_ledger_v0.9.43_cheap_collapse_refuse",
+        "exectv2_hybrid_key_family_event_ledger_v0.9.44_cheap_stack_further_prunes",
+        "exectv2_hybrid_key_family_event_ledger_v0.9.40_combo_clinical_name",
+        "exectv2_full_ledger_drop_examples",
+        "exectv2_full_ledger_drop_encoding_non_sf",
+        "exectv2_compact_ledger_further_prune",
+        "exectv2_compact_ledger_plus_encoding",
+        "exectv2_compact_ledger_plus_encoding_examples",
+    ),
+)
+def test_build_prompt_input_rejects_deleted_dump_and_prune_versions(
+    version: str,
+) -> None:
+    with pytest.raises(ValueError, match="unsupported prompt version"):
+        structured.build_prompt_input(_LETTER, prompt_version=version)
+
+
 def test_format_retry_schema_is_canonical_structured_record() -> None:
-    schema = structured.format_retry_schema_for(structured.PROMPT_VERSION_V0_9_24)
+    schema = structured.format_retry_schema_for(structured.FULL_LEDGER)
     assert "StructuredClinicalEvent" in schema.get("$defs", {})
     assert "V26ClinicalEventRecord" not in schema.get("$defs", {})

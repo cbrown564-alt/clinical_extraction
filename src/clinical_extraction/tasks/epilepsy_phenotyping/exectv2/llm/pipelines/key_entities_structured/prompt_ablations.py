@@ -1,11 +1,7 @@
-"""Retained Compact-ledger drop from the Full-ledger structured prompt.
+"""Compact-ledger cut from the Full-ledger structured prompt.
 
-``exectv2_compact_ledger`` is the living Compact identity: authored
-order, no ``letter_id`` or ``prompt_version``. The older ``v0.9.40``
-string keeps the current-run dump so saved raws still replay. The
-v0.9.41–v0.9.44 identities are historical further prunes of that
-current-run dump. Intermediate leave-one-out prune arms are lineage
-in git history.
+``exectv2_compact_ledger`` and ``exect_llm_with_rules`` are the same
+payload: authored order, no ``letter_id`` or ``prompt_version``.
 """
 
 from __future__ import annotations
@@ -16,26 +12,7 @@ from typing import Any
 
 from .constants import (
     COMPACT_LEDGER,
-    COMPACT_LEDGER_FURTHER_PRUNE,
-    COMPACT_LEDGER_PLUS_ENCODING,
-    COMPACT_LEDGER_PLUS_ENCODING_EXAMPLES,
     EXECT_LLM_WITH_RULES,
-    FULL_LEDGER_DROP_ENCODING_NON_SF,
-    FULL_LEDGER_DROP_EXAMPLES,
-    PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME,
-    PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES,
-    PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT,
-    PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT,
-    PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE,
-    PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES,
-)
-from .prompt_further_prune import (
-    COMBO_CLINICAL_NAME,
-    IX_PENDING,
-    REFUSE_CHORUS,
-    SCAFFOLD_REPRINT,
-    STACKED_PRUNES,
-    apply_further_prune,
 )
 from .prompt_plain_language import apply_plain_language
 
@@ -77,6 +54,17 @@ AUTHORED_KEY_ORDER = (
     "worked_examples",
     "letter_text",
 )
+COMPACT_AUTHORED_KEYS = (
+    "task",
+    "output_schema",
+    "decision_procedure",
+    "family_guidance",
+    "attribute_vocabulary",
+    "categories",
+    "clinical_rules",
+    "suggested_evidence",
+    "letter_text",
+)
 RESEARCH_METADATA_KEYS = frozenset({"letter_id", "prompt_version"})
 
 
@@ -89,23 +77,16 @@ class AblationSpec:
     drop_rule_ids: frozenset[str] = frozenset()
     task: str | None = None
     plain_language: bool = False
-    further_prunes: tuple[str, ...] = ()
     authored_order: bool = False
 
 
-def _compact_spec(
-    version: str,
-    *,
-    further_prunes: tuple[str, ...] = (),
-    authored_order: bool = False,
-) -> AblationSpec:
+def _compact_spec(version: str) -> AblationSpec:
     return AblationSpec(
         version=version,
         drop_examples=True,
         drop_rule_ids=_ENCODING_NON_SF,
         plain_language=True,
-        further_prunes=further_prunes,
-        authored_order=authored_order,
+        authored_order=True,
     )
 
 
@@ -131,57 +112,8 @@ def dump_model_facing_payload(
 
 
 ABLATION_SPECS: dict[str, AblationSpec] = {
-    EXECT_LLM_WITH_RULES: _compact_spec(EXECT_LLM_WITH_RULES, authored_order=True),
-    COMPACT_LEDGER: _compact_spec(COMPACT_LEDGER, authored_order=True),
-    COMPACT_LEDGER_PLUS_ENCODING: AblationSpec(
-        version=COMPACT_LEDGER_PLUS_ENCODING,
-        drop_examples=True,
-        plain_language=True,
-        authored_order=True,
-    ),
-    COMPACT_LEDGER_PLUS_ENCODING_EXAMPLES: AblationSpec(
-        version=COMPACT_LEDGER_PLUS_ENCODING_EXAMPLES,
-        plain_language=True,
-        authored_order=True,
-    ),
-    FULL_LEDGER_DROP_EXAMPLES: AblationSpec(
-        version=FULL_LEDGER_DROP_EXAMPLES,
-        drop_examples=True,
-        authored_order=True,
-    ),
-    FULL_LEDGER_DROP_ENCODING_NON_SF: AblationSpec(
-        version=FULL_LEDGER_DROP_ENCODING_NON_SF,
-        drop_rule_ids=_ENCODING_NON_SF,
-        authored_order=True,
-    ),
-    COMPACT_LEDGER_FURTHER_PRUNE: _compact_spec(
-        COMPACT_LEDGER_FURTHER_PRUNE,
-        further_prunes=STACKED_PRUNES,
-        authored_order=True,
-    ),
-    PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES: _compact_spec(
-        PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES
-    ),
-    PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT: _compact_spec(
-        PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT,
-        further_prunes=(IX_PENDING,),
-    ),
-    PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT: _compact_spec(
-        PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT,
-        further_prunes=(SCAFFOLD_REPRINT,),
-    ),
-    PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE: _compact_spec(
-        PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE,
-        further_prunes=(REFUSE_CHORUS,),
-    ),
-    PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES: _compact_spec(
-        PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES,
-        further_prunes=STACKED_PRUNES,
-    ),
-    PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME: _compact_spec(
-        PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME,
-        further_prunes=(COMBO_CLINICAL_NAME,),
-    ),
+    EXECT_LLM_WITH_RULES: _compact_spec(EXECT_LLM_WITH_RULES),
+    COMPACT_LEDGER: _compact_spec(COMPACT_LEDGER),
 }
 
 
@@ -194,7 +126,7 @@ def example_id_for_index(index: int) -> str:
 
 
 def apply_v0924_ablation(payload: dict[str, Any], spec: AblationSpec) -> dict[str, Any]:
-    """Return a copy of the v0.9.24 payload with one named slice removed."""
+    """Return a copy of the Full-ledger payload with the Compact cut applied."""
 
     ablated = dict(payload)
     ablated["prompt_version"] = spec.version
@@ -220,6 +152,4 @@ def apply_v0924_ablation(payload: dict[str, Any], spec: AblationSpec) -> dict[st
         ]
     if spec.plain_language:
         ablated = apply_plain_language(ablated)
-    for kind in spec.further_prunes:
-        ablated = apply_further_prune(ablated, kind)
     return ablated

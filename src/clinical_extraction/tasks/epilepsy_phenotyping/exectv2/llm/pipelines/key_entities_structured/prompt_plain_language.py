@@ -1,7 +1,7 @@
 """Plain-language rewrite of the cheap-stack structured prompt.
 
-Applies only after the v0.9.40 structural drop. The selected v0.9.24 payload
-is unchanged. Clinical meaning stays; research labels and leftover jargon go.
+Applies to the Compact cut of the Full-ledger payload. Clinical
+meaning stays; research labels and leftover jargon go.
 """
 
 from __future__ import annotations

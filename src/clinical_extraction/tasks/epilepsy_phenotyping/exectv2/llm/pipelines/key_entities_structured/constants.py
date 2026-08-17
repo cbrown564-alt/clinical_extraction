@@ -6,9 +6,8 @@ Pure relocation of the module-level constants from
 Paper names ``exect_llm_with_rules`` and ``exect_full_ledger`` are
 aliases of Compact and Full. The older ``exectv2_*`` strings remain
 the live default and replay aliases until paper cells are rewritten.
-Study-only further-prune identities, including ``v0.9.44``, sit
-beside them; they are not Compact ledger. Mention encoder lives in
-``mention_unit.py``, not this registry.
+Dump, further-prune, and naming-graft identities are gone. Mention
+encoder lives in ``mention_unit.py``, not this registry.
 """
 
 from __future__ import annotations
@@ -27,33 +26,7 @@ EXECT_LLM_WITH_RULES = "exect_llm_with_rules"
 EXECT_FULL_LEDGER = "exect_full_ledger"
 FULL_LEDGER = "exectv2_full_ledger"
 COMPACT_LEDGER = "exectv2_compact_ledger"
-PROMPT_VERSION_V0_9_24 = "exectv2_hybrid_key_family_event_ledger_v0.9.24"
-PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.40_drop_encoding_non_sf_all_examples"
-)
-PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.41_cheap_drop_ix_pending_repeat"
-)
-PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.42_cheap_drop_scaffold_reprint"
-)
-PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.43_cheap_collapse_refuse"
-)
-PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.44_cheap_stack_further_prunes"
-)
-PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME = (
-    "exectv2_hybrid_key_family_event_ledger_v0.9.40_combo_clinical_name"
-)
-FULL_LEDGER_DROP_EXAMPLES = "exectv2_full_ledger_drop_examples"
-FULL_LEDGER_DROP_ENCODING_NON_SF = "exectv2_full_ledger_drop_encoding_non_sf"
-COMPACT_LEDGER_FURTHER_PRUNE = "exectv2_compact_ledger_further_prune"
-COMPACT_LEDGER_PLUS_ENCODING = "exectv2_compact_ledger_plus_encoding"
-COMPACT_LEDGER_PLUS_ENCODING_EXAMPLES = (
-    "exectv2_compact_ledger_plus_encoding_examples"
-)
-# Live default after Decision 0057. Decision 0050 fills stay Full ledger.
+# Live default is Compact. Full stays as the cited comparator.
 PROMPT_VERSION = COMPACT_LEDGER
 _SUPPORTED_FULL_PROMPT_VERSIONS = frozenset(
     {
@@ -61,18 +34,6 @@ _SUPPORTED_FULL_PROMPT_VERSIONS = frozenset(
         EXECT_FULL_LEDGER,
         FULL_LEDGER,
         COMPACT_LEDGER,
-        PROMPT_VERSION_V0_9_24,
-        PROMPT_VERSION_V0_9_40_DROP_ENCODING_NON_SF_ALL_EXAMPLES,
-        PROMPT_VERSION_V0_9_41_CHEAP_DROP_IX_PENDING_REPEAT,
-        PROMPT_VERSION_V0_9_42_CHEAP_DROP_SCAFFOLD_REPRINT,
-        PROMPT_VERSION_V0_9_43_CHEAP_COLLAPSE_REFUSE,
-        PROMPT_VERSION_V0_9_44_CHEAP_STACK_FURTHER_PRUNES,
-        PROMPT_VERSION_V0_9_40_COMBO_CLINICAL_NAME,
-        FULL_LEDGER_DROP_EXAMPLES,
-        FULL_LEDGER_DROP_ENCODING_NON_SF,
-        COMPACT_LEDGER_FURTHER_PRUNE,
-        COMPACT_LEDGER_PLUS_ENCODING,
-        COMPACT_LEDGER_PLUS_ENCODING_EXAMPLES,
     }
 )
 PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"
