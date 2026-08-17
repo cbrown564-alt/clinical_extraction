@@ -6,7 +6,7 @@ Gan 2026 and ExECTv2 have different data and claim boundaries. Read `PROJECT_STA
 
 ## Document owners
 
-Use `README.md` for the repository map, `docs/NAVIGATION.md` and `docs/THREAD_MAP.md` for routing, `docs/canon/README.md` for governing claims, `PROJECT_STATUS.md` for current work, and `docs/plans/ACTIVE_ROADMAP.md` for sequence. Then read the relevant design, decision, experiment, or runbook owner.
+Use `README.md` for the repository map, `docs/paper/README.md` for paper methods and claims, `docs/NAVIGATION.md` for the paper source library, and `PROJECT_STATUS.md` for current work. Then read the relevant owner. The paper-final cut is [`docs/plans/paper_final_repo_scope_2026-08-17.md`](docs/plans/paper_final_repo_scope_2026-08-17.md).
 
 Do not add another roadmap, status board, evidence register, or research canon. Keep detailed results in their existing artifact or log; update `PROJECT_STATUS.md` only after its evidence owner.
 
@@ -24,4 +24,4 @@ Use the project skills whose descriptions match the task; their procedures and t
 
 Run focused tests while iterating. Before a broad completion claim, activate `.venv` and run the relevant combination of `python -m pytest`, `ruff check src tests`, and `mypy src`. Do not run expensive model calls, inspect locked data, or regenerate broad artifacts merely to update documentation.
 
-Pytest tiers follow [Decision 0049](docs/decisions/0049-pytest-research-validity-firewall.md): plain `pytest` is the always-on research-validity firewall (`-m "not deep"`). Use `pytest -m deep` only for the capped deep allowlist. New always-on cases must pass always-on admission and should replace or narrow an existing case for the same obligation. Terms: `CONTEXT.md` Verification.
+Pytest tiers follow [pytest is the research-validity firewall](docs/paper/decisions/pytest-is-the-research-validity-firewall.md): plain `pytest` is the always-on firewall (`-m "not deep"`). Use `pytest -m deep` only for the capped deep allowlist. New always-on cases must pass always-on admission and should replace or narrow an existing case for the same obligation. Terms: `CONTEXT.md` Verification.
