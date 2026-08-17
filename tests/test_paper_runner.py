@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from clinical_extraction.paper.cli import run, verify
+from clinical_extraction.paper.cli import run
 from clinical_extraction.paper.exect import (
     CANDIDATE_VERSION,
     HOSTED_SLUGS,
@@ -13,8 +13,9 @@ from clinical_extraction.paper.exect import (
     control_path,
     verify_compact,
 )
+from clinical_extraction.paper.gan import run_gan, verify_gan
 from clinical_extraction.paper.lm import gemini_api_base
-from clinical_extraction.paper.methods import LIVE_METHODS, split_for
+from clinical_extraction.paper.methods import LIVE_METHODS, gan_machine_split, split_for
 from clinical_extraction.paper.roster import living_models
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
@@ -96,11 +97,69 @@ def test_verify_compact_test60_is_aggregate_only() -> None:
         assert "exect_test60" in path.as_posix()
 
 
-def test_verify_cli_reports_paper_gan_identities() -> None:
-    only = verify("gan_llm_only", "dev750", "gemma4_26b")
-    hybrid = verify("gan_llm_with_rules", "dev750", "gpt56luna")
+def test_verify_gan_pins_paper_identities_without_changing_defaults() -> None:
+    before_only = gan_llm_only.PROMPT_VERSION
+    before_hybrid = hybrid_structured_events.PROMPT_VERSION
+    only = verify_gan("gan_llm_only", "dev750", "gemma4_26b")
+    hybrid = verify_gan("gan_llm_with_rules", "dev750", "gpt56luna")
+    assert only["ok"] is True
+    assert only["method"] == "gan_llm_only"
     assert only["prompt_version"] == gan_llm_only.GAN_LLM_ONLY
-    assert hybrid["prompt_version"] == hybrid_structured_events.GAN_LLM_WITH_RULES
+    assert only["split"] == "dev750"
+    assert only["split_machine"] == "validation" == gan_machine_split("dev750")
+    assert only["row_count"] == 750
+    assert only["row_policy"] == "development_review_permitted"
     assert only["model"] == "ollama_chat/gemma4:26b"
-    with pytest.raises(SystemExit, match="not wired"):
-        run("gan_llm_only", "gemma4_26b", "dev750")
+    assert only["max_tokens"] == 1200
+    assert hybrid["ok"] is True
+    assert hybrid["method"] == "gan_llm_with_rules"
+    assert hybrid["prompt_version"] == hybrid_structured_events.GAN_LLM_WITH_RULES
+    assert hybrid["drops_research_metadata"] is True
+    assert hybrid["max_tokens"] == 5000
+    assert gan_llm_only.PROMPT_VERSION == before_only == gan_llm_only.GAN_LLM_ONLY
+    assert (
+        hybrid_structured_events.PROMPT_VERSION
+        == before_hybrid
+        == hybrid_structured_events.GAN_LLM_WITH_RULES
+    )
+
+
+def test_verify_gan_test450_is_aggregate_only() -> None:
+    payload = verify_gan("gan_llm_with_rules", "test450")
+    assert payload["ok"] is True
+    assert payload["split"] == "test450"
+    assert payload["split_machine"] == "test"
+    assert payload["row_count"] == 450
+    assert payload["row_policy"] == "aggregate_only"
+    assert payload["test450_authorized"] is True
+    assert "incorrect_source_row_indices" not in payload
+
+
+def test_cli_dispatches_gan_live(monkeypatch: pytest.MonkeyPatch) -> None:
+    captured: dict[str, object] = {}
+
+    def fake_run(
+        method: str,
+        slug: str,
+        *,
+        live: bool,
+        split: str,
+        overwrite: bool = False,
+        api_base: str | None = None,
+        timeout: int | None = None,
+        progress_every: int = 1,
+    ) -> dict[str, object]:
+        captured.update(method=method, slug=slug, live=live, split=split)
+        return {"ok": True, "method": method}
+
+    monkeypatch.setattr("clinical_extraction.paper.cli.run_gan", fake_run)
+    payload = run("gan_llm_only", "qwen38_27b", "dev750")
+    assert payload == {"ok": True, "method": "gan_llm_only"}
+    assert captured == {
+        "method": "gan_llm_only",
+        "slug": "qwen38_27b",
+        "live": True,
+        "split": "dev750",
+    }
+    with pytest.raises(RuntimeError, match="requires live=True"):
+        run_gan("gan_llm_with_rules", "gpt56luna", live=False, split="dev750")

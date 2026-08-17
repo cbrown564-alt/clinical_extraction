@@ -26,6 +26,8 @@ LIVE_METHODS: dict[str, dict[str, object]] = {
 }
 
 HOLDOUT_SPLITS = frozenset({"test450", "test60"})
+GAN_MACHINE_SPLITS = {"dev750": "validation", "test450": "test"}
+GAN_ROW_COUNTS = {"dev750": 750, "test450": 450}
 
 
 def method_spec(method: str) -> dict[str, object]:
@@ -57,3 +59,21 @@ def holdout_is_aggregate_only(split: str) -> bool:
     """Locked test splits are aggregate-only."""
 
     return split in HOLDOUT_SPLITS
+
+
+def gan_machine_split(split: str) -> str:
+    """Map a paper Gan split to the gan2026_split_v1 machine name."""
+
+    try:
+        return GAN_MACHINE_SPLITS[split]
+    except KeyError as exc:
+        raise ValueError(f"unsupported Gan paper split {split!r}") from exc
+
+
+def gan_row_count(split: str) -> int:
+    """Return the locked Gan paper split size."""
+
+    try:
+        return GAN_ROW_COUNTS[split]
+    except KeyError as exc:
+        raise ValueError(f"unsupported Gan paper split {split!r}") from exc
