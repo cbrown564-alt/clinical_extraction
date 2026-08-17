@@ -465,8 +465,8 @@
     {
       "name": "No-call replay",
       "role": "replay path",
-      "path": "scripts/replay_gan2026_v05_current_schema.py",
-      "note": "Re-parses saved raw model outputs through the current ruleset without model calls; produced experiments/gan2026_six_model_current_floors_replay_20260731/."
+      "path": "scripts/run_current_stack.py",
+      "note": "Historical zero-call replay of saved current-stack cells. Not the paper live runner."
     }
   ],
   "evidence_owners": [
