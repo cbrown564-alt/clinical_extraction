@@ -23,33 +23,22 @@ node_modules/
 
 .worktrees/
 
-# Experiment outputs can be large; keep metadata in git and add selected artifacts intentionally.
-experiments/**/predictions*.csv
-experiments/**/predictions*.json
-experiments/**/traces/
+# Local-only research corpus, lab notebook, and derived dumps.
+# Frontend Demo UI mock-data stays tracked under frontend/public/mock-data/.
+/data/
+/docs/
+/experiments/
+/literature/
+/media/
+/PROJECT_STATUS.md
+/CONTEXT.md
 
-# GEPA optimizer run scratch: cloudpickle resume checkpoints, per-example output
-# dumps, and orchestrator logs/status. The curated synthesis + per-run
-# json/md/jsonl/instruction artifacts are committed intentionally; these
-# machine-generated internals are not.
-experiments/**/gepa_state.bin
-experiments/**/generated_best_outputs_valset/
-experiments/gepa_overnight*/**/*.log*
-experiments/gepa_overnight*/*.log*
-experiments/gepa_overnight*/*_status.json
-
-# Scratch run scripts/outputs under experiments/ and scripts/ (underscore-prefixed by
-# convention) and captured run logs/streams. Registered artifacts are added explicitly.
-experiments/_*
+# Scratch run scripts/outputs under scripts/ (underscore-prefixed by
+# convention) and captured run logs/streams.
 scripts/_*
-experiments/*.log
-experiments/*.stderr
-experiments/*.stdout
 scripts/*.log
 scripts/*.stderr
 scripts/*.stdout
-experiments/*_stderr.txt
-experiments/*_stdout.txt
 scripts/*_stderr.txt
 scripts/*_stdout.txt
 logs/
@@ -59,8 +48,7 @@ mlruns/
 mlflow.db
 mlflow.db-*
 
-# Local operational scratch and captured run output (summaries belong in experiments/ or docs/).
-# The explainer lives promoted at docs/explainer; nothing tracked remains under scratch/.
+# Local operational scratch and captured run output.
 scratch/*
 output/
 
@@ -82,7 +70,6 @@ output/
 *.nav
 *.snm
 *.vrb
-literature/**/*.log
 
 # SF canonical row-analysis working output (regenerable from experiments/exectv2_sf_canonical_*.py)
 /_sf_canonical/
