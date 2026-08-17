@@ -8,8 +8,9 @@ Private helpers (and the ``parse_json_payload_with_schema_repair`` /
 modules import the legacy module as ``structured`` and reach those attributes
 directly.
 
-After the 2026-08-16 prune, live identities are ``v0.9.24`` and
-cheap-stack ``v0.9.40``. Study-only further-prune IDs sit beside them.
+After the 2026-08-17 slot reassignment, live identities are ``v0.9.24``
+and cheap-stack slot 2 ``v0.9.44``. Predecessor cheap-stack IDs remain
+for replay.
 """
 # ruff: noqa: F401 — thin re-export facade for the legacy ``structured`` API.
 

@@ -1,7 +1,7 @@
 """Full-profile prompt builder for the structured-event extractor.
 
-The selected ``v0.9.24`` body and retained cheap-stack ``v0.9.40`` remain
-live. Study-only further-prune identities are registered beside them.
+The selected ``v0.9.24`` body and cheap-stack slot 2 ``v0.9.44`` remain
+live. Predecessor cheap-stack identities are registered beside them.
 """
 
 from __future__ import annotations

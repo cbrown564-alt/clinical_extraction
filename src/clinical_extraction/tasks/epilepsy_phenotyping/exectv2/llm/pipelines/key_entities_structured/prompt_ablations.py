@@ -1,8 +1,9 @@
 """Retained cheap-stack drop from the frozen v0.9.24 structured prompt.
 
-``v0.9.40_drop_encoding_non_sf_all_examples`` is the live cheap slot.
-The v0.9.41–v0.9.44 identities are study-only further prunes of that
-slot. Intermediate leave-one-out prune arms are lineage in git history.
+``v0.9.44_cheap_stack_further_prunes`` is the live cheap slot.
+``v0.9.40`` is the predecessor cheap stack. The one-cut v0.9.41–v0.9.43
+identities remain for replay. Intermediate leave-one-out prune arms
+are lineage in git history.
 """
 
 from __future__ import annotations

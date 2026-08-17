@@ -3,9 +3,10 @@
 Pure relocation of the module-level constants from
 ``llm_only_key_entities_structured``. No logic changes.
 
-After the 2026-08-16 prune, the live current-hybrid identities here are
-selected ``v0.9.24`` and cheap-stack ``v0.9.40``. Study-only
-further-prune identities sit beside them; they are not slot 2.
+After the 2026-08-17 slot reassignment, the live current-hybrid
+identities here are selected ``v0.9.24`` and cheap-stack slot 2
+``v0.9.44``. Predecessor ``v0.9.40``–``v0.9.43`` identities remain
+for replay.
 Mention-unit v2 lives in ``mention_unit.py``, not this registry.
 """
 
