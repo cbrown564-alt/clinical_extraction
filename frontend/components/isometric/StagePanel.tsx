@@ -4,6 +4,7 @@ import type {
   StageObservationData,
   StationLayoutNode,
   TeachingCaseData,
+  TeachingRunData,
 } from "@/lib/isometricTypes";
 import { ACCENT, catalogMatches } from "@/lib/isometricLayout";
 
@@ -11,6 +12,7 @@ interface StagePanelProps {
   station: StationLayoutNode;
   observations: StageObservationData[];
   activeCase: TeachingCaseData | undefined;
+  activeRun?: TeachingRunData;
   onClose: () => void;
 }
 
@@ -24,6 +26,7 @@ export default function StagePanel({
   station,
   observations,
   activeCase,
+  activeRun,
   onClose,
 }: StagePanelProps) {
   const fired = observations.filter((obs) => obs.changed);
@@ -33,6 +36,11 @@ export default function StagePanel({
   const thisCaseLines =
     station.kind === "source"
       ? [activeCase ? `${activeCase.letter_id}. ${activeCase.story}` : "No letter loaded."]
+      : station.kind === "score" && activeRun
+        ? [
+            activeRun.final_answer,
+            activeRun.correctness_note,
+          ].filter((line) => line.trim().length > 0)
       : catalog.length > 0
         ? catalog
             .filter((item) =>

@@ -279,9 +279,15 @@ export function activationLabel(
   }
 }
 
+export function clipLine(text: string, max = 88): string {
+  const trimmed = text.trim();
+  if (trimmed.length <= max) return trimmed;
+  return `${trimmed.slice(0, max).trimEnd()}…`;
+}
+
 export function sourceLetterLine(noteText: string, goldReference: string): string {
   const gold = goldReference.trim();
-  if (gold) return gold.length > 88 ? `${gold.slice(0, 88).trimEnd()}…` : gold;
+  if (gold) return clipLine(gold);
 
   const lines = noteText
     .split("\n")
@@ -292,5 +298,5 @@ export function sourceLetterLine(noteText: string, goldReference: string): strin
     lines[1] ??
     lines[0] ??
     "";
-  return body.length > 88 ? `${body.slice(0, 88).trimEnd()}…` : body;
+  return clipLine(body);
 }

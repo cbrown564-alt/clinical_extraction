@@ -17,6 +17,7 @@ import {
   activationLabel,
   ACCENT,
   sourceLetterLine,
+  clipLine,
 } from "@/lib/isometricLayout";
 import type { StationActivation } from "@/lib/isometricTypes";
 import StagePanel from "./StagePanel";
@@ -100,7 +101,7 @@ export default function IsometricCanvas() {
               type="button"
               onClick={() => setSelectedStageId(selectedHere ? null : station.id)}
               className={`absolute -translate-x-1/2 -translate-y-1/2 bg-white px-2 py-1.5 text-left ${
-                station.kind === "source" ? "w-52" : "w-32"
+                station.kind === "source" || station.kind === "score" ? "w-52" : "w-32"
               }`}
               style={{
                 left,
@@ -120,6 +121,16 @@ export default function IsometricCanvas() {
                   {sourceLetterLine(activeCase.note_text, activeCase.gold_reference)}
                 </p>
               )}
+              {station.kind === "score" && activation !== "skipped" && activeRun?.final_answer && (
+                <p className="mt-1 text-xs leading-snug text-neutral-600">
+                  {clipLine(activeRun.final_answer, 72)}
+                  {activeRun.correct === true
+                    ? " · matches gold"
+                    : activeRun.correct === false
+                      ? " · misses gold"
+                      : ""}
+                </p>
+              )}
             </button>
           );
         })}
@@ -131,6 +142,7 @@ export default function IsometricCanvas() {
             station={selected.station}
             observations={selected.mapped}
             activeCase={activeCase}
+            activeRun={activeRun}
             onClose={() => setSelectedStageId(null)}
           />
         </div>
@@ -142,6 +154,7 @@ export default function IsometricCanvas() {
             station={selected.station}
             observations={selected.mapped}
             activeCase={activeCase}
+            activeRun={activeRun}
             onClose={() => setSelectedStageId(null)}
           />
         </div>
