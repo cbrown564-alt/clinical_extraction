@@ -11,6 +11,23 @@ def _reject_invented_event_kind(event: object) -> object:
     return event
 
 
+def test_parse_json_payload_with_schema_repair_drops_unmatched_closing_brace() -> None:
+    payload, notes = parse_json_payload_with_schema_repair(
+        '{"clinical_events":[{"family":"investigation","fact":"MRI","attributes":{"mri_result":"abnormal"}}}]}'
+    )
+
+    assert payload == {
+        "clinical_events": [
+            {
+                "family": "investigation",
+                "fact": "MRI",
+                "attributes": {"mri_result": "abnormal"},
+            }
+        ]
+    }
+    assert notes == ["json_dialect_repaired: unmatched_container_close"]
+
+
 def test_parse_json_payload_with_schema_repair_handles_python_literal_dialect() -> None:
     payload, notes = parse_json_payload_with_schema_repair(
         "{'events': [{'notes': None}], 'selection': {'confidence': 'high'}}"

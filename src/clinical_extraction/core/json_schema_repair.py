@@ -39,6 +39,12 @@ def parse_json_payload_with_schema_repair(
                 return json.loads(repaired_syntax), syntax_notes
             except json.JSONDecodeError:
                 pass
+        repaired_closes, close_notes = _repair_unmatched_container_closes(raw_payload)
+        if close_notes:
+            try:
+                return json.loads(repaired_closes), close_notes
+            except json.JSONDecodeError:
+                pass
         if not python_literal_dialect_repair:
             raise json_error from None
         try:
@@ -74,3 +80,44 @@ def _repair_local_json_syntax_drift(raw_payload: str) -> tuple[str, list[str]]:
     if count:
         notes.append("json_dialect_repaired: extra_container_close")
     return repaired, notes
+
+
+def _repair_unmatched_container_closes(raw_payload: str) -> tuple[str, list[str]]:
+    """Drop extra } or ] that do not match the open container."""
+
+    pairs = {"{": "}", "[": "]"}
+    closing = {"}": "{", "]": "["}
+    stack: list[str] = []
+    kept: list[str] = []
+    in_string = False
+    escaped = False
+    dropped = 0
+    for char in raw_payload:
+        if in_string:
+            kept.append(char)
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_string = False
+            continue
+        if char == '"':
+            in_string = True
+            kept.append(char)
+            continue
+        if char in pairs:
+            stack.append(char)
+            kept.append(char)
+            continue
+        if char in closing:
+            if stack and stack[-1] == closing[char]:
+                stack.pop()
+                kept.append(char)
+                continue
+            dropped += 1
+            continue
+        kept.append(char)
+    if not dropped:
+        return raw_payload, []
+    return "".join(kept), ["json_dialect_repaired: unmatched_container_close"]

@@ -67,11 +67,18 @@ MAX_TOKENS = {
     "gan_llm_with_rules": 5000,
 }
 DEEPSEEK_MAX_TOKENS = 24000
+HIGH_REASONING_GAN_LLM_ONLY_MAX_TOKENS = 16000
 
 
-def _max_tokens_for(method: str, slug: str | None = None) -> int:
+def _max_tokens_for(
+    method: str,
+    slug: str | None = None,
+    reasoning_effort: str | None = None,
+) -> int:
     if slug == "deepseek_v4_flash":
         return DEEPSEEK_MAX_TOKENS
+    if method == "gan_llm_only" and reasoning_effort == "high":
+        return HIGH_REASONING_GAN_LLM_ONLY_MAX_TOKENS
     return MAX_TOKENS[method]
 
 
@@ -191,7 +198,7 @@ def run_gan(
     done = {int(row["source_row_index"]) for row in existing}
     todo = [record for record in records if record.source_row_index not in done]
     resolved_base = resolve_paper_api_base(spec.slug, api_base)
-    max_tokens = _max_tokens_for(method, spec.slug)
+    max_tokens = _max_tokens_for(method, spec.slug, spec.reasoning_effort)
     if todo:
         _prepare_live_runtime(
             spec,
