@@ -100,7 +100,7 @@ export default function IsometricCanvas() {
               key={station.id}
               type="button"
               onClick={() => setSelectedStageId(selectedHere ? null : station.id)}
-              className={`absolute -translate-x-1/2 -translate-y-1/2 bg-white px-2 py-1.5 text-left ${
+              className={`absolute -translate-x-1/2 bg-white px-2 py-1.5 text-left ${
                 station.kind === "source" || station.kind === "score" ? "w-52" : "w-32"
               }`}
               style={{
