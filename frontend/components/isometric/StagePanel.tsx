@@ -30,7 +30,6 @@ export default function StagePanel({
   onClose,
 }: StagePanelProps) {
   const fired = observations.filter((obs) => obs.changed);
-  const changeObs = fired[0] ?? observations.find((obs) => obs.input !== obs.output);
   const catalog = station.catalog ?? [];
 
   const thisCaseLines =
@@ -109,14 +108,20 @@ export default function StagePanel({
           )}
         </section>
 
-        {changeObs && changeObs.changed && (
-          <section>
-            <h3 className="mb-2 text-xs font-medium text-neutral-500">Change</h3>
-            <p className="mb-2 font-medium">{changeObs.stage_name}</p>
-            <p className="text-xs text-neutral-500">In</p>
-            <p className="mb-3 whitespace-pre-wrap">{truncate(changeObs.input)}</p>
-            <p className="text-xs text-neutral-500">Out</p>
-            <p className="whitespace-pre-wrap">{truncate(changeObs.output)}</p>
+        {fired.length > 0 && (
+          <section className="space-y-4">
+            <h3 className="text-xs font-medium text-neutral-500">
+              {fired.length === 1 ? "Change" : "Changes"}
+            </h3>
+            {fired.map((obs) => (
+              <div key={obs.stage_id}>
+                <p className="mb-2 font-medium">{obs.stage_name}</p>
+                <p className="text-xs text-neutral-500">In</p>
+                <p className="mb-3 whitespace-pre-wrap">{truncate(obs.input)}</p>
+                <p className="text-xs text-neutral-500">Out</p>
+                <p className="whitespace-pre-wrap">{truncate(obs.output)}</p>
+              </div>
+            ))}
           </section>
         )}
       </div>

@@ -123,7 +123,7 @@ export default function IsometricCanvas() {
               )}
               {station.kind === "score" && activation !== "skipped" && activeRun?.final_answer && (
                 <p className="mt-1 text-xs leading-snug text-neutral-600">
-                  {clipLine(activeRun.final_answer, 72)}
+                  {clipLine(activeRun.final_answer, 40)}
                   {activeRun.correct === true
                     ? " · matches gold"
                     : activeRun.correct === false
