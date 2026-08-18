@@ -8,6 +8,9 @@ interface HighlightSpan {
   /** A highlight tone, or any string (legacy callers); unknowns render plain. */
   kind: HighlightTone | string;
   label?: string;
+  id?: string;
+  selected?: boolean;
+  dim?: boolean;
 }
 
 interface LetterRendererProps {
@@ -15,6 +18,7 @@ interface LetterRendererProps {
   highlights?: HighlightSpan[];
   /** Extra content below the letter (gold label card etc). */
   children?: React.ReactNode;
+  onHighlightSelect?: (id: string) => void;
 }
 
 const KNOWN_TONES: HighlightTone[] = [
@@ -39,15 +43,30 @@ function toTone(kind: string): HighlightTone | null {
  * Thin adapter over the shared {@link SourceDocument}. Used by the ExECTv2
  * explorer and semantic-support review, which pass pre-resolved highlight tones.
  */
-export default function LetterRenderer({ text, highlights = [], children }: LetterRendererProps) {
+export default function LetterRenderer({
+  text,
+  highlights = [],
+  children,
+  onHighlightSelect,
+}: LetterRendererProps) {
   const spans: RenderSpan[] = [];
   for (const h of highlights) {
     const tone = toTone(h.kind);
-    if (tone) spans.push({ start: h.start, end: h.end, tone, label: h.label });
+    if (tone) {
+      spans.push({
+        start: h.start,
+        end: h.end,
+        tone,
+        label: h.label,
+        id: h.id,
+        selected: h.selected,
+        dim: h.dim,
+      });
+    }
   }
 
   return (
-    <SourceDocument text={text} spans={spans}>
+    <SourceDocument text={text} spans={spans} onSpanSelect={onHighlightSelect}>
       {children}
     </SourceDocument>
   );

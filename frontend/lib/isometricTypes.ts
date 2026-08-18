@@ -1,3 +1,5 @@
+import type { FactGoldData, PredictedFactData } from "./assemblyLineTypes";
+
 export type EffectClass =
   | "transport_or_schema"
   | "representation"
@@ -35,6 +37,8 @@ export interface TeachingRunData {
   correct: boolean | null;
   correctness_note: string;
   observations: StageObservationData[];
+  facts?: PredictedFactData[];
+  gold_unit?: FactGoldData;
 }
 
 export interface TeachingCaseData {

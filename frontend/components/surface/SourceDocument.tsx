@@ -23,6 +23,10 @@ export interface RenderSpan {
   start: number;
   end: number;
   tone: HighlightTone;
+  /** Stable id for click-to-select surfaces. */
+  id?: string;
+  selected?: boolean;
+  dim?: boolean;
   /** Plain-text tooltip / aria label. */
   label?: string;
   /** Rich tooltip body (falls back to `label`). */
@@ -184,25 +188,51 @@ export default function SourceDocument({
   text,
   spans = [],
   children,
+  onSpanSelect,
 }: {
   text: string;
   spans?: RenderSpan[];
   children?: ReactNode;
+  onSpanSelect?: (id: string) => void;
 }) {
   const cleanText = useMemo(() => unescapeText(text), [text]);
   const segments = useMemo(() => buildSegments(cleanText, spans), [cleanText, spans]);
 
   return (
     <div className="relative rounded-xl border border-border bg-surface p-5 shadow-sm">
-      <div className="note-text text-foreground">
+      <div className={`note-text text-foreground${onSpanSelect ? " note-text--picker" : ""}`}>
         {segments.map((seg, i) => {
           const content = cleanText.slice(seg.start, seg.end);
           if (seg.spans.length === 0) {
             return <span key={i}>{withBreaks(content)}</span>;
           }
           const primary = seg.spans[0];
-          const mark = (
-            <mark className={`span-highlight ${TONE_CLASS[primary.tone]}`} title={primary.label}>
+          const selectedClass = primary.selected ? " span-highlight--selected" : "";
+          const dimClass = primary.dim && !primary.selected ? " span-highlight--dim" : "";
+          const interactive = Boolean(onSpanSelect && primary.id);
+          const markClass = `span-highlight ${TONE_CLASS[primary.tone]}${selectedClass}${dimClass}${
+            interactive ? " span-highlight--interactive" : ""
+          }`;
+          const mark = interactive ? (
+            <mark
+              className={markClass}
+              title={primary.label}
+              role="button"
+              tabIndex={0}
+              aria-pressed={primary.selected}
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => onSpanSelect?.(primary.id as string)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onSpanSelect?.(primary.id as string);
+                }
+              }}
+            >
+              {withBreaks(content)}
+            </mark>
+          ) : (
+            <mark className={markClass} title={primary.label}>
               {withBreaks(content)}
             </mark>
           );

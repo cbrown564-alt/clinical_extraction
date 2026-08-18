@@ -42,7 +42,7 @@ export default function ExplorerBody({
       </div>
 
       {/* Right – inspector */}
-      <div className="flex min-h-[36rem] min-w-0 shrink-0 flex-col bg-surface lg:min-h-0 lg:flex-1">
+      <div className="flex min-h-[36rem] min-w-0 shrink-0 flex-col overflow-hidden bg-surface lg:min-h-0 lg:flex-1">
         {inspector}
       </div>
     </div>
