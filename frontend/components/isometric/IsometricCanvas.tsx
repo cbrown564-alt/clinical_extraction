@@ -15,14 +15,21 @@ import {
   observationsForStation,
   stationActivation,
   activationLabel,
+  ACCENT,
+  sourceLetterLine,
 } from "@/lib/isometricLayout";
 import type { StationActivation } from "@/lib/isometricTypes";
 import StagePanel from "./StagePanel";
 
-function statusClass(activation: StationActivation, selected: boolean): string {
-  if (selected) return "font-semibold text-neutral-900";
-  if (activation === "on") return "font-semibold text-neutral-900";
-  return "font-normal text-neutral-500";
+function nameClass(activation: StationActivation): string {
+  if (activation === "skipped") return "text-sm font-normal text-neutral-400";
+  if (activation === "idle") return "text-sm font-normal text-neutral-700";
+  return "text-base font-semibold text-neutral-900";
+}
+
+function statusClass(activation: StationActivation): string {
+  if (activation === "on") return "text-xs font-medium";
+  return "text-xs font-normal text-neutral-500";
 }
 
 export default function IsometricCanvas() {
@@ -72,7 +79,11 @@ export default function IsometricCanvas() {
                 key={`${curr.station.id}-path`}
                 d={path}
                 fill="none"
-                stroke="#d4d4d4"
+                stroke={
+                  curr.activation === "skipped" && next.activation === "skipped"
+                    ? "#e5e5e5"
+                    : "#a3a3a3"
+                }
                 strokeWidth="1"
               />
             );
@@ -88,17 +99,27 @@ export default function IsometricCanvas() {
               key={station.id}
               type="button"
               onClick={() => setSelectedStageId(selectedHere ? null : station.id)}
-              className={`absolute w-36 -translate-x-1/2 -translate-y-1/2 bg-white px-2 py-2 text-left ${
-                selectedHere ? "border border-neutral-900" : "border border-transparent"
+              className={`absolute -translate-x-1/2 -translate-y-1/2 bg-white px-2 py-1.5 text-left ${
+                station.kind === "source" ? "w-52" : "w-32"
               }`}
-              style={{ left, top }}
+              style={{
+                left,
+                top,
+                boxShadow: selectedHere ? `inset 0 0 0 1px ${ACCENT}` : undefined,
+              }}
             >
-              <div className={`text-sm ${statusClass(activation, selectedHere)}`}>
-                {station.name}
-              </div>
-              <div className={`text-xs ${activation === "on" ? "text-neutral-700" : "text-neutral-500"}`}>
+              <div className={nameClass(activation)}>{station.name}</div>
+              <div
+                className={statusClass(activation)}
+                style={activation === "on" ? { color: ACCENT } : undefined}
+              >
                 {activationLabel(activation, onCount, catalogSize)}
               </div>
+              {station.kind === "source" && activeCase && (
+                <p className="mt-1 text-xs leading-snug text-neutral-600">
+                  {sourceLetterLine(activeCase.note_text, activeCase.gold_reference)}
+                </p>
+              )}
             </button>
           );
         })}

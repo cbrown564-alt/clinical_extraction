@@ -5,7 +5,7 @@ import type {
   StationLayoutNode,
   TeachingCaseData,
 } from "@/lib/isometricTypes";
-import { catalogMatches } from "@/lib/isometricLayout";
+import { ACCENT, catalogMatches } from "@/lib/isometricLayout";
 
 interface StagePanelProps {
   station: StationLayoutNode;
@@ -48,13 +48,13 @@ export default function StagePanel({
     <aside className="flex h-full w-full flex-col border-l border-neutral-200 bg-white text-neutral-900">
       <div className="flex items-start justify-between gap-3 border-b border-neutral-200 px-5 py-4">
         <div>
-          <h2 className="text-base font-semibold">{station.name}</h2>
-          <p className="mt-1 max-w-prose text-sm text-neutral-700">{station.alwaysDoes}</p>
+          <h2 className="text-lg font-semibold">{station.name}</h2>
+          <p className="mt-1 max-w-prose text-sm text-neutral-600">{station.alwaysDoes}</p>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="text-sm text-neutral-600 hover:text-neutral-900"
+          className="text-sm text-neutral-500 hover:text-neutral-900"
         >
           Close
         </button>
@@ -63,7 +63,7 @@ export default function StagePanel({
       <div className="flex-1 space-y-6 overflow-y-auto px-5 py-4 text-sm">
         {catalog.length > 0 && (
           <section>
-            <h3 className="mb-2 font-semibold">Catalog</h3>
+            <h3 className="mb-2 text-xs font-medium text-neutral-500">Catalog</h3>
             <ul className="space-y-1">
               {catalog.map((item) => {
                 const itemObs = observations.filter((obs) => catalogMatches(item, obs));
@@ -72,10 +72,13 @@ export default function StagePanel({
                 return (
                   <li
                     key={item.id}
-                    className={isOn ? "font-semibold text-neutral-900" : "text-neutral-500"}
+                    className={isOn ? "font-medium text-neutral-900" : "text-neutral-500"}
                   >
                     {item.label}
-                    <span className="ml-2 font-normal">
+                    <span
+                      className="ml-2 font-normal"
+                      style={isOn ? { color: ACCENT } : undefined}
+                    >
                       {inMethod ? (isOn ? "on" : "idle") : "not in this method"}
                     </span>
                   </li>
@@ -86,7 +89,7 @@ export default function StagePanel({
         )}
 
         <section>
-          <h3 className="mb-2 font-semibold">This case</h3>
+          <h3 className="mb-2 text-xs font-medium text-neutral-500">This case</h3>
           {thisCaseLines.length === 0 ? (
             <p className="text-neutral-500">Nothing at this stage on this case.</p>
           ) : (
@@ -100,11 +103,11 @@ export default function StagePanel({
 
         {changeObs && changeObs.changed && (
           <section>
-            <h3 className="mb-2 font-semibold">Change</h3>
-            <p className="mb-2 text-neutral-700">{changeObs.stage_name}</p>
-            <p className="text-neutral-500">In</p>
+            <h3 className="mb-2 text-xs font-medium text-neutral-500">Change</h3>
+            <p className="mb-2 font-medium">{changeObs.stage_name}</p>
+            <p className="text-xs text-neutral-500">In</p>
             <p className="mb-3 whitespace-pre-wrap">{truncate(changeObs.input)}</p>
-            <p className="text-neutral-500">Out</p>
+            <p className="text-xs text-neutral-500">Out</p>
             <p className="whitespace-pre-wrap">{truncate(changeObs.output)}</p>
           </section>
         )}

@@ -236,15 +236,16 @@ export interface StationPoint {
 }
 
 export const CANVAS_WIDTH = 960;
-export const CANVAS_HEIGHT = 520;
+export const CANVAS_HEIGHT = 400;
+export const ACCENT = "#0f4c4a";
 
 export function layoutStationPoints(count: number): StationPoint[] {
   const topCount = Math.ceil(count / 2);
   const bottomCount = count - topCount;
-  const left = 90;
-  const right = CANVAS_WIDTH - 90;
-  const topY = 150;
-  const bottomY = 370;
+  const left = 150;
+  const right = CANVAS_WIDTH - 150;
+  const topY = 108;
+  const bottomY = 268;
 
   const row = (n: number, y: number): StationPoint[] => {
     if (n === 1) return [{ x: (left + right) / 2, y }];
@@ -276,4 +277,20 @@ export function activationLabel(
       return _exhaustive;
     }
   }
+}
+
+export function sourceLetterLine(noteText: string, goldReference: string): string {
+  const gold = goldReference.trim();
+  if (gold) return gold.length > 88 ? `${gold.slice(0, 88).trimEnd()}…` : gold;
+
+  const lines = noteText
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+  const body =
+    lines.find((line) => line.length > 24 && !/clinic letter/i.test(line)) ??
+    lines[1] ??
+    lines[0] ??
+    "";
+  return body.length > 88 ? `${body.slice(0, 88).trimEnd()}…` : body;
 }

@@ -4,6 +4,7 @@ import {
   useIsometricStore,
   type MethodType,
 } from "@/lib/isometricStore";
+import { ACCENT } from "@/lib/isometricLayout";
 
 const METHODS: { id: MethodType; label: string }[] = [
   { id: "rules", label: "Rules" },
@@ -18,7 +19,7 @@ export default function IsometricControls() {
   return (
     <div className="flex flex-wrap items-center gap-3 border-b border-neutral-200 bg-white px-4 py-2 text-neutral-900">
       <label className="flex min-w-0 items-center gap-2 text-sm">
-        <span>Case</span>
+        <span className="text-neutral-500">Case</span>
         <select
           value={selectedCaseId}
           onChange={(event) => setSelectedCaseId(event.target.value)}
@@ -41,10 +42,9 @@ export default function IsometricControls() {
               type="button"
               onClick={() => setSelectedMethod(method.id)}
               className={`h-8 px-2.5 text-sm ${
-                active
-                  ? "border border-neutral-900 font-semibold"
-                  : "border border-transparent text-neutral-600"
+                active ? "font-semibold" : "border border-transparent text-neutral-500"
               }`}
+              style={active ? { boxShadow: `inset 0 0 0 1px ${ACCENT}` } : undefined}
             >
               {method.label}
             </button>
