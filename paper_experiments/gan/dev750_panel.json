@@ -1,0 +1,175 @@
+{
+  "cells": [
+    {
+      "comparison": "paper_experiments/gan/gan_llm_only/grok46/dev750/comparison.json",
+      "label": "Grok 4.6",
+      "living_effort": "low",
+      "method": "gan_llm_only",
+      "model": "xai/grok-4.6",
+      "model_slug": "grok46",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_only/grok46/dev750/",
+      "purist_accuracy": 0.7867,
+      "purist_correct": 590,
+      "rows": "paper_experiments/gan/gan_llm_only/grok46/dev750/rows.jsonl",
+      "scored": "paper_experiments/gan/gan_llm_only/grok46/dev750/scored.jsonl",
+      "status": "present"
+    },
+    {
+      "comparison": "paper_experiments/gan/gan_llm_with_rules/grok46/dev750/comparison.json",
+      "label": "Grok 4.6",
+      "living_effort": "low",
+      "method": "gan_llm_with_rules",
+      "model": "xai/grok-4.6",
+      "model_slug": "grok46",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_with_rules/grok46/dev750/",
+      "purist_accuracy": 0.9,
+      "purist_correct": 675,
+      "rows": "paper_experiments/gan/gan_llm_with_rules/grok46/dev750/rows.jsonl",
+      "scored": "paper_experiments/gan/gan_llm_with_rules/grok46/dev750/scored.jsonl",
+      "status": "present"
+    },
+    {
+      "comparison": "paper_experiments/gan/gan_llm_only/gpt56luna/dev750/comparison.json",
+      "label": "GPT-5.6 Luna",
+      "living_effort": "low",
+      "method": "gan_llm_only",
+      "model": "openai/gpt-5.6-luna",
+      "model_slug": "gpt56luna",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_only/gpt56luna/dev750/",
+      "purist_accuracy": 0.7773,
+      "purist_correct": 583,
+      "rows": "paper_experiments/gan/gan_llm_only/gpt56luna/dev750/rows.jsonl",
+      "scored": "paper_experiments/gan/gan_llm_only/gpt56luna/dev750/scored.jsonl",
+      "status": "present"
+    },
+    {
+      "comparison": "paper_experiments/gan/gan_llm_with_rules/gpt56luna/dev750/comparison.json",
+      "label": "GPT-5.6 Luna",
+      "living_effort": "low",
+      "method": "gan_llm_with_rules",
+      "model": "openai/gpt-5.6-luna",
+      "model_slug": "gpt56luna",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_with_rules/gpt56luna/dev750/",
+      "purist_accuracy": 0.884,
+      "purist_correct": 663,
+      "rows": "paper_experiments/gan/gan_llm_with_rules/gpt56luna/dev750/rows.jsonl",
+      "scored": "paper_experiments/gan/gan_llm_with_rules/gpt56luna/dev750/scored.jsonl",
+      "status": "present"
+    },
+    {
+      "comparison": "paper_experiments/gan/gan_llm_only/gemini37flash/dev750/comparison.json",
+      "label": "Gemini 3.7 Flash",
+      "living_effort": "low",
+      "method": "gan_llm_only",
+      "model": "gemini/gemini-3.7-flash",
+      "model_slug": "gemini37flash",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_only/gemini37flash/dev750/",
+      "purist_accuracy": 0.7653,
+      "purist_correct": 574,
+      "rows": "paper_experiments/gan/gan_llm_only/gemini37flash/dev750/rows.jsonl",
+      "scored": "paper_experiments/gan/gan_llm_only/gemini37flash/dev750/scored.jsonl",
+      "status": "present"
+    },
+    {
+      "comparison": "paper_experiments/gan/gan_llm_with_rules/gemini37flash/dev750/comparison.json",
+      "label": "Gemini 3.7 Flash",
+      "living_effort": "low",
+      "method": "gan_llm_with_rules",
+      "model": "gemini/gemini-3.7-flash",
+      "model_slug": "gemini37flash",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_with_rules/gemini37flash/dev750/",
+      "purist_accuracy": 0.9067,
+      "purist_correct": 680,
+      "rows": "paper_experiments/gan/gan_llm_with_rules/gemini37flash/dev750/rows.jsonl",
+      "scored": "paper_experiments/gan/gan_llm_with_rules/gemini37flash/dev750/scored.jsonl",
+      "status": "present"
+    },
+    {
+      "label": "DeepSeek V4 Flash",
+      "method": "gan_llm_only",
+      "model": "deepseek/deepseek-v4-flash",
+      "model_slug": "deepseek_v4_flash",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_only/deepseek_v4_flash/dev750/",
+      "status": "pending"
+    },
+    {
+      "label": "DeepSeek V4 Flash",
+      "method": "gan_llm_with_rules",
+      "model": "deepseek/deepseek-v4-flash",
+      "model_slug": "deepseek_v4_flash",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_with_rules/deepseek_v4_flash/dev750/",
+      "status": "pending"
+    },
+    {
+      "label": "Qwen 3.8 27B",
+      "method": "gan_llm_only",
+      "model": "ollama_chat/qwen3.8:27b",
+      "model_slug": "qwen38_27b",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_only/qwen38_27b/dev750/",
+      "status": "pending"
+    },
+    {
+      "label": "Qwen 3.8 27B",
+      "method": "gan_llm_with_rules",
+      "model": "ollama_chat/qwen3.8:27b",
+      "model_slug": "qwen38_27b",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_with_rules/qwen38_27b/dev750/",
+      "status": "pending"
+    },
+    {
+      "label": "Gemma 4 26B",
+      "method": "gan_llm_only",
+      "model": "ollama_chat/gemma4:26b",
+      "model_slug": "gemma4_26b",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_only/gemma4_26b/dev750/",
+      "status": "pending"
+    },
+    {
+      "label": "Gemma 4 26B",
+      "method": "gan_llm_with_rules",
+      "model": "ollama_chat/gemma4:26b",
+      "model_slug": "gemma4_26b",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_with_rules/gemma4_26b/dev750/",
+      "status": "pending"
+    }
+  ],
+  "claim_boundary": "Living six-model Gan development panel. Remasures stay under experiments/paper/.../reasoning_* or thinking_disabled/. Not holdout.",
+  "living_effort": {
+    "deepseek": "thinking_on_provider_default",
+    "hosted_reasoning": "low",
+    "local": "none"
+  },
+  "method_identity": "grok46",
+  "methods": [
+    "gan_llm_only",
+    "gan_llm_with_rules"
+  ],
+  "models": [
+    "grok46",
+    "gpt56luna",
+    "gemini37flash",
+    "deepseek_v4_flash",
+    "qwen38_27b",
+    "gemma4_26b"
+  ],
+  "notes_source": {
+    "frontend": "/datasets/gan2026/letters",
+    "split_machine": "validation"
+  },
+  "row_policy": "development_review_permitted",
+  "schema_version": "paper_experiments.gan.dev750_panel.v1",
+  "split": "dev750",
+  "split_machine": "validation"
+}

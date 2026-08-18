@@ -1,0 +1,13 @@
+{
+  "empty_raw_count": 0,
+  "hybrid_headline_f1": 0.889,
+  "living_effort": "low",
+  "method": "exect_llm_with_rules",
+  "model": "gemini/gemini-3.7-flash",
+  "model_slug": "gemini37flash",
+  "n": 140,
+  "program": "exectv2_compact_ledger",
+  "raw_headline_f1": 0.83,
+  "row_policy": "development_review_permitted",
+  "split": "dev140"
+}

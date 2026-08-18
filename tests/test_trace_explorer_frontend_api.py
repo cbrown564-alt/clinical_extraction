@@ -255,3 +255,46 @@ def test_frontend_store_drops_holdout_ids_even_when_payloads_include_them() -> N
     assert store.is_locked_letter("exectv2", holdout_id)
     assert store.letter("exectv2", holdout_id) is None
     assert len(catalog_ids) == 140
+
+
+def test_frontend_api_serves_the_living_gan_dev750_panel(client: TestClient) -> None:
+    panel = client.get("/paper/gan/dev750")
+    assert panel.status_code == 200
+    body = panel.json()
+    assert body["split"] == "dev750"
+    assert body["method_identity"] == "grok46"
+    assert len(body["cells"]) == 12
+    grok = client.get("/paper/gan/dev750/gan_llm_with_rules/grok46/scored")
+    assert grok.status_code == 200
+    scored = grok.json()
+    assert scored["count"] == 750
+    assert scored["rows"][0]["letter_id"] == str(scored["rows"][0]["source_row_index"])
+    letters = client.get("/datasets/gan2026/letters")
+    assert letters.status_code == 200
+    letter_ids = {letter["id"] for letter in letters.json()["letters"]}
+    scored_ids = {row["letter_id"] for row in scored["rows"]}
+    assert letter_ids
+    assert scored_ids & letter_ids
+    pending = client.get("/paper/gan/dev750/gan_llm_only/qwen38_27b/scored")
+    assert pending.status_code == 404
+
+
+def test_frontend_api_serves_the_living_exect_dev140_panel(client: TestClient) -> None:
+    panel = client.get("/paper/exect/dev140")
+    assert panel.status_code == 200
+    body = panel.json()
+    assert body["split"] == "dev140"
+    assert body["method_identity"] == "grok46"
+    assert len(body["cells"]) == 6
+    grok = client.get("/paper/exect/dev140/grok46/scored")
+    assert grok.status_code == 200
+    scored = grok.json()
+    assert scored["count"] == 140
+    letters = client.get("/datasets/exectv2/letters")
+    assert letters.status_code == 200
+    letter_ids = {letter["id"] for letter in letters.json()["letters"]}
+    scored_ids = {row["letter_id"] for row in scored["rows"]}
+    assert letter_ids
+    assert scored_ids & letter_ids
+    pending = client.get("/paper/exect/dev140/qwen38_27b/scored")
+    assert pending.status_code == 404

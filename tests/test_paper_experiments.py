@@ -77,6 +77,7 @@ def test_inventory_covers_present_and_missing_cells() -> None:
     assert present == {
         ("gpt56sol", "exect_llm_with_rules", "dev140"),
         ("gpt56sol", "exect_llm_with_rules", "test60"),
+        ("grok46", "exect_llm_with_rules", "dev140"),
         ("gpt56luna", "exect_llm_with_rules", "dev140"),
         ("gpt56luna", "exect_llm_with_rules", "test60"),
         ("gemini37flash", "exect_llm_with_rules", "dev140"),
@@ -87,14 +88,26 @@ def test_inventory_covers_present_and_missing_cells() -> None:
         ("gemma4_26b", "exect_llm_with_rules", "test60"),
         ("gemma4_26b", "gan_llm_only", "dev750"),
         ("gemma4_26b", "gan_llm_only", "test450"),
+        ("grok46", "gan_llm_only", "dev750"),
+        ("grok46", "gan_llm_with_rules", "dev750"),
+        ("gpt56luna", "gan_llm_only", "dev750"),
+        ("gpt56luna", "gan_llm_with_rules", "dev750"),
+        ("gemini37flash", "gan_llm_only", "dev750"),
+        ("gemini37flash", "gan_llm_with_rules", "dev750"),
     }
     assert "gan_llm_with_rules" in missing_methods
     missing_cells = {
         (row.get("model_slug"), row["method"], row.get("split")) for row in inventory["missing"]
     }
     assert ("qwen38_27b", "exect_llm_with_rules", "dev140") in missing_cells
-    assert ("grok46", "exect_llm_with_rules", "dev140") in missing_cells
-    assert ("grok46", "gan_llm_with_rules", "dev750") in missing_cells
+    assert ("grok46", "exect_llm_with_rules", "dev140") not in missing_cells
+    assert ("grok46", "exect_llm_with_rules", "test60") in missing_cells
+    assert ("deepseek_v4_flash", "gan_llm_only", "dev750") in missing_cells
+    assert ("deepseek_v4_flash", "gan_llm_with_rules", "dev750") in missing_cells
+    assert ("qwen38_27b", "gan_llm_only", "dev750") in missing_cells
+    assert ("qwen38_27b", "gan_llm_with_rules", "dev750") in missing_cells
+    assert ("gemma4_26b", "gan_llm_with_rules", "dev750") in missing_cells
+    assert ("grok46", "gan_llm_with_rules", "dev750") not in missing_cells
     gan_fields = set(inventory["strip"]["gan"])
     exect_fields = set(inventory["strip"]["exect"])
     for row in inventory["present"]:
@@ -119,6 +132,103 @@ def test_inventory_covers_present_and_missing_cells() -> None:
         assert empty == row["empty_raw_count"]
         if row["split"] in {"test450", "test60"}:
             assert row["row_policy"] == "aggregate_only"
+
+
+def test_gan_dev750_panel_is_rectangular() -> None:
+    panel = json.loads(
+        (ROOT / "paper_experiments/gan/dev750_panel.json").read_text(encoding="utf-8")
+    )
+    assert panel["schema_version"] == "paper_experiments.gan.dev750_panel.v1"
+    assert panel["split"] == "dev750"
+    assert panel["method_identity"] == "grok46"
+    assert panel["living_effort"]["hosted_reasoning"] == "low"
+    assert panel["models"] == list(LIVING_SLUGS)
+    assert panel["methods"] == ["gan_llm_only", "gan_llm_with_rules"]
+    assert len(panel["cells"]) == 12
+    present = {
+        (cell["model_slug"], cell["method"])
+        for cell in panel["cells"]
+        if cell["status"] == "present"
+    }
+    pending = {
+        (cell["model_slug"], cell["method"])
+        for cell in panel["cells"]
+        if cell["status"] == "pending"
+    }
+    assert present == {
+        ("grok46", "gan_llm_only"),
+        ("grok46", "gan_llm_with_rules"),
+        ("gpt56luna", "gan_llm_only"),
+        ("gpt56luna", "gan_llm_with_rules"),
+        ("gemini37flash", "gan_llm_only"),
+        ("gemini37flash", "gan_llm_with_rules"),
+    }
+    assert pending == {
+        ("deepseek_v4_flash", "gan_llm_only"),
+        ("deepseek_v4_flash", "gan_llm_with_rules"),
+        ("qwen38_27b", "gan_llm_only"),
+        ("qwen38_27b", "gan_llm_with_rules"),
+        ("gemma4_26b", "gan_llm_only"),
+        ("gemma4_26b", "gan_llm_with_rules"),
+    }
+    for cell in panel["cells"]:
+        if cell["status"] != "present":
+            continue
+        scored_path = ROOT / cell["scored"]
+        rows = [
+            json.loads(line)
+            for line in scored_path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        assert len(rows) == 750
+        first = rows[0]
+        assert first["letter_id"] == str(first["source_row_index"])
+        assert {"source_row_index", "letter_id", "predicted_label", "purist_correct"} <= set(first)
+
+
+def test_exect_dev140_panel_is_rectangular() -> None:
+    panel = json.loads(
+        (ROOT / "paper_experiments/exect/dev140_panel.json").read_text(encoding="utf-8")
+    )
+    assert panel["schema_version"] == "paper_experiments.exect.dev140_panel.v1"
+    assert panel["split"] == "dev140"
+    assert panel["method_identity"] == "grok46"
+    assert panel["living_effort"]["hosted_reasoning"] == "low"
+    assert panel["models"] == list(LIVING_SLUGS)
+    assert panel["methods"] == ["exect_llm_with_rules"]
+    assert len(panel["cells"]) == 6
+    present = {
+        cell["model_slug"] for cell in panel["cells"] if cell["status"] == "present"
+    }
+    pending = {
+        cell["model_slug"] for cell in panel["cells"] if cell["status"] == "pending"
+    }
+    assert present == {
+        "grok46",
+        "gpt56luna",
+        "gemini37flash",
+        "deepseek_v4_flash",
+        "gemma4_26b",
+    }
+    assert pending == {"qwen38_27b"}
+    for cell in panel["cells"]:
+        if cell["status"] != "present":
+            continue
+        scored_path = ROOT / cell["scored"]
+        rows = [
+            json.loads(line)
+            for line in scored_path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        assert len(rows) == 140
+        first = rows[0]
+        assert first["letter_id"].startswith("EA")
+        assert {
+            "letter_id",
+            "raw_headline_f1",
+            "hybrid_headline_f1",
+            "hybrid_four_family_letter_exact",
+        } <= set(first)
 
 
 def test_exect_hybrid_cells_have_raw_and_hybrid() -> None:

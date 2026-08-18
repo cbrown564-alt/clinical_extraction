@@ -1,0 +1,13 @@
+{
+  "empty_raw_count": 0,
+  "hybrid_headline_f1": 0.7674,
+  "living_effort": "none",
+  "method": "exect_llm_with_rules",
+  "model": "ollama_chat/gemma4:26b",
+  "model_slug": "gemma4_26b",
+  "n": 140,
+  "program": "exectv2_compact_ledger",
+  "raw_headline_f1": 0.4751,
+  "row_policy": "development_review_permitted",
+  "split": "dev140"
+}

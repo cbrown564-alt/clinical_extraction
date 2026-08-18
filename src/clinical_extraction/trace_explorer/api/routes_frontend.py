@@ -7,6 +7,13 @@ from typing import Any, Literal
 from fastapi import APIRouter, Query
 from pydantic import BaseModel, ConfigDict, Field
 
+from clinical_extraction.paper.exect_panel import (
+    load_dev140_panel,
+)
+from clinical_extraction.paper.exect_panel import (
+    load_scored_rows as load_exect_scored_rows,
+)
+from clinical_extraction.paper.gan_panel import load_dev750_panel, load_scored_rows
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
     AblationConfig,
@@ -108,6 +115,54 @@ def registry(data: FrontendDataDependency) -> dict[str, Any]:
 @router.get("/pipeline-families")
 def pipeline_families(data: FrontendDataDependency) -> dict[str, Any]:
     return data.named("pipeline_families")
+
+
+@router.get("/paper/gan/dev750")
+def paper_gan_dev750() -> dict[str, Any]:
+    """Living six-model Gan development panel for the frontend."""
+
+    return load_dev750_panel()
+
+
+@router.get("/paper/gan/dev750/{method}/{slug}/scored")
+def paper_gan_dev750_scored(method: str, slug: str) -> dict[str, Any]:
+    """Per-note scores for one present living Gan development cell."""
+
+    try:
+        rows = load_scored_rows(method, slug)
+    except (FileNotFoundError, KeyError, ValueError):
+        raise not_found() from None
+    return {
+        "method": method,
+        "model_slug": slug,
+        "split": "dev750",
+        "count": len(rows),
+        "rows": rows,
+    }
+
+
+@router.get("/paper/exect/dev140")
+def paper_exect_dev140() -> dict[str, Any]:
+    """Living six-model ExECT Compact development panel for the frontend."""
+
+    return load_dev140_panel()
+
+
+@router.get("/paper/exect/dev140/{slug}/scored")
+def paper_exect_dev140_scored(slug: str) -> dict[str, Any]:
+    """Per-letter Compact scores for one present living ExECT development cell."""
+
+    try:
+        rows = load_exect_scored_rows(slug)
+    except (FileNotFoundError, KeyError, ValueError):
+        raise not_found() from None
+    return {
+        "method": "exect_llm_with_rules",
+        "model_slug": slug,
+        "split": "dev140",
+        "count": len(rows),
+        "rows": rows,
+    }
 
 
 @router.get("/datasets/{dataset}/letters")

@@ -1,0 +1,114 @@
+{
+  "cells": [
+    {
+      "comparison": "paper_experiments/exect/exect_llm_with_rules/grok46/dev140/comparison.json",
+      "hybrid_headline_f1": 0.8998,
+      "label": "Grok 4.6",
+      "living_effort": "low",
+      "method": "exect_llm_with_rules",
+      "model": "xai/grok-4.6",
+      "model_slug": "grok46",
+      "n": 140,
+      "path": "paper_experiments/exect/exect_llm_with_rules/grok46/dev140/",
+      "raw_headline_f1": 0.8202,
+      "rows": "paper_experiments/exect/exect_llm_with_rules/grok46/dev140/structured.jsonl",
+      "scored": "paper_experiments/exect/exect_llm_with_rules/grok46/dev140/scored.jsonl",
+      "status": "present"
+    },
+    {
+      "comparison": "paper_experiments/exect/exect_llm_with_rules/gpt56luna/dev140/comparison.json",
+      "hybrid_headline_f1": 0.8818,
+      "label": "GPT-5.6 Luna",
+      "living_effort": "low",
+      "method": "exect_llm_with_rules",
+      "model": "openai/gpt-5.6-luna",
+      "model_slug": "gpt56luna",
+      "n": 140,
+      "path": "paper_experiments/exect/exect_llm_with_rules/gpt56luna/dev140/",
+      "raw_headline_f1": 0.7929,
+      "rows": "paper_experiments/exect/exect_llm_with_rules/gpt56luna/dev140/structured.jsonl",
+      "scored": "paper_experiments/exect/exect_llm_with_rules/gpt56luna/dev140/scored.jsonl",
+      "status": "present"
+    },
+    {
+      "comparison": "paper_experiments/exect/exect_llm_with_rules/gemini37flash/dev140/comparison.json",
+      "hybrid_headline_f1": 0.889,
+      "label": "Gemini 3.7 Flash",
+      "living_effort": "low",
+      "method": "exect_llm_with_rules",
+      "model": "gemini/gemini-3.7-flash",
+      "model_slug": "gemini37flash",
+      "n": 140,
+      "path": "paper_experiments/exect/exect_llm_with_rules/gemini37flash/dev140/",
+      "raw_headline_f1": 0.83,
+      "rows": "paper_experiments/exect/exect_llm_with_rules/gemini37flash/dev140/structured.jsonl",
+      "scored": "paper_experiments/exect/exect_llm_with_rules/gemini37flash/dev140/scored.jsonl",
+      "status": "present"
+    },
+    {
+      "comparison": "paper_experiments/exect/exect_llm_with_rules/deepseek_v4_flash/dev140/comparison.json",
+      "hybrid_headline_f1": 0.88,
+      "label": "DeepSeek V4 Flash",
+      "living_effort": "thinking_on_provider_default",
+      "method": "exect_llm_with_rules",
+      "model": "deepseek/deepseek-v4-flash",
+      "model_slug": "deepseek_v4_flash",
+      "n": 140,
+      "path": "paper_experiments/exect/exect_llm_with_rules/deepseek_v4_flash/dev140/",
+      "raw_headline_f1": 0.601,
+      "rows": "paper_experiments/exect/exect_llm_with_rules/deepseek_v4_flash/dev140/structured.jsonl",
+      "scored": "paper_experiments/exect/exect_llm_with_rules/deepseek_v4_flash/dev140/scored.jsonl",
+      "status": "present"
+    },
+    {
+      "label": "Qwen 3.8 27B",
+      "method": "exect_llm_with_rules",
+      "model": "ollama_chat/qwen3.8:27b",
+      "model_slug": "qwen38_27b",
+      "n": 140,
+      "path": "paper_experiments/exect/exect_llm_with_rules/qwen38_27b/dev140/",
+      "status": "pending"
+    },
+    {
+      "comparison": "paper_experiments/exect/exect_llm_with_rules/gemma4_26b/dev140/comparison.json",
+      "hybrid_headline_f1": 0.7674,
+      "label": "Gemma 4 26B",
+      "living_effort": "none",
+      "method": "exect_llm_with_rules",
+      "model": "ollama_chat/gemma4:26b",
+      "model_slug": "gemma4_26b",
+      "n": 140,
+      "path": "paper_experiments/exect/exect_llm_with_rules/gemma4_26b/dev140/",
+      "raw_headline_f1": 0.4751,
+      "rows": "paper_experiments/exect/exect_llm_with_rules/gemma4_26b/dev140/structured.jsonl",
+      "scored": "paper_experiments/exect/exect_llm_with_rules/gemma4_26b/dev140/scored.jsonl",
+      "status": "present"
+    }
+  ],
+  "claim_boundary": "Living six-model ExECT Compact development panel. One Compact call is both raw and hybrid. Remasures stay under experiments/paper/.../reasoning_* or thinking_disabled/. Not holdout. The July explorer runs.json roster is historical.",
+  "living_effort": {
+    "deepseek": "thinking_on_provider_default",
+    "hosted_reasoning": "low",
+    "local": "none"
+  },
+  "method_identity": "grok46",
+  "methods": [
+    "exect_llm_with_rules"
+  ],
+  "models": [
+    "grok46",
+    "gpt56luna",
+    "gemini37flash",
+    "deepseek_v4_flash",
+    "qwen38_27b",
+    "gemma4_26b"
+  ],
+  "notes_source": {
+    "frontend": "/datasets/exectv2/letters",
+    "split_machine": "dev"
+  },
+  "row_policy": "development_review_permitted",
+  "schema_version": "paper_experiments.exect.dev140_panel.v1",
+  "split": "dev140",
+  "split_machine": "dev"
+}

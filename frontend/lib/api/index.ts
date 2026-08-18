@@ -69,6 +69,124 @@ export function fetchRegistry() {
   return request<import("../types").RegistryResponse>("/registry");
 }
 
+export type GanDev750Method = "gan_llm_only" | "gan_llm_with_rules";
+
+export type GanDev750PanelCell = {
+  model_slug: string;
+  model: string;
+  label: string;
+  method: GanDev750Method;
+  status: "present" | "pending";
+  path: string;
+  n: number;
+  rows?: string;
+  scored?: string | null;
+  comparison?: string;
+  purist_correct?: number | null;
+  purist_accuracy?: number | null;
+  living_effort?: string | null;
+};
+
+export type GanDev750Panel = {
+  schema_version: string;
+  split: "dev750";
+  methods: GanDev750Method[];
+  models: string[];
+  method_identity: string;
+  living_effort: {
+    hosted_reasoning: string;
+    deepseek: string;
+    local: string;
+  };
+  notes_source: {
+    split_machine: string;
+    frontend: string;
+  };
+  cells: GanDev750PanelCell[];
+};
+
+export type GanDev750ScoredRow = {
+  source_row_index: number;
+  letter_id: string;
+  method: GanDev750Method;
+  predicted_label: string | null;
+  purist_correct: boolean | null;
+  pragmatic_correct: boolean | null;
+  parse_ok: boolean;
+};
+
+export function fetchGanDev750Panel() {
+  return request<GanDev750Panel>("/paper/gan/dev750");
+}
+
+export function fetchGanDev750Scored(method: GanDev750Method, slug: string) {
+  return request<{
+    method: GanDev750Method;
+    model_slug: string;
+    split: "dev750";
+    count: number;
+    rows: GanDev750ScoredRow[];
+  }>(`/paper/gan/dev750/${method}/${encodeURIComponent(slug)}/scored`);
+}
+
+export type ExectDev140PanelCell = {
+  model_slug: string;
+  model: string;
+  label: string;
+  method: "exect_llm_with_rules";
+  status: "present" | "pending";
+  path: string;
+  n: number;
+  rows?: string;
+  scored?: string | null;
+  comparison?: string;
+  raw_headline_f1?: number | null;
+  hybrid_headline_f1?: number | null;
+  living_effort?: string | null;
+};
+
+export type ExectDev140Panel = {
+  schema_version: string;
+  split: "dev140";
+  methods: Array<"exect_llm_with_rules">;
+  models: string[];
+  method_identity: string;
+  living_effort: {
+    hosted_reasoning: string;
+    deepseek: string;
+    local: string;
+  };
+  notes_source: {
+    split_machine: string;
+    frontend: string;
+  };
+  cells: ExectDev140PanelCell[];
+};
+
+export type ExectDev140ScoredRow = {
+  letter_id: string;
+  method: "exect_llm_with_rules";
+  raw_headline_f1: number | null;
+  hybrid_headline_f1: number | null;
+  raw_four_family_letter_exact: boolean | null;
+  hybrid_four_family_letter_exact: boolean | null;
+  parse_ok: boolean;
+};
+
+export function fetchExectDev140Panel() {
+  return request<ExectDev140Panel>("/paper/exect/dev140");
+}
+
+export function fetchExectDev140Scored(slug: string) {
+  return request<{
+    method: "exect_llm_with_rules";
+    model_slug: string;
+    split: "dev140";
+    count: number;
+    rows: ExectDev140ScoredRow[];
+  }>(`/paper/exect/dev140/${encodeURIComponent(slug)}/scored`);
+}
+
 export function fetchArtifact(
   runId: string,
   artifactPath?: string,

@@ -28,6 +28,8 @@ LIVE_METHODS: dict[str, dict[str, object]] = {
 HOLDOUT_SPLITS = frozenset({"test450", "test60"})
 GAN_MACHINE_SPLITS = {"dev750": "validation", "test450": "test"}
 GAN_ROW_COUNTS = {"dev750": 750, "test450": 450}
+EXECT_MACHINE_SPLITS = {"dev140": "dev", "test60": "test"}
+EXECT_ROW_COUNTS = {"dev140": 140, "test60": 59}
 
 
 def method_spec(method: str) -> dict[str, object]:
@@ -77,3 +79,12 @@ def gan_row_count(split: str) -> int:
         return GAN_ROW_COUNTS[split]
     except KeyError as exc:
         raise ValueError(f"unsupported Gan paper split {split!r}") from exc
+
+
+def exect_row_count(split: str) -> int:
+    """Return the locked ExECT paper split size."""
+
+    try:
+        return EXECT_ROW_COUNTS[split]
+    except KeyError as exc:
+        raise ValueError(f"unsupported ExECT paper split {split!r}") from exc

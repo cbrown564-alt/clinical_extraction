@@ -8,7 +8,9 @@ from collections.abc import Sequence
 from typing import Any
 
 from clinical_extraction.paper.exect import MODELS, run_compact, verify_compact
+from clinical_extraction.paper.exect_panel import promote_exect
 from clinical_extraction.paper.gan import run_gan, verify_gan
+from clinical_extraction.paper.gan_panel import promote_gan
 from clinical_extraction.paper.methods import LIVE_METHODS, method_spec, split_for
 
 
@@ -16,7 +18,10 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
         description="Run or verify a paper method cell.",
     )
-    parser.add_argument("action", choices=("verify", "run"))
+    parser.add_argument(
+        "action",
+        choices=("verify", "run", "promote-gan", "promote-exect"),
+    )
     parser.add_argument("--method", required=True, choices=sorted(LIVE_METHODS))
     parser.add_argument("--model", choices=tuple(MODELS))
     parser.add_argument("--split", required=True)
@@ -29,6 +34,34 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--thinking", choices=("enabled", "disabled"))
     args = parser.parse_args(argv)
     split_for(args.method, args.split)
+    if args.action == "promote-gan":
+        if args.model is None:
+            raise SystemExit("promote-gan requires --model")
+        if args.split not in {"dev750", "test450"}:
+            raise SystemExit("promote-gan only accepts --split dev750 or test450")
+        print(
+            json.dumps(
+                promote_gan(args.method, args.model, args.split),
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return
+    if args.action == "promote-exect":
+        if args.model is None:
+            raise SystemExit("promote-exect requires --model")
+        if args.split not in {"dev140", "test60"}:
+            raise SystemExit("promote-exect only accepts --split dev140 or test60")
+        if args.method != "exect_llm_with_rules":
+            raise SystemExit("promote-exect is Compact only")
+        print(
+            json.dumps(
+                promote_exect(args.model, args.split),
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return
     if args.action == "verify":
         print(json.dumps(verify(args.method, args.split, args.model), indent=2, sort_keys=True))
         return

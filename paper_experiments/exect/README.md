@@ -19,4 +19,10 @@ raw from the same call. Full ledger lives under
 | Gemma 4 26B | `dev140` | 0.7674 | 0.4751 | 0.8038 | 0.7049 |
 | Gemma 4 26B | `test60` | 0.6933 | 0.4662 | 0.7327 | 0.6740 |
 
-Still missing: Qwen 3.8 Compact on both splits.
+Still missing: Qwen 3.8 Compact on both splits. Grok Compact `dev140`
+is promoted into the living frontend panel
+(`exect/dev140_panel.json`). Grok `test60` is not promoted.
+
+Frontend pull: `GET /paper/exect/dev140` and
+`GET /paper/exect/dev140/{slug}/scored`. Join letters on `letter_id`.
+The July `/exectv2/runs` roster is historical (Sol + Qwen 3.6).

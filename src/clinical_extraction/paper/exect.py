@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import tempfile
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime
@@ -804,3 +805,30 @@ def _prepare_live_runtime(
             thinking_type=spec.thinking_type,
         )
     )
+
+
+def compact_metrics_from_structured(
+    slug: str,
+    structured_path: Path,
+) -> list[dict[str, Any]]:
+    """Replay Compact assembly from saved raws and return letter metrics."""
+
+    if slug not in MODELS:
+        raise RuntimeError(f"{slug} is not a living paper model")
+    spec = MODELS[slug]
+    letters = letters_dev140()
+    raws = {
+        str(row["letter_id"]): str(row.get("raw_output") or "")
+        for row in load_jsonl_rows(structured_path)
+    }
+    with tempfile.TemporaryDirectory() as tmp:
+        scored = _run_replay_arm(
+            spec,
+            letters,
+            arm=CANDIDATE_ARM,
+            prompt_version=CANDIDATE_VERSION,
+            raws=raws,
+            out_dir=Path(tmp),
+            split="dev140",
+        )
+    return list(scored["metrics"])

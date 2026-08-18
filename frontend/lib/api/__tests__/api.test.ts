@@ -1,5 +1,14 @@
 import { fetchJson } from "../client";
-import { fetchHealth, fetchLetter, fetchLetters, fetchRuns } from "../index";
+import {
+  fetchExectDev140Panel,
+  fetchExectDev140Scored,
+  fetchGanDev750Panel,
+  fetchGanDev750Scored,
+  fetchHealth,
+  fetchLetter,
+  fetchLetters,
+  fetchRuns,
+} from "../index";
 
 describe("api/client", () => {
   it("throws on non-ok HTTP responses", async () => {
@@ -67,6 +76,46 @@ describe("api/client", () => {
     expect(global.fetch).toHaveBeenNthCalledWith(
       2,
       "/api/datasets/exectv2/runs",
+      expect.objectContaining({ headers: { "Content-Type": "application/json" } })
+    );
+  });
+
+  it("requests the living Gan dev750 panel and one scored cell", async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({}),
+    }) as unknown as typeof fetch;
+
+    await fetchGanDev750Panel();
+    await fetchGanDev750Scored("gan_llm_with_rules", "grok46");
+    expect(global.fetch).toHaveBeenNthCalledWith(
+      1,
+      "/api/paper/gan/dev750",
+      expect.objectContaining({ headers: { "Content-Type": "application/json" } })
+    );
+    expect(global.fetch).toHaveBeenNthCalledWith(
+      2,
+      "/api/paper/gan/dev750/gan_llm_with_rules/grok46/scored",
+      expect.objectContaining({ headers: { "Content-Type": "application/json" } })
+    );
+  });
+
+  it("requests the living ExECT Compact dev140 panel and one scored cell", async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({}),
+    }) as unknown as typeof fetch;
+
+    await fetchExectDev140Panel();
+    await fetchExectDev140Scored("grok46");
+    expect(global.fetch).toHaveBeenNthCalledWith(
+      1,
+      "/api/paper/exect/dev140",
+      expect.objectContaining({ headers: { "Content-Type": "application/json" } })
+    );
+    expect(global.fetch).toHaveBeenNthCalledWith(
+      2,
+      "/api/paper/exect/dev140/grok46/scored",
       expect.objectContaining({ headers: { "Content-Type": "application/json" } })
     );
   });
