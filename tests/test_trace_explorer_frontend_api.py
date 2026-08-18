@@ -74,8 +74,10 @@ def test_frontend_catalog_and_read_only_surfaces_use_the_live_api(client: TestCl
         if run.get("kind") == "llm_with_rules"
     ]
     active_hybrid = [run for run in hybrid if run.get("active_method") == "llm_with_rules"]
-    assert len(active_hybrid) == 1
-    assert active_hybrid[0]["model"] == "openai/gpt-5.6-sol"
+    models = {run["model"] for run in active_hybrid}
+    assert "xai/grok-4.6" in models
+    assert "openai/gpt-5.6-luna" in models
+    assert "openai/gpt-5.6-sol" not in models
 
 
 def test_locked_test_records_are_not_enumerable(client: TestClient) -> None:
@@ -295,6 +297,18 @@ def test_frontend_api_serves_the_living_gan_dev750_panel(client: TestClient) -> 
     assert scored_ids & letter_ids
     pending = client.get("/paper/gan/dev750/gan_llm_only/qwen38_27b/scored")
     assert pending.status_code == 404
+
+
+def test_exect_workbench_run_uses_living_paper_raws(client: TestClient) -> None:
+    run_id = "exectv2_dev140_gpt56luna_llm_plus_rules"
+    response = client.get(f"/exectv2/runs/{run_id}")
+    assert response.status_code == 200
+    run = response.json()["run"]
+    assert run["model"] == "openai/gpt-5.6-luna"
+    letter = next(item for item in run["letters"] if item["letter_id"] == "EA0002")
+    assert letter["predicted_mentions"]
+    entities = {item["entity"] for item in letter["predicted_mentions"]}
+    assert "Diagnosis" in entities
 
 
 def test_frontend_api_serves_the_living_exect_dev140_panel(client: TestClient) -> None:

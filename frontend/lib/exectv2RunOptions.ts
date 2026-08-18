@@ -20,11 +20,11 @@ const ACTIVE_METHOD_ALIASES: Readonly<Record<string, string>> = {
 };
 
 const MODEL_ORDER = [
-  "openai/gpt-5.6-sol",
+  "xai/grok-4.6",
   "openai/gpt-5.6-luna",
   "gemini/gemini-3.7-flash",
   "deepseek/deepseek-v4-flash",
-  "ollama_chat/qwen3.6:35b",
+  "ollama_chat/qwen3.8:27b",
   "ollama_chat/gemma4:26b",
 ] as const;
 

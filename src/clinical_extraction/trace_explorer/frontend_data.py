@@ -7,9 +7,17 @@ import json
 from pathlib import Path
 from typing import Any, Literal
 
+from clinical_extraction.paper.exect import hydrate_saved_exect_letter
+from clinical_extraction.paper.exect_panel import (
+    paper_exect_catalog_runs,
+    paper_exect_identity,
+)
 from clinical_extraction.paper.gan import hydrate_saved_raw_row
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     DEFAULT_SPLIT_MANIFEST as EXECT_SPLIT_MANIFEST,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
+    load_letters_for_split,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.naming import (
     LLM_METHOD_ALIASES,
@@ -23,6 +31,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     load_records_for_split,
     load_split_manifest,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
+    load_jsonl_rows,
 )
 from clinical_extraction.trace_explorer.gan2026_comparison import (
     GanValidationDiscovery,
@@ -95,6 +106,8 @@ class FrontendDataStore:
         self._gan_validation = self._discover_gan_validation()
         self._gan_dev_ids, self._gan_holdout_ids = _gan_split_ids(self._repo_root)
         self._exect_dev_ids, self._exect_holdout_ids = _exect_split_ids(self._repo_root)
+        self._paper_exect_run_cache: dict[str, dict[str, Any]] = {}
+        self._exect_gold_by_id: dict[str, Any] | None = None
 
     @staticmethod
     def _resolve_repo_root(frontend_data_root: Path) -> Path:
@@ -353,6 +366,51 @@ class FrontendDataStore:
                     break
         return rows
 
+    def _paper_exect_run(self, run_id: str) -> dict[str, Any] | None:
+        identity = paper_exect_identity(run_id)
+        if identity is None:
+            return None
+        cached = self._paper_exect_run_cache.get(run_id)
+        if cached is not None:
+            return copy.deepcopy(cached)
+        slug, lane = identity
+        summary = next(
+            (item for item in paper_exect_catalog_runs() if item["run_id"] == run_id),
+            None,
+        )
+        if summary is None:
+            return None
+        paths = summary.get("artifact_paths") or []
+        if not paths:
+            return None
+        rows_path = self._repo_root / str(paths[0])
+        if not rows_path.is_file():
+            return None
+        gold_by_id = self._exect_gold_letters()
+        letters = []
+        for row in load_jsonl_rows(rows_path):
+            letter_id = str(row.get("letter_id") or "")
+            gold = gold_by_id.get(letter_id)
+            if gold is None:
+                continue
+            letters.append(
+                hydrate_saved_exect_letter(
+                    gold,
+                    str(row.get("raw_output") or ""),
+                    model=str(summary["model"]),
+                    lane=lane,
+                )
+            )
+        run = {**summary, "letters": letters}
+        self._paper_exect_run_cache[run_id] = run
+        return copy.deepcopy(run)
+
+    def _exect_gold_letters(self) -> dict[str, Any]:
+        if self._exect_gold_by_id is None:
+            letters = load_letters_for_split("dev")
+            self._exect_gold_by_id = {letter.letter_id: letter for letter in letters}
+        return self._exect_gold_by_id
+
     def _hydrate_gan_replay_row(self, run_id: str, row: dict[str, Any]) -> dict[str, Any]:
         if row.get("structured_record") or row.get("decision_record") or row.get("row_trace"):
             return row
@@ -393,16 +451,24 @@ class FrontendDataStore:
         runs = payload.get("runs")
         if not isinstance(runs, list):
             raise ValueError("ExECTv2 runs resource must contain a list")
+        paper_runs = paper_exect_catalog_runs()
+        kept = [
+            {**self._canonical_exect_run(run), "letters": []}
+            for run in runs
+            if isinstance(run, dict)
+            and (
+                not paper_runs
+                or run.get("run_id") in {*RULES_METHOD_ALIASES, "exectv2_deterministic_all9_dev140"}
+                or run.get("kind") == "rules"
+                or run.get("pipeline_family") == "rules"
+            )
+        ]
         return {
             "generated_on": payload.get("generated_on"),
             "source_index": payload.get("source_index"),
             "dataset": "exectv2",
             "split": "dev140",
-            "runs": [
-                {**self._canonical_exect_run(run), "letters": []}
-                for run in runs
-                if isinstance(run, dict)
-            ],
+            "runs": [*paper_runs, *kept],
         }
 
     def exectv2_run(self, run_id: str) -> dict[str, Any] | None:
@@ -410,8 +476,27 @@ class FrontendDataStore:
         runs = payload.get("runs")
         if not isinstance(runs, list) or not isinstance(payload.get("shared_letters"), list):
             raise ValueError("ExECTv2 runs resource is malformed")
+        paper_run = self._paper_exect_run(run_id)
+        if paper_run is not None:
+            return {
+                "generated_on": payload.get("generated_on"),
+                "source_index": payload.get("source_index"),
+                "dataset": "exectv2",
+                "split": "dev140",
+                "shared_letters": self._exect_shared_letters(),
+                "run": paper_run,
+            }
+        catalog_runs = paper_exect_catalog_runs()
         canonical_runs = [
-            self._canonical_exect_run(run) for run in runs if isinstance(run, dict)
+            self._canonical_exect_run(run)
+            for run in runs
+            if isinstance(run, dict)
+            and (
+                not catalog_runs
+                or run.get("run_id") in {*RULES_METHOD_ALIASES, "exectv2_deterministic_all9_dev140"}
+                or run.get("kind") == "rules"
+                or run.get("pipeline_family") == "rules"
+            )
         ]
         matches = [run for run in canonical_runs if self._exect_run_matches(run, run_id)]
         if len(matches) == 1:

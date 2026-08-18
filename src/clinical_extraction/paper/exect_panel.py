@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.paper.exect import compact_metrics_from_structured
@@ -278,6 +278,95 @@ def load_dev140_panel() -> dict[str, Any]:
     return json.loads(PANEL_PATH.read_text(encoding="utf-8"))
 
 
+def paper_exect_run_id(slug: str, lane: Literal["llm", "llm_with_rules"]) -> str:
+    """Workbench run id for a living Compact cell."""
+
+    suffix = "llm_plus_rules" if lane == "llm_with_rules" else "llm_only"
+    return f"exectv2_dev140_{slug}_{suffix}"
+
+
+def paper_exect_identity(run_id: str) -> tuple[str, Literal["llm", "llm_with_rules"]] | None:
+    """Return (model slug, lane) for a living Compact workbench run id."""
+
+    prefix = "exectv2_dev140_"
+    if not run_id.startswith(prefix):
+        return None
+    rest = run_id[len(prefix) :]
+    if rest.endswith("_llm_plus_rules"):
+        return rest[: -len("_llm_plus_rules")], "llm_with_rules"
+    if rest.endswith("_llm_only"):
+        return rest[: -len("_llm_only")], "llm"
+    return None
+
+
+def paper_exect_catalog_runs() -> list[dict[str, Any]]:
+    """Present living Compact cells as workbench raw and hybrid runs."""
+
+    panel = load_dev140_panel()
+    runs: list[dict[str, Any]] = []
+    for cell in panel.get("cells", []):
+        if not isinstance(cell, dict) or cell.get("status") != "present":
+            continue
+        rows_path = ROOT / str(cell["rows"])
+        if not rows_path.is_file():
+            continue
+        slug = str(cell["model_slug"])
+        label = str(cell.get("label") or slug)
+        model = str(cell["model"])
+        for lane, score, kind, view in (
+            (
+                "llm_with_rules",
+                cell.get("hybrid_headline_f1"),
+                "llm_with_rules",
+                "headline_target",
+            ),
+            ("llm", cell.get("raw_headline_f1"), "llm", "raw_lane_score"),
+        ):
+            runs.append(
+                {
+                    "run_id": paper_exect_run_id(slug, lane),
+                    "task": "exectv2",
+                    "label": (
+                        f"{label} · LLM + rules"
+                        if lane == "llm_with_rules"
+                        else f"{label} · LLM only"
+                    ),
+                    "model": model,
+                    "kind": kind,
+                    "active_method": lane,
+                    "method_id": lane,
+                    "architecture_family": "exect_llm_with_rules",
+                    "pipeline_family": (
+                        "exect_llm_with_rules" if lane == "llm_with_rules" else "llm"
+                    ),
+                    "split": "dev140",
+                    "row_count": int(cell.get("n") or 140),
+                    "date": "2026-08-18",
+                    "decision": "development_comparison",
+                    "promotion_decision": "living Compact panel",
+                    "claim_boundary": panel.get("claim_boundary"),
+                    "scorer_view": view,
+                    "artifact_paths": [rows_path.relative_to(ROOT).as_posix()],
+                    "source_paths": [rows_path.relative_to(ROOT).as_posix()],
+                    "metrics": {
+                        "overall_f1": score,
+                        "precision": None,
+                        "recall": None,
+                        "families": {},
+                    },
+                    "operational": {
+                        "call_failures": 0,
+                        "parse_schema_failures": 0,
+                        "evidence_invalid_dropped": 0,
+                        "exact_evidence_rate": None,
+                        "by_family": {},
+                    },
+                    "letters": [],
+                }
+            )
+    return runs
+
+
 def load_scored_rows(slug: str) -> list[dict[str, Any]]:
     """Return frontend-joinable scored rows for one present Compact cell."""
 
@@ -340,7 +429,7 @@ def _compact_arm(comparison: Mapping[str, Any]) -> dict[str, Any]:
     if not isinstance(arms, Mapping):
         return {}
     arm = arms.get(METHOD) or arms.get("compact_ledger") or {}
-    return arm if isinstance(arm, Mapping) else {}
+    return dict(arm) if isinstance(arm, Mapping) else {}
 
 
 def _living_effort(slug: str) -> str:
