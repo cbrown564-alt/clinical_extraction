@@ -5,6 +5,8 @@ from __future__ import annotations
 import dspy
 from dspy.adapters.chat_adapter import ChatAdapter
 
+from .constants import FLAT_SCHEMA_VERSIONS, PROMPT_VERSION
+
 
 class ExECTv2KeyEntitiesStructuredSignature(dspy.Signature):
     """Read one clinical letter and produce structured clinical events.
@@ -26,11 +28,33 @@ class ExECTv2KeyEntitiesStructuredSignature(dspy.Signature):
     )
 
 
+class CompactKeyEntitiesStructuredSignature(dspy.Signature):
+    """Read one clinical letter and produce structured clinical events.
+
+    Return exactly one JSON object with a 'clinical_events' list. No markdown.
+    """
+
+    prompt_input_json: str = dspy.InputField(
+        desc="JSON containing one clinical letter and task instructions."
+    )
+    extraction_json: str = dspy.OutputField(
+        desc=(
+            'One strict JSON object: {"clinical_events": [{"family": ..., '
+            '"evidence": ..., "fact": ..., "attributes": {...}}, ...]}. '
+            "No markdown."
+        )
+    )
+
+
 class DspyKeyEntitiesStructuredExtractor(dspy.Module):
     def __init__(self, *, prompt_version: str | None = None) -> None:
         super().__init__()
-        del prompt_version  # Call-site compatibility; version is selected globally.
-        self._signature: type[dspy.Signature] = ExECTv2KeyEntitiesStructuredSignature
+        selected = prompt_version or PROMPT_VERSION
+        self._signature: type[dspy.Signature] = (
+            CompactKeyEntitiesStructuredSignature
+            if selected in FLAT_SCHEMA_VERSIONS
+            else ExECTv2KeyEntitiesStructuredSignature
+        )
         self.predict = dspy.Predict(self._signature)
 
     def forward(self, prompt_input_json: str) -> dspy.Prediction:

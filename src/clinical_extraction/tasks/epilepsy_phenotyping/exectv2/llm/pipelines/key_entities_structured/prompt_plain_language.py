@@ -32,6 +32,15 @@ _RULE_PHRASES = (
         "you copy them into event_state as trace strings.",
         "Return only clinical_events.",
     ),
+    (
+        "Both anchor_text and evidence must be exact substrings of the letter.",
+        "Both fact and evidence must be exact copies from the letter.",
+    ),
+    ("event_state and attributes carry", "attributes carry"),
+    ("such as EEG, MRI, or CT", "such as EEG or MRI"),
+    ("otherwise 'MRI'; likewise 'EEG' or 'CT'", "otherwise 'MRI'; likewise 'EEG'"),
+    (" or only Negation", ""),
+    (" with Certainty from probable/possible context", ""),
     ("one short final-justification sentence", "one short sentence"),
     (
         "Do not add a generic epilepsy companion to a specific epilepsy subtype",
@@ -87,6 +96,10 @@ _RULE_PHRASES = (
     ("the exact medication item span", "the exact medication wording"),
     ("Every rendered mention object", "Every mention"),
     ("Every rendered mention text", "Every mention text"),
+    (
+        "Every mention must include both entity and text.",
+        "Every clinical event must include family, evidence, fact, and attributes.",
+    ),
     ("can render both", "can include both"),
     ("Do not render", "Do not include"),
     ("do not render", "do not include"),

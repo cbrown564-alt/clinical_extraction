@@ -22,6 +22,7 @@ from .constants import (
     COMPACT_LEDGER,
     COMPONENT_OWNER,
     EXECT_FULL_LEDGER,
+    EXECT_LLM_ONLY,
     EXECT_LLM_WITH_RULES,
     FULL_LEDGER,
     KEY_ENTITY_ITEM_F1_TARGET,
@@ -65,6 +66,9 @@ from .prompt_builders import (
 )
 from .prompt_compact import (
     COMPACT_AUTHORED_KEYS,
+    LLM_ONLY_AUTHORED_KEYS,
+    SHARED_RULE_SECTION_KEYS,
+    compact_rule_count,
 )
 from .prompt_content import (
     _attribute_vocabulary,
@@ -119,7 +123,11 @@ __all__ = [
     "COMPACT_AUTHORED_KEYS",
     "COMPACT_LEDGER",
     "EXECT_FULL_LEDGER",
+    "EXECT_LLM_ONLY",
     "EXECT_LLM_WITH_RULES",
+    "LLM_ONLY_AUTHORED_KEYS",
+    "SHARED_RULE_SECTION_KEYS",
+    "compact_rule_count",
     "DspyKeyEntitiesStructuredExtractor",
     "FULL_LEDGER",
     "EventFamily",

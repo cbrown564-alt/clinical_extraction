@@ -10,7 +10,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict
 
-from .constants import EventFamily
+from .constants import FLAT_SCHEMA_VERSIONS, EventFamily
 
 
 class RenderedMentionRecord(BaseModel):
@@ -23,14 +23,35 @@ class RenderedMentionRecord(BaseModel):
     attributes: dict[str, Any] = {}
 
 
+class CompactClinicalEvent(BaseModel):
+    """Flat Compact-ledger event advertised to the model and format retry."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    family: EventFamily
+    evidence: str
+    fact: str
+    attributes: dict[str, Any] = {}
+
+
+class CompactExtractionRecord(BaseModel):
+    """Compact-ledger output advertised to a format-only retry."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    clinical_events: list[CompactClinicalEvent] = []
+
+
 class StructuredClinicalEvent(BaseModel):
     """One source-near clinical event with one or more scorer-facing renderings."""
 
     model_config = ConfigDict(extra="ignore")
 
     family: EventFamily
-    anchor_text: str
     evidence: str
+    fact: str = ""
+    attributes: dict[str, Any] = {}
+    anchor_text: str = ""
     event_state: dict[str, Any] = {}
     mentions: list[RenderedMentionRecord] = []
     confidence: Literal["low", "medium", "high"] = "medium"
@@ -78,7 +99,8 @@ class StructuredExtractionRecord(BaseModel):
 def format_retry_schema_for(prompt_version: str) -> dict[str, Any]:
     """JSON schema advertised to a format-only retry for this prompt version."""
 
-    del prompt_version  # Only the canonical structured schema remains live.
+    if prompt_version in FLAT_SCHEMA_VERSIONS:
+        return CompactExtractionRecord.model_json_schema()
     return StructuredExtractionRecord.model_json_schema()
 
 

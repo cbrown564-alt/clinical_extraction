@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pytest
 
@@ -15,6 +16,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines import (
+    key_entities_structured as structured_pkg,
 )
 from tests.helpers.prompt_hygiene import FORBIDDEN_PHRASES
 
@@ -428,6 +432,7 @@ def test_no_prompt_version_mentions_cui() -> None:
         structured.EXECT_FULL_LEDGER,
         structured.COMPACT_LEDGER,
         structured.EXECT_LLM_WITH_RULES,
+        structured.EXECT_LLM_ONLY,
     ]
     try:
         for version in versions:
@@ -446,6 +451,16 @@ def test_no_prompt_version_mentions_cui() -> None:
     assert structured.PROMPT_VERSION == structured.COMPACT_LEDGER
 
 
+def test_compact_prompt_is_authored_in_one_file() -> None:
+    source = Path(structured_pkg.__file__).with_name("prompt_compact.py").read_text()
+    assert "from .prompt_rules_full" not in source
+    assert "from .prompt_plain_language" not in source
+    assert "_event_lane_guide" not in source
+    assert "_attribute_vocabulary" not in source
+    assert "_clinical_rules" not in source
+    assert "_clean_rule_text" not in source
+
+
 def test_compact_is_authored_as_compact() -> None:
     payload = json.loads(
         structured.build_prompt_input(
@@ -459,12 +474,169 @@ def test_compact_is_authored_as_compact() -> None:
     assert "prompt_version" not in payload
     assert "candidate_evidence_ledger" not in payload
     assert "event_lane_guide" not in payload
-    assert len(payload["clinical_rules"]) == 67
+    assert list(payload["clinical_rules"]) == [
+        "suggested_evidence",
+        *structured.SHARED_RULE_SECTION_KEYS,
+    ]
+    assert structured.compact_rule_count(payload["clinical_rules"]) == 52
     assert payload["task"].startswith(
         "Read the clinical letter once. Use the suggested evidence"
     )
     assert payload["suggested_evidence"]
     assert "medication" in payload["categories"]
+
+
+def test_compact_schema_is_flat_fact_events() -> None:
+    payload = json.loads(
+        structured.build_prompt_input(
+            _LETTER, prompt_version=structured.COMPACT_LEDGER
+        )
+    )
+    event_schema = payload["output_schema"]["clinical_events"][0]
+    assert list(event_schema) == ["family", "evidence", "fact", "attributes"]
+    assert event_schema["family"] == (
+        "medication | diagnosis | seizure_frequency | investigation"
+    )
+    assert "mentions" not in event_schema
+    assert "anchor_text" not in event_schema
+    assert "event_state" not in event_schema
+    assert "confidence" not in event_schema
+    assert "rationale" not in event_schema
+
+    vocab = payload["attribute_vocabulary"]
+    assert list(vocab) == [
+        "medication",
+        "diagnosis",
+        "seizure_frequency",
+        "investigation",
+    ]
+    assert list(vocab["medication"]) == ["name", "dose", "unit", "frequency"]
+    assert "g or mg" in vocab["medication"]["unit"]
+    assert vocab["medication"]["frequency"] == ["1", "2", "3", "as_required"]
+    assert "multiple_seizures" in vocab["diagnosis"]["category"]
+    assert "Certainty" not in vocab["diagnosis"]
+    assert "Negation" not in vocab["seizure_frequency"]
+    assert set(vocab["seizure_frequency"]) == {
+        "age_lower",
+        "age_unit",
+        "age_upper",
+        "change",
+        "count",
+        "count_lower",
+        "count_upper",
+        "day",
+        "month",
+        "period",
+        "periods",
+        "periods_lower",
+        "periods_upper",
+        "point",
+        "when",
+        "year",
+    }
+    assert vocab["seizure_frequency"]["when"] == ["during", "since"]
+    assert vocab["seizure_frequency"]["point"] == [
+        "birthday",
+        "drug_change",
+        "last_clinic",
+        "last_month",
+        "last_week",
+        "last_year",
+        "surgery",
+    ]
+    assert vocab["seizure_frequency"]["change"] == [
+        "decreased",
+        "frequent",
+        "increased",
+        "infrequent",
+        "same",
+    ]
+    assert vocab["seizure_frequency"]["period"] == ["day", "week", "month", "year"]
+    assert vocab["seizure_frequency"]["age_unit"] == ["month", "year"]
+    assert set(vocab["investigation"]) == {
+        "eeg_performed",
+        "eeg_result",
+        "mri_performed",
+        "mri_result",
+    }
+
+    compact_text = json.dumps(
+        {key: value for key, value in payload.items() if key != "letter_text"}
+    )
+    assert "event_state" not in compact_text
+    assert "EEG_Type" not in compact_text
+    assert "EEG type" not in compact_text
+    assert "CT_Performed" not in compact_text
+    assert "Certainty" not in compact_text
+    assert "Negation" not in compact_text
+    assert '"confidence"' not in compact_text
+    assert "rationale" not in compact_text.lower()
+    assert "mention text" not in compact_text
+    assert "Return only clinical_events" not in compact_text
+    assert "Prescription" not in compact_text
+    assert "string copied from the letter" not in compact_text
+    assert "tonic chronic" not in compact_text
+    assert "Keep, reject, split, or merge facts based only" not in compact_text
+
+
+def test_compact_seizure_rules_use_field_names() -> None:
+    payload = json.loads(
+        structured.build_prompt_input(
+            _LETTER, prompt_version=structured.COMPACT_LEDGER
+        )
+    )
+    sf_rules = " ".join(payload["clinical_rules"]["seizure_frequency"])
+    assert payload["categories"]["seizure_frequency"][2] == (
+        "qualitative_change: decreased, frequent, increased, infrequent, or same"
+    )
+    assert (
+        "must include count, count_lower, count_upper, change, "
+        "day, month, year, age_lower, or age_upper"
+    ) in sf_rules
+    assert "when, point, and period are not enough on their own" in sf_rules
+    assert "Do not set change='returned'" in sf_rules
+    assert "count='0', when='since'" in sf_rules
+    assert "Do not use point for age" in sf_rules
+    assert "when='since' with a day, month, year, or point" in sf_rules
+    assert "Do not set change from 'well controlled'" in sf_rules
+    assert "since period" not in sf_rules
+    assert "since-age" not in sf_rules
+    assert "time point" not in sf_rules
+    assert "drug-change" not in sf_rules
+    assert "active-rate" not in sf_rules
+
+
+def test_compact_llm_only_omits_suggested_evidence() -> None:
+    compact = json.loads(
+        structured.build_prompt_input(
+            _LETTER, prompt_version=structured.COMPACT_LEDGER
+        )
+    )
+    llm_only = json.loads(
+        structured.build_prompt_input(
+            _LETTER, prompt_version=structured.EXECT_LLM_ONLY
+        )
+    )
+    assert list(llm_only) == list(structured.LLM_ONLY_AUTHORED_KEYS)
+    assert "suggested_evidence" not in llm_only
+    assert "suggested" not in json.dumps(
+        {key: value for key, value in llm_only.items() if key != "letter_text"}
+    ).lower()
+    assert llm_only["output_schema"] == compact["output_schema"]
+    assert llm_only["attribute_vocabulary"] == compact["attribute_vocabulary"]
+    assert llm_only["family_guidance"] == compact["family_guidance"]
+    assert "categories" not in llm_only
+    assert list(llm_only["clinical_rules"]) == list(structured.SHARED_RULE_SECTION_KEYS)
+    assert llm_only["clinical_rules"] == {
+        key: compact["clinical_rules"][key] for key in structured.SHARED_RULE_SECTION_KEYS
+    }
+    assert compact["clinical_rules"]["suggested_evidence"][0].startswith(
+        "First classify each suggested-evidence row"
+    )
+    assert llm_only["task"].startswith("Read the clinical letter once. List the")
+    assert all(
+        "Keep, reject, split" not in step for step in llm_only["decision_procedure"]
+    )
 
 
 def test_full_is_authored_as_full() -> None:
@@ -536,3 +708,13 @@ def test_format_retry_schema_is_canonical_structured_record() -> None:
     schema = structured.format_retry_schema_for(structured.FULL_LEDGER)
     assert "StructuredClinicalEvent" in schema.get("$defs", {})
     assert "V26ClinicalEventRecord" not in schema.get("$defs", {})
+
+
+def test_compact_format_retry_schema_is_flat_fact_events() -> None:
+    schema = structured.format_retry_schema_for(structured.COMPACT_LEDGER)
+    event = schema["$defs"]["CompactClinicalEvent"]["properties"]
+    assert list(event) == ["family", "evidence", "fact", "attributes"]
+    assert "anchor_text" not in event
+    assert "mentions" not in event
+    assert "confidence" not in event
+    assert "rationale" not in event

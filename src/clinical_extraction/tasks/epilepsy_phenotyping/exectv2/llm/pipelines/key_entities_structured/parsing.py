@@ -26,11 +26,155 @@ from .records import (
     MentionForEvidence,
     PatientHistoryKind,
     PatientHistoryRecord,
+    RenderedMentionRecord,
     StructuredExtractionRecord,
 )
 
 _PATIENT_HISTORY_KINDS = set(get_args(PatientHistoryKind))
 _CURRENT_MEDICATION_STATUS = "current"
+_ENTITY_TO_FAMILY = {entity: family for family, entity in FAMILY_TO_ENTITY.items()}
+
+
+def _with_identity(mapping: dict[str, str]) -> dict[str, str]:
+    return {**mapping, **{value: value for value in mapping.values()}}
+
+
+_ATTR_ALIASES: dict[str, dict[str, str]] = {
+    "medication": _with_identity(
+        {
+            "name": "DrugName",
+            "dose": "DrugDose",
+            "unit": "DoseUnit",
+            "frequency": "Frequency",
+        }
+    ),
+    "diagnosis": _with_identity({"category": "DiagCategory"}),
+    "seizure_frequency": _with_identity(
+        {
+            "count": "NumberOfSeizures",
+            "count_lower": "LowerNumberOfSeizures",
+            "count_upper": "UpperNumberOfSeizures",
+            "periods": "NumberOfTimePeriods",
+            "periods_lower": "LowerNumberOfTimePeriods",
+            "periods_upper": "UpperNumberOfTimePeriods",
+            "period": "TimePeriod",
+            "day": "DayDate",
+            "month": "MonthDate",
+            "year": "YearDate",
+            "when": "TimeSince_or_TimeOfEvent",
+            "point": "PointInTime",
+            "change": "FrequencyChange",
+            "age_lower": "AgeLower",
+            "age_upper": "AgeUpper",
+            "age_unit": "AgeUnit",
+        }
+    ),
+    "investigation": _with_identity(
+        {
+            "eeg_performed": "EEG_Performed",
+            "eeg_result": "EEG_Results",
+            "mri_performed": "MRI_Performed",
+            "mri_result": "MRI_Results",
+        }
+    ),
+}
+
+_VALUE_ALIASES: dict[str, dict[str, str]] = {
+    "Frequency": {
+        "1": "1",
+        "2": "2",
+        "3": "3",
+        "as_required": "As_Required",
+        "asrequired": "As_Required",
+    },
+    "DiagCategory": {
+        "epilepsy": "Epilepsy",
+        "multiple_seizures": "MultipleSeizures",
+        "multipleseizures": "MultipleSeizures",
+        "single_seizure": "SingleSeizure",
+        "singleseizure": "SingleSeizure",
+    },
+    "TimePeriod": {
+        "day": "Day",
+        "days": "Day",
+        "week": "Week",
+        "weeks": "Week",
+        "month": "Month",
+        "months": "Month",
+        "year": "Year",
+        "years": "Year",
+    },
+    "TimeSince_or_TimeOfEvent": {
+        "during": "During",
+        "since": "Since",
+    },
+    "PointInTime": {
+        "birthday": "Birthday",
+        "drug_change": "DrugChange",
+        "drugchange": "DrugChange",
+        "last_clinic": "LastClinic",
+        "lastclinic": "LastClinic",
+        "last_month": "Last_Month",
+        "lastmonth": "Last_Month",
+        "last_week": "Last_Week",
+        "lastweek": "Last_Week",
+        "last_year": "Last_Year",
+        "lastyear": "Last_Year",
+        "surgery": "Surgery",
+    },
+    "FrequencyChange": {
+        "decreased": "Decreased",
+        "frequent": "Frequent",
+        "increased": "Increased",
+        "infrequent": "Infrequent",
+        "same": "Same",
+    },
+    "AgeUnit": {
+        "month": "Month",
+        "months": "Month",
+        "year": "Year",
+        "years": "Year",
+    },
+    "EEG_Performed": {"yes": "Yes", "no": "No"},
+    "EEG_Results": {
+        "abnormal": "Abnormal",
+        "normal": "Normal",
+        "unknown": "Unknown",
+    },
+    "MRI_Performed": {"yes": "Yes", "no": "No"},
+    "MRI_Results": {
+        "abnormal": "Abnormal",
+        "normal": "Normal",
+        "unknown": "Unknown",
+    },
+}
+
+
+def _canonical_value(attr: str, value: str) -> str:
+    aliases = _VALUE_ALIASES.get(attr)
+    if aliases is None:
+        return value
+    key = value.strip().lower().replace(" ", "_").replace("-", "_")
+    return aliases.get(key, value)
+
+
+def _canonicalize_compact_attributes(
+    family: str, attributes: dict[str, str]
+) -> dict[str, str]:
+    aliases = _ATTR_ALIASES.get(family) or _ATTR_ALIASES.get(
+        _ENTITY_TO_FAMILY.get(family, ""), {}
+    )
+    canonical: dict[str, str] = {}
+    for key, value in attributes.items():
+        contract_key = aliases.get(key, key)
+        canonical[contract_key] = _canonical_value(contract_key, value)
+    return canonical
+
+
+def _family_for_aliases(family: str, entity: str = "") -> str:
+    if family in _ATTR_ALIASES:
+        return family
+    return _ENTITY_TO_FAMILY.get(entity, family)
 
 
 def parse_structured_events_json(
@@ -121,11 +265,25 @@ def _coerce_structured_payload(payload: Any) -> tuple[Any, list[str]]:
             event["family"] = event["clinical_family"]
             notes.append(f"schema_repaired: clinical_family_to_family: event[{event_index}]")
         if "anchor_text" not in event:
-            event["anchor_text"] = str(event.get("event") or "")
+            event["anchor_text"] = str(event.get("fact") or event.get("event") or "")
         family = str(event.get("family", ""))
         mentions = event.get("mentions")
+        if isinstance(event.get("attributes"), dict):
+            event["attributes"] = _canonicalize_compact_attributes(
+                family,
+                _stringify_mapping(
+                    event.get("attributes") or {},
+                    notes=notes,
+                    prefix=f"event[{event_index}].attributes",
+                ),
+            )
         if "mentions" not in event:
-            event_text = str(event.get("event") or event.get("anchor_text") or "").strip()
+            event_text = str(
+                event.get("fact")
+                or event.get("event")
+                or event.get("anchor_text")
+                or ""
+            ).strip()
             attrs = event.get("attributes") if isinstance(event.get("attributes"), dict) else {}
             if event_text:
                 event["mentions"] = [
@@ -167,10 +325,13 @@ def _coerce_structured_payload(payload: Any) -> tuple[Any, list[str]]:
                         f"missing={','.join(missing)}"
                     )
                     continue
-                mention["attributes"] = _stringify_mapping(
-                    mention.get("attributes") or {},
-                    notes=notes,
-                    prefix=f"event[{event_index}].mentions[{mention_index}].attributes",
+                mention["attributes"] = _canonicalize_compact_attributes(
+                    _family_for_aliases(family, str(mention.get("entity") or "")),
+                    _stringify_mapping(
+                        mention.get("attributes") or {},
+                        notes=notes,
+                        prefix=f"event[{event_index}].mentions[{mention_index}].attributes",
+                    ),
                 )
                 coerced_mentions.append(mention)
             event["mentions"] = coerced_mentions
@@ -218,7 +379,16 @@ def flatten_events(record: StructuredExtractionRecord) -> list[MentionForEvidenc
     for event in record.clinical_events:
         if event.family == "history":
             continue
-        for mention in event.mentions:
+        rendered = list(event.mentions)
+        if not rendered and event.fact:
+            rendered = [
+                RenderedMentionRecord(
+                    entity=FAMILY_TO_ENTITY.get(event.family, ""),
+                    text=event.fact,
+                    attributes=dict(event.attributes),
+                )
+            ]
+        for mention in rendered:
             entity = mention.entity or FAMILY_TO_ENTITY.get(event.family, "")
             if entity not in KEY_ENTITY_NAMES:
                 continue

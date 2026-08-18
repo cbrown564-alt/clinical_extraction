@@ -23,14 +23,17 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
 )
 
 EXECT_LLM_WITH_RULES = "exect_llm_with_rules"
+EXECT_LLM_ONLY = "exect_llm_only"
 EXECT_FULL_LEDGER = "exect_full_ledger"
 FULL_LEDGER = "exectv2_full_ledger"
 COMPACT_LEDGER = "exectv2_compact_ledger"
 FULL_VERSIONS = frozenset({FULL_LEDGER, EXECT_FULL_LEDGER})
 COMPACT_VERSIONS = frozenset({COMPACT_LEDGER, EXECT_LLM_WITH_RULES})
-# Live default is Compact. Full stays as the cited comparator.
+LLM_ONLY_VERSIONS = frozenset({EXECT_LLM_ONLY})
+FLAT_SCHEMA_VERSIONS = COMPACT_VERSIONS | LLM_ONLY_VERSIONS
+# Live default is Compact hybrid. Full stays as the cited comparator.
 PROMPT_VERSION = COMPACT_LEDGER
-_SUPPORTED_PROMPT_VERSIONS = FULL_VERSIONS | COMPACT_VERSIONS
+_SUPPORTED_PROMPT_VERSIONS = FULL_VERSIONS | FLAT_SCHEMA_VERSIONS
 PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"
 COMPONENT_OWNER = "hybrid_key_family_event_ledger"
 
