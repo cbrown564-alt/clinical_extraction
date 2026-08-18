@@ -215,6 +215,30 @@ def test_gemini_reasoning_effort_is_read_from_environment(
     assert captured["extra_body"] == {"reasoning_effort": "medium"}
 
 
+def test_openrouter_gemini_sends_medium_reasoning_effort(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict[str, Any] = {}
+    monkeypatch.setattr(llm_config, "_load_repo_dotenv_if_needed", lambda: None)
+    monkeypatch.setenv("OPENROUTER_API_KEY", "openrouter-secret")
+    monkeypatch.setenv("GEMINI_REASONING_EFFORT", "medium")
+    monkeypatch.setattr(
+        llm_config.dspy,
+        "LM",
+        lambda _model, **kwargs: captured.update(kwargs) or object(),
+    )
+
+    llm_config.build_dspy_lm(
+        "gemini/gemini-3.7-flash",
+        temperature=0.0,
+        max_tokens=900,
+        cache=False,
+    )
+
+    assert captured["api_base"] == llm_config.OPENROUTER_OPENAI_BASE
+    assert captured["extra_body"] == {"reasoning": {"effort": "medium"}}
+
+
 def test_gemini_route_rejects_unsupported_reasoning_effort(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -231,6 +255,50 @@ def test_gemini_route_rejects_unsupported_reasoning_effort(
             max_tokens=900,
             cache=False,
         )
+
+
+def test_deepseek_thinking_disabled_is_sent_in_extra_body(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict[str, Any] = {}
+
+    def fake_lm(model: str, **kwargs: Any) -> object:
+        captured["model"] = model
+        captured.update(kwargs)
+        return object()
+
+    monkeypatch.setattr(llm_config.dspy, "LM", fake_lm)
+
+    llm_config.build_dspy_lm(
+        "deepseek/deepseek-v4-flash",
+        temperature=0.0,
+        max_tokens=16000,
+        cache=False,
+        thinking_type="disabled",
+    )
+
+    assert captured["model"] == "deepseek/deepseek-v4-flash"
+    assert captured["extra_body"] == {"thinking": {"type": "disabled"}}
+
+
+def test_deepseek_omits_thinking_toggle_when_unset(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict[str, Any] = {}
+    monkeypatch.setattr(
+        llm_config.dspy,
+        "LM",
+        lambda _model, **kwargs: captured.update(kwargs) or object(),
+    )
+
+    llm_config.build_dspy_lm(
+        "deepseek/deepseek-v4-flash",
+        temperature=0.0,
+        max_tokens=16000,
+        cache=False,
+    )
+
+    assert "extra_body" not in captured
 
 
 def test_gemini_route_requires_an_api_key(monkeypatch: pytest.MonkeyPatch) -> None:

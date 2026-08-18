@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 from collections.abc import Mapping, Sequence
+from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -20,6 +21,8 @@ from clinical_extraction.paper.exect import (
     MODELS,
     OLLAMA_NUM_CTX_ENV,
     ModelSpec,
+    apply_reasoning_effort,
+    paper_work_suffix,
 )
 from clinical_extraction.paper.lm import build_paper_lm, resolve_paper_api_base
 from clinical_extraction.paper.methods import (
@@ -63,6 +66,13 @@ MAX_TOKENS = {
     "gan_llm_only": 1200,
     "gan_llm_with_rules": 5000,
 }
+DEEPSEEK_MAX_TOKENS = 24000
+
+
+def _max_tokens_for(method: str, slug: str | None = None) -> int:
+    if slug == "deepseek_v4_flash":
+        return DEEPSEEK_MAX_TOKENS
+    return MAX_TOKENS[method]
 
 
 def verify_gan(
@@ -81,6 +91,9 @@ def verify_gan(
     if method == "gan_llm_only":
         before = gan_llm_only.PROMPT_VERSION
         payload = json.loads(gan_llm_only.build_prompt_input(_placeholder_record()))
+        authored = list(gan_llm_only.LLM_ONLY_AUTHORED_KEYS)
+        if list(payload) != authored:
+            raise RuntimeError("gan_llm_only prompt drifted from authored keys")
         if gan_llm_only.PROMPT_VERSION != before:
             raise RuntimeError("LLM-only payload check changed the live default")
         if gan_llm_only.PROMPT_VERSION != gan_llm_only.GAN_LLM_ONLY:
@@ -93,11 +106,14 @@ def verify_gan(
                 prompt_version=hybrid_structured_events.GAN_LLM_WITH_RULES,
             )
         )
+        authored = list(hybrid_structured_events.LLM_WITH_RULES_AUTHORED_KEYS)
         blob = json.dumps(payload)
+        if set(payload) != set(authored):
+            raise RuntimeError("gan_llm_with_rules prompt drifted from authored keys")
         if "prompt_version" in payload or "source_row_index" in payload:
-            raise RuntimeError("cleaned Gan request still emits the research envelope")
+            raise RuntimeError("gan_llm_with_rules request still emits the research envelope")
         if "Gan 2026" in blob:
-            raise RuntimeError("cleaned Gan request still names the dataset")
+            raise RuntimeError("gan_llm_with_rules request still names the dataset")
         if hybrid_structured_events.PROMPT_VERSION != before:
             raise RuntimeError("hybrid payload check changed the live default")
         if hybrid_structured_events.PROMPT_VERSION != hybrid_structured_events.GAN_LLM_WITH_RULES:
@@ -114,10 +130,10 @@ def verify_gan(
         "test450_authorized": holdout,
         "hosted": list(HOSTED_SLUGS),
         "local": list(LOCAL_SLUGS),
-        "max_tokens": MAX_TOKENS[method],
+        "max_tokens": _max_tokens_for(method, slug),
         "work_root": (WORK_ROOT / method).relative_to(ROOT).as_posix(),
         "holdout_scratch": (HOLDOUT_SCRATCH / method).relative_to(ROOT).as_posix(),
-        "drops_research_metadata": method == "gan_llm_with_rules",
+        "authored_keys": authored,
         "default_prompt_version": (
             gan_llm_only.PROMPT_VERSION
             if method == "gan_llm_only"
@@ -140,6 +156,8 @@ def run_gan(
     api_base: str | None = None,
     timeout: int | None = None,
     progress_every: int = 1,
+    thinking: str | None = None,
+    reasoning_effort: str | None = None,
 ) -> dict[str, Any]:
     """Run one allowed Gan paper cell."""
 
@@ -148,7 +166,11 @@ def run_gan(
         raise RuntimeError("run_gan requires live=True")
     if slug not in MODELS:
         raise RuntimeError(f"{slug} is not a living paper model")
-    spec = MODELS[slug]
+    spec = apply_reasoning_effort(MODELS[slug], reasoning_effort)
+    if thinking is not None:
+        if slug != "deepseek_v4_flash":
+            raise RuntimeError("thinking toggle is DeepSeek only")
+        spec = replace(spec, thinking_type=thinking)
     holdout = holdout_is_aggregate_only(split)
     machine = gan_machine_split(split)
     expected = gan_row_count(split)
@@ -156,7 +178,11 @@ def run_gan(
     records = load_records_for_split(machine)
     if len(records) != expected:
         raise RuntimeError(f"expected {expected} {split} records, found {len(records)}")
-    work_root = (HOLDOUT_SCRATCH if holdout else WORK_ROOT) / method / spec.slug / split
+    work_root = (HOLDOUT_SCRATCH if holdout else WORK_ROOT) / method / spec.slug
+    segment = paper_work_suffix(spec)
+    if segment:
+        work_root = work_root / segment
+    work_root = work_root / split
     work_root.mkdir(parents=True, exist_ok=True)
     rows_path = work_root / "rows.jsonl"
     started = datetime.now(UTC).isoformat()
@@ -165,7 +191,7 @@ def run_gan(
     done = {int(row["source_row_index"]) for row in existing}
     todo = [record for record in records if record.source_row_index not in done]
     resolved_base = resolve_paper_api_base(spec.slug, api_base)
-    max_tokens = MAX_TOKENS[method]
+    max_tokens = _max_tokens_for(method, spec.slug)
     if todo:
         _prepare_live_runtime(
             spec,
@@ -231,6 +257,8 @@ def run_gan(
         "model_label": spec.label,
         "temperature": spec.temperature,
         "max_tokens": max_tokens,
+        "thinking_type": spec.thinking_type,
+        "reasoning_effort": spec.reasoning_effort,
         "cache": False,
         "split": split,
         "split_machine": machine,
@@ -433,7 +461,7 @@ def _prepare_live_runtime(
                 f"{OLLAMA_NUM_CTX_ENV}={existing} conflicts with {declared}"
             )
         os.environ[OLLAMA_NUM_CTX_ENV] = declared
-    if spec.reasoning_effort:
+    if spec.slug == "gemini37flash" and spec.reasoning_effort:
         os.environ["GEMINI_REASONING_EFFORT"] = spec.reasoning_effort
     if spec.credential_env and not any(
         os.environ.get(name, "").strip() for name in spec.credential_env
@@ -448,5 +476,7 @@ def _prepare_live_runtime(
             cache=False,
             api_base=api_base,
             timeout=timeout,
+            reasoning_effort=spec.reasoning_effort,
+            thinking_type=spec.thinking_type,
         )
     )

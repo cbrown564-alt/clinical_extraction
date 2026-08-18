@@ -18,6 +18,9 @@ OPENROUTER_OPENAI_BASE = "https://openrouter.ai/api/v1"
 OPENROUTER_GEMINI_PROVIDER = "google"
 GEMINI_ALLOWED_REASONING_EFFORT = frozenset({"low", "medium", "high"})
 GEMINI_DEFAULT_REASONING_EFFORT = "low"
+DEEPSEEK_PREFIX = "deepseek/"
+DEEPSEEK_THINKING_ENV = "CLINICAL_EXTRACTION_DEEPSEEK_THINKING"
+DEEPSEEK_THINKING_TYPES = frozenset({"enabled", "disabled"})
 
 
 def build_dspy_lm(
@@ -30,6 +33,8 @@ def build_dspy_lm(
     api_key: str | None = None,
     num_retries: int = 2,
     timeout: int | None = None,
+    reasoning_effort: str | None = None,
+    thinking_type: str | None = None,
 ) -> dspy.LM:
     """Create a DSPy LM with optional local/OpenAI-compatible endpoint routing."""
 
@@ -39,6 +44,9 @@ def build_dspy_lm(
         "cache": cache,
         "num_retries": num_retries,
     }
+    native_openai_reasoning = _uses_native_openai_reasoning_param(model)
+    if reasoning_effort and native_openai_reasoning:
+        kwargs["reasoning_effort"] = reasoning_effort
     if timeout is not None:
         kwargs["timeout"] = timeout
     if api_key is not None:
@@ -91,7 +99,36 @@ def build_dspy_lm(
         }
     if api_base:
         kwargs["api_base"] = api_base
+    if (
+        reasoning_effort
+        and not native_openai_reasoning
+        and "extra_body" not in kwargs
+    ):
+        kwargs["extra_body"] = {"reasoning": {"effort": reasoning_effort}}
+    _apply_deepseek_thinking(kwargs, model, thinking_type)
     return dspy.LM(model, **kwargs)
+
+
+def _apply_deepseek_thinking(
+    kwargs: dict[str, Any],
+    model: str,
+    thinking_type: str | None,
+) -> None:
+    if not model.startswith(DEEPSEEK_PREFIX):
+        return
+    resolved = (thinking_type or os.environ.get(DEEPSEEK_THINKING_ENV, "")).strip()
+    if not resolved:
+        return
+    if resolved not in DEEPSEEK_THINKING_TYPES:
+        allowed = ", ".join(sorted(DEEPSEEK_THINKING_TYPES))
+        raise ValueError(f"DeepSeek thinking_type must be one of: {allowed}")
+    extra = dict(kwargs.get("extra_body") or {})
+    extra["thinking"] = {"type": resolved}
+    kwargs["extra_body"] = extra
+
+
+def _uses_native_openai_reasoning_param(model: str) -> bool:
+    return model.startswith("openai/") and "/xai/" not in model and "/google/" not in model
 
 
 def _ollama_options_from_environment() -> dict[str, int]:

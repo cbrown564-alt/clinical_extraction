@@ -16,8 +16,10 @@ local research checkout and are not cloned.
 
 ## Results
 
-Held-out test scores for GPT-5.6 Sol (2 d.p.). Rules-only is deterministic and
-does not use a model.
+Held-out test scores for GPT-5.6 Sol (2 d.p.), the historical
+method-identity row. Living identity is Grok 4.6; those cells are
+not on disk yet. Rules-only is deterministic and does not use a
+model.
 
 | Method | Gan 2026 | ExECTv2 |
 | --- | ---: | ---: |

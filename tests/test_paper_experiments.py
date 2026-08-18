@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 EXECT_HYBRID_ROOT = ROOT / "paper_experiments/exect/exect_llm_with_rules"
 FULL_LEDGER_ROOT = ROOT / "paper_experiments/comparators/exect_full_ledger"
 LIVING_SLUGS = (
-    "gpt56sol",
+    "grok46",
     "gpt56luna",
     "gemini37flash",
     "deepseek_v4_flash",
@@ -62,6 +62,9 @@ def test_roster_locks_the_living_six() -> None:
     living = tuple(row["slug"] for row in roster["living"])
     assert living == LIVING_SLUGS
     assert roster["living"][0]["method_identity"] is True
+    historical_slugs = {row.get("slug") for row in roster["historical"]}
+    assert "gpt56sol" in historical_slugs
+    assert "grok46" not in historical_slugs
 
 
 def test_inventory_covers_present_and_missing_cells() -> None:
@@ -86,9 +89,12 @@ def test_inventory_covers_present_and_missing_cells() -> None:
         ("gemma4_26b", "gan_llm_only", "test450"),
     }
     assert "gan_llm_with_rules" in missing_methods
-    assert ("qwen38_27b", "exect_llm_with_rules", "dev140") in {
+    missing_cells = {
         (row.get("model_slug"), row["method"], row.get("split")) for row in inventory["missing"]
     }
+    assert ("qwen38_27b", "exect_llm_with_rules", "dev140") in missing_cells
+    assert ("grok46", "exect_llm_with_rules", "dev140") in missing_cells
+    assert ("grok46", "gan_llm_with_rules", "dev750") in missing_cells
     gan_fields = set(inventory["strip"]["gan"])
     exect_fields = set(inventory["strip"]["exect"])
     for row in inventory["present"]:

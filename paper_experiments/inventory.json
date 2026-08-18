@@ -153,6 +153,50 @@
   ],
   "missing": [
     {
+      "model_slug": "grok46",
+      "model": "xai/grok-4.6",
+      "method": "exect_llm_with_rules",
+      "split": "dev140",
+      "n": 140,
+      "status": "missing",
+      "note": "Living method-identity Compact. Not yet promoted from experiments/."
+    },
+    {
+      "model_slug": "grok46",
+      "model": "xai/grok-4.6",
+      "method": "exect_llm_with_rules",
+      "split": "test60",
+      "n": 59,
+      "status": "missing",
+      "note": "Aggregate-only after dev140 completes."
+    },
+    {
+      "model_slug": "grok46",
+      "model": "xai/grok-4.6",
+      "method": "gan_llm_only",
+      "split": "dev750",
+      "n": 750,
+      "status": "missing"
+    },
+    {
+      "model_slug": "grok46",
+      "model": "xai/grok-4.6",
+      "method": "gan_llm_only",
+      "split": "test450",
+      "n": 450,
+      "status": "missing",
+      "note": "Aggregate-only."
+    },
+    {
+      "model_slug": "grok46",
+      "model": "xai/grok-4.6",
+      "method": "gan_llm_with_rules",
+      "split": "dev750",
+      "n": 750,
+      "status": "missing",
+      "note": "Cleaned request. Living method-identity blank."
+    },
+    {
       "model_slug": "qwen38_27b",
       "model": "ollama_chat/qwen3.8:27b",
       "method": "exect_llm_with_rules",
@@ -190,7 +234,7 @@
     {
       "method": "gan_llm_with_rules",
       "status": "missing",
-      "note": "Cleaned request. Luna dev750 exists in local scratch only. Five other dev750 models and all six test450 cells are blanks. Do not cite the enveloped v0.5 panel."
+      "note": "Cleaned request. Luna dev750 exists in local scratch only. Grok and the other living models on dev750, and all six test450 cells, are blanks. Do not cite the enveloped v0.5 panel. Sol cells are historical."
     }
   ]
 }

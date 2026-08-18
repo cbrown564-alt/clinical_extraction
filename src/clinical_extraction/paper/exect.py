@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import os
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -49,8 +49,9 @@ CANDIDATE_VERSION = structured.COMPACT_LEDGER
 CONTROL_ARM = "exect_full_ledger"
 CANDIDATE_ARM = "exect_llm_with_rules"
 OLLAMA_NUM_CTX_ENV = "CLINICAL_EXTRACTION_OLLAMA_NUM_CTX"
-HOSTED_SLUGS = ("gpt56sol", "gpt56luna", "gemini37flash", "deepseek_v4_flash")
+HOSTED_SLUGS = ("grok46", "gpt56luna", "gemini37flash", "deepseek_v4_flash")
 LOCAL_SLUGS = ("qwen38_27b", "gemma4_26b")
+GROK46_SLUG = "grok46"
 WORK_ROOT = ROOT / "experiments/paper/exect_llm_with_rules"
 HOLDOUT_SCRATCH = ROOT / "scratch/holdout/paper/exect_llm_with_rules"
 
@@ -80,6 +81,21 @@ _DEV140_CONTROLS = {
         "_structured.jsonl"
     ),
 }
+_DEV140_COMPACT_PAPER = {
+    "gemini37flash": (
+        "paper_experiments/exect/exect_llm_with_rules/gemini37flash/dev140/"
+        "structured.jsonl"
+    ),
+    "gpt56luna": (
+        "paper_experiments/exect/exect_llm_with_rules/gpt56luna/dev140/"
+        "structured.jsonl"
+    ),
+}
+ALLOWED_REASONING_ABLATIONS = frozenset(
+    {
+        ("gemini37flash", "medium"),
+    }
+)
 _TEST60_CONTROLS = {
     "gpt56sol": "experiments/current_stack/sidecars/exect_test60/gpt56sol.jsonl",
     "gpt56luna": "experiments/current_stack/sidecars/exect_test60/gpt56luna.jsonl",
@@ -111,29 +127,69 @@ class ModelSpec:
     timeout: int
     num_ctx: int | None = None
     reasoning_effort: str | None = None
+    thinking_type: str | None = None
     provider_revision: str | None = None
+
+
+REASONING_EFFORT_SLUGS = frozenset({"grok46", "gpt56luna", "gemini37flash"})
+
+
+def thinking_work_segment(spec: ModelSpec) -> str | None:
+    """Return a sidecar directory for an explicit DeepSeek thinking-off remasure."""
+
+    if spec.thinking_type == "disabled":
+        return "thinking_disabled"
+    return None
+
+
+def paper_work_suffix(spec: ModelSpec) -> str | None:
+    """Return the remasure directory for thinking-off or non-living effort."""
+
+    thinking = thinking_work_segment(spec)
+    if thinking:
+        return thinking
+    living = MODELS.get(spec.slug)
+    living_effort = living.reasoning_effort if living is not None else None
+    if spec.reasoning_effort and spec.reasoning_effort != living_effort:
+        return f"reasoning_{spec.reasoning_effort}"
+    return None
+
+
+def apply_reasoning_effort(spec: ModelSpec, effort: str | None) -> ModelSpec:
+    """Pin a non-living reasoning effort on a hosted reasoning model."""
+
+    if effort is None:
+        return spec
+    if spec.slug not in REASONING_EFFORT_SLUGS:
+        raise RuntimeError("reasoning effort is only for hosted reasoning models")
+    if effort == spec.reasoning_effort:
+        raise RuntimeError(
+            f"{effort} is the living paper setting for {spec.slug}; omit --reasoning-effort"
+        )
+    return replace(spec, reasoning_effort=effort)
 
 
 def _spec_for(item: Mapping[str, Any]) -> ModelSpec:
     slug = str(item["slug"])
     hosted = item["route"] == "hosted"
     credentials = {
-        "gpt56sol": ("AI_GATEWAY_API_KEY",),
+        "grok46": ("AI_GATEWAY_API_KEY",),
         "gpt56luna": ("OPENAI_API_KEY",),
         "gemini37flash": ("OPENROUTER_API_KEY",),
         "deepseek_v4_flash": ("DEEPSEEK_API_KEY",),
     }
+    hosted_timeout = 600 if slug in {"deepseek_v4_flash", "grok46"} else 300
     return ModelSpec(
         slug=slug,
         model=str(item["model"]),
         label=str(item["label"]),
-        temperature=1.0 if slug in {"gpt56sol", "gpt56luna"} else 0.0,
+        temperature=1.0 if slug in {"grok46", "gpt56luna"} else 0.0,
         max_tokens=64000 if slug == "deepseek_v4_flash" else 16000,
         route=str(item["route"]),
         credential_env=credentials.get(slug, ()),
-        timeout=900 if not hosted else (600 if slug == "deepseek_v4_flash" else 300),
+        timeout=900 if not hosted else hosted_timeout,
         num_ctx=32768 if slug == "qwen38_27b" else (65536 if slug == "gemma4_26b" else None),
-        reasoning_effort="low" if slug == "gemini37flash" else None,
+        reasoning_effort="low" if slug in {"grok46", "gpt56luna", "gemini37flash"} else None,
         provider_revision=item.get("provider_revision"),
     )
 
@@ -141,11 +197,23 @@ def _spec_for(item: Mapping[str, Any]) -> ModelSpec:
 MODELS: dict[str, ModelSpec] = {item["slug"]: _spec_for(item) for item in living_models()}
 
 
+def has_full_control(slug: str, split: str) -> bool:
+    """Return whether a living model has a Full-ledger sidecar for this split."""
+
+    if split == "test60":
+        return slug in _TEST60_CONTROLS
+    if split == "dev140":
+        return slug in _DEV140_CONTROLS
+    raise ValueError(f"unsupported ExECT split {split}")
+
+
 def control_path(slug: str, split: str) -> Path:
     """Return the Full-ledger sidecar used as the Compact control."""
 
     if slug not in MODELS:
         raise ValueError(f"unknown paper model {slug}")
+    if not has_full_control(slug, split):
+        raise ValueError(f"{slug} has no Full-ledger {split} control")
     if split == "test60":
         path = ROOT / _TEST60_CONTROLS[slug]
     elif split == "dev140":
@@ -197,7 +265,11 @@ def verify_compact(*, split: str = "dev140", slug: str | None = None) -> dict[st
         structured.set_active_prompt_version(before)
     if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
         raise RuntimeError("payload check changed the live default")
-    if slug is not None and not control_path(slug, split).is_file():
+    if (
+        slug is not None
+        and has_full_control(slug, split)
+        and not control_path(slug, split).is_file()
+    ):
         raise RuntimeError(f"missing Full ledger {split} control: {control_path(slug, split)}")
     holdout = holdout_is_aggregate_only(split)
     return {
@@ -230,33 +302,35 @@ def run_compact(
     api_base: str | None = None,
     timeout: int | None = None,
     progress_every: int = 1,
+    thinking: str | None = None,
+    reasoning_effort: str | None = None,
 ) -> dict[str, Any]:
     """Run Compact live against a saved Full-ledger control."""
 
+    if slug not in MODELS:
+        raise RuntimeError(f"{slug} is not a living paper model")
     verify_compact(split=split, slug=slug)
     if not live:
         raise RuntimeError("run_compact requires live=True")
-    if slug not in MODELS:
-        raise RuntimeError(f"{slug} is not a living paper model")
-    spec = MODELS[slug]
+    spec = apply_reasoning_effort(MODELS[slug], reasoning_effort)
+    if thinking is not None:
+        if slug != "deepseek_v4_flash":
+            raise RuntimeError("thinking toggle is DeepSeek only")
+        spec = replace(spec, thinking_type=thinking)
     load_dotenv(ROOT / ".env", override=False)
     letters = letters_for_split(split)
     holdout = holdout_is_aggregate_only(split)
-    work_root = (HOLDOUT_SCRATCH if holdout else WORK_ROOT) / spec.slug / split
+    work_root = HOLDOUT_SCRATCH if holdout else WORK_ROOT
+    segment = paper_work_suffix(spec)
+    if segment:
+        work_root = work_root / spec.slug / segment / split
+    else:
+        work_root = work_root / spec.slug / split
     work_root.mkdir(parents=True, exist_ok=True)
     started = datetime.now(UTC).isoformat()
     if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
         raise RuntimeError("live default drifted before the run")
     resolved_base = resolve_paper_api_base(spec.slug, api_base)
-    control = _run_replay_arm(
-        spec,
-        letters,
-        arm=CONTROL_ARM,
-        prompt_version=CONTROL_VERSION,
-        raws=_raws_from_sidecar(control_path(slug, split), letters, holdout=holdout),
-        out_dir=work_root / CONTROL_ARM,
-        split=split,
-    )
     candidate = _run_candidate(
         spec,
         letters,
@@ -269,53 +343,111 @@ def run_compact(
     )
     if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
         raise RuntimeError("candidate arm left the live default changed")
-    versus = compare_pair(control, candidate, letters)
-    hybrid = versus["surfaces"]["hybrid"]
     quality = candidate["summary"]["quality"]
-    artifact = {
-        "schema_version": "paper.exect_llm_with_rules.v1",
-        "generated_on": "2026-08-17",
-        "method": CANDIDATE_ARM,
-        "model_slug": spec.slug,
-        "model": spec.model,
-        "model_label": spec.label,
-        "temperature": spec.temperature,
-        "max_tokens": spec.max_tokens,
-        "cache": False,
-        "split": split,
-        "row_count": len(letters),
-        "row_policy": "aggregate_only" if holdout else "development_review_permitted",
-        "started_utc": started,
-        "finished_utc": datetime.now(UTC).isoformat(),
-        "live": True,
-        "model_calls": candidate["summary"]["new_model_calls"],
-        "default_prompt_version": structured.PROMPT_VERSION,
-        "provider_revision": spec.provider_revision,
-        "reasoning_effort": spec.reasoning_effort,
-        "arms": {
-            CONTROL_ARM: _public_arm_summary(control["summary"], holdout=holdout),
-            CANDIDATE_ARM: _public_arm_summary(candidate["summary"], holdout=holdout),
-        },
-        "comparison": {f"{CANDIDATE_ARM}_minus_{CONTROL_ARM}": versus},
-        "decision": {
-            CANDIDATE_ARM: {
-                "status": "scored",
-                "headline_f1_delta": hybrid["headline_f1_delta"],
-                "family_f1_delta": hybrid["family_f1_delta"],
-                "four_family_letter_exact_net": hybrid["four_family_letter_exact_net"],
-                "parse": quality["parse"],
-                "schema": quality["schema"],
-            }
-        },
-        "claim_boundary": (
-            "ExECT aggregate-only test60 Compact versus saved Full ledger."
-            if holdout
-            else "ExECT development Compact versus saved Full ledger. Not holdout."
-        ),
-    }
-    if not holdout:
-        artifact["letter_ids"] = [letter.letter_id for letter in letters]
-        artifact["changed_rows"] = changed_rows(control, candidate, letters)
+    if has_full_control(slug, split):
+        control = _run_replay_arm(
+            spec,
+            letters,
+            arm=CONTROL_ARM,
+            prompt_version=CONTROL_VERSION,
+            raws=_raws_from_sidecar(control_path(slug, split), letters, holdout=holdout),
+            out_dir=work_root / CONTROL_ARM,
+            split=split,
+        )
+        versus = compare_pair(control, candidate, letters)
+        hybrid = versus["surfaces"]["hybrid"]
+        artifact = {
+            "schema_version": "paper.exect_llm_with_rules.v1",
+            "generated_on": "2026-08-17",
+            "method": CANDIDATE_ARM,
+            "model_slug": spec.slug,
+            "model": spec.model,
+            "model_label": spec.label,
+            "temperature": spec.temperature,
+            "max_tokens": spec.max_tokens,
+            "cache": False,
+            "split": split,
+            "row_count": len(letters),
+            "row_policy": "aggregate_only" if holdout else "development_review_permitted",
+            "started_utc": started,
+            "finished_utc": datetime.now(UTC).isoformat(),
+            "live": True,
+            "model_calls": candidate["summary"]["new_model_calls"],
+            "default_prompt_version": structured.PROMPT_VERSION,
+            "provider_revision": spec.provider_revision,
+            "reasoning_effort": spec.reasoning_effort,
+            "thinking_type": spec.thinking_type,
+            "arms": {
+                CONTROL_ARM: _public_arm_summary(control["summary"], holdout=holdout),
+                CANDIDATE_ARM: _public_arm_summary(candidate["summary"], holdout=holdout),
+            },
+            "comparison": {f"{CANDIDATE_ARM}_minus_{CONTROL_ARM}": versus},
+            "decision": {
+                CANDIDATE_ARM: {
+                    "status": "scored",
+                    "headline_f1_delta": hybrid["headline_f1_delta"],
+                    "family_f1_delta": hybrid["family_f1_delta"],
+                    "four_family_letter_exact_net": hybrid["four_family_letter_exact_net"],
+                    "parse": quality["parse"],
+                    "schema": quality["schema"],
+                }
+            },
+            "claim_boundary": (
+                "ExECT aggregate-only test60 Compact versus saved Full ledger."
+                if holdout
+                else "ExECT development Compact versus saved Full ledger. Not holdout."
+            ),
+        }
+        if not holdout:
+            artifact["letter_ids"] = [letter.letter_id for letter in letters]
+            artifact["changed_rows"] = changed_rows(control, candidate, letters)
+    else:
+        artifact = {
+            "schema_version": "paper.exect_llm_with_rules.v1",
+            "generated_on": "2026-08-17",
+            "method": CANDIDATE_ARM,
+            "model_slug": spec.slug,
+            "model": spec.model,
+            "model_label": spec.label,
+            "temperature": spec.temperature,
+            "max_tokens": spec.max_tokens,
+            "cache": False,
+            "split": split,
+            "row_count": len(letters),
+            "row_policy": "aggregate_only" if holdout else "development_review_permitted",
+            "started_utc": started,
+            "finished_utc": datetime.now(UTC).isoformat(),
+            "live": True,
+            "model_calls": candidate["summary"]["new_model_calls"],
+            "default_prompt_version": structured.PROMPT_VERSION,
+            "provider_revision": spec.provider_revision,
+            "reasoning_effort": spec.reasoning_effort,
+            "thinking_type": spec.thinking_type,
+            "arms": {
+                CANDIDATE_ARM: _public_arm_summary(candidate["summary"], holdout=holdout),
+            },
+            "decision": {
+                CANDIDATE_ARM: {
+                    "status": "scored",
+                    "raw_headline_f1": candidate["summary"]["raw_headline_f1"],
+                    "hybrid_headline_f1": candidate["summary"]["hybrid_headline_f1"],
+                    "raw_family_f1": candidate["summary"]["raw_family_f1"],
+                    "hybrid_family_f1": candidate["summary"]["hybrid_family_f1"],
+                    "parse": quality["parse"],
+                    "schema": quality["schema"],
+                }
+            },
+            "claim_boundary": (
+                "ExECT aggregate-only test60 Compact. No Full-ledger control for this model."
+                if holdout
+                else (
+                    "ExECT development Compact. No Full-ledger control for this model. "
+                    "Not holdout."
+                )
+            ),
+        }
+        if not holdout:
+            artifact["letter_ids"] = [letter.letter_id for letter in letters]
     out = work_root / "comparison.json"
     out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return {
@@ -326,6 +458,135 @@ def run_compact(
         "model_calls": artifact["model_calls"],
         "decision": artifact["decision"],
         "default_prompt_version": structured.PROMPT_VERSION,
+    }
+
+
+def run_compact_reasoning_ablation(
+    slug: str,
+    *,
+    effort: str,
+    live: bool,
+    split: str = "dev140",
+    overwrite: bool = False,
+    api_base: str | None = None,
+    timeout: int | None = None,
+    progress_every: int = 1,
+) -> dict[str, Any]:
+    """Run Compact at an explicit effort against the living paper cell."""
+
+    if slug not in MODELS:
+        raise RuntimeError(f"{slug} is not a living paper model")
+    paper_spec = MODELS[slug]
+    if split != "dev140":
+        raise RuntimeError("Compact reasoning ablation is development-only")
+    if not live:
+        raise RuntimeError("run_compact_reasoning_ablation requires live=True")
+    if paper_spec.reasoning_effort == effort:
+        raise RuntimeError(
+            f"{effort} is the living paper setting for {slug}; omit --reasoning-effort"
+        )
+    if (slug, effort) not in ALLOWED_REASONING_ABLATIONS:
+        raise RuntimeError(
+            f"{slug} {effort} is not an allowed Compact reasoning ablation"
+        )
+    paper_sidecar = ROOT / _DEV140_COMPACT_PAPER[slug]
+    if not paper_sidecar.is_file():
+        raise RuntimeError(f"missing living Compact {split} cell: {paper_sidecar}")
+    verify_compact(split=split, slug=None)
+    spec = replace(paper_spec, reasoning_effort=effort)
+    load_dotenv(ROOT / ".env", override=False)
+    letters = letters_for_split(split)
+    work_root = WORK_ROOT / spec.slug / f"reasoning_{effort}" / split
+    work_root.mkdir(parents=True, exist_ok=True)
+    started = datetime.now(UTC).isoformat()
+    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
+        raise RuntimeError("live default drifted before the run")
+    resolved_base = resolve_paper_api_base(spec.slug, api_base)
+    paper_effort = paper_spec.reasoning_effort or "provider_default"
+    control = _run_replay_arm(
+        paper_spec,
+        letters,
+        arm=f"{CANDIDATE_ARM}_{paper_effort}",
+        prompt_version=CANDIDATE_VERSION,
+        raws=_raws_from_sidecar(paper_sidecar, letters),
+        out_dir=work_root / f"{CANDIDATE_ARM}_{paper_effort}",
+        split=split,
+    )
+    candidate = _run_candidate(
+        spec,
+        letters,
+        overwrite=overwrite,
+        api_base=resolved_base,
+        timeout=timeout or spec.timeout,
+        progress_every=progress_every,
+        out_dir=work_root / f"{CANDIDATE_ARM}_{effort}",
+        split=split,
+    )
+    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
+        raise RuntimeError("candidate arm left the live default changed")
+    versus = compare_pair(control, candidate, letters)
+    hybrid = versus["surfaces"]["hybrid"]
+    quality = candidate["summary"]["quality"]
+    artifact = {
+        "schema_version": "paper.exect_llm_with_rules.reasoning_ablation.v1",
+        "generated_on": "2026-08-17",
+        "method": CANDIDATE_ARM,
+        "diagnostic": True,
+        "model_slug": spec.slug,
+        "model": spec.model,
+        "model_label": spec.label,
+        "temperature": spec.temperature,
+        "max_tokens": spec.max_tokens,
+        "cache": False,
+        "split": split,
+        "row_count": len(letters),
+        "row_policy": "development_review_permitted",
+        "started_utc": started,
+        "finished_utc": datetime.now(UTC).isoformat(),
+        "live": True,
+        "model_calls": candidate["summary"]["new_model_calls"],
+        "default_prompt_version": structured.PROMPT_VERSION,
+        "paper_reasoning_effort": paper_effort,
+        "candidate_reasoning_effort": effort,
+        "arms": {
+            f"{CANDIDATE_ARM}_{paper_effort}": _public_arm_summary(
+                control["summary"], holdout=False
+            ),
+            f"{CANDIDATE_ARM}_{effort}": _public_arm_summary(
+                candidate["summary"], holdout=False
+            ),
+        },
+        "comparison": {
+            f"{CANDIDATE_ARM}_{effort}_minus_{CANDIDATE_ARM}_{paper_effort}": versus
+        },
+        "decision": {
+            CANDIDATE_ARM: {
+                "status": "scored",
+                "headline_f1_delta": hybrid["headline_f1_delta"],
+                "family_f1_delta": hybrid["family_f1_delta"],
+                "four_family_letter_exact_net": hybrid["four_family_letter_exact_net"],
+                "parse": quality["parse"],
+                "schema": quality["schema"],
+            }
+        },
+        "letter_ids": [letter.letter_id for letter in letters],
+        "changed_rows": changed_rows(control, candidate, letters),
+        "claim_boundary": (
+            f"Diagnostic {spec.label} Compact reasoning {effort} versus living "
+            f"{paper_effort} on ExECT development. Not a paper cell. Not holdout."
+        ),
+    }
+    out = work_root / "comparison.json"
+    out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return {
+        "artifact": out.relative_to(ROOT).as_posix(),
+        "live": True,
+        "split": split,
+        "model": spec.model,
+        "model_calls": artifact["model_calls"],
+        "decision": artifact["decision"],
+        "default_prompt_version": structured.PROMPT_VERSION,
+        "claim_boundary": artifact["claim_boundary"],
     }
 
 
@@ -524,7 +785,7 @@ def _prepare_live_runtime(
                 f"{OLLAMA_NUM_CTX_ENV}={existing} conflicts with {declared}"
             )
         os.environ[OLLAMA_NUM_CTX_ENV] = declared
-    if spec.reasoning_effort:
+    if spec.slug == "gemini37flash" and spec.reasoning_effort:
         os.environ["GEMINI_REASONING_EFFORT"] = spec.reasoning_effort
     if spec.credential_env and not any(
         os.environ.get(name, "").strip() for name in spec.credential_env
@@ -539,5 +800,7 @@ def _prepare_live_runtime(
             cache=False,
             api_base=api_base,
             timeout=timeout,
+            reasoning_effort=spec.reasoning_effort,
+            thinking_type=spec.thinking_type,
         )
     )

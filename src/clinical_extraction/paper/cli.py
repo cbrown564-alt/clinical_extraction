@@ -25,6 +25,8 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--api-base")
     parser.add_argument("--timeout", type=int)
     parser.add_argument("--progress-every", type=int, default=1)
+    parser.add_argument("--reasoning-effort", choices=("low", "medium", "high"))
+    parser.add_argument("--thinking", choices=("enabled", "disabled"))
     args = parser.parse_args(argv)
     split_for(args.method, args.split)
     if args.action == "verify":
@@ -44,6 +46,8 @@ def main(argv: Sequence[str] | None = None) -> None:
                 api_base=args.api_base,
                 timeout=args.timeout,
                 progress_every=args.progress_every,
+                reasoning_effort=args.reasoning_effort,
+                thinking=args.thinking,
             ),
             indent=2,
             sort_keys=True,
@@ -70,6 +74,8 @@ def run(
     api_base: str | None = None,
     timeout: int | None = None,
     progress_every: int = 1,
+    reasoning_effort: str | None = None,
+    thinking: str | None = None,
 ) -> dict[str, Any]:
     """Run one allowed paper cell."""
 
@@ -84,6 +90,8 @@ def run(
             api_base=api_base,
             timeout=timeout,
             progress_every=progress_every,
+            thinking=thinking,
+            reasoning_effort=reasoning_effort,
         )
     return run_gan(
         method,
@@ -94,4 +102,6 @@ def run(
         api_base=api_base,
         timeout=timeout,
         progress_every=progress_every,
+        thinking=thinking,
+        reasoning_effort=reasoning_effort,
     )
