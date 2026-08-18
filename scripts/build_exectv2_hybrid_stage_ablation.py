@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """ExECTv2 llm_with_rules band + first-changer stage ablation.
 
-True ordered no-call replay from retained structured sidecars. See
+True ordered no-call replay from retained structured JSONL. See
 docs/research/exectv2/hybrid_stage_ablation_protocol_2026-08-06.md.
 """
 

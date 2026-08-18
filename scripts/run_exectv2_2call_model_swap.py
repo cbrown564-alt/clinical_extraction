@@ -120,7 +120,7 @@ def main() -> None:
 
 
 def _diagnosis_artifact_path(config: model_swap.ModelSwapConfig) -> Path | None:
-    """Return the sidecar path only when Diagnosis has a separate producer."""
+    """Return the replay file path only when Diagnosis has a separate producer."""
 
     producer_id = config.assembly.lenses["Diagnosis"].producer
     if producer_id == "structured_key_family_event_ledger":

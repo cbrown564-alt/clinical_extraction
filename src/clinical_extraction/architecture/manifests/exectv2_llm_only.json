@@ -9,10 +9,10 @@
     "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py",
     "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_only_letter"
   },
-  "one_sentence": "One structured model call proposes four-family findings, and the selected LLM-only view scores those findings before family-specific deterministic transforms.",
-  "sixty_second": "The selected LLM-only lane shares one structured producer with the LLM-with-rules method. It builds the four-family prompt, makes or replays one model call, parses the event ledger, optionally performs a format-only retry for eligible local models, flattens events, and applies evidence and render-safety gates. Its selected prediction is the raw candidate view from that producer. It does not run seizure-frequency projection, Diagnosis reconciliation, Prescription rescue, or any other LLM-with-rules family transform. The old GEPA program remains named as a historical comparison rather than silently serving as the current selected entry point.",
+  "one_sentence": "One standalone Compact model request proposes four-family findings, and the selected LLM-only view scores those findings without hybrid family transforms.",
+  "sixty_second": "The selected LLM-only method uses its own standalone Compact request (`exect_llm_only`), separate from the Compact hybrid request. It builds the LLM-only four-family prompt (no suggested-evidence scan), makes or replays one model call, parses the event ledger, optionally performs a format-only retry for eligible local models, flattens events, and applies evidence and render-safety gates. Its scored prediction is the raw candidate view (raw F1). It does not run seizure-frequency projection, Diagnosis reconciliation, Prescription normalization, or any other hybrid family transform. Hybrid-call raw is not LLM-only. The old GEPA program remains named as a historical comparison rather than the selected entry point.",
   "prediction_owner": "the named model (stage exect.llm.model_call); deterministic stages only parse, represent, and gate its findings",
-  "scored_representation": "The raw_candidate four-family PredictedLetter from the shared one-call producer, scored per entity and overall.",
+  "scored_representation": "The raw_candidate four-family PredictedLetter from the standalone Compact LLM-only request, scored per entity and overall (raw F1).",
   "stages": [
     {
       "stage_id": "exect.llm.build_prompt",
@@ -134,7 +134,7 @@
       "rule_category": "benchmark_format",
       "effect_class": "benchmark_projection",
       "input_type": "gated PredictedLetter",
-      "input_example": "four-family mentions from the shared producer",
+      "input_example": "four-family mentions from the LLM-only producer",
       "output_type": "raw_candidate PredictedLetter",
       "output_example": "the same four-family mentions with raw_candidate provenance",
       "implementation": {
@@ -146,7 +146,7 @@
         "scored_view",
         "predicted_mentions"
       ],
-      "paper_wording": "The selected LLM-only view is the raw candidate from the one-call producer."
+      "paper_wording": "The selected LLM-only view is the raw candidate from the standalone Compact LLM-only request."
     },
     {
       "stage_id": "exect.llm.score",

@@ -422,7 +422,7 @@ def test_gemini_reasoning_ablation_is_dev140_medium_only() -> None:
     assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER
 
 
-def test_cli_dispatches_effort_remasure_to_live_runners(
+def test_cli_dispatches_non_living_effort_to_live_runners(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     compact: dict[str, object] = {}

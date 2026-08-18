@@ -34,7 +34,7 @@ HOLDOUT_FORBIDDEN = ("incorrect_source_row_indices", "letter_ids", "changed_rows
 
 
 def living_work_root(method: str, slug: str, split: str) -> Path:
-    """Return the living (non-remasure) sidecar for a Gan paper cell."""
+    """Return the living-effort Gan work directory."""
 
     root = HOLDOUT_ROOT if holdout_is_aggregate_only(split) else WORK_ROOT
     return root / method / slug / split
@@ -65,7 +65,7 @@ def promote_gan(method: str, slug: str, split: str) -> dict[str, Any]:
     rows_path = source / "rows.jsonl"
     comparison_path = source / "comparison.json"
     if not rows_path.is_file() or not comparison_path.is_file():
-        raise RuntimeError(f"missing living {method} {slug} {split} sidecar")
+        raise RuntimeError(f"missing finished living-effort {method} {slug} {split} run")
     rows = load_jsonl_rows(rows_path)
     expected = gan_row_count(split)
     if len(rows) != expected:
@@ -74,7 +74,9 @@ def promote_gan(method: str, slug: str, split: str) -> dict[str, Any]:
     if comparison.get("split") != split or comparison.get("method") != method:
         raise RuntimeError(f"{comparison_path} is not this paper cell")
     if comparison.get("reasoning_effort") not in {None, "low"}:
-        raise RuntimeError("promote only the living low-effort cell, not a remasure")
+        raise RuntimeError(
+            "promote only the living low-effort cell, not a non-living-effort repeat"
+        )
     if holdout:
         _assert_aggregate_only(comparison)
     dest = paper_cell_root(method, slug, split)
@@ -207,7 +209,7 @@ def rebuild_dev750_panel() -> dict[str, Any]:
         "models": [item["slug"] for item in living_models()],
         "cells": cells,
         "claim_boundary": (
-            "Living six-model Gan development panel. Remasures stay under "
+            "Living six-model Gan development panel. Non-living-effort repeats stay under "
             "experiments/paper/.../reasoning_* or thinking_disabled/. Not holdout."
         ),
     }
@@ -376,7 +378,7 @@ def _sync_inventory(panel: Mapping[str, Any]) -> None:
                 "split": PROMOTE_SPLIT,
                 "n": gan_row_count(PROMOTE_SPLIT),
                 "status": "missing",
-                "note": "Living-effort Gan development cell. Promote when the sidecar finishes.",
+                "note": "Living-effort Gan development cell. Promote when the run finishes.",
             }
         )
     inventory["present"] = present

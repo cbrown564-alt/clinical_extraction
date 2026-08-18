@@ -38,7 +38,7 @@ def _patch_panel_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     )
 
 
-def _write_sidecar(root: Path, slug: str) -> None:
+def _write_work_cell(root: Path, slug: str) -> None:
     cell = root / "experiments/paper/exect_llm_with_rules" / slug / "dev140"
     nested = cell / "exect_llm_with_rules"
     nested.mkdir(parents=True, exist_ok=True)
@@ -123,7 +123,7 @@ def _write_inventory(tmp_path: Path, *, present: list[dict[str, object]]) -> Non
 def test_promote_strips_replay_and_writes_scored_panel(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    _write_sidecar(tmp_path, "grok46")
+    _write_work_cell(tmp_path, "grok46")
     _write_inventory(tmp_path, present=[])
     _patch_panel_paths(tmp_path, monkeypatch)
 
@@ -217,10 +217,10 @@ def test_rebuild_keeps_existing_compact_present_without_cell_json(
     assert historical in synced["present"]
 
 
-def test_promote_rejects_a_remasure(
+def test_promote_rejects_non_living_effort_cell(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    _write_sidecar(tmp_path, "grok46")
+    _write_work_cell(tmp_path, "grok46")
     comparison_path = (
         tmp_path / "experiments/paper/exect_llm_with_rules/grok46/dev140/comparison.json"
     )
@@ -233,7 +233,7 @@ def test_promote_rejects_a_remasure(
         promote_exect_dev140("grok46")
 
 
-def _write_holdout_sidecar(root: Path, slug: str) -> None:
+def _write_holdout_work_cell(root: Path, slug: str) -> None:
     cell = root / "scratch/holdout/paper/exect_llm_with_rules" / slug / "test60"
     nested = cell / "exect_llm_with_rules"
     nested.mkdir(parents=True, exist_ok=True)
@@ -274,7 +274,7 @@ def _write_holdout_sidecar(root: Path, slug: str) -> None:
 def test_promote_exect_test60_strips_replay_and_updates_inventory(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    _write_holdout_sidecar(tmp_path, "grok46")
+    _write_holdout_work_cell(tmp_path, "grok46")
     _write_inventory(
         tmp_path,
         present=[],
@@ -319,7 +319,7 @@ def test_promote_exect_test60_strips_replay_and_updates_inventory(
 def test_promote_exect_test60_rejects_letter_ids(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    _write_holdout_sidecar(tmp_path, "grok46")
+    _write_holdout_work_cell(tmp_path, "grok46")
     comparison_path = (
         tmp_path / "scratch/holdout/paper/exect_llm_with_rules/grok46/test60/comparison.json"
     )

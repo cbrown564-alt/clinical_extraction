@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Copy selected holdout replay inputs out of scratch/ as stripped sidecars.
+"""Copy selected holdout replay inputs out of scratch/ as stripped replay JSONL.
 
-Keeps only the fields current-stack remasure needs. Drops note text, gold,
+Keeps only the fields current-stack rerun needs. Drops note text, gold,
 prompt payloads, and sealed rows. Scratch trees stay as the operational dump.
 
 See docs/runbooks/current_stack_six_model_replay.md.

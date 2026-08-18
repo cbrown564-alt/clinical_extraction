@@ -1,4 +1,4 @@
-"""Score Compact versus Full ledger remasure for the paper runner."""
+"""Score Compact versus Full ledger comparison for the paper runner."""
 
 from __future__ import annotations
 
@@ -87,7 +87,7 @@ def _score_arm(
     structured_rows = load_jsonl_rows(structured_path)
     if len(structured_rows) != len(letters):
         raise RuntimeError(
-            f"{slug} structured sidecar has {len(structured_rows)} rows, expected {len(letters)}"
+            f"{slug} structured file has {len(structured_rows)} rows, expected {len(letters)}"
         )
     letter_rows = _letter_family_rows(
         gold=letters,

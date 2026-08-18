@@ -30,7 +30,7 @@ from .base import SeizureFrequencyLens, ThinArtifactLens
 class SeizureFrequencyDictionaryLens(ThinArtifactLens):
     """v10 SeizureFrequency: pass-through lens adapter.
 
-    SeizureFrequency extraction and state projection are owned by model sidecars
+    SeizureFrequency extraction and state projection are owned by model structured JSONL
     and ``sf_state_projection_suppression_v01``. Standard-dictionary rewrites
     and residual additions are not applied in the assembly stage.
     """

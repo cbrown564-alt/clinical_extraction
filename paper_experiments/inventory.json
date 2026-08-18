@@ -23,7 +23,7 @@
       "model": "deepseek/deepseek-v4-flash",
       "model_slug": "deepseek_v4_flash",
       "n": 750,
-      "note": "Living-effort Gan development cell. Promote when the sidecar finishes.",
+      "note": "Living-effort Gan development cell. Promote when the replay file finishes.",
       "split": "dev750",
       "status": "missing"
     },
@@ -32,7 +32,7 @@
       "model": "deepseek/deepseek-v4-flash",
       "model_slug": "deepseek_v4_flash",
       "n": 750,
-      "note": "Living-effort Gan development cell. Promote when the sidecar finishes.",
+      "note": "Living-effort Gan development cell. Promote when the replay file finishes.",
       "split": "dev750",
       "status": "missing"
     },
@@ -41,7 +41,7 @@
       "model": "ollama_chat/qwen3.8:27b",
       "model_slug": "qwen38_27b",
       "n": 750,
-      "note": "Living-effort Gan development cell. Promote when the sidecar finishes.",
+      "note": "Living-effort Gan development cell. Promote when the replay file finishes.",
       "split": "dev750",
       "status": "missing"
     },
@@ -50,7 +50,7 @@
       "model": "ollama_chat/qwen3.8:27b",
       "model_slug": "qwen38_27b",
       "n": 750,
-      "note": "Living-effort Gan development cell. Promote when the sidecar finishes.",
+      "note": "Living-effort Gan development cell. Promote when the replay file finishes.",
       "split": "dev750",
       "status": "missing"
     },
@@ -59,7 +59,7 @@
       "model": "ollama_chat/gemma4:26b",
       "model_slug": "gemma4_26b",
       "n": 750,
-      "note": "Living-effort Gan development cell. Promote when the sidecar finishes.",
+      "note": "Living-effort Gan development cell. Promote when the replay file finishes.",
       "split": "dev750",
       "status": "missing"
     },
@@ -68,7 +68,7 @@
       "model": "ollama_chat/qwen3.8:27b",
       "model_slug": "qwen38_27b",
       "n": 140,
-      "note": "Living-effort ExECT Compact development cell. Promote when the sidecar finishes.",
+      "note": "Living-effort ExECT Compact development cell. Promote when the replay file finishes.",
       "split": "dev140",
       "status": "missing"
     },

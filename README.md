@@ -31,10 +31,11 @@ is deterministic and does not use a model.
   request. The living Grok holdout is 375/450; do not read an enveloped
   `v0.5` score into the hybrid cell.
 - **ExECTv2:** de-duplicated clinical fact F1 on the locked `test60` split
-  (diagnosis, seizure frequency, prescriptions, and investigations). The
-  hybrid and LLM-only rows are the same Compact ledger call. This is
-  the project's primary research metric for ExECT, not the published strict
-  benchmark score.
+  (diagnosis, seizure frequency, prescriptions, and investigations). Compact
+  hybrid (`exect_llm_with_rules`) and standalone Compact LLM-only
+  (`exect_llm_only`) are separate requests; cite hybrid F1 and raw F1
+  respectively. Hybrid-call raw is not LLM-only. This is the project's
+  primary research metric for ExECT, not the published strict benchmark score.
 
 Scores are not interchangeable across tasks.
 

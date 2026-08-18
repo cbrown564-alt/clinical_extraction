@@ -1,7 +1,8 @@
-# Current-stack replay sidecars
+# Current-stack replay JSONL
 
-Stripped holdout inputs for no-call remasure. Promoted out of `scratch/` so
-selected primary fills do not depend on a gitignored dump.
+Stripped holdout inputs for no-call rerun and re-score. Promoted out
+of `scratch/` so selected primary fills do not depend on a gitignored
+dump.
 
 Each Gan row keeps `source_row_index`, `prompt_version`, `raw_output`, and
 boolean comparison flags. Each ExECT row keeps `letter_id`, `prompt_version`,
@@ -17,4 +18,4 @@ Rebuild from scratch, if those trees are still present:
 .venv\Scripts\python.exe scripts/promote_current_stack_sidecars.py
 ```
 
-Then point `SOURCES.json` at the sidecar paths (already the living inventory).
+Then point `SOURCES.json` at the replay file paths (already the living inventory).

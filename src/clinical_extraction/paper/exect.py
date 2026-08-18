@@ -1,4 +1,4 @@
-"""One Compact versus Full remasure for the paper ExECT methods."""
+"""One Compact versus Full control comparison for the paper ExECT methods."""
 
 from __future__ import annotations
 
@@ -143,7 +143,7 @@ REASONING_EFFORT_SLUGS = frozenset({"grok46", "gpt56luna", "gemini37flash"})
 
 
 def thinking_work_segment(spec: ModelSpec) -> str | None:
-    """Return a sidecar directory for an explicit DeepSeek thinking-off remasure."""
+    """Return a work-directory segment for an explicit DeepSeek thinking-off repeat."""
 
     if spec.thinking_type == "disabled":
         return "thinking_disabled"
@@ -151,7 +151,7 @@ def thinking_work_segment(spec: ModelSpec) -> str | None:
 
 
 def paper_work_suffix(spec: ModelSpec) -> str | None:
-    """Return the remasure directory for thinking-off or non-living effort."""
+    """Return the work-directory segment for thinking-off or non-living effort."""
 
     thinking = thinking_work_segment(spec)
     if thinking:
@@ -206,7 +206,7 @@ MODELS: dict[str, ModelSpec] = {item["slug"]: _spec_for(item) for item in living
 
 
 def has_full_control(slug: str, split: str) -> bool:
-    """Return whether a living model has a Full-ledger sidecar for this split."""
+    """Return whether a living model has a Full-ledger control file for this split."""
 
     if split == "test60":
         return slug in _TEST60_CONTROLS
@@ -216,7 +216,7 @@ def has_full_control(slug: str, split: str) -> bool:
 
 
 def control_path(slug: str, split: str) -> Path:
-    """Return the Full-ledger sidecar used as the Compact control."""
+    """Return the Full-ledger control JSONL used as the Compact control."""
 
     if slug not in MODELS:
         raise ValueError(f"unknown paper model {slug}")
@@ -237,7 +237,7 @@ def _reject_lfs_pointer(path: Path) -> None:
         return
     first = path.read_text(encoding="utf-8", errors="replace").splitlines()[:1]
     if first and first[0].startswith("version https://git-lfs.github.com/spec/v1"):
-        raise RuntimeError(f"{path} is a Git LFS pointer, not a replayable JSONL sidecar")
+        raise RuntimeError(f"{path} is a Git LFS pointer, not a replayable JSONL events file")
 
 
 def letters_for_split(split: str) -> list[ExectLetter]:
@@ -568,7 +568,9 @@ def run_compact(
             letters,
             arm=CONTROL_ARM,
             prompt_version=CONTROL_VERSION,
-            raws=_raws_from_sidecar(control_path(slug, split), letters, holdout=holdout),
+            raws=_raws_from_structured_file(
+                control_path(slug, split), letters, holdout=holdout
+            ),
             out_dir=work_root / CONTROL_ARM,
             split=split,
         )
@@ -817,9 +819,9 @@ def run_compact_reasoning_ablation(
         raise RuntimeError(
             f"{slug} {effort} is not an allowed Compact reasoning ablation"
         )
-    paper_sidecar = ROOT / _DEV140_COMPACT_PAPER[slug]
-    if not paper_sidecar.is_file():
-        raise RuntimeError(f"missing living Compact {split} cell: {paper_sidecar}")
+    paper_structured_path = ROOT / _DEV140_COMPACT_PAPER[slug]
+    if not paper_structured_path.is_file():
+        raise RuntimeError(f"missing living Compact {split} cell: {paper_structured_path}")
     verify_compact(split=split, slug=None)
     spec = replace(paper_spec, reasoning_effort=effort)
     load_dotenv(ROOT / ".env", override=False)
@@ -836,7 +838,7 @@ def run_compact_reasoning_ablation(
         letters,
         arm=f"{CANDIDATE_ARM}_{paper_effort}",
         prompt_version=CANDIDATE_VERSION,
-        raws=_raws_from_sidecar(paper_sidecar, letters),
+        raws=_raws_from_structured_file(paper_structured_path, letters),
         out_dir=work_root / f"{CANDIDATE_ARM}_{paper_effort}",
         split=split,
     )
@@ -925,7 +927,7 @@ def _public_arm_summary(summary: Mapping[str, Any], *, holdout: bool) -> dict[st
     return payload
 
 
-def _raws_from_sidecar(
+def _raws_from_structured_file(
     path: Path,
     letters: Sequence[ExectLetter],
     *,
@@ -944,7 +946,7 @@ def _raws_from_sidecar(
                 raw = json.dumps({"clinical_events": events})
         if not raw:
             raise RuntimeError(
-                "a test60 control sidecar row has no replayable events"
+                "a test60 control row has no replayable events"
                 if holdout
                 else f"{path} missing raw_output for {letter_id}"
             )

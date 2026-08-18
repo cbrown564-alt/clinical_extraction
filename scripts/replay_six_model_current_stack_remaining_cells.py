@@ -687,7 +687,7 @@ def main() -> None:
             "call_mode": "saved_raw_or_structured_no_call",
             "claim_boundary": (
                 "No-call current-repair readout. Gan test450 uses v0.5 saved raw. "
-                "ExECT uses v0.9.24 structured sidecars through HEAD default/default. "
+                "ExECT uses v0.9.24 structured JSONL through HEAD default/default. "
                 "Holdout cells are aggregate-only. Does not rewrite Decision 0046/0047 "
                 "or C16 holdout fills."
             ),

@@ -38,7 +38,7 @@ def _patch_panel_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     )
 
 
-def _write_sidecar(root: Path, method: str, slug: str, *, label: str) -> None:
+def _write_work_cell(root: Path, method: str, slug: str, *, label: str) -> None:
     cell = root / "experiments/paper" / method / slug / "dev750"
     cell.mkdir(parents=True, exist_ok=True)
     rows = []
@@ -84,7 +84,7 @@ def _write_sidecar(root: Path, method: str, slug: str, *, label: str) -> None:
 def test_promote_writes_replay_scored_and_panel(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    _write_sidecar(tmp_path, "gan_llm_only", "grok46", label="1 per month")
+    _write_work_cell(tmp_path, "gan_llm_only", "grok46", label="1 per month")
     inventory = {
         "schema_version": "paper_experiments.inventory.v1",
         "strip": {"gan": ["source_row_index", "prompt_version", "raw_output"]},
@@ -184,8 +184,10 @@ def test_rebuild_keeps_historical_present_when_panel_slot_is_pending(
     assert historical in synced["present"]
 
 
-def test_promote_rejects_a_remasure(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    _write_sidecar(tmp_path, "gan_llm_only", "grok46", label="1 per month")
+def test_promote_rejects_non_living_effort_cell(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _write_work_cell(tmp_path, "gan_llm_only", "grok46", label="1 per month")
     comparison_path = tmp_path / "experiments/paper/gan_llm_only/grok46/dev750/comparison.json"
     comparison = json.loads(comparison_path.read_text(encoding="utf-8"))
     comparison["reasoning_effort"] = "high"
@@ -200,7 +202,7 @@ def test_promote_rejects_a_remasure(tmp_path: Path, monkeypatch: pytest.MonkeyPa
         promote_gan_dev750("gan_llm_only", "grok46")
 
 
-def _write_holdout_sidecar(root: Path, method: str, slug: str) -> None:
+def _write_holdout_work_cell(root: Path, method: str, slug: str) -> None:
     cell = root / "scratch/holdout/paper" / method / slug / "test450"
     cell.mkdir(parents=True, exist_ok=True)
     rows = []
@@ -242,7 +244,7 @@ def _write_holdout_sidecar(root: Path, method: str, slug: str) -> None:
 def test_promote_gan_test450_strips_replay_and_updates_inventory(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    _write_holdout_sidecar(tmp_path, "gan_llm_only", "grok46")
+    _write_holdout_work_cell(tmp_path, "gan_llm_only", "grok46")
     (tmp_path / "paper_experiments").mkdir()
     (tmp_path / "paper_experiments/inventory.json").write_text(
         json.dumps(
@@ -291,7 +293,7 @@ def test_promote_gan_test450_strips_replay_and_updates_inventory(
 def test_promote_gan_test450_rejects_row_level_comparison(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    _write_holdout_sidecar(tmp_path, "gan_llm_with_rules", "grok46")
+    _write_holdout_work_cell(tmp_path, "gan_llm_with_rules", "grok46")
     comparison_path = (
         tmp_path / "scratch/holdout/paper/gan_llm_with_rules/grok46/test450/comparison.json"
     )

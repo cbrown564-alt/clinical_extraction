@@ -3,6 +3,9 @@
 Machine assemble wrote these numbers. Claim owners are not edited
 until you do this step on purpose.
 
+These are current-stack Full-ledger and enveloped-Gan assembly fills.
+They are not cited Compact ExECT paper cells.
+
 ## Sol method-identity fills
 
 - Gan test450 Purist: **381/450** (0.8467, glance 0.85)

@@ -8,5 +8,6 @@ request and is not in this tree yet.
 - Inventory: [`SOURCES.json`](SOURCES.json)
 - Numbers: [`latest/fills.json`](latest/fills.json)
 
-Holdout raws stay in local `experiments/current_stack/sidecars/`.
-Do not put letter IDs or note text in `latest/`.
+Holdout replay JSONL stays in local
+`experiments/current_stack/sidecars/`. Do not put letter IDs or note
+text in `latest/`.

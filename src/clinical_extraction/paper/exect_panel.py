@@ -37,7 +37,7 @@ HOLDOUT_FORBIDDEN = ("letter_ids", "changed_rows")
 
 
 def living_work_root(slug: str, split: str = PROMOTE_SPLIT) -> Path:
-    """Return the living (non-remasure) Compact sidecar."""
+    """Return the living-effort Compact work directory."""
 
     root = HOLDOUT_ROOT if holdout_is_aggregate_only(split) else WORK_ROOT
     return root / slug / split
@@ -56,7 +56,7 @@ def paper_llm_only_cell_root(slug: str, split: str = PROMOTE_SPLIT) -> Path:
 
 
 def living_llm_only_work_root(slug: str, split: str = PROMOTE_SPLIT) -> Path:
-    """Return the living (non-remasure) Compact LLM-only sidecar."""
+    """Return the living-effort Compact LLM-only work directory."""
 
     root = LLM_ONLY_HOLDOUT_ROOT if holdout_is_aggregate_only(split) else LLM_ONLY_WORK_ROOT
     return root / slug / split
@@ -78,10 +78,10 @@ def promote_exect(slug: str, split: str) -> dict[str, Any]:
     holdout = holdout_is_aggregate_only(split)
     model = model_by_slug(slug)
     source = living_work_root(slug, split)
-    structured_path = _sidecar_structured_path(source, METHOD)
+    structured_path = _work_structured_path(source, METHOD)
     comparison_path = source / "comparison.json"
     if structured_path is None or not comparison_path.is_file():
-        raise RuntimeError(f"missing living {METHOD} {slug} {split} sidecar")
+        raise RuntimeError(f"missing finished living-effort {METHOD} {slug} {split} run")
     rows = load_jsonl_rows(structured_path)
     expected = exect_row_count(split)
     if len(rows) != expected:
@@ -90,7 +90,9 @@ def promote_exect(slug: str, split: str) -> dict[str, Any]:
     if comparison.get("split") != split:
         raise RuntimeError(f"{comparison_path} is not this paper cell")
     if comparison.get("reasoning_effort") not in {None, "low"}:
-        raise RuntimeError("promote only the living low-effort cell, not a remasure")
+        raise RuntimeError(
+            "promote only the living low-effort cell, not a non-living-effort repeat"
+        )
     if holdout:
         _assert_aggregate_only(comparison)
     dest = paper_cell_root(slug, split)
@@ -123,7 +125,7 @@ def promote_exect(slug: str, split: str) -> dict[str, Any]:
         "hybrid_headline_f1": arm.get("hybrid_headline_f1"),
     }
     if not holdout:
-        metrics_path = _sidecar_metrics_path(source, METHOD)
+        metrics_path = _work_metrics_path(source, METHOD)
         if metrics_path is not None:
             metrics = load_jsonl_rows(metrics_path)
         else:
@@ -171,10 +173,12 @@ def promote_exect_llm_only(slug: str, split: str) -> dict[str, Any]:
     holdout = holdout_is_aggregate_only(split)
     model = model_by_slug(slug)
     source = living_llm_only_work_root(slug, split)
-    structured_path = _sidecar_structured_path(source, LLM_ONLY_METHOD)
+    structured_path = _work_structured_path(source, LLM_ONLY_METHOD)
     comparison_path = source / "comparison.json"
     if structured_path is None or not comparison_path.is_file():
-        raise RuntimeError(f"missing living {LLM_ONLY_METHOD} {slug} {split} sidecar")
+        raise RuntimeError(
+            f"missing finished living-effort {LLM_ONLY_METHOD} {slug} {split} run"
+        )
     rows = load_jsonl_rows(structured_path)
     expected = exect_row_count(split)
     if len(rows) != expected:
@@ -183,7 +187,9 @@ def promote_exect_llm_only(slug: str, split: str) -> dict[str, Any]:
     if comparison.get("split") != split:
         raise RuntimeError(f"{comparison_path} is not this paper cell")
     if comparison.get("reasoning_effort") not in {None, "low"}:
-        raise RuntimeError("promote only the living low-effort cell, not a remasure")
+        raise RuntimeError(
+            "promote only the living low-effort cell, not a non-living-effort repeat"
+        )
     if holdout:
         _assert_aggregate_only(comparison)
     dest = paper_llm_only_cell_root(slug, split)
@@ -215,7 +221,7 @@ def promote_exect_llm_only(slug: str, split: str) -> dict[str, Any]:
         "raw_headline_f1": arm.get("raw_headline_f1"),
     }
     if not holdout:
-        metrics_path = _sidecar_metrics_path(source, LLM_ONLY_METHOD)
+        metrics_path = _work_metrics_path(source, LLM_ONLY_METHOD)
         if metrics_path is not None:
             metrics = load_jsonl_rows(metrics_path)
         else:
@@ -358,7 +364,7 @@ def rebuild_dev140_panel() -> dict[str, Any]:
         "cells": cells,
         "claim_boundary": (
             "Living six-model ExECT Compact development panel. One Compact "
-            "call is both raw and hybrid. Remasures stay under "
+            "call is both raw and hybrid. Non-living-effort repeats stay under "
             "experiments/paper/.../reasoning_* or thinking_disabled/. Not holdout. "
             "The July explorer runs.json roster is historical."
         ),
@@ -538,7 +544,7 @@ def _upsert_present(entry: Mapping[str, Any]) -> None:
     )
 
 
-def _sidecar_structured_path(source: Path, method: str = METHOD) -> Path | None:
+def _work_structured_path(source: Path, method: str = METHOD) -> Path | None:
     nested = source / method / "structured.jsonl"
     flat = source / "structured.jsonl"
     if nested.is_file():
@@ -548,7 +554,7 @@ def _sidecar_structured_path(source: Path, method: str = METHOD) -> Path | None:
     return None
 
 
-def _sidecar_metrics_path(source: Path, method: str = METHOD) -> Path | None:
+def _work_metrics_path(source: Path, method: str = METHOD) -> Path | None:
     nested = source / method / "letter_metrics.jsonl"
     flat = source / "letter_metrics.jsonl"
     if nested.is_file():
@@ -740,7 +746,7 @@ def _sync_inventory(panel: Mapping[str, Any]) -> None:
                 "status": "missing",
                 "note": (
                     "Living-effort ExECT Compact development cell. "
-                    "Promote when the sidecar finishes."
+                    "Promote when the run finishes."
                 ),
             }
         )

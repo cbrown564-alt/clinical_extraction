@@ -1,4 +1,4 @@
-"""Form recovery parse for mention-unit hybrid remasure.
+"""Form recovery parse for mention-unit hybrid rerun.
 
 Reads leftover count, period, and investigation-result words from that
 item's name plus evidence. Does not search the letter.
