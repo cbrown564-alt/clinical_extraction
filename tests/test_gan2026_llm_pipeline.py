@@ -7,6 +7,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm import (
     GAN_LLM_ONLY,
+    LLM_ONLY_AUTHORED_KEYS,
     PROMPT_VERSION,
     CanonicalLlmDecisionRecord,
     build_prompt_input,
@@ -37,7 +38,9 @@ def test_build_prompt_input_excludes_gold_and_embeds_rule_taxonomy() -> None:
     prompt = json.loads(build_prompt_input(_record()))
 
     assert PROMPT_VERSION == GAN_LLM_ONLY == "gan_llm_only"
-    assert prompt["prompt_version"] == PROMPT_VERSION
+    assert list(prompt) == list(LLM_ONLY_AUTHORED_KEYS)
+    assert "prompt_version" not in prompt
+    assert "source_row_index" not in prompt
     assert prompt["note_text"] == _record().note_text
     assert "gold_label" not in json.dumps(prompt)
 

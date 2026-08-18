@@ -11,6 +11,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
     GAN_LLM_WITH_RULES,
+    LLM_WITH_RULES_AUTHORED_KEYS,
     PROMPT_VERSION,
     PROMPT_VERSION_FINAL,
     PROMPT_VERSION_V0_5,
@@ -73,6 +74,7 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     blob = json.dumps(prompt)
 
     assert PROMPT_VERSION == GAN_LLM_WITH_RULES == "gan_llm_with_rules"
+    assert set(prompt) == set(LLM_WITH_RULES_AUTHORED_KEYS)
     assert "prompt_version" not in prompt
     assert "source_row_index" not in prompt
     assert "Gan 2026" not in blob
