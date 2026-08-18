@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { CheckCircle2, FileText } from "lucide-react";
+import { CheckCircle2, FileText, Layers } from "lucide-react";
 
 export type DestinationScope = "dataset" | "exectv2";
 
@@ -16,6 +16,12 @@ export const APP_DESTINATIONS: AppDestination[] = [
     label: "Workbench",
     scope: "dataset",
     Icon: FileText,
+  },
+  {
+    href: "/schematic",
+    label: "Assembly Line",
+    scope: "dataset",
+    Icon: Layers,
   },
   {
     href: "/semantic-support-review",
