@@ -349,6 +349,37 @@ def _programs(method: str) -> tuple[Any, Any]:
     return hybrid_structured_events.DspyStructuredExtractor(), FormatOnlyJsonRetry()
 
 
+def hydrate_saved_raw_row(
+    method: str,
+    record: GanFrequencyRecord,
+    raw_output: str,
+    *,
+    split: str = "dev750",
+) -> dict[str, Any]:
+    """Rebuild parse, repair, and row_trace from a promoted paper raw_output."""
+
+    spec = method_spec(method)
+    if spec["task"] != "gan2026":
+        raise ValueError(f"{method} is not a Gan paper method")
+    machine = gan_machine_split(split)
+    config = PipelineConfiguration(
+        architecture="llm" if method == "gan_llm_only" else "llm_with_rules",
+        dspy_cache=False,
+        prompt_version=_prompt_version(method),
+        repair_mode="hybrid_full_stack" if method == "gan_llm_with_rules" else None,
+    )
+    return _run_record(
+        method,
+        record,
+        config,
+        split=split,
+        machine=machine,
+        program=None,
+        retry_program=None,
+        raw_output=raw_output,
+    )
+
+
 def _run_record(
     method: str,
     record: GanFrequencyRecord,
@@ -358,9 +389,12 @@ def _run_record(
     machine: str,
     program: Any,
     retry_program: Any,
+    raw_output: str | None = None,
 ) -> dict[str, Any]:
     if method == "gan_llm_only":
-        result = orch_llm.run_record(record, config, mode="live", program=program)
+        result = orch_llm.run_record(
+            record, config, mode="live", program=program, raw_output=raw_output
+        )
         decision = result.parsed_model_output
         comparison = gan_llm_only._compare_to_gold(record, decision) if decision else None
         row_trace = dict(result.diagnostics["row_trace"])
@@ -392,6 +426,7 @@ def _run_record(
         mode="live",
         program=program,
         format_retry_program=retry_program,
+        raw_output=raw_output,
     )
     extraction = result.parsed_model_output
     comparison = (

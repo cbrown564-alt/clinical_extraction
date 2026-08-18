@@ -15,6 +15,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
 
+from clinical_extraction.paper.gan_panel import load_dev750_panel
+from clinical_extraction.paper.roster import living_models
+
 TRACE_SCHEMA_VERSION = "gan2026.row_trace.v1"
 
 
@@ -123,6 +126,7 @@ def discover_gan2026_validation_runs(
             )
 
     families.append(_rules_only_family())
+    _overlay_paper_dev750(repo_root, families, registry, artifacts)
     return GanValidationDiscovery(
         catalog={
             "generated_on": "2026-08-13",
@@ -137,6 +141,124 @@ def discover_gan2026_validation_runs(
         },
         registry_entries=tuple(registry),
         replay_artifacts=artifacts,
+    )
+
+
+def paper_run_id(method: str, slug: str) -> str:
+    """Workbench run id for a living paper Gan cell."""
+
+    suffix = "llm_with_rules" if method == "gan_llm_with_rules" else "llm_only"
+    return f"gan2026_validation750_{slug}_{suffix}"
+
+
+def paper_identity_from_run_id(run_id: str) -> tuple[str, str] | None:
+    """Return (paper method, model slug) for a workbench Gan run id."""
+
+    prefix = "gan2026_validation750_"
+    if not run_id.startswith(prefix):
+        return None
+    rest = run_id[len(prefix) :]
+    if rest.endswith("_llm_with_rules"):
+        return "gan_llm_with_rules", rest[: -len("_llm_with_rules")]
+    if rest.endswith("_llm_only"):
+        return "gan_llm_only", rest[: -len("_llm_only")]
+    return None
+
+
+def _overlay_paper_dev750(
+    repo_root: Path,
+    families: list[dict[str, Any]],
+    registry: list[dict[str, Any]],
+    artifacts: dict[str, Path],
+) -> None:
+    """Prefer tracked paper_experiments rows for living development cells."""
+
+    panel = load_dev750_panel()
+    by_run = {str(family["run_id"]): family for family in families}
+    models = {item["slug"]: item for item in living_models()}
+    for cell in panel.get("cells", []):
+        if not isinstance(cell, dict) or cell.get("status") != "present":
+            continue
+        method = str(cell["method"])
+        slug = str(cell["model_slug"])
+        rows_path = repo_root / str(cell["rows"])
+        if not rows_path.is_file():
+            continue
+        row_count = int(cell.get("n") or 750)
+        purist_correct = int(cell.get("purist_correct") or 0)
+        purist_accuracy = float(cell.get("purist_accuracy") or 0.0)
+        inspection = {
+            "complete": True,
+            "row_count": row_count,
+            "metrics": {
+                "row_count": row_count,
+                "purist_correct": purist_correct,
+                "purist_accuracy": purist_accuracy,
+                "pragmatic_correct": 0,
+                "pragmatic_accuracy": 0.0,
+            },
+        }
+        run_id = paper_run_id(method, slug)
+        artifacts[run_id] = rows_path.resolve()
+        model = models.get(slug, {})
+        family = _paper_family(cell, model, inspection)
+        existing = by_run.get(run_id)
+        if existing is None:
+            families.insert(-1, family)
+        else:
+            families[families.index(existing)] = family
+        by_run[run_id] = family
+        registry[:] = [item for item in registry if item["run_id"] != run_id]
+        registry.append(
+            {
+                "run_id": run_id,
+                "artifact_paths": [rows_path.relative_to(repo_root).as_posix()],
+                "date": "2026-08-18",
+                "decision": "development_comparison",
+                "mode": "replay",
+                "model": cell.get("model") or model.get("model"),
+                "model_role": family["display_label"],
+                "pipeline_family": family["pipeline_family"],
+                "primary_metrics": family["metrics"],
+                "repair_mode": family["repair_mode"],
+                "replay_status": "paper_dev750_raw_replay",
+                "row_count": 750,
+                "split": "validation",
+                "registry_roles": ["paper_dev750_panel"],
+                "evidence_validity": (
+                    "Row-level Gan validation development evidence; not holdout evidence."
+                ),
+            }
+        )
+
+
+def _paper_family(
+    cell: dict[str, Any],
+    model: dict[str, Any],
+    inspection: dict[str, Any],
+) -> dict[str, Any]:
+    method = str(cell["method"])
+    slug = str(cell["model_slug"])
+    method_name = "llm_with_rules" if method == "gan_llm_with_rules" else "llm_only"
+    condition = ModelCondition(
+        slug,
+        str(cell.get("model") or model.get("model") or ""),
+        str(cell.get("label") or model.get("label") or slug),
+    )
+    return _model_family(
+        condition,
+        method_name=method_name,
+        prompt_version=(
+            "gan2026_hybrid_structured_events_v0.7"
+            if method_name == "llm_with_rules"
+            else "gan2026_llm_only_canonical_pipeline_v0.8"
+        ),
+        repair_mode=(
+            "hybrid_full_stack"
+            if method_name == "llm_with_rules"
+            else "model_selected_evidence_benchmark_adapter"
+        ),
+        inspection=inspection,
     )
 
 

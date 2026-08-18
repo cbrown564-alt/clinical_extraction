@@ -100,9 +100,27 @@ def test_gan_hybrid_workbench_marks_retired_dev750_trees_not_retained(
     assert families.status_code == 200
     sol = next(family for family in families.json()["families"] if family["run_id"] == run_id)
     assert sol["availability"] == "not_retained"
+    luna = next(
+        family
+        for family in families.json()["families"]
+        if family["run_id"] == "gan2026_validation750_gpt56luna_llm_with_rules"
+    )
+    assert luna["availability"] == "replay"
     models = {family["model"] for family in families.json()["families"]}
     assert "gemini/gemini-3.7-flash" in models
     assert "openai/gpt-4.1-mini" not in models
+
+
+def test_paper_gan_raw_row_hydrates_structured_trace(client: TestClient) -> None:
+    run_id = "gan2026_validation750_gpt56luna_llm_with_rules"
+    response = client.get(f"/artifacts/{run_id}", params={"letter_id": "103"})
+    assert response.status_code == 200
+    row = response.json()["content"][0]
+    assert row["source_row_index"] == 103
+    assert row["structured_record"]["selection"]["final_label"]
+    assert row["normalized_events"]
+    assert row["row_trace"]["schema_version"] == "gan2026.row_trace.v1"
+    assert row["row_trace"]["method"] == "llm_with_rules"
 
 
 def test_saved_artifact_replay_is_allowlisted_and_bounded(client: TestClient) -> None:

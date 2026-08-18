@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 from typing import Any, Literal
 
+from clinical_extraction.paper.gan import hydrate_saved_raw_row
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     DEFAULT_SPLIT_MANIFEST as EXECT_SPLIT_MANIFEST,
 )
@@ -26,6 +27,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
 from clinical_extraction.trace_explorer.gan2026_comparison import (
     GanValidationDiscovery,
     discover_gan2026_validation_runs,
+    paper_identity_from_run_id,
 )
 
 DatasetId = Literal["gan2026", "exectv2"]
@@ -253,9 +255,12 @@ class FrontendDataStore:
             if replay_path is not None:
                 if letter_id is not None:
                     row = self._read_jsonl_matching(replay_path, letter_id)
-                    content = [] if row is None else [row]
+                    content = [] if row is None else [self._hydrate_gan_replay_row(run_id, row)]
                 else:
-                    content = self._read_jsonl(replay_path, limit=limit)
+                    content = [
+                        self._hydrate_gan_replay_row(run_id, row)
+                        for row in self._read_jsonl(replay_path, limit=limit)
+                    ]
                 return {
                     "run_id": run_id,
                     "artifact_path": replay_path.relative_to(self._repo_root).as_posix(),
@@ -324,6 +329,9 @@ class FrontendDataStore:
             paths.extend(hybrid_root.glob("*/validation750.rows.jsonl"))
             paths.extend(hybrid_root.glob("*/*/validation750.rows.jsonl"))
             paths.extend(hybrid_root.glob("*--llm_with_rules.jsonl"))
+        paper_gan = repo_root / "paper_experiments" / "gan"
+        paths.append(paper_gan / "dev750_panel.json")
+        paths.extend(paper_gan.glob("*/*/dev750/rows.jsonl"))
         return tuple(
             sorted(
                 (str(path.resolve()), path.stat().st_size, path.stat().st_mtime_ns)
@@ -344,6 +352,21 @@ class FrontendDataStore:
                 if limit is not None and len(rows) >= limit:
                     break
         return rows
+
+    def _hydrate_gan_replay_row(self, run_id: str, row: dict[str, Any]) -> dict[str, Any]:
+        if row.get("structured_record") or row.get("decision_record") or row.get("row_trace"):
+            return row
+        identity = paper_identity_from_run_id(run_id)
+        if identity is None:
+            return row
+        method, _slug = identity
+        source = row.get("source_row_index")
+        if source is None:
+            return row
+        record = self._validation_dataset_records.get(int(source))
+        if record is None:
+            return row
+        return hydrate_saved_raw_row(method, record, str(row.get("raw_output") or ""))
 
     @classmethod
     def _read_jsonl_matching(cls, path: Path, letter_id: str) -> dict[str, Any] | None:
