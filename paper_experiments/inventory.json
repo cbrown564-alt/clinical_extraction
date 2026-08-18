@@ -2,24 +2,6 @@
   "missing": [
     {
       "method": "exect_llm_with_rules",
-      "model": "xai/grok-4.6",
-      "model_slug": "grok46",
-      "n": 59,
-      "note": "Aggregate-only after dev140 completes.",
-      "split": "test60",
-      "status": "missing"
-    },
-    {
-      "method": "gan_llm_only",
-      "model": "xai/grok-4.6",
-      "model_slug": "grok46",
-      "n": 450,
-      "note": "Aggregate-only.",
-      "split": "test450",
-      "status": "missing"
-    },
-    {
-      "method": "exect_llm_with_rules",
       "model": "ollama_chat/qwen3.8:27b",
       "model_slug": "qwen38_27b",
       "n": 59,
@@ -318,6 +300,42 @@
       "replay_alias": "exectv2_compact_ledger",
       "row_policy": "development_review_permitted",
       "split": "dev140",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "gan_llm_only",
+      "model": "xai/grok-4.6",
+      "model_slug": "grok46",
+      "n": 450,
+      "path": "paper_experiments/gan/gan_llm_only/grok46/test450/rows.jsonl",
+      "replay_alias": "gan_llm_only",
+      "row_policy": "aggregate_only",
+      "split": "test450",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "gan_llm_with_rules",
+      "model": "xai/grok-4.6",
+      "model_slug": "grok46",
+      "n": 450,
+      "path": "paper_experiments/gan/gan_llm_with_rules/grok46/test450/rows.jsonl",
+      "replay_alias": "gan_llm_with_rules",
+      "row_policy": "aggregate_only",
+      "split": "test450",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "exect_llm_with_rules",
+      "model": "xai/grok-4.6",
+      "model_slug": "grok46",
+      "n": 59,
+      "path": "paper_experiments/exect/exect_llm_with_rules/grok46/test60/structured.jsonl",
+      "replay_alias": "exectv2_compact_ledger",
+      "row_policy": "aggregate_only",
+      "split": "test60",
       "status": "present"
     }
   ],

@@ -78,6 +78,7 @@ def test_inventory_covers_present_and_missing_cells() -> None:
         ("gpt56sol", "exect_llm_with_rules", "dev140"),
         ("gpt56sol", "exect_llm_with_rules", "test60"),
         ("grok46", "exect_llm_with_rules", "dev140"),
+        ("grok46", "exect_llm_with_rules", "test60"),
         ("gpt56luna", "exect_llm_with_rules", "dev140"),
         ("gpt56luna", "exect_llm_with_rules", "test60"),
         ("gemini37flash", "exect_llm_with_rules", "dev140"),
@@ -89,7 +90,9 @@ def test_inventory_covers_present_and_missing_cells() -> None:
         ("gemma4_26b", "gan_llm_only", "dev750"),
         ("gemma4_26b", "gan_llm_only", "test450"),
         ("grok46", "gan_llm_only", "dev750"),
+        ("grok46", "gan_llm_only", "test450"),
         ("grok46", "gan_llm_with_rules", "dev750"),
+        ("grok46", "gan_llm_with_rules", "test450"),
         ("gpt56luna", "gan_llm_only", "dev750"),
         ("gpt56luna", "gan_llm_with_rules", "dev750"),
         ("gemini37flash", "gan_llm_only", "dev750"),
@@ -101,7 +104,9 @@ def test_inventory_covers_present_and_missing_cells() -> None:
     }
     assert ("qwen38_27b", "exect_llm_with_rules", "dev140") in missing_cells
     assert ("grok46", "exect_llm_with_rules", "dev140") not in missing_cells
-    assert ("grok46", "exect_llm_with_rules", "test60") in missing_cells
+    assert ("grok46", "exect_llm_with_rules", "test60") not in missing_cells
+    assert ("grok46", "gan_llm_only", "test450") not in missing_cells
+    assert ("grok46", "gan_llm_with_rules", "test450") not in missing_cells
     assert ("deepseek_v4_flash", "gan_llm_only", "dev750") in missing_cells
     assert ("deepseek_v4_flash", "gan_llm_with_rules", "dev750") in missing_cells
     assert ("qwen38_27b", "gan_llm_only", "dev750") in missing_cells

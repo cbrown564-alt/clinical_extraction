@@ -1,0 +1,149 @@
+{
+  "arms": {
+    "exect_llm_with_rules": {
+      "assembly_family_f1": {
+        "Diagnosis": 0.7903,
+        "Investigations": 0.8913,
+        "Prescription": 0.9167,
+        "SeizureFrequency": 0.6377
+      },
+      "assembly_headline_f1": 0.805,
+      "call_mode": "live",
+      "gate_event_count": 73,
+      "hybrid_family_f1": {
+        "Diagnosis": 0.7903,
+        "Investigations": 0.8913,
+        "Prescription": 0.9167,
+        "SeizureFrequency": 0.6377
+      },
+      "hybrid_family_letter_exact": {
+        "Diagnosis": 31,
+        "Investigations": 53,
+        "Prescription": 48,
+        "SeizureFrequency": 32
+      },
+      "hybrid_family_prf": {
+        "Diagnosis": {
+          "f1": 0.7903,
+          "precision": 0.7778,
+          "recall": 0.8033
+        },
+        "Investigations": {
+          "f1": 0.8913,
+          "precision": 0.9111,
+          "recall": 0.8723
+        },
+        "Prescription": {
+          "f1": 0.9167,
+          "precision": 0.9277,
+          "recall": 0.9059
+        },
+        "SeizureFrequency": {
+          "f1": 0.6377,
+          "precision": 0.6875,
+          "recall": 0.5946
+        }
+      },
+      "hybrid_four_family_letter_exact": 14,
+      "hybrid_headline_f1": 0.805,
+      "hybrid_headline_prf": {
+        "f1": 0.805,
+        "precision": 0.8176,
+        "recall": 0.7927
+      },
+      "new_model_calls": 59,
+      "prompt_version": "exectv2_compact_ledger",
+      "quality": {
+        "illegal_enum": 0,
+        "inexact_evidence": 0,
+        "parse": 0,
+        "schema": 0
+      },
+      "raw_family_f1": {
+        "Diagnosis": 0.7368,
+        "Investigations": 0.8913,
+        "Prescription": 0.9231,
+        "SeizureFrequency": 0.6528
+      },
+      "raw_family_letter_exact": {
+        "Diagnosis": 31,
+        "Investigations": 53,
+        "Prescription": 49,
+        "SeizureFrequency": 28
+      },
+      "raw_family_prf": {
+        "Diagnosis": {
+          "f1": 0.7368,
+          "precision": 0.728,
+          "recall": 0.7459
+        },
+        "Investigations": {
+          "f1": 0.8913,
+          "precision": 0.9111,
+          "recall": 0.8723
+        },
+        "Prescription": {
+          "f1": 0.9231,
+          "precision": 0.9286,
+          "recall": 0.9176
+        },
+        "SeizureFrequency": {
+          "f1": 0.6528,
+          "precision": 0.6714,
+          "recall": 0.6351
+        }
+      },
+      "raw_four_family_letter_exact": 12,
+      "raw_headline_f1": 0.7883,
+      "raw_headline_prf": {
+        "f1": 0.7883,
+        "precision": 0.7932,
+        "recall": 0.7835
+      },
+      "raw_mention_count": 342,
+      "scored_mention_count": 342
+    }
+  },
+  "cache": false,
+  "claim_boundary": "ExECT aggregate-only test60 Compact. No Full-ledger control for this model.",
+  "decision": {
+    "exect_llm_with_rules": {
+      "hybrid_family_f1": {
+        "Diagnosis": 0.7903,
+        "Investigations": 0.8913,
+        "Prescription": 0.9167,
+        "SeizureFrequency": 0.6377
+      },
+      "hybrid_headline_f1": 0.805,
+      "parse": 0,
+      "raw_family_f1": {
+        "Diagnosis": 0.7368,
+        "Investigations": 0.8913,
+        "Prescription": 0.9231,
+        "SeizureFrequency": 0.6528
+      },
+      "raw_headline_f1": 0.7883,
+      "schema": 0,
+      "status": "scored"
+    }
+  },
+  "default_prompt_version": "exectv2_compact_ledger",
+  "finished_utc": "2026-08-18T05:48:53.412520+00:00",
+  "generated_on": "2026-08-17",
+  "live": true,
+  "max_tokens": 16000,
+  "method": "exect_llm_with_rules",
+  "model": "xai/grok-4.6",
+  "model_calls": 59,
+  "model_label": "Grok 4.6",
+  "model_slug": "grok46",
+  "provider_revision": null,
+  "reasoning_effort": "low",
+  "row_count": 59,
+  "row_policy": "aggregate_only",
+  "schema_version": "paper.exect_llm_with_rules.v1",
+  "split": "test60",
+  "started_utc": "2026-08-18T05:30:01.509385+00:00",
+  "temperature": 1.0,
+  "thinking_type": null
+}

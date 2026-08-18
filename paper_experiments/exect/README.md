@@ -8,6 +8,8 @@ raw from the same call. Full ledger lives under
 
 | Model | Split | Compact hybrid | Compact raw | Full hybrid | Full raw |
 | --- | --- | ---: | ---: | ---: | ---: |
+| Grok 4.6 | `dev140` | 0.8998 | 0.8202 | — | — |
+| Grok 4.6 | `test60` | 0.805 | 0.7883 | — | — |
 | GPT-5.6 Sol | `dev140` | 0.8934 | 0.8047 | 0.9048 | 0.829 |
 | GPT-5.6 Sol | `test60` | 0.8031 | 0.7697 | 0.8202 | 0.7938 |
 | GPT-5.6 Luna | `dev140` | 0.8818 | 0.7929 | 0.8974 | 0.8306 |
@@ -19,9 +21,9 @@ raw from the same call. Full ledger lives under
 | Gemma 4 26B | `dev140` | 0.7674 | 0.4751 | 0.8038 | 0.7049 |
 | Gemma 4 26B | `test60` | 0.6933 | 0.4662 | 0.7327 | 0.6740 |
 
-Still missing: Qwen 3.8 Compact on both splits. Grok Compact `dev140`
-is promoted into the living frontend panel
-(`exect/dev140_panel.json`). Grok `test60` is not promoted.
+Still missing: Qwen 3.8 Compact on both splits. Grok Compact has no
+Full-ledger control. Grok `dev140` is in the living frontend panel
+(`exect/dev140_panel.json`). Grok `test60` is aggregate-only.
 
 Frontend pull: `GET /paper/exect/dev140` and
 `GET /paper/exect/dev140/{slug}/scored`. Join letters on `letter_id`.

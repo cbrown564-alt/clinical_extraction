@@ -16,20 +16,19 @@ local research checkout and are not cloned.
 
 ## Results
 
-Held-out test scores for GPT-5.6 Sol (2 d.p.), the historical
-method-identity row. Living identity is Grok 4.6; those cells are
-not on disk yet. Rules-only is deterministic and does not use a
-model.
+Held-out test scores for Grok 4.6 (2 d.p.), the living
+method-identity row. GPT-5.6 Sol cells stay historical. Rules-only
+is deterministic and does not use a model.
 
 | Method | Gan 2026 | ExECTv2 |
 | --- | ---: | ---: |
-| LLM with rules | — | 0.80 |
-| LLM only | 0.74 | 0.77 |
+| LLM with rules | 0.83 | 0.81 |
+| LLM only | 0.73 | 0.79 |
 | Rules only | 0.73 | 0.79 |
 
 - **Gan 2026:** Purist accuracy on the locked `test450` split (one current
   seizure-frequency label per letter). The cited hybrid is the cleaned
-  request; that holdout is not on disk yet. Do not read an enveloped
+  request. The living Grok holdout is 375/450; do not read an enveloped
   `v0.5` score into the hybrid cell.
 - **ExECTv2:** de-duplicated clinical fact F1 on the locked `test60` split
   (diagnosis, seizure frequency, prescriptions, and investigations). The

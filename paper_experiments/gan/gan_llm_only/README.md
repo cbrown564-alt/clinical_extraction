@@ -13,6 +13,7 @@ cell. Those rows cannot be replayed.
 | Model | Split | Rows | Empty raw |
 | --- | --- | ---: | ---: |
 | Grok 4.6 | `dev750` | 750 | 0 |
+| Grok 4.6 | `test450` | 450 | 0 |
 | GPT-5.6 Luna | `dev750` | 750 | 0 |
 | Gemini 3.7 Flash | `dev750` | 750 | 0 |
 | Gemma 4 26B (historical v0.8) | `dev750` | 750 | 8 |

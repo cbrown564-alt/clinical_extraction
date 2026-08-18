@@ -39,8 +39,8 @@ Join Gan on `source_row_index`. Join ExECT on `letter_id`. Promote a
 finished living sidecar with:
 
 ```bash
-python -m clinical_extraction.paper promote-gan --method gan_llm_only --model grok46 --split dev750
-python -m clinical_extraction.paper promote-exect --method exect_llm_with_rules --model qwen38_27b --split dev140
+python -m clinical_extraction.paper promote-gan --method gan_llm_only --model grok46 --split test450
+python -m clinical_extraction.paper promote-exect --method exect_llm_with_rules --model qwen38_27b --split test60
 ```
 
 `/exectv2/runs` is the July explorer payload (Sol + Qwen 3.6). The
@@ -54,5 +54,7 @@ and Gemma. Pending: Qwen 3.8.
 
 Still missing elsewhere:
 
-- Grok 4.6 Compact `test60` (aggregate-only)
 - Qwen 3.8 Compact `dev140` / `test60`
+- Cleaned Gan hybrid and living Gan LLM-only for DeepSeek, Qwen, and
+  living Gemma; Luna and Gemini Gan `test450` exist in holdout
+  scratch and are not yet promoted
