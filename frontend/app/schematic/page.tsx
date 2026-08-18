@@ -7,14 +7,14 @@ export default function SchematicPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex h-full w-full items-center justify-center bg-background text-muted">
-          <div className="text-center">
-            <p className="text-sm font-medium">Loading 2.5D Isometric Assembly Line...</p>
-          </div>
+        <div className="flex h-full w-full items-center justify-center bg-white text-neutral-600">
+          <p className="text-sm">Loading pipeline map.</p>
         </div>
       }
     >
-      <IsometricWorkspace />
+      <div className="h-full">
+        <IsometricWorkspace />
+      </div>
     </Suspense>
   );
 }

@@ -103,49 +103,31 @@ export interface TeachingCasesPayload {
   manifests: MethodManifestData[];
 }
 
-export interface IsoPoint {
-  x: number;
-  y: number;
-}
+export type StationKind =
+  | "source"
+  | "prompt"
+  | "model"
+  | "schema"
+  | "normalize"
+  | "repair"
+  | "evidence"
+  | "score"
+  | "flatten"
+  | "store"
+  | "lenses";
 
-export type StationVisualType =
-  | "letterhead"
-  | "intake"
-  | "neural_core"
-  | "schema_gate"
-  | "centrifuge"
-  | "repair_rack"
-  | "commutator"
-  | "lens"
-  | "evidence_gate"
-  | "scoreboard";
-
-export interface CardSlot {
-  /** Canvas X offset relative to station point */
-  offsetX: number;
-  /** Canvas Y offset relative to station point */
-  offsetY: number;
-  width: number;
-  height: number;
-  anchorPort: "top" | "bottom" | "left" | "right";
-  targetPort: "top" | "bottom" | "left" | "right";
+export interface CatalogItem {
+  id: string;
+  label: string;
+  stageIdPattern: string;
 }
 
 export interface StationLayoutNode {
   id: string;
-  label: string;
-  shortLabel: string;
-  gridX: number;
-  gridY: number;
-  elevation: number;
-  owner: StageOwner;
-  effectClass: EffectClass;
-  stageIdPattern: string;
-  visualType: StationVisualType;
-  cardSlot?: CardSlot;
-  isRepairRack?: boolean;
-  rackRules?: { id: string; label: string; stageId: string }[];
-  isCommutator?: boolean;
-  lane?: "all" | "diagnosis" | "seizure_frequency" | "prescription" | "investigations";
-  isGate?: boolean;
+  name: string;
+  alwaysDoes: string;
+  kind: StationKind;
+  catalog?: CatalogItem[];
 }
+
+export type StationActivation = "on" | "idle" | "skipped";
