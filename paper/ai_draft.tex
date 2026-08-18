@@ -1,0 +1,436 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage{amsmath,amssymb}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{url}
+\usetikzlibrary{arrows.meta,positioning}
+
+\newcommand{\code}[1]{\texttt{#1}}
+
+\begin{document}
+
+\title{Inspectable Clinical Extraction from Epilepsy Letters}
+
+\author{\IEEEauthorblockN{Conor Brown, Yujian Gan}}
+
+\maketitle
+
+\begin{abstract}
+Clinical extraction results are difficult to interpret when model output,
+deterministic rules, repair, evidence checks, and scoring are reported as one
+method. We evaluate three methods on two
+epilepsy-letter tasks: current seizure-frequency labeling on the Gan 2026
+synthetic benchmark and broad epilepsy phenotyping on ExECTv2. For each task we
+compare rules only, LLM only, and LLM with rules. Saved Gan holdout results are
+364/450 Purist for the single-pass system and 379/450 for a multi-model
+comparison. On ExECT dev140, rules only reached 0.6020 paper-derived all-features
+macro item F1 (0.3548 under the existing strict micro scorer), the LLM only
+method reached 0.7393 clinical fact F1. The historical combined control reached
+0.9189 but used deterministic Prescription and SF-union paths. In the fixed
+six-model ExECT test60 panel, Sol led at 0.8047 clinical-headline F1; in the
+selected matched Gan v0.5 test450 panel, Sol led at 373/450 Purist.
+Saved-output ablations show positive normalization contributions on both tasks,
+while the evidence check is score-inert on those representative replays. The
+selected evidence supports a reproducible component comparison with explicit
+data limits and a tested implementation of the published ExECT metric views. It
+does not reproduce the original ExECT system or its reported 0.87/0.90 scores,
+and it does not support general model superiority, cross-task reliability
+transfer, or independent clinical validation.
+\end{abstract}
+
+\begin{IEEEkeywords}
+clinical information extraction, epilepsy, large language models,
+reproducibility, evidence attribution
+\end{IEEEkeywords}
+
+\section{Introduction}
+
+Epilepsy letters combine temporal reasoning, clinical terminology, medication
+regimens, investigation findings, and ambiguous current-versus-historical
+statements. Large language models (LLMs) can broaden extraction, but a model
+call can hide where a result came from. Deterministic systems are easier to
+inspect, yet often fail on linguistic variation and long-range clinical
+selection.
+
+We compare rules-only, LLM-only, and LLM-with-rules methods. The same package
+contains a deep single-label task and a broad
+multi-entity task. This makes it possible to ask which stages transfer, which
+results depend on task-specific scoring, and where evidence is insufficient for
+a stronger claim.
+
+The paper contributes: (1) selected results for three methods on two tasks;
+(2) explicit ownership of extraction, normalization, final formatting, repair,
+evidence checking, and scoring; (3) saved aggregate Gan holdout results and
+partial ExECT model-transfer evidence; and (4) reproducibility controls that pin prompts,
+scorers, splits, repair policies, runtime identifiers, dependencies, and
+file hashes.
+
+\section{Related Work}
+
+ExECT demonstrated structured epilepsy extraction from unstructured clinic
+letters and later work documented the corresponding annotation resource
+\cite{fonferko2019exect,fonferko2024annotation}. Seizure-frequency extraction
+has also been studied with machine-reading and pretrained-language-model
+approaches \cite{xie2022seizure,abeysinghe2025leveraging}, while recent work
+has explored fine-tuned LLMs and reproducible synthetic clinical letters
+\cite{holgate2025fine,gan2026synthetic}. Our focus is complementary: processing
+steps and data limits are part of the scientific method, and rules-only,
+LLM-only, and LLM-with-rules methods are compared without collapsing their
+different scoring and repair mechanisms.
+
+\section{Methods}
+
+\subsection{Tasks and Split Policy}
+
+Gan 2026 asks for one current seizure-frequency label per synthetic letter
+\cite{gan2026synthetic}. Validation750 is the row-inspectable development and
+replay split. Test450 is a locked holdout: only saved aggregate results are
+retained, and row-level holdout failures are not used for development.
+
+ExECTv2 covers Diagnosis, SeizureFrequency, Prescription, and Investigations in
+the primary comparison, with additional entities retained in the deterministic
+all-nine reference \cite{fonferko2019exect,fonferko2024annotation}. Dev140 is
+the row-inspectable development split. Full200 combines dev140 with held-out
+test60 and is reported only as a development-inclusive aggregate audit; it is
+not an independent holdout.
+
+\subsection{Compared Methods}
+
+For each task, the retained evidence index selects one rules-only, LLM-only, and
+LLM-with-rules run. Rules-only runs use no model calls. LLM-only runs put the
+clinical decision in one model program. The ExECT GEPA run is a negative
+development comparison. The final ExECT comparison requires model-origin facts
+in all four families and prohibits independent Prescription or Seizure
+Frequency substitution or union.
+
+\begin{figure}[tbp]
+\centering
+\begin{tikzpicture}[
+  node distance=4mm,
+  box/.style={draw,rounded corners=2pt,align=center,font=\scriptsize,
+    text width=0.75\columnwidth,minimum height=5mm},
+  arrow/.style={-{Latex[length=1.6mm]},line width=0.35pt}
+]
+\node[box] (input) {Clinical letter and fixed split rules};
+\node[box,below=of input] (extract) {Rules or model-owned extraction};
+\node[box,below=of extract] (clinical) {Clinical selection and deterministic repair};
+\node[box,below=of clinical] (project) {Normalization, projection, and evidence checks};
+\node[box,below=of project] (score) {Task scorer, output identity, and evidence limit};
+\draw[arrow] (input) -- (extract);
+\draw[arrow] (extract) -- (clinical);
+\draw[arrow] (clinical) -- (project);
+\draw[arrow] (project) -- (score);
+\end{tikzpicture}
+\caption{Processing steps and their owners. Ownership remains explicit when a
+step is implemented by an LLM.}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Scoring, Repair, and Attribution}
+
+Gan uses Purist and Pragmatic label scoring; Purist is the primary strict label
+score. ExECT's primary internal score is de-duplicated
+\code{clinical\_headline} recovery across four families. Phrase, CUI,
+evidence-valid, and full-attribute companions are reported separately.
+\code{clinical\_headline} is not presented as reproduction of the published
+strict ExECT benchmark.
+The paper-derived views score each entity type separately and report their macro
+mean. Per-item scoring counts mentions; per-letter scoring requires at least one
+correct mention and feature bundle. Certainty applies to Diagnosis and
+PatientHistory; negation applies only to PatientHistory.
+
+Raw model selection, JSON or format repair, source-exact evidence repair,
+deterministic semantic repair, projection, and final scoring are separate
+stages. Model-specific transport or output-shape adapters do not become model
+quality evidence. Semantic repairs retain a named deterministic owner and must
+be ablated or otherwise tested before supporting a causal interpretation.
+
+\subsection{Recorded Reference Version}
+
+The retained evidence index records implementation commit \code{46562134}, the
+dependency declaration and lock, prompts, scorers, split definitions,
+repair policies, model policy, split runbook, and CI workflow. A semantic
+prompt, scorer, split, repair, runtime-route, or component-graph change requires
+a new recorded version and complete replay. This rule does not authorize model calls.
+
+\section{Results}
+
+\subsection{Selected Method Comparison}
+
+Table~\ref{tab:reference-cells} is the minimum selected scientific comparison.
+Scores are not compared across tasks because the datasets, outputs, and scorers
+differ.
+
+\begin{table}[!t]
+\caption{Selected Results for Three Methods on Two Tasks}
+\label{tab:reference-cells}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{@{}p{0.13\columnwidth}p{0.12\columnwidth}p{0.16\columnwidth}p{0.20\columnwidth}p{0.29\columnwidth}@{}}
+\toprule
+Task & Method & Split & Selected result & Use and limit \\
+\midrule
+ExECTv2 & Rules only & dev140 & All-feature macro item F1 0.6020 & Paper-derived development result; strict micro F1 0.3548. \\
+ExECTv2 & LLM only & dev140 & Headline F1 0.7393 & GEPA negative development comparator. \\
+ExECTv2 & Historical LLM with rules & dev140 & Clinical fact F1 0.9189 & Reproducible control; not the final model-led architecture. \\
+Gan 2026 & Rules only & validation750 & 697/750 Purist & Deterministic development comparator. \\
+Gan 2026 & LLM only & validation750 & 581/750 Purist & Single-pass development comparator. \\
+Gan 2026 & LLM with rules (v0.5) & validation750 & 661/748 rendered Purist & Historical GPT-4.1-mini development reference; six-model v0.5 coverage pending. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+All six runs replay from current code and selected outputs without model calls.
+The ExECT combined-method replay also returns evidence-valid F1 0.8913. Its legacy
+benchmark/CUI companion is 0.4791 versus 0.4729 in the saved run; this diagnostic
+does not define the paper-derived rules-only result or affect the reproduced
+0.9189 headline score. Its deterministic Prescription producer and SF extractor
+union are architecture limits, not model contributions.
+
+\subsection{ExECT Paper-Derived Metric Replay}
+
+\begin{table}[tbp]
+\caption{ExECT Rules-Only Dev140 Metric Views}
+\label{tab:exect-published}
+\centering
+\scriptsize
+\begin{tabular}{lrr}
+\toprule
+View & Per-item F1 & Per-letter F1 \\
+\midrule
+Normalized phrase & 0.5687 & 0.7518 \\
+CUI & 0.7144 & 0.8534 \\
+All features & 0.6020 & 0.7922 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The no-call replay covers all nine entity types. CUI identity recovers many
+surface-form misses, while attribute agreement---especially for Diagnosis---is
+the main remaining loss. One gold mention and six predictions lack a CUI;
+missing identifiers never match. The original 0.87 per-item and 0.90 per-letter
+scores remain reference values, not reproduced results.
+
+\subsection{Gan Locked Holdout Evidence}
+
+\begin{table}[tbp]
+\caption{Gan Saved Results on Locked Test450}
+\label{tab:gan-holdout}
+\centering
+\scriptsize
+\begin{tabular}{lrl}
+\toprule
+System & Purist & Role \\
+\midrule
+Single structured-event pass & 364/450 & One model pass per note \\
+V12 multi-trace reviewer & 379/450 & Three model passes per note \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Both rows in Table~\ref{tab:gan-holdout} are saved aggregate evidence. The
+15-row quality difference is 3.33 percentage points. A cold execution requires
+one model pass per note for the single-pass system and three for the saved V12
+test condition. DeepSeek input was unavailable on all 450 rows. The saved V12
+audit made 450 new reasoner calls while replaying two upstream traces.
+Matched tokens, cost, latency, hardware, and cache telemetry were not retained,
+so no measured token, dollar, energy, or latency comparison is claimed.
+
+\subsection{Fixed ExECT Model Comparison}
+
+Table~\ref{tab:model-swap} records the fixed six-model roster under the
+corrected model-led family architecture.
+
+\begin{table}[!t]
+\caption{Fixed ExECT Six-Model Comparison}
+\label{tab:model-swap}
+\centering
+\scriptsize
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lrrrrrrr}
+\toprule
+Model condition & dev140 & test60 & Diagnosis & SF & Prescription & Investigations & Test call/parse \\
+\midrule
+GPT-4.1-mini & 0.8202 & 0.7572 & 0.8470 & 0.6936 & 0.8672 & 0.8538 & 0/0 \\
+GPT-5.6 Luna & 0.8832 & 0.7950 & 0.8910 & 0.7892 & 0.9250 & 0.9202 & 0/0 \\
+GPT-5.6 Sol & 0.8920 & 0.8047 & 0.8882 & 0.8012 & 0.9432 & 0.9358 & 0/0 \\
+DeepSeek V4 Flash & 0.8767 & 0.7881 & 0.8764 & 0.7610 & 0.9280 & 0.9389 & 0/0 \\
+Qwen 3.6:35B (local) & 0.8571 & 0.7872 & 0.8720 & 0.7062 & 0.9249 & 0.9105 & 0/0 \\
+Gemma 4 26B (local) & 0.8016 & 0.7169 & 0.8378 & 0.6226 & 0.9046 & 0.8047 & 0/6 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+Historical rows are excluded because Prescription was deterministic-only and SF
+included an independent extractor union. The fixed rows preserve attribution,
+state-profile, schema/evidence, and regression records. DeepSeek uses the
+official \code{deepseek-v4-flash} route. Test60 is
+aggregate only; provider and local-runtime differences prevent a model-neutral
+capability ranking.
+
+\subsection{Cross-Task Components and Reliability}
+
+The paper-facing framework applies the same eight reliability criteria to both
+tasks: correctness/generalization, clinical selection/unsupported inference,
+evidence support/faithfulness, uncertainty/selective action,
+robustness/stability, component attribution/correction safety, clinical-slice
+coverage, and operational reliability. Measures, denominators, stages, and
+evidence limits remain task-specific. Construct-only and non-comparable results
+produce no cross-task numerical difference, and no composite reliability score
+is reported.
+
+\begin{table}[tbp]
+\caption{Saved-Output Component Ablation}
+\label{tab:components}
+\centering
+\scriptsize
+\begin{tabular}{lrr}
+\toprule
+Component & ExECT dev140 & Gan validation750 \\
+\midrule
+Normalization/dictionary & +0.0389 & +0.0293 \\
+Evidence validation & 0.0000 & 0.0000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The zero score delta in Table~\ref{tab:components} does not show that evidence
+validation is unnecessary. A filter may be essential on malformed or
+hallucinated outputs even when all selected reference predictions already
+satisfy it. Rejection and repair tests, not aggregate F1 alone, carry that part
+of the evidence.
+
+\begin{table}[!t]
+\caption{Retained Reliability Evidence and Limits}
+\label{tab:reliability}
+\centering
+\scriptsize
+\begin{tabular}{@{}p{0.18\columnwidth}p{0.42\columnwidth}p{0.30\columnwidth}@{}}
+\toprule
+Subject & Retained result & Boundary \\
+\midrule
+ExECT evidence & Hybrid dev140 minimum exact evidence rate 1.0000 & Development reference. \\
+ExECT calibration & Brier 0.2225; base-rate Brier 0.2340; ECE 0.0587 & Full200 aggregate internal scoring-rule result. \\
+ExECT confidence & Test60 failure AUROC 0.5394 GPT; 0.5503 historical DeepSeek; 0.4895 Qwen & Aggregate negative result for saved outputs. \\
+ExECT SF state replay & Final projection/suppression improves state F1 for all six; 54 W$\rightarrow$C and one C$\rightarrow$W & dev140 development result. \\
+Gan grounding & Architecture-specific validation grounding packages retained & Metrics are not uniform across families. \\
+Reproducibility & Tests, Ruff, mypy, hashes, split restrictions, and six-run replay pass & Engineering verification, not clinical validation. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Neither predeclared model-confidence review rule met its test60 catch-rate and
+burden gates, so no confidence-based review policy is adopted. The retained
+evidence does not support a cross-task over-reading claim. The predeclared
+ExECT analogue has zero gold unknown-only letters; empty-gold letters remain
+diagnostic rather than being substituted after the result. A 48-item ExECT
+dev140 semantic-support sample spans six models and four families, but
+independent review has not started; exact source presence is not presented as
+semantic or clinical faithfulness.
+
+\section{Discussion}
+
+The reduced system can reproduce six selected runs while keeping component
+provenance and data limits explicit. The historical ExECT combined control is
+substantially stronger than the retained rules-only and LLM-only development
+references on \code{clinical\_headline}, but its Prescription and Seizure
+Frequency ownership does not meet the final model-led architecture. The three
+runs also do not share the paper-derived metric views and cannot establish
+strict benchmark superiority. The rules-only
+replay shows that CUI matching recovers surface variation, while feature
+completion remains the larger limitation.
+
+Historical model-transfer artifacts ran with three runtime models, but their
+Prescription/SF columns are excluded from the final model comparison. The
+fixed panel replaces them with six exact conditions under one component
+boundary. Runtime differences still prevent general model superiority claims,
+and the ExECT and Gan rankings differ substantially.
+
+The cross-task ablation suggests that normalization is useful in both tasks.
+The exact-evidence check's zero F1 delta shows why aggregate score changes are
+insufficient: rejection, source attribution, and repair need direct tests.
+
+\section{Limitations}
+
+Gan test450 contains saved aggregate evidence only and cannot support row-level tuning.
+ExECT full200 includes dev140 and is not an independent holdout.
+\code{clinical\_headline} is a clinical fact score, not the published
+strict benchmark. The paper-derived replay uses development data and does not
+reproduce the original system, annotation process, or 0.87/0.90 scores. A
+legacy benchmark/CUI companion has small current-code replay drift. The fixed
+six-model panels use different provider transports, temperatures, token limits,
+and local versus hosted runtimes. The historical combined control does not
+satisfy the final model-led family boundary.
+Model-reported confidence was uninformative for the three saved historical
+outputs under the frozen test60 analysis; this is not deployment calibration
+or a six-model result. Annotation-quality findings are internally adjudicated; unqualified
+clinical validity would require independent domain review. The current retained
+evidence does not support a cross-task over-reading claim; ExECT has zero gold
+unknown-only letters under the predeclared measure. The semantic-support sample
+is unreviewed, and unmatched hosted/local telemetry cannot support an efficiency
+ranking.
+
+\section{Conclusion}
+
+An inspectable clinical extraction system can preserve performance evidence
+and the source needed to interpret it. The selected results support a
+three-method comparison on two tasks and fixed six-model panels under each
+task's named scorer. The same eight reliability questions organize both tasks
+without implying one metric or a composite score. They expose the effect and
+regression risk of deterministic components without assigning their gains to
+the model. They do not support strict ExECT score reproduction, general model
+superiority, cross-task reliability transfer, or independent clinical
+validation. Those boundaries are part of the result, not footnotes to it.
+
+\section*{Reproducibility Statement}
+
+The machine-readable retained evidence index records the six runs, selected
+files and hashes, policy versions, and no-call replay expectations. The
+Markdown manuscript and this IEEE source use only selected evidence and claims
+permitted by the paper claim status.
+
+\IEEEtriggeratref{3}
+\begin{thebibliography}{00}
+\scriptsize
+\bibitem{fonferko2019exect} B. Fonferko-Shadrach, A. S. Lacey, A. Roberts,
+S. Thompson, D. V. Ford, R. A. Lyons, M. I. Rees, and W. O. Pickrell, ``Using
+natural language processing to extract structured epilepsy data from
+unstructured clinic letters: development and validation of the ExECT
+(extraction of epilepsy clinical text) system,'' \emph{BMJ Open}, vol. 9,
+no. 4, e023232, 2019, doi: 10.1136/bmjopen-2018-023232.
+
+\bibitem{fonferko2024annotation} B. Fonferko-Shadrach \emph{et al.},
+``Annotation of epilepsy clinic letters for natural language processing,''
+\emph{Journal of Biomedical Semantics}, vol. 15, no. 17, 2024, doi:
+10.1186/s13326-024-00316-z.
+
+\bibitem{xie2022seizure} K. Xie \emph{et al.}, ``Extracting seizure frequency
+from epilepsy clinic notes: a machine reading approach to natural language
+processing,'' \emph{Journal of the American Medical Informatics Association},
+vol. 29, no. 5, pp. 873--881, 2022, doi: 10.1093/jamia/ocac018.
+
+\bibitem{abeysinghe2025leveraging} R. Abeysinghe, S. Tao, S. D. Lhatoo,
+G.-Q. Zhang, and L. Cui, ``Leveraging pretrained language models for seizure
+frequency extraction from epilepsy evaluation reports,'' \emph{npj Digital
+Medicine}, 2025, doi: 10.1038/s41746-025-01592-4.
+
+\bibitem{holgate2025fine} B. Holgate, J. Davies, S. Fang, J. Winston,
+J. Teo, and M. Richardson, ``Fine-tuning LLMs to extract epilepsy seizure
+frequency data from health records,'' in \emph{Proc. 24th Workshop on
+Biomedical Language Processing}, Vienna, Austria, 2025, pp. 44--55, doi:
+10.18653/v1/2025.bionlp-1.5.
+
+\bibitem{gan2026synthetic} Y. Gan, S. H. Barlow, B. Holgate, J. Davies,
+J. T. Teo, J. S. Winston, and M. P. Richardson, ``Reproducible synthetic
+clinical letters for seizure frequency information extraction,'' arXiv:
+2603.11407, 2026.
+\end{thebibliography}
+
+\end{document}
