@@ -62,7 +62,7 @@ export const EXECT_FLATTEN_CATALOG: CatalogItem[] = [
 
 export const EXECT_SCORE_CATALOG: CatalogItem[] = [
   { id: "materialize", label: "Scoring views", stageIdPattern: "materialize_views" },
-  { id: "score", label: "Fact match", stageIdPattern: "score" },
+  { id: "score", label: "Emit units", stageIdPattern: "score" },
 ];
 
 export const GAN_STATIONS: StationLayoutNode[] = [
@@ -175,7 +175,7 @@ export const EXECT_STATIONS: StationLayoutNode[] = [
   {
     id: "exect_score",
     name: "Score",
-    alwaysDoes: "Materialize scoring views and fact-match.",
+    alwaysDoes: "What left the line. Gold comparison lives on Workbench.",
     kind: "score",
     catalog: EXECT_SCORE_CATALOG,
   },
@@ -344,9 +344,41 @@ export function clipLine(text: string, max = 88): string {
   return `${trimmed.slice(0, max).trimEnd()}…`;
 }
 
-export function sourceLetterLine(noteText: string, goldReference: string): string {
+export function isPipelineFillerNote(note: string): boolean {
+  return /^canonical (llm|rules)/i.test(note.trim());
+}
+
+export function usefulStageNote(note: string): string {
+  const trimmed = note.trim();
+  if (!trimmed || isPipelineFillerNote(trimmed)) return "";
+  return trimmed;
+}
+
+export function lensThisCaseLine(item: CatalogItem, obs: StageObservationData | undefined): string {
+  if (!obs) return `${item.label}: not in this method`;
+  const note = usefulStageNote(obs.note);
+  if (obs.changed && note) return `${item.label}: ${note}`;
+  if (obs.changed) return item.label;
+  return `${item.label}: assembled, no rewrite`;
+}
+
+export function lensRewriteLine(observations: StageObservationData[]): string {
+  const notes = observations
+    .filter((obs) => obs.changed)
+    .map((obs) => usefulStageNote(obs.note))
+    .filter((note) => note.length > 0);
+  if (notes.length === 0) return "";
+  return clipLine(notes[0], 88);
+}
+
+export function sourceLetterLine(
+  noteText: string,
+  goldReference: string,
+  story = ""
+): string {
   const gold = goldReference.trim();
   if (gold) return clipLine(gold);
+  if (story.trim()) return clipLine(story);
 
   const lines = noteText
     .split("\n")

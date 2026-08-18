@@ -13,11 +13,10 @@ the model boundary - repair, normalization, selection resolution, family
 transforms, gates, scoring - is the real code path, so a teaching case cannot
 drift from the pipeline without this module failing.
 
-``build_all_cases()`` returns the canonical pair used by the generated
-architecture documents. ``build_teaching_letters()`` adds the Gan letter
-library - extra letters that each isolate one mechanism (a diary-span rescue,
-a preservation stand-down) for the interactive explainer. The library does not
-change the canonical reading order.
+``build_all_cases()`` returns the synthetic pair used by vertical-slice
+tests. ``build_teaching_letters()`` returns the four paper flagship
+letters (G1, G3, E1, E2) for the explainer and the generated architecture
+teaching documents. The Gan letter library remains available separately.
 
 Building a teaching case makes no model calls and reads no locked rows.
 """
@@ -30,6 +29,13 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from clinical_extraction.architecture.stage_manifest import MethodManifest, load_manifest
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
+    annotation_from_mapping,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match import (
+    clinical_headline_unit_keys,
+)
 
 # --------------------------------------------------------------------------
 # Fixtures
@@ -56,6 +62,8 @@ class GanCaseSpec:
     mechanism: str
     hybrid_raw_output: str
     llm_only_raw_output: str
+    source_row_index: int = 1
+    fixture_note: str | None = None
 
 
 GAN_LETTER_ID = "TEACH-GAN-01"
@@ -707,7 +715,7 @@ def _gan_record(spec: GanCaseSpec) -> Any:
 
     gold = label_to_frequency_record(spec.gold)
     return GanFrequencyRecord(
-        source_row_index=1,
+        source_row_index=spec.source_row_index,
         note_text=spec.note_text,
         gold_label=spec.gold,
         gold_reference=spec.gold_reference,
@@ -835,7 +843,7 @@ def _gan_llm_only_run(spec: GanCaseSpec) -> MethodRun:
     run.record(
         "gan.llm.build_prompt",
         input_value=spec.note_text,
-        output_value=f"prompt input of {len(prompt_input)} characters",
+        output_value=prompt_input,
         changed=True,
         note="Transport only.",
     )
@@ -916,7 +924,7 @@ def _gan_llm_with_rules_run(spec: GanCaseSpec) -> MethodRun:
     run.record(
         "gan.llm_with_rules.build_prompt",
         input_value=spec.note_text,
-        output_value=f"prompt input of {len(prompt_input)} characters",
+        output_value=prompt_input,
         changed=True,
         note="Transport only.",
     )
@@ -1209,7 +1217,8 @@ def _gan_case(spec: GanCaseSpec) -> TeachingCase:
         note_text=spec.note_text,
         gold=spec.gold,
         gold_note=spec.gold_note,
-        fixture_note=(
+        fixture_note=spec.fixture_note
+        or (
             "The letter is synthetic and the raw model outputs are fixtures "
             "standing in for one model call each. No model call is made when "
             "this case is built. Prediction-bearing stages and evidence gates "
@@ -1267,7 +1276,7 @@ def _fact_summary(fact: Any) -> str:
     return f"{data.get('family')}: {body}"
 
 
-def _exect_rules_only_run() -> MethodRun:
+def _exect_rules_only_run(letter: Any | None = None) -> MethodRun:
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runner import (
         Exectv2PipelineConfiguration,
         Exectv2PipelineRunner,
@@ -1275,7 +1284,7 @@ def _exect_rules_only_run() -> MethodRun:
 
     manifest = load_manifest("exectv2_rules_only")
     run = MethodRun(method_id=manifest.method_id, manifest=manifest)
-    letter = _exect_letter()
+    letter = letter or _exect_letter()
 
     result = Exectv2PipelineRunner(
         Exectv2PipelineConfiguration(method="rules")
@@ -1293,11 +1302,19 @@ def _exect_rules_only_run() -> MethodRun:
                 else "Canonical rules-only stage."
             ),
         )
-    _exect_scoring(run, "exect.rules.score", result.prediction.mentions, nine_entity=True)
+    _exect_scoring(
+        run,
+        "exect.rules.score",
+        result.prediction.mentions,
+        nine_entity=True,
+        letter=letter,
+    )
     return run
 
 
-def _exect_llm_only_run() -> MethodRun:
+def _exect_llm_only_run(
+    letter: Any | None = None, raw_output: str | None = None
+) -> MethodRun:
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
         structured_one_call,
     )
@@ -1307,12 +1324,12 @@ def _exect_llm_only_run() -> MethodRun:
 
     manifest = load_manifest("exectv2_llm_only")
     run = MethodRun(method_id=manifest.method_id, manifest=manifest)
-    letter = _exect_letter()
+    letter = letter or _exect_letter()
 
     producer = structured_one_call.produce_structured_letter(
         letter,
         mode="replay",
-        raw_output=EXECT_HYBRID_RAW_OUTPUT,
+        raw_output=raw_output or EXECT_HYBRID_RAW_OUTPUT,
         config=StructuredMethodConfig.selected(),
     )
     result = structured_one_call.run_llm_only_letter(letter, producer)
@@ -1331,11 +1348,19 @@ def _exect_llm_only_run() -> MethodRun:
                 else "Canonical LLM-only stage."
             ),
         )
-    _exect_scoring(run, "exect.llm.score", result.prediction.mentions, nine_entity=False)
+    _exect_scoring(
+        run,
+        "exect.llm.score",
+        result.prediction.mentions,
+        nine_entity=False,
+        letter=letter,
+    )
     return run
 
 
-def _exect_llm_with_rules_run() -> MethodRun:
+def _exect_llm_with_rules_run(
+    letter: Any | None = None, raw_output: str | None = None
+) -> MethodRun:
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
         structured_one_call,
     )
@@ -1345,12 +1370,12 @@ def _exect_llm_with_rules_run() -> MethodRun:
 
     manifest = load_manifest("exectv2_llm_with_rules")
     run = MethodRun(method_id=manifest.method_id, manifest=manifest)
-    letter = _exect_letter()
+    letter = letter or _exect_letter()
 
     producer = structured_one_call.produce_structured_letter(
         letter,
         mode="replay",
-        raw_output=EXECT_HYBRID_RAW_OUTPUT,
+        raw_output=raw_output or EXECT_HYBRID_RAW_OUTPUT,
         config=StructuredMethodConfig.selected(),
     )
     result = structured_one_call.run_llm_with_rules_letter(
@@ -1361,6 +1386,15 @@ def _exect_llm_with_rules_run() -> MethodRun:
     for event in result.stage_events:
         if event.stage_id == "exect.llm_with_rules.score":
             continue
+        if ".lens." in event.stage_id:
+            run.record(
+                event.stage_id,
+                input_value=_summarize_findings(event.input_value),
+                output_value=_summarize_findings(event.output_value),
+                changed=_lens_clinically_changed(event.output_value),
+                note=_lens_teaching_note(event.output_value),
+            )
+            continue
         run.record(
             event.stage_id,
             input_value=event.input_value,
@@ -1370,7 +1404,7 @@ def _exect_llm_with_rules_run() -> MethodRun:
                 "Fixture boundary at the one-call producer; no live model call "
                 "is made."
                 if event.stage_id == "exect.llm_with_rules.model_call"
-                else "Canonical LLM-with-rules stage."
+                else ""
             ),
         )
     _exect_scoring(
@@ -1378,6 +1412,7 @@ def _exect_llm_with_rules_run() -> MethodRun:
         "exect.llm_with_rules.score",
         result.prediction.mentions,
         nine_entity=False,
+        letter=letter,
     )
     return run
 
@@ -1405,33 +1440,239 @@ def _structured_row(letter: Any, predicted: Any, gate_warnings: Any) -> dict[str
     }
 
 
+def _exect_letter_has_gold(letter: Any) -> bool:
+    return bool(getattr(letter, "annotations", None))
+
+
+_HEADLINE_FAMILIES = (
+    ("Diagnosis", "Diagnosis"),
+    ("SeizureFrequency", "Seizure frequency"),
+    ("Prescription", "Prescription"),
+    ("Investigations", "Investigations"),
+)
+
+
+def _format_headline_key(family: str, key: Any, letter: ExectLetter) -> str:
+    if family == "Diagnosis" and isinstance(key, tuple) and len(key) >= 2:
+        return str(key[1])
+    if family == "SeizureFrequency":
+        state = key[1] if isinstance(key, tuple) and len(key) >= 2 else ""
+        for annotation in letter.entities(family):
+            if key in clinical_headline_unit_keys(family, [annotation], letter.note_text):
+                phrase = annotation.text.replace("-", " ")
+                return f"{phrase} ({state})" if state else phrase
+        type_key = key[0] if isinstance(key, tuple) else key
+        type_label = (
+            type_key[1] if isinstance(type_key, tuple) and len(type_key) >= 2 else type_key
+        )
+        return f"{type_label} ({state})" if state else str(type_label)
+    if family == "Prescription" and isinstance(key, tuple) and key:
+        if key[0] == "ordinary" and len(key) >= 5:
+            _kind, name, dose, unit, freq = key[:5]
+            return f"{name} {dose} {unit} ×{freq}"
+        if key[0] == "rescue" and len(key) >= 2:
+            return f"{key[1]} as required"
+    if family == "Investigations" and isinstance(key, tuple) and len(key) >= 3:
+        modality, performed, result = key[0], key[1], key[2]
+        parts = [str(modality)]
+        if performed == "Yes":
+            parts.append("performed")
+        elif performed:
+            parts.append(str(performed))
+        if result:
+            parts.append(str(result).lower())
+        return " ".join(parts)
+    if isinstance(key, tuple):
+        return " ".join(str(part) for part in key if part not in {None, ""})
+    return str(key)
+
+
+def _headline_family_labels(letter: ExectLetter, family: str) -> list[str]:
+    keys = clinical_headline_unit_keys(family, letter.entities(family), letter.note_text)
+    return [_format_headline_key(family, key, letter) for key in keys]
+
+
+def _join_labels(labels: Sequence[str]) -> str:
+    return "; ".join(labels) if labels else "(none)"
+
+
+def _family_output_lines(predicted: ExectLetter) -> list[str]:
+    return [
+        f"{label}: {_join_labels(_headline_family_labels(predicted, family))}"
+        for family, label in _HEADLINE_FAMILIES
+    ]
+
+
+def _as_finding_items(value: Any) -> list[Any]:
+    if value is None:
+        return []
+    if isinstance(value, str):
+        try:
+            parsed = json.loads(value)
+        except json.JSONDecodeError:
+            return [value]
+        return parsed if isinstance(parsed, list) else [parsed]
+    if isinstance(value, Sequence) and not isinstance(value, str | bytes):
+        return list(value)
+    return [value]
+
+
+def _as_mapping(item: Any) -> Mapping[str, Any] | None:
+    if isinstance(item, Mapping):
+        return item
+    if hasattr(item, "model_dump"):
+        dumped = item.model_dump()
+        return dumped if isinstance(dumped, Mapping) else None
+    return None
+
+
+def _summarize_findings(value: Any) -> str:
+    lines: list[str] = []
+    for item in _as_finding_items(value):
+        data = _as_mapping(item)
+        if data is None:
+            text = str(item).strip()
+            if text:
+                lines.append(text)
+            continue
+        entity = str(data.get("entity") or "").strip()
+        text = str(data.get("text") or "").strip()
+        line = f"{entity}: {text}" if entity and text else text or entity
+        if line:
+            lines.append(line)
+    return "\n".join(lines) if lines else "(none)"
+
+
+def _lens_clinically_changed(output_value: Any) -> bool:
+    for item in _as_finding_items(output_value):
+        data = _as_mapping(item)
+        if data is None:
+            continue
+        for step in data.get("provenance") or []:
+            if not isinstance(step, Mapping):
+                continue
+            action = str(step.get("action") or "")
+            detail = step.get("detail") if isinstance(step.get("detail"), Mapping) else {}
+            if action == "rewrote_diagnosis_convention_from_dictionary":
+                return True
+            if action == "applied_standard_dictionary_diagnosis_repair" and (
+                int(detail.get("rewritten_count") or 0)
+                or int(detail.get("added_count") or 0)
+                or int(detail.get("dropped_count") or 0)
+            ):
+                return True
+            if action == "applied_standard_dictionary_prescription_repair" and (
+                int(detail.get("normalized_count") or 0)
+                or int(detail.get("split_regimen_count") or 0)
+                or int(detail.get("dropped_non_antiepileptic_count") or 0)
+            ):
+                return True
+    return False
+
+
+def _lens_teaching_note(output_value: Any) -> str:
+    notes: list[str] = []
+    for item in _as_finding_items(output_value):
+        data = _as_mapping(item)
+        if data is None:
+            continue
+        for step in data.get("provenance") or []:
+            if not isinstance(step, Mapping):
+                continue
+            action = str(step.get("action") or "")
+            detail = step.get("detail") if isinstance(step.get("detail"), Mapping) else {}
+            if action == "rewrote_diagnosis_convention_from_dictionary":
+                source = detail.get("source_text")
+                target = detail.get("target_text")
+                if source and target:
+                    notes.append(f"Dictionary rewrote diagnosis: {source} → {target}.")
+    unique = list(dict.fromkeys(notes))
+    if unique:
+        return " ".join(unique)
+    return "Assembled this family; no further clinical rewrite."
+
+
+def _mention_mapping(mention: Any) -> dict[str, Any]:
+    if hasattr(mention, "model_dump"):
+        data = mention.model_dump()
+    elif isinstance(mention, Mapping):
+        data = dict(mention)
+    else:
+        rendered = _jsonable(mention)
+        data = dict(rendered) if isinstance(rendered, Mapping) else {}
+    attributes = data.get("attributes") or {}
+    return {
+        "entity": str(data.get("entity", "")),
+        "text": str(data.get("text", mention)),
+        "attributes": {
+            str(key): str(value)
+            for key, value in dict(attributes).items()
+            if value is not None
+        },
+    }
+
+
 def _exect_scoring(
-    run: MethodRun, stage_id: str, mentions: Sequence[Any], *, nine_entity: bool
+    run: MethodRun,
+    stage_id: str,
+    mentions: Sequence[Any],
+    *,
+    nine_entity: bool,
+    letter: Any | None = None,
 ) -> None:
     by_entity: dict[str, int] = {}
     for mention in mentions:
-        data = _jsonable(mention)
-        entity = str(data.get("entity")) if isinstance(data, Mapping) else "?"
+        data = _mention_mapping(mention)
+        entity = data.get("entity") or "?"
         by_entity[entity] = by_entity.get(entity, 0) + 1
     coverage = "nine entities" if nine_entity else "four families"
-    run.final_answer = ", ".join(
-        f"{entity} x{count}" for entity, count in sorted(by_entity.items())
-    )
-    run.correct = None
-    run.correctness_note = (
-        f"This teaching letter carries no gold annotations, so no correctness "
-        f"verdict is claimed. The comparable unit is {coverage}."
-    )
-    run.record(
-        stage_id,
-        input_value=f"{len(mentions)} finding(s) over {coverage}",
-        output_value=by_entity,
-        changed=True,
-        note=(
+    has_gold = _exect_letter_has_gold(letter)
+    if has_gold:
+        predicted = ExectLetter(
+            letter_id=str(letter.letter_id),
+            note_text=letter.note_text,
+            annotations=tuple(
+                annotation_from_mapping(_mention_mapping(mention))
+                for mention in mentions
+            ),
+        )
+        emitted = _family_output_lines(predicted)
+        run.final_answer = "\n".join(emitted)
+        run.correct = None
+        boundary = (
+            "Rules extract nine entities; this station shows the four-family "
+            "units that left the line. "
+            if nine_entity
+            else ""
+        )
+        run.correctness_note = (
+            f"{boundary}Gold comparison lives on Workbench."
+        )
+        score_note = "What left the line. Gold comparison lives on Workbench."
+        output_value = "\n".join(emitted)
+        input_value = f"{len(mentions)} finding(s) entering the scorer"
+    else:
+        run.final_answer = ", ".join(
+            f"{entity} x{count}" for entity, count in sorted(by_entity.items())
+        )
+        run.correct = None
+        run.correctness_note = (
+            f"This teaching letter carries no gold annotations, so no "
+            f"correctness verdict is claimed. The comparable unit is {coverage}."
+        )
+        score_note = (
             "Unscored scorer-boundary illustration: this synthetic letter has "
             "no gold annotations. A real run scores the comparison over "
             f"{coverage}."
-        ),
+        )
+        output_value = by_entity
+        input_value = f"{len(mentions)} finding(s) over {coverage}"
+    run.record(
+        stage_id,
+        input_value=input_value,
+        output_value=output_value,
+        changed=True,
+        note=score_note,
     )
 
 
@@ -1509,7 +1750,10 @@ def build_gan_letter_library() -> tuple[TeachingCase, ...]:
 
 
 def build_teaching_letters() -> tuple[TeachingCase, ...]:
-    """The full explainer letter set: canonical Gan, the Gan letter library,
-    and the canonical ExECT case."""
+    """Explainer letters: paper flagship G1, G3, E1, and E2."""
 
-    return (build_gan_case(), *build_gan_letter_library(), build_exect_case())
+    from clinical_extraction.architecture.paper_teaching_cases import (
+        build_paper_teaching_letters,
+    )
+
+    return build_paper_teaching_letters()

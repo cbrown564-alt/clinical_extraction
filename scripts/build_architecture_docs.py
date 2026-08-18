@@ -25,13 +25,13 @@ from clinical_extraction.architecture.stage_manifest import (
     repo_root,
     validate_all,
 )
-from clinical_extraction.architecture.teaching_case import build_all_cases
+from clinical_extraction.architecture.teaching_case import build_teaching_letters
 
 DOCS_DIR = Path("docs/architecture")
 
 
 def build(root: Path) -> dict[Path, str]:
-    cases = build_all_cases()
+    cases = build_teaching_letters()
     return {
         root / DOCS_DIR / relative: content
         for relative, content in all_documents(cases).items()

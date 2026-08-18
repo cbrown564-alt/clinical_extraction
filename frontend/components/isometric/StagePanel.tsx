@@ -6,7 +6,13 @@ import type {
   TeachingCaseData,
   TeachingRunData,
 } from "@/lib/isometricTypes";
-import { ACCENT, catalogMatches, effectiveCatalog } from "@/lib/isometricLayout";
+import {
+  ACCENT,
+  catalogMatches,
+  effectiveCatalog,
+  lensThisCaseLine,
+  usefulStageNote,
+} from "@/lib/isometricLayout";
 
 interface StagePanelProps {
   station: StationLayoutNode;
@@ -20,6 +26,18 @@ function truncate(text: string, max = 420): string {
   const trimmed = text.trim();
   if (trimmed.length <= max) return trimmed;
   return `${trimmed.slice(0, max).trimEnd()}…`;
+}
+
+function formatPromptText(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed.startsWith("prompt input of ")) {
+    return "";
+  }
+  try {
+    return JSON.stringify(JSON.parse(trimmed), null, 2);
+  } catch {
+    return trimmed;
+  }
 }
 
 export default function StagePanel({
@@ -36,16 +54,25 @@ export default function StagePanel({
     station.kind === "source"
       ? [activeCase ? `${activeCase.letter_id}. ${activeCase.story}` : "No letter loaded."]
       : station.kind === "score" && activeRun
-        ? [activeRun.final_answer, activeRun.correctness_note].filter(
-            (line) => line.trim().length > 0
-          )
+        ? [
+            ...activeRun.final_answer.split("\n"),
+            activeRun.correctness_note,
+          ].filter((line) => line.trim().length > 0)
+        : station.kind === "lenses"
+          ? catalog.map((item) =>
+              lensThisCaseLine(
+                item,
+                observations.find((obs) => catalogMatches(item, obs))
+              )
+            )
         : catalog
             .filter((item) =>
               observations.some((obs) => catalogMatches(item, obs) && obs.changed)
             )
             .map((item) => {
               const obs = observations.find((o) => catalogMatches(item, o) && o.changed);
-              return obs?.note ? `${item.label}: ${obs.note}` : item.label;
+              const note = usefulStageNote(obs?.note ?? "");
+              return note ? `${item.label}: ${note}` : item.label;
             });
 
   return (
@@ -92,6 +119,26 @@ export default function StagePanel({
           </section>
         )}
 
+        {station.kind === "source" && activeCase && (
+          <section>
+            <h3 className="mb-2 text-xs font-medium text-neutral-500">Letter</h3>
+            <p className="note-text whitespace-pre-wrap">{activeCase.note_text}</p>
+          </section>
+        )}
+
+        {station.kind === "prompt" && (
+          <section>
+            <h3 className="mb-2 text-xs font-medium text-neutral-500">Prompt</h3>
+            {observations[0] && formatPromptText(observations[0].output) ? (
+              <pre className="whitespace-pre-wrap break-words font-sans text-sm leading-snug">
+                {formatPromptText(observations[0].output)}
+              </pre>
+            ) : (
+              <p className="text-neutral-500">Not in this method.</p>
+            )}
+          </section>
+        )}
+
         <section>
           <h3 className="mb-2 text-xs font-medium text-neutral-500">This case</h3>
           {thisCaseLines.length === 0 ? (
@@ -105,7 +152,7 @@ export default function StagePanel({
           )}
         </section>
 
-        {fired.length > 0 && (
+        {fired.length > 0 && station.kind !== "source" && station.kind !== "prompt" && (
           <section className="space-y-4">
             <h3 className="text-xs font-medium text-neutral-500">
               {fired.length === 1 ? "Change" : "Changes"}

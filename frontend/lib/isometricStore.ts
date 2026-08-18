@@ -67,7 +67,7 @@ export function methodIdFor(task: "gan2026" | "exectv2", method: MethodType): Me
 export const useIsometricStore = create<IsometricState>((set, get) => ({
   cases: [],
   manifests: [],
-  selectedCaseId: "gan2026_typical_rate_over_year_to_date",
+  selectedCaseId: "gan2026_cluster_vs_quiet_interval",
   selectedMethod: "llm_with_rules",
   currentStepIndex: 0,
   stepProgress: 0,

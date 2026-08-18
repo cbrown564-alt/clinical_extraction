@@ -28,16 +28,16 @@ def _repair_observations(run, family: str):
     ]
 
 
-def test_library_adds_two_gan_letters_without_touching_the_canonical_set():
+def test_library_stays_apart_from_the_paper_explainer_letters():
     library = build_gan_letter_library()
     assert [case.letter_id for case in library] == ["TEACH-GAN-02", "TEACH-GAN-03"]
     assert all(case.task == "gan2026" for case in library)
     letters = build_teaching_letters()
     assert [case.letter_id for case in letters] == [
-        "TEACH-GAN-01",
-        "TEACH-GAN-02",
-        "TEACH-GAN-03",
-        "TEACH-EXECT-01",
+        "GAN-15431",
+        "GAN-2166",
+        "EA0186",
+        "EA0057",
     ]
     assert all(case.story for case in library)
 

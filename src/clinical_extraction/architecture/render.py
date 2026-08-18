@@ -229,9 +229,9 @@ def render_method_card(manifest: MethodManifest) -> str:
     lines.append("")
     task_slug = "gan2026" if manifest.task == "gan2026" else "exectv2"
     lines.append(
-        f"See the [{manifest.task_label} teaching case]"
-        f"(../teaching_cases/{task_slug}.md), which runs this method over one "
-        "letter and records what every stage above actually did."
+        f"See the [{manifest.task_label} teaching letters]"
+        f"(../teaching_cases/{task_slug}.md), which run this method over the "
+        "paper flagship letters and record what every stage above actually did."
     )
     lines.append("")
     return "\n".join(lines)
@@ -477,9 +477,29 @@ def render_attribution_view() -> str:
 # --------------------------------------------------------------------------
 
 
+def _card_why(case: TeachingCase, run: MethodRun) -> str:
+    if run.method_id.endswith("rules_only"):
+        return case.card_why.get("rules", "")
+    if run.method_id.endswith("llm_only"):
+        return case.card_why.get("llm", "")
+    return case.card_why.get("llm_with_rules", "")
+
+
+def _verdict_label(run: MethodRun) -> str:
+    if run.correct is None:
+        return "not scored"
+    return "yes" if run.correct else "no"
+
+
+def _verdict_phrase(run: MethodRun) -> str:
+    if run.correct is None:
+        return "no correctness verdict is claimed for this trace"
+    return "correct" if run.correct else "incorrect"
+
+
 def render_teaching_case(case: TeachingCase) -> str:
     lines: list[str] = [GENERATED_BANNER, ""]
-    lines.append(f"# Teaching case: {case.task_label}")
+    lines.append(f"# Teaching case: {case.task_label} — `{case.letter_id}`")
     lines.append("")
     lines.append(f"Case id: `{case.case_id}`  ")
     lines.append(f"Letter: `{case.letter_id}`")
@@ -488,6 +508,18 @@ def render_teaching_case(case: TeachingCase) -> str:
     lines.append("")
     lines.append(case.fixture_note)
     lines.append("")
+    if case.mechanism_title or case.mechanism or case.story:
+        lines.append("## Why this letter")
+        lines.append("")
+        if case.mechanism_title:
+            lines.append(f"**{case.mechanism_title}**")
+            lines.append("")
+        if case.story:
+            lines.append(case.story)
+            lines.append("")
+        if case.mechanism:
+            lines.append(case.mechanism)
+            lines.append("")
     lines.append("## The letter")
     lines.append("")
     lines.append("```text")
@@ -503,16 +535,13 @@ def render_teaching_case(case: TeachingCase) -> str:
     lines.append("")
     lines.extend(
         _table(
-            ["Method", "Final answer", "Correct?"],
+            ["Method", "Final answer", "Correct?", "On this letter"],
             [
                 [
                     run.manifest.method_label,
                     run.final_answer,
-                    (
-                        "not scored"
-                        if run.correct is None
-                        else ("yes" if run.correct else "no")
-                    ),
+                    _verdict_label(run),
+                    _card_why(case, run),
                 ]
                 for run in case.runs
             ],
@@ -521,16 +550,19 @@ def render_teaching_case(case: TeachingCase) -> str:
     lines.append("")
 
     for run in case.runs:
-        lines.extend(_render_run(run))
+        lines.extend(_render_run(run, case))
     return "\n".join(lines)
 
 
-def _render_run(run: MethodRun) -> list[str]:
+def _render_run(run: MethodRun, case: TeachingCase | None = None) -> list[str]:
     lines: list[str] = []
     lines.append(f"## {run.manifest.method_label}")
     lines.append("")
     lines.append(f"> {run.manifest.one_sentence}")
     lines.append("")
+    if case is not None and _card_why(case, run):
+        lines.append(_card_why(case, run))
+        lines.append("")
     lines.append(f"**Prediction owner:** {run.manifest.prediction_owner}")
     lines.append("")
     lines.append(f"**Final answer:** {run.final_answer}")
@@ -568,112 +600,165 @@ def _render_run(run: MethodRun) -> list[str]:
     return lines
 
 
-def _case_slug(case: TeachingCase) -> str:
-    return "gan2026" if case.task == "gan2026" else "exectv2"
+def _letter_slug(case: TeachingCase) -> str:
+    return case.letter_id.lower()
 
 
 def _method_anchor(run: MethodRun) -> str:
     return run.manifest.method_label.lower().replace(" ", "-")
 
 
-def render_six_path_walkthrough(cases: Sequence[TeachingCase]) -> str:
-    """Render one compact reading order across all six selected paths.
+def _changed_repairs(run: MethodRun) -> list[str]:
+    return [
+        observation.stage_name
+        for observation in run.observations
+        if ".repair." in observation.stage_id and observation.changed
+    ]
 
-    The detailed stage observations stay in the task-specific generated cases.
-    This page is the single supervisor entry point: it sequences those
-    observations and derives its result and failure language from the
-    executable case output rather than duplicating pipeline facts by hand.
+
+def render_task_letter_index(cases: Sequence[TeachingCase], task: str) -> str:
+    selected = [case for case in cases if case.task == task]
+    label = selected[0].task_label if selected else task
+    lines: list[str] = [GENERATED_BANNER, ""]
+    lines.append(f"# {label} teaching letters")
+    lines.append("")
+    lines.append(
+        "Each letter below is a development-split paper flagship case. "
+        "Open a letter for the full stage trace through all three methods."
+    )
+    lines.append("")
+    lines.extend(
+        _table(
+            ["Letter", "What it teaches", "Gold"],
+            [
+                [
+                    f"[{case.letter_id}]({_letter_slug(case)}.md)",
+                    case.story or case.mechanism_title,
+                    case.gold,
+                ]
+                for case in selected
+            ],
+        )
+    )
+    lines.append("")
+    return "\n".join(lines)
+
+
+def render_six_path_walkthrough(cases: Sequence[TeachingCase]) -> str:
+    """One reading order across the paper letters and their three methods.
+
+    Result language is taken from the executed cases. This page does not
+    invent a rescue that the selected implementation did not produce.
     """
 
     lines: list[str] = [GENERATED_BANNER, ""]
-    lines.append("# Six-path teaching walkthrough")
+    lines.append("# Four-letter teaching walkthrough")
     lines.append("")
     lines.append(
         "Read this page as one continuous tour of the selected system. The "
-        "tour uses two synthetic letters because Gan 2026 and ExECTv2 have "
-        "different output contracts: `TEACH-GAN-01` supplies the competing "
-        "frequency example, and `TEACH-EXECT-01` supplies the four-family "
-        "example. No model call is made; fixture model outputs are marked at "
-        "the model boundary. Prediction-bearing stages and post-model gates "
-        "use the real selected implementation; the final ExECT score entry is "
-        "an unscored scorer-boundary illustration because the letter has no "
-        "gold annotations."
+        "tour uses four development-split paper letters: two Gan 2026 rows "
+        "and two ExECTv2 letters. Model outputs are replay fixtures (Grok "
+        "4.6 on Gan, Luna Compact on ExECT). No live model call is made. "
+        "Prediction-bearing stages and post-model gates use the real "
+        "selected implementation. ExECT Score lists the four-family units "
+        "that left the line; gold comparison lives on Workbench."
     )
     lines.append("")
     lines.append(
         "The five-stage diagram in the [repository README](../../../README.md) "
-        "is the short orientation. Each link below opens the generated method "
-        "card and the full stage trace for that path."
+        "is the short orientation. Each letter page is the full in/out trace."
     )
     lines.append("")
 
-    lines.append("## Walk the six paths in order")
+    lines.append("## The four letters")
     lines.append("")
-    path_runs = [
-        (teaching_case, method_run)
-        for teaching_case in cases
-        for method_run in teaching_case.runs
-    ]
-    for index, (case, run) in enumerate(path_runs, start=1):
-        manifest = run.manifest
-        result = run.final_answer
-        if run.correct is None:
-            verdict = "no correctness verdict is claimed for this fixture"
-        else:
-            verdict = "correct" if run.correct else "incorrect"
-        stage_names = " → ".join(stage.name for stage in manifest.stages)
-        lines.append(f"### {index}. {case.task_label} — {manifest.method_label}")
+    lines.extend(
+        _table(
+            ["Letter", "Task", "Gold", "What it teaches"],
+            [
+                [f"`{case.letter_id}`", case.task_label, case.gold, case.story]
+                for case in cases
+            ],
+        )
+    )
+    lines.append("")
+
+    for case in cases:
+        lines.append(f"## `{case.letter_id}` — {case.mechanism_title or case.story}")
         lines.append("")
+        if case.mechanism:
+            lines.append(case.mechanism)
+            lines.append("")
         lines.append(
-            f"**Letter:** `{case.letter_id}` · **Final output:** `{result}` · "
-            f"**Status:** {verdict}"
+            f"**Gold:** {case.gold}  "
         )
         lines.append("")
-        lines.append(f"**Stages:** {stage_names}")
+        lines.append(case.gold_note)
         lines.append("")
+        for run in case.runs:
+            manifest = run.manifest
+            repairs = _changed_repairs(run)
+            repair_note = (
+                f" Changed repair stages: {', '.join(f'`{name}`' for name in repairs)}."
+                if repairs
+                else ""
+            )
+            why = _card_why(case, run)
+            lines.append(f"### {case.task_label} — {manifest.method_label}")
+            lines.append("")
+            lines.append(
+                f"**Letter:** `{case.letter_id}` · **Final output:** "
+                f"`{run.final_answer}` · **Status:** {_verdict_phrase(run)}"
+            )
+            lines.append("")
+            if why:
+                lines.append(why)
+                lines.append("")
+            if repair_note:
+                lines.append(repair_note.strip())
+                lines.append("")
+            lines.append(
+                f"The first clinical proposer is {manifest.prediction_owner}. "
+                f"Open the [method card](../method_cards/{manifest.method_id}.md) "
+                f"for the contract, then the [full stage trace]"
+                f"({_letter_slug(case)}.md#{_method_anchor(run)}) for the "
+                "observed inputs, outputs, and ownership at each stage."
+            )
+            lines.append("")
+
+        gan_runs = {run.method_id: run for run in case.runs}
+        if "gan2026_llm_only" in gan_runs and "gan2026_llm_with_rules" in gan_runs:
+            llm_only = gan_runs["gan2026_llm_only"]
+            hybrid = gan_runs["gan2026_llm_with_rules"]
+            lines.append("### What the three Gan answers show")
+            lines.append("")
+            lines.append(
+                f"Rules-only returns `{gan_runs['gan2026_rules_only'].final_answer}`. "
+                f"LLM-only returns `{llm_only.final_answer}` "
+                f"({_verdict_phrase(llm_only)}) against gold `{case.gold}`. "
+                f"LLM-with-rules returns `{hybrid.final_answer}` "
+                f"({_verdict_phrase(hybrid)})."
+            )
+            lines.append("")
+            if hybrid.correct is True and llm_only.correct is False:
+                repairs = _changed_repairs(hybrid)
+                credited = repairs[0] if repairs else "a named deterministic repair"
+                lines.append(
+                    f"On this letter the hybrid path is a rescue, credited to "
+                    f"`{credited}`."
+                )
+                lines.append("")
+            elif hybrid.correct is False:
+                lines.append(
+                    "On this letter the hybrid path is not a rescue. The "
+                    "trace keeps the wrong answer visible."
+                )
+                lines.append("")
         lines.append(
-            f"The first clinical proposer is {manifest.prediction_owner}. "
-            f"Open the [method card](../method_cards/{manifest.method_id}.md) "
-            f"for the contract, then the [full stage trace]({_case_slug(case)}.md"
-            f"#{_method_anchor(run)}) for the observed inputs, outputs, and "
-            "ownership at each stage."
+            "This is a mechanism example from a development letter and a "
+            "replayed model output, not a holdout result."
         )
         lines.append("")
-
-    gan = next(case for case in cases if case.task == "gan2026")
-    gan_runs = {run.method_id: run for run in gan.runs}
-    failed = gan_runs["gan2026_llm_only"]
-    recovered = gan_runs["gan2026_llm_with_rules"]
-    repairs = [
-        observation
-        for observation in recovered.observations
-        if observation.stage_id.startswith("gan.llm_with_rules.repair.")
-        and observation.changed
-    ]
-    repair_name = repairs[0].stage_name if repairs else "the named deterministic repair stage"
-
-    lines.append("## Deliberate failure and recovery")
-    lines.append("")
-    lines.append(
-        f"**Failure:** the Gan LLM-only path returns `{failed.final_answer}` "
-        f"against the teaching answer `{gan.gold}`. Its full trace preserves "
-        "the model label and quoted evidence, making the selection error "
-        "visible rather than silently rewriting it."
-    )
-    lines.append("")
-    lines.append(
-        f"**Recovery:** the LLM-with-rules path starts from the same competing "
-        f"model choice and reaches `{recovered.final_answer}`. The change is "
-        f"credited to `{repair_name}`; the [Gan teaching trace]"
-        f"(gan2026.md#{_method_anchor(recovered)}) shows the before/after "
-        "values and the evidence check."
-    )
-    lines.append("")
-    lines.append(
-        "This is a mechanism example from a synthetic fixture, not a clinical "
-        "validation result."
-    )
-    lines.append("")
     return "\n".join(lines)
 
 
@@ -689,8 +774,9 @@ def _clip(text: str, limit: int = 600) -> str:
 # --------------------------------------------------------------------------
 
 
-def render_index() -> str:
+def render_index(cases: Sequence[TeachingCase] | None = None) -> str:
     manifests = load_manifests()
+    cases = list(cases or ())
     lines: list[str] = [GENERATED_BANNER, ""]
     lines.append("# Architecture: how a record moves through each method")
     lines.append("")
@@ -715,15 +801,18 @@ def render_index() -> str:
         "system on one page."
     )
     lines.append(
-        "2. [Six-path teaching walkthrough](teaching_cases/six_paths.md) - one "
-        "continuous reading order across the selected methods."
+        "2. [Four-letter teaching walkthrough](teaching_cases/six_paths.md) - "
+        "one continuous reading order across the paper flagship letters."
     )
     lines.append(
         "3. [Ownership matrix](diagrams/ownership_matrix.md) - who may change "
         "a clinical answer, everywhere."
     )
     lines.append("4. A method card below, for the method you need.")
-    lines.append("5. The teaching case for that task, to see a real letter move through it.")
+    lines.append(
+        "5. A teaching letter for that task, to see a development letter "
+        "move through it."
+    )
     lines.append("")
     lines.append("## Method cards")
     lines.append("")
@@ -745,19 +834,24 @@ def render_index() -> str:
     lines.append("## Teaching cases")
     lines.append("")
     lines.append(
-        "- [Six-path walkthrough](teaching_cases/six_paths.md) - the supervisor "
-        "reading order, including the deliberate failure and recovery."
+        "- [Four-letter walkthrough](teaching_cases/six_paths.md) - the "
+        "supervisor reading order for G1, G3, E1, and E2."
     )
     lines.append(
-        "- [Gan 2026](teaching_cases/gan2026.md) - one letter where the model "
-        "selects the wrong competing rate and the deterministic layer rescues "
-        "it."
+        "- [Gan 2026 letters](teaching_cases/gan2026.md) - quiet-interval "
+        "versus cluster grammar, and qualitative frequent versus unknown."
     )
     lines.append(
-        "- [ExECTv2](teaching_cases/exectv2.md) - one ordinary letter through "
-        "all three methods, showing the four-family versus nine-entity "
-        "comparison boundary."
+        "- [ExECTv2 letters](teaching_cases/exectv2.md) - four-family named "
+        "windows, and epileptic versus dissociative rates."
     )
+    if cases:
+        lines.append("")
+        for case in cases:
+            lines.append(
+                f"- [`{case.letter_id}`](teaching_cases/{_letter_slug(case)}.md) "
+                f"- {case.story}"
+            )
     lines.append("")
     lines.append("## Diagrams")
     lines.append("")
@@ -783,7 +877,7 @@ def all_documents(cases: Sequence[TeachingCase]) -> dict[str, str]:
     """Relative path -> rendered content, for every generated document."""
 
     documents: dict[str, str] = {
-        "README.md": render_index(),
+        "README.md": render_index(cases),
         "diagrams/overview.md": render_overview_diagram(),
         "diagrams/ownership_matrix.md": render_ownership_matrix(),
         "diagrams/attribution_origins.md": render_attribution_view(),
@@ -799,8 +893,15 @@ def all_documents(cases: Sequence[TeachingCase]) -> dict[str, str]:
             load_manifest(method_id)
         )
     for case in cases:
-        slug = "gan2026" if case.task == "gan2026" else "exectv2"
-        documents[f"teaching_cases/{slug}.md"] = render_teaching_case(case)
+        documents[f"teaching_cases/{_letter_slug(case)}.md"] = render_teaching_case(
+            case
+        )
+    documents["teaching_cases/gan2026.md"] = render_task_letter_index(
+        cases, "gan2026"
+    )
+    documents["teaching_cases/exectv2.md"] = render_task_letter_index(
+        cases, "exectv2"
+    )
     documents["teaching_cases/six_paths.md"] = render_six_path_walkthrough(cases)
     return documents
 

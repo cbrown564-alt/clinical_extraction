@@ -17,6 +17,7 @@ import {
   activationLabel,
   ACCENT,
   sourceLetterLine,
+  lensRewriteLine,
   clipLine,
 } from "@/lib/isometricLayout";
 import type { StationActivation } from "@/lib/isometricTypes";
@@ -91,7 +92,7 @@ export default function IsometricCanvas() {
           })}
         </svg>
 
-        {placed.map(({ station, point, activation, onCount, catalogSize }) => {
+        {placed.map(({ station, point, mapped, activation, onCount, catalogSize }) => {
           const selectedHere = selectedStageId === station.id;
           const left = `${(point.x / CANVAS_WIDTH) * 100}%`;
           const top = `${(point.y / CANVAS_HEIGHT) * 100}%`;
@@ -116,19 +117,34 @@ export default function IsometricCanvas() {
               >
                 {activationLabel(activation, onCount, catalogSize)}
               </div>
+              {station.kind === "lenses" && activation === "on" && lensRewriteLine(mapped) && (
+                <p className="mt-1 text-xs leading-snug text-neutral-600">
+                  {lensRewriteLine(mapped)}
+                </p>
+              )}
               {station.kind === "source" && activeCase && (
                 <p className="mt-1 text-xs leading-snug text-neutral-600">
-                  {sourceLetterLine(activeCase.note_text, activeCase.gold_reference)}
+                  {sourceLetterLine(
+                    activeCase.note_text,
+                    activeCase.gold_reference,
+                    activeCase.story
+                  )}
                 </p>
               )}
               {station.kind === "score" && activation !== "skipped" && activeRun?.final_answer && (
-                <p className="mt-1 text-xs leading-snug text-neutral-600">
-                  {clipLine(activeRun.final_answer, 40)}
-                  {activeRun.correct === true
-                    ? " · matches gold"
-                    : activeRun.correct === false
-                      ? " · misses gold"
-                      : ""}
+                <p className="mt-1 whitespace-pre-wrap text-xs leading-snug text-neutral-600">
+                  {activeCase?.task === "exectv2"
+                    ? activeRun.final_answer
+                        .split("\n")
+                        .map((line) => clipLine(line, 88))
+                        .join("\n")
+                    : `${clipLine(activeRun.final_answer, 72)}${
+                        activeRun.correct === true
+                          ? " · matches gold"
+                          : activeRun.correct === false
+                            ? " · misses gold"
+                            : ""
+                      }`}
                 </p>
               )}
             </button>
@@ -137,7 +153,13 @@ export default function IsometricCanvas() {
       </div>
 
       {selected && (
-        <div className="hidden w-[380px] shrink-0 md:block">
+        <div
+          className={`hidden shrink-0 md:block ${
+            selected.station.kind === "source" || selected.station.kind === "prompt"
+              ? "w-[min(36rem,46vw)]"
+              : "w-[380px]"
+          }`}
+        >
           <StagePanel
             station={selected.station}
             observations={selected.mapped}
