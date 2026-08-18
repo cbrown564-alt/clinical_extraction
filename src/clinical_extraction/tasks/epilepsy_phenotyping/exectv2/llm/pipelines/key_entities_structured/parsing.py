@@ -75,6 +75,8 @@ _ATTR_ALIASES: dict[str, dict[str, str]] = {
             "eeg_result": "EEG_Results",
             "mri_performed": "MRI_Performed",
             "mri_result": "MRI_Results",
+            "ct_performed": "CT_Performed",
+            "ct_result": "CT_Results",
         }
     ),
 }
@@ -143,6 +145,12 @@ _VALUE_ALIASES: dict[str, dict[str, str]] = {
     },
     "MRI_Performed": {"yes": "Yes", "no": "No"},
     "MRI_Results": {
+        "abnormal": "Abnormal",
+        "normal": "Normal",
+        "unknown": "Unknown",
+    },
+    "CT_Performed": {"yes": "Yes", "no": "No"},
+    "CT_Results": {
         "abnormal": "Abnormal",
         "normal": "Normal",
         "unknown": "Unknown",

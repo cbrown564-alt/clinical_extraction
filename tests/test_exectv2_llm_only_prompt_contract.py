@@ -478,7 +478,7 @@ def test_compact_is_authored_as_compact() -> None:
         "suggested_evidence",
         *structured.SHARED_RULE_SECTION_KEYS,
     ]
-    assert structured.compact_rule_count(payload["clinical_rules"]) == 52
+    assert structured.compact_rule_count(payload["clinical_rules"]) == 53
     assert payload["task"].startswith(
         "Read the clinical letter once. Use the suggested evidence"
     )
@@ -510,54 +510,59 @@ def test_compact_schema_is_flat_fact_events() -> None:
         "seizure_frequency",
         "investigation",
     ]
-    assert list(vocab["medication"]) == ["name", "dose", "unit", "frequency"]
-    assert "g or mg" in vocab["medication"]["unit"]
-    assert vocab["medication"]["frequency"] == ["1", "2", "3", "as_required"]
-    assert "multiple_seizures" in vocab["diagnosis"]["category"]
+    assert list(vocab["medication"]) == [
+        "DoseUnit",
+        "DrugDose",
+        "DrugName",
+        "Frequency",
+    ]
+    assert vocab["medication"]["DoseUnit"] == ["g", "mg"]
+    assert vocab["medication"]["Frequency"] == ["1", "2", "3", "As_Required"]
+    assert list(vocab["diagnosis"]) == ["DiagCategory"]
+    assert vocab["diagnosis"]["DiagCategory"] == [
+        "Epilepsy",
+        "MultipleSeizures",
+        "SingleSeizure",
+        "epilepsy",
+    ]
     assert "Certainty" not in vocab["diagnosis"]
+    assert "Certainty" not in vocab["seizure_frequency"]
     assert "Negation" not in vocab["seizure_frequency"]
-    assert set(vocab["seizure_frequency"]) == {
-        "age_lower",
-        "age_unit",
-        "age_upper",
-        "change",
-        "count",
-        "count_lower",
-        "count_upper",
-        "day",
-        "month",
-        "period",
-        "periods",
-        "periods_lower",
-        "periods_upper",
-        "point",
-        "when",
-        "year",
-    }
-    assert vocab["seizure_frequency"]["when"] == ["during", "since"]
-    assert vocab["seizure_frequency"]["point"] == [
-        "birthday",
-        "drug_change",
-        "last_clinic",
-        "last_month",
-        "last_week",
-        "last_year",
-        "surgery",
+    assert vocab["seizure_frequency"]["TimeSince_or_TimeOfEvent"] == [
+        "During",
+        "Since",
     ]
-    assert vocab["seizure_frequency"]["change"] == [
-        "decreased",
-        "frequent",
-        "increased",
-        "infrequent",
-        "same",
+    assert vocab["seizure_frequency"]["PointInTime"] == [
+        "Birthday",
+        "DrugChange",
+        "LastClinic",
+        "Last_Month",
+        "Last_Week",
+        "Last_Year",
+        "Surgery",
     ]
-    assert vocab["seizure_frequency"]["period"] == ["day", "week", "month", "year"]
-    assert vocab["seizure_frequency"]["age_unit"] == ["month", "year"]
+    assert vocab["seizure_frequency"]["FrequencyChange"] == [
+        "Decreased",
+        "Frequent",
+        "Increased",
+        "Infrequent",
+        "Same",
+    ]
+    assert vocab["seizure_frequency"]["TimePeriod"] == [
+        "Day",
+        "Month",
+        "Week",
+        "Year",
+        "days",
+    ]
+    assert vocab["seizure_frequency"]["AgeUnit"] == ["Month", "Year"]
     assert set(vocab["investigation"]) == {
-        "eeg_performed",
-        "eeg_result",
-        "mri_performed",
-        "mri_result",
+        "CT_Performed",
+        "CT_Results",
+        "EEG_Performed",
+        "EEG_Results",
+        "MRI_Performed",
+        "MRI_Results",
     }
 
     compact_text = json.dumps(
@@ -566,20 +571,17 @@ def test_compact_schema_is_flat_fact_events() -> None:
     assert "event_state" not in compact_text
     assert "EEG_Type" not in compact_text
     assert "EEG type" not in compact_text
-    assert "CT_Performed" not in compact_text
     assert "Certainty" not in compact_text
     assert "Negation" not in compact_text
     assert '"confidence"' not in compact_text
     assert "rationale" not in compact_text.lower()
     assert "mention text" not in compact_text
     assert "Return only clinical_events" not in compact_text
-    assert "Prescription" not in compact_text
-    assert "string copied from the letter" not in compact_text
-    assert "tonic chronic" not in compact_text
+    assert "Never write 'tonic chronic'" in compact_text
     assert "Keep, reject, split, or merge facts based only" not in compact_text
 
 
-def test_compact_seizure_rules_use_field_names() -> None:
+def test_compact_seizure_rules_keep_prior_wording() -> None:
     payload = json.loads(
         structured.build_prompt_input(
             _LETTER, prompt_version=structured.COMPACT_LEDGER
@@ -587,23 +589,26 @@ def test_compact_seizure_rules_use_field_names() -> None:
     )
     sf_rules = " ".join(payload["clinical_rules"]["seizure_frequency"])
     assert payload["categories"]["seizure_frequency"][2] == (
-        "qualitative_change: decreased, frequent, increased, infrequent, or same"
+        "qualitative_change: frequent/infrequent/increased/decreased/returned/controlled"
     )
     assert (
-        "must include count, count_lower, count_upper, change, "
-        "day, month, year, age_lower, or age_upper"
+        "must include NumberOfSeizures, LowerNumberOfSeizures, "
+        "FrequencyChange, TimeSince_or_TimeOfEvent, PointInTime, DayDate, "
+        "MonthDate, YearDate, AgeLower, or AgeUpper"
     ) in sf_rules
-    assert "when, point, and period are not enough on their own" in sf_rules
-    assert "Do not set change='returned'" in sf_rules
-    assert "count='0', when='since'" in sf_rules
-    assert "Do not use point for age" in sf_rules
-    assert "when='since' with a day, month, year, or point" in sf_rules
-    assert "Do not set change from 'well controlled'" in sf_rules
-    assert "since period" not in sf_rules
-    assert "since-age" not in sf_rules
-    assert "time point" not in sf_rules
-    assert "drug-change" not in sf_rules
-    assert "active-rate" not in sf_rules
+    assert "NumberOfSeizures='1', YearDate='2014'" in sf_rules
+    assert "TimeSince_or_TimeOfEvent='During'" in sf_rules
+    assert "TimeSince_or_TimeOfEvent='Since'" in sf_rules
+    assert "PointInTime='LastClinic'" in sf_rules
+    assert "TimePeriod='Week'" in sf_rules
+    assert "FrequencyChange only" in sf_rules
+    assert "since period is present" in sf_rules
+    assert "since-age time point" in sf_rules
+    assert "since, last, date, or drug-change frame" in sf_rules
+    assert "count='1'" not in sf_rules
+    assert "when='since'" not in sf_rules
+    assert "point='last_clinic'" not in sf_rules
+    assert "Do not set change='returned'" not in sf_rules
 
 
 def test_compact_llm_only_omits_suggested_evidence() -> None:
@@ -627,6 +632,7 @@ def test_compact_llm_only_omits_suggested_evidence() -> None:
     assert llm_only["family_guidance"] == compact["family_guidance"]
     assert "categories" not in llm_only
     assert list(llm_only["clinical_rules"]) == list(structured.SHARED_RULE_SECTION_KEYS)
+    assert structured.compact_rule_count(llm_only["clinical_rules"]) == 51
     assert llm_only["clinical_rules"] == {
         key: compact["clinical_rules"][key] for key in structured.SHARED_RULE_SECTION_KEYS
     }

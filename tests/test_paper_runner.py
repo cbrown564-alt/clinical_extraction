@@ -10,6 +10,7 @@ import pytest
 from clinical_extraction.paper.cli import run
 from clinical_extraction.paper.exect import (
     CANDIDATE_VERSION,
+    CONTROL_VERSION,
     GROK46_SLUG,
     HOSTED_SLUGS,
     LOCAL_SLUGS,
@@ -21,8 +22,10 @@ from clinical_extraction.paper.exect import (
     run_compact_reasoning_ablation,
     thinking_work_segment,
     verify_compact,
+    verify_full_ledger,
+    verify_llm_only,
 )
-from clinical_extraction.paper.gan import run_gan, verify_gan
+from clinical_extraction.paper.gan import _max_tokens_for, run_gan, verify_gan
 from clinical_extraction.paper.lm import (
     AI_GATEWAY_OPENAI_BASE,
     GROK46_LITELLM_MODEL,
@@ -129,8 +132,12 @@ def test_live_methods_are_the_paper_llm_cells() -> None:
         "gan_llm_only",
         "gan_llm_with_rules",
         "exect_llm_with_rules",
+        "exect_llm_only",
+        "exect_full_ledger",
     }
     split_for("exect_llm_with_rules", "dev140")
+    split_for("exect_llm_only", "dev140")
+    split_for("exect_full_ledger", "test60")
     split_for("gan_llm_with_rules", "test450")
     with pytest.raises(ValueError, match="does not use split"):
         split_for("exect_llm_with_rules", "test450")
@@ -142,7 +149,7 @@ def test_verify_compact_does_not_change_the_live_default() -> None:
     assert payload["ok"] is True
     assert payload["method"] == "exect_llm_with_rules"
     assert payload["candidate"] == CANDIDATE_VERSION == structured.COMPACT_LEDGER
-    assert payload["n_rules"] == 67
+    assert payload["n_rules"] == 53
     assert payload["n_examples"] == 0
     assert payload["authored_order"] is True
     assert payload["drops_research_metadata"] is True
@@ -151,6 +158,43 @@ def test_verify_compact_does_not_change_the_live_default() -> None:
     assert payload["hosted"] == list(HOSTED_SLUGS)
     assert payload["local"] == list(LOCAL_SLUGS)
     assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER
+
+
+def test_verify_llm_only_does_not_change_the_live_default() -> None:
+    before = structured.PROMPT_VERSION
+    payload = verify_llm_only(split="dev140", slug=GROK46_SLUG)
+    assert payload["ok"] is True
+    assert payload["method"] == "exect_llm_only"
+    assert payload["prompt_version"] == structured.EXECT_LLM_ONLY
+    assert payload["n_rules"] == 51
+    assert payload["n_examples"] == 0
+    assert payload["authored_order"] is True
+    assert payload["drops_research_metadata"] is True
+    assert payload["work_root"] == "experiments/paper/exect_llm_only"
+    assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER
+
+
+def test_verify_full_ledger_does_not_change_the_live_default() -> None:
+    before = structured.PROMPT_VERSION
+    payload = verify_full_ledger(split="dev140", slug=GROK46_SLUG)
+    assert payload["ok"] is True
+    assert payload["method"] == "exect_full_ledger"
+    assert payload["prompt_version"] == CONTROL_VERSION == structured.FULL_LEDGER
+    assert payload["n_examples"] > 0
+    assert payload["n_rules"] > 52
+    assert payload["split"] == "dev140"
+    assert payload["row_policy"] == "development_review_permitted"
+    assert payload["work_root"] == "experiments/paper/exect_full_ledger"
+    assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER
+
+
+def test_verify_full_ledger_test60_is_aggregate_only() -> None:
+    payload = verify_full_ledger(split="test60", slug=GROK46_SLUG)
+    assert payload["row_count"] == 59
+    assert payload["row_policy"] == "aggregate_only"
+    assert payload["test60_authorized"] is True
+    assert payload["holdout_scratch"] == "scratch/holdout/paper/exect_full_ledger"
+    assert structured.PROMPT_VERSION == structured.COMPACT_LEDGER
 
 
 def test_verify_compact_test60_is_aggregate_only() -> None:
@@ -187,6 +231,10 @@ def test_verify_gan_pins_paper_identities_without_changing_defaults() -> None:
     assert only["max_tokens"] == 1200
     deepseek_only = verify_gan("gan_llm_only", "dev750", "deepseek_v4_flash")
     assert deepseek_only["max_tokens"] == 24000
+    assert _max_tokens_for("gan_llm_only", "gpt56luna") == 1200
+    assert _max_tokens_for("gan_llm_only", "gpt56luna", "low") == 1200
+    assert _max_tokens_for("gan_llm_only", "gpt56luna", "medium") == 1200
+    assert _max_tokens_for("gan_llm_only", "gpt56luna", "high") == 16000
     assert hybrid["ok"] is True
     assert hybrid["model"] == "xai/grok-4.6"
     assert hybrid["method"] == "gan_llm_with_rules"
@@ -321,8 +369,24 @@ def test_cli_dispatches_grok46_compact(monkeypatch: pytest.MonkeyPatch) -> None:
         return {"ok": True, "method": "exect_llm_with_rules"}
 
     monkeypatch.setattr("clinical_extraction.paper.cli.run_compact", fake_compact)
+    monkeypatch.setattr(
+        "clinical_extraction.paper.cli.run_full_ledger",
+        lambda *args, **kwargs: {"ok": True, "method": "exect_full_ledger"},
+    )
+    monkeypatch.setattr(
+        "clinical_extraction.paper.cli.run_llm_only",
+        lambda *args, **kwargs: {"ok": True, "method": "exect_llm_only"},
+    )
     payload = run("exect_llm_with_rules", GROK46_SLUG, "dev140")
     assert payload == {"ok": True, "method": "exect_llm_with_rules"}
+    assert run("exect_full_ledger", GROK46_SLUG, "dev140") == {
+        "ok": True,
+        "method": "exect_full_ledger",
+    }
+    assert run("exect_llm_only", GROK46_SLUG, "dev140") == {
+        "ok": True,
+        "method": "exect_llm_only",
+    }
     assert captured == {
         "slug": GROK46_SLUG,
         "live": True,

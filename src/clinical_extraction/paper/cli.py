@@ -7,7 +7,15 @@ import json
 from collections.abc import Sequence
 from typing import Any
 
-from clinical_extraction.paper.exect import MODELS, run_compact, verify_compact
+from clinical_extraction.paper.exect import (
+    MODELS,
+    run_compact,
+    run_full_ledger,
+    run_llm_only,
+    verify_compact,
+    verify_full_ledger,
+    verify_llm_only,
+)
 from clinical_extraction.paper.exect_panel import promote_exect
 from clinical_extraction.paper.gan import run_gan, verify_gan
 from clinical_extraction.paper.gan_panel import promote_gan
@@ -94,6 +102,10 @@ def verify(method: str, split: str, slug: str | None = None) -> dict[str, Any]:
     spec = method_spec(method)
     split_for(method, split)
     if spec["task"] == "exectv2":
+        if method == "exect_full_ledger":
+            return verify_full_ledger(split=split, slug=slug)
+        if method == "exect_llm_only":
+            return verify_llm_only(split=split, slug=slug)
         return verify_compact(split=split, slug=slug)
     return verify_gan(method, split, slug)
 
@@ -115,6 +127,30 @@ def run(
     spec = method_spec(method)
     split_for(method, split)
     if spec["task"] == "exectv2":
+        if method == "exect_full_ledger":
+            return run_full_ledger(
+                slug,
+                live=True,
+                split=split,
+                overwrite=overwrite,
+                api_base=api_base,
+                timeout=timeout,
+                progress_every=progress_every,
+                thinking=thinking,
+                reasoning_effort=reasoning_effort,
+            )
+        if method == "exect_llm_only":
+            return run_llm_only(
+                slug,
+                live=True,
+                split=split,
+                overwrite=overwrite,
+                api_base=api_base,
+                timeout=timeout,
+                progress_every=progress_every,
+                thinking=thinking,
+                reasoning_effort=reasoning_effort,
+            )
         return run_compact(
             slug,
             live=True,

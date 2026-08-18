@@ -130,6 +130,35 @@ def test_parse_compact_short_attribute_names() -> None:
     }
 
 
+def test_parse_compact_ct_short_attribute_names() -> None:
+    raw = json.dumps(
+        {
+            "clinical_events": [
+                {
+                    "family": "investigation",
+                    "evidence": "CT head was abnormal.",
+                    "fact": "CT",
+                    "attributes": {
+                        "ct_performed": "yes",
+                        "ct_result": "abnormal",
+                    },
+                }
+            ]
+        }
+    )
+
+    record, errors = structured.parse_structured_events_json(raw)
+    mentions = structured.flatten_events(record) if record is not None else []
+
+    assert record is not None
+    assert not any(str(error).startswith("schema_validation_error:") for error in errors)
+    assert mentions[0].entity == INVESTIGATIONS.name
+    assert mentions[0].attributes == {
+        "CT_Performed": "Yes",
+        "CT_Results": "Abnormal",
+    }
+
+
 def test_parse_structured_events_coerces_nested_values() -> None:
     raw = json.dumps(
         {
@@ -413,3 +442,26 @@ def test_v26_missing_event_does_not_fail_the_letter() -> None:
     assert record.clinical_events[0].mentions == []
     assert [mention.entity for mention in mentions] == [DIAGNOSIS.name]
     assert mentions[0].text == "focal epilepsy"
+
+
+def test_parse_compact_recovers_extra_trailing_brace() -> None:
+    raw = (
+        '{"clinical_events":[{"family":"investigation","evidence":'
+        '"MRI 2019 right occipital lobe infarct","fact":'
+        '"MRI 2019 right occipital lobe infarct","attributes":'
+        '{"mri_performed":"yes","mri_result":"abnormal"}}}]}'
+    )
+
+    record, errors = structured.parse_structured_events_json(raw)
+    mentions = structured.flatten_events(record) if record is not None else []
+
+    assert record is not None
+    assert not any(str(error).startswith("invalid_json:") for error in errors)
+    assert "json_dialect_repaired: unmatched_container_close" in errors
+    assert [event.family for event in record.clinical_events] == ["investigation"]
+    assert mentions[0].entity == INVESTIGATIONS.name
+    assert mentions[0].text == "MRI 2019 right occipital lobe infarct"
+    assert mentions[0].attributes == {
+        "MRI_Performed": "Yes",
+        "MRI_Results": "Abnormal",
+    }

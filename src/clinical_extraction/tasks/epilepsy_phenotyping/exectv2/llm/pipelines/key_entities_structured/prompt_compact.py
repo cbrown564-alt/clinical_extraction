@@ -86,16 +86,16 @@ _LLM_ONLY_DECISION_PROCEDURE = [
 
 _FAMILY_GUIDANCE = {
     "medication": (
-        "Anti-seizure medicines. Include name, dose, unit, and frequency when "
-        "stated. Copy the medication wording from the letter: the full short "
-        "regimen when it appears in a list, or the drug name alone when that "
-        "is all the note states."
+        "Anti-seizure medicines. Include DrugName, DrugDose, DoseUnit, and "
+        "Frequency when stated. Copy the medication wording from the letter: "
+        "the full short regimen when it appears in a list, or the drug name "
+        "alone when that is all the note states."
     ),
     "diagnosis": (
         "Diagnoses such as epilepsy, focal epilepsy, seizure disorder, or "
-        "named seizure types. Include category. Do not include vague symptoms "
-        "or non-epileptic alternatives unless the letter states they are "
-        "epileptic diagnoses, even when they appear under a diagnosis or "
+        "named seizure types. Include DiagCategory. Do not include vague "
+        "symptoms or non-epileptic alternatives unless the letter states they "
+        "are epileptic diagnoses, even when they appear under a diagnosis or "
         "problem-list heading."
     ),
     "seizure_frequency": (
@@ -106,8 +106,9 @@ _FAMILY_GUIDANCE = {
         "unless the letter states they are epileptic seizures."
     ),
     "investigation": (
-        "EEG and MRI statements. Include performed and result attributes only "
-        "for completed tests or tests with a result, not planned repeats or a "
+        "EEG, MRI, and CT statements. Include EEG_Performed, EEG_Results, "
+        "MRI_Performed, MRI_Results, CT_Performed, and CT_Results only for "
+        "completed tests or tests with a result, not planned repeats or a "
         "test name with no result."
     ),
 }
@@ -125,55 +126,57 @@ _OUTPUT_SCHEMA = {
 
 _ATTRIBUTE_VOCABULARY: dict[str, dict[str, Any]] = {
     "medication": {
-        "name": "Drug name as written.",
-        "dose": "Numeric dose only, without the unit.",
-        "unit": "g or mg, matching the letter.",
-        "frequency": ["1", "2", "3", "as_required"],
+        "DoseUnit": ["g", "mg"],
+        "DrugDose": "string copied from the letter.",
+        "DrugName": "string copied from the letter.",
+        "Frequency": ["1", "2", "3", "As_Required"],
     },
     "diagnosis": {
-        "category": (
-            "epilepsy for an epilepsy syndrome or diagnosis; "
-            "multiple_seizures for a plural named seizure type; "
-            "single_seizure for one named seizure event."
-        ),
+        "DiagCategory": [
+            "Epilepsy",
+            "MultipleSeizures",
+            "SingleSeizure"
+        ],
     },
     "seizure_frequency": {
-        "count": "Exact integer number of seizures. Do not put a range here.",
-        "count_lower": "Lower bound of a seizure-count range.",
-        "count_upper": "Upper bound of a seizure-count range.",
-        "periods": "How many time units the rate uses when the count is exact.",
-        "periods_lower": "Lower bound of a time-unit range, as in every 3 to 4 weeks.",
-        "periods_upper": "Upper bound of a time-unit range.",
-        "period": ["day", "week", "month", "year"],
-        "day": "Calendar day number, 1-31, when the letter dates the event.",
-        "month": "Calendar month number, 1-12, when the letter dates the event.",
-        "year": "Four-digit year when the letter dates the event.",
-        "when": ["during", "since"],
-        "point": [
-            "birthday",
-            "drug_change",
-            "last_clinic",
-            "last_month",
-            "last_week",
-            "last_year",
-            "surgery",
+        "AgeLower": "string copied from the letter.",
+        "AgeUnit": ["Month", "Year"],
+        "AgeUpper": "string copied from the letter.",
+        "DayDate": "string copied from the letter.",
+        "FrequencyChange": [
+            "Decreased",
+            "Frequent",
+            "Increased",
+            "Infrequent",
+            "Same",
         ],
-        "change": [
-            "decreased",
-            "frequent",
-            "increased",
-            "infrequent",
-            "same",
+        "LowerNumberOfSeizures": "string copied from the letter.",
+        "LowerNumberOfTimePeriods": "string copied from the letter.",
+        "MonthDate": "string copied from the letter.",
+        "NumberOfSeizures": "string copied from the letter.",
+        "NumberOfTimePeriods": "string copied from the letter.",
+        "PointInTime": [
+            "Birthday",
+            "DrugChange",
+            "LastClinic",
+            "Last_Month",
+            "Last_Week",
+            "Last_Year",
+            "Surgery",
         ],
-        "age_lower": "Lower age bound when the letter uses age.",
-        "age_upper": "Upper age bound when the letter uses age.",
-        "age_unit": ["month", "year"],
+        "TimePeriod": ["Day", "Month", "Week", "Year"],
+        "TimeSince_or_TimeOfEvent": ["During", "Since"],
+        "UpperNumberOfSeizures": "string copied from the letter.",
+        "UpperNumberOfTimePeriods": "string copied from the letter.",
+        "YearDate": "string copied from the letter.",
     },
     "investigation": {
-        "eeg_performed": "yes if an EEG was done; no if the letter says it was not.",
-        "eeg_result": "normal, abnormal, or unknown, only when a result is stated.",
-        "mri_performed": "yes if an MRI was done; no if the letter says it was not.",
-        "mri_result": "normal, abnormal, or unknown, only when a result is stated.",
+        "CT_Performed": ["No", "Yes"],
+        "CT_Results": ["Abnormal", "Normal", "Unknown"],
+        "EEG_Performed": ["No", "Yes"],
+        "EEG_Results": ["Abnormal", "Normal", "Unknown"],
+        "MRI_Performed": ["No", "Yes"],
+        "MRI_Results": ["Abnormal", "Normal", "Unknown"],
     },
 }
 
@@ -193,11 +196,11 @@ _CATEGORIES = {
     "seizure_frequency": [
         "active_rate: count or rate for generic or named seizures",
         "seizure_free_anchor: no further seizures, seizure-free, last seizure/event date",
-        "qualitative_change: decreased, frequent, increased, infrequent, or same",
+        "qualitative_change: frequent/infrequent/increased/decreased/returned/controlled",
         "reject: diagnosis-only, family history, unnamed events, or an old best period",
     ],
     "investigation": [
-        "performed_investigation: completed MRI/EEG/telemetry, especially with result",
+        "performed_investigation: completed MRI/CT/EEG/telemetry, especially with result",
         "planned_investigation: arrange/request/repeat/future/follow-up",
         "reject: a test name with no completed or result status",
     ],
@@ -275,6 +278,10 @@ _SHARED_RULE_SECTIONS: dict[str, list[str]] = {
         "of a named seizure type such as 'focal seizures with altered awareness'."
     ),
     (
+        "For tonic-clonic seizure wording, preserve 'tonic clonic' or "
+        "'tonic-clonic'. Never write 'tonic chronic'."
+    ),
+    (
         "A problem-list or diagnosis header is not enough by itself: still "
         "exclude anxiety, dissociative/non-epileptic events, blackouts, "
         "collapse, and loss of consciousness from diagnosis unless the phrase "
@@ -289,9 +296,9 @@ _SHARED_RULE_SECTIONS: dict[str, list[str]] = {
     ),
     (
         "Never include a seizure-frequency event with empty attributes. A "
-        "valid event must include count, count_lower, count_upper, change, "
-        "day, month, year, age_lower, or age_upper. when, point, and period "
-        "are not enough on their own."
+        "valid event must include NumberOfSeizures, LowerNumberOfSeizures, "
+        "FrequencyChange, TimeSince_or_TimeOfEvent, PointInTime, DayDate, "
+        "MonthDate, YearDate, AgeLower, or AgeUpper."
     ),
     (
         "For seizure-frequency wording, use the generic seizure phrase when "
@@ -311,16 +318,16 @@ _SHARED_RULE_SECTIONS: dict[str, list[str]] = {
         "When a seizure-frequency heading names a plural seizure type "
         "followed only by a year or date, treat it as one dated occurrence "
         "of that named type unless another count is attached to that same "
-        "type. For example, 'absence like seizures 2014' has count='1', "
-        "year='2014', and when='during'."
+        "type. For example, 'absence like seizures 2014' has "
+        "NumberOfSeizures='1', YearDate='2014', and "
+        "TimeSince_or_TimeOfEvent='During'."
     ),
     (
         "Statements that seizures have returned or have been experienced "
-        "since a triggering event are active seizure states. Use count, "
-        "count_lower, periods, period, day, month, year, when, or point "
-        "when the letter states them. Do not set change='returned'. If the "
-        "letter names current seizures but gives no count, date, when, "
-        "point, or change, do not invent a rate."
+        "since a triggering event are active seizure states. Use active-rate "
+        "attributes when a count, cadence, date, or since period is present. "
+        "If the letter names current seizures but gives no count, cadence, "
+        "change, or seizure-free time frame, do not invent a rate."
     ),
     (
         "When a named seizure-frequency statement says 'focal seizures with "
@@ -363,14 +370,14 @@ _SHARED_RULE_SECTIONS: dict[str, list[str]] = {
     ),
     (
         "Onset-history statements such as 'seizures since the age of 13' are "
-        "not seizure frequency by themselves. Include them only when the same "
-        "sentence says the last seizures were in a past age range. Then use "
-        "count='0', when='since', and the stated age_lower, age_upper, and "
-        "age_unit. Do not use point for age."
+        "not seizure frequency by themselves. Use them only as a seizure-free "
+        "since-age time point when the same sentence says the last seizures "
+        "were in a past age range such as the teenage years."
     ),
     (
         "For seizure-frequency ranges, never write values like '2 to 3', "
-        "'2-4', or '3 or 4' in count. Use count_lower and count_upper instead."
+        "'2-4', or '3 or 4' in NumberOfSeizures. Use LowerNumberOfSeizures "
+        "and UpperNumberOfSeizures instead."
     ),
     (
         "For approximate count words without exact numbers, use conservative "
@@ -378,33 +385,37 @@ _SHARED_RULE_SECTIONS: dict[str, list[str]] = {
         "'couple'='2', 'few'='2', and 'several'='3'."
     ),
     (
-        "For interval rates such as 'one every 3 to 4 weeks', set count='1', "
-        "periods_lower='3', periods_upper='4', and period='week'. Do not "
-        "convert the interval into 3 to 4 seizures."
+        "For interval rates such as 'one every 3 to 4 weeks', set "
+        "NumberOfSeizures='1', LowerNumberOfTimePeriods='3', "
+        "UpperNumberOfTimePeriods='4', and TimePeriod='Week'. Do not convert "
+        "the interval into 3 to 4 seizures."
     ),
     (
         "For cluster statements, keep the cluster as the clinical event when "
         "the note counts clusters, for example fact 'cluster of seizures' with "
-        "count='1' and the stated date or time frame."
+        "NumberOfSeizures='1' and the stated date or time frame."
     ),
     (
         "For frequency-change statements without an exact count, include a "
-        "seizure-frequency event with change only: decreased, frequent, "
-        "increased, infrequent, or same."
+        "seizure-frequency event with FrequencyChange only: Decreased, "
+        "Frequent, Increased, Infrequent, or Same."
     ),
     (
-        "For dated counts such as '2 to 3 in March', use count_lower and "
-        "count_upper plus month or year and when='during'; do not invent "
-        "period='month' unless the note says per month."
+        "For dated counts such as '2 to 3 in March', use "
+        "LowerNumberOfSeizures and UpperNumberOfSeizures plus MonthDate or "
+        "YearDate and TimeSince_or_TimeOfEvent='During'; do not invent "
+        "TimePeriod='Month' unless the note says per month."
     ),
     (
-        "For 'since last clinic', use when='since' and point='last_clinic'; "
-        "do not put 'since last clinic' in period."
+        "For 'since last clinic', use TimeSince_or_TimeOfEvent='Since' and "
+        "PointInTime='LastClinic'; do not put 'since last clinic' in "
+        "TimePeriod."
     ),
     (
-        "For last-event or seizure-free statements, use count='0' with "
-        "when='since' and the stated month, year, or point. Do not convert "
-        "last-event dates into an annual recurring rate."
+        "For last-event or seizure-free statements, use NumberOfSeizures='0' "
+        "with TimeSince_or_TimeOfEvent='Since' and the stated MonthDate, "
+        "YearDate, or PointInTime. Do not convert last-event dates into an "
+        "annual recurring rate."
     ),
     (
         "Phrases like 'last seizure', 'last event', or 'has had none since' "
@@ -432,11 +443,10 @@ _SHARED_RULE_SECTIONS: dict[str, list[str]] = {
     ),
     (
         "Do not include a bare seizure-free or 'well controlled' "
-        "seizure-frequency event unless it names the seizure type and gives "
-        "when='since' with a day, month, year, or point, including "
-        "drug_change. Do not set change from 'well controlled'. Phrases such "
-        "as 'remains seizure free and is now driving' or 'seizures were well "
-        "controlled on medication' are not enough on their own."
+        "seizure-frequency event unless it names the seizure type and gives a "
+        "since, last, date, or drug-change frame. Phrases such as 'remains "
+        "seizure free and is now driving' or 'seizures were well controlled "
+        "on medication' are not enough on their own."
     ),
     (
         "Do not use a pointing phrase such as 'these seizures', 'such "
@@ -468,13 +478,13 @@ _SHARED_RULE_SECTIONS: dict[str, list[str]] = {
         "If a current regimen gives unequal time-of-day doses such as "
         "'Epilim 300 mg mane and 600 mg nocte' or 'Lamictal 100 mg in the "
         "morning, 175 mg in the afternoon', include separate medication "
-        "events with frequency='1'. Do not mark these current scheduled "
-        "doses as as_required."
+        "events with Frequency='1'. Do not mark these current scheduled "
+        "doses as As_Required."
     ),
     (
         "When the current regimen says 'twice a day', 'twice daily', or "
-        "'bd', include frequency='2'; when it says once daily, mane, nocte, "
-        "morning, or evening, include frequency='1'."
+        "'bd', include Frequency='2'; when it says once daily, mane, nocte, "
+        "morning, or evening, include Frequency='1'."
     ),
     (
         "For medication list entries that contain a compact regimen, write "
@@ -486,8 +496,8 @@ _SHARED_RULE_SECTIONS: dict[str, list[str]] = {
     "investigation": [
     (
         "ECG is not one of the requested investigations. Never map ECG to "
-        "EEG or MRI, and do not include an investigation event from ECG-only "
-        "evidence."
+        "EEG, MRI, or CT, and do not include an investigation event from "
+        "ECG-only evidence."
     ),
     (
         "If the test sentence contains 'will', 'arrange', 'request', "

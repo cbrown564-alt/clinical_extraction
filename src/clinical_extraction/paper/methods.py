@@ -23,6 +23,16 @@ LIVE_METHODS: dict[str, dict[str, object]] = {
         "splits": ("dev140", "test60"),
         "prompt_attr": "COMPACT_LEDGER",
     },
+    "exect_llm_only": {
+        "task": "exectv2",
+        "splits": ("dev140", "test60"),
+        "prompt_attr": "EXECT_LLM_ONLY",
+    },
+    "exect_full_ledger": {
+        "task": "exectv2",
+        "splits": ("dev140", "test60"),
+        "prompt_attr": "FULL_LEDGER",
+    },
 }
 
 HOLDOUT_SPLITS = frozenset({"test450", "test60"})
