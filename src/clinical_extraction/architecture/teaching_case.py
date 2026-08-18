@@ -28,6 +28,16 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
+from clinical_extraction.architecture.fact_lineage import (
+    GoldUnit,
+    PredictedFact,
+    attach_run_gold,
+    build_exect_facts,
+    build_gan_hybrid_facts,
+    build_gan_llm_facts,
+    build_gan_rules_facts,
+    empty_gold_unit,
+)
 from clinical_extraction.architecture.stage_manifest import MethodManifest, load_manifest
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
@@ -581,6 +591,8 @@ class MethodRun:
     method_id: str
     manifest: MethodManifest
     observations: list[StageObservation] = field(default_factory=list)
+    facts: list[PredictedFact] = field(default_factory=list)
+    gold_unit: GoldUnit = field(default_factory=lambda: empty_gold_unit(""))
     final_answer: str = ""
     correct: bool | None = None
     correctness_note: str = ""
@@ -626,6 +638,8 @@ class MethodRun:
             "correct": self.correct,
             "correctness_note": self.correctness_note,
             "observations": [obs.to_dict() for obs in self.observations],
+            "facts": [fact.to_dict() for fact in self.facts],
+            "gold_unit": self.gold_unit.to_dict(),
         }
 
 
@@ -826,6 +840,16 @@ def _gan_rules_only_run(spec: GanCaseSpec) -> MethodRun:
         note="A gate: it accepts or rejects, it does not rewrite the answer.",
     )
     _gan_scoring(run, "gan.rules.score", result.output.final_value, gold_label=spec.gold)
+    run.facts = build_gan_rules_facts(
+        spec.note_text,
+        candidates,
+        normalized,
+        selection,
+        result.output.final_value,
+        run,
+        gold_label=spec.gold,
+    )
+    attach_run_gold(run, spec.gold, spec.gold_note)
     return run
 
 
@@ -906,6 +930,17 @@ def _gan_llm_only_run(spec: GanCaseSpec) -> MethodRun:
         changed=False,
     )
     _gan_scoring(run, "gan.llm.score", final_label, gold_label=spec.gold)
+    run.facts = build_gan_llm_facts(
+        spec.note_text,
+        decision.evidence if decision else "",
+        str(adapter["before_label"] or ""),
+        str(adapter["after_label"] or ""),
+        final_label,
+        run,
+        gold_label=spec.gold,
+        method_prefix="gan.llm",
+    )
+    attach_run_gold(run, spec.gold, spec.gold_note)
     return run
 
 
@@ -1043,6 +1078,27 @@ def _gan_llm_with_rules_run(spec: GanCaseSpec) -> MethodRun:
         ),
     )
     _gan_scoring(run, "gan.llm_with_rules.score", final_label, gold_label=spec.gold)
+    model_events = []
+    if extraction is not None:
+        model_events = list(extraction.events)
+    elif trace["model_prediction"]["record"]:
+        model_events = list(trace["model_prediction"]["record"].get("events") or [])
+    run.facts = build_gan_hybrid_facts(
+        spec.note_text,
+        model_events,
+        normalized_events,
+        {
+            "selected_event_ids": selection_block["selected_event_ids"],
+            "model_final_label": selection_block["model_final_label"],
+            "resolved_label": selection_block["resolved_label"],
+            "evidence": evidence,
+        },
+        walk,
+        final_label,
+        run,
+        gold_label=spec.gold,
+    )
+    attach_run_gold(run, spec.gold, spec.gold_note)
     return run
 
 
@@ -1309,6 +1365,16 @@ def _exect_rules_only_run(letter: Any | None = None) -> MethodRun:
         nine_entity=True,
         letter=letter,
     )
+    comparison = getattr(result, "comparison_projection", None)
+    mentions = comparison.mentions if comparison is not None else result.prediction.mentions
+    run.facts = build_exect_facts(
+        letter,
+        mentions,
+        result.stage_events,
+        run,
+        gold_label=_exect_gold_label(letter),
+    )
+    attach_run_gold(run, _exect_gold_label(letter))
     return run
 
 
@@ -1355,6 +1421,14 @@ def _exect_llm_only_run(
         nine_entity=False,
         letter=letter,
     )
+    run.facts = build_exect_facts(
+        letter,
+        result.prediction.mentions,
+        result.stage_events,
+        run,
+        gold_label=_exect_gold_label(letter),
+    )
+    attach_run_gold(run, _exect_gold_label(letter))
     return run
 
 
@@ -1414,7 +1488,22 @@ def _exect_llm_with_rules_run(
         nine_entity=False,
         letter=letter,
     )
+    run.facts = build_exect_facts(
+        letter,
+        result.prediction.mentions,
+        result.stage_events,
+        run,
+        gold_label=_exect_gold_label(letter),
+    )
+    attach_run_gold(run, _exect_gold_label(letter))
     return run
+
+
+def _exect_gold_label(letter: Any) -> str:
+    annotations = getattr(letter, "annotations", None)
+    if annotations:
+        return f"{len(annotations)} gold annotations"
+    return "(no gold annotations)"
 
 
 def _structured_row(letter: Any, predicted: Any, gate_warnings: Any) -> dict[str, Any]:
