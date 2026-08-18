@@ -25,6 +25,46 @@ export const EXECT_LENS_CATALOG: CatalogItem[] = [
   { id: "investigations", label: "Investigations", stageIdPattern: "lens.investigations" },
 ];
 
+export const GAN_SCHEMA_CATALOG: CatalogItem[] = [
+  { id: "json_schema_repair", label: "JSON shape", stageIdPattern: "json_schema_repair" },
+  { id: "format_only_retry", label: "Format-only retry", stageIdPattern: "format_only_retry" },
+  { id: "schema_validation", label: "Schema validation", stageIdPattern: "schema_validation" },
+];
+
+export const GAN_NORMALIZE_CATALOG: CatalogItem[] = [
+  { id: "rules_extract", label: "Extract candidates", stageIdPattern: "gan.rules.extract" },
+  { id: "normalize_events", label: "Normalize events", stageIdPattern: "normalize" },
+  { id: "resolve_label", label: "Resolve label", stageIdPattern: "resolve_label" },
+  { id: "select_and_render", label: "Select and render", stageIdPattern: "select_and_render" },
+];
+
+export const GAN_EVIDENCE_CATALOG: CatalogItem[] = [
+  { id: "scorable", label: "Scorable label", stageIdPattern: "scorable_label_check" },
+  { id: "containment", label: "Verbatim evidence", stageIdPattern: "evidence_containment" },
+  { id: "trace", label: "Evidence trace", stageIdPattern: "evidence_trace_check" },
+  { id: "selected_evidence_repair", label: "Selected-evidence repair", stageIdPattern: "selected_evidence_repair" },
+];
+
+export const EXECT_PARSE_CATALOG: CatalogItem[] = [
+  { id: "parse", label: "Parse and retry", stageIdPattern: "parse" },
+];
+
+export const EXECT_FLATTEN_CATALOG: CatalogItem[] = [
+  { id: "extract_sf", label: "Extract seizure frequency", stageIdPattern: "extract_seizure_frequency" },
+  { id: "extract_entities", label: "Extract entities", stageIdPattern: "extract_entities" },
+  { id: "flatten", label: "Flatten mentions", stageIdPattern: "flatten" },
+  { id: "project_and_gate", label: "Project and gate", stageIdPattern: "project_and_gate" },
+  { id: "sf_state", label: "Seizure-frequency state", stageIdPattern: "sf_state_projection" },
+  { id: "sf_unknown", label: "Unknown suppression", stageIdPattern: "sf_unknown_suppression" },
+  { id: "dedupe", label: "Dedupe", stageIdPattern: "dedupe" },
+  { id: "raw_candidate", label: "Raw candidate", stageIdPattern: "raw_candidate" },
+];
+
+export const EXECT_SCORE_CATALOG: CatalogItem[] = [
+  { id: "materialize", label: "Scoring views", stageIdPattern: "materialize_views" },
+  { id: "score", label: "Fact match", stageIdPattern: "score" },
+];
+
 export const GAN_STATIONS: StationLayoutNode[] = [
   {
     id: "gan_source",
@@ -49,12 +89,14 @@ export const GAN_STATIONS: StationLayoutNode[] = [
     name: "Schema",
     alwaysDoes: "Make the output parseable. No clinical rewrite.",
     kind: "schema",
+    catalog: GAN_SCHEMA_CATALOG,
   },
   {
     id: "gan_normalize",
     name: "Normalize",
     alwaysDoes: "Turn events into the scored representation.",
     kind: "normalize",
+    catalog: GAN_NORMALIZE_CATALOG,
   },
   {
     id: "gan_repair",
@@ -68,6 +110,7 @@ export const GAN_STATIONS: StationLayoutNode[] = [
     name: "Evidence",
     alwaysDoes: "Require a verbatim span. Drop or fail if it is missing.",
     kind: "evidence",
+    catalog: GAN_EVIDENCE_CATALOG,
   },
   {
     id: "gan_score",
@@ -101,12 +144,14 @@ export const EXECT_STATIONS: StationLayoutNode[] = [
     name: "Parse",
     alwaysDoes: "Make the model output parseable. No clinical rewrite.",
     kind: "schema",
+    catalog: EXECT_PARSE_CATALOG,
   },
   {
     id: "exect_flatten",
     name: "Flatten",
     alwaysDoes: "Turn mentions into findings and project seizure-frequency state.",
     kind: "flatten",
+    catalog: EXECT_FLATTEN_CATALOG,
   },
   {
     id: "exect_store",
@@ -132,6 +177,7 @@ export const EXECT_STATIONS: StationLayoutNode[] = [
     name: "Score",
     alwaysDoes: "Materialize scoring views and fact-match.",
     kind: "score",
+    catalog: EXECT_SCORE_CATALOG,
   },
 ];
 
@@ -204,6 +250,18 @@ export function catalogMatches(item: CatalogItem, obs: StageObservationData): bo
   return obs.stage_id.includes(item.stageIdPattern);
 }
 
+export function effectiveCatalog(
+  station: StationLayoutNode,
+  mapped: StageObservationData[]
+): CatalogItem[] {
+  if (station.catalog && station.catalog.length > 0) return station.catalog;
+  return mapped.map((obs) => ({
+    id: obs.stage_id,
+    label: obs.stage_name,
+    stageIdPattern: obs.stage_id,
+  }));
+}
+
 export function stationActivation(
   station: StationLayoutNode,
   mapped: StageObservationData[]
@@ -212,22 +270,23 @@ export function stationActivation(
     return { activation: "on", onCount: 1, catalogSize: 0 };
   }
 
+  const catalog = effectiveCatalog(station, mapped);
   if (mapped.length === 0) {
-    return { activation: "skipped", onCount: 0, catalogSize: station.catalog?.length ?? 0 };
+    return { activation: "skipped", onCount: 0, catalogSize: catalog.length };
   }
 
-  if (station.catalog && station.catalog.length > 0) {
-    const onCount = station.catalog.filter((item) =>
+  if (catalog.length > 1) {
+    const onCount = catalog.filter((item) =>
       mapped.some((obs) => catalogMatches(item, obs) && obs.changed)
     ).length;
     return {
       activation: onCount > 0 ? "on" : "idle",
       onCount,
-      catalogSize: station.catalog.length,
+      catalogSize: catalog.length,
     };
   }
 
-  return { activation: "on", onCount: mapped.length, catalogSize: 0 };
+  return { activation: "on", onCount: mapped.length, catalogSize: catalog.length };
 }
 
 export interface StationPoint {
@@ -266,7 +325,7 @@ export function activationLabel(
 ): string {
   switch (activation) {
     case "on":
-      if (catalogSize > 0) return `on · ${onCount} of ${catalogSize}`;
+      if (catalogSize > 1) return `on · ${onCount} of ${catalogSize}`;
       return "on";
     case "idle":
       return "idle";

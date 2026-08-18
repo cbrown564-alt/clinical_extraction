@@ -6,7 +6,7 @@ import type {
   TeachingCaseData,
   TeachingRunData,
 } from "@/lib/isometricTypes";
-import { ACCENT, catalogMatches } from "@/lib/isometricLayout";
+import { ACCENT, catalogMatches, effectiveCatalog } from "@/lib/isometricLayout";
 
 interface StagePanelProps {
   station: StationLayoutNode;
@@ -30,26 +30,23 @@ export default function StagePanel({
   onClose,
 }: StagePanelProps) {
   const fired = observations.filter((obs) => obs.changed);
-  const catalog = station.catalog ?? [];
+  const catalog = effectiveCatalog(station, observations);
 
   const thisCaseLines =
     station.kind === "source"
       ? [activeCase ? `${activeCase.letter_id}. ${activeCase.story}` : "No letter loaded."]
       : station.kind === "score" && activeRun
-        ? [
-            activeRun.final_answer,
-            activeRun.correctness_note,
-          ].filter((line) => line.trim().length > 0)
-      : catalog.length > 0
-        ? catalog
+        ? [activeRun.final_answer, activeRun.correctness_note].filter(
+            (line) => line.trim().length > 0
+          )
+        : catalog
             .filter((item) =>
               observations.some((obs) => catalogMatches(item, obs) && obs.changed)
             )
             .map((item) => {
               const obs = observations.find((o) => catalogMatches(item, o) && o.changed);
               return obs?.note ? `${item.label}: ${obs.note}` : item.label;
-            })
-        : observations.map((obs) => obs.note || obs.stage_name);
+            });
 
   return (
     <aside className="flex h-full w-full flex-col border-l border-neutral-200 bg-white text-neutral-900">
