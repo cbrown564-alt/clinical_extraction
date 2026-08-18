@@ -15,11 +15,23 @@ export const GAN_REPAIR_RULES = [
 
 export const GAN_STATIONS: StationLayoutNode[] = [
   {
+    id: "gan_letterhead",
+    label: "Clinical Letterhead",
+    shortLabel: "Letterhead",
+    gridX: -0.5,
+    gridY: 0.2,
+    elevation: 0,
+    owner: "deterministic",
+    effectClass: "transport_or_schema",
+    stageIdPattern: "letterhead",
+    visualType: "letterhead",
+  },
+  {
     id: "gan_prompt",
     label: "Prompt & Ingest Bay",
     shortLabel: "Ingest Bay",
-    gridX: 0.5,
-    gridY: 0.5,
+    gridX: 2.5,
+    gridY: 0.2,
     elevation: 0,
     owner: "deterministic",
     effectClass: "transport_or_schema",
@@ -30,8 +42,8 @@ export const GAN_STATIONS: StationLayoutNode[] = [
     id: "gan_model",
     label: "Model Structured Extractor",
     shortLabel: "Neural Core",
-    gridX: 3.2,
-    gridY: 0.5,
+    gridX: 5.6,
+    gridY: 0.2,
     elevation: 6,
     owner: "model",
     effectClass: "clinical_meaning",
@@ -42,8 +54,8 @@ export const GAN_STATIONS: StationLayoutNode[] = [
     id: "gan_schema",
     label: "Schema Repair & Retry Gate",
     shortLabel: "Schema Gate",
-    gridX: 5.8,
-    gridY: 0.8,
+    gridX: 8.6,
+    gridY: 0.6,
     elevation: 3,
     owner: "deterministic",
     effectClass: "transport_or_schema",
@@ -55,8 +67,8 @@ export const GAN_STATIONS: StationLayoutNode[] = [
     id: "gan_normalizer",
     label: "Event Normalizer & Resolver",
     shortLabel: "Resolver",
-    gridX: 5.6,
-    gridY: 2.8,
+    gridX: 7.8,
+    gridY: 3.2,
     elevation: 3,
     owner: "deterministic",
     effectClass: "representation",
@@ -67,8 +79,8 @@ export const GAN_STATIONS: StationLayoutNode[] = [
     id: "gan_repair_bay",
     label: "10-Family Repair Bay",
     shortLabel: "Repair Bay",
-    gridX: 2.4,
-    gridY: 2.5,
+    gridX: 4.4,
+    gridY: 3.4,
     elevation: 7,
     owner: "deterministic",
     effectClass: "clinical_meaning",
@@ -81,8 +93,8 @@ export const GAN_STATIONS: StationLayoutNode[] = [
     id: "gan_evidence_gate",
     label: "Evidence Verbatim Gate",
     shortLabel: "Evidence Gate",
-    gridX: 1.8,
-    gridY: 5.0,
+    gridX: 2.0,
+    gridY: 5.2,
     elevation: 3,
     owner: "deterministic",
     effectClass: "validation_gate",
@@ -95,7 +107,7 @@ export const GAN_STATIONS: StationLayoutNode[] = [
     label: "Purist / Pragmatic Scorer",
     shortLabel: "Scoreboard",
     gridX: 5.6,
-    gridY: 4.8,
+    gridY: 5.6,
     elevation: 5,
     owner: "scorer",
     effectClass: "benchmark_projection",
@@ -106,11 +118,23 @@ export const GAN_STATIONS: StationLayoutNode[] = [
 
 export const EXECT_STATIONS: StationLayoutNode[] = [
   {
+    id: "exect_letterhead",
+    label: "Clinical Letterhead",
+    shortLabel: "Letterhead",
+    gridX: -0.5,
+    gridY: 0.2,
+    elevation: 0,
+    owner: "deterministic",
+    effectClass: "transport_or_schema",
+    stageIdPattern: "letterhead",
+    visualType: "letterhead",
+  },
+  {
     id: "exect_prompt",
     label: "4-Family Prompt Bay",
     shortLabel: "Ingest Bay",
-    gridX: 0.5,
-    gridY: 0.5,
+    gridX: 2.2,
+    gridY: 0.2,
     elevation: 0,
     owner: "deterministic",
     effectClass: "transport_or_schema",
@@ -121,8 +145,8 @@ export const EXECT_STATIONS: StationLayoutNode[] = [
     id: "exect_model",
     label: "4-Family Structured LLM",
     shortLabel: "Neural Core",
-    gridX: 3.2,
-    gridY: 0.5,
+    gridX: 5.0,
+    gridY: 0.2,
     elevation: 6,
     owner: "model",
     effectClass: "clinical_meaning",
@@ -133,8 +157,8 @@ export const EXECT_STATIONS: StationLayoutNode[] = [
     id: "exect_parse",
     label: "Parse & Local Format-Retry",
     shortLabel: "Parse Gate",
-    gridX: 5.8,
-    gridY: 0.8,
+    gridX: 7.8,
+    gridY: 0.6,
     elevation: 3,
     owner: "deterministic",
     effectClass: "transport_or_schema",
@@ -146,7 +170,7 @@ export const EXECT_STATIONS: StationLayoutNode[] = [
     id: "exect_flatten_proj",
     label: "Mention Flattener & SF Proj",
     shortLabel: "Flattener",
-    gridX: 5.6,
+    gridX: 7.2,
     gridY: 2.4,
     elevation: 3,
     owner: "deterministic",
@@ -158,7 +182,7 @@ export const EXECT_STATIONS: StationLayoutNode[] = [
     id: "exect_finding_store",
     label: "Finding Store (Commutator)",
     shortLabel: "Commutator",
-    gridX: 3.2,
+    gridX: 5.0,
     gridY: 2.6,
     elevation: 6,
     owner: "deterministic",
@@ -167,13 +191,12 @@ export const EXECT_STATIONS: StationLayoutNode[] = [
     visualType: "commutator",
     isCommutator: true,
   },
-  // 4 Parallel Family Lenses
   {
     id: "exect_lens_diagnosis",
     label: "Diagnosis Dictionary Lens",
     shortLabel: "Diagnosis Lens",
-    gridX: 1.6,
-    gridY: 2.0,
+    gridX: 2.8,
+    gridY: 2.2,
     elevation: 4,
     owner: "deterministic",
     effectClass: "clinical_meaning",
@@ -185,8 +208,8 @@ export const EXECT_STATIONS: StationLayoutNode[] = [
     id: "exect_lens_sf",
     label: "Seizure Frequency State Lens",
     shortLabel: "SF State Lens",
-    gridX: 1.2,
-    gridY: 3.4,
+    gridX: 2.2,
+    gridY: 3.6,
     elevation: 3,
     owner: "deterministic",
     effectClass: "representation",
@@ -198,8 +221,8 @@ export const EXECT_STATIONS: StationLayoutNode[] = [
     id: "exect_lens_rx",
     label: "Prescription Regimen Lens",
     shortLabel: "Prescription Lens",
-    gridX: 1.8,
-    gridY: 4.6,
+    gridX: 2.6,
+    gridY: 5.0,
     elevation: 4,
     owner: "deterministic",
     effectClass: "clinical_meaning",
@@ -211,8 +234,8 @@ export const EXECT_STATIONS: StationLayoutNode[] = [
     id: "exect_lens_investigations",
     label: "Investigations Adapter Lens",
     shortLabel: "Investigations",
-    gridX: 3.4,
-    gridY: 4.6,
+    gridX: 4.4,
+    gridY: 5.0,
     elevation: 2,
     owner: "deterministic",
     effectClass: "representation",
@@ -224,8 +247,8 @@ export const EXECT_STATIONS: StationLayoutNode[] = [
     id: "exect_evidence_gate",
     label: "Exact Evidence Gatekeeper",
     shortLabel: "Evidence Gate",
-    gridX: 4.8,
-    gridY: 3.8,
+    gridX: 6.4,
+    gridY: 4.4,
     elevation: 2,
     owner: "deterministic",
     effectClass: "validation_gate",
@@ -237,8 +260,8 @@ export const EXECT_STATIONS: StationLayoutNode[] = [
     id: "exect_scorer",
     label: "Scoring Views & Fact Match",
     shortLabel: "Scoreboard",
-    gridX: 6.2,
-    gridY: 4.8,
+    gridX: 7.8,
+    gridY: 5.6,
     elevation: 5,
     owner: "scorer",
     effectClass: "benchmark_projection",
@@ -257,20 +280,12 @@ export interface CameraSettings {
   scale: number;
 }
 
-export function getCameraSettings(isGan: boolean): CameraSettings {
-  if (isGan) {
-    return {
-      viewBox: "0 0 1320 840",
-      originX: 200,
-      originY: 120,
-      scale: 102,
-    };
-  }
+export function getCameraSettings(_isGan?: boolean): CameraSettings {
   return {
-    viewBox: "0 0 1320 840",
-    originX: 200,
+    viewBox: "0 0 1520 960",
+    originX: 160,
     originY: 120,
-    scale: 102,
+    scale: 88,
   };
 }
 
@@ -279,6 +294,7 @@ export function getCameraSettings(isGan: boolean): CameraSettings {
  */
 export function mapStageToStationId(stageId: string, isGan: boolean): string {
   if (isGan) {
+    if (stageId.includes("letterhead") || stageId.includes("source_note")) return "gan_letterhead";
     if (stageId.includes("build_prompt") || stageId === "gan.rules.extract") return "gan_prompt";
     if (stageId.includes("model_call")) return "gan_model";
     if (
@@ -308,6 +324,7 @@ export function mapStageToStationId(stageId: string, isGan: boolean): string {
     if (stageId.includes("score")) return "gan_scorer";
     return "gan_prompt";
   } else {
+    if (stageId.includes("letterhead") || stageId.includes("source_note")) return "exect_letterhead";
     if (
       stageId.includes("build_prompt") ||
       stageId.includes("extract_seizure_frequency") ||

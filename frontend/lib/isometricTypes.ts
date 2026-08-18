@@ -109,6 +109,7 @@ export interface IsoPoint {
 }
 
 export type StationVisualType =
+  | "letterhead"
   | "intake"
   | "neural_core"
   | "schema_gate"
@@ -118,6 +119,17 @@ export type StationVisualType =
   | "lens"
   | "evidence_gate"
   | "scoreboard";
+
+export interface CardSlot {
+  /** Canvas X offset relative to station point */
+  offsetX: number;
+  /** Canvas Y offset relative to station point */
+  offsetY: number;
+  width: number;
+  height: number;
+  anchorPort: "top" | "bottom" | "left" | "right";
+  targetPort: "top" | "bottom" | "left" | "right";
+}
 
 export interface StationLayoutNode {
   id: string;
@@ -130,6 +142,7 @@ export interface StationLayoutNode {
   effectClass: EffectClass;
   stageIdPattern: string;
   visualType: StationVisualType;
+  cardSlot?: CardSlot;
   isRepairRack?: boolean;
   rackRules?: { id: string; label: string; stageId: string }[];
   isCommutator?: boolean;
