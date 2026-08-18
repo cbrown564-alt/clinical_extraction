@@ -478,7 +478,7 @@ def test_compact_is_authored_as_compact() -> None:
         "suggested_evidence",
         *structured.SHARED_RULE_SECTION_KEYS,
     ]
-    assert structured.compact_rule_count(payload["clinical_rules"]) == 53
+    assert structured.compact_rule_count(payload["clinical_rules"]) == 54
     assert payload["task"].startswith(
         "Read the clinical letter once. Use the suggested evidence"
     )
@@ -511,19 +511,22 @@ def test_compact_schema_is_flat_fact_events() -> None:
         "investigation",
     ]
     assert list(vocab["medication"]) == [
-        "DoseUnit",
-        "DrugDose",
-        "DrugName",
-        "Frequency",
+        "dose",
+        "frequency",
+        "name",
+        "unit",
     ]
-    assert vocab["medication"]["DoseUnit"] == ["g", "mg"]
-    assert vocab["medication"]["Frequency"] == ["1", "2", "3", "As_Required"]
+    assert vocab["medication"]["dose"] == "Numeric dose only, without the unit."
+    assert vocab["medication"]["unit"] == ["g", "mg"]
+    assert vocab["medication"]["frequency"] == ["1", "2", "3", "as_required"]
+    assert vocab["medication"]["name"] == "Drug name as written."
+    assert "DrugDose" not in vocab["medication"]
+    assert "DrugName" not in vocab["medication"]
     assert list(vocab["diagnosis"]) == ["DiagCategory"]
     assert vocab["diagnosis"]["DiagCategory"] == [
         "Epilepsy",
         "MultipleSeizures",
         "SingleSeizure",
-        "epilepsy",
     ]
     assert "Certainty" not in vocab["diagnosis"]
     assert "Certainty" not in vocab["seizure_frequency"]
@@ -553,7 +556,6 @@ def test_compact_schema_is_flat_fact_events() -> None:
         "Month",
         "Week",
         "Year",
-        "days",
     ]
     assert vocab["seizure_frequency"]["AgeUnit"] == ["Month", "Year"]
     assert set(vocab["investigation"]) == {
@@ -579,6 +581,10 @@ def test_compact_schema_is_flat_fact_events() -> None:
     assert "Return only clinical_events" not in compact_text
     assert "Never write 'tonic chronic'" in compact_text
     assert "Keep, reject, split, or merge facts based only" not in compact_text
+    assert "Numeric dose only, without the unit." in compact_text
+    assert "Write diagnosis fact as only the short syndrome" in compact_text
+    assert "frequency='1'" in compact_text
+    assert "Frequency='1'" not in compact_text
 
 
 def test_compact_seizure_rules_keep_prior_wording() -> None:
@@ -632,7 +638,7 @@ def test_compact_llm_only_omits_suggested_evidence() -> None:
     assert llm_only["family_guidance"] == compact["family_guidance"]
     assert "categories" not in llm_only
     assert list(llm_only["clinical_rules"]) == list(structured.SHARED_RULE_SECTION_KEYS)
-    assert structured.compact_rule_count(llm_only["clinical_rules"]) == 51
+    assert structured.compact_rule_count(llm_only["clinical_rules"]) == 52
     assert llm_only["clinical_rules"] == {
         key: compact["clinical_rules"][key] for key in structured.SHARED_RULE_SECTION_KEYS
     }

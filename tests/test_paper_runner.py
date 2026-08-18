@@ -149,7 +149,7 @@ def test_verify_compact_does_not_change_the_live_default() -> None:
     assert payload["ok"] is True
     assert payload["method"] == "exect_llm_with_rules"
     assert payload["candidate"] == CANDIDATE_VERSION == structured.COMPACT_LEDGER
-    assert payload["n_rules"] == 53
+    assert payload["n_rules"] == 54
     assert payload["n_examples"] == 0
     assert payload["authored_order"] is True
     assert payload["drops_research_metadata"] is True
@@ -166,7 +166,7 @@ def test_verify_llm_only_does_not_change_the_live_default() -> None:
     assert payload["ok"] is True
     assert payload["method"] == "exect_llm_only"
     assert payload["prompt_version"] == structured.EXECT_LLM_ONLY
-    assert payload["n_rules"] == 51
+    assert payload["n_rules"] == 52
     assert payload["n_examples"] == 0
     assert payload["authored_order"] is True
     assert payload["drops_research_metadata"] is True

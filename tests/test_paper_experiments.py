@@ -81,6 +81,8 @@ def test_inventory_covers_present_and_missing_cells() -> None:
         ("grok46", "exect_llm_with_rules", "test60"),
         ("gpt56luna", "exect_llm_with_rules", "dev140"),
         ("gpt56luna", "exect_llm_with_rules", "test60"),
+        ("gpt56luna", "exect_llm_only", "dev140"),
+        ("gpt56luna", "exect_llm_only", "test60"),
         ("gemini37flash", "exect_llm_with_rules", "dev140"),
         ("gemini37flash", "exect_llm_with_rules", "test60"),
         ("deepseek_v4_flash", "exect_llm_with_rules", "dev140"),
@@ -103,6 +105,8 @@ def test_inventory_covers_present_and_missing_cells() -> None:
         (row.get("model_slug"), row["method"], row.get("split")) for row in inventory["missing"]
     }
     assert ("qwen38_27b", "exect_llm_with_rules", "dev140") in missing_cells
+    assert ("grok46", "exect_llm_only", "dev140") in missing_cells
+    assert ("gpt56luna", "exect_llm_only", "dev140") not in missing_cells
     assert ("grok46", "exect_llm_with_rules", "dev140") not in missing_cells
     assert ("grok46", "exect_llm_with_rules", "test60") not in missing_cells
     assert ("grok46", "gan_llm_only", "test450") not in missing_cells
@@ -250,8 +254,10 @@ def test_exect_hybrid_cells_have_raw_and_hybrid() -> None:
             assert comparison["row_policy"] == "aggregate_only"
             assert "letter_ids" not in comparison
             assert "changed_rows" not in comparison
-        compact = comparison["arms"]["compact_ledger"]
-        full = comparison["arms"]["full_ledger"]
+        compact = comparison["arms"].get("exect_llm_with_rules") or comparison["arms"][
+            "compact_ledger"
+        ]
+        full = comparison["arms"].get("exect_full_ledger") or comparison["arms"]["full_ledger"]
         assert "raw_headline_f1" in compact
         assert "hybrid_headline_f1" in compact
         assert "raw_headline_f1" in full

@@ -16,7 +16,7 @@ from clinical_extraction.paper.exect import (
     verify_full_ledger,
     verify_llm_only,
 )
-from clinical_extraction.paper.exect_panel import promote_exect
+from clinical_extraction.paper.exect_panel import promote_exect, promote_exect_llm_only
 from clinical_extraction.paper.gan import run_gan, verify_gan
 from clinical_extraction.paper.gan_panel import promote_gan
 from clinical_extraction.paper.methods import LIVE_METHODS, method_spec, split_for
@@ -60,8 +60,17 @@ def main(argv: Sequence[str] | None = None) -> None:
             raise SystemExit("promote-exect requires --model")
         if args.split not in {"dev140", "test60"}:
             raise SystemExit("promote-exect only accepts --split dev140 or test60")
+        if args.method == "exect_llm_only":
+            print(
+                json.dumps(
+                    promote_exect_llm_only(args.model, args.split),
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+            return
         if args.method != "exect_llm_with_rules":
-            raise SystemExit("promote-exect is Compact only")
+            raise SystemExit("promote-exect is Compact hybrid or Compact LLM-only")
         print(
             json.dumps(
                 promote_exect(args.model, args.split),

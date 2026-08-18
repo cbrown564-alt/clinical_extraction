@@ -17,7 +17,7 @@
     },
     {
       "comparison": "paper_experiments/exect/exect_llm_with_rules/gpt56luna/dev140/comparison.json",
-      "hybrid_headline_f1": 0.8818,
+      "hybrid_headline_f1": 0.888,
       "label": "GPT-5.6 Luna",
       "living_effort": "low",
       "method": "exect_llm_with_rules",
@@ -25,7 +25,7 @@
       "model_slug": "gpt56luna",
       "n": 140,
       "path": "paper_experiments/exect/exect_llm_with_rules/gpt56luna/dev140/",
-      "raw_headline_f1": 0.7929,
+      "raw_headline_f1": 0.8105,
       "rows": "paper_experiments/exect/exect_llm_with_rules/gpt56luna/dev140/structured.jsonl",
       "scored": "paper_experiments/exect/exect_llm_with_rules/gpt56luna/dev140/scored.jsonl",
       "status": "present"

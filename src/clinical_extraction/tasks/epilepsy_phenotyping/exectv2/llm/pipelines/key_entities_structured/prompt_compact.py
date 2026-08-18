@@ -86,17 +86,17 @@ _LLM_ONLY_DECISION_PROCEDURE = [
 
 _FAMILY_GUIDANCE = {
     "medication": (
-        "Anti-seizure medicines. Include DrugName, DrugDose, DoseUnit, and "
-        "Frequency when stated. Copy the medication wording from the letter: "
-        "the full short regimen when it appears in a list, or the drug name "
-        "alone when that is all the note states."
+        "Anti-seizure medicines. Include name, dose, unit, and frequency when "
+        "stated. Copy the medication wording from the letter: the full short "
+        "regimen when it appears in a list, or the drug name alone when that "
+        "is all the note states."
     ),
     "diagnosis": (
         "Diagnoses such as epilepsy, focal epilepsy, seizure disorder, or "
-        "named seizure types. Include DiagCategory. Do not include vague "
-        "symptoms or non-epileptic alternatives unless the letter states they "
-        "are epileptic diagnoses, even when they appear under a diagnosis or "
-        "problem-list heading."
+        "named seizure types. Write fact as only that short name. Include "
+        "DiagCategory. Do not include vague symptoms or non-epileptic "
+        "alternatives unless the letter states they are epileptic diagnoses, "
+        "even when they appear under a diagnosis or problem-list heading."
     ),
     "seizure_frequency": (
         "How often a seizure type occurs, including seizure-free duration, "
@@ -126,10 +126,10 @@ _OUTPUT_SCHEMA = {
 
 _ATTRIBUTE_VOCABULARY: dict[str, dict[str, Any]] = {
     "medication": {
-        "DoseUnit": ["g", "mg"],
-        "DrugDose": "string copied from the letter.",
-        "DrugName": "string copied from the letter.",
-        "Frequency": ["1", "2", "3", "As_Required"],
+        "dose": "Numeric dose only, without the unit.",
+        "frequency": ["1", "2", "3", "as_required"],
+        "name": "Drug name as written.",
+        "unit": ["g", "mg"],
     },
     "diagnosis": {
         "DiagCategory": [
@@ -240,6 +240,14 @@ _SHARED_RULE_SECTIONS: dict[str, list[str]] = {
     (
         "For diagnosis, split compound seizure clauses into separate diagnoses "
         "when the letter names more than one seizure type."
+    ),
+    (
+        "Write diagnosis fact as only the short syndrome or named seizure "
+        "type. If the letter names a syndrome and a seizure type, such as "
+        "juvenile absence epilepsy and tonic clonic seizures, include each as "
+        "its own diagnosis event. Do not put hedges, timing, or extra anatomy "
+        "into fact: words such as 'probably', 'from sleep', a question-mark "
+        "side of onset, or 'retained awareness' as its own event."
     ),
     (
         "Prefer the most specific epilepsy syndrome or seizure type stated in "
@@ -478,13 +486,13 @@ _SHARED_RULE_SECTIONS: dict[str, list[str]] = {
         "If a current regimen gives unequal time-of-day doses such as "
         "'Epilim 300 mg mane and 600 mg nocte' or 'Lamictal 100 mg in the "
         "morning, 175 mg in the afternoon', include separate medication "
-        "events with Frequency='1'. Do not mark these current scheduled "
-        "doses as As_Required."
+        "events with frequency='1'. Do not mark these current scheduled "
+        "doses as as_required."
     ),
     (
         "When the current regimen says 'twice a day', 'twice daily', or "
-        "'bd', include Frequency='2'; when it says once daily, mane, nocte, "
-        "morning, or evening, include Frequency='1'."
+        "'bd', include frequency='2'; when it says once daily, mane, nocte, "
+        "morning, or evening, include frequency='1'."
     ),
     (
         "For medication list entries that contain a compact regimen, write "

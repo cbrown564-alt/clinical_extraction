@@ -24,11 +24,14 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 ROOT = discover_repo_root(start=Path(__file__))
 WORK_ROOT = ROOT / "experiments/paper/exect_llm_with_rules"
 HOLDOUT_ROOT = ROOT / "scratch/holdout/paper/exect_llm_with_rules"
+LLM_ONLY_WORK_ROOT = ROOT / "experiments/paper/exect_llm_only"
+LLM_ONLY_HOLDOUT_ROOT = ROOT / "scratch/holdout/paper/exect_llm_only"
 PAPER_EXECT = ROOT / "paper_experiments/exect"
 PANEL_PATH = PAPER_EXECT / "dev140_panel.json"
 INVENTORY_PATH = ROOT / "paper_experiments/inventory.json"
 REPLAY_FIELDS = ("letter_id", "prompt_version", "raw_output")
 METHOD = "exect_llm_with_rules"
+LLM_ONLY_METHOD = "exect_llm_only"
 PROMOTE_SPLIT = "dev140"
 HOLDOUT_FORBIDDEN = ("letter_ids", "changed_rows")
 
@@ -41,9 +44,22 @@ def living_work_root(slug: str, split: str = PROMOTE_SPLIT) -> Path:
 
 
 def paper_cell_root(slug: str, split: str = PROMOTE_SPLIT) -> Path:
-    """Return the tracked paper directory for a Compact cell."""
+    """Return the tracked paper directory for a Compact hybrid cell."""
 
     return PAPER_EXECT / METHOD / slug / split
+
+
+def paper_llm_only_cell_root(slug: str, split: str = PROMOTE_SPLIT) -> Path:
+    """Return the tracked paper directory for a Compact LLM-only cell."""
+
+    return PAPER_EXECT / LLM_ONLY_METHOD / slug / split
+
+
+def living_llm_only_work_root(slug: str, split: str = PROMOTE_SPLIT) -> Path:
+    """Return the living (non-remasure) Compact LLM-only sidecar."""
+
+    root = LLM_ONLY_HOLDOUT_ROOT if holdout_is_aggregate_only(split) else LLM_ONLY_WORK_ROOT
+    return root / slug / split
 
 
 def promote_exect_dev140(slug: str) -> dict[str, Any]:
@@ -62,7 +78,7 @@ def promote_exect(slug: str, split: str) -> dict[str, Any]:
     holdout = holdout_is_aggregate_only(split)
     model = model_by_slug(slug)
     source = living_work_root(slug, split)
-    structured_path = _sidecar_structured_path(source)
+    structured_path = _sidecar_structured_path(source, METHOD)
     comparison_path = source / "comparison.json"
     if structured_path is None or not comparison_path.is_file():
         raise RuntimeError(f"missing living {METHOD} {slug} {split} sidecar")
@@ -107,7 +123,7 @@ def promote_exect(slug: str, split: str) -> dict[str, Any]:
         "hybrid_headline_f1": arm.get("hybrid_headline_f1"),
     }
     if not holdout:
-        metrics_path = _sidecar_metrics_path(source)
+        metrics_path = _sidecar_metrics_path(source, METHOD)
         if metrics_path is not None:
             metrics = load_jsonl_rows(metrics_path)
         else:
@@ -143,6 +159,92 @@ def promote_exect(slug: str, split: str) -> dict[str, Any]:
         "panel": PANEL_PATH.relative_to(ROOT).as_posix(),
         "cells": panel["cells"],
     }
+
+
+def promote_exect_llm_only(slug: str, split: str) -> dict[str, Any]:
+    """Copy a finished Compact LLM-only cell. Cite raw F1 only."""
+
+    spec = method_spec(LLM_ONLY_METHOD)
+    if spec["task"] != "exectv2":
+        raise RuntimeError("promote-exect LLM-only is ExECT only")
+    split_for(LLM_ONLY_METHOD, split)
+    holdout = holdout_is_aggregate_only(split)
+    model = model_by_slug(slug)
+    source = living_llm_only_work_root(slug, split)
+    structured_path = _sidecar_structured_path(source, LLM_ONLY_METHOD)
+    comparison_path = source / "comparison.json"
+    if structured_path is None or not comparison_path.is_file():
+        raise RuntimeError(f"missing living {LLM_ONLY_METHOD} {slug} {split} sidecar")
+    rows = load_jsonl_rows(structured_path)
+    expected = exect_row_count(split)
+    if len(rows) != expected:
+        raise RuntimeError(f"{structured_path} has {len(rows)} rows, expected {expected}")
+    comparison = json.loads(comparison_path.read_text(encoding="utf-8"))
+    if comparison.get("split") != split:
+        raise RuntimeError(f"{comparison_path} is not this paper cell")
+    if comparison.get("reasoning_effort") not in {None, "low"}:
+        raise RuntimeError("promote only the living low-effort cell, not a remasure")
+    if holdout:
+        _assert_aggregate_only(comparison)
+    dest = paper_llm_only_cell_root(slug, split)
+    dest.mkdir(parents=True, exist_ok=True)
+    replay, empty = _public_replay(rows)
+    write_jsonl_rows(replay, dest / "structured.jsonl")
+    (dest / "comparison.json").write_text(
+        json.dumps(comparison, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    arm = _llm_only_arm(comparison)
+    cell = {
+        "model_slug": slug,
+        "model": model["model"],
+        "method": LLM_ONLY_METHOD,
+        "program": "exect_llm_only",
+        "split": split,
+        "split_machine": "test" if holdout else "dev",
+        "n": expected,
+        "row_count": expected,
+        "row_policy": "aggregate_only" if holdout else "development_review_permitted",
+        "id_field": "letter_id",
+        "replay_fields": list(REPLAY_FIELDS),
+        "empty_raw_count": empty,
+        "source": source.relative_to(ROOT).as_posix(),
+        "living_effort": _living_effort(slug),
+        "rows": "structured.jsonl",
+        "comparison": "comparison.json",
+        "raw_headline_f1": arm.get("raw_headline_f1"),
+    }
+    if not holdout:
+        metrics_path = _sidecar_metrics_path(source, LLM_ONLY_METHOD)
+        if metrics_path is not None:
+            metrics = load_jsonl_rows(metrics_path)
+        else:
+            metrics = compact_metrics_from_structured(slug, dest / "structured.jsonl")
+        scored = _public_scored_llm_only(metrics)
+        if len(scored) != expected:
+            raise RuntimeError(f"{slug} scored {len(scored)} letters, expected {expected}")
+        write_jsonl_rows(scored, dest / "scored.jsonl")
+        cell["scored"] = "scored.jsonl"
+    (dest / "cell.json").write_text(
+        json.dumps(cell, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    _upsert_present(
+        {
+            "model_slug": slug,
+            "model": model["model"],
+            "method": LLM_ONLY_METHOD,
+            "replay_alias": "exect_llm_only",
+            "split": split,
+            "n": expected,
+            "row_policy": "aggregate_only" if holdout else "development_review_permitted",
+            "path": (dest / "structured.jsonl").relative_to(ROOT).as_posix(),
+            "status": "present",
+            "empty_raw_count": empty,
+        }
+    )
+    _ensure_missing_standalone_llm_only()
+    return {"cell": cell}
 
 
 def ensure_exect_dev140_scored(slug: str) -> Path:
@@ -313,57 +415,89 @@ def paper_exect_catalog_runs() -> list[dict[str, Any]]:
         slug = str(cell["model_slug"])
         label = str(cell.get("label") or slug)
         model = str(cell["model"])
-        for lane, score, kind, view in (
-            (
-                "llm_with_rules",
-                cell.get("hybrid_headline_f1"),
-                "llm_with_rules",
-                "headline_target",
-            ),
-            ("llm", cell.get("raw_headline_f1"), "llm", "raw_lane_score"),
-        ):
-            runs.append(
-                {
-                    "run_id": paper_exect_run_id(slug, lane),
-                    "task": "exectv2",
-                    "label": (
-                        f"{label} · LLM + rules"
-                        if lane == "llm_with_rules"
-                        else f"{label} · LLM only"
-                    ),
-                    "model": model,
-                    "kind": kind,
-                    "active_method": lane,
-                    "method_id": lane,
-                    "architecture_family": "exect_llm_with_rules",
-                    "pipeline_family": (
-                        "exect_llm_with_rules" if lane == "llm_with_rules" else "llm"
-                    ),
-                    "split": "dev140",
-                    "row_count": int(cell.get("n") or 140),
-                    "date": "2026-08-18",
-                    "decision": "development_comparison",
-                    "promotion_decision": "living Compact panel",
-                    "claim_boundary": panel.get("claim_boundary"),
-                    "scorer_view": view,
-                    "artifact_paths": [rows_path.relative_to(ROOT).as_posix()],
-                    "source_paths": [rows_path.relative_to(ROOT).as_posix()],
-                    "metrics": {
-                        "overall_f1": score,
-                        "precision": None,
-                        "recall": None,
-                        "families": {},
-                    },
-                    "operational": {
-                        "call_failures": 0,
-                        "parse_schema_failures": 0,
-                        "evidence_invalid_dropped": 0,
-                        "exact_evidence_rate": None,
-                        "by_family": {},
-                    },
-                    "letters": [],
-                }
-            )
+        runs.append(
+            {
+                "run_id": paper_exect_run_id(slug, "llm_with_rules"),
+                "task": "exectv2",
+                "label": f"{label} · LLM + rules",
+                "model": model,
+                "kind": "llm_with_rules",
+                "active_method": "llm_with_rules",
+                "method_id": "llm_with_rules",
+                "architecture_family": METHOD,
+                "pipeline_family": METHOD,
+                "split": "dev140",
+                "row_count": int(cell.get("n") or 140),
+                "date": "2026-08-18",
+                "decision": "development_comparison",
+                "promotion_decision": "living Compact panel",
+                "claim_boundary": panel.get("claim_boundary"),
+                "scorer_view": "headline_target",
+                "artifact_paths": [rows_path.relative_to(ROOT).as_posix()],
+                "source_paths": [rows_path.relative_to(ROOT).as_posix()],
+                "metrics": {
+                    "overall_f1": cell.get("hybrid_headline_f1"),
+                    "precision": None,
+                    "recall": None,
+                    "families": {},
+                },
+                "operational": {
+                    "call_failures": 0,
+                    "parse_schema_failures": 0,
+                    "evidence_invalid_dropped": 0,
+                    "exact_evidence_rate": None,
+                    "by_family": {},
+                },
+                "letters": [],
+            }
+        )
+    for model_row in living_models():
+        slug = str(model_row["slug"])
+        dest = paper_llm_only_cell_root(slug)
+        cell_path = dest / "cell.json"
+        rows_path = dest / "structured.jsonl"
+        if not cell_path.is_file() or not rows_path.is_file():
+            continue
+        cell = json.loads(cell_path.read_text(encoding="utf-8"))
+        runs.append(
+            {
+                "run_id": paper_exect_run_id(slug, "llm"),
+                "task": "exectv2",
+                "label": f"{model_row['label']} · LLM only",
+                "model": str(model_row["model"]),
+                "kind": "llm",
+                "active_method": "llm",
+                "method_id": "llm",
+                "architecture_family": LLM_ONLY_METHOD,
+                "pipeline_family": "llm",
+                "split": "dev140",
+                "row_count": int(cell.get("n") or 140),
+                "date": "2026-08-18",
+                "decision": "development_comparison",
+                "promotion_decision": "living Compact LLM-only",
+                "claim_boundary": (
+                    "Standalone Compact LLM-only. Cite raw F1 only. "
+                    "Hybrid-call raw is not this method."
+                ),
+                "scorer_view": "raw_lane_score",
+                "artifact_paths": [rows_path.relative_to(ROOT).as_posix()],
+                "source_paths": [rows_path.relative_to(ROOT).as_posix()],
+                "metrics": {
+                    "overall_f1": cell.get("raw_headline_f1"),
+                    "precision": None,
+                    "recall": None,
+                    "families": {},
+                },
+                "operational": {
+                    "call_failures": 0,
+                    "parse_schema_failures": 0,
+                    "evidence_invalid_dropped": 0,
+                    "exact_evidence_rate": None,
+                    "by_family": {},
+                },
+                "letters": [],
+            }
+        )
     return runs
 
 
@@ -404,8 +538,8 @@ def _upsert_present(entry: Mapping[str, Any]) -> None:
     )
 
 
-def _sidecar_structured_path(source: Path) -> Path | None:
-    nested = source / METHOD / "structured.jsonl"
+def _sidecar_structured_path(source: Path, method: str = METHOD) -> Path | None:
+    nested = source / method / "structured.jsonl"
     flat = source / "structured.jsonl"
     if nested.is_file():
         return nested
@@ -414,14 +548,82 @@ def _sidecar_structured_path(source: Path) -> Path | None:
     return None
 
 
-def _sidecar_metrics_path(source: Path) -> Path | None:
-    nested = source / METHOD / "letter_metrics.jsonl"
+def _sidecar_metrics_path(source: Path, method: str = METHOD) -> Path | None:
+    nested = source / method / "letter_metrics.jsonl"
     flat = source / "letter_metrics.jsonl"
     if nested.is_file():
         return nested
     if flat.is_file():
         return flat
     return None
+
+
+def _llm_only_arm(comparison: Mapping[str, Any]) -> dict[str, Any]:
+    arms = comparison.get("arms") or {}
+    if not isinstance(arms, Mapping):
+        return {}
+    arm = arms.get(LLM_ONLY_METHOD) or {}
+    return dict(arm) if isinstance(arm, Mapping) else {}
+
+
+def _public_scored_llm_only(metrics: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    scored: list[dict[str, Any]] = []
+    for row in metrics:
+        quality = row.get("quality") or {}
+        raw_prf = row.get("raw_headline_prf") or {}
+        scored.append(
+            {
+                "letter_id": str(row["letter_id"]),
+                "method": LLM_ONLY_METHOD,
+                "raw_headline_f1": raw_prf.get("f1"),
+                "raw_four_family_letter_exact": row.get("raw_four_family_letter_exact"),
+                "parse_ok": int(quality.get("parse") or 0) == 0
+                and int(quality.get("schema") or 0) == 0,
+            }
+        )
+    return scored
+
+
+def _ensure_missing_standalone_llm_only() -> None:
+    inventory = json.loads(INVENTORY_PATH.read_text(encoding="utf-8"))
+    present = {
+        (row["model_slug"], row["method"], row["split"]) for row in inventory["present"]
+    }
+    missing = {
+        (row.get("model_slug"), row["method"], row.get("split"))
+        for row in inventory["missing"]
+    }
+    extra: list[dict[str, Any]] = []
+    for model in living_models():
+        slug = str(model["slug"])
+        for split, n, policy in (
+            ("dev140", 140, "development_review_permitted"),
+            ("test60", 59, "aggregate_only"),
+        ):
+            key = (slug, LLM_ONLY_METHOD, split)
+            if key in present or key in missing:
+                continue
+            extra.append(
+                {
+                    "model_slug": slug,
+                    "model": model["model"],
+                    "method": LLM_ONLY_METHOD,
+                    "n": n,
+                    "note": (
+                        "Standalone Compact LLM-only request. "
+                        "Hybrid-call raw is not this method."
+                    ),
+                    "row_policy": policy,
+                    "split": split,
+                    "status": "missing",
+                }
+            )
+    if extra:
+        inventory["missing"].extend(extra)
+        INVENTORY_PATH.write_text(
+            json.dumps(inventory, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
 
 
 def _compact_arm(comparison: Mapping[str, Any]) -> dict[str, Any]:

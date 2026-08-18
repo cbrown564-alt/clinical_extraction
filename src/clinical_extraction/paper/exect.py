@@ -268,7 +268,7 @@ def verify_compact(*, split: str = "dev140", slug: str | None = None) -> dict[st
         if "letter_id" in compact or "prompt_version" in compact:
             raise RuntimeError("Compact still emits research metadata")
         if (
-            structured.compact_rule_count(compact["clinical_rules"]) != 53
+            structured.compact_rule_count(compact["clinical_rules"]) != 54
             or "worked_examples" in compact
         ):
             raise RuntimeError("Compact content drifted")
@@ -323,7 +323,7 @@ def verify_llm_only(*, split: str = "dev140", slug: str | None = None) -> dict[s
             raise RuntimeError("LLM-only still emits research metadata")
         if list(payload["clinical_rules"]) != list(structured.SHARED_RULE_SECTION_KEYS):
             raise RuntimeError("LLM-only rule sections drifted")
-        if structured.compact_rule_count(payload["clinical_rules"]) != 51:
+        if structured.compact_rule_count(payload["clinical_rules"]) != 52:
             raise RuntimeError("LLM-only content drifted")
     finally:
         structured.set_active_prompt_version(before)

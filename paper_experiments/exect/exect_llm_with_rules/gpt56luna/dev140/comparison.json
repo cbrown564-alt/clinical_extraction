@@ -1,192 +1,6 @@
 {
   "arms": {
-    "compact_ledger": {
-      "assembly_family_f1": {
-        "Diagnosis": 0.8699,
-        "Investigations": 0.9283,
-        "Prescription": 0.9409,
-        "SeizureFrequency": 0.79
-      },
-      "assembly_headline_f1": 0.8818,
-      "call_mode": "live",
-      "gate_event_count": 180,
-      "hybrid_family_f1": {
-        "Diagnosis": 0.8699,
-        "Investigations": 0.9283,
-        "Prescription": 0.9409,
-        "SeizureFrequency": 0.79
-      },
-      "hybrid_family_letter_exact": {
-        "Diagnosis": 95,
-        "Investigations": 126,
-        "Prescription": 123,
-        "SeizureFrequency": 95
-      },
-      "hybrid_family_prf": {
-        "Diagnosis": {
-          "f1": 0.8699,
-          "precision": 0.8729,
-          "recall": 0.8669
-        },
-        "Investigations": {
-          "f1": 0.9283,
-          "precision": 0.9535,
-          "recall": 0.9044
-        },
-        "Prescription": {
-          "f1": 0.9409,
-          "precision": 0.955,
-          "recall": 0.9272
-        },
-        "SeizureFrequency": {
-          "f1": 0.79,
-          "precision": 0.8344,
-          "recall": 0.75
-        }
-      },
-      "hybrid_four_family_letter_exact": 56,
-      "hybrid_headline_f1": 0.8818,
-      "hybrid_headline_prf": {
-        "f1": 0.8818,
-        "precision": 0.9001,
-        "recall": 0.8643
-      },
-      "hybrid_rewrite_letters": [
-        "EA0002",
-        "EA0004",
-        "EA0006",
-        "EA0007",
-        "EA0009",
-        "EA0010",
-        "EA0011",
-        "EA0033",
-        "EA0034",
-        "EA0038",
-        "EA0039",
-        "EA0040",
-        "EA0043",
-        "EA0046",
-        "EA0047",
-        "EA0049",
-        "EA0050",
-        "EA0054",
-        "EA0056",
-        "EA0057",
-        "EA0059",
-        "EA0061",
-        "EA0071",
-        "EA0072",
-        "EA0075",
-        "EA0079",
-        "EA0092",
-        "EA0093",
-        "EA0096",
-        "EA0100",
-        "EA0106",
-        "EA0107",
-        "EA0108",
-        "EA0109",
-        "EA0110",
-        "EA0111",
-        "EA0113",
-        "EA0114",
-        "EA0116",
-        "EA0119",
-        "EA0121",
-        "EA0123",
-        "EA0124",
-        "EA0125",
-        "EA0126",
-        "EA0127",
-        "EA0128",
-        "EA0131",
-        "EA0132",
-        "EA0133",
-        "EA0135",
-        "EA0141",
-        "EA0142",
-        "EA0143",
-        "EA0146",
-        "EA0148",
-        "EA0150",
-        "EA0152",
-        "EA0154",
-        "EA0156",
-        "EA0157",
-        "EA0158",
-        "EA0161",
-        "EA0162",
-        "EA0167",
-        "EA0168",
-        "EA0169",
-        "EA0171",
-        "EA0172",
-        "EA0175",
-        "EA0179",
-        "EA0180",
-        "EA0181",
-        "EA0182",
-        "EA0185",
-        "EA0186",
-        "EA0188",
-        "EA0189",
-        "EA0195",
-        "EA0198",
-        "EA0200"
-      ],
-      "new_model_calls": 140,
-      "prompt_version": "exectv2_compact_ledger",
-      "quality": {
-        "illegal_enum": 0,
-        "inexact_evidence": 7,
-        "parse": 0,
-        "schema": 0
-      },
-      "raw_family_f1": {
-        "Diagnosis": 0.6828,
-        "Investigations": 0.9283,
-        "Prescription": 0.8889,
-        "SeizureFrequency": 0.7596
-      },
-      "raw_family_letter_exact": {
-        "Diagnosis": 61,
-        "Investigations": 126,
-        "Prescription": 116,
-        "SeizureFrequency": 84
-      },
-      "raw_family_prf": {
-        "Diagnosis": {
-          "f1": 0.6828,
-          "precision": 0.6937,
-          "recall": 0.6724
-        },
-        "Investigations": {
-          "f1": 0.9283,
-          "precision": 0.9535,
-          "recall": 0.9044
-        },
-        "Prescription": {
-          "f1": 0.8889,
-          "precision": 0.9045,
-          "recall": 0.8738
-        },
-        "SeizureFrequency": {
-          "f1": 0.7596,
-          "precision": 0.7574,
-          "recall": 0.7619
-        }
-      },
-      "raw_four_family_letter_exact": 34,
-      "raw_headline_f1": 0.7929,
-      "raw_headline_prf": {
-        "f1": 0.7929,
-        "precision": 0.8041,
-        "recall": 0.7821
-      },
-      "raw_mention_count": 824,
-      "scored_mention_count": 817
-    },
-    "full_ledger": {
+    "exect_full_ledger": {
       "assembly_family_f1": {
         "Diagnosis": 0.8873,
         "Investigations": 0.9202,
@@ -363,2085 +177,684 @@
       },
       "raw_mention_count": 813,
       "scored_mention_count": 813
+    },
+    "exect_llm_with_rules": {
+      "assembly_family_f1": {
+        "Diagnosis": 0.88,
+        "Investigations": 0.9318,
+        "Prescription": 0.9455,
+        "SeizureFrequency": 0.791
+      },
+      "assembly_headline_f1": 0.888,
+      "call_mode": "live",
+      "gate_event_count": 181,
+      "hybrid_family_f1": {
+        "Diagnosis": 0.88,
+        "Investigations": 0.9318,
+        "Prescription": 0.9455,
+        "SeizureFrequency": 0.791
+      },
+      "hybrid_family_letter_exact": {
+        "Diagnosis": 93,
+        "Investigations": 126,
+        "Prescription": 127,
+        "SeizureFrequency": 92
+      },
+      "hybrid_family_prf": {
+        "Diagnosis": {
+          "f1": 0.88,
+          "precision": 0.8972,
+          "recall": 0.8635
+        },
+        "Investigations": {
+          "f1": 0.9318,
+          "precision": 0.9609,
+          "recall": 0.9044
+        },
+        "Prescription": {
+          "f1": 0.9455,
+          "precision": 0.9646,
+          "recall": 0.9272
+        },
+        "SeizureFrequency": {
+          "f1": 0.791,
+          "precision": 0.8601,
+          "recall": 0.7321
+        }
+      },
+      "hybrid_four_family_letter_exact": 51,
+      "hybrid_headline_f1": 0.888,
+      "hybrid_headline_prf": {
+        "f1": 0.888,
+        "precision": 0.9188,
+        "recall": 0.8593
+      },
+      "hybrid_rewrite_letters": [
+        "EA0002",
+        "EA0004",
+        "EA0005",
+        "EA0006",
+        "EA0007",
+        "EA0008",
+        "EA0009",
+        "EA0010",
+        "EA0011",
+        "EA0018",
+        "EA0025",
+        "EA0033",
+        "EA0034",
+        "EA0038",
+        "EA0039",
+        "EA0040",
+        "EA0043",
+        "EA0044",
+        "EA0045",
+        "EA0046",
+        "EA0050",
+        "EA0054",
+        "EA0056",
+        "EA0057",
+        "EA0059",
+        "EA0061",
+        "EA0067",
+        "EA0071",
+        "EA0072",
+        "EA0075",
+        "EA0079",
+        "EA0092",
+        "EA0093",
+        "EA0096",
+        "EA0100",
+        "EA0106",
+        "EA0107",
+        "EA0108",
+        "EA0110",
+        "EA0111",
+        "EA0114",
+        "EA0116",
+        "EA0119",
+        "EA0121",
+        "EA0123",
+        "EA0124",
+        "EA0125",
+        "EA0126",
+        "EA0128",
+        "EA0132",
+        "EA0133",
+        "EA0135",
+        "EA0141",
+        "EA0142",
+        "EA0143",
+        "EA0148",
+        "EA0150",
+        "EA0151",
+        "EA0152",
+        "EA0153",
+        "EA0154",
+        "EA0156",
+        "EA0158",
+        "EA0161",
+        "EA0162",
+        "EA0164",
+        "EA0167",
+        "EA0168",
+        "EA0171",
+        "EA0172",
+        "EA0175",
+        "EA0179",
+        "EA0180",
+        "EA0182",
+        "EA0186",
+        "EA0188",
+        "EA0189",
+        "EA0195",
+        "EA0200"
+      ],
+      "new_model_calls": 140,
+      "prompt_version": "exectv2_compact_ledger",
+      "quality": {
+        "illegal_enum": 0,
+        "inexact_evidence": 0,
+        "parse": 0,
+        "schema": 0
+      },
+      "raw_family_f1": {
+        "Diagnosis": 0.6941,
+        "Investigations": 0.9318,
+        "Prescription": 0.9383,
+        "SeizureFrequency": 0.7538
+      },
+      "raw_family_letter_exact": {
+        "Diagnosis": 55,
+        "Investigations": 126,
+        "Prescription": 126,
+        "SeizureFrequency": 79
+      },
+      "raw_family_prf": {
+        "Diagnosis": {
+          "f1": 0.6941,
+          "precision": 0.7293,
+          "recall": 0.6621
+        },
+        "Investigations": {
+          "f1": 0.9318,
+          "precision": 0.9609,
+          "recall": 0.9044
+        },
+        "Prescription": {
+          "f1": 0.9383,
+          "precision": 0.9548,
+          "recall": 0.9223
+        },
+        "SeizureFrequency": {
+          "f1": 0.7538,
+          "precision": 0.7702,
+          "recall": 0.7381
+        }
+      },
+      "raw_four_family_letter_exact": 31,
+      "raw_headline_f1": 0.8105,
+      "raw_headline_prf": {
+        "f1": 0.8105,
+        "precision": 0.8369,
+        "recall": 0.7858
+      },
+      "raw_mention_count": 788,
+      "scored_mention_count": 788
     }
   },
   "cache": false,
-  "changed_rows": {
-    "compact_current": [
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0008"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0011"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "loss",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0025"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0045"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0049"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0054"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0056"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0061"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0071"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0075"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0078"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "loss",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0079"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0088"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0102"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0104"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0109"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0111"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0117"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0119"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0123"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "loss",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0126"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "loss",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0131"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0132"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0137"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "win",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0143"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0153"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0158"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0162"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0171"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "loss",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0182"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0185"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0190"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0195"
-      }
-    ],
-    "compact_further_prune": [
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0008"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0016"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0049"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0054"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0056"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "loss",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0061"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0068"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0071"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0075"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0078"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "loss",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0082"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "loss",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0096"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0102"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0104"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "loss",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0107"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0109"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0111"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0119"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0123"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "loss",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0131"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0132"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0137"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0146"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0157"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0171"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "win",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0179"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "loss",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0182"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0185"
-      }
-    ],
-    "drop_encoding_non_sf": [
-      {
-        "family_exact_direction": {
-          "Diagnosis": "loss",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0005"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0009"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0010"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0011"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0016"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0018"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0019"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0045"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0049"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0054"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0056"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0068"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0071"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0078"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0102"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0104"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0109"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0111"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0120"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0121"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0123"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "loss",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0126"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "loss",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0131"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0136"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0137"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "win",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0143"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0150"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0157"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0158"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0162"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0164"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "loss",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0182"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0183"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0185"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0195"
-      }
-    ],
-    "drop_examples": [
-      {
-        "family_exact_direction": {
-          "Diagnosis": "loss",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0005"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0011"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0021"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "loss",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0022"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0028"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0035"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0045"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0049"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0050"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0054"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0056"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0061"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0071"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0078"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "loss",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0093"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0102"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "loss",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0104"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0109"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "loss",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0111"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0119"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0120"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0123"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0131"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0132"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0137"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0153"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0162"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0175"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0183"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0185"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0195"
-      }
-    ],
-    "full_ledger": [
-      {
-        "family_exact_direction": {
-          "Diagnosis": "loss",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0005"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0009"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0010"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "loss",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0011"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0018"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0019"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "loss",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0022"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0035"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0043"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0045"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0050"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0054"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0056"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0061"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0068"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "win",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0078"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "loss",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0088"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0102"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0104"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0108"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0109"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0119"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "win",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0120"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0123"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "loss",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0126"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "loss",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0131"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0132"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0133"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0136"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0153"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0156"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "win",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0175"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "loss",
-          "Prescription": "same",
-          "SeizureFrequency": "same"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0182"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0183"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "loss"
-        },
-        "four_family_exact_direction": "loss",
-        "letter_id": "EA0184"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "win",
-        "letter_id": "EA0185"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0190"
-      },
-      {
-        "family_exact_direction": {
-          "Diagnosis": "same",
-          "Investigations": "same",
-          "Prescription": "same",
-          "SeizureFrequency": "win"
-        },
-        "four_family_exact_direction": "same",
-        "letter_id": "EA0195"
-      }
-    ]
-  },
-  "claim_boundary": "ExECTv2 Luna 140-letter Compact-ledger ablation. Not holdout, not six-model transfer, and not a Decision 0050 change.",
+  "changed_rows": [
+    {
+      "family_exact_direction": {
+        "Diagnosis": "win",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "same"
+      },
+      "four_family_exact_direction": "win",
+      "letter_id": "EA0005"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "loss"
+      },
+      "four_family_exact_direction": "loss",
+      "letter_id": "EA0010"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "loss",
+        "Investigations": "same",
+        "Prescription": "win",
+        "SeizureFrequency": "same"
+      },
+      "four_family_exact_direction": "same",
+      "letter_id": "EA0011"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "loss",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "same"
+      },
+      "four_family_exact_direction": "loss",
+      "letter_id": "EA0014"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "loss"
+      },
+      "four_family_exact_direction": "same",
+      "letter_id": "EA0018"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "win"
+      },
+      "four_family_exact_direction": "win",
+      "letter_id": "EA0019"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "loss",
+        "SeizureFrequency": "same"
+      },
+      "four_family_exact_direction": "same",
+      "letter_id": "EA0035"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "win"
+      },
+      "four_family_exact_direction": "same",
+      "letter_id": "EA0043"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "win"
+      },
+      "four_family_exact_direction": "win",
+      "letter_id": "EA0045"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "loss",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "same"
+      },
+      "four_family_exact_direction": "same",
+      "letter_id": "EA0047"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "win",
+        "SeizureFrequency": "same"
+      },
+      "four_family_exact_direction": "same",
+      "letter_id": "EA0049"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "loss"
+      },
+      "four_family_exact_direction": "loss",
+      "letter_id": "EA0056"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "loss"
+      },
+      "four_family_exact_direction": "same",
+      "letter_id": "EA0061"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "loss",
+        "Investigations": "same",
+        "Prescription": "loss",
+        "SeizureFrequency": "loss"
+      },
+      "four_family_exact_direction": "loss",
+      "letter_id": "EA0068"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "loss"
+      },
+      "four_family_exact_direction": "loss",
+      "letter_id": "EA0071"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "loss",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "same"
+      },
+      "four_family_exact_direction": "same",
+      "letter_id": "EA0082"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "win",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "loss"
+      },
+      "four_family_exact_direction": "same",
+      "letter_id": "EA0088"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "win",
+        "SeizureFrequency": "loss"
+      },
+      "four_family_exact_direction": "same",
+      "letter_id": "EA0102"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "win"
+      },
+      "four_family_exact_direction": "same",
+      "letter_id": "EA0104"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "loss"
+      },
+      "four_family_exact_direction": "loss",
+      "letter_id": "EA0108"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "loss",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "same"
+      },
+      "four_family_exact_direction": "loss",
+      "letter_id": "EA0109"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "loss"
+      },
+      "four_family_exact_direction": "same",
+      "letter_id": "EA0111"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "win"
+      },
+      "four_family_exact_direction": "same",
+      "letter_id": "EA0117"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "win"
+      },
+      "four_family_exact_direction": "win",
+      "letter_id": "EA0119"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "loss",
+        "Prescription": "same",
+        "SeizureFrequency": "same"
+      },
+      "four_family_exact_direction": "loss",
+      "letter_id": "EA0120"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "win",
+        "SeizureFrequency": "same"
+      },
+      "four_family_exact_direction": "same",
+      "letter_id": "EA0121"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "win",
+        "Prescription": "same",
+        "SeizureFrequency": "same"
+      },
+      "four_family_exact_direction": "win",
+      "letter_id": "EA0131"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "loss",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "same"
+      },
+      "four_family_exact_direction": "same",
+      "letter_id": "EA0136"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "loss"
+      },
+      "four_family_exact_direction": "loss",
+      "letter_id": "EA0151"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "win"
+      },
+      "four_family_exact_direction": "same",
+      "letter_id": "EA0153"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "loss"
+      },
+      "four_family_exact_direction": "same",
+      "letter_id": "EA0156"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "win",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "same"
+      },
+      "four_family_exact_direction": "win",
+      "letter_id": "EA0157"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "win",
+        "SeizureFrequency": "same"
+      },
+      "four_family_exact_direction": "win",
+      "letter_id": "EA0158"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "loss",
+        "SeizureFrequency": "same"
+      },
+      "four_family_exact_direction": "loss",
+      "letter_id": "EA0167"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "loss"
+      },
+      "four_family_exact_direction": "same",
+      "letter_id": "EA0171"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "loss",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "same"
+      },
+      "four_family_exact_direction": "loss",
+      "letter_id": "EA0175"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "win",
+        "Investigations": "win",
+        "Prescription": "same",
+        "SeizureFrequency": "same"
+      },
+      "four_family_exact_direction": "same",
+      "letter_id": "EA0182"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "win"
+      },
+      "four_family_exact_direction": "win",
+      "letter_id": "EA0184"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "same",
+        "Investigations": "same",
+        "Prescription": "same",
+        "SeizureFrequency": "loss"
+      },
+      "four_family_exact_direction": "same",
+      "letter_id": "EA0190"
+    },
+    {
+      "family_exact_direction": {
+        "Diagnosis": "loss",
+        "Investigations": "same",
+        "Prescription": "loss",
+        "SeizureFrequency": "loss"
+      },
+      "four_family_exact_direction": "loss",
+      "letter_id": "EA0199"
+    }
+  ],
+  "claim_boundary": "ExECT development Compact versus saved Full ledger. Not holdout.",
   "comparison": {
-    "compact_current_minus_compact_ledger": {
+    "exect_llm_with_rules_minus_exect_full_ledger": {
       "regression_triggers": [
-        "raw net four-family letter-exact losses 4",
-        "hybrid net four-family letter-exact losses 7"
+        "raw net four-family letter-exact losses 7",
+        "hybrid net four-family letter-exact losses 4"
       ],
       "significant_regression": true,
       "surfaces": {
         "hybrid": {
           "family_f1_delta": {
-            "Diagnosis": 0.0122,
-            "Investigations": -0.0088,
-            "Prescription": 0.0098,
-            "SeizureFrequency": -0.0074
+            "Diagnosis": -0.0073,
+            "Investigations": 0.0116,
+            "Prescription": -0.005,
+            "SeizureFrequency": -0.0381
           },
-          "four_family_letter_exact_losses": 11,
-          "four_family_letter_exact_net": -7,
-          "four_family_letter_exact_wins": 4,
-          "headline_f1_delta": 0.0038,
+          "four_family_letter_exact_losses": 12,
+          "four_family_letter_exact_net": -4,
+          "four_family_letter_exact_wins": 8,
+          "headline_f1_delta": -0.0094,
           "per_family_letter_exact_flips": {
             "Diagnosis": {
-              "losses": 3,
-              "wins": 3
+              "losses": 9,
+              "wins": 4
             },
             "Investigations": {
-              "losses": 2,
-              "wins": 1
+              "losses": 1,
+              "wins": 2
             },
             "Prescription": {
-              "losses": 0,
-              "wins": 4
+              "losses": 4,
+              "wins": 5
             },
             "SeizureFrequency": {
               "losses": 15,
-              "wins": 9
-            }
-          }
-        },
-        "raw": {
-          "family_f1_delta": {
-            "Diagnosis": 0.0114,
-            "Investigations": -0.0158,
-            "Prescription": 0.0398,
-            "SeizureFrequency": -0.0243
-          },
-          "four_family_letter_exact_losses": 7,
-          "four_family_letter_exact_net": -4,
-          "four_family_letter_exact_wins": 3,
-          "headline_f1_delta": 0.0061,
-          "per_family_letter_exact_flips": {
-            "Diagnosis": {
-              "losses": 5,
-              "wins": 6
-            },
-            "Investigations": {
-              "losses": 3,
-              "wins": 1
-            },
-            "Prescription": {
-              "losses": 3,
-              "wins": 11
-            },
-            "SeizureFrequency": {
-              "losses": 14,
-              "wins": 8
-            }
-          }
-        }
-      }
-    },
-    "compact_further_prune_minus_compact_ledger": {
-      "regression_triggers": [
-        "raw net four-family letter-exact losses 3"
-      ],
-      "significant_regression": true,
-      "surfaces": {
-        "hybrid": {
-          "family_f1_delta": {
-            "Diagnosis": 0.0109,
-            "Investigations": -0.0035,
-            "Prescription": 0.007,
-            "SeizureFrequency": -0.015
-          },
-          "four_family_letter_exact_losses": 8,
-          "four_family_letter_exact_net": -1,
-          "four_family_letter_exact_wins": 7,
-          "headline_f1_delta": 0.0021,
-          "per_family_letter_exact_flips": {
-            "Diagnosis": {
-              "losses": 4,
-              "wins": 5
-            },
-            "Investigations": {
-              "losses": 1,
-              "wins": 1
-            },
-            "Prescription": {
-              "losses": 1,
-              "wins": 4
-            },
-            "SeizureFrequency": {
-              "losses": 10,
-              "wins": 4
-            }
-          }
-        },
-        "raw": {
-          "family_f1_delta": {
-            "Diagnosis": 0.0054,
-            "Investigations": -0.0035,
-            "Prescription": 0.0049,
-            "SeizureFrequency": -0.0323
-          },
-          "four_family_letter_exact_losses": 7,
-          "four_family_letter_exact_net": -3,
-          "four_family_letter_exact_wins": 4,
-          "headline_f1_delta": -0.0031,
-          "per_family_letter_exact_flips": {
-            "Diagnosis": {
-              "losses": 7,
-              "wins": 5
-            },
-            "Investigations": {
-              "losses": 1,
-              "wins": 1
-            },
-            "Prescription": {
-              "losses": 7,
-              "wins": 9
-            },
-            "SeizureFrequency": {
-              "losses": 13,
-              "wins": 3
-            }
-          }
-        }
-      }
-    },
-    "drop_encoding_non_sf_minus_compact_ledger": {
-      "regression_triggers": [],
-      "significant_regression": false,
-      "surfaces": {
-        "hybrid": {
-          "family_f1_delta": {
-            "Diagnosis": 0.0066,
-            "Investigations": -0.0081,
-            "Prescription": 0.0246,
-            "SeizureFrequency": 0.0305
-          },
-          "four_family_letter_exact_losses": 8,
-          "four_family_letter_exact_net": 1,
-          "four_family_letter_exact_wins": 9,
-          "headline_f1_delta": 0.0141,
-          "per_family_letter_exact_flips": {
-            "Diagnosis": {
-              "losses": 2,
-              "wins": 5
-            },
-            "Investigations": {
-              "losses": 2,
-              "wins": 1
-            },
-            "Prescription": {
-              "losses": 0,
-              "wins": 7
-            },
-            "SeizureFrequency": {
-              "losses": 9,
-              "wins": 10
-            }
-          }
-        },
-        "raw": {
-          "family_f1_delta": {
-            "Diagnosis": 0.0212,
-            "Investigations": -0.0081,
-            "Prescription": 0.059,
-            "SeizureFrequency": 0.0219
-          },
-          "four_family_letter_exact_losses": 4,
-          "four_family_letter_exact_net": 3,
-          "four_family_letter_exact_wins": 7,
-          "headline_f1_delta": 0.0266,
-          "per_family_letter_exact_flips": {
-            "Diagnosis": {
-              "losses": 4,
-              "wins": 7
-            },
-            "Investigations": {
-              "losses": 2,
-              "wins": 1
-            },
-            "Prescription": {
-              "losses": 1,
-              "wins": 12
-            },
-            "SeizureFrequency": {
-              "losses": 9,
-              "wins": 11
-            }
-          }
-        }
-      }
-    },
-    "drop_examples_minus_compact_ledger": {
-      "regression_triggers": [
-        "hybrid net four-family letter-exact losses 4"
-      ],
-      "significant_regression": true,
-      "surfaces": {
-        "hybrid": {
-          "family_f1_delta": {
-            "Diagnosis": 0.0132,
-            "Investigations": -0.0081,
-            "Prescription": 0.007,
-            "SeizureFrequency": 0.0113
-          },
-          "four_family_letter_exact_losses": 9,
-          "four_family_letter_exact_net": -4,
-          "four_family_letter_exact_wins": 5,
-          "headline_f1_delta": 0.0077,
-          "per_family_letter_exact_flips": {
-            "Diagnosis": {
-              "losses": 2,
-              "wins": 4
-            },
-            "Investigations": {
-              "losses": 2,
-              "wins": 0
-            },
-            "Prescription": {
-              "losses": 1,
-              "wins": 4
-            },
-            "SeizureFrequency": {
-              "losses": 13,
               "wins": 8
             }
           }
         },
         "raw": {
           "family_f1_delta": {
-            "Diagnosis": 0.0373,
-            "Investigations": -0.0081,
-            "Prescription": 0.0564,
-            "SeizureFrequency": -0.0126
+            "Diagnosis": -0.0405,
+            "Investigations": 0.0116,
+            "Prescription": -0.0096,
+            "SeizureFrequency": -0.0283
           },
-          "four_family_letter_exact_losses": 5,
-          "four_family_letter_exact_net": -1,
-          "four_family_letter_exact_wins": 4,
-          "headline_f1_delta": 0.0248,
+          "four_family_letter_exact_losses": 13,
+          "four_family_letter_exact_net": -7,
+          "four_family_letter_exact_wins": 6,
+          "headline_f1_delta": -0.0201,
           "per_family_letter_exact_flips": {
             "Diagnosis": {
-              "losses": 3,
-              "wins": 6
-            },
-            "Investigations": {
-              "losses": 2,
-              "wins": 0
-            },
-            "Prescription": {
-              "losses": 1,
-              "wins": 11
-            },
-            "SeizureFrequency": {
               "losses": 14,
               "wins": 7
-            }
-          }
-        }
-      }
-    },
-    "full_ledger_minus_compact_ledger": {
-      "regression_triggers": [],
-      "significant_regression": false,
-      "surfaces": {
-        "hybrid": {
-          "family_f1_delta": {
-            "Diagnosis": 0.0174,
-            "Investigations": -0.0081,
-            "Prescription": 0.0096,
-            "SeizureFrequency": 0.0391
-          },
-          "four_family_letter_exact_losses": 10,
-          "four_family_letter_exact_net": -1,
-          "four_family_letter_exact_wins": 9,
-          "headline_f1_delta": 0.0156,
-          "per_family_letter_exact_flips": {
-            "Diagnosis": {
-              "losses": 4,
-              "wins": 7
             },
             "Investigations": {
-              "losses": 2,
-              "wins": 1
+              "losses": 1,
+              "wins": 2
             },
             "Prescription": {
-              "losses": 1,
-              "wins": 4
+              "losses": 6,
+              "wins": 5
             },
             "SeizureFrequency": {
-              "losses": 9,
-              "wins": 13
-            }
-          }
-        },
-        "raw": {
-          "family_f1_delta": {
-            "Diagnosis": 0.0518,
-            "Investigations": -0.0081,
-            "Prescription": 0.059,
-            "SeizureFrequency": 0.0225
-          },
-          "four_family_letter_exact_losses": 7,
-          "four_family_letter_exact_net": 4,
-          "four_family_letter_exact_wins": 11,
-          "headline_f1_delta": 0.0377,
-          "per_family_letter_exact_flips": {
-            "Diagnosis": {
-              "losses": 9,
-              "wins": 10
-            },
-            "Investigations": {
-              "losses": 2,
-              "wins": 1
-            },
-            "Prescription": {
-              "losses": 1,
-              "wins": 12
-            },
-            "SeizureFrequency": {
-              "losses": 11,
-              "wins": 14
+              "losses": 16,
+              "wins": 8
             }
           }
         }
       }
     }
   },
-  "control_arm": "compact_ledger",
   "decision": {
-    "compact_current": {
-      "failures": [
-        "hybrid net four-family letter-exact losses 7"
-      ],
+    "exect_llm_with_rules": {
       "family_f1_delta": {
-        "Diagnosis": 0.0122,
-        "Investigations": -0.0088,
-        "Prescription": 0.0098,
-        "SeizureFrequency": -0.0074
-      },
-      "four_family_letter_exact_net": -7,
-      "headline_f1_delta": 0.0038,
-      "status": "scored",
-      "verdict": "load_bearing"
-    },
-    "compact_further_prune": {
-      "failures": [],
-      "family_f1_delta": {
-        "Diagnosis": 0.0109,
-        "Investigations": -0.0035,
-        "Prescription": 0.007,
-        "SeizureFrequency": -0.015
-      },
-      "four_family_letter_exact_net": -1,
-      "headline_f1_delta": 0.0021,
-      "status": "scored",
-      "verdict": "cheap"
-    },
-    "drop_encoding_non_sf": {
-      "failures": [],
-      "family_f1_delta": {
-        "Diagnosis": 0.0066,
-        "Investigations": -0.0081,
-        "Prescription": 0.0246,
-        "SeizureFrequency": 0.0305
-      },
-      "four_family_letter_exact_net": 1,
-      "headline_f1_delta": 0.0141,
-      "status": "scored",
-      "verdict": "cheap"
-    },
-    "drop_examples": {
-      "failures": [
-        "hybrid net four-family letter-exact losses 4"
-      ],
-      "family_f1_delta": {
-        "Diagnosis": 0.0132,
-        "Investigations": -0.0081,
-        "Prescription": 0.007,
-        "SeizureFrequency": 0.0113
+        "Diagnosis": -0.0073,
+        "Investigations": 0.0116,
+        "Prescription": -0.005,
+        "SeizureFrequency": -0.0381
       },
       "four_family_letter_exact_net": -4,
-      "headline_f1_delta": 0.0077,
-      "status": "scored",
-      "verdict": "load_bearing"
-    },
-    "full_ledger": {
-      "failures": [],
-      "family_f1_delta": {
-        "Diagnosis": 0.0174,
-        "Investigations": -0.0081,
-        "Prescription": 0.0096,
-        "SeizureFrequency": 0.0391
-      },
-      "four_family_letter_exact_net": -1,
-      "headline_f1_delta": 0.0156,
-      "status": "scored",
-      "verdict": "descriptive"
+      "headline_f1_delta": -0.0094,
+      "parse": 0,
+      "schema": 0,
+      "status": "scored"
     }
   },
-  "default_prompt_version": "exectv2_full_ledger",
-  "finished_utc": "2026-08-17T10:52:53.443788+00:00",
+  "default_prompt_version": "exectv2_compact_ledger",
+  "finished_utc": "2026-08-18T20:15:37.166378+00:00",
   "generated_on": "2026-08-17",
   "letter_ids": [
     "EA0002",
@@ -2587,16 +1000,18 @@
   ],
   "live": true,
   "max_tokens": 16000,
+  "method": "exect_llm_with_rules",
   "model": "openai/gpt-5.6-luna",
-  "model_calls": 560,
-  "protocol": "docs/research/exectv2/compact_ledger_luna_dev140_ablation_protocol_2026-08-17.md",
-  "provenance": {
-    "dirty_tree": true,
-    "git_commit": "fe8893950a3b0e17d75dc4acc4713b31d94d8f57"
-  },
+  "model_calls": 140,
+  "model_label": "GPT-5.6 Luna",
+  "model_slug": "gpt56luna",
+  "provider_revision": null,
+  "reasoning_effort": "low",
   "row_count": 140,
-  "schema_version": "exectv2.compact_ledger_luna_dev140_ablation.v1",
+  "row_policy": "development_review_permitted",
+  "schema_version": "paper.exect_llm_with_rules.v1",
   "split": "dev140",
-  "started_utc": "2026-08-17T09:05:47.043578+00:00",
-  "temperature": 1.0
+  "started_utc": "2026-08-18T20:01:32.405453+00:00",
+  "temperature": 1.0,
+  "thinking_type": null
 }

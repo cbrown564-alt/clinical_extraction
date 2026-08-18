@@ -1,25 +1,24 @@
 {
   "comparison": "comparison.json",
   "empty_raw_count": 0,
-  "hybrid_headline_f1": 0.888,
+  "hybrid_headline_f1": 0.7827,
   "id_field": "letter_id",
   "living_effort": "low",
   "method": "exect_llm_with_rules",
   "model": "openai/gpt-5.6-luna",
   "model_slug": "gpt56luna",
-  "n": 140,
+  "n": 59,
   "program": "exectv2_compact_ledger",
-  "raw_headline_f1": 0.8105,
+  "raw_headline_f1": 0.7604,
   "replay_fields": [
     "letter_id",
     "prompt_version",
     "raw_output"
   ],
-  "row_count": 140,
-  "row_policy": "development_review_permitted",
+  "row_count": 59,
+  "row_policy": "aggregate_only",
   "rows": "structured.jsonl",
-  "scored": "scored.jsonl",
-  "source": "experiments/paper/exect_llm_with_rules/gpt56luna/dev140",
-  "split": "dev140",
-  "split_machine": "dev"
+  "source": "scratch/holdout/paper/exect_llm_with_rules/gpt56luna/test60",
+  "split": "test60",
+  "split_machine": "test"
 }
