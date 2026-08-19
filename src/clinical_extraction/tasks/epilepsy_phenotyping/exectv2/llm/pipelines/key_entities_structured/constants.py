@@ -31,7 +31,7 @@ FULL_VERSIONS = frozenset({FULL_LEDGER, EXECT_FULL_LEDGER})
 COMPACT_VERSIONS = frozenset({COMPACT_LEDGER, EXECT_LLM_WITH_RULES})
 LLM_ONLY_VERSIONS = frozenset({EXECT_LLM_ONLY})
 FLAT_SCHEMA_VERSIONS = COMPACT_VERSIONS | LLM_ONLY_VERSIONS
-# Live default is Compact hybrid. Full stays as the cited comparator.
+# Live default is ExECT LLM with rules. Full ledger stays as the cited comparator.
 PROMPT_VERSION = COMPACT_LEDGER
 _SUPPORTED_PROMPT_VERSIONS = FULL_VERSIONS | FLAT_SCHEMA_VERSIONS
 PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"

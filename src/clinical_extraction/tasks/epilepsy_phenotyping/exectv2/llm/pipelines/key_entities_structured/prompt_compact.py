@@ -545,7 +545,7 @@ def _sectioned_rules(*, include_suggested: bool) -> dict[str, list[str]]:
 
 
 def build_compact_prompt_input(letter: ExectLetter) -> str:
-    """Build the Compact hybrid payload, including suggested evidence."""
+    """Build the ExECT LLM with rules payload, including suggested evidence."""
 
     payload = {
         "task": _HYBRID_TASK,
@@ -562,7 +562,7 @@ def build_compact_prompt_input(letter: ExectLetter) -> str:
 
 
 def build_compact_llm_only_prompt_input(letter: ExectLetter) -> str:
-    """Build the Compact LLM-only payload, without suggested evidence."""
+    """Build the ExECT LLM only payload, without suggested evidence."""
 
     payload = {
         "task": _LLM_ONLY_TASK,

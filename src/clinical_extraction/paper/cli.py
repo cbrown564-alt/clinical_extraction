@@ -70,7 +70,7 @@ def main(argv: Sequence[str] | None = None) -> None:
             )
             return
         if args.method != "exect_llm_with_rules":
-            raise SystemExit("promote-exect is Compact hybrid or Compact LLM-only")
+            raise SystemExit("promote-exect is ExECT LLM with rules or ExECT LLM only")
         print(
             json.dumps(
                 promote_exect(args.model, args.split),
