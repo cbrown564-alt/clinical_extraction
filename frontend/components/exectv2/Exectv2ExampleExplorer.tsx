@@ -34,6 +34,7 @@ import {
   type AttributeRank,
 } from "@/lib/attributeOrder";
 import { lastRuleActionLabel } from "@/lib/plainLanguageLabels";
+import { mergeFamilyHighlights } from "@/lib/letterHighlights";
 import { displayPredictedEvidence } from "@/lib/predictedQuote";
 import {
   alignFamilyMentions,
@@ -775,15 +776,20 @@ export default function Exectv2ExampleExplorer() {
 
   // Colour each evidence span by its family so the letter matches the lens
   // strip; when a single family lens is active, show only that family's spans
-  // (mirroring how Gan's stage selection drives the note highlights).
-  const highlightSpans = selectedLetter.evidence_spans
-    .filter((span) => activeFamily === "all" || span.entity === activeFamily)
-    .map((span) => ({
-      start: span.start,
-      end: span.end,
-      kind: familyTone(String(span.entity)),
-      label: span.label,
-    }));
+  // (mirroring how Gan's stage selection drives the note highlights). Overlap
+  // and whitespace-only gaps collapse to one run so gold/predicted chips do
+  // not punch holes in the same phrase.
+  const highlightSpans = mergeFamilyHighlights(
+    selectedLetter.evidence_spans.filter(
+      (span) => activeFamily === "all" || span.entity === activeFamily
+    ),
+    selectedLetter.letter_text
+  ).map((span) => ({
+    start: span.start,
+    end: span.end,
+    kind: familyTone(String(span.entity)),
+    label: span.label,
+  }));
 
   return (
     <SurfaceLayout variant="fill">

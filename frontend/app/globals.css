@@ -49,12 +49,14 @@ body {
   user-select: none;
 }
 
-/* Highlight spans – rounded semi-transparent pills with subtle shadow */
+/* Highlight spans – continuous wash and underline, including wrapped lines */
 .span-highlight {
   transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 4px;
-  padding: 1px 4px;
-  margin: 0 1px;
+  border-radius: 0;
+  padding: 1px 0;
+  margin: 0;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 
 .span-highlight--deterministic {
