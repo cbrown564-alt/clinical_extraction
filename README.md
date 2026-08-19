@@ -2,11 +2,14 @@
 
 Turn epilepsy clinic letters into structured clinical facts.
 
-This repository is research code and a working demonstration. It compares three
-ways of extracting information from clinical notes—deterministic rules, a
-language model alone, and a language model with deterministic repair—on two
-benchmarks. The point of the work is not only the score, but which component
-improved a result and where each method fails.
+This repository is research code and a working demonstration. The proposed
+method translates clinic letters into structured clinical facts in a designed
+form, with quoted source text. A model collects the facts and evidence;
+recorded rules shape them into the required form. Written rules and a model
+alone are baselines. The public golds are the evaluation forms used here, not
+the task. Tables cite Grok 4.6 so the story stays on the method. Gemini is in
+the same band where cells exist. The recorded object keeps the source span
+and a change log, not only the score.
 
 This is a research and teaching package, not a clinical deployment claim.
 
@@ -16,8 +19,7 @@ local research checkout and are not cloned.
 
 ## Results
 
-Held-out test scores for Grok 4.6 (2 d.p.), the living
-method-identity row. GPT-5.6 Sol cells stay historical. Rules-only
+Held-out test scores for Grok 4.6 (2 d.p.), the cited model. GPT-5.6 Sol cells stay historical. Rules-only
 is deterministic and does not use a model.
 
 | Method | Gan 2026 | ExECTv2 |
@@ -40,7 +42,7 @@ is deterministic and does not use a model.
 
 Scores are not interchangeable across tasks.
 
-## Two tasks, three methods
+## Two tasks
 
 | | Gan 2026 | ExECTv2 |
 | --- | --- | --- |
@@ -49,12 +51,13 @@ Scores are not interchangeable across tasks.
 | Locked test split | `test450` (aggregate scores only) | `test60` (aggregate scores only) |
 | Primary score | Purist accuracy | Clinical fact F1 |
 
-Each task uses the same three methods:
+Each task uses the same three methods. LLM with rules is the proposed
+method. Rules and LLM only are baselines:
 
-- **Rules** — deterministic code produces the clinical answer.
+- **LLM with rules** — the model collects structured facts with source text;
+  recorded rules may normalize, select, or repair them before scoring.
 - **LLM** — the model produces the clinical answer.
-- **LLM with rules** — the model extracts or proposes facts; deterministic code
-  may normalize, select, or repair them before scoring.
+- **Rules** — deterministic code produces the clinical answer.
 
 ## How it works
 

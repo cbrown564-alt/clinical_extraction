@@ -1,7 +1,5 @@
 \documentclass[conference]{IEEEtran}
-\IEEEoverridecommandlockouts
-% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
-%Template version as of 6/27/2024
+% \IEEEoverridecommandlockouts
 
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
@@ -11,6 +9,7 @@
 \usepackage{xcolor}
 \usepackage{tabularx}
 \usepackage{array}
+\usepackage{subcaption}
 
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 
@@ -18,14 +17,28 @@
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Reliable Extraction from Epilepsy Letters\\}
+\begin{titlepage}
+    \centering
 
-\author{\IEEEauthorblockN{1\textsuperscript{st} Conor Brown}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-Belfast, Northern Ireland \\
-cbrown564@gmail.com}
-}
+    {\Huge\bfseries Translating clinical narratives into structured evidence\par}
+    \vspace{2cm}
+
+    {\large
+    A dissertation submitted in partial fulfilment of\par
+    The requirement for the degree of\par
+    MASTER OF SCIENCE in Artificial Intelligence\par
+    in\par
+    The Queen’s University of Belfast\par
+    by\par
+    Conor Brown\par
+    4th September 2026
+    }
+\end{titlepage}
+
+
+\title{Translating clinical narratives into structured evidence\\}
+
+
 
 \maketitle
 
@@ -40,57 +53,138 @@ component, formatting, style, styling, insert.
 \end{IEEEkeywords}
 
 \section{Introduction}
+
+Clinical information extraction is the process of turning clinical 
+narratives into structured facts suitable for clinical use and research.
+
 \subsection{Medical framing}
-Epilepsy is one of the most common neurological diseases
+Epilepsy is one of the most common neurological diseases. 30 
+percent of patients are drug resistant and research progress has 
+been stubbornly slow. We need a deeper understanding of who 
+these patients are, how they are treated, how outcomes differ over 
+time and across groups. The most important clinical markers are 
+trapped in unstructured notes. Costly chart review is required for 
+constructing patient timelines, identifying research cohorts, 
+conducting retrospective studies.
 
-30 percent of patients are drug resistant and research progress has been stubbornly slow
-
-We need a deeper understanding of who these patients are, how they are treated, how outcomes differ over time and across groups
-
-The most important clinical markers are trapped in unstructured notes
-
-Costly chart review is required for constructing patient timelines, identifying research cohorts, conducting retrospective studies
-
-They struggle through that anyway because it’s so valuable, but it’s not just costly it’s error prone 
-Entity extraction vs. entity relational extraction and reasoning
-NLP solved entity extraction a while back, but this is a temporal and clinical reasoning problem - how to represent a clinical state in a rigorous way
-
-It’s not just computers that struggle with this problem, but doctors too - they all describe things differently and experts struggle to interpret them identically 
+They struggle through that anyway because it’s so valuable, but it’s 
+not just costly it’s error prone. Entity extraction vs. entity relational 
+extraction and reasoning. NLP solved entity extraction a while back, 
+but this is a temporal and clinical reasoning problem - how to 
+represent a clinical state in a rigorous way. It’s not just computers 
+that struggle with this problem, but doctors too - they all describe 
+things differently and experts struggle to interpret them identically 
 
 \subsection{Prior system summary}
-Rules-based systems are good at entity extraction but require extensive annotation and perform poorly on logic
+Rules-based systems are good at entity extraction but require 
+extensive annotation and perform poorly on logic. BERT-based 
+systems require extensive annotations and again, perform poorly 
+on logic. GPT-based systems are very semantically flexible and 
+strong on reasoning, but they’re a bit too flexible - hallucination, 
+rambling prose, it’s unstructured data to unstructured data. 
+Monolithic LLMs provide the least visibility into the most dangerous
+task, clinical reasoning.
 
-BERT-based systems require extensive annotations and again, perform poorly on logic
-
-GPT-based systems are very semantically flexible and strong on reasoning, but they’re a bit too flexible - hallucination, rambling prose, it’s unstructured data to unstructured data
-
-Monolithic LLMs provide the least visibility into the most dangerous task, clinical reasoning
-
-Most of the LLMs tested and performing well as monolithic systems were closed-source, which creates privacy concerns
-
-These problems lead to systems generalising poorly to new tasks and styles
-We need the modularity and reliability of rules-based systems to constrain the flexibility of the LLMs and audit their outputs
+Most of the LLMs tested and performing well as monolithic systems 
+were closed-source, which creates privacy concerns. These 
+problems lead to systems generalising poorly to new tasks and styles. 
+We need the modularity and reliability of rules-based systems to constrain 
+the flexibility of the LLMs and audit their outputs.
 
 \subsection{Hybrid solution}
-I present a modular, evidence-grounded LLM framework for clinical information extraction from epilepsy clinical letters
+I present a modular, evidence-grounded LLM framework for clinical 
+information extraction from epilepsy clinical letters. It decomposes 
+extraction into configurable stages for semantic interpretation, relation 
+extraction, temporal resolution, concept normalisation, schema validation 
+and evidence verification. It is evaluated across two independently 
+developed, publicly shareable epilepsy benchmarks assessing two 
+different capabilities: broad phenotype extraction in ExECTv2 and 
+temporally complex seizure-frequency extraction from synthetic letters.
 
-It decomposes extraction into configurable stages for semantic interpretation, relation extraction, temporal resolution, concept normalisation, schema validation and evidence verification
+By directly comparing rules-only, LLM-only and hybrid configurations, plus 
+component ablations and error analysis, we show how modular, 
+evidence-grounded hybrid systems not only improve field-level F1 scores 
+but also reliability, auditability and generalisability.
 
-It is evaluated across two independently developed, publicly shareable epilepsy benchmarks assessing two different capabilities: broad phenotype extraction in ExECTv2 and temporally complex seizure-frequency extraction from synthetic leets
+\section{Literature Review}
 
-By directly comparing rules-only, LLM-only and hybrid configurations, plus component ablations and error analysis, we show how modular, evidence-grounded hybrid systems not only improve field-level F1 scores but also reliability, auditability and generalisability
+\section{Methods}
+\subsection{Data}
+Two datasets were used to evaluate the performance of the system on
+two distinct tasks. Dataset 1 assesses the system's ability to extract a 
+broad inventory of clinical facts and attributes, often with multiple facts 
+per category e.g. multiple kinds of medication, each with its own dose, 
+unit and frequency. Dataset 2 assesses the system's ability to extract
+a single clinical fact that represents the patient's current seizure frequency
+burden. This often involves multiple seizure frequency events that need to be
+aggregated (e.g. 1 in February, 2 in April = 3 per 3 months) or disambiguated
+(e.g. "She discontinued Valproate on 10 Jul. Shortly afterwards, she experienced
+2 to 3 seizures, one triggered by missed medication. She has remained 
+seizure-free since") to produce a single answer.
 
-\section{Figures and Tables}\label{FAT}
-\paragraph{Positioning Figures and Tables} Place figures and tables at the top and 
-bottom of columns. Avoid placing them in the middle of columns. Large 
-figures and tables may span across both columns. Figure captions should be 
-below the figures; table heads should appear above the tables. Insert 
-figures and tables after they are cited in the text. Use the abbreviation 
-``Fig.~\ref{fig}'', even at the beginning of a sentence.
+Dataset 1 consists of 200 synthetic letters written by
+trained specialists based on real clinic letters from hospital outpatient
+consultations with epilepsy specialists in Swansea Bay. The letters 
+were double annotated by four trained researchers and clinicians
+according to strict annotation guidelines. The dataset consists of 9
+distinct categories describing a patient's experience of epilepsy. In this
+paper we focused in the four most important categories: the medication
+used (drug name, dose, unit, frequency), the diagnosis (type of seizures 
+e.g. tonic-clonic seizures), the investigations used to confirm the diagnosis
+(e.g. MRI results) and how often the patient has seizures (e.g. focal seizures
+for around 1 year before this). An example letter is shown in Figure 1a. The 
+dataset was split into 
+
+Dataset 2 consists of 1,500 letters using a combination of 
+human and generative AI. Ten synthetic letter templates were created 
+based on real clinic letters from King's College Hospital. GPT-5 
+generated 500 diverse short descriptions of seizure frequency. Human 
+annotators read and assigned gold-standard labels to each 
+description. The description-label pairs were then inserted into the 
+parameterised templates to create the full dataset of 15,000 letters. This
+paper used a subset of 1,500 letters provided by the author. The 
+gold-standard annotation consists of a single label describing the patient's 
+current seizure frequency burden, e.g. seizure free for 5 months. An example 
+letter is shown in Figure 2a.
+
+\begin{figure*}[t]
+    \centering
+
+    \begin{subfigure}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{fig1.png}
+        \caption{Example clinical letter from the Swansea Bay with relevant facts about medication, diagnosis, investigations and seizure frequency highlighted.}
+        \label{fig:first}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{fig2.png}
+        \caption{Example clinical letter from King's College Hospital with relevant seizure frequency events highlighted.}
+        \label{fig:second}
+    \end{subfigure}
+
+    \caption{Example clinical letters from Swansea Bay (a) and King's College Hospital (b). Highlighted sections of the letter illustrate the areas where the pipeline identified relevant clinical facts for the task.}
+    \label{fig:combined}
+\end{figure*}
+
+\subsection{Architecture}
+
+\section{Results}
+\subsection{Development Environment}
+\subsection{Methods}
+\subsection{Models}
+\subsection{Structured Evidence}
+\subsection{Ablations}
+\subsection{Error Analysis}
+
+\section{Discussion}
+
+\section{Conclusion}
 
 \begin{tabularx}{\linewidth}{|Y|Y|Y|Y|}
 \hline
-\textbf{Table Head} &
+\textbf{Entity} &
 \textbf{Claim it supports} &
 \textbf{Evidence shown} &
 \textbf{Reviewer risk} \\
@@ -128,29 +222,6 @@ normalisation errors, temporal contradiction, abstention rate &
 Difficulty identifying the most meaningful errors \\
 \hline
 \end{tabularx}
-
-\begin{figure}[htbp]
-\centerline{\includegraphics{fig1.png}}
-\caption{Example of a figure caption.}
-\label{fig}
-\end{figure}
-
-Figure Labels: Use 8 point Times New Roman for Figure labels. Use words 
-rather than symbols or abbreviations when writing Figure axis labels to 
-avoid confusing the reader. As an example, write the quantity 
-``Magnetization'', or ``Magnetization, M'', not just ``M''. If including 
-units in the label, present them within parentheses. Do not label axes only 
-with units. In the example, write ``Magnetization (A/m)'' or ``Magnetization 
-\{A[m(1)]\}'', not just ``A/m''. Do not label axes with a ratio of 
-quantities and units. For example, write ``Temperature (K)'', not 
-``Temperature/K''.
-
-\section*{Acknowledgment}
-
-The preferred spelling of the word ``acknowledgment'' in America is without 
-an ``e'' after the ``g''. Avoid the stilted expression ``one of us (R. B. 
-G.) thanks $\ldots$''. Instead, try ``R. B. G. thanks$\ldots$''. Put sponsor 
-acknowledgments in the unnumbered footnote on the first page.
 
 \section*{References}
 
