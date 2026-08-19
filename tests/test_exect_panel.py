@@ -139,11 +139,13 @@ def test_promote_strips_replay_and_writes_scored_panel(
     panel = rebuild_dev140_panel()
     assert panel["method_identity"] == "grok46"
     assert panel["living_effort"]["hosted_reasoning"] == "low"
-    assert len(panel["cells"]) == 6
+    assert panel["methods"] == ["exect_llm_only", "exect_llm_with_rules"]
+    assert len(panel["cells"]) == 12
     present = [cell for cell in panel["cells"] if cell["status"] == "present"]
     pending = [cell for cell in panel["cells"] if cell["status"] == "pending"]
     assert [cell["model_slug"] for cell in present] == ["grok46"]
-    assert len(pending) == 5
+    assert present[0]["method"] == "exect_llm_with_rules"
+    assert len(pending) == 11
     assert payload["cell"]["n"] == 140
     assert panel["models"] == [item["slug"] for item in living_models()]
     synced = json.loads(
@@ -156,7 +158,9 @@ def test_promote_strips_replay_and_writes_scored_panel(
         for row in synced["present"]
     )
     assert not any(
-        row.get("model_slug") == "grok46" and row.get("split") == "dev140"
+        row.get("model_slug") == "grok46"
+        and row.get("method") == "exect_llm_with_rules"
+        and row.get("split") == "dev140"
         for row in synced["missing"]
     )
     assert any(
@@ -208,7 +212,11 @@ def test_rebuild_keeps_existing_compact_present_without_cell_json(
     _write_inventory(tmp_path, present=[historical])
     _patch_panel_paths(tmp_path, monkeypatch)
     panel = rebuild_dev140_panel()
-    luna = next(cell for cell in panel["cells"] if cell["model_slug"] == "gpt56luna")
+    luna = next(
+        cell
+        for cell in panel["cells"]
+        if cell["model_slug"] == "gpt56luna" and cell["method"] == "exect_llm_with_rules"
+    )
     assert luna["status"] == "present"
     assert luna["hybrid_headline_f1"] == 0.8818
     synced = json.loads(

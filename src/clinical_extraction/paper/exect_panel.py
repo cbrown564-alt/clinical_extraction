@@ -32,6 +32,7 @@ INVENTORY_PATH = ROOT / "paper_experiments/inventory.json"
 REPLAY_FIELDS = ("letter_id", "prompt_version", "raw_output")
 METHOD = "exect_llm_with_rules"
 LLM_ONLY_METHOD = "exect_llm_only"
+EXECT_METHODS = (LLM_ONLY_METHOD, METHOD)
 PROMOTE_SPLIT = "dev140"
 HOLDOUT_FORBIDDEN = ("letter_ids", "changed_rows")
 
@@ -44,19 +45,27 @@ def living_work_root(slug: str, split: str = PROMOTE_SPLIT) -> Path:
 
 
 def paper_cell_root(slug: str, split: str = PROMOTE_SPLIT) -> Path:
-    """Return the tracked paper directory for a Compact hybrid cell."""
+    """Return the tracked paper directory for an ExECT LLM with rules cell."""
 
-    return PAPER_EXECT / METHOD / slug / split
+    return paper_method_cell_root(METHOD, slug, split)
 
 
 def paper_llm_only_cell_root(slug: str, split: str = PROMOTE_SPLIT) -> Path:
-    """Return the tracked paper directory for a Compact LLM-only cell."""
+    """Return the tracked paper directory for an ExECT LLM only cell."""
 
-    return PAPER_EXECT / LLM_ONLY_METHOD / slug / split
+    return paper_method_cell_root(LLM_ONLY_METHOD, slug, split)
+
+
+def paper_method_cell_root(method: str, slug: str, split: str = PROMOTE_SPLIT) -> Path:
+    """Return the tracked paper directory for one ExECT paper method cell."""
+
+    if method not in EXECT_METHODS:
+        raise ValueError(f"unsupported ExECT paper method {method}")
+    return PAPER_EXECT / method / slug / split
 
 
 def living_llm_only_work_root(slug: str, split: str = PROMOTE_SPLIT) -> Path:
-    """Return the living-effort Compact LLM-only work directory."""
+    """Return the living-effort ExECT LLM only work directory."""
 
     root = LLM_ONLY_HOLDOUT_ROOT if holdout_is_aggregate_only(split) else LLM_ONLY_WORK_ROOT
     return root / slug / split
@@ -300,25 +309,29 @@ def rebuild_dev140_panel() -> dict[str, Any]:
     cells: list[dict[str, Any]] = []
     for model in living_models():
         slug = str(model["slug"])
-        dest = paper_cell_root(slug)
-        structured_path = dest / "structured.jsonl"
-        comparison_path = dest / "comparison.json"
-        cell_path = dest / "cell.json"
-        scored_path = dest / "scored.jsonl"
-        if structured_path.is_file() and comparison_path.is_file():
-            comparison = json.loads(comparison_path.read_text(encoding="utf-8"))
-            arm = _compact_arm(comparison)
-            extra = (
-                json.loads(cell_path.read_text(encoding="utf-8"))
-                if cell_path.is_file()
-                else {}
-            )
-            cells.append(
-                {
+        for method in EXECT_METHODS:
+            dest = paper_method_cell_root(method, slug)
+            structured_path = dest / "structured.jsonl"
+            comparison_path = dest / "comparison.json"
+            cell_path = dest / "cell.json"
+            scored_path = dest / "scored.jsonl"
+            if structured_path.is_file() and comparison_path.is_file():
+                comparison = json.loads(comparison_path.read_text(encoding="utf-8"))
+                arm = (
+                    _llm_only_arm(comparison)
+                    if method == LLM_ONLY_METHOD
+                    else _compact_arm(comparison)
+                )
+                extra = (
+                    json.loads(cell_path.read_text(encoding="utf-8"))
+                    if cell_path.is_file()
+                    else {}
+                )
+                cell: dict[str, Any] = {
                     "model_slug": slug,
                     "model": model["model"],
                     "label": model["label"],
-                    "method": METHOD,
+                    "method": method,
                     "status": "present",
                     "path": dest.relative_to(ROOT).as_posix() + "/",
                     "rows": structured_path.relative_to(ROOT).as_posix(),
@@ -328,22 +341,23 @@ def rebuild_dev140_panel() -> dict[str, Any]:
                     "comparison": comparison_path.relative_to(ROOT).as_posix(),
                     "n": exect_row_count(PROMOTE_SPLIT),
                     "raw_headline_f1": arm.get("raw_headline_f1"),
-                    "hybrid_headline_f1": arm.get("hybrid_headline_f1"),
                     "living_effort": extra.get("living_effort") or _living_effort(slug),
                 }
-            )
-        else:
-            cells.append(
-                {
-                    "model_slug": slug,
-                    "model": model["model"],
-                    "label": model["label"],
-                    "method": METHOD,
-                    "status": "pending",
-                    "path": dest.relative_to(ROOT).as_posix() + "/",
-                    "n": exect_row_count(PROMOTE_SPLIT),
-                }
-            )
+                if method == METHOD:
+                    cell["hybrid_headline_f1"] = arm.get("hybrid_headline_f1")
+                cells.append(cell)
+            else:
+                cells.append(
+                    {
+                        "model_slug": slug,
+                        "model": model["model"],
+                        "label": model["label"],
+                        "method": method,
+                        "status": "pending",
+                        "path": dest.relative_to(ROOT).as_posix() + "/",
+                        "n": exect_row_count(PROMOTE_SPLIT),
+                    }
+                )
     panel = {
         "schema_version": "paper_experiments.exect.dev140_panel.v1",
         "split": PROMOTE_SPLIT,
@@ -359,14 +373,15 @@ def rebuild_dev140_panel() -> dict[str, Any]:
             "split_machine": "dev",
             "frontend": "/datasets/exectv2/letters",
         },
-        "methods": [METHOD],
+        "methods": list(EXECT_METHODS),
         "models": [item["slug"] for item in living_models()],
         "cells": cells,
         "claim_boundary": (
-            "Living six-model ExECT Compact development panel. One Compact "
-            "call is both raw and hybrid. Non-living-effort repeats stay under "
-            "experiments/paper/.../reasoning_* or thinking_disabled/. Not holdout. "
-            "The July explorer runs.json roster is historical."
+            "Living six-model ExECT development panel. ExECT LLM only and "
+            "ExECT LLM with rules are separate requests. Non-living-effort "
+            "repeats stay under experiments/paper/.../reasoning_* or "
+            "thinking_disabled/. Not holdout. The July explorer runs.json "
+            "roster is historical."
         ),
     }
     PANEL_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -421,6 +436,45 @@ def paper_exect_catalog_runs() -> list[dict[str, Any]]:
         slug = str(cell["model_slug"])
         label = str(cell.get("label") or slug)
         model = str(cell["model"])
+        method = str(cell.get("method") or METHOD)
+        if method == LLM_ONLY_METHOD:
+            runs.append(
+                {
+                    "run_id": paper_exect_run_id(slug, "llm"),
+                    "task": "exectv2",
+                    "label": f"{label} · LLM only",
+                    "model": model,
+                    "kind": "llm",
+                    "active_method": "llm",
+                    "method_id": "llm",
+                    "architecture_family": LLM_ONLY_METHOD,
+                    "pipeline_family": "llm",
+                    "split": "dev140",
+                    "row_count": int(cell.get("n") or 140),
+                    "date": "2026-08-18",
+                    "decision": "development_comparison",
+                    "promotion_decision": "living ExECT LLM only",
+                    "claim_boundary": panel.get("claim_boundary"),
+                    "scorer_view": "raw_lane_score",
+                    "artifact_paths": [rows_path.relative_to(ROOT).as_posix()],
+                    "source_paths": [rows_path.relative_to(ROOT).as_posix()],
+                    "metrics": {
+                        "overall_f1": cell.get("raw_headline_f1"),
+                        "precision": None,
+                        "recall": None,
+                        "families": {},
+                    },
+                    "operational": {
+                        "call_failures": 0,
+                        "parse_schema_failures": 0,
+                        "evidence_invalid_dropped": 0,
+                        "exact_evidence_rate": None,
+                        "by_family": {},
+                    },
+                    "letters": [],
+                }
+            )
+            continue
         runs.append(
             {
                 "run_id": paper_exect_run_id(slug, "llm_with_rules"),
@@ -436,7 +490,7 @@ def paper_exect_catalog_runs() -> list[dict[str, Any]]:
                 "row_count": int(cell.get("n") or 140),
                 "date": "2026-08-18",
                 "decision": "development_comparison",
-                "promotion_decision": "living Compact panel",
+                "promotion_decision": "living ExECT panel",
                 "claim_boundary": panel.get("claim_boundary"),
                 "scorer_view": "headline_target",
                 "artifact_paths": [rows_path.relative_to(ROOT).as_posix()],
@@ -457,61 +511,14 @@ def paper_exect_catalog_runs() -> list[dict[str, Any]]:
                 "letters": [],
             }
         )
-    for model_row in living_models():
-        slug = str(model_row["slug"])
-        dest = paper_llm_only_cell_root(slug)
-        cell_path = dest / "cell.json"
-        rows_path = dest / "structured.jsonl"
-        if not cell_path.is_file() or not rows_path.is_file():
-            continue
-        cell = json.loads(cell_path.read_text(encoding="utf-8"))
-        runs.append(
-            {
-                "run_id": paper_exect_run_id(slug, "llm"),
-                "task": "exectv2",
-                "label": f"{model_row['label']} · LLM only",
-                "model": str(model_row["model"]),
-                "kind": "llm",
-                "active_method": "llm",
-                "method_id": "llm",
-                "architecture_family": LLM_ONLY_METHOD,
-                "pipeline_family": "llm",
-                "split": "dev140",
-                "row_count": int(cell.get("n") or 140),
-                "date": "2026-08-18",
-                "decision": "development_comparison",
-                "promotion_decision": "living Compact LLM-only",
-                "claim_boundary": (
-                    "Standalone Compact LLM-only. Cite raw F1 only. "
-                    "Hybrid-call raw is not this method."
-                ),
-                "scorer_view": "raw_lane_score",
-                "artifact_paths": [rows_path.relative_to(ROOT).as_posix()],
-                "source_paths": [rows_path.relative_to(ROOT).as_posix()],
-                "metrics": {
-                    "overall_f1": cell.get("raw_headline_f1"),
-                    "precision": None,
-                    "recall": None,
-                    "families": {},
-                },
-                "operational": {
-                    "call_failures": 0,
-                    "parse_schema_failures": 0,
-                    "evidence_invalid_dropped": 0,
-                    "exact_evidence_rate": None,
-                    "by_family": {},
-                },
-                "letters": [],
-            }
-        )
     return runs
 
 
-def load_scored_rows(slug: str) -> list[dict[str, Any]]:
-    """Return frontend-joinable scored rows for one present Compact cell."""
+def load_scored_rows(method: str, slug: str) -> list[dict[str, Any]]:
+    """Return frontend-joinable scored rows for one present ExECT cell."""
 
     model_by_slug(slug)
-    path = paper_cell_root(slug) / "scored.jsonl"
+    path = paper_method_cell_root(method, slug) / "scored.jsonl"
     if not path.is_file():
         raise FileNotFoundError(path)
     return load_jsonl_rows(path)
@@ -616,8 +623,8 @@ def _ensure_missing_standalone_llm_only() -> None:
                     "method": LLM_ONLY_METHOD,
                     "n": n,
                     "note": (
-                        "Standalone Compact LLM-only request. "
-                        "Hybrid-call raw is not this method."
+                        "ExECT LLM only. The unrepaired output of "
+                        "ExECT LLM with rules is not this method."
                     ),
                     "row_policy": policy,
                     "split": split,
@@ -699,7 +706,7 @@ def _sync_inventory(panel: Mapping[str, Any]) -> None:
 
     def living_dev140(row: Mapping[str, Any]) -> bool:
         return (
-            row.get("method") == METHOD
+            row.get("method") in EXECT_METHODS
             and row.get("split") == PROMOTE_SPLIT
             and row.get("model_slug") in living_slugs
         )
@@ -709,8 +716,9 @@ def _sync_inventory(panel: Mapping[str, Any]) -> None:
     by_slug = {item["slug"]: item for item in living_models()}
     for cell in panel["cells"]:
         slug = str(cell["model_slug"])
-        key = (slug, METHOD, PROMOTE_SPLIT)
-        dest = paper_cell_root(slug)
+        method = str(cell["method"])
+        key = (slug, method, PROMOTE_SPLIT)
+        dest = paper_method_cell_root(method, slug)
         if cell["status"] == "present":
             cell_path = dest / "cell.json"
             if cell_path.is_file():
@@ -719,7 +727,7 @@ def _sync_inventory(panel: Mapping[str, Any]) -> None:
                     {
                         "model_slug": slug,
                         "model": by_slug[slug]["model"],
-                        "method": METHOD,
+                        "method": method,
                         "replay_alias": cell_meta["program"],
                         "split": PROMOTE_SPLIT,
                         "n": exect_row_count(PROMOTE_SPLIT),
@@ -740,12 +748,12 @@ def _sync_inventory(panel: Mapping[str, Any]) -> None:
             {
                 "model_slug": slug,
                 "model": by_slug[slug]["model"],
-                "method": METHOD,
+                "method": method,
                 "split": PROMOTE_SPLIT,
                 "n": exect_row_count(PROMOTE_SPLIT),
                 "status": "missing",
                 "note": (
-                    "Living-effort ExECT Compact development cell. "
+                    "Living-effort ExECT development cell. "
                     "Promote when the run finishes."
                 ),
             }

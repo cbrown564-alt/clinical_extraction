@@ -17,8 +17,6 @@ LIVING_SLUGS = (
     "gemma4_26b",
 )
 EXECT_HYBRID_PRESENT = {
-    ("gpt56sol", "dev140", 140, "openai/gpt-5.6-sol"),
-    ("gpt56sol", "test60", 59, "openai/gpt-5.6-sol"),
     ("gpt56luna", "dev140", 140, "openai/gpt-5.6-luna"),
     ("gpt56luna", "test60", 59, "openai/gpt-5.6-luna"),
     ("gemini37flash", "dev140", 140, "gemini/gemini-3.7-flash"),
@@ -75,16 +73,18 @@ def test_inventory_covers_present_and_missing_cells() -> None:
     present = {(row["model_slug"], row["method"], row["split"]) for row in inventory["present"]}
     missing_methods = {row["method"] for row in inventory["missing"]}
     assert present == {
-        ("gpt56sol", "exect_llm_with_rules", "dev140"),
-        ("gpt56sol", "exect_llm_with_rules", "test60"),
         ("grok46", "exect_llm_with_rules", "dev140"),
         ("grok46", "exect_llm_with_rules", "test60"),
+        ("grok46", "exect_llm_only", "dev140"),
+        ("grok46", "exect_llm_only", "test60"),
         ("gpt56luna", "exect_llm_with_rules", "dev140"),
         ("gpt56luna", "exect_llm_with_rules", "test60"),
         ("gpt56luna", "exect_llm_only", "dev140"),
         ("gpt56luna", "exect_llm_only", "test60"),
         ("gemini37flash", "exect_llm_with_rules", "dev140"),
         ("gemini37flash", "exect_llm_with_rules", "test60"),
+        ("gemini37flash", "exect_llm_only", "dev140"),
+        ("gemini37flash", "exect_llm_only", "test60"),
         ("deepseek_v4_flash", "exect_llm_with_rules", "dev140"),
         ("deepseek_v4_flash", "exect_llm_with_rules", "test60"),
         ("gemma4_26b", "exect_llm_with_rules", "dev140"),
@@ -98,14 +98,17 @@ def test_inventory_covers_present_and_missing_cells() -> None:
         ("gpt56luna", "gan_llm_only", "dev750"),
         ("gpt56luna", "gan_llm_with_rules", "dev750"),
         ("gemini37flash", "gan_llm_only", "dev750"),
+        ("gemini37flash", "gan_llm_only", "test450"),
         ("gemini37flash", "gan_llm_with_rules", "dev750"),
+        ("gemini37flash", "gan_llm_with_rules", "test450"),
     }
     assert "gan_llm_with_rules" in missing_methods
     missing_cells = {
         (row.get("model_slug"), row["method"], row.get("split")) for row in inventory["missing"]
     }
     assert ("qwen38_27b", "exect_llm_with_rules", "dev140") in missing_cells
-    assert ("grok46", "exect_llm_only", "dev140") in missing_cells
+    assert ("grok46", "exect_llm_only", "dev140") not in missing_cells
+    assert ("gemini37flash", "exect_llm_only", "dev140") not in missing_cells
     assert ("gpt56luna", "exect_llm_only", "dev140") not in missing_cells
     assert ("grok46", "exect_llm_with_rules", "dev140") not in missing_cells
     assert ("grok46", "exect_llm_with_rules", "test60") not in missing_cells
@@ -204,22 +207,34 @@ def test_exect_dev140_panel_is_rectangular() -> None:
     assert panel["method_identity"] == "grok46"
     assert panel["living_effort"]["hosted_reasoning"] == "low"
     assert panel["models"] == list(LIVING_SLUGS)
-    assert panel["methods"] == ["exect_llm_with_rules"]
-    assert len(panel["cells"]) == 6
+    assert panel["methods"] == ["exect_llm_only", "exect_llm_with_rules"]
+    assert len(panel["cells"]) == 12
     present = {
-        cell["model_slug"] for cell in panel["cells"] if cell["status"] == "present"
+        (cell["model_slug"], cell["method"])
+        for cell in panel["cells"]
+        if cell["status"] == "present"
     }
     pending = {
-        cell["model_slug"] for cell in panel["cells"] if cell["status"] == "pending"
+        (cell["model_slug"], cell["method"])
+        for cell in panel["cells"]
+        if cell["status"] == "pending"
     }
     assert present == {
-        "grok46",
-        "gpt56luna",
-        "gemini37flash",
-        "deepseek_v4_flash",
-        "gemma4_26b",
+        ("grok46", "exect_llm_only"),
+        ("grok46", "exect_llm_with_rules"),
+        ("gpt56luna", "exect_llm_only"),
+        ("gpt56luna", "exect_llm_with_rules"),
+        ("gemini37flash", "exect_llm_only"),
+        ("gemini37flash", "exect_llm_with_rules"),
+        ("deepseek_v4_flash", "exect_llm_with_rules"),
+        ("gemma4_26b", "exect_llm_with_rules"),
     }
-    assert pending == {"qwen38_27b"}
+    assert pending == {
+        ("deepseek_v4_flash", "exect_llm_only"),
+        ("qwen38_27b", "exect_llm_only"),
+        ("qwen38_27b", "exect_llm_with_rules"),
+        ("gemma4_26b", "exect_llm_only"),
+    }
     for cell in panel["cells"]:
         if cell["status"] != "present":
             continue
@@ -232,12 +247,13 @@ def test_exect_dev140_panel_is_rectangular() -> None:
         assert len(rows) == 140
         first = rows[0]
         assert first["letter_id"].startswith("EA")
-        assert {
-            "letter_id",
-            "raw_headline_f1",
-            "hybrid_headline_f1",
-            "hybrid_four_family_letter_exact",
-        } <= set(first)
+        assert first["method"] == cell["method"]
+        assert "raw_headline_f1" in first
+        if cell["method"] == "exect_llm_with_rules":
+            assert {
+                "hybrid_headline_f1",
+                "hybrid_four_family_letter_exact",
+            } <= set(first)
 
 
 def test_exect_hybrid_cells_have_raw_and_hybrid() -> None:

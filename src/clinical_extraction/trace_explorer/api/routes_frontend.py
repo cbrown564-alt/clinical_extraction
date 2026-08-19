@@ -143,26 +143,33 @@ def paper_gan_dev750_scored(method: str, slug: str) -> dict[str, Any]:
 
 @router.get("/paper/exect/dev140")
 def paper_exect_dev140() -> dict[str, Any]:
-    """Living six-model ExECT Compact development panel for the frontend."""
+    """Living six-model ExECT development panel for the frontend."""
 
     return load_dev140_panel()
 
 
-@router.get("/paper/exect/dev140/{slug}/scored")
-def paper_exect_dev140_scored(slug: str) -> dict[str, Any]:
-    """Per-letter Compact scores for one present living ExECT development cell."""
+@router.get("/paper/exect/dev140/{method}/{slug}/scored")
+def paper_exect_dev140_scored(method: str, slug: str) -> dict[str, Any]:
+    """Per-letter scores for one present living ExECT development cell."""
 
     try:
-        rows = load_exect_scored_rows(slug)
+        rows = load_exect_scored_rows(method, slug)
     except (FileNotFoundError, KeyError, ValueError):
         raise not_found() from None
     return {
-        "method": "exect_llm_with_rules",
+        "method": method,
         "model_slug": slug,
         "split": "dev140",
         "count": len(rows),
         "rows": rows,
     }
+
+
+@router.get("/paper/exect/dev140/{slug}/scored")
+def paper_exect_dev140_scored_hybrid(slug: str) -> dict[str, Any]:
+    """Alias for ExECT LLM with rules scored rows."""
+
+    return paper_exect_dev140_scored("exect_llm_with_rules", slug)
 
 
 @router.get("/datasets/{dataset}/letters")

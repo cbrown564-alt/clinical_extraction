@@ -129,11 +129,13 @@ export function fetchGanDev750Scored(method: GanDev750Method, slug: string) {
   }>(`/paper/gan/dev750/${method}/${encodeURIComponent(slug)}/scored`);
 }
 
+export type ExectDev140Method = "exect_llm_only" | "exect_llm_with_rules";
+
 export type ExectDev140PanelCell = {
   model_slug: string;
   model: string;
   label: string;
-  method: "exect_llm_with_rules";
+  method: ExectDev140Method;
   status: "present" | "pending";
   path: string;
   n: number;
@@ -148,7 +150,7 @@ export type ExectDev140PanelCell = {
 export type ExectDev140Panel = {
   schema_version: string;
   split: "dev140";
-  methods: Array<"exect_llm_with_rules">;
+  methods: ExectDev140Method[];
   models: string[];
   method_identity: string;
   living_effort: {
@@ -165,11 +167,11 @@ export type ExectDev140Panel = {
 
 export type ExectDev140ScoredRow = {
   letter_id: string;
-  method: "exect_llm_with_rules";
+  method: ExectDev140Method;
   raw_headline_f1: number | null;
-  hybrid_headline_f1: number | null;
+  hybrid_headline_f1?: number | null;
   raw_four_family_letter_exact: boolean | null;
-  hybrid_four_family_letter_exact: boolean | null;
+  hybrid_four_family_letter_exact?: boolean | null;
   parse_ok: boolean;
 };
 
@@ -177,14 +179,14 @@ export function fetchExectDev140Panel() {
   return request<ExectDev140Panel>("/paper/exect/dev140");
 }
 
-export function fetchExectDev140Scored(slug: string) {
+export function fetchExectDev140Scored(method: ExectDev140Method, slug: string) {
   return request<{
-    method: "exect_llm_with_rules";
+    method: ExectDev140Method;
     model_slug: string;
     split: "dev140";
     count: number;
     rows: ExectDev140ScoredRow[];
-  }>(`/paper/exect/dev140/${encodeURIComponent(slug)}/scored`);
+  }>(`/paper/exect/dev140/${method}/${encodeURIComponent(slug)}/scored`);
 }
 
 export function fetchArtifact(

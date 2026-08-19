@@ -317,16 +317,25 @@ def test_frontend_api_serves_the_living_exect_dev140_panel(client: TestClient) -
     body = panel.json()
     assert body["split"] == "dev140"
     assert body["method_identity"] == "grok46"
-    assert len(body["cells"]) == 6
-    grok = client.get("/paper/exect/dev140/grok46/scored")
+    assert body["methods"] == ["exect_llm_only", "exect_llm_with_rules"]
+    assert len(body["cells"]) == 12
+    grok = client.get("/paper/exect/dev140/exect_llm_with_rules/grok46/scored")
     assert grok.status_code == 200
     scored = grok.json()
+    assert scored["method"] == "exect_llm_with_rules"
     assert scored["count"] == 140
+    llm_only = client.get("/paper/exect/dev140/exect_llm_only/grok46/scored")
+    assert llm_only.status_code == 200
+    assert llm_only.json()["method"] == "exect_llm_only"
+    assert llm_only.json()["count"] == 140
     letters = client.get("/datasets/exectv2/letters")
     assert letters.status_code == 200
     letter_ids = {letter["id"] for letter in letters.json()["letters"]}
     scored_ids = {row["letter_id"] for row in scored["rows"]}
     assert letter_ids
     assert scored_ids & letter_ids
-    pending = client.get("/paper/exect/dev140/qwen38_27b/scored")
+    pending = client.get("/paper/exect/dev140/exect_llm_only/qwen38_27b/scored")
     assert pending.status_code == 404
+    alias = client.get("/paper/exect/dev140/grok46/scored")
+    assert alias.status_code == 200
+    assert alias.json()["method"] == "exect_llm_with_rules"
