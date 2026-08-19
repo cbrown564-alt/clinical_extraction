@@ -1,11 +1,10 @@
 """Discover governed Gan validation750 artifacts for the trace explorer.
 
-Hybrid (`llm_with_rules`) cells prefer a current-stack no-call replay tree
-when `hybrid_artifact_root` is set. Those `dev750` forests were retired in
-the 16 Aug living-stack freeze, so workbench cells stay visible as
-`not_retained`. Nested leftover scratch paths are still accepted if a
-config points there. Partial conditions remain visible as progress
-metadata but their rows are never served.
+The workbench catalog is the living six-model roster. Present cells prefer
+tracked ``paper_experiments`` rows. July 18 and 13 Aug leftover trees are
+used only when a living slug still has a matching config path and no paper
+cell. Historical Sol and Qwen 3.6 are not catalog rows. Partial living
+conditions stay visible as ``not_retained``; their rows are never served.
 """
 
 from __future__ import annotations
@@ -28,18 +27,13 @@ class ModelCondition:
     label: str
 
 
-MODEL_CONDITIONS = (
-    ModelCondition("gpt56luna", "openai/gpt-5.6-luna", "GPT-5.6 Luna"),
-    ModelCondition("gemini37flash", "gemini/gemini-3.7-flash", "Gemini 3.7 Flash"),
-    ModelCondition("gpt56sol", "openai/gpt-5.6-sol", "GPT-5.6 Sol"),
-    ModelCondition(
-        "deepseek_v4_flash",
-        "deepseek/deepseek-v4-flash",
-        "DeepSeek V4 Flash",
-    ),
-    ModelCondition("qwen36_35b", "ollama_chat/qwen3.6:35b", "Qwen 3.6:35B"),
-    ModelCondition("gemma4_26b", "ollama_chat/gemma4:26b", "Gemma 4 26B"),
-)
+def living_model_conditions() -> tuple[ModelCondition, ...]:
+    """Return the living paper roster as workbench model conditions."""
+
+    return tuple(
+        ModelCondition(str(item["slug"]), str(item["model"]), str(item["label"]))
+        for item in living_models()
+    )
 
 
 @dataclass(frozen=True)
@@ -72,15 +66,22 @@ def discover_gan2026_validation_runs(
 
     for method_name in ("llm_with_rules", "llm_only"):
         method = methods[method_name]
-        for condition in MODEL_CONDITIONS:
-            configured_condition = configured[condition.slug]
-            if configured_condition["model"] != condition.route:
+        for condition in living_model_conditions():
+            configured_condition = configured.get(condition.slug)
+            if (
+                configured_condition is not None
+                and configured_condition["model"] != condition.route
+            ):
                 raise ValueError(f"configured model mismatch for {condition.slug}")
-            path = _condition_rows_path(
-                artifact_root,
-                condition.slug,
-                method_name,
-                hybrid_root=hybrid_root,
+            path = (
+                _condition_rows_path(
+                    artifact_root,
+                    condition.slug,
+                    method_name,
+                    hybrid_root=hybrid_root,
+                )
+                if configured_condition is not None
+                else artifact_root / "_missing" / f"{condition.slug}--{method_name}.jsonl"
             )
             inspection = _inspect_rows(
                 path,
@@ -129,13 +130,14 @@ def discover_gan2026_validation_runs(
     _overlay_paper_dev750(repo_root, families, registry, artifacts)
     return GanValidationDiscovery(
         catalog={
-            "generated_on": "2026-08-13",
+            "generated_on": "2026-08-19",
             "source_artifact": config["protocol"],
             "claim_boundary": (
-                "Gan validation750 is inspectable development evidence. Hybrid cells "
-                "are the 13 Aug current-stack no-call replay; LLM-only cells are the "
-                "July 18 comparison tree. Only exact, trace-valid 750-row conditions "
-                "are replayable; test450 is excluded."
+                "Living six-model Gan development panel. Present cells prefer "
+                "paper_experiments; pending living models stay visible as "
+                "not_retained. Historical Sol and Qwen 3.6 are not catalog rows. "
+                "Only exact, trace-valid 750-row conditions are replayable; "
+                "test450 is excluded."
             ),
             "families": families,
         },
@@ -239,7 +241,9 @@ def _paper_family(
 ) -> dict[str, Any]:
     method = str(cell["method"])
     slug = str(cell["model_slug"])
-    method_name = "llm_with_rules" if method == "gan_llm_with_rules" else "llm_only"
+    method_name: Literal["llm_with_rules", "llm_only"] = (
+        "llm_with_rules" if method == "gan_llm_with_rules" else "llm_only"
+    )
     condition = ModelCondition(
         slug,
         str(cell.get("model") or model.get("model") or ""),

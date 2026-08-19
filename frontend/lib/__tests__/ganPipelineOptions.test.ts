@@ -1,5 +1,7 @@
 import { activeMethodLabel } from "../plainLanguageLabels";
 import {
+  ganFamiliesFromDev750Panel,
+  ganPaperRunId,
   ganPipelineOptionLabel,
   groupGanPipelineOptions,
   isGanAggregateRunId,
@@ -8,11 +10,11 @@ import {
 import type { ActiveMethod, PipelineFamilyItem } from "../types";
 
 const MODELS = [
-  "openai/gpt-5.6-sol",
+  "xai/grok-4.6",
   "openai/gpt-5.6-luna",
   "gemini/gemini-3.7-flash",
   "deepseek/deepseek-v4-flash",
-  "ollama_chat/qwen3.6:35b",
+  "ollama_chat/qwen3.8:27b",
   "ollama_chat/gemma4:26b",
 ];
 
@@ -53,8 +55,8 @@ describe("Gan architecture options", () => {
   });
 
   it("removes execution-mode wording from picker option labels", () => {
-    expect(ganPipelineOptionLabel("GPT-5.6 Sol · replay")).toBe("GPT-5.6 Sol");
-    expect(ganPipelineOptionLabel("GPT-5.6 Sol · live")).toBe("GPT-5.6 Sol");
+    expect(ganPipelineOptionLabel("Grok 4.6 · replay")).toBe("Grok 4.6");
+    expect(ganPipelineOptionLabel("Grok 4.6 · live")).toBe("Grok 4.6");
     expect(ganPipelineOptionLabel("Deterministic canonical")).toBe(
       "Deterministic rules"
     );
@@ -100,6 +102,63 @@ describe("Gan architecture options", () => {
     ];
 
     expect(resolveGanPipelineOption(options, "rules")?.run_id).toBe("rules");
+  });
+
+  it("builds living catalog rows from the Gan dev750 panel, Grok first", () => {
+    const families = ganFamiliesFromDev750Panel({
+      cells: [
+        {
+          model_slug: "gpt56luna",
+          model: "openai/gpt-5.6-luna",
+          label: "GPT-5.6 Luna",
+          method: "gan_llm_with_rules",
+          status: "present",
+          n: 750,
+          purist_correct: 663,
+          purist_accuracy: 0.884,
+        },
+        {
+          model_slug: "grok46",
+          model: "xai/grok-4.6",
+          label: "Grok 4.6",
+          method: "gan_llm_with_rules",
+          status: "present",
+          n: 750,
+          purist_correct: 675,
+          purist_accuracy: 0.9,
+        },
+        {
+          model_slug: "qwen38_27b",
+          model: "ollama_chat/qwen3.8:27b",
+          label: "Qwen 3.8 27B",
+          method: "gan_llm_with_rules",
+          status: "pending",
+          n: 750,
+        },
+      ],
+    });
+
+    expect(ganPaperRunId("gan_llm_with_rules", "grok46")).toBe(
+      "gan2026_validation750_grok46_llm_with_rules"
+    );
+    expect(families.map((item) => item.model)).toEqual([
+      "openai/gpt-5.6-luna",
+      "xai/grok-4.6",
+      "ollama_chat/qwen3.8:27b",
+      "(model-independent)",
+    ]);
+    const grouped = groupGanPipelineOptions(families);
+    expect(grouped[0].options.map((item) => item.model)).toEqual([
+      "xai/grok-4.6",
+      "openai/gpt-5.6-luna",
+      "ollama_chat/qwen3.8:27b",
+    ]);
+    expect(families.find((item) => item.model === "xai/grok-4.6")?.availability).toBe(
+      "replay"
+    );
+    expect(
+      families.find((item) => item.model === "ollama_chat/qwen3.8:27b")?.availability
+    ).toBe("not_retained");
   });
 
   it("recognises only the sealed Gan winning-mode run ids as aggregate-only", () => {

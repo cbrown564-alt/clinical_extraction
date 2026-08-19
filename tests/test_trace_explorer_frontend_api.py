@@ -97,20 +97,34 @@ def test_locked_test_records_are_not_enumerable(client: TestClient) -> None:
 def test_gan_hybrid_workbench_marks_retired_dev750_trees_not_retained(
     client: TestClient,
 ) -> None:
-    run_id = "gan2026_validation750_gpt56sol_llm_with_rules"
     families = client.get("/pipeline-families")
     assert families.status_code == 200
-    sol = next(family for family in families.json()["families"] if family["run_id"] == run_id)
-    assert sol["availability"] == "not_retained"
+    catalog = families.json()["families"]
+    models = {family["model"] for family in catalog}
+    assert "xai/grok-4.6" in models
+    assert "openai/gpt-5.6-luna" in models
+    assert "gemini/gemini-3.7-flash" in models
+    assert "openai/gpt-5.6-sol" not in models
+    assert "ollama_chat/qwen3.6:35b" not in models
+    grok = next(
+        family
+        for family in catalog
+        if family["run_id"] == "gan2026_validation750_grok46_llm_with_rules"
+    )
+    assert grok["label"] == "Grok 4.6"
+    assert grok["availability"] == "replay"
     luna = next(
         family
-        for family in families.json()["families"]
+        for family in catalog
         if family["run_id"] == "gan2026_validation750_gpt56luna_llm_with_rules"
     )
     assert luna["availability"] == "replay"
-    models = {family["model"] for family in families.json()["families"]}
-    assert "gemini/gemini-3.7-flash" in models
-    assert "openai/gpt-4.1-mini" not in models
+    pending = next(
+        family
+        for family in catalog
+        if family["run_id"] == "gan2026_validation750_qwen38_27b_llm_with_rules"
+    )
+    assert pending["availability"] == "not_retained"
 
 
 def test_paper_gan_raw_row_hydrates_structured_trace(client: TestClient) -> None:

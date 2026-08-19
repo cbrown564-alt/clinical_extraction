@@ -139,9 +139,14 @@ export interface PipelineFamilyItem {
   pipeline_family: string;
   model?: string;
   model_label?: string;
-  comparison_role?: "control" | "diagnostic";
+  comparison_role?: "control" | "diagnostic" | "winner";
   availability: "live" | "replay" | "aggregate_only" | "not_retained";
-  evidence_scope: "validation_rows" | "test450_aggregate_only" | "not_measured";
+  evidence_scope:
+    | "validation_rows"
+    | "validation750_row_level"
+    | "test450_aggregate_only"
+    | "not_measured"
+    | "incomplete_not_served";
   unavailable_reason?: string;
   metrics?: {
     row_count: number;
@@ -152,6 +157,10 @@ export interface PipelineFamilyItem {
   };
   has_replay_artifact: boolean;
   run_count?: number;
+  progress?: {
+    completed_rows: number;
+    expected_rows: number;
+  };
 }
 
 export interface PipelineFamiliesResponse {

@@ -2,11 +2,11 @@ import { activeMethodLabel } from "./plainLanguageLabels";
 import type { ActiveMethod, PipelineFamilyItem } from "./types";
 
 const MODEL_ORDER = [
-  "openai/gpt-5.6-sol",
+  "xai/grok-4.6",
   "openai/gpt-5.6-luna",
   "gemini/gemini-3.7-flash",
   "deepseek/deepseek-v4-flash",
-  "ollama_chat/qwen3.6:35b",
+  "ollama_chat/qwen3.8:27b",
   "ollama_chat/gemma4:26b",
 ];
 
@@ -55,6 +55,99 @@ export function isGanAggregateRunId(runId: string): boolean {
     runId.startsWith("gan2026_winning_mode_") &&
     runId.endsWith("_llm_plus_rules_test450")
   );
+}
+
+export type GanDev750PanelCell = {
+  model_slug: string;
+  model: string;
+  label: string;
+  method: "gan_llm_only" | "gan_llm_with_rules";
+  status: "present" | "pending";
+  n: number;
+  purist_correct?: number | null;
+  purist_accuracy?: number | null;
+};
+
+export type GanDev750PanelLike = {
+  claim_boundary?: string;
+  cells: GanDev750PanelCell[];
+};
+
+export function ganPaperRunId(
+  method: GanDev750PanelCell["method"],
+  slug: string
+): string {
+  const suffix = method === "gan_llm_with_rules" ? "llm_with_rules" : "llm_only";
+  return `gan2026_validation750_${slug}_${suffix}`;
+}
+
+function rulesOnlyFamily(): PipelineFamilyItem {
+  return {
+    value: "rules",
+    run_id: "rules",
+    label: "Deterministic canonical",
+    display_label: "Deterministic canonical",
+    model_label: "No model",
+    executable: true,
+    kind: "rules",
+    pipeline_family: "rules",
+    model: "(model-independent)",
+    comparison_role: "control",
+    availability: "live",
+    evidence_scope: "validation_rows",
+    has_replay_artifact: false,
+    run_count: 1,
+  };
+}
+
+export function ganFamiliesFromDev750Panel(
+  panel: GanDev750PanelLike
+): PipelineFamilyItem[] {
+  return [
+    ...panel.cells.map((cell) => {
+      const kind =
+        cell.method === "gan_llm_with_rules" ? "llm_with_rules" : "llm";
+      const present = cell.status === "present";
+      const runId = ganPaperRunId(cell.method, cell.model_slug);
+      const modeLabel = kind === "llm_with_rules" ? "LLM + rules" : "LLM only";
+      const family: PipelineFamilyItem = {
+        value: runId,
+        run_id: runId,
+        label: cell.label,
+        display_label: `${cell.label} · ${present ? modeLabel : "in progress"}`,
+        model_label: cell.label,
+        executable: false,
+        kind,
+        pipeline_family: kind,
+        model: cell.model,
+        comparison_role: kind === "llm_with_rules" ? "winner" : "diagnostic",
+        availability: present ? "replay" : "not_retained",
+        evidence_scope: present
+          ? "validation750_row_level"
+          : "incomplete_not_served",
+        has_replay_artifact: present,
+        run_count: present ? 1 : 0,
+        progress: {
+          completed_rows: present ? cell.n : 0,
+          expected_rows: 750,
+        },
+      };
+      if (present) {
+        family.metrics = {
+          row_count: cell.n,
+          purist_correct: cell.purist_correct ?? 0,
+          purist_accuracy: cell.purist_accuracy ?? 0,
+          pragmatic_correct: 0,
+          pragmatic_accuracy: 0,
+        };
+      } else {
+        family.unavailable_reason =
+          "This condition is incomplete; partial validation rows are not served.";
+      }
+      return family;
+    }),
+    rulesOnlyFamily(),
+  ];
 }
 
 export function ganOverallScore(
