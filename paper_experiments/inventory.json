@@ -65,16 +65,6 @@
     },
     {
       "method": "exect_llm_only",
-      "model": "deepseek/deepseek-v4-flash",
-      "model_slug": "deepseek_v4_flash",
-      "n": 59,
-      "note": "ExECT LLM only. The unrepaired output of ExECT LLM with rules is not this method.",
-      "row_policy": "aggregate_only",
-      "split": "test60",
-      "status": "missing"
-    },
-    {
-      "method": "exect_llm_only",
       "model": "ollama_chat/qwen3.8:27b",
       "model_slug": "qwen38_27b",
       "n": 59,
@@ -91,15 +81,6 @@
       "note": "ExECT LLM only. The unrepaired output of ExECT LLM with rules is not this method.",
       "row_policy": "aggregate_only",
       "split": "test60",
-      "status": "missing"
-    },
-    {
-      "method": "exect_llm_only",
-      "model": "deepseek/deepseek-v4-flash",
-      "model_slug": "deepseek_v4_flash",
-      "n": 140,
-      "note": "Living-effort ExECT development cell. Promote when the run finishes.",
-      "split": "dev140",
       "status": "missing"
     },
     {
@@ -374,6 +355,18 @@
     {
       "empty_raw_count": 0,
       "method": "exect_llm_only",
+      "model": "deepseek/deepseek-v4-flash",
+      "model_slug": "deepseek_v4_flash",
+      "n": 59,
+      "path": "paper_experiments/exect/exect_llm_only/deepseek_v4_flash/test60/structured.jsonl",
+      "replay_alias": "exect_llm_only",
+      "row_policy": "aggregate_only",
+      "split": "test60",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "exect_llm_only",
       "model": "xai/grok-4.6",
       "model_slug": "grok46",
       "n": 140,
@@ -439,6 +432,18 @@
       "n": 140,
       "path": "paper_experiments/exect/exect_llm_with_rules/gemini37flash/dev140/structured.jsonl",
       "replay_alias": "exectv2_compact_ledger",
+      "row_policy": "development_review_permitted",
+      "split": "dev140",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "exect_llm_only",
+      "model": "deepseek/deepseek-v4-flash",
+      "model_slug": "deepseek_v4_flash",
+      "n": 140,
+      "path": "paper_experiments/exect/exect_llm_only/deepseek_v4_flash/dev140/structured.jsonl",
+      "replay_alias": "exect_llm_only",
       "row_policy": "development_review_permitted",
       "split": "dev140",
       "status": "present"

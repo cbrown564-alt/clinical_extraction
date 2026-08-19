@@ -1,0 +1,149 @@
+{
+  "arms": {
+    "exect_llm_only": {
+      "assembly_family_f1": {
+        "Diagnosis": 0.8099,
+        "Investigations": 0.8723,
+        "Prescription": 0.9277,
+        "SeizureFrequency": 0.5755
+      },
+      "assembly_headline_f1": 0.7988,
+      "call_mode": "live",
+      "gate_event_count": 70,
+      "hybrid_family_f1": {
+        "Diagnosis": 0.8099,
+        "Investigations": 0.8723,
+        "Prescription": 0.9277,
+        "SeizureFrequency": 0.5755
+      },
+      "hybrid_family_letter_exact": {
+        "Diagnosis": 34,
+        "Investigations": 52,
+        "Prescription": 50,
+        "SeizureFrequency": 27
+      },
+      "hybrid_family_prf": {
+        "Diagnosis": {
+          "f1": 0.8099,
+          "precision": 0.8167,
+          "recall": 0.8033
+        },
+        "Investigations": {
+          "f1": 0.8723,
+          "precision": 0.8723,
+          "recall": 0.8723
+        },
+        "Prescription": {
+          "f1": 0.9277,
+          "precision": 0.9506,
+          "recall": 0.9059
+        },
+        "SeizureFrequency": {
+          "f1": 0.5755,
+          "precision": 0.6154,
+          "recall": 0.5405
+        }
+      },
+      "hybrid_four_family_letter_exact": 17,
+      "hybrid_headline_f1": 0.7988,
+      "hybrid_headline_prf": {
+        "f1": 0.7988,
+        "precision": 0.8179,
+        "recall": 0.7805
+      },
+      "new_model_calls": 59,
+      "prompt_version": "exect_llm_only",
+      "quality": {
+        "illegal_enum": 0,
+        "inexact_evidence": 0,
+        "parse": 0,
+        "schema": 0
+      },
+      "raw_family_f1": {
+        "Diagnosis": 0.7458,
+        "Investigations": 0.8723,
+        "Prescription": 0.9405,
+        "SeizureFrequency": 0.5931
+      },
+      "raw_family_letter_exact": {
+        "Diagnosis": 35,
+        "Investigations": 52,
+        "Prescription": 52,
+        "SeizureFrequency": 27
+      },
+      "raw_family_prf": {
+        "Diagnosis": {
+          "f1": 0.7458,
+          "precision": 0.7719,
+          "recall": 0.7213
+        },
+        "Investigations": {
+          "f1": 0.8723,
+          "precision": 0.8723,
+          "recall": 0.8723
+        },
+        "Prescription": {
+          "f1": 0.9405,
+          "precision": 0.9518,
+          "recall": 0.9294
+        },
+        "SeizureFrequency": {
+          "f1": 0.5931,
+          "precision": 0.6056,
+          "recall": 0.5811
+        }
+      },
+      "raw_four_family_letter_exact": 16,
+      "raw_headline_f1": 0.7807,
+      "raw_headline_prf": {
+        "f1": 0.7807,
+        "precision": 0.7968,
+        "recall": 0.7652
+      },
+      "raw_mention_count": 324,
+      "scored_mention_count": 324
+    }
+  },
+  "cache": false,
+  "claim_boundary": "ExECT aggregate-only test60 Compact LLM-only. Not the cited hybrid.",
+  "decision": {
+    "exect_llm_only": {
+      "hybrid_family_f1": {
+        "Diagnosis": 0.8099,
+        "Investigations": 0.8723,
+        "Prescription": 0.9277,
+        "SeizureFrequency": 0.5755
+      },
+      "hybrid_headline_f1": 0.7988,
+      "parse": 0,
+      "raw_family_f1": {
+        "Diagnosis": 0.7458,
+        "Investigations": 0.8723,
+        "Prescription": 0.9405,
+        "SeizureFrequency": 0.5931
+      },
+      "raw_headline_f1": 0.7807,
+      "schema": 0,
+      "status": "scored"
+    }
+  },
+  "default_prompt_version": "exectv2_compact_ledger",
+  "finished_utc": "2026-08-19T07:33:01.987002+00:00",
+  "generated_on": "2026-08-18",
+  "live": true,
+  "max_tokens": 64000,
+  "method": "exect_llm_only",
+  "model": "deepseek/deepseek-v4-flash",
+  "model_calls": 59,
+  "model_label": "DeepSeek V4 Flash",
+  "model_slug": "deepseek_v4_flash",
+  "provider_revision": "DeepSeek-V4-Flash-0731",
+  "reasoning_effort": null,
+  "row_count": 59,
+  "row_policy": "aggregate_only",
+  "schema_version": "paper.exect_llm_only.v1",
+  "split": "test60",
+  "started_utc": "2026-08-19T04:46:41.558073+00:00",
+  "temperature": 0.0,
+  "thinking_type": null
+}
