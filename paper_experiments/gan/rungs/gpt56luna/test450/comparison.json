@@ -1,0 +1,76 @@
+{
+  "claim_boundary": "Gan aggregate-only test450 replay. Do not inspect holdout rows.",
+  "format_only_check": {
+    "note": "Rung 3 is selected_evidence_derivation. It stays format-only only when selected_event_ids never change.",
+    "predicted_kind_changes": 156,
+    "purist_harms": 3,
+    "purist_rescues": 102,
+    "repair_mode": "selected_evidence_derivation",
+    "selected_event_id_changes": 0,
+    "used_as_rung_3": true
+  },
+  "generated_on": "2026-08-20",
+  "model_slug": "gpt56luna",
+  "row_count": 450,
+  "row_policy": "aggregate_only",
+  "rungs": {
+    "llm_format": {
+      "pragmatic_accuracy": 0.7756,
+      "pragmatic_correct": 349,
+      "predicted_kinds": {
+        "frequency": 216,
+        "no_reference": 49,
+        "seizure_free": 84,
+        "unknown": 72,
+        "unresolved_multiple": 29
+      },
+      "purist_accuracy": 0.7267,
+      "purist_correct": 327,
+      "scorable": 450
+    },
+    "llm_post": {
+      "pragmatic_accuracy": 0.8533,
+      "pragmatic_correct": 384,
+      "predicted_kinds": {
+        "frequency": 260,
+        "no_reference": 36,
+        "seizure_free": 63,
+        "unknown": 62,
+        "unresolved_multiple": 29
+      },
+      "purist_accuracy": 0.8089,
+      "purist_correct": 364,
+      "scorable": 450
+    },
+    "llm_schema": {
+      "pragmatic_accuracy": 0.5467,
+      "pragmatic_correct": 246,
+      "predicted_kinds": {
+        "frequency": 109,
+        "no_reference": 19,
+        "seizure_free": 83,
+        "unknown": 63,
+        "unresolved_multiple": 34,
+        "unscorable": 142
+      },
+      "purist_accuracy": 0.5067,
+      "purist_correct": 228,
+      "scorable": 308
+    },
+    "rules_only": {
+      "pragmatic_accuracy": 0.7578,
+      "pragmatic_correct": 341,
+      "predicted_kinds": {
+        "frequency": 258,
+        "no_reference": 119,
+        "seizure_free": 55,
+        "unresolved_multiple": 18
+      },
+      "purist_accuracy": 0.7133,
+      "purist_correct": 321,
+      "scorable": 450
+    }
+  },
+  "shared_raw_output": "gan_llm_with_rules",
+  "split": "test450"
+}

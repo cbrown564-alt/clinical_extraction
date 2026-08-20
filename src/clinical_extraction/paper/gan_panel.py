@@ -120,21 +120,21 @@ def promote_gan(method: str, slug: str, split: str) -> dict[str, Any]:
         json.dumps(cell, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
-    if holdout:
-        _upsert_present(
-            {
-                "model_slug": slug,
-                "model": model["model"],
-                "method": method,
-                "replay_alias": prompt,
-                "split": split,
-                "n": expected,
-                "row_policy": "aggregate_only",
-                "path": (dest / "rows.jsonl").relative_to(ROOT).as_posix(),
-                "status": "present",
-                "empty_raw_count": empty,
-            }
-        )
+    _upsert_present(
+        {
+            "model_slug": slug,
+            "model": model["model"],
+            "method": method,
+            "replay_alias": prompt,
+            "split": split,
+            "n": expected,
+            "row_policy": "aggregate_only" if holdout else "development_review_permitted",
+            "path": (dest / "rows.jsonl").relative_to(ROOT).as_posix(),
+            "status": "present",
+            "empty_raw_count": empty,
+        }
+    )
+    if holdout or method not in GAN_METHODS:
         return {"cell": cell}
     panel = rebuild_dev750_panel()
     return {"cell": cell, "panel": PANEL_PATH.relative_to(ROOT).as_posix(), "cells": panel["cells"]}

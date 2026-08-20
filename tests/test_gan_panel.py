@@ -290,6 +290,46 @@ def test_promote_gan_test450_strips_replay_and_updates_inventory(
     )
 
 
+def test_promote_gan_llm_pre_post_writes_inventory_without_changing_the_two_method_panel(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _write_work_cell(tmp_path, "gan_llm_pre_post", "gpt56luna", label="1 per month")
+    _write_holdout_work_cell(tmp_path, "gan_llm_pre_post", "gpt56luna")
+    (tmp_path / "paper_experiments").mkdir()
+    (tmp_path / "paper_experiments/inventory.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "paper_experiments.inventory.v1",
+                "strip": {"gan": ["source_row_index", "prompt_version", "raw_output"]},
+                "present": [],
+                "missing": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    _patch_panel_paths(tmp_path, monkeypatch)
+
+    development = promote_gan("gan_llm_pre_post", "gpt56luna", "dev750")
+    holdout = promote_gan("gan_llm_pre_post", "gpt56luna", "test450")
+
+    dev_dest = tmp_path / "paper_experiments/gan/gan_llm_pre_post/gpt56luna/dev750"
+    holdout_dest = tmp_path / "paper_experiments/gan/gan_llm_pre_post/gpt56luna/test450"
+    assert (dev_dest / "rows.jsonl").is_file()
+    assert (dev_dest / "scored.jsonl").is_file()
+    assert (holdout_dest / "rows.jsonl").is_file()
+    assert not (holdout_dest / "scored.jsonl").is_file()
+    assert development["cell"]["method"] == "gan_llm_pre_post"
+    assert holdout["cell"]["row_policy"] == "aggregate_only"
+    assert "panel" not in development
+    panel = rebuild_dev750_panel()
+    assert panel["methods"] == ["gan_llm_only", "gan_llm_with_rules"]
+    assert len(panel["cells"]) == 12
+    synced = json.loads((tmp_path / "paper_experiments/inventory.json").read_text(encoding="utf-8"))
+    present = {(row["model_slug"], row["method"], row["split"]) for row in synced["present"]}
+    assert ("gpt56luna", "gan_llm_pre_post", "dev750") in present
+    assert ("gpt56luna", "gan_llm_pre_post", "test450") in present
+
+
 def test_promote_gan_test450_rejects_row_level_comparison(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
