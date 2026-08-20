@@ -134,12 +134,12 @@ describe("assembly line facts", () => {
     expect(view.phrase).toBe("focal to bilateral convulsive seizures");
   });
 
-  it("keeps gan one-liners as prose and marks flatten or lens as compare stages", () => {
+  it("keeps gan one-liners as prose and marks lens as compare stages", () => {
     expect(parseStationFact("5 per cluster [quiet interval]")).toEqual({
       kind: "prose",
       text: "5 per cluster [quiet interval]",
     });
-    expect(isShapeCompareStage("exect.llm.flatten_events")).toBe(true);
+    expect(isShapeCompareStage("exect.llm.parse_and_retry")).toBe(false);
     expect(isShapeCompareStage("exect.llm_with_rules.lens.diagnosis")).toBe(true);
     expect(isShapeCompareStage("exect.llm.model_call")).toBe(false);
     expect(hasMentionList('{"mentions":[{"entity":"Diagnosis"}]}')).toBe(true);

@@ -331,12 +331,18 @@ def test_frontend_api_serves_the_living_exect_dev140_panel(client: TestClient) -
     body = panel.json()
     assert body["split"] == "dev140"
     assert body["method_identity"] == "grok46"
-    assert body["methods"] == ["exect_llm_only", "exect_llm_with_rules"]
-    assert len(body["cells"]) == 12
-    grok = client.get("/paper/exect/dev140/exect_llm_with_rules/grok46/scored")
+    assert body["methods"] == [
+        "rules_only",
+        "llm_schema",
+        "llm_format",
+        "llm_post",
+        "llm_pre_post",
+    ]
+    assert len(body["cells"]) == 30
+    grok = client.get("/paper/exect/dev140/exect_llm_pre_post/grok46/scored")
     assert grok.status_code == 200
     scored = grok.json()
-    assert scored["method"] == "exect_llm_with_rules"
+    assert scored["method"] == "exect_llm_pre_post"
     assert scored["count"] == 140
     llm_only = client.get("/paper/exect/dev140/exect_llm_only/grok46/scored")
     assert llm_only.status_code == 200
@@ -352,4 +358,4 @@ def test_frontend_api_serves_the_living_exect_dev140_panel(client: TestClient) -
     assert pending.status_code == 404
     alias = client.get("/paper/exect/dev140/grok46/scored")
     assert alias.status_code == 200
-    assert alias.json()["method"] == "exect_llm_with_rules"
+    assert alias.json()["method"] == "exect_llm_pre_post"

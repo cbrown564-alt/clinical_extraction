@@ -107,7 +107,7 @@ describe("api/client", () => {
     }) as unknown as typeof fetch;
 
     await fetchExectDev140Panel();
-    await fetchExectDev140Scored("exect_llm_with_rules", "grok46");
+    await fetchExectDev140Scored("exect_llm_pre_post", "grok46");
     expect(global.fetch).toHaveBeenNthCalledWith(
       1,
       "/api/paper/exect/dev140",
@@ -115,7 +115,7 @@ describe("api/client", () => {
     );
     expect(global.fetch).toHaveBeenNthCalledWith(
       2,
-      "/api/paper/exect/dev140/exect_llm_with_rules/grok46/scored",
+      "/api/paper/exect/dev140/exect_llm_pre_post/grok46/scored",
       expect.objectContaining({ headers: { "Content-Type": "application/json" } })
     );
   });

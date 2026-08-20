@@ -153,7 +153,7 @@ export function parseStationFact(raw: string): StationFactView {
 
 export function isShapeCompareStage(stageId: string): boolean {
   const tail = stageId.split(".").pop() ?? "";
-  return tail === "flatten_events" || stageId.includes(".lens.");
+  return stageId.includes(".lens.");
 }
 
 function isAssemblyHighlightTone(tone: string): tone is AssemblyHighlightTone {

@@ -1639,7 +1639,7 @@
               "note": "Canonical LLM-only stage."
             },
             {
-              "stage_id": "exect.llm.flatten_events",
+              "stage_id": "exect.llm.map_events",
               "stage_name": "Flatten events into mentions",
               "owner": "deterministic",
               "effect_class": "representation",
@@ -1708,7 +1708,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm.flatten_events",
+                  "stage_id": "exect.llm.map_events",
                   "stage_name": "Flatten events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"Symptomatic structural focal epilepsy\",\n  \"confidence\": \"high\",\n  \"evidence\": \"Diagnosis: Symptomatic structural focal epilepsy\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"Epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"Symptomatic structural focal epilepsy\"\n    }\n  ],\n  \"rationale\": \"The letter explicitly lists symptomatic structural focal epilepsy as the diagnosis.\"\n}",
@@ -1769,7 +1769,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm.flatten_events",
+                  "stage_id": "exect.llm.map_events",
                   "stage_name": "Flatten events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"epilepsy\",\n  \"confidence\": \"high\",\n  \"evidence\": \"This is the probable cause of his epilepsy.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"epilepsy\"\n    }\n  ],\n  \"rationale\": \"The letter explicitly refers to the patient's epilepsy.\"\n}",
@@ -1830,7 +1830,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm.flatten_events",
+                  "stage_id": "exect.llm.map_events",
                   "stage_name": "Flatten events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal to bilateral convulsive seizures\",\n  \"confidence\": \"high\",\n  \"evidence\": \"I think therefore that this was a focal to bilateral convulsive seizures.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"2\",\n        \"DiagCategory\": \"MultipleSeizures\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"focal to bilateral convulsive seizures\"\n    }\n  ],\n  \"rationale\": \"The recent event is described as a probable focal to bilateral convulsive seizure type.\"\n}",
@@ -1891,7 +1891,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm.flatten_events",
+                  "stage_id": "exect.llm.map_events",
                   "stage_name": "Flatten events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal motor seizures\",\n  \"confidence\": \"high\",\n  \"evidence\": \"As you recall Mr Owens has had focal motor seizures in the past where he has had jerking of his right leg.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"Epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"focal motor seizures\"\n    }\n  ],\n  \"rationale\": \"The letter explicitly states a history of focal motor seizures.\"\n}",
@@ -1952,7 +1952,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm.flatten_events",
+                  "stage_id": "exect.llm.map_events",
                   "stage_name": "Flatten events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"seizure\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He was well from an epilepsy point of view until he had a seizure last month.\",\n  \"family\": \"seizure_frequency\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Negation\": \"Affirmed\",\n        \"NumberOfSeizures\": \"1\",\n        \"PointInTime\": \"Last_Month\",\n        \"TimeSince_or_TimeOfEvent\": \"During\"\n      },\n      \"entity\": \"SeizureFrequency\",\n      \"text\": \"seizure\"\n    }\n  ],\n  \"rationale\": \"The letter states that one seizure occurred last month.\"\n}",
@@ -2013,7 +2013,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm.flatten_events",
+                  "stage_id": "exect.llm.map_events",
                   "stage_name": "Flatten events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal to bilateral convulsive seizure\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He has had one previous focal to bilateral convulsive seizure at the time of diagnosis of his epilepsy in May 2017.\",\n  \"family\": \"seizure_frequency\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"MonthDate\": \"May\",\n        \"Negation\": \"Affirmed\",\n        \"NumberOfSeizures\": \"1\",\n        \"TimeSince_or_TimeOfEvent\": \"During\",\n        \"YearDate\": \"2017\"\n      },\n      \"entity\": \"SeizureFrequency\",\n      \"text\": \"focal to bilateral convulsive seizure\"\n    }\n  ],\n  \"rationale\": \"The letter records one previous focal to bilateral convulsive seizure in May 2017.\"\n}",
@@ -2074,7 +2074,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm.flatten_events",
+                  "stage_id": "exect.llm.map_events",
                   "stage_name": "Flatten events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal motor seizures\",\n  \"confidence\": \"medium\",\n  \"evidence\": \"As you recall Mr Owens has had focal motor seizures in the past where he has had jerking of his right leg. These were happening frequently before he started the medication. The last event was probably 10 months ago.\",\n  \"family\": \"seizure_frequency\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"2\",\n        \"Negation\": \"Affirmed\",\n        \"NumberOfSeizures\": \"0\",\n        \"NumberOfTimePeriods\": \"10\",\n        \"TimePeriod\": \"Month\",\n        \"TimeSince_or_TimeOfEvent\": \"Since\"\n      },\n      \"entity\": \"SeizureFrequency\",\n      \"text\": \"focal motor seizures\"\n    }\n  ],\n  \"rationale\": \"The last focal motor seizure event is stated to have probably occurred 10 months ago.\"\n}",
@@ -2135,7 +2135,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm.flatten_events",
+                  "stage_id": "exect.llm.map_events",
                   "stage_name": "Flatten events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"MRI at the time was abnormal\",\n  \"confidence\": \"high\",\n  \"evidence\": \"As you will recall his MRI at the time was abnormal with an area of ischaemic damage in the left inferior frontal lobe.\",\n  \"family\": \"investigation\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"MRI_Performed\": \"Yes\",\n        \"MRI_Results\": \"Abnormal\"\n      },\n      \"entity\": \"Investigations\",\n      \"text\": \"MRI\"\n    }\n  ],\n  \"rationale\": \"The letter reports a completed abnormal MRI with left inferior frontal lobe ischaemic damage.\"\n}",
@@ -2196,7 +2196,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm.flatten_events",
+                  "stage_id": "exect.llm.map_events",
                   "stage_name": "Flatten events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"An EEG in 2017 did show some left sided sharp waves\",\n  \"confidence\": \"high\",\n  \"evidence\": \"An EEG in 2017 did show some left sided sharp waves.\",\n  \"family\": \"investigation\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"EEG_Performed\": \"Yes\",\n        \"EEG_Results\": \"Abnormal\",\n        \"EEG_Type\": \"Standard\"\n      },\n      \"entity\": \"Investigations\",\n      \"text\": \"EEG\"\n    }\n  ],\n  \"rationale\": \"The letter reports an EEG in 2017 showing left sided sharp waves.\"\n}",
@@ -2257,7 +2257,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm.flatten_events",
+                  "stage_id": "exect.llm.map_events",
                   "stage_name": "Flatten events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"lamotrigine 75mg twice a day\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He is currently taking lamotrigine 75mg twice a day and given the recent seizure I would be very grateful if you could increase this by 25mg every fortnight to 100mg twice a day.\",\n  \"family\": \"medication\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"DoseUnit\": \"mg\",\n        \"DrugDose\": \"75\",\n        \"DrugName\": \"lamotrigine\",\n        \"Frequency\": \"2\"\n      },\n      \"entity\": \"Prescription\",\n      \"text\": \"lamotrigine\"\n    }\n  ],\n  \"rationale\": \"The letter states that he is currently taking lamotrigine 75 mg twice a day.\"\n}",
@@ -2337,7 +2337,7 @@
               "note": ""
             },
             {
-              "stage_id": "exect.llm_with_rules.flatten_events",
+              "stage_id": "exect.llm_with_rules.map_events",
               "stage_name": "Flatten model events into mentions",
               "owner": "deterministic",
               "effect_class": "representation",
@@ -2486,7 +2486,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.flatten_events",
+                  "stage_id": "exect.llm_with_rules.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"Symptomatic structural focal epilepsy\",\n  \"confidence\": \"high\",\n  \"evidence\": \"Diagnosis: Symptomatic structural focal epilepsy\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"Epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"Symptomatic structural focal epilepsy\"\n    }\n  ],\n  \"rationale\": \"The letter explicitly lists symptomatic structural focal epilepsy as the diagnosis.\"\n}",
@@ -2565,7 +2565,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.flatten_events",
+                  "stage_id": "exect.llm_with_rules.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"epilepsy\",\n  \"confidence\": \"high\",\n  \"evidence\": \"This is the probable cause of his epilepsy.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"epilepsy\"\n    }\n  ],\n  \"rationale\": \"The letter explicitly refers to the patient's epilepsy.\"\n}",
@@ -2644,7 +2644,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.flatten_events",
+                  "stage_id": "exect.llm_with_rules.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal to bilateral convulsive seizures\",\n  \"confidence\": \"high\",\n  \"evidence\": \"I think therefore that this was a focal to bilateral convulsive seizures.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"2\",\n        \"DiagCategory\": \"MultipleSeizures\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"focal to bilateral convulsive seizures\"\n    }\n  ],\n  \"rationale\": \"The recent event is described as a probable focal to bilateral convulsive seizure type.\"\n}",
@@ -2723,7 +2723,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.flatten_events",
+                  "stage_id": "exect.llm_with_rules.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal motor seizures\",\n  \"confidence\": \"high\",\n  \"evidence\": \"As you recall Mr Owens has had focal motor seizures in the past where he has had jerking of his right leg.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"Epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"focal motor seizures\"\n    }\n  ],\n  \"rationale\": \"The letter explicitly states a history of focal motor seizures.\"\n}",
@@ -2802,7 +2802,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.flatten_events",
+                  "stage_id": "exect.llm_with_rules.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal to bilateral convulsive seizure\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He has had one previous focal to bilateral convulsive seizure at the time of diagnosis of his epilepsy in May 2017.\",\n  \"family\": \"seizure_frequency\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"MonthDate\": \"May\",\n        \"Negation\": \"Affirmed\",\n        \"NumberOfSeizures\": \"1\",\n        \"TimeSince_or_TimeOfEvent\": \"During\",\n        \"YearDate\": \"2017\"\n      },\n      \"entity\": \"SeizureFrequency\",\n      \"text\": \"focal to bilateral convulsive seizure\"\n    }\n  ],\n  \"rationale\": \"The letter records one previous focal to bilateral convulsive seizure in May 2017.\"\n}",
@@ -2899,7 +2899,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.flatten_events",
+                  "stage_id": "exect.llm_with_rules.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal motor seizures\",\n  \"confidence\": \"medium\",\n  \"evidence\": \"As you recall Mr Owens has had focal motor seizures in the past where he has had jerking of his right leg. These were happening frequently before he started the medication. The last event was probably 10 months ago.\",\n  \"family\": \"seizure_frequency\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"2\",\n        \"Negation\": \"Affirmed\",\n        \"NumberOfSeizures\": \"0\",\n        \"NumberOfTimePeriods\": \"10\",\n        \"TimePeriod\": \"Month\",\n        \"TimeSince_or_TimeOfEvent\": \"Since\"\n      },\n      \"entity\": \"SeizureFrequency\",\n      \"text\": \"focal motor seizures\"\n    }\n  ],\n  \"rationale\": \"The last focal motor seizure event is stated to have probably occurred 10 months ago.\"\n}",
@@ -2996,7 +2996,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.flatten_events",
+                  "stage_id": "exect.llm_with_rules.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"lamotrigine 75mg twice a day\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He is currently taking lamotrigine 75mg twice a day and given the recent seizure I would be very grateful if you could increase this by 25mg every fortnight to 100mg twice a day.\",\n  \"family\": \"medication\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"DoseUnit\": \"mg\",\n        \"DrugDose\": \"75\",\n        \"DrugName\": \"lamotrigine\",\n        \"Frequency\": \"2\"\n      },\n      \"entity\": \"Prescription\",\n      \"text\": \"lamotrigine\"\n    }\n  ],\n  \"rationale\": \"The letter states that he is currently taking lamotrigine 75 mg twice a day.\"\n}",
@@ -3075,7 +3075,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.flatten_events",
+                  "stage_id": "exect.llm_with_rules.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"MRI at the time was abnormal\",\n  \"confidence\": \"high\",\n  \"evidence\": \"As you will recall his MRI at the time was abnormal with an area of ischaemic damage in the left inferior frontal lobe.\",\n  \"family\": \"investigation\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"MRI_Performed\": \"Yes\",\n        \"MRI_Results\": \"Abnormal\"\n      },\n      \"entity\": \"Investigations\",\n      \"text\": \"MRI\"\n    }\n  ],\n  \"rationale\": \"The letter reports a completed abnormal MRI with left inferior frontal lobe ischaemic damage.\"\n}",
@@ -3154,7 +3154,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.flatten_events",
+                  "stage_id": "exect.llm_with_rules.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"An EEG in 2017 did show some left sided sharp waves\",\n  \"confidence\": \"high\",\n  \"evidence\": \"An EEG in 2017 did show some left sided sharp waves.\",\n  \"family\": \"investigation\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"EEG_Performed\": \"Yes\",\n        \"EEG_Results\": \"Abnormal\",\n        \"EEG_Type\": \"Standard\"\n      },\n      \"entity\": \"Investigations\",\n      \"text\": \"EEG\"\n    }\n  ],\n  \"rationale\": \"The letter reports an EEG in 2017 showing left sided sharp waves.\"\n}",
@@ -3603,7 +3603,7 @@
               "note": "Canonical LLM-only stage."
             },
             {
-              "stage_id": "exect.llm.flatten_events",
+              "stage_id": "exect.llm.map_events",
               "stage_name": "Flatten events into mentions",
               "owner": "deterministic",
               "effect_class": "representation",
@@ -3672,7 +3672,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm.flatten_events",
+                  "stage_id": "exect.llm.map_events",
                   "stage_name": "Flatten events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"Levetiracetam 1000mg bd\",\n  \"confidence\": \"high\",\n  \"evidence\": \"Medication:\\tLevetiracetam 1000mg bd\",\n  \"family\": \"medication\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"DoseUnit\": \"mg\",\n        \"DrugDose\": \"1000\",\n        \"DrugName\": \"Levetiracetam\",\n        \"Frequency\": \"2\"\n      },\n      \"entity\": \"Prescription\",\n      \"text\": \"Levetiracetam 1000mg bd\"\n    }\n  ],\n  \"rationale\": \"The letter lists levetiracetam as a current twice-daily anti-seizure medication.\"\n}",
@@ -3733,7 +3733,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm.flatten_events",
+                  "stage_id": "exect.llm.map_events",
                   "stage_name": "Flatten events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"Symptomatic structural epilepsy secondary to previous cerebral abcess\",\n  \"confidence\": \"high\",\n  \"evidence\": \"\\t\\t2. Symptomatic structural epilepsy secondary to previous cerebral abcess\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"Symptomatic structural epilepsy secondary to previous cerebral abcess\"\n    }\n  ],\n  \"rationale\": \"The diagnosis section explicitly states symptomatic structural epilepsy secondary to the previous cerebral abscess.\"\n}",
@@ -3794,7 +3794,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm.flatten_events",
+                  "stage_id": "exect.llm.map_events",
                   "stage_name": "Flatten events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"epilepsy\",\n  \"confidence\": \"high\",\n  \"evidence\": \"Mr Harris does have epilepsy as a result of his brain surgery and has a tendency for ongoing epileptic seizures.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"Epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"epilepsy\"\n    }\n  ],\n  \"rationale\": \"The comments explicitly affirm that Mr Harris has epilepsy.\"\n}",
@@ -3855,7 +3855,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm.flatten_events",
+                  "stage_id": "exect.llm.map_events",
                   "stage_name": "Flatten events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal motor seizures without changes in awareness\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He used to have focal motor seizures without changes in awareness, these would involve his left arm twitching with retained awareness.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"Epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"focal motor seizures without changes in awareness\"\n    }\n  ],\n  \"rationale\": \"The letter describes a previous named epileptic seizure type with retained awareness.\"\n}",
@@ -3916,7 +3916,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm.flatten_events",
+                  "stage_id": "exect.llm.map_events",
                   "stage_name": "Flatten events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal to bilateral convulsive seizures\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He has previously had focal to bilateral convulsive seizures.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"Epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"focal to bilateral convulsive seizures\"\n    }\n  ],\n  \"rationale\": \"The letter explicitly records previous focal to bilateral convulsive seizures.\"\n}",
@@ -3977,7 +3977,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm.flatten_events",
+                  "stage_id": "exect.llm.map_events",
                   "stage_name": "Flatten events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal motor seizures\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He used to gets these every month but has not had a seizure like this for around two years now.\",\n  \"family\": \"seizure_frequency\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Negation\": \"Affirmed\",\n        \"NumberOfSeizures\": \"0\",\n        \"NumberOfTimePeriods\": \"2\",\n        \"TimePeriod\": \"Year\",\n        \"TimeSince_or_TimeOfEvent\": \"Since\"\n      },\n      \"entity\": \"SeizureFrequency\",\n      \"text\": \"focal motor seizures\"\n    }\n  ],\n  \"rationale\": \"The letter states that these focal motor seizures have not occurred for around two years.\"\n}",
@@ -4038,7 +4038,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm.flatten_events",
+                  "stage_id": "exect.llm.map_events",
                   "stage_name": "Flatten events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal to bilateral convulsive seizures\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He has previously had focal to bilateral convulsive seizures. his last one was on Christmas day 2009.\",\n  \"family\": \"seizure_frequency\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"DayDate\": \"Christmas day\",\n        \"Negation\": \"Affirmed\",\n        \"NumberOfSeizures\": \"0\",\n        \"TimeSince_or_TimeOfEvent\": \"Since\",\n        \"YearDate\": \"2009\"\n      },\n      \"entity\": \"SeizureFrequency\",\n      \"text\": \"focal to bilateral convulsive seizures\"\n    }\n  ],\n  \"rationale\": \"The letter gives the last occurrence of this seizure type as Christmas day 2009.\"\n}",
@@ -4099,7 +4099,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm.flatten_events",
+                  "stage_id": "exect.llm.map_events",
                   "stage_name": "Flatten events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"A MRI two years ago showed an area of gliosis in the right frontal lobe\",\n  \"confidence\": \"high\",\n  \"evidence\": \"A MRI two years ago showed an area of gliosis in the right frontal lobe secondary to his previous surgery.\",\n  \"family\": \"investigation\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"MRI_Performed\": \"Yes\",\n        \"MRI_Results\": \"Abnormal\"\n      },\n      \"entity\": \"Investigations\",\n      \"text\": \"MRI\"\n    }\n  ],\n  \"rationale\": \"A completed MRI was reported as showing right frontal lobe gliosis.\"\n}",
@@ -4179,7 +4179,7 @@
               "note": ""
             },
             {
-              "stage_id": "exect.llm_with_rules.flatten_events",
+              "stage_id": "exect.llm_with_rules.map_events",
               "stage_name": "Flatten model events into mentions",
               "owner": "deterministic",
               "effect_class": "representation",
@@ -4328,7 +4328,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.flatten_events",
+                  "stage_id": "exect.llm_with_rules.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"Symptomatic structural epilepsy secondary to previous cerebral abcess\",\n  \"confidence\": \"high\",\n  \"evidence\": \"\\t\\t2. Symptomatic structural epilepsy secondary to previous cerebral abcess\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"Symptomatic structural epilepsy secondary to previous cerebral abcess\"\n    }\n  ],\n  \"rationale\": \"The diagnosis section explicitly states symptomatic structural epilepsy secondary to the previous cerebral abscess.\"\n}",
@@ -4407,7 +4407,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.flatten_events",
+                  "stage_id": "exect.llm_with_rules.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"epilepsy\",\n  \"confidence\": \"high\",\n  \"evidence\": \"Mr Harris does have epilepsy as a result of his brain surgery and has a tendency for ongoing epileptic seizures.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"Epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"epilepsy\"\n    }\n  ],\n  \"rationale\": \"The comments explicitly affirm that Mr Harris has epilepsy.\"\n}",
@@ -4486,7 +4486,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.flatten_events",
+                  "stage_id": "exect.llm_with_rules.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal motor seizures without changes in awareness\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He used to have focal motor seizures without changes in awareness, these would involve his left arm twitching with retained awareness.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"Epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"focal motor seizures without changes in awareness\"\n    }\n  ],\n  \"rationale\": \"The letter describes a previous named epileptic seizure type with retained awareness.\"\n}",
@@ -4565,7 +4565,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.flatten_events",
+                  "stage_id": "exect.llm_with_rules.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal to bilateral convulsive seizures\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He has previously had focal to bilateral convulsive seizures.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"Epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"focal to bilateral convulsive seizures\"\n    }\n  ],\n  \"rationale\": \"The letter explicitly records previous focal to bilateral convulsive seizures.\"\n}",
@@ -4644,7 +4644,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.flatten_events",
+                  "stage_id": "exect.llm_with_rules.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal motor seizures\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He used to gets these every month but has not had a seizure like this for around two years now.\",\n  \"family\": \"seizure_frequency\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Negation\": \"Affirmed\",\n        \"NumberOfSeizures\": \"0\",\n        \"NumberOfTimePeriods\": \"2\",\n        \"TimePeriod\": \"Year\",\n        \"TimeSince_or_TimeOfEvent\": \"Since\"\n      },\n      \"entity\": \"SeizureFrequency\",\n      \"text\": \"focal motor seizures\"\n    }\n  ],\n  \"rationale\": \"The letter states that these focal motor seizures have not occurred for around two years.\"\n}",
@@ -4741,7 +4741,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.flatten_events",
+                  "stage_id": "exect.llm_with_rules.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal to bilateral convulsive seizures\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He has previously had focal to bilateral convulsive seizures. his last one was on Christmas day 2009.\",\n  \"family\": \"seizure_frequency\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"DayDate\": \"Christmas day\",\n        \"Negation\": \"Affirmed\",\n        \"NumberOfSeizures\": \"0\",\n        \"TimeSince_or_TimeOfEvent\": \"Since\",\n        \"YearDate\": \"2009\"\n      },\n      \"entity\": \"SeizureFrequency\",\n      \"text\": \"focal to bilateral convulsive seizures\"\n    }\n  ],\n  \"rationale\": \"The letter gives the last occurrence of this seizure type as Christmas day 2009.\"\n}",
@@ -4838,7 +4838,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.flatten_events",
+                  "stage_id": "exect.llm_with_rules.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"Levetiracetam 1000mg bd\",\n  \"confidence\": \"high\",\n  \"evidence\": \"Medication:\\tLevetiracetam 1000mg bd\",\n  \"family\": \"medication\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"DoseUnit\": \"mg\",\n        \"DrugDose\": \"1000\",\n        \"DrugName\": \"Levetiracetam\",\n        \"Frequency\": \"2\"\n      },\n      \"entity\": \"Prescription\",\n      \"text\": \"Levetiracetam 1000mg bd\"\n    }\n  ],\n  \"rationale\": \"The letter lists levetiracetam as a current twice-daily anti-seizure medication.\"\n}",
@@ -4917,7 +4917,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.flatten_events",
+                  "stage_id": "exect.llm_with_rules.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"A MRI two years ago showed an area of gliosis in the right frontal lobe\",\n  \"confidence\": \"high\",\n  \"evidence\": \"A MRI two years ago showed an area of gliosis in the right frontal lobe secondary to his previous surgery.\",\n  \"family\": \"investigation\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"MRI_Performed\": \"Yes\",\n        \"MRI_Results\": \"Abnormal\"\n      },\n      \"entity\": \"Investigations\",\n      \"text\": \"MRI\"\n    }\n  ],\n  \"rationale\": \"A completed MRI was reported as showing right frontal lobe gliosis.\"\n}",
@@ -6057,7 +6057,7 @@
           "rule_category": "general"
         },
         {
-          "stage_id": "exect.llm.flatten_events",
+          "stage_id": "exect.llm.map_events",
           "name": "Flatten events into mentions",
           "operation": "Turn each model event into an ExECT mention with its entity, text, attributes, and evidence.",
           "owner": "deterministic",
@@ -6252,7 +6252,7 @@
           "runtime_action": "parse_schema_and_optional_format_retry"
         },
         {
-          "stage_id": "exect.llm_with_rules.flatten_events",
+          "stage_id": "exect.llm_with_rules.map_events",
           "name": "Flatten model events into mentions",
           "operation": "Turn each model event into an ExECT mention with its entity, text, attributes, and evidence.",
           "owner": "deterministic",
@@ -6264,7 +6264,7 @@
           "output_example": "a Diagnosis mention 'focal epilepsy' with its evidence span",
           "implementation": {
             "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/parsing.py",
-            "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.parsing:flatten_events"
+            "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.parsing:map_events"
           },
           "governing_test": "tests/test_exectv2_llm_only_parsing.py",
           "trace_fields": [

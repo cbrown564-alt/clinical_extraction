@@ -36,7 +36,7 @@ GAN_HYBRID_ROWS = (
 )
 EXECT_COMPACT_ROWS = (
     ROOT
-    / "paper_experiments/exect/exect_llm_with_rules/gpt56luna/dev140/structured.jsonl"
+    / "paper_experiments/exect/exect_llm_pre_post/gpt56luna/dev140/structured.jsonl"
 )
 
 GAN_FIXTURE_NOTE = (
@@ -226,7 +226,7 @@ def build_paper_teaching_letters() -> tuple[TeachingCase, ...]:
             "rules": "Nine-entity extractors fill the all-nine baseline.",
             "llm": "One call proposes four-family findings as written.",
             "llm_with_rules": (
-                "Lenses run on the four families after flatten and store."
+                "Lenses run on the four families after parse, gates, and store."
             ),
         },
         mechanism_title="Four families and named time windows",

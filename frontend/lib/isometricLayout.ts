@@ -52,7 +52,7 @@ export const EXECT_PARSE_CATALOG: CatalogItem[] = [
 export const EXECT_FLATTEN_CATALOG: CatalogItem[] = [
   { id: "extract_sf", label: "Extract seizure frequency", stageIdPattern: "extract_seizure_frequency" },
   { id: "extract_entities", label: "Extract entities", stageIdPattern: "extract_entities" },
-  { id: "flatten", label: "Flatten mentions", stageIdPattern: "flatten" },
+  { id: "flatten", label: "Map events", stageIdPattern: "map_events" },
   { id: "project_and_gate", label: "Project and gate", stageIdPattern: "project_and_gate" },
   { id: "sf_state", label: "Seizure-frequency state", stageIdPattern: "sf_state_projection" },
   { id: "sf_unknown", label: "Unknown suppression", stageIdPattern: "sf_unknown_suppression" },
@@ -220,6 +220,7 @@ export function mapStageToStationId(stageId: string, isGan: boolean): string | n
   if (stageId.includes("parse")) return "exect_parse";
   if (
     stageId.includes("flatten") ||
+    stageId.includes("map_events") ||
     stageId.includes("project_and_gate") ||
     stageId.includes("sf_state_projection") ||
     stageId.includes("sf_unknown_suppression") ||

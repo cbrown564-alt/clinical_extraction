@@ -169,7 +169,7 @@ def paper_exect_dev140_scored(method: str, slug: str) -> dict[str, Any]:
 def paper_exect_dev140_scored_hybrid(slug: str) -> dict[str, Any]:
     """Alias for ExECT LLM with rules scored rows."""
 
-    return paper_exect_dev140_scored("exect_llm_with_rules", slug)
+    return paper_exect_dev140_scored("exect_llm_pre_post", slug)
 
 
 @router.get("/datasets/{dataset}/letters")

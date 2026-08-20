@@ -129,7 +129,15 @@ export function fetchGanDev750Scored(method: GanDev750Method, slug: string) {
   }>(`/paper/gan/dev750/${method}/${encodeURIComponent(slug)}/scored`);
 }
 
-export type ExectDev140Method = "exect_llm_only" | "exect_llm_with_rules";
+export type ExectDev140Method =
+  | "exect_llm_only"
+  | "exect_llm_pre_post"
+  | "exect_llm_with_rules"
+  | "rules_only"
+  | "llm_schema"
+  | "llm_format"
+  | "llm_post"
+  | "llm_pre_post";
 
 export type ExectDev140PanelCell = {
   model_slug: string;

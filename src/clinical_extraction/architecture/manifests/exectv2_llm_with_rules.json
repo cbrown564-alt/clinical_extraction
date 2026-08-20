@@ -10,7 +10,7 @@
     "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_with_rules_letter"
   },
   "one_sentence": "ExECT LLM with rules: the model proposes findings for four families in one request; deterministic family transforms reconcile those findings into the scored representation (hybrid F1).",
-  "sixty_second": "ExECT LLM with rules (`exect_llm_with_rules`) uses its own request (suggested-evidence scan included), separate from ExECT LLM only (`exect_llm_only`). One structured call per letter asks the named model for candidate findings across Diagnosis, Seizure Frequency, Prescription, and Investigations. No deterministic extractor proposes findings and none is unioned in - that is the family-ownership rule from decision 0040. After the call, code parses and may make one format-only retry, flattens the model's events into ExECT mentions, projects the model's seizure-frequency facts into the required state representation, and suppresses a narrowly defined class of unsupported unknown states. Raw and scored findings are both registered in a finding store, so every later change stays attributable. Then one family transform runs per entity, and the four behave differently: Diagnosis applies the active standard dictionary to model findings; Seizure Frequency is a thin assembly over the earlier projection; Prescription applies dictionary-driven regimen processing with bounded correction; Investigations is a behavior-preserving adapter while its residual providers remain prompt-side. Every final finding must carry exact source evidence, and the scored views are then materialized. Hybrid-call raw is not LLM-only.",
+  "sixty_second": "ExECT LLM with rules (`exect_llm_with_rules`) uses its own request (suggested-evidence scan included), separate from ExECT LLM only (`exect_llm_only`). One structured call per letter asks the named model for candidate findings across Diagnosis, Seizure Frequency, Prescription, and Investigations. No deterministic extractor proposes findings and none is unioned in - that is the family-ownership rule from decision 0040. After the call, code parses Compact events and may make one format-only retry, projects the model's seizure-frequency facts into the required state representation, and suppresses a narrowly defined class of unsupported unknown states. Raw and scored findings are both registered in a finding store, so every later change stays attributable. Then one family transform runs per entity, and the four behave differently: Diagnosis applies the active standard dictionary to model findings; Seizure Frequency is a thin assembly over the earlier projection; Prescription applies dictionary-driven regimen processing with bounded correction; Investigations is a behavior-preserving adapter while its residual providers remain prompt-side. Every final finding must carry exact source evidence, and the scored views are then materialized. Hybrid-call raw is not LLM-only.",
   "prediction_owner": "the named model proposes all four families (exect.llm_with_rules.model_call); four family transforms may change findings afterwards",
   "scored_representation": "A PredictedLetter of four-family mentions materialized into named score views; the primary view is clinical fact recovery (`clinical_headline`, hybrid F1).",
   "stages": [
@@ -84,28 +84,6 @@
       "paper_wording": "Malformed model output is repaired at the transport and schema level, with one format-only retry for local models."
     },
     {
-      "stage_id": "exect.llm_with_rules.flatten_events",
-      "runtime_action": "flatten_model_events",
-      "name": "Flatten model events into mentions",
-      "operation": "Turn each model event into an ExECT mention with its entity, text, attributes, and evidence.",
-      "owner": "deterministic",
-      "rule_category": "general",
-      "effect_class": "representation",
-      "input_type": "StructuredExtractionRecord",
-      "input_example": "an event with family 'Diagnosis' and text 'focal epilepsy'",
-      "output_type": "list[MentionForEvidence]",
-      "output_example": "a Diagnosis mention 'focal epilepsy' with its evidence span",
-      "implementation": {
-        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/parsing.py",
-        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.parsing:flatten_events"
-      },
-      "governing_test": "tests/test_exectv2_llm_only_parsing.py",
-      "trace_fields": [
-        "n_mentions_raw"
-      ],
-      "paper_wording": "Model events are flattened into entity mentions."
-    },
-    {
       "stage_id": "exect.llm_with_rules.project_and_gate",
       "runtime_action": "repair_attributes_and_enforce_evidence",
       "name": "Enrich attributes and apply render-safety gates",
@@ -113,7 +91,7 @@
       "owner": "deterministic",
       "rule_category": "clinical_epilepsy",
       "effect_class": "clinical_meaning",
-      "input_type": "list[MentionForEvidence] plus note text",
+      "input_type": "Compact events plus note text",
       "input_example": "a SeizureFrequency mention with no state attributes; a Prescription mention with Frequency 'twice a day'",
       "output_type": "PredictedLetter plus gate warnings",
       "output_example": "the SeizureFrequency mention is dropped; the out-of-vocabulary Frequency value is removed",

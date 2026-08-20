@@ -41,7 +41,7 @@ Rung 5 is a different request. `gan_llm_only` is not a results column.
   `v0.5` score into that cell.
 - **ExECTv2:** de-duplicated clinical fact F1 on the locked `test60` split
   (diagnosis, seizure frequency, prescriptions, and investigations). Rung 2
-  is `exect_llm_only` raw F1. Rung 5 is `exect_llm_with_rules` hybrid F1.
+  is `exect_llm_only` raw F1. Rung 5 is `exect_llm_pre_post` hybrid F1.
   An unrepaired hybrid answer is not rung 2. This is the project's primary
   research metric for ExECT, not the published strict benchmark score.
 

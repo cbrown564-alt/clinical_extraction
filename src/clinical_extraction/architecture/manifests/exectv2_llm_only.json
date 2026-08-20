@@ -10,7 +10,7 @@
     "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_only_letter"
   },
   "one_sentence": "ExECT LLM only: one model call on the note proposes four-family findings, and the selected view scores those findings without family repair.",
-  "sixty_second": "ExECT LLM only (`exect_llm_only`) uses its own request, separate from ExECT LLM with rules. It builds the LLM-only four-family prompt (no suggested-evidence scan), makes or replays one model call, parses the event ledger, optionally performs a format-only retry for eligible local models, flattens events, and applies evidence and render-safety gates. Its scored prediction is the raw candidate view (raw F1). It does not run seizure-frequency projection, Diagnosis reconciliation, Prescription normalization, or any other family transform. The unrepaired output of ExECT LLM with rules is not this method. The old GEPA program remains named as a historical comparison rather than the selected entry point.",
+  "sixty_second": "ExECT LLM only (`exect_llm_only`) uses its own request, separate from ExECT LLM with rules. It builds the LLM-only four-family prompt (no suggested-evidence scan), makes or replays one model call, parses Compact events, optionally performs a format-only retry for eligible local models, and applies evidence and render-safety gates. Family and fact names are spelled into the scorer mention fields as part of that parse. Its scored prediction is the raw candidate view (raw F1). It does not run seizure-frequency projection, Diagnosis reconciliation, Prescription normalization, or any other family transform. The unrepaired output of ExECT LLM with rules is not this method. The old GEPA program remains named as a historical comparison rather than the selected entry point.",
   "prediction_owner": "the named model (stage exect.llm.model_call); deterministic stages only parse, represent, and gate its findings",
   "scored_representation": "The raw_candidate four-family PredictedLetter from the ExECT LLM only request, scored per entity and overall (raw F1).",
   "stages": [
@@ -82,35 +82,13 @@
       "paper_wording": "Malformed model output is handled at the transport and schema boundary."
     },
     {
-      "stage_id": "exect.llm.flatten_events",
-      "name": "Flatten events into mentions",
-      "operation": "Turn each model event into an ExECT mention with its entity, text, attributes, and evidence.",
-      "owner": "deterministic",
-      "rule_category": "general",
-      "effect_class": "representation",
-      "input_type": "StructuredExtractionRecord",
-      "input_example": "an event with family 'Diagnosis' and text 'focal epilepsy'",
-      "output_type": "list[MentionForEvidence]",
-      "output_example": "a Diagnosis mention with its evidence span",
-      "implementation": {
-        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py",
-        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter"
-      },
-      "governing_test": "tests/test_exectv2_llm_vertical_slice.py",
-      "trace_fields": [
-        "n_events_raw",
-        "n_mentions_raw"
-      ],
-      "paper_wording": "Model events are flattened into entity mentions without adding a deterministic extractor."
-    },
-    {
       "stage_id": "exect.llm.project_and_gate",
       "name": "Apply representation and evidence gates",
       "operation": "Normalize closed-vocabulary attributes, require exact source evidence, and withhold mentions rejected by the shared render-safety gates.",
       "owner": "deterministic",
       "rule_category": "clinical_epilepsy",
       "effect_class": "validation_gate",
-      "input_type": "list[MentionForEvidence] plus note text",
+      "input_type": "Compact events plus note text",
       "input_example": "a mention whose evidence does not appear in the note",
       "output_type": "PredictedLetter plus gate warnings",
       "output_example": "the ungrounded mention is withheld and a gate warning is recorded",
