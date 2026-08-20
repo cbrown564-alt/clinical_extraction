@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import os
 import tempfile
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 from pathlib import Path
@@ -51,7 +51,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 from clinical_extraction.trace_explorer.exectv2_comparison import _frontend_letter
 
 ROOT = discover_repo_root(start=Path(__file__))
-CANDIDATE_VERSION = structured.COMPACT_LEDGER
+CANDIDATE_VERSION = structured.EXECT_LLM_PRE_POST
 CANDIDATE_ARM = "exect_llm_pre_post"
 LLM_ONLY_ARM = "exect_llm_only"
 LLM_ONLY_VERSION = structured.EXECT_LLM_ONLY
@@ -78,6 +78,59 @@ ALLOWED_REASONING_ABLATIONS = frozenset(
     {
         ("gemini37flash", "medium"),
     }
+)
+
+
+@dataclass(frozen=True)
+class _ExectArmSpec:
+    method: str
+    prompt_version: str
+    work_root: Path
+    holdout_scratch: Path
+    schema_version: str
+    generated_on: str
+    progress_label: str
+    holdout_claim_boundary: str
+    dev_claim_boundary: str
+    drift_before: str
+    drift_after: str
+    run_requires: str
+    verify_version_key: Literal["candidate", "prompt_version"]
+
+
+_PRE_POST_ARM = _ExectArmSpec(
+    method=CANDIDATE_ARM,
+    prompt_version=CANDIDATE_VERSION,
+    work_root=WORK_ROOT,
+    holdout_scratch=HOLDOUT_SCRATCH,
+    schema_version="paper.exect_llm_pre_post.v1",
+    generated_on="2026-08-17",
+    progress_label="compact",
+    holdout_claim_boundary="ExECT aggregate-only test60 Compact.",
+    dev_claim_boundary="ExECT development Compact. Not holdout.",
+    drift_before="live default drifted before the run",
+    drift_after="candidate arm left the live default changed",
+    run_requires="run_compact requires live=True",
+    verify_version_key="candidate",
+)
+_LLM_ONLY_ARM = _ExectArmSpec(
+    method=LLM_ONLY_ARM,
+    prompt_version=LLM_ONLY_VERSION,
+    work_root=LLM_ONLY_WORK_ROOT,
+    holdout_scratch=LLM_ONLY_HOLDOUT_SCRATCH,
+    schema_version="paper.exect_llm_only.v1",
+    generated_on="2026-08-18",
+    progress_label="llm_only",
+    holdout_claim_boundary=(
+        "ExECT aggregate-only test60 Compact LLM-only. Not the cited hybrid."
+    ),
+    dev_claim_boundary=(
+        "ExECT development Compact LLM-only. Not the cited hybrid. Not holdout."
+    ),
+    drift_before="live default drifted before the LLM-only run",
+    drift_after="LLM-only arm left the live Compact default changed",
+    run_requires="run_llm_only requires live=True",
+    verify_version_key="prompt_version",
 )
 
 
@@ -163,15 +216,6 @@ def _spec_for(item: Mapping[str, Any]) -> ModelSpec:
 MODELS: dict[str, ModelSpec] = {item["slug"]: _spec_for(item) for item in living_models()}
 
 
-
-def _reject_lfs_pointer(path: Path) -> None:
-    if not path.is_file():
-        return
-    first = path.read_text(encoding="utf-8", errors="replace").splitlines()[:1]
-    if first and first[0].startswith("version https://git-lfs.github.com/spec/v1"):
-        raise RuntimeError(f"{path} is a Git LFS pointer, not a replayable JSONL events file")
-
-
 def letters_for_split(split: str) -> list[ExectLetter]:
     """Load the development or locked-test ExECT letters."""
 
@@ -186,12 +230,50 @@ def letters_for_split(split: str) -> list[ExectLetter]:
     return letters
 
 
-def verify_compact(*, split: str = "dev140", slug: str | None = None) -> dict[str, Any]:
-    """Check Compact payload identity."""
-
+def _verify_arm(
+    arm: _ExectArmSpec,
+    *,
+    split: str = "dev140",
+    slug: str | None = None,
+    verify_payload: Callable[[ExectLetter], Mapping[str, Any]],
+    verify_drift_message: str,
+) -> dict[str, Any]:
+    if slug is not None and slug not in MODELS:
+        raise RuntimeError(f"{slug} is not a living paper model")
     letter = ExectLetter(letter_id="EA0002", note_text="placeholder")
     before = structured.PROMPT_VERSION
     try:
+        payload = verify_payload(letter)
+    finally:
+        structured.set_active_prompt_version(before)
+    if structured.PROMPT_VERSION != structured.EXECT_LLM_PRE_POST:
+        raise RuntimeError(verify_drift_message)
+    holdout = holdout_is_aggregate_only(split)
+    result: dict[str, Any] = {
+        "ok": True,
+        "method": arm.method,
+        arm.verify_version_key: arm.prompt_version,
+        "split": split,
+        "row_count": 59 if holdout else 140,
+        "row_policy": "aggregate_only" if holdout else "development_review_permitted",
+        "test60_authorized": holdout,
+        "n_rules": structured.compact_rule_count(payload["clinical_rules"]),
+        "n_examples": 0,
+        "authored_order": True,
+        "drops_research_metadata": True,
+        "hosted": list(HOSTED_SLUGS),
+        "local": list(LOCAL_SLUGS),
+        "work_root": arm.work_root.relative_to(ROOT).as_posix(),
+        "holdout_scratch": arm.holdout_scratch.relative_to(ROOT).as_posix(),
+        "default_prompt_version": structured.PROMPT_VERSION,
+    }
+    return result
+
+
+def verify_compact(*, split: str = "dev140", slug: str | None = None) -> dict[str, Any]:
+    """Check Compact payload identity."""
+
+    def _payload(letter: ExectLetter) -> Mapping[str, Any]:
         compact = json.loads(
             structured.build_prompt_input(letter, prompt_version=CANDIDATE_VERSION)
         )
@@ -204,40 +286,21 @@ def verify_compact(*, split: str = "dev140", slug: str | None = None) -> dict[st
             or "worked_examples" in compact
         ):
             raise RuntimeError("Compact content drifted")
-    finally:
-        structured.set_active_prompt_version(before)
-    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
-        raise RuntimeError("payload check changed the live default")
+        return compact
+
     del slug
-    holdout = holdout_is_aggregate_only(split)
-    return {
-        "ok": True,
-        "method": CANDIDATE_ARM,
-        "candidate": CANDIDATE_VERSION,
-        "split": split,
-        "row_count": 59 if holdout else 140,
-        "row_policy": "aggregate_only" if holdout else "development_review_permitted",
-        "test60_authorized": holdout,
-        "n_rules": structured.compact_rule_count(compact["clinical_rules"]),
-        "n_examples": 0,
-        "authored_order": True,
-        "drops_research_metadata": True,
-        "hosted": list(HOSTED_SLUGS),
-        "local": list(LOCAL_SLUGS),
-        "work_root": WORK_ROOT.relative_to(ROOT).as_posix(),
-        "holdout_scratch": HOLDOUT_SCRATCH.relative_to(ROOT).as_posix(),
-        "default_prompt_version": structured.PROMPT_VERSION,
-    }
+    return _verify_arm(
+        _PRE_POST_ARM,
+        split=split,
+        verify_payload=_payload,
+        verify_drift_message="payload check changed the live default",
+    )
 
 
 def verify_llm_only(*, split: str = "dev140", slug: str | None = None) -> dict[str, Any]:
     """Check Compact LLM-only payload identity without changing the live default."""
 
-    if slug is not None and slug not in MODELS:
-        raise RuntimeError(f"{slug} is not a living paper model")
-    letter = ExectLetter(letter_id="EA0002", note_text="placeholder")
-    before = structured.PROMPT_VERSION
-    try:
+    def _payload(letter: ExectLetter) -> Mapping[str, Any]:
         payload = json.loads(
             structured.build_prompt_input(letter, prompt_version=LLM_ONLY_VERSION)
         )
@@ -251,30 +314,121 @@ def verify_llm_only(*, split: str = "dev140", slug: str | None = None) -> dict[s
             raise RuntimeError("LLM-only rule sections drifted")
         if structured.compact_rule_count(payload["clinical_rules"]) != 52:
             raise RuntimeError("LLM-only content drifted")
-    finally:
-        structured.set_active_prompt_version(before)
-    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
-        raise RuntimeError("LLM-only verify changed the live Compact default")
+        return payload
+
+    return _verify_arm(
+        _LLM_ONLY_ARM,
+        split=split,
+        slug=slug,
+        verify_payload=_payload,
+        verify_drift_message="LLM-only verify changed the live Compact default",
+    )
+
+
+def _run_live(
+    slug: str,
+    arm: _ExectArmSpec,
+    *,
+    live: bool,
+    split: str = "dev140",
+    overwrite: bool = False,
+    api_base: str | None = None,
+    timeout: int | None = None,
+    progress_every: int = 1,
+    thinking: str | None = None,
+    reasoning_effort: str | None = None,
+    verify: Callable[..., dict[str, Any]],
+) -> dict[str, Any]:
+    if slug not in MODELS:
+        raise RuntimeError(f"{slug} is not a living paper model")
+    verify(split=split, slug=slug)
+    if not live:
+        raise RuntimeError(arm.run_requires)
+    spec = apply_reasoning_effort(MODELS[slug], reasoning_effort)
+    if thinking is not None:
+        if slug != "deepseek_v4_flash":
+            raise RuntimeError("thinking toggle is DeepSeek only")
+        spec = replace(spec, thinking_type=thinking)
+    load_dotenv(ROOT / ".env", override=False)
+    letters = letters_for_split(split)
     holdout = holdout_is_aggregate_only(split)
-    return {
-        "ok": True,
-        "method": LLM_ONLY_ARM,
-        "prompt_version": LLM_ONLY_VERSION,
+    work_root = arm.holdout_scratch if holdout else arm.work_root
+    segment = paper_work_suffix(spec)
+    if segment:
+        work_root = work_root / spec.slug / segment / split
+    else:
+        work_root = work_root / spec.slug / split
+    work_root.mkdir(parents=True, exist_ok=True)
+    started = datetime.now(UTC).isoformat()
+    if structured.PROMPT_VERSION != structured.EXECT_LLM_PRE_POST:
+        raise RuntimeError(arm.drift_before)
+    resolved_base = resolve_paper_api_base(spec.slug, api_base)
+    candidate = _run_candidate(
+        spec,
+        letters,
+        overwrite=overwrite,
+        api_base=resolved_base,
+        timeout=timeout or spec.timeout,
+        progress_every=progress_every,
+        out_dir=work_root / arm.method,
+        split=split,
+        prompt_version=arm.prompt_version,
+        arm=arm.method,
+        progress_label=arm.progress_label,
+    )
+    if structured.PROMPT_VERSION != structured.EXECT_LLM_PRE_POST:
+        raise RuntimeError(arm.drift_after)
+    quality = candidate["summary"]["quality"]
+    artifact = {
+        "schema_version": arm.schema_version,
+        "generated_on": arm.generated_on,
+        "method": arm.method,
+        "model_slug": spec.slug,
+        "model": spec.model,
+        "model_label": spec.label,
+        "temperature": spec.temperature,
+        "max_tokens": spec.max_tokens,
+        "cache": False,
         "split": split,
-        "row_count": 59 if holdout else 140,
+        "row_count": len(letters),
         "row_policy": "aggregate_only" if holdout else "development_review_permitted",
-        "test60_authorized": holdout,
-        "n_rules": structured.compact_rule_count(payload["clinical_rules"]),
-        "n_examples": 0,
-        "authored_order": True,
-        "drops_research_metadata": True,
-        "hosted": list(HOSTED_SLUGS),
-        "local": list(LOCAL_SLUGS),
-        "work_root": LLM_ONLY_WORK_ROOT.relative_to(ROOT).as_posix(),
-        "holdout_scratch": LLM_ONLY_HOLDOUT_SCRATCH.relative_to(ROOT).as_posix(),
+        "started_utc": started,
+        "finished_utc": datetime.now(UTC).isoformat(),
+        "live": True,
+        "model_calls": candidate["summary"]["new_model_calls"],
+        "default_prompt_version": structured.PROMPT_VERSION,
+        "provider_revision": spec.provider_revision,
+        "reasoning_effort": spec.reasoning_effort,
+        "thinking_type": spec.thinking_type,
+        "arms": {
+            arm.method: _public_arm_summary(candidate["summary"], holdout=holdout),
+        },
+        "decision": {
+            arm.method: {
+                "status": "scored",
+                "raw_headline_f1": candidate["summary"]["raw_headline_f1"],
+                "hybrid_headline_f1": candidate["summary"]["hybrid_headline_f1"],
+                "raw_family_f1": candidate["summary"]["raw_family_f1"],
+                "hybrid_family_f1": candidate["summary"]["hybrid_family_f1"],
+                "parse": quality["parse"],
+                "schema": quality["schema"],
+            }
+        },
+        "claim_boundary": arm.holdout_claim_boundary if holdout else arm.dev_claim_boundary,
+    }
+    if not holdout:
+        artifact["letter_ids"] = [letter.letter_id for letter in letters]
+    out = work_root / "comparison.json"
+    out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return {
+        "artifact": out.relative_to(ROOT).as_posix(),
+        "live": True,
+        "split": split,
+        "model": spec.model,
+        "model_calls": artifact["model_calls"],
+        "decision": artifact["decision"],
         "default_prompt_version": structured.PROMPT_VERSION,
     }
-
 
 
 def run_compact(
@@ -291,97 +445,19 @@ def run_compact(
 ) -> dict[str, Any]:
     """Run Compact live."""
 
-    if slug not in MODELS:
-        raise RuntimeError(f"{slug} is not a living paper model")
-    verify_compact(split=split, slug=slug)
-    if not live:
-        raise RuntimeError("run_compact requires live=True")
-    spec = apply_reasoning_effort(MODELS[slug], reasoning_effort)
-    if thinking is not None:
-        if slug != "deepseek_v4_flash":
-            raise RuntimeError("thinking toggle is DeepSeek only")
-        spec = replace(spec, thinking_type=thinking)
-    load_dotenv(ROOT / ".env", override=False)
-    letters = letters_for_split(split)
-    holdout = holdout_is_aggregate_only(split)
-    work_root = HOLDOUT_SCRATCH if holdout else WORK_ROOT
-    segment = paper_work_suffix(spec)
-    if segment:
-        work_root = work_root / spec.slug / segment / split
-    else:
-        work_root = work_root / spec.slug / split
-    work_root.mkdir(parents=True, exist_ok=True)
-    started = datetime.now(UTC).isoformat()
-    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
-        raise RuntimeError("live default drifted before the run")
-    resolved_base = resolve_paper_api_base(spec.slug, api_base)
-    candidate = _run_candidate(
-        spec,
-        letters,
-        overwrite=overwrite,
-        api_base=resolved_base,
-        timeout=timeout or spec.timeout,
-        progress_every=progress_every,
-        out_dir=work_root / CANDIDATE_ARM,
+    return _run_live(
+        slug,
+        _PRE_POST_ARM,
+        live=live,
         split=split,
+        overwrite=overwrite,
+        api_base=api_base,
+        timeout=timeout,
+        progress_every=progress_every,
+        thinking=thinking,
+        reasoning_effort=reasoning_effort,
+        verify=verify_compact,
     )
-    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
-        raise RuntimeError("candidate arm left the live default changed")
-    quality = candidate["summary"]["quality"]
-    artifact = {
-        "schema_version": "paper.exect_llm_pre_post.v1",
-        "generated_on": "2026-08-17",
-        "method": CANDIDATE_ARM,
-        "model_slug": spec.slug,
-        "model": spec.model,
-        "model_label": spec.label,
-        "temperature": spec.temperature,
-        "max_tokens": spec.max_tokens,
-        "cache": False,
-        "split": split,
-        "row_count": len(letters),
-        "row_policy": "aggregate_only" if holdout else "development_review_permitted",
-        "started_utc": started,
-        "finished_utc": datetime.now(UTC).isoformat(),
-        "live": True,
-        "model_calls": candidate["summary"]["new_model_calls"],
-        "default_prompt_version": structured.PROMPT_VERSION,
-        "provider_revision": spec.provider_revision,
-        "reasoning_effort": spec.reasoning_effort,
-        "thinking_type": spec.thinking_type,
-        "arms": {
-            CANDIDATE_ARM: _public_arm_summary(candidate["summary"], holdout=holdout),
-        },
-        "decision": {
-            CANDIDATE_ARM: {
-                "status": "scored",
-                "raw_headline_f1": candidate["summary"]["raw_headline_f1"],
-                "hybrid_headline_f1": candidate["summary"]["hybrid_headline_f1"],
-                "raw_family_f1": candidate["summary"]["raw_family_f1"],
-                "hybrid_family_f1": candidate["summary"]["hybrid_family_f1"],
-                "parse": quality["parse"],
-                "schema": quality["schema"],
-            }
-        },
-        "claim_boundary": (
-            "ExECT aggregate-only test60 Compact."
-            if holdout
-            else "ExECT development Compact. Not holdout."
-        ),
-    }
-    if not holdout:
-        artifact["letter_ids"] = [letter.letter_id for letter in letters]
-    out = work_root / "comparison.json"
-    out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    return {
-        "artifact": out.relative_to(ROOT).as_posix(),
-        "live": True,
-        "split": split,
-        "model": spec.model,
-        "model_calls": artifact["model_calls"],
-        "decision": artifact["decision"],
-        "default_prompt_version": structured.PROMPT_VERSION,
-    }
 
 
 def run_llm_only(
@@ -398,100 +474,19 @@ def run_llm_only(
 ) -> dict[str, Any]:
     """Run Compact LLM-only live. Does not write hybrid Compact cells."""
 
-    if slug not in MODELS:
-        raise RuntimeError(f"{slug} is not a living paper model")
-    verify_llm_only(split=split, slug=slug)
-    if not live:
-        raise RuntimeError("run_llm_only requires live=True")
-    spec = apply_reasoning_effort(MODELS[slug], reasoning_effort)
-    if thinking is not None:
-        if slug != "deepseek_v4_flash":
-            raise RuntimeError("thinking toggle is DeepSeek only")
-        spec = replace(spec, thinking_type=thinking)
-    load_dotenv(ROOT / ".env", override=False)
-    letters = letters_for_split(split)
-    holdout = holdout_is_aggregate_only(split)
-    work_root = LLM_ONLY_HOLDOUT_SCRATCH if holdout else LLM_ONLY_WORK_ROOT
-    segment = paper_work_suffix(spec)
-    if segment:
-        work_root = work_root / spec.slug / segment / split
-    else:
-        work_root = work_root / spec.slug / split
-    work_root.mkdir(parents=True, exist_ok=True)
-    started = datetime.now(UTC).isoformat()
-    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
-        raise RuntimeError("live default drifted before the LLM-only run")
-    resolved_base = resolve_paper_api_base(spec.slug, api_base)
-    candidate = _run_candidate(
-        spec,
-        letters,
-        overwrite=overwrite,
-        api_base=resolved_base,
-        timeout=timeout or spec.timeout,
-        progress_every=progress_every,
-        out_dir=work_root / LLM_ONLY_ARM,
+    return _run_live(
+        slug,
+        _LLM_ONLY_ARM,
+        live=live,
         split=split,
-        prompt_version=LLM_ONLY_VERSION,
-        arm=LLM_ONLY_ARM,
-        progress_label="llm_only",
+        overwrite=overwrite,
+        api_base=api_base,
+        timeout=timeout,
+        progress_every=progress_every,
+        thinking=thinking,
+        reasoning_effort=reasoning_effort,
+        verify=verify_llm_only,
     )
-    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
-        raise RuntimeError("LLM-only arm left the live Compact default changed")
-    quality = candidate["summary"]["quality"]
-    artifact = {
-        "schema_version": "paper.exect_llm_only.v1",
-        "generated_on": "2026-08-18",
-        "method": LLM_ONLY_ARM,
-        "model_slug": spec.slug,
-        "model": spec.model,
-        "model_label": spec.label,
-        "temperature": spec.temperature,
-        "max_tokens": spec.max_tokens,
-        "cache": False,
-        "split": split,
-        "row_count": len(letters),
-        "row_policy": "aggregate_only" if holdout else "development_review_permitted",
-        "started_utc": started,
-        "finished_utc": datetime.now(UTC).isoformat(),
-        "live": True,
-        "model_calls": candidate["summary"]["new_model_calls"],
-        "default_prompt_version": structured.PROMPT_VERSION,
-        "provider_revision": spec.provider_revision,
-        "reasoning_effort": spec.reasoning_effort,
-        "thinking_type": spec.thinking_type,
-        "arms": {
-            LLM_ONLY_ARM: _public_arm_summary(candidate["summary"], holdout=holdout),
-        },
-        "decision": {
-            LLM_ONLY_ARM: {
-                "status": "scored",
-                "raw_headline_f1": candidate["summary"]["raw_headline_f1"],
-                "hybrid_headline_f1": candidate["summary"]["hybrid_headline_f1"],
-                "raw_family_f1": candidate["summary"]["raw_family_f1"],
-                "hybrid_family_f1": candidate["summary"]["hybrid_family_f1"],
-                "parse": quality["parse"],
-                "schema": quality["schema"],
-            }
-        },
-        "claim_boundary": (
-            "ExECT aggregate-only test60 Compact LLM-only. Not the cited hybrid."
-            if holdout
-            else "ExECT development Compact LLM-only. Not the cited hybrid. Not holdout."
-        ),
-    }
-    if not holdout:
-        artifact["letter_ids"] = [letter.letter_id for letter in letters]
-    out = work_root / "comparison.json"
-    out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    return {
-        "artifact": out.relative_to(ROOT).as_posix(),
-        "live": True,
-        "split": split,
-        "model": spec.model,
-        "model_calls": artifact["model_calls"],
-        "decision": artifact["decision"],
-        "default_prompt_version": structured.PROMPT_VERSION,
-    }
 
 
 def run_compact_reasoning_ablation(
@@ -532,7 +527,7 @@ def run_compact_reasoning_ablation(
     work_root = WORK_ROOT / spec.slug / f"reasoning_{effort}" / split
     work_root.mkdir(parents=True, exist_ok=True)
     started = datetime.now(UTC).isoformat()
-    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
+    if structured.PROMPT_VERSION != structured.EXECT_LLM_PRE_POST:
         raise RuntimeError("live default drifted before the run")
     resolved_base = resolve_paper_api_base(spec.slug, api_base)
     paper_effort = paper_spec.reasoning_effort or "provider_default"
@@ -555,13 +550,13 @@ def run_compact_reasoning_ablation(
         out_dir=work_root / f"{CANDIDATE_ARM}_{effort}",
         split=split,
     )
-    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
+    if structured.PROMPT_VERSION != structured.EXECT_LLM_PRE_POST:
         raise RuntimeError("candidate arm left the live default changed")
     versus = compare_pair(control, candidate, letters)
     hybrid = versus["surfaces"]["hybrid"]
     quality = candidate["summary"]["quality"]
     artifact = {
-        "schema_version": "paper.exect_llm_with_rules.reasoning_ablation.v1",
+        "schema_version": "paper.exect_llm_pre_post.reasoning_ablation.v1",
         "generated_on": "2026-08-17",
         "method": CANDIDATE_ARM,
         "diagnostic": True,
@@ -691,7 +686,7 @@ def _run_replay_arm(
                 split=split,
                 config=StructuredMethodConfig.selected(),
             )
-            hybrid = structured_one_call.run_llm_with_rules_letter(letter, producer)
+            hybrid = structured_one_call.run_llm_pre_post_letter(letter, producer)
             producer_rows.append(dict(producer.row))
             assembly_rows.append(
                 assembly_row(hybrid.row, prompt_version, "saved_structured_no_call")
@@ -778,7 +773,9 @@ def _run_candidate(
                 row = dict(producer.row)
                 if raw_output is not None:
                     row["mode"] = "live"
-                if row.get("prompt_version") != prompt_version:
+                if structured.canonicalize_prompt_version(
+                    str(row.get("prompt_version") or "")
+                ) != prompt_version:
                     raise RuntimeError(
                         "a test60 letter used the wrong prompt version"
                         if holdout
@@ -811,7 +808,7 @@ def _run_candidate(
                 split=split,
                 config=StructuredMethodConfig.selected(),
             )
-            hybrid = structured_one_call.run_llm_with_rules_letter(letter, producer)
+            hybrid = structured_one_call.run_llm_pre_post_letter(letter, producer)
             assembly_rows.append(assembly_row(hybrid.row, prompt_version, "live"))
         write_jsonl_rows(existing, structured_path)
         write_jsonl_rows(assembly_rows, assembly_path)
@@ -888,7 +885,7 @@ def hydrate_saved_exect_letter(
         if lane == "llm":
             predicted = list(producer.row.get("predicted_mentions") or [])
         else:
-            hybrid = structured_one_call.run_llm_with_rules_letter(letter, producer)
+            hybrid = structured_one_call.run_llm_pre_post_letter(letter, producer)
             predicted = list(hybrid.row.get("predicted_mentions") or [])
             if not predicted:
                 predicted = [
