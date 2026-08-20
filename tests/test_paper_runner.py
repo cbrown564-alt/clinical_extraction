@@ -131,6 +131,7 @@ def test_live_methods_are_the_paper_llm_cells() -> None:
     assert set(LIVE_METHODS) == {
         "gan_llm_only",
         "gan_llm_with_rules",
+        "gan_llm_pre_post",
         "exect_llm_with_rules",
         "exect_llm_only",
         "exect_full_ledger",
@@ -276,6 +277,8 @@ def test_cli_dispatches_gan_live(monkeypatch: pytest.MonkeyPatch) -> None:
         progress_every: int = 1,
         thinking: str | None = None,
         reasoning_effort: str | None = None,
+        row_limit: int | None = None,
+        slice_name: str | None = None,
     ) -> dict[str, object]:
         captured.update(
             method=method,
@@ -455,6 +458,8 @@ def test_cli_dispatches_non_living_effort_to_live_runners(
         progress_every: int = 1,
         thinking: str | None = None,
         reasoning_effort: str | None = None,
+        row_limit: int | None = None,
+        slice_name: str | None = None,
     ) -> dict[str, object]:
         gan.update(
             method=method,

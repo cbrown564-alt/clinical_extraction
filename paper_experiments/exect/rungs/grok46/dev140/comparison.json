@@ -1,0 +1,57 @@
+{
+  "claim_boundary": "ExECT development replay. Not holdout.",
+  "format_only_check": {
+    "note": "format_only is the stop before dictionary rewrite. dictionary_normalized is semantic, not format.",
+    "same_as_schema": false,
+    "surface": "format_only"
+  },
+  "generated_on": "2026-08-20",
+  "model_slug": "grok46",
+  "row_count": 140,
+  "rungs": {
+    "llm_format": {
+      "clinical_fact_f1": 0.8324,
+      "family_f1": {
+        "Diagnosis": 0.6914,
+        "Investigations": 0.9368,
+        "Prescription": 0.9479,
+        "SeizureFrequency": 0.8491
+      },
+      "precision": 0.8594,
+      "recall": 0.807
+    },
+    "llm_post": {
+      "clinical_fact_f1": 0.904,
+      "family_f1": {
+        "Diagnosis": 0.8866,
+        "Investigations": 0.9438,
+        "Prescription": 0.9455,
+        "SeizureFrequency": 0.8491
+      },
+      "precision": 0.9302,
+      "recall": 0.8792
+    },
+    "llm_pre_post": {
+      "clinical_fact_f1": 0.8998,
+      "note": "Different prompt from rungs 2-4. Not a shared raw_output.",
+      "source": "living_exect_llm_with_rules"
+    },
+    "llm_schema": {
+      "clinical_fact_f1": 0.8212,
+      "family_f1": {
+        "Diagnosis": 0.6914,
+        "Investigations": 0.9368,
+        "Prescription": 0.9479,
+        "SeizureFrequency": 0.7965
+      },
+      "precision": 0.8333,
+      "recall": 0.8095
+    },
+    "rules_only": {
+      "clinical_fact_f1": 0.9042,
+      "source": "exect_rules"
+    }
+  },
+  "shared_raw_output": "exect_llm_only",
+  "split": "dev140"
+}

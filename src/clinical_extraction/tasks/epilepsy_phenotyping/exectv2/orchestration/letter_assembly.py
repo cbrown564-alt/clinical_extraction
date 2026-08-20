@@ -47,6 +47,7 @@ TARGET_ENTITIES = (
 MATERIALIZED_SURFACES = (
     "source_scored",
     "evidence_valid",
+    "format_only",
     "protocol_model_preserving_canonical",
     "dictionary_normalized",
     "residual_benchmark_added",
@@ -267,6 +268,7 @@ def _lane_prediction_surfaces(
     return {
         "source_scored": source_scored,
         "evidence_valid": [finding for finding in source_scored if finding.evidence_valid],
+        "format_only": list(source_scored),
         "protocol_model_preserving_canonical": [
             finding
             for finding in source_scored

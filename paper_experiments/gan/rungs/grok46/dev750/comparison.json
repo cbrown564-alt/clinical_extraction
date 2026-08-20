@@ -1,0 +1,76 @@
+{
+  "claim_boundary": "Gan development replay. Not holdout.",
+  "format_only_check": {
+    "note": "Rung 3 is selected_evidence_derivation. It stays format-only only when selected_event_ids never change.",
+    "predicted_kind_changes": 306,
+    "purist_harms": 1,
+    "purist_rescues": 242,
+    "repair_mode": "selected_evidence_derivation",
+    "selected_event_id_changes": 0,
+    "used_as_rung_3": true
+  },
+  "generated_on": "2026-08-20",
+  "model_slug": "grok46",
+  "row_count": 750,
+  "rungs": {
+    "llm_format": {
+      "pragmatic_accuracy": 0.8507,
+      "pragmatic_correct": 638,
+      "predicted_kinds": {
+        "frequency": 392,
+        "no_reference": 61,
+        "seizure_free": 149,
+        "unknown": 106,
+        "unresolved_multiple": 42
+      },
+      "purist_accuracy": 0.816,
+      "purist_correct": 612,
+      "scorable": 750
+    },
+    "llm_post": {
+      "pragmatic_accuracy": 0.9267,
+      "pragmatic_correct": 695,
+      "predicted_kinds": {
+        "frequency": 448,
+        "no_reference": 47,
+        "seizure_free": 120,
+        "unknown": 92,
+        "unresolved_multiple": 43
+      },
+      "purist_accuracy": 0.9,
+      "purist_correct": 675,
+      "scorable": 750
+    },
+    "llm_schema": {
+      "pragmatic_accuracy": 0.5213,
+      "pragmatic_correct": 391,
+      "predicted_kinds": {
+        "frequency": 195,
+        "no_reference": 25,
+        "seizure_free": 147,
+        "unknown": 69,
+        "unresolved_multiple": 12,
+        "unscorable": 302
+      },
+      "purist_accuracy": 0.4947,
+      "purist_correct": 371,
+      "scorable": 448
+    },
+    "rules_only": {
+      "pragmatic_accuracy": 0.9187,
+      "pragmatic_correct": 689,
+      "predicted_kinds": {
+        "frequency": 458,
+        "no_reference": 117,
+        "seizure_free": 133,
+        "unknown": 12,
+        "unresolved_multiple": 30
+      },
+      "purist_accuracy": 0.908,
+      "purist_correct": 681,
+      "scorable": 750
+    }
+  },
+  "shared_raw_output": "gan_llm_with_rules",
+  "split": "dev750"
+}

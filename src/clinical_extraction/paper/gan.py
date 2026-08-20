@@ -24,6 +24,7 @@ from clinical_extraction.paper.exect import (
     apply_reasoning_effort,
     paper_work_suffix,
 )
+from clinical_extraction.paper.gan_pre_post_slices import source_rows_for_slice
 from clinical_extraction.paper.lm import build_paper_lm, resolve_paper_api_base
 from clinical_extraction.paper.methods import (
     gan_machine_split,
@@ -50,6 +51,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     llm as gan_llm_only,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_pre_post import (
+    LLM_PRE_POST_AUTHORED_KEYS,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration import llm as orch_llm
 from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration import (
     llm_with_rules as orch_hybrid,
@@ -65,6 +69,7 @@ HOLDOUT_SCRATCH = ROOT / "scratch/holdout/paper"
 MAX_TOKENS = {
     "gan_llm_only": 1200,
     "gan_llm_with_rules": 5000,
+    "gan_llm_pre_post": 5000,
 }
 DEEPSEEK_MAX_TOKENS = 24000
 HIGH_REASONING_GAN_LLM_ONLY_MAX_TOKENS = 16000
@@ -105,6 +110,28 @@ def verify_gan(
             raise RuntimeError("LLM-only payload check changed the live default")
         if gan_llm_only.PROMPT_VERSION != gan_llm_only.GAN_LLM_ONLY:
             raise RuntimeError("gan_llm_only live default drifted")
+    elif method == "gan_llm_pre_post":
+        before = hybrid_structured_events.PROMPT_VERSION
+        payload = json.loads(
+            hybrid_structured_events.build_prompt_input(
+                _placeholder_record(),
+                prompt_version=hybrid_structured_events.GAN_LLM_PRE_POST,
+            )
+        )
+        authored = list(LLM_PRE_POST_AUTHORED_KEYS)
+        blob = json.dumps(payload)
+        if set(payload) != set(authored):
+            raise RuntimeError("gan_llm_pre_post prompt drifted from authored keys")
+        if "prompt_version" in payload or "source_row_index" in payload:
+            raise RuntimeError("gan_llm_pre_post request still emits the research envelope")
+        if "Gan 2026" in blob:
+            raise RuntimeError("gan_llm_pre_post request still names the dataset")
+        if "suggested_evidence" not in payload:
+            raise RuntimeError("gan_llm_pre_post request dropped suggested evidence")
+        if hybrid_structured_events.PROMPT_VERSION != before:
+            raise RuntimeError("pre_post payload check changed the live default")
+        if hybrid_structured_events.PROMPT_VERSION != hybrid_structured_events.GAN_LLM_WITH_RULES:
+            raise RuntimeError("gan_llm_with_rules live default drifted")
     else:
         before = hybrid_structured_events.PROMPT_VERSION
         payload = json.loads(
@@ -144,7 +171,7 @@ def verify_gan(
         "default_prompt_version": (
             gan_llm_only.PROMPT_VERSION
             if method == "gan_llm_only"
-            else hybrid_structured_events.PROMPT_VERSION
+            else prompt
         ),
     }
     if slug is not None:
@@ -165,6 +192,8 @@ def run_gan(
     progress_every: int = 1,
     thinking: str | None = None,
     reasoning_effort: str | None = None,
+    row_limit: int | None = None,
+    slice_name: str | None = None,
 ) -> dict[str, Any]:
     """Run one allowed Gan paper cell."""
 
@@ -179,16 +208,43 @@ def run_gan(
             raise RuntimeError("thinking toggle is DeepSeek only")
         spec = replace(spec, thinking_type=thinking)
     holdout = holdout_is_aggregate_only(split)
+    if row_limit is not None and slice_name is not None:
+        raise RuntimeError("row_limit and slice_name cannot be combined")
+    if row_limit is not None:
+        if holdout:
+            raise RuntimeError("row_limit is not allowed on holdout")
+        if method != "gan_llm_pre_post":
+            raise RuntimeError("row_limit is only for gan_llm_pre_post slices")
+        if row_limit < 1:
+            raise RuntimeError("row_limit must be at least 1")
+    if slice_name is not None:
+        if holdout:
+            raise RuntimeError("named slices are not allowed on holdout")
+        if method != "gan_llm_pre_post":
+            raise RuntimeError("named slices are only for gan_llm_pre_post")
     machine = gan_machine_split(split)
     expected = gan_row_count(split)
     load_dotenv(ROOT / ".env", override=False)
     records = load_records_for_split(machine)
     if len(records) != expected:
         raise RuntimeError(f"expected {expected} {split} records, found {len(records)}")
+    if row_limit is not None:
+        records = records[:row_limit]
+    if slice_name is not None:
+        wanted = set(source_rows_for_slice(slice_name))
+        records = [record for record in records if record.source_row_index in wanted]
+        if len(records) != len(wanted):
+            raise RuntimeError(
+                f"{slice_name} resolved {len(records)} records, expected {len(wanted)}"
+            )
     work_root = (HOLDOUT_SCRATCH if holdout else WORK_ROOT) / method / spec.slug
     segment = paper_work_suffix(spec)
     if segment:
         work_root = work_root / segment
+    if row_limit is not None:
+        work_root = work_root / f"slice{row_limit}"
+    if slice_name is not None:
+        work_root = work_root / f"slice_{slice_name}"
     work_root = work_root / split
     work_root.mkdir(parents=True, exist_ok=True)
     rows_path = work_root / "rows.jsonl"
@@ -218,6 +274,7 @@ def run_gan(
         api_base=resolved_base,
         timeout=timeout or spec.timeout,
         prompt_version=prompt,
+        repair_mode="hybrid_full_stack" if method != "gan_llm_only" else None,
     )
     for index, record in enumerate(todo, start=1):
         row = _run_record(
@@ -281,9 +338,18 @@ def run_gan(
         "claim_boundary": (
             "Gan aggregate-only test450. Do not inspect holdout rows."
             if holdout
-            else "Gan development cell. Not holdout."
+            else (
+                "Gan development hard slice. Not holdout. Not a full dev750 cell."
+                if slice_name
+                else "Gan development cell. Not holdout."
+            )
         ),
     }
+    if slice_name is not None:
+        artifact["slice"] = slice_name
+        artifact["slice_source_row_indices"] = [
+            record.source_row_index for record in records
+        ]
     if not holdout:
         artifact["incorrect_source_row_indices"] = [
             int(row["source_row_index"])
@@ -309,6 +375,8 @@ def _prompt_version(method: str) -> str:
         return gan_llm_only.GAN_LLM_ONLY
     if method == "gan_llm_with_rules":
         return hybrid_structured_events.GAN_LLM_WITH_RULES
+    if method == "gan_llm_pre_post":
+        return hybrid_structured_events.GAN_LLM_PRE_POST
     raise ValueError(method)
 
 
@@ -373,7 +441,7 @@ def hydrate_saved_raw_row(
         architecture="llm" if method == "gan_llm_only" else "llm_with_rules",
         dspy_cache=False,
         prompt_version=_prompt_version(method),
-        repair_mode="hybrid_full_stack" if method == "gan_llm_with_rules" else None,
+        repair_mode="hybrid_full_stack" if method != "gan_llm_only" else None,
     )
     return _run_record(
         method,
@@ -447,7 +515,7 @@ def _run_record(
         "paper_split": split,
         "split_manifest": SPLIT_MANIFEST,
         "pipeline_family": "llm_with_rules",
-        "prompt_version": hybrid_structured_events.PROMPT_VERSION,
+        "prompt_version": _prompt_version(method),
         "prompt_input_json": result.diagnostics["prompt_input_json"],
         "raw_output": result.raw_model_output or "",
         "reused_raw_output": result.diagnostics["reused_raw_output"],

@@ -5,11 +5,11 @@ Turn epilepsy clinic letters into structured clinical facts.
 This repository is research code and a working demonstration. The proposed
 method translates clinic letters into structured clinical facts in a designed
 form, with quoted source text. A model collects the facts and evidence;
-recorded rules shape them into the required form. Written rules and a model
-alone are baselines. The public golds are the evaluation forms used here, not
-the task. Tables cite Grok 4.6 so the story stays on the method. Gemini is in
-the same band where cells exist. The recorded object keeps the source span
-and a change log, not only the score.
+recorded rules shape them into the required form. Rule help is a depth
+axis, not an on/off hybrid switch. The public golds are the evaluation
+forms used here, not the task. Tables cite Grok 4.6 so the story stays on
+the method. Gemini is in the same band where cells exist. The recorded
+object keeps the source span and a change log, not only the score.
 
 This is a research and teaching package, not a clinical deployment claim.
 
@@ -22,23 +22,28 @@ local research checkout and are not cloned.
 Held-out test scores for Grok 4.6 (2 d.p.), the cited model. GPT-5.6 Sol cells stay historical. Rules-only
 is deterministic and does not use a model.
 
-| Method | Gan 2026 | ExECTv2 |
+| Rung | Gan 2026 | ExECTv2 |
 | --- | ---: | ---: |
-| LLM with rules | 0.83 | 0.81 |
-| LLM only | 0.73 | 0.79 |
-| Rules only | 0.73 | 0.79 |
+| 1 rules only | 0.73 | 0.79 |
+| 2 schema only | — | 0.77 |
+| 3 format render | — | — |
+| 4 clinical post | 0.83 | — |
+| 5 pre-suggest + post | — | 0.81 |
+
+Em dashes are missing locked cells, not zeros. Gan rungs 2–4 share one
+`gan_llm_with_rules` output; their named Grok development scores are on
+[claims](docs/paper/claims.md). ExECT rungs 2–4 replay `exect_llm_only`.
+Rung 5 is a different request. `gan_llm_only` is not a results column.
 
 - **Gan 2026:** Purist accuracy on the locked `test450` split (one current
-  seizure-frequency label per letter). The cited hybrid is the cleaned
+  seizure-frequency label per letter). The cited rung-4 cell is the cleaned
   request. The living Grok holdout is 375/450; do not read an enveloped
-  `v0.5` score into the hybrid cell.
+  `v0.5` score into that cell.
 - **ExECTv2:** de-duplicated clinical fact F1 on the locked `test60` split
-  (diagnosis, seizure frequency, prescriptions, and investigations). ExECT LLM
-  with rules (`exect_llm_with_rules`) and ExECT LLM only
-  (`exect_llm_only`) are separate requests; cite hybrid F1 and raw F1
-  respectively. The unrepaired LLM-with-rules output is not ExECT LLM
-  only. This is the project's primary research metric for ExECT, not
-  the published strict benchmark score.
+  (diagnosis, seizure frequency, prescriptions, and investigations). Rung 2
+  is `exect_llm_only` raw F1. Rung 5 is `exect_llm_with_rules` hybrid F1.
+  An unrepaired hybrid answer is not rung 2. This is the project's primary
+  research metric for ExECT, not the published strict benchmark score.
 
 Scores are not interchangeable across tasks.
 
@@ -51,13 +56,15 @@ Scores are not interchangeable across tasks.
 | Locked test split | `test450` (aggregate scores only) | `test60` (aggregate scores only) |
 | Primary score | Purist accuracy | Clinical fact F1 |
 
-Each task uses the same three methods. LLM with rules is the proposed
-method. Rules and LLM only are baselines:
+Each task uses the same five rungs of rule help:
 
-- **LLM with rules** — the model collects structured facts with source text;
-  recorded rules may normalize, select, or repair them before scoring.
-- **LLM** — the model produces the clinical answer.
-- **Rules** — deterministic code produces the clinical answer.
+- **1 rules only** — deterministic code produces the clinical answer.
+- **2 schema only** — one model call, no candidate list; JSON/schema only.
+- **3 format render** — same saved output; dialect or serialization only.
+- **4 clinical post** — same saved output plus the full clinical rule stack.
+- **5 pre-suggest + post** — deterministic candidates go into the prompt,
+  then the same post stack. This is living ExECT LLM with rules. On Gan it
+  is a new request (`gan_llm_pre_post`), iterated on Luna first.
 
 ## How it works
 

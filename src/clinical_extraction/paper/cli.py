@@ -17,8 +17,10 @@ from clinical_extraction.paper.exect import (
     verify_llm_only,
 )
 from clinical_extraction.paper.exect_panel import promote_exect, promote_exect_llm_only
+from clinical_extraction.paper.exect_rung_replay import replay_exect_dev140
 from clinical_extraction.paper.gan import run_gan, verify_gan
 from clinical_extraction.paper.gan_panel import promote_gan
+from clinical_extraction.paper.gan_rung_replay import replay_gan_rungs
 from clinical_extraction.paper.methods import LIVE_METHODS, method_spec, split_for
 
 
@@ -28,7 +30,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     )
     parser.add_argument(
         "action",
-        choices=("verify", "run", "promote-gan", "promote-exect"),
+        choices=("verify", "run", "promote-gan", "promote-exect", "replay-rungs"),
     )
     parser.add_argument("--method", required=True, choices=sorted(LIVE_METHODS))
     parser.add_argument("--model", choices=tuple(MODELS))
@@ -40,7 +42,24 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--progress-every", type=int, default=1)
     parser.add_argument("--reasoning-effort", choices=("low", "medium", "high"))
     parser.add_argument("--thinking", choices=("enabled", "disabled"))
+    parser.add_argument("--row-limit", type=int)
+    parser.add_argument("--slice")
     args = parser.parse_args(argv)
+    if args.action == "replay-rungs":
+        if args.split in {"dev750", "test450"}:
+            slug = args.model or "grok46"
+            print(
+                json.dumps(
+                    replay_gan_rungs(args.split, slug=slug),
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+            return
+        if args.split == "dev140":
+            print(json.dumps(replay_exect_dev140(), indent=2, sort_keys=True))
+            return
+        raise SystemExit("replay-rungs accepts --split dev750, test450, or dev140")
     split_for(args.method, args.split)
     if args.action == "promote-gan":
         if args.model is None:
@@ -98,6 +117,8 @@ def main(argv: Sequence[str] | None = None) -> None:
                 progress_every=args.progress_every,
                 reasoning_effort=args.reasoning_effort,
                 thinking=args.thinking,
+                row_limit=args.row_limit,
+                slice_name=args.slice,
             ),
             indent=2,
             sort_keys=True,
@@ -130,11 +151,19 @@ def run(
     progress_every: int = 1,
     reasoning_effort: str | None = None,
     thinking: str | None = None,
+    row_limit: int | None = None,
+    slice_name: str | None = None,
 ) -> dict[str, Any]:
     """Run one allowed paper cell."""
 
     spec = method_spec(method)
     split_for(method, split)
+    if row_limit is not None and method != "gan_llm_pre_post":
+        raise SystemExit("--row-limit is only for gan_llm_pre_post development slices")
+    if slice_name is not None and method != "gan_llm_pre_post":
+        raise SystemExit("--slice is only for gan_llm_pre_post development slices")
+    if row_limit is not None and slice_name is not None:
+        raise SystemExit("--row-limit and --slice cannot be combined")
     if spec["task"] == "exectv2":
         if method == "exect_full_ledger":
             return run_full_ledger(
@@ -182,4 +211,6 @@ def run(
         progress_every=progress_every,
         thinking=thinking,
         reasoning_effort=reasoning_effort,
+        row_limit=row_limit,
+        slice_name=slice_name,
     )

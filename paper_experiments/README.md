@@ -14,8 +14,10 @@ Roster: [`roster.json`](roster.json). Inventory: [`inventory.json`](inventory.js
 | `exect/dev140_panel.json` | Rectangular living six-model ExECT `dev140` index for the frontend |
 | `exect/exect_rules/` | ExECT rules headlines |
 | `comparators/exect_full_ledger/` | Full-ledger control raws (named comparator only; not a headline method) |
-| `gan/gan_llm_only/` | Cited Gan LLM-only |
-| `gan/gan_llm_with_rules/` | Cited Gan hybrid (cleaned request) |
+| `gan/gan_llm_only/` | Existing Gan LLM-only cells. Not a results column |
+| `gan/gan_llm_with_rules/` | Gan rung 4 (cleaned request). Living scores predate the omitted-`kind` schema fill; a later six-model no-call reparse is listed in `inventory.json` `deferred`. Do not start it now. |
+| `gan/rungs/` | Replay of rungs 1–4 from hybrid raw. Development may keep row files. `test450` writes `comparison.json` aggregates only. Do not start the holdout replay until the omitted-`kind` reparse. |
+| `exect/rungs/` | Grok `dev140` replay of rungs 1–4 from `exect_llm_only` raw |
 | `gan/dev750_panel.json` | Rectangular living six-model Gan `dev750` index for the frontend |
 | `current_stack/` | Historical Full-ledger / enveloped-Gan fills. Not the cited Gan hybrid. |
 

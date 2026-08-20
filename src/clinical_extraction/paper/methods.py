@@ -18,6 +18,11 @@ LIVE_METHODS: dict[str, dict[str, object]] = {
         "splits": ("dev750", "test450"),
         "prompt_attr": "GAN_LLM_WITH_RULES",
     },
+    "gan_llm_pre_post": {
+        "task": "gan2026",
+        "splits": ("dev750", "test450"),
+        "prompt_attr": "GAN_LLM_PRE_POST",
+    },
     "exect_llm_with_rules": {
         "task": "exectv2",
         "splits": ("dev140", "test60"),

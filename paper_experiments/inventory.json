@@ -474,6 +474,38 @@
     }
   ],
   "purpose": "Replayable paper cells. Holdout files keep only replay keys.",
+  "deferred": [
+    {
+      "action": "no_call_reparse",
+      "do_not_start_now": true,
+      "method": "gan_llm_with_rules",
+      "models": [
+        "grok46",
+        "gpt56luna",
+        "gemini37flash",
+        "deepseek_v4_flash",
+        "qwen38_27b",
+        "gemma4_26b"
+      ],
+      "note": "Omitted event kind schema fill. Replay saved raw_output only. Living scores predate this repair. Holdout remains aggregate-only. Missing hybrid cells wait until they exist. Do not start now.",
+      "reason": "schema_repair.omitted_event_kind",
+      "splits": [
+        "dev750",
+        "test450"
+      ],
+      "status": "later"
+    },
+    {
+      "action": "holdout_rung_replay",
+      "after": "no_call_reparse",
+      "command": "python -m clinical_extraction.paper replay-rungs --method gan_llm_with_rules --model grok46 --split test450",
+      "do_not_start_now": true,
+      "method": "gan_llm_with_rules",
+      "note": "Aggregate rungs 1-4 from saved hybrid raw. Writes comparison.json only. No scored.jsonl or hops.jsonl. Rung 5 is a new request and is not this replay. Do not start until the omitted-kind reparse.",
+      "split": "test450",
+      "status": "later"
+    }
+  ],
   "schema_version": "paper_experiments.inventory.v1",
   "strip": {
     "exect": [

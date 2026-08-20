@@ -70,6 +70,7 @@ BASELINE_SF_ACTIVE_RATE_FIDELITY = 0.2887
 MATERIALIZED_SURFACES = (
     "source_scored",
     "evidence_valid",
+    "format_only",
     "protocol_model_preserving_canonical",
     "dictionary_normalized",
     "residual_benchmark_added",
@@ -579,6 +580,7 @@ def _lane_prediction_surfaces(
     return {
         "source_scored": source_scored,
         "evidence_valid": evidence_valid,
+        "format_only": list(source_scored),
         "protocol_model_preserving_canonical": protocol_model_preserving_canonical,
         "dictionary_normalized": dictionary_normalized,
         "residual_benchmark_added": residual_benchmark_added,
