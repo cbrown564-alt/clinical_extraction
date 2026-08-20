@@ -1,9 +1,10 @@
 {
   "claim_boundary": "ExECT aggregate-only test60 replay. Do not inspect holdout rows.",
   "format_only_check": {
-    "note": "format_only is the stop before dictionary rewrite. dictionary_normalized is semantic, not format.",
-    "same_as_schema": false,
-    "surface": "format_only"
+    "materialized_format_only_differs_from_rung3": 12,
+    "note": "Rung 3 scores format_render (producer predicted_mentions before assembly; SF projection and unknown suppression off). Materialized format_only in assembly remains a stop marker, not rung 3.",
+    "same_as_schema": true,
+    "surface": "format_render"
   },
   "generated_on": "2026-08-20",
   "model_slug": "gpt56luna",
@@ -11,15 +12,15 @@
   "row_policy": "aggregate_only",
   "rungs": {
     "llm_format": {
-      "clinical_fact_f1": 0.7471,
+      "clinical_fact_f1": 0.7448,
       "family_f1": {
         "Diagnosis": 0.6786,
         "Investigations": 0.9247,
         "Prescription": 0.9405,
-        "SeizureFrequency": 0.4844
+        "SeizureFrequency": 0.4928
       },
-      "precision": 0.8035,
-      "recall": 0.6982
+      "precision": 0.7864,
+      "recall": 0.7073
     },
     "llm_post": {
       "clinical_fact_f1": 0.7762,

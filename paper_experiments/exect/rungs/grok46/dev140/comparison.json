@@ -1,9 +1,10 @@
 {
   "claim_boundary": "ExECT development replay. Not holdout.",
   "format_only_check": {
-    "note": "format_only is the stop before dictionary rewrite. dictionary_normalized is semantic, not format.",
-    "same_as_schema": false,
-    "surface": "format_only"
+    "materialized_format_only_differs_from_rung3": 28,
+    "note": "Rung 3 scores format_render (producer predicted_mentions before assembly; SF projection and unknown suppression off). Materialized format_only in assembly remains a stop marker, not rung 3.",
+    "same_as_schema": true,
+    "surface": "format_render"
   },
   "generated_on": "2026-08-20",
   "model_slug": "grok46",
@@ -11,15 +12,15 @@
   "row_policy": "development_review_permitted",
   "rungs": {
     "llm_format": {
-      "clinical_fact_f1": 0.8324,
+      "clinical_fact_f1": 0.8212,
       "family_f1": {
         "Diagnosis": 0.6914,
         "Investigations": 0.9368,
         "Prescription": 0.9479,
-        "SeizureFrequency": 0.8491
+        "SeizureFrequency": 0.7965
       },
-      "precision": 0.8594,
-      "recall": 0.807
+      "precision": 0.8333,
+      "recall": 0.8095
     },
     "llm_post": {
       "clinical_fact_f1": 0.904,

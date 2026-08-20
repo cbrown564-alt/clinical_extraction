@@ -11,7 +11,9 @@ from clinical_extraction.paper.cli import main
 from clinical_extraction.paper.exect_rung_replay import (
     exect_llm_only_rows_path,
     exect_rung_out_dir,
+    format_render_mention_rows,
     replay_exect_dev140,
+    replay_exect_rungs,
     write_exect_rung_artifacts,
 )
 from clinical_extraction.paper.methods import exect_row_count
@@ -107,6 +109,63 @@ def test_development_exect_rung_artifacts_keep_row_files(tmp_path: Path) -> None
 def test_replay_exect_dev140_stays_a_development_alias() -> None:
     assert replay_exect_dev140.__doc__
     assert "development" in (replay_exect_dev140.__doc__ or "").lower()
+
+
+def test_format_render_uses_pre_assembly_mentions_not_materialized_format_only() -> None:
+    summary = replay_exect_rungs("dev140", slug="grok46")
+    check = summary["format_only_check"]
+    assert check["surface"] == "format_render"
+    assert check["materialized_format_only_differs_from_rung3"]
+    assert "SF projection and unknown suppression off" in check["note"]
+    rungs = summary["rungs"]
+    assert rungs["llm_schema"]["clinical_fact_f1"] == pytest.approx(0.8212)
+    assert rungs["llm_format"]["clinical_fact_f1"] == pytest.approx(0.8212)
+    assert rungs["llm_post"]["clinical_fact_f1"] == pytest.approx(0.904)
+    assert (
+        rungs["llm_format"]["family_f1"]["SeizureFrequency"]
+        < rungs["llm_post"]["family_f1"]["SeizureFrequency"]
+    )
+
+
+def test_format_render_matches_producer_predicted_mentions() -> None:
+    from clinical_extraction.paper.exect import letters_for_split
+    from clinical_extraction.paper.roster import model_by_slug
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
+        llm_only_key_entities_structured as structured,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
+        structured_one_call,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.contracts import (
+        StructuredMethodConfig,
+    )
+    from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
+        load_jsonl_rows,
+    )
+
+    letter = next(iter(letters_for_split("dev140")))
+    raw_path = exect_llm_only_rows_path("grok46", "dev140")
+    raw_output = next(
+        row["raw_output"]
+        for row in load_jsonl_rows(raw_path)
+        if row["letter_id"] == letter.letter_id
+    )
+    before = structured.PROMPT_VERSION
+    try:
+        structured.set_active_prompt_version(structured.EXECT_LLM_ONLY)
+        producer = structured_one_call.produce_structured_letter(
+            letter,
+            model=str(model_by_slug("grok46")["model"]),
+            mode="replay",
+            raw_output=str(raw_output),
+            split="dev",
+            config=StructuredMethodConfig.selected(),
+        )
+    finally:
+        structured.set_active_prompt_version(before)
+    rendered = format_render_mention_rows(producer)
+    schema_mentions = list(producer.row.get("predicted_mentions") or [])
+    assert rendered == schema_mentions
 
 
 def test_cli_replay_rungs_accepts_test60(monkeypatch: pytest.MonkeyPatch) -> None:

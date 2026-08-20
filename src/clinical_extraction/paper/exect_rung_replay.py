@@ -33,6 +33,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.contracts import (
     StructuredMethodConfig,
+    StructuredProducerResult,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.letter_assembly import (
     assemble_structured_rows,
@@ -49,9 +50,10 @@ ROOT = discover_repo_root(start=Path(__file__))
 FAMILIES = ("Diagnosis", "SeizureFrequency", "Prescription", "Investigations")
 SURFACE_FOR_RUNG = {
     "llm_schema": "predicted_mentions",
-    "llm_format": "format_only",
+    "llm_format": "format_render",
     "llm_post": "residual_benchmark_added",
 }
+RUNG3_REPLAY_SURFACE = "format_render"
 PRE_POST_METHOD = "exect_llm_pre_post"
 
 
@@ -118,6 +120,12 @@ def write_exect_rung_artifacts(
     write_jsonl_rows(list(scored), scored_path)
     write_jsonl_rows(list(hops), hops_path)
     return comparison
+
+
+def format_render_mention_rows(producer: StructuredProducerResult) -> list[dict[str, Any]]:
+    """Pre-assembly mentions with parse respell only; no SF projection or suppression."""
+
+    return [dict(mention) for mention in producer.row.get("predicted_mentions") or []]
 
 
 def inventory_hash(mentions: Sequence[Mapping[str, Any]], note_text: str) -> str:
@@ -192,8 +200,10 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
             )[letter.letter_id]
             surfaces = assembled["prediction_surfaces"]
             schema_mentions = list(producer.row.get("predicted_mentions") or [])
+            format_render_mentions = format_render_mention_rows(producer)
             schema_hash = inventory_hash(schema_mentions, letter.note_text)
-            format_hash = inventory_hash(surfaces["format_only"], letter.note_text)
+            format_hash = inventory_hash(format_render_mentions, letter.note_text)
+            materialized_format_only = list(surfaces.get("format_only") or [])
             dict_hash = inventory_hash(
                 surfaces.get("dictionary_normalized") or [], letter.note_text
             )
@@ -235,12 +245,13 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
                 ),
             ]
             by_rung: dict[str, dict[str, Any]] = {}
+            rung_mentions = {
+                "llm_schema": schema_mentions,
+                "llm_format": format_render_mentions,
+                "llm_post": list(surfaces.get("residual_benchmark_added") or []),
+            }
             for rung, surface in SURFACE_FOR_RUNG.items():
-                mentions = (
-                    schema_mentions
-                    if rung == "llm_schema"
-                    else list(surfaces.get(surface) or [])
-                )
+                mentions = rung_mentions[rung]
                 by_rung[rung] = {
                     "surface": surface,
                     "inventory_hash": inventory_hash(mentions, letter.note_text),
@@ -275,7 +286,16 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
                 for mention in surfaces.get("source_scored") or []
                 if mention not in (surfaces.get("residual_benchmark_added") or [])
             ]
-            scored.append({"letter_id": letter_id, "rungs": by_rung})
+            scored.append(
+                {
+                    "letter_id": letter_id,
+                    "rungs": by_rung,
+                    "format_render_vs_materialized_format_only": (
+                        inventory_hash(format_render_mentions, letter.note_text)
+                        != inventory_hash(materialized_format_only, letter.note_text)
+                    ),
+                }
+            )
             if not holdout:
                 hops_rows.append(
                     {
@@ -294,6 +314,7 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
         row_count=len(scored),
         rules=rules,
         hybrid_cell=hybrid_cell,
+        scored=scored,
     )
     write_exect_rung_artifacts(
         exect_rung_out_dir(slug, split),
@@ -320,6 +341,7 @@ def _comparison_summary(
     row_count: int,
     rules: Mapping[str, Any],
     hybrid_cell: Mapping[str, Any],
+    scored: Sequence[Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     nested = rules.get(split)
     if isinstance(nested, Mapping) and nested.get("four_family_headline_f1") is not None:
@@ -349,15 +371,25 @@ def _comparison_summary(
             else "ExECT development replay. Not holdout."
         ),
         "format_only_check": {
-            "surface": "format_only",
+            "surface": RUNG3_REPLAY_SURFACE,
+            "materialized_format_only_differs_from_rung3": (
+                sum(
+                    1
+                    for row in scored or []
+                    if row.get("format_render_vs_materialized_format_only")
+                )
+                if scored is not None
+                else None
+            ),
             "same_as_schema": (
                 list(family_rows["llm_schema"]) == list(family_rows["llm_format"])
                 or _surface_prf(family_rows["llm_schema"])
                 == _surface_prf(family_rows["llm_format"])
             ),
             "note": (
-                "format_only is the stop before dictionary rewrite. "
-                "dictionary_normalized is semantic, not format."
+                "Rung 3 scores format_render (producer predicted_mentions before "
+                "assembly; SF projection and unknown suppression off). Materialized "
+                "format_only in assembly remains a stop marker, not rung 3."
             ),
         },
         "generated_on": datetime.now(UTC).date().isoformat(),
