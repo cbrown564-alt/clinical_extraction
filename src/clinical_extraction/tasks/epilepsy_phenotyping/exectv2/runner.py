@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from typing import Any, Literal
 
 from .data import ExectLetter
-from .llm.pipelines.key_entities_structured.constants import PromptProfile
 from .orchestration import rules, structured_one_call
 from .orchestration.contracts import StructuredMethodConfig
 from .runners.naming import ActiveMethodName, active_method_name
@@ -32,7 +31,7 @@ class Exectv2PipelineConfiguration:
     program: Any | None = None
     format_retry_program: Any | None = None
     split: str = "dev"
-    prompt_profile: PromptProfile = "full"
+    prompt_profile: Literal["full"] = "full"
 
 
 @dataclass(frozen=True)

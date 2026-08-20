@@ -24,56 +24,27 @@ def _raw() -> str:
             "clinical_events": [
                 {
                     "family": "diagnosis",
-                    "anchor_text": "focal epilepsy",
                     "evidence": "Diagnosis: focal epilepsy",
-                    "event_state": {},
-                    "mentions": [
-                        {"entity": "Diagnosis", "text": "focal epilepsy", "attributes": {}}
-                    ],
-                    "confidence": "high",
-                    "rationale": "The diagnosis is explicit.",
+                    "fact": "focal epilepsy",
+                    "attributes": {},
                 },
                 {
                     "family": "investigation",
-                    "anchor_text": "MRI brain normal",
                     "evidence": "MRI brain normal",
-                    "event_state": {},
-                    "mentions": [{"entity": "Investigations", "text": "MRI", "attributes": {}}],
-                    "confidence": "high",
-                    "rationale": "The investigation is explicit.",
+                    "fact": "MRI",
+                    "attributes": {},
                 },
                 {
                     "family": "medication",
-                    "anchor_text": "Levetiracetam 500 mg twice daily",
                     "evidence": "Levetiracetam 500 mg twice daily",
-                    "event_state": {},
-                    "mentions": [
-                        {
-                            "entity": "Prescription",
-                            "text": "Levetiracetam",
-                            "attributes": {"DoseUnit": "mg", "Frequency": "2"},
-                        }
-                    ],
-                    "confidence": "high",
-                    "rationale": "The prescription is explicit.",
+                    "fact": "Levetiracetam",
+                    "attributes": {"DoseUnit": "mg", "Frequency": "2"},
                 },
                 {
                     "family": "seizure_frequency",
-                    "anchor_text": "seizures",
                     "evidence": "She has two seizures per month",
-                    "event_state": {},
-                    "mentions": [
-                        {
-                            "entity": "SeizureFrequency",
-                            "text": "seizures",
-                            "attributes": {
-                                "NumberOfSeizures": "2",
-                                "TimePeriod": "Month",
-                            },
-                        }
-                    ],
-                    "confidence": "high",
-                    "rationale": "The frequency is explicit.",
+                    "fact": "seizures",
+                    "attributes": {"NumberOfSeizures": "2", "TimePeriod": "Month"},
                 },
             ]
         }

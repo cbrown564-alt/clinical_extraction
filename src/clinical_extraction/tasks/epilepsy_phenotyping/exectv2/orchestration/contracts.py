@@ -207,7 +207,7 @@ class StructuredProducerResult:
     prompt_input_json: str
     raw_output: str
     parsed_record: Any
-    flattened_mentions: tuple[Any, ...]
+    spelled_mentions: tuple[Any, ...]
     projected_letter: PredictedLetter
     gate_warnings: tuple[str, ...]
     initial_parse_errors: tuple[str, ...] = ()
@@ -224,7 +224,7 @@ class StructuredProducerResult:
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "parsed_record", deep_freeze(self.parsed_record))
-        object.__setattr__(self, "flattened_mentions", deep_freeze(self.flattened_mentions))
+        object.__setattr__(self, "spelled_mentions", deep_freeze(self.spelled_mentions))
         object.__setattr__(self, "row", deep_freeze(self.row))
         object.__setattr__(self, "stage_events", tuple(self.stage_events))
 

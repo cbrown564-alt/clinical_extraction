@@ -12,9 +12,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair 
     parse_json_payload_with_schema_repair,
 )
 
-from ..contract.prediction import PredictedLetter
+from ..contract.prediction import PredictedLetter, PredictedMention
 from ..data import ExectLetter
-from ..llm.pipelines.key_entities_structured import MentionForEvidence, to_predicted_letter
+from ..llm.pipelines.key_entities_structured import to_predicted_letter
 from ..llm.shared.json_parse import extract_json_object
 
 PROMPT_VERSION = "exectv2_gepa_dedup_adapter_v1"
@@ -86,10 +86,10 @@ def parse_dedup_clinical_facts_json(
 
 def clinical_facts_to_mentions(
     facts: Sequence[DedupClinicalFactRecord | Mapping[str, Any]],
-) -> tuple[list[MentionForEvidence], list[dict[str, Any]], list[str]]:
+) -> tuple[list[PredictedMention], list[dict[str, Any]], list[str]]:
     """Map model facts to scorer-facing mentions without adding or merging facts."""
 
-    mentions: list[MentionForEvidence] = []
+    mentions: list[PredictedMention] = []
     provenance: list[dict[str, Any]] = []
     notes: list[str] = []
     for index, raw_fact in enumerate(facts):
@@ -176,7 +176,7 @@ def _clinical_fact_to_mention(
     *,
     index: int,
     notes: list[str],
-) -> MentionForEvidence | None:
+) -> PredictedMention | None:
     family = _normalize_fact_family(fact.family)
     evidence = fact.evidence.strip()
     confidence: Literal["low", "medium", "high"] = "medium"
@@ -201,7 +201,7 @@ def _clinical_fact_to_mention(
         entity = entity_by_family.get(family)
         text = text_by_family.get(family, "")
         if entity and text:
-            return MentionForEvidence(
+            return PredictedMention(
                 entity=entity,
                 text=text,
                 attributes=dict(fact.attributes),
@@ -215,7 +215,7 @@ def _clinical_fact_to_mention(
         if not text:
             notes.append(f"clinical_facts.fact[{index}]:missing_diagnosis_concept")
             return None
-        return MentionForEvidence(
+        return PredictedMention(
             entity="Diagnosis",
             text=text,
             attributes={"Negation": _normalize_negation(fact.negation)},
@@ -224,7 +224,7 @@ def _clinical_fact_to_mention(
             rationale="mapped from model-emitted de-duplicated diagnosis fact",
         )
     if family == "seizure_frequency":
-        return MentionForEvidence(
+        return PredictedMention(
             entity="SeizureFrequency",
             text=fact.seizure_type.strip() or "seizures",
             attributes=_seizure_state_attributes(fact.state, notes=notes, index=index),
@@ -244,7 +244,7 @@ def _clinical_fact_to_mention(
             attributes["DoseUnit"] = _normalize_dose_unit(fact.dose_unit)
         if fact.frequency.strip():
             attributes["Frequency"] = _normalize_frequency(fact.frequency)
-        return MentionForEvidence(
+        return PredictedMention(
             entity="Prescription",
             text=fact.source_text.strip() or drug,
             attributes=attributes,
@@ -257,7 +257,7 @@ def _clinical_fact_to_mention(
         if modality is None:
             notes.append(f"clinical_facts.fact[{index}]:unsupported_modality={fact.modality!r}")
             return None
-        return MentionForEvidence(
+        return PredictedMention(
             entity="Investigations",
             text=modality,
             attributes={

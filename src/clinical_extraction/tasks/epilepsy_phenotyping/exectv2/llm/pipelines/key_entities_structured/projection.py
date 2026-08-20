@@ -31,14 +31,9 @@ from .constants import (
     PIPELINE_FAMILY,
     PROMPT_VERSION,
 )
-from .records import (
-    MentionForEvidence,
-)
-
-
 def to_predicted_letter(
     letter_id: str,
-    mentions: list[MentionForEvidence],
+    mentions: list[PredictedMention],
     *,
     note_text: str,
     prompt_version: str = PROMPT_VERSION,
@@ -46,7 +41,7 @@ def to_predicted_letter(
     pipeline_family: str = PIPELINE_FAMILY,
 ) -> tuple[PredictedLetter, list[str]]:
     all_warnings: list[str] = []
-    entity_valid: list[MentionForEvidence] = []
+    entity_valid: list[PredictedMention] = []
     for mention in mentions:
         if mention.entity not in KEY_ENTITY_NAMES:
             all_warnings.append(f"dropped_out_of_scope_entity: {mention.entity!r}")
@@ -100,10 +95,10 @@ def to_predicted_letter(
 
 
 def _repair_evidence_from_mention_text(
-    mention: MentionForEvidence,
+    mention: PredictedMention,
     note_text: str,
     warnings: list[str],
-) -> MentionForEvidence:
+) -> PredictedMention:
     """Use exact model-selected mention text as evidence for source-near entities."""
 
     if mention.evidence and evidence_is_substring(note_text, mention.evidence):

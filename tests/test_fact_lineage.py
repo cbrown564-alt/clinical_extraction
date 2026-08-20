@@ -140,11 +140,12 @@ def test_ea0057_parse_does_not_surface_event_state_copy() -> None:
     )
     parse = next(step for step in fact.transforms if "parse" in step.stage_id)
     assert "event_state" not in propose.left
-    assert propose.left == parse.left
-    assert parse.idle is True
+    assert "event_state" not in parse.left
+    assert "confidence" not in parse.left
+    assert "mentions" not in parse.left
 
 
-def test_exect_frequency_fact_keeps_attributes_through_flatten_and_leave() -> None:
+def test_exect_frequency_fact_keeps_attributes_through_parse_and_leave() -> None:
     _, run = _run("EA0057", "exectv2_llm_with_rules")
     fact = next(
         item
@@ -153,11 +154,9 @@ def test_exect_frequency_fact_keeps_attributes_through_flatten_and_leave() -> No
         and "two years" in item.span.text.lower()
         and "focal motor" in item.label.lower()
     )
-    flatten = next(
-        step for step in fact.transforms if step.stage_id.endswith("flatten_events")
-    )
+    parse = next(step for step in fact.transforms if "parse" in step.stage_id)
     leave = next(step for step in fact.transforms if step.band == "leave")
-    assert "NumberOfSeizures" in flatten.left
+    assert "NumberOfSeizures" in parse.left
     assert "NumberOfSeizures" in leave.left
     lens = next(
         step

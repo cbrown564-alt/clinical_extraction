@@ -59,11 +59,10 @@ from .constants import (
     PIPELINE_FAMILY,
     PROMPT_VERSION,
     PUBLISHED_PER_ENTITY_ITEM_F1,
-    PromptProfile,
     prompt_version_for,
 )
 from .parsing import (
-    flatten_events,
+    mentions_from_events,
     parse_structured_events_json,
 )
 from .projection import (
@@ -96,7 +95,7 @@ def run_split(
     checkpoint_jsonl_path: Path | None = None,
     checkpoint_report_path: Path | None = None,
     resume: bool = False,
-    prompt_profile: PromptProfile = "full",
+    prompt_profile: str = "full",
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Compatibility facade; the one-call producer lives in orchestration."""
 
@@ -144,7 +143,7 @@ def _legacy_run_split(
     checkpoint_jsonl_path: Path | None = None,
     checkpoint_report_path: Path | None = None,
     resume: bool = False,
-    prompt_profile: PromptProfile = "full",
+    prompt_profile: str = "full",
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     program = DspyKeyEntitiesStructuredExtractor()
     format_retry_program = FormatOnlyJsonRetry()
@@ -169,10 +168,10 @@ def _legacy_run_split(
     rows: list[dict[str, Any]] = [r for r in existing_rows if r.get("letter_id") in requested]
     n_resumed = len(rows)
     todo = pending_items(letters, completed, key_of=lambda letter: letter.letter_id)
-    prompt_version = prompt_version_for(prompt_profile)
+    prompt_version = prompt_version_for()
 
     for letter in todo:
-        prompt_input_json = build_prompt_input(letter, prompt_profile=prompt_profile)
+        prompt_input_json = build_prompt_input(letter)
         raw_output = ""
         call_error: str | None = None
         adapter_repair_notes: list[str] = []
@@ -236,7 +235,7 @@ def _legacy_run_split(
                 ]
                 parse_errors = [*initial_parse_errors, *format_retry_notes]
         parse_errors = [*adapter_repair_notes, *parse_errors]
-        mentions = flatten_events(record) if record else []
+        mentions = mentions_from_events(record) if record else []
         predicted_letter, gate_warnings = to_predicted_letter(
             letter.letter_id,
             mentions,
@@ -268,12 +267,6 @@ def _legacy_run_split(
                 "n_evidence_invalid": len(mentions) - len(predicted_letter.mentions),
                 "structured_events": [
                     event.model_dump() for event in (record.clinical_events if record else [])
-                ],
-                "patient_history": [
-                    item.model_dump() for item in (record.patient_history if record else [])
-                ],
-                "medication_history": [
-                    item.model_dump() for item in (record.medication_history if record else [])
                 ],
                 "predicted_mentions": [_mention_to_row(m) for m in predicted_letter.mentions],
                 "gold_mentions": [
@@ -322,8 +315,6 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
 
     n_mentions_raw = sum(int(r.get("n_mentions_raw", 0)) for r in rows)
     n_evidence_invalid = sum(int(r.get("n_evidence_invalid", 0)) for r in rows)
-    n_patient_history = sum(len(r.get("patient_history", [])) for r in rows)
-    n_medication_history = sum(len(r.get("medication_history", [])) for r in rows)
     gold_letters = _reconstruct_letters(rows, key="gold_mentions")
     pred_letters = _reconstruct_letters(rows, key="predicted_mentions")
 
@@ -357,8 +348,6 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
         ),
         "n_events_raw": sum(int(r.get("n_events_raw", 0)) for r in rows),
         "n_mentions_raw": n_mentions_raw,
-        "n_patient_history": n_patient_history,
-        "n_medication_history": n_medication_history,
         "n_mentions_scored": sum(int(r.get("n_mentions_scored", 0)) for r in rows),
         "n_evidence_invalid": n_evidence_invalid,
         "evidence_validity_rate": (
@@ -423,8 +412,6 @@ def write_report(
             f"- Format retries rejected: {summary.get('format_retries_rejected', 0)}",
             f"- Clinical events raw: {summary.get('n_events_raw', 0)}",
             f"- Mentions raw: {summary.get('n_mentions_raw', 0)}",
-            f"- Patient-history sink entries: {summary.get('n_patient_history', 0)}",
-            f"- Medication-history sink entries: {summary.get('n_medication_history', 0)}",
             f"- Mentions scored: {summary.get('n_mentions_scored', 0)}",
             f"- Evidence-invalid dropped: {summary.get('n_evidence_invalid', 0)}",
             f"- Evidence validity rate: {summary.get('evidence_validity_rate', 0.0):.4f}",
@@ -690,7 +677,7 @@ def _emit_checkpoint(
     model: str,
     mode: str,
     prompt_version: str = PROMPT_VERSION,
-    prompt_profile: PromptProfile = "full",
+    prompt_profile: str = "full",
 ) -> None:
     summary = summarize_rows(rows)
     if jsonl_path is not None:

@@ -10,6 +10,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     PRESCRIPTION,
     SEIZURE_FREQUENCY,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
+    PredictedMention,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
@@ -53,69 +56,9 @@ def test_history_last_event_is_promoted_to_seizure_free_for_legacy_v26_rows() ->
     }
 
 
-def test_flatten_events_preserves_cross_entity_renderings() -> None:
-    raw = json.dumps(
-        {
-            "clinical_events": [
-                {
-                    "family": "seizure_frequency",
-                    "anchor_text": "focal seizures",
-                    "evidence": "focal epilepsy with 2 focal seizures per month",
-                    "event_state": {"rate": "2 per 1 Month"},
-                    "mentions": [
-                        {
-                            "entity": DIAGNOSIS.name,
-                            "text": "focal epilepsy",
-                            "attributes": {
-                                "DiagCategory": "Epilepsy",
-                                "Certainty": "5",
-                                "Negation": "Affirmed",
-                            },
-                        },
-                        {
-                            "entity": DIAGNOSIS.name,
-                            "text": "focal seizures",
-                            "attributes": {
-                                "DiagCategory": "MultipleSeizures",
-                                "Certainty": "5",
-                                "Negation": "Affirmed",
-                            },
-                        },
-                        {
-                            "entity": SEIZURE_FREQUENCY.name,
-                            "text": "focal seizures",
-                            "attributes": {
-                                "NumberOfSeizures": "2",
-                                "NumberOfTimePeriods": "1",
-                                "TimePeriod": "Month",
-                            },
-                        },
-                    ],
-                    "confidence": "high",
-                    "rationale": "Diagnosis and rate are stated.",
-                }
-            ]
-        }
-    )
-    record, errors = structured.parse_structured_events_json(raw)
-    assert record is not None
-    assert errors == []
-
-    mentions = structured.flatten_events(record)
-
-    assert [mention.entity for mention in mentions] == [
-        DIAGNOSIS.name,
-        DIAGNOSIS.name,
-        SEIZURE_FREQUENCY.name,
-    ]
-    assert all(
-        mention.evidence == "focal epilepsy with 2 focal seizures per month" for mention in mentions
-    )
-
-
 def test_to_predicted_letter_gates_evidence_and_projects_cuis() -> None:
     mentions = [
-        structured.MentionForEvidence(
+        PredictedMention(
             entity=DIAGNOSIS.name,
             text="focal epilepsy",
             attributes={
@@ -129,7 +72,7 @@ def test_to_predicted_letter_gates_evidence_and_projects_cuis() -> None:
             confidence="high",
             rationale="Diagnosis stated.",
         ),
-        structured.MentionForEvidence(
+        PredictedMention(
             entity=SEIZURE_FREQUENCY.name,
             text="focal seizures",
             attributes={"NumberOfSeizures": "2", "DiagCategory": "Epilepsy"},
@@ -137,7 +80,7 @@ def test_to_predicted_letter_gates_evidence_and_projects_cuis() -> None:
             confidence="high",
             rationale="Frequency stated.",
         ),
-        structured.MentionForEvidence(
+        PredictedMention(
             entity=SEIZURE_FREQUENCY.name,
             text="focal seizures",
             attributes={"Negation": "Affirmed"},
@@ -145,7 +88,7 @@ def test_to_predicted_letter_gates_evidence_and_projects_cuis() -> None:
             confidence="high",
             rationale="No frequency-state attributes.",
         ),
-        structured.MentionForEvidence(
+        PredictedMention(
             entity=INVESTIGATIONS.name,
             text="MRI",
             attributes={"MRI_Performed": "Yes"},
@@ -153,7 +96,7 @@ def test_to_predicted_letter_gates_evidence_and_projects_cuis() -> None:
             confidence="high",
             rationale="Duplicate modality-only rendering.",
         ),
-        structured.MentionForEvidence(
+        PredictedMention(
             entity=INVESTIGATIONS.name,
             text="MRI brain",
             attributes={"MRI_Performed": "Yes", "MRI_Results": "Normal"},
@@ -161,19 +104,19 @@ def test_to_predicted_letter_gates_evidence_and_projects_cuis() -> None:
             confidence="high",
             rationale="Result-bearing rendering.",
         ),
-        structured.MentionForEvidence(
+        PredictedMention(
             entity="PatientHistory",
             text="focal seizures",
             attributes={},
             evidence="focal epilepsy with 2 focal seizures per month",
         ),
-        structured.MentionForEvidence(
+        PredictedMention(
             entity=INVESTIGATIONS.name,
             text="EEG",
             attributes={"EEG_Performed": "Yes"},
             evidence="not in the note",
         ),
-        structured.MentionForEvidence(
+        PredictedMention(
             entity=PRESCRIPTION.name,
             text="lamotrigine 200 mg twice daily",
             attributes={
@@ -186,7 +129,7 @@ def test_to_predicted_letter_gates_evidence_and_projects_cuis() -> None:
             confidence="high",
             rationale="Mention text itself is exact source evidence.",
         ),
-        structured.MentionForEvidence(
+        PredictedMention(
             entity=DIAGNOSIS.name,
             text="focal seizures",
             attributes={
@@ -352,137 +295,3 @@ def test_write_report_includes_goal_and_diagnostic_ladder(tmp_path) -> None:
     assert "## Diagnostic Scoring Ladder" in text
 
 
-def test_clinical_family_events_project_through_to_predicted_letter() -> None:
-    note = (
-        "Diagnosis: focal epilepsy. "
-        "She has 2 focal seizures per month. "
-        "Current medication: lamotrigine 100 mg in the morning and 200 mg in the evening. "
-        "She previously tried levetiracetam. "
-        "MRI brain was normal."
-    )
-    raw = json.dumps(
-        {
-            "clinical_events": [
-                {
-                    "clinical_family": "diagnosis",
-                    "event": "focal epilepsy",
-                    "evidence": "Diagnosis: focal epilepsy.",
-                    "attributes": {
-                        "DiagCategory": "Epilepsy",
-                        "Certainty": "5",
-                        "Negation": "Affirmed",
-                    },
-                },
-                {
-                    "clinical_family": "seizure_frequency",
-                    "event": "focal seizures",
-                    "evidence": "She has 2 focal seizures per month.",
-                    "attributes": {
-                        "NumberOfSeizures": "2",
-                        "NumberOfTimePeriods": "1",
-                        "TimePeriod": "Month",
-                    },
-                },
-                {
-                    "clinical_family": "medication",
-                    "event": "lamotrigine",
-                    "evidence": (
-                        "Current medication: lamotrigine 100 mg in the morning "
-                        "and 200 mg in the evening."
-                    ),
-                    "attributes": {
-                        "DrugName": "lamotrigine",
-                        "DrugDose": "100",
-                        "DoseUnit": "mg",
-                        "Frequency": "1",
-                        "Status": "current",
-                    },
-                },
-                {
-                    "clinical_family": "medication",
-                    "event": "lamotrigine",
-                    "evidence": (
-                        "Current medication: lamotrigine 100 mg in the morning "
-                        "and 200 mg in the evening."
-                    ),
-                    "attributes": {
-                        "DrugName": "lamotrigine",
-                        "DrugDose": "200",
-                        "DoseUnit": "mg",
-                        "Frequency": "1",
-                        "Status": "current",
-                    },
-                },
-                {
-                    "clinical_family": "medication",
-                    "event": "levetiracetam",
-                    "evidence": "She previously tried levetiracetam.",
-                    "attributes": {
-                        "DrugName": "levetiracetam",
-                        "Status": "past",
-                    },
-                },
-                {
-                    "clinical_family": "investigation",
-                    "event": "MRI",
-                    "evidence": "MRI brain was normal.",
-                    "attributes": {
-                        "MRI_Performed": "Yes",
-                        "MRI_Results": "Normal",
-                    },
-                },
-                {
-                    "clinical_family": "history",
-                    "event": "tried",
-                    "evidence": "She previously tried levetiracetam.",
-                    "attributes": {"Kind": "unclassified_event"},
-                },
-            ]
-        }
-    )
-
-    record, errors = structured.parse_structured_events_json(raw)
-    assert record is not None
-    assert not any(str(error).startswith("schema_validation_error:") for error in errors)
-
-    mentions = structured.flatten_events(record)
-    letter, warnings = structured.to_predicted_letter(
-        "TEST001",
-        mentions,
-        note_text=note,
-        prompt_version=structured.FULL_LEDGER,
-    )
-
-    assert [mention.entity for mention in letter.mentions] == [
-        DIAGNOSIS.name,
-        SEIZURE_FREQUENCY.name,
-        PRESCRIPTION.name,
-        PRESCRIPTION.name,
-        INVESTIGATIONS.name,
-    ]
-    assert [mention.text for mention in letter.mentions] == [
-        "focal epilepsy",
-        "focal seizures",
-        "lamotrigine",
-        "lamotrigine",
-        "MRI",
-    ]
-    doses = [
-        mention.attributes.get("DrugDose")
-        for mention in letter.mentions
-        if mention.entity == PRESCRIPTION.name
-    ]
-    assert doses == ["100", "200"]
-    assert all("Status" not in mention.attributes for mention in letter.mentions)
-    sf = next(mention for mention in letter.mentions if mention.entity == SEIZURE_FREQUENCY.name)
-    assert sf.attributes["NumberOfSeizures"] == "2"
-    assert sf.attributes["TimePeriod"] == "Month"
-    investigation = next(
-        mention for mention in letter.mentions if mention.entity == INVESTIGATIONS.name
-    )
-    assert investigation.attributes["MRI_Performed"] == "Yes"
-    assert investigation.attributes["MRI_Results"] == "Normal"
-    assert [item.kind for item in record.medication_history] == ["past_medication"]
-    assert [item.span for item in record.medication_history] == ["levetiracetam"]
-    assert [item.kind for item in record.patient_history] == ["unclassified_event"]
-    assert not any("schema_validation_error" in warning for warning in warnings)

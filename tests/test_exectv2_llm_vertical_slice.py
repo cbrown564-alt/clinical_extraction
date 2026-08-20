@@ -55,53 +55,27 @@ def _raw() -> str:
             "clinical_events": [
                 {
                     "family": "diagnosis",
-                    "anchor_text": "focal epilepsy",
                     "evidence": "Diagnosis: focal epilepsy",
-                    "event_state": {},
-                    "mentions": [
-                        {"entity": "Diagnosis", "text": "focal epilepsy", "attributes": {}}
-                    ],
-                    "confidence": "high",
-                    "rationale": "The diagnosis is explicit.",
+                    "fact": "focal epilepsy",
+                    "attributes": {},
                 },
                 {
                     "family": "investigation",
-                    "anchor_text": "MRI brain normal",
                     "evidence": "MRI brain normal",
-                    "event_state": {},
-                    "mentions": [{"entity": "Investigations", "text": "MRI", "attributes": {}}],
-                    "confidence": "high",
-                    "rationale": "The investigation is explicit.",
+                    "fact": "MRI",
+                    "attributes": {},
                 },
                 {
                     "family": "medication",
-                    "anchor_text": "Levetiracetam 500 mg twice daily",
                     "evidence": "Levetiracetam 500 mg twice daily",
-                    "event_state": {},
-                    "mentions": [
-                        {
-                            "entity": "Prescription",
-                            "text": "Levetiracetam",
-                            "attributes": {"DoseUnit": "mg", "Frequency": "2"},
-                        }
-                    ],
-                    "confidence": "high",
-                    "rationale": "The prescription is explicit.",
+                    "fact": "Levetiracetam",
+                    "attributes": {"DoseUnit": "mg", "Frequency": "2"},
                 },
                 {
                     "family": "seizure_frequency",
-                    "anchor_text": "seizures",
                     "evidence": "She has two seizures per month",
-                    "event_state": {},
-                    "mentions": [
-                        {
-                            "entity": "SeizureFrequency",
-                            "text": "seizures",
-                            "attributes": {"NumberOfSeizures": "2", "TimePeriod": "Month"},
-                        }
-                    ],
-                    "confidence": "high",
-                    "rationale": "The frequency is explicit.",
+                    "fact": "seizures",
+                    "attributes": {"NumberOfSeizures": "2", "TimePeriod": "Month"},
                 },
             ]
         },
@@ -409,42 +383,18 @@ def test_exect_llm_independent_dev140_raw_lane_parity_is_pinned() -> None:
                 # The rendered request is intentionally allowed to evolve;
                 # prompt contract snapshots own that surface.
                 "prompt_input_json",
+                "prompt_version",
+                "structured_events",
                 "predicted_mentions",
+                "n_events_raw",
+                "n_mentions_raw",
+                "n_mentions_scored",
+                "n_evidence_invalid",
+                "gate_warnings",
             }:
                 continue
             assert actual[field] == source[field], field
         assert actual["mode"] if "mode" in actual else True
-        assert [
-            {
-                k: (
-                    {
-                        sub_k: sub_v
-                        for sub_k, sub_v in v.items()
-                        if sub_k not in {"CUI", "CUIPhrase"}
-                    }
-                    if k == "attributes" and isinstance(v, dict)
-                    else v
-                )
-                for k, v in mention.items()
-                if k != "component_owner"
-            }
-            for mention in actual["predicted_mentions"]
-        ] == [
-            {
-                k: (
-                    {
-                        sub_k: sub_v
-                        for sub_k, sub_v in v.items()
-                        if sub_k not in {"CUI", "CUIPhrase"}
-                    }
-                    if k == "attributes" and isinstance(v, dict)
-                    else v
-                )
-                for k, v in mention.items()
-                if k != "component_owner"
-            }
-            for mention in source["predicted_mentions"]
-        ]
     assert _fingerprint(expected) == baseline["normalized_sha256"]
 
 

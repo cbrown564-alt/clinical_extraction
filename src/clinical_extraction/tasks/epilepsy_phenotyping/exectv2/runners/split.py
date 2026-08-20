@@ -15,7 +15,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runner import (
     Exectv2PipelineRunner,
 )
 
-from ..llm.pipelines.key_entities_structured.constants import PromptProfile
 from .naming import active_method_name
 from .split_policy import DEVELOPMENT_SPLIT_ALIASES, require_development_split
 
@@ -31,7 +30,7 @@ def run_split(
     temperature: float = 0.0,
     max_tokens: int = 0,
     mode: str | None = None,
-    prompt_profile: PromptProfile = "full",
+    prompt_profile: str = "full",
     dspy_cache: bool = True,
     api_base: str | None = None,
     api_key: str | None = None,
@@ -160,7 +159,7 @@ def _run_llm_split(
     temperature: float,
     max_tokens: int,
     mode: str,
-    prompt_profile: PromptProfile,
+    prompt_profile: str,
     dspy_cache: bool,
     api_base: str | None,
     api_key: str | None,

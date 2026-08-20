@@ -3,11 +3,10 @@
 Pure relocation of the module-level constants from
 ``llm_only_key_entities_structured``. No logic changes.
 
-Paper names ``exect_llm_with_rules`` and ``exect_full_ledger`` are
-aliases of Compact and Full. The older ``exectv2_*`` strings remain
-the live default and replay aliases until paper cells are rewritten.
-Dump, further-prune, and naming-graft identities are gone. Mention
-encoder lives in ``mention_unit.py``, not this registry.
+Paper names ``exect_llm_pre_post`` and ``exect_llm_only`` are the
+living Compact methods. ``exect_llm_with_rules`` remains a live
+alias of pre-post. The older ``exectv2_compact_ledger`` string remains
+the live Compact prompt version.
 """
 
 from __future__ import annotations
@@ -22,18 +21,16 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     SEIZURE_FREQUENCY,
 )
 
+EXECT_LLM_PRE_POST = "exect_llm_pre_post"
 EXECT_LLM_WITH_RULES = "exect_llm_with_rules"
 EXECT_LLM_ONLY = "exect_llm_only"
-EXECT_FULL_LEDGER = "exect_full_ledger"
-FULL_LEDGER = "exectv2_full_ledger"
 COMPACT_LEDGER = "exectv2_compact_ledger"
-FULL_VERSIONS = frozenset({FULL_LEDGER, EXECT_FULL_LEDGER})
-COMPACT_VERSIONS = frozenset({COMPACT_LEDGER, EXECT_LLM_WITH_RULES})
+COMPACT_VERSIONS = frozenset(
+    {COMPACT_LEDGER, EXECT_LLM_PRE_POST, EXECT_LLM_WITH_RULES}
+)
 LLM_ONLY_VERSIONS = frozenset({EXECT_LLM_ONLY})
-FLAT_SCHEMA_VERSIONS = COMPACT_VERSIONS | LLM_ONLY_VERSIONS
-# Live default is ExECT LLM with rules. Full ledger stays as the cited comparator.
 PROMPT_VERSION = COMPACT_LEDGER
-_SUPPORTED_PROMPT_VERSIONS = FULL_VERSIONS | FLAT_SCHEMA_VERSIONS
+_SUPPORTED_PROMPT_VERSIONS = COMPACT_VERSIONS | LLM_ONLY_VERSIONS
 PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"
 COMPONENT_OWNER = "hybrid_key_family_event_ledger"
 
@@ -53,24 +50,20 @@ PUBLISHED_PER_ENTITY_ITEM_F1: dict[str, float] = {
 }
 
 EventFamily = Literal[
-    "medication", "diagnosis", "seizure_frequency", "investigation", "history"
+    "medication", "diagnosis", "seizure_frequency", "investigation"
 ]
 ALLOWED_EVENT_FAMILIES = {
     "medication",
     "diagnosis",
     "seizure_frequency",
     "investigation",
-    "history",
 }
 FAMILY_TO_ENTITY = {
     "medication": PRESCRIPTION.name,
     "diagnosis": DIAGNOSIS.name,
     "seizure_frequency": SEIZURE_FREQUENCY.name,
     "investigation": INVESTIGATIONS.name,
-    "history": "History",
 }
-PromptProfile = Literal["full"]
-
 _MEDICATION_RE = re.compile(
     r"\b("
     r"lamotrigine|lamictal|levetiracetam|keppra|brivaracetam|sodium valproate|"
@@ -118,15 +111,9 @@ def set_active_prompt_version(version: str) -> None:
     PROMPT_VERSION = version
 
 
-def prompt_version_for(
-    profile: PromptProfile = "full",
-    *,
-    prompt_version: str | None = None,
-) -> str:
-    """Resolve the prompt identity for a profile and optional override."""
+def prompt_version_for(*, prompt_version: str | None = None) -> str:
+    """Resolve the living Compact prompt identity."""
 
-    if profile != "full":
-        raise ValueError(f"unsupported prompt profile {profile!r}; expected 'full'")
     selected = prompt_version or PROMPT_VERSION
     if selected not in _SUPPORTED_PROMPT_VERSIONS:
         raise ValueError(

@@ -6,7 +6,7 @@ import hashlib
 import json
 from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
-from typing import Any, Literal, cast
+from typing import Any, Literal
 
 import dspy
 
@@ -35,11 +35,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build
 
 from ..llm.pipelines.key_entities_structured.constants import (
     PIPELINE_FAMILY,
-    PromptProfile,
     prompt_version_for,
 )
 from ..llm.pipelines.key_entities_structured.parsing import (
-    flatten_events,
+    mentions_from_events,
     parse_structured_events_json,
 )
 from ..llm.pipelines.key_entities_structured.projection import (
@@ -84,11 +83,11 @@ def produce_structured_letter(
     format_retry_program: Any | None = None,
     config: StructuredMethodConfig | None = None,
 ) -> StructuredProducerResult:
-    """Own prompt construction, one model/replay read, parsing, retry, and flattening."""
+    """Own prompt construction, one model/replay read, parsing, retry, and event mapping."""
 
     config = config or StructuredMethodConfig.selected()
-    prompt_version = prompt_version_for(config.prompt_profile)
-    prompt_input_json = build_prompt_input(letter, prompt_profile=config.prompt_profile)
+    prompt_version = prompt_version_for()
+    prompt_input_json = build_prompt_input(letter)
     if mode == "live" and raw_output is not None:
         raise ValueError("live mode does not accept raw_outputs")
     if mode == "replay" and raw_output is None:
@@ -161,7 +160,7 @@ def produce_structured_letter(
             ]
             parse_errors = [*initial_parse_errors, *format_retry_notes]
 
-    mentions = flatten_events(record) if record else []
+    mentions = mentions_from_events(record) if record else []
     projected, gate_warnings = to_predicted_letter(
         letter.letter_id,
         mentions,
@@ -191,12 +190,6 @@ def produce_structured_letter(
         "n_evidence_invalid": len(mentions) - len(projected.mentions),
         "structured_events": [
             event.model_dump() for event in (record.clinical_events if record else [])
-        ],
-        "patient_history": [
-            item.model_dump() for item in (record.patient_history if record else [])
-        ],
-        "medication_history": [
-            item.model_dump() for item in (record.medication_history if record else [])
         ],
         "predicted_mentions": [_mention_to_row(mention) for mention in projected.mentions],
         "gold_mentions": [],
@@ -232,16 +225,6 @@ def produce_structured_letter(
             rule_category="general",
         ),
         ExectStageEvent(
-            stage_id="exect.llm_with_rules.flatten_events",
-            owner="deterministic",
-            effect_class="representation",
-            input_value=row["structured_events"],
-            output_value=[_mention_to_row(mention) for mention in mentions],
-            changed=True,
-            action="flatten_model_events",
-            rule_category="general",
-        ),
-        ExectStageEvent(
             stage_id="exect.llm_with_rules.project_and_gate",
             owner="deterministic",
             effect_class="validation_gate",
@@ -257,7 +240,7 @@ def produce_structured_letter(
         prompt_input_json=prompt_input_json,
         raw_output=raw_text,
         parsed_record=record,
-        flattened_mentions=tuple(mentions),
+        spelled_mentions=tuple(mentions),
         projected_letter=projected,
         gate_warnings=tuple(gate_warnings),
         initial_parse_errors=tuple(initial_parse_errors),
@@ -296,7 +279,7 @@ def run_llm_only_letter(
             stage_id="exect.llm.raw_candidate",
             owner="deterministic",
             effect_class="benchmark_projection",
-            input_value=len(producer.flattened_mentions),
+            input_value=len(producer.spelled_mentions),
             output_value=len(producer.projected_letter.mentions),
             changed=False,
             action="materialize_raw_candidate_view",
@@ -812,7 +795,7 @@ def run_split(
                 if format_retry_factory is not None
                 else FormatOnlyJsonRetry()
             )
-    prompt_version = prompt_version_for(config.prompt_profile)
+    prompt_version = prompt_version_for()
     for letter in todo:
         producer = produce_structured_letter(
             letter,
@@ -953,7 +936,7 @@ def _emit_checkpoint(
         model=model,
         mode=mode,
         prompt_version=prompt_version,
-        prompt_profile=cast(PromptProfile, prompt_profile),
+        prompt_profile=prompt_profile,
     )
     if report_path is not None and jsonl_path is not None:
         _checkpoint_metadata_path(report_path).write_text(
@@ -997,7 +980,7 @@ def _run_contract(
         "dspy_cache": dspy_cache,
         "route": api_base or "",
         "prompt_profile": config.prompt_profile,
-        "prompt_version": prompt_version_for(config.prompt_profile),
+        "prompt_version": prompt_version_for(),
         "diagnosis_policy_variant": config.diagnosis_policy_variant,
         "prescription_policy_variant": config.prescription_policy_variant,
         "sf_projection_ablation": config.sf_projection_ablation,

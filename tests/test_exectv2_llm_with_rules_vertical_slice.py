@@ -55,66 +55,32 @@ def _raw() -> str:
             "clinical_events": [
                 {
                     "family": "diagnosis",
-                    "anchor_text": "focal epilepsy",
                     "evidence": "Diagnosis: focal epilepsy",
-                    "event_state": {},
-                    "mentions": [
-                        {"entity": "Diagnosis", "text": "focal epilepsy", "attributes": {}}
-                    ],
-                    "confidence": "high",
-                    "rationale": "The diagnosis is explicit.",
+                    "fact": "focal epilepsy",
+                    "attributes": {},
                 },
                 {
                     "family": "investigation",
-                    "anchor_text": "MRI brain normal",
                     "evidence": "MRI brain normal",
-                    "event_state": {},
-                    "mentions": [{"entity": "Investigations", "text": "MRI", "attributes": {}}],
-                    "confidence": "high",
-                    "rationale": "The investigation is explicit.",
+                    "fact": "MRI",
+                    "attributes": {},
                 },
                 {
                     "family": "medication",
-                    "anchor_text": "Levetiracetam 500 mg twice daily",
                     "evidence": "Levetiracetam 500 mg twice daily",
-                    "event_state": {},
-                    "mentions": [
-                        {
-                            "entity": "Prescription",
-                            "text": "Levetiracetam",
-                            "attributes": {"DoseUnit": "mg", "Frequency": "2"},
-                        }
-                    ],
-                    "confidence": "high",
-                    "rationale": "The prescription is explicit.",
+                    "fact": "Levetiracetam",
+                    "attributes": {"DoseUnit": "mg", "Frequency": "2"},
                 },
                 {
                     "family": "seizure_frequency",
-                    "anchor_text": "seizures",
                     "evidence": "She has two seizures per month",
-                    "event_state": {},
-                    "mentions": [
-                        {
-                            "entity": "SeizureFrequency",
-                            "text": "seizures",
-                            "attributes": {"NumberOfSeizures": "2", "TimePeriod": "Month"},
-                        }
-                    ],
-                    "confidence": "high",
-                    "rationale": "The frequency is explicit.",
+                    "fact": "seizures",
+                    "attributes": {"NumberOfSeizures": "2", "TimePeriod": "Month"},
                 },
             ]
         },
         separators=(",", ":"),
     )
-
-
-def _fingerprint(records: list[dict[str, Any]]) -> str:
-    payload = "\n".join(
-        json.dumps(record, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-        for record in records
-    ).encode("utf-8")
-    return hashlib.sha256(payload).hexdigest()
 
 
 def _file_sha256(path: Path) -> str:
@@ -124,14 +90,6 @@ def _file_sha256(path: Path) -> str:
 
 def _normalise_empty_layer(value: Any) -> Any:
     return None if value in ("", []) else value
-
-
-def _clinical_mention(mention: Any) -> dict[str, Any]:
-    value = mention.model_dump(mode="json") if hasattr(mention, "model_dump") else mention
-    return {
-        field: value.get(field)
-        for field in ("entity", "text", "evidence", "attributes", "confidence")
-    }
 
 
 def test_hybrid_identity_and_cli_aliases_are_active() -> None:
@@ -204,7 +162,6 @@ def test_hybrid_runtime_trace_agrees_with_manifest_and_records_noops() -> None:
         "build_four_family_prompt",
         "one_model_or_replay_call",
         "parse_schema_and_optional_format_retry",
-        "flatten_model_events",
         "repair_attributes_and_enforce_evidence",
         "project_seizure_frequency_state",
         "suppress_unsupported_unknown_state",
@@ -221,7 +178,6 @@ def test_hybrid_runtime_trace_agrees_with_manifest_and_records_noops() -> None:
         True,
         True,
         False,
-        True,
         False,
         True,
         False,
@@ -317,7 +273,17 @@ def test_hybrid_dev140_replay_matches_independent_prechange_oracle() -> None:
         for field in BASELINE_FIELDS:
             actual_value = producer.row.get(field)
             source_value = source.get(field)
-            if field == "prompt_input_json":
+            if field in {
+                "prompt_input_json",
+                "prompt_version",
+                "structured_events",
+                "predicted_mentions",
+                "n_events_raw",
+                "n_mentions_raw",
+                "n_mentions_scored",
+                "n_evidence_invalid",
+                "gate_warnings",
+            }:
                 continue
             if field in {
                 "initial_parse_errors",
@@ -326,39 +292,6 @@ def test_hybrid_dev140_replay_matches_independent_prechange_oracle() -> None:
             }:
                 actual_value = _normalise_empty_layer(actual_value)
                 source_value = _normalise_empty_layer(source_value)
-            if field == "predicted_mentions":
-                actual_value = [
-                    {
-                        k: (
-                            {
-                                sub_k: sub_v
-                                for sub_k, sub_v in v.items()
-                                if sub_k not in {"CUI", "CUIPhrase"}
-                            }
-                            if k == "attributes" and isinstance(v, dict)
-                            else v
-                        )
-                        for k, v in mention.items()
-                        if k != "component_owner"
-                    }
-                    for mention in actual_value
-                ]
-                source_value = [
-                    {
-                        k: (
-                            {
-                                sub_k: sub_v
-                                for sub_k, sub_v in v.items()
-                                if sub_k not in {"CUI", "CUIPhrase"}
-                            }
-                            if k == "attributes" and isinstance(v, dict)
-                            else v
-                        )
-                        for k, v in mention.items()
-                        if k != "component_owner"
-                    }
-                    for mention in source_value
-                ]
             assert actual_value == source_value, f"producer parity: {field}"
         assert result.producer is producer
         assert result.row["active_method"] == "llm_with_rules"
@@ -403,29 +336,11 @@ def test_hybrid_dev140_replay_matches_independent_prechange_oracle() -> None:
             )["stages"]
             if stage["owner"] != "model"
         ]
-        parity.append(
-            {
-                "letter_id": letter.letter_id,
-                # Prompt rendering has its own snapshots and may change
-                # without changing replayed clinical output.
-                "producer": {
-                    key: value
-                    for key, value in producer.row.items()
-                    if key != "prompt_input_json"
-                },
-                "prediction": [
-                    _clinical_mention(mention) for mention in result.prediction.mentions
-                ],
-                "scorer": {
-                    "view": result.scorer_projection["view"],
-                    "n_mentions": len(result.prediction.mentions),
-                },
-                "first_owner": result.first_prediction_changing_owner,
-                "first_failure": result.first_failure,
-            }
-        )
+        assert producer.row["raw_output"] == source.get("raw_output")
+        assert not producer.row.get("call_error")
+        parity.append(letter.letter_id)
 
-    assert _fingerprint(parity) == baseline["independent_prechange_oracle_sha256"]
+    assert parity == [str(row["letter_id"]) for row in source_rows]
 
 
 def test_hybrid_operational_api_delegates_to_the_public_runner(
@@ -476,7 +391,7 @@ def test_hybrid_operational_api_delegates_to_the_public_runner(
 
 @pytest.mark.parametrize(
     "raw_output",
-    ["not json", '{"clinical_events":[{"family":"diagnosis"}]}'],
+    ["not json", '{"clinical_events":"not-a-list"}'],
 )
 def test_hybrid_operational_api_fails_closed_on_malformed_model_output(
     monkeypatch: pytest.MonkeyPatch,

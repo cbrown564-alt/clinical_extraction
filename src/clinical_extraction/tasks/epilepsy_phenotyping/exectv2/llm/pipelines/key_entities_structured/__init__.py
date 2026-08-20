@@ -8,8 +8,7 @@ Private helpers (and the ``parse_json_payload_with_schema_repair`` /
 modules import the legacy module as ``structured`` and reach those attributes
 directly.
 
-Public names are Full ledger and Compact ledger, plus paper-name
-aliases. Each variant has its own builder.
+Public names are the living Compact methods.
 """
 # ruff: noqa: F401 — thin re-export facade for the legacy ``structured`` API.
 
@@ -21,26 +20,22 @@ from .constants import (
     ALLOWED_EVENT_FAMILIES,
     COMPACT_LEDGER,
     COMPONENT_OWNER,
-    EXECT_FULL_LEDGER,
     EXECT_LLM_ONLY,
     EXECT_LLM_WITH_RULES,
-    FULL_LEDGER,
     KEY_ENTITY_ITEM_F1_TARGET,
     KEY_ENTITY_NAMES,
     PIPELINE_FAMILY,
     PROMPT_VERSION,
     PUBLISHED_PER_ENTITY_ITEM_F1,
     EventFamily,
-    PromptProfile,
     prompt_version_for,
     set_active_prompt_version,
 )
 from .parsing import (
     _coerce_structured_payload,
-    _legacy_mention_to_event,
     _stringify_mapping,
     _strip_non_scored_rationale_fields,
-    flatten_events,
+    mentions_from_events,
     parse_json_payload_with_schema_repair,
     parse_structured_events_json,
 )
@@ -87,11 +82,8 @@ from .prompt_content import (
     high_priority_evidence_ledger_for_letter,
 )
 from .records import (
-    MedicationHistoryRecord,
-    MentionForEvidence,
-    PatientHistoryRecord,
-    RenderedMentionRecord,
-    StructuredClinicalEvent,
+    CompactClinicalEvent,
+    CompactExtractionRecord,
     StructuredExtractionRecord,
     format_retry_schema_for,
 )
@@ -122,32 +114,26 @@ __all__ = [
     "COMPONENT_OWNER",
     "COMPACT_AUTHORED_KEYS",
     "COMPACT_LEDGER",
-    "EXECT_FULL_LEDGER",
     "EXECT_LLM_ONLY",
     "EXECT_LLM_WITH_RULES",
     "LLM_ONLY_AUTHORED_KEYS",
     "SHARED_RULE_SECTION_KEYS",
     "compact_rule_count",
     "DspyKeyEntitiesStructuredExtractor",
-    "FULL_LEDGER",
     "EventFamily",
     "ExECTv2KeyEntitiesStructuredSignature",
     "KEY_ENTITY_ITEM_F1_TARGET",
     "KEY_ENTITY_NAMES",
-    "MentionForEvidence",
-    "MedicationHistoryRecord",
-    "PatientHistoryRecord",
     "PIPELINE_FAMILY",
     "PROMPT_VERSION",
     "PUBLISHED_PER_ENTITY_ITEM_F1",
-    "PromptProfile",
-    "RenderedMentionRecord",
-    "StructuredClinicalEvent",
+    "CompactClinicalEvent",
+    "CompactExtractionRecord",
     "StructuredExtractionRecord",
     "build_prompt_input",
     "format_retry_schema_for",
     "candidate_evidence_ledger_for_letter",
-    "flatten_events",
+    "mentions_from_events",
     "high_priority_evidence_ledger_for_letter",
     "parse_json_payload_with_schema_repair",
     "parse_structured_events_json",

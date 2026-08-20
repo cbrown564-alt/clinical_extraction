@@ -6,8 +6,7 @@ helpers and the ``parse_json_payload_with_schema_repair`` / ``write_jsonl``
 pass-throughs are also re-exported because other modules import this module as
 ``structured`` and access those attributes directly.
 
-Public names are Full ledger and Compact ledger, plus paper-name
-aliases. Each variant has its own builder.
+Public names are the living Compact methods.
 """
 # ruff: noqa: F401 — thin re-export facade; all symbols are intentionally re-exported.
 
@@ -21,10 +20,8 @@ from .pipelines.key_entities_structured import (
     COMPACT_AUTHORED_KEYS,
     COMPACT_LEDGER,
     COMPONENT_OWNER,
-    EXECT_FULL_LEDGER,
     EXECT_LLM_ONLY,
     EXECT_LLM_WITH_RULES,
-    FULL_LEDGER,
     KEY_ENTITY_ITEM_F1_TARGET,
     KEY_ENTITY_NAMES,
     LLM_ONLY_AUTHORED_KEYS,
@@ -35,12 +32,8 @@ from .pipelines.key_entities_structured import (
     DspyKeyEntitiesStructuredExtractor,
     EventFamily,
     ExECTv2KeyEntitiesStructuredSignature,
-    MedicationHistoryRecord,
-    MentionForEvidence,
-    PatientHistoryRecord,
-    PromptProfile,
-    RenderedMentionRecord,
-    StructuredClinicalEvent,
+    CompactClinicalEvent,
+    CompactExtractionRecord,
     StructuredExtractionRecord,
     __all__,
     _apply_render_safety_gates,
@@ -61,7 +54,6 @@ from .pipelines.key_entities_structured import (
     _investigation_lane_hint,
     _investigation_modalities,
     _key_clinical_recovery_to_dict,
-    _legacy_mention_to_event,
     _medication_lane_hint,
     _mention_to_row,
     _overall_to_dict,
@@ -80,7 +72,7 @@ from .pipelines.key_entities_structured import (
     build_prompt_input,
     candidate_evidence_ledger_for_letter,
     compact_rule_count,
-    flatten_events,
+    mentions_from_events,
     format_retry_schema_for,
     high_priority_evidence_ledger_for_letter,
     parse_json_payload_with_schema_repair,

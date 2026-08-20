@@ -219,7 +219,7 @@ def replay_letter(
     record = kes.records.StructuredExtractionRecord.model_validate(
         {"clinical_events": events}
     )
-    flattened = kes.parsing.flatten_events(record)
+    flattened = kes.parsing.mentions_from_events(record)
     flat_rows = [_mention_to_row(mention) for mention in flattened]
     projected, _gate_warnings = kes.projection.to_predicted_letter(
         letter.letter_id,

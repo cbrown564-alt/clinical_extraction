@@ -69,7 +69,6 @@ from .mention_unit_shared import (
     project_hybrid_event,
     project_rx_split_once_daily,
 )
-from .pipelines.key_entities_structured import records as structured_records
 from .pipelines.key_entities_structured.prompt_content import (
     candidate_evidence_ledger_for_letter,
 )
@@ -673,7 +672,7 @@ def materialize_mention_unit(
 
     evidence_mentions, invalid_mentions, evidence_warnings = check_evidence(
         [
-            structured_records.MentionForEvidence(
+            PredictedMention(
                 entity=mention.entity,
                 text=mention.text,
                 attributes=dict(mention.attributes),

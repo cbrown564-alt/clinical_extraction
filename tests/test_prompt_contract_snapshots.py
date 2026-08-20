@@ -67,7 +67,7 @@ PROMPT_BUILDERS: dict[str, Callable[[], str | dict[str, object]]] = {
         _gan_record()
     ),
     "exectv2__structured_key_families": lambda: exectv2_structured.build_prompt_input(
-        _exect_letter(), prompt_version=exectv2_structured.FULL_LEDGER
+        _exect_letter(), prompt_version=exectv2_structured.COMPACT_LEDGER
     ),
 }
 
