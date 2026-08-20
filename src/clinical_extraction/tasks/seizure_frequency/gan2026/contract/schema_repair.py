@@ -43,9 +43,11 @@ def repair_decision_payload(payload: Any) -> Any:
 def repair_structured_extraction_payload(payload: Any) -> Any:
     """Repair schema aliases in a structured extraction payload.
 
-    This intentionally repairs only output-shape aliases such as enum names and
-    numeric confidence. It does not repair Gan benchmark labels; that remains in
-    normalize.py so deterministic and LLM pipelines share the same label policy.
+    This repairs output-shape aliases such as enum names and numeric
+    confidence, and fills an omitted required event ``kind`` from sibling
+    events or the already-written selection. It does not repair Gan
+    benchmark labels; that remains in normalize.py so deterministic and
+    LLM pipelines share the same label policy.
     """
 
     if not isinstance(payload, dict):
@@ -85,6 +87,7 @@ def repair_structured_extraction_payload(payload: Any) -> Any:
         _move_key_alias(repaired_selection, "rationality", "rationale")
         repaired_selection.setdefault("confidence", "medium")
         repaired["selection"] = repaired_selection
+    _fill_omitted_event_kinds(repaired)
     return repaired
 
 
@@ -153,6 +156,102 @@ def repair_selected_answer_payload(
         retained.append(event)
     repaired["events"] = retained
     return repaired, notes, quarantined
+
+
+_VALID_EVENT_KINDS = frozenset(
+    {
+        "frequency_rate",
+        "cluster_frequency",
+        "seizure_free",
+        "last_event_only",
+        "unknown_frequency",
+        "no_reference",
+    }
+)
+_FINAL_KIND_TO_EVENT_KIND = {
+    "seizure_free": "seizure_free",
+    "unknown": "unknown_frequency",
+    "no_reference": "no_reference",
+}
+
+
+def _event_kind_omitted(event: dict[str, Any]) -> bool:
+    kind = event.get("kind")
+    return kind is None or (isinstance(kind, str) and not kind.strip())
+
+
+def _same_written_value(left: Any, right: Any) -> bool:
+    if not isinstance(left, str) or not isinstance(right, str):
+        return False
+    left_text = left.strip()
+    right_text = right.strip()
+    return bool(left_text) and left_text == right_text
+
+
+def _omitted_event_kind_from_siblings(
+    event: dict[str, Any],
+    events: list[dict[str, Any]],
+) -> str | None:
+    raw_value = event.get("raw_value")
+    evidence = event.get("evidence")
+    sibling_kinds: set[str] = set()
+    for other in events:
+        if other is event or _event_kind_omitted(other):
+            continue
+        other_kind = other.get("kind")
+        if other_kind not in _VALID_EVENT_KINDS:
+            continue
+        has_raw = isinstance(raw_value, str) and bool(raw_value.strip())
+        matched = (
+            _same_written_value(raw_value, other.get("raw_value"))
+            if has_raw
+            else _same_written_value(evidence, other.get("evidence"))
+        )
+        if matched:
+            sibling_kinds.add(str(other_kind))
+    if len(sibling_kinds) == 1:
+        return sibling_kinds.pop()
+    return None
+
+
+def _omitted_event_kind_from_selection(
+    event: dict[str, Any],
+    final_kind: str | None,
+) -> str | None:
+    if final_kind is None:
+        return None
+    mapped = _FINAL_KIND_TO_EVENT_KIND.get(final_kind)
+    if mapped is not None:
+        return mapped
+    if final_kind != "frequency":
+        return None
+    written = event.get("raw_value")
+    if not isinstance(written, str) or not written.strip():
+        written = event.get("evidence")
+    if not isinstance(written, str) or not written.strip():
+        return None
+    if "cluster" in written.lower():
+        return "cluster_frequency"
+    return "frequency_rate"
+
+
+def _fill_omitted_event_kinds(payload: dict[str, Any]) -> None:
+    events = payload.get("events")
+    if not isinstance(events, list):
+        return
+    dict_events = [event for event in events if isinstance(event, dict)]
+    selection = payload.get("selection")
+    final_kind = None
+    if isinstance(selection, dict) and isinstance(selection.get("final_kind"), str):
+        final_kind = selection["final_kind"]
+    for event in dict_events:
+        if not _event_kind_omitted(event):
+            continue
+        filled = _omitted_event_kind_from_siblings(event, dict_events)
+        if filled is None:
+            filled = _omitted_event_kind_from_selection(event, final_kind)
+        if filled is not None:
+            event["kind"] = filled
 
 
 def _move_key_alias(payload: dict[str, Any], alias: str, canonical: str) -> None:

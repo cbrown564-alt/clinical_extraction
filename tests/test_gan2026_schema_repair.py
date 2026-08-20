@@ -2,6 +2,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair 
     parse_json_payload_with_schema_repair,
     repair_decision_payload,
     repair_selected_answer_payload,
+    repair_structured_extraction_payload,
 )
 
 
@@ -119,3 +120,149 @@ def test_repair_selected_answer_payload_never_quarantines_selected_event() -> No
     assert payload["events"][0]["event_id"] == "e1"
     assert notes == []
     assert quarantined == []
+
+
+def _event(
+    event_id: str,
+    *,
+    kind: str | None = "frequency_rate",
+    raw_value: str = "6 to 7 per year",
+    evidence: str = "6 to 7 per year",
+) -> dict[str, object]:
+    event: dict[str, object] = {
+        "event_id": event_id,
+        "raw_value": raw_value,
+        "temporality": "current",
+        "assertion_status": "asserted",
+        "evidence": evidence,
+    }
+    if kind is not None:
+        event["kind"] = kind
+    return event
+
+
+def test_repair_fills_omitted_kind_from_sibling_with_same_raw_value() -> None:
+    payload = repair_structured_extraction_payload(
+        {
+            "events": [
+                _event("e1"),
+                _event("e2"),
+                _event("e3", kind=None),
+            ],
+            "selection": {
+                "selected_event_ids": ["e1", "e2", "e3"],
+                "final_kind": "frequency",
+                "final_label": "6 to 7 per year",
+                "evidence": "6 to 7 per year",
+                "confidence": "high",
+                "rationale": "Same rate stated three times.",
+            },
+        }
+    )
+
+    assert [event["kind"] for event in payload["events"]] == [
+        "frequency_rate",
+        "frequency_rate",
+        "frequency_rate",
+    ]
+    assert payload["selection"]["final_label"] == "6 to 7 per year"
+
+
+def test_repair_fills_omitted_kind_from_selection_when_no_sibling() -> None:
+    payload = repair_structured_extraction_payload(
+        {
+            "events": [_event("e1", kind=None, raw_value="seizure free for 6 month")],
+            "selection": {
+                "selected_event_ids": ["e1"],
+                "final_kind": "seizure_free",
+                "final_label": "seizure free for 6 month",
+                "evidence": "6 to 7 per year",
+                "confidence": "high",
+                "rationale": "Quiet interval.",
+            },
+        }
+    )
+
+    assert payload["events"][0]["kind"] == "seizure_free"
+
+
+def test_repair_fills_frequency_kind_from_written_raw_value_and_final_kind() -> None:
+    payload = repair_structured_extraction_payload(
+        {
+            "events": [_event("e1", kind=None)],
+            "selection": {
+                "selected_event_ids": ["e1"],
+                "final_kind": "frequency",
+                "final_label": "6 to 7 per year",
+                "evidence": "6 to 7 per year",
+                "confidence": "high",
+                "rationale": "Current yearly count.",
+            },
+        }
+    )
+
+    assert payload["events"][0]["kind"] == "frequency_rate"
+
+
+def test_repair_fills_cluster_kind_from_written_raw_value_and_final_kind() -> None:
+    payload = repair_structured_extraction_payload(
+        {
+            "events": [
+                _event(
+                    "e1",
+                    kind=None,
+                    raw_value="1 cluster per 5 day, 3 per cluster",
+                    evidence="clusters every 5 days",
+                )
+            ],
+            "selection": {
+                "selected_event_ids": ["e1"],
+                "final_kind": "frequency",
+                "final_label": "1 cluster per 5 day, 3 per cluster",
+                "evidence": "clusters every 5 days",
+                "confidence": "high",
+                "rationale": "Cluster rate.",
+            },
+        }
+    )
+
+    assert payload["events"][0]["kind"] == "cluster_frequency"
+
+
+def test_repair_does_not_invent_kind_from_raw_value_alone() -> None:
+    payload = repair_structured_extraction_payload(
+        {
+            "events": [_event("e1", kind=None)],
+            "selection": {
+                "selected_event_ids": ["e1"],
+                "final_label": "6 to 7 per year",
+                "evidence": "6 to 7 per year",
+                "confidence": "high",
+                "rationale": "Current yearly count.",
+            },
+        }
+    )
+
+    assert "kind" not in payload["events"][0]
+
+
+def test_repair_does_not_fill_kind_when_siblings_disagree() -> None:
+    payload = repair_structured_extraction_payload(
+        {
+            "events": [
+                _event("e1", kind="frequency_rate"),
+                _event("e2", kind="cluster_frequency"),
+                _event("e3", kind=None),
+            ],
+            "selection": {
+                "selected_event_ids": ["e3"],
+                "final_kind": "unresolved_multiple",
+                "final_label": "unknown",
+                "evidence": "6 to 7 per year",
+                "confidence": "low",
+                "rationale": "Conflicting event types.",
+            },
+        }
+    )
+
+    assert "kind" not in payload["events"][2]
