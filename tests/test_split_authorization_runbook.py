@@ -5,24 +5,28 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-RUNBOOK = ROOT / "docs/runbooks/gated_blockers_2026-06-18.md"
+DECISION = ROOT / "docs/paper/decisions/holdout-is-aggregate-only.md"
 
 pytestmark = pytest.mark.local_corpus
 
 
-def test_runbook_keeps_gan_test450_locked() -> None:
-    runbook = " ".join(RUNBOOK.read_text(encoding="utf-8").split())
+def test_decision_keeps_holdout_splits_locked() -> None:
+    decision = " ".join(DECISION.read_text(encoding="utf-8").split())
 
-    assert "Gan `test450` is a locked holdout" in runbook
-    assert "may not inspect its row-level" in runbook
-    assert "explicit user authorization for the run" in runbook
-    assert "A holdout defect starts a new validation candidate" in runbook
+    assert "`test450` (Gan) and `test60` (ExECT) are locked" in decision
+    assert "Cite aggregate scores only" in decision
+    assert (
+        "Do not inspect holdout identifiers, notes, predictions, evidence, errors, or changed rows"
+        in decision
+    )
 
 
-def test_runbook_keeps_exect_test60_out_of_development() -> None:
-    runbook = " ".join(RUNBOOK.read_text(encoding="utf-8").split())
+def test_decision_forbids_holdout_repair_and_tuning() -> None:
+    decision = " ".join(DECISION.read_text(encoding="utf-8").split())
 
-    assert "`test60` is held out from row-level development" in runbook
-    assert "development-inclusive aggregate audit" in runbook
-    assert "not an independent holdout" in runbook
-    assert "must not expose or use `test60` rows for tuning" in runbook
+    assert "A holdout defect starts a new development candidate" in decision
+    assert (
+        "It does not permit holdout repair, prompt change, or scorer change from those rows"
+        in decision
+    )
+    assert "Do not retune from sealed `test450`, Real(300), or ExECT `test60`" in decision

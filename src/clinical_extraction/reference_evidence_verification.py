@@ -8,9 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from clinical_extraction.evidence_replay import (
-    replay_current_stack_primary,
     replay_exectv2_deterministic,
-    replay_exectv2_finding_assembly,
     replay_exectv2_saved_predictions,
     replay_gan_saved_comparisons,
 )
@@ -73,12 +71,8 @@ def _run_replay(verification: Mapping[str, Any], *, repo_root: Path) -> dict[str
         return replay_exectv2_saved_predictions(
             repo_root / str(inputs["path"]), split=str(inputs["split"])
         )
-    if replay == "exectv2_finding_assembly":
-        return replay_exectv2_finding_assembly(repo_root / str(inputs["path"]))
     if replay == "gan_saved_comparisons":
         return replay_gan_saved_comparisons(repo_root / str(inputs["path"]))
-    if replay == "current_stack_primary":
-        return replay_current_stack_primary(repo_root)
     raise ValueError(f"unsupported retained evidence replay: {replay}")
 
 

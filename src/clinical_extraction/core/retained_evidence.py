@@ -24,9 +24,7 @@ _CLOSURE_FIELDS = {
 _REPLAY_INPUT_FIELDS = {
     "exectv2_deterministic": {"split"},
     "exectv2_saved_predictions": {"path", "split"},
-    "exectv2_finding_assembly": {"path"},
     "gan_saved_comparisons": {"path"},
-    "current_stack_primary": {"fills", "sources", "e5"},
 }
 _REQUIRED_RECORD_FIELDS = {
     "id",
@@ -376,7 +374,7 @@ def _validate_verification(value: object, *, record_id: str, repo_root: Path) ->
         )
     if "split" in required_inputs:
         _nonempty_text(inputs, "split")
-    for path_field in ("path", "fills", "sources", "e5"):
+    for path_field in ("path",):
         if path_field not in required_inputs:
             continue
         path_text = _nonempty_text(inputs, path_field)

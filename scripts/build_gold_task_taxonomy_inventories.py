@@ -23,7 +23,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     load_letters,
     load_letters_for_split,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.metric import KEY_FAMILIES
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     load_records_for_split,
     load_records_with_monthly_frequency,
@@ -38,6 +37,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DATE_STAMP = "20260806"
 REPORT_DATE = "2026-08-06"
+KEY_FAMILIES = (
+    "Diagnosis",
+    "SeizureFrequency",
+    "Prescription",
+    "Investigations",
+)
 
 _MULTIPLE_WORD_RE = re.compile(r"\bmultiple\b", re.IGNORECASE)
 

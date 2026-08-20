@@ -1,4 +1,4 @@
-"""No-call replays for the six retained architecture reference cells."""
+"""No-call replays for paper reference evidence cells."""
 
 from __future__ import annotations
 
@@ -107,60 +107,6 @@ def replay_exectv2_saved_predictions(path: Path, *, split: str) -> dict[str, int
         "clinical_headline_f1": float(aggregate["f1"]),
         "strict_benchmark_per_item_f1": round(float(strict.f1), 4),
     }
-
-
-def replay_current_stack_primary(repo_root: Path) -> dict[str, int | float]:
-    """Read living Decision 0050 / 0046 fills without inspecting holdout rows."""
-
-    fills = _load_json_object(
-        repo_root / "paper_experiments/current_stack/latest/fills.json"
-    )
-    sources = _load_json_object(repo_root / "paper_experiments/current_stack/SOURCES.json")
-    e5 = _load_json_object(
-        repo_root
-        / "paper_experiments/exectv2_rules_only_campaign_e5_remeasure_20260815.json"
-    )
-    hybrid = fills["hybrid"]
-    unchanged = sources["unchanged_primary_fills"]
-    return {
-        "gan_sol_hybrid_purist": int(hybrid["gan_test450"]["gpt56sol"]["purist"]),
-        "exect_sol_hybrid_dev140_f1": float(hybrid["exect_dev140"]["gpt56sol"]["f1"]),
-        "exect_sol_hybrid_test60_f1": float(hybrid["exect_test60"]["gpt56sol"]["f1"]),
-        "gan_sol_llm_only_rate": float(unchanged["gan_test450_sol_llm_only"]),
-        "exect_sol_llm_only_dev140_f1": float(unchanged["exect_dev140_sol_llm_only"]),
-        "exect_sol_llm_only_test60_f1": float(unchanged["exect_test60_sol_llm_only"]),
-        "exect_rules_dev140_f1": float(e5["dev140"]["four_family_headline_f1"]),
-        "exect_rules_test60_f1": float(e5["test60"]["four_family_headline_f1"]),
-    }
-
-
-def replay_exectv2_finding_assembly(path: Path) -> dict[str, int | float]:
-    """Rebuild a saved-output finding assembly and return its primary scores."""
-
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.manifests import (
-        load_finding_assembly_manifest,
-    )
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.pipeline import (
-        build_finding_assembly,
-    )
-
-    run = build_finding_assembly(load_finding_assembly_manifest(path))
-    ladder = run.report["score_ladder"]
-    post_lens_f1 = float(ladder["post_lens_score"]["overall"]["f1"])
-    return {
-        "row_count": int(run.report["row_count"]),
-        "clinical_headline_f1": float(ladder["headline_target"]["overall"]["f1"]),
-        "post_lens_f1": post_lens_f1,
-        "evidence_valid_f1": post_lens_f1,
-        "benchmark_cui_f1": float(ladder["benchmark"]["after_cui_projection"]),
-    }
-
-
-def _load_json_object(path: Path) -> dict[str, Any]:
-    value = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(value, dict):
-        raise ValueError(f"expected JSON object in {path}")
-    return value
 
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:

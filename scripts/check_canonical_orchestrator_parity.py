@@ -85,33 +85,14 @@ IMPLEMENTATION_FILES = (
     / "tasks"
     / "epilepsy_phenotyping"
     / "exectv2"
-    / "assembly"
-    / "pipeline.py",
-    ROOT
-    / "src"
-    / "clinical_extraction"
-    / "tasks"
-    / "epilepsy_phenotyping"
-    / "exectv2"
     / "llm"
     / "pipelines"
     / "key_entities_structured"
     / "runner.py",
-    ROOT
-    / "src"
-    / "clinical_extraction"
-    / "tasks"
-    / "epilepsy_phenotyping"
-    / "exectv2"
-    / "llm"
-    / "shared"
-    / "mention_pipeline.py",
-    ROOT / "scripts" / "verify_reference_evidence.py",
     ROOT / "scripts" / "build_architecture_docs.py",
     ROOT / "scripts" / "check_canonical_orchestrator_development_parity.py",
     ROOT / "scripts" / "check_locked_aggregate_safety.py",
     ROOT / "experiments" / "canonical_orchestrator_development_parity_0047.json",
-    ROOT / "docs" / "experiments" / "retained_evidence_manifest.json",
 )
 
 
@@ -203,26 +184,6 @@ def _implementation_hashes() -> dict[str, str]:
 def _verification_gates() -> dict[str, dict[str, Any]]:
     """Run the no-call external checks claimed by this retained artifact."""
 
-    retained_command = [sys.executable, "scripts/verify_reference_evidence.py"]
-    retained = subprocess.run(
-        retained_command,
-        cwd=ROOT,
-        text=True,
-        capture_output=True,
-        check=False,
-    )
-    retained_cells: dict[str, Any] = {}
-    if retained.returncode == 0:
-        try:
-            retained_cells = json.loads(retained.stdout)
-        except json.JSONDecodeError:
-            retained = subprocess.CompletedProcess(
-                retained.args,
-                1,
-                retained.stdout,
-                "reference verifier returned invalid JSON",
-            )
-
     architecture_command = [sys.executable, "scripts/build_architecture_docs.py", "--check"]
     architecture = subprocess.run(
         architecture_command,
@@ -250,11 +211,6 @@ def _verification_gates() -> dict[str, dict[str, Any]]:
         check=False,
     )
     return {
-        "retained_historical_reference": {
-            "passed": retained.returncode == 0,
-            "command": ".venv\\Scripts\\python.exe scripts\\verify_reference_evidence.py",
-            "cells": retained_cells,
-        },
         "architecture_drift": {
             "passed": architecture.returncode == 0,
             "command": (

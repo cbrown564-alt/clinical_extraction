@@ -6,7 +6,6 @@ from pathlib import Path
 import pytest
 
 from clinical_extraction.evidence_replay import (
-    replay_current_stack_primary,
     replay_exectv2_deterministic,
     replay_exectv2_saved_predictions,
     replay_gan_saved_comparisons,
@@ -63,14 +62,3 @@ def test_replay_exectv2_gepa_predictions_uses_current_scorer() -> None:
     assert result["row_count"] == 140
     assert result["clinical_headline_f1"] == 0.7410
     assert result["strict_benchmark_per_item_f1"] == 0.1356
-
-
-@pytest.mark.local_corpus
-def test_replay_current_stack_primary_matches_living_fills() -> None:
-    result = replay_current_stack_primary(ROOT)
-
-    assert result["gan_sol_hybrid_purist"] == 381
-    assert result["exect_sol_hybrid_dev140_f1"] == 0.9119
-    assert result["exect_sol_hybrid_test60_f1"] == 0.8302
-    assert result["exect_rules_dev140_f1"] == 0.9042
-    assert result["exect_rules_test60_f1"] == 0.7937

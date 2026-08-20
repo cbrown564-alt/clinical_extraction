@@ -28,15 +28,6 @@ EXECT_HYBRID_PRESENT = {
 
 
 def test_paper_hybrid_fills_are_present() -> None:
-    fills = json.loads(
-        (ROOT / "paper_experiments/current_stack/latest/fills.json").read_text(
-            encoding="utf-8"
-        )
-    )
-    assert "hybrid" in fills
-    assert "gan_test450" in fills["hybrid"]
-    assert "exect_dev140" in fills["hybrid"]
-    assert "exect_test60" in fills["hybrid"]
     e5 = json.loads(
         (ROOT / "paper_experiments/exect/exect_rules/dev140.json").read_text(
             encoding="utf-8"
@@ -279,7 +270,7 @@ def test_exect_hybrid_cells_have_raw_and_hybrid() -> None:
             .splitlines()[0]
         )
         assert set(hybrid_row) == {"letter_id", "prompt_version", "raw_output"}
-        assert hybrid_row["prompt_version"] == "exectv2_compact_ledger"
+        assert hybrid_row["prompt_version"] == "exect_llm_pre_post"
         lines = [
             line
             for line in (EXECT_HYBRID_ROOT / slug / split / "structured.jsonl")
