@@ -1,5 +1,5 @@
 import { isBrowsableSplit } from "./datasets/splits";
-import { activeMethodLabel } from "./plainLanguageLabels";
+import { exectActiveMethodLabel } from "./plainLanguageLabels";
 import type {
   ActiveMethod,
   Exectv2RunWireResponse,
@@ -15,8 +15,12 @@ const ACTIVE_METHOD_ALIASES: Readonly<Record<string, string>> = {
   llm: "llm",
   llm_only: "llm",
   exectv2_llm_only: "llm",
+  exect_llm_only: "llm",
   llm_with_rules: "llm_with_rules",
   exectv2_llm_with_rules: "llm_with_rules",
+  exect_llm_pre_post: "llm_with_rules",
+  exect_llm_with_rules: "llm_with_rules",
+  llm_pre_post: "llm_with_rules",
 };
 
 const MODEL_ORDER = [
@@ -35,17 +39,17 @@ const GROUPS: ReadonlyArray<{
 }> = [
   {
     method: "llm_with_rules",
-    label: activeMethodLabel("llm_with_rules"),
-    caption: "Six models under the fixed one-call architecture after bounded assembly",
+    label: exectActiveMethodLabel("llm_with_rules"),
+    caption: "Six models under the fixed one-call architecture after deterministic pre-post",
   },
   {
     method: "llm",
-    label: activeMethodLabel("llm"),
-    caption: "The same six calls before deterministic assembly",
+    label: exectActiveMethodLabel("llm"),
+    caption: "The same six calls before deterministic pre-post",
   },
   {
     method: "rules",
-    label: activeMethodLabel("rules"),
+    label: exectActiveMethodLabel("rules"),
     caption: "No-call all-9 rules baseline",
   },
 ];

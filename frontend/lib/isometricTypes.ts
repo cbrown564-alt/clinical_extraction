@@ -10,12 +10,12 @@ export type EffectClass =
 export type StageOwner = "model" | "deterministic" | "scorer";
 
 export type MethodId =
-  | "gan2026_rules_only"
-  | "gan2026_llm_only"
-  | "gan2026_llm_with_rules"
-  | "exectv2_rules_only"
-  | "exectv2_llm_only"
-  | "exectv2_llm_with_rules";
+  | "gan_rules"
+  | "gan_llm_only"
+  | "gan_llm_with_rules"
+  | "exect_rules"
+  | "exect_llm_only"
+  | "exect_llm_pre_post";
 
 export interface StageObservationData {
   stage_id: string;

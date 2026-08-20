@@ -18,7 +18,7 @@ const fact = (overrides: Partial<PredictedFactData> = {}): PredictedFactData => 
   span: { start: 10, end: 40, text: "structural epilepsy" },
   transforms: [
     {
-      stage_id: "exect.llm_with_rules.model_call",
+      stage_id: "exect.llm_pre_post.model_call",
       stage_name: "Model proposes findings",
       band: "propose",
       entered: "(none)",
@@ -27,7 +27,7 @@ const fact = (overrides: Partial<PredictedFactData> = {}): PredictedFactData => 
       note: "",
     },
     {
-      stage_id: "exect.llm_with_rules.lens.diagnosis",
+      stage_id: "exect.llm_pre_post.lens.diagnosis",
       stage_name: "Diagnosis family transform",
       band: "reshape",
       entered: "Diagnosis: Symptomatic structural epilepsy",
@@ -140,7 +140,7 @@ describe("assembly line facts", () => {
       text: "5 per cluster [quiet interval]",
     });
     expect(isShapeCompareStage("exect.llm.parse_and_retry")).toBe(false);
-    expect(isShapeCompareStage("exect.llm_with_rules.lens.diagnosis")).toBe(true);
+    expect(isShapeCompareStage("exect.llm_pre_post.lens.diagnosis")).toBe(true);
     expect(isShapeCompareStage("exect.llm.model_call")).toBe(false);
     expect(hasMentionList('{"mentions":[{"entity":"Diagnosis"}]}')).toBe(true);
     expect(hasMentionList('{"entity":"Diagnosis","attributes":{}}')).toBe(false);

@@ -1,6 +1,5 @@
 import {
   exectv2OptionLabel,
-  exectv2RunActiveMethod,
   groupExectv2Runs,
   hydrateExectv2Run,
   hydrateExectv2Runs,
@@ -128,42 +127,22 @@ describe("ExECTv2 architecture options", () => {
     expect(resolveExectv2RunId([savedHybridRun, collidingRun], "llm_with_rules")).toBeNull();
   });
 
-  it("uses only the Decision-0046 Sol raw lane for the active aliases in the actual payload", () => {
+  it("uses the living paper roster when the July mock roster is retired", () => {
     const hydrated = hydrateExectv2Runs(actualRuns);
-    const rawRuns = hydrated.runs.filter((item) => exectv2RunActiveMethod(item) === "llm");
-    const sol = rawRuns.find((item) => item.model === "openai/gpt-5.6-sol");
-    expect(rawRuns).toHaveLength(6);
-    expect(sol).toBeDefined();
-    expect(resolveExectv2RunId(rawRuns, "llm")).toBe(sol?.run_id);
-    expect(resolveExectv2RunId(rawRuns, "llm_only")).toBe(sol?.run_id);
-    expect(resolveExectv2RunId(rawRuns, "exectv2_llm_only")).toBe(sol?.run_id);
-    expect(
-      rawRuns.every((item) =>
-        item.run_id === sol?.run_id ||
-        (item.active_method === undefined && item.method_id === undefined)
-      )
-    ).toBe(true);
-    expect(resolveExectv2RunId(rawRuns, sol?.run_id ?? "")).toBe(sol?.run_id);
+    expect(hydrated.runs).toHaveLength(1);
+    expect(hydrated.runs[0]?.run_id).toBe("rules");
+    expect(hydrated.runs[0]?.kind).toBe("rules");
   });
 
-  it("uses only the Decision-0046 Sol final lane for the active hybrid aliases", () => {
-    const hydrated = hydrateExectv2Runs(actualRuns);
-    const finalRuns = hydrated.runs.filter(
-      (item) => exectv2RunActiveMethod(item) === "llm_with_rules"
-    );
-    const sol = finalRuns.find((item) => item.model === "openai/gpt-5.6-sol");
-    expect(finalRuns).toHaveLength(6);
-    expect(sol).toBeDefined();
-    expect(resolveExectv2RunId(finalRuns, "llm_with_rules")).toBe(sol?.run_id);
-    expect(resolveExectv2RunId(finalRuns, "exectv2_llm_with_rules")).toBe(
-      sol?.run_id
-    );
-    expect(
-      finalRuns.every((item) =>
-        item.run_id === sol?.run_id ||
-        (item.active_method === undefined && item.method_id === undefined)
-      )
-    ).toBe(true);
+  it("resolves exect_llm_pre_post as the active pre-post alias", () => {
+    const prePostRun = {
+      ...run("llm_with_rules", MODELS[0], 10),
+      run_id: "exectv2_dev140_grok46_llm_plus_rules",
+      active_method: "llm_with_rules",
+      method_id: "llm_with_rules",
+    };
+    expect(resolveExectv2RunId([prePostRun], "exect_llm_pre_post")).toBe(prePostRun.run_id);
+    expect(resolveExectv2RunId([prePostRun], "llm_pre_post")).toBe(prePostRun.run_id);
   });
 
   it("groups the winning mode first, then its raw and no-call comparators", () => {
@@ -183,7 +162,7 @@ describe("ExECTv2 architecture options", () => {
       "rules",
     ]);
     expect(groups.map((group) => group.runs.length)).toEqual([6, 6, 1]);
-    expect(groups[0].label).toBe("LLM with rules");
+    expect(groups[0].label).toBe("LLM pre-post");
     expect(groups[1].label).toBe("LLM only");
     expect(groups[2].label).toBe("Rules only");
     expect(groups[0].runs.map((item) => item.model)).toEqual(MODELS);

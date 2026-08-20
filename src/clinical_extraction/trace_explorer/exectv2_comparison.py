@@ -209,7 +209,7 @@ def _model_run(
                     raw_output=raw_out,
                     split="dev140",
                 )
-                result = structured_one_call.run_llm_with_rules_letter(gold, producer)
+                result = structured_one_call.run_llm_pre_post_letter(gold, producer)
                 predicted_mentions_payload = _list_of_mappings(
                     result.row.get("predicted_mentions")
                 )

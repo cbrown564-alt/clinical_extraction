@@ -10,7 +10,7 @@ const lensObs = (
   note: string,
   changed: boolean
 ): StageObservationData => ({
-  stage_id: "exect.llm_with_rules.lens.diagnosis",
+  stage_id: "exect.llm_pre_post.lens.diagnosis",
   stage_name: "Diagnosis",
   owner: "deterministic",
   effect_class: "clinical_meaning",

@@ -133,7 +133,7 @@ export type ExectDev140Method =
   | "exect_llm_only"
   | "exect_llm_pre_post"
   | "exect_llm_with_rules"
-  | "rules_only"
+  | "exect_rules"
   | "llm_schema"
   | "llm_format"
   | "llm_post"

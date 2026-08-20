@@ -32,6 +32,14 @@ export function activeMethodLabel(method: ActiveMethod): string {
   return LABELS[method];
 }
 
+/** ExECT picker and badge labels (paper method names). */
+export function exectActiveMethodLabel(method: ActiveMethod): string {
+  if (method === "llm_with_rules") {
+    return "LLM pre-post";
+  }
+  return activeMethodLabel(method);
+}
+
 export function familyLabel(pipelineFamily: string): string {
   const RULES_ONLY = activeMethodLabel("rules");
   const LLM_ONLY = activeMethodLabel("llm");
@@ -64,24 +72,18 @@ export function familyLabel(pipelineFamily: string): string {
   return BUCKETS[pipelineFamily] ?? deSnake(pipelineFamily);
 }
 
-/**
- * ExECTv2 architecture labels for the component ladder. The glossary maps v08
- * to "frozen production control" and v01–v07 to "prior assembly versions";
- * the model-named diagnostics keep the model family so the column stays
- * meaningful, but drop the internal version-suffix jargon.
- */
+/** ExECT run labels for legacy registry rows (paper methods only). */
 export function exectv2ArchitectureLabel(runId: string): string {
-  const LABELS: Array<[string, string]> = [
-    ["v09_partial_hybrid", "Simplification study (single-pass)"],
-    ["v0916_deepseek", "DeepSeek diagnostic"],
-    ["v0922_qwen", "Qwen diagnostic"],
-    ["v08_dev140_p7fix", "Frozen production control (P7 rescore)"],
-    ["v08", "Frozen production control"],
-  ];
-  for (const [needle, label] of LABELS) {
-    if (runId.includes(needle)) return label;
+  if (runId.includes("llm_plus_rules") || runId.includes("llm_pre_post")) {
+    return "LLM pre-post";
   }
-  return deSnake(runId.replace("exectv2_holistic_finding_assembly_", ""));
+  if (runId.includes("llm_only")) {
+    return "LLM only";
+  }
+  if (runId.includes("deterministic") || runId === "rules") {
+    return "Rules only";
+  }
+  return deSnake(runId.replace(/^exectv2_/, ""));
 }
 
 /**

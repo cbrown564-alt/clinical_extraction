@@ -20,7 +20,7 @@
       "mechanism": "The letter states a seizure-free interval of up to four months and clusters of five seizures in a day. Gold needs both parts. On this Grok replay, rules get the two-part label; the model-led methods collapse to the cluster count or the quiet interval.",
       "runs": [
         {
-          "method_id": "gan2026_rules_only",
+          "method_id": "gan_rules",
           "method_label": "Rules only",
           "one_sentence": "Deterministic rules find every seizure-frequency statement in the letter, normalize them, pick one as the current answer, and render it as a Gan label.",
           "prediction_owner": "deterministic rules (stage gan.rules.select_and_render)",
@@ -145,7 +145,7 @@
           }
         },
         {
-          "method_id": "gan2026_llm_only",
+          "method_id": "gan_llm_only",
           "method_label": "LLM only",
           "one_sentence": "One model call reads the letter and returns the final Gan label directly; deterministic code then repairs, validates, and scores that answer.",
           "prediction_owner": "the model (stage gan.llm.model_call), with one deterministic override at gan.llm.selected_evidence_repair",
@@ -242,7 +242,7 @@
           }
         },
         {
-          "method_id": "gan2026_llm_with_rules",
+          "method_id": "gan_llm_with_rules",
           "method_label": "LLM with rules",
           "one_sentence": "The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer.",
           "prediction_owner": "the model proposes and selects (gan.llm_with_rules.model_call); ten deterministic repair families may change the answer afterwards",
@@ -585,7 +585,7 @@
       "mechanism": "The letter says frequent petit mal and increasing absences, with no number. Gold is unknown. Rules and the one-call model abstain. The hybrid path renders a qualitative daily rate; that still sits in the unknown bucket on this scorer.",
       "runs": [
         {
-          "method_id": "gan2026_rules_only",
+          "method_id": "gan_rules",
           "method_label": "Rules only",
           "one_sentence": "Deterministic rules find every seizure-frequency statement in the letter, normalize them, pick one as the current answer, and render it as a Gan label.",
           "prediction_owner": "deterministic rules (stage gan.rules.select_and_render)",
@@ -710,7 +710,7 @@
           }
         },
         {
-          "method_id": "gan2026_llm_only",
+          "method_id": "gan_llm_only",
           "method_label": "LLM only",
           "one_sentence": "One model call reads the letter and returns the final Gan label directly; deterministic code then repairs, validates, and scores that answer.",
           "prediction_owner": "the model (stage gan.llm.model_call), with one deterministic override at gan.llm.selected_evidence_repair",
@@ -807,7 +807,7 @@
           }
         },
         {
-          "method_id": "gan2026_llm_with_rules",
+          "method_id": "gan_llm_with_rules",
           "method_label": "LLM with rules",
           "one_sentence": "The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer.",
           "prediction_owner": "the model proposes and selects (gan.llm_with_rules.model_call); ten deterministic repair families may change the answer afterwards",
@@ -1202,7 +1202,7 @@
       "mechanism": "The letter has diagnosis, several dated seizure statements, a current regimen, and completed tests. The hard part is binding 'last month' and '10 months ago' to counts, not to a recurring rate.",
       "runs": [
         {
-          "method_id": "exectv2_rules_only",
+          "method_id": "exect_rules",
           "method_label": "Rules only",
           "one_sentence": "Nine independent deterministic extractors produce the all-nine prediction, while an explicit four-family projection defines the primary model comparison.",
           "prediction_owner": "the nine deterministic extractors (stage exect.rules.extract_entities); the four-family projection is scorer-facing",
@@ -1600,7 +1600,7 @@
           }
         },
         {
-          "method_id": "exectv2_llm_only",
+          "method_id": "exect_llm_only",
           "method_label": "LLM only",
           "one_sentence": "One structured model call proposes four-family findings, and the selected LLM-only view scores those findings before family-specific deterministic transforms.",
           "prediction_owner": "the named model (stage exect.llm.model_call); deterministic stages only parse, represent, and gate its findings",
@@ -2298,16 +2298,16 @@
           }
         },
         {
-          "method_id": "exectv2_llm_with_rules",
+          "method_id": "exect_llm_pre_post",
           "method_label": "LLM with rules",
           "one_sentence": "The model proposes findings for four families in one call; deterministic family transforms reconcile those findings into the final scored representation.",
-          "prediction_owner": "the named model proposes all four families (exect.llm_with_rules.model_call); four family transforms may change findings afterwards",
+          "prediction_owner": "the named model proposes all four families (exect.llm_pre_post.model_call); four family transforms may change findings afterwards",
           "final_answer": "Diagnosis: focal epilepsy; focal to bilateral convulsive seizure; focal motor seizure\nSeizure frequency: focal to bilateral convulsive seizure (active-rate); focal motor seizures (seizure-free)\nPrescription: lamotrigine 75 mg ×2\nInvestigations: MRI performed abnormal; EEG performed abnormal",
           "correct": null,
           "correctness_note": "Gold comparison lives on Workbench.",
           "observations": [
             {
-              "stage_id": "exect.llm_with_rules.build_prompt",
+              "stage_id": "exect.llm_pre_post.build_prompt",
               "stage_name": "Build the four-family prompt",
               "owner": "deterministic",
               "effect_class": "transport_or_schema",
@@ -2317,7 +2317,7 @@
               "note": ""
             },
             {
-              "stage_id": "exect.llm_with_rules.model_call",
+              "stage_id": "exect.llm_pre_post.model_call",
               "stage_name": "Model proposes findings for four families",
               "owner": "model",
               "effect_class": "clinical_meaning",
@@ -2327,7 +2327,7 @@
               "note": "Fixture boundary at the one-call producer; no live model call is made."
             },
             {
-              "stage_id": "exect.llm_with_rules.parse_and_retry",
+              "stage_id": "exect.llm_pre_post.parse_and_retry",
               "stage_name": "Parse output, with format-only retry when eligible",
               "owner": "deterministic",
               "effect_class": "transport_or_schema",
@@ -2337,7 +2337,7 @@
               "note": ""
             },
             {
-              "stage_id": "exect.llm_with_rules.map_events",
+              "stage_id": "exect.llm_pre_post.map_events",
               "stage_name": "Flatten model events into mentions",
               "owner": "deterministic",
               "effect_class": "representation",
@@ -2347,7 +2347,7 @@
               "note": ""
             },
             {
-              "stage_id": "exect.llm_with_rules.project_and_gate",
+              "stage_id": "exect.llm_pre_post.project_and_gate",
               "stage_name": "Enrich attributes and apply render-safety gates",
               "owner": "deterministic",
               "effect_class": "clinical_meaning",
@@ -2357,7 +2357,7 @@
               "note": ""
             },
             {
-              "stage_id": "exect.llm_with_rules.sf_state_projection",
+              "stage_id": "exect.llm_pre_post.sf_state_projection",
               "stage_name": "Project seizure-frequency facts into the state representation",
               "owner": "deterministic",
               "effect_class": "clinical_meaning",
@@ -2367,7 +2367,7 @@
               "note": ""
             },
             {
-              "stage_id": "exect.llm_with_rules.sf_unknown_suppression",
+              "stage_id": "exect.llm_pre_post.sf_unknown_suppression",
               "stage_name": "Suppress unsupported unknown states",
               "owner": "deterministic",
               "effect_class": "clinical_meaning",
@@ -2377,7 +2377,7 @@
               "note": ""
             },
             {
-              "stage_id": "exect.llm_with_rules.register_findings",
+              "stage_id": "exect.llm_pre_post.register_findings",
               "stage_name": "Register raw and scored findings",
               "owner": "deterministic",
               "effect_class": "transport_or_schema",
@@ -2387,7 +2387,7 @@
               "note": ""
             },
             {
-              "stage_id": "exect.llm_with_rules.lens.diagnosis",
+              "stage_id": "exect.llm_pre_post.lens.diagnosis",
               "stage_name": "Diagnosis family transform",
               "owner": "deterministic",
               "effect_class": "clinical_meaning",
@@ -2397,7 +2397,7 @@
               "note": "Assembled this family; no further clinical rewrite."
             },
             {
-              "stage_id": "exect.llm_with_rules.lens.seizure_frequency",
+              "stage_id": "exect.llm_pre_post.lens.seizure_frequency",
               "stage_name": "Seizure Frequency family transform",
               "owner": "deterministic",
               "effect_class": "representation",
@@ -2407,7 +2407,7 @@
               "note": "Assembled this family; no further clinical rewrite."
             },
             {
-              "stage_id": "exect.llm_with_rules.lens.prescription",
+              "stage_id": "exect.llm_pre_post.lens.prescription",
               "stage_name": "Prescription family transform",
               "owner": "deterministic",
               "effect_class": "clinical_meaning",
@@ -2417,7 +2417,7 @@
               "note": "Assembled this family; no further clinical rewrite."
             },
             {
-              "stage_id": "exect.llm_with_rules.lens.investigations",
+              "stage_id": "exect.llm_pre_post.lens.investigations",
               "stage_name": "Investigations family transform",
               "owner": "deterministic",
               "effect_class": "representation",
@@ -2427,7 +2427,7 @@
               "note": "Assembled this family; no further clinical rewrite."
             },
             {
-              "stage_id": "exect.llm_with_rules.evidence_requirement",
+              "stage_id": "exect.llm_pre_post.evidence_requirement",
               "stage_name": "Require exact evidence for every finding",
               "owner": "deterministic",
               "effect_class": "validation_gate",
@@ -2437,7 +2437,7 @@
               "note": ""
             },
             {
-              "stage_id": "exect.llm_with_rules.materialize_views",
+              "stage_id": "exect.llm_pre_post.materialize_views",
               "stage_name": "Materialize the score views",
               "owner": "deterministic",
               "effect_class": "benchmark_projection",
@@ -2447,7 +2447,7 @@
               "note": ""
             },
             {
-              "stage_id": "exect.llm_with_rules.score",
+              "stage_id": "exect.llm_pre_post.score",
               "stage_name": "Score against gold",
               "owner": "scorer",
               "effect_class": "benchmark_projection",
@@ -2468,7 +2468,7 @@
               },
               "transforms": [
                 {
-                  "stage_id": "exect.llm_with_rules.model_call",
+                  "stage_id": "exect.llm_pre_post.model_call",
                   "stage_name": "Model proposes findings for four families",
                   "band": "propose",
                   "entered": "(none)",
@@ -2477,7 +2477,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.parse_and_retry",
+                  "stage_id": "exect.llm_pre_post.parse_and_retry",
                   "stage_name": "Parse output, with format-only retry when eligible",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"Symptomatic structural focal epilepsy\",\n  \"confidence\": \"high\",\n  \"evidence\": \"Diagnosis: Symptomatic structural focal epilepsy\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"Epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"Symptomatic structural focal epilepsy\"\n    }\n  ],\n  \"rationale\": \"The letter explicitly lists symptomatic structural focal epilepsy as the diagnosis.\"\n}",
@@ -2486,7 +2486,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.map_events",
+                  "stage_id": "exect.llm_pre_post.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"Symptomatic structural focal epilepsy\",\n  \"confidence\": \"high\",\n  \"evidence\": \"Diagnosis: Symptomatic structural focal epilepsy\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"Epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"Symptomatic structural focal epilepsy\"\n    }\n  ],\n  \"rationale\": \"The letter explicitly lists symptomatic structural focal epilepsy as the diagnosis.\"\n}",
@@ -2495,7 +2495,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.project_and_gate",
+                  "stage_id": "exect.llm_pre_post.project_and_gate",
                   "stage_name": "Enrich attributes and apply render-safety gates",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"Certainty\": \"1\",\n    \"DiagCategory\": \"Epilepsy\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"Diagnosis: Symptomatic structural focal epilepsy\",\n  \"rationale\": \"The letter explicitly lists symptomatic structural focal epilepsy as the diagnosis.\",\n  \"text\": \"Symptomatic structural focal epilepsy\"\n}",
@@ -2504,7 +2504,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.lens.diagnosis",
+                  "stage_id": "exect.llm_pre_post.lens.diagnosis",
                   "stage_name": "Diagnosis family transform",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0472349\",\n    \"CUIPhrase\": \"symptomatic structural focal epilepsy\",\n    \"Certainty\": \"1\",\n    \"DiagCategory\": \"Epilepsy\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"Diagnosis: Symptomatic structural focal epilepsy\",\n  \"rationale\": \"The letter explicitly lists symptomatic structural focal epilepsy as the diagnosis.\",\n  \"text\": \"Symptomatic structural focal epilepsy\"\n}",
@@ -2513,7 +2513,7 @@
                   "note": "Assembled this family; no further clinical rewrite."
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.evidence_requirement",
+                  "stage_id": "exect.llm_pre_post.evidence_requirement",
                   "stage_name": "Require exact evidence for every finding",
                   "band": "gate",
                   "entered": "Diagnosis: Symptomatic structural focal epilepsy",
@@ -2522,7 +2522,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.score",
+                  "stage_id": "exect.llm_pre_post.score",
                   "stage_name": "Score against gold",
                   "band": "leave",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0472349\",\n    \"CUIPhrase\": \"symptomatic structural focal epilepsy\",\n    \"Certainty\": \"1\",\n    \"DiagCategory\": \"Epilepsy\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"Diagnosis: Symptomatic structural focal epilepsy\",\n  \"rationale\": \"The letter explicitly lists symptomatic structural focal epilepsy as the diagnosis.\",\n  \"text\": \"Symptomatic structural focal epilepsy\"\n}",
@@ -2547,7 +2547,7 @@
               },
               "transforms": [
                 {
-                  "stage_id": "exect.llm_with_rules.model_call",
+                  "stage_id": "exect.llm_pre_post.model_call",
                   "stage_name": "Model proposes findings for four families",
                   "band": "propose",
                   "entered": "(none)",
@@ -2556,7 +2556,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.parse_and_retry",
+                  "stage_id": "exect.llm_pre_post.parse_and_retry",
                   "stage_name": "Parse output, with format-only retry when eligible",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"epilepsy\",\n  \"confidence\": \"high\",\n  \"evidence\": \"This is the probable cause of his epilepsy.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"epilepsy\"\n    }\n  ],\n  \"rationale\": \"The letter explicitly refers to the patient's epilepsy.\"\n}",
@@ -2565,7 +2565,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.map_events",
+                  "stage_id": "exect.llm_pre_post.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"epilepsy\",\n  \"confidence\": \"high\",\n  \"evidence\": \"This is the probable cause of his epilepsy.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"epilepsy\"\n    }\n  ],\n  \"rationale\": \"The letter explicitly refers to the patient's epilepsy.\"\n}",
@@ -2574,7 +2574,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.project_and_gate",
+                  "stage_id": "exect.llm_pre_post.project_and_gate",
                   "stage_name": "Enrich attributes and apply render-safety gates",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"Certainty\": \"1\",\n    \"DiagCategory\": \"epilepsy\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"This is the probable cause of his epilepsy.\",\n  \"rationale\": \"The letter explicitly refers to the patient's epilepsy.\",\n  \"text\": \"epilepsy\"\n}",
@@ -2583,7 +2583,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.lens.diagnosis",
+                  "stage_id": "exect.llm_pre_post.lens.diagnosis",
                   "stage_name": "Diagnosis family transform",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0014544\",\n    \"CUIPhrase\": \"epilepsy\",\n    \"Certainty\": \"1\",\n    \"DiagCategory\": \"epilepsy\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"This is the probable cause of his epilepsy.\",\n  \"rationale\": \"The letter explicitly refers to the patient's epilepsy.\",\n  \"text\": \"epilepsy\"\n}",
@@ -2592,7 +2592,7 @@
                   "note": "Assembled this family; no further clinical rewrite."
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.evidence_requirement",
+                  "stage_id": "exect.llm_pre_post.evidence_requirement",
                   "stage_name": "Require exact evidence for every finding",
                   "band": "gate",
                   "entered": "This is the probable cause of his epilepsy.",
@@ -2601,7 +2601,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.score",
+                  "stage_id": "exect.llm_pre_post.score",
                   "stage_name": "Score against gold",
                   "band": "leave",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0014544\",\n    \"CUIPhrase\": \"epilepsy\",\n    \"Certainty\": \"1\",\n    \"DiagCategory\": \"epilepsy\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"This is the probable cause of his epilepsy.\",\n  \"rationale\": \"The letter explicitly refers to the patient's epilepsy.\",\n  \"text\": \"epilepsy\"\n}",
@@ -2626,7 +2626,7 @@
               },
               "transforms": [
                 {
-                  "stage_id": "exect.llm_with_rules.model_call",
+                  "stage_id": "exect.llm_pre_post.model_call",
                   "stage_name": "Model proposes findings for four families",
                   "band": "propose",
                   "entered": "(none)",
@@ -2635,7 +2635,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.parse_and_retry",
+                  "stage_id": "exect.llm_pre_post.parse_and_retry",
                   "stage_name": "Parse output, with format-only retry when eligible",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal to bilateral convulsive seizures\",\n  \"confidence\": \"high\",\n  \"evidence\": \"I think therefore that this was a focal to bilateral convulsive seizures.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"2\",\n        \"DiagCategory\": \"MultipleSeizures\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"focal to bilateral convulsive seizures\"\n    }\n  ],\n  \"rationale\": \"The recent event is described as a probable focal to bilateral convulsive seizure type.\"\n}",
@@ -2644,7 +2644,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.map_events",
+                  "stage_id": "exect.llm_pre_post.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal to bilateral convulsive seizures\",\n  \"confidence\": \"high\",\n  \"evidence\": \"I think therefore that this was a focal to bilateral convulsive seizures.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"2\",\n        \"DiagCategory\": \"MultipleSeizures\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"focal to bilateral convulsive seizures\"\n    }\n  ],\n  \"rationale\": \"The recent event is described as a probable focal to bilateral convulsive seizure type.\"\n}",
@@ -2653,7 +2653,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.project_and_gate",
+                  "stage_id": "exect.llm_pre_post.project_and_gate",
                   "stage_name": "Enrich attributes and apply render-safety gates",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"Certainty\": \"2\",\n    \"DiagCategory\": \"MultipleSeizures\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"I think therefore that this was a focal to bilateral convulsive seizures.\",\n  \"rationale\": \"The recent event is described as a probable focal to bilateral convulsive seizure type.\",\n  \"text\": \"focal to bilateral convulsive seizures\"\n}",
@@ -2662,7 +2662,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.lens.diagnosis",
+                  "stage_id": "exect.llm_pre_post.lens.diagnosis",
                   "stage_name": "Diagnosis family transform",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0877017\",\n    \"CUIPhrase\": \"focal-to-bilateral-convulsive-seizures\",\n    \"Certainty\": \"2\",\n    \"DiagCategory\": \"MultipleSeizures\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"I think therefore that this was a focal to bilateral convulsive seizures.\",\n  \"rationale\": \"The recent event is described as a probable focal to bilateral convulsive seizure type.\",\n  \"text\": \"focal to bilateral convulsive seizures\"\n}",
@@ -2671,7 +2671,7 @@
                   "note": "Assembled this family; no further clinical rewrite."
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.evidence_requirement",
+                  "stage_id": "exect.llm_pre_post.evidence_requirement",
                   "stage_name": "Require exact evidence for every finding",
                   "band": "gate",
                   "entered": "I think therefore that this was a focal to bilateral convulsive seizures.",
@@ -2680,7 +2680,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.score",
+                  "stage_id": "exect.llm_pre_post.score",
                   "stage_name": "Score against gold",
                   "band": "leave",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0877017\",\n    \"CUIPhrase\": \"focal-to-bilateral-convulsive-seizures\",\n    \"Certainty\": \"2\",\n    \"DiagCategory\": \"MultipleSeizures\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"I think therefore that this was a focal to bilateral convulsive seizures.\",\n  \"rationale\": \"The recent event is described as a probable focal to bilateral convulsive seizure type.\",\n  \"text\": \"focal to bilateral convulsive seizures\"\n}",
@@ -2705,7 +2705,7 @@
               },
               "transforms": [
                 {
-                  "stage_id": "exect.llm_with_rules.model_call",
+                  "stage_id": "exect.llm_pre_post.model_call",
                   "stage_name": "Model proposes findings for four families",
                   "band": "propose",
                   "entered": "(none)",
@@ -2714,7 +2714,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.parse_and_retry",
+                  "stage_id": "exect.llm_pre_post.parse_and_retry",
                   "stage_name": "Parse output, with format-only retry when eligible",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal motor seizures\",\n  \"confidence\": \"high\",\n  \"evidence\": \"As you recall Mr Owens has had focal motor seizures in the past where he has had jerking of his right leg.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"Epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"focal motor seizures\"\n    }\n  ],\n  \"rationale\": \"The letter explicitly states a history of focal motor seizures.\"\n}",
@@ -2723,7 +2723,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.map_events",
+                  "stage_id": "exect.llm_pre_post.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal motor seizures\",\n  \"confidence\": \"high\",\n  \"evidence\": \"As you recall Mr Owens has had focal motor seizures in the past where he has had jerking of his right leg.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"Epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"focal motor seizures\"\n    }\n  ],\n  \"rationale\": \"The letter explicitly states a history of focal motor seizures.\"\n}",
@@ -2732,7 +2732,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.project_and_gate",
+                  "stage_id": "exect.llm_pre_post.project_and_gate",
                   "stage_name": "Enrich attributes and apply render-safety gates",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"Certainty\": \"1\",\n    \"DiagCategory\": \"Epilepsy\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"As you recall Mr Owens has had focal motor seizures in the past where he has had jerking of his right leg.\",\n  \"rationale\": \"The letter explicitly states a history of focal motor seizures.\",\n  \"text\": \"focal motor seizures\"\n}",
@@ -2741,7 +2741,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.lens.diagnosis",
+                  "stage_id": "exect.llm_pre_post.lens.diagnosis",
                   "stage_name": "Diagnosis family transform",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0016399\",\n    \"CUIPhrase\": \"focal-motor-seizures\",\n    \"Certainty\": \"1\",\n    \"DiagCategory\": \"Epilepsy\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"As you recall Mr Owens has had focal motor seizures in the past where he has had jerking of his right leg.\",\n  \"rationale\": \"The letter explicitly states a history of focal motor seizures.\",\n  \"text\": \"focal motor seizures\"\n}",
@@ -2750,7 +2750,7 @@
                   "note": "Assembled this family; no further clinical rewrite."
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.evidence_requirement",
+                  "stage_id": "exect.llm_pre_post.evidence_requirement",
                   "stage_name": "Require exact evidence for every finding",
                   "band": "gate",
                   "entered": "As you recall Mr Owens has had focal motor seizures in the past where he has had jerking of his right leg.",
@@ -2759,7 +2759,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.score",
+                  "stage_id": "exect.llm_pre_post.score",
                   "stage_name": "Score against gold",
                   "band": "leave",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0016399\",\n    \"CUIPhrase\": \"focal-motor-seizures\",\n    \"Certainty\": \"1\",\n    \"DiagCategory\": \"Epilepsy\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"As you recall Mr Owens has had focal motor seizures in the past where he has had jerking of his right leg.\",\n  \"rationale\": \"The letter explicitly states a history of focal motor seizures.\",\n  \"text\": \"focal motor seizures\"\n}",
@@ -2784,7 +2784,7 @@
               },
               "transforms": [
                 {
-                  "stage_id": "exect.llm_with_rules.model_call",
+                  "stage_id": "exect.llm_pre_post.model_call",
                   "stage_name": "Model proposes findings for four families",
                   "band": "propose",
                   "entered": "(none)",
@@ -2793,7 +2793,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.parse_and_retry",
+                  "stage_id": "exect.llm_pre_post.parse_and_retry",
                   "stage_name": "Parse output, with format-only retry when eligible",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal to bilateral convulsive seizure\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He has had one previous focal to bilateral convulsive seizure at the time of diagnosis of his epilepsy in May 2017.\",\n  \"family\": \"seizure_frequency\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"MonthDate\": \"May\",\n        \"Negation\": \"Affirmed\",\n        \"NumberOfSeizures\": \"1\",\n        \"TimeSince_or_TimeOfEvent\": \"During\",\n        \"YearDate\": \"2017\"\n      },\n      \"entity\": \"SeizureFrequency\",\n      \"text\": \"focal to bilateral convulsive seizure\"\n    }\n  ],\n  \"rationale\": \"The letter records one previous focal to bilateral convulsive seizure in May 2017.\"\n}",
@@ -2802,7 +2802,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.map_events",
+                  "stage_id": "exect.llm_pre_post.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal to bilateral convulsive seizure\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He has had one previous focal to bilateral convulsive seizure at the time of diagnosis of his epilepsy in May 2017.\",\n  \"family\": \"seizure_frequency\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"MonthDate\": \"May\",\n        \"Negation\": \"Affirmed\",\n        \"NumberOfSeizures\": \"1\",\n        \"TimeSince_or_TimeOfEvent\": \"During\",\n        \"YearDate\": \"2017\"\n      },\n      \"entity\": \"SeizureFrequency\",\n      \"text\": \"focal to bilateral convulsive seizure\"\n    }\n  ],\n  \"rationale\": \"The letter records one previous focal to bilateral convulsive seizure in May 2017.\"\n}",
@@ -2811,7 +2811,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.project_and_gate",
+                  "stage_id": "exect.llm_pre_post.project_and_gate",
                   "stage_name": "Enrich attributes and apply render-safety gates",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"MonthDate\": \"May\",\n    \"Negation\": \"Affirmed\",\n    \"NumberOfSeizures\": \"1\",\n    \"TimeSince_or_TimeOfEvent\": \"During\",\n    \"YearDate\": \"2017\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"SeizureFrequency\",\n  \"evidence\": \"He has had one previous focal to bilateral convulsive seizure at the time of diagnosis of his epilepsy in May 2017.\",\n  \"rationale\": \"The letter records one previous focal to bilateral convulsive seizure in May 2017.\",\n  \"text\": \"focal to bilateral convulsive seizure\"\n}",
@@ -2820,7 +2820,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.sf_state_projection",
+                  "stage_id": "exect.llm_pre_post.sf_state_projection",
                   "stage_name": "Project seizure-frequency facts into the state representation",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0877017\",\n    \"CUIPhrase\": \"focal to bilateral convulsive seizure\",\n    \"MonthDate\": \"May\",\n    \"Negation\": \"Affirmed\",\n    \"NumberOfSeizures\": \"1\",\n    \"TimeSince_or_TimeOfEvent\": \"During\",\n    \"YearDate\": \"2017\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"SeizureFrequency\",\n  \"evidence\": \"He has had one previous focal to bilateral convulsive seizure at the time of diagnosis of his epilepsy in May 2017.\",\n  \"rationale\": \"The letter records one previous focal to bilateral convulsive seizure in May 2017.\",\n  \"text\": \"focal to bilateral convulsive seizure\"\n}",
@@ -2829,7 +2829,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.sf_unknown_suppression",
+                  "stage_id": "exect.llm_pre_post.sf_unknown_suppression",
                   "stage_name": "Suppress unsupported unknown states",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0877017\",\n    \"CUIPhrase\": \"focal to bilateral convulsive seizure\",\n    \"MonthDate\": \"May\",\n    \"Negation\": \"Affirmed\",\n    \"NumberOfSeizures\": \"1\",\n    \"TimeSince_or_TimeOfEvent\": \"During\",\n    \"YearDate\": \"2017\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"SeizureFrequency\",\n  \"evidence\": \"He has had one previous focal to bilateral convulsive seizure at the time of diagnosis of his epilepsy in May 2017.\",\n  \"rationale\": \"The letter records one previous focal to bilateral convulsive seizure in May 2017.\",\n  \"text\": \"focal to bilateral convulsive seizure\"\n}",
@@ -2838,7 +2838,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.lens.seizure_frequency",
+                  "stage_id": "exect.llm_pre_post.lens.seizure_frequency",
                   "stage_name": "Seizure Frequency family transform",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0877017\",\n    \"CUIPhrase\": \"focal to bilateral convulsive seizure\",\n    \"MonthDate\": \"May\",\n    \"Negation\": \"Affirmed\",\n    \"NumberOfSeizures\": \"1\",\n    \"TimeSince_or_TimeOfEvent\": \"During\",\n    \"YearDate\": \"2017\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"SeizureFrequency\",\n  \"evidence\": \"He has had one previous focal to bilateral convulsive seizure at the time of diagnosis of his epilepsy in May 2017.\",\n  \"rationale\": \"The letter records one previous focal to bilateral convulsive seizure in May 2017.\",\n  \"text\": \"focal to bilateral convulsive seizure\"\n}",
@@ -2847,7 +2847,7 @@
                   "note": "Assembled this family; no further clinical rewrite."
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.evidence_requirement",
+                  "stage_id": "exect.llm_pre_post.evidence_requirement",
                   "stage_name": "Require exact evidence for every finding",
                   "band": "gate",
                   "entered": "He has had one previous focal to bilateral convulsive seizure at the time of diagnosis of his epilepsy in May 2017.",
@@ -2856,7 +2856,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.score",
+                  "stage_id": "exect.llm_pre_post.score",
                   "stage_name": "Score against gold",
                   "band": "leave",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0877017\",\n    \"CUIPhrase\": \"focal to bilateral convulsive seizure\",\n    \"MonthDate\": \"May\",\n    \"Negation\": \"Affirmed\",\n    \"NumberOfSeizures\": \"1\",\n    \"TimeSince_or_TimeOfEvent\": \"During\",\n    \"YearDate\": \"2017\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"SeizureFrequency\",\n  \"evidence\": \"He has had one previous focal to bilateral convulsive seizure at the time of diagnosis of his epilepsy in May 2017.\",\n  \"rationale\": \"The letter records one previous focal to bilateral convulsive seizure in May 2017.\",\n  \"text\": \"focal to bilateral convulsive seizure\"\n}",
@@ -2881,7 +2881,7 @@
               },
               "transforms": [
                 {
-                  "stage_id": "exect.llm_with_rules.model_call",
+                  "stage_id": "exect.llm_pre_post.model_call",
                   "stage_name": "Model proposes findings for four families",
                   "band": "propose",
                   "entered": "(none)",
@@ -2890,7 +2890,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.parse_and_retry",
+                  "stage_id": "exect.llm_pre_post.parse_and_retry",
                   "stage_name": "Parse output, with format-only retry when eligible",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal motor seizures\",\n  \"confidence\": \"medium\",\n  \"evidence\": \"As you recall Mr Owens has had focal motor seizures in the past where he has had jerking of his right leg. These were happening frequently before he started the medication. The last event was probably 10 months ago.\",\n  \"family\": \"seizure_frequency\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"2\",\n        \"Negation\": \"Affirmed\",\n        \"NumberOfSeizures\": \"0\",\n        \"NumberOfTimePeriods\": \"10\",\n        \"TimePeriod\": \"Month\",\n        \"TimeSince_or_TimeOfEvent\": \"Since\"\n      },\n      \"entity\": \"SeizureFrequency\",\n      \"text\": \"focal motor seizures\"\n    }\n  ],\n  \"rationale\": \"The last focal motor seizure event is stated to have probably occurred 10 months ago.\"\n}",
@@ -2899,7 +2899,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.map_events",
+                  "stage_id": "exect.llm_pre_post.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal motor seizures\",\n  \"confidence\": \"medium\",\n  \"evidence\": \"As you recall Mr Owens has had focal motor seizures in the past where he has had jerking of his right leg. These were happening frequently before he started the medication. The last event was probably 10 months ago.\",\n  \"family\": \"seizure_frequency\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"2\",\n        \"Negation\": \"Affirmed\",\n        \"NumberOfSeizures\": \"0\",\n        \"NumberOfTimePeriods\": \"10\",\n        \"TimePeriod\": \"Month\",\n        \"TimeSince_or_TimeOfEvent\": \"Since\"\n      },\n      \"entity\": \"SeizureFrequency\",\n      \"text\": \"focal motor seizures\"\n    }\n  ],\n  \"rationale\": \"The last focal motor seizure event is stated to have probably occurred 10 months ago.\"\n}",
@@ -2908,7 +2908,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.project_and_gate",
+                  "stage_id": "exect.llm_pre_post.project_and_gate",
                   "stage_name": "Enrich attributes and apply render-safety gates",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"Certainty\": \"2\",\n    \"Negation\": \"Affirmed\",\n    \"NumberOfSeizures\": \"0\",\n    \"NumberOfTimePeriods\": \"10\",\n    \"TimePeriod\": \"Month\",\n    \"TimeSince_or_TimeOfEvent\": \"Since\"\n  },\n  \"confidence\": \"medium\",\n  \"entity\": \"SeizureFrequency\",\n  \"evidence\": \"As you recall Mr Owens has had focal motor seizures in the past where he has had jerking of his right leg. These were happening frequently before he started the medication. The last event was probably 10 months ago.\",\n  \"rationale\": \"The last focal motor seizure event is stated to have probably occurred 10 months ago.\",\n  \"text\": \"focal motor seizures\"\n}",
@@ -2917,7 +2917,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.sf_state_projection",
+                  "stage_id": "exect.llm_pre_post.sf_state_projection",
                   "stage_name": "Project seizure-frequency facts into the state representation",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0016399\",\n    \"CUIPhrase\": \"focal motor seizures\",\n    \"Certainty\": \"2\",\n    \"Negation\": \"Affirmed\",\n    \"NumberOfSeizures\": \"0\",\n    \"NumberOfTimePeriods\": \"10\",\n    \"TimePeriod\": \"Month\",\n    \"TimeSince_or_TimeOfEvent\": \"Since\"\n  },\n  \"confidence\": \"medium\",\n  \"entity\": \"SeizureFrequency\",\n  \"evidence\": \"As you recall Mr Owens has had focal motor seizures in the past where he has had jerking of his right leg. These were happening frequently before he started the medication. The last event was probably 10 months ago.\",\n  \"rationale\": \"The last focal motor seizure event is stated to have probably occurred 10 months ago.\",\n  \"text\": \"focal motor seizures\"\n}",
@@ -2926,7 +2926,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.sf_unknown_suppression",
+                  "stage_id": "exect.llm_pre_post.sf_unknown_suppression",
                   "stage_name": "Suppress unsupported unknown states",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0016399\",\n    \"CUIPhrase\": \"focal motor seizures\",\n    \"Certainty\": \"2\",\n    \"Negation\": \"Affirmed\",\n    \"NumberOfSeizures\": \"0\",\n    \"NumberOfTimePeriods\": \"10\",\n    \"TimePeriod\": \"Month\",\n    \"TimeSince_or_TimeOfEvent\": \"Since\"\n  },\n  \"confidence\": \"medium\",\n  \"entity\": \"SeizureFrequency\",\n  \"evidence\": \"As you recall Mr Owens has had focal motor seizures in the past where he has had jerking of his right leg. These were happening frequently before he started the medication. The last event was probably 10 months ago.\",\n  \"rationale\": \"The last focal motor seizure event is stated to have probably occurred 10 months ago.\",\n  \"text\": \"focal motor seizures\"\n}",
@@ -2935,7 +2935,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.lens.seizure_frequency",
+                  "stage_id": "exect.llm_pre_post.lens.seizure_frequency",
                   "stage_name": "Seizure Frequency family transform",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0016399\",\n    \"CUIPhrase\": \"focal motor seizures\",\n    \"Certainty\": \"2\",\n    \"Negation\": \"Affirmed\",\n    \"NumberOfSeizures\": \"0\",\n    \"NumberOfTimePeriods\": \"10\",\n    \"TimePeriod\": \"Month\",\n    \"TimeSince_or_TimeOfEvent\": \"Since\"\n  },\n  \"confidence\": \"medium\",\n  \"entity\": \"SeizureFrequency\",\n  \"evidence\": \"As you recall Mr Owens has had focal motor seizures in the past where he has had jerking of his right leg. These were happening frequently before he started the medication. The last event was probably 10 months ago.\",\n  \"rationale\": \"The last focal motor seizure event is stated to have probably occurred 10 months ago.\",\n  \"text\": \"focal motor seizures\"\n}",
@@ -2944,7 +2944,7 @@
                   "note": "Assembled this family; no further clinical rewrite."
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.evidence_requirement",
+                  "stage_id": "exect.llm_pre_post.evidence_requirement",
                   "stage_name": "Require exact evidence for every finding",
                   "band": "gate",
                   "entered": "As you recall Mr Owens has had focal motor seizures in the past where he has had jerking of his right leg. These were happening frequently before he started the medication. The last event was probably 10 months ago.",
@@ -2953,7 +2953,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.score",
+                  "stage_id": "exect.llm_pre_post.score",
                   "stage_name": "Score against gold",
                   "band": "leave",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0016399\",\n    \"CUIPhrase\": \"focal motor seizures\",\n    \"Certainty\": \"2\",\n    \"Negation\": \"Affirmed\",\n    \"NumberOfSeizures\": \"0\",\n    \"NumberOfTimePeriods\": \"10\",\n    \"TimePeriod\": \"Month\"\n  },\n  \"confidence\": \"medium\",\n  \"entity\": \"SeizureFrequency\",\n  \"evidence\": \"As you recall Mr Owens has had focal motor seizures in the past where he has had jerking of his right leg. These were happening frequently before he started the medication. The last event was probably 10 months ago.\",\n  \"rationale\": \"The last focal motor seizure event is stated to have probably occurred 10 months ago. Deterministic state projection aligns temporal direction.\",\n  \"text\": \"focal motor seizures\"\n}",
@@ -2978,7 +2978,7 @@
               },
               "transforms": [
                 {
-                  "stage_id": "exect.llm_with_rules.model_call",
+                  "stage_id": "exect.llm_pre_post.model_call",
                   "stage_name": "Model proposes findings for four families",
                   "band": "propose",
                   "entered": "(none)",
@@ -2987,7 +2987,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.parse_and_retry",
+                  "stage_id": "exect.llm_pre_post.parse_and_retry",
                   "stage_name": "Parse output, with format-only retry when eligible",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"lamotrigine 75mg twice a day\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He is currently taking lamotrigine 75mg twice a day and given the recent seizure I would be very grateful if you could increase this by 25mg every fortnight to 100mg twice a day.\",\n  \"family\": \"medication\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"DoseUnit\": \"mg\",\n        \"DrugDose\": \"75\",\n        \"DrugName\": \"lamotrigine\",\n        \"Frequency\": \"2\"\n      },\n      \"entity\": \"Prescription\",\n      \"text\": \"lamotrigine\"\n    }\n  ],\n  \"rationale\": \"The letter states that he is currently taking lamotrigine 75 mg twice a day.\"\n}",
@@ -2996,7 +2996,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.map_events",
+                  "stage_id": "exect.llm_pre_post.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"lamotrigine 75mg twice a day\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He is currently taking lamotrigine 75mg twice a day and given the recent seizure I would be very grateful if you could increase this by 25mg every fortnight to 100mg twice a day.\",\n  \"family\": \"medication\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"DoseUnit\": \"mg\",\n        \"DrugDose\": \"75\",\n        \"DrugName\": \"lamotrigine\",\n        \"Frequency\": \"2\"\n      },\n      \"entity\": \"Prescription\",\n      \"text\": \"lamotrigine\"\n    }\n  ],\n  \"rationale\": \"The letter states that he is currently taking lamotrigine 75 mg twice a day.\"\n}",
@@ -3005,7 +3005,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.project_and_gate",
+                  "stage_id": "exect.llm_pre_post.project_and_gate",
                   "stage_name": "Enrich attributes and apply render-safety gates",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"DoseUnit\": \"mg\",\n    \"DrugDose\": \"75\",\n    \"DrugName\": \"lamotrigine\",\n    \"Frequency\": \"2\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Prescription\",\n  \"evidence\": \"He is currently taking lamotrigine 75mg twice a day and given the recent seizure I would be very grateful if you could increase this by 25mg every fortnight to 100mg twice a day.\",\n  \"rationale\": \"The letter states that he is currently taking lamotrigine 75 mg twice a day.\",\n  \"text\": \"lamotrigine\"\n}",
@@ -3014,7 +3014,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.lens.prescription",
+                  "stage_id": "exect.llm_pre_post.lens.prescription",
                   "stage_name": "Prescription family transform",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0064636\",\n    \"CUIPhrase\": \"lamotrigine\",\n    \"DoseUnit\": \"mg\",\n    \"DrugDose\": \"75\",\n    \"DrugName\": \"lamotrigine\",\n    \"Frequency\": \"2\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Prescription\",\n  \"evidence\": \"He is currently taking lamotrigine 75mg twice a day and given the recent seizure I would be very grateful if you could increase this by 25mg every fortnight to 100mg twice a day.\",\n  \"rationale\": \"The letter states that he is currently taking lamotrigine 75 mg twice a day.\",\n  \"text\": \"lamotrigine\"\n}",
@@ -3023,7 +3023,7 @@
                   "note": "Assembled this family; no further clinical rewrite."
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.evidence_requirement",
+                  "stage_id": "exect.llm_pre_post.evidence_requirement",
                   "stage_name": "Require exact evidence for every finding",
                   "band": "gate",
                   "entered": "He is currently taking lamotrigine 75mg twice a day and given the recent seizure I would be very grateful if you could increase this by 25mg every fortnight to 100mg twice a day.",
@@ -3032,7 +3032,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.score",
+                  "stage_id": "exect.llm_pre_post.score",
                   "stage_name": "Score against gold",
                   "band": "leave",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0064636\",\n    \"CUIPhrase\": \"lamotrigine\",\n    \"DoseUnit\": \"mg\",\n    \"DrugDose\": \"75\",\n    \"DrugName\": \"lamotrigine\",\n    \"Frequency\": \"2\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Prescription\",\n  \"evidence\": \"He is currently taking lamotrigine 75mg twice a day and given the recent seizure I would be very grateful if you could increase this by 25mg every fortnight to 100mg twice a day.\",\n  \"rationale\": \"The letter states that he is currently taking lamotrigine 75 mg twice a day.\",\n  \"text\": \"lamotrigine\"\n}",
@@ -3057,7 +3057,7 @@
               },
               "transforms": [
                 {
-                  "stage_id": "exect.llm_with_rules.model_call",
+                  "stage_id": "exect.llm_pre_post.model_call",
                   "stage_name": "Model proposes findings for four families",
                   "band": "propose",
                   "entered": "(none)",
@@ -3066,7 +3066,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.parse_and_retry",
+                  "stage_id": "exect.llm_pre_post.parse_and_retry",
                   "stage_name": "Parse output, with format-only retry when eligible",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"MRI at the time was abnormal\",\n  \"confidence\": \"high\",\n  \"evidence\": \"As you will recall his MRI at the time was abnormal with an area of ischaemic damage in the left inferior frontal lobe.\",\n  \"family\": \"investigation\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"MRI_Performed\": \"Yes\",\n        \"MRI_Results\": \"Abnormal\"\n      },\n      \"entity\": \"Investigations\",\n      \"text\": \"MRI\"\n    }\n  ],\n  \"rationale\": \"The letter reports a completed abnormal MRI with left inferior frontal lobe ischaemic damage.\"\n}",
@@ -3075,7 +3075,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.map_events",
+                  "stage_id": "exect.llm_pre_post.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"MRI at the time was abnormal\",\n  \"confidence\": \"high\",\n  \"evidence\": \"As you will recall his MRI at the time was abnormal with an area of ischaemic damage in the left inferior frontal lobe.\",\n  \"family\": \"investigation\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"MRI_Performed\": \"Yes\",\n        \"MRI_Results\": \"Abnormal\"\n      },\n      \"entity\": \"Investigations\",\n      \"text\": \"MRI\"\n    }\n  ],\n  \"rationale\": \"The letter reports a completed abnormal MRI with left inferior frontal lobe ischaemic damage.\"\n}",
@@ -3084,7 +3084,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.project_and_gate",
+                  "stage_id": "exect.llm_pre_post.project_and_gate",
                   "stage_name": "Enrich attributes and apply render-safety gates",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"MRI_Performed\": \"Yes\",\n    \"MRI_Results\": \"Abnormal\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Investigations\",\n  \"evidence\": \"As you will recall his MRI at the time was abnormal with an area of ischaemic damage in the left inferior frontal lobe.\",\n  \"rationale\": \"The letter reports a completed abnormal MRI with left inferior frontal lobe ischaemic damage.\",\n  \"text\": \"MRI\"\n}",
@@ -3093,7 +3093,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.lens.investigations",
+                  "stage_id": "exect.llm_pre_post.lens.investigations",
                   "stage_name": "Investigations family transform",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C1319851\",\n    \"CUIPhrase\": \"mri abnormal\",\n    \"MRI_Performed\": \"Yes\",\n    \"MRI_Results\": \"Abnormal\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Investigations\",\n  \"evidence\": \"As you will recall his MRI at the time was abnormal with an area of ischaemic damage in the left inferior frontal lobe.\",\n  \"rationale\": \"The letter reports a completed abnormal MRI with left inferior frontal lobe ischaemic damage.\",\n  \"text\": \"MRI\"\n}",
@@ -3102,7 +3102,7 @@
                   "note": "Assembled this family; no further clinical rewrite."
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.evidence_requirement",
+                  "stage_id": "exect.llm_pre_post.evidence_requirement",
                   "stage_name": "Require exact evidence for every finding",
                   "band": "gate",
                   "entered": "As you will recall his MRI at the time was abnormal with an area of ischaemic damage in the left inferior frontal lobe.",
@@ -3111,7 +3111,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.score",
+                  "stage_id": "exect.llm_pre_post.score",
                   "stage_name": "Score against gold",
                   "band": "leave",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C1319851\",\n    \"CUIPhrase\": \"mri abnormal\",\n    \"MRI_Performed\": \"Yes\",\n    \"MRI_Results\": \"Abnormal\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Investigations\",\n  \"evidence\": \"As you will recall his MRI at the time was abnormal with an area of ischaemic damage in the left inferior frontal lobe.\",\n  \"rationale\": \"The letter reports a completed abnormal MRI with left inferior frontal lobe ischaemic damage.\",\n  \"text\": \"MRI\"\n}",
@@ -3136,7 +3136,7 @@
               },
               "transforms": [
                 {
-                  "stage_id": "exect.llm_with_rules.model_call",
+                  "stage_id": "exect.llm_pre_post.model_call",
                   "stage_name": "Model proposes findings for four families",
                   "band": "propose",
                   "entered": "(none)",
@@ -3145,7 +3145,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.parse_and_retry",
+                  "stage_id": "exect.llm_pre_post.parse_and_retry",
                   "stage_name": "Parse output, with format-only retry when eligible",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"An EEG in 2017 did show some left sided sharp waves\",\n  \"confidence\": \"high\",\n  \"evidence\": \"An EEG in 2017 did show some left sided sharp waves.\",\n  \"family\": \"investigation\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"EEG_Performed\": \"Yes\",\n        \"EEG_Results\": \"Abnormal\",\n        \"EEG_Type\": \"Standard\"\n      },\n      \"entity\": \"Investigations\",\n      \"text\": \"EEG\"\n    }\n  ],\n  \"rationale\": \"The letter reports an EEG in 2017 showing left sided sharp waves.\"\n}",
@@ -3154,7 +3154,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.map_events",
+                  "stage_id": "exect.llm_pre_post.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"An EEG in 2017 did show some left sided sharp waves\",\n  \"confidence\": \"high\",\n  \"evidence\": \"An EEG in 2017 did show some left sided sharp waves.\",\n  \"family\": \"investigation\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"EEG_Performed\": \"Yes\",\n        \"EEG_Results\": \"Abnormal\",\n        \"EEG_Type\": \"Standard\"\n      },\n      \"entity\": \"Investigations\",\n      \"text\": \"EEG\"\n    }\n  ],\n  \"rationale\": \"The letter reports an EEG in 2017 showing left sided sharp waves.\"\n}",
@@ -3163,7 +3163,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.project_and_gate",
+                  "stage_id": "exect.llm_pre_post.project_and_gate",
                   "stage_name": "Enrich attributes and apply render-safety gates",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"EEG_Performed\": \"Yes\",\n    \"EEG_Results\": \"Abnormal\",\n    \"EEG_Type\": \"Standard\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Investigations\",\n  \"evidence\": \"An EEG in 2017 did show some left sided sharp waves.\",\n  \"rationale\": \"The letter reports an EEG in 2017 showing left sided sharp waves.\",\n  \"text\": \"EEG\"\n}",
@@ -3172,7 +3172,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.lens.investigations",
+                  "stage_id": "exect.llm_pre_post.lens.investigations",
                   "stage_name": "Investigations family transform",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0151611\",\n    \"CUIPhrase\": \"eeg abnormal\",\n    \"EEG_Performed\": \"Yes\",\n    \"EEG_Results\": \"Abnormal\",\n    \"EEG_Type\": \"Standard\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Investigations\",\n  \"evidence\": \"An EEG in 2017 did show some left sided sharp waves.\",\n  \"rationale\": \"The letter reports an EEG in 2017 showing left sided sharp waves.\",\n  \"text\": \"EEG\"\n}",
@@ -3181,7 +3181,7 @@
                   "note": "Assembled this family; no further clinical rewrite."
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.evidence_requirement",
+                  "stage_id": "exect.llm_pre_post.evidence_requirement",
                   "stage_name": "Require exact evidence for every finding",
                   "band": "gate",
                   "entered": "An EEG in 2017 did show some left sided sharp waves.",
@@ -3190,7 +3190,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.score",
+                  "stage_id": "exect.llm_pre_post.score",
                   "stage_name": "Score against gold",
                   "band": "leave",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0151611\",\n    \"CUIPhrase\": \"eeg abnormal\",\n    \"EEG_Performed\": \"Yes\",\n    \"EEG_Results\": \"Abnormal\",\n    \"EEG_Type\": \"Standard\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Investigations\",\n  \"evidence\": \"An EEG in 2017 did show some left sided sharp waves.\",\n  \"rationale\": \"The letter reports an EEG in 2017 showing left sided sharp waves.\",\n  \"text\": \"EEG\"\n}",
@@ -3234,7 +3234,7 @@
       "mechanism": "The letter states structural epilepsy that is now quiet and dissociative attacks twice a week. A model that puts the weekly rate on epilepsy has mixed the two diagnoses. The diagnosis and seizure-frequency lenses exist to keep those facts apart.",
       "runs": [
         {
-          "method_id": "exectv2_rules_only",
+          "method_id": "exect_rules",
           "method_label": "Rules only",
           "one_sentence": "Nine independent deterministic extractors produce the all-nine prediction, while an explicit four-family projection defines the primary model comparison.",
           "prediction_owner": "the nine deterministic extractors (stage exect.rules.extract_entities); the four-family projection is scorer-facing",
@@ -3564,7 +3564,7 @@
           }
         },
         {
-          "method_id": "exectv2_llm_only",
+          "method_id": "exect_llm_only",
           "method_label": "LLM only",
           "one_sentence": "One structured model call proposes four-family findings, and the selected LLM-only view scores those findings before family-specific deterministic transforms.",
           "prediction_owner": "the named model (stage exect.llm.model_call); deterministic stages only parse, represent, and gate its findings",
@@ -4140,16 +4140,16 @@
           }
         },
         {
-          "method_id": "exectv2_llm_with_rules",
+          "method_id": "exect_llm_pre_post",
           "method_label": "LLM with rules",
           "one_sentence": "The model proposes findings for four families in one call; deterministic family transforms reconcile those findings into the final scored representation.",
-          "prediction_owner": "the named model proposes all four families (exect.llm_with_rules.model_call); four family transforms may change findings afterwards",
+          "prediction_owner": "the named model proposes all four families (exect.llm_pre_post.model_call); four family transforms may change findings afterwards",
           "final_answer": "Diagnosis: focal epilepsy; focal motor seizure; focal to bilateral convulsive seizure\nSeizure frequency: focal motor seizures (seizure-free); focal to bilateral convulsive seizures (seizure-free)\nPrescription: levetiracetam 1000 mg ×2\nInvestigations: MRI performed abnormal",
           "correct": null,
           "correctness_note": "Gold comparison lives on Workbench.",
           "observations": [
             {
-              "stage_id": "exect.llm_with_rules.build_prompt",
+              "stage_id": "exect.llm_pre_post.build_prompt",
               "stage_name": "Build the four-family prompt",
               "owner": "deterministic",
               "effect_class": "transport_or_schema",
@@ -4159,7 +4159,7 @@
               "note": ""
             },
             {
-              "stage_id": "exect.llm_with_rules.model_call",
+              "stage_id": "exect.llm_pre_post.model_call",
               "stage_name": "Model proposes findings for four families",
               "owner": "model",
               "effect_class": "clinical_meaning",
@@ -4169,7 +4169,7 @@
               "note": "Fixture boundary at the one-call producer; no live model call is made."
             },
             {
-              "stage_id": "exect.llm_with_rules.parse_and_retry",
+              "stage_id": "exect.llm_pre_post.parse_and_retry",
               "stage_name": "Parse output, with format-only retry when eligible",
               "owner": "deterministic",
               "effect_class": "transport_or_schema",
@@ -4179,7 +4179,7 @@
               "note": ""
             },
             {
-              "stage_id": "exect.llm_with_rules.map_events",
+              "stage_id": "exect.llm_pre_post.map_events",
               "stage_name": "Flatten model events into mentions",
               "owner": "deterministic",
               "effect_class": "representation",
@@ -4189,7 +4189,7 @@
               "note": ""
             },
             {
-              "stage_id": "exect.llm_with_rules.project_and_gate",
+              "stage_id": "exect.llm_pre_post.project_and_gate",
               "stage_name": "Enrich attributes and apply render-safety gates",
               "owner": "deterministic",
               "effect_class": "clinical_meaning",
@@ -4199,7 +4199,7 @@
               "note": ""
             },
             {
-              "stage_id": "exect.llm_with_rules.sf_state_projection",
+              "stage_id": "exect.llm_pre_post.sf_state_projection",
               "stage_name": "Project seizure-frequency facts into the state representation",
               "owner": "deterministic",
               "effect_class": "clinical_meaning",
@@ -4209,7 +4209,7 @@
               "note": ""
             },
             {
-              "stage_id": "exect.llm_with_rules.sf_unknown_suppression",
+              "stage_id": "exect.llm_pre_post.sf_unknown_suppression",
               "stage_name": "Suppress unsupported unknown states",
               "owner": "deterministic",
               "effect_class": "clinical_meaning",
@@ -4219,7 +4219,7 @@
               "note": ""
             },
             {
-              "stage_id": "exect.llm_with_rules.register_findings",
+              "stage_id": "exect.llm_pre_post.register_findings",
               "stage_name": "Register raw and scored findings",
               "owner": "deterministic",
               "effect_class": "transport_or_schema",
@@ -4229,7 +4229,7 @@
               "note": ""
             },
             {
-              "stage_id": "exect.llm_with_rules.lens.diagnosis",
+              "stage_id": "exect.llm_pre_post.lens.diagnosis",
               "stage_name": "Diagnosis family transform",
               "owner": "deterministic",
               "effect_class": "clinical_meaning",
@@ -4239,7 +4239,7 @@
               "note": "Dictionary rewrote diagnosis: Symptomatic structural epilepsy secondary to previous cerebral abcess → symptomatic structural focal epilepsy."
             },
             {
-              "stage_id": "exect.llm_with_rules.lens.seizure_frequency",
+              "stage_id": "exect.llm_pre_post.lens.seizure_frequency",
               "stage_name": "Seizure Frequency family transform",
               "owner": "deterministic",
               "effect_class": "representation",
@@ -4249,7 +4249,7 @@
               "note": "Assembled this family; no further clinical rewrite."
             },
             {
-              "stage_id": "exect.llm_with_rules.lens.prescription",
+              "stage_id": "exect.llm_pre_post.lens.prescription",
               "stage_name": "Prescription family transform",
               "owner": "deterministic",
               "effect_class": "clinical_meaning",
@@ -4259,7 +4259,7 @@
               "note": "Assembled this family; no further clinical rewrite."
             },
             {
-              "stage_id": "exect.llm_with_rules.lens.investigations",
+              "stage_id": "exect.llm_pre_post.lens.investigations",
               "stage_name": "Investigations family transform",
               "owner": "deterministic",
               "effect_class": "representation",
@@ -4269,7 +4269,7 @@
               "note": "Assembled this family; no further clinical rewrite."
             },
             {
-              "stage_id": "exect.llm_with_rules.evidence_requirement",
+              "stage_id": "exect.llm_pre_post.evidence_requirement",
               "stage_name": "Require exact evidence for every finding",
               "owner": "deterministic",
               "effect_class": "validation_gate",
@@ -4279,7 +4279,7 @@
               "note": ""
             },
             {
-              "stage_id": "exect.llm_with_rules.materialize_views",
+              "stage_id": "exect.llm_pre_post.materialize_views",
               "stage_name": "Materialize the score views",
               "owner": "deterministic",
               "effect_class": "benchmark_projection",
@@ -4289,7 +4289,7 @@
               "note": ""
             },
             {
-              "stage_id": "exect.llm_with_rules.score",
+              "stage_id": "exect.llm_pre_post.score",
               "stage_name": "Score against gold",
               "owner": "scorer",
               "effect_class": "benchmark_projection",
@@ -4310,7 +4310,7 @@
               },
               "transforms": [
                 {
-                  "stage_id": "exect.llm_with_rules.model_call",
+                  "stage_id": "exect.llm_pre_post.model_call",
                   "stage_name": "Model proposes findings for four families",
                   "band": "propose",
                   "entered": "(none)",
@@ -4319,7 +4319,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.parse_and_retry",
+                  "stage_id": "exect.llm_pre_post.parse_and_retry",
                   "stage_name": "Parse output, with format-only retry when eligible",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"Symptomatic structural epilepsy secondary to previous cerebral abcess\",\n  \"confidence\": \"high\",\n  \"evidence\": \"\\t\\t2. Symptomatic structural epilepsy secondary to previous cerebral abcess\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"Symptomatic structural epilepsy secondary to previous cerebral abcess\"\n    }\n  ],\n  \"rationale\": \"The diagnosis section explicitly states symptomatic structural epilepsy secondary to the previous cerebral abscess.\"\n}",
@@ -4328,7 +4328,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.map_events",
+                  "stage_id": "exect.llm_pre_post.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"Symptomatic structural epilepsy secondary to previous cerebral abcess\",\n  \"confidence\": \"high\",\n  \"evidence\": \"\\t\\t2. Symptomatic structural epilepsy secondary to previous cerebral abcess\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"Symptomatic structural epilepsy secondary to previous cerebral abcess\"\n    }\n  ],\n  \"rationale\": \"The diagnosis section explicitly states symptomatic structural epilepsy secondary to the previous cerebral abscess.\"\n}",
@@ -4337,7 +4337,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.project_and_gate",
+                  "stage_id": "exect.llm_pre_post.project_and_gate",
                   "stage_name": "Enrich attributes and apply render-safety gates",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"Certainty\": \"1\",\n    \"DiagCategory\": \"epilepsy\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"\\t\\t2. Symptomatic structural epilepsy secondary to previous cerebral abcess\",\n  \"rationale\": \"The diagnosis section explicitly states symptomatic structural epilepsy secondary to the previous cerebral abscess.\",\n  \"text\": \"Symptomatic structural epilepsy secondary to previous cerebral abcess\"\n}",
@@ -4346,7 +4346,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.lens.diagnosis",
+                  "stage_id": "exect.llm_pre_post.lens.diagnosis",
                   "stage_name": "Diagnosis family transform",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"Certainty\": \"1\",\n    \"DiagCategory\": \"epilepsy\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"\\t\\t2. Symptomatic structural epilepsy secondary to previous cerebral abcess\",\n  \"rationale\": \"The diagnosis section explicitly states symptomatic structural epilepsy secondary to the previous cerebral abscess.\",\n  \"text\": \"Symptomatic structural epilepsy secondary to previous cerebral abcess\"\n}",
@@ -4355,7 +4355,7 @@
                   "note": "Dictionary rewrote diagnosis: Symptomatic structural epilepsy secondary to previous cerebral abcess → symptomatic structural focal epilepsy."
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.evidence_requirement",
+                  "stage_id": "exect.llm_pre_post.evidence_requirement",
                   "stage_name": "Require exact evidence for every finding",
                   "band": "gate",
                   "entered": "\t\t2. Symptomatic structural epilepsy secondary to previous cerebral abcess",
@@ -4364,7 +4364,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.score",
+                  "stage_id": "exect.llm_pre_post.score",
                   "stage_name": "Score against gold",
                   "band": "leave",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0472349\",\n    \"CUIPhrase\": \"symptomatic structural focal epilepsy\",\n    \"Certainty\": \"1\",\n    \"DiagCategory\": \"Epilepsy\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"\\t\\t2. Symptomatic structural epilepsy secondary to previous cerebral abcess\",\n  \"rationale\": \"The diagnosis section explicitly states symptomatic structural epilepsy secondary to the previous cerebral abscess.\",\n  \"text\": \"symptomatic structural focal epilepsy\"\n}",
@@ -4389,7 +4389,7 @@
               },
               "transforms": [
                 {
-                  "stage_id": "exect.llm_with_rules.model_call",
+                  "stage_id": "exect.llm_pre_post.model_call",
                   "stage_name": "Model proposes findings for four families",
                   "band": "propose",
                   "entered": "(none)",
@@ -4398,7 +4398,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.parse_and_retry",
+                  "stage_id": "exect.llm_pre_post.parse_and_retry",
                   "stage_name": "Parse output, with format-only retry when eligible",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"epilepsy\",\n  \"confidence\": \"high\",\n  \"evidence\": \"Mr Harris does have epilepsy as a result of his brain surgery and has a tendency for ongoing epileptic seizures.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"Epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"epilepsy\"\n    }\n  ],\n  \"rationale\": \"The comments explicitly affirm that Mr Harris has epilepsy.\"\n}",
@@ -4407,7 +4407,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.map_events",
+                  "stage_id": "exect.llm_pre_post.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"epilepsy\",\n  \"confidence\": \"high\",\n  \"evidence\": \"Mr Harris does have epilepsy as a result of his brain surgery and has a tendency for ongoing epileptic seizures.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"Epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"epilepsy\"\n    }\n  ],\n  \"rationale\": \"The comments explicitly affirm that Mr Harris has epilepsy.\"\n}",
@@ -4416,7 +4416,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.project_and_gate",
+                  "stage_id": "exect.llm_pre_post.project_and_gate",
                   "stage_name": "Enrich attributes and apply render-safety gates",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"Certainty\": \"1\",\n    \"DiagCategory\": \"Epilepsy\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"Mr Harris does have epilepsy as a result of his brain surgery and has a tendency for ongoing epileptic seizures.\",\n  \"rationale\": \"The comments explicitly affirm that Mr Harris has epilepsy.\",\n  \"text\": \"epilepsy\"\n}",
@@ -4425,7 +4425,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.lens.diagnosis",
+                  "stage_id": "exect.llm_pre_post.lens.diagnosis",
                   "stage_name": "Diagnosis family transform",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0014544\",\n    \"CUIPhrase\": \"epilepsy\",\n    \"Certainty\": \"1\",\n    \"DiagCategory\": \"Epilepsy\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"Mr Harris does have epilepsy as a result of his brain surgery and has a tendency for ongoing epileptic seizures.\",\n  \"rationale\": \"The comments explicitly affirm that Mr Harris has epilepsy.\",\n  \"text\": \"epilepsy\"\n}",
@@ -4434,7 +4434,7 @@
                   "note": "Dictionary rewrote diagnosis: Symptomatic structural epilepsy secondary to previous cerebral abcess → symptomatic structural focal epilepsy."
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.evidence_requirement",
+                  "stage_id": "exect.llm_pre_post.evidence_requirement",
                   "stage_name": "Require exact evidence for every finding",
                   "band": "gate",
                   "entered": "Mr Harris does have epilepsy as a result of his brain surgery and has a tendency for ongoing epileptic seizures.",
@@ -4443,7 +4443,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.score",
+                  "stage_id": "exect.llm_pre_post.score",
                   "stage_name": "Score against gold",
                   "band": "leave",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0014544\",\n    \"CUIPhrase\": \"epilepsy\",\n    \"Certainty\": \"1\",\n    \"DiagCategory\": \"Epilepsy\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"Mr Harris does have epilepsy as a result of his brain surgery and has a tendency for ongoing epileptic seizures.\",\n  \"rationale\": \"The comments explicitly affirm that Mr Harris has epilepsy.\",\n  \"text\": \"epilepsy\"\n}",
@@ -4468,7 +4468,7 @@
               },
               "transforms": [
                 {
-                  "stage_id": "exect.llm_with_rules.model_call",
+                  "stage_id": "exect.llm_pre_post.model_call",
                   "stage_name": "Model proposes findings for four families",
                   "band": "propose",
                   "entered": "(none)",
@@ -4477,7 +4477,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.parse_and_retry",
+                  "stage_id": "exect.llm_pre_post.parse_and_retry",
                   "stage_name": "Parse output, with format-only retry when eligible",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal motor seizures without changes in awareness\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He used to have focal motor seizures without changes in awareness, these would involve his left arm twitching with retained awareness.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"Epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"focal motor seizures without changes in awareness\"\n    }\n  ],\n  \"rationale\": \"The letter describes a previous named epileptic seizure type with retained awareness.\"\n}",
@@ -4486,7 +4486,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.map_events",
+                  "stage_id": "exect.llm_pre_post.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal motor seizures without changes in awareness\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He used to have focal motor seizures without changes in awareness, these would involve his left arm twitching with retained awareness.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"Epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"focal motor seizures without changes in awareness\"\n    }\n  ],\n  \"rationale\": \"The letter describes a previous named epileptic seizure type with retained awareness.\"\n}",
@@ -4495,7 +4495,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.project_and_gate",
+                  "stage_id": "exect.llm_pre_post.project_and_gate",
                   "stage_name": "Enrich attributes and apply render-safety gates",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"Certainty\": \"1\",\n    \"DiagCategory\": \"Epilepsy\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"He used to have focal motor seizures without changes in awareness, these would involve his left arm twitching with retained awareness.\",\n  \"rationale\": \"The letter describes a previous named epileptic seizure type with retained awareness.\",\n  \"text\": \"focal motor seizures without changes in awareness\"\n}",
@@ -4504,7 +4504,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.lens.diagnosis",
+                  "stage_id": "exect.llm_pre_post.lens.diagnosis",
                   "stage_name": "Diagnosis family transform",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0016399\",\n    \"CUIPhrase\": \"focal-motor-seizures\",\n    \"Certainty\": \"1\",\n    \"DiagCategory\": \"Epilepsy\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"He used to have focal motor seizures without changes in awareness, these would involve his left arm twitching with retained awareness.\",\n  \"rationale\": \"The letter describes a previous named epileptic seizure type with retained awareness.\",\n  \"text\": \"focal motor seizures without changes in awareness\"\n}",
@@ -4513,7 +4513,7 @@
                   "note": "Dictionary rewrote diagnosis: Symptomatic structural epilepsy secondary to previous cerebral abcess → symptomatic structural focal epilepsy."
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.evidence_requirement",
+                  "stage_id": "exect.llm_pre_post.evidence_requirement",
                   "stage_name": "Require exact evidence for every finding",
                   "band": "gate",
                   "entered": "He used to have focal motor seizures without changes in awareness, these would involve his left arm twitching with retained awareness.",
@@ -4522,7 +4522,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.score",
+                  "stage_id": "exect.llm_pre_post.score",
                   "stage_name": "Score against gold",
                   "band": "leave",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0016399\",\n    \"CUIPhrase\": \"focal-motor-seizures\",\n    \"Certainty\": \"1\",\n    \"DiagCategory\": \"Epilepsy\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"He used to have focal motor seizures without changes in awareness, these would involve his left arm twitching with retained awareness.\",\n  \"rationale\": \"The letter describes a previous named epileptic seizure type with retained awareness.\",\n  \"text\": \"focal motor seizures without changes in awareness\"\n}",
@@ -4547,7 +4547,7 @@
               },
               "transforms": [
                 {
-                  "stage_id": "exect.llm_with_rules.model_call",
+                  "stage_id": "exect.llm_pre_post.model_call",
                   "stage_name": "Model proposes findings for four families",
                   "band": "propose",
                   "entered": "(none)",
@@ -4556,7 +4556,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.parse_and_retry",
+                  "stage_id": "exect.llm_pre_post.parse_and_retry",
                   "stage_name": "Parse output, with format-only retry when eligible",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal to bilateral convulsive seizures\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He has previously had focal to bilateral convulsive seizures.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"Epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"focal to bilateral convulsive seizures\"\n    }\n  ],\n  \"rationale\": \"The letter explicitly records previous focal to bilateral convulsive seizures.\"\n}",
@@ -4565,7 +4565,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.map_events",
+                  "stage_id": "exect.llm_pre_post.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal to bilateral convulsive seizures\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He has previously had focal to bilateral convulsive seizures.\",\n  \"family\": \"diagnosis\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Certainty\": \"1\",\n        \"DiagCategory\": \"Epilepsy\",\n        \"Negation\": \"Affirmed\"\n      },\n      \"entity\": \"Diagnosis\",\n      \"text\": \"focal to bilateral convulsive seizures\"\n    }\n  ],\n  \"rationale\": \"The letter explicitly records previous focal to bilateral convulsive seizures.\"\n}",
@@ -4574,7 +4574,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.project_and_gate",
+                  "stage_id": "exect.llm_pre_post.project_and_gate",
                   "stage_name": "Enrich attributes and apply render-safety gates",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"Certainty\": \"1\",\n    \"DiagCategory\": \"Epilepsy\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"He has previously had focal to bilateral convulsive seizures.\",\n  \"rationale\": \"The letter explicitly records previous focal to bilateral convulsive seizures.\",\n  \"text\": \"focal to bilateral convulsive seizures\"\n}",
@@ -4583,7 +4583,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.lens.diagnosis",
+                  "stage_id": "exect.llm_pre_post.lens.diagnosis",
                   "stage_name": "Diagnosis family transform",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0877017\",\n    \"CUIPhrase\": \"focal-to-bilateral-convulsive-seizures\",\n    \"Certainty\": \"1\",\n    \"DiagCategory\": \"Epilepsy\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"He has previously had focal to bilateral convulsive seizures.\",\n  \"rationale\": \"The letter explicitly records previous focal to bilateral convulsive seizures.\",\n  \"text\": \"focal to bilateral convulsive seizures\"\n}",
@@ -4592,7 +4592,7 @@
                   "note": "Dictionary rewrote diagnosis: Symptomatic structural epilepsy secondary to previous cerebral abcess → symptomatic structural focal epilepsy."
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.evidence_requirement",
+                  "stage_id": "exect.llm_pre_post.evidence_requirement",
                   "stage_name": "Require exact evidence for every finding",
                   "band": "gate",
                   "entered": "He has previously had focal to bilateral convulsive seizures.",
@@ -4601,7 +4601,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.score",
+                  "stage_id": "exect.llm_pre_post.score",
                   "stage_name": "Score against gold",
                   "band": "leave",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0877017\",\n    \"CUIPhrase\": \"focal-to-bilateral-convulsive-seizures\",\n    \"Certainty\": \"1\",\n    \"DiagCategory\": \"Epilepsy\",\n    \"Negation\": \"Affirmed\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Diagnosis\",\n  \"evidence\": \"He has previously had focal to bilateral convulsive seizures.\",\n  \"rationale\": \"The letter explicitly records previous focal to bilateral convulsive seizures.\",\n  \"text\": \"focal to bilateral convulsive seizures\"\n}",
@@ -4626,7 +4626,7 @@
               },
               "transforms": [
                 {
-                  "stage_id": "exect.llm_with_rules.model_call",
+                  "stage_id": "exect.llm_pre_post.model_call",
                   "stage_name": "Model proposes findings for four families",
                   "band": "propose",
                   "entered": "(none)",
@@ -4635,7 +4635,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.parse_and_retry",
+                  "stage_id": "exect.llm_pre_post.parse_and_retry",
                   "stage_name": "Parse output, with format-only retry when eligible",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal motor seizures\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He used to gets these every month but has not had a seizure like this for around two years now.\",\n  \"family\": \"seizure_frequency\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Negation\": \"Affirmed\",\n        \"NumberOfSeizures\": \"0\",\n        \"NumberOfTimePeriods\": \"2\",\n        \"TimePeriod\": \"Year\",\n        \"TimeSince_or_TimeOfEvent\": \"Since\"\n      },\n      \"entity\": \"SeizureFrequency\",\n      \"text\": \"focal motor seizures\"\n    }\n  ],\n  \"rationale\": \"The letter states that these focal motor seizures have not occurred for around two years.\"\n}",
@@ -4644,7 +4644,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.map_events",
+                  "stage_id": "exect.llm_pre_post.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal motor seizures\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He used to gets these every month but has not had a seizure like this for around two years now.\",\n  \"family\": \"seizure_frequency\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"Negation\": \"Affirmed\",\n        \"NumberOfSeizures\": \"0\",\n        \"NumberOfTimePeriods\": \"2\",\n        \"TimePeriod\": \"Year\",\n        \"TimeSince_or_TimeOfEvent\": \"Since\"\n      },\n      \"entity\": \"SeizureFrequency\",\n      \"text\": \"focal motor seizures\"\n    }\n  ],\n  \"rationale\": \"The letter states that these focal motor seizures have not occurred for around two years.\"\n}",
@@ -4653,7 +4653,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.project_and_gate",
+                  "stage_id": "exect.llm_pre_post.project_and_gate",
                   "stage_name": "Enrich attributes and apply render-safety gates",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"Negation\": \"Affirmed\",\n    \"NumberOfSeizures\": \"0\",\n    \"NumberOfTimePeriods\": \"2\",\n    \"TimePeriod\": \"Year\",\n    \"TimeSince_or_TimeOfEvent\": \"Since\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"SeizureFrequency\",\n  \"evidence\": \"He used to gets these every month but has not had a seizure like this for around two years now.\",\n  \"rationale\": \"The letter states that these focal motor seizures have not occurred for around two years.\",\n  \"text\": \"focal motor seizures\"\n}",
@@ -4662,7 +4662,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.sf_state_projection",
+                  "stage_id": "exect.llm_pre_post.sf_state_projection",
                   "stage_name": "Project seizure-frequency facts into the state representation",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0016399\",\n    \"CUIPhrase\": \"focal motor seizures\",\n    \"Negation\": \"Affirmed\",\n    \"NumberOfSeizures\": \"0\",\n    \"NumberOfTimePeriods\": \"2\",\n    \"TimePeriod\": \"Year\",\n    \"TimeSince_or_TimeOfEvent\": \"Since\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"SeizureFrequency\",\n  \"evidence\": \"He used to gets these every month but has not had a seizure like this for around two years now.\",\n  \"rationale\": \"The letter states that these focal motor seizures have not occurred for around two years.\",\n  \"text\": \"focal motor seizures\"\n}",
@@ -4671,7 +4671,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.sf_unknown_suppression",
+                  "stage_id": "exect.llm_pre_post.sf_unknown_suppression",
                   "stage_name": "Suppress unsupported unknown states",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0016399\",\n    \"CUIPhrase\": \"focal motor seizures\",\n    \"Negation\": \"Affirmed\",\n    \"NumberOfSeizures\": \"0\",\n    \"NumberOfTimePeriods\": \"2\",\n    \"TimePeriod\": \"Year\",\n    \"TimeSince_or_TimeOfEvent\": \"Since\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"SeizureFrequency\",\n  \"evidence\": \"He used to gets these every month but has not had a seizure like this for around two years now.\",\n  \"rationale\": \"The letter states that these focal motor seizures have not occurred for around two years.\",\n  \"text\": \"focal motor seizures\"\n}",
@@ -4680,7 +4680,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.lens.seizure_frequency",
+                  "stage_id": "exect.llm_pre_post.lens.seizure_frequency",
                   "stage_name": "Seizure Frequency family transform",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0016399\",\n    \"CUIPhrase\": \"focal motor seizures\",\n    \"Negation\": \"Affirmed\",\n    \"NumberOfSeizures\": \"0\",\n    \"NumberOfTimePeriods\": \"2\",\n    \"TimePeriod\": \"Year\",\n    \"TimeSince_or_TimeOfEvent\": \"Since\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"SeizureFrequency\",\n  \"evidence\": \"He used to gets these every month but has not had a seizure like this for around two years now.\",\n  \"rationale\": \"The letter states that these focal motor seizures have not occurred for around two years.\",\n  \"text\": \"focal motor seizures\"\n}",
@@ -4689,7 +4689,7 @@
                   "note": "Assembled this family; no further clinical rewrite."
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.evidence_requirement",
+                  "stage_id": "exect.llm_pre_post.evidence_requirement",
                   "stage_name": "Require exact evidence for every finding",
                   "band": "gate",
                   "entered": "He used to gets these every month but has not had a seizure like this for around two years now.",
@@ -4698,7 +4698,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.score",
+                  "stage_id": "exect.llm_pre_post.score",
                   "stage_name": "Score against gold",
                   "band": "leave",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0016399\",\n    \"CUIPhrase\": \"focal motor seizures\",\n    \"Negation\": \"Affirmed\",\n    \"NumberOfSeizures\": \"0\",\n    \"NumberOfTimePeriods\": \"2\",\n    \"TimePeriod\": \"Year\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"SeizureFrequency\",\n  \"evidence\": \"He used to gets these every month but has not had a seizure like this for around two years now.\",\n  \"rationale\": \"The letter states that these focal motor seizures have not occurred for around two years. Deterministic state projection aligns temporal direction.\",\n  \"text\": \"focal motor seizures\"\n}",
@@ -4723,7 +4723,7 @@
               },
               "transforms": [
                 {
-                  "stage_id": "exect.llm_with_rules.model_call",
+                  "stage_id": "exect.llm_pre_post.model_call",
                   "stage_name": "Model proposes findings for four families",
                   "band": "propose",
                   "entered": "(none)",
@@ -4732,7 +4732,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.parse_and_retry",
+                  "stage_id": "exect.llm_pre_post.parse_and_retry",
                   "stage_name": "Parse output, with format-only retry when eligible",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal to bilateral convulsive seizures\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He has previously had focal to bilateral convulsive seizures. his last one was on Christmas day 2009.\",\n  \"family\": \"seizure_frequency\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"DayDate\": \"Christmas day\",\n        \"Negation\": \"Affirmed\",\n        \"NumberOfSeizures\": \"0\",\n        \"TimeSince_or_TimeOfEvent\": \"Since\",\n        \"YearDate\": \"2009\"\n      },\n      \"entity\": \"SeizureFrequency\",\n      \"text\": \"focal to bilateral convulsive seizures\"\n    }\n  ],\n  \"rationale\": \"The letter gives the last occurrence of this seizure type as Christmas day 2009.\"\n}",
@@ -4741,7 +4741,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.map_events",
+                  "stage_id": "exect.llm_pre_post.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"focal to bilateral convulsive seizures\",\n  \"confidence\": \"high\",\n  \"evidence\": \"He has previously had focal to bilateral convulsive seizures. his last one was on Christmas day 2009.\",\n  \"family\": \"seizure_frequency\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"DayDate\": \"Christmas day\",\n        \"Negation\": \"Affirmed\",\n        \"NumberOfSeizures\": \"0\",\n        \"TimeSince_or_TimeOfEvent\": \"Since\",\n        \"YearDate\": \"2009\"\n      },\n      \"entity\": \"SeizureFrequency\",\n      \"text\": \"focal to bilateral convulsive seizures\"\n    }\n  ],\n  \"rationale\": \"The letter gives the last occurrence of this seizure type as Christmas day 2009.\"\n}",
@@ -4750,7 +4750,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.project_and_gate",
+                  "stage_id": "exect.llm_pre_post.project_and_gate",
                   "stage_name": "Enrich attributes and apply render-safety gates",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"DayDate\": \"Christmas day\",\n    \"Negation\": \"Affirmed\",\n    \"NumberOfSeizures\": \"0\",\n    \"TimeSince_or_TimeOfEvent\": \"Since\",\n    \"YearDate\": \"2009\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"SeizureFrequency\",\n  \"evidence\": \"He has previously had focal to bilateral convulsive seizures. his last one was on Christmas day 2009.\",\n  \"rationale\": \"The letter gives the last occurrence of this seizure type as Christmas day 2009.\",\n  \"text\": \"focal to bilateral convulsive seizures\"\n}",
@@ -4759,7 +4759,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.sf_state_projection",
+                  "stage_id": "exect.llm_pre_post.sf_state_projection",
                   "stage_name": "Project seizure-frequency facts into the state representation",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0877017\",\n    \"CUIPhrase\": \"focal to bilateral convulsive seizures\",\n    \"DayDate\": \"Christmas day\",\n    \"Negation\": \"Affirmed\",\n    \"NumberOfSeizures\": \"0\",\n    \"TimeSince_or_TimeOfEvent\": \"Since\",\n    \"YearDate\": \"2009\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"SeizureFrequency\",\n  \"evidence\": \"He has previously had focal to bilateral convulsive seizures. his last one was on Christmas day 2009.\",\n  \"rationale\": \"The letter gives the last occurrence of this seizure type as Christmas day 2009.\",\n  \"text\": \"focal to bilateral convulsive seizures\"\n}",
@@ -4768,7 +4768,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.sf_unknown_suppression",
+                  "stage_id": "exect.llm_pre_post.sf_unknown_suppression",
                   "stage_name": "Suppress unsupported unknown states",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0877017\",\n    \"CUIPhrase\": \"focal to bilateral convulsive seizures\",\n    \"DayDate\": \"Christmas day\",\n    \"Negation\": \"Affirmed\",\n    \"NumberOfSeizures\": \"0\",\n    \"TimeSince_or_TimeOfEvent\": \"Since\",\n    \"YearDate\": \"2009\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"SeizureFrequency\",\n  \"evidence\": \"He has previously had focal to bilateral convulsive seizures. his last one was on Christmas day 2009.\",\n  \"rationale\": \"The letter gives the last occurrence of this seizure type as Christmas day 2009.\",\n  \"text\": \"focal to bilateral convulsive seizures\"\n}",
@@ -4777,7 +4777,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.lens.seizure_frequency",
+                  "stage_id": "exect.llm_pre_post.lens.seizure_frequency",
                   "stage_name": "Seizure Frequency family transform",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0877017\",\n    \"CUIPhrase\": \"focal to bilateral convulsive seizures\",\n    \"DayDate\": \"Christmas day\",\n    \"Negation\": \"Affirmed\",\n    \"NumberOfSeizures\": \"0\",\n    \"TimeSince_or_TimeOfEvent\": \"Since\",\n    \"YearDate\": \"2009\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"SeizureFrequency\",\n  \"evidence\": \"He has previously had focal to bilateral convulsive seizures. his last one was on Christmas day 2009.\",\n  \"rationale\": \"The letter gives the last occurrence of this seizure type as Christmas day 2009.\",\n  \"text\": \"focal to bilateral convulsive seizures\"\n}",
@@ -4786,7 +4786,7 @@
                   "note": "Assembled this family; no further clinical rewrite."
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.evidence_requirement",
+                  "stage_id": "exect.llm_pre_post.evidence_requirement",
                   "stage_name": "Require exact evidence for every finding",
                   "band": "gate",
                   "entered": "He has previously had focal to bilateral convulsive seizures. his last one was on Christmas day 2009.",
@@ -4795,7 +4795,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.score",
+                  "stage_id": "exect.llm_pre_post.score",
                   "stage_name": "Score against gold",
                   "band": "leave",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0877017\",\n    \"CUIPhrase\": \"focal to bilateral convulsive seizures\",\n    \"DayDate\": \"Christmas day\",\n    \"Negation\": \"Affirmed\",\n    \"NumberOfSeizures\": \"0\",\n    \"YearDate\": \"2009\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"SeizureFrequency\",\n  \"evidence\": \"He has previously had focal to bilateral convulsive seizures. his last one was on Christmas day 2009.\",\n  \"rationale\": \"The letter gives the last occurrence of this seizure type as Christmas day 2009. Deterministic state projection aligns temporal direction.\",\n  \"text\": \"focal to bilateral convulsive seizures\"\n}",
@@ -4820,7 +4820,7 @@
               },
               "transforms": [
                 {
-                  "stage_id": "exect.llm_with_rules.model_call",
+                  "stage_id": "exect.llm_pre_post.model_call",
                   "stage_name": "Model proposes findings for four families",
                   "band": "propose",
                   "entered": "(none)",
@@ -4829,7 +4829,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.parse_and_retry",
+                  "stage_id": "exect.llm_pre_post.parse_and_retry",
                   "stage_name": "Parse output, with format-only retry when eligible",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"Levetiracetam 1000mg bd\",\n  \"confidence\": \"high\",\n  \"evidence\": \"Medication:\\tLevetiracetam 1000mg bd\",\n  \"family\": \"medication\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"DoseUnit\": \"mg\",\n        \"DrugDose\": \"1000\",\n        \"DrugName\": \"Levetiracetam\",\n        \"Frequency\": \"2\"\n      },\n      \"entity\": \"Prescription\",\n      \"text\": \"Levetiracetam 1000mg bd\"\n    }\n  ],\n  \"rationale\": \"The letter lists levetiracetam as a current twice-daily anti-seizure medication.\"\n}",
@@ -4838,7 +4838,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.map_events",
+                  "stage_id": "exect.llm_pre_post.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"Levetiracetam 1000mg bd\",\n  \"confidence\": \"high\",\n  \"evidence\": \"Medication:\\tLevetiracetam 1000mg bd\",\n  \"family\": \"medication\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"DoseUnit\": \"mg\",\n        \"DrugDose\": \"1000\",\n        \"DrugName\": \"Levetiracetam\",\n        \"Frequency\": \"2\"\n      },\n      \"entity\": \"Prescription\",\n      \"text\": \"Levetiracetam 1000mg bd\"\n    }\n  ],\n  \"rationale\": \"The letter lists levetiracetam as a current twice-daily anti-seizure medication.\"\n}",
@@ -4847,7 +4847,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.project_and_gate",
+                  "stage_id": "exect.llm_pre_post.project_and_gate",
                   "stage_name": "Enrich attributes and apply render-safety gates",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"DoseUnit\": \"mg\",\n    \"DrugDose\": \"1000\",\n    \"DrugName\": \"Levetiracetam\",\n    \"Frequency\": \"2\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Prescription\",\n  \"evidence\": \"Medication:\\tLevetiracetam 1000mg bd\",\n  \"rationale\": \"The letter lists levetiracetam as a current twice-daily anti-seizure medication.\",\n  \"text\": \"Levetiracetam 1000mg bd\"\n}",
@@ -4856,7 +4856,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.lens.prescription",
+                  "stage_id": "exect.llm_pre_post.lens.prescription",
                   "stage_name": "Prescription family transform",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0377265\",\n    \"CUIPhrase\": \"levetiracetam\",\n    \"DoseUnit\": \"mg\",\n    \"DrugDose\": \"1000\",\n    \"DrugName\": \"levetiracetam\",\n    \"Frequency\": \"2\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Prescription\",\n  \"evidence\": \"Medication:\\tLevetiracetam 1000mg bd\",\n  \"rationale\": \"The letter lists levetiracetam as a current twice-daily anti-seizure medication.\",\n  \"text\": \"Levetiracetam 1000mg bd\"\n}",
@@ -4865,7 +4865,7 @@
                   "note": "Assembled this family; no further clinical rewrite."
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.evidence_requirement",
+                  "stage_id": "exect.llm_pre_post.evidence_requirement",
                   "stage_name": "Require exact evidence for every finding",
                   "band": "gate",
                   "entered": "Medication:\tLevetiracetam 1000mg bd",
@@ -4874,7 +4874,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.score",
+                  "stage_id": "exect.llm_pre_post.score",
                   "stage_name": "Score against gold",
                   "band": "leave",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C0377265\",\n    \"CUIPhrase\": \"levetiracetam\",\n    \"DoseUnit\": \"mg\",\n    \"DrugDose\": \"1000\",\n    \"DrugName\": \"levetiracetam\",\n    \"Frequency\": \"2\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Prescription\",\n  \"evidence\": \"Medication:\\tLevetiracetam 1000mg bd\",\n  \"rationale\": \"The letter lists levetiracetam as a current twice-daily anti-seizure medication.\",\n  \"text\": \"Levetiracetam 1000mg bd\"\n}",
@@ -4899,7 +4899,7 @@
               },
               "transforms": [
                 {
-                  "stage_id": "exect.llm_with_rules.model_call",
+                  "stage_id": "exect.llm_pre_post.model_call",
                   "stage_name": "Model proposes findings for four families",
                   "band": "propose",
                   "entered": "(none)",
@@ -4908,7 +4908,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.parse_and_retry",
+                  "stage_id": "exect.llm_pre_post.parse_and_retry",
                   "stage_name": "Parse output, with format-only retry when eligible",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"A MRI two years ago showed an area of gliosis in the right frontal lobe\",\n  \"confidence\": \"high\",\n  \"evidence\": \"A MRI two years ago showed an area of gliosis in the right frontal lobe secondary to his previous surgery.\",\n  \"family\": \"investigation\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"MRI_Performed\": \"Yes\",\n        \"MRI_Results\": \"Abnormal\"\n      },\n      \"entity\": \"Investigations\",\n      \"text\": \"MRI\"\n    }\n  ],\n  \"rationale\": \"A completed MRI was reported as showing right frontal lobe gliosis.\"\n}",
@@ -4917,7 +4917,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.map_events",
+                  "stage_id": "exect.llm_pre_post.map_events",
                   "stage_name": "Flatten model events into mentions",
                   "band": "reshape",
                   "entered": "{\n  \"anchor_text\": \"A MRI two years ago showed an area of gliosis in the right frontal lobe\",\n  \"confidence\": \"high\",\n  \"evidence\": \"A MRI two years ago showed an area of gliosis in the right frontal lobe secondary to his previous surgery.\",\n  \"family\": \"investigation\",\n  \"mentions\": [\n    {\n      \"attributes\": {\n        \"MRI_Performed\": \"Yes\",\n        \"MRI_Results\": \"Abnormal\"\n      },\n      \"entity\": \"Investigations\",\n      \"text\": \"MRI\"\n    }\n  ],\n  \"rationale\": \"A completed MRI was reported as showing right frontal lobe gliosis.\"\n}",
@@ -4926,7 +4926,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.project_and_gate",
+                  "stage_id": "exect.llm_pre_post.project_and_gate",
                   "stage_name": "Enrich attributes and apply render-safety gates",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"MRI_Performed\": \"Yes\",\n    \"MRI_Results\": \"Abnormal\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Investigations\",\n  \"evidence\": \"A MRI two years ago showed an area of gliosis in the right frontal lobe secondary to his previous surgery.\",\n  \"rationale\": \"A completed MRI was reported as showing right frontal lobe gliosis.\",\n  \"text\": \"MRI\"\n}",
@@ -4935,7 +4935,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.lens.investigations",
+                  "stage_id": "exect.llm_pre_post.lens.investigations",
                   "stage_name": "Investigations family transform",
                   "band": "reshape",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C1319851\",\n    \"CUIPhrase\": \"mri abnormal\",\n    \"MRI_Performed\": \"Yes\",\n    \"MRI_Results\": \"Abnormal\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Investigations\",\n  \"evidence\": \"A MRI two years ago showed an area of gliosis in the right frontal lobe secondary to his previous surgery.\",\n  \"rationale\": \"A completed MRI was reported as showing right frontal lobe gliosis.\",\n  \"text\": \"MRI\"\n}",
@@ -4944,7 +4944,7 @@
                   "note": "Assembled this family; no further clinical rewrite."
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.evidence_requirement",
+                  "stage_id": "exect.llm_pre_post.evidence_requirement",
                   "stage_name": "Require exact evidence for every finding",
                   "band": "gate",
                   "entered": "A MRI two years ago showed an area of gliosis in the right frontal lobe secondary to his previous surgery.",
@@ -4953,7 +4953,7 @@
                   "note": ""
                 },
                 {
-                  "stage_id": "exect.llm_with_rules.score",
+                  "stage_id": "exect.llm_pre_post.score",
                   "stage_name": "Score against gold",
                   "band": "leave",
                   "entered": "{\n  \"attributes\": {\n    \"CUI\": \"C1319851\",\n    \"CUIPhrase\": \"mri abnormal\",\n    \"MRI_Performed\": \"Yes\",\n    \"MRI_Results\": \"Abnormal\"\n  },\n  \"confidence\": \"high\",\n  \"entity\": \"Investigations\",\n  \"evidence\": \"A MRI two years ago showed an area of gliosis in the right frontal lobe secondary to his previous surgery.\",\n  \"rationale\": \"A completed MRI was reported as showing right frontal lobe gliosis.\",\n  \"text\": \"MRI\"\n}",
@@ -4980,7 +4980,7 @@
   ],
   "manifests": [
     {
-      "method_id": "gan2026_rules_only",
+      "method_id": "gan_rules",
       "task": "gan2026",
       "task_label": "Gan 2026",
       "method": "rules",
@@ -5131,7 +5131,7 @@
       ]
     },
     {
-      "method_id": "gan2026_llm_only",
+      "method_id": "gan_llm_only",
       "task": "gan2026",
       "task_label": "Gan 2026",
       "method": "llm",
@@ -5345,14 +5345,14 @@
       ]
     },
     {
-      "method_id": "gan2026_llm_with_rules",
+      "method_id": "gan_llm_with_rules",
       "task": "gan2026",
       "task_label": "Gan 2026",
       "method": "llm_with_rules",
       "method_label": "LLM with rules",
       "role": "selected",
       "entry_point": {
-        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestration/llm_with_rules.py",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestration/llm_pre_post.py",
         "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.llm_with_rules:run_record"
       },
       "one_sentence": "The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer.",
@@ -5831,7 +5831,7 @@
         {
           "name": "No-call replay",
           "role": "replay path",
-          "path": "scripts/run_current_stack.py",
+          "path": "src/clinical_extraction/paper/cli.py",
           "note": "Historical zero-call replay of saved current-stack cells. Not the paper live runner."
         }
       ],
@@ -5842,7 +5842,7 @@
       ]
     },
     {
-      "method_id": "exectv2_rules_only",
+      "method_id": "exect_rules",
       "task": "exectv2",
       "task_label": "ExECTv2",
       "method": "rules",
@@ -5971,7 +5971,7 @@
       ]
     },
     {
-      "method_id": "exectv2_llm_only",
+      "method_id": "exect_llm_only",
       "task": "exectv2",
       "task_label": "ExECTv2",
       "method": "llm",
@@ -6094,7 +6094,7 @@
             "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py",
             "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter"
           },
-          "governing_test": "tests/test_exectv2_llm_only_projection.py",
+          "governing_test": "tests/test_exect_llm_only_projection.py",
           "trace_fields": [
             "gate_warnings",
             "n_mentions_scored",
@@ -6149,14 +6149,7 @@
           "paper_wording": "The raw candidate view is scored by mention matching against ExECTv2 gold."
         }
       ],
-      "related_paths": [
-        {
-          "name": "Historical GEPA program",
-          "role": "historical performance control",
-          "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/",
-          "note": "The closed GEPA program is retained for historical comparison only; it is not the selected LLM-only entry point."
-        }
-      ],
+      "related_paths": [],
       "evidence_owners": [
         "docs/paper/decisions/exect-compact-is-the-cited-hybrid.md",
         "docs/paper/methods.md",
@@ -6164,28 +6157,29 @@
       ]
     },
     {
-      "method_id": "exectv2_llm_with_rules",
+      "method_id": "exect_llm_pre_post",
       "task": "exectv2",
       "task_label": "ExECTv2",
-      "method": "llm_with_rules",
-      "method_label": "LLM with rules",
+      "method": "llm_pre_post",
+      "method_label": "LLM pre-post",
       "role": "selected",
       "entry_point": {
         "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py",
-        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_with_rules_letter"
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_pre_post_letter"
       },
-      "one_sentence": "The model proposes findings for four families in one call; deterministic family transforms reconcile those findings into the final scored representation.",
-      "sixty_second": "One structured call per letter asks the named model for candidate findings across Diagnosis, Seizure Frequency, Prescription, and Investigations. No deterministic extractor proposes findings and none is unioned in - that is the family-ownership rule from decision 0040. After the call, code parses and may make one format-only retry, flattens the model's events into ExECT mentions, projects the model's seizure-frequency facts into the required state representation, and suppresses a narrowly defined class of unsupported unknown states. Raw and scored findings are both registered in a finding store, so every later change stays attributable. Then one family transform runs per entity, and the four behave differently: Diagnosis applies the active standard dictionary to model findings; Seizure Frequency is a thin assembly over the earlier projection; Prescription applies dictionary-driven regimen processing with bounded correction; Investigations is a behavior-preserving adapter while its residual providers remain prompt-side. Every final finding must carry exact source evidence, and the scored views are then materialized.",
-      "prediction_owner": "the named model proposes all four families (exect.llm_with_rules.model_call); four family transforms may change findings afterwards",
-      "scored_representation": "A PredictedLetter of four-family mentions materialized into named score views; the primary view is clinical fact recovery (`clinical_headline`).",
+      "one_sentence": "ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms reconcile those findings into the scored representation (hybrid F1).",
+      "sixty_second": "ExECT LLM pre-post (`exect_llm_pre_post`) uses its own request (suggested-evidence scan included), separate from ExECT LLM only (`exect_llm_only`). One structured call per letter asks the named model for candidate findings across Diagnosis, Seizure Frequency, Prescription, and Investigations. No deterministic extractor proposes findings and none is unioned in - that is the family-ownership rule from decision 0040. After the call, code parses Compact events and may make one format-only retry, projects the model's seizure-frequency facts into the required state representation, and suppresses a narrowly defined class of unsupported unknown states. Raw and scored findings are both registered in a finding store, so every later change stays attributable. Then one family transform runs per entity, and the four behave differently: Diagnosis applies the active standard dictionary to model findings; Seizure Frequency is a thin assembly over the earlier projection; Prescription applies dictionary-driven regimen processing with bounded correction; Investigations is a behavior-preserving adapter while its residual providers remain prompt-side. Every final finding must carry exact source evidence, and the scored views are then materialized. Hybrid-call raw is not LLM-only.",
+      "prediction_owner": "the named model proposes all four families (exect.llm_pre_post.model_call); four family transforms may change findings afterwards",
+      "scored_representation": "A PredictedLetter of four-family mentions materialized into named score views; the primary view is clinical fact recovery (`clinical_headline`, hybrid F1).",
       "stages": [
         {
-          "stage_id": "exect.llm_with_rules.build_prompt",
+          "stage_id": "exect.llm_pre_post.build_prompt",
+          "runtime_action": "build_four_family_prompt",
           "name": "Build the four-family prompt",
           "operation": "Render the note text and the four-family event-ledger schema into the prompt input for one structured call.",
           "owner": "deterministic",
+          "rule_category": "general",
           "effect_class": "transport_or_schema",
-          "may_change_clinical_meaning": false,
           "input_type": "ExectLetter",
           "input_example": "letter text plus letter id",
           "output_type": "prompt input JSON (str)",
@@ -6198,17 +6192,15 @@
           "trace_fields": [
             "prompt_version"
           ],
-          "paper_wording": "A single prompt requests candidate findings for four clinical families.",
-          "rule_category": "general",
-          "runtime_action": "build_four_family_prompt"
+          "paper_wording": "A single prompt requests candidate findings for four clinical families."
         },
         {
-          "stage_id": "exect.llm_with_rules.model_call",
+          "stage_id": "exect.llm_pre_post.model_call",
+          "runtime_action": "one_model_or_replay_call",
           "name": "Model proposes findings for four families",
           "operation": "One structured call returns candidate findings for Diagnosis, Seizure Frequency, Prescription, and Investigations, each with evidence.",
           "owner": "model",
           "effect_class": "clinical_meaning",
-          "may_change_clinical_meaning": true,
           "input_type": "prompt input JSON (str)",
           "input_example": "letter text plus the four-family schema",
           "output_type": "raw structured JSON (str)",
@@ -6224,16 +6216,16 @@
             "prompt_version"
           ],
           "paper_wording": "A single language-model call proposes candidate findings for all four families.",
-          "notes": "Decision 0040: the named model supplies all four families. No deterministic extractor may replace or be unioned into its result. This is what historical v08 did differently.",
-          "runtime_action": "one_model_or_replay_call"
+          "notes": "Decision 0040: the named model supplies all four families. No deterministic extractor may replace or be unioned into its result. This is what historical v08 did differently."
         },
         {
-          "stage_id": "exect.llm_with_rules.parse_and_retry",
+          "stage_id": "exect.llm_pre_post.parse_and_retry",
+          "runtime_action": "parse_schema_and_optional_format_retry",
           "name": "Parse output, with format-only retry when eligible",
           "operation": "Recover and repair the JSON payload, coerce legacy mention shapes into events, and for eligible local models make one format-only retry that is accepted only if it validates.",
           "owner": "deterministic",
+          "rule_category": "general",
           "effect_class": "transport_or_schema",
-          "may_change_clinical_meaning": false,
           "input_type": "raw structured JSON (str)",
           "input_example": "an events list with one unclosed mention object",
           "output_type": "StructuredExtractionRecord plus parse notes",
@@ -6247,41 +6239,17 @@
             "parse_errors",
             "format_retry_notes"
           ],
-          "paper_wording": "Malformed model output is repaired at the transport and schema level, with one format-only retry for local models.",
-          "rule_category": "general",
-          "runtime_action": "parse_schema_and_optional_format_retry"
+          "paper_wording": "Malformed model output is repaired at the transport and schema level, with one format-only retry for local models."
         },
         {
-          "stage_id": "exect.llm_with_rules.map_events",
-          "name": "Flatten model events into mentions",
-          "operation": "Turn each model event into an ExECT mention with its entity, text, attributes, and evidence.",
-          "owner": "deterministic",
-          "effect_class": "representation",
-          "may_change_clinical_meaning": false,
-          "input_type": "StructuredExtractionRecord",
-          "input_example": "an event with family 'Diagnosis' and text 'focal epilepsy'",
-          "output_type": "list[MentionForEvidence]",
-          "output_example": "a Diagnosis mention 'focal epilepsy' with its evidence span",
-          "implementation": {
-            "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/parsing.py",
-            "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.parsing:map_events"
-          },
-          "governing_test": "tests/test_exectv2_llm_only_parsing.py",
-          "trace_fields": [
-            "n_mentions_raw"
-          ],
-          "paper_wording": "Model events are flattened into entity mentions.",
-          "rule_category": "general",
-          "runtime_action": "flatten_model_events"
-        },
-        {
-          "stage_id": "exect.llm_with_rules.project_and_gate",
+          "stage_id": "exect.llm_pre_post.project_and_gate",
+          "runtime_action": "repair_attributes_and_enforce_evidence",
           "name": "Enrich attributes and apply render-safety gates",
           "operation": "Attach CUI and canonical-phrase attributes, drop attribute values outside the closed vocabulary, drop seizure-frequency mentions that carry no frequency state, and drop modality-only Investigations duplicates.",
           "owner": "deterministic",
+          "rule_category": "clinical_epilepsy",
           "effect_class": "clinical_meaning",
-          "may_change_clinical_meaning": true,
-          "input_type": "list[MentionForEvidence] plus note text",
+          "input_type": "Compact events plus note text",
           "input_example": "a SeizureFrequency mention with no state attributes; a Prescription mention with Frequency 'twice a day'",
           "output_type": "PredictedLetter plus gate warnings",
           "output_example": "the SeizureFrequency mention is dropped; the out-of-vocabulary Frequency value is removed",
@@ -6296,17 +6264,16 @@
             "n_mentions_scored"
           ],
           "paper_wording": "Model mentions are enriched with concept identifiers and passed through render-safety gates before assembly.",
-          "rule_category": "clinical_epilepsy",
-          "notes": "Classed as clinical_meaning because it can remove a finding the model produced: a seizure-frequency mention without a frequency state is dropped outright. Its more common behaviour is representation enrichment, which is why it is easy to read as inert.",
-          "runtime_action": "repair_attributes_and_enforce_evidence"
+          "notes": "Classed as clinical_meaning because it can remove a finding the model produced: a seizure-frequency mention without a frequency state is dropped outright. Its more common behaviour is representation enrichment, which is why it is easy to read as inert."
         },
         {
-          "stage_id": "exect.llm_with_rules.sf_state_projection",
+          "stage_id": "exect.llm_pre_post.sf_state_projection",
+          "runtime_action": "project_seizure_frequency_state",
           "name": "Project seizure-frequency facts into the state representation",
           "operation": "Convert the model's seizure-frequency facts into the state and ownership representation the ExECT scorer expects, including List 11 / range / interval / last-event encoding on emitted mentions, adding state attributes and named-type ownership the model did not supply.",
           "owner": "deterministic",
+          "rule_category": "seizure_frequency",
           "effect_class": "clinical_meaning",
-          "may_change_clinical_meaning": true,
           "input_type": "row of seizure-frequency mentions",
           "input_example": "a mention 'seizure free since March' with no state attribute",
           "output_type": "row of projected seizure-frequency mentions plus recorded actions",
@@ -6321,17 +6288,16 @@
             "diagnostics.action_counts"
           ],
           "paper_wording": "Model-produced seizure-frequency facts are projected into the scored state representation, with every projection action recorded.",
-          "rule_category": "seizure_frequency",
-          "notes": "Named 'projection' but classed here as clinical_meaning: it can create the state representation that is scored, and it can add mentions from a candidate. Finding 4 of the 2026-07-30 review names this exact case. The selected setting is ablation='combined', which enables both the state and ownership projections.",
-          "runtime_action": "project_seizure_frequency_state"
+          "notes": "Named 'projection' but classed here as clinical_meaning: it can create the state representation that is scored, and it can add mentions from a candidate. Finding 4 of the 2026-07-30 review names this exact case. The selected setting is ablation='combined', which enables both the state and ownership projections."
         },
         {
-          "stage_id": "exect.llm_with_rules.sf_unknown_suppression",
+          "stage_id": "exect.llm_pre_post.sf_unknown_suppression",
+          "runtime_action": "suppress_unsupported_unknown_state",
           "name": "Suppress unsupported unknown states",
           "operation": "Remove seizure-frequency findings whose state is unknown and unsupported under the narrowly defined suppression rule.",
           "owner": "deterministic",
+          "rule_category": "seizure_frequency",
           "effect_class": "clinical_meaning",
-          "may_change_clinical_meaning": true,
           "input_type": "row of projected seizure-frequency mentions",
           "input_example": "a seizure-frequency mention with an unknown state and no supporting rate",
           "output_type": "row with the suppressed mentions removed plus recorded actions",
@@ -6346,17 +6312,16 @@
             "diagnostics.action_counts"
           ],
           "paper_wording": "A narrowly scoped deterministic rule suppresses unsupported unknown seizure-frequency states.",
-          "rule_category": "seizure_frequency",
-          "notes": "Removes model-produced findings. Suppression is a clinical change, not a filter on noise.",
-          "runtime_action": "suppress_unsupported_unknown_state"
+          "notes": "Removes model-produced findings. Suppression is a clinical change, not a filter on noise."
         },
         {
-          "stage_id": "exect.llm_with_rules.register_findings",
+          "stage_id": "exect.llm_pre_post.register_findings",
+          "runtime_action": "register_raw_and_scored_findings",
           "name": "Register raw and scored findings",
           "operation": "Record both the raw and the scored surface of every finding in the finding store, with its producer, source lane, and ownership label.",
           "owner": "deterministic",
+          "rule_category": "general",
           "effect_class": "transport_or_schema",
-          "may_change_clinical_meaning": false,
           "input_type": "per-entity rows plus the letter",
           "input_example": "the Diagnosis row from the structured producer",
           "output_type": "ClinicalFindingStore",
@@ -6365,23 +6330,22 @@
             "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/finding_store.py",
             "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.finding_store:ClinicalFindingStore"
           },
-          "governing_test": "tests/test_exectv2_clinical_finding_assembly.py",
+          "governing_test": "tests/test_exectv2_llm_pre_post_vertical_slice.py",
           "trace_fields": [
             "lanes[entity].raw_lane_mentions",
             "lanes[entity].predicted_mentions"
           ],
           "paper_wording": "Raw and scored findings are retained separately so every deterministic action stays attributable.",
-          "rule_category": "general",
-          "notes": "This stage is what makes component attribution possible: the model's raw output survives beside the reconciled output for every entity.",
-          "runtime_action": "register_raw_and_scored_findings"
+          "notes": "This stage is what makes component attribution possible: the model's raw output survives beside the reconciled output for every entity."
         },
         {
-          "stage_id": "exect.llm_with_rules.lens.diagnosis",
+          "stage_id": "exect.llm_pre_post.lens.diagnosis",
+          "runtime_action": "apply_named_family_lens",
           "name": "Diagnosis family transform",
           "operation": "Reconcile Diagnosis findings with the active standard dictionary; may rewrite, drop, or add bounded concepts.",
           "owner": "deterministic",
+          "rule_category": "clinical_epilepsy",
           "effect_class": "clinical_meaning",
-          "may_change_clinical_meaning": true,
           "input_type": "Diagnosis findings in the store",
           "input_example": "model Diagnosis findings such as 'epilepsy' with exact source evidence",
           "output_type": "reconciled Diagnosis findings plus lens diagnostics",
@@ -6390,23 +6354,22 @@
             "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/diagnosis.py",
             "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.diagnosis:DiagnosisDictionaryLens"
           },
-          "governing_test": "tests/test_exectv2_clinical_finding_assembly.py",
+          "governing_test": "tests/test_exectv2_llm_pre_post_vertical_slice.py",
           "trace_fields": [
             "lanes.Diagnosis.lens_diagnostics",
             "provenance[].action"
           ],
           "paper_wording": "A deterministic Diagnosis transform reconciles model findings against the active standard dictionary.",
-          "rule_category": "clinical_epilepsy",
-          "notes": "The active policy variant is 'default' (decision 0045). The 'combined' variant is archived development evidence and must not be the default for new runs. This is the family transform with the widest licence: it is the only one that can add a concept the model did not produce. Heading recovery and the generic epilepsy companion were zero-fire hooks in the decomposition and are retained only in historical artifacts, not the active lens.",
-          "runtime_action": "apply_named_family_lens"
+          "notes": "The active policy variant is 'default' (decision 0045). The 'combined' variant is archived development evidence and must not be the default for new runs. This is the family transform with the widest licence: it is the only one that can add a concept the model did not produce. Heading recovery and the generic epilepsy companion were zero-fire hooks in the decomposition and are retained only in historical artifacts, not the active lens."
         },
         {
-          "stage_id": "exect.llm_with_rules.lens.seizure_frequency",
+          "stage_id": "exect.llm_pre_post.lens.seizure_frequency",
+          "runtime_action": "apply_named_family_lens",
           "name": "Seizure Frequency family transform",
           "operation": "Assemble the already-projected and already-suppressed seizure-frequency findings; a thin transform that adds no further clinical change.",
           "owner": "deterministic",
+          "rule_category": "seizure_frequency",
           "effect_class": "representation",
-          "may_change_clinical_meaning": false,
           "input_type": "Seizure Frequency findings in the store",
           "input_example": "projected seizure-free findings from the sf producer",
           "output_type": "reconciled Seizure Frequency findings",
@@ -6415,22 +6378,21 @@
             "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/seizure_frequency.py",
             "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.seizure_frequency:SeizureFrequencyLens"
           },
-          "governing_test": "tests/test_exectv2_clinical_finding_assembly.py",
+          "governing_test": "tests/test_exectv2_llm_pre_post_vertical_slice.py",
           "trace_fields": [
             "lanes.SeizureFrequency.lens_diagnostics"
           ],
           "paper_wording": "The Seizure Frequency transform assembles findings whose clinical projection has already been applied.",
-          "rule_category": "seizure_frequency",
-          "notes": "The clinical work for this family happened earlier, at exect.llm_with_rules.sf_state_projection and exect.llm_with_rules.sf_unknown_suppression. Reading the lens alone will understate what happened to Seizure Frequency.",
-          "runtime_action": "apply_named_family_lens"
+          "notes": "The clinical work for this family happened earlier, at exect.llm_pre_post.sf_state_projection and exect.llm_pre_post.sf_unknown_suppression. Reading the lens alone will understate what happened to Seizure Frequency."
         },
         {
-          "stage_id": "exect.llm_with_rules.lens.prescription",
+          "stage_id": "exect.llm_pre_post.lens.prescription",
+          "runtime_action": "apply_named_family_lens",
           "name": "Prescription family transform",
           "operation": "Normalize the surfaces the dictionary owns (generic drug name, canonical dose unit, dose value) and split an explicitly stated uneven once-daily regimen into one fact per dose.",
           "owner": "deterministic",
+          "rule_category": "clinical_epilepsy",
           "effect_class": "clinical_meaning",
-          "may_change_clinical_meaning": true,
           "input_type": "Prescription findings in the store",
           "input_example": "model finding 'levetiracetam 500mg BD'",
           "output_type": "reconciled Prescription findings plus lens diagnostics",
@@ -6445,17 +6407,16 @@
             "provenance[].action"
           ],
           "paper_wording": "A deterministic Prescription transform normalizes drug and dose surfaces and splits explicitly stated uneven daily regimens. It neither removes nor adds regimen findings.",
-          "rule_category": "clinical_epilepsy",
-          "notes": "The active policy variant is 'default' (decision 0045). Decision 0040 requires bounded correction here rather than deterministic substitution: the rules may correct the model, they may not replace it as the producer. v10 (2026-08-10): this transform no longer deletes model-selected regimens that read as planned or historical, and no longer adds dictionary residual regimens; both rules were measured net-harmful on dev140 across six models and were removed rather than guarded, so the stage can now only reshape a model finding, never remove or invent one. See docs/research/exectv2/prescription_lens_rule_decomposition_2026-08-10.md.",
-          "runtime_action": "apply_named_family_lens"
+          "notes": "The active policy variant is 'default' (decision 0045). Decision 0040 requires bounded correction here rather than deterministic substitution: the rules may correct the model, they may not replace it as the producer. v10 (2026-08-10): this transform no longer deletes model-selected regimens that read as planned or historical, and no longer adds dictionary residual regimens; both rules were measured net-harmful on dev140 across six models and were removed rather than guarded, so the stage can now only reshape a model finding, never remove or invent one. See docs/research/exectv2/prescription_lens_rule_decomposition_2026-08-10.md."
         },
         {
-          "stage_id": "exect.llm_with_rules.lens.investigations",
+          "stage_id": "exect.llm_pre_post.lens.investigations",
+          "runtime_action": "apply_named_family_lens",
           "name": "Investigations family transform",
           "operation": "Assemble model-selected Investigations findings without an additional dictionary rule pass.",
           "owner": "deterministic",
+          "rule_category": "clinical_epilepsy",
           "effect_class": "representation",
-          "may_change_clinical_meaning": false,
           "input_type": "Investigations findings in the store",
           "input_example": "model-selected Investigations findings with exact source evidence",
           "output_type": "assembled Investigations findings",
@@ -6464,21 +6425,20 @@
             "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/investigations.py",
             "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.investigations:InvestigationsDictionaryLens"
           },
-          "governing_test": "tests/test_exectv2_clinical_finding_assembly.py",
+          "governing_test": "tests/test_exectv2_llm_pre_post_vertical_slice.py",
           "trace_fields": [
             "lanes.Investigations.lens_diagnostics"
           ],
-          "paper_wording": "The Investigations assembly stage preserves model-selected findings; residual providers remain available to prompt construction but are not consumed by this no-op lens.",
-          "rule_category": "clinical_epilepsy",
-          "runtime_action": "apply_named_family_lens"
+          "paper_wording": "The Investigations assembly stage preserves model-selected findings; residual providers remain available to prompt construction but are not consumed by this no-op lens."
         },
         {
-          "stage_id": "exect.llm_with_rules.evidence_requirement",
+          "stage_id": "exect.llm_pre_post.evidence_requirement",
+          "runtime_action": "require_exact_source_evidence",
           "name": "Require exact evidence for every finding",
           "operation": "Reject the assembled letter if any final finding lacks evidence or carries evidence that is not an exact substring of the note.",
           "owner": "deterministic",
+          "rule_category": "general",
           "effect_class": "validation_gate",
-          "may_change_clinical_meaning": false,
           "input_type": "assembled findings plus note text",
           "input_example": "a Diagnosis finding whose evidence was paraphrased",
           "output_type": "the assembled letter, or a ValueError",
@@ -6487,22 +6447,21 @@
             "path": "src/clinical_extraction/operational/exect.py",
             "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.letter_assembly:assemble_letter"
           },
-          "governing_test": "tests/test_exectv2_clinical_finding_assembly.py",
+          "governing_test": "tests/test_exectv2_llm_pre_post_vertical_slice.py",
           "trace_fields": [
             "n_evidence_invalid"
           ],
           "paper_wording": "Every final finding is required to carry evidence that appears verbatim in the source note.",
-          "rule_category": "general",
-          "notes": "This gate raises rather than silently dropping. A family transform that invented an unevidenced concept fails the whole letter, which is why the Diagnosis transform's add licence is bounded in practice.",
-          "runtime_action": "require_exact_source_evidence"
+          "notes": "This gate raises rather than silently dropping. A family transform that invented an unevidenced concept fails the whole letter, which is why the Diagnosis transform's add licence is bounded in practice."
         },
         {
-          "stage_id": "exect.llm_with_rules.materialize_views",
+          "stage_id": "exect.llm_pre_post.materialize_views",
+          "runtime_action": "materialize_scoring_views",
           "name": "Materialize the score views",
           "operation": "Build the named prediction views - raw candidate, post-lens assembled findings, and clinical fact recovery - from the same assembled findings.",
           "owner": "deterministic",
+          "rule_category": "benchmark_format",
           "effect_class": "benchmark_projection",
-          "may_change_clinical_meaning": false,
           "input_type": "assembled findings",
           "input_example": "four families of reconciled findings",
           "output_type": "named FindingViewResult views",
@@ -6516,17 +6475,15 @@
             "prediction_surfaces"
           ],
           "paper_wording": "Findings are materialized into named scoring views; the primary view is clinical fact recovery (`clinical_headline`).",
-          "rule_category": "benchmark_format",
-          "notes": "One set of findings, several numbers. Naming the view is part of naming the result.",
-          "runtime_action": "materialize_scoring_views"
+          "notes": "One set of findings, several numbers. Naming the view is part of naming the result."
         },
         {
-          "stage_id": "exect.llm_with_rules.score",
+          "stage_id": "exect.llm_pre_post.score",
+          "runtime_action": "defer_gold_comparison_to_scorer",
           "name": "Score against gold",
           "operation": "Match the materialized view's mentions to gold annotations and report per-entity and overall precision, recall, and F1.",
           "owner": "scorer",
           "effect_class": "benchmark_projection",
-          "may_change_clinical_meaning": false,
           "input_type": "materialized view plus gold annotations",
           "input_example": "clinical fact recovery view against the four-family gold",
           "output_type": "OverallScore plus per-entity EntityScore",
@@ -6540,8 +6497,7 @@
             "scores.overall",
             "scores.per_entity"
           ],
-          "paper_wording": "Predictions are scored by mention matching against the ExECTv2 gold annotations under the named view.",
-          "runtime_action": "defer_gold_comparison_to_scorer"
+          "paper_wording": "Predictions are scored by mention matching against the ExECTv2 gold annotations under the named view."
         }
       ],
       "related_paths": [
@@ -6552,10 +6508,10 @@
           "note": "Adds endpoint handling and live assembly around the same stages. Not a separate method; it must not drift from this manifest."
         },
         {
-          "name": "Cited Compact hybrid",
+          "name": "ExECT LLM pre-post",
           "role": "paper identity",
           "path": "docs/paper/decisions/exect-compact-is-the-cited-hybrid.md",
-          "note": "Compact is the paper ExECT hybrid. Full ledger is the control. Mention encoder is out."
+          "note": "ExECT LLM pre-post is the paper hybrid row. Full ledger is the control. Mention encoder is out."
         },
         {
           "name": "Closed numbered series",

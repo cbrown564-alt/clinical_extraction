@@ -117,5 +117,14 @@ export function ganArtifact(runId: string, letterId?: string) {
 }
 
 export function exectv2Payload() {
-  return readMockJson<Record<string, unknown>>("exectv2/runs.json");
+  const payload = readMockJson<{
+    generated_on?: string;
+    source_index?: string;
+    shared_letters?: unknown[];
+    runs?: Array<Record<string, unknown>>;
+  }>("exectv2/runs.json");
+  const runs = (payload.runs ?? []).filter(
+    (run) => run.kind === "rules" || run.run_id === "rules"
+  );
+  return { ...payload, runs };
 }

@@ -272,7 +272,16 @@ def run_note(request: RunNoteRequest) -> dict[str, Any]:
 
 @router.get("/exectv2/runs")
 def exectv2_runs(data: FrontendDataDependency) -> dict[str, Any]:
-    return data.exectv2_catalog()
+    catalog = data.exectv2_catalog()
+    payload = data.named("exectv2_runs")
+    return {
+        "generated_on": catalog.get("generated_on") or payload.get("generated_on"),
+        "source_index": catalog.get("source_index") or payload.get("source_index"),
+        "dataset": catalog.get("dataset"),
+        "split": catalog.get("split"),
+        "shared_letters": payload.get("shared_letters", []),
+        "runs": catalog.get("runs", []),
+    }
 
 
 @router.get("/exectv2/runs/{run_id}")

@@ -64,8 +64,11 @@ def discover_gan2026_validation_runs(
     registry: list[dict[str, Any]] = []
     artifacts: dict[str, Path] = {}
 
-    for method_name in ("llm_with_rules", "llm_only"):
-        method = methods[method_name]
+    for config_method in ("llm_with_rules", "llm_only"):
+        pipeline_method: Literal["llm_with_rules", "llm"] = (
+            "llm_with_rules" if config_method == "llm_with_rules" else "llm"
+        )
+        method = methods[config_method]
         for condition in living_model_conditions():
             configured_condition = configured.get(condition.slug)
             if (
@@ -77,20 +80,21 @@ def discover_gan2026_validation_runs(
                 _condition_rows_path(
                     artifact_root,
                     condition.slug,
-                    method_name,
+                    pipeline_method,
                     hybrid_root=hybrid_root,
                 )
                 if configured_condition is not None
-                else artifact_root / "_missing" / f"{condition.slug}--{method_name}.jsonl"
+                else artifact_root / "_missing" / f"{condition.slug}--{pipeline_method}.jsonl"
             )
             inspection = _inspect_rows(
                 path,
                 expected_indices=expected_indices,
-                method=method_name,
+                method=pipeline_method,
             )
             family = _model_family(
                 condition,
-                method_name=method_name,
+                run_suffix=config_method,
+                pipeline_method=pipeline_method,
                 prompt_version=str(method["prompt_version"]),
                 repair_mode=str(method["repair_mode"]),
                 inspection=inspection,
@@ -107,7 +111,7 @@ def discover_gan2026_validation_runs(
                         path.relative_to(config_path.parent.parent.parent).as_posix()
                     ],
                     "date": (
-                        "2026-08-13" if method_name == "llm_with_rules" else "2026-07-19"
+                        "2026-08-13" if config_method == "llm_with_rules" else "2026-07-19"
                     ),
                     "decision": "development_comparison",
                     "mode": "replay",
@@ -241,8 +245,8 @@ def _paper_family(
 ) -> dict[str, Any]:
     method = str(cell["method"])
     slug = str(cell["model_slug"])
-    method_name: Literal["llm_with_rules", "llm_only"] = (
-        "llm_with_rules" if method == "gan_llm_with_rules" else "llm_only"
+    method_name: Literal["llm_with_rules", "llm"] = (
+        "llm_with_rules" if method == "gan_llm_with_rules" else "llm"
     )
     condition = ModelCondition(
         slug,
@@ -251,11 +255,12 @@ def _paper_family(
     )
     return _model_family(
         condition,
-        method_name=method_name,
+        run_suffix="llm_with_rules" if method_name == "llm_with_rules" else "llm_only",
+        pipeline_method=method_name,
         prompt_version=(
-            "gan2026_hybrid_structured_events_v0.7"
+            "gan_llm_with_rules"
             if method_name == "llm_with_rules"
-            else "gan2026_llm_only_canonical_pipeline_v0.8"
+            else "gan_llm_only"
         ),
         repair_mode=(
             "hybrid_full_stack"
@@ -269,7 +274,7 @@ def _paper_family(
 def _condition_rows_path(
     artifact_root: Path,
     slug: str,
-    method_name: str,
+    method_name: Literal["llm_with_rules", "llm"],
     *,
     hybrid_root: Path | None = None,
 ) -> Path:
@@ -279,15 +284,19 @@ def _condition_rows_path(
     if method_name == "llm_with_rules" and hybrid_root is not None:
         roots.append(hybrid_root)
     roots.append(artifact_root)
+    method_suffixes: list[str] = [method_name]
+    if method_name == "llm":
+        method_suffixes.append("llm_only")
     candidates: list[Path] = []
     for root in roots:
-        candidates.extend(
-            (
-                root / slug / "validation750.rows.jsonl",
-                root / slug / method_name / "validation750.rows.jsonl",
-                root / f"{slug}--{method_name}.jsonl",
+        for suffix in method_suffixes:
+            candidates.extend(
+                (
+                    root / slug / "validation750.rows.jsonl",
+                    root / slug / suffix / "validation750.rows.jsonl",
+                    root / f"{slug}--{suffix}.jsonl",
+                )
             )
-        )
     for path in candidates:
         if path.is_file():
             return path
@@ -298,7 +307,7 @@ def _inspect_rows(
     path: Path,
     *,
     expected_indices: set[int],
-    method: str,
+    method: Literal["llm_with_rules", "llm"],
 ) -> dict[str, Any]:
     if not path.is_file():
         return {"complete": False, "row_count": 0}
@@ -352,16 +361,17 @@ def _inspect_rows(
 def _model_family(
     condition: ModelCondition,
     *,
-    method_name: Literal["llm_with_rules", "llm_only"],
+    run_suffix: str,
+    pipeline_method: Literal["llm_with_rules", "llm"],
     prompt_version: str,
     repair_mode: str,
     inspection: dict[str, Any],
 ) -> dict[str, Any]:
-    active_method = "llm_with_rules" if method_name == "llm_with_rules" else "llm"
+    active_method = "llm_with_rules" if pipeline_method == "llm_with_rules" else "llm"
     kind = active_method
-    run_id = f"gan2026_validation750_{condition.slug}_{method_name}"
+    run_id = f"gan2026_validation750_{condition.slug}_{run_suffix}"
     complete = bool(inspection["complete"])
-    mode_label = "LLM + rules" if method_name == "llm_with_rules" else "LLM only"
+    mode_label = "LLM + rules" if pipeline_method == "llm_with_rules" else "LLM only"
     status_label = mode_label if complete else "in progress"
     result: dict[str, Any] = {
         "value": run_id,
@@ -375,7 +385,7 @@ def _model_family(
         "architecture_family": active_method,
         "pipeline_family": active_method,
         "model": condition.route,
-        "comparison_role": "winner" if method_name == "llm_with_rules" else "diagnostic",
+        "comparison_role": "winner" if pipeline_method == "llm_with_rules" else "diagnostic",
         "availability": "replay" if complete else "not_retained",
         "evidence_scope": "validation750_row_level" if complete else "incomplete_not_served",
         "has_replay_artifact": complete,
@@ -398,7 +408,7 @@ def _rules_only_family() -> dict[str, Any]:
     return {
         "value": "rules",
         "run_id": "rules",
-        "saved_run_id": "rules_only",
+        "saved_run_id": "rules",
         "label": "Deterministic canonical",
         "display_label": "Deterministic canonical",
         "model_label": "No model",
