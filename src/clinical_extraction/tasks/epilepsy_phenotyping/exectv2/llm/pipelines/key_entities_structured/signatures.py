@@ -6,7 +6,6 @@ import dspy
 from dspy.adapters.chat_adapter import ChatAdapter
 
 
-
 class CompactKeyEntitiesStructuredSignature(dspy.Signature):
     """Read one clinical letter and produce structured clinical events.
 

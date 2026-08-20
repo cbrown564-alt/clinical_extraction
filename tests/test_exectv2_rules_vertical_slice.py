@@ -226,7 +226,9 @@ def test_exect_rules_cli_spec_dispatches_active_method(monkeypatch) -> None:
         "llm_only",
         "exectv2_llm_only",
         "llm_with_rules",
+        "llm_pre_post",
         "exectv2_llm_with_rules",
+        "exectv2_llm_pre_post",
     }
 
 

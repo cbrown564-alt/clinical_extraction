@@ -203,7 +203,7 @@
       "status": "scored"
     }
   },
-  "default_prompt_version": "exectv2_compact_ledger",
+  "default_prompt_version": "exect_llm_pre_post",
   "finished_utc": "2026-08-18T21:58:39.225716+00:00",
   "generated_on": "2026-08-18",
   "letter_ids": [

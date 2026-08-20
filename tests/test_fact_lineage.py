@@ -25,7 +25,7 @@ def _run(letter_id: str, method_id: str):
 
 
 def test_paper_hybrid_runs_publish_fact_ids_spans_and_gold() -> None:
-    _, e2 = _run("EA0057", "exectv2_llm_with_rules")
+    _, e2 = _run("EA0057", "exectv2_llm_pre_post")
     assert e2.facts, "EA0057 hybrid must expose predicted facts"
     for fact in e2.facts:
         assert fact.fact_id
@@ -37,7 +37,7 @@ def test_paper_hybrid_runs_publish_fact_ids_spans_and_gold() -> None:
 
 
 def test_ea0057_hybrid_structural_epilepsy_shows_diagnosis_lens_only() -> None:
-    _, run = _run("EA0057", "exectv2_llm_with_rules")
+    _, run = _run("EA0057", "exectv2_llm_pre_post")
     fact = next(
         item
         for item in run.facts
@@ -129,7 +129,7 @@ def test_lineage_render_drops_event_state_scratchpad() -> None:
 
 
 def test_ea0057_parse_does_not_surface_event_state_copy() -> None:
-    _, run = _run("EA0057", "exectv2_llm_with_rules")
+    _, run = _run("EA0057", "exectv2_llm_pre_post")
     fact = next(
         item
         for item in run.facts
@@ -146,7 +146,7 @@ def test_ea0057_parse_does_not_surface_event_state_copy() -> None:
 
 
 def test_exect_frequency_fact_keeps_attributes_through_parse_and_leave() -> None:
-    _, run = _run("EA0057", "exectv2_llm_with_rules")
+    _, run = _run("EA0057", "exectv2_llm_pre_post")
     fact = next(
         item
         for item in run.facts

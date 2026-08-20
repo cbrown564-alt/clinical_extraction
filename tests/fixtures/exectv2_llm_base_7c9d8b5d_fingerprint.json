@@ -28,7 +28,7 @@
       "superseded_by": "producer-row bookkeeping catch-up",
       "change": "The independent oracle hashes the full producer.row except prompt_input_json. Live producer rows now also carry empty format-retry layers, patient_history, medication_history, and structured_output_failure_codes, plus CUI / CUIPhrase / component_owner mention metadata that the field-by-field asserts already strip. Clinical producer fields still match the saved Sol dev140 artifact. first_owner stays model; first_failure stays none.",
       "why": "Field-by-field producer parity against the saved artifact still passes. The hash moved because the oracle pinned bookkeeping keys added after the previous freeze, not because selected-method clinical output changed. The same hash already failed on ac899fb0, before the 2026-08-16 surface prune.",
-      "evidence": "tests/test_exectv2_llm_with_rules_vertical_slice.py::test_hybrid_dev140_replay_matches_independent_prechange_oracle",
+      "evidence": "tests/test_exectv2_llm_pre_post_vertical_slice.py::test_hybrid_dev140_replay_matches_independent_prechange_oracle",
       "scope_note": "No selected-stack, Decision 0050, or clinical-headline change. The oracle still pins no-call replay of the saved Sol dev140 raws."
     },
     {

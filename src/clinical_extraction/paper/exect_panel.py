@@ -18,6 +18,9 @@ from clinical_extraction.paper.methods import (
 )
 from clinical_extraction.paper.roster import living_models, model_by_slug
 from clinical_extraction.paper.rungs import RUNG_IDS
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
+    llm_only_key_entities_structured as structured,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
     write_jsonl_rows,
@@ -132,7 +135,7 @@ def promote_exect(slug: str, split: str) -> dict[str, Any]:
         "model_slug": slug,
         "model": model["model"],
         "method": METHOD,
-        "program": "exectv2_compact_ledger",
+        "program": "exect_llm_pre_post",
         "split": split,
         "split_machine": "test" if holdout else "dev",
         "n": expected,
@@ -169,7 +172,7 @@ def promote_exect(slug: str, split: str) -> dict[str, Any]:
                 "model_slug": slug,
                 "model": model["model"],
                 "method": METHOD,
-                "replay_alias": "exectv2_compact_ledger",
+                "replay_alias": "exect_llm_pre_post",
                 "split": split,
                 "n": expected,
                 "row_policy": "aggregate_only",
@@ -302,7 +305,7 @@ def ensure_exect_dev140_scored(slug: str) -> Path:
             "model_slug": slug,
             "model": model["model"],
             "method": METHOD,
-            "program": "exectv2_compact_ledger",
+            "program": "exect_llm_pre_post",
             "split": PROMOTE_SPLIT,
             "n": exect_row_count(PROMOTE_SPLIT),
             "row_policy": "development_review_permitted",
@@ -780,7 +783,9 @@ def _public_replay(rows: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], in
         replay.append(
             {
                 "letter_id": str(row["letter_id"]),
-                "prompt_version": str(row["prompt_version"]),
+                "prompt_version": structured.canonicalize_prompt_version(
+                    str(row["prompt_version"])
+                ),
                 "raw_output": raw,
             }
         )

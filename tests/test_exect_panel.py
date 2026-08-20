@@ -49,7 +49,7 @@ def _write_work_cell(root: Path, slug: str) -> None:
         structured.append(
             {
                 "letter_id": letter_id,
-                "prompt_version": "exectv2_compact_ledger",
+                "prompt_version": "exect_llm_pre_post",
                 "raw_output": '{"mentions":[]}',
                 "gold_mentions": ["do-not-promote"],
                 "predicted_mentions": [],
@@ -58,7 +58,7 @@ def _write_work_cell(root: Path, slug: str) -> None:
         metrics.append(
             {
                 "arm": "exect_llm_pre_post",
-                "prompt_version": "exectv2_compact_ledger",
+                "prompt_version": "exect_llm_pre_post",
                 "letter_id": letter_id,
                 "raw_headline_prf": {"f1": 0.5},
                 "hybrid_headline_prf": {"f1": 0.8},
@@ -132,7 +132,7 @@ def test_promote_strips_replay_and_writes_scored_panel(
     replay = json.loads((dest / "structured.jsonl").read_text(encoding="utf-8").splitlines()[0])
     scored = json.loads((dest / "scored.jsonl").read_text(encoding="utf-8").splitlines()[0])
     assert set(replay) == {"letter_id", "prompt_version", "raw_output"}
-    assert replay["prompt_version"] == "exectv2_compact_ledger"
+    assert replay["prompt_version"] == "exect_llm_pre_post"
     assert scored["letter_id"] == "EA0001"
     assert scored["hybrid_four_family_letter_exact"] is True
     assert scored["parse_ok"] is True
@@ -186,7 +186,7 @@ def test_rebuild_keeps_existing_compact_present_without_cell_json(
             json.dumps(
                 {
                     "letter_id": f"EA{index + 1:04d}",
-                    "prompt_version": "exectv2_compact_ledger",
+                    "prompt_version": "exect_llm_pre_post",
                     "raw_output": "{}",
                 }
             )
@@ -208,7 +208,7 @@ def test_rebuild_keeps_existing_compact_present_without_cell_json(
         "model_slug": "gpt56luna",
         "model": "openai/gpt-5.6-luna",
         "method": "exect_llm_pre_post",
-        "replay_alias": "exectv2_compact_ledger",
+        "replay_alias": "exect_llm_pre_post",
         "split": "dev140",
         "n": 140,
         "row_policy": "development_review_permitted",
@@ -257,7 +257,7 @@ def _write_holdout_work_cell(root: Path, slug: str) -> None:
         structured.append(
             {
                 "letter_id": f"EA{index + 1:04d}",
-                "prompt_version": "exectv2_compact_ledger",
+                "prompt_version": "exect_llm_pre_post",
                 "raw_output": '{"mentions":[]}',
                 "gold_mentions": ["do-not-promote"],
             }

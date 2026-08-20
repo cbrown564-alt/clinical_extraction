@@ -151,7 +151,7 @@
       "model_slug": "deepseek_v4_flash",
       "n": 59,
       "path": "paper_experiments/exect/exect_llm_pre_post/deepseek_v4_flash/test60/structured.jsonl",
-      "replay_alias": "exectv2_compact_ledger",
+      "replay_alias": "exect_llm_pre_post",
       "row_policy": "aggregate_only",
       "split": "test60",
       "status": "present"
@@ -163,7 +163,7 @@
       "model_slug": "gemma4_26b",
       "n": 59,
       "path": "paper_experiments/exect/exect_llm_pre_post/gemma4_26b/test60/structured.jsonl",
-      "replay_alias": "exectv2_compact_ledger",
+      "replay_alias": "exect_llm_pre_post",
       "row_policy": "aggregate_only",
       "split": "test60",
       "status": "present"
@@ -175,7 +175,7 @@
       "model_slug": "gemma4_26b",
       "n": 450,
       "path": "paper_experiments/gan/gan_llm_only/gemma4_26b/test450/rows.jsonl",
-      "replay_alias": "gan2026_llm_only_canonical_pipeline_v0.8",
+      "replay_alias": "gan_llm_only",
       "row_policy": "aggregate_only",
       "split": "test450",
       "status": "present"
@@ -259,7 +259,7 @@
       "model_slug": "gemma4_26b",
       "n": 750,
       "path": "paper_experiments/gan/gan_llm_only/gemma4_26b/dev750/rows.jsonl",
-      "replay_alias": "gan2026_llm_only_canonical_pipeline_v0.8",
+      "replay_alias": "gan_llm_only",
       "row_policy": "development_review_permitted",
       "split": "dev750",
       "status": "present"
@@ -295,7 +295,7 @@
       "model_slug": "gpt56luna",
       "n": 59,
       "path": "paper_experiments/exect/exect_llm_pre_post/gpt56luna/test60/structured.jsonl",
-      "replay_alias": "exectv2_compact_ledger",
+      "replay_alias": "exect_llm_pre_post",
       "row_policy": "aggregate_only",
       "split": "test60",
       "status": "present"
@@ -343,7 +343,7 @@
       "model_slug": "grok46",
       "n": 59,
       "path": "paper_experiments/exect/exect_llm_pre_post/grok46/test60/structured.jsonl",
-      "replay_alias": "exectv2_compact_ledger",
+      "replay_alias": "exect_llm_pre_post",
       "row_policy": "aggregate_only",
       "split": "test60",
       "status": "present"
@@ -355,7 +355,7 @@
       "model_slug": "gemini37flash",
       "n": 59,
       "path": "paper_experiments/exect/exect_llm_pre_post/gemini37flash/test60/structured.jsonl",
-      "replay_alias": "exectv2_compact_ledger",
+      "replay_alias": "exect_llm_pre_post",
       "row_policy": "aggregate_only",
       "split": "test60",
       "status": "present"
@@ -451,7 +451,7 @@
       "model_slug": "grok46",
       "n": 140,
       "path": "paper_experiments/exect/exect_llm_pre_post/grok46/dev140/structured.jsonl",
-      "replay_alias": "exectv2_compact_ledger",
+      "replay_alias": "exect_llm_pre_post",
       "row_policy": "development_review_permitted",
       "split": "dev140",
       "status": "present"
@@ -475,7 +475,7 @@
       "model_slug": "gpt56luna",
       "n": 140,
       "path": "paper_experiments/exect/exect_llm_pre_post/gpt56luna/dev140/structured.jsonl",
-      "replay_alias": "exectv2_compact_ledger",
+      "replay_alias": "exect_llm_pre_post",
       "row_policy": "development_review_permitted",
       "split": "dev140",
       "status": "present"
@@ -499,7 +499,7 @@
       "model_slug": "gemini37flash",
       "n": 140,
       "path": "paper_experiments/exect/exect_llm_pre_post/gemini37flash/dev140/structured.jsonl",
-      "replay_alias": "exectv2_compact_ledger",
+      "replay_alias": "exect_llm_pre_post",
       "row_policy": "development_review_permitted",
       "split": "dev140",
       "status": "present"
@@ -523,7 +523,7 @@
       "model_slug": "deepseek_v4_flash",
       "n": 140,
       "path": "paper_experiments/exect/exect_llm_pre_post/deepseek_v4_flash/dev140/structured.jsonl",
-      "replay_alias": "exectv2_compact_ledger",
+      "replay_alias": "exect_llm_pre_post",
       "row_policy": "development_review_permitted",
       "split": "dev140",
       "status": "present"
@@ -535,7 +535,7 @@
       "model_slug": "gemma4_26b",
       "n": 140,
       "path": "paper_experiments/exect/exect_llm_pre_post/gemma4_26b/dev140/structured.jsonl",
-      "replay_alias": "exectv2_compact_ledger",
+      "replay_alias": "exect_llm_pre_post",
       "row_policy": "development_review_permitted",
       "split": "dev140",
       "status": "present"

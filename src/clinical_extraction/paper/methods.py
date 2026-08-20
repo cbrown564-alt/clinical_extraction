@@ -26,12 +26,12 @@ LIVE_METHODS: dict[str, dict[str, object]] = {
     "exect_llm_pre_post": {
         "task": "exectv2",
         "splits": ("dev140", "test60"),
-        "prompt_attr": "COMPACT_LEDGER",
+        "prompt_attr": "EXECT_LLM_PRE_POST",
     },
     "exect_llm_with_rules": {
         "task": "exectv2",
         "splits": ("dev140", "test60"),
-        "prompt_attr": "COMPACT_LEDGER",
+        "prompt_attr": "EXECT_LLM_PRE_POST",
         "alias_of": "exect_llm_pre_post",
     },
     "exect_llm_only": {

@@ -31,6 +31,8 @@ from .constants import (
     PIPELINE_FAMILY,
     PROMPT_VERSION,
 )
+
+
 def to_predicted_letter(
     letter_id: str,
     mentions: list[PredictedMention],

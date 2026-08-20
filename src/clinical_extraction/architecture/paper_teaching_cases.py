@@ -14,7 +14,7 @@ from clinical_extraction.architecture.teaching_case import (
     GanCaseSpec,
     TeachingCase,
     _exect_llm_only_run,
-    _exect_llm_with_rules_run,
+    _exect_llm_pre_post_run,
     _exect_rules_only_run,
     _gan_case,
 )
@@ -150,7 +150,7 @@ def _exect_paper_case(
     case.runs = [
         _exect_rules_only_run(letter),
         _exect_llm_only_run(letter, raw_output),
-        _exect_llm_with_rules_run(letter, raw_output),
+        _exect_llm_pre_post_run(letter, raw_output),
     ]
     return case
 

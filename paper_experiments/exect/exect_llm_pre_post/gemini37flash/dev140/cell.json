@@ -8,7 +8,7 @@
   "model": "gemini/gemini-3.7-flash",
   "model_slug": "gemini37flash",
   "n": 140,
-  "program": "exectv2_compact_ledger",
+  "program": "exect_llm_pre_post",
   "raw_headline_f1": 0.8238,
   "replay_fields": [
     "letter_id",

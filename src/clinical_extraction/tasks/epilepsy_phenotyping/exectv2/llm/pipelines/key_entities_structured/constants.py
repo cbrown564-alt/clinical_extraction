@@ -3,10 +3,9 @@
 Pure relocation of the module-level constants from
 ``llm_only_key_entities_structured``. No logic changes.
 
-Paper names ``exect_llm_pre_post`` and ``exect_llm_only`` are the
-living Compact methods. ``exect_llm_with_rules`` remains a live
-alias of pre-post. The older ``exectv2_compact_ledger`` string remains
-the live Compact prompt version.
+Paper names ``exect_llm_pre_post`` and ``exect_llm_only`` are the living
+Compact methods. Legacy prompt strings are accepted on read only via
+``LEGACY_PROMPT_VERSION_ALIASES``.
 """
 
 from __future__ import annotations
@@ -25,11 +24,15 @@ EXECT_LLM_PRE_POST = "exect_llm_pre_post"
 EXECT_LLM_WITH_RULES = "exect_llm_with_rules"
 EXECT_LLM_ONLY = "exect_llm_only"
 COMPACT_LEDGER = "exectv2_compact_ledger"
-COMPACT_VERSIONS = frozenset(
-    {COMPACT_LEDGER, EXECT_LLM_PRE_POST, EXECT_LLM_WITH_RULES}
-)
+
+LEGACY_PROMPT_VERSION_ALIASES: dict[str, str] = {
+    COMPACT_LEDGER: EXECT_LLM_PRE_POST,
+    EXECT_LLM_WITH_RULES: EXECT_LLM_PRE_POST,
+}
+
+COMPACT_VERSIONS = frozenset({EXECT_LLM_PRE_POST})
 LLM_ONLY_VERSIONS = frozenset({EXECT_LLM_ONLY})
-PROMPT_VERSION = COMPACT_LEDGER
+PROMPT_VERSION = EXECT_LLM_PRE_POST
 _SUPPORTED_PROMPT_VERSIONS = COMPACT_VERSIONS | LLM_ONLY_VERSIONS
 PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"
 COMPONENT_OWNER = "hybrid_key_family_event_ledger"
@@ -99,22 +102,30 @@ _SEIZURE_STATE_RE = re.compile(
 )
 
 
+def canonicalize_prompt_version(version: str) -> str:
+    """Map legacy Compact prompt strings to the living paper name."""
+
+    return LEGACY_PROMPT_VERSION_ALIASES.get(version, version)
+
+
 def set_active_prompt_version(version: str) -> None:
     """Select the full-profile prompt version emitted by build_prompt_input."""
 
     global PROMPT_VERSION
-    if version not in _SUPPORTED_PROMPT_VERSIONS:
+    selected = canonicalize_prompt_version(version)
+    if selected not in _SUPPORTED_PROMPT_VERSIONS:
         raise ValueError(
             f"unsupported prompt version {version!r}; "
-            f"expected one of {sorted(_SUPPORTED_PROMPT_VERSIONS)}"
+            f"expected one of {sorted(_SUPPORTED_PROMPT_VERSIONS)} "
+            f"or legacy aliases {sorted(LEGACY_PROMPT_VERSION_ALIASES)}"
         )
-    PROMPT_VERSION = version
+    PROMPT_VERSION = selected
 
 
 def prompt_version_for(*, prompt_version: str | None = None) -> str:
     """Resolve the living Compact prompt identity."""
 
-    selected = prompt_version or PROMPT_VERSION
+    selected = canonicalize_prompt_version(prompt_version or PROMPT_VERSION)
     if selected not in _SUPPORTED_PROMPT_VERSIONS:
         raise ValueError(
             f"unsupported prompt version {selected!r}; "

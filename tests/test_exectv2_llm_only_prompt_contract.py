@@ -7,12 +7,6 @@ from pathlib import Path
 
 import pytest
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
-    DIAGNOSIS,
-    INVESTIGATIONS,
-    PRESCRIPTION,
-    SEIZURE_FREQUENCY,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
@@ -33,7 +27,7 @@ _LETTER = ExectLetter(letter_id="TEST001", note_text=_NOTE)
 
 def test_prompt_hygiene_and_four_family_schema() -> None:
     payload_str = structured.build_prompt_input(
-        _LETTER, prompt_version=structured.COMPACT_LEDGER
+        _LETTER, prompt_version=structured.EXECT_LLM_PRE_POST
     )
     leaked = [phrase for phrase in FORBIDDEN_PHRASES if phrase in payload_str]
     assert leaked == []
@@ -57,7 +51,7 @@ def _prompt_fields_without_letter(payload: dict) -> str:
 def test_no_prompt_version_mentions_cui() -> None:
     original = structured.PROMPT_VERSION
     versions = [
-        structured.COMPACT_LEDGER,
+        structured.EXECT_LLM_PRE_POST,
         structured.EXECT_LLM_WITH_RULES,
         structured.EXECT_LLM_ONLY,
     ]
@@ -75,7 +69,7 @@ def test_no_prompt_version_mentions_cui() -> None:
     finally:
         structured.set_active_prompt_version(original)
 
-    assert structured.PROMPT_VERSION == structured.COMPACT_LEDGER
+    assert structured.PROMPT_VERSION == structured.EXECT_LLM_PRE_POST
 
 
 def test_compact_prompt_is_authored_in_one_file() -> None:
@@ -91,7 +85,7 @@ def test_compact_prompt_is_authored_in_one_file() -> None:
 def test_compact_is_authored_as_compact() -> None:
     payload = json.loads(
         structured.build_prompt_input(
-            _LETTER, prompt_version=structured.COMPACT_LEDGER
+            _LETTER, prompt_version=structured.EXECT_LLM_PRE_POST
         )
     )
     assert list(payload) == list(structured.COMPACT_AUTHORED_KEYS)
@@ -116,7 +110,7 @@ def test_compact_is_authored_as_compact() -> None:
 def test_compact_schema_is_flat_fact_events() -> None:
     payload = json.loads(
         structured.build_prompt_input(
-            _LETTER, prompt_version=structured.COMPACT_LEDGER
+            _LETTER, prompt_version=structured.EXECT_LLM_PRE_POST
         )
     )
     event_schema = payload["output_schema"]["clinical_events"][0]
@@ -217,7 +211,7 @@ def test_compact_schema_is_flat_fact_events() -> None:
 def test_compact_seizure_rules_keep_prior_wording() -> None:
     payload = json.loads(
         structured.build_prompt_input(
-            _LETTER, prompt_version=structured.COMPACT_LEDGER
+            _LETTER, prompt_version=structured.EXECT_LLM_PRE_POST
         )
     )
     sf_rules = " ".join(payload["clinical_rules"]["seizure_frequency"])
@@ -247,7 +241,7 @@ def test_compact_seizure_rules_keep_prior_wording() -> None:
 def test_compact_llm_only_omits_suggested_evidence() -> None:
     compact = json.loads(
         structured.build_prompt_input(
-            _LETTER, prompt_version=structured.COMPACT_LEDGER
+            _LETTER, prompt_version=structured.EXECT_LLM_PRE_POST
         )
     )
     llm_only = json.loads(
@@ -281,7 +275,7 @@ def test_compact_llm_only_omits_suggested_evidence() -> None:
 def test_paper_names_are_aliases_of_compact() -> None:
     compact = json.loads(
         structured.build_prompt_input(
-            _LETTER, prompt_version=structured.COMPACT_LEDGER
+            _LETTER, prompt_version=structured.EXECT_LLM_PRE_POST
         )
     )
     paper_compact = json.loads(
@@ -317,7 +311,7 @@ def test_build_prompt_input_rejects_deleted_dump_and_prune_versions(
 
 
 def test_compact_format_retry_schema_is_flat_fact_events() -> None:
-    schema = structured.format_retry_schema_for(structured.COMPACT_LEDGER)
+    schema = structured.format_retry_schema_for(structured.EXECT_LLM_PRE_POST)
     event = schema["$defs"]["CompactClinicalEvent"]["properties"]
     assert list(event) == ["family", "evidence", "fact", "attributes"]
     assert "anchor_text" not in event

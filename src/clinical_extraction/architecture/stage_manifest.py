@@ -79,8 +79,12 @@ METHOD_IDS: tuple[str, ...] = (
     "gan2026_llm_with_rules",
     "exectv2_rules_only",
     "exectv2_llm_only",
-    "exectv2_llm_with_rules",
+    "exectv2_llm_pre_post",
 )
+
+LEGACY_METHOD_ID_ALIASES: dict[str, str] = {
+    "exectv2_llm_with_rules": "exectv2_llm_pre_post",
+}
 
 _REQUIRED_STAGE_FIELDS = (
     "stage_id",
@@ -321,12 +325,13 @@ def manifest_path(method_id: str) -> Path:
 
 @cache
 def load_manifest(method_id: str) -> MethodManifest:
-    path = manifest_path(method_id)
+    resolved = LEGACY_METHOD_ID_ALIASES.get(method_id, method_id)
+    path = manifest_path(resolved)
     if not path.is_file():
         raise FileNotFoundError(f"no stage manifest for {method_id!r} at {path}")
     payload = json.loads(path.read_text(encoding="utf-8"))
     manifest = _manifest(payload)
-    if manifest.method_id != method_id:
+    if manifest.method_id != resolved:
         raise ValueError(
             f"{path.name} declares method_id {manifest.method_id!r}"
         )

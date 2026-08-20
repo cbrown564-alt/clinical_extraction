@@ -126,7 +126,7 @@ class Exectv2PipelineRunner:
                 format_retry_program=self.config.format_retry_program,
                 config=config,
             )
-            result = structured_one_call.run_llm_with_rules_letter(
+            result = structured_one_call.run_llm_pre_post_letter(
                 letter, producer, config=config
             )
         else:

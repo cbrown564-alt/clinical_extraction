@@ -18,6 +18,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
     load_letters_for_split,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
+    llm_only_key_entities_structured as structured,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
     has_blocking_parse_issue,
 )
@@ -52,7 +55,9 @@ def _existing_complete_rows(path: Path, prompt_version: str) -> list[dict[str, A
         letter_id = str(row.get("letter_id") or "")
         if not letter_id or letter_id in seen:
             continue
-        if row.get("prompt_version") != prompt_version:
+        if structured.canonicalize_prompt_version(
+            str(row.get("prompt_version") or "")
+        ) != prompt_version:
             raise RuntimeError(
                 f"{path} has {letter_id} with {row.get('prompt_version')}"
             )

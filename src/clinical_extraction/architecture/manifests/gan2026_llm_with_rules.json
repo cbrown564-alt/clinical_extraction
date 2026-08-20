@@ -463,10 +463,10 @@
       "note": "Named repair modes switch repair families on and off for ablation. The selected comparison uses hybrid_full_stack."
     },
     {
-      "name": "No-call replay",
+      "name": "Paper live runner",
       "role": "replay path",
-      "path": "scripts/run_current_stack.py",
-      "note": "Historical zero-call replay of saved current-stack cells. Not the paper live runner."
+      "path": "src/clinical_extraction/paper/cli.py",
+      "note": "python -m clinical_extraction.paper run --method gan_llm_with_rules --model <slug> --split <dev750|test450>"
     }
   ],
   "evidence_owners": [

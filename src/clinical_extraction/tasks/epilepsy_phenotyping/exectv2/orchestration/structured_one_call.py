@@ -196,7 +196,7 @@ def produce_structured_letter(
     }
     _producer_stages = (
         ExectStageEvent(
-            stage_id="exect.llm_with_rules.build_prompt",
+            stage_id="exect.llm_pre_post.build_prompt",
             owner="deterministic",
             effect_class="transport_or_schema",
             input_value=letter.letter_id,
@@ -206,7 +206,7 @@ def produce_structured_letter(
             rule_category="general",
         ),
         ExectStageEvent(
-            stage_id="exect.llm_with_rules.model_call",
+            stage_id="exect.llm_pre_post.model_call",
             owner="model",
             effect_class="clinical_meaning",
             input_value=prompt_input_json,
@@ -215,7 +215,7 @@ def produce_structured_letter(
             action="one_model_or_replay_call",
         ),
         ExectStageEvent(
-            stage_id="exect.llm_with_rules.parse_and_retry",
+            stage_id="exect.llm_pre_post.parse_and_retry",
             owner="deterministic",
             effect_class="transport_or_schema",
             input_value=raw_text,
@@ -225,7 +225,7 @@ def produce_structured_letter(
             rule_category="general",
         ),
         ExectStageEvent(
-            stage_id="exect.llm_with_rules.project_and_gate",
+            stage_id="exect.llm_pre_post.project_and_gate",
             owner="deterministic",
             effect_class="validation_gate",
             input_value=[_mention_to_row(mention) for mention in mentions],
@@ -322,7 +322,7 @@ def run_llm_only_letter(
     )
 
 
-def run_llm_with_rules_letter(
+def run_llm_pre_post_letter(
     letter: ExectLetter,
     producer: StructuredProducerResult,
     *,
@@ -332,10 +332,10 @@ def run_llm_with_rules_letter(
 
     config = config or StructuredMethodConfig.selected()
     config.require_selected()
-    return _run_llm_with_rules_letter(letter, producer, config=config)
+    return _run_llm_pre_post_letter(letter, producer, config=config)
 
 
-def run_archived_llm_with_rules_letter(
+def run_archived_llm_pre_post_letter(
     letter: ExectLetter,
     producer: StructuredProducerResult,
     *,
@@ -345,10 +345,10 @@ def run_archived_llm_with_rules_letter(
 
     if not config.archived_replay:
         raise ValueError("archived replay entry point requires archived_replay=True")
-    return _run_llm_with_rules_letter(letter, producer, config=config)
+    return _run_llm_pre_post_letter(letter, producer, config=config)
 
 
-def _run_llm_with_rules_letter(
+def _run_llm_pre_post_letter(
     letter: ExectLetter,
     producer: StructuredProducerResult,
     *,
@@ -367,7 +367,7 @@ def _run_llm_with_rules_letter(
     stages.extend(
         [
             ExectStageEvent(
-                stage_id="exect.llm_with_rules.sf_state_projection",
+                stage_id="exect.llm_pre_post.sf_state_projection",
                 owner="deterministic",
                 effect_class="clinical_meaning",
                 input_value=producer_row.get("predicted_mentions", []),
@@ -377,7 +377,7 @@ def _run_llm_with_rules_letter(
                 rule_category="seizure_frequency",
             ),
             ExectStageEvent(
-                stage_id="exect.llm_with_rules.sf_unknown_suppression",
+                stage_id="exect.llm_pre_post.sf_unknown_suppression",
                 owner="deterministic",
                 effect_class="clinical_meaning",
                 input_value=producer_row.get("predicted_mentions", []),
@@ -387,7 +387,7 @@ def _run_llm_with_rules_letter(
                 rule_category="seizure_frequency",
             ),
             ExectStageEvent(
-                stage_id="exect.llm_with_rules.register_findings",
+                stage_id="exect.llm_pre_post.register_findings",
                 owner="deterministic",
                 effect_class="transport_or_schema",
                 input_value=len(producer.projected_letter.mentions),
@@ -413,7 +413,7 @@ def _run_llm_with_rules_letter(
         lane = assembled["lanes"][entity]
         stages.append(
             ExectStageEvent(
-                stage_id=f"exect.llm_with_rules.lens.{lens_stage_names[entity]}",
+                stage_id=f"exect.llm_pre_post.lens.{lens_stage_names[entity]}",
                 owner="deterministic",
                 effect_class=(
                     "representation"
@@ -434,7 +434,7 @@ def _run_llm_with_rules_letter(
     stages.extend(
         [
             ExectStageEvent(
-                stage_id="exect.llm_with_rules.evidence_requirement",
+                stage_id="exect.llm_pre_post.evidence_requirement",
                 owner="deterministic",
                 effect_class="validation_gate",
                 input_value=len(assembled["predicted_mentions"]),
@@ -444,7 +444,7 @@ def _run_llm_with_rules_letter(
                 rule_category="general",
             ),
             ExectStageEvent(
-                stage_id="exect.llm_with_rules.materialize_views",
+                stage_id="exect.llm_pre_post.materialize_views",
                 owner="deterministic",
                 effect_class="benchmark_projection",
                 input_value=len(assembled["predicted_mentions"]),
@@ -457,7 +457,7 @@ def _run_llm_with_rules_letter(
                 rule_category="benchmark_format",
             ),
             ExectStageEvent(
-                stage_id="exect.llm_with_rules.score",
+                stage_id="exect.llm_pre_post.score",
                 owner="scorer",
                 effect_class="benchmark_projection",
                 input_value=len(assembled["predicted_mentions"]),
@@ -470,7 +470,7 @@ def _run_llm_with_rules_letter(
     prediction = _prediction_from_assembly(letter, assembled)
     row = producer_row
     row.update(assembled)
-    row["source_method_id"] = "exectv2_llm_with_rules"
+    row["source_method_id"] = "exectv2_llm_pre_post"
     row["source_pipeline_family"] = SOURCE_PIPELINE_FAMILY
     row["active_method"] = "llm_with_rules"
     row["method_id"] = "llm_with_rules"
@@ -542,7 +542,7 @@ def _fail_closed_hybrid_result(
     stages = list(_hybrid_producer_stages(producer))
     stages.append(
         ExectStageEvent(
-            stage_id="exect.llm_with_rules.fail_closed",
+            stage_id="exect.llm_pre_post.fail_closed",
             owner="deterministic",
             effect_class="validation_gate",
             input_value={
@@ -576,7 +576,7 @@ def _fail_closed_hybrid_result(
     row = deep_thaw(producer.row)
     row.update(
         {
-            "source_method_id": "exectv2_llm_with_rules",
+            "source_method_id": "exectv2_llm_pre_post",
             "source_pipeline_family": SOURCE_PIPELINE_FAMILY,
             "active_method": "llm_with_rules",
             "method_id": "llm_with_rules",
@@ -627,7 +627,7 @@ def run_primary_pair(
 
     producer = producer or produce_structured_letter(letter, config=config, **producer_kwargs)
     llm_only = run_llm_only_letter(letter, producer)
-    hybrid = run_llm_with_rules_letter(
+    hybrid = run_llm_pre_post_letter(
         letter,
         producer,
         config=config or StructuredMethodConfig.selected(),
@@ -658,7 +658,7 @@ def _hybrid_producer_stages(
             owner=event.owner,
             effect_class=(
                 "clinical_meaning"
-                if event.stage_id == "exect.llm_with_rules.project_and_gate"
+                if event.stage_id == "exect.llm_pre_post.project_and_gate"
                 else event.effect_class
             ),
             input_value=event.input_value,
@@ -679,7 +679,7 @@ def _llm_only_producer_stages(
     stages = producer_stages_for(producer)
     return tuple(
         ExectStageEvent(
-            stage_id=event.stage_id.replace("exect.llm_with_rules.", "exect.llm."),
+            stage_id=event.stage_id.replace("exect.llm_pre_post.", "exect.llm."),
             owner=event.owner,
             effect_class=event.effect_class,
             input_value=event.input_value,
@@ -817,7 +817,7 @@ def run_split(
             result = run_llm_only_letter(letter, producer)
             row = dict(result.row)
         elif projection == "llm_with_rules":
-            result = run_llm_with_rules_letter(letter, producer, config=config)
+            result = run_llm_pre_post_letter(letter, producer, config=config)
             row = dict(result.row)
         else:
             row = dict(producer.row)

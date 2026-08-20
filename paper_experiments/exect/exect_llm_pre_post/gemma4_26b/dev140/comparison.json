@@ -1,6 +1,6 @@
 {
   "arms": {
-    "compact_ledger": {
+    "exect_llm_pre_post": {
       "assembly_family_f1": {
         "Diagnosis": 0.7872,
         "Investigations": 0.795,
@@ -167,7 +167,7 @@
         "EA0200"
       ],
       "new_model_calls": 0,
-      "prompt_version": "exectv2_compact_ledger",
+      "prompt_version": "exect_llm_pre_post",
       "quality": {
         "illegal_enum": 28,
         "inexact_evidence": 16,
@@ -1326,79 +1326,7 @@
     }
   ],
   "claim_boundary": "ExECTv2 development living Compact versus saved Full ledger on a local model. Not holdout, not a selected prompt, not a Decision 0050 change, and not a Decision 0051 roster swap.",
-  "comparison": {
-    "compact_ledger_minus_full_ledger": {
-      "regression_triggers": [
-        "raw four-family F1 drop -0.2298",
-        "raw Prescription F1 drop -0.7051",
-        "raw net four-family letter-exact losses 4",
-        "hybrid SeizureFrequency F1 drop -0.0836"
-      ],
-      "significant_regression": true,
-      "surfaces": {
-        "hybrid": {
-          "family_f1_delta": {
-            "Diagnosis": -0.0225,
-            "Investigations": -0.0175,
-            "Prescription": -0.04,
-            "SeizureFrequency": -0.0836
-          },
-          "four_family_letter_exact_losses": 13,
-          "four_family_letter_exact_net": 2,
-          "four_family_letter_exact_wins": 15,
-          "headline_f1_delta": -0.0364,
-          "per_family_letter_exact_flips": {
-            "Diagnosis": {
-              "losses": 16,
-              "wins": 17
-            },
-            "Investigations": {
-              "losses": 19,
-              "wins": 14
-            },
-            "Prescription": {
-              "losses": 16,
-              "wins": 12
-            },
-            "SeizureFrequency": {
-              "losses": 22,
-              "wins": 19
-            }
-          }
-        },
-        "raw": {
-          "family_f1_delta": {
-            "Diagnosis": -0.0731,
-            "Investigations": -0.0196,
-            "Prescription": -0.7051,
-            "SeizureFrequency": -0.0674
-          },
-          "four_family_letter_exact_losses": 12,
-          "four_family_letter_exact_net": -4,
-          "four_family_letter_exact_wins": 8,
-          "headline_f1_delta": -0.2298,
-          "per_family_letter_exact_flips": {
-            "Diagnosis": {
-              "losses": 15,
-              "wins": 7
-            },
-            "Investigations": {
-              "losses": 19,
-              "wins": 14
-            },
-            "Prescription": {
-              "losses": 73,
-              "wins": 6
-            },
-            "SeizureFrequency": {
-              "losses": 22,
-              "wins": 24
-            }
-          }
-        }
-      }
-    }
-  },
+  "comparison": {},
   "control_sidecar": "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715_structured.jsonl",
   "decision": {
     "compact_ledger": {
@@ -1415,7 +1343,7 @@
       "status": "scored"
     }
   },
-  "default_prompt_version": "exectv2_compact_ledger",
+  "default_prompt_version": "exect_llm_pre_post",
   "finished_utc": "2026-08-17T16:39:12.049992+00:00",
   "generated_on": "2026-08-17",
   "letter_ids": [

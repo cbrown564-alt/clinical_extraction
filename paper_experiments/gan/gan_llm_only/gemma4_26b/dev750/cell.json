@@ -1,20 +1,20 @@
 {
-  "model_slug": "gemma4_26b",
-  "model": "ollama_chat/gemma4:26b",
-  "program": "gan2026_llm_only_canonical_pipeline_v0.8",
-  "split": "dev750",
-  "split_machine": "validation",
-  "n": 750,
-  "row_count": 750,
-  "row_policy": "development_review_permitted",
+  "call_mode": "live_2026-07-20",
+  "empty_raw_count": 8,
   "id_field": "source_row_index",
+  "model": "ollama_chat/gemma4:26b",
+  "model_slug": "gemma4_26b",
+  "n": 750,
+  "program": "gan_llm_only",
   "replay_fields": [
     "source_row_index",
     "prompt_version",
     "raw_output"
   ],
-  "empty_raw_count": 8,
+  "row_count": 750,
+  "row_policy": "development_review_permitted",
+  "rows": "rows.jsonl",
   "source": "scratch/validation/gan2026_six_model_comparison_20260718/gemma4_26b/llm_only/validation750.rows.jsonl",
-  "call_mode": "live_2026-07-20",
-  "rows": "rows.jsonl"
+  "split": "dev750",
+  "split_machine": "validation"
 }

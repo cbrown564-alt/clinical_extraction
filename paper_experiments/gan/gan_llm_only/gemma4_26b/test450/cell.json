@@ -1,20 +1,20 @@
 {
-  "model_slug": "gemma4_26b",
-  "model": "ollama_chat/gemma4:26b",
-  "program": "gan2026_llm_only_canonical_pipeline_v0.8",
-  "split": "test450",
-  "split_machine": "test",
-  "n": 450,
-  "row_count": 450,
-  "row_policy": "aggregate_only",
+  "call_mode": "live_2026-08-01",
+  "empty_raw_count": 0,
   "id_field": "source_row_index",
+  "model": "ollama_chat/gemma4:26b",
+  "model_slug": "gemma4_26b",
+  "n": 450,
+  "program": "gan_llm_only",
   "replay_fields": [
     "source_row_index",
     "prompt_version",
     "raw_output"
   ],
-  "empty_raw_count": 0,
+  "row_count": 450,
+  "row_policy": "aggregate_only",
+  "rows": "rows.jsonl",
   "source": "scratch/holdout/gan2026_six_model_llm_only_test450_20260801/gemma4_26b/rows.jsonl",
-  "call_mode": "live_2026-08-01",
-  "rows": "rows.jsonl"
+  "split": "test450",
+  "split_machine": "test"
 }

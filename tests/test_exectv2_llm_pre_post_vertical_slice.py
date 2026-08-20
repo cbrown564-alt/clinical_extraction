@@ -102,13 +102,17 @@ def test_hybrid_identity_and_cli_aliases_are_active() -> None:
 
     assert LLM_WITH_RULES_METHOD_ALIASES == (
         "llm_with_rules",
+        "llm_pre_post",
         "exectv2_llm_with_rules",
+        "exectv2_llm_pre_post",
     )
     assert [active_method_name(alias) for alias in LLM_WITH_RULES_METHOD_ALIASES] == [
         "llm_with_rules",
         "llm_with_rules",
+        "llm_with_rules",
+        "llm_with_rules",
     ]
-    assert retained_method_id("llm_with_rules") == "exectv2_llm_with_rules"
+    assert retained_method_id("llm_with_rules") == "exectv2_llm_pre_post"
     assert set(LLM_WITH_RULES_METHOD_ALIASES) <= set(get_cli_specs())
 
 
@@ -130,14 +134,14 @@ def test_hybrid_public_runner_uses_canonical_projection_and_fresh_identity() -> 
     assert result.method == "llm_with_rules"
     assert result.result.row["active_method"] == "llm_with_rules"
     assert result.result.row["method_id"] == "llm_with_rules"
-    assert result.result.row["source_method_id"] == "exectv2_llm_with_rules"
+    assert result.result.row["source_method_id"] == "exectv2_llm_pre_post"
     assert result.result.row["scored_view"] == "clinical_headline"
     assert result.result.row["policy"] == {
         "diagnosis_policy_variant": "default",
         "prescription_policy_variant": "default",
         "sf_projection_ablation": "combined",
     }
-    assert result.result.stage_events[-1].stage_id == "exect.llm_with_rules.score"
+    assert result.result.stage_events[-1].stage_id == "exect.llm_pre_post.score"
 
 
 def test_hybrid_runtime_trace_agrees_with_manifest_and_records_noops() -> None:
@@ -155,7 +159,7 @@ def test_hybrid_runtime_trace_agrees_with_manifest_and_records_noops() -> None:
             model="fixture/model",
         )
     ).run(_letter())
-    manifest = load_manifest("exectv2_llm_with_rules")
+    manifest = load_manifest("exectv2_llm_pre_post")
     events = result.result.stage_events
     assert [event.stage_id for event in events] == [stage.stage_id for stage in manifest.stages]
     assert [event.action for event in events] == [
@@ -227,7 +231,7 @@ def test_hybrid_split_replay_projects_rows_without_a_second_producer_call(
     assert calls == len(letters)
     assert [row["letter_id"] for row in rows] == [letter.letter_id for letter in letters]
     assert all(row["method_id"] == "llm_with_rules" for row in rows)
-    assert all(row["source_method_id"] == "exectv2_llm_with_rules" for row in rows)
+    assert all(row["source_method_id"] == "exectv2_llm_pre_post" for row in rows)
     assert all(row["pipeline_family"] == "llm_with_rules" for row in rows)
     assert all(
         row["source_pipeline_family"] == "exectv2_hybrid_key_family_event_ledger" for row in rows
@@ -269,7 +273,7 @@ def test_hybrid_dev140_replay_matches_independent_prechange_oracle() -> None:
             raw_output=raw_outputs[letter.letter_id],
             split="dev140",
         )
-        result = structured_one_call.run_llm_with_rules_letter(letter, producer)
+        result = structured_one_call.run_llm_pre_post_letter(letter, producer)
         for field in BASELINE_FIELDS:
             actual_value = producer.row.get(field)
             source_value = source.get(field)
@@ -295,7 +299,7 @@ def test_hybrid_dev140_replay_matches_independent_prechange_oracle() -> None:
             assert actual_value == source_value, f"producer parity: {field}"
         assert result.producer is producer
         assert result.row["active_method"] == "llm_with_rules"
-        assert result.row["source_method_id"] == "exectv2_llm_with_rules"
+        assert result.row["source_method_id"] == "exectv2_llm_pre_post"
         assert result.row["source_pipeline_family"] == source["pipeline_family"]
         for field in (
             "model",
@@ -331,7 +335,7 @@ def test_hybrid_dev140_replay_matches_independent_prechange_oracle() -> None:
             )
             for stage in json.loads(
                 Path(
-                    "src/clinical_extraction/architecture/manifests/exectv2_llm_with_rules.json"
+                    "src/clinical_extraction/architecture/manifests/exectv2_llm_pre_post.json"
                 ).read_text(encoding="utf-8")
             )["stages"]
             if stage["owner"] != "model"
@@ -386,7 +390,7 @@ def test_hybrid_operational_api_delegates_to_the_public_runner(
     assert output[0]["method"] == "llm_with_rules"
     assert output[0]["run_id"] == "llm_with_rules"
     assert output[0]["scored_view"] == "clinical_headline"
-    assert output[0]["trace"][-1]["stage_id"] == "exect.llm_with_rules.score"
+    assert output[0]["trace"][-1]["stage_id"] == "exect.llm_pre_post.score"
 
 
 @pytest.mark.parametrize(
@@ -453,7 +457,7 @@ def test_hybrid_operational_api_fails_closed_on_malformed_model_output(
         marker in output[0]["error"]["message"]
         for marker in ("invalid_json:", "schema_validation_error:")
     )
-    assert output[0]["trace"][-1]["stage_id"] == "exect.llm_with_rules.fail_closed"
+    assert output[0]["trace"][-1]["stage_id"] == "exect.llm_pre_post.fail_closed"
     assert not any(
         mention["entity"] == "Diagnosis"
         for mention in output[0].get("prediction", {}).get("mentions", [])

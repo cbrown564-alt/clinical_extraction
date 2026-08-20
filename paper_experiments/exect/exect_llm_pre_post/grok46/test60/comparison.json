@@ -1,6 +1,6 @@
 {
   "arms": {
-    "exect_llm_with_rules": {
+    "exect_llm_pre_post": {
       "assembly_family_f1": {
         "Diagnosis": 0.7903,
         "Investigations": 0.8913,
@@ -52,7 +52,7 @@
         "recall": 0.7927
       },
       "new_model_calls": 0,
-      "prompt_version": "exectv2_compact_ledger",
+      "prompt_version": "exect_llm_pre_post",
       "quality": {
         "illegal_enum": 0,
         "inexact_evidence": 0,
@@ -107,7 +107,7 @@
   "cache": false,
   "claim_boundary": "ExECT aggregate-only test60 Compact. No Full-ledger control for this model.",
   "decision": {
-    "exect_llm_with_rules": {
+    "exect_llm_pre_post": {
       "hybrid_family_f1": {
         "Diagnosis": 0.7903,
         "Investigations": 0.8913,
@@ -127,12 +127,12 @@
       "status": "scored"
     }
   },
-  "default_prompt_version": "exectv2_compact_ledger",
+  "default_prompt_version": "exect_llm_pre_post",
   "finished_utc": "2026-08-18T22:47:11.601095+00:00",
   "generated_on": "2026-08-17",
   "live": true,
   "max_tokens": 16000,
-  "method": "exect_llm_with_rules",
+  "method": "exect_llm_pre_post",
   "model": "xai/grok-4.6",
   "model_calls": 0,
   "model_label": "Grok 4.6",
@@ -141,7 +141,7 @@
   "reasoning_effort": "low",
   "row_count": 59,
   "row_policy": "aggregate_only",
-  "schema_version": "paper.exect_llm_with_rules.v1",
+  "schema_version": "paper.exect_llm_pre_post.v1",
   "split": "test60",
   "started_utc": "2026-08-18T22:47:11.330476+00:00",
   "temperature": 1.0,

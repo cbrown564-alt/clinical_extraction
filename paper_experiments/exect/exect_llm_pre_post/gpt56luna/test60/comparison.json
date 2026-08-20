@@ -1,109 +1,6 @@
 {
   "arms": {
-    "exect_full_ledger": {
-      "assembly_family_f1": {
-        "Diagnosis": 0.8033,
-        "Investigations": 0.9231,
-        "Prescription": 0.9091,
-        "SeizureFrequency": 0.5606
-      },
-      "assembly_headline_f1": 0.7974,
-      "call_mode": "saved_structured_no_call",
-      "gate_event_count": 65,
-      "hybrid_family_f1": {
-        "Diagnosis": 0.8033,
-        "Investigations": 0.9231,
-        "Prescription": 0.9091,
-        "SeizureFrequency": 0.5606
-      },
-      "hybrid_family_letter_exact": {
-        "Diagnosis": 34,
-        "Investigations": 54,
-        "Prescription": 48,
-        "SeizureFrequency": 25
-      },
-      "hybrid_family_prf": {
-        "Diagnosis": {
-          "f1": 0.8033,
-          "precision": 0.8205,
-          "recall": 0.7869
-        },
-        "Investigations": {
-          "f1": 0.9231,
-          "precision": 0.9545,
-          "recall": 0.8936
-        },
-        "Prescription": {
-          "f1": 0.9091,
-          "precision": 0.9375,
-          "recall": 0.8824
-        },
-        "SeizureFrequency": {
-          "f1": 0.5606,
-          "precision": 0.6379,
-          "recall": 0.5
-        }
-      },
-      "hybrid_four_family_letter_exact": 13,
-      "hybrid_headline_f1": 0.7974,
-      "hybrid_headline_prf": {
-        "f1": 0.7974,
-        "precision": 0.8361,
-        "recall": 0.7622
-      },
-      "new_model_calls": 0,
-      "prompt_version": "exectv2_full_ledger",
-      "quality": {
-        "illegal_enum": 0,
-        "inexact_evidence": 0,
-        "parse": 0,
-        "schema": 0
-      },
-      "raw_family_f1": {
-        "Diagnosis": 0.7479,
-        "Investigations": 0.9231,
-        "Prescription": 0.9091,
-        "SeizureFrequency": 0.5797
-      },
-      "raw_family_letter_exact": {
-        "Diagnosis": 35,
-        "Investigations": 54,
-        "Prescription": 48,
-        "SeizureFrequency": 23
-      },
-      "raw_family_prf": {
-        "Diagnosis": {
-          "f1": 0.7479,
-          "precision": 0.7672,
-          "recall": 0.7295
-        },
-        "Investigations": {
-          "f1": 0.9231,
-          "precision": 0.9545,
-          "recall": 0.8936
-        },
-        "Prescription": {
-          "f1": 0.9091,
-          "precision": 0.9375,
-          "recall": 0.8824
-        },
-        "SeizureFrequency": {
-          "f1": 0.5797,
-          "precision": 0.625,
-          "recall": 0.5405
-        }
-      },
-      "raw_four_family_letter_exact": 13,
-      "raw_headline_f1": 0.7785,
-      "raw_headline_prf": {
-        "f1": 0.7785,
-        "precision": 0.8092,
-        "recall": 0.75
-      },
-      "raw_mention_count": 320,
-      "scored_mention_count": 320
-    },
-    "exect_llm_with_rules": {
+    "exect_llm_pre_post": {
       "assembly_family_f1": {
         "Diagnosis": 0.7627,
         "Investigations": 0.9565,
@@ -155,7 +52,7 @@
         "recall": 0.747
       },
       "new_model_calls": 59,
-      "prompt_version": "exectv2_compact_ledger",
+      "prompt_version": "exect_llm_pre_post",
       "quality": {
         "illegal_enum": 0,
         "inexact_evidence": 1,
@@ -209,78 +106,9 @@
   },
   "cache": false,
   "claim_boundary": "ExECT aggregate-only test60 Compact versus saved Full ledger.",
-  "comparison": {
-    "exect_llm_with_rules_minus_exect_full_ledger": {
-      "regression_triggers": [
-        "raw net four-family letter-exact losses 3"
-      ],
-      "significant_regression": true,
-      "surfaces": {
-        "hybrid": {
-          "family_f1_delta": {
-            "Diagnosis": -0.0406,
-            "Investigations": 0.0334,
-            "Prescription": -0.0097,
-            "SeizureFrequency": -0.018
-          },
-          "four_family_letter_exact_losses": 5,
-          "four_family_letter_exact_net": -2,
-          "four_family_letter_exact_wins": 3,
-          "headline_f1_delta": -0.0147,
-          "per_family_letter_exact_flips": {
-            "Diagnosis": {
-              "losses": 8,
-              "wins": 1
-            },
-            "Investigations": {
-              "losses": 0,
-              "wins": 2
-            },
-            "Prescription": {
-              "losses": 4,
-              "wins": 1
-            },
-            "SeizureFrequency": {
-              "losses": 2,
-              "wins": 4
-            }
-          }
-        },
-        "raw": {
-          "family_f1_delta": {
-            "Diagnosis": -0.0607,
-            "Investigations": 0.0334,
-            "Prescription": 0.0032,
-            "SeizureFrequency": -0.0209
-          },
-          "four_family_letter_exact_losses": 5,
-          "four_family_letter_exact_net": -3,
-          "four_family_letter_exact_wins": 2,
-          "headline_f1_delta": -0.0181,
-          "per_family_letter_exact_flips": {
-            "Diagnosis": {
-              "losses": 11,
-              "wins": 1
-            },
-            "Investigations": {
-              "losses": 0,
-              "wins": 2
-            },
-            "Prescription": {
-              "losses": 4,
-              "wins": 3
-            },
-            "SeizureFrequency": {
-              "losses": 2,
-              "wins": 4
-            }
-          }
-        }
-      }
-    }
-  },
+  "comparison": {},
   "decision": {
-    "exect_llm_with_rules": {
+    "exect_llm_pre_post": {
       "family_f1_delta": {
         "Diagnosis": -0.0406,
         "Investigations": 0.0334,
@@ -294,12 +122,12 @@
       "status": "scored"
     }
   },
-  "default_prompt_version": "exectv2_compact_ledger",
+  "default_prompt_version": "exect_llm_pre_post",
   "finished_utc": "2026-08-18T20:23:23.956548+00:00",
   "generated_on": "2026-08-17",
   "live": true,
   "max_tokens": 16000,
-  "method": "exect_llm_with_rules",
+  "method": "exect_llm_pre_post",
   "model": "openai/gpt-5.6-luna",
   "model_calls": 59,
   "model_label": "GPT-5.6 Luna",
@@ -308,7 +136,7 @@
   "reasoning_effort": "low",
   "row_count": 59,
   "row_policy": "aggregate_only",
-  "schema_version": "paper.exect_llm_with_rules.v1",
+  "schema_version": "paper.exect_llm_pre_post.v1",
   "split": "test60",
   "started_utc": "2026-08-18T20:18:14.073307+00:00",
   "temperature": 1.0,

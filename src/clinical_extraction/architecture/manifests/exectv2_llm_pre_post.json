@@ -1,21 +1,21 @@
 {
-  "method_id": "exectv2_llm_with_rules",
+  "method_id": "exectv2_llm_pre_post",
   "task": "exectv2",
   "task_label": "ExECTv2",
-  "method": "llm_with_rules",
-  "method_label": "LLM with rules",
+  "method": "llm_pre_post",
+  "method_label": "LLM pre-post",
   "role": "selected",
   "entry_point": {
     "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py",
-    "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_with_rules_letter"
+    "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_pre_post_letter"
   },
-  "one_sentence": "ExECT LLM with rules: the model proposes findings for four families in one request; deterministic family transforms reconcile those findings into the scored representation (hybrid F1).",
-  "sixty_second": "ExECT LLM with rules (`exect_llm_with_rules`) uses its own request (suggested-evidence scan included), separate from ExECT LLM only (`exect_llm_only`). One structured call per letter asks the named model for candidate findings across Diagnosis, Seizure Frequency, Prescription, and Investigations. No deterministic extractor proposes findings and none is unioned in - that is the family-ownership rule from decision 0040. After the call, code parses Compact events and may make one format-only retry, projects the model's seizure-frequency facts into the required state representation, and suppresses a narrowly defined class of unsupported unknown states. Raw and scored findings are both registered in a finding store, so every later change stays attributable. Then one family transform runs per entity, and the four behave differently: Diagnosis applies the active standard dictionary to model findings; Seizure Frequency is a thin assembly over the earlier projection; Prescription applies dictionary-driven regimen processing with bounded correction; Investigations is a behavior-preserving adapter while its residual providers remain prompt-side. Every final finding must carry exact source evidence, and the scored views are then materialized. Hybrid-call raw is not LLM-only.",
-  "prediction_owner": "the named model proposes all four families (exect.llm_with_rules.model_call); four family transforms may change findings afterwards",
+  "one_sentence": "ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms reconcile those findings into the scored representation (hybrid F1).",
+  "sixty_second": "ExECT LLM pre-post (`exect_llm_pre_post`) uses its own request (suggested-evidence scan included), separate from ExECT LLM only (`exect_llm_only`). One structured call per letter asks the named model for candidate findings across Diagnosis, Seizure Frequency, Prescription, and Investigations. No deterministic extractor proposes findings and none is unioned in - that is the family-ownership rule from decision 0040. After the call, code parses Compact events and may make one format-only retry, projects the model's seizure-frequency facts into the required state representation, and suppresses a narrowly defined class of unsupported unknown states. Raw and scored findings are both registered in a finding store, so every later change stays attributable. Then one family transform runs per entity, and the four behave differently: Diagnosis applies the active standard dictionary to model findings; Seizure Frequency is a thin assembly over the earlier projection; Prescription applies dictionary-driven regimen processing with bounded correction; Investigations is a behavior-preserving adapter while its residual providers remain prompt-side. Every final finding must carry exact source evidence, and the scored views are then materialized. Hybrid-call raw is not LLM-only.",
+  "prediction_owner": "the named model proposes all four families (exect.llm_pre_post.model_call); four family transforms may change findings afterwards",
   "scored_representation": "A PredictedLetter of four-family mentions materialized into named score views; the primary view is clinical fact recovery (`clinical_headline`, hybrid F1).",
   "stages": [
     {
-      "stage_id": "exect.llm_with_rules.build_prompt",
+      "stage_id": "exect.llm_pre_post.build_prompt",
       "runtime_action": "build_four_family_prompt",
       "name": "Build the four-family prompt",
       "operation": "Render the note text and the four-family event-ledger schema into the prompt input for one structured call.",
@@ -37,7 +37,7 @@
       "paper_wording": "A single prompt requests candidate findings for four clinical families."
     },
     {
-      "stage_id": "exect.llm_with_rules.model_call",
+      "stage_id": "exect.llm_pre_post.model_call",
       "runtime_action": "one_model_or_replay_call",
       "name": "Model proposes findings for four families",
       "operation": "One structured call returns candidate findings for Diagnosis, Seizure Frequency, Prescription, and Investigations, each with evidence.",
@@ -61,7 +61,7 @@
       "notes": "Decision 0040: the named model supplies all four families. No deterministic extractor may replace or be unioned into its result. This is what historical v08 did differently."
     },
     {
-      "stage_id": "exect.llm_with_rules.parse_and_retry",
+      "stage_id": "exect.llm_pre_post.parse_and_retry",
       "runtime_action": "parse_schema_and_optional_format_retry",
       "name": "Parse output, with format-only retry when eligible",
       "operation": "Recover and repair the JSON payload, coerce legacy mention shapes into events, and for eligible local models make one format-only retry that is accepted only if it validates.",
@@ -84,7 +84,7 @@
       "paper_wording": "Malformed model output is repaired at the transport and schema level, with one format-only retry for local models."
     },
     {
-      "stage_id": "exect.llm_with_rules.project_and_gate",
+      "stage_id": "exect.llm_pre_post.project_and_gate",
       "runtime_action": "repair_attributes_and_enforce_evidence",
       "name": "Enrich attributes and apply render-safety gates",
       "operation": "Attach CUI and canonical-phrase attributes, drop attribute values outside the closed vocabulary, drop seizure-frequency mentions that carry no frequency state, and drop modality-only Investigations duplicates.",
@@ -109,7 +109,7 @@
       "notes": "Classed as clinical_meaning because it can remove a finding the model produced: a seizure-frequency mention without a frequency state is dropped outright. Its more common behaviour is representation enrichment, which is why it is easy to read as inert."
     },
     {
-      "stage_id": "exect.llm_with_rules.sf_state_projection",
+      "stage_id": "exect.llm_pre_post.sf_state_projection",
       "runtime_action": "project_seizure_frequency_state",
       "name": "Project seizure-frequency facts into the state representation",
       "operation": "Convert the model's seizure-frequency facts into the state and ownership representation the ExECT scorer expects, including List 11 / range / interval / last-event encoding on emitted mentions, adding state attributes and named-type ownership the model did not supply.",
@@ -133,7 +133,7 @@
       "notes": "Named 'projection' but classed here as clinical_meaning: it can create the state representation that is scored, and it can add mentions from a candidate. Finding 4 of the 2026-07-30 review names this exact case. The selected setting is ablation='combined', which enables both the state and ownership projections."
     },
     {
-      "stage_id": "exect.llm_with_rules.sf_unknown_suppression",
+      "stage_id": "exect.llm_pre_post.sf_unknown_suppression",
       "runtime_action": "suppress_unsupported_unknown_state",
       "name": "Suppress unsupported unknown states",
       "operation": "Remove seizure-frequency findings whose state is unknown and unsupported under the narrowly defined suppression rule.",
@@ -157,7 +157,7 @@
       "notes": "Removes model-produced findings. Suppression is a clinical change, not a filter on noise."
     },
     {
-      "stage_id": "exect.llm_with_rules.register_findings",
+      "stage_id": "exect.llm_pre_post.register_findings",
       "runtime_action": "register_raw_and_scored_findings",
       "name": "Register raw and scored findings",
       "operation": "Record both the raw and the scored surface of every finding in the finding store, with its producer, source lane, and ownership label.",
@@ -172,7 +172,7 @@
         "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/finding_store.py",
         "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.finding_store:ClinicalFindingStore"
       },
-      "governing_test": "tests/test_exectv2_clinical_finding_assembly.py",
+      "governing_test": "tests/test_exectv2_llm_pre_post_vertical_slice.py",
       "trace_fields": [
         "lanes[entity].raw_lane_mentions",
         "lanes[entity].predicted_mentions"
@@ -181,7 +181,7 @@
       "notes": "This stage is what makes component attribution possible: the model's raw output survives beside the reconciled output for every entity."
     },
     {
-      "stage_id": "exect.llm_with_rules.lens.diagnosis",
+      "stage_id": "exect.llm_pre_post.lens.diagnosis",
       "runtime_action": "apply_named_family_lens",
       "name": "Diagnosis family transform",
       "operation": "Reconcile Diagnosis findings with the active standard dictionary; may rewrite, drop, or add bounded concepts.",
@@ -196,7 +196,7 @@
         "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/diagnosis.py",
         "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.diagnosis:DiagnosisDictionaryLens"
       },
-      "governing_test": "tests/test_exectv2_clinical_finding_assembly.py",
+      "governing_test": "tests/test_exectv2_llm_pre_post_vertical_slice.py",
       "trace_fields": [
         "lanes.Diagnosis.lens_diagnostics",
         "provenance[].action"
@@ -205,7 +205,7 @@
       "notes": "The active policy variant is 'default' (decision 0045). The 'combined' variant is archived development evidence and must not be the default for new runs. This is the family transform with the widest licence: it is the only one that can add a concept the model did not produce. Heading recovery and the generic epilepsy companion were zero-fire hooks in the decomposition and are retained only in historical artifacts, not the active lens."
     },
     {
-      "stage_id": "exect.llm_with_rules.lens.seizure_frequency",
+      "stage_id": "exect.llm_pre_post.lens.seizure_frequency",
       "runtime_action": "apply_named_family_lens",
       "name": "Seizure Frequency family transform",
       "operation": "Assemble the already-projected and already-suppressed seizure-frequency findings; a thin transform that adds no further clinical change.",
@@ -220,15 +220,15 @@
         "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/seizure_frequency.py",
         "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.seizure_frequency:SeizureFrequencyLens"
       },
-      "governing_test": "tests/test_exectv2_clinical_finding_assembly.py",
+      "governing_test": "tests/test_exectv2_llm_pre_post_vertical_slice.py",
       "trace_fields": [
         "lanes.SeizureFrequency.lens_diagnostics"
       ],
       "paper_wording": "The Seizure Frequency transform assembles findings whose clinical projection has already been applied.",
-      "notes": "The clinical work for this family happened earlier, at exect.llm_with_rules.sf_state_projection and exect.llm_with_rules.sf_unknown_suppression. Reading the lens alone will understate what happened to Seizure Frequency."
+      "notes": "The clinical work for this family happened earlier, at exect.llm_pre_post.sf_state_projection and exect.llm_pre_post.sf_unknown_suppression. Reading the lens alone will understate what happened to Seizure Frequency."
     },
     {
-      "stage_id": "exect.llm_with_rules.lens.prescription",
+      "stage_id": "exect.llm_pre_post.lens.prescription",
       "runtime_action": "apply_named_family_lens",
       "name": "Prescription family transform",
       "operation": "Normalize the surfaces the dictionary owns (generic drug name, canonical dose unit, dose value) and split an explicitly stated uneven once-daily regimen into one fact per dose.",
@@ -243,7 +243,7 @@
         "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/prescription.py",
         "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.prescription:PrescriptionDictionaryLens"
       },
-      "governing_test": "tests/test_exectv2_prescription_bounded_policy_candidate.py",
+      "governing_test": "tests/test_exectv2_prescription_extraction.py",
       "trace_fields": [
         "lanes.Prescription.lens_diagnostics",
         "provenance[].action"
@@ -252,7 +252,7 @@
       "notes": "The active policy variant is 'default' (decision 0045). Decision 0040 requires bounded correction here rather than deterministic substitution: the rules may correct the model, they may not replace it as the producer. v10 (2026-08-10): this transform no longer deletes model-selected regimens that read as planned or historical, and no longer adds dictionary residual regimens; both rules were measured net-harmful on dev140 across six models and were removed rather than guarded, so the stage can now only reshape a model finding, never remove or invent one. See docs/research/exectv2/prescription_lens_rule_decomposition_2026-08-10.md."
     },
     {
-      "stage_id": "exect.llm_with_rules.lens.investigations",
+      "stage_id": "exect.llm_pre_post.lens.investigations",
       "runtime_action": "apply_named_family_lens",
       "name": "Investigations family transform",
       "operation": "Assemble model-selected Investigations findings without an additional dictionary rule pass.",
@@ -267,14 +267,14 @@
         "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/investigations.py",
         "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.investigations:InvestigationsDictionaryLens"
       },
-      "governing_test": "tests/test_exectv2_clinical_finding_assembly.py",
+      "governing_test": "tests/test_exectv2_llm_pre_post_vertical_slice.py",
       "trace_fields": [
         "lanes.Investigations.lens_diagnostics"
       ],
       "paper_wording": "The Investigations assembly stage preserves model-selected findings; residual providers remain available to prompt construction but are not consumed by this no-op lens."
     },
     {
-      "stage_id": "exect.llm_with_rules.evidence_requirement",
+      "stage_id": "exect.llm_pre_post.evidence_requirement",
       "runtime_action": "require_exact_source_evidence",
       "name": "Require exact evidence for every finding",
       "operation": "Reject the assembled letter if any final finding lacks evidence or carries evidence that is not an exact substring of the note.",
@@ -289,7 +289,7 @@
         "path": "src/clinical_extraction/operational/exect.py",
         "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.letter_assembly:assemble_letter"
       },
-      "governing_test": "tests/test_exectv2_clinical_finding_assembly.py",
+      "governing_test": "tests/test_exectv2_llm_pre_post_vertical_slice.py",
       "trace_fields": [
         "n_evidence_invalid"
       ],
@@ -297,7 +297,7 @@
       "notes": "This gate raises rather than silently dropping. A family transform that invented an unevidenced concept fails the whole letter, which is why the Diagnosis transform's add licence is bounded in practice."
     },
     {
-      "stage_id": "exect.llm_with_rules.materialize_views",
+      "stage_id": "exect.llm_pre_post.materialize_views",
       "runtime_action": "materialize_scoring_views",
       "name": "Materialize the score views",
       "operation": "Build the named prediction views - raw candidate, post-lens assembled findings, and clinical fact recovery - from the same assembled findings.",
@@ -320,7 +320,7 @@
       "notes": "One set of findings, several numbers. Naming the view is part of naming the result."
     },
     {
-      "stage_id": "exect.llm_with_rules.score",
+      "stage_id": "exect.llm_pre_post.score",
       "runtime_action": "defer_gold_comparison_to_scorer",
       "name": "Score against gold",
       "operation": "Match the materialized view's mentions to gold annotations and report per-entity and overall precision, recall, and F1.",
@@ -350,10 +350,10 @@
       "note": "Adds endpoint handling and live assembly around the same stages. Not a separate method; it must not drift from this manifest."
     },
     {
-      "name": "ExECT LLM with rules",
+      "name": "ExECT LLM pre-post",
       "role": "paper identity",
       "path": "docs/paper/decisions/exect-compact-is-the-cited-hybrid.md",
-      "note": "ExECT LLM with rules is the paper hybrid row. Full ledger is the control. Mention encoder is out."
+      "note": "ExECT LLM pre-post is the paper hybrid row. Full ledger is the control. Mention encoder is out."
     },
     {
       "name": "Closed numbered series",

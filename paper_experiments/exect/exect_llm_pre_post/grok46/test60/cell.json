@@ -8,7 +8,7 @@
   "model": "xai/grok-4.6",
   "model_slug": "grok46",
   "n": 59,
-  "program": "exectv2_compact_ledger",
+  "program": "exect_llm_pre_post",
   "raw_headline_f1": 0.7883,
   "replay_fields": [
     "letter_id",

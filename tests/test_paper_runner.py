@@ -145,7 +145,7 @@ def test_verify_compact_does_not_change_the_live_default() -> None:
     payload = verify_compact()
     assert payload["ok"] is True
     assert payload["method"] == "exect_llm_pre_post"
-    assert payload["candidate"] == CANDIDATE_VERSION == structured.COMPACT_LEDGER
+    assert payload["candidate"] == CANDIDATE_VERSION == structured.EXECT_LLM_PRE_POST
     assert payload["n_rules"] == 54
     assert payload["n_examples"] == 0
     assert payload["authored_order"] is True
@@ -154,7 +154,7 @@ def test_verify_compact_does_not_change_the_live_default() -> None:
     assert payload["row_policy"] == "development_review_permitted"
     assert payload["hosted"] == list(HOSTED_SLUGS)
     assert payload["local"] == list(LOCAL_SLUGS)
-    assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER
+    assert structured.PROMPT_VERSION == before == structured.EXECT_LLM_PRE_POST
 
 
 def test_verify_llm_only_does_not_change_the_live_default() -> None:
@@ -168,7 +168,7 @@ def test_verify_llm_only_does_not_change_the_live_default() -> None:
     assert payload["authored_order"] is True
     assert payload["drops_research_metadata"] is True
     assert payload["work_root"] == "experiments/paper/exect_llm_only"
-    assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER
+    assert structured.PROMPT_VERSION == before == structured.EXECT_LLM_PRE_POST
 
 
 def test_verify_compact_test60_is_aggregate_only() -> None:
@@ -179,7 +179,7 @@ def test_verify_compact_test60_is_aggregate_only() -> None:
     assert payload["row_count"] == 59
     assert payload["row_policy"] == "aggregate_only"
     assert payload["test60_authorized"] is True
-    assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER
+    assert structured.PROMPT_VERSION == before == structured.EXECT_LLM_PRE_POST
 
 
 def test_verify_gan_pins_paper_identities_without_changing_defaults() -> None:
@@ -312,7 +312,7 @@ def test_grok46_is_living_compact() -> None:
     assert holdout["row_policy"] == "aggregate_only"
     with pytest.raises(RuntimeError, match="requires live=True"):
         run_compact(GROK46_SLUG, live=False, split="dev140")
-    assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER
+    assert structured.PROMPT_VERSION == before == structured.EXECT_LLM_PRE_POST
 
 
 def test_cli_dispatches_grok46_compact(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -376,7 +376,7 @@ def test_gemini_reasoning_ablation_is_dev140_medium_only() -> None:
             split="dev140",
         )
     assert MODELS["gemini37flash"].reasoning_effort == "low"
-    assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER
+    assert structured.PROMPT_VERSION == before == structured.EXECT_LLM_PRE_POST
 
 
 def test_cli_dispatches_non_living_effort_to_live_runners(
@@ -501,4 +501,4 @@ def test_luna_living_low_is_not_an_ablation() -> None:
             split="dev140",
         )
     assert MODELS["gpt56luna"].reasoning_effort == "low"
-    assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER
+    assert structured.PROMPT_VERSION == before == structured.EXECT_LLM_PRE_POST

@@ -513,7 +513,7 @@ EXECT_HYBRID_RAW_OUTPUT = json.dumps(
     }
 )
 
-# Fixture standing in for one GEPA LLM-only program output.
+# Fixture standing in for one LLM-only program output.
 EXECT_LLM_ONLY_RAW_OUTPUT = json.dumps(
     {
         "clinical_facts": [
@@ -1432,7 +1432,7 @@ def _exect_llm_only_run(
     return run
 
 
-def _exect_llm_with_rules_run(
+def _exect_llm_pre_post_run(
     letter: Any | None = None, raw_output: str | None = None
 ) -> MethodRun:
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
@@ -1442,7 +1442,7 @@ def _exect_llm_with_rules_run(
         StructuredMethodConfig,
     )
 
-    manifest = load_manifest("exectv2_llm_with_rules")
+    manifest = load_manifest("exectv2_llm_pre_post")
     run = MethodRun(method_id=manifest.method_id, manifest=manifest)
     letter = letter or _exect_letter()
 
@@ -1452,13 +1452,13 @@ def _exect_llm_with_rules_run(
         raw_output=raw_output or EXECT_HYBRID_RAW_OUTPUT,
         config=StructuredMethodConfig.selected(),
     )
-    result = structured_one_call.run_llm_with_rules_letter(
+    result = structured_one_call.run_llm_pre_post_letter(
         letter,
         producer,
         config=StructuredMethodConfig.selected(),
     )
     for event in result.stage_events:
-        if event.stage_id == "exect.llm_with_rules.score":
+        if event.stage_id == "exect.llm_pre_post.score":
             continue
         if ".lens." in event.stage_id:
             run.record(
@@ -1477,13 +1477,13 @@ def _exect_llm_with_rules_run(
             note=(
                 "Fixture boundary at the one-call producer; no live model call "
                 "is made."
-                if event.stage_id == "exect.llm_with_rules.model_call"
+                if event.stage_id == "exect.llm_pre_post.model_call"
                 else ""
             ),
         )
     _exect_scoring(
         run,
-        "exect.llm_with_rules.score",
+        "exect.llm_pre_post.score",
         result.prediction.mentions,
         nine_entity=False,
         letter=letter,
@@ -1821,7 +1821,7 @@ def build_exect_case() -> TeachingCase:
     case.runs = [
         _exect_rules_only_run(),
         _exect_llm_only_run(),
-        _exect_llm_with_rules_run(),
+        _exect_llm_pre_post_run(),
     ]
     return case
 

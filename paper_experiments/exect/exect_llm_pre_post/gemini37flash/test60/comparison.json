@@ -1,109 +1,6 @@
 {
   "arms": {
-    "exect_full_ledger": {
-      "assembly_family_f1": {
-        "Diagnosis": 0.8264,
-        "Investigations": 0.9565,
-        "Prescription": 0.9222,
-        "SeizureFrequency": 0.6364
-      },
-      "assembly_headline_f1": 0.831,
-      "call_mode": "saved_structured_no_call",
-      "gate_event_count": 63,
-      "hybrid_family_f1": {
-        "Diagnosis": 0.8264,
-        "Investigations": 0.9565,
-        "Prescription": 0.9222,
-        "SeizureFrequency": 0.6364
-      },
-      "hybrid_family_letter_exact": {
-        "Diagnosis": 37,
-        "Investigations": 55,
-        "Prescription": 49,
-        "SeizureFrequency": 29
-      },
-      "hybrid_family_prf": {
-        "Diagnosis": {
-          "f1": 0.8264,
-          "precision": 0.8333,
-          "recall": 0.8197
-        },
-        "Investigations": {
-          "f1": 0.9565,
-          "precision": 0.9778,
-          "recall": 0.9362
-        },
-        "Prescription": {
-          "f1": 0.9222,
-          "precision": 0.939,
-          "recall": 0.9059
-        },
-        "SeizureFrequency": {
-          "f1": 0.6364,
-          "precision": 0.7241,
-          "recall": 0.5676
-        }
-      },
-      "hybrid_four_family_letter_exact": 17,
-      "hybrid_headline_f1": 0.831,
-      "hybrid_headline_prf": {
-        "f1": 0.831,
-        "precision": 0.8623,
-        "recall": 0.8018
-      },
-      "new_model_calls": 0,
-      "prompt_version": "exectv2_full_ledger",
-      "quality": {
-        "illegal_enum": 0,
-        "inexact_evidence": 0,
-        "parse": 0,
-        "schema": 0
-      },
-      "raw_family_f1": {
-        "Diagnosis": 0.7769,
-        "Investigations": 0.9565,
-        "Prescription": 0.9349,
-        "SeizureFrequency": 0.6324
-      },
-      "raw_family_letter_exact": {
-        "Diagnosis": 35,
-        "Investigations": 55,
-        "Prescription": 51,
-        "SeizureFrequency": 26
-      },
-      "raw_family_prf": {
-        "Diagnosis": {
-          "f1": 0.7769,
-          "precision": 0.7833,
-          "recall": 0.7705
-        },
-        "Investigations": {
-          "f1": 0.9565,
-          "precision": 0.9778,
-          "recall": 0.9362
-        },
-        "Prescription": {
-          "f1": 0.9349,
-          "precision": 0.9405,
-          "recall": 0.9294
-        },
-        "SeizureFrequency": {
-          "f1": 0.6324,
-          "precision": 0.6935,
-          "recall": 0.5811
-        }
-      },
-      "raw_four_family_letter_exact": 14,
-      "raw_headline_f1": 0.8138,
-      "raw_headline_prf": {
-        "f1": 0.8138,
-        "precision": 0.836,
-        "recall": 0.7927
-      },
-      "raw_mention_count": 339,
-      "scored_mention_count": 339
-    },
-    "exect_llm_with_rules": {
+    "exect_llm_pre_post": {
       "assembly_family_f1": {
         "Diagnosis": 0.819,
         "Investigations": 0.9565,
@@ -155,7 +52,7 @@
         "recall": 0.7683
       },
       "new_model_calls": 59,
-      "prompt_version": "exectv2_compact_ledger",
+      "prompt_version": "exect_llm_pre_post",
       "quality": {
         "illegal_enum": 0,
         "inexact_evidence": 0,
@@ -209,76 +106,9 @@
   },
   "cache": false,
   "claim_boundary": "ExECT aggregate-only test60 Compact versus saved Full ledger.",
-  "comparison": {
-    "exect_llm_with_rules_minus_exect_full_ledger": {
-      "regression_triggers": [],
-      "significant_regression": false,
-      "surfaces": {
-        "hybrid": {
-          "family_f1_delta": {
-            "Diagnosis": -0.0074,
-            "Investigations": 0.0,
-            "Prescription": -0.0668,
-            "SeizureFrequency": 0.0098
-          },
-          "four_family_letter_exact_losses": 4,
-          "four_family_letter_exact_net": -1,
-          "four_family_letter_exact_wins": 3,
-          "headline_f1_delta": -0.0181,
-          "per_family_letter_exact_flips": {
-            "Diagnosis": {
-              "losses": 7,
-              "wins": 2
-            },
-            "Investigations": {
-              "losses": 1,
-              "wins": 2
-            },
-            "Prescription": {
-              "losses": 3,
-              "wins": 0
-            },
-            "SeizureFrequency": {
-              "losses": 2,
-              "wins": 3
-            }
-          }
-        },
-        "raw": {
-          "family_f1_delta": {
-            "Diagnosis": 0.0053,
-            "Investigations": 0.0,
-            "Prescription": -0.0367,
-            "SeizureFrequency": 0.0243
-          },
-          "four_family_letter_exact_losses": 3,
-          "four_family_letter_exact_net": 1,
-          "four_family_letter_exact_wins": 4,
-          "headline_f1_delta": -0.0015,
-          "per_family_letter_exact_flips": {
-            "Diagnosis": {
-              "losses": 6,
-              "wins": 3
-            },
-            "Investigations": {
-              "losses": 1,
-              "wins": 2
-            },
-            "Prescription": {
-              "losses": 4,
-              "wins": 0
-            },
-            "SeizureFrequency": {
-              "losses": 1,
-              "wins": 4
-            }
-          }
-        }
-      }
-    }
-  },
+  "comparison": {},
   "decision": {
-    "exect_llm_with_rules": {
+    "exect_llm_pre_post": {
       "family_f1_delta": {
         "Diagnosis": -0.0074,
         "Investigations": 0.0,
@@ -292,12 +122,12 @@
       "status": "scored"
     }
   },
-  "default_prompt_version": "exectv2_compact_ledger",
+  "default_prompt_version": "exect_llm_pre_post",
   "finished_utc": "2026-08-18T22:14:07.787679+00:00",
   "generated_on": "2026-08-17",
   "live": true,
   "max_tokens": 16000,
-  "method": "exect_llm_with_rules",
+  "method": "exect_llm_pre_post",
   "model": "gemini/gemini-3.7-flash",
   "model_calls": 59,
   "model_label": "Gemini 3.7 Flash",
@@ -306,7 +136,7 @@
   "reasoning_effort": "low",
   "row_count": 59,
   "row_policy": "aggregate_only",
-  "schema_version": "paper.exect_llm_with_rules.v1",
+  "schema_version": "paper.exect_llm_pre_post.v1",
   "split": "test60",
   "started_utc": "2026-08-18T22:11:07.502023+00:00",
   "temperature": 0.0,

@@ -858,7 +858,7 @@ def render_index(cases: Sequence[TeachingCase] | None = None) -> str:
     lines.append("- [Overview](diagrams/overview.md)")
     lines.append("- [Ownership matrix](diagrams/ownership_matrix.md)")
     lines.append("- [Gan LLM-with-rules stages](diagrams/gan2026_llm_with_rules_stages.md)")
-    lines.append("- [ExECT LLM-with-rules stages](diagrams/exectv2_llm_with_rules_stages.md)")
+    lines.append("- [ExECT LLM pre-post stages](diagrams/exectv2_llm_pre_post_stages.md)")
     lines.append("- [Result attribution origins](diagrams/attribution_origins.md)")
     lines.append("")
     lines.append("## What this layer does not own")
@@ -884,8 +884,8 @@ def all_documents(cases: Sequence[TeachingCase]) -> dict[str, str]:
         "diagrams/gan2026_llm_with_rules_stages.md": render_stage_diagram(
             "gan2026_llm_with_rules"
         ),
-        "diagrams/exectv2_llm_with_rules_stages.md": render_stage_diagram(
-            "exectv2_llm_with_rules"
+        "diagrams/exectv2_llm_pre_post_stages.md": render_stage_diagram(
+            "exectv2_llm_pre_post"
         ),
     }
     for method_id in METHOD_IDS:

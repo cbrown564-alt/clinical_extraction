@@ -6,7 +6,7 @@
   "model": "deepseek/deepseek-v4-flash",
   "model_slug": "deepseek_v4_flash",
   "n": 140,
-  "program": "exectv2_compact_ledger",
+  "program": "exect_llm_pre_post",
   "raw_headline_f1": 0.601,
   "row_policy": "development_review_permitted",
   "split": "dev140"

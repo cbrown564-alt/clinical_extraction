@@ -1,184 +1,6 @@
 {
   "arms": {
-    "exect_full_ledger": {
-      "assembly_family_f1": {
-        "Diagnosis": 0.8873,
-        "Investigations": 0.9202,
-        "Prescription": 0.9505,
-        "SeizureFrequency": 0.8291
-      },
-      "assembly_headline_f1": 0.8974,
-      "call_mode": "saved_structured_no_call",
-      "gate_event_count": 150,
-      "hybrid_family_f1": {
-        "Diagnosis": 0.8873,
-        "Investigations": 0.9202,
-        "Prescription": 0.9505,
-        "SeizureFrequency": 0.8291
-      },
-      "hybrid_family_letter_exact": {
-        "Diagnosis": 98,
-        "Investigations": 125,
-        "Prescription": 126,
-        "SeizureFrequency": 99
-      },
-      "hybrid_family_prf": {
-        "Diagnosis": {
-          "f1": 0.8873,
-          "precision": 0.9014,
-          "recall": 0.8737
-        },
-        "Investigations": {
-          "f1": 0.9202,
-          "precision": 0.9528,
-          "recall": 0.8897
-        },
-        "Prescription": {
-          "f1": 0.9505,
-          "precision": 0.9697,
-          "recall": 0.932
-        },
-        "SeizureFrequency": {
-          "f1": 0.8291,
-          "precision": 0.8851,
-          "recall": 0.7798
-        }
-      },
-      "hybrid_four_family_letter_exact": 55,
-      "hybrid_headline_f1": 0.8974,
-      "hybrid_headline_prf": {
-        "f1": 0.8974,
-        "precision": 0.9247,
-        "recall": 0.8717
-      },
-      "hybrid_rewrite_letters": [
-        "EA0006",
-        "EA0007",
-        "EA0009",
-        "EA0033",
-        "EA0034",
-        "EA0038",
-        "EA0039",
-        "EA0040",
-        "EA0043",
-        "EA0045",
-        "EA0046",
-        "EA0047",
-        "EA0050",
-        "EA0054",
-        "EA0057",
-        "EA0059",
-        "EA0061",
-        "EA0071",
-        "EA0072",
-        "EA0075",
-        "EA0079",
-        "EA0082",
-        "EA0092",
-        "EA0093",
-        "EA0096",
-        "EA0100",
-        "EA0106",
-        "EA0107",
-        "EA0108",
-        "EA0110",
-        "EA0111",
-        "EA0114",
-        "EA0116",
-        "EA0121",
-        "EA0123",
-        "EA0124",
-        "EA0125",
-        "EA0126",
-        "EA0128",
-        "EA0132",
-        "EA0133",
-        "EA0135",
-        "EA0141",
-        "EA0142",
-        "EA0143",
-        "EA0148",
-        "EA0149",
-        "EA0150",
-        "EA0152",
-        "EA0154",
-        "EA0156",
-        "EA0157",
-        "EA0158",
-        "EA0161",
-        "EA0162",
-        "EA0164",
-        "EA0167",
-        "EA0168",
-        "EA0169",
-        "EA0171",
-        "EA0172",
-        "EA0175",
-        "EA0180",
-        "EA0181",
-        "EA0182",
-        "EA0184",
-        "EA0185",
-        "EA0186",
-        "EA0188",
-        "EA0189",
-        "EA0195",
-        "EA0198",
-        "EA0200"
-      ],
-      "new_model_calls": 0,
-      "prompt_version": "exectv2_full_ledger",
-      "quality": {
-        "illegal_enum": 0,
-        "inexact_evidence": 0,
-        "parse": 0,
-        "schema": 0
-      },
-      "raw_family_f1": {
-        "Diagnosis": 0.7346,
-        "Investigations": 0.9202,
-        "Prescription": 0.9479,
-        "SeizureFrequency": 0.7821
-      },
-      "raw_family_letter_exact": {
-        "Diagnosis": 62,
-        "Investigations": 125,
-        "Prescription": 127,
-        "SeizureFrequency": 87
-      },
-      "raw_family_prf": {
-        "Diagnosis": {
-          "f1": 0.7346,
-          "precision": 0.7572,
-          "recall": 0.7133
-        },
-        "Investigations": {
-          "f1": 0.9202,
-          "precision": 0.9528,
-          "recall": 0.8897
-        },
-        "Prescription": {
-          "f1": 0.9479,
-          "precision": 0.9695,
-          "recall": 0.9272
-        },
-        "SeizureFrequency": {
-          "f1": 0.7821,
-          "precision": 0.7844,
-          "recall": 0.7798
-        }
-      },
-      "raw_four_family_letter_exact": 38,
-      "raw_headline_f1": 0.8306,
-      "raw_headline_prf": {
-        "f1": 0.8306,
-        "precision": 0.8501,
-        "recall": 0.812
-      },
-      "raw_mention_count": 813,
-      "scored_mention_count": 813
-    },
-    "exect_llm_with_rules": {
+    "exect_llm_pre_post": {
       "assembly_family_f1": {
         "Diagnosis": 0.88,
         "Investigations": 0.9318,
@@ -311,7 +133,7 @@
         "EA0200"
       ],
       "new_model_calls": 140,
-      "prompt_version": "exectv2_compact_ledger",
+      "prompt_version": "exect_llm_pre_post",
       "quality": {
         "illegal_enum": 0,
         "inexact_evidence": 0,
@@ -767,79 +589,9 @@
     }
   ],
   "claim_boundary": "ExECT development Compact versus saved Full ledger. Not holdout.",
-  "comparison": {
-    "exect_llm_with_rules_minus_exect_full_ledger": {
-      "regression_triggers": [
-        "raw net four-family letter-exact losses 7",
-        "hybrid net four-family letter-exact losses 4"
-      ],
-      "significant_regression": true,
-      "surfaces": {
-        "hybrid": {
-          "family_f1_delta": {
-            "Diagnosis": -0.0073,
-            "Investigations": 0.0116,
-            "Prescription": -0.005,
-            "SeizureFrequency": -0.0381
-          },
-          "four_family_letter_exact_losses": 12,
-          "four_family_letter_exact_net": -4,
-          "four_family_letter_exact_wins": 8,
-          "headline_f1_delta": -0.0094,
-          "per_family_letter_exact_flips": {
-            "Diagnosis": {
-              "losses": 9,
-              "wins": 4
-            },
-            "Investigations": {
-              "losses": 1,
-              "wins": 2
-            },
-            "Prescription": {
-              "losses": 4,
-              "wins": 5
-            },
-            "SeizureFrequency": {
-              "losses": 15,
-              "wins": 8
-            }
-          }
-        },
-        "raw": {
-          "family_f1_delta": {
-            "Diagnosis": -0.0405,
-            "Investigations": 0.0116,
-            "Prescription": -0.0096,
-            "SeizureFrequency": -0.0283
-          },
-          "four_family_letter_exact_losses": 13,
-          "four_family_letter_exact_net": -7,
-          "four_family_letter_exact_wins": 6,
-          "headline_f1_delta": -0.0201,
-          "per_family_letter_exact_flips": {
-            "Diagnosis": {
-              "losses": 14,
-              "wins": 7
-            },
-            "Investigations": {
-              "losses": 1,
-              "wins": 2
-            },
-            "Prescription": {
-              "losses": 6,
-              "wins": 5
-            },
-            "SeizureFrequency": {
-              "losses": 16,
-              "wins": 8
-            }
-          }
-        }
-      }
-    }
-  },
+  "comparison": {},
   "decision": {
-    "exect_llm_with_rules": {
+    "exect_llm_pre_post": {
       "family_f1_delta": {
         "Diagnosis": -0.0073,
         "Investigations": 0.0116,
@@ -853,7 +605,7 @@
       "status": "scored"
     }
   },
-  "default_prompt_version": "exectv2_compact_ledger",
+  "default_prompt_version": "exect_llm_pre_post",
   "finished_utc": "2026-08-18T20:15:37.166378+00:00",
   "generated_on": "2026-08-17",
   "letter_ids": [
@@ -1000,7 +752,7 @@
   ],
   "live": true,
   "max_tokens": 16000,
-  "method": "exect_llm_with_rules",
+  "method": "exect_llm_pre_post",
   "model": "openai/gpt-5.6-luna",
   "model_calls": 140,
   "model_label": "GPT-5.6 Luna",
@@ -1009,7 +761,7 @@
   "reasoning_effort": "low",
   "row_count": 140,
   "row_policy": "development_review_permitted",
-  "schema_version": "paper.exect_llm_with_rules.v1",
+  "schema_version": "paper.exect_llm_pre_post.v1",
   "split": "dev140",
   "started_utc": "2026-08-18T20:01:32.405453+00:00",
   "temperature": 1.0,
