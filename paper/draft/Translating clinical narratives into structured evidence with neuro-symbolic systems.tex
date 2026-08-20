@@ -36,26 +36,44 @@
 \end{titlepage}
 
 
-\title{Translating clinical narratives into structured evidence\\}
+\title{Translating clinical narratives into structured evidence with neuro-symbolic systems\\}
 
 
 
 \maketitle
 
 \begin{abstract}
-This document is a model and instructions for \LaTeX.
-This and the IEEEtran.cls file define the components of your paper [title, text, heads, etc.]. *CRITICAL: Do Not Use Symbols, Special Characters, Footnotes, 
-or Math in Paper Title or Abstract.
+Clinical information extraction (IE) converts clinical 
+narratives into structured facts. Large language models can 
+do this with significantly less preprocessing than rules-based 
+methods, but they introduce new classes of problems: 
+hallucination, schema drift and overconfidence. We propose 
+a hybrid system where the model extracts entities, interprets 
+relations and provides evidence, and the rules normalise 
+entities, verify evidence and apply policies to resolve conflicts. 
+This modular system preserves the rich uncertainty captured 
+in clinical narratives while producing auditable structured 
+outputs that confirm to explicit rules. We use 2 public datasets 
+of epilepsy letters to evaluate this system on two distinct tasks: 
+(1) selecting the most important clinical fact among many and 
+(2) building a broad inventory of clinical facts. We show that 
+the combined system improved F1 by +0.05 vs. rules-only or 
+LLM-only systems, while creating a rich evidence trail with an 
+exact evidence score of >0.99. This transparent, 
+evidence-grounded system is a step towards making more 
+trustworthy systems for clinical use.
 \end{abstract}
 
 \begin{IEEEkeywords}
-component, formatting, style, styling, insert.
+information extraction, neuro-symbolic, evidence verification, 
+natural language processing
 \end{IEEEkeywords}
 
 \section{Introduction}
 
 Clinical information extraction is the process of turning clinical 
-narratives into structured facts suitable for clinical use and research.
+narratives into structured facts suitable for clinical use and 
+research.
 
 \subsection{Medical framing}
 Epilepsy is one of the most common neurological diseases. 30 
@@ -121,6 +139,12 @@ aggregated (e.g. 1 in February, 2 in April = 3 per 3 months) or disambiguated
 (e.g. "She discontinued Valproate on 10 Jul. Shortly afterwards, she experienced
 2 to 3 seizures, one triggered by missed medication. She has remained 
 seizure-free since") to produce a single answer.
+
+One dataset is tasked with selecting a
+single fact, the patient's current seizure burden, from a 400-word 
+letter.  The other is tasked with selecting selecting an average of 
+six facts per 200-word letter, covering a broad inventory of clinical 
+facts (medication, diagnosis, investigations, seizure frequency).
 
 Dataset 1 consists of 200 synthetic letters written by
 trained specialists based on real clinic letters from hospital outpatient
