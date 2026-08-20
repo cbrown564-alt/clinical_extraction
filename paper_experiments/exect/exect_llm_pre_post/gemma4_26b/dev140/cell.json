@@ -2,7 +2,7 @@
   "empty_raw_count": 0,
   "hybrid_headline_f1": 0.7674,
   "living_effort": "none",
-  "method": "exect_llm_with_rules",
+  "method": "exect_llm_pre_post",
   "model": "ollama_chat/gemma4:26b",
   "model_slug": "gemma4_26b",
   "n": 140,

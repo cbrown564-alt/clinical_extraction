@@ -1,0 +1,58 @@
+{
+  "claim_boundary": "ExECT aggregate-only test60 replay. Do not inspect holdout rows.",
+  "format_only_check": {
+    "note": "format_only is the stop before dictionary rewrite. dictionary_normalized is semantic, not format.",
+    "same_as_schema": false,
+    "surface": "format_only"
+  },
+  "generated_on": "2026-08-20",
+  "model_slug": "gpt56luna",
+  "row_count": 59,
+  "row_policy": "aggregate_only",
+  "rungs": {
+    "llm_format": {
+      "clinical_fact_f1": 0.7471,
+      "family_f1": {
+        "Diagnosis": 0.6786,
+        "Investigations": 0.9247,
+        "Prescription": 0.9405,
+        "SeizureFrequency": 0.4844
+      },
+      "precision": 0.8035,
+      "recall": 0.6982
+    },
+    "llm_post": {
+      "clinical_fact_f1": 0.7762,
+      "family_f1": {
+        "Diagnosis": 0.7692,
+        "Investigations": 0.9247,
+        "Prescription": 0.9277,
+        "SeizureFrequency": 0.4844
+      },
+      "precision": 0.8225,
+      "recall": 0.7348
+    },
+    "llm_pre_post": {
+      "clinical_fact_f1": 0.7827,
+      "note": "Different prompt from rungs 2-4. Not a shared raw_output.",
+      "source": "living_exect_llm_pre_post"
+    },
+    "llm_schema": {
+      "clinical_fact_f1": 0.7448,
+      "family_f1": {
+        "Diagnosis": 0.6786,
+        "Investigations": 0.9247,
+        "Prescription": 0.9405,
+        "SeizureFrequency": 0.4928
+      },
+      "precision": 0.7864,
+      "recall": 0.7073
+    },
+    "rules_only": {
+      "clinical_fact_f1": 0.7937,
+      "source": "exect_rules"
+    }
+  },
+  "shared_raw_output": "exect_llm_only",
+  "split": "test60"
+}

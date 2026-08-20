@@ -2,7 +2,7 @@
   "empty_raw_count": 0,
   "hybrid_headline_f1": 0.88,
   "living_effort": "thinking_on_provider_default",
-  "method": "exect_llm_with_rules",
+  "method": "exect_llm_pre_post",
   "model": "deepseek/deepseek-v4-flash",
   "model_slug": "deepseek_v4_flash",
   "n": 140,

@@ -9,16 +9,15 @@ Roster: [`roster.json`](roster.json). Inventory: [`inventory.json`](inventory.js
 
 | Path | What it is |
 | --- | --- |
-| `exect/exect_llm_with_rules/` | ExECT LLM with rules (cite hybrid F1). |
+| `exect/exect_llm_pre_post/` | ExECT rung 5 (cite hybrid F1). `exect_llm_with_rules` is the live alias. |
 | `exect/exect_llm_only/` | ExECT LLM only (cite raw F1). |
 | `exect/dev140_panel.json` | Rectangular living six-model ExECT `dev140` index for the frontend |
 | `exect/exect_rules/` | ExECT rules headlines |
-| `comparators/exect_full_ledger/` | Full-ledger control raws (named comparator only; not a headline method) |
 | `gan/gan_llm_only/` | Existing Gan LLM-only cells. Not a results column |
 | `gan/gan_llm_with_rules/` | Gan rung 4 (cleaned request). Living scores predate the omitted-`kind` schema fill; a later six-model no-call reparse is listed in `inventory.json` `deferred`. |
 | `gan/gan_llm_pre_post/` | Gan rung 5. Luna is present on `dev750` and `test450`. Not automatically the cited model. |
 | `gan/rungs/` | Replay of rungs 1–4 from hybrid raw. Development may keep row files. `test450` writes `comparison.json` aggregates only. |
-| `exect/rungs/` | Grok `dev140` replay of rungs 1–4 from `exect_llm_only` raw |
+| `exect/rungs/` | Replay of rungs 1–4 from `exect_llm_only` raw. Development may keep row files. `test60` writes `comparison.json` aggregates only. |
 | `gan/dev750_panel.json` | Rectangular living six-model Gan `dev750` index for the frontend |
 | `current_stack/` | Historical Full-ledger / enveloped-Gan fills. Not the cited Gan hybrid. |
 
@@ -37,14 +36,14 @@ Frontend pull:
 - Gan scores: `GET /paper/gan/dev750/{gan_llm_only|gan_llm_with_rules}/{slug}/scored`
 - ExECT notes: `GET /datasets/exectv2/letters`
 - ExECT panel: `GET /paper/exect/dev140`
-- ExECT scores: `GET /paper/exect/dev140/{exect_llm_only|exect_llm_with_rules}/{slug}/scored`
+- ExECT scores: `GET /paper/exect/dev140/{exect_llm_only|exect_llm_pre_post|llm_schema|llm_format|llm_post}/{slug}/scored`
 
 Join Gan on `source_row_index`. Join ExECT on `letter_id`. Promote a
 finished living replay file with:
 
 ```bash
 python -m clinical_extraction.paper promote-gan --method gan_llm_only --model grok46 --split test450
-python -m clinical_extraction.paper promote-exect --method exect_llm_with_rules --model qwen38_27b --split test60
+python -m clinical_extraction.paper promote-exect --method exect_llm_pre_post --model qwen38_27b --split test60
 python -m clinical_extraction.paper promote-exect --method exect_llm_only --model gpt56luna --split dev140
 ```
 

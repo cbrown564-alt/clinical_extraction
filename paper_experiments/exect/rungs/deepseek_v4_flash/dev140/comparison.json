@@ -6,47 +6,47 @@
     "surface": "format_only"
   },
   "generated_on": "2026-08-20",
-  "model_slug": "grok46",
+  "model_slug": "deepseek_v4_flash",
   "row_count": 140,
   "row_policy": "development_review_permitted",
   "rungs": {
     "llm_format": {
-      "clinical_fact_f1": 0.8324,
+      "clinical_fact_f1": 0.8332,
       "family_f1": {
-        "Diagnosis": 0.6914,
-        "Investigations": 0.9368,
-        "Prescription": 0.9479,
-        "SeizureFrequency": 0.8491
+        "Diagnosis": 0.7005,
+        "Investigations": 0.9363,
+        "Prescription": 0.9447,
+        "SeizureFrequency": 0.8446
       },
-      "precision": 0.8594,
-      "recall": 0.807
+      "precision": 0.8488,
+      "recall": 0.8182
     },
     "llm_post": {
-      "clinical_fact_f1": 0.904,
+      "clinical_fact_f1": 0.8987,
       "family_f1": {
-        "Diagnosis": 0.8866,
-        "Investigations": 0.9438,
-        "Prescription": 0.9455,
-        "SeizureFrequency": 0.8491
+        "Diagnosis": 0.8851,
+        "Investigations": 0.9363,
+        "Prescription": 0.9397,
+        "SeizureFrequency": 0.8446
       },
-      "precision": 0.9302,
-      "recall": 0.8792
+      "precision": 0.9084,
+      "recall": 0.8892
     },
     "llm_pre_post": {
-      "clinical_fact_f1": 0.8998,
+      "clinical_fact_f1": 0.88,
       "note": "Different prompt from rungs 2-4. Not a shared raw_output.",
       "source": "living_exect_llm_pre_post"
     },
     "llm_schema": {
-      "clinical_fact_f1": 0.8212,
+      "clinical_fact_f1": 0.8137,
       "family_f1": {
-        "Diagnosis": 0.6914,
-        "Investigations": 0.9368,
-        "Prescription": 0.9479,
-        "SeizureFrequency": 0.7965
+        "Diagnosis": 0.7005,
+        "Investigations": 0.9363,
+        "Prescription": 0.9447,
+        "SeizureFrequency": 0.7588
       },
-      "precision": 0.8333,
-      "recall": 0.8095
+      "precision": 0.8142,
+      "recall": 0.8132
     },
     "rules_only": {
       "clinical_fact_f1": 0.9042,

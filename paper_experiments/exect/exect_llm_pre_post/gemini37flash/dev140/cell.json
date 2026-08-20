@@ -4,7 +4,7 @@
   "hybrid_headline_f1": 0.8946,
   "id_field": "letter_id",
   "living_effort": "low",
-  "method": "exect_llm_with_rules",
+  "method": "exect_llm_pre_post",
   "model": "gemini/gemini-3.7-flash",
   "model_slug": "gemini37flash",
   "n": 140,

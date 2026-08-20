@@ -4,7 +4,7 @@
   "hybrid_headline_f1": 0.805,
   "id_field": "letter_id",
   "living_effort": "low",
-  "method": "exect_llm_with_rules",
+  "method": "exect_llm_pre_post",
   "model": "xai/grok-4.6",
   "model_slug": "grok46",
   "n": 59,

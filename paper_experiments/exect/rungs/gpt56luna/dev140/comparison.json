@@ -6,47 +6,47 @@
     "surface": "format_only"
   },
   "generated_on": "2026-08-20",
-  "model_slug": "grok46",
+  "model_slug": "gpt56luna",
   "row_count": 140,
   "row_policy": "development_review_permitted",
   "rungs": {
     "llm_format": {
-      "clinical_fact_f1": 0.8324,
+      "clinical_fact_f1": 0.7987,
       "family_f1": {
-        "Diagnosis": 0.6914,
-        "Investigations": 0.9368,
-        "Prescription": 0.9479,
-        "SeizureFrequency": 0.8491
+        "Diagnosis": 0.6788,
+        "Investigations": 0.9288,
+        "Prescription": 0.9406,
+        "SeizureFrequency": 0.7129
       },
-      "precision": 0.8594,
-      "recall": 0.807
+      "precision": 0.8435,
+      "recall": 0.7584
     },
     "llm_post": {
-      "clinical_fact_f1": 0.904,
+      "clinical_fact_f1": 0.8708,
       "family_f1": {
-        "Diagnosis": 0.8866,
-        "Investigations": 0.9438,
-        "Prescription": 0.9455,
-        "SeizureFrequency": 0.8491
+        "Diagnosis": 0.8726,
+        "Investigations": 0.9288,
+        "Prescription": 0.9481,
+        "SeizureFrequency": 0.7129
       },
-      "precision": 0.9302,
-      "recall": 0.8792
+      "precision": 0.9047,
+      "recall": 0.8394
     },
     "llm_pre_post": {
-      "clinical_fact_f1": 0.8998,
+      "clinical_fact_f1": 0.888,
       "note": "Different prompt from rungs 2-4. Not a shared raw_output.",
       "source": "living_exect_llm_pre_post"
     },
     "llm_schema": {
-      "clinical_fact_f1": 0.8212,
+      "clinical_fact_f1": 0.7912,
       "family_f1": {
-        "Diagnosis": 0.6914,
-        "Investigations": 0.9368,
-        "Prescription": 0.9479,
-        "SeizureFrequency": 0.7965
+        "Diagnosis": 0.6788,
+        "Investigations": 0.9288,
+        "Prescription": 0.9406,
+        "SeizureFrequency": 0.6813
       },
-      "precision": 0.8333,
-      "recall": 0.8095
+      "precision": 0.8254,
+      "recall": 0.7597
     },
     "rules_only": {
       "clinical_fact_f1": 0.9042,
