@@ -35,11 +35,11 @@ def test_exect_dev140_rungs_score_format_render_not_materialized_format_only() -
     )
     check = payload["format_only_check"]
     assert check["surface"] == "format_render"
-    assert check["materialized_format_only_differs_from_rung3"]
-    assert "SF projection and unknown suppression off" in check["note"]
+    assert check["same_as_schema"] is False
+    assert "same-fact format" in check["note"]
     rungs = payload["rungs"]
-    assert rungs["llm_schema"]["clinical_fact_f1"] == 0.8212
-    assert rungs["llm_format"]["clinical_fact_f1"] == 0.8212
+    assert rungs["llm_schema"]["clinical_fact_f1"] == 0.6485
+    assert rungs["llm_format"]["clinical_fact_f1"] == 0.8197
     assert rungs["llm_post"]["clinical_fact_f1"] == 0.904
     assert rungs["rules_only"]["clinical_fact_f1"] == 0.9042
     assert rungs["llm_pre_post"]["clinical_fact_f1"] == 0.8998

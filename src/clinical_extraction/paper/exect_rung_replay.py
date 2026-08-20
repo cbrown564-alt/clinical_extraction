@@ -122,10 +122,25 @@ def write_exect_rung_artifacts(
     return comparison
 
 
-def format_render_mention_rows(producer: StructuredProducerResult) -> list[dict[str, Any]]:
-    """Pre-assembly mentions with parse respell only; no SF projection or suppression."""
+def schema_mention_rows(producer: StructuredProducerResult) -> list[dict[str, Any]]:
+    """Four-family events as flattened. No CUI attach, gates, or family format."""
 
-    return [dict(mention) for mention in producer.row.get("predicted_mentions") or []]
+    return [
+        structured.mention_row(mention)
+        for mention in structured.schema_mentions(producer.spelled_mentions)
+    ]
+
+
+def format_render_mention_rows(
+    producer: StructuredProducerResult,
+    note_text: str,
+) -> list[dict[str, Any]]:
+    """Same findings, standard writing. No evidence reject or clinical post."""
+
+    formatted, _warnings = structured.apply_format_stack(
+        producer.spelled_mentions, note_text
+    )
+    return [structured.mention_row(mention) for mention in formatted]
 
 
 def inventory_hash(mentions: Sequence[Mapping[str, Any]], note_text: str) -> str:
@@ -199,9 +214,9 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
                 config=StructuredMethodConfig.selected(),
             )[letter.letter_id]
             surfaces = assembled["prediction_surfaces"]
-            schema_mentions = list(producer.row.get("predicted_mentions") or [])
-            format_render_mentions = format_render_mention_rows(producer)
-            schema_hash = inventory_hash(schema_mentions, letter.note_text)
+            schema_rows = schema_mention_rows(producer)
+            format_render_mentions = format_render_mention_rows(producer, letter.note_text)
+            schema_hash = inventory_hash(schema_rows, letter.note_text)
             format_hash = inventory_hash(format_render_mentions, letter.note_text)
             materialized_format_only = list(surfaces.get("format_only") or [])
             dict_hash = inventory_hash(
@@ -246,7 +261,7 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
             ]
             by_rung: dict[str, dict[str, Any]] = {}
             rung_mentions = {
-                "llm_schema": schema_mentions,
+                "llm_schema": schema_rows,
                 "llm_format": format_render_mentions,
                 "llm_post": list(surfaces.get("residual_benchmark_added") or []),
             }
@@ -382,14 +397,14 @@ def _comparison_summary(
                 else None
             ),
             "same_as_schema": (
-                list(family_rows["llm_schema"]) == list(family_rows["llm_format"])
-                or _surface_prf(family_rows["llm_schema"])
+                _surface_prf(family_rows["llm_schema"])
                 == _surface_prf(family_rows["llm_format"])
             ),
             "note": (
-                "Rung 3 scores format_render (producer predicted_mentions before "
-                "assembly; SF projection and unknown suppression off). Materialized "
-                "format_only in assembly remains a stop marker, not rung 3."
+                "Rung 2 is flatten only. Rung 3 is same-fact format (closed-vocab "
+                "canonicalize, CUI attach, Rx name/unit/dose, SF encoding, Inv "
+                "attribute strip) without evidence reject or family post. "
+                "Materialized format_only remains a stop marker, not rung 3."
             ),
         },
         "generated_on": datetime.now(UTC).date().isoformat(),

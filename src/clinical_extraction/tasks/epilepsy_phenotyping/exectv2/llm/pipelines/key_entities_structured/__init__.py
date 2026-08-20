@@ -10,7 +10,7 @@ directly.
 
 Public names are the living Compact methods.
 """
-# ruff: noqa: F401 — thin re-export facade for the legacy ``structured`` API.
+# ruff: noqa: F401, I001 — thin re-export facade; import order avoids a cycle.
 
 from .constants import (
     _DIAGNOSIS_RE,
@@ -58,6 +58,11 @@ from .projection import (
     _repair_evidence_from_mention_text,
     _strip_model_supplied_projection_attrs,
     to_predicted_letter,
+)
+from .format_stack import (
+    apply_format_stack,
+    mention_row,
+    schema_mentions,
 )
 from .prompt_builders import (
     build_prompt_input,
@@ -147,6 +152,9 @@ __all__ = [
     "run_split",
     "set_active_prompt_version",
     "summarize_rows",
+    "apply_format_stack",
+    "mention_row",
+    "schema_mentions",
     "to_predicted_letter",
     "write_jsonl",
     "write_report",

@@ -14,6 +14,7 @@ from clinical_extraction.paper.exect_rung_replay import (
     format_render_mention_rows,
     replay_exect_dev140,
     replay_exect_rungs,
+    schema_mention_rows,
     write_exect_rung_artifacts,
 )
 from clinical_extraction.paper.methods import exect_row_count
@@ -115,11 +116,10 @@ def test_format_render_uses_pre_assembly_mentions_not_materialized_format_only()
     summary = replay_exect_rungs("dev140", slug="grok46")
     check = summary["format_only_check"]
     assert check["surface"] == "format_render"
-    assert check["materialized_format_only_differs_from_rung3"]
-    assert "SF projection and unknown suppression off" in check["note"]
+    assert check["same_as_schema"] is False
+    assert "same-fact format" in check["note"]
     rungs = summary["rungs"]
-    assert rungs["llm_schema"]["clinical_fact_f1"] == pytest.approx(0.8212)
-    assert rungs["llm_format"]["clinical_fact_f1"] == pytest.approx(0.8212)
+    assert rungs["llm_schema"]["clinical_fact_f1"] != rungs["llm_format"]["clinical_fact_f1"]
     assert rungs["llm_post"]["clinical_fact_f1"] == pytest.approx(0.904)
     assert (
         rungs["llm_format"]["family_f1"]["SeizureFrequency"]
@@ -127,7 +127,7 @@ def test_format_render_uses_pre_assembly_mentions_not_materialized_format_only()
     )
 
 
-def test_format_render_matches_producer_predicted_mentions() -> None:
+def test_format_render_is_not_schema_or_gated_predicted_mentions() -> None:
     from clinical_extraction.paper.exect import letters_for_split
     from clinical_extraction.paper.roster import model_by_slug
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
@@ -163,9 +163,15 @@ def test_format_render_matches_producer_predicted_mentions() -> None:
         )
     finally:
         structured.set_active_prompt_version(before)
-    rendered = format_render_mention_rows(producer)
-    schema_mentions = list(producer.row.get("predicted_mentions") or [])
-    assert rendered == schema_mentions
+    rendered = format_render_mention_rows(producer, letter.note_text)
+    schema_rows = schema_mention_rows(producer)
+    gated = list(producer.row.get("predicted_mentions") or [])
+    assert rendered != schema_rows
+    schema_missing_cui = any(
+        "CUI" not in dict(row.get("attributes") or {}) for row in schema_rows
+    )
+    assert schema_missing_cui or not schema_rows
+    assert rendered != gated
 
 
 def test_cli_replay_rungs_accepts_test60(monkeypatch: pytest.MonkeyPatch) -> None:
