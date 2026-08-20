@@ -23,20 +23,21 @@ LIVE_METHODS: dict[str, dict[str, object]] = {
         "splits": ("dev750", "test450"),
         "prompt_attr": "GAN_LLM_PRE_POST",
     },
+    "exect_llm_pre_post": {
+        "task": "exectv2",
+        "splits": ("dev140", "test60"),
+        "prompt_attr": "COMPACT_LEDGER",
+    },
     "exect_llm_with_rules": {
         "task": "exectv2",
         "splits": ("dev140", "test60"),
         "prompt_attr": "COMPACT_LEDGER",
+        "alias_of": "exect_llm_pre_post",
     },
     "exect_llm_only": {
         "task": "exectv2",
         "splits": ("dev140", "test60"),
         "prompt_attr": "EXECT_LLM_ONLY",
-    },
-    "exect_full_ledger": {
-        "task": "exectv2",
-        "splits": ("dev140", "test60"),
-        "prompt_attr": "FULL_LEDGER",
     },
 }
 
@@ -94,6 +95,23 @@ def gan_row_count(split: str) -> int:
         return GAN_ROW_COUNTS[split]
     except KeyError as exc:
         raise ValueError(f"unsupported Gan paper split {split!r}") from exc
+
+
+def exect_machine_split(split: str) -> str:
+    """Map a paper ExECT split to the exectv2 machine name."""
+
+    try:
+        return EXECT_MACHINE_SPLITS[split]
+    except KeyError as exc:
+        raise ValueError(f"unsupported ExECT paper split {split!r}") from exc
+
+
+def canonical_exect_method(method: str) -> str:
+    """Collapse the living ExECT hybrid alias onto exect_llm_pre_post."""
+
+    spec = method_spec(method)
+    alias = spec.get("alias_of")
+    return str(alias) if alias else method
 
 
 def exect_row_count(split: str) -> int:

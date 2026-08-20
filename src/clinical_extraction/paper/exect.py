@@ -1,4 +1,4 @@
-"""One Compact versus Full control comparison for the paper ExECT methods."""
+"""Paper runner for Compact ExECT LLM-only and LLM pre-post."""
 
 from __future__ import annotations
 
@@ -51,56 +51,26 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 from clinical_extraction.trace_explorer.exectv2_comparison import _frontend_letter
 
 ROOT = discover_repo_root(start=Path(__file__))
-CONTROL_VERSION = structured.FULL_LEDGER
 CANDIDATE_VERSION = structured.COMPACT_LEDGER
-CONTROL_ARM = "exect_full_ledger"
-CANDIDATE_ARM = "exect_llm_with_rules"
+CANDIDATE_ARM = "exect_llm_pre_post"
 LLM_ONLY_ARM = "exect_llm_only"
 LLM_ONLY_VERSION = structured.EXECT_LLM_ONLY
 OLLAMA_NUM_CTX_ENV = "CLINICAL_EXTRACTION_OLLAMA_NUM_CTX"
 HOSTED_SLUGS = ("grok46", "gpt56luna", "gemini37flash", "deepseek_v4_flash")
 LOCAL_SLUGS = ("qwen38_27b", "gemma4_26b")
 GROK46_SLUG = "grok46"
-WORK_ROOT = ROOT / "experiments/paper/exect_llm_with_rules"
-HOLDOUT_SCRATCH = ROOT / "scratch/holdout/paper/exect_llm_with_rules"
-FULL_WORK_ROOT = ROOT / "experiments/paper/exect_full_ledger"
-FULL_HOLDOUT_SCRATCH = ROOT / "scratch/holdout/paper/exect_full_ledger"
+WORK_ROOT = ROOT / "experiments/paper/exect_llm_pre_post"
+HOLDOUT_SCRATCH = ROOT / "scratch/holdout/paper/exect_llm_pre_post"
 LLM_ONLY_WORK_ROOT = ROOT / "experiments/paper/exect_llm_only"
 LLM_ONLY_HOLDOUT_SCRATCH = ROOT / "scratch/holdout/paper/exect_llm_only"
 
-_DEV140_CONTROLS = {
-    "gpt56sol": (
-        "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715"
-        "_structured.jsonl"
-    ),
-    "gpt56luna": (
-        "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715"
-        "_structured.jsonl"
-    ),
-    "gemini37flash": (
-        "experiments/exectv2_six_model_single_call_gemini37flash_dev140_20260813"
-        "_structured.jsonl"
-    ),
-    "deepseek_v4_flash": (
-        "experiments/exectv2_deepseek_v4_flash_0731_update_dev140_20260731"
-        "_structured.jsonl"
-    ),
-    "gemma4_26b": (
-        "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715"
-        "_structured.jsonl"
-    ),
-    "qwen38_27b": (
-        "experiments/exectv2_six_model_single_call_qwen38_27b_dev140_20260814"
-        "_structured.jsonl"
-    ),
-}
 _DEV140_COMPACT_PAPER = {
     "gemini37flash": (
-        "paper_experiments/exect/exect_llm_with_rules/gemini37flash/dev140/"
+        "paper_experiments/exect/exect_llm_pre_post/gemini37flash/dev140/"
         "structured.jsonl"
     ),
     "gpt56luna": (
-        "paper_experiments/exect/exect_llm_with_rules/gpt56luna/dev140/"
+        "paper_experiments/exect/exect_llm_pre_post/gpt56luna/dev140/"
         "structured.jsonl"
     ),
 }
@@ -109,23 +79,6 @@ ALLOWED_REASONING_ABLATIONS = frozenset(
         ("gemini37flash", "medium"),
     }
 )
-_TEST60_CONTROLS = {
-    "gpt56sol": "experiments/current_stack/sidecars/exect_test60/gpt56sol.jsonl",
-    "gpt56luna": "experiments/current_stack/sidecars/exect_test60/gpt56luna.jsonl",
-    "gemini37flash": (
-        "experiments/current_stack/sidecars/exect_test60/gemini37flash.jsonl"
-    ),
-    "deepseek_v4_flash": (
-        "experiments/current_stack/sidecars/exect_test60/deepseek_v4_flash_0731.jsonl"
-    ),
-    "gemma4_26b": (
-        "scratch/local_queue/gemma4_26b_exect/test60/gemma4_26b/"
-        "gemma4_26b_structured.jsonl"
-    ),
-    "qwen38_27b": (
-        "scratch/holdout/qwen38_27b_20260814/exect_test60/qwen38_27b_structured.jsonl"
-    ),
-}
 
 
 @dataclass(frozen=True)
@@ -210,32 +163,6 @@ def _spec_for(item: Mapping[str, Any]) -> ModelSpec:
 MODELS: dict[str, ModelSpec] = {item["slug"]: _spec_for(item) for item in living_models()}
 
 
-def has_full_control(slug: str, split: str) -> bool:
-    """Return whether a living model has a Full-ledger control file for this split."""
-
-    if split == "test60":
-        return slug in _TEST60_CONTROLS
-    if split == "dev140":
-        return slug in _DEV140_CONTROLS
-    raise ValueError(f"unsupported ExECT split {split}")
-
-
-def control_path(slug: str, split: str) -> Path:
-    """Return the Full-ledger control JSONL used as the Compact control."""
-
-    if slug not in MODELS:
-        raise ValueError(f"unknown paper model {slug}")
-    if not has_full_control(slug, split):
-        raise ValueError(f"{slug} has no Full-ledger {split} control")
-    if split == "test60":
-        path = ROOT / _TEST60_CONTROLS[slug]
-    elif split == "dev140":
-        path = ROOT / _DEV140_CONTROLS[slug]
-    else:
-        raise ValueError(f"unsupported ExECT split {split}")
-    _reject_lfs_pointer(path)
-    return path
-
 
 def _reject_lfs_pointer(path: Path) -> None:
     if not path.is_file():
@@ -260,7 +187,7 @@ def letters_for_split(split: str) -> list[ExectLetter]:
 
 
 def verify_compact(*, split: str = "dev140", slug: str | None = None) -> dict[str, Any]:
-    """Check Compact payload identity and optional control presence."""
+    """Check Compact payload identity."""
 
     letter = ExectLetter(letter_id="EA0002", note_text="placeholder")
     before = structured.PROMPT_VERSION
@@ -281,18 +208,12 @@ def verify_compact(*, split: str = "dev140", slug: str | None = None) -> dict[st
         structured.set_active_prompt_version(before)
     if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
         raise RuntimeError("payload check changed the live default")
-    if (
-        slug is not None
-        and has_full_control(slug, split)
-        and not control_path(slug, split).is_file()
-    ):
-        raise RuntimeError(f"missing Full ledger {split} control: {control_path(slug, split)}")
+    del slug
     holdout = holdout_is_aggregate_only(split)
     return {
         "ok": True,
         "method": CANDIDATE_ARM,
         "candidate": CANDIDATE_VERSION,
-        "control": CONTROL_VERSION,
         "split": split,
         "row_count": 59 if holdout else 140,
         "row_policy": "aggregate_only" if holdout else "development_review_permitted",
@@ -355,166 +276,6 @@ def verify_llm_only(*, split: str = "dev140", slug: str | None = None) -> dict[s
     }
 
 
-def verify_full_ledger(*, split: str = "dev140", slug: str | None = None) -> dict[str, Any]:
-    """Check Full-ledger payload identity without changing the live default."""
-
-    if slug is not None and slug not in MODELS:
-        raise RuntimeError(f"{slug} is not a living paper model")
-    letter = ExectLetter(letter_id="EA0002", note_text="placeholder")
-    before = structured.PROMPT_VERSION
-    try:
-        full = json.loads(
-            structured.build_prompt_input(letter, prompt_version=CONTROL_VERSION)
-        )
-        if "worked_examples" not in full or "clinical_rules" not in full:
-            raise RuntimeError("Full ledger dropped the long instruction book")
-        if len(full["clinical_rules"]) <= 52:
-            raise RuntimeError("Full ledger rulebook is no longer longer than Compact")
-    finally:
-        structured.set_active_prompt_version(before)
-    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
-        raise RuntimeError("Full ledger verify changed the live Compact default")
-    holdout = holdout_is_aggregate_only(split)
-    return {
-        "ok": True,
-        "method": CONTROL_ARM,
-        "prompt_version": CONTROL_VERSION,
-        "split": split,
-        "row_count": 59 if holdout else 140,
-        "row_policy": "aggregate_only" if holdout else "development_review_permitted",
-        "test60_authorized": holdout,
-        "n_rules": len(full["clinical_rules"]),
-        "n_examples": len(full["worked_examples"]),
-        "hosted": list(HOSTED_SLUGS),
-        "local": list(LOCAL_SLUGS),
-        "work_root": FULL_WORK_ROOT.relative_to(ROOT).as_posix(),
-        "holdout_scratch": FULL_HOLDOUT_SCRATCH.relative_to(ROOT).as_posix(),
-        "default_prompt_version": structured.PROMPT_VERSION,
-    }
-
-
-def run_full_ledger(
-    slug: str,
-    *,
-    live: bool,
-    split: str = "dev140",
-    overwrite: bool = False,
-    api_base: str | None = None,
-    timeout: int | None = None,
-    progress_every: int = 1,
-    thinking: str | None = None,
-    reasoning_effort: str | None = None,
-) -> dict[str, Any]:
-    """Run the Full-ledger control live. Does not write Compact cells."""
-
-    if slug not in MODELS:
-        raise RuntimeError(f"{slug} is not a living paper model")
-    verify_full_ledger(split=split, slug=slug)
-    if not live:
-        raise RuntimeError("run_full_ledger requires live=True")
-    spec = apply_reasoning_effort(MODELS[slug], reasoning_effort)
-    if thinking is not None:
-        if slug != "deepseek_v4_flash":
-            raise RuntimeError("thinking toggle is DeepSeek only")
-        spec = replace(spec, thinking_type=thinking)
-    load_dotenv(ROOT / ".env", override=False)
-    letters = letters_for_split(split)
-    holdout = holdout_is_aggregate_only(split)
-    work_root = FULL_HOLDOUT_SCRATCH if holdout else FULL_WORK_ROOT
-    segment = paper_work_suffix(spec)
-    if segment:
-        work_root = work_root / spec.slug / segment / split
-    else:
-        work_root = work_root / spec.slug / split
-    work_root.mkdir(parents=True, exist_ok=True)
-    started = datetime.now(UTC).isoformat()
-    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
-        raise RuntimeError("live default drifted before the Full ledger run")
-    resolved_base = resolve_paper_api_base(spec.slug, api_base)
-    control = _run_candidate(
-        spec,
-        letters,
-        overwrite=overwrite,
-        api_base=resolved_base,
-        timeout=timeout or spec.timeout,
-        progress_every=progress_every,
-        out_dir=work_root,
-        split=split,
-        prompt_version=CONTROL_VERSION,
-        arm=CONTROL_ARM,
-        progress_label="full_ledger",
-    )
-    if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
-        raise RuntimeError("Full ledger arm left the live Compact default changed")
-    quality = control["summary"]["quality"]
-    artifact = {
-        "schema_version": "paper.exect_full_ledger.v1",
-        "generated_on": "2026-08-18",
-        "method": CONTROL_ARM,
-        "model_slug": spec.slug,
-        "model": spec.model,
-        "model_label": spec.label,
-        "temperature": spec.temperature,
-        "max_tokens": spec.max_tokens,
-        "cache": False,
-        "split": split,
-        "row_count": len(letters),
-        "row_policy": "aggregate_only" if holdout else "development_review_permitted",
-        "started_utc": started,
-        "finished_utc": datetime.now(UTC).isoformat(),
-        "live": True,
-        "model_calls": control["summary"]["new_model_calls"],
-        "default_prompt_version": structured.PROMPT_VERSION,
-        "provider_revision": spec.provider_revision,
-        "reasoning_effort": spec.reasoning_effort,
-        "thinking_type": spec.thinking_type,
-        "arms": {
-            CONTROL_ARM: _public_arm_summary(control["summary"], holdout=holdout),
-        },
-        "decision": {
-            CONTROL_ARM: {
-                "status": "scored",
-                "raw_headline_f1": control["summary"]["raw_headline_f1"],
-                "hybrid_headline_f1": control["summary"]["hybrid_headline_f1"],
-                "raw_family_f1": control["summary"]["raw_family_f1"],
-                "hybrid_family_f1": control["summary"]["hybrid_family_f1"],
-                "parse": quality["parse"],
-                "schema": quality["schema"],
-            }
-        },
-        "claim_boundary": (
-            "ExECT aggregate-only test60 Full-ledger control. Not the cited hybrid."
-            if holdout
-            else "ExECT development Full-ledger control. Not the cited hybrid. Not holdout."
-        ),
-    }
-    if not holdout:
-        artifact["letter_ids"] = [letter.letter_id for letter in letters]
-    protocol = work_root / "protocol.md"
-    if not protocol.is_file():
-        protocol.write_text(
-            (
-                "# Grok Full-ledger control\n\n"
-                "Question: what is living Grok 4.6 Full-ledger clinical-fact F1 "
-                "on ExECT `dev140` and aggregate-only `test60`?\n\n"
-                "Compact remains the cited hybrid. This cell is the longer "
-                "control. Living effort is hosted `low`. Do not inspect "
-                "`test60` rows.\n"
-            ),
-            encoding="utf-8",
-        )
-    out = work_root / "comparison.json"
-    out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    return {
-        "artifact": out.relative_to(ROOT).as_posix(),
-        "live": True,
-        "split": split,
-        "model": spec.model,
-        "model_calls": artifact["model_calls"],
-        "decision": artifact["decision"],
-        "default_prompt_version": structured.PROMPT_VERSION,
-    }
-
 
 def run_compact(
     slug: str,
@@ -528,7 +289,7 @@ def run_compact(
     thinking: str | None = None,
     reasoning_effort: str | None = None,
 ) -> dict[str, Any]:
-    """Run Compact live against a saved Full-ledger control."""
+    """Run Compact live."""
 
     if slug not in MODELS:
         raise RuntimeError(f"{slug} is not a living paper model")
@@ -567,112 +328,49 @@ def run_compact(
     if structured.PROMPT_VERSION != structured.COMPACT_LEDGER:
         raise RuntimeError("candidate arm left the live default changed")
     quality = candidate["summary"]["quality"]
-    if has_full_control(slug, split):
-        control = _run_replay_arm(
-            spec,
-            letters,
-            arm=CONTROL_ARM,
-            prompt_version=CONTROL_VERSION,
-            raws=_raws_from_structured_file(
-                control_path(slug, split), letters, holdout=holdout
-            ),
-            out_dir=work_root / CONTROL_ARM,
-            split=split,
-        )
-        versus = compare_pair(control, candidate, letters)
-        hybrid = versus["surfaces"]["hybrid"]
-        artifact = {
-            "schema_version": "paper.exect_llm_with_rules.v1",
-            "generated_on": "2026-08-17",
-            "method": CANDIDATE_ARM,
-            "model_slug": spec.slug,
-            "model": spec.model,
-            "model_label": spec.label,
-            "temperature": spec.temperature,
-            "max_tokens": spec.max_tokens,
-            "cache": False,
-            "split": split,
-            "row_count": len(letters),
-            "row_policy": "aggregate_only" if holdout else "development_review_permitted",
-            "started_utc": started,
-            "finished_utc": datetime.now(UTC).isoformat(),
-            "live": True,
-            "model_calls": candidate["summary"]["new_model_calls"],
-            "default_prompt_version": structured.PROMPT_VERSION,
-            "provider_revision": spec.provider_revision,
-            "reasoning_effort": spec.reasoning_effort,
-            "thinking_type": spec.thinking_type,
-            "arms": {
-                CONTROL_ARM: _public_arm_summary(control["summary"], holdout=holdout),
-                CANDIDATE_ARM: _public_arm_summary(candidate["summary"], holdout=holdout),
-            },
-            "comparison": {f"{CANDIDATE_ARM}_minus_{CONTROL_ARM}": versus},
-            "decision": {
-                CANDIDATE_ARM: {
-                    "status": "scored",
-                    "headline_f1_delta": hybrid["headline_f1_delta"],
-                    "family_f1_delta": hybrid["family_f1_delta"],
-                    "four_family_letter_exact_net": hybrid["four_family_letter_exact_net"],
-                    "parse": quality["parse"],
-                    "schema": quality["schema"],
-                }
-            },
-            "claim_boundary": (
-                "ExECT aggregate-only test60 Compact versus saved Full ledger."
-                if holdout
-                else "ExECT development Compact versus saved Full ledger. Not holdout."
-            ),
-        }
-        if not holdout:
-            artifact["letter_ids"] = [letter.letter_id for letter in letters]
-            artifact["changed_rows"] = changed_rows(control, candidate, letters)
-    else:
-        artifact = {
-            "schema_version": "paper.exect_llm_with_rules.v1",
-            "generated_on": "2026-08-17",
-            "method": CANDIDATE_ARM,
-            "model_slug": spec.slug,
-            "model": spec.model,
-            "model_label": spec.label,
-            "temperature": spec.temperature,
-            "max_tokens": spec.max_tokens,
-            "cache": False,
-            "split": split,
-            "row_count": len(letters),
-            "row_policy": "aggregate_only" if holdout else "development_review_permitted",
-            "started_utc": started,
-            "finished_utc": datetime.now(UTC).isoformat(),
-            "live": True,
-            "model_calls": candidate["summary"]["new_model_calls"],
-            "default_prompt_version": structured.PROMPT_VERSION,
-            "provider_revision": spec.provider_revision,
-            "reasoning_effort": spec.reasoning_effort,
-            "thinking_type": spec.thinking_type,
-            "arms": {
-                CANDIDATE_ARM: _public_arm_summary(candidate["summary"], holdout=holdout),
-            },
-            "decision": {
-                CANDIDATE_ARM: {
-                    "status": "scored",
-                    "raw_headline_f1": candidate["summary"]["raw_headline_f1"],
-                    "hybrid_headline_f1": candidate["summary"]["hybrid_headline_f1"],
-                    "raw_family_f1": candidate["summary"]["raw_family_f1"],
-                    "hybrid_family_f1": candidate["summary"]["hybrid_family_f1"],
-                    "parse": quality["parse"],
-                    "schema": quality["schema"],
-                }
-            },
-            "claim_boundary": (
-                "ExECT aggregate-only test60 Compact. No Full-ledger control for this model."
-                if holdout
-                else (
-                    "ExECT development Compact. No Full-ledger control for this model. "
-                    "Not holdout."
-                )
-            ),
-        }
-        if not holdout:
-            artifact["letter_ids"] = [letter.letter_id for letter in letters]
+    artifact = {
+        "schema_version": "paper.exect_llm_pre_post.v1",
+        "generated_on": "2026-08-17",
+        "method": CANDIDATE_ARM,
+        "model_slug": spec.slug,
+        "model": spec.model,
+        "model_label": spec.label,
+        "temperature": spec.temperature,
+        "max_tokens": spec.max_tokens,
+        "cache": False,
+        "split": split,
+        "row_count": len(letters),
+        "row_policy": "aggregate_only" if holdout else "development_review_permitted",
+        "started_utc": started,
+        "finished_utc": datetime.now(UTC).isoformat(),
+        "live": True,
+        "model_calls": candidate["summary"]["new_model_calls"],
+        "default_prompt_version": structured.PROMPT_VERSION,
+        "provider_revision": spec.provider_revision,
+        "reasoning_effort": spec.reasoning_effort,
+        "thinking_type": spec.thinking_type,
+        "arms": {
+            CANDIDATE_ARM: _public_arm_summary(candidate["summary"], holdout=holdout),
+        },
+        "decision": {
+            CANDIDATE_ARM: {
+                "status": "scored",
+                "raw_headline_f1": candidate["summary"]["raw_headline_f1"],
+                "hybrid_headline_f1": candidate["summary"]["hybrid_headline_f1"],
+                "raw_family_f1": candidate["summary"]["raw_family_f1"],
+                "hybrid_family_f1": candidate["summary"]["hybrid_family_f1"],
+                "parse": quality["parse"],
+                "schema": quality["schema"],
+            }
+        },
+        "claim_boundary": (
+            "ExECT aggregate-only test60 Compact."
+            if holdout
+            else "ExECT development Compact. Not holdout."
+        ),
+    }
+    if not holdout:
+        artifact["letter_ids"] = [letter.letter_id for letter in letters]
     out = work_root / "comparison.json"
     out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return {
@@ -1047,10 +745,7 @@ def _run_candidate(
                     BatchChatItem(
                         custom_id=letter.letter_id,
                         messages=program.render_messages(
-                            prompt_input_json=structured.build_prompt_input(
-                                letter,
-                                prompt_profile=config.prompt_profile,
-                            )
+                            prompt_input_json=structured.build_prompt_input(letter)
                         ),
                     )
                     for letter in todo

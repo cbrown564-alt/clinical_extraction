@@ -10,19 +10,15 @@ import pytest
 from clinical_extraction.paper.cli import run
 from clinical_extraction.paper.exect import (
     CANDIDATE_VERSION,
-    CONTROL_VERSION,
     GROK46_SLUG,
     HOSTED_SLUGS,
     LOCAL_SLUGS,
     MODELS,
-    control_path,
-    has_full_control,
     paper_work_suffix,
     run_compact,
     run_compact_reasoning_ablation,
     thinking_work_segment,
     verify_compact,
-    verify_full_ledger,
     verify_llm_only,
 )
 from clinical_extraction.paper.gan import _max_tokens_for, run_gan, verify_gan
@@ -132,13 +128,13 @@ def test_live_methods_are_the_paper_llm_cells() -> None:
         "gan_llm_only",
         "gan_llm_with_rules",
         "gan_llm_pre_post",
+        "exect_llm_pre_post",
         "exect_llm_with_rules",
         "exect_llm_only",
-        "exect_full_ledger",
     }
+    split_for("exect_llm_pre_post", "dev140")
     split_for("exect_llm_with_rules", "dev140")
     split_for("exect_llm_only", "dev140")
-    split_for("exect_full_ledger", "test60")
     split_for("gan_llm_with_rules", "test450")
     with pytest.raises(ValueError, match="does not use split"):
         split_for("exect_llm_with_rules", "test450")
@@ -148,7 +144,7 @@ def test_verify_compact_does_not_change_the_live_default() -> None:
     before = structured.PROMPT_VERSION
     payload = verify_compact()
     assert payload["ok"] is True
-    assert payload["method"] == "exect_llm_with_rules"
+    assert payload["method"] == "exect_llm_pre_post"
     assert payload["candidate"] == CANDIDATE_VERSION == structured.COMPACT_LEDGER
     assert payload["n_rules"] == 54
     assert payload["n_examples"] == 0
@@ -175,29 +171,6 @@ def test_verify_llm_only_does_not_change_the_live_default() -> None:
     assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER
 
 
-def test_verify_full_ledger_does_not_change_the_live_default() -> None:
-    before = structured.PROMPT_VERSION
-    payload = verify_full_ledger(split="dev140", slug=GROK46_SLUG)
-    assert payload["ok"] is True
-    assert payload["method"] == "exect_full_ledger"
-    assert payload["prompt_version"] == CONTROL_VERSION == structured.FULL_LEDGER
-    assert payload["n_examples"] > 0
-    assert payload["n_rules"] > 52
-    assert payload["split"] == "dev140"
-    assert payload["row_policy"] == "development_review_permitted"
-    assert payload["work_root"] == "experiments/paper/exect_full_ledger"
-    assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER
-
-
-def test_verify_full_ledger_test60_is_aggregate_only() -> None:
-    payload = verify_full_ledger(split="test60", slug=GROK46_SLUG)
-    assert payload["row_count"] == 59
-    assert payload["row_policy"] == "aggregate_only"
-    assert payload["test60_authorized"] is True
-    assert payload["holdout_scratch"] == "scratch/holdout/paper/exect_full_ledger"
-    assert structured.PROMPT_VERSION == structured.COMPACT_LEDGER
-
-
 def test_verify_compact_test60_is_aggregate_only() -> None:
     before = structured.PROMPT_VERSION
     payload = verify_compact(split="test60")
@@ -207,13 +180,6 @@ def test_verify_compact_test60_is_aggregate_only() -> None:
     assert payload["row_policy"] == "aggregate_only"
     assert payload["test60_authorized"] is True
     assert structured.PROMPT_VERSION == before == structured.COMPACT_LEDGER
-    for slug in HOSTED_SLUGS:
-        if not has_full_control(slug, "test60"):
-            continue
-        path = control_path(slug, "test60")
-        assert "exect_test60" in path.as_posix()
-    assert has_full_control("gpt56luna", "test60")
-    assert not has_full_control(GROK46_SLUG, "test60")
 
 
 def test_verify_gan_pins_paper_identities_without_changing_defaults() -> None:
@@ -336,13 +302,9 @@ def test_grok46_paper_lm_uses_vercel_ai_gateway(monkeypatch: pytest.MonkeyPatch)
     assert captured["extra_body"] == {"reasoning": {"effort": "low"}}
 
 
-def test_grok46_is_living_compact_without_full_control() -> None:
+def test_grok46_is_living_compact() -> None:
     before = structured.PROMPT_VERSION
     assert GROK46_SLUG in MODELS
-    assert not has_full_control(GROK46_SLUG, "dev140")
-    assert not has_full_control(GROK46_SLUG, "test60")
-    with pytest.raises(ValueError, match="no Full-ledger"):
-        control_path(GROK46_SLUG, "dev140")
     payload = verify_compact(split="dev140", slug=GROK46_SLUG)
     assert payload["ok"] is True
     holdout = verify_compact(split="test60", slug=GROK46_SLUG)
@@ -373,19 +335,11 @@ def test_cli_dispatches_grok46_compact(monkeypatch: pytest.MonkeyPatch) -> None:
 
     monkeypatch.setattr("clinical_extraction.paper.cli.run_compact", fake_compact)
     monkeypatch.setattr(
-        "clinical_extraction.paper.cli.run_full_ledger",
-        lambda *args, **kwargs: {"ok": True, "method": "exect_full_ledger"},
-    )
-    monkeypatch.setattr(
         "clinical_extraction.paper.cli.run_llm_only",
         lambda *args, **kwargs: {"ok": True, "method": "exect_llm_only"},
     )
     payload = run("exect_llm_with_rules", GROK46_SLUG, "dev140")
     assert payload == {"ok": True, "method": "exect_llm_with_rules"}
-    assert run("exect_full_ledger", GROK46_SLUG, "dev140") == {
-        "ok": True,
-        "method": "exect_full_ledger",
-    }
     assert run("exect_llm_only", GROK46_SLUG, "dev140") == {
         "ok": True,
         "method": "exect_llm_only",

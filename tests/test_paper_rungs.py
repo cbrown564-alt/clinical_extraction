@@ -12,6 +12,7 @@ from clinical_extraction.paper.rungs import (
     GAN_RUNG_SOURCE,
     RESULT_COLUMNS,
     RUNG_IDS,
+    exect_method_for_rung,
     gan_method_for_rung,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.letter_assembly import (
@@ -98,7 +99,8 @@ def test_result_columns_are_the_five_rungs() -> None:
     assert GAN_RUNG_SOURCE["llm_schema"] == "replay_gan_llm_with_rules"
     assert GAN_RUNG_SOURCE["llm_pre_post"] == "new_request"
     assert EXECT_RUNG_SOURCE["llm_schema"] == "replay_exect_llm_only"
-    assert EXECT_RUNG_SOURCE["llm_pre_post"] == "living_exect_llm_with_rules"
+    assert EXECT_RUNG_SOURCE["llm_pre_post"] == "living_exect_llm_pre_post"
+    assert exect_method_for_rung("llm_pre_post") == "exect_llm_pre_post"
 
 
 def test_selected_evidence_render_keeps_the_same_event() -> None:

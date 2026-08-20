@@ -38,7 +38,7 @@ EXECT_METHOD_FOR_RUNG: dict[RungId, str] = {
     "llm_schema": "exect_llm_schema",
     "llm_format": "exect_llm_format",
     "llm_post": "exect_llm_post",
-    "llm_pre_post": "exect_llm_with_rules",
+    "llm_pre_post": "exect_llm_pre_post",
 }
 GAN_REPAIR_MODE_FOR_RUNG: dict[str, str] = {
     "llm_schema": "raw_model",
@@ -58,7 +58,7 @@ EXECT_RUNG_SOURCE: dict[RungId, str] = {
     "llm_schema": "replay_exect_llm_only",
     "llm_format": "replay_exect_llm_only",
     "llm_post": "replay_exect_llm_only",
-    "llm_pre_post": "living_exect_llm_with_rules",
+    "llm_pre_post": "living_exect_llm_pre_post",
 }
 RUNG_DEPTH: dict[RungId, int] = {
     "rules_only": 1,

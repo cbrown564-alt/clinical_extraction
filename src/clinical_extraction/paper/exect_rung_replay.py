@@ -11,8 +11,13 @@ from typing import Any
 
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.paper.answer_states import graph_from_hops, make_hop
-from clinical_extraction.paper.exect_score import letters_dev140
-from clinical_extraction.paper.rungs import EXECT_HOP_EFFECT_CLASS
+from clinical_extraction.paper.exect import letters_for_split
+from clinical_extraction.paper.methods import (
+    exect_row_count,
+    holdout_is_aggregate_only,
+)
+from clinical_extraction.paper.roster import model_by_slug
+from clinical_extraction.paper.rungs import EXECT_HOP_EFFECT_CLASS, RUNG_IDS
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.views import (
     predictions_from_prediction_surface,
 )
@@ -41,18 +46,78 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 )
 
 ROOT = discover_repo_root(start=Path(__file__))
-GROK_LLM_ONLY = ROOT / "paper_experiments/exect/exect_llm_only/grok46/dev140"
-GROK_HYBRID_CELL = (
-    ROOT / "paper_experiments/exect/exect_llm_with_rules/grok46/dev140/cell.json"
-)
-RULES_DEV140 = ROOT / "paper_experiments/exect/exect_rules/dev140.json"
-OUT_DIR = ROOT / "paper_experiments/exect/rungs/grok46/dev140"
 FAMILIES = ("Diagnosis", "SeizureFrequency", "Prescription", "Investigations")
 SURFACE_FOR_RUNG = {
     "llm_schema": "predicted_mentions",
     "llm_format": "format_only",
     "llm_post": "residual_benchmark_added",
 }
+PRE_POST_METHOD = "exect_llm_pre_post"
+
+
+def exect_llm_only_rows_path(slug: str, split: str) -> Path:
+    """Return the living llm-only replay file for one model and split."""
+
+    return (
+        ROOT
+        / "paper_experiments/exect/exect_llm_only"
+        / slug
+        / split
+        / "structured.jsonl"
+    )
+
+
+def exect_pre_post_cell_path(slug: str, split: str) -> Path:
+    """Return the living rung-5 cell for one model and split."""
+
+    return (
+        ROOT
+        / "paper_experiments/exect"
+        / PRE_POST_METHOD
+        / slug
+        / split
+        / "cell.json"
+    )
+
+
+def exect_rules_path(split: str) -> Path:
+    """Return the standalone-rules headline file that covers this split."""
+
+    del split
+    return ROOT / "paper_experiments/exect/exect_rules/dev140.json"
+
+
+def exect_rung_out_dir(slug: str, split: str) -> Path:
+    """Return the rung-replay directory for one model and split."""
+
+    return ROOT / "paper_experiments/exect/rungs" / slug / split
+
+
+def write_exect_rung_artifacts(
+    out_dir: Path,
+    summary: Mapping[str, Any],
+    *,
+    scored: Sequence[Mapping[str, Any]],
+    hops: Sequence[Mapping[str, Any]],
+    holdout: bool,
+) -> Path:
+    """Write replay artifacts. Holdout keeps comparison.json only."""
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    comparison = out_dir / "comparison.json"
+    comparison.write_text(
+        json.dumps(dict(summary), indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    scored_path = out_dir / "scored.jsonl"
+    hops_path = out_dir / "hops.jsonl"
+    if holdout:
+        scored_path.unlink(missing_ok=True)
+        hops_path.unlink(missing_ok=True)
+        return comparison
+    write_jsonl_rows(list(scored), scored_path)
+    write_jsonl_rows(list(hops), hops_path)
+    return comparison
 
 
 def inventory_hash(mentions: Sequence[Mapping[str, Any]], note_text: str) -> str:
@@ -75,18 +140,33 @@ def inventory_hash(mentions: Sequence[Mapping[str, Any]], note_text: str) -> str
     return "|".join(sorted(keys))
 
 
-def replay_exect_dev140(*, slug: str = "grok46") -> dict[str, Any]:
-    """Replay Grok llm_only raw_output through rungs 1-4 on development letters."""
+def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
+    """Replay saved llm_only raw_output through rungs 1-4. No new model calls."""
 
-    if slug != "grok46":
-        raise ValueError("ExECT rung replay is implemented for grok46 dev140 only")
-    letters = {letter.letter_id: letter for letter in letters_dev140()}
-    structured_rows = load_jsonl_rows(GROK_LLM_ONLY / "structured.jsonl")
+    if split not in {"dev140", "test60"}:
+        raise ValueError("ExECT rung replay accepts split dev140 or test60")
+    holdout = holdout_is_aggregate_only(split)
+    expected_n = exect_row_count(split)
+    raw_path = exect_llm_only_rows_path(slug, split)
+    if not raw_path.is_file():
+        raise FileNotFoundError(
+            f"missing exect_llm_only replay file for {slug} {split}: {raw_path}"
+        )
+    letters = {letter.letter_id: letter for letter in letters_for_split(split)}
+    structured_rows = load_jsonl_rows(raw_path)
     raws = {str(row["letter_id"]): str(row["raw_output"]) for row in structured_rows}
-    if len(raws) != 140:
-        raise RuntimeError(f"expected 140 llm_only raw rows, found {len(raws)}")
-    rules = json.loads(RULES_DEV140.read_text(encoding="utf-8"))
-    hybrid_cell = json.loads(GROK_HYBRID_CELL.read_text(encoding="utf-8"))
+    if len(raws) != expected_n:
+        raise RuntimeError(
+            f"expected {expected_n} llm_only raw rows for {split}, found {len(raws)}"
+        )
+    rules = json.loads(exect_rules_path(split).read_text(encoding="utf-8"))
+    hybrid_cell_path = exect_pre_post_cell_path(slug, split)
+    hybrid_cell = (
+        json.loads(hybrid_cell_path.read_text(encoding="utf-8"))
+        if hybrid_cell_path.is_file()
+        else {}
+    )
+    model = str(model_by_slug(slug)["model"])
     before = structured.PROMPT_VERSION
     scored: list[dict[str, Any]] = []
     hops_rows: list[dict[str, Any]] = []
@@ -99,10 +179,10 @@ def replay_exect_dev140(*, slug: str = "grok46") -> dict[str, Any]:
             letter = letters[letter_id]
             producer = structured_one_call.produce_structured_letter(
                 letter,
-                model="xai/grok-4.6",
+                model=model,
                 mode="replay",
                 raw_output=raw_output,
-                split="dev",
+                split="test" if holdout else "dev",
                 config=StructuredMethodConfig.selected(),
             )
             assembled = assemble_structured_rows(
@@ -196,40 +276,82 @@ def replay_exect_dev140(*, slug: str = "grok46") -> dict[str, Any]:
                 if mention not in (surfaces.get("residual_benchmark_added") or [])
             ]
             scored.append({"letter_id": letter_id, "rungs": by_rung})
-            hops_rows.append(
-                {
-                    "letter_id": letter_id,
-                    "answer_states": hops,
-                    "graph": graph_from_hops(hops, unused),
-                }
-            )
+            if not holdout:
+                hops_rows.append(
+                    {
+                        "letter_id": letter_id,
+                        "answer_states": hops,
+                        "graph": graph_from_hops(hops, unused),
+                    }
+                )
     finally:
         structured.set_active_prompt_version(before)
-    summary = {
-        "claim_boundary": "ExECT development replay. Not holdout.",
-        "generated_on": datetime.now(UTC).date().isoformat(),
-        "model_slug": slug,
-        "split": "dev140",
-        "shared_raw_output": "exect_llm_only",
-        "row_count": len(scored),
-        "rungs": {
-            "rules_only": {
-                "clinical_fact_f1": rules["dev140"]["four_family_headline_f1"],
-                "source": "exect_rules",
-            },
-            "llm_schema": _surface_prf(family_rows["llm_schema"]),
-            "llm_format": _surface_prf(family_rows["llm_format"]),
-            "llm_post": _surface_prf(family_rows["llm_post"]),
-            "llm_pre_post": {
-                "clinical_fact_f1": hybrid_cell.get("hybrid_headline_f1"),
-                "source": "living_exect_llm_with_rules",
-                "note": "Different prompt from rungs 2-4. Not a shared raw_output.",
-            },
+    summary = _comparison_summary(
+        family_rows,
+        slug=slug,
+        split=split,
+        holdout=holdout,
+        row_count=len(scored),
+        rules=rules,
+        hybrid_cell=hybrid_cell,
+    )
+    write_exect_rung_artifacts(
+        exect_rung_out_dir(slug, split),
+        summary,
+        scored=scored,
+        hops=hops_rows,
+        holdout=holdout,
+    )
+    return summary
+
+
+def replay_exect_dev140(*, slug: str = "grok46") -> dict[str, Any]:
+    """Replay llm_only raw_output through rungs 1-4 on development letters."""
+
+    return replay_exect_rungs("dev140", slug=slug)
+
+
+def _comparison_summary(
+    family_rows: Mapping[str, Sequence[Mapping[str, Any]]],
+    *,
+    slug: str,
+    split: str,
+    holdout: bool,
+    row_count: int,
+    rules: Mapping[str, Any],
+    hybrid_cell: Mapping[str, Any],
+) -> dict[str, Any]:
+    nested = rules.get(split)
+    if isinstance(nested, Mapping) and nested.get("four_family_headline_f1") is not None:
+        rules_f1 = nested["four_family_headline_f1"]
+    else:
+        headline = rules.get("clinical_headline") or {}
+        rules_f1 = headline.get("f1") if isinstance(headline, Mapping) else None
+    rungs: dict[str, Any] = {
+        "rules_only": {
+            "clinical_fact_f1": rules_f1,
+            "source": "exect_rules",
         },
+        "llm_schema": _surface_prf(family_rows["llm_schema"]),
+        "llm_format": _surface_prf(family_rows["llm_format"]),
+        "llm_post": _surface_prf(family_rows["llm_post"]),
+    }
+    if hybrid_cell.get("hybrid_headline_f1") is not None:
+        rungs["llm_pre_post"] = {
+            "clinical_fact_f1": hybrid_cell.get("hybrid_headline_f1"),
+            "source": "living_exect_llm_pre_post",
+            "note": "Different prompt from rungs 2-4. Not a shared raw_output.",
+        }
+    return {
+        "claim_boundary": (
+            "ExECT aggregate-only test60 replay. Do not inspect holdout rows."
+            if holdout
+            else "ExECT development replay. Not holdout."
+        ),
         "format_only_check": {
             "surface": "format_only",
             "same_as_schema": (
-                family_rows["llm_schema"] == family_rows["llm_format"]
+                list(family_rows["llm_schema"]) == list(family_rows["llm_format"])
                 or _surface_prf(family_rows["llm_schema"])
                 == _surface_prf(family_rows["llm_format"])
             ),
@@ -238,15 +360,14 @@ def replay_exect_dev140(*, slug: str = "grok46") -> dict[str, Any]:
                 "dictionary_normalized is semantic, not format."
             ),
         },
+        "generated_on": datetime.now(UTC).date().isoformat(),
+        "model_slug": slug,
+        "row_count": row_count,
+        "row_policy": "aggregate_only" if holdout else "development_review_permitted",
+        "rungs": {rung: rungs[rung] for rung in RUNG_IDS if rung in rungs},
+        "shared_raw_output": "exect_llm_only",
+        "split": split,
     }
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
-    write_jsonl_rows(scored, OUT_DIR / "scored.jsonl")
-    write_jsonl_rows(hops_rows, OUT_DIR / "hops.jsonl")
-    (OUT_DIR / "comparison.json").write_text(
-        json.dumps(summary, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
-    return summary
 
 
 def _family_keys(

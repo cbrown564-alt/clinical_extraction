@@ -10,14 +10,12 @@ from typing import Any
 from clinical_extraction.paper.exect import (
     MODELS,
     run_compact,
-    run_full_ledger,
     run_llm_only,
     verify_compact,
-    verify_full_ledger,
     verify_llm_only,
 )
 from clinical_extraction.paper.exect_panel import promote_exect, promote_exect_llm_only
-from clinical_extraction.paper.exect_rung_replay import replay_exect_dev140
+from clinical_extraction.paper.exect_rung_replay import replay_exect_rungs
 from clinical_extraction.paper.gan import run_gan, verify_gan
 from clinical_extraction.paper.gan_panel import promote_gan
 from clinical_extraction.paper.gan_rung_replay import replay_gan_rungs
@@ -56,10 +54,19 @@ def main(argv: Sequence[str] | None = None) -> None:
                 )
             )
             return
-        if args.split == "dev140":
-            print(json.dumps(replay_exect_dev140(), indent=2, sort_keys=True))
+        if args.split in {"dev140", "test60"}:
+            slug = args.model or "grok46"
+            print(
+                json.dumps(
+                    replay_exect_rungs(args.split, slug=slug),
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
             return
-        raise SystemExit("replay-rungs accepts --split dev750, test450, or dev140")
+        raise SystemExit(
+            "replay-rungs accepts --split dev750, test450, dev140, or test60"
+        )
     split_for(args.method, args.split)
     if args.action == "promote-gan":
         if args.model is None:
@@ -88,8 +95,8 @@ def main(argv: Sequence[str] | None = None) -> None:
                 )
             )
             return
-        if args.method != "exect_llm_with_rules":
-            raise SystemExit("promote-exect is ExECT LLM with rules or ExECT LLM only")
+        if args.method not in {"exect_llm_pre_post", "exect_llm_with_rules"}:
+            raise SystemExit("promote-exect is ExECT pre-post or ExECT LLM only")
         print(
             json.dumps(
                 promote_exect(args.model, args.split),
@@ -132,8 +139,6 @@ def verify(method: str, split: str, slug: str | None = None) -> dict[str, Any]:
     spec = method_spec(method)
     split_for(method, split)
     if spec["task"] == "exectv2":
-        if method == "exect_full_ledger":
-            return verify_full_ledger(split=split, slug=slug)
         if method == "exect_llm_only":
             return verify_llm_only(split=split, slug=slug)
         return verify_compact(split=split, slug=slug)
@@ -165,18 +170,6 @@ def run(
     if row_limit is not None and slice_name is not None:
         raise SystemExit("--row-limit and --slice cannot be combined")
     if spec["task"] == "exectv2":
-        if method == "exect_full_ledger":
-            return run_full_ledger(
-                slug,
-                live=True,
-                split=split,
-                overwrite=overwrite,
-                api_base=api_base,
-                timeout=timeout,
-                progress_every=progress_every,
-                thinking=thinking,
-                reasoning_effort=reasoning_effort,
-            )
         if method == "exect_llm_only":
             return run_llm_only(
                 slug,

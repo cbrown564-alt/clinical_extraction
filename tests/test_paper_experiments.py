@@ -6,8 +6,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-EXECT_HYBRID_ROOT = ROOT / "paper_experiments/exect/exect_llm_with_rules"
-FULL_LEDGER_ROOT = ROOT / "paper_experiments/comparators/exect_full_ledger"
+EXECT_HYBRID_ROOT = ROOT / "paper_experiments/exect/exect_llm_pre_post"
 LIVING_SLUGS = (
     "grok46",
     "gpt56luna",
@@ -73,24 +72,24 @@ def test_inventory_covers_present_and_missing_cells() -> None:
     present = {(row["model_slug"], row["method"], row["split"]) for row in inventory["present"]}
     missing_methods = {row["method"] for row in inventory["missing"]}
     assert present == {
-        ("grok46", "exect_llm_with_rules", "dev140"),
-        ("grok46", "exect_llm_with_rules", "test60"),
+        ("grok46", "exect_llm_pre_post", "dev140"),
+        ("grok46", "exect_llm_pre_post", "test60"),
         ("grok46", "exect_llm_only", "dev140"),
         ("grok46", "exect_llm_only", "test60"),
-        ("gpt56luna", "exect_llm_with_rules", "dev140"),
-        ("gpt56luna", "exect_llm_with_rules", "test60"),
+        ("gpt56luna", "exect_llm_pre_post", "dev140"),
+        ("gpt56luna", "exect_llm_pre_post", "test60"),
         ("gpt56luna", "exect_llm_only", "dev140"),
         ("gpt56luna", "exect_llm_only", "test60"),
-        ("gemini37flash", "exect_llm_with_rules", "dev140"),
-        ("gemini37flash", "exect_llm_with_rules", "test60"),
+        ("gemini37flash", "exect_llm_pre_post", "dev140"),
+        ("gemini37flash", "exect_llm_pre_post", "test60"),
         ("gemini37flash", "exect_llm_only", "dev140"),
         ("gemini37flash", "exect_llm_only", "test60"),
-        ("deepseek_v4_flash", "exect_llm_with_rules", "dev140"),
-        ("deepseek_v4_flash", "exect_llm_with_rules", "test60"),
+        ("deepseek_v4_flash", "exect_llm_pre_post", "dev140"),
+        ("deepseek_v4_flash", "exect_llm_pre_post", "test60"),
         ("deepseek_v4_flash", "exect_llm_only", "dev140"),
         ("deepseek_v4_flash", "exect_llm_only", "test60"),
-        ("gemma4_26b", "exect_llm_with_rules", "dev140"),
-        ("gemma4_26b", "exect_llm_with_rules", "test60"),
+        ("gemma4_26b", "exect_llm_pre_post", "dev140"),
+        ("gemma4_26b", "exect_llm_pre_post", "test60"),
         ("gemma4_26b", "gan_llm_only", "dev750"),
         ("gemma4_26b", "gan_llm_only", "test450"),
         ("grok46", "gan_llm_only", "dev750"),
@@ -111,12 +110,12 @@ def test_inventory_covers_present_and_missing_cells() -> None:
     missing_cells = {
         (row.get("model_slug"), row["method"], row.get("split")) for row in inventory["missing"]
     }
-    assert ("qwen38_27b", "exect_llm_with_rules", "dev140") in missing_cells
+    assert ("qwen38_27b", "exect_llm_pre_post", "dev140") in missing_cells
     assert ("grok46", "exect_llm_only", "dev140") not in missing_cells
     assert ("gemini37flash", "exect_llm_only", "dev140") not in missing_cells
     assert ("gpt56luna", "exect_llm_only", "dev140") not in missing_cells
-    assert ("grok46", "exect_llm_with_rules", "dev140") not in missing_cells
-    assert ("grok46", "exect_llm_with_rules", "test60") not in missing_cells
+    assert ("grok46", "exect_llm_pre_post", "dev140") not in missing_cells
+    assert ("grok46", "exect_llm_pre_post", "test60") not in missing_cells
     assert ("grok46", "gan_llm_only", "test450") not in missing_cells
     assert ("grok46", "gan_llm_with_rules", "test450") not in missing_cells
     assert ("deepseek_v4_flash", "gan_llm_only", "dev750") in missing_cells
@@ -207,13 +206,20 @@ def test_exect_dev140_panel_is_rectangular() -> None:
     panel = json.loads(
         (ROOT / "paper_experiments/exect/dev140_panel.json").read_text(encoding="utf-8")
     )
-    assert panel["schema_version"] == "paper_experiments.exect.dev140_panel.v1"
+    assert panel["schema_version"] == "paper_experiments.exect.dev140_panel.v2"
     assert panel["split"] == "dev140"
     assert panel["method_identity"] == "grok46"
     assert panel["living_effort"]["hosted_reasoning"] == "low"
     assert panel["models"] == list(LIVING_SLUGS)
-    assert panel["methods"] == ["exect_llm_only", "exect_llm_with_rules"]
-    assert len(panel["cells"]) == 12
+    assert panel["methods"] == [
+        "rules_only",
+        "llm_schema",
+        "llm_format",
+        "llm_post",
+        "llm_pre_post",
+    ]
+    assert panel["request_methods"] == ["exect_llm_only", "exect_llm_pre_post"]
+    assert len(panel["cells"]) == 30
     present = {
         (cell["model_slug"], cell["method"])
         for cell in panel["cells"]
@@ -224,24 +230,10 @@ def test_exect_dev140_panel_is_rectangular() -> None:
         for cell in panel["cells"]
         if cell["status"] == "pending"
     }
-    assert present == {
-        ("grok46", "exect_llm_only"),
-        ("grok46", "exect_llm_with_rules"),
-        ("gpt56luna", "exect_llm_only"),
-        ("gpt56luna", "exect_llm_with_rules"),
-        ("gemini37flash", "exect_llm_only"),
-        ("gemini37flash", "exect_llm_with_rules"),
-        ("deepseek_v4_flash", "exect_llm_with_rules"),
-        ("gemma4_26b", "exect_llm_with_rules"),
-    }
-    assert pending == {
-        ("deepseek_v4_flash", "exect_llm_only"),
-        ("qwen38_27b", "exect_llm_only"),
-        ("qwen38_27b", "exect_llm_with_rules"),
-        ("gemma4_26b", "exect_llm_only"),
-    }
+    assert {("grok46", "rules_only"), ("grok46", "llm_pre_post")} <= present
+    assert ("qwen38_27b", "llm_pre_post") in pending
     for cell in panel["cells"]:
-        if cell["status"] != "present":
+        if cell["status"] != "present" or not cell.get("scored"):
             continue
         scored_path = ROOT / cell["scored"]
         rows = [
@@ -252,9 +244,8 @@ def test_exect_dev140_panel_is_rectangular() -> None:
         assert len(rows) == 140
         first = rows[0]
         assert first["letter_id"].startswith("EA")
-        assert first["method"] == cell["method"]
-        assert "raw_headline_f1" in first
-        if cell["method"] == "exect_llm_with_rules":
+        if cell["method"] == "llm_pre_post":
+            assert first["method"] == "exect_llm_pre_post"
             assert {
                 "hybrid_headline_f1",
                 "hybrid_four_family_letter_exact",
@@ -275,14 +266,13 @@ def test_exect_hybrid_cells_have_raw_and_hybrid() -> None:
             assert comparison["row_policy"] == "aggregate_only"
             assert "letter_ids" not in comparison
             assert "changed_rows" not in comparison
-        compact = comparison["arms"].get("exect_llm_with_rules") or comparison["arms"][
-            "compact_ledger"
-        ]
-        full = comparison["arms"].get("exect_full_ledger") or comparison["arms"]["full_ledger"]
+        compact = (
+            comparison["arms"].get("exect_llm_pre_post")
+            or comparison["arms"].get("exect_llm_with_rules")
+            or comparison["arms"]["compact_ledger"]
+        )
         assert "raw_headline_f1" in compact
         assert "hybrid_headline_f1" in compact
-        assert "raw_headline_f1" in full
-        assert "hybrid_headline_f1" in full
         hybrid_row = json.loads(
             (EXECT_HYBRID_ROOT / slug / split / "structured.jsonl")
             .read_text(encoding="utf-8")
@@ -290,12 +280,6 @@ def test_exect_hybrid_cells_have_raw_and_hybrid() -> None:
         )
         assert set(hybrid_row) == {"letter_id", "prompt_version", "raw_output"}
         assert hybrid_row["prompt_version"] == "exectv2_compact_ledger"
-        control = json.loads(
-            (FULL_LEDGER_ROOT / slug / split / "structured.jsonl")
-            .read_text(encoding="utf-8")
-            .splitlines()[0]
-        )
-        assert control["prompt_version"] == "exectv2_full_ledger"
         lines = [
             line
             for line in (EXECT_HYBRID_ROOT / slug / split / "structured.jsonl")

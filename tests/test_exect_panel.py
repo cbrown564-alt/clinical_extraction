@@ -21,11 +21,11 @@ def _patch_panel_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("clinical_extraction.paper.exect_panel.ROOT", tmp_path)
     monkeypatch.setattr(
         "clinical_extraction.paper.exect_panel.WORK_ROOT",
-        tmp_path / "experiments/paper/exect_llm_with_rules",
+        tmp_path / "experiments/paper/exect_llm_pre_post",
     )
     monkeypatch.setattr(
         "clinical_extraction.paper.exect_panel.HOLDOUT_ROOT",
-        tmp_path / "scratch/holdout/paper/exect_llm_with_rules",
+        tmp_path / "scratch/holdout/paper/exect_llm_pre_post",
     )
     monkeypatch.setattr("clinical_extraction.paper.exect_panel.PAPER_EXECT", exect)
     monkeypatch.setattr(
@@ -39,8 +39,8 @@ def _patch_panel_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def _write_work_cell(root: Path, slug: str) -> None:
-    cell = root / "experiments/paper/exect_llm_with_rules" / slug / "dev140"
-    nested = cell / "exect_llm_with_rules"
+    cell = root / "experiments/paper/exect_llm_pre_post" / slug / "dev140"
+    nested = cell / "exect_llm_pre_post"
     nested.mkdir(parents=True, exist_ok=True)
     structured = []
     metrics = []
@@ -57,7 +57,7 @@ def _write_work_cell(root: Path, slug: str) -> None:
         )
         metrics.append(
             {
-                "arm": "exect_llm_with_rules",
+                "arm": "exect_llm_pre_post",
                 "prompt_version": "exectv2_compact_ledger",
                 "letter_id": letter_id,
                 "raw_headline_prf": {"f1": 0.5},
@@ -81,12 +81,12 @@ def _write_work_cell(root: Path, slug: str) -> None:
     (cell / "comparison.json").write_text(
         json.dumps(
             {
-                "method": "exect_llm_with_rules",
+                "method": "exect_llm_pre_post",
                 "split": "dev140",
                 "reasoning_effort": "low",
                 "row_count": 140,
                 "arms": {
-                    "exect_llm_with_rules": {
+                    "exect_llm_pre_post": {
                         "raw_headline_f1": 0.5,
                         "hybrid_headline_f1": 0.8,
                     }
@@ -109,7 +109,7 @@ def _write_inventory(tmp_path: Path, *, present: list[dict[str, object]]) -> Non
                 "missing": [
                     {
                         "model_slug": "grok46",
-                        "method": "exect_llm_with_rules",
+                        "method": "exect_llm_pre_post",
                         "split": "dev140",
                         "status": "missing",
                     }
@@ -128,7 +128,7 @@ def test_promote_strips_replay_and_writes_scored_panel(
     _patch_panel_paths(tmp_path, monkeypatch)
 
     payload = promote_exect_dev140("grok46")
-    dest = tmp_path / "paper_experiments/exect/exect_llm_with_rules/grok46/dev140"
+    dest = tmp_path / "paper_experiments/exect/exect_llm_pre_post/grok46/dev140"
     replay = json.loads((dest / "structured.jsonl").read_text(encoding="utf-8").splitlines()[0])
     scored = json.loads((dest / "scored.jsonl").read_text(encoding="utf-8").splitlines()[0])
     assert set(replay) == {"letter_id", "prompt_version", "raw_output"}
@@ -139,13 +139,20 @@ def test_promote_strips_replay_and_writes_scored_panel(
     panel = rebuild_dev140_panel()
     assert panel["method_identity"] == "grok46"
     assert panel["living_effort"]["hosted_reasoning"] == "low"
-    assert panel["methods"] == ["exect_llm_only", "exect_llm_with_rules"]
-    assert len(panel["cells"]) == 12
+    assert panel["methods"] == [
+        "rules_only",
+        "llm_schema",
+        "llm_format",
+        "llm_post",
+        "llm_pre_post",
+    ]
+    assert panel["request_methods"] == ["exect_llm_only", "exect_llm_pre_post"]
+    assert len(panel["cells"]) == 30
     present = [cell for cell in panel["cells"] if cell["status"] == "present"]
     pending = [cell for cell in panel["cells"] if cell["status"] == "pending"]
     assert [cell["model_slug"] for cell in present] == ["grok46"]
-    assert present[0]["method"] == "exect_llm_with_rules"
-    assert len(pending) == 11
+    assert present[0]["method"] == "llm_pre_post"
+    assert len(pending) == 29
     assert payload["cell"]["n"] == 140
     assert panel["models"] == [item["slug"] for item in living_models()]
     synced = json.loads(
@@ -153,13 +160,13 @@ def test_promote_strips_replay_and_writes_scored_panel(
     )
     assert any(
         row["model_slug"] == "grok46"
-        and row["method"] == "exect_llm_with_rules"
+        and row["method"] == "exect_llm_pre_post"
         and row["split"] == "dev140"
         for row in synced["present"]
     )
     assert not any(
         row.get("model_slug") == "grok46"
-        and row.get("method") == "exect_llm_with_rules"
+        and row.get("method") == "exect_llm_pre_post"
         and row.get("split") == "dev140"
         for row in synced["missing"]
     )
@@ -172,7 +179,7 @@ def test_promote_strips_replay_and_writes_scored_panel(
 def test_rebuild_keeps_existing_compact_present_without_cell_json(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    dest = tmp_path / "paper_experiments/exect/exect_llm_with_rules/gpt56luna/dev140"
+    dest = tmp_path / "paper_experiments/exect/exect_llm_pre_post/gpt56luna/dev140"
     dest.mkdir(parents=True)
     dest.joinpath("structured.jsonl").write_text(
         "".join(
@@ -200,12 +207,12 @@ def test_rebuild_keeps_existing_compact_present_without_cell_json(
     historical = {
         "model_slug": "gpt56luna",
         "model": "openai/gpt-5.6-luna",
-        "method": "exect_llm_with_rules",
+        "method": "exect_llm_pre_post",
         "replay_alias": "exectv2_compact_ledger",
         "split": "dev140",
         "n": 140,
         "row_policy": "development_review_permitted",
-        "path": "paper_experiments/exect/exect_llm_with_rules/gpt56luna/dev140/structured.jsonl",
+        "path": "paper_experiments/exect/exect_llm_pre_post/gpt56luna/dev140/structured.jsonl",
         "status": "present",
         "empty_raw_count": 0,
     }
@@ -215,7 +222,7 @@ def test_rebuild_keeps_existing_compact_present_without_cell_json(
     luna = next(
         cell
         for cell in panel["cells"]
-        if cell["model_slug"] == "gpt56luna" and cell["method"] == "exect_llm_with_rules"
+        if cell["model_slug"] == "gpt56luna" and cell["method"] == "llm_pre_post"
     )
     assert luna["status"] == "present"
     assert luna["hybrid_headline_f1"] == 0.8818
@@ -230,7 +237,7 @@ def test_promote_rejects_non_living_effort_cell(
 ) -> None:
     _write_work_cell(tmp_path, "grok46")
     comparison_path = (
-        tmp_path / "experiments/paper/exect_llm_with_rules/grok46/dev140/comparison.json"
+        tmp_path / "experiments/paper/exect_llm_pre_post/grok46/dev140/comparison.json"
     )
     comparison = json.loads(comparison_path.read_text(encoding="utf-8"))
     comparison["reasoning_effort"] = "high"
@@ -242,8 +249,8 @@ def test_promote_rejects_non_living_effort_cell(
 
 
 def _write_holdout_work_cell(root: Path, slug: str) -> None:
-    cell = root / "scratch/holdout/paper/exect_llm_with_rules" / slug / "test60"
-    nested = cell / "exect_llm_with_rules"
+    cell = root / "scratch/holdout/paper/exect_llm_pre_post" / slug / "test60"
+    nested = cell / "exect_llm_pre_post"
     nested.mkdir(parents=True, exist_ok=True)
     structured = []
     for index in range(59):
@@ -262,13 +269,13 @@ def _write_holdout_work_cell(root: Path, slug: str) -> None:
     (cell / "comparison.json").write_text(
         json.dumps(
             {
-                "method": "exect_llm_with_rules",
+                "method": "exect_llm_pre_post",
                 "split": "test60",
                 "reasoning_effort": "low",
                 "row_count": 59,
                 "row_policy": "aggregate_only",
                 "arms": {
-                    "exect_llm_with_rules": {
+                    "exect_llm_pre_post": {
                         "raw_headline_f1": 0.7883,
                         "hybrid_headline_f1": 0.805,
                     }
@@ -292,7 +299,7 @@ def test_promote_exect_test60_strips_replay_and_updates_inventory(
     payload["missing"] = [
         {
             "model_slug": "grok46",
-            "method": "exect_llm_with_rules",
+            "method": "exect_llm_pre_post",
             "split": "test60",
             "status": "missing",
         }
@@ -301,7 +308,7 @@ def test_promote_exect_test60_strips_replay_and_updates_inventory(
     _patch_panel_paths(tmp_path, monkeypatch)
 
     result = promote_exect("grok46", "test60")
-    dest = tmp_path / "paper_experiments/exect/exect_llm_with_rules/grok46/test60"
+    dest = tmp_path / "paper_experiments/exect/exect_llm_pre_post/grok46/test60"
     replay = json.loads((dest / "structured.jsonl").read_text(encoding="utf-8").splitlines()[0])
     assert set(replay) == {"letter_id", "prompt_version", "raw_output"}
     assert not (dest / "scored.jsonl").is_file()
@@ -313,7 +320,7 @@ def test_promote_exect_test60_strips_replay_and_updates_inventory(
     synced = json.loads(inventory_path.read_text(encoding="utf-8"))
     assert any(
         row["model_slug"] == "grok46"
-        and row["method"] == "exect_llm_with_rules"
+        and row["method"] == "exect_llm_pre_post"
         and row["split"] == "test60"
         and row["row_policy"] == "aggregate_only"
         for row in synced["present"]
@@ -329,7 +336,7 @@ def test_promote_exect_test60_rejects_letter_ids(
 ) -> None:
     _write_holdout_work_cell(tmp_path, "grok46")
     comparison_path = (
-        tmp_path / "scratch/holdout/paper/exect_llm_with_rules/grok46/test60/comparison.json"
+        tmp_path / "scratch/holdout/paper/exect_llm_pre_post/grok46/test60/comparison.json"
     )
     comparison = json.loads(comparison_path.read_text(encoding="utf-8"))
     comparison["letter_ids"] = ["EA0001"]

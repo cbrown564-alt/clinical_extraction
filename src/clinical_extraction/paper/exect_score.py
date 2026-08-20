@@ -1,4 +1,4 @@
-"""Score Compact versus Full ledger comparison for the paper runner."""
+"""Score Compact ExECT paper arms."""
 
 from __future__ import annotations
 
