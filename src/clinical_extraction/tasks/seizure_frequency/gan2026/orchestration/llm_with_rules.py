@@ -275,15 +275,7 @@ def run_record(
     ]
     repair_stage_ids = (
         "selected_evidence",
-        "monthly_diary",
-        "usual_interval",
-        "typical_over_ytd",
-        "breakthrough",
-        "non_epileptic",
-        "residual_jerk",
-        "post_change_burst",
-        "dated_sequence",
-        "elapsed_anchor",
+        *legacy.DEFAULT_SEMANTIC_FAMILY_ORDER,
     )
     for family in repair_stage_ids:
         family_event = next(

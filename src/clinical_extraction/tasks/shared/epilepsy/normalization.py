@@ -55,7 +55,7 @@ def label_to_frequency_record(label: str) -> FrequencyLabelRecord:
             monthly_frequency=1000.0,
         )
 
-    scoring_label = normalized
+    scoring_label = _author_evaluation_multiple_count(normalized)
     if "cluster" in scoring_label:
         if "unknown" in scoring_label:
             return FrequencyLabelRecord(
@@ -72,6 +72,8 @@ def label_to_frequency_record(label: str) -> FrequencyLabelRecord:
         kind = FrequencyLabelKind.SEIZURE_FREE
     elif min_per_year < 0 or max_per_year < 0:
         kind = _sentinel_kind(min_per_year, max_per_year)
+    elif _is_unresolved_multiple_label(normalized):
+        kind = FrequencyLabelKind.UNRESOLVED_MULTIPLE
     else:
         kind = FrequencyLabelKind.FREQUENCY
 
@@ -149,6 +151,53 @@ def label_to_monthly_frequency(label: str) -> float:
     values for unknown and no-reference are both scored as the unknown category.
     """
     return label_to_frequency_record(label).monthly_frequency
+
+
+def _is_unresolved_multiple_label(label: str) -> bool:
+    return label.startswith("multiple per") or " per multiple " in label
+
+
+def _author_evaluation_multiple_count(label: str) -> str:
+    """Project vague ``multiple`` counts the way the author evaluation script does.
+
+    ``e_evaluation_synthetic_results.parse_label_to_yearly_count`` rewrites
+    ``multiple per week/day`` to 2, ``multiple per month`` to 8, and
+    ``multiple per year`` to 18 before parsing. Prefer that file over the CSV
+    preparation parser when the two disagree.
+    """
+    text = label
+    text = text.replace(" per multiple week", " per 2 week")
+    text = text.replace(" per multiple month", " per 2 month")
+    text = text.replace(" per multiple year", " per 2 year")
+    text = text.replace(" per multiple day", " per 2 day")
+    if (
+        text.endswith("week")
+        or text.endswith("weeks")
+        or "week," in text
+        or "weeks," in text
+    ):
+        text = text.replace("multiple per ", "2 per ")
+        return text.replace("multiple cluster per ", "2 cluster per ")
+    if (
+        text.endswith("month")
+        or text.endswith("months")
+        or "month," in text
+        or "months," in text
+    ):
+        text = text.replace("multiple per ", "8 per ")
+        return text.replace("multiple cluster per ", "8 cluster per ")
+    if (
+        text.endswith("year")
+        or text.endswith("years")
+        or "year," in text
+        or "years," in text
+    ):
+        text = text.replace("multiple per ", "18 per ")
+        return text.replace("multiple cluster per ", "18 cluster per ")
+    if text.endswith("day") or text.endswith("days") or "day," in text or "days," in text:
+        text = text.replace("multiple per ", "2 per ")
+        return text.replace("multiple cluster per ", "2 cluster per ")
+    return text
 
 
 def _sentinel_kind(min_per_year: float, max_per_year: float) -> FrequencyLabelKind:

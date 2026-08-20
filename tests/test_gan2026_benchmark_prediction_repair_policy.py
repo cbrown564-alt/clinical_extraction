@@ -1,8 +1,14 @@
 from __future__ import annotations
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
+    Portability,
+    RuleGroup,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label,
+    repair_prediction_label_format_preserving,
     repair_prediction_label_with_evidence,
+    repair_prediction_label_with_trace,
 )
 
 
@@ -69,6 +75,78 @@ def test_nightly_is_format_repaired_to_one_per_day() -> None:
     assert repair_prediction_label("nightly") == "1 per day"
     assert repair_prediction_label("every night") == "1 per day"
     assert repair_prediction_label("each night") == "1 per day"
+
+
+def test_period_word_synonyms_are_format_repaired() -> None:
+    assert repair_prediction_label("fortnightly") == "1 per 2 week"
+    assert repair_prediction_label("quarterly") == "1 per 3 month"
+    assert repair_prediction_label("12 to 30 per quarter") == "12 to 30 per 3 month"
+    assert repair_prediction_label("7 to 8 per quarter") == "7 to 8 per 3 month"
+
+
+def test_every_range_and_daypart_are_format_repaired() -> None:
+    assert repair_prediction_label("every 4 to 6 weeks") == "1 per 4 to 6 week"
+    assert repair_prediction_label("every four to six weeks") == "1 per 4 to 6 week"
+    assert repair_prediction_label("every one to two weeks") == "1 per 1 to 2 week"
+    assert repair_prediction_label("every 1 or 2 weeks") == "1 per 1 to 2 week"
+    assert repair_prediction_label("every 1 to 2 days") == "1 per 1 to 2 day"
+    assert repair_prediction_label("1 every 1 to 2 days") == "1 per 1 to 2 day"
+    assert repair_prediction_label("once every 2 to 3 weeks") == "1 per 2 to 3 week"
+    assert repair_prediction_label("every morning") == "1 per day"
+    assert repair_prediction_label("every evening") == "1 per day"
+    assert repair_prediction_label("every other night") == "1 per 2 day"
+
+
+def test_once_or_twice_and_hedged_once_a_period_are_format_repaired() -> None:
+    assert repair_prediction_label("once or twice a month") == "1 to 2 per month"
+    assert repair_prediction_label("once or twice a week") == "1 to 2 per week"
+    assert repair_prediction_label("roughly once a month") == "1 per month"
+    assert repair_prediction_label("typically once a month") == "1 per month"
+
+
+def test_leftover_event_tokens_do_not_block_count_per_period() -> None:
+    assert repair_prediction_label("4 absences per day") == "4 per day"
+    assert repair_prediction_label("6 to 7 myoclonic per week") == "6 to 7 per week"
+    assert repair_prediction_label("five focal automatisms per week") == "5 per week"
+    assert repair_prediction_label("2 to 4 focal non-motor per week") == "2 to 4 per week"
+    assert repair_prediction_label("2–3 such episodes per week") == "2 to 3 per week"
+    assert repair_prediction_label("1x/week") == "1 per week"
+
+
+def test_most_days_and_nights_are_multiple_per_week() -> None:
+    assert repair_prediction_label("most days") == "multiple per week"
+    assert repair_prediction_label("on most days") == "multiple per week"
+    assert repair_prediction_label("brief episodes most days") == "multiple per week"
+    assert repair_prediction_label("most nights") == "multiple per week"
+    assert repair_prediction_label("most nights of the week") == "multiple per week"
+    trace = repair_prediction_label_with_trace("most days")
+    assert any(
+        event.rule_id == "benchmark_repair.vague_frequency_to_multiple"
+        for event in trace.events
+    )
+    assert all(event.group is RuleGroup.BENCHMARK_REPAIR for event in trace.events)
+    assert all(
+        event.portability is Portability.BENCHMARK_FORMAT for event in trace.events
+    )
+
+
+def test_seizure_days_are_format_repaired_to_count_per_period() -> None:
+    assert repair_prediction_label("8 seizure days per month") == "8 per month"
+    assert repair_prediction_label("8 seizure-days per month") == "8 per month"
+    assert repair_prediction_label("3 seizure days per week") == "3 per week"
+    assert repair_prediction_label("About three seizure days per week") == "3 per week"
+    assert repair_prediction_label("2 days per week") == "2 per week"
+    assert repair_prediction_label_format_preserving("8 seizure days per month") == (
+        "8 per month"
+    )
+    assert repair_prediction_label("2 cluster days per month") == "unknown"
+
+
+def test_timing_and_vague_words_are_not_invented_rates() -> None:
+    assert repair_prediction_label("nocturnal") == "no seizure frequency reference"
+    assert repair_prediction_label("intermittent") == "no seizure frequency reference"
+    assert repair_prediction_label("1 cluster per week") == "unknown"
+    assert repair_prediction_label("most shifts") == "no seizure frequency reference"
 
 
 def test_daily_seizure_evidence_still_renders_one_per_day() -> None:

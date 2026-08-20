@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 import dspy
+from dspy.adapters.chat_adapter import ChatAdapter
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from clinical_extraction.core.evidence import evidence_is_substring
@@ -279,6 +280,44 @@ class NormalizedEventRecord(BaseModel):
     validation_errors: list[str]
 
 
+DEFAULT_SEMANTIC_FAMILY_ORDER: tuple[str, ...] = (
+    "usual_interval",
+    "typical_over_ytd",
+    "breakthrough",
+    "non_epileptic",
+    "residual_jerk",
+    "post_change_burst",
+    "dated_sequence",
+    "elapsed_anchor",
+    "monthly_diary",
+)
+
+_SEMANTIC_FAMILY_FLAG: dict[str, str] = {
+    "usual_interval": "usual_interval_repair",
+    "typical_over_ytd": "typical_over_ytd_repair",
+    "breakthrough": "breakthrough_repair",
+    "non_epileptic": "non_epileptic_repair",
+    "residual_jerk": "residual_jerk_repair",
+    "post_change_burst": "post_change_burst_repair",
+    "dated_sequence": "dated_sequence_repair",
+    "elapsed_anchor": "elapsed_anchor_repair",
+    "monthly_diary": "monthly_diary_repair",
+}
+
+
+def adjacent_semantic_family_orders(
+    order: Sequence[str] = DEFAULT_SEMANTIC_FAMILY_ORDER,
+) -> tuple[tuple[tuple[str, str], tuple[str, ...]], ...]:
+    """Return each adjacent swap of the clinical post-stack families."""
+
+    swaps: list[tuple[tuple[str, str], tuple[str, ...]]] = []
+    for index in range(len(order) - 1):
+        swapped = list(order)
+        swapped[index], swapped[index + 1] = swapped[index + 1], swapped[index]
+        swaps.append(((order[index], order[index + 1]), tuple(swapped)))
+    return tuple(swaps)
+
+
 @dataclass(frozen=True)
 class StructuredRepairConfig:
     """Controls deterministic repair families applied after LLM-only structured-events output."""
@@ -298,6 +337,7 @@ class StructuredRepairConfig:
     post_change_burst_repair: bool = True
     dated_sequence_repair: bool = True
     elapsed_anchor_repair: bool = True
+    semantic_family_order: tuple[str, ...] = DEFAULT_SEMANTIC_FAMILY_ORDER
 
     @classmethod
     def for_mode(cls, mode: StructuredRepairMode) -> StructuredRepairConfig:
@@ -419,7 +459,11 @@ class StructuredRepairConfig:
             "selected_evidence_derivation",
             "hybrid_full_stack",
         ):
-            if flags == StructuredRepairConfig.for_mode(mode)._flags():
+            named = StructuredRepairConfig.for_mode(mode)
+            if (
+                flags == named._flags()
+                and self.semantic_family_order == named.semantic_family_order
+            ):
                 return mode
         return "custom"
 
@@ -467,6 +511,15 @@ class DspyStructuredExtractor(dspy.Module):
 
     def forward(self, prompt_input_json: str) -> dspy.Prediction:
         return self.predict(prompt_input_json=prompt_input_json)
+
+    def render_messages(self, *, prompt_input_json: str) -> list[dict[str, object]]:
+        """Render the initial model request without making a model call."""
+
+        return ChatAdapter().format(
+            Gan2026StructuredExtractorSignature,
+            demos=[],
+            inputs={"prompt_input_json": prompt_input_json},
+        )
 
 
 def build_prompt_input(
@@ -649,178 +702,17 @@ def parse_structured_json_with_trace(
             evidence_exact=evidence_exact,
             operands=operands,
         )
-    if repair_config.usual_interval_repair:
-        usual_interval_label = _usual_interval_label_from_events(extraction, repaired_label)
-        next_label = usual_interval_label or repaired_label
-        repaired_label = _record_label_repair(
-            errors,
-            hops,
-            stage_id="gan.select.usual_interval",
-            effect_class="semantic",
-            rung=4,
-            before=repaired_label,
-            after=next_label,
-            evidence=evidence,
-            evidence_exact=evidence_exact,
-            operands=operands,
-        )
-    if repair_config.typical_over_ytd_repair:
-        typical_over_ytd = _typical_recurring_rate_over_ytd_from_events(
-            extraction,
-            repaired_label,
-        )
-        next_label = typical_over_ytd or repaired_label
-        repaired_label = _record_label_repair(
-            errors,
-            hops,
-            stage_id="gan.select.typical_over_ytd",
-            effect_class="semantic",
-            rung=4,
-            before=repaired_label,
-            after=next_label,
-            evidence=evidence,
-            evidence_exact=evidence_exact,
-            operands=operands,
-        )
-    if repair_config.breakthrough_repair:
-        breakthrough_label = _breakthrough_label_from_events(extraction, repaired_label)
-        next_label = breakthrough_label or repaired_label
-        repaired_label = _record_label_repair(
-            errors,
-            hops,
-            stage_id="gan.select.breakthrough",
-            effect_class="semantic",
-            rung=4,
-            before=repaired_label,
-            after=next_label,
-            evidence=evidence,
-            evidence_exact=evidence_exact,
-            operands=operands,
-        )
-    if repair_config.non_epileptic_repair:
-        non_epileptic_label = _non_epileptic_label_from_events(extraction, repaired_label)
-        next_label = non_epileptic_label or repaired_label
-        repaired_label = _record_label_repair(
-            errors,
-            hops,
-            stage_id="gan.select.non_epileptic",
-            effect_class="semantic",
-            rung=4,
-            before=repaired_label,
-            after=next_label,
-            evidence=evidence,
-            evidence_exact=evidence_exact,
-            operands=operands,
-        )
-    if repair_config.residual_jerk_repair:
-        residual_jerk_label = _residual_jerk_label_from_events(
-            extraction,
-            repaired_label,
-            note_text=note_text,
-        )
-        next_label = residual_jerk_label or repaired_label
-        repaired_label = _record_label_repair(
-            errors,
-            hops,
-            stage_id="gan.select.residual_jerk",
-            effect_class="semantic",
-            rung=4,
-            before=repaired_label,
-            after=next_label,
-            evidence=evidence,
-            evidence_exact=evidence_exact,
-            operands=operands,
-        )
-    if repair_config.post_change_burst_repair:
-        post_change_label = _post_change_burst_label_from_events(
-            extraction,
-            repaired_label,
-            note_text=note_text,
-        )
-        next_label = post_change_label or repaired_label
-        repaired_label = _record_label_repair(
-            errors,
-            hops,
-            stage_id="gan.select.post_change_burst",
-            effect_class="semantic",
-            rung=4,
-            before=repaired_label,
-            after=next_label,
-            evidence=evidence,
-            evidence_exact=evidence_exact,
-            operands=operands,
-        )
-    if repair_config.dated_sequence_repair:
-        dated_sequence_label = _dated_sequence_label_from_events(
-            extraction,
-            repaired_label,
-            note_text=note_text,
-        )
-        next_label = dated_sequence_label or repaired_label
-        repaired_label = _record_label_repair(
-            errors,
-            hops,
-            stage_id="gan.select.dated_sequence",
-            effect_class="semantic",
-            rung=4,
-            before=repaired_label,
-            after=next_label,
-            evidence=evidence,
-            evidence_exact=evidence_exact,
-            operands=operands,
-        )
-    if repair_config.elapsed_anchor_repair:
-        elapsed_window_label = _elapsed_since_anchor_label_from_events(
-            extraction,
-            repaired_label,
-            note_text=note_text,
-        )
-        vetoed = None
-        if elapsed_window_label and _should_preserve_sustained_selected_seizure_free(
-            extraction,
-            repaired_label,
-            elapsed_window_label,
-        ):
-            vetoed, elapsed_window_label = elapsed_window_label, None
-        next_label = elapsed_window_label or repaired_label
-        repaired_label = _record_label_repair(
-            errors,
-            hops,
-            stage_id="gan.select.elapsed_anchor",
-            effect_class="semantic",
-            rung=4,
-            before=repaired_label,
-            after=next_label,
-            evidence=evidence,
-            evidence_exact=evidence_exact,
-            operands=operands,
-            vetoed=vetoed,
-        )
-    if repair_config.monthly_diary_repair:
-        monthly_diary_label = _monthly_diary_label_from_events(
-            extraction,
-            note_text=note_text,
-        )
-        vetoed = None
-        if monthly_diary_label and _should_preserve_label_from_monthly_diary(
-            repaired_label,
-            extraction=extraction,
-        ):
-            vetoed, monthly_diary_label = monthly_diary_label, None
-        next_label = monthly_diary_label or repaired_label
-        repaired_label = _record_label_repair(
-            errors,
-            hops,
-            stage_id="gan.select.monthly_diary",
-            effect_class="semantic",
-            rung=4,
-            before=repaired_label,
-            after=next_label,
-            evidence=evidence,
-            evidence_exact=evidence_exact,
-            operands=operands,
-            vetoed=vetoed,
-        )
+    repaired_label = _apply_semantic_families(
+        extraction,
+        repaired_label,
+        note_text=note_text,
+        repair_config=repair_config,
+        errors=errors,
+        hops=hops,
+        evidence=evidence,
+        evidence_exact=evidence_exact,
+        operands=operands,
+    )
     try:
         label_to_frequency_record(repaired_label)
     except ValueError as exc:
@@ -843,6 +735,109 @@ def parse_structured_json_with_trace(
         semantic_events=semantic_events,
         answer_states=hops,
     )
+
+
+def _apply_semantic_families(
+    extraction: StructuredExtractionRecord,
+    repaired_label: str,
+    *,
+    note_text: str,
+    repair_config: StructuredRepairConfig,
+    errors: list[str],
+    hops: list[dict[str, Any]],
+    evidence: str | None,
+    evidence_exact: bool | None,
+    operands: Sequence[str],
+) -> str:
+    """Apply clinical post-stack families in the configured order."""
+
+    for family_id in repair_config.semantic_family_order:
+        flag_name = _SEMANTIC_FAMILY_FLAG.get(family_id)
+        if flag_name is None:
+            raise ValueError(f"unknown semantic family: {family_id}")
+        if not getattr(repair_config, flag_name):
+            continue
+        proposed, vetoed = _semantic_family_proposal(
+            family_id,
+            extraction,
+            repaired_label,
+            note_text=note_text,
+        )
+        next_label = proposed or repaired_label
+        repaired_label = _record_label_repair(
+            errors,
+            hops,
+            stage_id=f"gan.select.{family_id}",
+            effect_class="semantic",
+            rung=4,
+            before=repaired_label,
+            after=next_label,
+            evidence=evidence,
+            evidence_exact=evidence_exact,
+            operands=operands,
+            vetoed=vetoed,
+        )
+    return repaired_label
+
+
+def _semantic_family_proposal(
+    family_id: str,
+    extraction: StructuredExtractionRecord,
+    repaired_label: str,
+    *,
+    note_text: str,
+) -> tuple[str | None, str | None]:
+    if family_id == "usual_interval":
+        return _usual_interval_label_from_events(extraction, repaired_label), None
+    if family_id == "typical_over_ytd":
+        return _typical_recurring_rate_over_ytd_from_events(extraction, repaired_label), None
+    if family_id == "breakthrough":
+        return _breakthrough_label_from_events(extraction, repaired_label), None
+    if family_id == "non_epileptic":
+        return _non_epileptic_label_from_events(extraction, repaired_label), None
+    if family_id == "residual_jerk":
+        return _residual_jerk_label_from_events(
+            extraction,
+            repaired_label,
+            note_text=note_text,
+        ), None
+    if family_id == "post_change_burst":
+        return _post_change_burst_label_from_events(
+            extraction,
+            repaired_label,
+            note_text=note_text,
+        ), None
+    if family_id == "dated_sequence":
+        return _dated_sequence_label_from_events(
+            extraction,
+            repaired_label,
+            note_text=note_text,
+        ), None
+    if family_id == "elapsed_anchor":
+        elapsed_window_label = _elapsed_since_anchor_label_from_events(
+            extraction,
+            repaired_label,
+            note_text=note_text,
+        )
+        if elapsed_window_label and _should_preserve_sustained_selected_seizure_free(
+            extraction,
+            repaired_label,
+            elapsed_window_label,
+        ):
+            return None, elapsed_window_label
+        return elapsed_window_label, None
+    if family_id == "monthly_diary":
+        monthly_diary_label = _monthly_diary_label_from_events(
+            extraction,
+            note_text=note_text,
+        )
+        if monthly_diary_label and _should_preserve_label_from_monthly_diary(
+            repaired_label,
+            extraction=extraction,
+        ):
+            return None, monthly_diary_label
+        return monthly_diary_label, None
+    raise ValueError(f"unknown semantic family: {family_id}")
 
 
 def _answer_hop(

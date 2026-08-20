@@ -26,6 +26,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 import dspy
+from dspy.adapters.chat_adapter import ChatAdapter
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from clinical_extraction.core.evidence import evidence_is_substring
@@ -140,6 +141,15 @@ class DspyCanonicalLlmExtractor(dspy.Module):
 
     def forward(self, prompt_input_json: str) -> dspy.Prediction:
         return self.predict(prompt_input_json=prompt_input_json)
+
+    def render_messages(self, *, prompt_input_json: str) -> list[dict[str, object]]:
+        """Render the initial model request without making a model call."""
+
+        return ChatAdapter().format(
+            Gan2026CanonicalLlmExtractorSignature,
+            demos=[],
+            inputs={"prompt_input_json": prompt_input_json},
+        )
 
 
 def build_prompt_input(record: GanFrequencyRecord) -> str:

@@ -249,6 +249,13 @@ def early_rate_label_from_selected_evidence(text: str) -> str | None:
     if most_weeks:
         return "multiple per week"
 
+    most_days_or_nights = re.search(
+        r"\bmost\s+(?:days|nights)(?:\s+of\s+the\s+week)?\b",
+        text,
+    )
+    if most_days_or_nights:
+        return "multiple per week"
+
     vague_weekdays = re.search(
         r"\b(?:most|several|multiple)\s+weekdays\b",
         text,

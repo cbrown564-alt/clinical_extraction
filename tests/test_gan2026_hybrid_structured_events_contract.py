@@ -10,6 +10,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
+    DEFAULT_SEMANTIC_FAMILY_ORDER,
     GAN_LLM_WITH_RULES,
     LLM_WITH_RULES_AUTHORED_KEYS,
     PROMPT_VERSION,
@@ -17,6 +18,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_e
     PROMPT_VERSION_V0_5,
     StructuredExtractionRecord,
     StructuredRepairConfig,
+    adjacent_semantic_family_orders,
     build_prompt_input,
     load_reusable_raw_outputs,
     parse_structured_json,
@@ -275,6 +277,25 @@ def test_elapsed_seizure_free_is_not_replaced_by_a_short_diary() -> None:
 
     assert extraction is not None
     assert extraction.selection.final_label == "seizure free for 6 month"
+
+
+def test_default_semantic_order_puts_diary_after_elapsed_anchor() -> None:
+    """Diary after elapsed-anchor is the measured default.
+
+    Family: semantic family order. Portability: seizure_frequency.
+    """
+    assert DEFAULT_SEMANTIC_FAMILY_ORDER[-2:] == (
+        "elapsed_anchor",
+        "monthly_diary",
+    )
+    swaps = adjacent_semantic_family_orders()
+    assert ("elapsed_anchor", "monthly_diary") in {
+        pair for pair, _order in swaps
+    }
+    diary_first = next(
+        order for pair, order in swaps if pair == ("elapsed_anchor", "monthly_diary")
+    )
+    assert diary_first[-2:] == ("monthly_diary", "elapsed_anchor")
 
 
 def test_run_split_reuses_raw_outputs_without_new_call(tmp_path: Path) -> None:

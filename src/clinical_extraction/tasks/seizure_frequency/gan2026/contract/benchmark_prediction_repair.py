@@ -84,6 +84,11 @@ def _slash_per_forms(text: str) -> str:
 
 def _x_times_forms(text: str) -> str:
     unit_pattern = r"h|hr|hrs?|hour|d|day|wk|wks?|week|mo|mon|mos?|month|yr|yrs?|y|year"
+    text = re.sub(
+        rf"(\d+)\s*[x×]\s*/\s*({unit_pattern})s?\b",
+        lambda match: f"{match.group(1)} per {UNIT_SYNONYMS.get(match.group(2), match.group(2))}",
+        text,
+    )
     text = re.sub(r"(?<=\d)\s*[x×]\s*(?=per\b|/)", " ", text)
     text = re.sub(
         rf"\bx\s*(\d+)\s*/\s*({unit_pattern})s?\b",
@@ -99,12 +104,23 @@ def _x_times_forms(text: str) -> str:
 
 
 def _every_each_forms(text: str) -> str:
-    text = re.sub(r"\b\d+\s+(?=every\s+other\s+(day|week|month|year)\b)", "", text)
-    text = re.sub(r"\b\d+\s+(?=(?:every|each)\s+\d+\s*(day|week|month|year)s?\b)", "", text)
+    text = re.sub(r"\b\d+\s+(?=every\s+other\s+(day|week|month|year|nights?)\b)", "", text)
+    text = re.sub(
+        r"\b\d+\s+(?=(?:every|each)\s+\d+(?:\s+to\s+\d+)?\s*(day|week|month|year)s?\b)",
+        "",
+        text,
+    )
     text = re.sub(r"\b(?:every|each)\s+other\s+(day|week|month|year)\b", r"1 per 2 \1", text)
+    text = re.sub(r"\b(?:every|each)\s+other\s+nights?\b", "1 per 2 day", text)
+    text = re.sub(
+        r"\b(?:every|each)\s+(\d+)\s+to\s+(\d+)\s*(day|week|month|year)s?\b",
+        r"1 per \1 to \2 \3",
+        text,
+    )
     text = re.sub(r"\b(?:every|each)\s+(\d+)\s*(day|week|month|year)s?\b", r"1 per \1 \2", text)
     text = re.sub(r"\b(?:every|each)\s+(day|week|month|year)s?\b", r"1 per \1", text)
     text = re.sub(r"\b(?:every|each)\s+nights?\b", "1 per day", text)
+    text = re.sub(r"\b(?:every|each)\s+(?:morning|afternoon|evening)s?\b", "1 per day", text)
     return re.sub(r"\bper\s+(?:each|every)\s+", "per ", text)
 
 
@@ -132,6 +148,12 @@ def _period_words(text: str) -> str:
     text = re.sub(r"\b(?:annually|yearly)\b", "1 per year", text)
     text = re.sub(r"\bsemiweekly\b", "2 per week", text)
     text = re.sub(r"\bbiweekly\b", "1 per 2 week", text)
+    text = re.sub(r"\bfortnightly\b", "1 per 2 week", text)
+    text = re.sub(
+        r"(\d+(?:\s*to\s*\d+)?|\bmultiple\b)?\s*\bquarterly\b",
+        lambda match: (match.group(1) or "1") + " per 3 month",
+        text,
+    )
     text = re.sub(r"\bsemimonthly\b", "2 per month", text)
     return re.sub(r"\bbimonthly\b", "1 per 2 month", text)
 
@@ -152,6 +174,24 @@ def _strip_upper_bound_qualifier(text: str) -> str:
 
 def _normalize_quarter_period(text: str) -> str:
     return re.sub(r"\bper\s+quarter\b", "per 3 month", text)
+
+
+def _seizure_days_to_rate(text: str) -> str:
+    """Project diary-style day counts onto the already stated period."""
+
+    def replace(match: re.Match[str]) -> str:
+        denominator = (match.group("den") or "").strip()
+        unit = match.group("unit")
+        den_text = f"{denominator} " if denominator and denominator != "1" else ""
+        return f"{match.group('count')} per {den_text}{unit}"
+
+    return re.sub(
+        r"\b(?P<count>\d+(?:\s*to\s*\d+)?|multiple)\s+"
+        r"(?:seizure[-\s]+)?days?\s+per\s+"
+        r"(?P<den>(?:\d+(?:\s*to\s*\d+)?\s+)?)(?P<unit>week|month|year)\b",
+        replace,
+        text,
+    )
 
 
 def _inequality_to_multiple(text: str) -> str:
@@ -188,6 +228,12 @@ def _hourly_to_multiple_per_day(text: str) -> str:
 
 
 def _vague_frequency_to_multiple(text: str) -> str:
+    text = re.sub(
+        r"\bmost\s+nights?(?:\s+of\s+the\s+week)?\b",
+        "multiple per week",
+        text,
+    )
+    text = re.sub(r"\bmost\s+days\b", "multiple per week", text)
     text = re.sub(r"\brare\b(?!\s+per\b)", "multiple per year", text)
     text = re.sub(r"\boccasional\b(?!\s+per\b)", "multiple per month", text)
     text = re.sub(r"\bfrequent\b(?!\s+per\b)", "multiple per day", text)
@@ -204,7 +250,11 @@ def _vague_frequency_to_multiple(text: str) -> str:
 
 
 def _drop_prediction_noise(text: str) -> str:
-    text = re.sub(r"\b(?:approximately|approx\.?|about|around|nearly|~)\b", "", text)
+    text = re.sub(
+        r"\b(?:approximately|approx\.?|about|around|nearly|roughly|typically|circa|~)\b",
+        "",
+        text,
+    )
     text = re.sub(r"\b(?:a few|few|several)\b", "multiple", text)
     text = re.sub(r"\ba couple of\b", "2", text)
     return _drop_prediction_format_noise(text)
@@ -214,10 +264,19 @@ def _drop_prediction_format_noise(text: str) -> str:
     normalized = normalize_frequency_label(text)
     if normalized in {"unknown", "no seizure frequency reference"}:
         return normalized
-    text = re.sub(r"\b(?:approximately|approx\.?|about|around|nearly|~)\b", "", text)
+    text = re.sub(
+        r"\b(?:approximately|approx\.?|about|around|nearly|roughly|typically|circa|~)\b",
+        "",
+        text,
+    )
     text = re.sub(r"\bseizures?\b(?!\s*[- ]?free)", "", text)
-    text = re.sub(r"\b(?:episodes?|events?|attacks?|spells?|szs?)\b", "", text)
-    text = re.sub(r"\b(?:of|the|a|an)\b", "", text)
+    text = re.sub(
+        r"\b(?:episodes?|events?|attacks?|spells?|szs?|absences?|"
+        r"myoclonic|jerks?|automatisms?|convulsions?)\b",
+        "",
+        text,
+    )
+    text = re.sub(r"\b(?:of|the|a|an|such|focal|clinically|suspected)\b", "", text)
     return normalize_frequency_label(text)
 
 
@@ -495,6 +554,19 @@ def _fallback_prediction_repair(text: str) -> str:
         den_text = f"{denominator} " if denominator and denominator != "1" else ""
         return f"{match.group('num')} per {den_text}{unit}"
 
+    leftover_rate = re.search(
+        r"(?P<num>(?:\d+(?:\s*to\s*\d+)?|multiple))\s+"
+        r"(?P<leftover>(?:[a-z]+(?:-[a-z]+)?\s+){1,8})"
+        r"per\s+(?P<den>(?:\d+(?:\s*to\s*\d+)?\s*)?)"
+        r"(?P<unit>day|week|month|year)",
+        text,
+    )
+    if leftover_rate and not re.search(r"\b(?:day|night)s?\b", leftover_rate.group("leftover")):
+        denominator = (leftover_rate.group("den") or "").strip()
+        unit = leftover_rate.group("unit")
+        den_text = f"{denominator} " if denominator and denominator != "1" else ""
+        return f"{leftover_rate.group('num')} per {den_text}{unit}"
+
     event_per_window = re.search(
         r"(?P<num>(?:\d+(?:\s*to\s*\d+)?|multiple))\s+"
         r"(?=(?:[a-z]+(?:-[a-z]+)?\s+){0,5}"
@@ -526,6 +598,18 @@ def _normalize_or_count_ranges(text: str) -> str:
     Benchmark-format projection: preserves both endpoints already present in the
     selected label instead of collapsing through fallback to one end.
     """
+    text = re.sub(
+        r"\b(?:every|each)\s+(?P<low>\d+(?:\.\d+)?)\s+or\s+(?P<high>\d+(?:\.\d+)?)\s+"
+        r"(?P<unit>day|week|month|year)s?\b",
+        r"every \g<low> to \g<high> \g<unit>",
+        text,
+    )
+    text = re.sub(
+        r"\b(?P<low>\d+(?:\.\d+)?)\s+or\s+(?P<high>\d+(?:\.\d+)?)\s+"
+        r"(?P<article>per|a)\s+(?P<unit>day|week|month|year)s?\b",
+        r"\g<low> to \g<high> per \g<unit>",
+        text,
+    )
     return re.sub(
         r"\b(?P<low>\d+(?:\.\d+)?)\s+or\s+(?P<high>\d+(?:\.\d+)?)\s+(?=per\b)",
         r"\g<low> to \g<high> ",
@@ -569,6 +653,11 @@ def _cluster_over_in_window(text: str) -> str:
 
 
 def _once_twice_thrice(text: str) -> str:
+    text = re.sub(
+        r"\bonce\s+or\s+twice\s+a\s+(day|week|month|year)s?\b",
+        r"1 to 2 per \1",
+        text,
+    )
     text = re.sub(r"\bonce\b", "1", text)
     text = re.sub(r"\btwice\b", "2", text)
     return re.sub(r"\bthrice\b", "3", text)
@@ -661,6 +750,16 @@ BENCHMARK_REPAIR_STEPS = (
         rule_id="benchmark_repair.period_words",
         description="Convert daily/nightly/weekly/monthly/yearly period words into per labels.",
         apply=_period_words,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_quarter_period",
+        description="Convert quarter denominators to the Gan-compatible 3 month window.",
+        apply=_normalize_quarter_period,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.seizure_days_to_rate",
+        description="Project seizure-day counts per period into count-per-period labels.",
+        apply=_seizure_days_to_rate,
     ),
     BenchmarkRepairStep(
         rule_id="benchmark_repair.cluster_over_in_window",
@@ -862,6 +961,11 @@ FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS = (
         rule_id="benchmark_repair.normalize_quarter_period",
         description="Convert quarter denominators to the Gan-compatible 3 month window.",
         apply=_normalize_quarter_period,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.seizure_days_to_rate",
+        description="Project seizure-day counts per period into count-per-period labels.",
+        apply=_seizure_days_to_rate,
     ),
     BenchmarkRepairStep(
         rule_id="benchmark_repair.many_to_multiple",
