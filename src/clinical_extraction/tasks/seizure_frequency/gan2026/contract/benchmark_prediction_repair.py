@@ -104,6 +104,7 @@ def _every_each_forms(text: str) -> str:
     text = re.sub(r"\b(?:every|each)\s+other\s+(day|week|month|year)\b", r"1 per 2 \1", text)
     text = re.sub(r"\b(?:every|each)\s+(\d+)\s*(day|week|month|year)s?\b", r"1 per \1 \2", text)
     text = re.sub(r"\b(?:every|each)\s+(day|week|month|year)s?\b", r"1 per \1", text)
+    text = re.sub(r"\b(?:every|each)\s+nights?\b", "1 per day", text)
     return re.sub(r"\bper\s+(?:each|every)\s+", "per ", text)
 
 
@@ -120,6 +121,11 @@ def _period_words(text: str) -> str:
     )
     text = re.sub(
         r"(\d+(?:\s*to\s*\d+)?|\bmultiple\b)?\s*\bdaily\b",
+        lambda match: (match.group(1) or "1") + " per day",
+        text,
+    )
+    text = re.sub(
+        r"(\d+(?:\s*to\s*\d+)?|\bmultiple\b)?\s*\bnightly\b",
         lambda match: (match.group(1) or "1") + " per day",
         text,
     )
@@ -653,7 +659,7 @@ BENCHMARK_REPAIR_STEPS = (
     ),
     BenchmarkRepairStep(
         rule_id="benchmark_repair.period_words",
-        description="Convert daily/weekly/monthly/yearly period words into per labels.",
+        description="Convert daily/nightly/weekly/monthly/yearly period words into per labels.",
         apply=_period_words,
     ),
     BenchmarkRepairStep(
@@ -844,7 +850,7 @@ FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS = (
     ),
     BenchmarkRepairStep(
         rule_id="benchmark_repair.period_words",
-        description="Convert daily/weekly/monthly/yearly period words into per labels.",
+        description="Convert daily/nightly/weekly/monthly/yearly period words into per labels.",
         apply=_period_words,
     ),
     BenchmarkRepairStep(

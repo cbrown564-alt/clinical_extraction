@@ -2,6 +2,10 @@ from __future__ import annotations
 
 import re
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.post_stack_fix_flags import (
+    post_stack_fix_flags,
+)
+
 from ._shared_tokens import GAP_WORDS_TOKEN, GAP_WORDS_TOKEN_5
 from .selected_evidence_text import (
     format_prediction_rate as _format_prediction_rate,
@@ -511,7 +515,10 @@ def daily_label_from_selected_evidence(text: str) -> str | None:
     event_nouns = rf"(?:{_EVENT_NOUN})"
     if re.search(rf"\b(?:no|without)\b.{{0,80}}\b{event_nouns}\b", text):
         return None
-    if re.search(r"\bdaily\s+(?:entries|diary|logs?)\b", text):
+    daily_log_pattern = r"\bdaily\s+(?:entries|diary|logs?|routines?)\b"
+    if not post_stack_fix_flags().no_reference_daily:
+        daily_log_pattern = r"\bdaily\s+(?:entries|diary|logs?)\b"
+    if re.search(daily_log_pattern, text):
         return None
     if re.search(
         r"\b(?:dozens?|scores?)\b.{0,30}\b(?:in|per|each|a)\s+"

@@ -76,6 +76,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.parse_diagnostics i
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.parse_diagnostics import (
     has_repair_note as _has_repair_note,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_pre_post import (
+    GAN_LLM_PRE_POST,
+    build_llm_pre_post_prompt_input,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_with_rules import (
     build_llm_with_rules_prompt_input,
 )
@@ -89,6 +93,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_clean_scorer_facing,
     repair_prediction_label_format_preserving,
     repair_prediction_label_with_evidence,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.post_stack_fix_flags import (
+    post_stack_fix_flags,
 )
 
 _clinic_date = llm_structured_temporal.clinic_date
@@ -115,6 +122,7 @@ PROMPT_VERSION_FINAL = "gan2026_hybrid_structured_events_final"
 LLM_WITH_RULES_AUTHORED_KEYS = prompt_llm_with_rules.LLM_WITH_RULES_AUTHORED_KEYS
 # Paper method is prompt_llm_with_rules.py. `final` is a replay alias.
 # v0.5 is a separate historical builder, not a mode of the paper prompt.
+# gan_llm_pre_post is a different request: same schema plus suggested rows.
 PROMPT_VERSION = GAN_LLM_WITH_RULES
 ROW_TRACE_SCHEMA_VERSION = "gan2026.row_trace.v1"
 _SUPPORTED_PROMPT_VERSIONS = frozenset(
@@ -122,6 +130,7 @@ _SUPPORTED_PROMPT_VERSIONS = frozenset(
         GAN_LLM_WITH_RULES,
         PROMPT_VERSION_FINAL,
         PROMPT_VERSION_V0_5,
+        GAN_LLM_PRE_POST,
     }
 )
 
@@ -476,6 +485,8 @@ def build_prompt_input(
 
     if selected_prompt_version == PROMPT_VERSION_V0_5:
         return build_llm_with_rules_v05_prompt_input(record)
+    if selected_prompt_version == GAN_LLM_PRE_POST:
+        return build_llm_pre_post_prompt_input(record)
     return build_llm_with_rules_prompt_input(record)
 
 
@@ -548,6 +559,25 @@ def parse_structured_json_with_trace(
             semantic_events=[],
         )
     model_extraction = extraction
+    hops: list[dict[str, Any]] = []
+    evidence = extraction.selection.evidence
+    operands = list(extraction.selection.selected_event_ids)
+    evidence_exact = (
+        evidence_is_substring(note_text, evidence) if note_text and evidence else None
+    )
+    hops.append(
+        _answer_hop(
+            stage_id="gan.model.selection",
+            owner="model",
+            effect_class="semantic",
+            before=None,
+            after=extraction.selection.final_label,
+            evidence=evidence,
+            evidence_exact=evidence_exact,
+            operands=operands,
+            rung=2,
+        )
+    )
 
     normalized_events = [
         _normalize_event(event, note_text=note_text) for event in extraction.events
@@ -562,9 +592,23 @@ def parse_structured_json_with_trace(
             resolved_label=None,
             final_label=None,
             semantic_events=[],
+            answer_states=hops,
         )
 
     resolved_label = final_label
+    hops.append(
+        _answer_hop(
+            stage_id="gan.schema.resolve_label",
+            owner="replay",
+            effect_class="schema",
+            before=extraction.selection.final_label,
+            after=resolved_label,
+            evidence=evidence,
+            evidence_exact=evidence_exact,
+            operands=operands,
+            rung=2,
+        )
+    )
     repaired_label = final_label
     if repair_config.basic_label_repair and not repair_config.selected_evidence_repair:
         basic_repair = (
@@ -574,86 +618,209 @@ def parse_structured_json_with_trace(
             if repair_config.basic_label_repair_format_only
             else repair_prediction_label
         )
-        repaired_label = _replace_repaired_label(
+        next_label = basic_repair(repaired_label)
+        repaired_label = _record_label_repair(
             errors,
-            repaired_label,
-            basic_repair(repaired_label),
+            hops,
+            stage_id="gan.render.basic_label",
+            effect_class="format",
+            rung=3,
+            before=repaired_label,
+            after=next_label,
+            evidence=evidence,
+            evidence_exact=evidence_exact,
+            operands=operands,
         )
     if repair_config.selected_evidence_repair:
-        repaired_label = _replace_repaired_label(
+        next_label = repair_prediction_label_with_evidence(
+            repaired_label,
+            extraction.selection.evidence,
+            context_text=note_text,
+        )
+        repaired_label = _record_label_repair(
             errors,
-            repaired_label,
-            repair_prediction_label_with_evidence(
-                repaired_label,
-                extraction.selection.evidence,
-                context_text=note_text,
-            ),
+            hops,
+            stage_id="gan.render.selected_evidence",
+            effect_class="format",
+            rung=3,
+            before=repaired_label,
+            after=next_label,
+            evidence=evidence,
+            evidence_exact=evidence_exact,
+            operands=operands,
         )
-    if repair_config.monthly_diary_repair:
-        monthly_diary_label = _monthly_diary_label_from_events(
-            extraction,
-            note_text=note_text,
-        )
-        if monthly_diary_label and not _should_preserve_label_from_monthly_diary(
-            repaired_label,
-            extraction=extraction,
-        ):
-            repaired_label = _replace_repaired_label(errors, repaired_label, monthly_diary_label)
     if repair_config.usual_interval_repair:
         usual_interval_label = _usual_interval_label_from_events(extraction, repaired_label)
-        if usual_interval_label:
-            repaired_label = _replace_repaired_label(errors, repaired_label, usual_interval_label)
+        next_label = usual_interval_label or repaired_label
+        repaired_label = _record_label_repair(
+            errors,
+            hops,
+            stage_id="gan.select.usual_interval",
+            effect_class="semantic",
+            rung=4,
+            before=repaired_label,
+            after=next_label,
+            evidence=evidence,
+            evidence_exact=evidence_exact,
+            operands=operands,
+        )
     if repair_config.typical_over_ytd_repair:
         typical_over_ytd = _typical_recurring_rate_over_ytd_from_events(
             extraction,
             repaired_label,
         )
-        if typical_over_ytd:
-            repaired_label = _replace_repaired_label(errors, repaired_label, typical_over_ytd)
+        next_label = typical_over_ytd or repaired_label
+        repaired_label = _record_label_repair(
+            errors,
+            hops,
+            stage_id="gan.select.typical_over_ytd",
+            effect_class="semantic",
+            rung=4,
+            before=repaired_label,
+            after=next_label,
+            evidence=evidence,
+            evidence_exact=evidence_exact,
+            operands=operands,
+        )
     if repair_config.breakthrough_repair:
         breakthrough_label = _breakthrough_label_from_events(extraction, repaired_label)
-        if breakthrough_label:
-            repaired_label = _replace_repaired_label(errors, repaired_label, breakthrough_label)
+        next_label = breakthrough_label or repaired_label
+        repaired_label = _record_label_repair(
+            errors,
+            hops,
+            stage_id="gan.select.breakthrough",
+            effect_class="semantic",
+            rung=4,
+            before=repaired_label,
+            after=next_label,
+            evidence=evidence,
+            evidence_exact=evidence_exact,
+            operands=operands,
+        )
     if repair_config.non_epileptic_repair:
         non_epileptic_label = _non_epileptic_label_from_events(extraction, repaired_label)
-        if non_epileptic_label:
-            repaired_label = _replace_repaired_label(errors, repaired_label, non_epileptic_label)
+        next_label = non_epileptic_label or repaired_label
+        repaired_label = _record_label_repair(
+            errors,
+            hops,
+            stage_id="gan.select.non_epileptic",
+            effect_class="semantic",
+            rung=4,
+            before=repaired_label,
+            after=next_label,
+            evidence=evidence,
+            evidence_exact=evidence_exact,
+            operands=operands,
+        )
     if repair_config.residual_jerk_repair:
         residual_jerk_label = _residual_jerk_label_from_events(
             extraction,
             repaired_label,
             note_text=note_text,
         )
-        if residual_jerk_label:
-            repaired_label = _replace_repaired_label(errors, repaired_label, residual_jerk_label)
+        next_label = residual_jerk_label or repaired_label
+        repaired_label = _record_label_repair(
+            errors,
+            hops,
+            stage_id="gan.select.residual_jerk",
+            effect_class="semantic",
+            rung=4,
+            before=repaired_label,
+            after=next_label,
+            evidence=evidence,
+            evidence_exact=evidence_exact,
+            operands=operands,
+        )
     if repair_config.post_change_burst_repair:
         post_change_label = _post_change_burst_label_from_events(
             extraction,
             repaired_label,
             note_text=note_text,
         )
-        if post_change_label:
-            repaired_label = _replace_repaired_label(errors, repaired_label, post_change_label)
+        next_label = post_change_label or repaired_label
+        repaired_label = _record_label_repair(
+            errors,
+            hops,
+            stage_id="gan.select.post_change_burst",
+            effect_class="semantic",
+            rung=4,
+            before=repaired_label,
+            after=next_label,
+            evidence=evidence,
+            evidence_exact=evidence_exact,
+            operands=operands,
+        )
     if repair_config.dated_sequence_repair:
         dated_sequence_label = _dated_sequence_label_from_events(
             extraction,
             repaired_label,
             note_text=note_text,
         )
-        if dated_sequence_label:
-            repaired_label = _replace_repaired_label(errors, repaired_label, dated_sequence_label)
+        next_label = dated_sequence_label or repaired_label
+        repaired_label = _record_label_repair(
+            errors,
+            hops,
+            stage_id="gan.select.dated_sequence",
+            effect_class="semantic",
+            rung=4,
+            before=repaired_label,
+            after=next_label,
+            evidence=evidence,
+            evidence_exact=evidence_exact,
+            operands=operands,
+        )
     if repair_config.elapsed_anchor_repair:
         elapsed_window_label = _elapsed_since_anchor_label_from_events(
             extraction,
             repaired_label,
             note_text=note_text,
         )
-        if elapsed_window_label and not _should_preserve_sustained_selected_seizure_free(
+        vetoed = None
+        if elapsed_window_label and _should_preserve_sustained_selected_seizure_free(
             extraction,
             repaired_label,
             elapsed_window_label,
         ):
-            repaired_label = _replace_repaired_label(errors, repaired_label, elapsed_window_label)
+            vetoed, elapsed_window_label = elapsed_window_label, None
+        next_label = elapsed_window_label or repaired_label
+        repaired_label = _record_label_repair(
+            errors,
+            hops,
+            stage_id="gan.select.elapsed_anchor",
+            effect_class="semantic",
+            rung=4,
+            before=repaired_label,
+            after=next_label,
+            evidence=evidence,
+            evidence_exact=evidence_exact,
+            operands=operands,
+            vetoed=vetoed,
+        )
+    if repair_config.monthly_diary_repair:
+        monthly_diary_label = _monthly_diary_label_from_events(
+            extraction,
+            note_text=note_text,
+        )
+        vetoed = None
+        if monthly_diary_label and _should_preserve_label_from_monthly_diary(
+            repaired_label,
+            extraction=extraction,
+        ):
+            vetoed, monthly_diary_label = monthly_diary_label, None
+        next_label = monthly_diary_label or repaired_label
+        repaired_label = _record_label_repair(
+            errors,
+            hops,
+            stage_id="gan.select.monthly_diary",
+            effect_class="semantic",
+            rung=4,
+            before=repaired_label,
+            after=next_label,
+            evidence=evidence,
+            evidence_exact=evidence_exact,
+            operands=operands,
+            vetoed=vetoed,
+        )
     try:
         label_to_frequency_record(repaired_label)
     except ValueError as exc:
@@ -674,7 +841,67 @@ def parse_structured_json_with_trace(
         resolved_label=resolved_label,
         final_label=repaired_label,
         semantic_events=semantic_events,
+        answer_states=hops,
     )
+
+
+def _answer_hop(
+    *,
+    stage_id: str,
+    owner: str,
+    effect_class: str,
+    before: str | None,
+    after: str | None,
+    evidence: str | None,
+    evidence_exact: bool | None,
+    operands: Sequence[str],
+    rung: int,
+    vetoed: str | None = None,
+) -> dict[str, Any]:
+    return {
+        "stage_id": stage_id,
+        "owner": owner,
+        "effect_class": effect_class,
+        "before": before,
+        "after": after,
+        "evidence": evidence,
+        "evidence_exact": evidence_exact,
+        "operands": list(operands),
+        "vetoed": vetoed,
+        "rung": rung,
+        "changed": before != after,
+    }
+
+
+def _record_label_repair(
+    errors: list[str],
+    hops: list[dict[str, Any]],
+    *,
+    stage_id: str,
+    effect_class: str,
+    rung: int,
+    before: str,
+    after: str,
+    evidence: str | None,
+    evidence_exact: bool | None,
+    operands: Sequence[str],
+    vetoed: str | None = None,
+) -> str:
+    hops.append(
+        _answer_hop(
+            stage_id=stage_id,
+            owner="replay",
+            effect_class=effect_class,
+            before=before,
+            after=after,
+            evidence=evidence,
+            evidence_exact=evidence_exact,
+            operands=operands,
+            rung=rung,
+            vetoed=vetoed,
+        )
+    )
+    return _replace_repaired_label(errors, before, after)
 
 
 def _hybrid_row_trace(
@@ -685,6 +912,7 @@ def _hybrid_row_trace(
     resolved_label: str | None,
     final_label: str | None,
     semantic_events: Sequence[str],
+    answer_states: Sequence[Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     selection = model_extraction.selection if model_extraction else None
     return {
@@ -710,6 +938,7 @@ def _hybrid_row_trace(
             "after_label": final_label,
             "events": list(semantic_events),
         },
+        "answer_states": list(answer_states or []),
         "evidence_validation": None,
         "scoring": None,
     }
@@ -752,14 +981,48 @@ def _should_preserve_label_from_monthly_diary(
 ) -> bool:
     """Block diary aggregation from overwriting selected seizure-free or week-scale rates.
 
-    Portability: ``seizure_frequency``. Protects an already-parsable model selection
-    from a multi-month diary rewrite that changes clinical meaning. Explicit
-    current-month seizure-free selections remain eligible for diary override.
+    Portability: ``seizure_frequency``. Applied after elapsed-anchor so a
+    sustained dated freedom (four or more months, or any year-scale window)
+    is not replaced by a later month log. Vague ``seizure free for multiple *``
+    and shorter free tails remain eligible for diary override. Current-month
+    seizure-free selections also stay eligible.
     """
     label = (repaired_label or "").strip().lower()
     if not label:
         return False
+    typical_month = re.fullmatch(r"(?P<count>\d+) per month", label)
+    if post_stack_fix_flags().month_x_typical_preserve and typical_month and extraction is not None:
+        count = typical_month.group("count")
+        selection_text = " ".join(
+            str(part or "")
+            for part in (
+                extraction.selection.final_label,
+                extraction.selection.evidence,
+                extraction.selection.rationale,
+            )
+        )
+        if re.search(
+            rf"\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|"
+            rf"jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|"
+            rf"nov(?:ember)?|dec(?:ember)?)\s+x\s*{count}\b",
+            selection_text,
+            flags=re.IGNORECASE,
+        ):
+            return True
     if label.startswith("seizure free"):
+        if post_stack_fix_flags().vague_seizure_free_diary:
+            if re.search(r"\bseizure free for multiple\b", label):
+                return False
+            duration = re.fullmatch(
+                r"seizure free for (?P<count>\d+) (?P<unit>day|week|month|year)",
+                label,
+            )
+            if duration:
+                count = int(duration.group("count"))
+                unit = duration.group("unit")
+                if unit == "year" or (unit == "month" and count >= 4):
+                    return True
+                return False
         # Basic repair may inflate "this month" to multiple year; inspect selection.
         if extraction is not None:
             selection_text = " ".join(

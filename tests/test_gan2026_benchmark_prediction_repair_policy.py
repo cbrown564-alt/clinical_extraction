@@ -54,6 +54,40 @@ def test_explicit_no_reference_sentinel_is_preserved() -> None:
     )
 
 
+def test_no_reference_is_not_rewritten_from_daily_routine() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "no seizure frequency reference",
+            "I have scheduled a routine appointment for a teacher living alone "
+            "with a regular daily routine and reduced social contact.",
+        )
+        == "no seizure frequency reference"
+    )
+
+
+def test_nightly_is_format_repaired_to_one_per_day() -> None:
+    assert repair_prediction_label("nightly") == "1 per day"
+    assert repair_prediction_label("every night") == "1 per day"
+    assert repair_prediction_label("each night") == "1 per day"
+
+
+def test_daily_seizure_evidence_still_renders_one_per_day() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "1 per day",
+            "She continues to have seizures daily.",
+        )
+        == "1 per day"
+    )
+    assert (
+        repair_prediction_label_with_evidence(
+            "nightly",
+            "she continues to have nightly generalised tonic-clonic seizures",
+        )
+        == "1 per day"
+    )
+
+
 def test_underscore_separated_model_labels_are_format_repaired() -> None:
     assert repair_prediction_label("multiple_per_day") == "multiple per day"
     assert repair_prediction_label("multiple_per_week") == "multiple per week"

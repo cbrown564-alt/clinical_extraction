@@ -11,13 +11,23 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_temp
     month_number,
     small_number_words_to_digits,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.post_stack_fix_flags import (
+    post_stack_fix_flags,
+)
 
 from ..selected_evidence._shared_tokens import GAP_WORDS_TOKEN
 from ..selected_evidence.selected_evidence_monthly_diary import (
+    _date_list_diary_label_from_selected_evidence,
     monthly_diary_label_from_text,
 )
 
 MonthlyDiaryMonthKey = tuple[int, int | None]
+_MONTHLY_DIARY_EVENT_KINDS = {
+    "frequency_rate",
+    "cluster_frequency",
+    "seizure_free",
+    "last_event_only",
+}
 
 
 class StructuredMonthlyDiaryEventLike(Protocol):
@@ -50,19 +60,30 @@ def monthly_diary_label_from_events(
     *,
     note_text: str | None,
 ) -> str | None:
-    counts_by_month: dict[MonthlyDiaryMonthKey, int] = {}
+    flags = post_stack_fix_flags()
+    if flags.date_list_span:
+        for event in extraction.events:
+            if not _is_monthly_diary_event(event):
+                continue
+            date_list_label = _date_list_diary_label_from_selected_evidence(
+                small_number_words_to_digits(_event_text(event))
+            )
+            if date_list_label:
+                return date_list_label
+
+    merged: dict[MonthlyDiaryMonthKey, tuple[int, str, frozenset[str]]] = {}
     for event in extraction.events:
-        if event.kind not in {
-            "frequency_rate",
-            "cluster_frequency",
-            "seizure_free",
-            "last_event_only",
-        }:
+        if not _is_monthly_diary_event(event):
             continue
-        if event.assertion_status not in {"asserted", "historical"}:
-            continue
+        event_text = _event_text(event)
+        cover_text = (event.evidence or event_text).lower()
+        states = _diary_state_terms(event_text)
         for month_key, count in _monthly_diary_event_counts(event, note_text=note_text).items():
-            counts_by_month.setdefault(month_key, count)
+            if flags.diary_sum_all_months:
+                _merge_diary_month_count(merged, month_key, count, cover_text, states)
+            else:
+                merged.setdefault(month_key, (count, cover_text, states))
+    counts_by_month = {key: value[0] for key, value in merged.items()}
 
     if len(counts_by_month) >= 2:
         total = sum(counts_by_month.values())
@@ -70,12 +91,7 @@ def monthly_diary_label_from_events(
         return f"{total} per {months} month"
 
     for event in extraction.events:
-        if event.kind not in {
-            "frequency_rate",
-            "cluster_frequency",
-            "seizure_free",
-            "last_event_only",
-        }:
+        if event.kind not in _MONTHLY_DIARY_EVENT_KINDS:
             continue
         text = _event_text(event)
         label = monthly_diary_label_from_text(text)
@@ -84,39 +100,99 @@ def monthly_diary_label_from_events(
     return None
 
 
+def _is_monthly_diary_event(event: StructuredMonthlyDiaryEventLike) -> bool:
+    return (
+        event.kind in _MONTHLY_DIARY_EVENT_KINDS
+        and event.assertion_status in {"asserted", "historical"}
+    )
+
+
+_DIARY_STATE_TERMS = (
+    "sleep",
+    "asleep",
+    "night",
+    "nocturnal",
+    "awake",
+    "waking",
+    "daytime",
+    "day",
+)
+
+
+def _diary_state_terms(text: str) -> frozenset[str]:
+    return frozenset(
+        match.group(0)
+        for match in re.finditer(
+            rf"\b(?:{'|'.join(_DIARY_STATE_TERMS)})\b",
+            text,
+        )
+    )
+
+
+def _merge_diary_month_count(
+    merged: dict[MonthlyDiaryMonthKey, tuple[int, str, frozenset[str]]],
+    month_key: MonthlyDiaryMonthKey,
+    count: int,
+    source_text: str,
+    states: frozenset[str],
+) -> None:
+    if month_key not in merged:
+        merged[month_key] = (count, source_text, states)
+        return
+    old_count, old_text, old_states = merged[month_key]
+    if source_text in old_text or old_text in source_text:
+        if len(source_text) > len(old_text) or (
+            len(source_text) == len(old_text) and count > old_count
+        ):
+            merged[month_key] = (count, source_text, states)
+        return
+    if old_states < states and count >= old_count:
+        merged[month_key] = (count, source_text, states)
+        return
+    if states < old_states and old_count >= count:
+        return
+    if states and old_states and states.isdisjoint(old_states):
+        merged[month_key] = (
+            old_count + count,
+            f"{old_text} {source_text}",
+            old_states | states,
+        )
+
+
 def _monthly_diary_event_counts(
     event: StructuredMonthlyDiaryEventLike,
     *,
     note_text: str | None,
 ) -> dict[MonthlyDiaryMonthKey, int]:
-    text = small_number_words_to_digits(
-        next(
-            (
-                part
-                for part in (event.evidence, event.raw_value, event.notes)
-                if part and _monthly_diary_event_month_text(part)
-            ),
-            " ".join(part for part in (event.evidence, event.raw_value, event.notes) if part),
-        ).lower()
-    )
-    state_count = _monthly_diary_state_count(text)
-    month_key = _monthly_diary_event_month(event)
-    if state_count is not None and month_key is not None:
-        return {month_key: state_count}
-
+    flags = post_stack_fix_flags()
+    joined_text = small_number_words_to_digits(_event_text(event))
+    if flags.date_list_span and _date_list_diary_label_from_selected_evidence(joined_text):
+        return {}
+    count_source = event.evidence or event.raw_value or event.notes or ""
+    text = small_number_words_to_digits(count_source.lower())
+    if flags.date_list_span:
+        text = re.sub(r"\b\d{2}-\d{2}\b", " ", text)
     month_pattern = (
         r"jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|"
         r"jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|"
         r"nov(?:ember)?|dec(?:ember)?"
     )
+    state_count = _monthly_diary_state_count(text)
+    month_key = _monthly_diary_event_month(event)
+    skip_collapsed_state = flags.diary_sum_all_months and len(_month_stems(text)) >= 2
+    if state_count is not None and month_key is not None and not skip_collapsed_state:
+        return {month_key: state_count}
     count_terms = r"\d+|no|zero|a|an"
     med_unit_filter = r"(?!\s*(?:mg|mcg|g|ml|tablets?|pills?|capsules?|doses?|prn|bd|tds|qds)\b)"
     counts: dict[MonthlyDiaryMonthKey, int] = {}
+    in_month_bridge = (
+        r"(?:were\s+)?(?:so\s+far\s+)?" if flags.diary_sum_all_months else ""
+    )
 
     for match in re.finditer(
         rf"\b(?P<count>{count_terms}){med_unit_filter}\s+"
         rf"(?:{GAP_WORDS_TOKEN}(?:seizures?|events?|convulsions?)\s+)?"
-        rf"in\s+(?:early|mid|late)?\s*(?P<month>{month_pattern})"
+        rf"{in_month_bridge}in\s+(?:early|mid|late)?\s*(?P<month>{month_pattern})"
         rf"(?:\s+(?P<year>\d{{4}}))?\b",
         text,
     ):
@@ -249,6 +325,8 @@ def _monthly_diary_event_count(event: StructuredMonthlyDiaryEventLike) -> int | 
     )
     for candidate in candidates:
         text = small_number_words_to_digits(candidate.lower())
+        if post_stack_fix_flags().date_list_span:
+            text = re.sub(r"\b\d{2}-\d{2}\b", " ", text)
         state_count = _monthly_diary_state_count(text)
         if state_count is not None:
             return state_count
@@ -282,15 +360,20 @@ def _monthly_diary_state_count(text: str) -> int | None:
     return None
 
 
-def _monthly_diary_event_month_text(text: str) -> bool:
-    return bool(
-        re.search(
+def _month_stems(text: str) -> set[str]:
+    return {
+        match.group(0)[:3].lower()
+        for match in re.finditer(
             r"\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|"
             r"jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|"
             r"nov(?:ember)?|dec(?:ember)?)\b",
             text.lower(),
         )
-    )
+    }
+
+
+def _monthly_diary_event_month_text(text: str) -> bool:
+    return bool(_month_stems(text))
 
 
 def _monthly_diary_count_value(count_text: str) -> int:

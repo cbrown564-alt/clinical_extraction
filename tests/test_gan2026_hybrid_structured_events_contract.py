@@ -210,6 +210,73 @@ def test_elapsed_anchor_converts_seizure_free_since_date_to_month_duration() -> 
     )
 
 
+def test_elapsed_seizure_free_is_not_replaced_by_a_short_diary() -> None:
+    """Sustained dated freedom stays after a later countable diary.
+
+    Family: monthly_diary after elapsed_anchor. Portability: seizure_frequency.
+    """
+    evidence = (
+        "Seizure-free since 27 March 2024 as per patient and collateral reports."
+    )
+    raw = json.dumps(
+        {
+            "events": [
+                {
+                    "event_id": "e1",
+                    "kind": "seizure_free",
+                    "raw_value": "seizure free since 27 March 2024",
+                    "applies_to": "seizures",
+                    "time_window": "since 27 March 2024",
+                    "temporality": "current",
+                    "assertion_status": "asserted",
+                    "evidence": evidence,
+                    "notes": None,
+                },
+                {
+                    "event_id": "e2",
+                    "kind": "frequency_rate",
+                    "raw_value": "2",
+                    "applies_to": "seizures",
+                    "time_window": "January 2024",
+                    "temporality": "historical",
+                    "assertion_status": "historical",
+                    "evidence": "2 in January",
+                    "notes": None,
+                },
+                {
+                    "event_id": "e3",
+                    "kind": "frequency_rate",
+                    "raw_value": "1",
+                    "applies_to": "seizures",
+                    "time_window": "February 2024",
+                    "temporality": "historical",
+                    "assertion_status": "historical",
+                    "evidence": "1 in February",
+                    "notes": None,
+                },
+            ],
+            "selection": {
+                "selected_event_ids": ["e1"],
+                "final_kind": "seizure_free",
+                "final_label": "seizure free since 27 March 2024",
+                "evidence": evidence,
+                "confidence": "high",
+                "rationale": "The note states seizure freedom since 27 March 2024.",
+            },
+        }
+    )
+    note = (
+        "Clinic Date: 29 September 2024\n"
+        "Seizure-free since 27 March 2024 as per patient and collateral reports. "
+        "2 in January. 1 in February."
+    )
+
+    extraction, _, _errors = parse_structured_json(raw, note_text=note)
+
+    assert extraction is not None
+    assert extraction.selection.final_label == "seizure free for 6 month"
+
+
 def test_run_split_reuses_raw_outputs_without_new_call(tmp_path: Path) -> None:
     reuse_path = tmp_path / "prior.jsonl"
     reuse_path.write_text(
@@ -252,6 +319,210 @@ def test_parse_structured_json_can_use_clean_scorer_facing_gold_policy() -> None
     assert extraction is not None
     assert extraction.selection.final_label == "multiple per week"
     assert errors == ["final_label_repaired: 'most weekdays' -> 'multiple per week'"]
+
+
+def test_parse_structured_json_fills_omitted_kind_on_selected_sibling_event() -> None:
+    payload = json.loads(_raw_structured())
+    typed = dict(payload["events"][0])
+    typed["event_id"] = "e1"
+    typed["kind"] = "frequency_rate"
+    omitted = dict(payload["events"][0])
+    omitted["event_id"] = "e2"
+    omitted.pop("kind")
+    payload["events"] = [typed, omitted]
+    payload["selection"]["selected_event_ids"] = ["e1", "e2"]
+
+    extraction, _, errors = parse_structured_json(json.dumps(payload))
+
+    assert extraction is not None
+    assert [event.kind for event in extraction.events] == [
+        "frequency_rate",
+        "frequency_rate",
+    ]
+    assert extraction.selection.final_label == "2 per month"
+    assert errors == []
+
+
+def test_vague_seizure_free_does_not_veto_countable_monthly_diary() -> None:
+    """Allow a countable diary to replace inflated 'seizure free for multiple'.
+
+    Family: monthly_diary. Portability: seizure_frequency.
+    """
+    raw = json.dumps(
+        {
+            "events": [
+                {
+                    "event_id": "e1",
+                    "kind": "seizure_free",
+                    "raw_value": "no seizures",
+                    "applies_to": "seizures",
+                    "time_window": "this month so far",
+                    "temporality": "current",
+                    "assertion_status": "asserted",
+                    "evidence": "This month so far she has no seizures",
+                    "notes": None,
+                },
+                {
+                    "event_id": "e2",
+                    "kind": "frequency_rate",
+                    "raw_value": "4",
+                    "applies_to": "seizures",
+                    "time_window": "February",
+                    "temporality": "recent",
+                    "assertion_status": "asserted",
+                    "evidence": "earlier 4 in February",
+                    "notes": None,
+                },
+                {
+                    "event_id": "e3",
+                    "kind": "frequency_rate",
+                    "raw_value": "7",
+                    "applies_to": "seizures",
+                    "time_window": "December",
+                    "temporality": "historical",
+                    "assertion_status": "asserted",
+                    "evidence": "7 in December",
+                    "notes": None,
+                },
+            ],
+            "selection": {
+                "selected_event_ids": ["e1"],
+                "final_kind": "seizure_free",
+                "final_label": "seizure free this month so far",
+                "evidence": "This month so far she has no seizures",
+                "confidence": "high",
+                "rationale": "The current month is seizure-free so far.",
+            },
+        }
+    )
+    note = (
+        "Clinic Date: 15 March 2025\n"
+        "This month so far she has no seizures. Earlier 4 in February and 7 in December."
+    )
+
+    extraction, _, _errors = parse_structured_json(raw, note_text=note)
+
+    assert extraction is not None
+    assert extraction.selection.final_label == "11 per 4 month"
+
+
+def test_week_scale_rate_still_blocks_monthly_diary() -> None:
+    """Keep a parsable week-scale selection against a multi-month diary sum.
+
+    Family: monthly_diary. Portability: seizure_frequency.
+    """
+    raw = json.dumps(
+        {
+            "events": [
+                {
+                    "event_id": "e1",
+                    "kind": "frequency_rate",
+                    "raw_value": "2 per week",
+                    "applies_to": "seizures",
+                    "time_window": "over the past month",
+                    "temporality": "recent",
+                    "assertion_status": "asserted",
+                    "evidence": "overall frequency has been twice per week",
+                    "notes": None,
+                },
+                {
+                    "event_id": "e2",
+                    "kind": "frequency_rate",
+                    "raw_value": "5",
+                    "applies_to": "seizures",
+                    "time_window": "June",
+                    "temporality": "historical",
+                    "assertion_status": "asserted",
+                    "evidence": "In June: five events during sleep",
+                    "notes": None,
+                },
+                {
+                    "event_id": "e3",
+                    "kind": "frequency_rate",
+                    "raw_value": "1",
+                    "applies_to": "seizures",
+                    "time_window": "August",
+                    "temporality": "historical",
+                    "assertion_status": "asserted",
+                    "evidence": "In August: one while awake",
+                    "notes": None,
+                },
+            ],
+            "selection": {
+                "selected_event_ids": ["e1"],
+                "final_kind": "frequency",
+                "final_label": "2 per week",
+                "evidence": "overall frequency has been twice per week",
+                "confidence": "high",
+                "rationale": "The current rate is twice per week.",
+            },
+        }
+    )
+
+    extraction, _, _errors = parse_structured_json(raw)
+
+    assert extraction is not None
+    assert extraction.selection.final_label == "2 per week"
+
+
+def test_month_x_count_log_keeps_the_multi_month_span() -> None:
+    """A Month-x-N trend is a span sum unless rules see an increasing-lead-in.
+
+    Family: monthly_diary. Portability: seizure_frequency.
+    """
+    raw = json.dumps(
+        {
+            "events": [
+                {
+                    "event_id": "e1",
+                    "kind": "frequency_rate",
+                    "raw_value": "3",
+                    "applies_to": "seizures",
+                    "time_window": "July 2025",
+                    "temporality": "recent",
+                    "assertion_status": "asserted",
+                    "evidence": "July x 3 focal aware motor",
+                    "notes": "Three focal aware motor seizures in July.",
+                },
+                {
+                    "event_id": "e2",
+                    "kind": "frequency_rate",
+                    "raw_value": "4",
+                    "applies_to": "seizures",
+                    "time_window": "August 2025",
+                    "temporality": "recent",
+                    "assertion_status": "asserted",
+                    "evidence": "August x 4 focal aware motor",
+                    "notes": "Four focal aware motor seizures in August.",
+                },
+                {
+                    "event_id": "e3",
+                    "kind": "frequency_rate",
+                    "raw_value": "5",
+                    "applies_to": "seizures",
+                    "time_window": "September 2025",
+                    "temporality": "recent",
+                    "assertion_status": "asserted",
+                    "evidence": "September x 5 focal aware motor",
+                    "notes": "Five focal aware motor seizures in September.",
+                },
+            ],
+            "selection": {
+                "selected_event_ids": ["e3"],
+                "final_kind": "frequency",
+                "final_label": "5 per month",
+                "evidence": "September x 5 focal aware motor",
+                "confidence": "high",
+                "rationale": "The latest complete month is September x 5.",
+            },
+        }
+    )
+
+    extraction, _, errors = parse_structured_json(raw)
+
+    assert extraction is not None
+    assert extraction.selection.final_label == "12 per 3 month"
+    assert any("12 per 3 month" in str(error) for error in errors)
 
 
 def test_parse_structured_json_repairs_schema_aliases_and_normalizes_selected_label() -> None:
