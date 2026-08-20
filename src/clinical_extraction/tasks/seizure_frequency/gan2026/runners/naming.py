@@ -6,10 +6,8 @@ ActivePipelineName = Literal["rules", "llm", "llm_with_rules"]
 
 _ALIASES = {
     "rules": "rules",
-    "rules_only": "rules",
     "deterministic_canonical_pipeline": "rules",
     "llm": "llm",
-    "llm_only": "llm",
     "llm_only_canonical_pipeline": "llm",
     "llm_with_rules": "llm_with_rules",
     "hybrid_structured_events": "llm_with_rules",

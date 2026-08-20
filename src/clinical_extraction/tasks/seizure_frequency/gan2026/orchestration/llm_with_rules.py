@@ -7,8 +7,6 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Any, Literal, cast
 
-import dspy
-
 from clinical_extraction.core.local_structured_output import (
     FormatOnlyJsonRetry,
     assess_structured_output,
@@ -18,10 +16,19 @@ from clinical_extraction.core.local_structured_output import (
 )
 from clinical_extraction.core.schemas import FinalExtraction
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.contracts import (
     GanRecordResult,
     GanStageEvent,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.scaffolding import (
+    attach_row_scoring,
+    common_split_metadata_updates,
+    configure_live_lm,
+    configure_split_lm,
+    envelope_model_call_error,
+    finalize_split_metadata,
+    first_prediction_changing_owner,
+    maybe_emit_progress_checkpoint,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners.config import (
     PipelineConfiguration,
@@ -60,23 +67,13 @@ def run_record(
 
     if mode == "live" and not reused_raw_output:
         if program is None:
-            dspy.configure(
-                lm=build_dspy_lm(
-                    config.model,
-                    temperature=config.temperature,
-                    max_tokens=config.max_tokens,
-                    cache=config.dspy_cache,
-                    api_base=config.api_base,
-                    api_key=config.api_key,
-                    timeout=config.timeout,
-                )
-            )
+            configure_live_lm(config)
             program = legacy.DspyStructuredExtractor()
         try:
             prediction = program(prompt_input_json=prompt_input_json)
             raw_text = str(prediction.structured_json)
         except Exception as exc:  # pragma: no cover - live provider behavior.
-            call_error = f"{type(exc).__name__}: {exc}"
+            call_error = envelope_model_call_error(exc)
             recovered = raw_output_from_adapter_error(call_error)
             if recovered:
                 raw_text = recovered
@@ -331,14 +328,7 @@ def run_record(
             ),
         ]
     )
-    first_owner = next(
-        (
-            event.owner
-            for event in stage_events
-            if event.changed and event.effect_class == "clinical_meaning"
-        ),
-        None,
-    )
+    first_owner = first_prediction_changing_owner(stage_events)
     first_failure = call_error or next(
         (
             str(error)
@@ -414,9 +404,11 @@ def run_split(
     metadata.update(
         {
             "pipeline_family": "llm_with_rules",
-            "dspy_cache": dspy_cache,
-            "reuse_source": reuse_source,
-            "escalation_reason": escalation_reason,
+            **common_split_metadata_updates(
+                dspy_cache=dspy_cache,
+                reuse_source=reuse_source,
+                escalation_reason=escalation_reason,
+            ),
             "repair_mode": repair_config.resolved_repair_mode,
             "repair_mode_metadata": repair_mode_metadata(repair_config.resolved_repair_mode),
             "repair_config": asdict(repair_config),
@@ -425,14 +417,12 @@ def run_split(
     program = None
     retry_program = None
     if mode == "live":
-        dspy.configure(
-            lm=build_dspy_lm(
-                model,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                cache=dspy_cache,
-                api_base=api_base,
-            )
+        configure_split_lm(
+            model=model,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            dspy_cache=dspy_cache,
+            api_base=api_base,
         )
         program = legacy.DspyStructuredExtractor()
         retry_program = FormatOnlyJsonRetry()
@@ -448,10 +438,13 @@ def run_split(
             format_retry_program=retry_program,
             repair_config=repair_config,
         )
-        row_trace = dict(result.diagnostics["row_trace"])
         extraction = result.parsed_model_output
-        comparison = legacy._compare_to_gold(record, extraction) if extraction else None
-        row_trace["scoring"] = comparison
+        row_trace = attach_row_scoring(
+            result,
+            record=record,
+            compare_fn=legacy._compare_to_gold,
+            parsed=extraction,
+        )
         row = {
             "source_row_index": record.source_row_index,
             "split": split,
@@ -480,16 +473,16 @@ def run_split(
                 "gold_monthly_frequency": record.gold_monthly_frequency,
                 "row_ok": record.row_ok,
             },
-            "comparison": comparison,
+            "comparison": row_trace["scoring"],
         }
         rows.append(row)
-        if progress_every and len(rows) % progress_every == 0:
-            legacy._emit_progress_checkpoint(
-                rows,
-                metadata,
-                total=len(records),
-                jsonl_path=checkpoint_jsonl_path,
-                report_path=checkpoint_report_path,
-            )
-    metadata["summary"] = legacy.summarize_records(rows)
-    return rows, metadata
+        maybe_emit_progress_checkpoint(
+            rows,
+            metadata,
+            total=len(records),
+            progress_every=progress_every,
+            jsonl_path=checkpoint_jsonl_path,
+            report_path=checkpoint_report_path,
+            emit_fn=legacy._emit_progress_checkpoint,
+        )
+    return finalize_split_metadata(rows, metadata, legacy.summarize_records)

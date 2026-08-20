@@ -6,16 +6,23 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal
 
-import dspy
-
 from clinical_extraction.core.schemas import FinalExtraction
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm import llm as active_llm
 from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.contracts import (
     GanModelOutput,
     GanRecordResult,
     GanStageEvent,
     ModelOutputSource,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.scaffolding import (
+    attach_row_scoring,
+    common_split_metadata_updates,
+    configure_live_lm,
+    configure_split_lm,
+    envelope_model_call_error,
+    finalize_split_metadata,
+    first_prediction_changing_owner,
+    maybe_emit_progress_checkpoint,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners.config import (
     PipelineConfiguration,
@@ -56,25 +63,13 @@ def run_record(
         reused_raw_output = model_output.reused
     elif mode == "live" and not reused_raw_output:
         if program is None:
-            from clinical_extraction.tasks.seizure_frequency.gan2026.runners.lm import (
-                configure_lm,
-            )
-
-            configure_lm(
-                model=config.model,
-                temperature=config.temperature,
-                max_tokens=config.max_tokens,
-                dspy_cache=config.dspy_cache,
-                api_base=config.api_base,
-                api_key=config.api_key,
-                timeout=config.timeout,
-            )
+            configure_live_lm(config)
             program = legacy.DspyCanonicalLlmExtractor()
         try:
             prediction = program(prompt_input_json=prompt_input_json)
             model_output = GanModelOutput(raw_output=str(prediction.decision_json))
         except Exception as exc:  # pragma: no cover - live provider behavior.
-            call_error = f"{type(exc).__name__}: {exc}"
+            call_error = envelope_model_call_error(exc)
             model_output = GanModelOutput(raw_output="", call_error=call_error)
 
     raw_text = model_output.raw_output
@@ -210,14 +205,7 @@ def run_record(
             action="defer_gold_comparison_to_scorer",
         ),
     )
-    first_owner = next(
-        (
-            event.owner
-            for event in stage_events
-            if event.changed and event.effect_class == "clinical_meaning"
-        ),
-        None,
-    )
+    first_owner = first_prediction_changing_owner(stage_events)
     first_failure = call_error or next(
         (str(error) for error in parse_errors if str(error) != "json_dialect_repaired"),
         None,
@@ -282,22 +270,20 @@ def run_split(
         api_base=api_base,
     )
     metadata.update(
-        {
-            "dspy_cache": dspy_cache,
-            "reuse_source": reuse_source,
-            "escalation_reason": escalation_reason,
-        }
+        common_split_metadata_updates(
+            dspy_cache=dspy_cache,
+            reuse_source=reuse_source,
+            escalation_reason=escalation_reason,
+        )
     )
     program = None
     if mode == "live":
-        dspy.configure(
-            lm=active_llm.build_dspy_lm(
-                model,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                cache=dspy_cache,
-                api_base=api_base,
-            )
+        configure_split_lm(
+            model=model,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            dspy_cache=dspy_cache,
+            api_base=api_base,
         )
         program = legacy.DspyCanonicalLlmExtractor()
 
@@ -310,10 +296,13 @@ def run_split(
             raw_output=reuse_raw_outputs.get(record.source_row_index),
             program=program,
         )
-        row_trace = dict(result.diagnostics["row_trace"])
         decision = result.parsed_model_output
-        comparison = legacy._compare_to_gold(record, decision) if decision else None
-        row_trace["scoring"] = comparison
+        row_trace = attach_row_scoring(
+            result,
+            record=record,
+            compare_fn=legacy._compare_to_gold,
+            parsed=decision,
+        )
         row = {
             "source_row_index": record.source_row_index,
             "split": split,
@@ -332,16 +321,16 @@ def run_split(
                 "gold_monthly_frequency": record.gold_monthly_frequency,
                 "row_ok": record.row_ok,
             },
-            "comparison": comparison,
+            "comparison": row_trace["scoring"],
         }
         rows.append(row)
-        if progress_every and len(rows) % progress_every == 0:
-            legacy._emit_progress_checkpoint(
-                rows,
-                metadata,
-                total=len(records),
-                jsonl_path=checkpoint_jsonl_path,
-                report_path=checkpoint_report_path,
-            )
-    metadata["summary"] = legacy.summarize_records(rows)
-    return rows, metadata
+        maybe_emit_progress_checkpoint(
+            rows,
+            metadata,
+            total=len(records),
+            progress_every=progress_every,
+            jsonl_path=checkpoint_jsonl_path,
+            report_path=checkpoint_report_path,
+            emit_fn=legacy._emit_progress_checkpoint,
+        )
+    return finalize_split_metadata(rows, metadata, legacy.summarize_records)

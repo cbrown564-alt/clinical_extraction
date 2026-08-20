@@ -14,8 +14,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_e
     GAN_LLM_WITH_RULES,
     LLM_WITH_RULES_AUTHORED_KEYS,
     PROMPT_VERSION,
-    PROMPT_VERSION_FINAL,
-    PROMPT_VERSION_V0_5,
     StructuredExtractionRecord,
     StructuredRepairConfig,
     adjacent_semantic_family_orders,
@@ -87,37 +85,11 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     assert "deterministic_final_selection" not in prompt
 
 
-def test_build_prompt_input_final_alias_matches_paper_name() -> None:
-    record = _record()
-    default = json.loads(build_prompt_input(record))
-    alias = json.loads(
-        build_prompt_input(record, prompt_version=PROMPT_VERSION_FINAL)
-    )
-
-    assert PROMPT_VERSION_FINAL == "gan2026_hybrid_structured_events_final"
-    assert default == alias
-    assert default["task"] == (
-        "Read the clinical note. Extract seizure-frequency facts as slim "
-        "events, then select the current burden."
-    )
-
-
-def test_build_prompt_input_v05_keeps_historical_envelope() -> None:
-    record = _record()
-    prompt = json.loads(
-        build_prompt_input(record, prompt_version=PROMPT_VERSION_V0_5)
-    )
-
-    assert prompt["prompt_version"] == PROMPT_VERSION_V0_5
-    assert prompt["source_row_index"] == record.source_row_index
-    assert prompt["instructions"] == json.loads(build_prompt_input(record))[
-        "instructions"
-    ]
-
-
 @pytest.mark.parametrize(
     "version",
     (
+        "gan2026_hybrid_structured_events_v0.5",
+        "gan2026_hybrid_structured_events_final",
         "gan2026_hybrid_structured_events_v0.6",
         "gan2026_hybrid_structured_events_v0.7",
         "gan2026_hybrid_structured_events_v0.8_luna_rate",

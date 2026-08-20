@@ -152,7 +152,7 @@ def test_rebuild_keeps_historical_present_when_panel_slot_is_pending(
         "model_slug": "gemma4_26b",
         "model": "ollama_chat/gemma4:26b",
         "method": "gan_llm_only",
-        "replay_alias": "gan2026_llm_only_canonical_pipeline_v0.8",
+        "replay_alias": "gan_llm_only",
         "split": "dev750",
         "n": 750,
         "row_policy": "development_review_permitted",

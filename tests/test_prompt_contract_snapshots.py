@@ -19,9 +19,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     hybrid_structured_events,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
-    llm as llm_only_canonical_pipeline,
+    llm,
 )
 
 SNAPSHOT_DIR = Path(__file__).parent / "snapshots" / "prompt_contracts"
@@ -60,10 +58,7 @@ PROMPT_BUILDERS: dict[str, Callable[[], str | dict[str, object]]] = {
     "gan2026__hybrid_structured_events": lambda: hybrid_structured_events.build_prompt_input(
         _gan_record()
     ),
-    "gan2026__hybrid_structured_events_v0.5": lambda: hybrid_structured_events.build_prompt_input(
-        _gan_record(), prompt_version=hybrid_structured_events.PROMPT_VERSION_V0_5
-    ),
-    "gan2026__llm": lambda: llm_only_canonical_pipeline.build_prompt_input(
+    "gan2026__llm": lambda: llm.build_prompt_input(
         _gan_record()
     ),
     "exectv2__structured_key_families": lambda: exectv2_structured.build_prompt_input(

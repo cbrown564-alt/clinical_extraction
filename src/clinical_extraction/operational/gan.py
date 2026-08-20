@@ -26,7 +26,7 @@ def run_gan_notes(notes: Sequence[InputNote], runtime: RuntimeConfig) -> list[di
     )
 
     config = PipelineConfiguration(
-        architecture="hybrid_structured_events",
+        architecture="rules",
         dspy_cache=False,
         model=runtime.model,
         temperature=runtime.temperature,
@@ -34,7 +34,7 @@ def run_gan_notes(notes: Sequence[InputNote], runtime: RuntimeConfig) -> list[di
         api_base=runtime.base_url,
         api_key=runtime.api_key,
         timeout=int(runtime.timeout_seconds),
-        prompt_version="gan2026_hybrid_structured_events_v0.5",
+        prompt_version="gan_llm_with_rules",
     )
     empty_label = label_to_frequency_record("unknown")
     output: list[dict[str, Any]] = []

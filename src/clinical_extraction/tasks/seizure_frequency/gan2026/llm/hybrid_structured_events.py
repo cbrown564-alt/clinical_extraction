@@ -84,10 +84,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_pre_post
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_with_rules import (
     build_llm_with_rules_prompt_input,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_with_rules_v05 import (
-    PROMPT_VERSION_V0_5,
-    build_llm_with_rules_v05_prompt_input,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label,
@@ -119,33 +115,15 @@ _nearest_event_month_year = llm_structured_temporal.nearest_event_month_year
 _small_number_words_to_digits = llm_structured_temporal.small_number_words_to_digits
 
 GAN_LLM_WITH_RULES = "gan_llm_with_rules"
-PROMPT_VERSION_FINAL = "gan2026_hybrid_structured_events_final"
 LLM_WITH_RULES_AUTHORED_KEYS = prompt_llm_with_rules.LLM_WITH_RULES_AUTHORED_KEYS
-# Paper method is prompt_llm_with_rules.py. `final` is a replay alias.
-# v0.5 is a separate historical builder, not a mode of the paper prompt.
-# gan_llm_pre_post is a different request: same schema plus suggested rows.
 PROMPT_VERSION = GAN_LLM_WITH_RULES
 ROW_TRACE_SCHEMA_VERSION = "gan2026.row_trace.v1"
 _SUPPORTED_PROMPT_VERSIONS = frozenset(
     {
         GAN_LLM_WITH_RULES,
-        PROMPT_VERSION_FINAL,
-        PROMPT_VERSION_V0_5,
         GAN_LLM_PRE_POST,
     }
 )
-
-
-def set_active_prompt_version(version: str) -> None:
-    """Select the structured-events prompt version emitted by build_prompt_input."""
-
-    global PROMPT_VERSION
-    if version not in _SUPPORTED_PROMPT_VERSIONS:
-        raise ValueError(
-            f"unsupported prompt version {version!r}; "
-            f"expected one of {sorted(_SUPPORTED_PROMPT_VERSIONS)}"
-        )
-    PROMPT_VERSION = version
 
 
 PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
@@ -527,7 +505,7 @@ def build_prompt_input(
     *,
     prompt_version: str | None = None,
 ) -> str:
-    """Dispatch to the paper prompt or the historical v0.5 builder."""
+    """Dispatch to the paper prompt or the pre/post variant."""
 
     selected_prompt_version = prompt_version or PROMPT_VERSION
     if selected_prompt_version not in _SUPPORTED_PROMPT_VERSIONS:
@@ -536,8 +514,6 @@ def build_prompt_input(
             f"expected one of {sorted(_SUPPORTED_PROMPT_VERSIONS)}"
         )
 
-    if selected_prompt_version == PROMPT_VERSION_V0_5:
-        return build_llm_with_rules_v05_prompt_input(record)
     if selected_prompt_version == GAN_LLM_PRE_POST:
         return build_llm_pre_post_prompt_input(record)
     return build_llm_with_rules_prompt_input(record)

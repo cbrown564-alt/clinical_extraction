@@ -9,13 +9,13 @@
     {
       "method": "llm_with_rules",
       "pipeline": "llm_with_rules",
-      "prompt_version": "gan2026_hybrid_structured_events_v0.7",
+      "prompt_version": "gan_llm_with_rules",
       "repair_mode": "hybrid_full_stack"
     },
     {
       "method": "llm_only",
       "pipeline": "llm",
-      "prompt_version": "gan2026_llm_only_canonical_pipeline_v0.8",
+      "prompt_version": "gan_llm_only",
       "repair_mode": "model_selected_evidence_benchmark_adapter"
     }
   ],
