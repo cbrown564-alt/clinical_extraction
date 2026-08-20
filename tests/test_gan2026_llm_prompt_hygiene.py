@@ -12,7 +12,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     hybrid_structured_events,
-    llm_only_canonical_pipeline,
+    llm,
 )
 
 INTERNAL_MODEL_FACING_PHRASES = (
@@ -77,7 +77,7 @@ def _payload_text(payload: str | dict[str, object]) -> str:
     ("name", "builder", "arg"),
     [
         ("hybrid_structured_events", hybrid_structured_events.build_prompt_input, "_record"),
-        ("llm_only_canonical_pipeline", llm_only_canonical_pipeline.build_prompt_input, "_record"),
+        ("llm", llm.build_prompt_input, "_record"),
         ("exectv2_structured", exectv2_structured.build_prompt_input, "_letter"),
     ],
 )

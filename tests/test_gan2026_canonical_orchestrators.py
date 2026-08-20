@@ -36,22 +36,16 @@ def test_gan_llm_active_name_and_legacy_identity_share_one_boundary() -> None:
 
 
 def test_gan_hybrid_active_name_is_used_by_live_split_configuration() -> None:
-    from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration import (
-        llm_with_rules,
-    )
-
     assert active_pipeline_name("llm_with_rules") == "llm_with_rules"
     assert active_pipeline_name("hybrid_structured_events") == "llm_with_rules"
     assert retained_pipeline_id("llm_with_rules") == "hybrid_structured_events"
-    assert llm_with_rules.PipelineConfiguration(
-        architecture="llm_with_rules"
-    ).architecture == "llm_with_rules"
+    assert PipelineConfiguration(architecture="llm_with_rules").architecture == "llm_with_rules"
 
 
 def test_gan_rules_canonical_record_preserves_stage_order_and_avoids_gold() -> None:
     result = run_record(
         _record("The patient has one seizure per month."),
-        PipelineConfiguration(architecture="deterministic_canonical_pipeline"),
+        PipelineConfiguration(architecture="rules"),
     )
 
     assert result.output.final_value == "1 per month"
@@ -78,7 +72,7 @@ def test_gan_llm_canonical_replay_keeps_model_boundary_and_evidence_gate() -> No
 
     result = run_llm_record(
         record,
-        PipelineConfiguration(architecture="llm_only_canonical_pipeline"),
+        PipelineConfiguration(architecture="llm"),
         mode="prompt-only",
         raw_output=raw,
     )
@@ -125,7 +119,7 @@ def test_gan_hybrid_runner_active_and_legacy_dispatch_is_strictly_no_call(
 
     monkeypatch.setattr(hybrid_structured_events, "run_item", fake_run_item)
     monkeypatch.setattr(
-        "clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.llm_with_rules.build_dspy_lm",
+        "clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.scaffolding.configure_split_lm",
         fail_model_builder,
     )
 

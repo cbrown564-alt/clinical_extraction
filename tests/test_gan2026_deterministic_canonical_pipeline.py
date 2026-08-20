@@ -24,7 +24,7 @@ def test_deterministic_canonical_pipeline_exposes_the_retained_stage_diagnostics
     assert len(records) == len(_SAMPLE_SOURCE_ROW_INDICES)
 
     canonical_runner = Gan2026PipelineRunner(
-        PipelineConfiguration(architecture="deterministic_canonical_pipeline")
+        PipelineConfiguration(architecture="rules")
     )
 
     for record in records:

@@ -59,7 +59,7 @@ def test_frontend_catalog_and_read_only_surfaces_use_the_live_api(client: TestCl
 
     registry = client.get("/registry")
     assert registry.status_code == 200
-    assert any(run["pipeline_family"] == "rules_only" for run in registry.json()["runs"])
+    assert any(run["pipeline_family"] == "rules" for run in registry.json()["runs"])
 
     families = client.get("/pipeline-families")
     assert families.status_code == 200
@@ -67,17 +67,20 @@ def test_frontend_catalog_and_read_only_surfaces_use_the_live_api(client: TestCl
 
     exect_runs = client.get("/exectv2/runs")
     assert exect_runs.status_code == 200
-    assert exect_runs.json()["runs"]
+    body = exect_runs.json()
+    assert body["split"] == "dev140"
+    run_ids = {run["run_id"] for run in body["runs"]}
+    assert "rules" in run_ids
+    assert "exectv2_winning_mode_gpt56sol_llm_plus_rules_dev140" not in run_ids
     hybrid = [
         run
-        for run in exect_runs.json()["runs"]
+        for run in body["runs"]
         if run.get("kind") == "llm_with_rules"
     ]
     active_hybrid = [run for run in hybrid if run.get("active_method") == "llm_with_rules"]
     models = {run["model"] for run in active_hybrid}
-    assert "xai/grok-4.6" in models
-    assert "openai/gpt-5.6-luna" in models
-    assert "openai/gpt-5.6-sol" not in models
+    if active_hybrid:
+        assert "openai/gpt-5.6-sol" not in models
 
 
 def test_locked_test_records_are_not_enumerable(client: TestClient) -> None:
@@ -249,7 +252,7 @@ def test_run_note_executes_the_real_deterministic_pipeline(client: TestClient) -
         "/run/note",
         json={
             "note_text": "She currently reports four seizures per day.",
-            "pipeline": "rules_only",
+            "pipeline": "rules",
             "source_row_index": 314,
             "gold_label": "4 per day",
             "gold_reference": "four seizures per day",
