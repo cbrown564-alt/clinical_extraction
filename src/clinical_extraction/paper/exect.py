@@ -15,6 +15,11 @@ import dspy
 from dotenv import load_dotenv
 
 from clinical_extraction.core.paths import discover_repo_root
+from clinical_extraction.paper.batch import (
+    BatchChatItem,
+    complete_chat_batch,
+    uses_provider_batch,
+)
 from clinical_extraction.paper.exect_score import (
     assembly_row,
     changed_rows,
@@ -1034,24 +1039,50 @@ def _run_candidate(
     try:
         structured.set_active_prompt_version(prompt_version)
         if todo:
-            _prepare_live_runtime(spec, api_base=api_base, timeout=timeout)
             program = structured_one_call.DspyKeyEntitiesStructuredExtractor()
+            config = StructuredMethodConfig.selected()
+            batch_raws: dict[str, str] = {}
+            if uses_provider_batch(spec.slug):
+                items = [
+                    BatchChatItem(
+                        custom_id=letter.letter_id,
+                        messages=program.render_messages(
+                            prompt_input_json=structured.build_prompt_input(
+                                letter,
+                                prompt_profile=config.prompt_profile,
+                            )
+                        ),
+                    )
+                    for letter in todo
+                ]
+                batch_raws = complete_chat_batch(
+                    spec,
+                    items,
+                    work_dir=out_dir,
+                    max_tokens=spec.max_tokens,
+                )
+            else:
+                _prepare_live_runtime(spec, api_base=api_base, timeout=timeout)
             rows = list(existing)
             for index, letter in enumerate(todo, start=1):
+                raw_output = batch_raws.get(letter.letter_id)
                 producer = structured_one_call.produce_structured_letter(
                     letter,
                     model=spec.model,
                     temperature=spec.temperature,
                     max_tokens=spec.max_tokens,
-                    mode="live",
+                    mode="replay" if raw_output is not None else "live",
                     dspy_cache=False,
                     api_base=api_base,
                     timeout=timeout,
                     split=split,
                     program=program,
-                    config=StructuredMethodConfig.selected(),
+                    raw_output=raw_output,
+                    config=config,
                 )
                 row = dict(producer.row)
+                if raw_output is not None:
+                    row["mode"] = "live"
                 if row.get("prompt_version") != prompt_version:
                     raise RuntimeError(
                         "a test60 letter used the wrong prompt version"

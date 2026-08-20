@@ -15,6 +15,11 @@ from dotenv import load_dotenv
 
 from clinical_extraction.core.local_structured_output import FormatOnlyJsonRetry
 from clinical_extraction.core.paths import discover_repo_root
+from clinical_extraction.paper.batch import (
+    BatchChatItem,
+    complete_chat_batch,
+    uses_provider_batch,
+)
 from clinical_extraction.paper.exect import (
     HOSTED_SLUGS,
     LOCAL_SLUGS,
@@ -255,7 +260,7 @@ def run_gan(
     todo = [record for record in records if record.source_row_index not in done]
     resolved_base = resolve_paper_api_base(spec.slug, api_base)
     max_tokens = _max_tokens_for(method, spec.slug, spec.reasoning_effort)
-    if todo:
+    if todo and not uses_provider_batch(spec.slug):
         _prepare_live_runtime(
             spec,
             api_base=resolved_base,
@@ -276,15 +281,27 @@ def run_gan(
         prompt_version=prompt,
         repair_mode="hybrid_full_stack" if method != "gan_llm_only" else None,
     )
+    batch_raws: dict[str, str] = {}
+    call_transport = "sync"
+    if todo and uses_provider_batch(spec.slug):
+        call_transport = "openai_batch" if spec.slug == "gpt56luna" else "openrouter_batch"
+        batch_raws = complete_chat_batch(
+            spec,
+            _gan_batch_items(method, todo, program),
+            work_dir=work_root,
+            max_tokens=max_tokens,
+        )
     for index, record in enumerate(todo, start=1):
+        raw_output = batch_raws.get(str(record.source_row_index))
         row = _run_record(
             method,
             record,
             config,
             split=split,
             machine=machine,
-            program=program,
-            retry_program=retry_program,
+            program=None if raw_output is not None else program,
+            retry_program=None if raw_output is not None else retry_program,
+            raw_output=raw_output,
         )
         if row.get("prompt_version") != prompt:
             raise RuntimeError(
@@ -333,6 +350,7 @@ def run_gan(
         "started_utc": started,
         "finished_utc": datetime.now(UTC).isoformat(),
         "live": True,
+        "call_transport": call_transport,
         "model_calls": len(todo),
         "summary": _public_summary(summary, holdout=holdout),
         "claim_boundary": (
@@ -416,6 +434,29 @@ def _existing_complete_rows(path: Path, prompt_version: str) -> list[dict[str, A
         seen.add(index)
         rows.append(row)
     return rows
+
+
+def _gan_batch_items(
+    method: str,
+    records: Sequence[GanFrequencyRecord],
+    program: Any,
+) -> list[BatchChatItem]:
+    items: list[BatchChatItem] = []
+    for record in records:
+        if method == "gan_llm_only":
+            prompt_input = gan_llm_only.build_prompt_input(record)
+        else:
+            prompt_input = hybrid_structured_events.build_prompt_input(
+                record,
+                prompt_version=_prompt_version(method),
+            )
+        items.append(
+            BatchChatItem(
+                custom_id=str(record.source_row_index),
+                messages=program.render_messages(prompt_input_json=prompt_input),
+            )
+        )
+    return items
 
 
 def _programs(method: str) -> tuple[Any, Any]:
