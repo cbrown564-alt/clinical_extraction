@@ -27,6 +27,58 @@ def _dx(text: str) -> ExectAnnotation:
     return _ann(DIAGNOSIS.name, text, DiagCategory="Epilepsy", Certainty="5", Negation="Affirmed")
 
 
+def test_frequency_headline_keys_folded_phrase_not_cui_attach() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    SEIZURE_FREQUENCY.name,
+                    "2 tonic clonic seizures in 2014",
+                    NumberOfSeizures="2",
+                    CUI="C0494475",
+                    CUIPhrase="tonic clonic seizures",
+                ),
+            ),
+        )
+    ]
+    pred_no_cui = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    SEIZURE_FREQUENCY.name,
+                    "grand mal",
+                    NumberOfSeizures="2",
+                ),
+            ),
+        )
+    ]
+    pred_wrong_cui = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    SEIZURE_FREQUENCY.name,
+                    "focal seizures",
+                    NumberOfSeizures="3",
+                    CUI="C0036572",
+                ),
+            ),
+        )
+    ]
+
+    matched = score_frequency_state(gold, pred_no_cui)
+    mismatched = score_frequency_state(gold, pred_wrong_cui)
+
+    assert matched.clinical_headline.f1 == 1.0
+    assert mismatched.clinical_headline.f1 == 0.0
+    assert matched.benchmark_with_cui.f1 == 0.0
+
+
 def test_frequency_state_counts_unique_projected_states_per_letter() -> None:
     gold = [
         ExectLetter(

@@ -72,6 +72,7 @@ from .pipelines.key_entities_structured import (
     _strip_non_scored_rationale_fields,
     _worked_examples,
     apply_format_stack,
+    assign_flatten_mention_ids,
     build_prompt_input,
     candidate_evidence_ledger_for_letter,
     canonicalize_prompt_version,

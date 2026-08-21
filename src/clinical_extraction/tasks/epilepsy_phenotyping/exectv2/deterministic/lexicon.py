@@ -155,6 +155,32 @@ def _build_phrase_to_cui() -> dict[str, str]:
 PHRASE_TO_CUI: dict[str, str] = _build_phrase_to_cui()
 
 
+def _longest_known_phrase_cui(phrase: str) -> str | None:
+    haystack = normalize_phrase(phrase)
+    if not haystack:
+        return None
+    for key in sorted(PHRASE_TO_CUI, key=len, reverse=True):
+        if key and key in haystack:
+            return PHRASE_TO_CUI[key]
+    return None
+
+
+def fold_seizure_type_phrase(phrase: str, cui: str | None = None) -> str:
+    """Return the canonical seizure-type head for a phrase or attached CUI.
+
+    Exact phrase lookup wins, then the longest known type string inside the
+    wording, then attached CUI. A wrong attached id does not override a
+    known type name.
+    """
+
+    resolved = assign_cui(phrase) or _longest_known_phrase_cui(phrase)
+    if resolved is None and cui:
+        resolved = cui
+    if resolved in SF_CUI_LEXICON:
+        return normalize_phrase(SF_CUI_LEXICON[resolved][0])
+    return normalize_phrase(phrase)
+
+
 def assign_cui(phrase: str) -> str | None:
     """Return the SeizureFrequency CUI for an anchor phrase, or None if unknown.
 

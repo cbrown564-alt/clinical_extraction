@@ -1,0 +1,60 @@
+# ExECT later-stage encode and select prompts
+
+Date: 2026-08-21
+Status: current
+Owner: [paper methods](../methods.md)
+Related: [Gemini is the cited model](gemini-is-the-cited-model.md),
+[Gan later-stage encode and select prompts](gan-later-stage-encode-select-prompts.md)
+
+## Decision
+
+Later-stage `exect_llm_encode` and `exect_llm_select` are Gemini
+calls that replace rule encode and rule select on a saved
+`exect_llm_only` mention list. They do not re-read the letter.
+
+Encode sees `mention_id`, family, clinical name, supporting
+sentence, details, and the closed name list for every family
+(diagnosis phrases, 16 seizure-type heads, generic medicines,
+MRI/CT/EEG) plus closed detail values. It writes one
+`standard_name` and details per extract mention. It does not add,
+drop, or split rows, and it does not write CUIs. After the call,
+code joins by `mention_id` and maps plain keys to gold keys. It may
+attach CUI from `standard_name` as decoration. Hybrid format and
+select do not run.
+
+Select sees the encoded rows (`mention_id`, family, `standard_name`,
+details, supporting sentence). It may drop, relabel
+`standard_name`, rewrite details from words already on
+that row, merge onto another `mention_id`, or add a companion that
+copies a kept quote and standard name into the other family. It may
+not invent a new quote or a name the kept row did not carry. After
+the call, only join runs.
+
+The SeizureFrequency type key is the canonical seizure-type phrase
+(16 lexicon heads), not CUI. Gold folds `CUIPhrase` when present.
+The encode list drops CUI-lookup leftovers (bare `focal` /
+`generalised`, `no further seizures`) and lists generic `seizures`
+last. Rules-only CUI attach stays an exact phrase lookup after the
+longest-span anchor; it does not assign by subset of the word
+`seizures`.
+
+Hybrid select follows the same invent ban. Letter-scan Diagnosis /
+SF / Rx / Inv tables are rules extract and pre-post high-priority
+suggested evidence. The model keep/rejects them. Rules do not union
+them in after a hybrid call.
+
+## Why
+
+The LLM row must be attributable to the model at encode and at
+select. A letter-in call is a second extract. Running hybrid invent
+after the call would score hybrid select as the LLM cell. CUI is a
+one-to-one tag, not a model job. Standard name is the designed-form
+name; clinical name stays extract wording.
+
+## Claim boundary
+
+A prompt and ownership contract. Clinical-fact SF type now keys the
+folded seizure-type phrase. CUI stay on the mention as secondary
+attributes and still feed the published with-CUI diagnostic. Not a
+claim that the later-stage calls have been run, or that living
+hybrid invent has been turned off.

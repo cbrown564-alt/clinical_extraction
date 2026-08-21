@@ -61,6 +61,7 @@ from .projection import (
 )
 from .format_stack import (
     apply_format_stack,
+    assign_flatten_mention_ids,
     mention_row,
     schema_mentions,
 )
@@ -154,6 +155,7 @@ __all__ = [
     "summarize_rows",
     "apply_format_stack",
     "mention_row",
+    "assign_flatten_mention_ids",
     "schema_mentions",
     "to_predicted_letter",
     "write_jsonl",

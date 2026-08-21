@@ -14,6 +14,12 @@ from clinical_extraction.paper.exect import (
     verify_compact,
     verify_llm_only,
 )
+from clinical_extraction.paper.exect_later_stage import (
+    run_later_stage as run_exect_later_stage,
+)
+from clinical_extraction.paper.exect_later_stage import (
+    verify_later_stage_prompt,
+)
 from clinical_extraction.paper.exect_panel import promote_exect, promote_exect_llm_only
 from clinical_extraction.paper.exect_rung_replay import replay_exect_rungs
 from clinical_extraction.paper.gan import run_gan, verify_gan
@@ -139,6 +145,17 @@ def verify(method: str, split: str, slug: str | None = None) -> dict[str, Any]:
     spec = method_spec(method)
     split_for(method, split)
     if spec["task"] == "exectv2":
+        if method == "exect_llm_encode":
+            if slug is not None and slug != "gemini37flash":
+                raise RuntimeError("later-stage ExECT encode runs on Gemini only")
+            verify_later_stage_prompt(method)
+            return {
+                "ok": True,
+                "method": method,
+                "prompt_version": "exect_llm_encode",
+                "split": split,
+                "row_policy": "development_review_permitted",
+            }
         if method == "exect_llm_only":
             return verify_llm_only(split=split, slug=slug)
         return verify_compact(split=split, slug=slug)
@@ -170,6 +187,17 @@ def run(
     if row_limit is not None and slice_name is not None:
         raise SystemExit("--row-limit and --slice cannot be combined")
     if spec["task"] == "exectv2":
+        if method == "exect_llm_encode":
+            return run_exect_later_stage(
+                method,
+                slug,
+                split=split,
+                overwrite=overwrite,
+                api_base=api_base,
+                timeout=timeout,
+                progress_every=progress_every,
+                reasoning_effort=reasoning_effort,
+            )
         if method == "exect_llm_only":
             return run_llm_only(
                 slug,

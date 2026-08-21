@@ -8,8 +8,10 @@ from clinical_extraction.core.scoring import PRF1, multiset_prf1, sum_prf1
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     POINT_RANGE_TRIPLES,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectAnnotation, ExectLetter
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.lexicon import (
+    fold_seizure_type_phrase,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match import (
     _letters_by_id,
     benchmark_config_for,
@@ -126,15 +128,15 @@ def _score_frequency_state_profile(
 ) -> PRF1:
     """Clinical-recovery SF metric: the per-letter *state profile*, type-agnostic.
 
-    The ``clinical_headline`` key conditions every fact on the annotator's chosen
-    seizure-type CUI and on gold's exhaustive per-type multiplicity (the same seizure
+    The ``clinical_headline`` key conditions every fact on the folded seizure-type
+    phrase and on gold's exhaustive per-type multiplicity (the same seizure
     type tagged once with a numeric rate and again with a qualitative change). Both are
     convention choices, not clinical recovery: a correct frequency statement keyed to a
-    clinically-valid but *different* CUI granularity scores zero. This companion scores
+    clinically-valid but *different* type granularity scores zero. This companion scores
     the clinical question Gan asks — *which seizure-frequency states does this letter
     describe?* — by keying only the (change-aware) state, deduplicated per letter. The
     honest SF clinical number is the bracket [clinical_headline, state_profile]; the gap
-    is the seizure-type-CUI granularity + multiplicity tax. See
+    is the seizure-type granularity + multiplicity tax. See
     ``docs/research/exectv2_sf_representation_not_recall_2026-06-28.md``.
     """
 
@@ -270,10 +272,10 @@ def _frequency_active_rate_keys(annotations: Iterable[ExectAnnotation]) -> list[
 
 
 def _frequency_type_key(annotation: ExectAnnotation) -> Hashable:
+    phrase = str(annotation.attributes.get("CUIPhrase") or annotation.text or "")
     cui = annotation.attributes.get("CUI")
-    if cui:
-        return ("cui", canonicalize_attribute_value("CUI", cui))
-    return ("phrase", normalize_phrase(annotation.text))
+    attached = canonicalize_attribute_value("CUI", cui) if cui else None
+    return ("phrase", fold_seizure_type_phrase(phrase, attached))
 
 
 def _count_based_state(attributes: Mapping[str, str]) -> str | None:

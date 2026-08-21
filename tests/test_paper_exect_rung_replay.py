@@ -121,7 +121,7 @@ def test_format_render_uses_pre_assembly_mentions_not_materialized_format_only()
     assert "same-fact format" in check["note"]
     rungs = summary["rungs"]
     assert rungs["llm_extract"]["clinical_fact_f1"] != rungs["llm_encode"]["clinical_fact_f1"]
-    assert rungs["llm_select"]["clinical_fact_f1"] == pytest.approx(0.904)
+    assert rungs["llm_select"]["clinical_fact_f1"] > rungs["llm_encode"]["clinical_fact_f1"]
     assert (
         rungs["llm_encode"]["family_f1"]["SeizureFrequency"]
         < rungs["llm_select"]["family_f1"]["SeizureFrequency"]

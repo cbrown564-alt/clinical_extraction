@@ -125,10 +125,12 @@ def write_exect_rung_artifacts(
 def schema_mention_rows(producer: StructuredProducerResult) -> list[dict[str, Any]]:
     """Four-family events as flattened. No CUI attach, gates, or family format."""
 
-    return [
-        structured.mention_row(mention)
-        for mention in structured.schema_mentions(producer.spelled_mentions)
-    ]
+    return structured.assign_flatten_mention_ids(
+        [
+            structured.mention_row(mention)
+            for mention in structured.schema_mentions(producer.spelled_mentions)
+        ]
+    )
 
 
 def format_render_mention_rows(
@@ -140,7 +142,9 @@ def format_render_mention_rows(
     formatted, _warnings = structured.apply_format_stack(
         producer.spelled_mentions, note_text
     )
-    return [structured.mention_row(mention) for mention in formatted]
+    return structured.assign_flatten_mention_ids(
+        [structured.mention_row(mention) for mention in formatted]
+    )
 
 
 def inventory_hash(mentions: Sequence[Mapping[str, Any]], note_text: str) -> str:

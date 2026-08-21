@@ -138,6 +138,20 @@ def mention_row(mention: PredictedMention) -> dict[str, object]:
     }
 
 
+def assign_flatten_mention_ids(
+    rows: Sequence[Mapping[str, Any]],
+) -> list[dict[str, object]]:
+    """Give flatten rows a stable mention_id when extract did not emit one."""
+
+    assigned: list[dict[str, object]] = []
+    for index, row in enumerate(rows, start=1):
+        next_row = dict(row)
+        current = str(next_row.get("mention_id") or next_row.get("finding_id") or "")
+        next_row["mention_id"] = current or f"m{index}"
+        assigned.append(next_row)
+    return assigned
+
+
 def _apply_family_format(mention: PredictedMention) -> PredictedMention:
     if mention.entity == PRESCRIPTION.name:
         return _format_prescription(mention)
