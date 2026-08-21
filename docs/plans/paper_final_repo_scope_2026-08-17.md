@@ -35,9 +35,10 @@ It is not a results column.
 | Locked test | `test450` (aggregate-only) | `test60` (aggregate-only) |
 | Primary score | Purist accuracy | Four-family clinical fact F1 |
 
-Living models, every time: Grok 4.6 (method identity), GPT-5.6
-Luna, Gemini 3.7 Flash, DeepSeek V4 Flash 0731, Qwen 3.8 27B, Gemma 4
-26B.
+Living models, every time: Gemini 3.7 Flash (cited / method
+identity), Grok 4.6, GPT-5.6 Luna, DeepSeek V4 Flash 0731, Qwen 3.8
+27B, Gemma 4 26B. Later-stage LLM encode and LLM select calls are
+Gemini only.
 
 Historical aliases, not living: GPT-5.6 Sol, GPT-4.1-mini, DeepSeek
 pre-0731, Qwen 3.6:35B, Compact dump (`v0.9.40`).
@@ -57,9 +58,9 @@ Locked machine identities:
 | 4 `llm_post` | `gan_llm_with_rules` / replay `exect_llm_only` assembly | Full clinical post |
 | 5 `llm_pre_post` | `gan_llm_pre_post` / `exect_llm_pre_post` | Candidates in the prompt, then the same post stack |
 
-`gan_llm_only` is not a results column. Luna is the Gan rung-5
-development iterator. Do not start Grok or holdout rung-5 in this
-cut. Hybrid-call raw is not ExECT rung 2.
+`gan_llm_only` is not a results column. Luna is the Gan pre-post
+development iterator. Later-stage LLM encode / select calls are
+Gemini only, on both tasks. Hybrid-call raw is not ExECT extract.
 
 Locked historical comparator:
 

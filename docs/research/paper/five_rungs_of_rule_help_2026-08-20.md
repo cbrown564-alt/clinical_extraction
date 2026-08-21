@@ -1,15 +1,16 @@
-# Five reported cells: two producers, one replay stack
+# Method × stage grid: rules / llm / hybrid against extract / encode / select
 
 Date: 2026-08-20
-Revised: 2026-08-21 (refile: not five depths of one hybrid switch)
+Revised: 2026-08-21 (refile: 3×3, not five depths of one hybrid switch)
 Status: paper source; development illustrations only
 Owners: [methods](../../paper/methods.md), [claims](../../paper/claims.md),
 this file for the worked reading
 
-The headline table keeps five reported cells. They are not five depths
-of the same thing. This page is the plain-language owner for what those
-cells are, how they run on one Gan letter and one ExECT letter, and
-what the full design is worth. Replayable numbers stay in
+The headline table is a 3×3: methods **rules**, **llm**, and
+**hybrid** against stages **extract**, **encode**, and **select**.
+This page is the plain-language owner for what those cells are, how
+they run on one Gan letter and one ExECT letter, and what the full
+design is worth. Replayable numbers stay in
 [`paper_experiments/`](../../../paper_experiments/README.md). What a
 sentence may say stays in [claims](../../paper/claims.md).
 
@@ -24,15 +25,18 @@ facts in a designed form, with quoted source text. A model collects a
 ledger. Recorded rules then shape that ledger. The same saved model
 output can be replayed through those rules without a new call.
 
-The framing is **two producers, one replay stack, one optional prompt
-treatment**:
+The framing is **three methods × three stages**:
 
-- **Rules only** — other producer. Different rule set. No model. Not a
-  preview of the post stack.
-- **Schema / encode / revise** — one saved raw replayed at three stops
-  (cells 2–4).
-- **Pre-suggest + revise** — other request. Candidates in the prompt,
-  then the same revise folder. Not a deeper climb on the same ladder.
+- **Rules** — no model. One submitted answer, shown in all three
+  stage columns. That rule set is not the hybrid encode/select stack.
+- **LLM** — model extract only, until Gemini later-stage encode and
+  select calls exist. Extract is the parsed `gan_llm_with_rules` /
+  `exect_llm_only` ledger (was cell 2).
+- **Hybrid encode / hybrid select** — same saved extract raw, replayed
+  at encode (was cell 3) then select (was cell 4).
+- **Hybrid extract** — other request (was cell 5): rule candidates in
+  the prompt, then the living select stack. Not a deeper climb on the
+  encode/select replay.
 
 The two public golds are evaluation forms, not the task. Gan asks for
 one current seizure-frequency label. ExECT asks for a complete
@@ -43,30 +47,30 @@ A later cell is not automatically better. A recorded hop is not a
 clinically correct step. The score is how the submitted answer is
 judged. Do not recode the stack; this is a refile of the claim.
 
-## The five reported cells
+## The 3×3
 
-| Cell | Plain name | What happens | What must not be confused with it |
+| | Extract | Encode | Select |
 | --- | --- | --- | --- |
-| 1 | Rules only | Deterministic code reads the letter and submits the designed form. No model. | The later revise stack that repairs a model ledger. Those are different rule sets. |
-| 2 | Schema (`llm_schema`) | Frozen model ledger scored as parsed. One saved raw for cells 2–4. On Gan this already writes a label (`_normalize_event` / `_resolve_final_label`); that is a render leak, not a no-rule model. | `gan_llm_only`, which asks for a finished Gan label. That prompt is not a results column. |
-| 3 | Encode (`llm_encode`) | Same saved raw. Encodes the model’s already-chosen facts into the evaluation form. Does not pick a different fact. *Cell 3 encodes the model’s facts into the evaluation form.* On ExECT the headline move is codebook/dictionary attach (`project_cuis` and related); on Gan it is the selected-evidence renderer (e.g. `≤ 4 per day` → `4 per day`), not a dictionary. `project_cuis` runs on the encode-replay stop — the reported encode cell already includes it. Encode is not dialect (`mgs`→`mg`) and not revise. | Treating encode as spelling-only, or pretending CUI is scored only at revise. |
-| 4 | Revise (`llm_revise`) | Same saved raw. Policy may change the facts. *Cell 4 may change those facts under recorded policy.* Rewrite/overwrite of an encoding (`epilepsy` → `focal epilepsy`) is one kind of revise, not the definition. Revise also withholds, drops, splits multiplicity, reselects the Gan event, or invents a residual. | An unrepaired hybrid answer, or a new model call. Defining revise as overwrite-only. |
-| 5 | Pre-suggest + revise (`llm_pre_post`) | Deterministic candidates go into the prompt. Then the same revise stack. Other request from cells 2–4. | Scoring the raw body of that hybrid call as if it were schema (cell 2). |
+| **Rules** | `gan_rules` / `exect_rules`. Same score in every stage column. | same | same |
+| **LLM** | Parsed model ledger. Was cell 2. Blank Gan `final_label` stays unscorable. Not `gan_llm_only`. | Empty until a Gemini later-stage encode call. | Empty until a Gemini later-stage select call. |
+| **Hybrid** | Other request (`*_pre_post`). Was cell 5. Candidates in the prompt, then the living select stack. | Encode replay of the `*_llm_with_rules` / `exect_llm_only` raw. Was cell 3. Same facts, designed form. | Select replay of that same raw. Was cell 4. Gate, drop, rewrite, reselect, invent. |
 
 Three hop effects on one raw support the reading (the paper table need
 not list every revise subtype):
 
 - **Dialect** — same-fact writing (`mgs`→`mg`, brand→generic, word numbers).
 - **Encode** — codebook / designed form / Gan selected-evidence renderer.
-- **Revise** — gate, rewrite, reselect, invent.
+- **Select** — gate, drop, rewrite, reselect, invent.
 
-On Gan, cells 2–4 replay one `gan_llm_with_rules` `raw_output`. Cell 5
-is `gan_llm_pre_post`, a new request. Luna is the development
-iterator for that request. It is not automatically the cited model.
+On Gan, llm extract and hybrid encode / select replay one
+`gan_llm_with_rules` `raw_output`. Hybrid extract is
+`gan_llm_pre_post`. Tables cite Gemini 3.7 Flash. Luna is the
+development iterator for that hybrid-extract request. Later-stage LLM
+encode and LLM select calls are Gemini only.
 
-On ExECT, cells 2–4 replay one `exect_llm_only` `raw_output`. Cell 5 is
-living `exect_llm_pre_post`. `exect_llm_with_rules` is the live alias
-for that request.
+On ExECT, llm extract and hybrid encode / select replay one
+`exect_llm_only` `raw_output`. Hybrid extract is living
+`exect_llm_pre_post`. `exect_llm_with_rules` is the live alias.
 
 The paper records every submitted-answer version as a hop log. A
 **score projection** converts the submitted answer to the unit the
@@ -87,33 +91,32 @@ The letter states a current rate as an upper bound:
 Gold is `4 per day`. That is a Gan gold-dialect convention. The bound
 stays in the quoted span. It is not in the submitted label.
 
-| Cell | Submitted label | Purist |
-| --- | --- | --- |
-| 1 rules only | `4 per day` | correct |
-| 2 schema | `≤ 4 per day` | incorrect |
-| 3 encode | `4 per day` | correct |
-| 4 revise | `4 per day` | correct |
+| | Extract | Encode | Select |
+| --- | --- | --- | --- |
+| **Rules** | `4 per day` (correct) | same | same |
+| **LLM** | `≤ 4 per day` (incorrect) | — | — |
+| **Hybrid** | — (other request) | `4 per day` (correct) | `4 per day` (correct) |
 
-Cells 2–4 share one Grok output. The model already selected the
-accommodation-log event. Schema keeps the inequality in the label, so
-Purist misses. Selected-evidence render (cell 3) **encodes** that
-already chosen event into the evaluation form and does not change
-`selected_event_ids`. Clinical post does not switch the event on this
-letter.
+LLM extract and hybrid encode / select share one Grok
+`gan_llm_with_rules` output. The model already selected the
+accommodation-log event. LLM extract keeps the inequality, so Purist
+misses. Hybrid encode **encodes** that already chosen event into the
+evaluation form and does not change `selected_event_ids`. Hybrid
+select does not switch the event on this letter.
 
 This is why encode exists as its own stop. The clinical fact is the
 same rate the model chose. The designed form is a different string.
 Turning selected-evidence repair off disables that whole renderer, not
 only bound flattening. The same raw can be replayed with the renderer
-off. Cell 5 is not shown here: Grok `gan_llm_pre_post` is not a cited
-cell in this cut.
+off. Hybrid extract is a different request (`gan_llm_pre_post`),
+not a replay of this letter's `gan_llm_with_rules` raw.
 
 **Contrast, still development:** source row `15431`. Gold is the
 two-part cluster label `1 cluster per 4 month, 5 per cluster`. Rules
-only submits that label and is Purist-correct. Schema writes a long
-cluster-after-quiet phrase and misses. Encode and revise both submit
-`seizure free for multiple month` and miss. The full revise stack does
-not recover a two-part cluster once the model has collapsed the
+submit that label and are Purist-correct. LLM extract writes a long
+cluster-after-quiet phrase and misses. Hybrid encode and hybrid
+select both submit `seizure free for multiple month` and miss. Select
+does not recover a two-part cluster once the model has collapsed the
 reading. Visibility is the point: the hops name the collapse.
 
 ## ExECT worked example: a hedge becomes a diagnosis concept
@@ -132,12 +135,12 @@ and
 
 > Seizure type and frequency: seizures every 3 to 4 weeks, possibly focal onset
 
-Grok put that hedge on the collected evidence. Cell 2 keeps Diagnosis
+Grok put that hedge on the collected evidence. LLM extract keeps Diagnosis
 as the written `epilepsy` mention. Cell 3 (encode-replay) may attach a
 CUI or respell closed-vocab fields; that is **encode**, not a concept
 rewrite. ExECT encode-replay includes CUI attach, so the encode cell is
 not “spelling only.” Cell 4 runs the diagnosis dictionary and records
-`focal epilepsy`. That is **revise** of the concept, not encode.
+`focal epilepsy`. That is **select** of the concept, not encode.
 
 ExECT encode is codebook attach, attribute canonicalize,
 prescription name/unit/dose, seizure-frequency encoding, and

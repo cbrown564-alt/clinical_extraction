@@ -423,7 +423,7 @@ These paths exist and are easy to mistake for the selected method. They are name
 | Path | Role | Why it is not the selected method |
 | --- | --- | --- |
 | `src/clinical_extraction/tasks/seizure_frequency/gan2026/runners/hybrid_structured_events.py` | research entry point | CLI wrapper over run_split; adds no clinical stage. |
-| `src/clinical_extraction/tasks/seizure_frequency/gan2026/experiments/repair_modes.py` | experiment control | Named repair modes switch repair families on and off for ablation. The selected comparison uses hybrid_full_stack. |
+| `src/clinical_extraction/tasks/seizure_frequency/gan2026/experiments/repair_modes.py` | experiment control | Named repair modes switch repair families on and off for ablation. The selected comparison uses llm_select. |
 | `src/clinical_extraction/paper/cli.py` | replay path | python -m clinical_extraction.paper run --method gan_llm_with_rules --model <slug> --split <dev750\|test450> |
 
 ## Executable trace

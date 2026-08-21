@@ -5,10 +5,12 @@ Turn epilepsy clinic letters into structured clinical facts.
 This repository is research code and a working demonstration. The proposed
 method translates clinic letters into structured clinical facts in a designed
 form, with quoted source text. A model collects the facts and evidence;
-recorded rules shape them into the required form. Rule help is a depth
-axis, not an on/off hybrid switch. The public golds are the evaluation
-forms used here, not the task. Tables cite Grok 4.6 so the story stays on
-the method. Gemini is in the same band where cells exist. The recorded
+recorded rules shape them into the required form. The comparison is
+methods (rules, llm, hybrid) against stages (extract, encode, select),
+not an on/off hybrid switch. The public golds are the evaluation
+forms used here, not the task. Tables cite Gemini 3.7 Flash so the
+story stays on the method. Grok, Luna, DeepSeek, Qwen, and Gemma are
+companion rows. The recorded
 object keeps the source span and a change log, not only the score.
 
 This is a research and teaching package, not a clinical deployment claim.
@@ -19,31 +21,44 @@ local research checkout and are not cloned.
 
 ## Results
 
-Held-out test scores for Grok 4.6 (2 d.p.), the cited model. GPT-5.6 Sol cells stay historical. Rules-only
-is deterministic and does not use a model.
+Held-out test scores for Gemini 3.7 Flash (2 d.p.), the cited model.
+Companion Grok cells stay on disk. GPT-5.6 Sol cells stay historical.
+Rules are deterministic and do not use a model. That score is repeated
+in every rules column.
 
-| Rung | Gan 2026 | ExECTv2 |
-| --- | ---: | ---: |
-| 1 rules only | 0.73 | 0.79 |
-| 2 schema only | — | 0.77 |
-| 3 format render | — | — |
-| 4 clinical post | 0.83 | — |
-| 5 pre-suggest + post | — | 0.81 |
+**Gan 2026** (Purist, locked `test450`):
 
-Em dashes are missing locked cells, not zeros. Gan rungs 2–4 share one
-`gan_llm_with_rules` output; their named Grok development scores are on
-[claims](docs/paper/claims.md). ExECT rungs 2–4 replay `exect_llm_only`.
-Rung 5 is a different request. `gan_llm_only` is not a results column.
+| | Extract | Encode | Select |
+| --- | ---: | ---: | ---: |
+| **Rules** | 0.73 | 0.73 | 0.73 |
+| **LLM** | — | — | — |
+| **Hybrid** | 0.83 | 0.74 | 0.83 |
+
+**ExECTv2** (clinical fact F1, locked `test60`):
+
+| | Extract | Encode | Select |
+| --- | ---: | ---: | ---: |
+| **Rules** | 0.79 | 0.79 | 0.79 |
+| **LLM** | — | — | — |
+| **Hybrid** | 0.81 | 0.78 | 0.81 |
+
+Em dashes are missing locked cells, not zeros. Later-stage LLM encode
+/ select are Gemini-only and not yet run. Hybrid encode / select
+replay `gan_llm_with_rules` / `exect_llm_only`. Hybrid extract is
+`*_pre_post`. Gan hybrid extract is living Gemini `gan_llm_pre_post`
+(372/450); hybrid select is living Gemini `gan_llm_with_rules`
+(373/450). Both round to 0.83. `gan_llm_only` is not a results
+column.
 
 - **Gan 2026:** Purist accuracy on the locked `test450` split (one current
-  seizure-frequency label per letter). The cited rung-4 cell is the cleaned
-  request. The living Grok holdout is 375/450; do not read an enveloped
-  `v0.5` score into that cell.
+  seizure-frequency label per letter). The cited hybrid-select cell is the
+  cleaned request. The living Grok companion holdout is 375/450; do not
+  read an enveloped `v0.5` score into that cell.
 - **ExECTv2:** de-duplicated clinical fact F1 on the locked `test60` split
-  (diagnosis, seizure frequency, prescriptions, and investigations). Rung 2
-  is `exect_llm_only` raw F1. Rung 5 is `exect_llm_pre_post` hybrid F1.
-  An unrepaired hybrid answer is not rung 2. This is the project's primary
-  research metric for ExECT, not the published strict benchmark score.
+  (diagnosis, seizure frequency, prescriptions, and investigations). LLM
+  extract replays `exect_llm_only`. Hybrid extract is `exect_llm_pre_post`.
+  An unrepaired hybrid body is not llm extract. This is the project's
+  primary research metric for ExECT, not the published strict benchmark.
 
 Scores are not interchangeable across tasks.
 
@@ -56,15 +71,16 @@ Scores are not interchangeable across tasks.
 | Locked test split | `test450` (aggregate scores only) | `test60` (aggregate scores only) |
 | Primary score | Purist accuracy | Clinical fact F1 |
 
-Each task uses the same five rungs of rule help:
+Each task uses the same 3×3: rules / llm / hybrid against extract /
+encode / select.
 
-- **1 rules only** — deterministic code produces the clinical answer.
-- **2 schema only** — one model call, no candidate list; JSON/schema only.
-- **3 format render** — same saved output; dialect or serialization only.
-- **4 clinical post** — same saved output plus the full clinical rule stack.
-- **5 pre-suggest + post** — deterministic candidates go into the prompt,
-  then the same post stack. This is living ExECT LLM with rules. On Gan it
-  is a new request (`gan_llm_pre_post`), iterated on Luna first.
+- **Rules** — deterministic code; one score in every stage column.
+- **LLM extract** — parsed model ledger. Later-stage LLM encode and
+  select are Gemini-only and not yet run.
+- **Hybrid encode / select** — replay of `gan_llm_with_rules` /
+  `exect_llm_only` through designed-form then policy.
+- **Hybrid extract** — other request (`*_pre_post`): candidates in the
+  prompt, then the living select stack.
 
 ## How it works
 

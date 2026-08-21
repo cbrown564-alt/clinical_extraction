@@ -8,16 +8,16 @@ this file for the named-rule list
 This is the comparable grain for both tasks: **named, independently
 stoppable rules**, classed by the locked assignment rule.
 
-- **Schema** = parse and flatten. On Gan, schema already writes a
-  submitted label via `_normalize_event` / `_resolve_final_label`
-  (encode/render leak). Schema is not a no-rule model.
+- **Extract** = model ledger. Parse is code. On Gan, score the model's
+  `final_label` only. `_normalize_event` / `_resolve_final_label` run
+  at encode.
 - **Encode** = same finding written into the designed / gold
-  form, including codebook attach. `project_cuis` is encode and runs at
-  the encode-replay stop; the reported encode cell already includes it.
-- **Revise** = accept / reject / rewrite / reselect / invent.
-  Gates stay in this folder in code; they are revise-gate, not encode.
+  form, including codebook attach and Gan resolve-if-blank. `project_cuis`
+  is encode and runs at the encode-replay stop.
+- **Select** = gate / drop / rewrite / reselect / invent.
+  Same five kinds on Gan and ExECT.
 
-Cell 1 (rules only) is a **different** rule set. It is not this
+The rules row of the 3×3 is a **different** rule set. It is not this
 catalogue. Live ExECT `exect_llm_only` still scores the mixed
 `project_and_gate` bundle; that view is not cell 2. Replay cells 2–4
 use the split below.
@@ -39,9 +39,6 @@ Status:
 - **live** — on in the default hybrid / replay stack
 - **format-replay** — applied on ExECT encode cell (cell 3); the live producer may
   not run it
-- **default off** — coded, flag off
-- **off** — present but not in the selected lens / mode
-- **deleted** — removed; unknown names raise
 
 ---
 
@@ -80,8 +77,6 @@ One current seizure-frequency label. Replay cells 2–4 share one
 | Diary dialect in the renderer (`monthly_diary_label_from_text` and calendar / sleep-awake / date-list helpers) | live, inside renderer | encode | Same selected span, diary string |
 | `blocks_inexact_span_family_rewrite` | live, inside renderer | gate | Block a kind change unless the quote is an exact source span |
 | `basic_label_repair` / `repair_prediction_label` | live only when selected-evidence is **off** | encode | Label-string normalize without selected evidence |
-| `basic_label_repair_format_only` | mode `strict_format` | encode | Narrower label normalize |
-| `clean_scorer_facing_gold_policy` | mode `clean_scorer_facing` | encode | Scorer-facing gold dialect without selected evidence |
 
 ### Revise
 
@@ -100,7 +95,6 @@ Applied in `DEFAULT_SEMANTIC_FAMILY_ORDER` when the matching flag is on.
 | Sustained seizure-free veto on `elapsed_anchor` | live | gate | Keep a sustained selected seizure-free label; record the elapsed proposal as vetoed |
 | `monthly_diary` (revise family) | live | reselect | May switch the submitted label to a diary-derived state |
 | Diary preserve-label guard | live | gate | Leave the current label when the diary family must not override |
-| `month_x_typical_preserve` | **default off** | gate | Hop-audit fix: keep a month-X typical reading |
 | `diary_sum_all_months` | live | rewrite | Hop-audit fix inside diary / revise |
 | `vague_seizure_free_diary` | live | rewrite | Hop-audit fix for vague seizure-free diary wording |
 | `date_list_span` | live | rewrite | Hop-audit fix for date-list span reading |
@@ -139,9 +133,6 @@ Cell 4 is living assembly (`residual_benchmark_added`).
 | JME covers phenotype drop | Revise | live | gate | Delete absence/jerk siblings when JME is present |
 | Bounded residual-add | Revise | live | invent | Invent a Diagnosis from a source pattern |
 | Residual redundancy skip | Revise | live | gate | Block an add already implied by kept concepts |
-| Absence-preservation / residual-subsumption variants | Revise | **off** (default variant `default`) | gate | Policy around drops/adds |
-| Heading recovery | Revise | **off** | invent | Historical; zero-fire |
-| Generic-epilepsy companion | Revise | **off** (hard `False`) | invent | Used to add generic `epilepsy` beside a subtype |
 
 Diagnosis encode-replay does **not** run the convention rewrite. Cell 3
 keeps written `epilepsy` and may attach a CUI (encode). Concept remap
@@ -179,8 +170,6 @@ is revise at the revise stop.
 | `unknown_suppression.drug_response_scope` | Revise | live | Drop unknown change that is drug-response scoped |
 | `unknown_suppression.contextual_or_historical_change` | Revise | live | Drop contextual / historical unknown change |
 | Candidate-span residual add | Revise | live if spans exist | Add a state mention from a candidate span |
-| `state.drop_stale_older_zero` / `drop_never_had_or_resemble` / `retarget_seizure_free_span` | Revise | **default off** (`residuals_v020`) | Extra residual projection |
-| Dictionary rewrite / dictionary residual-add | Revise | **off** | SF lens is pass-through |
 
 SF `encoding.*` on encode-replay is encode/dialect (same finding into
 designed form) unless a row invents a new mention. Ownership retarget
@@ -201,9 +190,6 @@ add is invent.
 | Split explicit uneven once-daily | Revise | live lens | rewrite | Multiplicity change |
 | Drop non-ASM | Revise | **live leftover** | gate | Deletes the finding; manifest says the lens never removes |
 | Drop planned-start / titration-only | Revise | **live leftover** | gate | Deletes the finding |
-| Residual-add current regimens | Revise | **off** | invent | Measured net-harmful |
-| Delete planned/historical as a general noise rule | Revise | **off** | gate | Removed; leftover is the planned-start drop |
-| `current_guard_only` / `residual_explicit_current_only` | — | **deleted** | — | Unknown variant raises |
 
 ### Investigations
 
@@ -212,8 +198,6 @@ add is invent.
 | Strip cross-modality `*_Performed='No'` not in the mention text | Encode | format-replay + live lens | encode | Same test, drop junk attrs |
 | Infer `*_Performed='Yes'` when a result is present | Encode | format-replay + live lens | encode | Same finding |
 | Pending-cue drop | Revise | live lens | gate | Delete await/request/appointment without a completed result |
-| Full noise / result-binding | Revise | **off** | gate | Former thick lens |
-| Residual investigation providers | Revise | **off** in assembly | invent | Prompt-side only |
 
 ---
 

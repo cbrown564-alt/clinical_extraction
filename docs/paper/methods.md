@@ -1,15 +1,15 @@
 # Paper methods
 
 Date: 2026-08-17
-Revised: 2026-08-21 (five cells: two producers + encode/revise; not five depths)
+Revised: 2026-08-21 (headline is a 3×3: rules / llm / hybrid × extract / encode / select)
 Status: current
 Owner: this file
 
 Two tasks. The proposed method translates clinic letters into structured
-facts in a designed form, with quoted source text. The five reported
-cells are two producers, one replay stack (schema / encode / revise),
-and one optional prompt treatment — not five depths of one hybrid
-switch. Scores are not interchangeable across tasks.
+facts in a designed form, with quoted source text. The headline table is
+a 3×3: methods **rules**, **llm**, and **hybrid** against stages
+**extract**, **encode**, and **select**. It is not five depths of one
+hybrid switch. Scores are not interchangeable across tasks.
 
 | | Gan 2026 | ExECTv2 |
 | --- | --- | --- |
@@ -40,18 +40,16 @@ are a design property, not a third evaluated task.
 | Submitted answer | One canonical frequency label | One de-duplicated fact inventory |
 | How this paper scores it | Label mapped to a monthly Purist band | Four-family clinical fact F1 |
 
-On Gan the living request for rungs 2–4 is `gan_llm_with_rules`:
-the model extracts events and makes a first pick. Rules may later
-render or switch that pick. Rungs 2–4 share one saved `raw_output`.
-Rung 5 is a new Gan request that also puts those deterministic
-candidates in the prompt. `gan_llm_only` is a different prompt. It is
-not a results column.
+On Gan, **llm extract** and **hybrid encode / hybrid select** replay
+one `gan_llm_with_rules` `raw_output`. **Hybrid extract** is a
+different request (`gan_llm_pre_post`): rule candidates in the
+prompt, then the living select stack. `gan_llm_only` is a third
+prompt. It is not a results column.
 
-On ExECT, rungs 2–4 replay `exect_llm_only` `raw_output`. Rung 5 is
-the living `exect_llm_pre_post` request, which already suggests
-candidates before generation. `exect_llm_with_rules` is the live
-alias for that request. An unrepaired hybrid answer is not
-rung 2.
+On ExECT, **llm extract** and **hybrid encode / hybrid select** replay
+`exect_llm_only` `raw_output`. **Hybrid extract** is living
+`exect_llm_pre_post` (`exect_llm_with_rules` is the live alias). An
+unrepaired hybrid body is not llm extract.
 
 The paper records every submitted-answer version as a hop log. A
 derived state graph is optional. A recorded hop is not a clinically
@@ -60,11 +58,16 @@ correct step.
 The paper uses these change classes consistently (plain-language owner:
 [five rungs](../research/paper/five_rungs_of_rule_help_2026-08-20.md)):
 
-- **Dialect:** same-fact writing (units, brand→generic, word numbers).
-- **Encode:** codebook / designed form / Gan selected-evidence renderer;
-  does not pick a different fact. ExECT format-replay includes CUI attach.
-- **Revise (semantic):** may change facts under recorded policy — gate,
-  rewrite, reselect, invent (overwrite is one kind, not the definition).
+- **Extract:** collect facts and quotes. The model's written label or
+  mentions. Parse is code.
+- **Encode:** same facts, designed form (units, brand→generic, word
+  numbers, codebook attach, Gan selected-evidence renderer, resolve a
+  blank Gan label). Does not pick a different fact.
+- **Select:** may change facts under recorded policy. Shared kinds on
+  both tasks: **gate** (withhold or block), **drop** (remove a
+  submitted fact), **rewrite** (change the meaning of a kept fact),
+  **reselect** (change which extracted fact is current), **invent**
+  (add a residual fact).
 - **Score projection:** converts the submitted answer to the unit the
   benchmark scores. It can discard distinctions without changing the
   submitted answer.
@@ -74,21 +77,18 @@ records it. A visible step is not described as clinically correct.
 
 ## Identities
 
-Headline columns are the five reported cells. Same names on both tasks.
-Scores stay task-specific. The plain-language owner, with one
-development letter on each task, is
+The headline is a 3×3. Same names on both tasks. Scores stay
+task-specific. The plain-language owner is
 [five rungs of rule help](../research/paper/five_rungs_of_rule_help_2026-08-20.md).
 
-| Rung | Identity | Gan | ExECT |
+| | Extract | Encode | Select |
 | --- | --- | --- | --- |
-| 1 `rules_only` | `gan_rules` / `exect_rules` | Other producer; no model; different rule set | Other producer; no model; different rule set |
-| 2 `llm_schema` | replay `gan_llm_with_rules` `raw_model` / replay `exect_llm_only` `source_scored` | Parsed ledger; already writes a label (`_normalize_event` / `_resolve_final_label` leak) | Parsed mentions. Score raw clinical-fact keys |
-| 3 `llm_encode` | replay `llm_encode` / `format_only` stop | Encode: selected-evidence renderer into evaluation form; must not switch the selected event | Encode: same-fact writing including `project_cuis` on encode-replay; not concept rewrite |
-| 4 `llm_revise` | `gan_llm_with_rules` `llm_revise` / `exect_llm_only` full assembly | Revise: full clinical revise may change facts | Revise: family transforms, gates, producer checks |
-| 5 `llm_pre_post` | `gan_llm_pre_post` / `exect_llm_pre_post` | Other request: candidates in the prompt, then the same post stack | Living hybrid request. Cite hybrid F1. Do not score that raw as rung 2 |
+| **Rules** | `gan_rules` / `exect_rules`. Same submitted answer in all three columns. No model. This rule set is not the hybrid encode/select stack. | same | same |
+| **LLM** | Replay `gan_llm_with_rules` / `exect_llm_only` as parsed. Model label or flattened mentions only. | Empty until Gemini later-stage `llm_encode` runs. | Empty until Gemini later-stage `llm_select` runs. |
+| **Hybrid** | Other request: `gan_llm_pre_post` / `exect_llm_pre_post` (was cell 5). Rule candidates in the prompt, then the living select stack. Cite that living score here. | Replay encode on the `gan_llm_with_rules` / `exect_llm_only` raw (was cell 3). Same facts, designed form. | Replay select on that same raw (was cell 4). Gate, drop, rewrite, reselect, invent. |
 
 `gan_llm_only` remains a live runner for existing cells. It is not a
-results column. Do not use it as rung 2 or 3.
+results column. Do not use it as llm extract.
 
 The living ExECT model methods are `exect_llm_only` and
 `exect_llm_pre_post` (`exect_llm_with_rules` is the live alias of
@@ -99,11 +99,14 @@ E5 and Compact are lineage labels, not living method names. See
 
 ## Roster
 
-Grok 4.6 is the cited model, so the story stays on the method.
-Companion rows, where their cells exist: GPT-5.6 Luna, Gemini
-3.7 Flash, DeepSeek V4 Flash 0731, Qwen 3.8 27B, Gemma 4 26B.
-GPT-5.6 Sol is historical. Gemini is in the same band as Grok
-where both cells exist.
+Gemini 3.7 Flash is the cited model, so the story stays on the
+method. Companion rows, where their cells exist: Grok 4.6, GPT-5.6
+Luna, DeepSeek V4 Flash 0731, Qwen 3.8 27B, Gemma 4 26B. GPT-5.6
+Sol is historical. Later-stage LLM encode and LLM select calls
+(`gan_llm_encode`, `gan_llm_select`, and the ExECT pair) are Gemini
+only. See [Gemini is the cited model](decisions/gemini-is-the-cited-model.md).
+Gan later-stage prompt contract:
+[Gan later-stage encode and select prompts](decisions/gan-later-stage-encode-select-prompts.md).
 
 Machine roster: [`paper_experiments/roster.json`](../../paper_experiments/roster.json).
 

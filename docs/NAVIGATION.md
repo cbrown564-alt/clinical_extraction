@@ -31,7 +31,7 @@ record:
 7. [Five rungs of rule help](research/paper/five_rungs_of_rule_help_2026-08-20.md) — plain-language rungs; Gan row 10 and ExECT `EA0007`
 7a. [Rule catalogue](research/paper/rule_catalogue_schema_format_post_2026-08-21.md) — named schema / format / post rules on both tasks
 8. [How the proposed method divides the work](research/artifacts/hybrid_architecture_2026-08-10.html)
-9. [Parallel performance view](research/artifacts/parallel_two_task_performance_view_2026-08-09.html) — two holdout comparisons, kept separate. Tables cite Grok; Gemini is in the same band.
+9. [Parallel performance view](research/artifacts/parallel_two_task_performance_view_2026-08-09.html) — two holdout comparisons, kept separate. Tables cite Gemini; Grok is a companion row.
 10. [Gan story](research/paper/gan_story_2026-08-10.md) and [ExECT story](research/paper/exect_story_2026-08-12.md) — ExECT hybrid numbers are Compact hybrid F1; standalone Compact LLM-only is raw F1 ([methods](paper/methods.md); [cells](../paper_experiments/exect/README.md))
 11. [Component roles and limits](research/artifacts/paper_source_component_roles_and_limits_2026-08-09.pptx) — prose: [failures](research/paper/failures_and_limits_2026-08-10.md)
 12. [Failures and limits](research/paper/failures_and_limits_2026-08-10.md)

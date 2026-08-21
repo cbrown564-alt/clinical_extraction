@@ -29,8 +29,10 @@ enveloped cells would describe the wrong call.
 
 ## Consequences
 
-- New writing may cite the Grok cleaned-request holdout. Wait for
-  the remaining models before a six-model holdout table.
+- New writing cites the Gemini cleaned-request cells where they
+  exist. Grok cleaned `test450` (375/450) remains a companion
+  locked total. Wait for the remaining models before a six-model
+  holdout table.
 - Existing enveloped hybrid fills stay historical.
 - Do not inspect `test450` rows.
 - Do not invent the remaining cleaned-request holdout numbers.

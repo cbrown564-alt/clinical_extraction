@@ -1,13 +1,13 @@
 # What the evidence supports
 
 Date: 2026-08-20
-Revised: 2026-08-21 (cells are two producers + encode/revise, not five depths)
+Revised: 2026-08-21 (headline is a 3×3: rules / llm / hybrid × extract / encode / select)
 Status: current
 Owner: this file
 
 This page is the paper's reading of the living comparison. Method names
-and splits are on [methods](methods.md). The headline table keeps five
-reported cells; they are not five depths of one hybrid switch. Replayable
+and splits are on [methods](methods.md). The headline table is a 3×3;
+it is not five depths of one hybrid switch. Replayable
 numbers live in
 [`paper_experiments/`](../../paper_experiments/README.md). Writing
 sources that unpack the same evidence are the
@@ -26,8 +26,10 @@ the page is the supported reading, not a list of things to avoid.
 | **Engineering** | Tests, hashes, split locks, replay. Not clinical validation. |
 | **Unsupported** | The files do not bear the sentence. |
 
-Grok 4.6 is the cited model, so the story stays on the method.
-Other models are companion rows. Scores do not move between tasks.
+Gemini 3.7 Flash is the cited model, so the story stays on the
+method. Grok, Luna, DeepSeek, Qwen, and Gemma are companion rows.
+Later-stage LLM encode and LLM select calls are Gemini only. Scores
+do not move between tasks.
 
 ## Central claim
 
@@ -43,7 +45,7 @@ The strongest cross-task formulation currently supported is:
 > The proposed method keeps a source span and a change log while
 > translating letters into a designed structured form. On two public
 > evaluation golds it beats a model alone and beats or slightly beats
-> standalone rules. Grok is the cited model; Gemini repeats the pattern
+> standalone rules. Gemini is the cited model; Grok repeats the pattern
 > where both cells exist.
 
 This is a claim about the recorded object and the locked totals. It is
@@ -67,16 +69,16 @@ two facts, or adding an unsupported rate is an error. The primary score
 is how completely those four kinds of fact were recovered. It is a
 research measure. It is not the published 2019 ExECT benchmark.
 
-The headline comparison is five reported cells: rules only (other
-producer), schema, format/encode, clinical post/revise, and
-pre-suggestion plus post (other request). They are not five depths of
-one hybrid switch. Plain gloss: rung 3 encodes the model’s facts into
-the evaluation form; rung 4 may change those facts under recorded
-policy. The worked reading is
+The headline comparison is a 3×3: rules / llm / hybrid against
+extract / encode / select. Rules repeat one score in every stage
+column. LLM has extract only until Gemini later-stage encode and
+select runs exist. Hybrid extract is the `*_pre_post` request (was
+cell 5). Hybrid encode and hybrid select replay the
+`gan_llm_with_rules` / `exect_llm_only` raw (were cells 3 and 4).
+The worked reading is
 [five rungs of rule help](../research/paper/five_rungs_of_rule_help_2026-08-20.md).
-`gan_llm_only` is a different prompt and is not a results column. On
-the inventory, rungs 2–4 replay `exect_llm_only`. Rung 5 is the
-living `exect_llm_pre_post` request. An unrepaired hybrid answer is not rung 2.
+`gan_llm_only` is a different prompt and is not a results column.
+An unrepaired hybrid body is not llm extract.
 A recorded rule may change clinical meaning; deterministic does not
 mean neutral or safe. A recorded hop is not a clinically correct
 step. A later cell is not automatically better. Development hop shares
@@ -86,21 +88,24 @@ are not holdout component estimates.
 
 ### What the locked totals show
 
-On 450 held-out letters, written rules (rung 1) labelled 329 correctly
-(73.1%). Grok plus the full clinical post stack (rung 4) labelled 375
-(83.3%). Gemini rung 4 labelled 373 (82.9%). The paper may say those
-locked totals. It may not treat `gan_llm_only` as a results column.
+On 450 held-out letters, written rules labelled 329 correctly
+(73.1%). That score fills every rules column. Gemini hybrid extract
+(`gan_llm_pre_post`) labelled 372 (82.7%). Gemini hybrid select
+labelled 373 (82.9%). Grok hybrid extract labelled 370 (82.2%).
+Grok hybrid select labelled 375 (83.3%). Those extract and select
+cells are different requests. The paper may say those locked totals.
+It may not treat `gan_llm_only` as a results column.
 That request is a different prompt (one finished label). Its Grok
-holdout cell is 327/450 (72.7%); it is not rung 2 or 3.
+holdout cell is 327/450 (72.7%); it is not extract or encode.
 
-The paper may say that, with Grok as the cited model, rung 4 clears
-the rules baseline on this locked set, and that Gemini repeats the
+The paper may say that, with Gemini as the cited model, hybrid select
+clears the rules baseline on this locked set, and that Grok repeats the
 pattern. It may say the gain is an overall count. It may not say
 which letters moved.
 
 The rule baseline is a standalone deterministic pipeline. It is not the
-same rule set that later repairs model events. The 46-letter gap from
-rules to Grok-plus-repair is therefore a method comparison, not a
+same rule set that later repairs model events. The gap from rules to
+Gemini-plus-select is therefore a method comparison, not a
 measurement of those later repair stages in isolation.
 
 ### What development replay shows about the lift
@@ -113,31 +118,33 @@ label from events the model had already extracted. Thirteen promoted
 another extracted event. None invented a rate from text the model never
 quoted.
 
-Named Grok `dev750` scores for rungs 1–4, from one saved
-`gan_llm_with_rules` output plus standalone rules:
+Named Gemini `dev750` 3×3, from standalone rules, one saved
+`gan_llm_with_rules` raw, and (blank) later-stage LLM calls:
 
-| Rung | Purist | Scorable |
-| --- | --- | --- |
-| 1 `rules_only` | 669/750 (0.8920) | 750 |
-| 2 `llm_schema` | 371/750 (0.4947) | 448 |
-| 3 `llm_encode` | 603/750 (0.8040) | 750 |
-| 4 `llm_revise` | 671/750 (0.8947) | 750 |
+| | Extract | Encode | Select |
+| --- | ---: | ---: | ---: |
+| **Rules** | 669/750 | 669/750 | 669/750 |
+| **LLM** | 444/750 (0.5920), 532 scorable | — | — |
+| **Hybrid** | 675/750 (0.9000) living `gan_llm_pre_post` | 608/750 (0.8107) | 677/750 (0.9027) |
 
-Selected-evidence render never changed `selected_event_ids` on these
-750 letters, so it is rung 3. It changed predicted kind 305 times and
-rescued 233 Purist letters (one harm). Those scores explain the *kind*
-of work recorded repair does. They are not holdout component shares.
-The paper may say the lift is stepwise (schema → form → clinical post
-→ pre-suggestion) when the rung-5 cell exists. It may not treat a
-development hop share as a holdout component estimate.
+Companion Grok on the shared `gan_llm_with_rules` raw: llm extract
+371/750, hybrid encode 603/750, hybrid select 671/750.
+
+On the Gemini raw, selected-evidence render never changed
+`selected_event_ids`, so it is encode. It changed predicted kind 219
+times and rescued 167 Purist letters (three harms). Those scores
+explain the *kind* of work recorded encode does. They are not holdout
+component shares. The paper may say the lift is stepwise (extract →
+encode → select → pre-suggestion) when the rung-5 cell exists. It may
+not treat a development hop share as a holdout component estimate.
 
 The paper may say the mass first change is label rendering of a span
-the model already chose, and that later clinical rules can still switch
+the model already chose, and that later select rules can still switch
 the reading (diary, dated count, usual rate, breakthrough). It may not
 say that recorded repair is causally necessary on held-out letters, or
-that it never harms an answer. Luna is the rung-5 development
-iterator. It is not automatically the cited model. Do not start Grok
-or holdout rung-5 calls in this cut.
+that it never harms an answer. Luna is the Gan pre-post development
+iterator. It is not the cited model. Later-stage LLM encode and LLM
+select calls are Gemini only, on both tasks.
 
 ### What remains hard
 
@@ -166,23 +173,21 @@ need its own gold; this gold still scores `4 per day`.
 ### What the locked totals show
 
 On 60 held-out letters, written rules recovered 79.4% of clinical
-facts and living Grok hybrid (rung 5) recovered 80.5%. Grok
-`exect_llm_only` raw F1 is 77.3% on that locked set; it is rung 2,
-not an unrepaired hybrid. On 140 development letters the five rungs
-are:
+facts and living Gemini hybrid extract (`exect_llm_pre_post`) recovered
+81.3%. Grok hybrid extract recovered 80.5%. Grok `exect_llm_only` raw
+F1 is 77.3% on that locked set; it is not llm extract flatten. On 140
+development letters the Grok 3×3 is:
 
-| Rung | Clinical fact F1 | Source |
-| --- | --- | --- |
-| 1 `rules_only` | 0.9042 | `exect_rules` |
-| 2 `llm_schema` | 0.6485 | flatten only; no CUI attach |
-| 3 `llm_encode` | 0.8197 | same raw; encode into designed form (CUI attach, units, SF encoding) |
-| 4 `llm_revise` | 0.9040 | same raw; revise (gates, SF projection, family lenses) |
-| 5 `llm_pre_post` | 0.8998 | living `exect_llm_pre_post` hybrid |
+| | Extract | Encode | Select |
+| --- | ---: | ---: | ---: |
+| **Rules** | 0.9042 | 0.9042 | 0.9042 |
+| **LLM** | 0.6485 (flatten only) | — | — |
+| **Hybrid** | 0.8998 (`exect_llm_pre_post`) | 0.8197 | 0.9040 |
 
 Rungs 2–4 share one `exect_llm_only` output. Rung 5 is a different
 request. Dictionary rewrite is revise, not encode. Live
 `exect_llm_only` Grok `dev140` raw F1 remains 0.8212; that gated
-producer view is not rung 2. SeizureFrequency schema F1 is 0.0
+producer view is not llm extract. SeizureFrequency schema F1 is 0.0
 because the clinical-fact key needs the codebook id that format
 attaches. The paper may not say the inventory format stop is empty.
 It may not park a semantic SF projection on the format rung.
@@ -194,9 +199,9 @@ inventory splits (DeepSeek held-out 81.2%; Gemma held-out 69.3%).
 Their model-alone inventory cells are not yet on disk. Qwen is
 missing both inventory model methods.
 
-The paper may say that, with Grok as the cited model, rung 5 sits
-above the model-alone request and slightly above written rules on
-the locked inventory, and that Gemini's total is in the same band. It
+The paper may say that, with Gemini as the cited model, hybrid extract
+sits above the model-alone request and slightly above written rules on
+the locked inventory, and that Grok's total is in the same band. It
 may say the inventory gain is smaller than the frequency-label gain. It
 may not rank providers, and it may not treat those percentages as the
 2019 benchmark.
@@ -323,7 +328,8 @@ paper is a list of bans.
 | Sol 381/450, or any Gan hybrid that still sent lab labels to the model | The enveloped request, not the cleaned frequency method |
 | Compact-dump scores as model-plus-repair | A different inventory request shape |
 | Full-ledger headlines as a sixth rung | The long control book, not a peer of the five-rung table |
-| `gan_llm_only` as rung 2 or 3 | A different prompt, not the shared hybrid raw |
+| `gan_llm_only` as extract or encode | A different prompt, not the shared hybrid raw |
+| Later-stage LLM encode / select on Grok, Luna, DeepSeek, Qwen, or Gemma | A run the paper did not authorise; those calls are Gemini only |
 | GEPA, historical `v08`, full200, or all-nine paper-derived metrics as the inventory comparison | A different evaluation object |
 | A three-pass multi-model frequency score | A different architecture |
 | The 60-plus-140 inventory letters as one independent test | A development-inclusive audit, not a locked test |
