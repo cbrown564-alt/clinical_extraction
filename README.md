@@ -5,9 +5,9 @@ Turn epilepsy clinic letters into structured clinical facts.
 This repository is research code and a working demonstration. The proposed
 method translates clinic letters into structured clinical facts in a designed
 form, with quoted source text. A model collects the facts and evidence;
-recorded rules shape them into the required form. The comparison is
-methods (rules, llm, hybrid) against stages (extract, encode, select),
-not an on/off hybrid switch. The public golds are the evaluation
+recorded rules shape them into the required form. The comparison is four methods (Rules, LLM, LLM then rules, Rules
+then LLM) against stages (extract, encode, select), not an on/off
+hybrid switch. The public golds are the evaluation
 forms used here, not the task. Tables cite Gemini 3.7 Flash so the
 story stays on the method. Grok, Luna, DeepSeek, Qwen, and Gemma are
 companion rows. The recorded
@@ -31,8 +31,9 @@ in every rules column.
 | | Extract | Encode | Select |
 | --- | ---: | ---: | ---: |
 | **Rules** | 0.73 | 0.73 | 0.73 |
-| **LLM** | — | — | — |
-| **Hybrid** | 0.83 | 0.74 | 0.83 |
+| **LLM** | 0.55 | 0.65 | 0.71 |
+| **LLM then rules** | 0.55 | 0.74 | 0.79 |
+| **Rules then LLM** | 0.59 | 0.77 | 0.80 |
 
 **ExECTv2** (clinical fact F1, locked `test60`):
 
@@ -40,25 +41,27 @@ in every rules column.
 | --- | ---: | ---: | ---: |
 | **Rules** | 0.79 | 0.79 | 0.79 |
 | **LLM** | — | — | — |
-| **Hybrid** | 0.81 | 0.78 | 0.81 |
+| **LLM then rules** | — | 0.78 | 0.81 |
+| **Rules then LLM** | — | — | 0.81 |
 
-Em dashes are missing locked cells, not zeros. Later-stage LLM encode
-/ select are Gemini-only and not yet run. Hybrid encode / select
-replay `gan_llm_with_rules` / `exect_llm_only`. Hybrid extract is
-`*_pre_post`. Gan hybrid extract is living Gemini `gan_llm_pre_post`
-(372/450); hybrid select is living Gemini `gan_llm_with_rules`
-(373/450). Both round to 0.83. `gan_llm_only` is not a results
-column.
+Em dashes are missing locked cells, not zeros. Gan **LLM** encode and
+select are later-stage Gemini cells. **LLM then rules** is the three
+stops on `gan_llm_with_rules` / `exect_llm_only`. **Rules then LLM**
+is the three stops on `*_pre_post`. Gan hybrid select is ledger-only.
+Gemini Rules then LLM select is 358/450; Gemini LLM then rules select
+is 357/450. Those living cells match the select stops. `gan_llm_only`
+is not a results column.
 
 - **Gan 2026:** Purist accuracy on the locked `test450` split (one current
-  seizure-frequency label per letter). The cited hybrid-select cell is the
-  cleaned request. The living Grok companion holdout is 375/450; do not
-  read an enveloped `v0.5` score into that cell.
+  seizure-frequency label per letter). The living Grok companion LLM
+  then rules select is 375/450; do not read an enveloped `v0.5` score
+  into that cell.
 - **ExECTv2:** de-duplicated clinical fact F1 on the locked `test60` split
-  (diagnosis, seizure frequency, prescriptions, and investigations). LLM
-  extract replays `exect_llm_only`. Hybrid extract is `exect_llm_pre_post`.
-  An unrepaired hybrid body is not llm extract. This is the project's
-  primary research metric for ExECT, not the published strict benchmark.
+  (diagnosis, seizure frequency, prescriptions, and investigations).
+  LLM then rules replays `exect_llm_only`. Rules then LLM is
+  `exect_llm_pre_post`. Extract stops on those raws are not all
+  filled. This is the project's primary research metric for ExECT,
+  not the published strict benchmark.
 
 Scores are not interchangeable across tasks.
 
@@ -71,16 +74,14 @@ Scores are not interchangeable across tasks.
 | Locked test split | `test450` (aggregate scores only) | `test60` (aggregate scores only) |
 | Primary score | Purist accuracy | Clinical fact F1 |
 
-Each task uses the same 3×3: rules / llm / hybrid against extract /
-encode / select.
+Each task uses the same four methods against extract / encode / select.
 
 - **Rules** — deterministic code; one score in every stage column.
-- **LLM extract** — parsed model ledger. Later-stage LLM encode and
-  select are Gemini-only and not yet run.
-- **Hybrid encode / select** — replay of `gan_llm_with_rules` /
-  `exect_llm_only` through designed-form then policy.
-- **Hybrid extract** — other request (`*_pre_post`): candidates in the
-  prompt, then the living select stack.
+- **LLM** — parsed model ledger, then Gemini later-stage encode and
+  select on Gan. ExECT later-stage encode and select are not yet run.
+- **LLM then rules** — `gan_llm_with_rules` / `exect_llm_only` at
+  extract, encode, and select.
+- **Rules then LLM** — `*_pre_post` at extract, encode, and select.
 
 ## How it works
 

@@ -1,13 +1,14 @@
-# Method × stage grid: rules / llm / hybrid against extract / encode / select
+# Method × stage grid: four methods against extract / encode / select
 
 Date: 2026-08-20
-Revised: 2026-08-21 (refile: 3×3, not five depths of one hybrid switch)
+Revised: 2026-08-21 (refile: Rules / LLM / LLM then rules / Rules then LLM)
 Status: paper source; development illustrations only
 Owners: [methods](../../paper/methods.md), [claims](../../paper/claims.md),
 this file for the worked reading
 
-The headline table is a 3×3: methods **rules**, **llm**, and
-**hybrid** against stages **extract**, **encode**, and **select**.
+The headline table is four methods — **Rules**, **LLM**, **LLM then
+rules**, **Rules then LLM** — against stages **extract**, **encode**,
+and **select**.
 This page is the plain-language owner for what those cells are, how
 they run on one Gan letter and one ExECT letter, and what the full
 design is worth. Replayable numbers stay in
@@ -15,7 +16,9 @@ design is worth. Replayable numbers stay in
 sentence may say stays in [claims](../../paper/claims.md).
 
 These examples are development letters. They explain a mechanism. They
-are not holdout component estimates. Do not inspect `test450` or
+are not holdout component estimates. The locked Gemini `test450`
+grid is in [README](../../../README.md) and
+[claims](../../paper/claims.md). Do not inspect `test450` or
 `test60` rows.
 
 ## What the design is
@@ -25,18 +28,18 @@ facts in a designed form, with quoted source text. A model collects a
 ledger. Recorded rules then shape that ledger. The same saved model
 output can be replayed through those rules without a new call.
 
-The framing is **three methods × three stages**:
+The framing is **four methods × three stages**:
 
 - **Rules** — no model. One submitted answer, shown in all three
-  stage columns. That rule set is not the hybrid encode/select stack.
-- **LLM** — model extract only, until Gemini later-stage encode and
-  select calls exist. Extract is the parsed `gan_llm_with_rules` /
-  `exect_llm_only` ledger (was cell 2).
-- **Hybrid encode / hybrid select** — same saved extract raw, replayed
-  at encode (was cell 3) then select (was cell 4).
-- **Hybrid extract** — other request (was cell 5): rule candidates in
-  the prompt, then the living select stack. Not a deeper climb on the
-  encode/select replay.
+  stage columns. That rule set is not the encode/select stack on a
+  model ledger.
+- **LLM** — model only. Extract is the parsed `gan_llm_with_rules` /
+  `exect_llm_only` ledger. Encode and select are later-stage model
+  calls on that ledger.
+- **LLM then rules** — `gan_llm_with_rules` / `exect_llm_only`.
+  Extract, encode, and select are the three stops on that raw.
+- **Rules then LLM** — `gan_llm_pre_post` / `exect_llm_pre_post`.
+  Extract, encode, and select are the three stops on that raw.
 
 The two public golds are evaluation forms, not the task. Gan asks for
 one current seizure-frequency label. ExECT asks for a complete
@@ -47,13 +50,14 @@ A later cell is not automatically better. A recorded hop is not a
 clinically correct step. The score is how the submitted answer is
 judged. Do not recode the stack; this is a refile of the claim.
 
-## The 3×3
+## The grid
 
 | | Extract | Encode | Select |
 | --- | --- | --- | --- |
 | **Rules** | `gan_rules` / `exect_rules`. Same score in every stage column. | same | same |
-| **LLM** | Parsed model ledger. Was cell 2. Blank Gan `final_label` stays unscorable. Not `gan_llm_only`. | Empty until a Gemini later-stage encode call. | Empty until a Gemini later-stage select call. |
-| **Hybrid** | Other request (`*_pre_post`). Was cell 5. Candidates in the prompt, then the living select stack. | Encode replay of the `*_llm_with_rules` / `exect_llm_only` raw. Was cell 3. Same facts, designed form. | Select replay of that same raw. Was cell 4. Gate, drop, rewrite, reselect, invent. |
+| **LLM** | Parsed model ledger. Blank Gan `final_label` stays unscorable. Not `gan_llm_only`. | Gan: Gemini `gan_llm_encode`. ExECT later-stage encode is still empty. | Gan: Gemini `gan_llm_select`. ExECT later-stage select is still empty. |
+| **LLM then rules** | `gan_llm_with_rules` / `exect_llm_only` extract stop. | Encode stop on that raw. | Select stop on that raw. |
+| **Rules then LLM** | `*_pre_post` extract stop. | Encode stop on that raw. | Select stop on that raw. |
 
 Three hop effects on one raw support the reading (the paper table need
 not list every revise subtype):
@@ -62,14 +66,14 @@ not list every revise subtype):
 - **Encode** — codebook / designed form / Gan selected-evidence renderer.
 - **Select** — gate, drop, rewrite, reselect, invent.
 
-On Gan, llm extract and hybrid encode / select replay one
-`gan_llm_with_rules` `raw_output`. Hybrid extract is
-`gan_llm_pre_post`. Tables cite Gemini 3.7 Flash. Luna is the
-development iterator for that hybrid-extract request. Later-stage LLM
-encode and LLM select calls are Gemini only.
+On Gan, LLM then rules is the three stops on one
+`gan_llm_with_rules` raw. Rules then LLM is the three stops on one
+`gan_llm_pre_post` raw. LLM encode and select are later-stage
+Gemini calls. Tables cite Gemini 3.7 Flash. Luna is the development
+iterator for the Rules then LLM request.
 
-On ExECT, llm extract and hybrid encode / select replay one
-`exect_llm_only` `raw_output`. Hybrid extract is living
+On ExECT, LLM then rules is the three stops on one `exect_llm_only`
+raw. Rules then LLM is the three stops on living
 `exect_llm_pre_post`. `exect_llm_with_rules` is the live alias.
 
 The paper records every submitted-answer version as a hop log. A
@@ -197,6 +201,7 @@ second use case.
 
 | Need | File |
 | --- | --- |
+| Gan Gemini reading of this grid | [rules and models across stages](gan_rules_and_llms_across_stages_2026-08-21.md) |
 | Locked wording | [claims](../../paper/claims.md) |
 | Identities, splits, scorers | [methods](../../paper/methods.md) |
 | Named schema / format / post rules | [rule catalogue](rule_catalogue_schema_format_post_2026-08-21.md) |
