@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2021.1.13)  19 AUG 2026 20:07
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2021.1.13)  20 AUG 2026 15:48
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -368,47 +368,38 @@ LaTeX Warning: No \author given.
 
 LaTeX Warning: No \author given.
 
-LaTeX Font Info:    Trying to load font information for U+msa on input line 46.
-
-(/usr/local/texlive/2020/texmf-dist/tex/latex/amsfonts/umsa.fd
-File: umsa.fd 2013/01/14 v3.01 AMS symbols A
-)
-LaTeX Font Info:    Trying to load font information for U+msb on input line 46.
-
-
-(/usr/local/texlive/2020/texmf-dist/tex/latex/amsfonts/umsb.fd
-File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-) [1
+[1
 
 
 ]
 <fig1.png, id=13, 986.68625pt x 797.98125pt>
 File: fig1.png Graphic file (type png)
 <use fig1.png>
-Package pdftex.def Info: fig1.png  used on input line 154.
+Package pdftex.def Info: fig1.png  used on input line 181.
 (pdftex.def)             Requested size: 232.19843pt x 187.78131pt.
 <fig2.png, id=15, 986.68625pt x 797.98125pt>
 File: fig2.png Graphic file (type png)
 <use fig2.png>
-Package pdftex.def Info: fig2.png  used on input line 161.
+Package pdftex.def Info: fig2.png  used on input line 188.
 (pdftex.def)             Requested size: 232.19843pt x 187.78131pt.
-
-Overfull \hbox (3.93898pt too wide) in paragraph at lines 223--223
+ (/usr/local/texlive/2020/texmf-dist/tex/latex/amsfonts/umsa.fd)
+(/usr/local/texlive/2020/texmf-dist/tex/latex/amsfonts/umsb.fd)
+Overfull \hbox (3.93898pt too wide) in paragraph at lines 250--250
 []|\OT1/ptm/m/n/10 Deterministic 
  []
 
 
-Overfull \hbox (3.93898pt too wide) in paragraph at lines 223--223
+Overfull \hbox (3.93898pt too wide) in paragraph at lines 250--250
 []|\OT1/ptm/m/n/10 Deterministic 
  []
 
 
-Overfull \hbox (10.32913pt too wide) in paragraph at lines 223--223
+Overfull \hbox (10.32913pt too wide) in paragraph at lines 250--250
 []|\OT1/ptm/m/n/10 Hallucinations, 
  []
 
 
-Overfull \hbox (10.0pt too wide) in paragraph at lines 223--224
+Overfull \hbox (10.0pt too wide) in paragraph at lines 250--251
 [][] 
  []
 
@@ -431,25 +422,22 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[3 <./fig1.png> <./fig2.png>] (./IEEE-conference-template-062824.aux)
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
- ) 
+[3 <./fig1.png> <./fig2.png>] (./IEEE-conference-template-062824.aux) ) 
 Here is how much of TeX's memory you used:
- 5127 strings out of 480608
- 77765 string characters out of 5903630
- 333231 words of memory out of 5000000
- 20972 multiletter control sequences out of 15000+600000
- 571424 words of font info for 97 fonts, out of 8000000 for 9000
+ 5106 strings out of 480608
+ 77559 string characters out of 5903630
+ 334231 words of memory out of 5000000
+ 20959 multiletter control sequences out of 15000+600000
+ 566696 words of font info for 83 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  48i,8n,46p,369b,436s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
-exlive/2020/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/202
-0/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/2020/texmf-d
-ist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2020/texmf-dist/fonts/
-type1/urw/times/utmri8a.pfb>
-Output written on IEEE-conference-template-062824.pdf (4 pages, 589838 bytes).
+{/usr/lo
+cal/texlive/2020/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/texlive/202
+0/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2020/texmf-di
+st/fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/2020/texmf-dist/fonts/
+type1/urw/times/utmr8a.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/urw/
+times/utmri8a.pfb>
+Output written on IEEE-conference-template-062824.pdf (4 pages, 591008 bytes).
 PDF statistics:
  39 PDF objects out of 1000 (max. 8388607)
  24 compressed objects within 1 object stream
