@@ -1,14 +1,15 @@
-# Five rungs of rule help
+# Five reported cells: two producers, one replay stack
 
 Date: 2026-08-20
+Revised: 2026-08-21 (refile: not five depths of one hybrid switch)
 Status: paper source; development illustrations only
 Owners: [methods](../../paper/methods.md), [claims](../../paper/claims.md),
 this file for the worked reading
 
-The headline table is five rungs of rule help, not three methods. This
-page is the plain-language owner for what those rungs are, how they
-run on one Gan letter and one ExECT letter, and what the full design
-is worth. Replayable numbers stay in
+The headline table keeps five reported cells. They are not five depths
+of the same thing. This page is the plain-language owner for what those
+cells are, how they run on one Gan letter and one ExECT letter, and
+what the full design is worth. Replayable numbers stay in
 [`paper_experiments/`](../../../paper_experiments/README.md). What a
 sentence may say stays in [claims](../../paper/claims.md).
 
@@ -23,41 +24,54 @@ facts in a designed form, with quoted source text. A model collects a
 ledger. Recorded rules then shape that ledger. The same saved model
 output can be replayed through those rules without a new call.
 
+The framing is **two producers, one replay stack, one optional prompt
+treatment**:
+
+- **Rules only** — other producer. Different rule set. No model. Not a
+  preview of the post stack.
+- **Schema / encode / revise** — one saved raw replayed at three stops
+  (rungs 2–4).
+- **Pre-suggest + post** — other request. Candidates in the prompt,
+  then the same post folder. Not a deeper climb on the same ladder.
+
 The two public golds are evaluation forms, not the task. Gan asks for
 one current seizure-frequency label. ExECT asks for a complete
-four-family inventory. The rungs use the same names on both tasks.
+four-family inventory. The cells use the same names on both tasks.
 The scores do not move between tasks.
 
-Rule help is a depth axis. It is not an on/off hybrid switch. A later
-rung is not automatically better. A recorded hop is not a clinically
-correct step. The score is how the submitted answer is judged.
+A later cell is not automatically better. A recorded hop is not a
+clinically correct step. The score is how the submitted answer is
+judged. Do not recode the stack; this is a refile of the claim.
 
-## The five rungs
+## The five reported cells
 
-Each rung is a depth of rule help around one letter.
-
-| Rung | Plain name | What happens | What must not be confused with it |
+| Cell | Plain name | What happens | What must not be confused with it |
 | --- | --- | --- | --- |
 | 1 | Rules only | Deterministic code reads the letter and submits the designed form. No model. | The later post stack that repairs a model ledger. Those are different rule sets. |
-| 2 | Schema only | One model call, no candidate list in the prompt. Score the parsed model object as written. | `gan_llm_only`, which asks for a finished Gan label. That prompt is not a results column. |
-| 3 | Format render | Same saved model output as rung 2. Change spelling, units, or serialization. Do not pick a different fact. | Dictionary rewrite, event switching, or family transforms. Those are semantic. |
-| 4 | Clinical post | Same saved output plus the full clinical rule stack. Rules may change meaning. | An unrepaired hybrid answer, or a new model call. |
-| 5 | Pre-suggest + post | Deterministic candidates go into the prompt. Then the same post stack. This is a different request from rungs 2–4. | Scoring the raw body of that hybrid call as if it were rung 2. |
+| 2 | Schema | Frozen model ledger scored as parsed. One saved raw for cells 2–4. On Gan this already writes a label (`_normalize_event` / `_resolve_final_label`); that is a render leak, not a no-rule model. | `gan_llm_only`, which asks for a finished Gan label. That prompt is not a results column. |
+| 3 | Format / encode | Same saved raw. Encodes the model’s already-chosen facts into the evaluation form. Does not pick a different fact. *Rung 3 encodes the model’s facts into the evaluation form.* On ExECT the headline move is codebook/dictionary attach (`project_cuis` and related); on Gan it is the selected-evidence renderer (e.g. `≤ 4 per day` → `4 per day`), not a dictionary. `project_cuis` runs on the format-replay stop — the reported format cell already includes encode. Encode is not dialect (`mgs`→`mg`) and not revise. | Treating encode as spelling-only, or pretending CUI is scored only at post. |
+| 4 | Clinical post / revise | Same saved raw. Policy may change the facts. *Rung 4 may change those facts under recorded policy.* Rewrite/overwrite of an encoding (`epilepsy` → `focal epilepsy`) is one kind of revise, not the definition. Revise also withholds, drops, splits multiplicity, reselects the Gan event, or invents a residual. | An unrepaired hybrid answer, or a new model call. Defining post as overwrite-only. |
+| 5 | Pre-suggest + post | Deterministic candidates go into the prompt. Then the same post stack. Other request from cells 2–4. | Scoring the raw body of that hybrid call as if it were schema (cell 2). |
 
-On Gan, rungs 2–4 replay one `gan_llm_with_rules` `raw_output`. Rung 5
+Three hop effects on one raw support the reading (the paper table need
+not list every revise subtype):
+
+- **Dialect** — same-fact writing (`mgs`→`mg`, brand→generic, word numbers).
+- **Encode** — codebook / designed form / Gan selected-evidence renderer.
+- **Revise** — gate, rewrite, reselect, invent.
+
+On Gan, cells 2–4 replay one `gan_llm_with_rules` `raw_output`. Cell 5
 is `gan_llm_pre_post`, a new request. Luna is the development
 iterator for that request. It is not automatically the cited model.
 
-On ExECT, rungs 2–4 replay one `exect_llm_only` `raw_output`. Rung 5 is
+On ExECT, cells 2–4 replay one `exect_llm_only` `raw_output`. Cell 5 is
 living `exect_llm_pre_post`. `exect_llm_with_rules` is the live alias
 for that request.
 
 The paper records every submitted-answer version as a hop log. A
-**format** change keeps the represented fact. A **semantic** change
-alters the selected event, concept, attribute, multiplicity, evidence
-acceptance, or unknown status. A **score projection** converts the
-submitted answer to the unit the benchmark scores. It can discard
-distinctions that remain in the object.
+**score projection** converts the submitted answer to the unit the
+benchmark scores. It can discard distinctions that remain in the
+object.
 
 ## Gan worked example: a bound becomes a gold label
 
@@ -73,25 +87,26 @@ The letter states a current rate as an upper bound:
 Gold is `4 per day`. That is a Gan gold-dialect convention. The bound
 stays in the quoted span. It is not in the submitted label.
 
-| Rung | Submitted label | Purist |
+| Cell | Submitted label | Purist |
 | --- | --- | --- |
 | 1 rules only | `4 per day` | correct |
-| 2 schema only | `≤ 4 per day` | incorrect |
-| 3 format render | `4 per day` | correct |
-| 4 clinical post | `4 per day` | correct |
+| 2 schema | `≤ 4 per day` | incorrect |
+| 3 format / encode | `4 per day` | correct |
+| 4 clinical post / revise | `4 per day` | correct |
 
-Rungs 2–4 share one Grok output. The model already selected the
+Cells 2–4 share one Grok output. The model already selected the
 accommodation-log event. Schema keeps the inequality in the label, so
-Purist misses. Selected-evidence render (rung 3) writes the gold
-dialect and does not change `selected_event_ids`. Clinical post does
-not switch the event on this letter.
+Purist misses. Selected-evidence render (cell 3) **encodes** that
+already chosen event into the evaluation form and does not change
+`selected_event_ids`. Clinical post does not switch the event on this
+letter.
 
-This is why rung 3 exists. The clinical fact is the same rate the
-model chose. The designed form is a different string. Turning
-selected-evidence repair off disables that whole renderer, not only
-bound flattening. The same raw can be replayed with the renderer off.
-Rung 5 is not shown here: Grok `gan_llm_pre_post` is not a cited cell
-in this cut.
+This is why encode exists as its own stop. The clinical fact is the
+same rate the model chose. The designed form is a different string.
+Turning selected-evidence repair off disables that whole renderer, not
+only bound flattening. The same raw can be replayed with the renderer
+off. Cell 5 is not shown here: Grok `gan_llm_pre_post` is not a cited
+cell in this cut.
 
 **Contrast, still development:** source row `15431`. Gold is the
 two-part cluster label `1 cluster per 4 month, 5 per cluster`. Rules
@@ -104,7 +119,7 @@ reading. Visibility is the point: the hops name the collapse.
 ## ExECT worked example: a hedge becomes a diagnosis concept
 
 **Letter:** ExECT development `EA0007`. **Model:** Grok 4.6.
-**Shared raw for rungs 2–4:** `exect_llm_only`. **Rung 5:** living
+**Shared raw for cells 2–4:** `exect_llm_only`. **Cell 5:** living
 `exect_llm_pre_post`. **Score:** four-family clinical fact F1.
 **Artifacts:** `paper_experiments/exect/rungs/grok46/dev140/` and
 `paper_experiments/exect/exect_llm_pre_post/grok46/dev140/`.
@@ -117,21 +132,23 @@ and
 
 > Seizure type and frequency: seizures every 3 to 4 weeks, possibly focal onset
 
-Grok put that hedge on the collected evidence. Rung 2 keeps Diagnosis
-as the written `epilepsy` mention. Rung 3 may attach a CUI or respell
-closed-vocab fields; it does not rewrite the concept. Rung 4 runs the
-diagnosis dictionary and records `focal epilepsy`. That is a semantic
-change, not a format change.
+Grok put that hedge on the collected evidence. Cell 2 keeps Diagnosis
+as the written `epilepsy` mention. Cell 3 (format-replay) may attach a
+CUI or respell closed-vocab fields; that is **encode**, not a concept
+rewrite. ExECT format-replay includes CUI attach, so the encode cell is
+not “spelling only.” Cell 4 runs the diagnosis dictionary and records
+`focal epilepsy`. That is **revise** of the concept, not encode.
 
-ExECT format is same-fact writing: attribute canonicalize, codebook
-ids, prescription name/unit/dose, seizure-frequency encoding, and
+ExECT format / encode is codebook attach, attribute canonicalize,
+prescription name/unit/dose, seizure-frequency encoding, and
 investigation attribute strip. Evidence reject, SF state projection,
-unknown suppression, and family lenses are clinical post and land on
-rung 4.
+unknown suppression, and family lenses are clinical post / revise and
+land on cell 4.
 
-Living rung 5 on the same letter has hybrid headline F1 1.0 and
+Living cell 5 on the same letter has hybrid headline F1 1.0 and
 four-family letter-exact true. The unrepaired hybrid raw on that
-request is not rung 2. Rung 2 is the separate `exect_llm_only` call.
+request is not schema (cell 2). Cell 2 is the separate `exect_llm_only`
+call.
 
 The rewrite is a task-format commitment. It is not an unqualified
 clinical diagnosis. The object keeps the quoted hedge, the named
@@ -141,31 +158,32 @@ the mapping without losing the span.
 ## What the full design is worth
 
 The value is the recorded object and the ability to stop the stack,
-not a promise that the last rung always wins.
+not a promise that the last cell always wins.
 
 1. **The same names on two questions.** Gan selects one current state.
-   ExECT inventories four families. Readers can compare depth of rule
-   help without pretending the scores are interchangeable.
-2. **Replay without a new call.** Rungs 2–4 are readings of one saved
-   `raw_output`. A format-only stop and a full post can be shown on
+   ExECT inventories four families. Readers can compare the reported
+   cells without pretending the scores are interchangeable.
+2. **Replay without a new call.** Cells 2–4 are readings of one saved
+   `raw_output`. An encode-only stop and a full post can be shown on
    the same model text.
-3. **Format and meaning stay separable.** Gan row 10 is a dialect
-   render of an already chosen event. ExECT `EA0007` is a concept
-   rewrite at post. Calling both “repair” would hide which class of
-   change occurred.
+3. **Encode and revise stay separable.** Gan row 10 is encode of an
+   already chosen event into the evaluation form. ExECT `EA0007` is
+   revise of the concept at post. Calling both “repair” would hide
+   which class of change occurred. ExECT’s encode cell already includes
+   CUI attach on format-replay.
 4. **The score can throw distinctions away.** Purist accepts `4 per
    day` and rejects `≤ 4 per day` on the same span. Clinical fact F1
    can match gold after a dictionary rewrite. The object still holds
    the bound and the hedge.
 5. **Rules only is a baseline, not the post stack.** On row `15431`
-   standalone rules get the cluster gold and the model-led rungs do
-   not. On the locked Gan set, rung 4 beats that baseline in the
+   standalone rules get the cluster gold and the model-led cells do
+   not. On the locked Gan set, cell 4 beats that baseline in the
    aggregate. Those facts can both be true because they compare
    different objects.
 6. **Pre-suggestion is a different request.** Candidates in the prompt
-   change what the model is asked to collect. That is why ExECT rung 5
+   change what the model is asked to collect. That is why ExECT cell 5
    is living `exect_llm_pre_post`, and why an unrepaired hybrid answer
-   is not ExECT rung 2.
+   is not ExECT schema.
 
 The files do not support a claim that every deterministic step is
 safe, that a visible hop is clinically correct, that development hop
@@ -178,6 +196,7 @@ second use case.
 | --- | --- |
 | Locked wording | [claims](../../paper/claims.md) |
 | Identities, splits, scorers | [methods](../../paper/methods.md) |
+| Named schema / format / post rules | [rule catalogue](rule_catalogue_schema_format_post_2026-08-21.md) |
 | Why a model plus recorded rules | [hybrid architecture](why_hybrid_architecture_2026-08-09.md) |
 | The two golds | [what the two golds already decided](what_the_two_golds_already_decided_2026-08-17.md) |
 | Earlier pair of reviewable traces | [reviewable case pair](reviewable_case_pair_2026-08-09.md) |

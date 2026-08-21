@@ -1,12 +1,14 @@
 # What the evidence supports
 
 Date: 2026-08-20
+Revised: 2026-08-21 (cells are two producers + encode/revise, not five depths)
 Status: current
 Owner: this file
 
 This page is the paper's reading of the living comparison. Method names
-and splits are on [methods](methods.md). The headline table is five
-rungs of rule help. Replayable numbers live in
+and splits are on [methods](methods.md). The headline table keeps five
+reported cells; they are not five depths of one hybrid switch. Replayable
+numbers live in
 [`paper_experiments/`](../../paper_experiments/README.md). Writing
 sources that unpack the same evidence are the
 [Gan story](../research/paper/gan_story_2026-08-10.md) and the
@@ -65,16 +67,20 @@ two facts, or adding an unsupported rate is an error. The primary score
 is how completely those four kinds of fact were recovered. It is a
 research measure. It is not the published 2019 ExECT benchmark.
 
-The headline comparison is five rungs: rules only, schema-only model
-output, format render, clinical post, and pre-suggestion plus post.
-The worked reading is
+The headline comparison is five reported cells: rules only (other
+producer), schema, format/encode, clinical post/revise, and
+pre-suggestion plus post (other request). They are not five depths of
+one hybrid switch. Plain gloss: rung 3 encodes the model’s facts into
+the evaluation form; rung 4 may change those facts under recorded
+policy. The worked reading is
 [five rungs of rule help](../research/paper/five_rungs_of_rule_help_2026-08-20.md).
 `gan_llm_only` is a different prompt and is not a results column. On
 the inventory, rungs 2–4 replay `exect_llm_only`. Rung 5 is the
 living `exect_llm_pre_post` request. An unrepaired hybrid answer is not rung 2.
 A recorded rule may change clinical meaning; deterministic does not
 mean neutral or safe. A recorded hop is not a clinically correct
-step. Development hop shares are not holdout component estimates.
+step. A later cell is not automatically better. Development hop shares
+are not holdout component estimates.
 
 ## Current seizure frequency
 
@@ -169,12 +175,12 @@ are:
 | --- | --- | --- |
 | 1 `rules_only` | 0.9042 | `exect_rules` |
 | 2 `llm_schema` | 0.6485 | flatten only; no CUI attach |
-| 3 `llm_format` | 0.8197 | same raw; same-fact writing (CUI, units, encoding) |
-| 4 `llm_post` | 0.9040 | same raw; gates, SF projection, family lenses |
+| 3 `llm_format` | 0.8197 | same raw; encode into designed form (CUI attach, units, SF encoding) |
+| 4 `llm_post` | 0.9040 | same raw; revise (gates, SF projection, family lenses) |
 | 5 `llm_pre_post` | 0.8998 | living `exect_llm_pre_post` hybrid |
 
 Rungs 2–4 share one `exect_llm_only` output. Rung 5 is a different
-request. Dictionary rewrite is semantic, not format. Live
+request. Dictionary rewrite is revise, not encode. Live
 `exect_llm_only` Grok `dev140` raw F1 remains 0.8212; that gated
 producer view is not rung 2. SeizureFrequency schema F1 is 0.0
 because the clinical-fact key needs the codebook id that format
