@@ -128,6 +128,8 @@ def test_live_methods_are_the_paper_llm_cells() -> None:
         "gan_llm_only",
         "gan_llm_with_rules",
         "gan_llm_pre_post",
+        "gan_llm_encode",
+        "gan_llm_select",
         "exect_llm_pre_post",
         "exect_llm_with_rules",
         "exect_llm_only",

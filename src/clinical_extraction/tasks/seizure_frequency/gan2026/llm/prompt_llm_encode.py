@@ -45,7 +45,7 @@ INSTRUCTIONS = [
         "stated value as the label."
     ),
     "Do not add, drop, or merge events.",
-    "Return exactly one JSON object with no markdown.",
+    "Return one JSON object with a labels list: one event_id and label per event.",
 ]
 
 LABEL_SCHEMA = {

@@ -29,6 +29,19 @@ from clinical_extraction.paper.exect import (
     apply_reasoning_effort,
     paper_work_suffix,
 )
+from clinical_extraction.paper.gan_later_stage import (
+    CITED_SLUG as LATER_STAGE_SLUG,
+)
+from clinical_extraction.paper.gan_later_stage import (
+    MAX_TOKENS as LATER_STAGE_MAX_TOKENS,
+)
+from clinical_extraction.paper.gan_later_stage import (
+    prompt_version as later_stage_prompt_version,
+)
+from clinical_extraction.paper.gan_later_stage import (
+    run_later_stage,
+    verify_later_stage_prompt,
+)
 from clinical_extraction.paper.gan_pre_post_slices import source_rows_for_slice
 from clinical_extraction.paper.lm import build_paper_lm, resolve_paper_api_base
 from clinical_extraction.paper.methods import (
@@ -56,8 +69,14 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     llm as gan_llm_only,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_encode import (
+    LLM_ENCODE_AUTHORED_KEYS,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_pre_post import (
     LLM_PRE_POST_AUTHORED_KEYS,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_select import (
+    LLM_SELECT_AUTHORED_KEYS,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration import llm as orch_llm
 from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration import (
@@ -75,6 +94,8 @@ MAX_TOKENS = {
     "gan_llm_only": 1200,
     "gan_llm_with_rules": 5000,
     "gan_llm_pre_post": 5000,
+    "gan_llm_encode": LATER_STAGE_MAX_TOKENS,
+    "gan_llm_select": LATER_STAGE_MAX_TOKENS,
 }
 DEEPSEEK_MAX_TOKENS = 24000
 HIGH_REASONING_GAN_LLM_ONLY_MAX_TOKENS = 16000
@@ -115,6 +136,15 @@ def verify_gan(
             raise RuntimeError("LLM-only payload check changed the live default")
         if gan_llm_only.PROMPT_VERSION != gan_llm_only.GAN_LLM_ONLY:
             raise RuntimeError("gan_llm_only live default drifted")
+    elif method in {"gan_llm_encode", "gan_llm_select"}:
+        if slug is not None and slug != LATER_STAGE_SLUG:
+            raise RuntimeError("later-stage Gan encode and select run on Gemini only")
+        verify_later_stage_prompt(method)
+        authored = (
+            list(LLM_ENCODE_AUTHORED_KEYS)
+            if method == "gan_llm_encode"
+            else list(LLM_SELECT_AUTHORED_KEYS)
+        )
     elif method == "gan_llm_pre_post":
         before = hybrid_structured_events.PROMPT_VERSION
         payload = json.loads(
@@ -205,6 +235,17 @@ def run_gan(
     verify_gan(method, split, slug)
     if not live:
         raise RuntimeError("run_gan requires live=True")
+    if method in {"gan_llm_encode", "gan_llm_select"}:
+        return run_later_stage(
+            method,
+            slug,
+            split=split,
+            overwrite=overwrite,
+            api_base=api_base,
+            timeout=timeout,
+            progress_every=progress_every,
+            reasoning_effort=reasoning_effort,
+        )
     if slug not in MODELS:
         raise RuntimeError(f"{slug} is not a living paper model")
     spec = apply_reasoning_effort(MODELS[slug], reasoning_effort)
@@ -395,6 +436,8 @@ def _prompt_version(method: str) -> str:
         return hybrid_structured_events.GAN_LLM_WITH_RULES
     if method == "gan_llm_pre_post":
         return hybrid_structured_events.GAN_LLM_PRE_POST
+    if method in {"gan_llm_encode", "gan_llm_select"}:
+        return later_stage_prompt_version(method)
     raise ValueError(method)
 
 
