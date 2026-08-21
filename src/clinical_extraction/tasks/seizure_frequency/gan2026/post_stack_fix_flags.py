@@ -16,7 +16,6 @@ from dataclasses import dataclass, replace
 @dataclass(frozen=True)
 class PostStackFixFlags:
     no_reference_daily: bool = True
-    month_x_typical_preserve: bool = False
     diary_sum_all_months: bool = True
     vague_seizure_free_diary: bool = True
     date_list_span: bool = True

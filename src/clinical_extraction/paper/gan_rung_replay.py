@@ -179,7 +179,7 @@ def replay_gan_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
             )
             scored_rung["selected_event_ids"] = selected_ids
             by_rung[rung] = scored_rung
-            if rung == "llm_schema":
+            if rung == "llm_extract":
                 schema_ids = selected_ids
                 schema_kind = scored_rung.get("predicted_kind")
             if rung == "llm_encode":
@@ -187,13 +187,13 @@ def replay_gan_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
                     event_id_changes += 1
                 if scored_rung.get("predicted_kind") != schema_kind:
                     kind_changes += 1
-                schema_ok = by_rung["llm_schema"]["purist_correct"]
+                schema_ok = by_rung["llm_extract"]["purist_correct"]
                 format_ok = scored_rung["purist_correct"]
                 if format_ok and not schema_ok:
                     format_rescues += 1
                 if schema_ok and not format_ok:
                     format_harms += 1
-            if rung == "llm_revise" and not holdout:
+            if rung == "llm_select" and not holdout:
                 full_hops = list(trace.get("answer_states") or [])
                 events = (
                     [event.model_dump() for event in extraction.events]

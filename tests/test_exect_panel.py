@@ -137,13 +137,13 @@ def test_promote_strips_replay_and_writes_scored_panel(
     assert scored["hybrid_four_family_letter_exact"] is True
     assert scored["parse_ok"] is True
     panel = rebuild_dev140_panel()
-    assert panel["method_identity"] == "grok46"
+    assert panel["method_identity"] == "gemini37flash"
     assert panel["living_effort"]["hosted_reasoning"] == "low"
     assert panel["methods"] == [
         "rules_only",
-        "llm_schema",
+        "llm_extract",
         "llm_encode",
-        "llm_revise",
+        "llm_select",
         "llm_pre_post",
     ]
     assert panel["request_methods"] == ["exect_llm_only", "exect_llm_pre_post"]

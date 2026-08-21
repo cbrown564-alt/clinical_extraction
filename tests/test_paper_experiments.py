@@ -8,9 +8,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 EXECT_HYBRID_ROOT = ROOT / "paper_experiments/exect/exect_llm_pre_post"
 LIVING_SLUGS = (
+    "gemini37flash",
     "grok46",
     "gpt56luna",
-    "gemini37flash",
     "deepseek_v4_flash",
     "qwen38_27b",
     "gemma4_26b",
@@ -92,6 +92,10 @@ def test_inventory_covers_present_and_missing_cells() -> None:
         ("gpt56luna", "gan_llm_with_rules", "test450"),
         ("gpt56luna", "gan_llm_pre_post", "dev750"),
         ("gpt56luna", "gan_llm_pre_post", "test450"),
+        ("gemini37flash", "gan_llm_pre_post", "dev750"),
+        ("gemini37flash", "gan_llm_pre_post", "test450"),
+        ("grok46", "gan_llm_pre_post", "dev750"),
+        ("grok46", "gan_llm_pre_post", "test450"),
         ("gemini37flash", "gan_llm_only", "dev750"),
         ("gemini37flash", "gan_llm_only", "test450"),
         ("gemini37flash", "gan_llm_with_rules", "dev750"),
@@ -147,7 +151,7 @@ def test_gan_dev750_panel_is_rectangular() -> None:
     )
     assert panel["schema_version"] == "paper_experiments.gan.dev750_panel.v1"
     assert panel["split"] == "dev750"
-    assert panel["method_identity"] == "grok46"
+    assert panel["method_identity"] == "gemini37flash"
     assert panel["living_effort"]["hosted_reasoning"] == "low"
     assert panel["models"] == list(LIVING_SLUGS)
     assert panel["methods"] == ["gan_llm_only", "gan_llm_with_rules"]
@@ -199,14 +203,14 @@ def test_exect_dev140_panel_is_rectangular() -> None:
     )
     assert panel["schema_version"] == "paper_experiments.exect.dev140_panel.v2"
     assert panel["split"] == "dev140"
-    assert panel["method_identity"] == "grok46"
+    assert panel["method_identity"] == "gemini37flash"
     assert panel["living_effort"]["hosted_reasoning"] == "low"
     assert panel["models"] == list(LIVING_SLUGS)
     assert panel["methods"] == [
         "rules_only",
-        "llm_schema",
+        "llm_extract",
         "llm_encode",
-        "llm_revise",
+        "llm_select",
         "llm_pre_post",
     ]
     assert panel["request_methods"] == ["exect_llm_only", "exect_llm_pre_post"]

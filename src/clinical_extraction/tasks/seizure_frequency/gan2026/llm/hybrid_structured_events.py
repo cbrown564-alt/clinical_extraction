@@ -87,8 +87,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_with_rul
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label,
-    repair_prediction_label_clean_scorer_facing,
-    repair_prediction_label_format_preserving,
     repair_prediction_label_with_evidence,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.post_stack_fix_flags import (
@@ -185,18 +183,18 @@ StructuredRepairMode = Literal[
     "strict_json_raw_model",
     "json_dialect_only",
     "raw_model",
-    "strict_format",
-    "clean_scorer_facing",
     "llm_encode",
-    "llm_revise",
+    "llm_select",
     "custom",
 ]
 # Sealed artifacts and older CLI flags may still emit these strings.
 _STRUCTURED_REPAIR_MODE_ALIASES: dict[str, StructuredRepairMode] = {
     "selected_evidence_derivation": "llm_encode",
-    "hybrid_full_stack": "llm_revise",
+    "hybrid_full_stack": "llm_select",
     "encode": "llm_encode",
-    "revise": "llm_revise",
+    "revise": "llm_select",
+    "llm_revise": "llm_select",
+    "select": "llm_select",
 }
 
 
@@ -310,8 +308,6 @@ class StructuredRepairConfig:
     repair_mode: StructuredRepairMode | None = None
     json_dialect_repair: bool = True
     basic_label_repair: bool = True
-    basic_label_repair_format_only: bool = False
-    clean_scorer_facing_gold_policy: bool = False
     selected_evidence_repair: bool = True
     monthly_diary_repair: bool = True
     usual_interval_repair: bool = True
@@ -328,8 +324,8 @@ class StructuredRepairConfig:
     def for_mode(cls, mode: StructuredRepairMode | str) -> StructuredRepairConfig:
         """Build one of the named repair modes used in run metadata and reports.
 
-        Legacy names ``selected_evidence_derivation`` and ``hybrid_full_stack``
-        still load as aliases for ``encode`` and ``revise``.
+        Legacy names ``selected_evidence_derivation``, ``hybrid_full_stack``,
+        and ``llm_revise`` still load as aliases for ``encode`` and ``select``.
         """
 
         mode = _STRUCTURED_REPAIR_MODE_ALIASES.get(mode, mode)  # type: ignore[assignment]
@@ -338,11 +334,10 @@ class StructuredRepairConfig:
                 repair_mode=mode,
                 json_dialect_repair=False,
                 basic_label_repair=False,
-                basic_label_repair_format_only=False,
-                clean_scorer_facing_gold_policy=False,
                 selected_evidence_repair=False,
                 monthly_diary_repair=False,
                 usual_interval_repair=False,
+                typical_over_ytd_repair=False,
                 breakthrough_repair=False,
                 non_epileptic_repair=False,
                 residual_jerk_repair=False,
@@ -355,11 +350,10 @@ class StructuredRepairConfig:
                 repair_mode=mode,
                 json_dialect_repair=True,
                 basic_label_repair=False,
-                basic_label_repair_format_only=False,
-                clean_scorer_facing_gold_policy=False,
                 selected_evidence_repair=False,
                 monthly_diary_repair=False,
                 usual_interval_repair=False,
+                typical_over_ytd_repair=False,
                 breakthrough_repair=False,
                 non_epileptic_repair=False,
                 residual_jerk_repair=False,
@@ -371,43 +365,10 @@ class StructuredRepairConfig:
             return cls(
                 repair_mode=mode,
                 basic_label_repair=False,
-                basic_label_repair_format_only=False,
-                clean_scorer_facing_gold_policy=False,
                 selected_evidence_repair=False,
                 monthly_diary_repair=False,
                 usual_interval_repair=False,
-                breakthrough_repair=False,
-                non_epileptic_repair=False,
-                residual_jerk_repair=False,
-                post_change_burst_repair=False,
-                dated_sequence_repair=False,
-                elapsed_anchor_repair=False,
-            )
-        if mode == "strict_format":
-            return cls(
-                repair_mode=mode,
-                basic_label_repair=True,
-                basic_label_repair_format_only=True,
-                clean_scorer_facing_gold_policy=False,
-                selected_evidence_repair=False,
-                monthly_diary_repair=False,
-                usual_interval_repair=False,
-                breakthrough_repair=False,
-                non_epileptic_repair=False,
-                residual_jerk_repair=False,
-                post_change_burst_repair=False,
-                dated_sequence_repair=False,
-                elapsed_anchor_repair=False,
-            )
-        if mode == "clean_scorer_facing":
-            return cls(
-                repair_mode=mode,
-                basic_label_repair=True,
-                basic_label_repair_format_only=True,
-                clean_scorer_facing_gold_policy=True,
-                selected_evidence_repair=False,
-                monthly_diary_repair=False,
-                usual_interval_repair=False,
+                typical_over_ytd_repair=False,
                 breakthrough_repair=False,
                 non_epileptic_repair=False,
                 residual_jerk_repair=False,
@@ -419,11 +380,10 @@ class StructuredRepairConfig:
             return cls(
                 repair_mode=mode,
                 basic_label_repair=True,
-                basic_label_repair_format_only=False,
-                clean_scorer_facing_gold_policy=False,
                 selected_evidence_repair=True,
                 monthly_diary_repair=False,
                 usual_interval_repair=False,
+                typical_over_ytd_repair=False,
                 breakthrough_repair=False,
                 non_epileptic_repair=False,
                 residual_jerk_repair=False,
@@ -431,7 +391,7 @@ class StructuredRepairConfig:
                 dated_sequence_repair=False,
                 elapsed_anchor_repair=False,
             )
-        if mode == "llm_revise":
+        if mode == "llm_select":
             return cls(repair_mode=mode)
         return cls(repair_mode=mode)  # type: ignore[arg-type]
 
@@ -444,10 +404,8 @@ class StructuredRepairConfig:
             "strict_json_raw_model",
             "json_dialect_only",
             "raw_model",
-            "strict_format",
-            "clean_scorer_facing",
             "llm_encode",
-            "llm_revise",
+            "llm_select",
         ):
             named = StructuredRepairConfig.for_mode(mode)
             if (
@@ -457,15 +415,26 @@ class StructuredRepairConfig:
                 return mode
         return "custom"
 
+    def encode_enabled(self) -> bool:
+        """True when this mode may write a designed-form label."""
+
+        return self.selected_evidence_repair or self.basic_label_repair
+
+    def select_enabled(self) -> bool:
+        """True when a named select family may change the facts."""
+
+        return any(
+            getattr(self, flag_name) for flag_name in _SEMANTIC_FAMILY_FLAG.values()
+        )
+
     def _flags(self) -> dict[str, bool]:
         return {
             "json_dialect_repair": self.json_dialect_repair,
             "basic_label_repair": self.basic_label_repair,
-            "basic_label_repair_format_only": self.basic_label_repair_format_only,
-            "clean_scorer_facing_gold_policy": self.clean_scorer_facing_gold_policy,
             "selected_evidence_repair": self.selected_evidence_repair,
             "monthly_diary_repair": self.monthly_diary_repair,
             "usual_interval_repair": self.usual_interval_repair,
+            "typical_over_ytd_repair": self.typical_over_ytd_repair,
             "breakthrough_repair": self.breakthrough_repair,
             "non_epileptic_repair": self.non_epileptic_repair,
             "residual_jerk_repair": self.residual_jerk_repair,
@@ -610,21 +579,49 @@ def parse_structured_json_with_trace(
         _answer_hop(
             stage_id="gan.model.selection",
             owner="model",
-            effect_class="revise",
+            effect_class="extract",
             before=None,
             after=extraction.selection.final_label,
             evidence=evidence,
             evidence_exact=evidence_exact,
             operands=operands,
-            cell_id="llm_schema",
+            cell_id="llm_extract",
         )
     )
+
+    if not repair_config.encode_enabled() and not repair_config.select_enabled():
+        return extraction, [], errors, _hybrid_row_trace(
+            model_extraction=model_extraction,
+            schema_payload_changed=schema_payload_changed,
+            format_events=format_events,
+            resolved_label=None,
+            final_label=extraction.selection.final_label,
+            semantic_events=[],
+            answer_states=hops,
+        )
 
     normalized_events = [
         _normalize_event(event, note_text=note_text) for event in extraction.events
     ]
-    final_label = _resolve_final_label(extraction, normalized_events)
-    if final_label is None:
+    model_label = extraction.selection.final_label
+    resolved_label = model_label
+    if repair_config.encode_enabled():
+        resolved_label = _resolve_final_label(extraction, normalized_events)
+        if resolved_label != model_label:
+            hops.append(
+                _answer_hop(
+                    stage_id="gan.encode.resolve_label",
+                    owner="replay",
+                    effect_class="encode",
+                    before=model_label,
+                    after=resolved_label,
+                    evidence=evidence,
+                    evidence_exact=evidence_exact,
+                    operands=operands,
+                    cell_id="llm_encode",
+                )
+            )
+    if resolved_label is None:
         errors.append("unscorable_final_label: no selected event normalized to a Gan label")
         return extraction, normalized_events, errors, _hybrid_row_trace(
             model_extraction=model_extraction,
@@ -636,30 +633,9 @@ def parse_structured_json_with_trace(
             answer_states=hops,
         )
 
-    resolved_label = final_label
-    hops.append(
-        _answer_hop(
-            stage_id="gan.schema.resolve_label",
-            owner="replay",
-            effect_class="schema",
-            before=extraction.selection.final_label,
-            after=resolved_label,
-            evidence=evidence,
-            evidence_exact=evidence_exact,
-            operands=operands,
-            cell_id="llm_schema",
-        )
-    )
-    repaired_label = final_label
+    repaired_label = resolved_label
     if repair_config.basic_label_repair and not repair_config.selected_evidence_repair:
-        basic_repair = (
-            repair_prediction_label_clean_scorer_facing
-            if repair_config.clean_scorer_facing_gold_policy
-            else repair_prediction_label_format_preserving
-            if repair_config.basic_label_repair_format_only
-            else repair_prediction_label
-        )
-        next_label = basic_repair(repaired_label)
+        next_label = repair_prediction_label(repaired_label)
         repaired_label = _record_label_repair(
             errors,
             hops,
@@ -756,8 +732,8 @@ def _apply_semantic_families(
             errors,
             hops,
             stage_id=f"gan.select.{family_id}",
-            effect_class="revise",
-            cell_id="llm_revise",
+            effect_class="select",
+            cell_id="llm_select",
             before=repaired_label,
             after=next_label,
             evidence=evidence,
@@ -977,25 +953,6 @@ def _should_preserve_label_from_monthly_diary(
     label = (repaired_label or "").strip().lower()
     if not label:
         return False
-    typical_month = re.fullmatch(r"(?P<count>\d+) per month", label)
-    if post_stack_fix_flags().month_x_typical_preserve and typical_month and extraction is not None:
-        count = typical_month.group("count")
-        selection_text = " ".join(
-            str(part or "")
-            for part in (
-                extraction.selection.final_label,
-                extraction.selection.evidence,
-                extraction.selection.rationale,
-            )
-        )
-        if re.search(
-            rf"\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|"
-            rf"jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|"
-            rf"nov(?:ember)?|dec(?:ember)?)\s+x\s*{count}\b",
-            selection_text,
-            flags=re.IGNORECASE,
-        ):
-            return True
     if label.startswith("seizure free"):
         if post_stack_fix_flags().vague_seizure_free_diary:
             if re.search(r"\bseizure free for multiple\b", label):

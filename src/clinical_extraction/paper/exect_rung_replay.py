@@ -49,9 +49,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 ROOT = discover_repo_root(start=Path(__file__))
 FAMILIES = ("Diagnosis", "SeizureFrequency", "Prescription", "Investigations")
 SURFACE_FOR_RUNG = {
-    "llm_schema": "predicted_mentions",
+    "llm_extract": "predicted_mentions",
     "llm_encode": "format_render",
-    "llm_revise": "residual_benchmark_added",
+    "llm_select": "residual_benchmark_added",
 }
 RUNG3_REPLAY_SURFACE = "format_render"
 PRE_POST_METHOD = "exect_llm_pre_post"
@@ -194,7 +194,7 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
     scored: list[dict[str, Any]] = []
     hops_rows: list[dict[str, Any]] = []
     family_rows: dict[str, list[dict[str, Any]]] = {
-        rung: [] for rung in ("llm_schema", "llm_encode", "llm_revise")
+        rung: [] for rung in ("llm_extract", "llm_encode", "llm_select")
     }
     try:
         structured.set_active_prompt_version(structured.EXECT_LLM_ONLY)
@@ -232,7 +232,7 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
                     effect_class=EXECT_HOP_EFFECT_CLASS["exect.schema.parse"],
                     before=None,
                     after=schema_hash,
-                    cell_id="llm_schema",
+                    cell_id="llm_extract",
                 ),
                 make_hop(
                     stage_id="exect.format.stop",
@@ -248,7 +248,7 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
                     effect_class=EXECT_HOP_EFFECT_CLASS["exect.select.dictionary"],
                     before=format_hash,
                     after=dict_hash,
-                    cell_id="llm_revise",
+                    cell_id="llm_select",
                 ),
                 make_hop(
                     stage_id="exect.select.residual",
@@ -256,14 +256,14 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
                     effect_class=EXECT_HOP_EFFECT_CLASS["exect.select.residual"],
                     before=dict_hash,
                     after=post_hash,
-                    cell_id="llm_revise",
+                    cell_id="llm_select",
                 ),
             ]
             by_rung: dict[str, dict[str, Any]] = {}
             rung_mentions = {
-                "llm_schema": schema_rows,
+                "llm_extract": schema_rows,
                 "llm_encode": format_render_mentions,
-                "llm_revise": list(surfaces.get("residual_benchmark_added") or []),
+                "llm_select": list(surfaces.get("residual_benchmark_added") or []),
             }
             for rung, surface in SURFACE_FOR_RUNG.items():
                 mentions = rung_mentions[rung]
@@ -369,9 +369,9 @@ def _comparison_summary(
             "clinical_fact_f1": rules_f1,
             "source": "exect_rules",
         },
-        "llm_schema": _surface_prf(family_rows["llm_schema"]),
+        "llm_extract": _surface_prf(family_rows["llm_extract"]),
         "llm_encode": _surface_prf(family_rows["llm_encode"]),
-        "llm_revise": _surface_prf(family_rows["llm_revise"]),
+        "llm_select": _surface_prf(family_rows["llm_select"]),
     }
     if hybrid_cell.get("hybrid_headline_f1") is not None:
         rungs["llm_pre_post"] = {
@@ -397,7 +397,7 @@ def _comparison_summary(
                 else None
             ),
             "same_as_schema": (
-                _surface_prf(family_rows["llm_schema"])
+                _surface_prf(family_rows["llm_extract"])
                 == _surface_prf(family_rows["llm_encode"])
             ),
             "note": (

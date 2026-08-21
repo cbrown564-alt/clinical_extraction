@@ -20,6 +20,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_e
     build_prompt_input,
     load_reusable_raw_outputs,
     parse_structured_json,
+    parse_structured_json_with_trace,
     run_split,
 )
 
@@ -138,6 +139,39 @@ def test_parse_structured_json_can_compute_final_label_from_selected_event() -> 
     assert extraction.selection.final_label == "2 per month"
     assert normalized_events[0].normalized_label == "2 per month"
     assert errors == []
+
+
+def test_extract_keeps_model_label_and_encode_owns_resolve() -> None:
+    raw = _raw_structured(None)
+    extract, extract_norm, _, extract_trace = parse_structured_json_with_trace(
+        raw,
+        note_text=_record().note_text,
+        repair_config=StructuredRepairConfig.for_mode("raw_model"),
+    )
+    encoded, encoded_norm, _, encode_trace = parse_structured_json_with_trace(
+        raw,
+        note_text=_record().note_text,
+        repair_config=StructuredRepairConfig.for_mode("llm_encode"),
+    )
+
+    assert extract is not None
+    assert extract.selection.final_label is None
+    assert extract_norm == []
+    assert encoded is not None
+    assert encoded.selection.final_label == "2 per month"
+    assert encoded_norm[0].normalized_label == "2 per month"
+    resolve_hops = [
+        hop
+        for hop in encode_trace["answer_states"]
+        if hop["stage_id"] == "gan.encode.resolve_label"
+    ]
+    assert resolve_hops
+    assert resolve_hops[0]["cell_id"] == "llm_encode"
+    assert resolve_hops[0]["effect_class"] == "encode"
+    assert not any(
+        hop["stage_id"] == "gan.encode.resolve_label"
+        for hop in extract_trace["answer_states"]
+    )
 
 
 def test_elapsed_anchor_converts_seizure_free_since_date_to_month_duration() -> None:
@@ -295,23 +329,6 @@ def test_run_split_reuses_raw_outputs_without_new_call(tmp_path: Path) -> None:
     assert rows[0]["reused_raw_output"] is True
     assert rows[0]["structured_record"]["selection"]["final_label"] == "2 per month"
     assert rows[0]["parse_errors"] == []
-
-
-def test_parse_structured_json_can_use_clean_scorer_facing_gold_policy() -> None:
-    raw = _raw_structured("most weekdays")
-
-    extraction, _, errors = parse_structured_json(
-        raw,
-        repair_config=StructuredRepairConfig(
-            selected_evidence_repair=False,
-            basic_label_repair_format_only=True,
-            clean_scorer_facing_gold_policy=True,
-        ),
-    )
-
-    assert extraction is not None
-    assert extraction.selection.final_label == "multiple per week"
-    assert errors == ["final_label_repaired: 'most weekdays' -> 'multiple per week'"]
 
 
 def test_parse_structured_json_fills_omitted_kind_on_selected_sibling_event() -> None:

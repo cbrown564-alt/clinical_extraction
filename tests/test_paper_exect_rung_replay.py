@@ -25,9 +25,9 @@ def _scored_row() -> dict[str, object]:
     return {
         "letter_id": "EA0001",
         "rungs": {
-            "llm_schema": rung,
+            "llm_extract": rung,
             "llm_encode": rung,
-            "llm_revise": rung,
+            "llm_select": rung,
         },
     }
 
@@ -53,7 +53,7 @@ def test_holdout_exect_rung_artifacts_are_aggregates_only(tmp_path: Path) -> Non
         "model_slug": "grok46",
         "row_count": 1,
         "rungs": {
-            "llm_schema": {
+            "llm_extract": {
                 "clinical_fact_f1": 0.77,
                 "precision": 0.8,
                 "recall": 0.75,
@@ -120,11 +120,11 @@ def test_format_render_uses_pre_assembly_mentions_not_materialized_format_only()
     assert check["same_as_schema"] is False
     assert "same-fact format" in check["note"]
     rungs = summary["rungs"]
-    assert rungs["llm_schema"]["clinical_fact_f1"] != rungs["llm_encode"]["clinical_fact_f1"]
-    assert rungs["llm_revise"]["clinical_fact_f1"] == pytest.approx(0.904)
+    assert rungs["llm_extract"]["clinical_fact_f1"] != rungs["llm_encode"]["clinical_fact_f1"]
+    assert rungs["llm_select"]["clinical_fact_f1"] == pytest.approx(0.904)
     assert (
         rungs["llm_encode"]["family_f1"]["SeizureFrequency"]
-        < rungs["llm_revise"]["family_f1"]["SeizureFrequency"]
+        < rungs["llm_select"]["family_f1"]["SeizureFrequency"]
     )
 
 

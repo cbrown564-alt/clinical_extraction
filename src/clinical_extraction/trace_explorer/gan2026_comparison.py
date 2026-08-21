@@ -263,7 +263,7 @@ def _paper_family(
             else "gan_llm_only"
         ),
         repair_mode=(
-            "llm_revise"
+            "llm_select"
             if method_name == "llm_with_rules"
             else "model_selected_evidence_benchmark_adapter"
         ),

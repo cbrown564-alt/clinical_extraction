@@ -143,14 +143,11 @@ def _repair_policy_description(repair_mode: str) -> str:
             "raw structured model selection plus Python-literal JSON dialect repair only"
         ),
         "raw_model": "raw structured model selection with no deterministic final-label repair",
-        "strict_format": (
-            "raw structured model selection plus strict format-preserving basic label repair only"
-        ),
-        "clean_scorer_facing": (
-            "raw structured model selection plus clean scorer-facing Gan gold-normalization policy"
-        ),
         "llm_encode": (
             "structured model selection plus selected-evidence derivation only"
+        ),
+        "llm_select": (
+            "hybrid full deterministic repair stack after structured model selection"
         ),
         "llm_revise": (
             "hybrid full deterministic repair stack after structured model selection"

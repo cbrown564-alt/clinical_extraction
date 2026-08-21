@@ -299,7 +299,7 @@ def test_frontend_api_serves_the_living_gan_dev750_panel(client: TestClient) -> 
     assert panel.status_code == 200
     body = panel.json()
     assert body["split"] == "dev750"
-    assert body["method_identity"] == "grok46"
+    assert body["method_identity"] == "gemini37flash"
     assert len(body["cells"]) == 12
     grok = client.get("/paper/gan/dev750/gan_llm_with_rules/grok46/scored")
     assert grok.status_code == 200
@@ -333,12 +333,12 @@ def test_frontend_api_serves_the_living_exect_dev140_panel(client: TestClient) -
     assert panel.status_code == 200
     body = panel.json()
     assert body["split"] == "dev140"
-    assert body["method_identity"] == "grok46"
+    assert body["method_identity"] == "gemini37flash"
     assert body["methods"] == [
         "rules_only",
-        "llm_schema",
+        "llm_extract",
         "llm_encode",
-        "llm_revise",
+        "llm_select",
         "llm_pre_post",
     ]
     assert len(body["cells"]) == 30

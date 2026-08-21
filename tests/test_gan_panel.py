@@ -113,7 +113,7 @@ def test_promote_writes_replay_scored_and_panel(
     assert scored["letter_id"] == str(scored["source_row_index"])
     assert scored["purist_correct"] is True
     panel = rebuild_dev750_panel()
-    assert panel["method_identity"] == "grok46"
+    assert panel["method_identity"] == "gemini37flash"
     assert panel["living_effort"]["hosted_reasoning"] == "low"
     assert len(panel["cells"]) == 12
     present = [cell for cell in panel["cells"] if cell["status"] == "present"]

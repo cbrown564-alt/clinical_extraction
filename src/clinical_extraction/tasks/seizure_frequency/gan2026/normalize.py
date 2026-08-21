@@ -13,9 +13,6 @@ from .contract.benchmark_prediction_repair import (
     FORMAT_PRESERVING_BENCHMARK_REPAIR_RULES,
     FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS,
 )
-from .contract.gold_policy import (
-    CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES,
-)
 from .deterministic.rules.benchmark_repair import (
     BenchmarkRepairTrace,
     apply_benchmark_repair_rules,
@@ -58,7 +55,6 @@ _parse_range = _labels._parse_range
 __all__ = [
     "BENCHMARK_REPAIR_RULES",
     "BENCHMARK_REPAIR_STEPS",
-    "CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES",
     "FORMAT_PRESERVING_BENCHMARK_REPAIR_RULES",
     "FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS",
     "FrequencyLabelKind",
@@ -68,8 +64,6 @@ __all__ = [
     "normalize_frequency_label",
     "parse_label_bounds",
     "repair_prediction_label",
-    "repair_prediction_label_clean_scorer_facing",
-    "repair_prediction_label_clean_scorer_facing_with_trace",
     "repair_prediction_label_format_preserving",
     "repair_prediction_label_format_preserving_with_trace",
     "repair_prediction_label_with_evidence",
@@ -93,29 +87,6 @@ def repair_prediction_label_format_preserving(raw: str | None) -> str:
     rate syntax, but leaves vague quantities and unrecognized labels untouched.
     """
     return repair_prediction_label_format_preserving_with_trace(raw).final_label
-
-
-def repair_prediction_label_clean_scorer_facing(raw: str | None) -> str:
-    """Apply clean Gan scorer-facing normalization after strict format repair."""
-    return repair_prediction_label_clean_scorer_facing_with_trace(raw).final_label
-
-
-def repair_prediction_label_clean_scorer_facing_with_trace(
-    raw: str | None,
-) -> BenchmarkRepairTrace:
-    """Strict format repair plus named Gan gold-normalization policy rules."""
-    strict_trace = repair_prediction_label_format_preserving_with_trace(raw)
-    text, policy_events = apply_benchmark_repair_rules(
-        strict_trace.final_label,
-        CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES,
-        AblationConfig(),
-    )
-    return BenchmarkRepairTrace(
-        raw_label=raw,
-        initial_label=strict_trace.initial_label,
-        final_label=text,
-        events=(*strict_trace.events, *policy_events),
-    )
 
 
 def repair_prediction_label_format_preserving_with_trace(raw: str | None) -> BenchmarkRepairTrace:

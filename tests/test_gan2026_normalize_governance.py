@@ -16,7 +16,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rules imp
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     BENCHMARK_REPAIR_RULES,
     BENCHMARK_REPAIR_STEPS,
-    CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES,
     FORMAT_PRESERVING_BENCHMARK_REPAIR_RULES,
     FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS,
     repair_prediction_label,
@@ -31,7 +30,6 @@ def test_benchmark_repair_steps_are_valid_and_benchmark_format_only() -> None:
     validate_benchmark_repair_steps(FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS)
     validate_rule_registry(BENCHMARK_REPAIR_RULES)
     validate_rule_registry(FORMAT_PRESERVING_BENCHMARK_REPAIR_RULES)
-    validate_rule_registry(CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES)
     assert BENCHMARK_REPAIR_STEPS
     assert BENCHMARK_REPAIR_RULES
     assert FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS
@@ -43,9 +41,6 @@ def test_benchmark_repair_steps_are_valid_and_benchmark_format_only() -> None:
     assert {(rule.group, rule.portability) for rule in BENCHMARK_REPAIR_RULES} == {
         (RuleGroup.BENCHMARK_REPAIR, Portability.BENCHMARK_FORMAT)
     }
-    assert {
-        (rule.group, rule.portability) for rule in CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES
-    } == {(RuleGroup.GOLD_NORMALIZATION_POLICY, Portability.GAN2026_SPECIFIC)}
 
 
 def test_benchmark_prediction_repair_owns_rule_tables() -> None:

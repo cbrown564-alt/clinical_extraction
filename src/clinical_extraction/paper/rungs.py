@@ -13,18 +13,18 @@ from typing import Literal
 
 RungId = Literal[
     "rules_only",
-    "llm_schema",
+    "llm_extract",
     "llm_encode",
-    "llm_revise",
+    "llm_select",
     "llm_pre_post",
 ]
 TaskName = Literal["gan2026", "exectv2"]
 
 RUNG_IDS: tuple[RungId, ...] = (
     "rules_only",
-    "llm_schema",
+    "llm_extract",
     "llm_encode",
-    "llm_revise",
+    "llm_select",
     "llm_pre_post",
 )
 RESULT_COLUMNS: tuple[RungId, ...] = RUNG_IDS
@@ -32,85 +32,94 @@ RESULT_COLUMNS: tuple[RungId, ...] = RUNG_IDS
 # Report / table order only. Not a climb or better-later axis.
 CELL_ORDER: dict[RungId, int] = {
     "rules_only": 1,
-    "llm_schema": 2,
+    "llm_extract": 2,
     "llm_encode": 3,
-    "llm_revise": 4,
+    "llm_select": 4,
     "llm_pre_post": 5,
 }
 
 CELL_ID_ALIASES: dict[str, RungId] = {
+    "llm_schema": "llm_extract",
     "llm_format": "llm_encode",
-    "llm_post": "llm_revise",
+    "llm_revise": "llm_select",
+    "llm_post": "llm_select",
 }
 METHOD_VIEW_ALIASES: dict[str, str] = {
+    "gan_llm_schema": "gan_llm_extract",
     "gan_llm_format": "gan_llm_encode",
+    "gan_llm_revise": "gan_llm_select",
+    "exect_llm_schema": "exect_llm_extract",
     "exect_llm_format": "exect_llm_encode",
-    "exect_llm_post": "exect_llm_revise",
+    "exect_llm_revise": "exect_llm_select",
+    "exect_llm_post": "exect_llm_select",
 }
-# Paper/replay view for Gan revise; live runner stays gan_llm_with_rules.
-GAN_REVISE_PAPER_VIEW = "gan_llm_revise"
+# Paper/replay view for Gan select; live runner stays gan_llm_with_rules.
+GAN_SELECT_PAPER_VIEW = "gan_llm_select"
+GAN_REVISE_PAPER_VIEW = GAN_SELECT_PAPER_VIEW
 
 GAN_METHOD_FOR_RUNG: dict[RungId, str] = {
     "rules_only": "gan_rules",
-    "llm_schema": "gan_llm_schema",
+    "llm_extract": "gan_llm_extract",
     "llm_encode": "gan_llm_encode",
-    "llm_revise": "gan_llm_with_rules",
+    "llm_select": "gan_llm_with_rules",
     "llm_pre_post": "gan_llm_pre_post",
 }
 EXECT_METHOD_FOR_RUNG: dict[RungId, str] = {
     "rules_only": "exect_rules",
-    "llm_schema": "exect_llm_schema",
+    "llm_extract": "exect_llm_extract",
     "llm_encode": "exect_llm_encode",
-    "llm_revise": "exect_llm_revise",
+    "llm_select": "exect_llm_select",
     "llm_pre_post": "exect_llm_pre_post",
 }
 GAN_REPAIR_MODE_FOR_RUNG: dict[str, str] = {
-    # Schema parse stop stays raw_model (live identity); encode/revise share llm_* names.
-    "llm_schema": "raw_model",
+    "llm_extract": "raw_model",
     "llm_encode": "llm_encode",
-    "llm_revise": "llm_revise",
-    "llm_pre_post": "llm_revise",
+    "llm_select": "llm_select",
+    "llm_pre_post": "llm_select",
 }
 GAN_RUNG_SOURCE: dict[RungId, str] = {
     "rules_only": "standalone_rules",
-    "llm_schema": "replay_gan_llm_with_rules",
+    "llm_extract": "replay_gan_llm_with_rules",
     "llm_encode": "replay_gan_llm_with_rules",
-    "llm_revise": "replay_gan_llm_with_rules",
+    "llm_select": "replay_gan_llm_with_rules",
     "llm_pre_post": "new_request",
 }
 EXECT_RUNG_SOURCE: dict[RungId, str] = {
     "rules_only": "standalone_rules",
-    "llm_schema": "replay_exect_llm_only",
+    "llm_extract": "replay_exect_llm_only",
     "llm_encode": "replay_exect_llm_only",
-    "llm_revise": "replay_exect_llm_only",
+    "llm_select": "replay_exect_llm_only",
     "llm_pre_post": "living_exect_llm_pre_post",
 }
 EXECT_HOP_EFFECT_CLASS: dict[str, str] = {
-    "exect.schema.parse": "schema",
+    "exect.schema.parse": "extract",
     "exect.format.stop": "encode",
     "exect.validation.evidence": "validation",
-    "exect.select.dictionary": "revise",
-    "exect.select.residual": "revise",
+    "exect.select.dictionary": "select",
+    "exect.select.residual": "select",
     "exect.projection.clinical_fact": "projection",
 }
 EXECT_STAGE_EFFECT_CLASS: dict[str, str] = {
-    "transport_or_schema": "schema",
+    "transport_or_schema": "extract",
     "representation": "encode",
-    "clinical_meaning": "revise",
+    "clinical_meaning": "select",
     "validation_gate": "validation",
     "benchmark_projection": "projection",
 }
 
 REPAIR_MODE_ALIASES: dict[str, str] = {
     "selected_evidence_derivation": "llm_encode",
-    "hybrid_full_stack": "llm_revise",
-    # Brief short names — never emit; still load if present.
+    "hybrid_full_stack": "llm_select",
+    "llm_revise": "llm_select",
     "encode": "llm_encode",
-    "revise": "llm_revise",
+    "revise": "llm_select",
+    "select": "llm_select",
 }
 EFFECT_CLASS_ALIASES: dict[str, str] = {
+    "schema": "extract",
     "format": "encode",
-    "semantic": "revise",
+    "semantic": "select",
+    "revise": "select",
 }
 CELL_ORDER_TO_ID: dict[int, RungId] = {order: cell for cell, order in CELL_ORDER.items()}
 

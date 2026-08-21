@@ -195,7 +195,7 @@ def rebuild_dev750_panel() -> dict[str, Any]:
         "split": PROMOTE_SPLIT,
         "split_machine": "validation",
         "row_policy": "development_review_permitted",
-        "method_identity": "grok46",
+        "method_identity": "gemini37flash",
         "living_effort": {
             "hosted_reasoning": "low",
             "deepseek": "thinking_on_provider_default",

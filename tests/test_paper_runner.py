@@ -54,9 +54,9 @@ pytestmark = pytest.mark.local_corpus
 def test_living_roster_is_the_six_paper_models() -> None:
     slugs = [item["slug"] for item in living_models()]
     assert slugs == [
+        "gemini37flash",
         "grok46",
         "gpt56luna",
-        "gemini37flash",
         "deepseek_v4_flash",
         "qwen38_27b",
         "gemma4_26b",

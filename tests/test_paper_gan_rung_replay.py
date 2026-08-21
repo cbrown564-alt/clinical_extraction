@@ -31,9 +31,9 @@ def _scored_row() -> dict[str, object]:
         "gold_label": "1 per week",
         "rungs": {
             "rules_only": {**rung, "selected_event_ids": []},
-            "llm_schema": rung,
+            "llm_extract": rung,
             "llm_encode": rung,
-            "llm_revise": rung,
+            "llm_select": rung,
         },
     }
 

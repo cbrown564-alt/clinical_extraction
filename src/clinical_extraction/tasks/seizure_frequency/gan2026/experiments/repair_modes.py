@@ -32,22 +32,6 @@ REPAIR_MODE_METADATA: Mapping[str, Mapping[str, Any]] = {
         "deterministic_semantic_repair": False,
         "scorer_facing": False,
     },
-    "strict_format": {
-        "repair_mode": "strict_format",
-        "attribution_source": "raw_llm_output_plus_format_repair",
-        "repair_family": "format_preserving_label_repair",
-        "semantic_selection_owner": "llm",
-        "deterministic_semantic_repair": False,
-        "scorer_facing": True,
-    },
-    "clean_scorer_facing": {
-        "repair_mode": "clean_scorer_facing",
-        "attribution_source": "raw_llm_output_plus_clean_scorer_policy",
-        "repair_family": "clean_scorer_facing_gold_policy",
-        "semantic_selection_owner": "llm",
-        "deterministic_semantic_repair": False,
-        "scorer_facing": True,
-    },
     "llm_encode": {
         "repair_mode": "llm_encode",
         "attribution_source": "llm_selected_evidence_plus_deterministic_derivation",
@@ -56,8 +40,8 @@ REPAIR_MODE_METADATA: Mapping[str, Mapping[str, Any]] = {
         "deterministic_semantic_repair": True,
         "scorer_facing": True,
     },
-    "llm_revise": {
-        "repair_mode": "llm_revise",
+    "llm_select": {
+        "repair_mode": "llm_select",
         "attribution_source": "raw_llm_output_plus_all_deterministic_repair_families",
         "repair_family": "full_structured_events_repair_stack",
         "semantic_selection_owner": "hybrid",
@@ -78,8 +62,8 @@ REPAIR_MODE_METADATA: Mapping[str, Mapping[str, Any]] = {
 def repair_mode_metadata(mode: str | None) -> dict[str, Any]:
     """Return stable attribution metadata for a named repair mode.
 
-    Legacy names ``selected_evidence_derivation`` and ``hybrid_full_stack``
-    resolve to ``llm_encode`` and ``llm_revise``.
+    Legacy names ``selected_evidence_derivation``, ``hybrid_full_stack``,
+    and ``llm_revise`` resolve to ``llm_encode`` and ``llm_select``.
     """
 
     if mode is None:

@@ -12,7 +12,7 @@ from clinical_extraction.paper.rungs import (
     normalize_effect_class,
 )
 
-EffectClass = Literal["schema", "encode", "revise", "validation", "projection"]
+EffectClass = Literal["extract", "encode", "select", "validation", "projection"]
 HopOwner = Literal["rules", "model", "replay"]
 
 

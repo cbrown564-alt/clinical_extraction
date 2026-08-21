@@ -13,15 +13,15 @@ ROSTER_PATH = ROOT / "paper_experiments/roster.json"
 
 
 def living_models() -> list[dict[str, Any]]:
-    """Return the six living paper models, Grok first."""
+    """Return the six living paper models, Gemini first."""
 
     payload = json.loads(ROSTER_PATH.read_text(encoding="utf-8"))
     living = list(payload["living"])
     slugs = [item["slug"] for item in living]
     if slugs != [
+        "gemini37flash",
         "grok46",
         "gpt56luna",
-        "gemini37flash",
         "deepseek_v4_flash",
         "qwen38_27b",
         "gemma4_26b",

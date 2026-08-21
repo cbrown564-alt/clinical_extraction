@@ -457,7 +457,7 @@ def rebuild_dev140_panel() -> dict[str, Any]:
         "split": PROMOTE_SPLIT,
         "split_machine": "dev",
         "row_policy": "development_review_permitted",
-        "method_identity": "grok46",
+        "method_identity": "gemini37flash",
         "living_effort": {
             "hosted_reasoning": "low",
             "deepseek": "thinking_on_provider_default",
@@ -623,7 +623,7 @@ def load_scored_rows(method: str, slug: str) -> list[dict[str, Any]]:
         cell = normalize_cell_id(method)
     except ValueError:
         cell = None
-    if cell in {"llm_schema", "llm_encode", "llm_revise"}:
+    if cell in {"llm_extract", "llm_encode", "llm_select"}:
         path = exect_rung_out_dir(slug, PROMOTE_SPLIT) / "scored.jsonl"
         if not path.is_file():
             raise FileNotFoundError(path)
