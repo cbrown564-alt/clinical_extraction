@@ -16,7 +16,7 @@ from typing import Any
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 
-from .prompt_content import candidate_evidence_ledger_for_letter
+from .prompt_content import high_priority_evidence_ledger_for_letter
 
 COMPACT_AUTHORED_KEYS = (
     "task",
@@ -584,5 +584,5 @@ def _suggested_evidence(letter: ExectLetter) -> list[dict[str, str]]:
             "name_hint": str(row["anchor_hint"]),
             "category": str(row["lane_hint"]),
         }
-        for row in candidate_evidence_ledger_for_letter(letter)
+        for row in high_priority_evidence_ledger_for_letter(letter)
     ]

@@ -29,6 +29,11 @@ _RETIRED_RULE_NAMES = frozenset(
         "residual_explicit_current_only",
         "full_noise_result_binding",
         "residual_investigation_providers",
+        "residual_jerk",
+        "elapsed_anchor",
+        "sustained_seizure_free_veto_on_elapsed_anchor",
+        "bounded_residual_add",
+        "residual_redundancy_skip",
     }
 )
 

@@ -7,7 +7,6 @@ from collections.abc import Mapping, Sequence
 from typing import Protocol
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_temporal import (
-    clinic_month_year,
     month_number,
     small_number_words_to_digits,
 )
@@ -278,9 +277,6 @@ def _monthly_diary_this_month_key(
     note_text: str | None,
     existing_counts: Mapping[MonthlyDiaryMonthKey, int],
 ) -> MonthlyDiaryMonthKey | None:
-    clinic = clinic_month_year(note_text or "")
-    if clinic is not None:
-        return clinic
     dated = [(month, year) for month, year in existing_counts if year is not None]
     if dated:
         latest_month, latest_year = max(dated, key=lambda item: item[1] * 12 + item[0])

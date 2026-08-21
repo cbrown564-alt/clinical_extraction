@@ -389,15 +389,14 @@ GAN_FREE_SPEC = GanCaseSpec(
     gold=GAN_FREE_GOLD_LABEL,
     gold_reference="He has remained seizure-free since March 2025",
     gold_note=(
-        "A stated sustained seizure-free period is the answer. Format repair "
-        "first turns 'since March 2025' into a vague month window; "
-        "elapsed-anchor then counts clinic date minus that anchor and "
-        "writes 'seizure free for 15 month'."
+        "A stated sustained seizure-free period is the answer. Format "
+        "repair turns 'since March 2025' into 'seizure free for multiple "
+        "month'. Living hybrid select does not convert that window from "
+        "the clinic date."
     ),
     story=(
-        "The model is right about seizure freedom. Repair then does the "
-        "date arithmetic the model left implicit: since March 2025, "
-        "seen in June 2026, is fifteen months."
+        "The model is right about seizure freedom. Living hybrid select "
+        "renders the since-date as a vague month window and stops there."
     ),
     card_why={
         "rules": (
@@ -410,17 +409,15 @@ GAN_FREE_SPEC = GanCaseSpec(
         ),
         "llm_with_rules": (
             "Selected-evidence first makes the phrasing scorable. "
-            "Elapsed-anchor then turns the since-date into a month duration "
-            "against the clinic date."
+            "Living hybrid select keeps the vague month window; it does "
+            "not count months from the clinic date."
         ),
     },
-    mechanism_title="Elapsed since-date becomes a duration",
+    mechanism_title="Since-date stays a vague month window",
     mechanism=(
         "The model selects the seizure-free statement. Selected-evidence "
         "canonicalizes 'since March 2025' to 'seizure free for multiple "
-        "month'. Elapsed-anchor then subtracts that month from the clinic "
-        "date (12 June 2026) and rewrites the label to "
-        "'seizure free for 15 month'."
+        "month'. Elapsed-anchor is off on the living hybrid select stack."
     ),
     hybrid_raw_output=GAN_FREE_HYBRID_RAW_OUTPUT,
     llm_only_raw_output=GAN_FREE_LLM_ONLY_RAW_OUTPUT,

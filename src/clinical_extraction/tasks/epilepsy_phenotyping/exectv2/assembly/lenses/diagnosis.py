@@ -12,16 +12,12 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.finding_sto
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lens_ops import (
     LensPolicy,
     LensResult,
-    diagnosis_added_finding,
     diagnosis_finding_with_text,
     rewrite_counts,
     text_counts,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     standard_dictionary as sd,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
-    canonicalize_diagnosis_concept,
 )
 
 from .base import DiagnosisLens, ThinArtifactLens
@@ -38,10 +34,10 @@ class DiagnosisHeadingRecoveryLens(ThinArtifactLens):
 class DiagnosisDictionaryLens(ThinArtifactLens):
     """Standard-dictionary Diagnosis repair over saved model findings.
 
-    The former heading-recovery and generic-companion additions are retained
-    only in historical artifacts; the selected v10 lens keeps the active
-    dictionary rewrites, noise filtering, attribute repair, and residual
-    additions.
+    The former heading-recovery, generic-companion, and residual
+    additions are retained only in historical artifacts. The selected
+    lens keeps dictionary rewrites, noise filtering, and attribute
+    repair.
     """
 
     def reconcile(
@@ -92,38 +88,6 @@ class DiagnosisDictionaryLens(ThinArtifactLens):
 
         added: list[ClinicalFinding] = []
         addition_rule_categories: list[str] = []
-        for text, evidence in sd.diagnosis_residual_additions(
-            store.note_text,
-            include_resolution_candidate=policy.diagnosis_resolution_candidate,
-        ):
-            if _has_diagnosis_concept(
-                [*kept, *added],
-                text=text,
-                include_resolution_candidate=policy.diagnosis_resolution_candidate,
-            ):
-                continue
-            selected_texts = [finding.text for finding in [*kept, *added]]
-            if sd.is_redundant_diagnosis_residual_addition(
-                text,
-                evidence=evidence,
-                selected_texts=selected_texts,
-                include_resolution_candidate=policy.diagnosis_resolution_candidate,
-            ):
-                continue
-            new_finding = diagnosis_added_finding(
-                store,
-                text=text,
-                evidence=evidence,
-                selected=[*kept, *added],
-                policy=policy,
-                lens_id=self.lens_id,
-                rule_category=sd.diagnosis_residual_addition_category(text, evidence),
-            )
-            if new_finding is not None:
-                added.append(new_finding)
-                addition_rule_categories.append(
-                    sd.diagnosis_residual_addition_category(text, evidence)
-                )
 
         event = ProvenanceEvent(
             stage="entity_lens",
@@ -171,26 +135,6 @@ class DiagnosisDictionaryLens(ThinArtifactLens):
             findings=final_findings,
             diagnostics=diagnostics,
         )
-
-
-def _has_diagnosis_concept(
-    findings: list[ClinicalFinding],
-    *,
-    text: str,
-    include_resolution_candidate: bool = False,
-) -> bool:
-    target = canonicalize_diagnosis_concept(text)
-    for finding in findings:
-        concept = canonicalize_diagnosis_concept(finding.text)
-        if concept == target:
-            return True
-        fragments = {"drug", "focal", "generalised", "occipital", "secondary", "symptomatic"}
-        if include_resolution_candidate:
-            fragments.remove("symptomatic")
-        if target in fragments:
-            if target in concept.split():
-                return True
-    return False
 
 
 __all__ = [

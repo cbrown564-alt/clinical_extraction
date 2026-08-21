@@ -167,17 +167,8 @@ RULE_RECORDS: tuple[RuleRecord, ...] = (
     RuleRecord("typical_over_ytd", "gan2026", "llm_select", "reselect", "live"),
     RuleRecord("breakthrough", "gan2026", "llm_select", "reselect", "live"),
     RuleRecord("non_epileptic", "gan2026", "llm_select", "rewrite", "live"),
-    RuleRecord("residual_jerk", "gan2026", "llm_select", "reselect", "live"),
     RuleRecord("post_change_burst", "gan2026", "llm_select", "reselect", "live"),
     RuleRecord("dated_sequence", "gan2026", "llm_select", "reselect", "live"),
-    RuleRecord("elapsed_anchor", "gan2026", "llm_select", "reselect", "live"),
-    RuleRecord(
-        "sustained_seizure_free_veto_on_elapsed_anchor",
-        "gan2026",
-        "llm_select",
-        "gate",
-        "live",
-    ),
     RuleRecord(
         "monthly_diary",
         "gan2026",
@@ -292,8 +283,6 @@ RULE_RECORDS: tuple[RuleRecord, ...] = (
     ),
     RuleRecord("diagnosis_convention_noise_drop", "exectv2", "llm_select", "drop", "live"),
     RuleRecord("jme_covers_phenotype_drop", "exectv2", "llm_select", "drop", "live"),
-    RuleRecord("bounded_residual_add", "exectv2", "llm_select", "invent", "live"),
-    RuleRecord("residual_redundancy_skip", "exectv2", "llm_select", "gate", "live"),
     # --- ExECT SeizureFrequency encode ---
     RuleRecord("encoding.word_number", "exectv2", "llm_encode", "encode", "format-replay"),
     RuleRecord("encoding.range_split", "exectv2", "llm_encode", "encode", "format-replay"),

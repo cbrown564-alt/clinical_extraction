@@ -26,10 +26,12 @@ hybrid families.
 The LLM row must be attributable to the model at encode and at select.
 A letter-in call would be a new extract. Running the nine hybrid
 families after the call would score hybrid select as the LLM cell.
-Keeping the note out is a deliberate narrowing: residual diary and
-elapsed-window rates stay with hybrid select, not this prompt.
+Keeping the note out is a deliberate narrowing. Living hybrid
+select also stays on the extracted events: no leftover date mine,
+no clinic-month diary assignment, no residual jerk, and no elapsed
+window conversion.
 
 ## Claim boundary
 
-A prompt and ownership contract. Not a claim that the calls have been
-run, or that this select matches hybrid select scores.
+A prompt and ownership contract. Gemini Gan later-stage cells are
+promoted. This select is not hybrid select.

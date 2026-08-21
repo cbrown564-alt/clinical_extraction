@@ -314,10 +314,10 @@ class StructuredRepairConfig:
     typical_over_ytd_repair: bool = True
     breakthrough_repair: bool = True
     non_epileptic_repair: bool = True
-    residual_jerk_repair: bool = True
+    residual_jerk_repair: bool = False
     post_change_burst_repair: bool = True
     dated_sequence_repair: bool = True
-    elapsed_anchor_repair: bool = True
+    elapsed_anchor_repair: bool = False
     semantic_family_order: tuple[str, ...] = DEFAULT_SEMANTIC_FAMILY_ORDER
 
     @classmethod

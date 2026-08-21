@@ -56,5 +56,6 @@ name; clinical name stays extract wording.
 A prompt and ownership contract. Clinical-fact SF type now keys the
 folded seizure-type phrase. CUI stay on the mention as secondary
 attributes and still feed the published with-CUI diagnostic. Not a
-claim that the later-stage calls have been run, or that living
-hybrid invent has been turned off.
+claim that the later-stage calls have been run. Living hybrid
+select no longer unions residual letter-scan findings after the
+call. Pre-post still shows those cues as suggested evidence.

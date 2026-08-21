@@ -442,13 +442,6 @@ def dated_sequence_label_from_events(
     dated_events = _distinct_dated_months(
         [mention for text in texts for mention in _dated_event_mentions(text)]
     )
-    # When events only repeat one calendar month (or omit dates), mine the note.
-    if (
-        len(dated_events) < 2
-        and note_text
-        and repaired_label in {"unknown", "no seizure frequency reference"}
-    ):
-        dated_events = _distinct_dated_months(_dated_event_mentions(note_text))
     if len(dated_events) < 2:
         return None
     first_month, first_year, _ = min(dated_events, key=lambda item: item[1] * 12 + item[0])

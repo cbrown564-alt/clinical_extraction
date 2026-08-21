@@ -2,6 +2,7 @@
 
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -22,6 +23,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_e
     parse_structured_json,
     parse_structured_json_with_trace,
     run_split,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families import (
+    dated_sequence_label_from_events,
 )
 
 
@@ -174,6 +178,33 @@ def test_extract_keeps_model_label_and_encode_owns_resolve() -> None:
     )
 
 
+def test_living_hybrid_select_drops_jerk_and_elapsed() -> None:
+    living = StructuredRepairConfig.for_mode("llm_select")
+    assert living.residual_jerk_repair is False
+    assert living.elapsed_anchor_repair is False
+    assert living.dated_sequence_repair is True
+    assert living.post_change_burst_repair is True
+
+
+def test_dated_sequence_does_not_mine_dates_from_the_letter() -> None:
+    extraction = SimpleNamespace(
+        events=[
+            SimpleNamespace(
+                evidence="frequency is unclear",
+                raw_value="",
+                time_window="",
+            )
+        ]
+    )
+    note = (
+        "Clinic Date: 1 June 2024\n"
+        "She had a seizure in March 2024 and another seizure in May 2024."
+    )
+    assert (
+        dated_sequence_label_from_events(extraction, "unknown", note_text=note) is None
+    )
+
+
 def test_elapsed_anchor_converts_seizure_free_since_date_to_month_duration() -> None:
     evidence = (
         "Seizure-free since 27 March 2024 as per patient and collateral reports."
@@ -208,8 +239,18 @@ def test_elapsed_anchor_converts_seizure_free_since_date_to_month_duration() -> 
         "Seizure-free since 27 March 2024 as per patient and collateral reports."
     )
 
-    extraction, _, errors = parse_structured_json(raw, note_text=note)
+    living, _, _ = parse_structured_json(raw, note_text=note)
+    extraction, _, errors = parse_structured_json(
+        raw,
+        note_text=note,
+        repair_config=StructuredRepairConfig(
+            residual_jerk_repair=False,
+            elapsed_anchor_repair=True,
+        ),
+    )
 
+    assert living is not None
+    assert living.selection.final_label != "seizure free for 6 month"
     assert extraction is not None
     assert extraction.selection.final_label == "seizure free for 6 month"
     assert any(
@@ -279,8 +320,18 @@ def test_elapsed_seizure_free_is_not_replaced_by_a_short_diary() -> None:
         "2 in January. 1 in February."
     )
 
-    extraction, _, _errors = parse_structured_json(raw, note_text=note)
+    living, _, _ = parse_structured_json(raw, note_text=note)
+    extraction, _, _errors = parse_structured_json(
+        raw,
+        note_text=note,
+        repair_config=StructuredRepairConfig(
+            residual_jerk_repair=False,
+            elapsed_anchor_repair=True,
+        ),
+    )
 
+    assert living is not None
+    assert living.selection.final_label == "3 per 2 month"
     assert extraction is not None
     assert extraction.selection.final_label == "seizure free for 6 month"
 
@@ -413,7 +464,7 @@ def test_vague_seizure_free_does_not_veto_countable_monthly_diary() -> None:
     extraction, _, _errors = parse_structured_json(raw, note_text=note)
 
     assert extraction is not None
-    assert extraction.selection.final_label == "11 per 4 month"
+    assert extraction.selection.final_label == "11 per 3 month"
 
 
 def test_week_scale_rate_still_blocks_monthly_diary() -> None:

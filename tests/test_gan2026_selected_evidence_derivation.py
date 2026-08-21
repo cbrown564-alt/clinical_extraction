@@ -297,5 +297,23 @@ def test_monthly_diary_sums_this_month_and_were_in_month() -> None:
     )
     assert (
         monthly_diary_label_from_events(SimpleNamespace(events=events), note_text=note)
-        == "18 per 3 month"
+        == "11 per 2 month"
+    )
+
+
+def test_this_month_does_not_borrow_clinic_month_from_the_letter() -> None:
+    events = [
+        _diary_event(
+            evidence="This month she has had two seizures",
+            raw_value="two seizures",
+            time_window="this month",
+        )
+    ]
+    note = (
+        "Clinic Date: 15 September 2011\n"
+        "This month she has had two seizures."
+    )
+    assert (
+        monthly_diary_label_from_events(SimpleNamespace(events=events), note_text=note)
+        is None
     )

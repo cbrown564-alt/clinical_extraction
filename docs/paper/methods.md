@@ -1,15 +1,16 @@
 # Paper methods
 
 Date: 2026-08-17
-Revised: 2026-08-21 (headline is a 3×3: rules / llm / hybrid × extract / encode / select)
+Revised: 2026-08-21 (headline is four methods × three stages)
 Status: current
 Owner: this file
 
 Two tasks. The proposed method translates clinic letters into structured
 facts in a designed form, with quoted source text. The headline table is
-a 3×3: methods **rules**, **llm**, and **hybrid** against stages
-**extract**, **encode**, and **select**. It is not five depths of one
-hybrid switch. Scores are not interchangeable across tasks.
+four methods — **Rules**, **LLM**, **LLM then rules**, **Rules then
+LLM** — against stages **extract**, **encode**, and **select**. It is
+not five depths of one hybrid switch. Scores are not interchangeable
+across tasks.
 
 | | Gan 2026 | ExECTv2 |
 | --- | --- | --- |
@@ -36,20 +37,22 @@ are a design property, not a third evaluated task.
 | --- | --- | --- |
 | Letter | One clinic letter | One clinic letter |
 | What the model collects | Frequency events with source text, and a first pick of the current state | Four-family facts with source text |
-| What rules may then do | Override the pick, render the designed dialect, check that the quote is in the letter | Map families to dictionaries, drop unsupported states, check that each finding has a quote |
+| What rules may then do | Override the pick from extracted events only, render the designed dialect, check that the quote is in the letter. Living hybrid select does not mine the letter for leftover dates, clinic-month diary assignment, residual jerk, or elapsed-window conversion. | Map families to dictionaries, drop unsupported states, check that each finding has a quote. Living hybrid select does not add leftover letter-scan findings after the call. |
 | Submitted answer | One canonical frequency label | One de-duplicated fact inventory |
 | How this paper scores it | Label mapped to a monthly Purist band | Four-family clinical fact F1 |
 
-On Gan, **llm extract** and **hybrid encode / hybrid select** replay
-one `gan_llm_with_rules` `raw_output`. **Hybrid extract** is a
-different request (`gan_llm_pre_post`): rule candidates in the
-prompt, then the living select stack. `gan_llm_only` is a third
+On Gan, **LLM then rules** is `gan_llm_with_rules`: extract, encode,
+and select are the three stops on that raw. **Rules then LLM** is
+`gan_llm_pre_post`: the same three stops on that other raw.
+**LLM** is later-stage encode and select on the frozen
+`gan_llm_with_rules` extract ledger. `gan_llm_only` is a third
 prompt. It is not a results column.
 
-On ExECT, **llm extract** and **hybrid encode / hybrid select** replay
-`exect_llm_only` `raw_output`. **Hybrid extract** is living
-`exect_llm_pre_post` (`exect_llm_with_rules` is the live alias). An
-unrepaired hybrid body is not llm extract.
+On ExECT, **LLM then rules** is `exect_llm_only` replayed at
+extract / encode / select. **Rules then LLM** is
+`exect_llm_pre_post` (`exect_llm_with_rules` is the live alias)
+replayed at those same stops. An unrepaired `*_pre_post` body is
+the extract stop, not the select stop.
 
 The paper records every submitted-answer version as a hop log. A
 derived state graph is optional. A recorded hop is not a clinically
@@ -77,15 +80,16 @@ records it. A visible step is not described as clinically correct.
 
 ## Identities
 
-The headline is a 3×3. Same names on both tasks. Scores stay
-task-specific. The plain-language owner is
+The headline is four methods × three stages. Same names on both
+tasks. Scores stay task-specific. The plain-language owner is
 [five rungs of rule help](../research/paper/five_rungs_of_rule_help_2026-08-20.md).
 
 | | Extract | Encode | Select |
 | --- | --- | --- | --- |
-| **Rules** | `gan_rules` / `exect_rules`. Same submitted answer in all three columns. No model. This rule set is not the hybrid encode/select stack. | same | same |
-| **LLM** | Replay `gan_llm_with_rules` / `exect_llm_only` as parsed. Model label or flattened mentions only. | Empty until Gemini later-stage `llm_encode` runs. | Empty until Gemini later-stage `llm_select` runs. |
-| **Hybrid** | Other request: `gan_llm_pre_post` / `exect_llm_pre_post` (was cell 5). Rule candidates in the prompt, then the living select stack. Cite that living score here. | Replay encode on the `gan_llm_with_rules` / `exect_llm_only` raw (was cell 3). Same facts, designed form. | Replay select on that same raw (was cell 4). Gate, drop, rewrite, reselect, invent. |
+| **Rules** | `gan_rules` / `exect_rules`. Same submitted answer in all three columns. No model. This rule set is not the encode/select stack on a model ledger. | same | same |
+| **LLM** | Frozen extract ledger only (parsed `gan_llm_with_rules` / `exect_llm_only`). | Gan: Gemini later-stage `gan_llm_encode`. ExECT later-stage encode is still empty. | Gan: Gemini later-stage `gan_llm_select`. ExECT later-stage select is still empty. |
+| **LLM then rules** | `gan_llm_with_rules` / `exect_llm_only` at extract (raw model label / flatten). | The same raw at rule encode. | The same raw at rule select. |
+| **Rules then LLM** | `gan_llm_pre_post` / `exect_llm_pre_post` at extract. | The same raw at rule encode. | The same raw at rule select. |
 
 `gan_llm_only` remains a live runner for existing cells. It is not a
 results column. Do not use it as llm extract.
@@ -107,6 +111,8 @@ Sol is historical. Later-stage LLM encode and LLM select calls
 only. See [Gemini is the cited model](decisions/gemini-is-the-cited-model.md).
 Gan later-stage prompt contract:
 [Gan later-stage encode and select prompts](decisions/gan-later-stage-encode-select-prompts.md).
+ExECT later-stage prompt contract:
+[ExECT later-stage encode and select prompts](decisions/exect-later-stage-encode-select-prompts.md).
 
 Machine roster: [`paper_experiments/roster.json`](../../paper_experiments/roster.json).
 

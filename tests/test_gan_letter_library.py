@@ -73,6 +73,5 @@ def test_seizure_free_letter_surfaces_elapsed_since_date_duration():
     elapsed = _repair_observations(hybrid, "elapsed_anchor")
     assert len(elapsed) == 1
     obs = elapsed[0]
-    assert obs.changed is True
-    assert str(obs.input_value) == "seizure free for multiple month"
-    assert str(obs.output_value) == "seizure free for 15 month"
+    assert obs.changed is False
+    assert hybrid.final_answer == "seizure free for multiple month"
