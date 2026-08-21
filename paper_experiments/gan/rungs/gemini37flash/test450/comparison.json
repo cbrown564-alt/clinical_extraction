@@ -44,17 +44,17 @@
       "scorable": 297
     },
     "llm_select": {
-      "pragmatic_accuracy": 0.8467,
-      "pragmatic_correct": 381,
+      "pragmatic_accuracy": 0.82,
+      "pragmatic_correct": 369,
       "predicted_kinds": {
-        "frequency": 274,
-        "no_reference": 32,
-        "seizure_free": 68,
-        "unknown": 49,
+        "frequency": 263,
+        "no_reference": 35,
+        "seizure_free": 74,
+        "unknown": 51,
         "unresolved_multiple": 27
       },
-      "purist_accuracy": 0.8178,
-      "purist_correct": 368,
+      "purist_accuracy": 0.7933,
+      "purist_correct": 357,
       "scorable": 450
     },
     "rules_only": {

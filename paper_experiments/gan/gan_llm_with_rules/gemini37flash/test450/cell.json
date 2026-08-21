@@ -9,8 +9,8 @@
   "model_slug": "gemini37flash",
   "n": 450,
   "program": "gan_llm_with_rules",
-  "purist_accuracy": 0.8289,
-  "purist_correct": 373,
+  "purist_accuracy": 0.7933,
+  "purist_correct": 357,
   "replay_fields": [
     "source_row_index",
     "prompt_version",
