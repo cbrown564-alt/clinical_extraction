@@ -32,7 +32,7 @@ the only comparator when cited—not a headline method. See
 | --- | --- |
 | [methods](methods.md) | Proposed method, baselines, roster, splits, scorers |
 | [five rungs](../research/paper/five_rungs_of_rule_help_2026-08-20.md) | Plain-language rungs, with one Gan and one ExECT development example |
-| [rule catalogue](../research/paper/rule_catalogue_schema_format_post_2026-08-21.md) | Named schema / format / post rules on both tasks |
+| [rule catalogue](../research/paper/rule_catalogue_schema_format_post_2026-08-21.md) | Named schema / encode / revise rules on both tasks |
 | [claims](claims.md) | What the paper may say, and how strongly |
 | [lineage](lineage.md) | How the living requests were reached and what kind of method change each revision made |
 | [decisions](decisions/) | Five current decisions |

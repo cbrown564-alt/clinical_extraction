@@ -26,8 +26,8 @@ def _scored_row() -> dict[str, object]:
         "letter_id": "EA0001",
         "rungs": {
             "llm_schema": rung,
-            "llm_format": rung,
-            "llm_post": rung,
+            "llm_encode": rung,
+            "llm_revise": rung,
         },
     }
 
@@ -112,6 +112,7 @@ def test_replay_exect_dev140_stays_a_development_alias() -> None:
     assert "development" in (replay_exect_dev140.__doc__ or "").lower()
 
 
+@pytest.mark.local_corpus
 def test_format_render_uses_pre_assembly_mentions_not_materialized_format_only() -> None:
     summary = replay_exect_rungs("dev140", slug="grok46")
     check = summary["format_only_check"]
@@ -119,14 +120,15 @@ def test_format_render_uses_pre_assembly_mentions_not_materialized_format_only()
     assert check["same_as_schema"] is False
     assert "same-fact format" in check["note"]
     rungs = summary["rungs"]
-    assert rungs["llm_schema"]["clinical_fact_f1"] != rungs["llm_format"]["clinical_fact_f1"]
-    assert rungs["llm_post"]["clinical_fact_f1"] == pytest.approx(0.904)
+    assert rungs["llm_schema"]["clinical_fact_f1"] != rungs["llm_encode"]["clinical_fact_f1"]
+    assert rungs["llm_revise"]["clinical_fact_f1"] == pytest.approx(0.904)
     assert (
-        rungs["llm_format"]["family_f1"]["SeizureFrequency"]
-        < rungs["llm_post"]["family_f1"]["SeizureFrequency"]
+        rungs["llm_encode"]["family_f1"]["SeizureFrequency"]
+        < rungs["llm_revise"]["family_f1"]["SeizureFrequency"]
     )
 
 
+@pytest.mark.local_corpus
 def test_format_render_is_not_schema_or_gated_predicted_mentions() -> None:
     from clinical_extraction.paper.exect import letters_for_split
     from clinical_extraction.paper.roster import model_by_slug

@@ -83,8 +83,8 @@ development letter on each task, is
 | --- | --- | --- | --- |
 | 1 `rules_only` | `gan_rules` / `exect_rules` | Other producer; no model; different rule set | Other producer; no model; different rule set |
 | 2 `llm_schema` | replay `gan_llm_with_rules` `raw_model` / replay `exect_llm_only` `source_scored` | Parsed ledger; already writes a label (`_normalize_event` / `_resolve_final_label` leak) | Parsed mentions. Score raw clinical-fact keys |
-| 3 `llm_format` | replay `selected_evidence_derivation` / `format_only` stop | Encode: selected-evidence renderer into evaluation form; must not switch the selected event | Encode: same-fact writing including `project_cuis` on format-replay; not concept rewrite |
-| 4 `llm_post` | `gan_llm_with_rules` `hybrid_full_stack` / `exect_llm_only` full assembly | Revise: full clinical post may change facts | Revise: family transforms, gates, producer checks |
+| 3 `llm_encode` | replay `llm_encode` / `format_only` stop | Encode: selected-evidence renderer into evaluation form; must not switch the selected event | Encode: same-fact writing including `project_cuis` on encode-replay; not concept rewrite |
+| 4 `llm_revise` | `gan_llm_with_rules` `llm_revise` / `exect_llm_only` full assembly | Revise: full clinical revise may change facts | Revise: family transforms, gates, producer checks |
 | 5 `llm_pre_post` | `gan_llm_pre_post` / `exect_llm_pre_post` | Other request: candidates in the prompt, then the same post stack | Living hybrid request. Cite hybrid F1. Do not score that raw as rung 2 |
 
 `gan_llm_only` remains a live runner for existing cells. It is not a

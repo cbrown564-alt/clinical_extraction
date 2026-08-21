@@ -953,7 +953,7 @@ def _gan_llm_with_rules_run(spec: GanCaseSpec) -> MethodRun:
     manifest = load_manifest("gan2026_llm_with_rules")
     run = MethodRun(method_id=manifest.method_id, manifest=manifest)
     record = _gan_record(spec)
-    repair_config = hybrid.StructuredRepairConfig.for_mode("hybrid_full_stack")
+    repair_config = hybrid.StructuredRepairConfig.for_mode("llm_revise")
 
     prompt_input = hybrid.build_prompt_input(record)
     run.record(

@@ -142,8 +142,8 @@ def test_promote_strips_replay_and_writes_scored_panel(
     assert panel["methods"] == [
         "rules_only",
         "llm_schema",
-        "llm_format",
-        "llm_post",
+        "llm_encode",
+        "llm_revise",
         "llm_pre_post",
     ]
     assert panel["request_methods"] == ["exect_llm_only", "exect_llm_pre_post"]

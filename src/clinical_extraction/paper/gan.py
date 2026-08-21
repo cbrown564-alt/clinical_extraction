@@ -279,7 +279,7 @@ def run_gan(
         api_base=resolved_base,
         timeout=timeout or spec.timeout,
         prompt_version=prompt,
-        repair_mode="hybrid_full_stack" if method != "gan_llm_only" else None,
+        repair_mode="llm_revise" if method != "gan_llm_only" else None,
     )
     batch_raws: dict[str, str] = {}
     call_transport = "sync"
@@ -482,7 +482,7 @@ def hydrate_saved_raw_row(
         architecture="llm" if method == "gan_llm_only" else "llm_with_rules",
         dspy_cache=False,
         prompt_version=_prompt_version(method),
-        repair_mode="hybrid_full_stack" if method != "gan_llm_only" else None,
+        repair_mode="llm_revise" if method != "gan_llm_only" else None,
     )
     return _run_record(
         method,

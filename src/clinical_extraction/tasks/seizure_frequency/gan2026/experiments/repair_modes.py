@@ -5,6 +5,8 @@ from __future__ import annotations
 from collections.abc import Iterable, Mapping
 from typing import Any
 
+from clinical_extraction.paper.rungs import normalize_repair_mode
+
 REPAIR_MODE_METADATA: Mapping[str, Mapping[str, Any]] = {
     "strict_json_raw_model": {
         "repair_mode": "strict_json_raw_model",
@@ -46,16 +48,16 @@ REPAIR_MODE_METADATA: Mapping[str, Mapping[str, Any]] = {
         "deterministic_semantic_repair": False,
         "scorer_facing": True,
     },
-    "selected_evidence_derivation": {
-        "repair_mode": "selected_evidence_derivation",
+    "llm_encode": {
+        "repair_mode": "llm_encode",
         "attribution_source": "llm_selected_evidence_plus_deterministic_derivation",
         "repair_family": "selected_evidence_label_derivation",
         "semantic_selection_owner": "llm_evidence_selection_then_deterministic_label",
         "deterministic_semantic_repair": True,
         "scorer_facing": True,
     },
-    "hybrid_full_stack": {
-        "repair_mode": "hybrid_full_stack",
+    "llm_revise": {
+        "repair_mode": "llm_revise",
         "attribution_source": "raw_llm_output_plus_all_deterministic_repair_families",
         "repair_family": "full_structured_events_repair_stack",
         "semantic_selection_owner": "hybrid",
@@ -74,17 +76,22 @@ REPAIR_MODE_METADATA: Mapping[str, Mapping[str, Any]] = {
 
 
 def repair_mode_metadata(mode: str | None) -> dict[str, Any]:
-    """Return stable attribution metadata for a named repair mode."""
+    """Return stable attribution metadata for a named repair mode.
+
+    Legacy names ``selected_evidence_derivation`` and ``hybrid_full_stack``
+    resolve to ``llm_encode`` and ``llm_revise``.
+    """
 
     if mode is None:
         return {}
-    metadata = REPAIR_MODE_METADATA.get(mode, REPAIR_MODE_METADATA["custom"])
+    resolved = normalize_repair_mode(mode)
+    metadata = REPAIR_MODE_METADATA.get(resolved, REPAIR_MODE_METADATA["custom"])
     payload = dict(metadata)
-    payload["repair_mode"] = mode
+    payload["repair_mode"] = resolved
     return payload
 
 
 def repair_mode_layers(modes: Iterable[str]) -> dict[str, dict[str, Any]]:
     """Build a per-layer repair-mode metadata map."""
 
-    return {mode: repair_mode_metadata(mode) for mode in modes}
+    return {normalize_repair_mode(mode): repair_mode_metadata(mode) for mode in modes}

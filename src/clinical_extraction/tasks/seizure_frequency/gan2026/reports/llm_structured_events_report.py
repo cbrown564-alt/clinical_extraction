@@ -149,6 +149,13 @@ def _repair_policy_description(repair_mode: str) -> str:
         "clean_scorer_facing": (
             "raw structured model selection plus clean scorer-facing Gan gold-normalization policy"
         ),
+        "llm_encode": (
+            "structured model selection plus selected-evidence derivation only"
+        ),
+        "llm_revise": (
+            "hybrid full deterministic repair stack after structured model selection"
+        ),
+        # Sealed / legacy names still resolve via normalize_repair_mode callers.
         "selected_evidence_derivation": (
             "structured model selection plus selected-evidence derivation only"
         ),
@@ -156,7 +163,12 @@ def _repair_policy_description(repair_mode: str) -> str:
             "hybrid full deterministic repair stack after structured model selection"
         ),
     }
+    from clinical_extraction.paper.rungs import normalize_repair_mode
+
     return descriptions.get(
-        repair_mode,
-        "custom deterministic repair families after structured model selection",
+        normalize_repair_mode(repair_mode),
+        descriptions.get(
+            repair_mode,
+            "custom deterministic repair families after structured model selection",
+        ),
     )

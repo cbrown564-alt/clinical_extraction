@@ -30,9 +30,9 @@ treatment**:
 - **Rules only** — other producer. Different rule set. No model. Not a
   preview of the post stack.
 - **Schema / encode / revise** — one saved raw replayed at three stops
-  (rungs 2–4).
-- **Pre-suggest + post** — other request. Candidates in the prompt,
-  then the same post folder. Not a deeper climb on the same ladder.
+  (cells 2–4).
+- **Pre-suggest + revise** — other request. Candidates in the prompt,
+  then the same revise folder. Not a deeper climb on the same ladder.
 
 The two public golds are evaluation forms, not the task. Gan asks for
 one current seizure-frequency label. ExECT asks for a complete
@@ -47,11 +47,11 @@ judged. Do not recode the stack; this is a refile of the claim.
 
 | Cell | Plain name | What happens | What must not be confused with it |
 | --- | --- | --- | --- |
-| 1 | Rules only | Deterministic code reads the letter and submits the designed form. No model. | The later post stack that repairs a model ledger. Those are different rule sets. |
-| 2 | Schema | Frozen model ledger scored as parsed. One saved raw for cells 2–4. On Gan this already writes a label (`_normalize_event` / `_resolve_final_label`); that is a render leak, not a no-rule model. | `gan_llm_only`, which asks for a finished Gan label. That prompt is not a results column. |
-| 3 | Format / encode | Same saved raw. Encodes the model’s already-chosen facts into the evaluation form. Does not pick a different fact. *Rung 3 encodes the model’s facts into the evaluation form.* On ExECT the headline move is codebook/dictionary attach (`project_cuis` and related); on Gan it is the selected-evidence renderer (e.g. `≤ 4 per day` → `4 per day`), not a dictionary. `project_cuis` runs on the format-replay stop — the reported format cell already includes encode. Encode is not dialect (`mgs`→`mg`) and not revise. | Treating encode as spelling-only, or pretending CUI is scored only at post. |
-| 4 | Clinical post / revise | Same saved raw. Policy may change the facts. *Rung 4 may change those facts under recorded policy.* Rewrite/overwrite of an encoding (`epilepsy` → `focal epilepsy`) is one kind of revise, not the definition. Revise also withholds, drops, splits multiplicity, reselects the Gan event, or invents a residual. | An unrepaired hybrid answer, or a new model call. Defining post as overwrite-only. |
-| 5 | Pre-suggest + post | Deterministic candidates go into the prompt. Then the same post stack. Other request from cells 2–4. | Scoring the raw body of that hybrid call as if it were schema (cell 2). |
+| 1 | Rules only | Deterministic code reads the letter and submits the designed form. No model. | The later revise stack that repairs a model ledger. Those are different rule sets. |
+| 2 | Schema (`llm_schema`) | Frozen model ledger scored as parsed. One saved raw for cells 2–4. On Gan this already writes a label (`_normalize_event` / `_resolve_final_label`); that is a render leak, not a no-rule model. | `gan_llm_only`, which asks for a finished Gan label. That prompt is not a results column. |
+| 3 | Encode (`llm_encode`) | Same saved raw. Encodes the model’s already-chosen facts into the evaluation form. Does not pick a different fact. *Cell 3 encodes the model’s facts into the evaluation form.* On ExECT the headline move is codebook/dictionary attach (`project_cuis` and related); on Gan it is the selected-evidence renderer (e.g. `≤ 4 per day` → `4 per day`), not a dictionary. `project_cuis` runs on the encode-replay stop — the reported encode cell already includes it. Encode is not dialect (`mgs`→`mg`) and not revise. | Treating encode as spelling-only, or pretending CUI is scored only at revise. |
+| 4 | Revise (`llm_revise`) | Same saved raw. Policy may change the facts. *Cell 4 may change those facts under recorded policy.* Rewrite/overwrite of an encoding (`epilepsy` → `focal epilepsy`) is one kind of revise, not the definition. Revise also withholds, drops, splits multiplicity, reselects the Gan event, or invents a residual. | An unrepaired hybrid answer, or a new model call. Defining revise as overwrite-only. |
+| 5 | Pre-suggest + revise (`llm_pre_post`) | Deterministic candidates go into the prompt. Then the same revise stack. Other request from cells 2–4. | Scoring the raw body of that hybrid call as if it were schema (cell 2). |
 
 Three hop effects on one raw support the reading (the paper table need
 not list every revise subtype):
@@ -91,8 +91,8 @@ stays in the quoted span. It is not in the submitted label.
 | --- | --- | --- |
 | 1 rules only | `4 per day` | correct |
 | 2 schema | `≤ 4 per day` | incorrect |
-| 3 format / encode | `4 per day` | correct |
-| 4 clinical post / revise | `4 per day` | correct |
+| 3 encode | `4 per day` | correct |
+| 4 revise | `4 per day` | correct |
 
 Cells 2–4 share one Grok output. The model already selected the
 accommodation-log event. Schema keeps the inequality in the label, so
@@ -111,8 +111,8 @@ cell in this cut.
 **Contrast, still development:** source row `15431`. Gold is the
 two-part cluster label `1 cluster per 4 month, 5 per cluster`. Rules
 only submits that label and is Purist-correct. Schema writes a long
-cluster-after-quiet phrase and misses. Format and post both submit
-`seizure free for multiple month` and miss. The full post stack does
+cluster-after-quiet phrase and misses. Encode and revise both submit
+`seizure free for multiple month` and miss. The full revise stack does
 not recover a two-part cluster once the model has collapsed the
 reading. Visibility is the point: the hops name the collapse.
 
@@ -133,16 +133,16 @@ and
 > Seizure type and frequency: seizures every 3 to 4 weeks, possibly focal onset
 
 Grok put that hedge on the collected evidence. Cell 2 keeps Diagnosis
-as the written `epilepsy` mention. Cell 3 (format-replay) may attach a
+as the written `epilepsy` mention. Cell 3 (encode-replay) may attach a
 CUI or respell closed-vocab fields; that is **encode**, not a concept
-rewrite. ExECT format-replay includes CUI attach, so the encode cell is
+rewrite. ExECT encode-replay includes CUI attach, so the encode cell is
 not “spelling only.” Cell 4 runs the diagnosis dictionary and records
 `focal epilepsy`. That is **revise** of the concept, not encode.
 
-ExECT format / encode is codebook attach, attribute canonicalize,
+ExECT encode is codebook attach, attribute canonicalize,
 prescription name/unit/dose, seizure-frequency encoding, and
 investigation attribute strip. Evidence reject, SF state projection,
-unknown suppression, and family lenses are clinical post / revise and
+unknown suppression, and family lenses are clinical revise and
 land on cell 4.
 
 Living cell 5 on the same letter has hybrid headline F1 1.0 and
@@ -164,13 +164,13 @@ not a promise that the last cell always wins.
    ExECT inventories four families. Readers can compare the reported
    cells without pretending the scores are interchangeable.
 2. **Replay without a new call.** Cells 2–4 are readings of one saved
-   `raw_output`. An encode-only stop and a full post can be shown on
+   `raw_output`. An encode-only stop and a full revise can be shown on
    the same model text.
 3. **Encode and revise stay separable.** Gan row 10 is encode of an
    already chosen event into the evaluation form. ExECT `EA0007` is
-   revise of the concept at post. Calling both “repair” would hide
+   revise of the concept at the revise stop. Calling both “repair” would hide
    which class of change occurred. ExECT’s encode cell already includes
-   CUI attach on format-replay.
+   CUI attach on encode-replay.
 4. **The score can throw distinctions away.** Purist accepts `4 per
    day` and rejects `≤ 4 per day` on the same span. Clinical fact F1
    can match gold after a dictionary rewrite. The object still holds

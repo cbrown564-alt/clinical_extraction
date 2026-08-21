@@ -48,7 +48,7 @@ def _label_for_order(
         raw_output,
         note_text=note_text,
         repair_config=StructuredRepairConfig(
-            repair_mode="hybrid_full_stack",
+            repair_mode="llm_revise",
             semantic_family_order=order,
         ),
     )

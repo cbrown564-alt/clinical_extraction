@@ -1,7 +1,10 @@
-"""Five paper rungs of rule help.
+"""Five reported cells: two producers, one replay stack, optional prompt treatment.
 
 These names replace the three-method results table. ``gan_llm_only`` remains
 a live runner identity for existing cells. It is not a results column.
+
+Cell ids are report identities, not a better-later depth axis.
+``CELL_ORDER`` is table order only.
 """
 
 from __future__ import annotations
@@ -11,8 +14,8 @@ from typing import Literal
 RungId = Literal[
     "rules_only",
     "llm_schema",
-    "llm_format",
-    "llm_post",
+    "llm_encode",
+    "llm_revise",
     "llm_pre_post",
 ]
 TaskName = Literal["gan2026", "exectv2"]
@@ -20,86 +23,159 @@ TaskName = Literal["gan2026", "exectv2"]
 RUNG_IDS: tuple[RungId, ...] = (
     "rules_only",
     "llm_schema",
-    "llm_format",
-    "llm_post",
+    "llm_encode",
+    "llm_revise",
     "llm_pre_post",
 )
 RESULT_COLUMNS: tuple[RungId, ...] = RUNG_IDS
 
+# Report / table order only. Not a climb or better-later axis.
+CELL_ORDER: dict[RungId, int] = {
+    "rules_only": 1,
+    "llm_schema": 2,
+    "llm_encode": 3,
+    "llm_revise": 4,
+    "llm_pre_post": 5,
+}
+
+CELL_ID_ALIASES: dict[str, RungId] = {
+    "llm_format": "llm_encode",
+    "llm_post": "llm_revise",
+}
+METHOD_VIEW_ALIASES: dict[str, str] = {
+    "gan_llm_format": "gan_llm_encode",
+    "exect_llm_format": "exect_llm_encode",
+    "exect_llm_post": "exect_llm_revise",
+}
+# Paper/replay view for Gan revise; live runner stays gan_llm_with_rules.
+GAN_REVISE_PAPER_VIEW = "gan_llm_revise"
+
 GAN_METHOD_FOR_RUNG: dict[RungId, str] = {
     "rules_only": "gan_rules",
     "llm_schema": "gan_llm_schema",
-    "llm_format": "gan_llm_format",
-    "llm_post": "gan_llm_with_rules",
+    "llm_encode": "gan_llm_encode",
+    "llm_revise": "gan_llm_with_rules",
     "llm_pre_post": "gan_llm_pre_post",
 }
 EXECT_METHOD_FOR_RUNG: dict[RungId, str] = {
     "rules_only": "exect_rules",
     "llm_schema": "exect_llm_schema",
-    "llm_format": "exect_llm_format",
-    "llm_post": "exect_llm_post",
+    "llm_encode": "exect_llm_encode",
+    "llm_revise": "exect_llm_revise",
     "llm_pre_post": "exect_llm_pre_post",
 }
 GAN_REPAIR_MODE_FOR_RUNG: dict[str, str] = {
+    # Schema parse stop stays raw_model (live identity); encode/revise share llm_* names.
     "llm_schema": "raw_model",
-    "llm_format": "selected_evidence_derivation",
-    "llm_post": "hybrid_full_stack",
-    "llm_pre_post": "hybrid_full_stack",
+    "llm_encode": "llm_encode",
+    "llm_revise": "llm_revise",
+    "llm_pre_post": "llm_revise",
 }
 GAN_RUNG_SOURCE: dict[RungId, str] = {
     "rules_only": "standalone_rules",
     "llm_schema": "replay_gan_llm_with_rules",
-    "llm_format": "replay_gan_llm_with_rules",
-    "llm_post": "replay_gan_llm_with_rules",
+    "llm_encode": "replay_gan_llm_with_rules",
+    "llm_revise": "replay_gan_llm_with_rules",
     "llm_pre_post": "new_request",
 }
 EXECT_RUNG_SOURCE: dict[RungId, str] = {
     "rules_only": "standalone_rules",
     "llm_schema": "replay_exect_llm_only",
-    "llm_format": "replay_exect_llm_only",
-    "llm_post": "replay_exect_llm_only",
+    "llm_encode": "replay_exect_llm_only",
+    "llm_revise": "replay_exect_llm_only",
     "llm_pre_post": "living_exect_llm_pre_post",
-}
-RUNG_DEPTH: dict[RungId, int] = {
-    "rules_only": 1,
-    "llm_schema": 2,
-    "llm_format": 3,
-    "llm_post": 4,
-    "llm_pre_post": 5,
 }
 EXECT_HOP_EFFECT_CLASS: dict[str, str] = {
     "exect.schema.parse": "schema",
-    "exect.format.stop": "format",
+    "exect.format.stop": "encode",
     "exect.validation.evidence": "validation",
-    "exect.select.dictionary": "semantic",
-    "exect.select.residual": "semantic",
+    "exect.select.dictionary": "revise",
+    "exect.select.residual": "revise",
     "exect.projection.clinical_fact": "projection",
 }
 EXECT_STAGE_EFFECT_CLASS: dict[str, str] = {
     "transport_or_schema": "schema",
-    "representation": "format",
-    "clinical_meaning": "semantic",
+    "representation": "encode",
+    "clinical_meaning": "revise",
     "validation_gate": "validation",
     "benchmark_projection": "projection",
 }
 
+REPAIR_MODE_ALIASES: dict[str, str] = {
+    "selected_evidence_derivation": "llm_encode",
+    "hybrid_full_stack": "llm_revise",
+    # Brief short names — never emit; still load if present.
+    "encode": "llm_encode",
+    "revise": "llm_revise",
+}
+EFFECT_CLASS_ALIASES: dict[str, str] = {
+    "format": "encode",
+    "semantic": "revise",
+}
+CELL_ORDER_TO_ID: dict[int, RungId] = {order: cell for cell, order in CELL_ORDER.items()}
 
-def gan_method_for_rung(rung: RungId) -> str:
-    """Return the Gan paper identity for one rung."""
 
-    return GAN_METHOD_FOR_RUNG[rung]
+def normalize_cell_id(value: str) -> RungId:
+    """Map a cell id, including sealed-artifact aliases, to the live name."""
+
+    mapped = CELL_ID_ALIASES.get(value, value)
+    if mapped not in RUNG_IDS:
+        raise ValueError(f"unknown cell id {value!r}")
+    return mapped  # type: ignore[return-value]
 
 
-def exect_method_for_rung(rung: RungId) -> str:
-    """Return the ExECT paper identity for one rung."""
+def normalize_method_view(value: str) -> str:
+    """Map a paper/replay method view name, including folder aliases."""
 
-    return EXECT_METHOD_FOR_RUNG[rung]
+    return METHOD_VIEW_ALIASES.get(value, value)
+
+
+def normalize_repair_mode(value: str) -> str:
+    """Map a repair-mode string, including sealed-artifact aliases."""
+
+    return REPAIR_MODE_ALIASES.get(value, value)
+
+
+def normalize_effect_class(value: str) -> str:
+    """Map a hop/stage effect class, including sealed-artifact aliases."""
+
+    return EFFECT_CLASS_ALIASES.get(value, value)
+
+
+def cell_id_from_legacy_rung(rung: int | str | None) -> RungId | None:
+    """Resolve an old hop ``rung`` int (or string id) to a named cell id."""
+
+    if rung is None:
+        return None
+    if isinstance(rung, int):
+        return CELL_ORDER_TO_ID.get(rung)
+    if isinstance(rung, str) and rung.isdigit():
+        return CELL_ORDER_TO_ID.get(int(rung))
+    return normalize_cell_id(str(rung))
+
+
+def gan_method_for_rung(rung: RungId | str) -> str:
+    """Return the Gan paper identity for one cell."""
+
+    return GAN_METHOD_FOR_RUNG[normalize_cell_id(rung)]
+
+
+def exect_method_for_rung(rung: RungId | str) -> str:
+    """Return the ExECT paper identity for one cell."""
+
+    return EXECT_METHOD_FOR_RUNG[normalize_cell_id(rung)]
 
 
 def repair_mode_for_gan_rung(rung: str) -> str:
-    """Return the StructuredRepairConfig mode that implements a Gan replay rung."""
+    """Return the StructuredRepairConfig mode that implements a Gan replay cell."""
 
     try:
-        return GAN_REPAIR_MODE_FOR_RUNG[rung]
-    except KeyError as exc:
-        raise ValueError(f"Gan rung {rung!r} has no replay repair mode") from exc
+        return GAN_REPAIR_MODE_FOR_RUNG[normalize_cell_id(rung)]
+    except (KeyError, ValueError) as exc:
+        raise ValueError(f"Gan cell {rung!r} has no replay repair mode") from exc
+
+
+def normalize_rungs_payload(rungs: dict[str, object]) -> dict[str, object]:
+    """Rewrite sealed comparison ``rungs`` keys to live cell ids."""
+
+    return {normalize_cell_id(key): value for key, value in rungs.items()}

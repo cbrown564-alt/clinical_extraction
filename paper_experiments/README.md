@@ -36,7 +36,7 @@ Frontend pull:
 - Gan scores: `GET /paper/gan/dev750/{gan_llm_only|gan_llm_with_rules}/{slug}/scored`
 - ExECT notes: `GET /datasets/exectv2/letters`
 - ExECT panel: `GET /paper/exect/dev140`
-- ExECT scores: `GET /paper/exect/dev140/{exect_llm_only|exect_llm_pre_post|llm_schema|llm_format|llm_post}/{slug}/scored`
+- ExECT scores: `GET /paper/exect/dev140/{exect_llm_only|exect_llm_pre_post|llm_schema|llm_encode|llm_revise}/{slug}/scored`
 
 Join Gan on `source_row_index`. Join ExECT on `letter_id`. Promote a
 finished living replay file with:

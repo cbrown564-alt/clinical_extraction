@@ -17,7 +17,7 @@ from clinical_extraction.paper.methods import (
     split_for,
 )
 from clinical_extraction.paper.roster import living_models, model_by_slug
-from clinical_extraction.paper.rungs import RUNG_IDS
+from clinical_extraction.paper.rungs import RUNG_IDS, normalize_cell_id
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
 )
@@ -619,14 +619,18 @@ def load_scored_rows(method: str, slug: str) -> list[dict[str, Any]]:
         method = METHOD
     if method == "llm_pre_post":
         method = METHOD
-    if method in {"llm_schema", "llm_format", "llm_post"}:
+    try:
+        cell = normalize_cell_id(method)
+    except ValueError:
+        cell = None
+    if cell in {"llm_schema", "llm_encode", "llm_revise"}:
         path = exect_rung_out_dir(slug, PROMOTE_SPLIT) / "scored.jsonl"
         if not path.is_file():
             raise FileNotFoundError(path)
         rows = []
         for row in load_jsonl_rows(path):
             payload = dict(row)
-            payload["method"] = method
+            payload["method"] = cell
             rows.append(payload)
         return rows
     path = paper_method_cell_root(method, slug) / "scored.jsonl"

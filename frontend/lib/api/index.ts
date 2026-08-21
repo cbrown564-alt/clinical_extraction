@@ -135,8 +135,10 @@ export type ExectDev140Method =
   | "exect_llm_with_rules"
   | "exect_rules"
   | "llm_schema"
-  | "llm_format"
-  | "llm_post"
+  | "llm_encode"
+  | "llm_revise"
+  | "llm_format" // sealed-artifact alias
+  | "llm_post" // sealed-artifact alias
   | "llm_pre_post";
 
 export type ExectDev140PanelCell = {

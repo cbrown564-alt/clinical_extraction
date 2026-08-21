@@ -8,20 +8,33 @@ const METHODS = new Set([
   "exect_llm_pre_post",
   "exect_llm_with_rules",
   "llm_schema",
-  "llm_format",
-  "llm_post",
+  "llm_encode",
+  "llm_revise",
+  "llm_format", // sealed-artifact alias
+  "llm_post", // sealed-artifact alias
   "llm_pre_post",
 ]);
 
+function normalizeMethod(method: string): string {
+  if (method === "llm_format") return "llm_encode";
+  if (method === "llm_post") return "llm_revise";
+  return method;
+}
+
 function scoredPath(method: string, slug: string) {
   const root = join(process.cwd(), "..", "paper_experiments", "exect");
-  if (method === "exect_llm_with_rules" || method === "llm_pre_post") {
+  const resolved = normalizeMethod(method);
+  if (resolved === "exect_llm_with_rules" || resolved === "llm_pre_post") {
     return join(root, "exect_llm_pre_post", slug, "dev140", "scored.jsonl");
   }
-  if (method === "llm_schema" || method === "llm_format" || method === "llm_post") {
+  if (
+    resolved === "llm_schema" ||
+    resolved === "llm_encode" ||
+    resolved === "llm_revise"
+  ) {
     return join(root, "rungs", slug, "dev140", "scored.jsonl");
   }
-  return join(root, method, slug, "dev140", "scored.jsonl");
+  return join(root, resolved, slug, "dev140", "scored.jsonl");
 }
 
 export async function GET(
@@ -32,13 +45,14 @@ export async function GET(
   if (!METHODS.has(method)) {
     return Response.json({ detail: "unknown ExECT paper method" }, { status: 404 });
   }
+  const resolved = normalizeMethod(method);
   try {
     const rows = readFileSync(scoredPath(method, slug), "utf8")
       .split("\n")
       .filter((line) => line.trim())
       .map((line) => JSON.parse(line) as Record<string, unknown>);
     return Response.json({
-      method,
+      method: resolved,
       model_slug: slug,
       split: "dev140",
       count: rows.length,

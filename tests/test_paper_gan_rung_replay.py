@@ -32,8 +32,8 @@ def _scored_row() -> dict[str, object]:
         "rungs": {
             "rules_only": {**rung, "selected_event_ids": []},
             "llm_schema": rung,
-            "llm_format": rung,
-            "llm_post": rung,
+            "llm_encode": rung,
+            "llm_revise": rung,
         },
     }
 

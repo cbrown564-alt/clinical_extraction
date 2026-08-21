@@ -182,7 +182,7 @@ def replay_gan_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
             if rung == "llm_schema":
                 schema_ids = selected_ids
                 schema_kind = scored_rung.get("predicted_kind")
-            if rung == "llm_format":
+            if rung == "llm_encode":
                 if selected_ids != schema_ids:
                     event_id_changes += 1
                 if scored_rung.get("predicted_kind") != schema_kind:
@@ -193,7 +193,7 @@ def replay_gan_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
                     format_rescues += 1
                 if schema_ok and not format_ok:
                     format_harms += 1
-            if rung == "llm_post" and not holdout:
+            if rung == "llm_revise" and not holdout:
                 full_hops = list(trace.get("answer_states") or [])
                 events = (
                     [event.model_dump() for event in extraction.events]
@@ -260,14 +260,14 @@ def _comparison_summary(
             else "Gan development replay. Not holdout."
         ),
         "format_only_check": {
-            "repair_mode": GAN_REPAIR_MODE_FOR_RUNG["llm_format"],
+            "repair_mode": GAN_REPAIR_MODE_FOR_RUNG["llm_encode"],
             "selected_event_id_changes": event_id_changes,
             "predicted_kind_changes": kind_changes,
             "purist_rescues": format_rescues,
             "purist_harms": format_harms,
             "used_as_rung_3": event_id_changes == 0,
             "note": (
-                "Rung 3 is selected_evidence_derivation. It stays format-only "
+                "Cell 3 is encode (selected-evidence derivation). It stays encode-only "
                 "only when selected_event_ids never change."
             ),
         },

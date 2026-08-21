@@ -120,8 +120,8 @@ Named Grok `dev750` scores for rungs 1–4, from one saved
 | --- | --- | --- |
 | 1 `rules_only` | 669/750 (0.8920) | 750 |
 | 2 `llm_schema` | 371/750 (0.4947) | 448 |
-| 3 `llm_format` | 603/750 (0.8040) | 750 |
-| 4 `llm_post` | 671/750 (0.8947) | 750 |
+| 3 `llm_encode` | 603/750 (0.8040) | 750 |
+| 4 `llm_revise` | 671/750 (0.8947) | 750 |
 
 Selected-evidence render never changed `selected_event_ids` on these
 750 letters, so it is rung 3. It changed predicted kind 305 times and
@@ -175,8 +175,8 @@ are:
 | --- | --- | --- |
 | 1 `rules_only` | 0.9042 | `exect_rules` |
 | 2 `llm_schema` | 0.6485 | flatten only; no CUI attach |
-| 3 `llm_format` | 0.8197 | same raw; encode into designed form (CUI attach, units, SF encoding) |
-| 4 `llm_post` | 0.9040 | same raw; revise (gates, SF projection, family lenses) |
+| 3 `llm_encode` | 0.8197 | same raw; encode into designed form (CUI attach, units, SF encoding) |
+| 4 `llm_revise` | 0.9040 | same raw; revise (gates, SF projection, family lenses) |
 | 5 `llm_pre_post` | 0.8998 | living `exect_llm_pre_post` hybrid |
 
 Rungs 2–4 share one `exect_llm_only` output. Rung 5 is a different

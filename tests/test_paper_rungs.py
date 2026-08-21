@@ -1,4 +1,4 @@
-"""Always-on contract for the five-rung paper table."""
+"""Always-on contract for the five reported cells (encode/revise frame)."""
 
 from __future__ import annotations
 
@@ -6,14 +6,17 @@ import json
 
 from clinical_extraction.paper.answer_states import graph_from_hops, make_hop
 from clinical_extraction.paper.rungs import (
+    CELL_ORDER,
     EXECT_HOP_EFFECT_CLASS,
     EXECT_RUNG_SOURCE,
     GAN_REPAIR_MODE_FOR_RUNG,
+    GAN_REVISE_PAPER_VIEW,
     GAN_RUNG_SOURCE,
     RESULT_COLUMNS,
     RUNG_IDS,
     exect_method_for_rung,
     gan_method_for_rung,
+    normalize_repair_mode,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.letter_assembly import (
     MATERIALIZED_SURFACES,
@@ -81,26 +84,56 @@ def _bound_raw() -> str:
     )
 
 
-def test_result_columns_are_the_five_rungs() -> None:
+def test_result_columns_are_the_five_cells() -> None:
     assert RUNG_IDS == (
         "rules_only",
         "llm_schema",
-        "llm_format",
-        "llm_post",
+        "llm_encode",
+        "llm_revise",
         "llm_pre_post",
     )
     assert RESULT_COLUMNS == RUNG_IDS
     assert "gan_llm_only" not in RESULT_COLUMNS
-    assert gan_method_for_rung("llm_post") == "gan_llm_with_rules"
+    assert CELL_ORDER == {
+        "rules_only": 1,
+        "llm_schema": 2,
+        "llm_encode": 3,
+        "llm_revise": 4,
+        "llm_pre_post": 5,
+    }
+    assert gan_method_for_rung("llm_revise") == "gan_llm_with_rules"
+    assert gan_method_for_rung("llm_encode") == "gan_llm_encode"
     assert gan_method_for_rung("llm_pre_post") == "gan_llm_pre_post"
+    assert GAN_REVISE_PAPER_VIEW == "gan_llm_revise"
     assert GAN_REPAIR_MODE_FOR_RUNG["llm_schema"] == "raw_model"
-    assert GAN_REPAIR_MODE_FOR_RUNG["llm_format"] == "selected_evidence_derivation"
-    assert GAN_REPAIR_MODE_FOR_RUNG["llm_post"] == "hybrid_full_stack"
+    assert GAN_REPAIR_MODE_FOR_RUNG["llm_encode"] == "llm_encode"
+    assert GAN_REPAIR_MODE_FOR_RUNG["llm_revise"] == "llm_revise"
     assert GAN_RUNG_SOURCE["llm_schema"] == "replay_gan_llm_with_rules"
     assert GAN_RUNG_SOURCE["llm_pre_post"] == "new_request"
     assert EXECT_RUNG_SOURCE["llm_schema"] == "replay_exect_llm_only"
     assert EXECT_RUNG_SOURCE["llm_pre_post"] == "living_exect_llm_pre_post"
+    assert exect_method_for_rung("llm_encode") == "exect_llm_encode"
+    assert exect_method_for_rung("llm_revise") == "exect_llm_revise"
     assert exect_method_for_rung("llm_pre_post") == "exect_llm_pre_post"
+
+
+def test_legacy_repair_mode_aliases_still_load() -> None:
+    assert normalize_repair_mode("selected_evidence_derivation") == "llm_encode"
+    assert normalize_repair_mode("hybrid_full_stack") == "llm_revise"
+    assert normalize_repair_mode("encode") == "llm_encode"
+    assert normalize_repair_mode("revise") == "llm_revise"
+    aliased = StructuredRepairConfig.for_mode("selected_evidence_derivation")
+    modern = StructuredRepairConfig.for_mode("llm_encode")
+    assert aliased.resolved_repair_mode == "llm_encode"
+    assert modern.resolved_repair_mode == "llm_encode"
+    assert aliased._flags() == modern._flags()
+    assert (
+        StructuredRepairConfig.for_mode("hybrid_full_stack").resolved_repair_mode
+        == "llm_revise"
+    )
+    # Schema parse stop stays the live name raw_model (not llm_schema).
+    assert GAN_REPAIR_MODE_FOR_RUNG["llm_schema"] == "raw_model"
+    assert StructuredRepairConfig.for_mode("raw_model").repair_mode == "raw_model"
 
 
 def test_selected_evidence_render_keeps_the_same_event() -> None:
@@ -114,7 +147,7 @@ def test_selected_evidence_render_keeps_the_same_event() -> None:
     rendered, _, _, format_trace = parse_structured_json_with_trace(
         raw,
         note_text=note,
-        repair_config=StructuredRepairConfig.for_mode("selected_evidence_derivation"),
+        repair_config=StructuredRepairConfig.for_mode("llm_encode"),
     )
     assert schema is not None
     assert rendered is not None
@@ -125,8 +158,9 @@ def test_selected_evidence_render_keeps_the_same_event() -> None:
     hops = format_trace["answer_states"]
     render_hops = [hop for hop in hops if hop["stage_id"] == "gan.render.selected_evidence"]
     assert render_hops
-    assert render_hops[0]["effect_class"] == "format"
-    assert render_hops[0]["rung"] == 3
+    assert render_hops[0]["effect_class"] == "encode"
+    assert render_hops[0]["cell_id"] == "llm_encode"
+    assert render_hops[0]["cell_order"] == 3
     assert render_hops[0]["operands"] == ["e1"]
 
 
@@ -135,32 +169,32 @@ def test_hop_log_keeps_every_label_version() -> None:
         make_hop(
             stage_id="gan.model.selection",
             owner="model",
-            effect_class="semantic",
+            effect_class="revise",
             before=None,
             after="seizure free since then",
             evidence="She has remained seizure-free since then.",
             operands=["e2"],
-            rung=2,
+            cell_id="llm_schema",
         ),
         make_hop(
             stage_id="gan.render.selected_evidence",
             owner="replay",
-            effect_class="format",
+            effect_class="encode",
             before="seizure free since then",
             after="seizure free for multiple month",
             evidence="She has remained seizure-free since then.",
             operands=["e2"],
-            rung=3,
+            cell_id="llm_encode",
         ),
         make_hop(
             stage_id="gan.select.post_change_burst",
             owner="replay",
-            effect_class="semantic",
+            effect_class="revise",
             before="seizure free for multiple month",
             after="2 to 3 per 1 month",
             evidence="Shortly afterwards, she experienced 2 to 3 seizures",
             operands=["e1"],
-            rung=4,
+            cell_id="llm_revise",
         ),
     ]
     graph = graph_from_hops(
@@ -194,11 +228,11 @@ def test_exect_format_stop_is_not_dictionary_rewrite() -> None:
 def test_exect_hops_use_the_same_effect_class_names() -> None:
     assert set(EXECT_HOP_EFFECT_CLASS.values()) <= {
         "schema",
-        "format",
-        "semantic",
+        "encode",
+        "revise",
         "validation",
         "projection",
     }
-    assert EXECT_HOP_EFFECT_CLASS["exect.format.stop"] == "format"
-    assert EXECT_HOP_EFFECT_CLASS["exect.select.dictionary"] == "semantic"
-    assert EXECT_HOP_EFFECT_CLASS["exect.select.residual"] == "semantic"
+    assert EXECT_HOP_EFFECT_CLASS["exect.format.stop"] == "encode"
+    assert EXECT_HOP_EFFECT_CLASS["exect.select.dictionary"] == "revise"
+    assert EXECT_HOP_EFFECT_CLASS["exect.select.residual"] == "revise"

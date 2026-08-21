@@ -50,8 +50,8 @@ ROOT = discover_repo_root(start=Path(__file__))
 FAMILIES = ("Diagnosis", "SeizureFrequency", "Prescription", "Investigations")
 SURFACE_FOR_RUNG = {
     "llm_schema": "predicted_mentions",
-    "llm_format": "format_render",
-    "llm_post": "residual_benchmark_added",
+    "llm_encode": "format_render",
+    "llm_revise": "residual_benchmark_added",
 }
 RUNG3_REPLAY_SURFACE = "format_render"
 PRE_POST_METHOD = "exect_llm_pre_post"
@@ -194,7 +194,7 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
     scored: list[dict[str, Any]] = []
     hops_rows: list[dict[str, Any]] = []
     family_rows: dict[str, list[dict[str, Any]]] = {
-        rung: [] for rung in ("llm_schema", "llm_format", "llm_post")
+        rung: [] for rung in ("llm_schema", "llm_encode", "llm_revise")
     }
     try:
         structured.set_active_prompt_version(structured.EXECT_LLM_ONLY)
@@ -232,7 +232,7 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
                     effect_class=EXECT_HOP_EFFECT_CLASS["exect.schema.parse"],
                     before=None,
                     after=schema_hash,
-                    rung=2,
+                    cell_id="llm_schema",
                 ),
                 make_hop(
                     stage_id="exect.format.stop",
@@ -240,7 +240,7 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
                     effect_class=EXECT_HOP_EFFECT_CLASS["exect.format.stop"],
                     before=schema_hash,
                     after=format_hash,
-                    rung=3,
+                    cell_id="llm_encode",
                 ),
                 make_hop(
                     stage_id="exect.select.dictionary",
@@ -248,7 +248,7 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
                     effect_class=EXECT_HOP_EFFECT_CLASS["exect.select.dictionary"],
                     before=format_hash,
                     after=dict_hash,
-                    rung=4,
+                    cell_id="llm_revise",
                 ),
                 make_hop(
                     stage_id="exect.select.residual",
@@ -256,14 +256,14 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
                     effect_class=EXECT_HOP_EFFECT_CLASS["exect.select.residual"],
                     before=dict_hash,
                     after=post_hash,
-                    rung=4,
+                    cell_id="llm_revise",
                 ),
             ]
             by_rung: dict[str, dict[str, Any]] = {}
             rung_mentions = {
                 "llm_schema": schema_rows,
-                "llm_format": format_render_mentions,
-                "llm_post": list(surfaces.get("residual_benchmark_added") or []),
+                "llm_encode": format_render_mentions,
+                "llm_revise": list(surfaces.get("residual_benchmark_added") or []),
             }
             for rung, surface in SURFACE_FOR_RUNG.items():
                 mentions = rung_mentions[rung]
@@ -370,8 +370,8 @@ def _comparison_summary(
             "source": "exect_rules",
         },
         "llm_schema": _surface_prf(family_rows["llm_schema"]),
-        "llm_format": _surface_prf(family_rows["llm_format"]),
-        "llm_post": _surface_prf(family_rows["llm_post"]),
+        "llm_encode": _surface_prf(family_rows["llm_encode"]),
+        "llm_revise": _surface_prf(family_rows["llm_revise"]),
     }
     if hybrid_cell.get("hybrid_headline_f1") is not None:
         rungs["llm_pre_post"] = {
@@ -398,7 +398,7 @@ def _comparison_summary(
             ),
             "same_as_schema": (
                 _surface_prf(family_rows["llm_schema"])
-                == _surface_prf(family_rows["llm_format"])
+                == _surface_prf(family_rows["llm_encode"])
             ),
             "note": (
                 "Rung 2 is flatten only. Rung 3 is same-fact format (closed-vocab "

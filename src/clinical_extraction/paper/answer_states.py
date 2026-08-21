@@ -5,7 +5,14 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Any, Literal
 
-EffectClass = Literal["schema", "format", "semantic", "validation", "projection"]
+from clinical_extraction.paper.rungs import (
+    CELL_ORDER,
+    RungId,
+    cell_id_from_legacy_rung,
+    normalize_effect_class,
+)
+
+EffectClass = Literal["schema", "encode", "revise", "validation", "projection"]
 HopOwner = Literal["rules", "model", "replay"]
 
 
@@ -13,30 +20,53 @@ def make_hop(
     *,
     stage_id: str,
     owner: HopOwner,
-    effect_class: EffectClass,
+    effect_class: EffectClass | str,
     before: str | None,
     after: str | None,
     evidence: str | None = None,
     evidence_exact: bool | None = None,
     operands: Sequence[str] | None = None,
     vetoed: str | None = None,
-    rung: int,
+    cell_id: RungId | str,
+    cell_order: int | None = None,
+    rung: int | None = None,
 ) -> dict[str, Any]:
-    """Build one recorded answer version."""
+    """Build one recorded answer version.
 
+    New emission uses ``cell_id`` and ``cell_order``. Legacy ``rung`` ints
+    are accepted as a read/write alias for older callers and sealed hops.
+    """
+
+    resolved = _resolve_cell(cell_id=cell_id, cell_order=cell_order, rung=rung)
     return {
         "stage_id": stage_id,
         "owner": owner,
-        "effect_class": effect_class,
+        "effect_class": normalize_effect_class(effect_class),
         "before": before,
         "after": after,
         "evidence": evidence,
         "evidence_exact": evidence_exact,
         "operands": list(operands or ()),
         "vetoed": vetoed,
-        "rung": rung,
+        "cell_id": resolved,
+        "cell_order": CELL_ORDER[resolved],
         "changed": before != after,
     }
+
+
+def normalize_hop(hop: Mapping[str, Any]) -> dict[str, Any]:
+    """Accept sealed hops that used ``rung`` / old effect-class strings."""
+
+    payload = dict(hop)
+    cell = cell_id_from_legacy_rung(
+        payload.get("cell_id") or payload.get("rung")
+    )
+    if cell is not None:
+        payload["cell_id"] = cell
+        payload["cell_order"] = CELL_ORDER[cell]
+    if "effect_class" in payload:
+        payload["effect_class"] = normalize_effect_class(str(payload["effect_class"]))
+    return payload
 
 
 def graph_from_hops(
@@ -50,6 +80,7 @@ def graph_from_hops(
     seen: set[str] = set()
     last_id: str | None = None
     for index, hop in enumerate(hops):
+        hop = normalize_hop(hop)
         label = hop.get("after")
         if label is None:
             continue
@@ -61,7 +92,8 @@ def graph_from_hops(
                     "kind": "answer",
                     "label": label,
                     "stage_id": hop["stage_id"],
-                    "rung": hop["rung"],
+                    "cell_id": hop.get("cell_id"),
+                    "cell_order": hop.get("cell_order"),
                 }
             )
             seen.add(str(label))
@@ -109,3 +141,24 @@ def unused_model_events(
             }
         )
     return unused
+
+
+def _resolve_cell(
+    *,
+    cell_id: RungId | str | None,
+    cell_order: int | None,
+    rung: int | None,
+) -> RungId:
+    if cell_id is not None:
+        resolved = cell_id_from_legacy_rung(cell_id)
+        if resolved is not None:
+            return resolved
+    if cell_order is not None:
+        resolved = cell_id_from_legacy_rung(cell_order)
+        if resolved is not None:
+            return resolved
+    if rung is not None:
+        resolved = cell_id_from_legacy_rung(rung)
+        if resolved is not None:
+            return resolved
+    raise ValueError("hop requires cell_id (or legacy rung / cell_order)")

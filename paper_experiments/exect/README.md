@@ -30,6 +30,6 @@ for Gemma and Qwen. `dev140` is in the living frontend panel
 (`exect/dev140_panel.json`). `test60` is aggregate-only.
 
 Frontend pull: `GET /paper/exect/dev140` and
-`GET /paper/exect/dev140/{exect_llm_only|exect_llm_pre_post|llm_schema|llm_format|llm_post}/{slug}/scored`.
+`GET /paper/exect/dev140/{exect_llm_only|exect_llm_pre_post|llm_schema|llm_encode|llm_revise}/{slug}/scored`.
 Join letters on `letter_id`.
 The July `/exectv2/runs` roster is historical (Sol + Qwen 3.6).

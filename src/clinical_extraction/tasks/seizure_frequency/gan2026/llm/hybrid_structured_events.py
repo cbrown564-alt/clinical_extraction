@@ -187,10 +187,17 @@ StructuredRepairMode = Literal[
     "raw_model",
     "strict_format",
     "clean_scorer_facing",
-    "selected_evidence_derivation",
-    "hybrid_full_stack",
+    "llm_encode",
+    "llm_revise",
     "custom",
 ]
+# Sealed artifacts and older CLI flags may still emit these strings.
+_STRUCTURED_REPAIR_MODE_ALIASES: dict[str, StructuredRepairMode] = {
+    "selected_evidence_derivation": "llm_encode",
+    "hybrid_full_stack": "llm_revise",
+    "encode": "llm_encode",
+    "revise": "llm_revise",
+}
 
 
 class StructuredEventRecord(BaseModel):
@@ -318,9 +325,14 @@ class StructuredRepairConfig:
     semantic_family_order: tuple[str, ...] = DEFAULT_SEMANTIC_FAMILY_ORDER
 
     @classmethod
-    def for_mode(cls, mode: StructuredRepairMode) -> StructuredRepairConfig:
-        """Build one of the named repair modes used in run metadata and reports."""
+    def for_mode(cls, mode: StructuredRepairMode | str) -> StructuredRepairConfig:
+        """Build one of the named repair modes used in run metadata and reports.
 
+        Legacy names ``selected_evidence_derivation`` and ``hybrid_full_stack``
+        still load as aliases for ``encode`` and ``revise``.
+        """
+
+        mode = _STRUCTURED_REPAIR_MODE_ALIASES.get(mode, mode)  # type: ignore[assignment]
         if mode == "strict_json_raw_model":
             return cls(
                 repair_mode=mode,
@@ -403,7 +415,7 @@ class StructuredRepairConfig:
                 dated_sequence_repair=False,
                 elapsed_anchor_repair=False,
             )
-        if mode == "selected_evidence_derivation":
+        if mode == "llm_encode":
             return cls(
                 repair_mode=mode,
                 basic_label_repair=True,
@@ -419,9 +431,9 @@ class StructuredRepairConfig:
                 dated_sequence_repair=False,
                 elapsed_anchor_repair=False,
             )
-        if mode == "hybrid_full_stack":
+        if mode == "llm_revise":
             return cls(repair_mode=mode)
-        return cls(repair_mode=mode)
+        return cls(repair_mode=mode)  # type: ignore[arg-type]
 
     @property
     def resolved_repair_mode(self) -> StructuredRepairMode:
@@ -434,8 +446,8 @@ class StructuredRepairConfig:
             "raw_model",
             "strict_format",
             "clean_scorer_facing",
-            "selected_evidence_derivation",
-            "hybrid_full_stack",
+            "llm_encode",
+            "llm_revise",
         ):
             named = StructuredRepairConfig.for_mode(mode)
             if (
@@ -598,13 +610,13 @@ def parse_structured_json_with_trace(
         _answer_hop(
             stage_id="gan.model.selection",
             owner="model",
-            effect_class="semantic",
+            effect_class="revise",
             before=None,
             after=extraction.selection.final_label,
             evidence=evidence,
             evidence_exact=evidence_exact,
             operands=operands,
-            rung=2,
+            cell_id="llm_schema",
         )
     )
 
@@ -635,7 +647,7 @@ def parse_structured_json_with_trace(
             evidence=evidence,
             evidence_exact=evidence_exact,
             operands=operands,
-            rung=2,
+            cell_id="llm_schema",
         )
     )
     repaired_label = final_label
@@ -652,8 +664,8 @@ def parse_structured_json_with_trace(
             errors,
             hops,
             stage_id="gan.render.basic_label",
-            effect_class="format",
-            rung=3,
+            effect_class="encode",
+            cell_id="llm_encode",
             before=repaired_label,
             after=next_label,
             evidence=evidence,
@@ -670,8 +682,8 @@ def parse_structured_json_with_trace(
             errors,
             hops,
             stage_id="gan.render.selected_evidence",
-            effect_class="format",
-            rung=3,
+            effect_class="encode",
+            cell_id="llm_encode",
             before=repaired_label,
             after=next_label,
             evidence=evidence,
@@ -744,8 +756,8 @@ def _apply_semantic_families(
             errors,
             hops,
             stage_id=f"gan.select.{family_id}",
-            effect_class="semantic",
-            rung=4,
+            effect_class="revise",
+            cell_id="llm_revise",
             before=repaired_label,
             after=next_label,
             evidence=evidence,
@@ -826,9 +838,12 @@ def _answer_hop(
     evidence: str | None,
     evidence_exact: bool | None,
     operands: Sequence[str],
-    rung: int,
+    cell_id: str,
     vetoed: str | None = None,
 ) -> dict[str, Any]:
+    from clinical_extraction.paper.rungs import CELL_ORDER, normalize_cell_id
+
+    resolved = normalize_cell_id(cell_id)
     return {
         "stage_id": stage_id,
         "owner": owner,
@@ -839,7 +854,8 @@ def _answer_hop(
         "evidence_exact": evidence_exact,
         "operands": list(operands),
         "vetoed": vetoed,
-        "rung": rung,
+        "cell_id": resolved,
+        "cell_order": CELL_ORDER[resolved],
         "changed": before != after,
     }
 
@@ -850,7 +866,7 @@ def _record_label_repair(
     *,
     stage_id: str,
     effect_class: str,
-    rung: int,
+    cell_id: str,
     before: str,
     after: str,
     evidence: str | None,
@@ -868,7 +884,7 @@ def _record_label_repair(
             evidence=evidence,
             evidence_exact=evidence_exact,
             operands=operands,
-            rung=rung,
+            cell_id=cell_id,
             vetoed=vetoed,
         )
     )

@@ -337,8 +337,8 @@ def test_frontend_api_serves_the_living_exect_dev140_panel(client: TestClient) -
     assert body["methods"] == [
         "rules_only",
         "llm_schema",
-        "llm_format",
-        "llm_post",
+        "llm_encode",
+        "llm_revise",
         "llm_pre_post",
     ]
     assert len(body["cells"]) == 30
