@@ -1,0 +1,15 @@
+# Literature review draft
+
+Epilepsy clinic letters contain clinically important information about diagnoses, seizure frequency, medication, investigations, and treatment changes. However, this information is often distributed across time, expressed with uncertainty, and tied to several seizure types or events. A single letter may therefore contain multiple relevant statements that are all true but cannot all become the same structured output. This is particularly difficult for seizure frequency, where dated events, seizure-free intervals, cluster descriptions, and historical rates must be distinguished from the current state required by an evaluation form. Structured clinical extraction is therefore not only a problem of recognising medical terms; it also requires selecting and representing the relevant clinical information consistently. **[Insert citations to epilepsy extraction and annotation literature.]**
+
+Existing approaches make different trade-offs. Rule-based systems can be transparent, controllable, and effective for constrained entities such as medicines or vocabulary-bound diagnoses. Their limitations arise when wording varies, when evidence is linked across a letter, or when temporal and contextual interpretation is needed. Machine-learning and large-language-model approaches can better handle paraphrase, implicit relations, and complex narrative context, but their outputs may be harder to constrain, inspect, and reconcile with a fixed structured representation. A final structured answer can therefore conceal whether a result came from relevant evidence, a plausible interpretation, or a task-specific formatting decision. **[Insert citations to rule-based, machine-learning, and LLM epilepsy-extraction studies.]**
+
+The evidence base is also limited by the availability of clinical text. Many studies use one private or local corpus, making independent comparison and assessment of transfer across differently written letters difficult. This is especially important for explicit rules, which may encode assumptions that work well in one document style but do not carry across to another. **[Use the Decker paper here for the exact, source-supported rule-transfer finding.]** Evidence about the transfer of LLM-based approaches should be stated cautiously unless it is directly supported by the literature. This study evaluates a training-free hybrid approach across two public epilepsy-letter datasets with different structured-output demands, while preserving the evidence and recorded decisions behind each final output.
+
+## Citation checklist
+
+- Epilepsy extraction and annotation difficulty, including seizure-frequency ambiguity.
+- Rule-based epilepsy extraction strengths and transfer limitations.
+- Machine-learning and LLM approaches to epilepsy or clinical information extraction.
+- Decker paper: exact description of the cross-corpus rule-transfer result.
+- Any direct evidence on cross-dataset or cross-style transfer of LLM-based clinical extraction.

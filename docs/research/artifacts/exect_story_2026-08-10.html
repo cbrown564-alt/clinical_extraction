@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>ExECTv2: recovering a complete clinical fact inventory</title>
+  <style>
+    :root {
+      --bg: oklch(0.976 0.005 145);
+      --surface: oklch(1 0 0);
+      --ink: oklch(0.19 0.025 155);
+      --muted: oklch(0.43 0.022 155);
+      --quiet: oklch(0.59 0.018 155);
+      --line: oklch(0.85 0.015 155);
+      --green: oklch(0.48 0.115 145);
+      --green-soft: oklch(0.925 0.042 145);
+      --blue: oklch(0.5 0.13 247);
+      --gray: oklch(0.63 0.012 155);
+      --red: oklch(0.52 0.15 31);
+      --red-soft: oklch(0.95 0.035 31);
+      --focus: oklch(0.5 0.16 280);
+      --sans: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--sans); }
+    a { color: inherit; text-underline-offset: 3px; }
+    :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+    .page { max-width: 1240px; margin: 0 auto; padding: 30px 32px 42px; }
+    .topline { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 45px; color: var(--quiet); font-size: .82rem; }
+    .topline a { text-decoration: none; }
+    .topline a:hover { color: var(--ink); text-decoration: underline; }
+    .authority { font-family: var(--mono); }
+    header { display: grid; grid-template-columns: 1.15fr .85fr; gap: 50px; align-items: end; padding-bottom: 32px; border-bottom: 1px solid var(--line); }
+    h1 { max-width: 17ch; margin: 0 0 17px; font-size: clamp(2.4rem, 5.5vw, 5.1rem); line-height: .98; letter-spacing: -.04em; text-wrap: balance; }
+    .lede { max-width: 68ch; margin: 0; color: var(--muted); font-size: 1.08rem; }
+    .headline { padding: 20px 22px; color: white; background: var(--ink); border-radius: 12px; }
+    .headline span { display: block; color: oklch(0.82 0.02 155); font-size: .8rem; }
+    .headline strong { display: block; margin: 5px 0 7px; font: 720 2rem/1 var(--mono); }
+    .headline p { margin: 0; color: oklch(0.88 0.012 155); }
+    .comparison { margin: 38px 0; padding: 28px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+    .comparison h2, .families h2, .mechanism h2, .boundary h2 { margin: 0 0 8px; font-size: 1.45rem; }
+    .comparison > p, .families > p, .mechanism > p, .boundary > p { max-width: 74ch; margin: 0 0 24px; color: var(--muted); }
+    .axis { display: grid; grid-template-columns: 150px 1fr 70px; gap: 12px; margin-bottom: 8px; color: var(--quiet); font: .7rem/1.3 var(--mono); }
+    .ticks { display: flex; justify-content: space-between; }
+    .barrow { display: grid; grid-template-columns: 150px 1fr 70px; gap: 12px; align-items: center; min-height: 52px; }
+    .method { font-weight: 650; color: var(--muted); }
+    .track { position: relative; height: 25px; background: oklch(0.94 0.008 155); border-radius: 5px; }
+    .track::after { content: ""; position: absolute; left: 50%; inset-block: -4px; width: 1px; background: var(--line); }
+    .bar { position: relative; z-index: 1; display: block; height: 100%; border-radius: 5px; }
+    .rules .bar { background: var(--gray); }
+    .llm .bar { background: oklch(0.92 0.035 247); border: 2px solid var(--blue); }
+    .hybrid .bar { background: var(--green); }
+    .value { text-align: right; font: 700 .86rem/1.2 var(--mono); }
+    .note { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); }
+    .families { margin: 44px 0; }
+    .family { display: grid; grid-template-columns: 180px 1fr 250px; gap: 26px; align-items: center; padding: 22px 0; border-top: 1px solid var(--line); }
+    .family:last-child { border-bottom: 1px solid var(--line); }
+    .family h3 { margin: 0 0 4px; font-size: 1.05rem; }
+    .family .takeaway { margin: 0; color: var(--muted); }
+    .mini { display: grid; grid-template-columns: 62px 1fr 42px; gap: 8px; align-items: center; margin: 6px 0; color: var(--quiet); font-size: .76rem; }
+    .mini-track { height: 12px; background: oklch(0.93 0.008 155); }
+    .mini-bar { display: block; height: 100%; }
+    .mini.rules .mini-bar { background: var(--gray); }
+    .mini.llm .mini-bar { background: var(--blue); }
+    .mini.hybrid .mini-bar { background: var(--green); }
+    .mini b { text-align: right; color: var(--ink); font-family: var(--mono); }
+    .effect { padding-left: 24px; border-left: 1px solid var(--line); color: var(--muted); }
+    .effect strong { display: block; margin-bottom: 4px; color: var(--ink); }
+    .effect.harm strong { color: var(--red); }
+    .mechanism { display: grid; grid-template-columns: .75fr 1.25fr; gap: 44px; margin: 44px 0; padding: 30px 0; border-block: 1px solid var(--line); }
+    .sequence { counter-reset: step; margin: 0; padding: 0; list-style: none; }
+    .sequence li { position: relative; padding: 0 0 20px 44px; color: var(--muted); }
+    .sequence li::before { counter-increment: step; content: counter(step); position: absolute; left: 0; top: -2px; display: grid; place-items: center; width: 28px; height: 28px; color: white; background: var(--green); border-radius: 50%; font: 700 .75rem/1 var(--mono); }
+    .sequence li:not(:last-child)::after { content: ""; position: absolute; left: 13px; top: 27px; bottom: 0; width: 1px; background: var(--line); }
+    .sequence strong { color: var(--ink); }
+    .boundary { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border-block: 1px solid var(--line); }
+    .boundary section { padding: 26px; background: var(--surface); }
+    .boundary ul { margin: 0; padding-left: 19px; color: var(--muted); }
+    .boundary li { margin: 8px 0; }
+    .boundary .no h2 { color: var(--red); }
+    footer { display: flex; justify-content: space-between; gap: 20px; margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--quiet); font-size: .82rem; }
+    @media (max-width: 900px) {
+      .page { padding: 24px 20px 34px; }
+      header, .mechanism { grid-template-columns: 1fr; gap: 26px; }
+      .family { grid-template-columns: 160px 1fr; }
+      .effect { grid-column: 1 / -1; padding: 0; border-left: 0; }
+    }
+    @media (max-width: 620px) {
+      .page { padding-inline: 14px; }
+      .topline { align-items: flex-start; }
+      .authority { text-align: right; }
+      .comparison { padding: 22px 16px; }
+      .axis, .barrow { grid-template-columns: 105px 1fr 56px; gap: 8px; }
+      .family { grid-template-columns: 1fr; gap: 12px; }
+      .effect { grid-column: auto; }
+      .boundary { grid-template-columns: 1fr; }
+      footer { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topline">
+      <a href="../paper/exect_story_2026-08-12.md">← Writing source (Markdown)</a>
+      <span class="authority">Historical visual · not on the paper-source path</span>
+    </div>
+
+    <header>
+      <div>
+        <h1>ExECT must recover the whole fact inventory.</h1>
+        <p class="lede">The proposed method extracts diagnoses, seizure-frequency facts, prescriptions, and investigations from one letter. The main risk is not one wrong label; it is an incomplete, merged, or unsupported set. The gold is the evaluation form, not the task.</p>
+      </div>
+      <div class="headline">
+        <span>Grok + rules · locked test60</span>
+        <strong>0.805 F1</strong>
+        <p>Living proposed-method hybrid F1. Higher than Grok LLM-only 0.7726; Gemini with rules 0.8129 is a panel row, not a second system name.</p>
+      </div>
+    </header>
+
+    <section class="comparison" aria-labelledby="comparison-title">
+      <h2 id="comparison-title">The selected comparison keeps the two baselines beside the proposed method</h2>
+      <p>Each result uses the same four clinical families. The metric is the project's clinical fact F1, not the published ExECT benchmark. Rules-only and a model alone are baselines; they do not get equal billing.</p>
+      <div class="axis" aria-hidden="true"><span></span><span class="ticks"><span>0</span><span>0.5</span><span>1.0</span></span><span></span></div>
+      <div class="barrow rules"><span class="method">Rules only</span><span class="track"><span class="bar" style="width:79.37%"></span></span><span class="value">0.7937</span></div>
+      <div class="barrow llm"><span class="method">Grok LLM only</span><span class="track"><span class="bar" style="width:77.26%"></span></span><span class="value">0.7726</span></div>
+      <div class="barrow hybrid"><span class="method">Grok + rules</span><span class="track"><span class="bar" style="width:80.50%"></span></span><span class="value">0.805</span></div>
+      <p class="note">On development, living Grok is 0.9042 rules-only, 0.8212 LLM-only raw, and 0.8998 hybrid. The larger development gain does not transfer in full to holdout.</p>
+    </section>
+
+    <section class="families" aria-labelledby="families-title">
+      <h2 id="families-title">The four families need different help</h2>
+      <p>Holdout ranges below cover all six models. The right-hand note comes from ordered development replay and explains what the family rules do.</p>
+
+      <div class="family">
+        <div><h3>Diagnosis</h3><p class="takeaway">Rules repair the concept inventory.</p></div>
+        <div aria-label="Diagnosis holdout scores">
+          <div class="mini rules"><span>Rules</span><span class="mini-track"><span class="mini-bar" style="width:86%"></span></span><b>.86</b></div>
+          <div class="mini llm"><span>LLM</span><span class="mini-track"><span class="mini-bar" style="width:82%"></span></span><b>.75–.82</b></div>
+          <div class="mini hybrid"><span>Hybrid</span><span class="mini-track"><span class="mini-bar" style="width:85%"></span></span><b>.79–.85</b></div>
+        </div>
+        <div class="effect"><strong>Development effect</strong>Diagnosis exactness rises from 0.39 to 0.58 after the diagnosis transform; 212 rescue events and 49 harms are recorded.</div>
+      </div>
+
+      <div class="family">
+        <div><h3>Seizure frequency</h3><p class="takeaway">The holdout floor remains.</p></div>
+        <div aria-label="Seizure frequency holdout scores">
+          <div class="mini rules"><span>Rules</span><span class="mini-track"><span class="mini-bar" style="width:58%"></span></span><b>.58</b></div>
+          <div class="mini llm"><span>LLM</span><span class="mini-track"><span class="mini-bar" style="width:51%"></span></span><b>.40–.51</b></div>
+          <div class="mini hybrid"><span>Hybrid</span><span class="mini-track"><span class="mini-bar" style="width:61%"></span></span><b>.49–.61</b></div>
+        </div>
+        <div class="effect"><strong>Development effect</strong>The producer check makes 305 rescues with no recorded harms at that stage, but missed or mixed state inventories remain.</div>
+      </div>
+
+      <div class="family">
+        <div><h3>Prescription</h3><p class="takeaway">Strong overall; the selected transform can harm.</p></div>
+        <div aria-label="Prescription holdout scores">
+          <div class="mini rules"><span>Rules</span><span class="mini-track"><span class="mini-bar" style="width:84%"></span></span><b>.84</b></div>
+          <div class="mini llm"><span>LLM</span><span class="mini-track"><span class="mini-bar" style="width:92%"></span></span><b>.82–.92</b></div>
+          <div class="mini hybrid"><span>Hybrid</span><span class="mini-track"><span class="mini-bar" style="width:86%"></span></span><b>.78–.86</b></div>
+        </div>
+        <div class="effect harm"><strong>Development trade-off and holdout transfer</strong>The prior v09 Prescription transform records 44 rescues and 60 harms. Two dev-fitted rules are removed in v10; aggregate-only test59 confirms higher exactness and micro-F1, with GPT-4.1-mini marginally worse.</div>
+      </div>
+
+      <div class="family">
+        <div><h3>Investigations</h3><p class="takeaway">The model carries this family.</p></div>
+        <div aria-label="Investigations holdout scores">
+          <div class="mini rules"><span>Rules</span><span class="mini-track"><span class="mini-bar" style="width:40%"></span></span><b>.40</b></div>
+          <div class="mini llm"><span>LLM</span><span class="mini-track"><span class="mini-bar" style="width:92%"></span></span><b>.79–.92</b></div>
+          <div class="mini hybrid"><span>Hybrid</span><span class="mini-track"><span class="mini-bar" style="width:92%"></span></span><b>.79–.92</b></div>
+        </div>
+        <div class="effect"><strong>Development effect</strong>The selected Investigations transform is effectively a no-op. Abnormal MRI and EEG findings expose the rules-only floor.</div>
+      </div>
+    </section>
+
+    <section class="mechanism">
+      <div>
+        <h2>How one letter becomes a fact inventory</h2>
+        <p>The model proposes all four families in one structured call. Deterministic stages then project attributes, apply selected family rules, require evidence, and assemble the final set.</p>
+      </div>
+      <ol class="sequence">
+        <li><strong>Interpret the whole letter.</strong> Produce candidate events and source spans.</li>
+        <li><strong>Project and check attributes.</strong> Remove candidates that do not satisfy the family contract.</li>
+        <li><strong>Apply family rules.</strong> Diagnosis and seizure-frequency stages make the largest helpful changes; Prescription has a measured harm surface.</li>
+        <li><strong>Return a coherent set.</strong> Score the final facts under the four-family project measure.</li>
+      </ol>
+    </section>
+
+    <div class="boundary">
+      <section>
+        <h2>Supported</h2>
+        <ul>
+          <li>A three-method comparison for living Grok on the cited ExECT methods.</li>
+          <li>Six-model aggregate holdout scores and family ranges.</li>
+          <li>Development evidence of family-specific rescues, harms, and no-ops.</li>
+        </ul>
+      </section>
+      <section class="no">
+        <h2>Not supported</h2>
+        <ul>
+          <li>Reproduction of the published ExECT benchmark.</li>
+          <li>Clinical validation or deployment readiness.</li>
+          <li>A claim that every deterministic family transform improves F1.</li>
+        </ul>
+      </section>
+    </div>
+
+    <footer>
+      <span>Owners: Decision 0046; paper provenance C10, C17–C19</span>
+      <span><a href="../exectv2/hybrid_stage_ablation_2026-08-06.md">stage replay</a> · <a href="../shared/six_model_holdout_category_aggregates_2026-08-06.md">holdout families</a></span>
+    </footer>
+  </main>
+</body>
+</html>

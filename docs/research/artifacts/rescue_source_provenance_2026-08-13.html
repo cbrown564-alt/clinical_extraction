@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Where the rescued answer came from — clinical extraction</title>
+  <!--
+    View contract
+    Question: When a rule first turns a wrong development cell into a
+      correct one, did the model already capture that answer?
+    Takeaway: Gan first-rescues are almost all re-renders of the selected
+      quote (1,437 / 1,539). Only ExECT Diagnosis has a measured
+      unquoted-letter add class (10 / 174). SF, Prescription, and
+      Investigations stay on model-captured mentions.
+    Form: Stacked-share bars by task/family; one letter compared across
+      two models; filterable class cards.
+    Palette: Same two-root cap as the parallel performance view
+      (Gan indigo, ExECT moss). Class state also uses hatch / outline.
+    Surface: Standalone local HTML evidence view; final QA at laptop and mobile.
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,500;9..144,650;9..144,700,0..100&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: oklch(0.955 0.014 88);
+      --surface: oklch(0.985 0.006 88);
+      --ink: oklch(0.22 0.018 70);
+      --muted: oklch(0.42 0.02 70);
+      --quiet: oklch(0.56 0.016 70);
+      --line: oklch(0.82 0.02 80);
+      --track: oklch(0.91 0.012 85);
+      --gan: oklch(0.40 0.115 255);
+      --gan-ink: oklch(0.34 0.11 255);
+      --gan-soft: oklch(0.90 0.035 250);
+      --exect: oklch(0.40 0.085 132);
+      --exect-ink: oklch(0.34 0.08 132);
+      --exect-soft: oklch(0.91 0.03 132);
+      --warn: oklch(0.48 0.12 42);
+      --warn-soft: oklch(0.94 0.03 70);
+      --slate: oklch(0.52 0.02 80);
+      --focus: oklch(0.48 0.14 255);
+      --display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      --sans: "Source Sans 3", "Segoe UI", "Helvetica Neue", sans-serif;
+      --mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+      --c-render: oklch(0.40 0.115 255);
+      --c-promote: oklch(0.46 0.09 200);
+      --c-compose: oklch(0.42 0.08 80);
+      --c-quote: oklch(0.40 0.085 132);
+      --c-trim: oklch(0.58 0.015 80);
+      --c-add: oklch(0.52 0.14 42);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(1100px 460px at 6% -8%, oklch(0.97 0.02 88 / .75), transparent 56%),
+        radial-gradient(820px 380px at 100% 0%, oklch(0.93 0.03 140 / .16), transparent 48%),
+        var(--paper);
+      font: 16px/1.55 var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .18;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    a { color: inherit; text-underline-offset: 3px; }
+    button { font: inherit; }
+    :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 32px 56px;
+    }
+    .topline {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px 18px;
+      margin-bottom: 36px;
+      color: var(--quiet);
+      font-size: .82rem;
+    }
+    .back { text-decoration: none; }
+    .back:hover { color: var(--ink); text-decoration: underline; }
+    .authority { font: 400 .72rem/1.4 var(--mono); }
+
+    .intro {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, .7fr);
+      gap: 40px;
+      align-items: end;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+    }
+    .kicker {
+      margin: 0 0 12px;
+      color: var(--quiet);
+      font: 500 .72rem/1.3 var(--mono);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    h1 {
+      max-width: 16ch;
+      margin: 0 0 16px;
+      font: 650 clamp(2.2rem, 5vw, 4.2rem)/.94 var(--display);
+      letter-spacing: -.035em;
+      text-wrap: balance;
+    }
+    .lede {
+      max-width: 46rem;
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.06rem;
+    }
+    .claim-limit {
+      margin: 0;
+      padding: 20px 20px 18px;
+      background: var(--warn-soft);
+      border-top: 3px solid var(--warn);
+      color: var(--muted);
+    }
+    .claim-limit strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--warn);
+      font: 650 .76rem/1.3 var(--sans);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    section { margin-top: 42px; }
+    h2 {
+      margin: 0 0 8px;
+      font: 500 1.7rem/1.15 var(--display);
+      letter-spacing: -.02em;
+    }
+    .section-lede {
+      max-width: 52rem;
+      margin: 0 0 22px;
+      color: var(--muted);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin: 0 0 18px;
+    }
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--quiet);
+      font: 400 .72rem/1 var(--mono);
+    }
+    .swatch {
+      width: 14px;
+      height: 10px;
+      border: 1px solid oklch(0.3 0.02 70 / .25);
+    }
+    .swatch.render { background: var(--c-render); }
+    .swatch.promote { background: transparent; box-shadow: inset 0 0 0 2px var(--c-promote); }
+    .swatch.compose {
+      background: repeating-linear-gradient(-45deg, var(--c-compose), var(--c-compose) 2px, oklch(0.88 0.03 80) 2px, oklch(0.88 0.03 80) 5px);
+    }
+    .swatch.quote { background: var(--c-quote); }
+    .swatch.trim { background: var(--c-trim); }
+    .swatch.add { background: var(--c-add); }
+
+    .bars { display: grid; gap: 16px; }
+    .bar-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      padding: 16px 18px 14px;
+    }
+    .bar-card.gan { border-top: 5px solid var(--gan); }
+    .bar-card.exect { border-top: 5px solid var(--exect); }
+    .bar-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .bar-meta h3 {
+      margin: 0;
+      font: 650 1rem/1.2 var(--sans);
+    }
+    .bar-meta small {
+      color: var(--quiet);
+      font: 400 .72rem/1.2 var(--mono);
+    }
+    .stack {
+      display: flex;
+      height: 28px;
+      overflow: hidden;
+      background: var(--track);
+    }
+    .seg {
+      height: 100%;
+      min-width: 0;
+    }
+    .seg.render { background: var(--c-render); }
+    .seg.promote { background: repeating-linear-gradient(90deg, var(--c-promote), var(--c-promote) 3px, transparent 3px, transparent 6px); background-color: oklch(0.88 0.03 200); }
+    .seg.compose {
+      background: repeating-linear-gradient(-45deg, var(--c-compose), var(--c-compose) 2px, oklch(0.88 0.03 80) 2px, oklch(0.88 0.03 80) 5px);
+    }
+    .seg.quote { background: var(--c-quote); }
+    .seg.trim { background: var(--c-trim); }
+    .seg.add { background: var(--c-add); }
+    .bar-note {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+
+    .pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .model-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-top: 6px solid var(--exect);
+    }
+    .model-card.unquoted { border-top-color: var(--c-add); }
+    .model-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .model-head h3 { margin: 0; font: 650 1.02rem/1.2 var(--sans); }
+    .badge {
+      align-self: start;
+      padding: 3px 8px;
+      font: 500 .68rem/1.3 var(--mono);
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .badge.add { color: var(--warn); background: var(--warn-soft); }
+    .badge.quote { color: var(--exect-ink); background: var(--exect-soft); }
+    .model-body { padding: 14px 18px 18px; }
+    blockquote {
+      margin: 0 0 12px;
+      padding: 12px 14px;
+      background: var(--paper);
+      border-left: 3px solid var(--exect);
+      font: 500 1.05rem/1.4 var(--display);
+    }
+    blockquote mark {
+      background: oklch(0.9 0.06 85);
+      padding: 0 .1em;
+    }
+    .kv {
+      display: grid;
+      grid-template-columns: 9.5rem 1fr;
+      gap: 6px 10px;
+      margin: 0;
+      font-size: .9rem;
+    }
+    .kv dt { color: var(--quiet); font: 400 .7rem/1.5 var(--mono); }
+    .kv dd { margin: 0; overflow-wrap: anywhere; }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 16px;
+    }
+    .filters button {
+      min-height: 40px;
+      padding: 8px 12px;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      cursor: pointer;
+    }
+    .filters button[aria-pressed="true"] {
+      color: var(--ink);
+      border-color: var(--ink);
+      font-weight: 700;
+    }
+    .filters button:hover { border-color: var(--ink); }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      padding: 16px 16px 14px;
+    }
+    .card[hidden] { display: none; }
+    .card.gan { border-top: 4px solid var(--gan); }
+    .card.exect { border-top: 4px solid var(--exect); }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      color: var(--quiet);
+      font: 400 .68rem/1.3 var(--mono);
+    }
+    .card h3 {
+      margin: 0 0 8px;
+      font: 650 1rem/1.25 var(--sans);
+    }
+    .change {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 8px;
+      align-items: center;
+      margin: 10px 0;
+      font: 500 .88rem/1.35 var(--mono);
+    }
+    .change span {
+      padding: 8px;
+      background: var(--paper);
+      overflow-wrap: anywhere;
+    }
+    .change .to { color: var(--quiet); font-size: .8rem; }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 40px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      color: var(--quiet);
+      font-size: .82rem;
+    }
+
+    @media (max-width: 820px) {
+      .intro, .pair { grid-template-columns: 1fr; }
+      .page { padding: 18px 16px 40px; }
+      .kv { grid-template-columns: 1fr; }
+      .change { grid-template-columns: 1fr; }
+      .change .to { text-align: center; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+    @media print {
+      body { background: white; }
+      body::before { display: none; }
+      .filters { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="topline">
+      <a class="back" href="../../NAVIGATION.md#paper-source-library">← Paper-source library</a>
+      <span class="authority">dev750 · dev140 · no model calls</span>
+    </div>
+
+    <header class="intro">
+      <div>
+        <p class="kicker">Rescue source provenance</p>
+        <h1>Where did the rescued answer come from?</h1>
+        <p class="lede">Stage ablation names the first rule that changed the label. This view asks a different question: was that rescued answer already in the model output, or did the rule introduce it from the letter? Most Gan first-rescues re-render a span the model already chose.</p>
+      </div>
+      <p class="claim-limit"><strong>What this does not prove</strong>Pooled six-model first-rescues on development splits. Not holdout component estimates, not clinical validity, and not a claim that a render is the only defensible reading.</p>
+    </header>
+
+    <section id="split" aria-labelledby="split-h">
+      <h2 id="split-h">The split</h2>
+      <p class="section-lede">Each bar is 100% of that family’s first-rescues. Gan is almost all selected-span render. Only Diagnosis shows a measured unquoted-letter add.</p>
+      <div class="legend" aria-hidden="true">
+        <span><i class="swatch render"></i> render selected</span>
+        <span><i class="swatch promote"></i> promote relegated</span>
+        <span><i class="swatch compose"></i> compose from events</span>
+        <span><i class="swatch quote"></i> use a model quote</span>
+        <span><i class="swatch trim"></i> trim extras</span>
+        <span><i class="swatch add"></i> unquoted letter add</span>
+      </div>
+      <div class="bars" id="bars"></div>
+    </section>
+
+    <section id="letter" aria-labelledby="letter-h">
+      <h2 id="letter-h">One letter, two models</h2>
+      <p class="section-lede">Development letter <code>EA0007</code>. Gold diagnosis is <code>focal epilepsy</code>. The letter contains both “epilepsy – unclassified” and “possibly focal onset.” Whether that hedge is in the model’s saved quotes changes the source class.</p>
+      <div class="pair">
+        <article class="model-card unquoted">
+          <div class="model-head">
+            <div>
+              <h3>Grok 4.6</h3>
+              <p class="section-lede" style="margin:6px 0 0">Diagnosis first-rescue · <code>lens.diagnosis</code></p>
+            </div>
+            <span class="badge add">unquoted letter add</span>
+          </div>
+          <div class="model-body">
+            <blockquote>Diagnosis: epilepsy – unclassified</blockquote>
+            <blockquote>She has seizures every 3 to 4 weeks.</blockquote>
+            <p class="section-lede">Living Grok quotes <mark>possibly focal onset</mark> on the seizure-frequency span. The diagnosis dictionary rewrites it to <mark>focal epilepsy</mark>. The retired Sol unquoted-add is not this cell.</p>
+            <dl class="kv">
+              <dt>Before</dt><dd><code>('Diagnosis', 'epilepsy')</code></dd>
+              <dt>After</dt><dd><code>('Diagnosis', 'focal epilepsy')</code></dd>
+              <dt>Gold</dt><dd><code>focal epilepsy</code> · rescue</dd>
+            </dl>
+          </div>
+        </article>
+        <article class="model-card">
+          <div class="model-head">
+            <div>
+              <h3>GPT-5.6 Luna</h3>
+              <p class="section-lede" style="margin:6px 0 0">Same letter · same lens · different capture</p>
+            </div>
+            <span class="badge quote">uses a model quote</span>
+          </div>
+          <div class="model-body">
+            <blockquote>Diagnosis: epilepsy – unclassified</blockquote>
+            <blockquote>Seizure type and frequency: seizures every 3 to 4 weeks, <mark>possibly focal onset</mark></blockquote>
+            <p class="section-lede">Luna already quoted the hedge on a seizure-frequency event. The same concept change is quote reuse, not a letter-only add.</p>
+            <dl class="kv">
+              <dt>Before</dt><dd><code>('Diagnosis', 'epilepsy')</code></dd>
+              <dt>After</dt><dd><code>('Diagnosis', 'focal epilepsy')</code></dd>
+              <dt>Gold</dt><dd><code>focal epilepsy</code> · rescue</dd>
+            </dl>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="cards" aria-labelledby="cards-h">
+      <h2 id="cards-h">One card per class</h2>
+      <p class="section-lede">Curated development examples from the provenance ledger. Filter by source class. The full cell counts stay in the Markdown owner and the JSON artifact.</p>
+      <div class="filters" role="group" aria-label="Filter source class">
+        <button type="button" aria-pressed="true" data-filter="all">All</button>
+        <button type="button" aria-pressed="false" data-filter="render_selected">Render</button>
+        <button type="button" aria-pressed="false" data-filter="promote_relegated_model_answer">Promote</button>
+        <button type="button" aria-pressed="false" data-filter="compose_from_captured_events">Compose</button>
+        <button type="button" aria-pressed="false" data-filter="use_model_quote_not_as_answer">Use quote</button>
+        <button type="button" aria-pressed="false" data-filter="trim_inventory_to_exact">Trim</button>
+        <button type="button" aria-pressed="false" data-filter="add_from_unquoted_letter_span">Unquoted add</button>
+      </div>
+      <div class="cards" id="card-grid"></div>
+    </section>
+
+    <footer>
+      <span>Source-library evidence view · 2026-08-13</span>
+      <span>Owner: <a href="../shared/hybrid_rescue_source_provenance_2026-08-13.md">provenance report</a> · <a href="../../../experiments/hybrid_rescue_source_provenance_20260813.json">JSON</a></span>
+    </footer>
+  </div>
+
+  <script>
+    const CLASSES = [
+      ["render_selected", "render", "render selected"],
+      ["promote_relegated_model_answer", "promote", "promote relegated"],
+      ["compose_from_captured_events", "compose", "compose from events"],
+      ["use_model_quote_not_as_answer", "quote", "use a model quote"],
+      ["trim_inventory_to_exact", "trim", "trim extras"],
+      ["add_from_unquoted_letter_span", "add", "unquoted letter add"]
+    ];
+
+    const rows = [
+      { theme: "gan", name: "Gan 2026", n: 1539, note: "1,437 of 1,539 first-rescues only re-render the selected quote. Zero unquoted letter adds.", counts: { render_selected: 1437, promote_relegated_model_answer: 13, compose_from_captured_events: 89 } },
+      { theme: "exect", name: "ExECT Diagnosis", n: 174, note: "Historical 13 Aug six-model provenance (not a living Grok recount). Living Grok EA0007 is a quoted-hedge dictionary rewrite, not an unquoted-letter add.", counts: { render_selected: 2, promote_relegated_model_answer: 7, use_model_quote_not_as_answer: 104, trim_inventory_to_exact: 51, add_from_unquoted_letter_span: 10 } },
+      { theme: "exect", name: "ExECT Seizure frequency", n: 347, note: "Mostly phrase → CUI at the producer gate, or a later trim / state compose from captured SF events.", counts: { render_selected: 301, compose_from_captured_events: 4, trim_inventory_to_exact: 42 } },
+      { theme: "exect", name: "ExECT Prescription", n: 10, note: "All ten rewrite a drug the model already named (dose split, rescue recode, unit clean-up).", counts: { compose_from_captured_events: 10 } },
+      { theme: "exect", name: "ExECT Investigations", n: 2, note: "Both first-rescues drop an extra or empty investigation key.", counts: { trim_inventory_to_exact: 2 } }
+    ];
+
+    const cards = [
+      { cls: "render_selected", theme: "gan", family: "Gan · row 10", stage: "repair.selected_evidence", title: "Selected span, new label form", before: "≤ 4 per day", after: "4 per day", quote: "observed frequency is noted as ≤ four per day", note: "The model already chose the quote. The rule only writes the Purist point-rate form." },
+      { cls: "promote_relegated_model_answer", theme: "gan", family: "Gan · row 13858", stage: "repair.non_epileptic", title: "Another event already had the label", before: "unknown", after: "seizure free for multiple year", quote: "intermittent brief episodes… over the past year", note: "A later family promotes a reading carried on a non-selected event." },
+      { cls: "compose_from_captured_events", theme: "gan", family: "Gan · row 14567", stage: "repair.dated_sequence", title: "Built from dated events", before: "2 per month", after: "3 per 3 month", quote: "Her second and third seizure was in January 2018", note: "No single event already held 3 per 3 month; the rule composed it from captured events." },
+      { cls: "use_model_quote_not_as_answer", theme: "exect", family: "ExECT Diagnosis · EA0034", stage: "lens.diagnosis", title: "Quote existed, not as that diagnosis", before: "focal epilepsy + arm movement + FTC", after: "adds occipital lobe epilepsy", quote: "distinctive tokens appear in a model span that was not the scored diagnosis key", note: "The supporting words were in the sidecar, but not as the rescued diagnosis mention." },
+      { cls: "trim_inventory_to_exact", theme: "exect", family: "ExECT Investigations · EA0002", stage: "project_and_gate", title: "Drop the extra MRI key", before: "MRI Yes None · MRI Yes Abnormal", after: "MRI Yes Abnormal", quote: "both MRI mentions were already in the model inventory", note: "Exactness is rescued by deletion, not by adding a finding." },
+      { cls: "add_from_unquoted_letter_span", theme: "exect", family: "ExECT Diagnosis · EA0007 Grok", stage: "dictionary", title: "Quoted hedge rewritten to gold concept", before: "epilepsy – unclassified", after: "focal epilepsy", quote: "Grok quote: seizures every 3 to 4 weeks, possibly focal onset", note: "Living hybrid F1 1.0. Historical unquoted-add class does not describe this Grok cell." },
+      { cls: "render_selected", theme: "exect", family: "ExECT SF · EA0004", stage: "project_and_gate", title: "Same state, phrase becomes CUI", before: "('phrase', 'seizure'), active-rate", after: "('cui', 'C0036572'), active-rate", quote: "model already emitted an active-rate seizure mention", note: "The producer gate re-identifies a state the model already proposed." },
+      { cls: "compose_from_captured_events", theme: "exect", family: "ExECT Prescription · EA0038 Sol", stage: "lens.prescription", title: "Split a captured divided dose", before: "carbamazepine 400/400/200 ×3", after: "400 · 400 · 200 as three ordinary keys", quote: "Current antiepileptic medication: carbamazepine…", note: "The drug and numbers were in the model regimen; the lens rewrote the unit keys." }
+    ];
+
+    function stack(counts, n) {
+      return CLASSES.map(([id, cls, label]) => {
+        const value = counts[id] || 0;
+        if (!value) return "";
+        const pct = (100 * value / n).toFixed(2);
+        return `<span class="seg ${cls}" style="width:${pct}%" title="${label}: ${value} (${pct}%)"></span>`;
+      }).join("");
+    }
+
+    document.getElementById("bars").innerHTML = rows.map((row) => `
+      <article class="bar-card ${row.theme}">
+        <div class="bar-meta">
+          <h3>${row.name}</h3>
+          <small>n = ${row.n.toLocaleString("en-GB")}</small>
+        </div>
+        <div class="stack" role="img" aria-label="${row.name}: ${row.note}">${stack(row.counts, row.n)}</div>
+        <p class="bar-note">${row.note}</p>
+      </article>
+    `).join("");
+
+    const grid = document.getElementById("card-grid");
+    grid.innerHTML = cards.map((card, index) => `
+      <article class="card ${card.theme}" data-class="${card.cls}" id="card-${index}">
+        <div class="card-top"><span>${card.family}</span><span>${card.stage}</span></div>
+        <h3>${card.title}</h3>
+        <div class="change">
+          <span>${card.before}</span>
+          <span class="to">→</span>
+          <span>${card.after}</span>
+        </div>
+        <p class="bar-note">${card.quote}</p>
+        <p class="bar-note">${card.note}</p>
+      </article>
+    `).join("");
+
+    const buttons = document.querySelectorAll(".filters button");
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const filter = button.dataset.filter;
+        buttons.forEach((other) => other.setAttribute("aria-pressed", String(other === button)));
+        grid.querySelectorAll(".card").forEach((card) => {
+          card.hidden = filter !== "all" && card.dataset.class !== filter;
+        });
+      });
+    });
+  </script>
+</body>
+</html>

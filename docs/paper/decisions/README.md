@@ -1,0 +1,9 @@
+# Current decisions
+
+Self-describing names. No numbered series.
+
+- [ExECT LLM with rules is the cited hybrid row](exect-compact-is-the-cited-hybrid.md)
+- [Gan cleaned request is the cited hybrid](gan-cleaned-request-is-the-cited-hybrid.md)
+- [Six-model roster](six-model-roster.md)
+- [Holdout is aggregate-only](holdout-is-aggregate-only.md)
+- [Pytest is the research-validity firewall](pytest-is-the-research-validity-firewall.md)

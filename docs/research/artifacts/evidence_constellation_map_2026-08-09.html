@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Paper evidence constellation — clinical extraction</title>
+  <style>
+    :root {
+      --bg: oklch(0.975 0.004 258);
+      --surface: oklch(1 0 0);
+      --surface-2: oklch(0.955 0.008 258);
+      --ink: oklch(0.19 0.025 258);
+      --muted: oklch(0.43 0.025 258);
+      --quiet: oklch(0.58 0.02 258);
+      --line: oklch(0.86 0.012 258);
+      --project: oklch(0.46 0.125 244);
+      --project-soft: oklch(0.94 0.035 244);
+      --literature: oklch(0.5 0.115 153);
+      --literature-soft: oklch(0.94 0.035 153);
+      --gap: oklch(0.51 0.14 38);
+      --gap-soft: oklch(0.95 0.035 38);
+      --focus: oklch(0.49 0.16 270);
+      --radius: 12px;
+      --sans: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 15px/1.52 var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-underline-offset: 3px; }
+    button { min-width: 44px; min-height: 44px; font: inherit; }
+    :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+    .page { max-width: 1440px; margin: 0 auto; padding: 32px; }
+    .masthead {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 430px);
+      gap: 40px;
+      align-items: end;
+      padding: 30px 0 28px;
+      border-bottom: 1px solid var(--line);
+    }
+    h1 {
+      max-width: 18ch;
+      margin: 0 0 14px;
+      font-size: clamp(2.15rem, 5vw, 4.6rem);
+      line-height: .98;
+      letter-spacing: -.04em;
+      text-wrap: balance;
+    }
+    .lede { max-width: 68ch; margin: 0; color: var(--muted); font-size: 1.06rem; }
+    .warning {
+      margin: 0;
+      padding: 18px 20px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--muted);
+    }
+    .warning strong { display: block; margin-bottom: 5px; color: var(--ink); }
+
+    .reader-test {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      margin: 24px 0;
+      padding: 16px 18px;
+      background: var(--ink);
+      color: white;
+      border-radius: var(--radius);
+    }
+    .test-label { font: 600 .72rem/1.2 var(--mono); letter-spacing: .04em; text-transform: uppercase; }
+    .reader-test p { margin: 0; color: oklch(0.87 0.012 258); }
+    .reader-test button {
+      padding: 9px 13px;
+      color: white;
+      background: transparent;
+      border: 1px solid oklch(1 0 0 / .32);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .reader-test button:hover { background: oklch(1 0 0 / .09); }
+
+    .workspace { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 28px; align-items: start; }
+    .rail { position: sticky; top: 18px; }
+    .rail h2 { margin: 0 0 10px; font-size: 1rem; }
+    .filter-group { margin: 0 0 22px; }
+    .filter-label { display: block; margin-bottom: 8px; color: var(--quiet); font: 600 .7rem/1.3 var(--mono); text-transform: uppercase; letter-spacing: .04em; }
+    .filters { display: flex; flex-wrap: wrap; gap: 7px; }
+    .filter {
+      padding: 7px 10px;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    .filter[aria-pressed="true"] { color: white; background: var(--ink); border-color: var(--ink); }
+    .claim-nav { display: grid; gap: 4px; }
+    .claim-nav button {
+      display: block;
+      width: 100%;
+      padding: 10px 9px;
+      text-align: left;
+      color: var(--muted);
+      background: transparent;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .claim-nav button:hover { background: var(--surface-2); color: var(--ink); }
+    .claim-nav button.active { background: var(--surface); color: var(--ink); box-shadow: 0 1px 4px oklch(0.2 0.02 258 / .11); }
+    .key { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); }
+    .key-row { display: flex; gap: 9px; align-items: center; margin: 7px 0; }
+    .swatch { width: 11px; height: 11px; border-radius: 3px; flex: 0 0 auto; }
+    .swatch.lit { background: var(--literature); }
+    .swatch.project { background: var(--project); }
+
+    .summary { display: flex; justify-content: space-between; gap: 16px; align-items: baseline; margin: 4px 0 15px; }
+    .summary h2 { margin: 0; font-size: 1.4rem; letter-spacing: -.02em; }
+    #result-count { color: var(--quiet); font: .75rem/1.4 var(--mono); }
+    .claims { display: grid; gap: 16px; }
+    .claim {
+      overflow: clip;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+    .claim[hidden] { display: none; }
+    .claim > summary {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: start;
+      padding: 20px;
+      list-style: none;
+      cursor: pointer;
+    }
+    .claim > summary::-webkit-details-marker { display: none; }
+    .claim > summary:hover { background: oklch(0.985 0.003 258); }
+    .claim-title { margin: 0 0 5px; font-size: 1.15rem; letter-spacing: -.015em; }
+    .claim-line { max-width: 76ch; margin: 0; color: var(--muted); }
+    .state { white-space: nowrap; padding: 4px 8px; color: var(--muted); background: var(--surface-2); border-radius: 999px; font: 600 .66rem/1.4 var(--mono); }
+    .claim[open] > summary { border-bottom: 1px solid var(--line); }
+    .claim-body { padding: 24px 20px 22px; }
+
+    .skeptic { max-width: 88ch; margin: 0 0 24px; font-size: 1.12rem; line-height: 1.4; }
+    .skeptic span { display: block; margin-bottom: 5px; color: var(--quiet); font: 600 .68rem/1.3 var(--mono); text-transform: uppercase; letter-spacing: .04em; }
+    .lane-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 22px; }
+    .lane { padding: 16px; border-radius: 10px; }
+    .lane.literature { background: var(--literature-soft); }
+    .lane.project { background: var(--project-soft); }
+    .lane h4 { display: flex; align-items: center; gap: 8px; margin: 0 0 7px; font-size: .9rem; }
+    .lane p { margin: 0; color: var(--muted); }
+    .lane .unfilled { color: var(--gap); font-weight: 650; }
+
+    .evidence-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(240px, .7fr); gap: 28px; }
+    .section-label { margin: 0 0 10px; color: var(--quiet); font: 600 .69rem/1.3 var(--mono); text-transform: uppercase; letter-spacing: .04em; }
+    .exhibits { display: grid; gap: 9px; margin-bottom: 22px; }
+    .exhibit {
+      display: grid;
+      grid-template-columns: 20px minmax(0, 1fr);
+      gap: 10px;
+      padding: 11px 12px;
+      color: inherit;
+      text-decoration: none;
+      background: var(--bg);
+      border-radius: 8px;
+    }
+    .exhibit:hover { background: var(--surface-2); }
+    .exhibit strong { display: block; font-size: .86rem; }
+    .exhibit small { display: block; margin-top: 2px; color: var(--muted); }
+    .arrow { color: var(--quiet); font-family: var(--mono); }
+    .owners { display: flex; flex-wrap: wrap; gap: 7px; }
+    .owner {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      padding: 5px 8px;
+      color: var(--muted);
+      background: var(--surface-2);
+      border-radius: 6px;
+      font: .72rem/1.45 var(--mono);
+      text-decoration: none;
+    }
+    .owner:hover { color: var(--ink); text-decoration: underline; }
+    .boundary, .gap {
+      padding: 15px 16px;
+      border-radius: 10px;
+    }
+    .boundary { margin-bottom: 12px; background: var(--surface-2); }
+    .gap { background: var(--gap-soft); }
+    .boundary h4, .gap h4 { margin: 0 0 7px; font-size: .82rem; }
+    .boundary p, .gap p { margin: 0; color: var(--muted); }
+    .gap h4 { color: var(--gap); }
+    .none { color: var(--literature) !important; font-weight: 650; }
+    .empty { padding: 40px 20px; text-align: center; color: var(--muted); background: var(--surface); border: 1px dashed var(--line); border-radius: var(--radius); }
+    footer { margin: 40px 0 10px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--quiet); font-size: .82rem; }
+
+    @media (max-width: 900px) {
+      .page { padding: 20px; }
+      .masthead { grid-template-columns: 1fr; gap: 22px; }
+      .workspace { grid-template-columns: 1fr; }
+      .rail { position: static; }
+      .claim-nav { display: none; }
+      .key { display: flex; gap: 18px; margin-top: 12px; padding-top: 12px; }
+    }
+    @media (max-width: 680px) {
+      .page { padding: 14px; }
+      .masthead { padding-top: 18px; }
+      .reader-test { grid-template-columns: 1fr; }
+      .lane-grid, .evidence-grid { grid-template-columns: 1fr; }
+      .claim > summary { grid-template-columns: 1fr; gap: 10px; }
+      .state { justify-self: start; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="masthead">
+      <div>
+        <h1>Paper evidence constellation</h1>
+        <p class="lede">A compact route from six core paper claims to usable exhibits, canonical owners, visible limits, and unresolved gaps. Choose a claim; follow only the sources needed to write or check it.</p>
+      </div>
+      <p class="warning"><strong>Navigation aid, not proof.</strong>This map does not create evidence, register sources, promote claims, or replace paper provenance. The linked owners remain authoritative.</p>
+    </header>
+
+    <section class="reader-test" aria-label="Reader test">
+      <span class="test-label">Reader test</span>
+      <p>Can the paper author locate an appropriate source <em>and its limit</em> for a named claim without reopening a long report?</p>
+      <button type="button" id="start-test">Try: component contribution</button>
+    </section>
+
+    <div class="workspace">
+      <aside class="rail" aria-label="Map controls">
+        <div class="filter-group">
+          <span class="filter-label">Evidence lane</span>
+          <div class="filters" data-filter-group="lane">
+            <button class="filter" type="button" data-value="all" aria-pressed="true">All</button>
+            <button class="filter" type="button" data-value="literature" aria-pressed="false">Literature / dataset</button>
+            <button class="filter" type="button" data-value="project" aria-pressed="false">Project / system</button>
+            <button class="filter" type="button" data-value="both" aria-pressed="false">Both lanes</button>
+          </div>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Gap state</span>
+          <div class="filters" data-filter-group="gap">
+            <button class="filter" type="button" data-value="all" aria-pressed="true">All</button>
+            <button class="filter" type="button" data-value="open" aria-pressed="false">Open gap</button>
+            <button class="filter" type="button" data-value="bounded" aria-pressed="false">Boundary only</button>
+          </div>
+        </div>
+        <nav class="claim-nav" aria-label="Core claims"></nav>
+        <div class="key" aria-label="Evidence lane key">
+          <div class="key-row"><span class="swatch lit"></span>External rationale and task definition</div>
+          <div class="key-row"><span class="swatch project"></span>Implementation and named results</div>
+        </div>
+      </aside>
+
+      <section aria-labelledby="claims-title">
+        <div class="summary">
+          <h2 id="claims-title">Six core claims</h2>
+          <span id="result-count" aria-live="polite">6 shown</span>
+        </div>
+        <div class="claims">
+          <details class="claim" id="system-contribution" data-lane="both" data-gap="open" open>
+            <summary>
+              <div><h3 class="claim-title">Proposed method</h3><p class="claim-line">The method translates clinic letters into structured facts in a designed form, with quoted source text. A model collects the facts. Recorded rules then shape the required form.</p></div>
+              <span class="state">planning hypothesis</span>
+            </summary>
+            <div class="claim-body">
+              <p class="skeptic"><span>Skeptic question</span>What does this method actually produce, what is implementation fact versus novelty claim, and are the public golds the task or only the evaluation forms?</p>
+              <div class="lane-grid">
+                <section class="lane literature"><h4><span class="swatch lit"></span>Literature / dataset lane</h4><p>Must establish the clinical need, prior-system gap, task definitions, and ambiguity limits. <span class="unfilled">The novelty comparison and downstream-use evidence remain missing.</span></p></section>
+                <section class="lane project"><h4><span class="swatch project"></span>Project / system lane</h4><p>Establishes the modular package, three method forms, explicit processing stages, and retained Gan and ExECT results.</p></section>
+              </div>
+              <div class="evidence-grid">
+                <div>
+                  <p class="section-label">Concrete exhibits</p>
+                  <div class="exhibits">
+                    <a class="exhibit" href="../paper/why_hybrid_architecture_2026-08-09.md"><span class="arrow">→</span><span><strong>Why the proposed method is a model plus recorded rules</strong><small>Short rationale: designed form first; golds are evaluation; rules and a model alone are baselines.</small></span></a>
+                    <a class="exhibit" href="./hybrid_architecture_2026-08-10.html"><span class="arrow">→</span><span><strong>How the proposed method divides the work</strong><small>Visual sequence: model collects facts and quotes; recorded rules shape the designed form.</small></span></a>
+                    <a class="exhibit" href="../shared/task_shape_framework_2026-08-06.md"><span class="arrow">→</span><span><strong>Task-shape framework</strong><small>Gan current-state reconstruction versus ExECT multi-fact recovery.</small></span></a>
+                  </div>
+                  <p class="section-label">Canonical owners</p>
+                  <div class="owners">
+                    <a class="owner" href="../../canon/01_system_architecture.md">system architecture</a>
+                    <a class="owner" href="../../canon/02_pipeline_steps.md">pipeline steps</a>
+                    <a class="owner" href="../../canon/10_paper_provenance.md">paper provenance · S1/S2/S6</a>
+                  </div>
+                </div>
+                <div>
+                  <section class="boundary"><h4>Limit that must remain visible</h4><p>Two golds are evaluation forms, not the task. One package and the living method cells are supported. Novelty over prior systems, clinical deployment, and downstream benefit are not established by repository evidence.</p></section>
+                  <section class="gap"><h4>Gap</h4><p>Literature-backed novelty comparison and real-world downstream-use evidence. Exact novelty wording remains a paper decision.</p></section>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="claim" id="architecture-inspectability" data-lane="both" data-gap="bounded">
+            <summary>
+              <div><h3 class="claim-title">Architecture and inspectability</h3><p class="claim-line">The selected paths expose stages, owners, intermediate records, evidence, and the points where clinical meaning may change.</p></div>
+              <span class="state">direct support</span>
+            </summary>
+            <div class="claim-body">
+              <p class="skeptic"><span>Skeptic question</span>Can a reader follow a real record end to end, identify who changed the clinical answer, and verify that the architecture description stays aligned with code?</p>
+              <div class="lane-grid">
+                <section class="lane literature"><h4><span class="swatch lit"></span>Literature / dataset lane</h4><p>May explain why transparency, provenance, uncertainty handling, and human review matter; it does not show what this system exposes.</p></section>
+                <section class="lane project"><h4><span class="swatch project"></span>Project / system lane</h4><p>Generated manifests, executed teaching cases, stage tests, and exact no-call replay establish the inspectable structure of the selected paths.</p></section>
+              </div>
+              <div class="evidence-grid">
+                <div>
+                  <p class="section-label">Concrete exhibits</p>
+                  <div class="exhibits">
+                    <a class="exhibit" href="../../architecture/teaching_cases/six_paths.md"><span class="arrow">→</span><span><strong>Executed six-path walkthrough</strong><small>Concrete intermediate records from real pipeline execution.</small></span></a>
+                    <a class="exhibit" href="../../architecture/diagrams/ownership_matrix.md"><span class="arrow">→</span><span><strong>Ownership matrix</strong><small>Every selected stage classified by owner and permitted effect.</small></span></a>
+                    <a class="exhibit" href="./paired_case_explorer_2026-08-09.html"><span class="arrow">→</span><span><strong>Paired evidence-to-output cases</strong><small>A focused, reader-tested view of two development journeys.</small></span></a>
+                  </div>
+                  <p class="section-label">Canonical owners</p>
+                  <div class="owners">
+                    <a class="owner" href="../../architecture/README.md">generated architecture index</a>
+                    <a class="owner" href="../../design/component_evidence_attribution_architecture.md">attribution design</a>
+                    <a class="owner" href="../../experiments/retained_evidence_manifest.md">retained evidence index</a>
+                    <a class="owner" href="../../canon/10_paper_provenance.md">paper provenance · S6/C5</a>
+                  </div>
+                </div>
+                <div>
+                  <section class="boundary"><h4>Limit that must remain visible</h4><p>Engineering inspectability and replay do not prove clinical safety, complete metadata for every historical run, or reviewer usability.</p></section>
+                  <section class="gap"><h4>Gap</h4><p class="none">No gap for the narrow architecture wording. Usability and clinical-safety claims remain out of scope without separate evidence.</p></section>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="claim" id="matched-performance" data-lane="both" data-gap="bounded">
+            <summary>
+              <div><h3 class="claim-title">Matched performance</h3><p class="claim-line">The proposed method yields named gains; size and direction depend on task, method, model, split, component, and scorer. Tables cite Grok; Gemini is in the same band where both cells exist.</p></div>
+              <span class="state">named comparisons</span>
+            </summary>
+            <div class="claim-body">
+              <p class="skeptic"><span>Skeptic question</span>Are methods truly like-for-like, are development and holdout separate, and are negative or mixed results shown alongside gains?</p>
+              <div class="lane-grid">
+                <section class="lane literature"><h4><span class="swatch lit"></span>Literature / dataset lane</h4><p>Defines benchmark tasks, comparator context, and metric or label limits. It cannot strengthen project scores.</p></section>
+                <section class="lane project"><h4><span class="swatch project"></span>Project / system lane</h4><p>Supports the living Grok three-method comparison on each task. Sol-matched fills are historical.</p></section>
+              </div>
+              <div class="evidence-grid">
+                <div>
+                  <p class="section-label">Concrete exhibits</p>
+                  <div class="exhibits">
+                    <a class="exhibit" href="./parallel_two_task_performance_view_2026-08-09.html"><span class="arrow">→</span><span><strong>Parallel two-task performance view</strong><small>The bounded writing view: separate method comparisons, metrics, identities, and limits.</small></span></a>
+                    <a class="exhibit" href="../shared/six_model_comparison_report_2026-07-18.md"><span class="arrow">→</span><span><strong>Parallel six-model comparison</strong><small>Separate Gan and ExECT outcomes, identities, splits, and score boundaries.</small></span></a>
+                    <a class="exhibit" href="../../paper/methods.md"><span class="arrow">→</span><span><strong>ExECT paper methods</strong><small>Locks ExECT rules, LLM only (raw F1), and LLM with rules (hybrid F1). Grok is the cited model.</small></span></a>
+                    <a class="exhibit" href="../../../experiments/six_model_final_panel_20260803/panel_aggregate.json"><span class="arrow">→</span><span><strong>Final panel aggregate</strong><small>Machine-readable selected aggregate results; no row inspection.</small></span></a>
+                  </div>
+                  <p class="section-label">Canonical owners</p>
+                  <div class="owners">
+                    <a class="owner" href="../../canon/10_paper_provenance.md">paper provenance · C10/C11/C15–C17</a>
+                    <a class="owner" href="../../decisions/0046-exect-primary-method-comparison-boundary.md">Decision 0046</a>
+                    <a class="owner" href="../shared/six_model_comparison_report_2026-07-18.md">comparison report</a>
+                  </div>
+                </div>
+                <div>
+                  <section class="boundary"><h4>Limit that must remain visible</h4><p>ExECT clinical-fact F1 is an internal research measure, not the published benchmark or clinical validation. Gan identities include prompt, repair, replay, route, and ruleset qualifications. No state-of-the-art or universal-win claim.</p></section>
+                  <section class="gap"><h4>Gap</h4><p class="none">No gap for the named comparisons. A universal hybrid advantage is unsupported and should not be pursued from these sources.</p></section>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="claim" id="component-contribution" data-lane="project" data-gap="bounded">
+            <summary>
+              <div><h3 class="claim-title">Component contribution and harm</h3><p class="claim-line">Ordered retained replays locate first clinical changes, rescues, regressions, and named components with mixed or harmful effects.</p></div>
+              <span class="state">development only</span>
+            </summary>
+            <div class="claim-body">
+              <p class="skeptic"><span>Skeptic question</span>What changed before and after the same model call, which component first made the change, and what can first-changer attribution not establish?</p>
+              <div class="lane-grid">
+                <section class="lane literature"><h4><span class="swatch lit"></span>Literature / dataset lane</h4><p>Only needed if a source directly establishes the clinical significance of a named rescue or harm.</p></section>
+                <section class="lane project"><h4><span class="swatch project"></span>Project / system lane</h4><p>Retained no-call development replays support component changes, rescue and regression counts, representative cases, and mixed counterfactuals.</p></section>
+              </div>
+              <div class="evidence-grid">
+                <div>
+                  <p class="section-label">Concrete exhibits</p>
+                  <div class="exhibits">
+                    <a class="exhibit" href="./paper_source_component_roles_and_limits_2026-08-09.pptx"><span class="arrow">→</span><span><strong>Component roles and limits</strong><small>Four-slide writing source: task-specific rescue, harm, no-op behaviour, and the causal boundary.</small></span></a>
+                    <a class="exhibit" href="../shared/cross_task_hybrid_mechanism_synthesis_2026-08-06.md"><span class="arrow">→</span><span><strong>Cross-task mechanism synthesis</strong><small>Names mass first-changers, residuals, and task-specific rules jobs.</small></span></a>
+                    <a class="exhibit" href="../gan2026/hybrid_stage_ablation_2026-08-06.md"><span class="arrow">→</span><span><strong>Gan stage ablation</strong><small>Ordered first-changer bands and clinical-selection harms on dev750.</small></span></a>
+                    <a class="exhibit" href="../exectv2/hybrid_stage_ablation_2026-08-06.md"><span class="arrow">→</span><span><strong>ExECT stage ablation</strong><small>Diagnosis and SF first-changers, Prescription net-harm, Investigations no-op.</small></span></a>
+                    <a class="exhibit" href="../exectv2/prescription_lens_rule_decomposition_2026-08-10.md"><span class="arrow">→</span><span><strong>Prescription rule decomposition</strong><small>Two harmful v09 rules removed; aggregate-only test59 confirmation supports v10.</small></span></a>
+                  </div>
+                  <p class="section-label">Canonical owners</p>
+                  <div class="owners">
+                    <a class="owner" href="../../canon/10_paper_provenance.md">paper provenance · C18/C19</a>
+                    <a class="owner" href="../../design/component_evidence_attribution_architecture.md">attribution design</a>
+                    <a class="owner" href="../shared/cross_task_hybrid_mechanism_synthesis_2026-08-06.md">mechanism synthesis</a>
+                  </div>
+                </div>
+                <div>
+                  <section class="boundary"><h4>Limit that must remain visible</h4><p>Development first-changer attribution is not leave-one-stage-out necessity, holdout mechanism evidence, or proof that disabling a harmful component improves the selected system.</p></section>
+                  <section class="gap"><h4>Gap</h4><p class="none">No gap for bounded development attribution. Holdout mechanism and causal necessity remain unsupported.</p></section>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="claim" id="research-reliability" data-lane="both" data-gap="open">
+            <summary>
+              <div><h3 class="claim-title">Evaluated research reliability</h3><p class="claim-line">The project asks the same eight reliability questions across both tasks while keeping measures, evidence states, row limits, and gaps task-specific.</p></div>
+              <span class="state">uneven evidence</span>
+            </summary>
+            <div class="claim-body">
+              <p class="skeptic"><span>Skeptic question</span>Are reliability terms defined, evidence reproducible, missing cells honest, and incomparable task measures kept separate rather than pooled?</p>
+              <div class="lane-grid">
+                <section class="lane literature"><h4><span class="swatch lit"></span>Literature / dataset lane</h4><p>Must justify why the selected reliability requirements matter; it cannot show that this system satisfies them.</p></section>
+                <section class="lane project"><h4><span class="swatch project"></span>Project / system lane</h4><p>Supports measured or demonstrated properties, explicit evidence states, source links, comparability labels, and known gaps across sixteen cells.</p></section>
+              </div>
+              <div class="evidence-grid">
+                <div>
+                  <p class="section-label">Concrete exhibits</p>
+                  <div class="exhibits">
+                    <a class="exhibit" href="../paper/why_evidence_uncertainty_and_human_review_belong_together_2026-08-09.md"><span class="arrow">→</span><span><strong>Why evidence, uncertainty, and review belong together</strong><small>Literature-grounded rationale for one human review process, with the validation boundary explicit.</small></span></a>
+                    <a class="exhibit" href="../../canon/09_cross_task_reliability.md"><span class="arrow">→</span><span><strong>Cross-task reliability summary</strong><small>Eight questions, task-specific measures, and maintained limits.</small></span></a>
+                    <a class="exhibit" href="../shared/reliability_scorecard_2026-07-18.md"><span class="arrow">→</span><span><strong>Shared reliability scorecard</strong><small>Explicit evidence state and source for each task-by-question cell.</small></span></a>
+                    <a class="exhibit" href="../../reference/evidence_groundedness_metric.md"><span class="arrow">→</span><span><strong>Groundedness measure definition</strong><small>Separates source presence from semantic support.</small></span></a>
+                  </div>
+                  <p class="section-label">Canonical owners</p>
+                  <div class="owners">
+                    <a class="owner" href="../../canon/09_cross_task_reliability.md">cross-task reliability</a>
+                    <a class="owner" href="../../design/reliability_evaluation_framework.md">reliability framework</a>
+                    <a class="owner" href="../../canon/10_paper_provenance.md">paper provenance · S8/C13</a>
+                    <a class="owner" href="../../experiments/retained_evidence_manifest.md">retained evidence index</a>
+                  </div>
+                </div>
+                <div>
+                  <section class="boundary"><h4>Limit that must remain visible</h4><p>Evidence strength is uneven; most comparisons are construct-only. There is no pooled metric, independent clinical validation, deployment evidence, or matched operational telemetry.</p></section>
+                  <section class="gap"><h4>Gap</h4><p>Independent review of the prepared ExECT semantic-support sample; literature grounding for the paper's selected reliability requirements; clinical validation and matched operational evidence remain absent.</p></section>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="claim" id="cross-task-reuse" data-lane="both" data-gap="bounded">
+            <summary>
+              <div><h3 class="claim-title">Cross-task reuse</h3><p class="claim-line">One package applies shared method forms, ownership discipline, replay, and reliability questions to two task-specific implementations.</p></div>
+              <span class="state">bounded reuse</span>
+            </summary>
+            <div class="claim-body">
+              <p class="skeptic"><span>Skeptic question</span>What is actually shared across Gan and ExECT, what stays task-specific, and is there evidence that all six paths run without implying performance transfer?</p>
+              <div class="lane-grid">
+                <section class="lane literature"><h4><span class="swatch lit"></span>Literature / dataset lane</h4><p>Defines the two task shapes, labels, clinical policies, and ambiguity limits.</p></section>
+                <section class="lane project"><h4><span class="swatch project"></span>Project / system lane</h4><p>Shows shared package structure and discipline applied to both task-specific paths. Neither lane supports performance transfer.</p></section>
+              </div>
+              <div class="evidence-grid">
+                <div>
+                  <p class="section-label">Concrete exhibits</p>
+                  <div class="exhibits">
+                    <a class="exhibit" href="../../architecture/README.md"><span class="arrow">→</span><span><strong>Generated six-path architecture</strong><small>Shared method vocabulary with task-specific stages and scored representations.</small></span></a>
+                    <a class="exhibit" href="../shared/task_shape_framework_2026-08-06.md"><span class="arrow">→</span><span><strong>Complementary task shapes</strong><small>Why Gan and ExECT cannot share one schema, policy, or measure.</small></span></a>
+                    <a class="exhibit" href="../../canon/09_cross_task_reliability.md"><span class="arrow">→</span><span><strong>Shared questions, separate measures</strong><small>Evidence discipline reused without a composite score.</small></span></a>
+                  </div>
+                  <p class="section-label">Canonical owners</p>
+                  <div class="owners">
+                    <a class="owner" href="../../canon/01_system_architecture.md">system architecture</a>
+                    <a class="owner" href="../../architecture/README.md">generated architecture</a>
+                    <a class="owner" href="../../canon/09_cross_task_reliability.md">cross-task reliability</a>
+                    <a class="owner" href="../../canon/10_paper_provenance.md">paper provenance · S1/S6/C13</a>
+                  </div>
+                </div>
+                <div>
+                  <section class="boundary"><h4>Limit that must remain visible</h4><p>Two task-specific implementations share architecture and evaluation discipline. They do not share a scorer or clinical policy, and the evidence does not establish zero-shot transfer, performance generalisation, or universal applicability.</p></section>
+                  <section class="gap"><h4>Gap</h4><p class="none">No gap for bounded architectural reuse. Performance transfer is unsupported and must not be inferred.</p></section>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+        <p class="empty" hidden>No claims match both filters.</p>
+      </section>
+    </div>
+
+    <footer>Built from the 2026-08-09 claim-to-evidence audit. Claim authority: <a href="../../canon/10_paper_provenance.md">paper provenance</a>. Exact selected files and hashes: <a href="../../experiments/retained_evidence_manifest.md">retained evidence index</a>.</footer>
+  </main>
+
+  <script>
+    const claims = [...document.querySelectorAll('.claim')];
+    const nav = document.querySelector('.claim-nav');
+    const empty = document.querySelector('.empty');
+    const count = document.querySelector('#result-count');
+    const filters = { lane: 'all', gap: 'all' };
+
+    claims.forEach((claim) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = claim.querySelector('.claim-title').textContent;
+      button.addEventListener('click', () => {
+        claim.open = true;
+        claim.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      nav.append(button);
+    });
+
+    function applyFilters() {
+      let visible = 0;
+      claims.forEach((claim, index) => {
+        const laneMatch = filters.lane === 'all' || claim.dataset.lane === filters.lane || (filters.lane !== 'both' && claim.dataset.lane === 'both');
+        const gapMatch = filters.gap === 'all' || claim.dataset.gap === filters.gap;
+        const show = laneMatch && gapMatch;
+        claim.hidden = !show;
+        nav.children[index].hidden = !show;
+        if (show) visible += 1;
+      });
+      count.textContent = `${visible} shown`;
+      empty.hidden = visible !== 0;
+    }
+
+    document.querySelectorAll('[data-filter-group]').forEach((group) => {
+      group.addEventListener('click', (event) => {
+        const button = event.target.closest('button');
+        if (!button) return;
+        const name = group.dataset.filterGroup;
+        filters[name] = button.dataset.value;
+        group.querySelectorAll('button').forEach((candidate) => candidate.setAttribute('aria-pressed', String(candidate === button)));
+        applyFilters();
+      });
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const index = claims.indexOf(entry.target);
+        [...nav.children].forEach((button, buttonIndex) => button.classList.toggle('active', buttonIndex === index));
+      });
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    claims.forEach((claim) => observer.observe(claim));
+
+    document.querySelector('#start-test').addEventListener('click', () => {
+      const target = document.querySelector('#component-contribution');
+      claims.forEach((claim) => { claim.open = false; });
+      target.hidden = false;
+      target.open = true;
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      target.querySelector('summary').focus();
+    });
+  </script>
+</body>
+</html>

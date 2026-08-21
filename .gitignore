@@ -28,7 +28,7 @@ node_modules/
 # Paper-facing fills live in tracked paper_experiments/.
 # Frontend Demo UI mock-data stays tracked under frontend/public/mock-data/.
 /data/
-/docs/
+/docs/audio/
 /experiments/
 /literature/
 /media/

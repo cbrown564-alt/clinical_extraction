@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">Where the proposed method still fails</title>
+  <desc id="desc">A paired chart shows holdout score ranges across six models for selected Gan categories and ExECT families. Gan clusters and ExECT seizure frequency are the lowest proposed-method ranges. Notes identify unknown-case and Prescription rule harms.</desc>
+  <rect width="1200" height="760" fill="#f7f8fa"/>
+  <style>
+    .ink{fill:#202633}.muted{fill:#5d6674}.quiet{fill:#7a8390}.title{font:700 48px Inter,system-ui,sans-serif}.sub{font:400 20px Inter,system-ui,sans-serif}.h{font:700 25px Inter,system-ui,sans-serif}.label{font:600 16px Inter,system-ui,sans-serif}.small{font:400 14px Inter,system-ui,sans-serif}.mono{font:600 14px ui-monospace,SFMono-Regular,monospace}.axis{stroke:#cfd5dd;stroke-width:1}.track{stroke:#e1e5ea;stroke-width:16;stroke-linecap:round}.gan{stroke:#2675aa;stroke-width:16;stroke-linecap:round}.exect{stroke:#4a853c;stroke-width:16;stroke-linecap:round}.dotg{fill:#2675aa}.dote{fill:#4a853c}.harm{fill:#b74d3c}.box{fill:#fff;stroke:#d5dae1}.warn{fill:#fbeeea}
+  </style>
+  <text x="70" y="82" class="title ink">The remaining errors are task-specific.</text>
+  <text x="70" y="122" class="sub muted">Holdout ranges show the shared floors. Development replay explains where rules help and where they can harm.</text>
+
+  <rect x="60" y="165" width="520" height="365" rx="14" class="box"/>
+  <text x="90" y="210" class="h ink">Gan 2026</text>
+  <text x="90" y="240" class="small muted">Proposed-method Purist accuracy across six models · test450</text>
+  <line x1="170" y1="285" x2="530" y2="285" class="axis"/>
+  <text x="170" y="270" class="small quiet">0</text><text x="342" y="270" class="small quiet">0.5</text><text x="515" y="270" class="small quiet">1.0</text>
+  <text x="90" y="325" class="label ink">Clusters</text><line x1="170" y1="320" x2="530" y2="320" class="track"/><line x1="318" y1="320" x2="415" y2="320" class="gan"/><circle cx="318" cy="320" r="6" class="dotg"/><circle cx="415" cy="320" r="6" class="dotg"/><text x="438" y="326" class="mono ink">.41–.68</text>
+  <text x="90" y="385" class="label ink">Unknown</text><line x1="170" y1="380" x2="530" y2="380" class="track"/><line x1="415" y1="380" x2="451" y2="380" class="gan"/><circle cx="415" cy="380" r="6" class="dotg"/><circle cx="451" cy="380" r="6" class="dotg"/><text x="468" y="386" class="mono ink">.68–.78</text>
+  <text x="90" y="445" class="label ink">Ordinary rates</text><line x1="170" y1="440" x2="530" y2="440" class="track"/><line x1="440" y1="440" x2="494" y2="440" class="gan"/><circle cx="440" cy="440" r="6" class="dotg"/><circle cx="494" cy="440" r="6" class="dotg"/><text x="438" y="477" class="mono ink">.75–.90</text>
+  <text x="90" y="505" class="small muted">Clusters remain the shared floor. On unknown gold, some</text>
+  <text x="90" y="525" class="small muted">clinical rules create false active-rate or seizure-free answers.</text>
+
+  <rect x="620" y="165" width="520" height="365" rx="14" class="box"/>
+  <text x="650" y="210" class="h ink">ExECTv2</text>
+  <text x="650" y="240" class="small muted">Hybrid clinical fact F1 across six models · test60</text>
+  <line x1="730" y1="285" x2="1090" y2="285" class="axis"/>
+  <text x="730" y="270" class="small quiet">0</text><text x="902" y="270" class="small quiet">0.5</text><text x="1075" y="270" class="small quiet">1.0</text>
+  <text x="650" y="325" class="label ink">Seizure frequency</text><line x1="730" y1="320" x2="1090" y2="320" class="track"/><line x1="906" y1="320" x2="950" y2="320" class="exect"/><circle cx="906" cy="320" r="6" class="dote"/><circle cx="950" cy="320" r="6" class="dote"/><text x="968" y="326" class="mono ink">.49–.61</text>
+  <text x="650" y="385" class="label ink">Prescription</text><line x1="730" y1="380" x2="1090" y2="380" class="track"/><line x1="1011" y1="380" x2="1040" y2="380" class="exect"/><circle cx="1011" cy="380" r="6" class="dote"/><circle cx="1040" cy="380" r="6" class="dote"/><text x="976" y="417" class="mono ink">.78–.86</text>
+  <text x="650" y="445" class="label ink">Diagnosis</text><line x1="730" y1="440" x2="1090" y2="440" class="track"/><line x1="1014" y1="440" x2="1036" y2="440" class="exect"/><circle cx="1014" cy="440" r="6" class="dote"/><circle cx="1036" cy="440" r="6" class="dote"/><text x="1052" y="446" class="mono ink">.79–.85</text>
+  <text x="650" y="505" class="small muted">Seizure frequency is the holdout floor. The Prescription</text>
+  <text x="650" y="525" class="small muted">transform records more harms than rescues on development.</text>
+
+  <rect x="60" y="570" width="1080" height="115" rx="12" class="warn"/>
+  <text x="90" y="612" class="h harm">The common lesson is not “add more rules.”</text>
+  <text x="90" y="645" class="sub ink">Rules solve explicit representation and task-policy problems. They do not remove clinical selection,</text>
+  <text x="90" y="674" class="sub ink">inventory, annotation, or scoring ambiguity, and they can introduce new errors.</text>
+
+  <text x="60" y="730" class="small quiet">Aggregate-only holdout ranges; no sealed-row inspection. Sources: holdout category aggregates, Gan and ExECT stage replays, paper provenance C18–C19.</text>
+</svg>
