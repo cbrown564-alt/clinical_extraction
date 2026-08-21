@@ -59,7 +59,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_select i
 LaterStageMethod = Literal["gan_llm_encode", "gan_llm_select"]
 CITED_SLUG = "gemini37flash"
 EXTRACT_METHOD = "gan_llm_with_rules"
-MAX_TOKENS = 1500
+MAX_TOKENS = 4000
 ROOT = discover_repo_root(start=Path(__file__))
 SPLIT_MANIFEST = "gan2026_split_v1"
 WORK_ROOT = ROOT / "experiments/paper"
@@ -122,14 +122,23 @@ def parse_encode_labels(raw_output: str) -> list[dict[str, str]]:
 
 def parse_select_answer(raw_output: str) -> dict[str, Any]:
     payload = _payload(raw_output)
-    ids = payload.get("selected_event_ids")
+    block = payload
+    nested = payload.get("selection")
+    if not isinstance(payload.get("selected_event_ids"), list) and isinstance(
+        nested, Mapping
+    ):
+        block = nested
+    ids = block.get("selected_event_ids")
     if not isinstance(ids, list):
         raise ValueError("select output has no selected_event_ids")
     answer: dict[str, Any] = {
         "selected_event_ids": [str(item) for item in ids],
     }
-    if payload.get("label") not in (None, ""):
-        answer["label"] = str(payload["label"])
+    label = block.get("label")
+    if label in (None, ""):
+        label = block.get("final_label")
+    if label not in (None, ""):
+        answer["label"] = str(label)
     return answer
 
 

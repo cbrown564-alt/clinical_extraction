@@ -32,6 +32,9 @@ def test_parse_encode_and_select_payloads() -> None:
     assert parse_select_answer('{"selected_event_ids": ["e1"]}') == {
         "selected_event_ids": ["e1"]
     }
+    assert parse_select_answer(
+        '{"events": [], "selection": {"selected_event_ids": ["e2"], "label": "1 per month"}}'
+    ) == {"selected_event_ids": ["e2"], "label": "1 per month"}
 
 
 def test_later_stage_verify_is_gemini_only() -> None:

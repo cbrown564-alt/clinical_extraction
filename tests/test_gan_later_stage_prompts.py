@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import json
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_label_forms import (
+    label_forms_payload,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_encode import (
     LLM_ENCODE_AUTHORED_KEYS,
     build_llm_encode_prompt_input,
@@ -38,6 +41,20 @@ _EXTRACT_EVENTS = [
 ]
 
 
+def test_label_forms_describe_each_shape_without_sentinel() -> None:
+    payload = label_forms_payload()
+    forms = payload["forms"]
+    names = [row["form"] for row in forms]
+    assert "sentinels" not in names
+    assert "sentinel" not in json.dumps(payload).lower()
+    assert names.count("unknown") == 1
+    assert names.count("no seizure frequency reference") == 1
+    for row in forms:
+        assert set(row) == {"form", "description", "examples"}
+        assert row["description"].strip()
+        assert row["examples"]
+
+
 def test_encode_payload_is_label_only_join() -> None:
     payload = json.loads(build_llm_encode_prompt_input(_EXTRACT_EVENTS))
     blob = json.dumps(payload)
@@ -55,7 +72,12 @@ def test_encode_payload_is_label_only_join() -> None:
             "evidence": "was seizure free for years",
         },
     ]
+    assert payload["label_forms"] == label_forms_payload()
     assert "leave event_id unchanged" in blob.lower()
+    assert "1 cluster per 4 month, 5 per cluster" in blob
+    assert "6 cluster per month, 4 per cluster" in blob
+    assert "1 cluster per 4 to 5 day, 2 per cluster" in blob
+    assert "seizure free for multiple month" in blob
     assert "unknown" in blob
     assert "no seizure frequency reference" in blob
     assert "4 per day" in blob
@@ -98,6 +120,7 @@ def test_select_payload_is_choose_ready_with_extract_hint() -> None:
             "evidence": "≤ four per day, with variable clustering",
         }
     ]
+    assert payload["label_forms"] == label_forms_payload()
     assert payload["first_choice"] == {
         "selected_event_ids": ["e1"],
         "label": "≤ 4 per day",
@@ -125,5 +148,6 @@ def _assert_no_internal_prompt_language(blob: str) -> None:
         "gold",
         "gan",
         "encode",
+        "sentinel",
     ):
         assert term not in lowered, term

@@ -10,10 +10,15 @@ import json
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_label_forms import (
+    label_forms_payload,
+)
+
 GAN_LLM_ENCODE = "gan_llm_encode"
 LLM_ENCODE_AUTHORED_KEYS = (
     "task",
     "instructions",
+    "label_forms",
     "label_schema",
     "events",
 )
@@ -23,27 +28,12 @@ TASK = "Write one short seizure-frequency label for each event."
 INSTRUCTIONS = [
     "Each event has an event_id, a stated value, and a supporting quote.",
     "Leave event_id unchanged. Return one label for every event, same event_id.",
-    (
-        "Write the label in this short form: a count and time unit "
-        "(1 per day), a range (2 to 3 per month), a cluster pair "
-        "(1 cluster per 4 month, 5 per cluster), a seizure-free duration "
-        "(seizure free for 6 month), unknown, or no seizure frequency "
-        "reference."
-    ),
-    (
-        "Use digits, not word numbers. Flatten an upper or lower bound: "
-        "at most four per day, or ≤ four per day, becomes 4 per day."
-    ),
+    "Every label must match one of the label forms.",
     (
         "Use the stated value. The quote is only to read that value. "
         "Do not invent a rate from unused words in the quote."
     ),
-    (
-        "If the stated value is not one of those shapes, write unknown "
-        "when seizures are discussed, or no seizure frequency reference "
-        "when there is no usable frequency evidence. Do not reuse the "
-        "stated value as the label."
-    ),
+    "Do not reuse the stated value as the label unless it already matches a form.",
     "Do not add, drop, or merge events.",
     "Return one JSON object with a labels list: one event_id and label per event.",
 ]
@@ -69,6 +59,7 @@ def build_llm_encode_prompt_input(events: Sequence[Mapping[str, Any]]) -> str:
     payload = {
         "task": TASK,
         "instructions": list(INSTRUCTIONS),
+        "label_forms": label_forms_payload(),
         "label_schema": dict(LABEL_SCHEMA),
         "events": [_encode_event_view(event) for event in events],
     }

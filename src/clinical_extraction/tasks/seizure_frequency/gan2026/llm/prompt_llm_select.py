@@ -10,10 +10,15 @@ import json
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_label_forms import (
+    label_forms_payload,
+)
+
 GAN_LLM_SELECT = "gan_llm_select"
 LLM_SELECT_AUTHORED_KEYS = (
     "task",
     "instructions",
+    "label_forms",
     "selection_schema",
     "first_choice",
     "events",
@@ -34,9 +39,9 @@ TASK = "Choose which events describe the current seizure burden."
 
 INSTRUCTIONS = [
     (
-        "Each event already has a short seizure-frequency label and a "
-        "supporting quote. Do not change a label that already matches "
-        "one event."
+        "Each event already has a seizure-frequency label and a "
+        "supporting quote. Every label you write must match one of the "
+        "label forms."
     ),
     (
         "A first choice is given. Keep that first choice when it still "
@@ -79,9 +84,9 @@ INSTRUCTIONS = [
         "remain active."
     ),
     (
-        "Return selected event ids. Write a new short label only when no "
-        "single event is the answer. That new label must use the same "
-        "short forms as the event labels."
+        "Return selected event ids. Write a new label only when no "
+        "single event is the answer. That new label must match one of "
+        "the label forms."
     ),
     "Do not add events. Do not write a new quote.",
     "Return exactly one JSON object with no markdown.",
@@ -90,8 +95,8 @@ INSTRUCTIONS = [
 SELECTION_SCHEMA = {
     "selected_event_ids": "ids of the events used for the answer",
     "label": (
-        "new short seizure-frequency label, only when no single event "
-        "is the answer; otherwise omit"
+        "new seizure-frequency label from the label forms, only when no "
+        "single event is the answer; otherwise omit"
     ),
 }
 
@@ -124,6 +129,7 @@ def build_llm_select_prompt_input(
     payload = {
         "task": TASK,
         "instructions": list(INSTRUCTIONS),
+        "label_forms": label_forms_payload(),
         "selection_schema": dict(SELECTION_SCHEMA),
         "first_choice": {
             "selected_event_ids": [str(item) for item in extract_selected_event_ids],
