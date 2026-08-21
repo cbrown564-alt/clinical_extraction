@@ -59,10 +59,11 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_select i
 LaterStageMethod = Literal["gan_llm_encode", "gan_llm_select"]
 CITED_SLUG = "gemini37flash"
 EXTRACT_METHOD = "gan_llm_with_rules"
-MAX_TOKENS = 4000
+MAX_TOKENS = 8000
 ROOT = discover_repo_root(start=Path(__file__))
 SPLIT_MANIFEST = "gan2026_split_v1"
 WORK_ROOT = ROOT / "experiments/paper"
+HOLDOUT_SCRATCH = ROOT / "scratch/holdout/paper"
 
 
 def prompt_version(method: LaterStageMethod) -> str:
@@ -97,8 +98,17 @@ def extract_rows_path(split: str, slug: str = CITED_SLUG) -> Path:
     )
 
 
+def later_stage_work_root(
+    method: LaterStageMethod,
+    slug: str = CITED_SLUG,
+    split: str = "dev750",
+) -> Path:
+    root = HOLDOUT_SCRATCH if holdout_is_aggregate_only(split) else WORK_ROOT
+    return root / method / slug / split
+
+
 def encode_work_rows_path(split: str, slug: str = CITED_SLUG) -> Path:
-    return WORK_ROOT / "gan_llm_encode" / slug / split / "rows.jsonl"
+    return later_stage_work_root("gan_llm_encode", slug, split) / "rows.jsonl"
 
 
 def parse_encode_labels(raw_output: str) -> list[dict[str, str]]:
@@ -207,8 +217,7 @@ def run_later_stage(
 ) -> dict[str, Any]:
     if slug != CITED_SLUG:
         raise RuntimeError("later-stage Gan encode and select run on Gemini only")
-    if holdout_is_aggregate_only(split):
-        raise RuntimeError("later-stage Gan calls are development-only in this cut")
+    holdout = holdout_is_aggregate_only(split)
     spec = apply_reasoning_effort(MODELS[slug], reasoning_effort)
     load_dotenv(ROOT / ".env", override=False)
     machine = gan_machine_split(split)
@@ -223,7 +232,7 @@ def run_later_stage(
         if not encode_path.exists():
             raise RuntimeError("gan_llm_select needs a finished gan_llm_encode work cell")
         encode_by_index = _load_jsonl_by_index(encode_path)
-    work_root = WORK_ROOT / method / spec.slug / split
+    work_root = later_stage_work_root(method, spec.slug, split)
     work_root.mkdir(parents=True, exist_ok=True)
     rows_path = work_root / "rows.jsonl"
     started = datetime.now(UTC).isoformat()
@@ -260,7 +269,9 @@ def run_later_stage(
         )
         if row.get("call_error"):
             raise RuntimeError(
-                f"{record.source_row_index} call failed: {row['call_error']}"
+                "a test450 row call failed"
+                if holdout
+                else f"{record.source_row_index} call failed: {row['call_error']}"
             )
         by_index[record.source_row_index] = row
         rows = [
@@ -286,21 +297,28 @@ def run_later_stage(
         "split_machine": machine,
         "split_manifest": SPLIT_MANIFEST,
         "row_count": len(records),
-        "row_policy": "development_review_permitted",
+        "row_policy": (
+            "aggregate_only" if holdout else "development_review_permitted"
+        ),
         "prompt_version": prompt,
         "started_utc": started,
         "finished_utc": datetime.now(UTC).isoformat(),
         "live": True,
         "call_transport": "openrouter_batch",
         "model_calls": len(todo),
-        "summary": _public_summary(summary, holdout=False),
-        "claim_boundary": "Gan development later-stage cell. Not holdout. No hybrid post-stack.",
-        "incorrect_source_row_indices": [
+        "summary": _public_summary(summary, holdout=holdout),
+        "claim_boundary": (
+            "Gan aggregate-only test450 later-stage cell. Do not inspect holdout rows."
+            if holdout
+            else "Gan development later-stage cell. Not holdout. No hybrid post-stack."
+        ),
+    }
+    if not holdout:
+        artifact["incorrect_source_row_indices"] = [
             int(row["source_row_index"])
             for row in rows
             if not (row.get("comparison") or {}).get("purist_correct")
-        ],
-    }
+        ]
     out = work_root / "comparison.json"
     out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return {

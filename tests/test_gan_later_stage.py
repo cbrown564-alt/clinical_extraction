@@ -6,6 +6,9 @@ import pytest
 
 from clinical_extraction.paper.gan import verify_gan
 from clinical_extraction.paper.gan_later_stage import (
+    MAX_TOKENS,
+    encode_work_rows_path,
+    later_stage_work_root,
     parse_encode_labels,
     parse_select_answer,
     project_encode_label,
@@ -40,5 +43,20 @@ def test_parse_encode_and_select_payloads() -> None:
 def test_later_stage_verify_is_gemini_only() -> None:
     assert verify_gan("gan_llm_encode", "dev750", "gemini37flash")["ok"] is True
     assert verify_gan("gan_llm_select", "dev750", "gemini37flash")["ok"] is True
+    assert verify_gan("gan_llm_encode", "test450", "gemini37flash")["ok"] is True
+    assert verify_gan("gan_llm_select", "test450", "gemini37flash")["row_policy"] == (
+        "aggregate_only"
+    )
     with pytest.raises(RuntimeError, match="Gemini only"):
         verify_gan("gan_llm_encode", "dev750", "grok46")
+
+
+def test_later_stage_holdout_cells_use_scratch() -> None:
+    assert MAX_TOKENS == 8000
+    encode_dev = encode_work_rows_path("dev750")
+    encode_holdout = encode_work_rows_path("test450")
+    assert "experiments/paper" in encode_dev.as_posix()
+    assert "scratch/holdout/paper" in encode_holdout.as_posix()
+    assert "scratch/holdout/paper" in later_stage_work_root(
+        "gan_llm_select", "gemini37flash", "test450"
+    ).as_posix()

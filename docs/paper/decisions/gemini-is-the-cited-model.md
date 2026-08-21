@@ -46,5 +46,6 @@ attribution on the cited row.
 ## Claim boundary
 
 A paper-identity and allowed-run choice. Not a claim that Gemini is
-clinically better, or that later-stage LLM encode / select has been
-run.
+clinically better. Gan later-stage encode and select have been run
+and promoted for Gemini. ExECT later-stage encode and select have
+not.

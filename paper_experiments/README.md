@@ -15,8 +15,10 @@ Roster: [`roster.json`](roster.json). Inventory: [`inventory.json`](inventory.js
 | `exect/exect_rules/` | ExECT rules headlines |
 | `gan/gan_llm_only/` | Existing Gan LLM-only cells. Not a results column |
 | `gan/gan_llm_with_rules/` | Gan rung 4 (cleaned request). Living scores predate the omitted-`kind` schema fill; a later six-model no-call reparse is listed in `inventory.json` `deferred`. |
-| `gan/gan_llm_pre_post/` | Gan hybrid extract. Gemini, Grok, and Luna are present on `dev750` and `test450`. Cite Gemini. Later-stage LLM encode / select calls are Gemini only. |
-| `gan/rungs/` | Replay of rungs 1–4 from hybrid raw. Development may keep row files. `test450` writes `comparison.json` aggregates only. |
+| `gan/gan_llm_pre_post/` | Gan Rules then LLM. Gemini, Grok, and Luna on `dev750` and `test450`. Cite Gemini. Stage scores are extract / encode / select on this raw. |
+| `gan/gan_llm_encode/` | Gan later-stage LLM encode. Gemini only, `dev750` and aggregate-only `test450`. |
+| `gan/gan_llm_select/` | Gan later-stage LLM select. Gemini only, `dev750` and aggregate-only `test450`. |
+| `gan/rungs/` | Extract / encode / select replay of the `gan_llm_with_rules` raw (LLM then rules). Development may keep row files. `test450` writes `comparison.json` aggregates only. |
 | `exect/rungs/` | Replay of rungs 1–4 from `exect_llm_only` raw. Development may keep row files. `test60` writes `comparison.json` aggregates only. |
 | `gan/dev750_panel.json` | Rectangular living six-model Gan `dev750` index for the frontend |
 | `current_stack/` | Historical Full-ledger / enveloped-Gan fills. Not the cited Gan hybrid. |
