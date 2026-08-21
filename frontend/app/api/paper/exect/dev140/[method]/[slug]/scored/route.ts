@@ -7,9 +7,11 @@ const METHODS = new Set([
   "exect_llm_only",
   "exect_llm_pre_post",
   "exect_llm_with_rules",
-  "llm_schema",
+  "llm_extract",
   "llm_encode",
-  "llm_revise",
+  "llm_select",
+  "llm_schema", // sealed-artifact alias
+  "llm_revise", // sealed-artifact alias
   "llm_format", // sealed-artifact alias
   "llm_post", // sealed-artifact alias
   "llm_pre_post",
@@ -17,7 +19,8 @@ const METHODS = new Set([
 
 function normalizeMethod(method: string): string {
   if (method === "llm_format") return "llm_encode";
-  if (method === "llm_post") return "llm_revise";
+  if (method === "llm_schema") return "llm_extract";
+  if (method === "llm_post" || method === "llm_revise") return "llm_select";
   return method;
 }
 
@@ -28,9 +31,9 @@ function scoredPath(method: string, slug: string) {
     return join(root, "exect_llm_pre_post", slug, "dev140", "scored.jsonl");
   }
   if (
-    resolved === "llm_schema" ||
+    resolved === "llm_extract" ||
     resolved === "llm_encode" ||
-    resolved === "llm_revise"
+    resolved === "llm_select"
   ) {
     return join(root, "rungs", slug, "dev140", "scored.jsonl");
   }

@@ -5826,7 +5826,7 @@
           "name": "Repair mode configuration",
           "role": "experiment control",
           "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/experiments/repair_modes.py",
-          "note": "Named repair modes switch repair families on and off for ablation. The selected comparison uses llm_revise."
+          "note": "Named repair modes switch repair families on and off for ablation. The selected comparison uses llm_select."
         },
         {
           "name": "No-call replay",

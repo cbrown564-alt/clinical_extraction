@@ -4,7 +4,7 @@ import type {
   FullRecordResponse,
   TraceItem,
 } from "../types";
-import { findEvidenceSpan, buildScoreFromLayers, buildRepair } from "./utils";
+import { findEvidenceSpan, buildScoreFromComparison, buildRepair } from "./utils";
 
 // ── Selected-fact adapter (llm_heavy_evidence_selection_with_deterministic_adapters) ──
 
@@ -73,6 +73,12 @@ export function adaptSelectedFactTrace(
       evidence,
     },
     repair: buildRepair(row.repair_changes),
-    score: buildScoreFromLayers(row.score_layers, row.reference.gold_label),
+    score: buildScoreFromComparison(
+      {
+        purist_correct: row.evidence_summary?.selected_evidence_valid,
+      },
+      finalLabel,
+      row.reference.gold_label
+    ),
   };
 }

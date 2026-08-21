@@ -92,48 +92,6 @@ export function buildScoreFromComparison(
 }
 
 /**
- * Build a StageScore from score_layers, following the canonical preference order.
- */
-export function buildScoreFromLayers(
-  scoreLayers: Record<string, unknown> | undefined,
-  goldLabel: string
-): StageScore {
-  const layerOrder = [
-    "clean_scorer_facing",
-    "benchmark_aligned",
-    "format_only",
-    "strict_format",
-    "raw_llm",
-  ];
-
-  for (const key of layerOrder) {
-    const layer = scoreLayers?.[key] as
-      | {
-          final_label?: string;
-          purist_correct?: boolean;
-          pragmatic_correct?: boolean;
-          scorable?: boolean;
-        }
-      | undefined;
-    if (layer?.final_label) {
-      return {
-        predictedLabel: layer.final_label,
-        goldLabel,
-        match: layer.final_label === goldLabel,
-        evidenceValid: layer.purist_correct ?? false,
-      };
-    }
-  }
-
-  return {
-    predictedLabel: "unknown",
-    goldLabel,
-    match: false,
-    evidenceValid: false,
-  };
-}
-
-/**
  * Build StageRepair from repair_changes array.
  */
 export function buildRepair(

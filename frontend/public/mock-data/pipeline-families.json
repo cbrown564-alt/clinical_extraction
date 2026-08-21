@@ -53,7 +53,7 @@
       "has_replay_artifact": true,
       "split": "validation750",
       "prompt_version": "gan_llm_with_rules",
-      "repair_mode": "llm_revise",
+      "repair_mode": "llm_select",
       "run_count": 1,
       "progress": {
         "completed_rows": 750,
@@ -117,7 +117,7 @@
       "has_replay_artifact": true,
       "split": "validation750",
       "prompt_version": "gan_llm_with_rules",
-      "repair_mode": "llm_revise",
+      "repair_mode": "llm_select",
       "run_count": 1,
       "progress": {
         "completed_rows": 750,
@@ -181,7 +181,7 @@
       "has_replay_artifact": true,
       "split": "validation750",
       "prompt_version": "gan_llm_with_rules",
-      "repair_mode": "llm_revise",
+      "repair_mode": "llm_select",
       "run_count": 1,
       "progress": {
         "completed_rows": 750,
@@ -239,7 +239,7 @@
       "has_replay_artifact": false,
       "split": "validation750",
       "prompt_version": "gan_llm_with_rules",
-      "repair_mode": "llm_revise",
+      "repair_mode": "llm_select",
       "run_count": 0,
       "progress": {
         "completed_rows": 0,
@@ -291,7 +291,7 @@
       "has_replay_artifact": false,
       "split": "validation750",
       "prompt_version": "gan_llm_with_rules",
-      "repair_mode": "llm_revise",
+      "repair_mode": "llm_select",
       "run_count": 0,
       "progress": {
         "completed_rows": 0,
@@ -343,7 +343,7 @@
       "has_replay_artifact": false,
       "split": "validation750",
       "prompt_version": "gan_llm_with_rules",
-      "repair_mode": "llm_revise",
+      "repair_mode": "llm_select",
       "run_count": 0,
       "progress": {
         "completed_rows": 0,

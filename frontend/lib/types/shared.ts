@@ -351,12 +351,6 @@ export interface LLMArtifactRow {
     selected_evidence: string;
     selected_evidence_valid: boolean;
   };
-  score_layers: Record<string, {
-    final_label: string;
-    purist_correct?: boolean;
-    pragmatic_correct?: boolean;
-    scorable?: boolean;
-  }>;
   reference: {
     gold_label: string;
   };
@@ -394,7 +388,6 @@ export interface DecisionRecordArtifactRow {
   evidence_valid?: boolean;
   parse_errors?: string[];
   repair_changes?: unknown[];
-  score_layers?: Record<string, unknown>;
   raw_output?: string;
   row_trace?: {
     model_prediction?: {
@@ -452,9 +445,6 @@ export interface EventsArtifactRow {
       uncertainty_flags?: string[];
     };
     final_answer?: {
-      raw_llm_final_label?: string;
-      raw_llm_final_kind?: string;
-      raw_llm_monthly_frequency?: number | null;
       selected_evidence?: string;
       final_rationale?: string;
       selected_event_ids?: string;
@@ -466,7 +456,6 @@ export interface EventsArtifactRow {
     purist_correct?: boolean;
     pragmatic_correct?: boolean;
   };
-  score_layers?: Record<string, unknown>;
   repair_changes?: unknown[];
   evidence_summary?: {
     selected_evidence?: string;
@@ -516,7 +505,6 @@ export interface SelectedFactArtifactRow {
     adapter_families?: string[];
     operand_complete?: boolean;
   };
-  score_layers?: Record<string, unknown>;
   repair_changes?: unknown[];
   evidence_summary?: {
     selected_fact_evidence?: string;

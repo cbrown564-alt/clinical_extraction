@@ -117,9 +117,6 @@ async function loadFirstArtifactRow(family: string): Promise<unknown> {
           error: null,
           operand_complete: true,
         },
-        score_layers: {
-          clean_scorer_facing: { final_label: "1 per month", purist_correct: true },
-        },
         repair_changes: [],
         evidence_summary: { selected_evidence_valid: true },
         reference: { gold_label: "1 per month" },

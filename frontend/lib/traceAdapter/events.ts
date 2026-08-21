@@ -4,7 +4,7 @@ import type {
   FullRecordResponse,
   TraceItem,
 } from "../types";
-import { findEvidenceSpan, buildScoreFromComparison, buildScoreFromLayers, buildSchemaRepair, canonicalSemanticKind } from "./utils";
+import { findEvidenceSpan, buildScoreFromComparison, buildSchemaRepair, canonicalSemanticKind } from "./utils";
 
 export function adaptEventsTrace(
   row: EventsArtifactRow,
@@ -98,10 +98,7 @@ export function adaptEventsTrace(
         });
 
   // Select stage: from selection or final_answer
-  const selectFinalLabel =
-    selection?.final_label ??
-    finalAnswer?.raw_llm_final_label ??
-    "unknown";
+  const selectFinalLabel = selection?.final_label ?? "unknown";
   const selectEvidence =
     selection?.evidence ??
     finalAnswer?.selected_evidence ??
@@ -133,8 +130,10 @@ export function adaptEventsTrace(
       row.row_trace?.model_prediction?.record ?? row.structured_record,
       row.repair_changes
     ),
-    score: row.comparison
-      ? buildScoreFromComparison(row.comparison, selectFinalLabel, row.reference.gold_label)
-      : buildScoreFromLayers(row.score_layers, row.reference.gold_label),
+    score: buildScoreFromComparison(
+      row.comparison,
+      selectFinalLabel,
+      row.reference.gold_label
+    ),
   };
 }
