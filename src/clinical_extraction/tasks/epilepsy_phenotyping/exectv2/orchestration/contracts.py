@@ -112,10 +112,8 @@ class StructuredMethodConfig:
     prescription_rescue_scope_candidate: bool = False
 
     def __post_init__(self) -> None:
-        if self.diagnosis_policy_variant not in {"default", "combined"}:
-            raise ValueError(
-                "diagnosis_policy_variant must be 'default' or 'combined'"
-            )
+        if self.diagnosis_policy_variant != "default":
+            raise ValueError("diagnosis_policy_variant must be 'default'")
         if self.prescription_policy_variant not in {"default", "combined"}:
             raise ValueError(
                 "prescription_policy_variant must be 'default' or 'combined'"
@@ -165,7 +163,6 @@ class StructuredMethodConfig:
     ) -> StructuredMethodConfig:
         return cls(
             prompt_profile=prompt_profile,
-            diagnosis_policy_variant="combined",
             prescription_policy_variant="combined",
             archived_replay=True,
         )

@@ -26,14 +26,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
 
 from .base import DiagnosisLens, ThinArtifactLens
 
-_DIAGNOSIS_POLICY_VARIANTS = frozenset(
-    {
-        "default",
-        "residual_subsumption_only",
-        "absence_preservation_only",
-        "combined",
-    }
-)
+_DIAGNOSIS_POLICY_VARIANTS = frozenset({"default"})
 
 
 class DiagnosisHeadingRecoveryLens(ThinArtifactLens):
@@ -60,11 +53,6 @@ class DiagnosisDictionaryLens(ThinArtifactLens):
         variant = policy.diagnosis_policy_variant
         if variant not in _DIAGNOSIS_POLICY_VARIANTS:
             raise ValueError(f"unknown Diagnosis policy variant: {variant}")
-        preserve_absence = variant in {"absence_preservation_only", "combined"}
-        suppress_subsumed_residual = variant in {
-            "residual_subsumption_only",
-            "combined",
-        }
         recovered = super().reconcile(store, policy=policy)
         kept: list[ClinicalFinding] = []
         rewritten: list[ClinicalFinding] = []
@@ -91,15 +79,11 @@ class DiagnosisDictionaryLens(ThinArtifactLens):
                     ),
                 )
                 rewritten.append(current)
-            preserve_absence_phenotype = (
-                (policy.model_preserving_policy_candidate or preserve_absence)
-                and _is_model_owned_absence_phenotype(current, recovered.findings)
-            )
             if sd.is_diagnosis_convention_noise(
                 current.text,
                 evidence=current.evidence or current.text,
                 diag_category=current.attributes.get("DiagCategory"),
-            ) and not preserve_absence_phenotype:
+            ):
                 dropped.append(current)
                 continue
             kept.append(current)
@@ -124,10 +108,6 @@ class DiagnosisDictionaryLens(ThinArtifactLens):
                 evidence=evidence,
                 selected_texts=selected_texts,
                 include_resolution_candidate=policy.diagnosis_resolution_candidate,
-                model_preserving_policy_candidate=(
-                    policy.model_preserving_policy_candidate
-                    or suppress_subsumed_residual
-                ),
             ):
                 continue
             new_finding = diagnosis_added_finding(
@@ -191,25 +171,6 @@ class DiagnosisDictionaryLens(ThinArtifactLens):
             findings=final_findings,
             diagnostics=diagnostics,
         )
-
-
-def _is_model_owned_absence_phenotype(
-    finding: ClinicalFinding,
-    recovered: tuple[ClinicalFinding, ...],
-) -> bool:
-    if canonicalize_diagnosis_concept(finding.text) != "absence seizures":
-        return False
-    if finding.source.fact_origin != "target_model_generated":
-        return False
-    if finding.attributes.get("Negation") != "Affirmed":
-        return False
-    return any(
-        other.finding_id != finding.finding_id
-        and other.source.fact_origin == "target_model_generated"
-        and other.attributes.get("Negation") == "Affirmed"
-        and "absence epilepsy" in canonicalize_diagnosis_concept(other.text)
-        for other in recovered
-    )
 
 
 def _has_diagnosis_concept(

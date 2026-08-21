@@ -18,12 +18,6 @@ _INVESTIGATION_MODALITY_PATTERNS: dict[str, re.Pattern[str]] = {
     "CT": re.compile(r"\bCT\b", re.IGNORECASE),
     "EEG": re.compile(r"\b(?:EEG|VEEG|video[-\s]+EEG|telemetry)\b", re.IGNORECASE),
 }
-_PLANNED_INVESTIGATION_EVIDENCE = re.compile(
-    r"\b(?:arrang(?:e|ing)|request(?:ed|ing)?|repeat|await(?:ed|ing)|pending|"
-    r"future|appointment|will\s+(?:arrange|request)|to\s+(?:arrange|request)|"
-    r"with\s+the\s+results)\b",
-    re.IGNORECASE,
-)
 _PENDING_INVESTIGATION_CUE = re.compile(
     r"\b(?:"
     r"will\s+(?:arrange|request|have|organise|organize)|"
@@ -110,58 +104,6 @@ def is_pending_investigation(
     if has_result_cue:
         return False
     return True
-
-
-def is_investigation_convention_noise(
-    text: str,
-    *,
-    evidence: str,
-    attributes: Mapping[str, Any],
-) -> bool:
-    """True when an Investigations mention is unsupported by completed/no-test evidence."""
-
-    repaired = {str(key): str(value) for key, value in attributes.items()}
-    scoring_attrs = _investigation_scoring_attributes(repaired)
-    if not scoring_attrs:
-        return True
-
-    surface = " ".join(part for part in (text, evidence) if part)
-    for _modality, (_, result_key) in _INVESTIGATION_MODALITY_ATTRS.items():
-        if result_key is None:
-            continue
-        result = repaired.get(result_key)
-        if result == "Normal" and not _INVESTIGATION_NORMAL_RESULT_CUE.search(surface):
-            return True
-        if result == "Abnormal" and not _INVESTIGATION_ABNORMAL_RESULT_CUE.search(surface):
-            return True
-    if _PLANNED_INVESTIGATION_EVIDENCE.search(surface) and not _has_positive_investigation(
-        scoring_attrs
-    ):
-        return True
-    if re.search(r"\bconfirmed with an EEG recording\b", surface, re.IGNORECASE):
-        return True
-
-    performed_yes = [
-        key for key, value in scoring_attrs.items() if key.endswith("_Performed") and value == "Yes"
-    ]
-    result_attrs = [
-        key
-        for key, value in scoring_attrs.items()
-        if key.endswith("_Results") and value in {"Normal", "Abnormal"}
-    ]
-    type_attrs = [key for key in scoring_attrs if key == "EEG_Type"]
-    performed_no = [
-        key for key, value in scoring_attrs.items() if key.endswith("_Performed") and value == "No"
-    ]
-    if performed_yes and not result_attrs and not type_attrs:
-        return True
-    if performed_no and not any(
-        _explicit_not_performed(modality, surface)
-        for modality, (performed_key, _) in _INVESTIGATION_MODALITY_ATTRS.items()
-        if performed_key in performed_no
-    ):
-        return True
-    return False
 
 
 _INVESTIGATION_RESIDUAL_PATTERNS: tuple[tuple[re.Pattern[str], str, str, str], ...] = (

@@ -25,7 +25,6 @@ from .diagnosis import (
 from .investigations import (
     investigation_convention_attribute_repairs,
     investigation_residual_additions,
-    is_investigation_convention_noise,
     is_pending_investigation,
 )
 from .prescription import (
@@ -62,7 +61,6 @@ __all__ = [
     "investigation_convention_attribute_repairs",
     "investigation_residual_additions",
     "is_diagnosis_convention_noise",
-    "is_investigation_convention_noise",
     "is_non_antiepileptic_prescription",
     "is_planned_start_prescription",
     "is_pending_investigation",

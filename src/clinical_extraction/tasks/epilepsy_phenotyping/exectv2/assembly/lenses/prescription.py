@@ -20,9 +20,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import
 
 from .base import PrescriptionLens, ThinArtifactLens
 
-# The `current_guard_only` / `residual_explicit_current_only` variants existed
-# only to bound the noise-drop and residual-add rules; both rules are gone, so
-# an unknown name now raises rather than silently doing nothing.
 _PRESCRIPTION_POLICY_VARIANTS = frozenset({"default", "local_scope_only", "combined"})
 
 

@@ -23,9 +23,9 @@ from .base import InvestigationsLens, ThinArtifactLens
 class InvestigationsDictionaryLens(ThinArtifactLens):
     """Drop pending-only investigation mentions; keep completed tests.
 
-    Residual providers stay prompt-side. The former full noise/result-binding
-    lens rules stay off. This only applies the gold-free pending-cue drop from
-    the v0.9.24 codebook (await/request/appointment without a completed result).
+    Residual providers stay prompt-side. This only applies the gold-free
+    pending-cue drop from the v0.9.24 codebook (await/request/appointment
+    without a completed result).
     """
 
     def reconcile(

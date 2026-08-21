@@ -22,10 +22,7 @@ The row walk is one design with two phases:
    ``no``, ``none``, or a year token to ``NumberOfSeizures='0'`` + Since.
    v0.19 widens last-event ``0`` to negated-since / remote lifetime ranges
    and keeps a named-CUI bare count when the only leftover sibling is
-   generic ``C0036572``. The opt-in ``residuals_v020`` candidate retargets
-   explicit seizure-free spans,
-   removes stale pre-event zero states beside a current rate, and drops only
-   explicit never-had / resemblance negatives.
+   generic ``C0036572``.
 """
 
 from __future__ import annotations
@@ -96,11 +93,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.seizure_freq
 )
 
 PROJECTION_VERSION = "exectv2_hybrid_sf_state_projection_v0.19"
-RESIDUALS_V020_VERSION = "exectv2_hybrid_sf_state_projection_v0.20"
 PIPELINE_FAMILY = "exectv2_hybrid_sf_state_projection"
 COMPONENT_OWNER = "deterministic_sf_state_ownership_projection"
 
-ProjectionAblation = Literal["none", "state", "ownership", "combined", "residuals_v020"]
+ProjectionAblation = Literal["none", "state", "ownership", "combined"]
 _OwnershipApply = Callable[
     [Sequence[Mapping[str, Any]]],
     tuple[list[dict[str, Any]], list[dict[str, str]]],
@@ -163,14 +159,6 @@ _SEIZURE_WORD_RE = re.compile(
     r"\b(seizures?|seizure[- ]free|absence|absences|myoclonic|tonic[- ]clonic|"
     r"tonic[- ]chronic|focal|convulsive|dyscognitive|complex partial)\b",
     re.IGNORECASE,
-)
-_SEIZURE_FREE_SPAN_RE = re.compile(r"\bseizure[- ]free\b", re.IGNORECASE)
-_NEVER_HAD_RE = re.compile(
-    r"\bnever\s+(?:had|experienced)\b"
-    r"|\b(?:has|have)\s+never\s+had\b"
-    r"|\b(?:has|have|had)\s+not\s+had\b"
-    r"(?:(?!\b(?:further|more)\b).){0,100}\b(?:resembl\w*|similar\s+to)\b",
-    re.IGNORECASE | re.DOTALL,
 )
 _NAMED_TYPE_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     (
@@ -237,10 +225,9 @@ def project_row(row: Mapping[str, Any], *, ablation: ProjectionAblation) -> dict
     mentions = [_copy_mention(m) for m in row.get("predicted_mentions", [])]
     actions: list[dict[str, str]] = []
 
-    residuals_v020 = ablation == "residuals_v020"
-    if ablation in {"state", "combined", "residuals_v020"}:
-        mentions = _apply_state_projection(row, mentions, actions, residuals_v020=residuals_v020)
-    if ablation in {"ownership", "combined", "residuals_v020"}:
+    if ablation in {"state", "combined"}:
+        mentions = _apply_state_projection(row, mentions, actions)
+    if ablation in {"ownership", "combined"}:
         mentions = _apply_ownership_projection(row, mentions, actions)
 
     mentions = _dedupe_exact_mentions(mentions)
@@ -252,7 +239,7 @@ def project_row(row: Mapping[str, Any], *, ablation: ProjectionAblation) -> dict
     out = dict(row)
     out["source_prompt_version"] = row.get("prompt_version")
     out["source_pipeline_family"] = row.get("pipeline_family")
-    projection_version = RESIDUALS_V020_VERSION if residuals_v020 else PROJECTION_VERSION
+    projection_version = PROJECTION_VERSION
     out["projection_version"] = projection_version
     out["pipeline_family"] = PIPELINE_FAMILY
     out["prompt_version"] = projection_version
@@ -353,8 +340,6 @@ def _apply_state_projection(
     row: Mapping[str, Any],
     mentions: list[dict[str, Any]],
     actions: list[dict[str, str]],
-    *,
-    residuals_v020: bool = False,
 ) -> list[dict[str, Any]]:
     mentions, encoding_actions = sf_encoding.apply_sf_attribute_encoding(mentions)
     for record in encoding_actions:
@@ -365,42 +350,8 @@ def _apply_state_projection(
                 {"text": record.get("text", ""), "evidence": ""},
             )
         )
-    active_exists = residuals_v020 and any(
-        _state(item) == "active-rate"
-        and any(
-            key in (item.get("attributes") or {})
-            for key in ("NumberOfSeizures", "LowerNumberOfSeizures", "UpperNumberOfSeizures")
-        )
-        for item in mentions
-    )
     kept: list[dict[str, Any]] = []
     for mention in mentions:
-        evidence = str(mention.get("evidence") or "")
-        attrs = dict(mention.get("attributes") or {})
-        if residuals_v020 and (
-            active_exists
-            and attrs.get("NumberOfSeizures") == "0"
-            and re.search(r"\bbefore\s+this\b", evidence, re.IGNORECASE)
-        ):
-            actions.append(_action("state.drop_stale_older_zero", "drop", mention))
-            continue
-        if residuals_v020 and _NEVER_HAD_RE.search(evidence):
-            actions.append(_action("state.drop_never_had_or_resemble", "drop", mention))
-            continue
-        if residuals_v020 and attrs.get("NumberOfSeizures") == "0":
-            free = _SEIZURE_FREE_SPAN_RE.search(evidence)
-            if free and not _SEIZURE_FREE_SPAN_RE.search(str(mention.get("text") or "")):
-                mention = _copy_mention(mention)
-                mention["text"] = free.group(0)
-                attrs.pop("CUI", None)
-                attrs.pop("CUIPhrase", None)
-                mention["attributes"] = attrs
-                mention["rationale"] = _append_rationale(
-                    mention,
-                    "Deterministic projection retargets zero frequency to the explicit "
-                    "seizure-free span.",
-                )
-                actions.append(_action("state.retarget_seizure_free_span", "repair", mention))
         dated_free = _rewrite_dated_last_event(mention)
         if dated_free is not mention:
             actions.append(_action("state.last_event_date_to_seizure_free", "repair", mention))

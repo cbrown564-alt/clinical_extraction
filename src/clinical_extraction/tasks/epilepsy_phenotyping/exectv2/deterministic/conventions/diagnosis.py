@@ -158,12 +158,6 @@ _DIAGNOSIS_FAMILY_CONTEXT = re.compile(
     r"uncle|cousin)\b",
     re.IGNORECASE,
 )
-_GENERIC_EPILEPSY_COMPANION_CONTEXT = re.compile(
-    r"\b(?:diagnosis|impression|has|have|had|known|diagnosed|diagnosed with|"
-    r"diagnosis of|historic diagnosis of|longstanding|long-standing|suffered with|"
-    r"reviewed .* with)\b.{0,140}\bepilep|\bepilep.{0,80}\bdiagnos",
-    re.IGNORECASE,
-)
 _PREFIX_DIAGNOSIS_CONVENTION_REPAIRS: tuple[tuple[re.Pattern[str], str], ...] = (
     (
         re.compile(
@@ -565,41 +559,6 @@ def is_diagnosis_convention_noise(
     return False
 
 
-def should_add_generic_epilepsy_companion(
-    text: str,
-    *,
-    evidence: str,
-    attributes: Mapping[str, Any],
-) -> bool:
-    """True when a benchmark-generic epilepsy row is implied by a selected subtype."""
-
-    # v0.9.20: broad subtype companions created more target-surface false
-    # positives than true positives on dev140. Explicit source-bound residual
-    # patterns now carry the generic benchmark rows we still want.
-    return False
-
-    if str(attributes.get("Negation", "Affirmed")) != "Affirmed":
-        return False
-    if diagnosis_category_for_concept(text) != "Epilepsy":
-        return False
-    concept = canonicalize_diagnosis_concept(text)
-    if concept == "epilepsy":
-        return False
-    if normalize_phrase(text) == "intractable epilepsy":
-        return False
-    if "epilep" not in normalize_phrase(" ".join(part for part in (text, evidence) if part)):
-        return False
-    if re.search(
-        r"\bnon[- ]?epileptic\b|\bno epilepsy\b|\bno diagnosis of epilepsy\b",
-        evidence,
-        re.IGNORECASE,
-    ):
-        return False
-    if _DIAGNOSIS_FAMILY_CONTEXT.search(evidence):
-        return False
-    return bool(_GENERIC_EPILEPSY_COMPANION_CONTEXT.search(evidence))
-
-
 def diagnosis_residual_additions(
     note_text: str, *, include_resolution_candidate: bool = False
 ) -> list[tuple[str, str]]:
@@ -643,7 +602,6 @@ def is_redundant_diagnosis_residual_addition(
     evidence: str,
     selected_texts: Sequence[str],
     include_resolution_candidate: bool = False,
-    model_preserving_policy_candidate: bool = False,
 ) -> bool:
     """True when a dev residual fragment is already covered by a specific concept."""
 
@@ -651,10 +609,6 @@ def is_redundant_diagnosis_residual_addition(
     if concept == "tonic clonic seizures" and _SECONDARY_GENERALISED_EVIDENCE.search(evidence):
         return True
     selected = {canonicalize_diagnosis_concept(item) for item in selected_texts}
-    if model_preserving_policy_candidate and _seizure_concept_is_subsumed(
-        concept, selected
-    ):
-        return True
     if include_resolution_candidate and concept == "generalised epilepsy":
         return any(
             item != concept and item.endswith("generalised epilepsy") for item in selected
@@ -668,21 +622,3 @@ def is_redundant_diagnosis_residual_addition(
     if concept == "focal seizures with altered awareness" and "dyscognitive seizures" in selected:
         return True
     return False
-
-
-def _seizure_concept_is_subsumed(concept: str, selected: set[str]) -> bool:
-    """Return whether a model-owned seizure phenotype covers a residual concept."""
-
-    target_tokens = _seizure_concept_tokens(concept)
-    if not target_tokens:
-        return False
-    return any(
-        target_tokens <= selected_tokens
-        for item in selected
-        if (selected_tokens := _seizure_concept_tokens(item))
-    )
-
-
-def _seizure_concept_tokens(concept: str) -> set[str]:
-    tokens = {"seizure" if token == "seizures" else token for token in concept.split()}
-    return tokens if "seizure" in tokens else set()
