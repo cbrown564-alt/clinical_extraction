@@ -21,7 +21,10 @@ from clinical_extraction.paper.exect_later_stage import (
     verify_later_stage_prompt,
 )
 from clinical_extraction.paper.exect_panel import promote_exect, promote_exect_llm_only
-from clinical_extraction.paper.exect_rung_replay import replay_exect_rungs
+from clinical_extraction.paper.exect_rung_replay import (
+    replay_exect_pre_post_encode,
+    replay_exect_rungs,
+)
 from clinical_extraction.paper.gan import run_gan, verify_gan
 from clinical_extraction.paper.gan_panel import promote_gan
 from clinical_extraction.paper.gan_rung_replay import replay_gan_rungs
@@ -62,6 +65,15 @@ def main(argv: Sequence[str] | None = None) -> None:
             return
         if args.split in {"dev140", "test60"}:
             slug = args.model or "grok46"
+            if args.method in {"exect_llm_pre_post", "exect_llm_with_rules"}:
+                print(
+                    json.dumps(
+                        replay_exect_pre_post_encode(args.split, slug=slug),
+                        indent=2,
+                        sort_keys=True,
+                    )
+                )
+                return
             print(
                 json.dumps(
                     replay_exect_rungs(args.split, slug=slug),

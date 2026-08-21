@@ -4,7 +4,13 @@ from __future__ import annotations
 
 import json
 
+import pytest
+
 from clinical_extraction.paper.answer_states import graph_from_hops, make_hop
+from clinical_extraction.paper.exect_rung_replay import (
+    exect_pre_post_structured_path,
+    replay_exect_pre_post_encode,
+)
 from clinical_extraction.paper.rungs import (
     CELL_ORDER,
     EXECT_HOP_EFFECT_CLASS,
@@ -115,6 +121,15 @@ def test_result_columns_are_the_five_cells() -> None:
     assert exect_method_for_rung("llm_encode") == "exect_llm_encode"
     assert exect_method_for_rung("llm_select") == "exect_llm_select"
     assert exect_method_for_rung("llm_pre_post") == "exect_llm_pre_post"
+
+
+def test_pre_post_encode_replay_uses_living_raw_and_rejects_missing() -> None:
+    path = exect_pre_post_structured_path("gemini37flash", "test60")
+    assert path.name == "structured.jsonl"
+    if path.exists():
+        assert "exect_llm_pre_post" in path.as_posix()
+    with pytest.raises(FileNotFoundError):
+        replay_exect_pre_post_encode("test60", slug="qwen38_27b")
 
 
 def test_legacy_repair_mode_aliases_still_load() -> None:

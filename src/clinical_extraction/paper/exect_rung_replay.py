@@ -69,6 +69,30 @@ def exect_llm_only_rows_path(slug: str, split: str) -> Path:
     )
 
 
+def exect_pre_post_structured_path(slug: str, split: str) -> Path:
+    """Return the living or promoted pre-post raw file for one model and split."""
+
+    living = (
+        ROOT
+        / "scratch/holdout/paper/exect_llm_pre_post"
+        / slug
+        / split
+        / PRE_POST_METHOD
+        / "structured.jsonl"
+    )
+    if living.is_file():
+        return living
+    promoted = (
+        ROOT
+        / "paper_experiments/exect"
+        / PRE_POST_METHOD
+        / slug
+        / split
+        / "structured.jsonl"
+    )
+    return promoted
+
+
 def exect_pre_post_cell_path(slug: str, split: str) -> Path:
     """Return the living rung-5 cell for one model and split."""
 
@@ -342,6 +366,123 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
         hops=hops_rows,
         holdout=holdout,
     )
+    return summary
+
+
+def replay_exect_pre_post_encode(split: str, *, slug: str = "gemini37flash") -> dict[str, Any]:
+    """Score rule encode on a saved pre-post raw. No new model calls."""
+
+    if split not in {"dev140", "test60"}:
+        raise ValueError("pre-post encode replay accepts split dev140 or test60")
+    holdout = holdout_is_aggregate_only(split)
+    expected_n = exect_row_count(split)
+    raw_path = exect_pre_post_structured_path(slug, split)
+    if not raw_path.is_file():
+        raise FileNotFoundError(
+            f"missing exect_llm_pre_post raw for {slug} {split}: {raw_path}"
+        )
+    letters = {letter.letter_id: letter for letter in letters_for_split(split)}
+    raws = {
+        str(row["letter_id"]): str(row["raw_output"])
+        for row in load_jsonl_rows(raw_path)
+    }
+    if len(raws) != expected_n:
+        raise RuntimeError(
+            f"expected {expected_n} pre_post raw rows for {split}, found {len(raws)}"
+        )
+    model = str(model_by_slug(slug)["model"])
+    before = structured.PROMPT_VERSION
+    encode_rows: list[dict[str, Any]] = []
+    extract_rows: list[dict[str, Any]] = []
+    try:
+        structured.set_active_prompt_version(structured.EXECT_LLM_PRE_POST)
+        for letter_id, raw_output in sorted(raws.items()):
+            letter = letters[letter_id]
+            producer = structured_one_call.produce_structured_letter(
+                letter,
+                model=model,
+                mode="replay",
+                raw_output=raw_output,
+                split="test" if holdout else "dev",
+                config=StructuredMethodConfig.selected(),
+            )
+            schema_rows = schema_mention_rows(producer)
+            format_rows = format_render_mention_rows(producer, letter.note_text)
+            schema_keys = _family_keys(letter, schema_rows)
+            format_keys = _family_keys(letter, format_rows)
+            for family in FAMILIES:
+                gold_keys = Counter(
+                    clinical_headline_unit_keys(
+                        family,
+                        [
+                            annotation
+                            for annotation in letter.annotations
+                            if annotation.entity == family
+                        ],
+                        letter.note_text,
+                    )
+                )
+                extract_rows.append(
+                    {
+                        "family": family,
+                        "gold_keys": _counter_rows(gold_keys),
+                        "pred_keys": _counter_rows(schema_keys[family]),
+                    }
+                )
+                encode_rows.append(
+                    {
+                        "family": family,
+                        "gold_keys": _counter_rows(gold_keys),
+                        "pred_keys": _counter_rows(format_keys[family]),
+                    }
+                )
+    finally:
+        structured.set_active_prompt_version(before)
+    extract = _surface_prf(extract_rows)
+    encode = _surface_prf(encode_rows)
+    summary = {
+        "claim_boundary": (
+            "ExECT aggregate-only test60 pre-post rule encode. "
+            "Do not inspect holdout rows."
+            if holdout
+            else "ExECT development pre-post rule encode. Not holdout."
+        ),
+        "generated_on": datetime.now(UTC).date().isoformat(),
+        "method": PRE_POST_METHOD,
+        "model_slug": slug,
+        "no_new_model_calls": True,
+        "row_count": expected_n,
+        "row_policy": "aggregate_only" if holdout else "development_review_permitted",
+        "split": split,
+        "source_raw": raw_path.relative_to(ROOT).as_posix(),
+        "surface": RUNG3_REPLAY_SURFACE,
+        "extract": extract,
+        "encode": encode,
+        "encode_same_as_extract": extract == encode,
+    }
+    if raw_path.parent.name == PRE_POST_METHOD:
+        cell_dir = raw_path.parent.parent
+    else:
+        cell_dir = raw_path.parent
+    cell_dir.mkdir(parents=True, exist_ok=True)
+    encode_path = cell_dir / "encode_stop.json"
+    encode_path.write_text(
+        json.dumps(summary, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    summary["artifact"] = encode_path.relative_to(ROOT).as_posix()
+    comparison_path = cell_dir / "comparison.json"
+    if "scratch/holdout" in comparison_path.as_posix() and comparison_path.is_file():
+        comparison = json.loads(comparison_path.read_text(encoding="utf-8"))
+        decision = comparison.setdefault("decision", {}).setdefault(PRE_POST_METHOD, {})
+        decision["encode_headline_f1"] = encode["clinical_fact_f1"]
+        decision["encode_family_f1"] = encode["family_f1"]
+        decision["encode_same_as_extract"] = extract == encode
+        comparison_path.write_text(
+            json.dumps(comparison, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        summary["comparison"] = comparison_path.relative_to(ROOT).as_posix()
     return summary
 
 
