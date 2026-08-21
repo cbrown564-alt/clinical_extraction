@@ -87,7 +87,7 @@ tasks. Scores stay task-specific. The plain-language owner is
 | | Extract | Encode | Select |
 | --- | --- | --- | --- |
 | **Rules** | `gan_rules` / `exect_rules`. Same submitted answer in all three columns. No model. This rule set is not the encode/select stack on a model ledger. | same | same |
-| **LLM** | Frozen extract ledger only (parsed `gan_llm_with_rules` / `exect_llm_only`). | Gan: Gemini later-stage `gan_llm_encode`. ExECT later-stage encode is still empty. | Gan: Gemini later-stage `gan_llm_select`. ExECT later-stage select is still empty. |
+| **LLM** | Frozen extract ledger only (parsed `gan_llm_with_rules` / `exect_llm_only`). | Gemini later-stage `gan_llm_encode` / `exect_llm_encode`. | Gemini later-stage `gan_llm_select` / `exect_llm_select`. |
 | **LLM then rules** | `gan_llm_with_rules` / `exect_llm_only` at extract (raw model label / flatten). | The same raw at rule encode. | The same raw at rule select. |
 | **Rules then LLM** | `gan_llm_pre_post` / `exect_llm_pre_post` at extract. | The same raw at rule encode. | The same raw at rule select. |
 

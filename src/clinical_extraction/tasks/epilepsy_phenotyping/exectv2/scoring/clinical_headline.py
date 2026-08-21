@@ -30,7 +30,7 @@ def annotation_from_mapping(mention: dict[str, Any]) -> ExectAnnotation:
 
     return ExectAnnotation(
         entity=str(mention.get("entity", "")),
-        text=str(mention.get("text", "")),
+        text=str(mention.get("standard_name") or mention.get("text", "")),
         attributes={
             str(key): str(value)
             for key, value in (mention.get("attributes") or {}).items()

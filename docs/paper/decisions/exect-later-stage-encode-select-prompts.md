@@ -23,12 +23,16 @@ attach CUI from `standard_name` as decoration. Hybrid format and
 select do not run.
 
 Select sees the encoded rows (`mention_id`, family, `standard_name`,
-details, supporting sentence). It may drop, relabel
-`standard_name`, rewrite details from words already on
-that row, merge onto another `mention_id`, or add a companion that
-copies a kept quote and standard name into the other family. It may
+details, supporting sentence). It does not see the encode name list
+again. The given `standard_name` is the short-name style to keep on
+merge or when also listing a fact in the other family. It may drop,
+relabel `standard_name`, rewrite details from words already on that
+row, merge onto another `mention_id`, or also list a kept fact in
+diagnosis or seizure frequency by copying that row's quote and
+standard name. It returns one row per input `mention_id`. It may
 not invent a new quote or a name the kept row did not carry. After
-the call, only join runs.
+the call, only join runs. Encode join writes `standard_name`;
+scoring uses that name.
 
 The SeizureFrequency type key is the canonical seizure-type phrase
 (16 lexicon heads), not CUI. Gold folds `CUIPhrase` when present.

@@ -105,7 +105,7 @@ def mention_name(mention: Mapping[str, Any]) -> str:
 
 
 def mention_standard_name(mention: Mapping[str, Any]) -> str:
-    return str(mention.get("standard_name") or "")
+    return str(mention.get("standard_name") or mention.get("text") or "")
 
 
 def mention_sentence(mention: Mapping[str, Any]) -> str:

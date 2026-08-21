@@ -51,8 +51,13 @@ LIVE_METHODS: dict[str, dict[str, object]] = {
     },
     "exect_llm_encode": {
         "task": "exectv2",
-        "splits": ("dev140",),
+        "splits": ("dev140", "test60"),
         "prompt_attr": "EXECT_LLM_ENCODE",
+    },
+    "exect_llm_select": {
+        "task": "exectv2",
+        "splits": ("dev140", "test60"),
+        "prompt_attr": "EXECT_LLM_SELECT",
     },
 }
 

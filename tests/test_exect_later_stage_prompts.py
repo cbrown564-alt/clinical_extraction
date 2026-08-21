@@ -4,7 +4,11 @@ from __future__ import annotations
 
 import json
 
-from clinical_extraction.paper.exect_later_stage import join_encode_mentions
+from clinical_extraction.paper.exect_later_stage import (
+    join_encode_mentions,
+    join_select_mentions,
+    later_stage_work_root,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
 )
@@ -71,6 +75,7 @@ def test_join_encode_writes_standard_name_and_attaches_cui() -> None:
             }
         ],
     )
+    assert joined[0]["standard_name"] == "generalised tonic clonic seizures"
     assert joined[0]["text"] == "generalised tonic clonic seizures"
     assert joined[0]["attributes"]["NumberOfSeizures"] == "2"
     assert joined[0]["attributes"]["CUI"] == "C0494475"
@@ -180,6 +185,7 @@ def test_select_payload_omits_clinical_name() -> None:
     payload = json.loads(build_llm_select_prompt_input(encoded))
     blob = json.dumps(payload)
     assert set(payload) == set(LLM_SELECT_AUTHORED_KEYS)
+    assert "standard_names" not in payload
     assert "letter_text" not in payload
     assert payload["mentions"] == [
         {
@@ -191,9 +197,99 @@ def test_select_payload_omits_clinical_name() -> None:
         }
     ]
     assert "must-not-appear" not in blob
+    assert "levetiracetam" not in blob
+    assert "write one standard name from the list" not in blob.lower()
+    assert "keep a row when" in blob.lower()
+    assert "drop a row when" in blob.lower()
+    assert "one row for every" in blob.lower()
     assert "do not write a new quote" in blob.lower()
-    assert "companion" in blob.lower()
+    assert "companion" not in blob.lower()
+    assert "also list" in blob.lower()
+    assert "other family" in blob.lower()
+    assert "group" not in payload["task"].lower()
     _assert_no_internal_prompt_language(blob)
+
+
+def test_select_reads_joined_standard_name() -> None:
+    joined = join_encode_mentions(
+        [
+            {
+                "mention_id": "m1",
+                "entity": "SeizureFrequency",
+                "text": "tonic clonic seizures",
+                "evidence": "2 generalised tonic clonic seizures in 2014",
+                "attributes": {"NumberOfSeizures": "2", "YearDate": "2014"},
+            }
+        ],
+        [
+            {
+                "mention_id": "m1",
+                "standard_name": "generalised tonic clonic seizures",
+                "details": {"count": "2", "year": "2014"},
+            }
+        ],
+    )
+    payload = json.loads(build_llm_select_prompt_input(joined))
+    assert payload["mentions"][0]["standard_name"] == (
+        "generalised tonic clonic seizures"
+    )
+
+
+def test_join_select_keep_drop_merge_and_also_list() -> None:
+    encoded = [
+        {
+            "mention_id": "m1",
+            "entity": "Diagnosis",
+            "standard_name": "epilepsy",
+            "text": "epilepsy",
+            "evidence": "Diagnosis: epilepsy",
+            "attributes": {"DiagCategory": "Epilepsy"},
+        },
+        {
+            "mention_id": "m2",
+            "entity": "SeizureFrequency",
+            "standard_name": "absences",
+            "text": "absences",
+            "evidence": "absence like seizures 2014",
+            "attributes": {"NumberOfSeizures": "1"},
+        },
+        {
+            "mention_id": "m3",
+            "entity": "SeizureFrequency",
+            "standard_name": "absences",
+            "text": "absences",
+            "evidence": "absence like seizures 2014",
+            "attributes": {"NumberOfSeizures": "1"},
+        },
+    ]
+    submitted = join_select_mentions(
+        encoded,
+        [
+            {"mention_id": "m1", "action": "keep"},
+            {
+                "mention_id": "m2",
+                "action": "merge",
+                "merge_into": "m3",
+            },
+            {"mention_id": "m3", "action": "keep"},
+            {
+                "action": "also_list",
+                "from_mention_id": "m1",
+                "clinical_family": "SeizureFrequency",
+            },
+        ],
+    )
+    names = [(row["entity"], row["standard_name"]) for row in submitted]
+    assert names == [
+        ("Diagnosis", "epilepsy"),
+        ("SeizureFrequency", "absences"),
+        ("SeizureFrequency", "epilepsy"),
+    ]
+
+
+def test_later_stage_holdout_cells_use_scratch() -> None:
+    path = later_stage_work_root("exect_llm_select", split="test60")
+    assert "scratch/holdout/paper" in path.as_posix()
 
 
 def _assert_no_internal_prompt_language(blob: str) -> None:

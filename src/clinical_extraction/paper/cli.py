@@ -145,16 +145,24 @@ def verify(method: str, split: str, slug: str | None = None) -> dict[str, Any]:
     spec = method_spec(method)
     split_for(method, split)
     if spec["task"] == "exectv2":
-        if method == "exect_llm_encode":
+        if method in {"exect_llm_encode", "exect_llm_select"}:
             if slug is not None and slug != "gemini37flash":
-                raise RuntimeError("later-stage ExECT encode runs on Gemini only")
+                raise RuntimeError("later-stage ExECT encode and select run on Gemini only")
             verify_later_stage_prompt(method)
             return {
                 "ok": True,
                 "method": method,
-                "prompt_version": "exect_llm_encode",
+                "prompt_version": (
+                    "exect_llm_encode"
+                    if method == "exect_llm_encode"
+                    else "exect_llm_select"
+                ),
                 "split": split,
-                "row_policy": "development_review_permitted",
+                "row_policy": (
+                    "aggregate_only"
+                    if split == "test60"
+                    else "development_review_permitted"
+                ),
             }
         if method == "exect_llm_only":
             return verify_llm_only(split=split, slug=slug)
@@ -187,7 +195,7 @@ def run(
     if row_limit is not None and slice_name is not None:
         raise SystemExit("--row-limit and --slice cannot be combined")
     if spec["task"] == "exectv2":
-        if method == "exect_llm_encode":
+        if method in {"exect_llm_encode", "exect_llm_select"}:
             return run_exect_later_stage(
                 method,
                 slug,

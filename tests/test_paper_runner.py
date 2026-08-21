@@ -134,6 +134,7 @@ def test_live_methods_are_the_paper_llm_cells() -> None:
         "exect_llm_with_rules",
         "exect_llm_only",
         "exect_llm_encode",
+        "exect_llm_select",
     }
     split_for("exect_llm_pre_post", "dev140")
     split_for("exect_llm_with_rules", "dev140")
