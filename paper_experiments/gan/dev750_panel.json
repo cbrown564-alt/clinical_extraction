@@ -151,15 +151,15 @@
     "hosted_reasoning": "low",
     "local": "none"
   },
-  "method_identity": "grok46",
+  "method_identity": "gemini37flash",
   "methods": [
     "gan_llm_only",
     "gan_llm_with_rules"
   ],
   "models": [
+    "gemini37flash",
     "grok46",
     "gpt56luna",
-    "gemini37flash",
     "deepseek_v4_flash",
     "qwen38_27b",
     "gemma4_26b"

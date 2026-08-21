@@ -1,20 +1,20 @@
 {
   "claim_boundary": "Gan development replay. Not holdout.",
   "format_only_check": {
-    "note": "Rung 3 is selected_evidence_derivation. It stays format-only only when selected_event_ids never change.",
+    "note": "Cell 3 is encode (selected-evidence derivation). It stays encode-only only when selected_event_ids never change.",
     "predicted_kind_changes": 305,
     "purist_harms": 1,
     "purist_rescues": 233,
-    "repair_mode": "selected_evidence_derivation",
+    "repair_mode": "llm_encode",
     "selected_event_id_changes": 0,
     "used_as_rung_3": true
   },
-  "generated_on": "2026-08-20",
+  "generated_on": "2026-08-21",
   "model_slug": "grok46",
   "row_count": 750,
   "row_policy": "development_review_permitted",
   "rungs": {
-    "llm_format": {
+    "llm_encode": {
       "pragmatic_accuracy": 0.84,
       "pragmatic_correct": 630,
       "predicted_kinds": {
@@ -28,21 +28,7 @@
       "purist_correct": 603,
       "scorable": 750
     },
-    "llm_post": {
-      "pragmatic_accuracy": 0.916,
-      "pragmatic_correct": 687,
-      "predicted_kinds": {
-        "frequency": 450,
-        "no_reference": 46,
-        "seizure_free": 117,
-        "unknown": 92,
-        "unresolved_multiple": 45
-      },
-      "purist_accuracy": 0.8947,
-      "purist_correct": 671,
-      "scorable": 750
-    },
-    "llm_schema": {
+    "llm_extract": {
       "pragmatic_accuracy": 0.5213,
       "pragmatic_correct": 391,
       "predicted_kinds": {
@@ -56,6 +42,20 @@
       "purist_accuracy": 0.4947,
       "purist_correct": 371,
       "scorable": 448
+    },
+    "llm_select": {
+      "pragmatic_accuracy": 0.916,
+      "pragmatic_correct": 687,
+      "predicted_kinds": {
+        "frequency": 450,
+        "no_reference": 46,
+        "seizure_free": 117,
+        "unknown": 92,
+        "unresolved_multiple": 45
+      },
+      "purist_accuracy": 0.8947,
+      "purist_correct": 671,
+      "scorable": 750
     },
     "rules_only": {
       "pragmatic_accuracy": 0.9053,

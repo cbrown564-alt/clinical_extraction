@@ -539,6 +539,54 @@
       "row_policy": "development_review_permitted",
       "split": "dev140",
       "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "gan_llm_pre_post",
+      "model": "gemini/gemini-3.7-flash",
+      "model_slug": "gemini37flash",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_pre_post/gemini37flash/dev750/rows.jsonl",
+      "replay_alias": "gan_llm_pre_post",
+      "row_policy": "development_review_permitted",
+      "split": "dev750",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "gan_llm_pre_post",
+      "model": "gemini/gemini-3.7-flash",
+      "model_slug": "gemini37flash",
+      "n": 450,
+      "path": "paper_experiments/gan/gan_llm_pre_post/gemini37flash/test450/rows.jsonl",
+      "replay_alias": "gan_llm_pre_post",
+      "row_policy": "aggregate_only",
+      "split": "test450",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "gan_llm_pre_post",
+      "model": "xai/grok-4.6",
+      "model_slug": "grok46",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_pre_post/grok46/dev750/rows.jsonl",
+      "replay_alias": "gan_llm_pre_post",
+      "row_policy": "development_review_permitted",
+      "split": "dev750",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "gan_llm_pre_post",
+      "model": "xai/grok-4.6",
+      "model_slug": "grok46",
+      "n": 450,
+      "path": "paper_experiments/gan/gan_llm_pre_post/grok46/test450/rows.jsonl",
+      "replay_alias": "gan_llm_pre_post",
+      "row_policy": "aggregate_only",
+      "split": "test450",
+      "status": "present"
     }
   ],
   "purpose": "Replayable paper cells. Holdout files keep only replay keys.",
