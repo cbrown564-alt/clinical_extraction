@@ -59,7 +59,9 @@ name; clinical name stays extract wording.
 
 A prompt and ownership contract. Clinical-fact SF type now keys the
 folded seizure-type phrase. CUI stay on the mention as secondary
-attributes and still feed the published with-CUI diagnostic. Not a
-claim that the later-stage calls have been run. Living hybrid
-select no longer unions residual letter-scan findings after the
-call. Pre-post still shows those cues as suggested evidence.
+attributes and still feed the published with-CUI diagnostic. Gemini
+later-stage `exect_llm_encode` and `exect_llm_select` have been run
+and promoted; cite the exact-scorer cells, not the 21 Aug hierarchy
+F1s. Living hybrid select no longer unions residual letter-scan
+findings after the call. Pre-post still shows those cues as
+suggested evidence.

@@ -25,13 +25,12 @@ access to a model's internal reasoning, or that a visible step is
 clinically correct.
 
 Headline table: four methods — Rules, LLM, LLM then rules, Rules
-then LLM — against extract / encode / select. Gan LLM encode and
-LLM select are promoted Gemini later-stage cells. ExECT later-stage
-encode and select are still empty. LLM then rules is the three stops on
-`gan_llm_with_rules` / `exect_llm_only`. Rules then LLM is the three
-stops on `*_pre_post`. `gan_llm_only` is not a results column. Full ledger
-is the only comparator when cited—not a headline method. See
-[methods](methods.md).
+then LLM — against extract / encode / select. Gan and ExECT LLM
+encode and LLM select are promoted Gemini later-stage cells. LLM
+then rules is the three stops on `gan_llm_with_rules` /
+`exect_llm_only`. Rules then LLM is the three stops on `*_pre_post`.
+`gan_llm_only` is not a results column. Full ledger is the only
+comparator when cited—not a headline method. See [methods](methods.md).
 
 | File | Job |
 | --- | --- |

@@ -40,17 +40,22 @@ in every rules column.
 | | Extract | Encode | Select |
 | --- | ---: | ---: | ---: |
 | **Rules** | 0.79 | 0.79 | 0.79 |
-| **LLM** | — | — | — |
-| **LLM then rules** | — | 0.78 | 0.81 |
-| **Rules then LLM** | — | — | 0.81 |
+| **LLM** | 0.80 | 0.81 | 0.80 |
+| **LLM then rules** | 0.80 | 0.81 | 0.79 |
+| **Rules then LLM** | 0.80 | 0.82 | 0.80 |
 
-Em dashes are missing locked cells, not zeros. Gan **LLM** encode and
-select are later-stage Gemini cells. **LLM then rules** is the three
+Gan **LLM** encode and select are later-stage Gemini cells. ExECT
+**LLM** encode and select are the matching later-stage Gemini cells,
+rescored with exact `clinical_headline_unit_keys` and promoted
+2026-08-22 (no new model calls). **LLM then rules** is the three
 stops on `gan_llm_with_rules` / `exect_llm_only`. **Rules then LLM**
 is the three stops on `*_pre_post`. Gan hybrid select is ledger-only.
-Gemini Rules then LLM select is 358/450; Gemini LLM then rules select
-is 357/450. Those living cells match the select stops. `gan_llm_only`
-is not a results column.
+Gemini Rules then LLM select is 358/450; Gemini LLM then rules
+select is 357/450. Those living Gan cells match the select stops.
+`gan_llm_only` is not a results column. ExECT rule-stop cells are a
+2026-08-22 no-call replay of the saved Gemini raws through the
+current exact scorer and the encode/select split (qualifier overwrite
+and SF type/bound are select).
 
 - **Gan 2026:** Purist accuracy on the locked `test450` split (one current
   seizure-frequency label per letter). The living Grok companion LLM
@@ -59,9 +64,9 @@ is not a results column.
 - **ExECTv2:** de-duplicated clinical fact F1 on the locked `test60` split
   (diagnosis, seizure frequency, prescriptions, and investigations).
   LLM then rules replays `exect_llm_only`. Rules then LLM is
-  `exect_llm_pre_post`. Extract stops on those raws are not all
-  filled. This is the project's primary research metric for ExECT,
-  not the published strict benchmark.
+  `exect_llm_pre_post`. LLM encode/select are later-stage Gemini
+  cells. This is the project's primary research metric for ExECT, not
+  the published strict benchmark.
 
 Scores are not interchangeable across tasks.
 
@@ -78,7 +83,7 @@ Each task uses the same four methods against extract / encode / select.
 
 - **Rules** — deterministic code; one score in every stage column.
 - **LLM** — parsed model ledger, then Gemini later-stage encode and
-  select on Gan. ExECT later-stage encode and select are not yet run.
+  select on the same freeze.
 - **LLM then rules** — `gan_llm_with_rules` / `exect_llm_only` at
   extract, encode, and select.
 - **Rules then LLM** — `*_pre_post` at extract, encode, and select.

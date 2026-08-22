@@ -200,11 +200,32 @@ need its own gold; this gold still scores `4 per day`.
 
 ### What the locked totals show
 
-On 60 held-out letters, written rules recovered 79.4% of clinical
-facts and living Gemini Rules then LLM (`exect_llm_pre_post`) recovered
-81.3%. Grok Rules then LLM recovered 80.5%. Grok `exect_llm_only` raw
-F1 is 77.3% on that locked set; it is not LLM extract flatten. On 140
-development letters the Grok grid is:
+On 59 held-out letters, written rules recovered 79.4% of clinical
+facts. A 2026-08-22 no-call replay of the saved Gemini raws through the
+current exact scorer and encode/select split gives Rules then LLM
+encode 81.9% and select 79.7%; LLM then rules encode 81.0% and select
+78.7%. Promoted Gemini later-stage encode is 80.6% and later-stage
+select is 79.5% (exact scorer; the 21 Aug hierarchy F1s are retired).
+The earlier living Gemini Rules then LLM select of 81.3% used
+the previous assembly and must not be mixed with this replay. Grok
+Rules then LLM recovered 80.5% on the prior assembly. Grok
+`exect_llm_only` raw F1 is 77.3% on that locked set; it is not LLM
+extract flatten.
+
+Named Gemini `test60` grid (aggregate-only, exact
+`clinical_headline_unit_keys`). **LLM** encode/select are later-stage
+Gemini cells. **LLM then rules** is the three stops on the
+`exect_llm_only` raw. **Rules then LLM** is the three stops on the
+`exect_llm_pre_post` raw.
+
+| | Extract | Encode | Select |
+| --- | ---: | ---: | ---: |
+| **Rules** | 0.7937 | 0.7937 | 0.7937 |
+| **LLM** | 0.7968 | 0.8059 | 0.7954 |
+| **LLM then rules** | 0.7968 | 0.8104 | 0.7869 |
+| **Rules then LLM** | 0.8039 | 0.8188 | 0.7974 |
+
+On 140 development letters the Grok grid is:
 
 | | Extract | Encode | Select |
 | --- | ---: | ---: | ---: |
@@ -221,19 +242,21 @@ because the clinical-fact key needs the codebook id that format
 attaches. The paper may not say the inventory format stop is empty.
 It may not park a semantic SF projection on the format rung.
 
-Gemini after repair recovered 81.3% of facts on the 60 held-out
-letters (89.5% on development). Luna after repair recovered 78.3%
-(88.8% on development). DeepSeek and Gemma have repair totals on both
-inventory splits (DeepSeek held-out 81.2%; Gemma held-out 69.3%).
-Their model-alone inventory cells are not yet on disk. Qwen is
-missing both inventory model methods.
+On the 2026-08-22 Gemini replay, encode is the strongest model-method
+stop on the locked inventory (Rules then LLM 81.9%, LLM then rules
+81.0%). Current-stack select does not improve those encode scores on
+holdout. Luna after repair recovered 78.3% (88.8% on development) on
+the prior assembly. DeepSeek and Gemma have prior-assembly repair
+totals on both inventory splits (DeepSeek held-out 81.2%; Gemma
+held-out 69.3%). Their model-alone inventory cells are not yet on
+disk. Qwen is missing both inventory model methods.
 
-The paper may say that, with Gemini as the cited model, Rules then LLM
-sits above the model-alone request and slightly above written rules on
-the locked inventory, and that Grok's total is in the same band. It
-may say the inventory gain is smaller than the frequency-label gain. It
-may not rank providers, and it may not treat those percentages as the
-2019 benchmark.
+The paper may say that, with Gemini as the cited model, current-stack
+encode sits above written rules on the locked inventory, and that
+select is a separate revise stop whose holdout total is not higher
+than encode. It may say the inventory gain is smaller than the
+frequency-label gain. It may not rank providers, and it may not treat
+those percentages as the 2019 benchmark.
 
 ### What development replay shows about the lift
 

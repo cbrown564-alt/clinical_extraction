@@ -55,7 +55,7 @@ judged. Do not recode the stack; this is a refile of the claim.
 | | Extract | Encode | Select |
 | --- | --- | --- | --- |
 | **Rules** | `gan_rules` / `exect_rules`. Same score in every stage column. | same | same |
-| **LLM** | Parsed model ledger. Blank Gan `final_label` stays unscorable. Not `gan_llm_only`. | Gan: Gemini `gan_llm_encode`. ExECT later-stage encode is still empty. | Gan: Gemini `gan_llm_select`. ExECT later-stage select is still empty. |
+| **LLM** | Parsed model ledger. Blank Gan `final_label` stays unscorable. Not `gan_llm_only`. | Gemini `gan_llm_encode` / `exect_llm_encode`. | Gemini `gan_llm_select` / `exect_llm_select`. |
 | **LLM then rules** | `gan_llm_with_rules` / `exect_llm_only` extract stop. | Encode stop on that raw. | Select stop on that raw. |
 | **Rules then LLM** | `*_pre_post` extract stop. | Encode stop on that raw. | Select stop on that raw. |
 
