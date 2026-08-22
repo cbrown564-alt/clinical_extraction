@@ -1,3 +1,11 @@
+"""Rule metadata for the Gan 2026 rules-only extract program.
+
+The model-ledger rule catalogue is
+``src/clinical_extraction/paper/rule_records.py`` and
+``docs/research/paper/rule_catalogue_schema_format_post_2026-08-21.md``.
+Same vocabulary, different program.
+"""
+
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence

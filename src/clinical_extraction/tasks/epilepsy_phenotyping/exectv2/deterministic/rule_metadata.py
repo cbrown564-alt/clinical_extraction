@@ -1,5 +1,10 @@
 """Rule metadata framework for the ExECTv2 deterministic extractor.
 
+This registry is the rules-only program's rule metadata. The model-ledger
+rule catalogue is ``src/clinical_extraction/paper/rule_records.py`` and
+``docs/research/paper/rule_catalogue_schema_format_post_2026-08-21.md``.
+Same vocabulary, different program.
+
 Follows the same structural pattern as
 ``tasks/seizure_frequency/gan2026/deterministic/rule_metadata.py`` but uses
 ExECTv2-specific enums (exectv2_specific portability, SF-centric rule groups).

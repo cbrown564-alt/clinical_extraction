@@ -7,8 +7,10 @@ import pytest
 from clinical_extraction.paper.rule_records import RULE_BY_NAME
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select_rules import (
+    CANDIDATE_SELECT_RULE_IDS,
     DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE,
     DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY,
+    EMITTED_ACTIONS_BY_RULE_ID,
     PRESCRIPTION_ACTIVE_TITRATION,
     PRESCRIPTION_EXACT_REGIMEN_DEDUPE,
     PRESCRIPTION_LOCAL_REGIMEN_SCOPE,
@@ -769,6 +771,15 @@ def test_select_rule_stack_rejects_unknown_rule_ids() -> None:
             source_mentions=[],
             note_text="",
             enabled_rule_ids=frozenset({"selection.typo"}),
+        )
+
+
+def test_emitted_actions_by_rule_id_covers_candidate_rules() -> None:
+    assert frozenset(EMITTED_ACTIONS_BY_RULE_ID) == frozenset(CANDIDATE_SELECT_RULE_IDS)
+    for rule_id, actions in EMITTED_ACTIONS_BY_RULE_ID.items():
+        assert actions, f"{rule_id} must declare at least one action kind"
+        assert actions <= frozenset({"rewrite", "add", "drop"}), (
+            f"{rule_id} declares invalid action kinds: {sorted(actions)}"
         )
 
 

@@ -75,6 +75,11 @@ The paper uses these change classes consistently (plain-language owner:
   benchmark scores. It can discard distinctions without changing the
   submitted answer.
 
+Stage boundaries are defined by the replayed rule sets on frozen model
+output, not by the live producer's call order. The live producer
+interleaves encode and select work where data dependencies require it;
+every stage-boundary claim in this paper is scored at a replay stop.
+
 A folded step is not described as visible unless a saved artifact
 records it. A visible step is not described as clinically correct.
 

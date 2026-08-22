@@ -22,12 +22,26 @@ catalogue. Live ExECT `exect_llm_only` still scores the mixed
 `project_and_gate` bundle; that view is not cell 2. Replay cells 2–4
 use the split below.
 
+## Two rule programs, one vocabulary
+
+Each task also has a **rules-only** extract registry: `RuleSpec`
+pattern+builder catalogs under `deterministic/rules/` (or equivalent),
+with metadata enums in that task's `rule_metadata.py`. Those programs
+use their own rule ids (`rate.*`, `cluster.*`, `diary.*`, …). This
+catalogue names the rules that act on the **model ledger** at extract,
+encode, and select stops. The two are different programs and different
+namespaces. They share the same authority and portability vocabulary.
+A rules-only id will not appear here; that is intentional.
+
 ### How to read: runs at vs authority
 
 - **Runs at** — where the flag fires in the stack: schema, encode
   (encode-replay), or revise.
 - **Authority** — what kind of hop the rule is: parse, dialect,
   encode, gate, rewrite, reselect, invent.
+- **Portability** — task/domain scope for a rule. A typed field on
+  `RuleRecord`: general, clinical_epilepsy, seizure_frequency,
+  benchmark_format, gan2026_specific, or exectv2_specific.
 
 A rule can run at encode and still be encode authority (not dialect). SF
 `encoding.*` on encode-replay is encode or dialect unless the row

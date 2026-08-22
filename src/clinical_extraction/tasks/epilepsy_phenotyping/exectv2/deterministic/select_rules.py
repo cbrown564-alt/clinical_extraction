@@ -28,6 +28,15 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
     diagnosis_category_for_concept,
     is_diagnosis_descendant,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.projection_tables import (
+    ABSENCE_FAMILY_CUIS,
+    DIRECT_SF_DIAGNOSIS_TEXT_BY_CUI,
+    EMBEDDED_DIAGNOSIS_ALIASES_BY_CUI,
+    HEADING_ONLY_SF_DIAGNOSIS_TEXT_BY_CUI,
+    HEADING_PHENOTYPE_NAMES,
+    NAMED_ABSENCE_SURFACES,
+    SF_TYPE_PARENT_CUI,
+)
 
 DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY = "selection.diagnosis_source_local_specificity"
 DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE = "selection.diagnosis_explicit_heading_phenotype"
@@ -68,23 +77,20 @@ _RULE_PORTABILITY_BY_ID = {
     SF_TO_DIAGNOSIS_EXPLICIT_TYPE: "benchmark_format",
 }
 
+EMITTED_ACTIONS_BY_RULE_ID: dict[str, frozenset[str]] = {
+    DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY: frozenset({"rewrite"}),
+    DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE: frozenset({"add"}),
+    PRESCRIPTION_LOCAL_REGIMEN_SCOPE: frozenset({"rewrite"}),
+    PRESCRIPTION_ACTIVE_TITRATION: frozenset({"add"}),
+    PRESCRIPTION_EXACT_REGIMEN_DEDUPE: frozenset({"drop"}),
+    SF_NAMED_TYPE_IDENTITY: frozenset({"rewrite"}),
+    SF_RECENT_EVENT_OVER_HISTORICAL_FREE: frozenset({"add", "drop"}),
+    SF_TO_DIAGNOSIS_EXPLICIT_TYPE: frozenset({"add"}),
+}
+
 _DIAGNOSIS_HEADING_RE = re.compile(
     r"^\s*(?:medical\s+)?diagnosis\s*:",
     re.IGNORECASE,
-)
-_HEADING_PHENOTYPE_NAMES = frozenset(
-    {
-        "absence",
-        "absence like seizures",
-        "absence seizure",
-        "absence seizures",
-        "absences",
-        "typical absence",
-        "typical absences",
-        "myoclonic jerk",
-        "myoclonic jerks",
-        "myoclonus",
-    }
 )
 _TITRATION_RE = re.compile(
     r"\b(?:increas(?:e|es|ed|ing)|titra(?:te|tes|ted|ting|tion))\b",
@@ -117,29 +123,6 @@ _HISTORICAL_FREE_BEFORE_EVENT_RE = re.compile(
 )
 
 _GENERIC_SF_CUIS = frozenset({"", "C0036572"})
-# Always-project named SF types: the Diagnosis view is the same clinical fact.
-_DIRECT_SF_DIAGNOSIS_TEXT_BY_CUI: dict[str, str] = {
-    "C0877017": "focal to bilateral convulsive seizures",
-    "C0270834": "focal seizures with altered awareness",
-    "C0016399": "focal motor seizures",
-    "C0234533": "generalised seizures",
-    "C0751495": "focal seizures",
-    "C4316903": "absence seizures",
-}
-# Heading-only aliases: gold keeps these in Diagnosis only under a type heading.
-_HEADING_ONLY_SF_DIAGNOSIS_TEXT_BY_CUI: dict[str, str] = {
-    "C0494475": "generalised tonic clonic seizures",
-    "C0270838": "secondary generalised seizures",
-}
-_ABSENCE_FAMILY_CUIS = frozenset({"C0563606", "C4316903"})
-_NAMED_ABSENCE_SURFACES = frozenset({"typical absence", "typical absences"})
-_SF_TYPE_PARENT_CUI = {
-    "C4316903": "C0563606",
-    "C0270834": "C0751495",
-}
-_EMBEDDED_DIAGNOSIS_ALIASES_BY_CUI: dict[str, tuple[str, ...]] = {
-    "C0016399": ("focal motor seizure", "partial motor seizure"),
-}
 _TYPE_HEADING_RE = re.compile(
     r"^\s*(?:diagnosis|seizure\s+type(?:\s+and\s+frequency)?)\s*:",
     re.IGNORECASE,
@@ -282,8 +265,8 @@ def _restore_explicit_heading_phenotypes(
             continue
         phenotype = canonicalize_diagnosis_concept(str(mention.get("text") or ""))
         if (
-            phenotype not in _HEADING_PHENOTYPE_NAMES
-            and normalize_phrase(str(mention.get("text") or "")) not in _HEADING_PHENOTYPE_NAMES
+            phenotype not in HEADING_PHENOTYPE_NAMES
+            and normalize_phrase(str(mention.get("text") or "")) not in HEADING_PHENOTYPE_NAMES
         ):
             continue
         if phenotype in owned:
@@ -514,9 +497,9 @@ def _restore_named_sf_identity(
 def _is_sf_type_descendant(child_cui: str, parent_cui: str) -> bool:
     current = child_cui
     seen: set[str] = set()
-    while current in _SF_TYPE_PARENT_CUI and current not in seen:
+    while current in SF_TYPE_PARENT_CUI and current not in seen:
         seen.add(current)
-        current = _SF_TYPE_PARENT_CUI[current]
+        current = SF_TYPE_PARENT_CUI[current]
         if current == parent_cui:
             return True
     return False
@@ -629,11 +612,11 @@ def _sf_diagnosis_projection_text(mention: Mapping[str, Any]) -> str | None:
 
     cui = _sf_cui(mention)
     surface = normalize_phrase(str(mention.get("text") or ""))
-    if cui in _DIRECT_SF_DIAGNOSIS_TEXT_BY_CUI:
-        return _DIRECT_SF_DIAGNOSIS_TEXT_BY_CUI[cui]
-    if cui in _ABSENCE_FAMILY_CUIS and surface in _NAMED_ABSENCE_SURFACES:
+    if cui in DIRECT_SF_DIAGNOSIS_TEXT_BY_CUI:
+        return DIRECT_SF_DIAGNOSIS_TEXT_BY_CUI[cui]
+    if cui in ABSENCE_FAMILY_CUIS and surface in NAMED_ABSENCE_SURFACES:
         return "absence seizures"
-    heading_text = _HEADING_ONLY_SF_DIAGNOSIS_TEXT_BY_CUI.get(cui)
+    heading_text = HEADING_ONLY_SF_DIAGNOSIS_TEXT_BY_CUI.get(cui)
     if heading_text is None:
         return None
     if _TYPE_HEADING_RE.search(str(mention.get("evidence") or "")) is None:
@@ -642,7 +625,7 @@ def _sf_diagnosis_projection_text(mention: Mapping[str, Any]) -> str | None:
 
 
 def _has_embedded_diagnosis_alias(mentions: Sequence[Mapping[str, Any]], target_cui: str) -> bool:
-    aliases = _EMBEDDED_DIAGNOSIS_ALIASES_BY_CUI.get(target_cui, ())
+    aliases = EMBEDDED_DIAGNOSIS_ALIASES_BY_CUI.get(target_cui, ())
     if not aliases:
         return False
     for mention in mentions:
@@ -795,6 +778,16 @@ def _copy_mention(mention: Mapping[str, Any]) -> dict[str, Any]:
     return deepcopy(dict(mention))
 
 
+def _validate_emitted_action(rule_id: str, action: str) -> None:
+    allowed = EMITTED_ACTIONS_BY_RULE_ID.get(rule_id)
+    if allowed is None or action not in allowed:
+        declared = sorted(allowed or ())
+        raise ValueError(
+            f"Select rule {rule_id!r} emitted action {action!r}; "
+            f"declared kinds are {declared}"
+        )
+
+
 def _with_action_provenance(
     mention: dict[str, Any],
     *,
@@ -802,6 +795,7 @@ def _with_action_provenance(
     action: str,
     before: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
+    _validate_emitted_action(rule_id, action)
     out = _copy_mention(mention)
     provenance = list(out.get("provenance") or [])
     provenance.append(
@@ -829,6 +823,7 @@ def _action(
     before: Mapping[str, Any] | None = None,
     after: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
+    _validate_emitted_action(rule_id, action)
     carrier = after or before or {}
     return {
         "rule_id": rule_id,
@@ -848,6 +843,7 @@ __all__ = [
     "CANDIDATE_SELECT_RULE_IDS",
     "DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE",
     "DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY",
+    "EMITTED_ACTIONS_BY_RULE_ID",
     "PRESCRIPTION_ACTIVE_TITRATION",
     "PRESCRIPTION_EXACT_REGIMEN_DEDUPE",
     "PRESCRIPTION_LOCAL_REGIMEN_SCOPE",

@@ -16,7 +16,7 @@ def test_specificity_rule_is_select_rewrite() -> None:
     assert row.task == "exectv2"
     assert row.runs_at == "llm_select"
     assert row.authority == "rewrite"
-    assert "clinical_epilepsy" in row.notes
+    assert row.portability == "clinical_epilepsy"
 
 
 def test_diagnosis_hierarchy_states_lobe_and_laterality_parents() -> None:
@@ -201,3 +201,31 @@ def test_convention_select_path_uses_the_hierarchy() -> None:
         )
         is None
     )
+
+
+def test_diagnosis_convention_target_composes_select_then_surface_alias() -> None:
+    """Live convention path applies select specificity before surface/alias."""
+
+    text = "focal epilepsy"
+    evidence = "Diagnosis: focal epilepsy - probable temporal"
+    assert sd.diagnosis_select_specificity_target(text, evidence) == "temporal lobe epilepsy"
+    assert sd.diagnosis_convention_surface_alias_target(text, evidence) is None
+    assert sd.diagnosis_convention_target(text, evidence) == "temporal lobe epilepsy"
+
+    alias_text = "focal cortical dysplasia"
+    alias_evidence = "MRI showed focal cortical dysplasia"
+    assert sd.diagnosis_select_specificity_target(alias_text, alias_evidence) is None
+    assert (
+        sd.diagnosis_convention_surface_alias_target(alias_text, alias_evidence)
+        == "symptomatic structural focal epilepsy"
+    )
+    assert (
+        sd.diagnosis_convention_target(alias_text, alias_evidence)
+        == "symptomatic structural focal epilepsy"
+    )
+
+    noop_text = "juvenile myoclonic epilepsy"
+    noop_evidence = "Diagnosis: juvenile myoclonic epilepsy"
+    assert sd.diagnosis_select_specificity_target(noop_text, noop_evidence) is None
+    assert sd.diagnosis_convention_surface_alias_target(noop_text, noop_evidence) is None
+    assert sd.diagnosis_convention_target(noop_text, noop_evidence) is None

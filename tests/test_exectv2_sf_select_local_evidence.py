@@ -21,8 +21,8 @@ def test_sf_local_evidence_select_rules_are_rewrites() -> None:
         assert row.task == "exectv2"
         assert row.runs_at == "llm_select"
         assert row.authority == "rewrite"
-    assert "seizure_frequency" in named.notes
-    assert "seizure_frequency" in bound.notes
+    assert named.portability == "seizure_frequency"
+    assert bound.portability == "seizure_frequency"
     encode = RULE_BY_NAME["encoding.sf_local_evidence"]
     assert encode.runs_at == "llm_encode"
     assert "seizure-free" in encode.notes

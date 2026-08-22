@@ -552,12 +552,13 @@ def _may_overwrite_diagnosis(mention: str, target: str) -> bool:
 def diagnosis_select_specificity_target(text: str, evidence: str) -> str | None:
     """Rewrite a kept Diagnosis to a more specific closed name.
 
-    Select authority: a probable anatomical modifier, or a possible laterality
-    class, may overwrite a less specific epilepsy mention on the same branch.
-    Laterality classifies the epilepsy, not a seizure-type adjective.
-    Elaborating ``namely`` / ``i.e.`` clauses do not overwrite. Possible or
-    queried onset does not create a lobe syndrome. A generalised mention is
-    not overwritten by a temporal sibling. A named lobe wins over a
+    Catalogue rule ``selection.diagnosis_specificity_hierarchy`` (select
+    authority, ``llm_select`` rewrite): a probable anatomical modifier, or a
+    possible laterality class, may overwrite a less specific epilepsy mention
+    on the same branch. Laterality classifies the epilepsy, not a seizure-type
+    adjective. Elaborating ``namely`` / ``i.e.`` clauses do not overwrite.
+    Possible or queried onset does not create a lobe syndrome. A generalised
+    mention is not overwritten by a temporal sibling. A named lobe wins over a
     same-branch etiology form.
     """
 
@@ -578,17 +579,18 @@ def diagnosis_select_specificity_target(text: str, evidence: str) -> str | None:
     return target
 
 
-def diagnosis_convention_target(text: str, evidence: str) -> str | None:
-    """Return the convention-repaired Diagnosis text, or ``None`` if unchanged.
+def diagnosis_convention_surface_alias_target(text: str, evidence: str) -> str | None:
+    """Return a live surface/alias convention repair, or ``None`` if unchanged.
 
-    Combines the v04 concept-keyed alias repairs with the v05 concept+evidence
-    residual benchmark rewrites, in the same precedence the lenses applied
-    (alias repair first, then residual benchmark).
+    Catalogue rules ``diagnosis_surface_spelling_alias`` (dialect or rewrite,
+    ``llm_select``) and ``diagnosis_concept_remap_from_evidence`` (rewrite,
+    ``llm_select``): spelling, alias, and closed-name rewrites toward benchmark
+    wording, including evidence-bound concept remaps such as intractable
+    epilepsy and focal-onset normalisation. Excludes select-authority
+    specificity hierarchy overwrites; :func:`diagnosis_format_target` replays
+    the same-fact encode subset at encode-replay.
     """
 
-    specific = diagnosis_select_specificity_target(text, evidence)
-    if specific is not None:
-        return specific
     surface = normalize_phrase(text.replace("–", " ").replace("—", " ").replace("-", " "))
     if surface == "epilepsy" and re.search(r"\bintractable epilepsy\b", evidence, re.IGNORECASE):
         return "intractable epilepsy"
@@ -601,6 +603,19 @@ def diagnosis_convention_target(text: str, evidence: str) -> str | None:
 
     concept = canonicalize_diagnosis_concept(text)
     return DIAGNOSIS_CONVENTION_ALIAS_REPAIRS.get(concept)
+
+
+def diagnosis_convention_target(text: str, evidence: str) -> str | None:
+    """Return the convention-repaired Diagnosis text, or ``None`` if unchanged.
+
+    Composes :func:`diagnosis_select_specificity_target` then
+    :func:`diagnosis_convention_surface_alias_target` in that order.
+    """
+
+    specific = diagnosis_select_specificity_target(text, evidence)
+    if specific is not None:
+        return specific
+    return diagnosis_convention_surface_alias_target(text, evidence)
 
 
 def diagnosis_format_target(
