@@ -5,7 +5,7 @@
 
 # Gan 2026 LLM with rules: stage diagram
 
-> The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer.
+> The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer. This is the source-near wording ablation; the cited Gan extract is gan_llm_extract_label_forms.
 
 Node shape carries the ownership. Rounded nodes are model-owned. Rectangles are deterministic. Hexagons are gates. Stages that may change clinical meaning are highlighted.
 

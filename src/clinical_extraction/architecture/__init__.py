@@ -1,7 +1,7 @@
 """Explanatory architecture layer.
 
-This package holds the authoritative stage manifests for the six selected
-task-method pairs, plus the generators that turn those manifests into
+This package holds the authoritative stage manifests for the six implemented
+task-method runners, plus the generators that turn those manifests into
 diagrams and teaching traces.
 
 It owns *explanation*, never prediction. Nothing here may be imported by a

@@ -6,7 +6,7 @@
 # Gan 2026 - LLM only
 
 Method id: `gan2026_llm_only`  
-Role: **selected**  
+Role: **implemented runner (not a paper results column)**  
 Stages: 8
 Stages that may change clinical meaning: 2
 
@@ -194,9 +194,9 @@ Entry point: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestra
 
 ## Not this method
 
-These paths exist and are easy to mistake for the selected method. They are named here so they cannot be read as it.
+These paths exist and are easy to mistake for this runner. They are named here so they cannot be read as it.
 
-| Path | Role | Why it is not the selected method |
+| Path | Role | Why it is not this runner |
 | --- | --- | --- |
 | `src/clinical_extraction/tasks/seizure_frequency/gan2026/runners/llm_only_canonical.py` | research entry point | CLI wrapper over run_split; adds no clinical stage. |
 

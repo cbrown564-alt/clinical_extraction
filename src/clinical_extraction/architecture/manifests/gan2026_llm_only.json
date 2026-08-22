@@ -4,7 +4,7 @@
   "task_label": "Gan 2026",
   "method": "llm",
   "method_label": "LLM only",
-  "role": "selected",
+  "role": "implemented runner (not a paper results column)",
   "entry_point": {
     "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestration/llm.py",
     "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.llm:run_record"

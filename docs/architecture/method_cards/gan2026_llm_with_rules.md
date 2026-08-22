@@ -6,13 +6,13 @@
 # Gan 2026 - LLM with rules
 
 Method id: `gan2026_llm_with_rules`  
-Role: **selected**  
+Role: **implemented runner (source-near wording ablation; cited Gan extract is gan_llm_extract_label_forms)**  
 Stages: 20
 Stages that may change clinical meaning: 11
 
 ## One sentence
 
-> The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer.
+> The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer. This is the source-near wording ablation; the cited Gan extract is gan_llm_extract_label_forms.
 
 ## Sixty seconds
 
@@ -26,7 +26,7 @@ One structured call returns two linked objects: an event ledger of source-near s
 | Who first proposes the clinical answer? | the model proposes and selects (gan.llm_with_rules.model_call); ten deterministic repair families may change the answer afterwards |
 | Which later stages may change clinical meaning? | `gan.llm_with_rules.repair.selected_evidence`, `gan.llm_with_rules.repair.monthly_diary`, `gan.llm_with_rules.repair.usual_interval`, `gan.llm_with_rules.repair.typical_over_ytd`, `gan.llm_with_rules.repair.breakthrough`, `gan.llm_with_rules.repair.non_epileptic`, `gan.llm_with_rules.repair.residual_jerk`, `gan.llm_with_rules.repair.post_change_burst`, `gan.llm_with_rules.repair.dated_sequence`, `gan.llm_with_rules.repair.elapsed_anchor` |
 | What final representation is scored? | One Gan label string per letter, projected to a Purist and a Pragmatic category. |
-| What evidence shows whether each component helped or harmed? | `docs/paper/decisions/gan-cleaned-request-is-the-cited-hybrid.md`, `docs/paper/methods.md`, `docs/paper/claims.md` |
+| What evidence shows whether each component helped or harmed? | `docs/paper/methods.md`, `docs/paper/claims.md` |
 
 ## Stages
 
@@ -418,12 +418,12 @@ Entry point: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestra
 
 ## Not this method
 
-These paths exist and are easy to mistake for the selected method. They are named here so they cannot be read as it.
+These paths exist and are easy to mistake for this runner. They are named here so they cannot be read as it.
 
-| Path | Role | Why it is not the selected method |
+| Path | Role | Why it is not this runner |
 | --- | --- | --- |
 | `src/clinical_extraction/tasks/seizure_frequency/gan2026/runners/hybrid_structured_events.py` | research entry point | CLI wrapper over run_split; adds no clinical stage. |
-| `src/clinical_extraction/tasks/seizure_frequency/gan2026/experiments/repair_modes.py` | experiment control | Named repair modes switch repair families on and off for ablation. The selected comparison uses llm_select. |
+| `src/clinical_extraction/tasks/seizure_frequency/gan2026/experiments/repair_modes.py` | experiment control | Named repair modes switch repair families on and off for ablation. The default comparison uses llm_select. |
 | `src/clinical_extraction/paper/cli.py` | replay path | python -m clinical_extraction.paper run --method gan_llm_with_rules --model <slug> --split <dev750\|test450> |
 
 ## Executable trace

@@ -4,13 +4,13 @@
   "task_label": "ExECTv2",
   "method": "llm_pre_post",
   "method_label": "LLM pre-post",
-  "role": "selected",
+  "role": "implemented runner (both extract row; exect_llm_with_rules alias)",
   "entry_point": {
     "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py",
     "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_pre_post_letter"
   },
-  "one_sentence": "ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms and named Select rules reconcile those findings into the scored representation (hybrid F1).",
-  "sixty_second": "ExECT LLM pre-post (`exect_llm_pre_post`) uses its own request (suggested-evidence scan included), separate from ExECT LLM only (`exect_llm_only`). One structured call per letter asks the named model for candidate findings across Diagnosis, Seizure Frequency, Prescription, and Investigations. No deterministic extractor proposes findings and none is unioned in - that is the family-ownership rule from decision 0040. After the call, code parses Compact events and may make one format-only retry, projects the model's seizure-frequency facts into the required state representation, and suppresses a narrowly defined class of unsupported unknown states. Raw and scored findings are both registered in a finding store, so every later change stays attributable. Then one family transform runs per entity, and the four behave differently: Diagnosis applies the active standard dictionary to model findings; Seizure Frequency is a thin assembly over the earlier projection; Prescription applies dictionary-driven regimen processing with bounded correction; Investigations is a behavior-preserving adapter while its residual providers remain prompt-side. A named, independently ablatable Select stack then corrects source-local specificity, regimen scope, duplicate or titration selection, seizure-type identity, and explicit cross-family seizure-type ownership. Every final finding must carry exact source evidence, and the scored views are then materialized. Hybrid-call raw is not LLM-only.",
+  "one_sentence": "ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms and named Select rules reconcile those findings into the scored representation (hybrid F1). This is the both-extract row; the paper's cited select stop uses later-stage encode/select per docs/paper/methods.md.",
+  "sixty_second": "ExECT LLM pre-post (`exect_llm_pre_post`, alias `exect_llm_with_rules`) uses its own request (suggested-evidence scan included), separate from ExECT LLM only (`exect_llm_only`). One structured call per letter asks the named model for candidate findings across Diagnosis, Seizure Frequency, Prescription, and Investigations. No deterministic extractor proposes findings and none is unioned in - that is the family-ownership rule from decision 0040. After the call, code parses Compact events and may make one format-only retry, projects the model's seizure-frequency facts into the required state representation, and suppresses a narrowly defined class of unsupported unknown states. Raw and scored findings are both registered in a finding store, so every later change stays attributable. Then one family transform runs per entity, and the four behave differently: Diagnosis applies the active standard dictionary to model findings; Seizure Frequency is a thin assembly over the earlier projection; Prescription applies dictionary-driven regimen processing with bounded correction; Investigations is a behavior-preserving adapter while its residual providers remain prompt-side. A named, independently ablatable Select stack then corrects source-local specificity, regimen scope, duplicate or titration selection, seizure-type identity, and explicit cross-family seizure-type ownership. Every final finding must carry exact source evidence, and the scored views are then materialized. Hybrid-call raw is not LLM-only. An unrepaired pre-post body is an extract stop, not the paper's cited select stop.",
   "prediction_owner": "the named model proposes all four families (exect.llm_pre_post.model_call); four family transforms and the named Select-rule stack may change findings afterwards",
   "scored_representation": "A PredictedLetter of four-family mentions materialized into named score views; the primary view is clinical fact recovery (`clinical_headline`, hybrid F1).",
   "stages": [
@@ -378,7 +378,7 @@
       "name": "ExECT LLM pre-post",
       "role": "paper identity",
       "path": "docs/paper/decisions/exect-compact-is-the-cited-hybrid.md",
-      "note": "ExECT LLM pre-post is the paper hybrid row. Full ledger is the control. Mention encoder is out."
+      "note": "This runner is the both-extract row (`exect_llm_pre_post` / `exect_llm_with_rules`). The paper's cited select stop uses later-stage encode/select; see docs/paper/methods.md."
     },
     {
       "name": "Closed numbered series",

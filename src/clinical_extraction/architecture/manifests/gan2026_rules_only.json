@@ -4,7 +4,7 @@
   "task_label": "Gan 2026",
   "method": "rules",
   "method_label": "Rules only",
-  "role": "selected",
+  "role": "implemented runner (rules-only baseline)",
   "entry_point": {
     "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestration/rules.py",
     "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.rules:run_record"

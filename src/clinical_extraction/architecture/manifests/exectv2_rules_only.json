@@ -4,7 +4,7 @@
   "task_label": "ExECTv2",
   "method": "rules",
   "method_label": "Rules only",
-  "role": "selected",
+  "role": "implemented runner (rules-only baseline)",
   "entry_point": {
     "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/rules.py",
     "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.rules:run_letter"

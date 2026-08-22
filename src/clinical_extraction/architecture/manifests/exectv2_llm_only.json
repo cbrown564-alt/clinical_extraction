@@ -4,13 +4,13 @@
   "task_label": "ExECTv2",
   "method": "llm",
   "method_label": "LLM only",
-  "role": "selected",
+  "role": "implemented runner (cell-3 extract flatten; producer raw F1 is not the paper extract stop)",
   "entry_point": {
     "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py",
     "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_only_letter"
   },
-  "one_sentence": "ExECT LLM only: one model call on the note proposes four-family findings, and the selected view scores those findings without family repair.",
-  "sixty_second": "ExECT LLM only (`exect_llm_only`) uses its own request, separate from ExECT LLM with rules. It builds the LLM-only four-family prompt (no suggested-evidence scan), makes or replays one model call, parses Compact events, optionally performs a format-only retry for eligible local models, and applies evidence and render-safety gates. Family and fact names are spelled into the scorer mention fields as part of that parse. Its scored prediction is the raw candidate view (raw F1). It does not run seizure-frequency projection, Diagnosis reconciliation, Prescription normalization, or any other family transform. The unrepaired output of ExECT LLM with rules is not this method.",
+  "one_sentence": "ExECT LLM only: one model call on the note proposes four-family findings, and the raw-candidate view scores those findings without family repair.",
+  "sixty_second": "ExECT LLM only (`exect_llm_only`) uses its own request, separate from ExECT LLM with rules. It builds the LLM-only four-family prompt (no suggested-evidence scan), makes or replays one model call, parses Compact events, optionally performs a format-only retry for eligible local models, and applies evidence and render-safety gates. Family and fact names are spelled into the scorer mention fields as part of that parse. Its scored prediction is the raw candidate view (raw F1). That producer raw F1 is the cell-3 extract flatten stop, not the paper's cited extract or select stop. It does not run seizure-frequency projection, Diagnosis reconciliation, Prescription normalization, or any other family transform. The unrepaired output of ExECT LLM with rules is not this method.",
   "prediction_owner": "the named model (stage exect.llm.model_call); deterministic stages only parse, represent, and gate its findings",
   "scored_representation": "The raw_candidate four-family PredictedLetter from the ExECT LLM only request, scored per entity and overall (raw F1).",
   "stages": [
@@ -34,7 +34,7 @@
         "prompt_input_json",
         "prompt_version"
       ],
-      "paper_wording": "The selected LLM-only method starts from one structured four-family prompt."
+      "paper_wording": "The LLM-only runner starts from one structured four-family prompt."
     },
     {
       "stage_id": "exect.llm.model_call",
@@ -107,7 +107,7 @@
     {
       "stage_id": "exect.llm.raw_candidate",
       "name": "Materialize the raw candidate view",
-      "operation": "Expose the producer's gated mentions as the selected LLM-only scoring view without applying the LLM-with-rules family transforms.",
+      "operation": "Expose the producer's gated mentions as the LLM-only raw-candidate scoring view without applying the LLM-with-rules family transforms.",
       "owner": "deterministic",
       "rule_category": "benchmark_format",
       "effect_class": "benchmark_projection",
@@ -124,7 +124,7 @@
         "scored_view",
         "predicted_mentions"
       ],
-      "paper_wording": "The selected LLM-only view is the raw candidate from the ExECT LLM only request."
+      "paper_wording": "The LLM-only raw-candidate view is the scoring surface from the ExECT LLM only request."
     },
     {
       "stage_id": "exect.llm.score",
@@ -149,7 +149,6 @@
     }
   ],
   "evidence_owners": [
-    "docs/paper/decisions/exect-compact-is-the-cited-hybrid.md",
     "docs/paper/methods.md",
     "docs/paper/claims.md"
   ]

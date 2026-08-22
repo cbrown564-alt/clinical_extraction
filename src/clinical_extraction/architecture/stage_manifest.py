@@ -1,13 +1,13 @@
-"""Authoritative stage manifests for the six selected task-method pairs.
+"""Authoritative stage manifests for the six implemented task-method runners.
 
 A manifest is the single machine-readable statement of how a record moves
-through one selected method. Diagrams, method cards, and teaching traces are
+through one implemented runner. Diagrams, method cards, and teaching traces are
 generated from or checked against it, so no hand-authored explanation can
 disagree with runtime ownership.
 
-The manifest describes the *selected* path only. Historical variants, rejected
+The manifest describes one implemented runner only. Historical variants, rejected
 candidates, and operational wrappers are named in ``related_paths`` so a reader
-can see they exist without mistaking them for the selected method.
+can see they exist without mistaking them for this runner.
 """
 
 from __future__ import annotations
@@ -132,7 +132,7 @@ class Implementation:
 
 @dataclass(frozen=True)
 class Stage:
-    """One explainable step in a selected method."""
+    """One explainable step in an implemented runner."""
 
     stage_id: str
     name: str
@@ -190,7 +190,7 @@ class Stage:
 
 @dataclass(frozen=True)
 class RelatedPath:
-    """A path that is *not* the selected method, named so it cannot be confused."""
+    """A path that is *not* this runner, named so it cannot be confused."""
 
     name: str
     role: str
@@ -200,7 +200,7 @@ class RelatedPath:
 
 @dataclass(frozen=True)
 class MethodManifest:
-    """One selected task-method pair."""
+    """One implemented task-method runner."""
 
     method_id: str
     task: str
@@ -452,7 +452,7 @@ def validate_all(*, root: Path | None = None) -> list[str]:
 
 
 def ownership_matrix() -> list[dict[str, Any]]:
-    """One row per selected method: who owns each effect class."""
+    """One row per implemented runner: who owns each effect class."""
 
     rows: list[dict[str, Any]] = []
     for manifest in load_manifests():

@@ -5,7 +5,7 @@
 
 # Four-letter teaching walkthrough
 
-Read this page as one continuous tour of the selected system. The tour uses four development-split paper letters: two Gan 2026 rows and two ExECTv2 letters. Model outputs are replay fixtures (Grok 4.6 on Gan, Luna Compact on ExECT). No live model call is made. Prediction-bearing stages and post-model gates use the real selected implementation. ExECT Score lists the four-family units that left the line; gold comparison lives on Workbench.
+Read this page as one continuous tour of the six implemented runners. The tour uses four development-split paper letters: two Gan 2026 rows and two ExECTv2 letters. Model outputs are replay fixtures; no live model call is made. Prediction-bearing stages and post-model gates use the real implemented pipelines. ExECT Score lists the four-family units that left the line; gold comparison lives on Workbench.
 
 The five-stage diagram in the [repository README](../../../README.md) is the short orientation. Each letter page is the full in/out trace.
 

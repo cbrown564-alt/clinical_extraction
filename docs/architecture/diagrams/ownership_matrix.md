@@ -5,7 +5,7 @@
 
 # Ownership matrix
 
-Every stage of every selected method, counted by what it is allowed to change. A method is only as explainable as this row.
+Every stage of every implemented runner, counted by what it is allowed to change. A runner is only as explainable as this row.
 
 ## Effect classes
 

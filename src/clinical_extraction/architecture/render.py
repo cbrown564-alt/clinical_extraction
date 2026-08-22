@@ -210,13 +210,13 @@ def render_method_card(manifest: MethodManifest) -> str:
         lines.append("## Not this method")
         lines.append("")
         lines.append(
-            "These paths exist and are easy to mistake for the selected "
-            "method. They are named here so they cannot be read as it."
+            "These paths exist and are easy to mistake for this "
+            "runner. They are named here so they cannot be read as it."
         )
         lines.append("")
         lines.extend(
             _table(
-                ["Path", "Role", "Why it is not the selected method"],
+                ["Path", "Role", "Why it is not this runner"],
                 [
                     [f"`{related.path}`", related.role, related.note]
                     for related in manifest.related_paths
@@ -245,12 +245,15 @@ def render_method_card(manifest: MethodManifest) -> str:
 def render_overview_diagram() -> str:
     manifests = load_manifests()
     lines: list[str] = [GENERATED_BANNER, ""]
-    lines.append("# Overview: two tasks x three methods")
+    lines.append("# Overview: two tasks x three implemented runners")
     lines.append("")
     lines.append(
-        "One diagram, six cells. Each cell names who first proposes the "
-        "clinical answer, which is the fact most often lost when these "
-        "methods are described informally."
+        "Six implemented runners on one page. Each cell names who first "
+        "proposes the clinical answer, which is the fact most often lost "
+        "when these pipelines are described informally. These runners are "
+        "not the paper's five-cell headline table; for cited methods, "
+        "scores, and claims see "
+        "[docs/paper/methods.md](../../../docs/paper/methods.md)."
     )
     lines.append("")
     lines.append("```mermaid")
@@ -356,8 +359,8 @@ def render_ownership_matrix() -> str:
     lines.append("# Ownership matrix")
     lines.append("")
     lines.append(
-        "Every stage of every selected method, counted by what it is allowed "
-        "to change. A method is only as explainable as this row."
+        "Every stage of every implemented runner, counted by what it is "
+        "allowed to change. A runner is only as explainable as this row."
     )
     lines.append("")
     lines.append("## Effect classes")
@@ -648,20 +651,20 @@ def render_six_path_walkthrough(cases: Sequence[TeachingCase]) -> str:
     """One reading order across the paper letters and their three methods.
 
     Result language is taken from the executed cases. This page does not
-    invent a rescue that the selected implementation did not produce.
+    invent a rescue that the implemented pipeline did not produce.
     """
 
     lines: list[str] = [GENERATED_BANNER, ""]
     lines.append("# Four-letter teaching walkthrough")
     lines.append("")
     lines.append(
-        "Read this page as one continuous tour of the selected system. The "
-        "tour uses four development-split paper letters: two Gan 2026 rows "
-        "and two ExECTv2 letters. Model outputs are replay fixtures (Grok "
-        "4.6 on Gan, Luna Compact on ExECT). No live model call is made. "
-        "Prediction-bearing stages and post-model gates use the real "
-        "selected implementation. ExECT Score lists the four-family units "
-        "that left the line; gold comparison lives on Workbench."
+        "Read this page as one continuous tour of the six implemented "
+        "runners. The tour uses four development-split paper letters: two "
+        "Gan 2026 rows and two ExECTv2 letters. Model outputs are replay "
+        "fixtures; no live model call is made. Prediction-bearing stages "
+        "and post-model gates use the real implemented pipelines. ExECT "
+        "Score lists the four-family units that left the line; gold "
+        "comparison lives on Workbench."
     )
     lines.append("")
     lines.append(
@@ -782,8 +785,11 @@ def render_index(cases: Sequence[TeachingCase] | None = None) -> str:
     lines.append("")
     lines.append(
         "This directory answers one question: what happens to a letter, "
-        "stage by stage, in each of the six selected task-method pairs, and "
-        "who owns each change."
+        "stage by stage, in each of the six implemented task-method "
+        "runners, and who owns each change. These runners explain "
+        "mechanism only; they are not the paper's five-cell headline "
+        "table. For cited methods, scores, and claims see "
+        "[docs/paper/methods.md](../paper/methods.md)."
     )
     lines.append("")
     lines.append(
@@ -797,8 +803,8 @@ def render_index(cases: Sequence[TeachingCase] | None = None) -> str:
     lines.append("## Start here")
     lines.append("")
     lines.append(
-        "1. [Two tasks x three methods](diagrams/overview.md) - the whole "
-        "system on one page."
+        "1. [Two tasks x three implemented runners](diagrams/overview.md) - "
+        "the whole system on one page."
     )
     lines.append(
         "2. [Four-letter teaching walkthrough](teaching_cases/six_paths.md) - "

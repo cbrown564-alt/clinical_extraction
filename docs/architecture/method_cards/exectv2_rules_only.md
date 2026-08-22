@@ -6,7 +6,7 @@
 # ExECTv2 - Rules only
 
 Method id: `exectv2_rules_only`  
-Role: **selected**  
+Role: **implemented runner (rules-only baseline)**  
 Stages: 4
 Stages that may change clinical meaning: 2
 
@@ -126,9 +126,9 @@ Entry point: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orches
 
 ## Not this method
 
-These paths exist and are easy to mistake for the selected method. They are named here so they cannot be read as it.
+These paths exist and are easy to mistake for this runner. They are named here so they cannot be read as it.
 
-| Path | Role | Why it is not the selected method |
+| Path | Role | Why it is not this runner |
 | --- | --- | --- |
 | `src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/published.py` | historical performance control | Reproduces the paper-derived metric view, which is not the internal clinical fact recovery scorer (`clinical_headline`). |
 | `src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/all_entities/diagnosis.py` | rejected candidate or ablation | include_diagnosis_resolution_candidate and include_diagnosis_benchmark_residuals are off in the selected baseline. |
