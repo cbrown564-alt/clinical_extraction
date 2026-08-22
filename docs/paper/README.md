@@ -24,12 +24,16 @@ the later rule changes, and the submitted answer. It does not claim
 access to a model's internal reasoning, or that a visible step is
 clinically correct.
 
-Gan headline table: five methods — Rules, Rules then LLM, LLM then
-rules, LLM then select rules, LLM — against extract / encode /
-select. ExECT keeps four methods. Gan LLM extract and encode are
-the codebook extract; LLM select reads that ledger. See
-[methods](methods.md) and
-[five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md).
+Headline tables: five role rows (rules, LLM, or both at extract /
+encode / select). The cited score is the select stop. The six-model
+row is cell 3 (LLM extract, rules encode, rules select) on both
+tasks. Gemini thinking and the source-near Gan extract are
+ablations. Gan LLM extract is the codebook extract; ExECT LLM
+encode is a second later-stage call. See
+[methods](methods.md),
+[Gan five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md),
+and
+[ExECT cell 4](../research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md).
 `gan_llm_only` is not a results column. Full ledger is the only
 comparator when cited—not a headline method.
 
@@ -38,7 +42,8 @@ comparator when cited—not a headline method.
 | [methods](methods.md) | Proposed method, baselines, roster, splits, scorers |
 | [method × stage](../research/paper/five_rungs_of_rule_help_2026-08-20.md) | Plain-language method × stage grid, with one Gan and one ExECT development example |
 | [Gan rules and models](../research/paper/gan_rules_and_llms_across_stages_2026-08-21.md) | Gemini Gan reading: roles, order, encode/select lift |
-| [five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md) | Cited Gemini frequency five-cell totals |
+| [Gan five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md) | Cited Gemini frequency five-cell totals |
+| [ExECT cell 4](../research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md) | Cited Gemini inventory LLM / LLM / rules stop |
 | [rule catalogue](../research/paper/rule_catalogue_schema_format_post_2026-08-21.md) | Named extract / encode / select rules on both tasks |
 | [claims](claims.md) | What the paper may say, and how strongly |
 | [lineage](lineage.md) | How the living requests were reached and what kind of method change each revision made |

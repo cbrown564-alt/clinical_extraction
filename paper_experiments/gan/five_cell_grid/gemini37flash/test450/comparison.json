@@ -1,36 +1,61 @@
 {
-  "claim_boundary": "Gan aggregate-only test450 five-cell grid. Do not inspect holdout rows.",
+  "claim_boundary": "Gan aggregate-only test450 five-cell grid. Headline is the select stop. Extract and encode counts are prior-stage ablations. Do not inspect holdout rows.",
   "split": "test450",
   "row_policy": "aggregate_only",
   "model": "gemini/gemini-3.7-flash",
   "scorer": "purist",
+  "n": 450,
+  "headline": "select",
+  "role_values": ["rules", "LLM", "both"],
   "cells": {
-    "rules": {"extract": 329, "encode": 329, "select": 329},
-    "rules_then_llm": {
+    "rules": {
+      "extract_role": "rules",
+      "encode_role": "rules",
+      "select_role": "rules",
+      "extract_source": "gan_rules",
+      "select": 329,
+      "ablation": {"extract": 329, "encode": 329}
+    },
+    "both_extract_then_rules": {
+      "extract_role": "both",
+      "encode_role": "rules",
+      "select_role": "rules",
       "extract_source": "gan_llm_pre_post_label_forms",
-      "extract": 371,
-      "encode": 361,
-      "select": 368
+      "select": 368,
+      "ablation": {"extract": 371, "encode": 361}
     },
-    "llm_then_rules": {
+    "llm_extract_then_rules": {
+      "extract_role": "LLM",
+      "encode_role": "rules",
+      "select_role": "rules",
       "extract_source": "gan_llm_extract_label_forms",
-      "extract": 354,
-      "encode": 346,
-      "select": 362
+      "encode_mode": "llm_encode_codebook",
+      "select_mode": "llm_select_after_codebook",
+      "select": 373,
+      "ablation": {"extract": 354, "encode": 359},
+      "historical_encode_ablation": {
+        "encode_mode": "llm_encode",
+        "encode": 346,
+        "select": 362
+      }
     },
-    "llm_then_select_rules": {
+    "llm_extract_encode_then_select_rules": {
+      "extract_role": "LLM",
+      "encode_role": "LLM",
+      "select_role": "rules",
       "extract_source": "gan_llm_extract_label_forms",
       "repair_mode": "llm_select_only",
-      "extract": 354,
-      "encode": 354,
-      "select": 368
+      "select": 368,
+      "ablation": {"extract": 354, "encode": 354}
     },
     "llm": {
+      "extract_role": "LLM",
+      "encode_role": "LLM",
+      "select_role": "LLM",
       "extract_source": "gan_llm_extract_label_forms",
       "select_method": "gan_llm_select_from_extract",
-      "extract": 354,
-      "encode": 354,
-      "select": 357
+      "select": 357,
+      "ablation": {"extract": 354, "encode": 354}
     }
   },
   "source_near_ablation_gan_llm_with_rules": {

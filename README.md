@@ -5,15 +5,17 @@ Turn epilepsy clinic letters into structured clinical facts.
 This repository is research code and a working demonstration. The proposed
 method translates clinic letters into structured clinical facts in a designed
 form, with quoted source text. A model collects the facts and evidence;
-recorded rules shape them into the required form. On Gan the
-comparison is five methods (Rules, Rules then LLM, LLM then rules,
-LLM then select rules, LLM) against stages (extract, encode,
-select). ExECT keeps four methods. Neither table is an on/off
-hybrid switch. The public golds are the evaluation
-forms used here, not the task. Tables cite Gemini 3.7 Flash so the
-story stays on the method. Grok, Luna, DeepSeek, Qwen, and Gemma are
-companion rows. The recorded
-object keeps the source span and a change log, not only the score.
+recorded rules shape them into the required form. Headline tables are Gemini
+five-cell grids: each of extract, encode, and select is rules, LLM, or both.
+The cited score is the select stop; extract and encode stops are stage
+ablations. The six-model comparison uses cell 3 only (LLM extract, rules
+encode, rules select) on both Gan and ExECT. ExECT cell 3 is the roster
+row, not the peak row (cell 4 LLM encode then rules select is higher and
+Gemini-only). Neither table is an on/off hybrid switch. The public golds
+are the evaluation forms used here, not the task. Tables cite Gemini 3.7
+Flash so the story stays on the method. Grok, Luna, DeepSeek, Qwen, and
+Gemma fill the cell-3 roster. The recorded object keeps the source span
+and a change log, not only the score.
 
 This is a research and teaching package, not a clinical deployment claim.
 
@@ -24,56 +26,63 @@ local research checkout and are not cloned.
 ## Results
 
 Held-out test scores for Gemini 3.7 Flash (2 d.p.), the cited model.
-Companion Grok cells stay on disk. GPT-5.6 Sol cells stay historical.
-Rules are deterministic and do not use a model. That score is repeated
-in every rules column.
+Extract and encode columns are stage ablations; select is the headline.
+The six-model roster compares cell 3 only. Companion Grok cells stay on
+disk. GPT-5.6 Sol cells stay historical. Rules are deterministic and do
+not use a model.
 
-**Gan 2026** (Purist, locked `test450`):
+**Gan 2026** (Purist, locked `test450`). Headline is the submitted
+(select) score:
 
-| LLM | Rules | Extract | Encode | Select |
-| --- | --- | ---: | ---: | ---: |
-| | extract, encode and select | 0.73 | 0.73 | 0.73 |
-| extract | extract, encode and select | 0.82 | 0.80 | 0.82 |
-| extract | encode, select | 0.79 | 0.77 | 0.80 |
-| extract, encode | select | 0.79 | 0.79 | 0.82 |
-| extract, encode and select | | 0.79 | 0.79 | 0.79 |
+| Extract | Encode | Select | Purist |
+| --- | --- | --- | ---: |
+| rules | rules | rules | 0.73 |
+| both | rules | rules | 0.82 |
+| LLM | rules | rules | 0.83 |
+| LLM | LLM | rules | 0.82 |
+| LLM | LLM | LLM | 0.79 |
 
-**ExECTv2** (clinical fact F1, locked `test60`):
+**ExECTv2** (clinical fact F1, locked `test60`). Headline is the
+submitted (select) score:
 
-| | Extract | Encode | Select |
-| --- | ---: | ---: | ---: |
-| **Rules** | 0.79 | 0.79 | 0.79 |
-| **LLM** | 0.80 | 0.81 | 0.80 |
-| **LLM then rules** | 0.80 | 0.81 | 0.79 |
-| **Rules then LLM** | 0.80 | 0.82 | 0.80 |
+| Extract | Encode | Select | F1 |
+| --- | --- | --- | ---: |
+| rules | rules | rules | 0.79 |
+| both | rules | rules | 0.80 |
+| LLM | rules | rules | 0.82 |
+| LLM | LLM | rules | 0.82 |
+| LLM | LLM | LLM | 0.80 |
 
-Gan **LLM** extract and encode are the codebook extract
-(`gan_llm_extract_label_forms`). Gan **LLM** select reads that
-extract. **LLM then rules** replays rule encode and select on that
-raw. **LLM then select rules** runs select families only. **Rules
-then LLM** is `gan_llm_pre_post_label_forms`. Gemini Rules then LLM
-select and LLM then select rules are both 0.82. LLM select is
-0.79. The source-near `gan_llm_with_rules` grid stays an
-ablation. ExECT **LLM** encode and select are later-stage Gemini
-cells, rescored with exact `clinical_headline_unit_keys` and
-promoted 2026-08-22 (no new model calls). ExECT **LLM then rules**
-replays `exect_llm_only`. ExECT **Rules then LLM** is
-`exect_llm_pre_post`. Gan hybrid select is ledger-only.
-`gan_llm_only` is not a results column. ExECT rule-stop cells are a
-2026-08-22 no-call replay of the saved Gemini raws through the
-current exact scorer and the encode/select split (qualifier overwrite
-and SF type/bound are select).
+Gan **LLM** extract is the codebook extract
+(`gan_llm_extract_label_forms`). **both** extract is
+`gan_llm_pre_post_label_forms`. LLM encode means that extract already
+wrote the form. The LLM-then-rules encode is `llm_encode_codebook`.
+LLM select is `gan_llm_select_from_extract`. Extract and encode stops
+are prior-stage ablations in
+[the five-cell grid](docs/research/gan2026/gan_five_cell_grid_2026-08-22.md).
+The source-near `gan_llm_with_rules` ablation keeps source wording closer
+to the letter; form alignment is weaker at extract and rules recover
+most at encode and select. ExECT **LLM** extract is `exect_llm_only`.
+**both** extract is
+`exect_llm_pre_post`. LLM encode is later-stage `exect_llm_encode`
+(a second call). LLM / LLM / rules is accepted Select on that encode
+ledger. LLM select is later-stage `exect_llm_select`. Extract and
+encode stops are prior-stage ablations. Gan hybrid select is
+ledger-only. `gan_llm_only` is not a results column.
 
 - **Gan 2026:** Purist accuracy on the locked `test450` split (one current
-  seizure-frequency label per letter). The living Grok companion LLM
-  then rules select is 0.83; do not read an enveloped `v0.5` score
-  into that cell.
+  seizure-frequency label per letter).
 - **ExECTv2:** de-duplicated clinical fact F1 on the locked `test60` split
   (diagnosis, seizure frequency, prescriptions, and investigations).
-  LLM then rules replays `exect_llm_only`. Rules then LLM is
-  `exect_llm_pre_post`. LLM encode/select are later-stage Gemini
-  cells. This is the project's primary research metric for ExECT, not
-  the published strict benchmark.
+  Cell 3 (LLM / rules / rules) is the roster row (living rungs select
+  0.8161). Cell 4 (LLM / LLM / rules) is the Gemini-only peak
+  (0.8173) after later-stage encode.
+
+**Ablations (not headline columns):** Gemini thinking low / medium /
+high on cell 3 only; Gan source-near `gan_llm_with_rules` (source
+wording vs form alignment); extract and encode stage stops above.
+`gan_llm_only`, no-forms `gan_llm_pre_post`, ExECT producer raw F1,
+Sol, and Full ledger are on disk but not cited as headline results.
 
 Scores are not interchangeable across tasks.
 
@@ -86,19 +95,18 @@ Scores are not interchangeable across tasks.
 | Locked test split | `test450` (aggregate scores only) | `test60` (aggregate scores only) |
 | Primary score | Purist accuracy | Clinical fact F1 |
 
-Gan uses five methods against extract / encode / select. ExECT keeps
-four.
+Both tasks name who runs extract, encode, and select (rules, LLM, or
+both).
 
-- **Rules** — deterministic code; one score in every stage column.
-- **Rules then LLM** — `gan_llm_pre_post_label_forms` /
-  `exect_llm_pre_post` at extract, then rule encode and select.
-- **LLM then rules** — codebook extract / `exect_llm_only`, then
-  rule encode and select.
-- **LLM then select rules** — Gan only: codebook extract, then
-  select families without rule encode.
-- **LLM** — Gan codebook extract is extract and encode; select
-  reads that ledger. ExECT LLM encode and select are later-stage
-  Gemini cells.
+- **rules / rules / rules** — standalone `gan_rules` / `exect_rules`.
+- **both / rules / rules** — `gan_llm_pre_post_label_forms` /
+  `exect_llm_pre_post`, then rule encode and select.
+- **LLM / rules / rules** — codebook extract / `exect_llm_only`,
+  then rule encode and select.
+- **LLM / LLM / rules** — Gan: codebook extract, then select only.
+  ExECT: later-stage encode, then accepted Select rules.
+- **LLM / LLM / LLM** — Gan `gan_llm_select_from_extract`. ExECT
+  later-stage `exect_llm_select`.
 
 ## How it works
 

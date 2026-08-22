@@ -1,9 +1,11 @@
 # ExECT later-stage encode and select prompts
 
 Date: 2026-08-21
+Revised: 2026-08-22 (Gemini-only ablation; six-model extract is `exect_llm_only`)
 Status: current
 Owner: [paper methods](../methods.md)
 Related: [Gemini is the cited model](gemini-is-the-cited-model.md),
+[six-model roster](six-model-roster.md),
 [Gan later-stage encode and select prompts](gan-later-stage-encode-select-prompts.md)
 
 ## Decision
@@ -57,11 +59,14 @@ name; clinical name stays extract wording.
 
 ## Claim boundary
 
-A prompt and ownership contract. Clinical-fact SF type now keys the
-folded seizure-type phrase. CUI stay on the mention as secondary
-attributes and still feed the published with-CUI diagnostic. Gemini
-later-stage `exect_llm_encode` and `exect_llm_select` have been run
-and promoted; cite the exact-scorer cells, not the 21 Aug hierarchy
+A prompt and ownership contract. These calls are Gemini-only
+ablations on a saved `exect_llm_only` extract. They are not the
+six-model row and are not authorised on Grok, Luna, DeepSeek, Qwen,
+or Gemma. Clinical-fact SF type now keys the folded seizure-type
+phrase. CUI stay on the mention as secondary attributes and still
+feed the published with-CUI diagnostic. Gemini later-stage
+`exect_llm_encode` and `exect_llm_select` have been run and
+promoted; cite the exact-scorer cells, not the 21 Aug hierarchy
 F1s. Living hybrid select no longer unions residual letter-scan
 findings after the call. Pre-post still shows those cues as
 suggested evidence.

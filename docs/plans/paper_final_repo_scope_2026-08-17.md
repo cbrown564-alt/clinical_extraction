@@ -12,7 +12,8 @@ debt. Git history keeps them. The working tree does not.
 No new experiment runs except:
 
 1. Missing cells on a primary paper method for one of the six living
-   models.
+   models. On ExECT the six-model row is cell 3 only (`exect_llm_only`,
+   rule encode, rule select). Peak inventory is Gemini cell 4 only.
 2. Missing cells on a historical method the paper will cite as a
    direct comparison.
 3. Luna `gan_llm_pre_post` on `dev750` (rung 5 development iterator).
@@ -75,8 +76,8 @@ method story.
 Today's Gan hybrid call (`v0.5`, with the envelope) is not the paper
 method. Do not relabel those cells as `gan_llm_with_rules`.
 
-The cleaned Gan request is a different call. Existing six-model
-hybrid fills stay historical. They are not paper cells. Grok, Luna,
+The cleaned Gan request is a different call. Existing hybrid fills
+stay historical. They are not paper cells. Grok, Luna,
 and Gemini `dev750` on the cleaned request are on disk. Grok cleaned
 `test450` is on disk (0.83). DeepSeek, Qwen, and living Gemma on
 `dev750`, and the other five models on aggregate-only `test450`,
@@ -88,9 +89,9 @@ Known blanks on primary methods:
 
 | Cell | Why it is allowed |
 | --- | --- |
-| Qwen 3.8 Compact `dev140`, then aggregate-only `test60` | Local living Compact is unfinished. Do not invent numbers. |
-| Gan `gan_llm_with_rules` on the cleaned request: DeepSeek, Qwen, and living Gemma on `dev750`, then the remaining five models on aggregate-only `test450` | The paper method is the cleaned request. Grok cleaned `test450` (0.83) and Grok, Luna, Gemini `dev750` are on disk. Do not inspect holdout rows. Do not start new Sol live calls. |
-| DeepSeek, Qwen 3.8, and living Gemma Gan LLM-only `dev750` and `test450` | `gan_llm_only` is a six-model paper table. Grok cells are on disk. |
+| ExECT cell 3 (`exect_llm_only`, then rule encode and rule select): missing `exect_llm_only` extracts for Qwen, Gemma, and DeepSeek on `dev140`, then aggregate-only `test60` | Six-model row is cell 3 roster comparison, not peak (cell 4 is Gemini only). Rule replay is no-call once extract exists. Do not finish leftover Compact or hybrid panels as the primary job. Do not invent numbers. |
+| Gan cell 3 (`gan_llm_extract_label_forms`, then rule encode and rule select): missing extracts for Qwen, Gemma, and DeepSeek on `dev750`, then aggregate-only `test450` | Six-model row is cell 3 roster comparison, not peak (cell 4 is Gemini only). Rule replay is no-call once extract exists. Do not finish leftover hybrid or LLM-only panels as the primary job. Do not invent numbers. |
+| Gan `gan_llm_with_rules` on the cleaned request: DeepSeek, Qwen, and living Gemma on `dev750`, then the remaining five models on aggregate-only `test450` | Source-near ablation only. Grok cleaned `test450` (0.83) and Grok, Luna, Gemini `dev750` are on disk. Do not inspect holdout rows. Do not start new Sol live calls. |
 
 Full ledger comparator cells that already exist do not need a new
 run. A comparator that is not in the manuscript is not a blank.
@@ -197,8 +198,7 @@ Grilling is closed. Next:
 
 1. Promote the keep-set into `docs/paper/` (methods, claims, five
    decisions, lineage page).
-2. Fill allowed blanks (Luna Compact `test60`, Qwen Compact, cleaned
-   Gan hybrid panel, Qwen Gan LLM-only).
+2. Fill allowed blanks (ExECT and Gan cell-3 roster extracts).
 3. Rename paper cells and live identities to paper names.
 4. Delete historical prompt code, study runners, and research
    reports that are not in the keep-set.
@@ -231,11 +231,12 @@ parallel once a blank has a runner.
    multi-model, mention-encoder study prompts, Compact dump, and extra
    Gan prompt variants are out.
 2. **Gan hybrid payload (2026-08-17).** `gan_llm_with_rules` is the
-   cleaned request, not today's enveloped `v0.5` call. That implies
-   a new six-model Gan hybrid panel. Do not cite 381/450 as the
-   paper hybrid until the cleaned holdout exists.
-3. **Gan LLM-only panel (2026-08-17).** `gan_llm_only` is a six-model
-   paper table. Qwen 3.8 `dev750` and `test450` are allowed blanks.
+   cleaned request, not today's enveloped `v0.5` call. It is a
+   source-near ablation, not the cited Gan method. The six-model row
+   is cell 3 (`gan_llm_extract_label_forms`, rule encode, rule
+   select). Do not cite 381/450 as the paper hybrid.
+3. **Gan LLM-only (2026-08-17).** `gan_llm_only` is a live runner
+   identity. It is not a results column and not the six-model table.
 4. **Working-tree history (2026-08-17).** One lineage page. Keep the
    paper source library (stories, why hybrid, failures, cases,
    phrase-variant inventories, architecture exhibit). Cut campaign
@@ -243,11 +244,11 @@ parallel once a blank has a runner.
 5. **Demo (2026-08-17).** Public frontend stays, restricted to paper
    methods. Historical paths leave the UI.
 6. **Current decisions (2026-08-17).** Five files, self-describing
-   names: Compact is the cited ExECT hybrid; the cleaned request is
-   the cited Gan hybrid; six-model roster; holdout is aggregate-only;
-   pytest is the research-validity firewall. Claim sentences live in
-   `docs/paper/claims.md`. Numbered decisions collapse to the history
-   log.
+   names: ExECT LLM with rules is the both-extract alias; the cleaned
+   request is the source-near Gan ablation; six-model roster (cell 3
+   only); holdout is aggregate-only; pytest is the research-validity
+   firewall. Claim sentences live in `docs/paper/claims.md`. Numbered
+   decisions collapse to the history log.
 7. **Local scratch (2026-08-17).** `experiments/` may stay as
    gitignored scratch for in-flight runs. Only `paper_experiments/`
    is committed evidence.

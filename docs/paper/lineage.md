@@ -1,7 +1,7 @@
 # How the cited methods were reached
 
 Date: 2026-08-17
-Revised: 2026-08-19 (method changes classified by semantic effect)
+Revised: 2026-08-22 (Gan cited row is codebook extract; cleaned hybrid is ablation)
 Status: current
 Owner: this file
 
@@ -48,22 +48,26 @@ ExECT LLM only. Full ledger is the longer control when cited; it
 is not a headline method or a peer column. Grok has no Full ledger
 cell.
 
-## Gan cleaned request
+## Gan codebook extract and source-near ablation
 
-The Gan hybrid is one structured-events call, then a frozen deterministic
-stack that chooses the current seizure-frequency label. The call defines the
-candidate representation; the later stack contains task-decision, semantic,
-and rendering changes. The
-clinical contract is thirteen instructions plus event and selection
-schemas.
+The cited Gan row is one codebook extract call
+(`gan_llm_extract_label_forms`), then fixed rule encode and rule
+select. Extract already writes the designed form; encode is that
+same cell.
+
+The source-near ablation is one structured-events call on the
+cleaned request (`gan_llm_with_rules`), then the same frozen
+deterministic stack that chooses the current seizure-frequency label.
+The call keeps letter wording; rule encode and rule select recover
+most of the score. That trade is not the headline method.
 
 An earlier request also sent three lab labels to the model: the
 dataset and method name, a version string, and the row index. Those
 labels do not teach extraction. The cleaned request keeps the
 thirteen instructions and drops the three labels.
 
-The paper method is the cleaned request. Cells from the enveloped
-request are not that method. Do not relabel them.
+Cells from the enveloped request are not either method. Do not
+relabel them.
 
 ## What was tried and is not cited
 

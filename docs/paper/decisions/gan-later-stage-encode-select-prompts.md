@@ -34,6 +34,8 @@ step if that ablation is cited. Rules after extract still encode.
 
 ## Claim boundary
 
-A prompt and ownership contract. The published Gemini grid still cites
-the `gan_llm_with_rules` later-stage cells until the codebook row is
-promoted. This select is not hybrid select.
+A prompt and ownership contract. Later-stage LLM encode and LLM
+select are Gemini only on both tasks. Headline tables cite the
+codebook extract row. The source-near `gan_llm_with_rules` ledger
+may still cite form-writing encode for that ablation only. This
+select is not hybrid select.

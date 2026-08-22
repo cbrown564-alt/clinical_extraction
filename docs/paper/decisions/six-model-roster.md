@@ -1,7 +1,7 @@
 # Six-model roster
 
 Date: 2026-08-17
-Revised: 2026-08-21 (Gemini is the cited model)
+Revised: 2026-08-22 (cell 3 only)
 Status: current
 Owner: [paper methods](../methods.md)
 Roster: [`paper_experiments/roster.json`](../../../paper_experiments/roster.json)
@@ -9,7 +9,8 @@ Cited-model decision: [Gemini is the cited model](gemini-is-the-cited-model.md)
 
 ## Decision
 
-Every living comparison uses these six models, in this order:
+The six-model comparison is **cell 3 only** on both tasks: LLM
+extract, rules encode, rules select.
 
 1. Gemini 3.7 Flash (cited model)
 2. Grok 4.6
@@ -18,30 +19,33 @@ Every living comparison uses these six models, in this order:
 5. Qwen 3.8 27B
 6. Gemma 4 26B
 
+Gan extract is `gan_llm_extract_label_forms`. ExECT extract is
+`exect_llm_only`. Encode and select are the recorded rule stacks
+replayed on that raw.
+
+Headline five-cell tables stay Gemini. Later-stage LLM encode and
+LLM select stay Gemini only. Gemini thinking low / medium / high
+is a cell-3 extract ablation, not a roster table.
+
+`gan_llm_with_rules`, `gan_llm_only`, no-forms `gan_llm_pre_post`,
+and leftover living extracts are ablations or historical cells.
+They are not the six-model comparison.
+
 Historical, not living: GPT-5.6 Sol, GPT-4.1-mini, DeepSeek
-pre-0731, Qwen 3.6:35B, Compact dump.
-
-Gemini 3.7 Flash is the cited model so the story stays on the method.
-The other five are companion rows. Sol is historical and is not a
-paper cell. Do not treat a missing cell as a score.
-
-Later-stage LLM encode and LLM select calls are Gemini only. See
-[Gemini is the cited model](gemini-is-the-cited-model.md).
+pre-0731, Qwen 3.6:35B, Compact dump. Sol is not a paper cell.
 
 ## Why
 
-One roster, every time. Mixing retired slots into a living table
-makes the comparison unreadable. Citing one model keeps the story
-on extract / encode / select, not on a model bake-off.
+Cell 3 is the same method on both tasks: one extract call, then
+fixed rules. That is the only row that can carry six models without
+paying for later-stage encode or select on the roster. ExECT cell 4
+can be higher; it is still Gemini-only.
 
 ## Consequences
 
-- New runs use these slugs and routes. Do not start new Sol live
-  calls. Do not keep Sol fills as paper cells.
-- Qwen 3.6 remains only as a Full-ledger historical local slot
-  until Compact Qwen and cleaned Gan Qwen land.
-- Gan LLM-only is a six-model table. Qwen 3.8 LLM-only is an
-  allowed blank. It is not a later-stage encode / select call.
-- DeepSeek V4 Flash is run with thinking on and thinking off.
-  Living Compact is the thinking-on (provider-default) cell.
-  Thinking-off is a rerun, not a replacement, until compared.
+- New roster runs are cell-3 extracts plus rule replay. Do not start
+  six-model later-stage encode or select. Do not start new Sol calls.
+- Do not treat `gan_llm_only` or source-near `gan_llm_with_rules`
+  as the six-model table.
+- DeepSeek thinking-on versus thinking-off is not this cell-3
+  Gemini thinking ablation.

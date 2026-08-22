@@ -1,16 +1,37 @@
 # ExECT paper cells
 
-Living paper methods:
+Headline table: Gemini five-cell grid on locked `test60`. The cited
+score is the select stop. Cell 3 (LLM / rules / rules) is the
+six-model roster row; extract is `exect_llm_only`. Cell 4 (LLM / LLM /
+rules) is the Gemini-only peak after later-stage encode.
 
-- `exect_llm_pre_post/` — ExECT rung 5 (cite hybrid F1 only).
-- `exect_llm_only/` — ExECT LLM only (cite raw F1 only). Rungs 2–4
-  replay this raw.
+| Extract | Encode | Select | F1 (Gemini `test60`) |
+| --- | --- | --- | ---: |
+| rules | rules | rules | 0.79 |
+| both | rules | rules | 0.80 |
+| LLM | rules | rules | 0.82 |
+| LLM | LLM | rules | 0.82 |
+| LLM | LLM | LLM | 0.80 |
 
-`exect_llm_with_rules` is the live runner alias for
-`exect_llm_pre_post`. The unrepaired output of ExECT pre-post is not
-ExECT LLM only.
+Cell-3 roster fills use `exect_llm_only/` plus rule encode and
+select. Cell-4 encode uses `exect_llm_encode/` (Gemini only).
+Extract and encode columns above are stage ablations, not separate
+headline methods.
+
+Historical on disk (not headline):
+
+- `exect_llm_pre_post/` — two-method hybrid from before the five-cell
+  pin. `exect_llm_with_rules` is a live runner alias only.
+- Producer raw F1 from `exect_llm_only` without rule stops is an
+  ablation view, not the cited score.
 
 `test60` is aggregate-only. Do not inspect those letters.
+
+## Development reference (not headline)
+
+Scores below are from historical two-method cells on `dev140` /
+`test60`. They support roster debugging, not the cited five-cell
+table.
 
 | Model | Split | ExECT pre-post | ExECT LLM only |
 | --- | --- | ---: | ---: |
@@ -25,11 +46,12 @@ ExECT LLM only.
 | Gemma 4 26B | `dev140` | 0.7674 | — |
 | Gemma 4 26B | `test60` | 0.6933 | — |
 
-Still missing: Qwen 3.8 both methods on both splits. ExECT LLM only
-for Gemma and Qwen. `dev140` is in the living frontend panel
-(`exect/dev140_panel.json`). `test60` is aggregate-only.
+Still missing: Qwen 3.8 cell-3 fills on both splits. ExECT LLM
+only for Gemma and Qwen. `dev140` cell-3 rungs are in the frontend
+panel (`exect/dev140_panel.json`). `exect_llm_pre_post` is not a
+panel column. `test60` is aggregate-only.
 
 Frontend pull: `GET /paper/exect/dev140` and
-`GET /paper/exect/dev140/{exect_llm_only|exect_llm_pre_post|llm_extract|llm_encode|llm_select}/{slug}/scored`.
+`GET /paper/exect/dev140/{method}/{slug}/scored`.
 Join letters on `letter_id`.
 The July `/exectv2/runs` roster is historical (Sol + Qwen 3.6).

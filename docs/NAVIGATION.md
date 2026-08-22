@@ -11,6 +11,8 @@ The dense pointer log is [decision history](history/decisions.md).
 | Public front door | [README](../README.md) |
 | What is present, missing, and allowed to run | [project status](../PROJECT_STATUS.md) |
 | Paper methods, claims, lineage, decisions | [paper keep-set](paper/README.md) |
+| Cited Gemini five-cell grids | [Gan grid](research/gan2026/gan_five_cell_grid_2026-08-22.md), [ExECT cell 4](research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md) |
+| Six-model cell-3 roster | [roster decision](paper/decisions/six-model-roster.md), [`paper_experiments/roster.json`](../paper_experiments/roster.json) |
 | Paper-final cut | [scope](plans/paper_final_repo_scope_2026-08-17.md) |
 | Replayable cells | [paper experiments](../paper_experiments/README.md) |
 | Live runner | `python -m clinical_extraction.paper` |
@@ -32,14 +34,14 @@ record:
 7a. [Rule catalogue](research/paper/rule_catalogue_schema_format_post_2026-08-21.md) — named schema / format / post rules on both tasks
 7b. [Rules and models across stages (Gan, Gemini)](research/paper/gan_rules_and_llms_across_stages_2026-08-21.md) — Gemini Gan reading of the locked five-cell grid; ExECT is a later report
 8. [How the proposed method divides the work](research/artifacts/hybrid_architecture_2026-08-10.html)
-9. [Parallel performance view](research/artifacts/parallel_two_task_performance_view_2026-08-09.html) — two holdout comparisons, kept separate. Tables cite Gemini; Grok is a companion row.
-10. [Gan story](research/paper/gan_story_2026-08-10.md) and [ExECT story](research/paper/exect_story_2026-08-12.md) — ExECT hybrid numbers are Compact hybrid F1; standalone Compact LLM-only is raw F1 ([methods](paper/methods.md); [cells](../paper_experiments/exect/README.md))
+9. [Parallel performance view](research/artifacts/parallel_two_task_performance_view_2026-08-09.html) — two holdout comparisons, kept separate. Tables cite Gemini five-cell grids; six-model roster is cell 3 only.
+10. [Gan story](research/paper/gan_story_2026-08-10.md) and [ExECT story](research/paper/exect_story_2026-08-12.md) — historical two-method numbers remain in prose; cited tables are the five-cell grids ([methods](paper/methods.md); [cells](../paper_experiments/README.md))
 11. [Component roles and limits](research/artifacts/paper_source_component_roles_and_limits_2026-08-09.pptx) — prose: [failures](research/paper/failures_and_limits_2026-08-10.md)
 12. [Failures and limits](research/paper/failures_and_limits_2026-08-10.md)
 13. [Two reviewable cases](research/paper/reviewable_case_pair_2026-08-09.md) and the [case explorer](research/artifacts/paired_case_explorer_2026-08-09.html)
 14. [Rescue source provenance](research/shared/hybrid_rescue_source_provenance_2026-08-13.md) and its [exhibit](research/artifacts/rescue_source_provenance_2026-08-13.html)
 15. [Flagship 3-letter suite](research/paper/flagship_3_letter_suite_2026-08-11.md) — development letters, not holdout
-16. Row-evidence workbook — cited historically; the file is not in the keep-set. Use living `paper_experiments/` scored cells for Grok development rows.
+16. Row-evidence workbook — cited historically; the file is not in the keep-set. Use promoted `paper_experiments/` scored cells for development rows.
 17. [Reliability view](research/artifacts/reliability_view_2026-08-10.html)
 18. [How the two tasks are scored](research/paper/score_definitions_2026-08-17.md) — writing glossary, not a scoring authority
 19. [Related-work source map](research/paper/related_work_seed_2026-08-17.md)

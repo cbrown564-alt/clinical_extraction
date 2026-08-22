@@ -1,6 +1,7 @@
 # Gemini is the cited model
 
 Date: 2026-08-21
+Revised: 2026-08-22 (six-model row is cell 3)
 Status: current
 Owner: [paper methods](../methods.md)
 Roster: [six-model roster](six-model-roster.md)
@@ -10,9 +11,10 @@ Roster: [six-model roster](six-model-roster.md)
 Gemini 3.7 Flash is the cited paper model. Tables and “the paper may
 say” sentences use Gemini so the story stays on the method.
 
-Grok 4.6 is a companion row, with GPT-5.6 Luna, DeepSeek V4 Flash
-0731, Qwen 3.8 27B, and Gemma 4 26B. Existing Grok cells stay on
-disk. They are not the cited row. Do not start new Sol live calls.
+The six-model comparison is cell 3 (LLM extract, rules encode, rules
+select). Companion rows exist only for that row. Existing Grok and
+other leftover extracts stay on disk as ablations or history. They
+are not the cited row. Do not start new Sol live calls.
 
 Later-stage model calls that replace rule encode or rule select —
 `gan_llm_encode`, `gan_llm_select`, and the matching ExECT later-stage
