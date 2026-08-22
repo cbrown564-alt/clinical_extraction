@@ -1,0 +1,41 @@
+{
+  "claim_boundary": "Gan aggregate-only test450 five-cell grid. Do not inspect holdout rows.",
+  "split": "test450",
+  "row_policy": "aggregate_only",
+  "model": "gemini/gemini-3.7-flash",
+  "scorer": "purist",
+  "cells": {
+    "rules": {"extract": 329, "encode": 329, "select": 329},
+    "rules_then_llm": {
+      "extract_source": "gan_llm_pre_post_label_forms",
+      "extract": 371,
+      "encode": 361,
+      "select": 368
+    },
+    "llm_then_rules": {
+      "extract_source": "gan_llm_extract_label_forms",
+      "extract": 354,
+      "encode": 346,
+      "select": 362
+    },
+    "llm_then_select_rules": {
+      "extract_source": "gan_llm_extract_label_forms",
+      "repair_mode": "llm_select_only",
+      "extract": 354,
+      "encode": 354,
+      "select": 368
+    },
+    "llm": {
+      "extract_source": "gan_llm_extract_label_forms",
+      "select_method": "gan_llm_select_from_extract",
+      "extract": 354,
+      "encode": 354,
+      "select": 357
+    }
+  },
+  "source_near_ablation_gan_llm_with_rules": {
+    "llm": {"extract": 246, "encode": 291, "select": 320},
+    "llm_then_rules": {"extract": 246, "encode": 335, "select": 357},
+    "rules_then_llm_living_pre_post": {"extract": 265, "encode": 345, "select": 358}
+  }
+}
