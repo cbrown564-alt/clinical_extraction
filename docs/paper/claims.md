@@ -1,14 +1,15 @@
 # What the evidence supports
 
 Date: 2026-08-20
-Revised: 2026-08-21 (headline is four methods × three stages)
+Revised: 2026-08-22 (Gan headline is five methods × three stages)
 Status: current
 Owner: this file
 
 This page is the paper's reading of the living comparison. Method names
-and splits are on [methods](methods.md). The headline table is four
-methods against extract / encode / select; it is not five depths of
-one hybrid switch. Replayable
+and splits are on [methods](methods.md). The Gan headline table is five
+methods against extract / encode / select: a prefix from all-rules to
+all-LLM. ExECT keeps the four-method table. Neither table is five
+depths of one hybrid switch. Replayable
 numbers live in
 [`paper_experiments/`](../../paper_experiments/README.md). Writing
 sources that unpack the same evidence are the
@@ -71,13 +72,18 @@ two facts, or adding an unsupported rate is an error. The primary score
 is how completely those four kinds of fact were recovered. It is a
 research measure. It is not the published 2019 ExECT benchmark.
 
-The headline comparison is four methods — Rules, LLM, LLM then
-rules, Rules then LLM — against extract / encode / select. Rules
-repeat one score in every stage column. LLM encode and select are
-later-stage model calls. LLM then rules encode and select replay the
-`gan_llm_with_rules` / `exect_llm_only` raw. Rules then LLM is the
-`*_pre_post` request. The worked reading is
-[five rungs of rule help](../research/paper/five_rungs_of_rule_help_2026-08-20.md).
+The Gan headline comparison is five methods — Rules, Rules then LLM,
+LLM then rules, LLM then select rules, LLM — against extract /
+encode / select. ExECT keeps Rules, LLM, LLM then rules, Rules then
+LLM. Rules repeat one score in every stage column. On Gan, LLM
+extract and encode are the codebook extract
+(`gan_llm_extract_label_forms`). LLM select reads that extract.
+LLM then rules replays rule encode and rule select on that raw.
+LLM then select rules runs select families only. Rules then LLM is
+`gan_llm_pre_post_label_forms`. The old `gan_llm_with_rules` grid is
+the source-near ablation. The worked reading is
+[five rungs of rule help](../research/paper/five_rungs_of_rule_help_2026-08-20.md)
+and the [five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md).
 `gan_llm_only` is a different prompt and is not a results column.
 An unrepaired `*_pre_post` body is not LLM extract.
 A recorded rule may change clinical meaning; deterministic does not
@@ -89,38 +95,42 @@ are not holdout component estimates.
 
 ### What the locked totals show
 
-On 450 held-out letters, written rules labelled 329 correctly
-(73.1%). That score fills every rules column. Grok Rules then LLM
-living select labelled 370 (82.2%). Grok LLM then rules living
-select labelled 375 (83.3%). The paper may say those locked totals
-and the Gemini grid below.
+On 450 held-out letters, written rules scored 0.73. That score
+fills every rules column. Grok Rules then LLM living select scored
+0.82. Grok LLM then rules living select scored 0.83. The paper may
+say those locked totals and the Gemini grid below.
 It may not treat `gan_llm_only` as a results column.
 That request is a different prompt (one finished label). Its Grok
-holdout cell is 327/450 (72.7%); it is not extract or encode.
+holdout cell is 0.73; it is not extract or encode.
 
-Named Gemini `test450` grid (aggregate-only). **LLM then rules** is
-the three stops on the `gan_llm_with_rules` raw. **Rules then LLM**
-is the three stops on the `gan_llm_pre_post` raw. **LLM** encode and
-select are later-stage Gemini cells. LLM extract is the
-`gan_llm_with_rules` extract stop (same freeze).
+Named Gemini `test450` grid (aggregate-only). **LLM** extract and
+encode are `gan_llm_extract_label_forms`. **LLM** select is
+`gan_llm_select_from_extract`. **LLM then rules** is rule encode and
+rule select on that extract raw. **LLM then select rules** is select
+families only (`llm_select_only`). **Rules then LLM** is
+`gan_llm_pre_post_label_forms` then the same rule encode and select
+stops. Owner:
+[five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md).
 
-| | Extract | Encode | Select |
-| --- | ---: | ---: | ---: |
-| **Rules** | 329/450 (0.7311) | 329/450 (0.7311) | 329/450 (0.7311) |
-| **LLM** | 246/450 (0.5467), 297 scorable | 291/450 (0.6467) | 320/450 (0.7111) |
-| **LLM then rules** | 246/450 (0.5467), 297 scorable | 335/450 (0.7444) | 357/450 (0.7933) |
-| **Rules then LLM** | 265/450 (0.5889), 316 scorable | 345/450 (0.7667) | 358/450 (0.7956) |
+| LLM | Rules | Extract | Encode | Select |
+| --- | --- | ---: | ---: | ---: |
+| | extract, encode and select | 0.73 | 0.73 | 0.73 |
+| extract | extract, encode and select | 0.82 | 0.80 | 0.82 |
+| extract | encode, select | 0.79 | 0.77 | 0.80 |
+| extract, encode | select | 0.79 | 0.79 | 0.82 |
+| extract, encode and select | | 0.79 | 0.79 | 0.79 |
 
-Hybrid select is ledger-only on both rows (`elapsed_anchor` and
-`residual_jerk` off). The living Gemini `gan_llm_with_rules` cell is
-357/450 (0.7933), the same as the select stop. The living Gemini
-`gan_llm_pre_post` cell is 358/450 (0.7956), the same as that select
-stop. The paper may say that, with Gemini as the cited model, both
-hybrids at select clear the rules baseline and later-stage Gemini
-select on this locked set, and that the two hybrids are one letter
-apart after the select bound is equalised. It may say the gain is an
-overall count. It may not say which letters moved. Grok living
-`gan_llm_with_rules` 375/450 was not re-scored on this stack.
+Hybrid select is ledger-only (`elapsed_anchor` and `residual_jerk`
+off). The paper may say that, with Gemini as the cited model, codebook
+extract already writes the designed form, that a separate later-stage
+encode call is not the LLM encode column, and that rule select without
+rule encode matches Rules then LLM select at 0.82. It may say both
+of those select totals clear standalone rules (0.73) and LLM select
+(0.79). It may say rule encode on the codebook extract drops the
+locked score (0.79 → 0.77). It may not say which letters moved. The
+source-near `gan_llm_with_rules` grid (LLM extract 0.55, later-stage
+select 0.71, hybrid select 0.79) stays an ablation. Grok living
+`gan_llm_with_rules` 0.83 was not re-scored on this stack.
 
 The rule baseline is a standalone deterministic pipeline. It is not the
 same rule set that later repairs model events. The gap from rules to
@@ -137,25 +147,24 @@ label from events the model had already extracted. Thirteen promoted
 another extracted event. None invented a rate from text the model never
 quoted.
 
-Named Gemini `dev750` grid. **LLM then rules** is the three stops on
-the `gan_llm_with_rules` raw. **Rules then LLM** is the three stops
-on the `gan_llm_pre_post` raw. **LLM** encode/select are later-stage
-Gemini calls, not those rule stops.
+Named Gemini `dev750` grid on the same codebook extract.
 
-| | Extract | Encode | Select |
-| --- | ---: | ---: | ---: |
-| **Rules** | 669/750 | 669/750 | 669/750 |
-| **LLM** | 444/750 (0.5920), 532 scorable | 506/750 (0.6747) | 568/750 (0.7573) |
-| **LLM then rules** | 444/750 (0.5920), 532 scorable | 608/750 (0.8107) | 660/750 (0.8800) |
-| **Rules then LLM** | 502/750 (0.6693), 582 scorable | 632/750 (0.8427) | 664/750 (0.8853) |
+| LLM | Rules | Extract | Encode | Select |
+| --- | --- | ---: | ---: | ---: |
+| | extract, encode and select | 0.89 | 0.89 | 0.89 |
+| extract | extract, encode and select | 0.86 | 0.86 | 0.89 |
+| extract | encode, select | 0.78 | 0.80 | 0.86 |
+| extract, encode | select | 0.78 | 0.78 | 0.85 |
+| extract, encode and select | | 0.78 | 0.78 | 0.79 |
 
-The living Gemini hybrid cells match those select stops (660 and
-664). Locked `test450` stage cuts are in the table under locked
+The source-near `gan_llm_with_rules` development grid (extract 0.59,
+later-stage encode 0.67 / select 0.76, hybrid select 0.88) stays an
+ablation. Locked `test450` stage cuts are in the table under locked
 totals.
 
 Companion Grok LLM then rules on `gan_llm_with_rules`: extract
-371/750, encode 603/750, select 671/750. Grok Rules then LLM on
-`gan_llm_pre_post`: extract 463/750, encode 633/750, select 680/750.
+0.49, encode 0.80, select 0.89. Grok Rules then LLM on
+`gan_llm_pre_post`: extract 0.62, encode 0.84, select 0.91.
 
 On the Gemini raw, selected-evidence render never changed
 `selected_event_ids`, so it is encode. It changed predicted kind 219
@@ -320,14 +329,17 @@ The files support this account of the proposed method, cited on Grok:
    be replayed without a new call. A named family is not always a free
    switch: removing breakthrough helps some unknowns and harms the
    wider ledger.
-4. On locked frequency letters, Gemini ledger-only LLM then rules
-   select raises the correct-label count by 28 against standalone
-   rules (357 vs 329). Grok living hybrid 375/450 is a different
-   stack. `gan_llm_only` is not in that comparison. On the locked inventory the rise from the model-alone
-   request to living hybrid is smaller, and slightly above standalone
-   rules. These totals compare rungs or requests; they do not
-   attribute holdout effects to individual rules. One extraction is
-   not a second use case.
+4. On locked frequency letters, Gemini rule select without encode
+   and Rules then LLM select both raise the locked score by 0.09
+   against standalone rules (0.82 vs 0.73). LLM select is 0.79.
+   Full rule encode then select on the codebook extract is 0.80.
+   Grok living hybrid 0.83 is a different stack on the
+   source-near request. `gan_llm_only` is not in that comparison.
+   On the locked inventory the rise from the model-alone request to
+   living hybrid is smaller, and slightly above standalone rules.
+   These totals compare methods; they do not attribute holdout
+   effects to individual rules. One extraction is not a second use
+   case.
 5. The remaining disagreements are current-state choice and incomplete
    inventories: which evidence is decisive, which reading is current,
    whether a cluster has two quantities, whether an unknown should stay

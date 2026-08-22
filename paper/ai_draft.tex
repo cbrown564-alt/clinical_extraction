@@ -27,13 +27,13 @@ method. We evaluate three methods on two
 epilepsy-letter tasks: current seizure-frequency labeling on the Gan 2026
 synthetic benchmark and broad epilepsy phenotyping on ExECTv2. For each task we
 compare rules only, LLM only, and LLM with rules. Saved Gan holdout results are
-364/450 Purist for the single-pass system and 379/450 for a multi-model
+0.81 Purist for the single-pass system and 0.84 for a multi-model
 comparison. On ExECT dev140, rules only reached 0.6020 paper-derived all-features
 macro item F1 (0.3548 under the existing strict micro scorer), the LLM only
 method reached 0.7393 clinical fact F1. The historical combined control reached
 0.9189 but used deterministic Prescription and SF-union paths. In the fixed
 six-model ExECT test60 panel, Sol led at 0.8047 clinical-headline F1; in the
-selected matched Gan v0.5 test450 panel, Sol led at 373/450 Purist.
+selected matched Gan v0.5 test450 panel, Sol led at 0.83 Purist.
 Saved-output ablations show positive normalization contributions on both tasks,
 while the evidence check is score-inert on those representative replays. The
 selected evidence supports a reproducible component comparison with explicit
@@ -179,9 +179,9 @@ Task & Method & Split & Selected result & Use and limit \\
 ExECTv2 & Rules only & dev140 & All-feature macro item F1 0.6020 & Paper-derived development result; strict micro F1 0.3548. \\
 ExECTv2 & LLM only & dev140 & Headline F1 0.7393 & GEPA negative development comparator. \\
 ExECTv2 & Historical LLM with rules & dev140 & Clinical fact F1 0.9189 & Reproducible control; not the final model-led architecture. \\
-Gan 2026 & Rules only & validation750 & 697/750 Purist & Deterministic development comparator. \\
-Gan 2026 & LLM only & validation750 & 581/750 Purist & Single-pass development comparator. \\
-Gan 2026 & LLM with rules (v0.5) & validation750 & 661/748 rendered Purist & Historical GPT-4.1-mini development reference; six-model v0.5 coverage pending. \\
+Gan 2026 & Rules only & validation750 & 0.93 Purist & Deterministic development comparator. \\
+Gan 2026 & LLM only & validation750 & 0.77 Purist & Single-pass development comparator. \\
+Gan 2026 & LLM with rules (v0.5) & validation750 & 0.88 rendered Purist & Historical GPT-4.1-mini development reference; six-model v0.5 coverage pending. \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -228,8 +228,8 @@ scores remain reference values, not reproduced results.
 \toprule
 System & Purist & Role \\
 \midrule
-Single structured-event pass & 364/450 & One model pass per note \\
-V12 multi-trace reviewer & 379/450 & Three model passes per note \\
+Single structured-event pass & 0.81 & One model pass per note \\
+V12 multi-trace reviewer & 0.84 & Three model passes per note \\
 \bottomrule
 \end{tabular}
 \end{table}

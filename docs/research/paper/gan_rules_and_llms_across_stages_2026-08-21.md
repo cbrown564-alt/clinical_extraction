@@ -1,17 +1,18 @@
 # Rules and models across extract, encode, and select (Gan 2026)
 
 Date: 2026-08-21
-Revised: 2026-08-21 (ledger-only hybrid select; Gemini replay)
+Revised: 2026-08-22 (codebook-extract five-cell grid)
 Status: paper source; Gan only; Gemini 3.7 Flash
 Owners: [methods](../../paper/methods.md), [claims](../../paper/claims.md),
 [method × stage](five_rungs_of_rule_help_2026-08-20.md)
 
-This report reads the locked Gemini four-method grid on Gan 2026. It asks
-what rules do well, what the model does well, why **Rules then LLM** is
-the strongest overall method on this gold, and why **LLM then rules**
-beats a model-only encode or select. Worked letters are development
-only. Holdout is aggregate-only. Do not inspect `test450` rows. ExECT
-is a separate report.
+This report reads the locked Gemini Gan grid. The cited table is now
+five methods on the codebook extract; see
+[five-cell grid](../gan2026/gan_five_cell_grid_2026-08-22.md).
+Worked letters below are development illustrations, some still on
+the source-near `gan_llm_with_rules` ledger. Holdout is
+aggregate-only. Do not inspect `test450` rows. ExECT is a separate
+report.
 
 Replayable cells:
 `paper_experiments/gan/rungs/gemini37flash/`,
@@ -53,39 +54,37 @@ object.
 
 ## The locked Gemini grid
 
-Named Gemini `test450` totals. **LLM then rules** is the three stops on
-the `gan_llm_with_rules` raw. **Rules then LLM** is the three stops on
-the `gan_llm_pre_post` raw. **LLM** encode and select are later-stage
-Gemini cells. LLM extract is the `gan_llm_with_rules` extract stop.
+Named Gemini `test450` totals on the codebook extract.
 
-| | Extract | Encode | Select |
-| --- | ---: | ---: | ---: |
-| **Rules** | 329/450 (0.73) | 329/450 (0.73) | 329/450 (0.73) |
-| **LLM** | 246/450 (0.55), 297 scorable | 291/450 (0.65) | 320/450 (0.71) |
-| **LLM then rules** | 246/450 (0.55), 297 scorable | 335/450 (0.74) | 357/450 (0.79) |
-| **Rules then LLM** | 265/450 (0.59), 316 scorable | 345/450 (0.77) | 358/450 (0.80) |
+| LLM | Rules | Extract | Encode | Select |
+| --- | --- | ---: | ---: | ---: |
+| | extract, encode and select | 0.73 | 0.73 | 0.73 |
+| extract | extract, encode and select | 0.82 | 0.80 | 0.82 |
+| extract | encode, select | 0.79 | 0.77 | 0.80 |
+| extract, encode | select | 0.79 | 0.79 | 0.82 |
+| extract, encode and select | | 0.79 | 0.79 | 0.79 |
+
+The source-near `gan_llm_with_rules` grid (LLM extract 0.55,
+later-stage select 0.71, hybrid select 0.79) is an ablation.
 
 Select on both hybrid rows is ledger-only: drop, regroup, or relabel
 events already collected. `elapsed_anchor` and `residual_jerk` are
-off. The living Gemini `gan_llm_with_rules` cell is now the same
-357/450 as the select stop. The living Gemini `gan_llm_pre_post`
-cell is the same 358/450 as that select stop. The paper may not say
-which holdout letters moved. These totals replace the earlier
-letter-clock select readings (368 and 372).
+off. The source-near living Gemini `gan_llm_with_rules` cell is
+0.79. The living no-forms `gan_llm_pre_post` cell is 0.80. The
+paper may not say which holdout letters moved.
 
 Three patterns sit in that table.
 
-1. **Extract is where standalone rules dominate.** 329 correct labels
-   with no model. Gemini without suggested candidates is 246. Giving
-   the model those candidates raises extract only to 265. The model is
-   not a better first writer of Gan labels than the rule book.
+1. **Extract is where standalone rules used to dominate.** On the
+   source-near request that was true (0.73 rules vs 0.55 Gemini
+   extract). On the codebook extract Gemini is 0.79, above rules.
 2. **Encode is where a model ledger plus rules first beats rules.**
-   Rule encode on a Gemini ledger is 335 or 345. That is already above
-   standalone rules (329) and well above later-stage Gemini encode
-   (291).
+   Rule encode on a Gemini ledger is 0.74 or 0.77. That is already above
+   standalone rules (0.73) and well above later-stage Gemini encode
+   (0.65).
 3. **Select is where both hybrids still clear later-stage Gemini, and
-   almost meet each other.** 357 and 358 sit above rules (329) and
-   above later-stage Gemini select (320). Once both hybrids use the
+   almost meet each other.** 0.79 and 0.80 sit above rules (0.73) and
+   above later-stage Gemini select (0.71). Once both hybrids use the
    same ledger bound as the LLM select cell, the last-mile gap is one
    letter.
 
@@ -97,20 +96,22 @@ holdout letter to one named rule.
 Named Gemini `dev750`. Same identities. Letters on this split may be
 read.
 
-| | Extract | Encode | Select |
-| --- | ---: | ---: | ---: |
-| **Rules** | 669/750 (0.89) | 669/750 (0.89) | 669/750 (0.89) |
-| **LLM** | 444/750 (0.59), 532 scorable | 506/750 (0.67) | 568/750 (0.76) |
-| **LLM then rules** | 444/750 (0.59), 532 scorable | 608/750 (0.81) | 660/750 (0.88) |
-| **Rules then LLM** | 502/750 (0.67), 582 scorable | 632/750 (0.84) | 664/750 (0.89) |
+| LLM | Rules | Extract | Encode | Select |
+| --- | --- | ---: | ---: | ---: |
+| | extract, encode and select | 0.89 | 0.89 | 0.89 |
+| extract | extract, encode and select | 0.86 | 0.86 | 0.89 |
+| extract | encode, select | 0.78 | 0.80 | 0.86 |
+| extract, encode | select | 0.78 | 0.78 | 0.85 |
+| extract, encode and select | | 0.78 | 0.78 | 0.79 |
 
-On this Gemini `gan_llm_with_rules` raw, selected-evidence render never
-changed `selected_event_ids` (219 kind changes; 167 Purist rescues;
-three harms). That is why encode is encode. The living Gemini hybrid
-cells now match their select stops (660 and 664).
+The source-near `gan_llm_with_rules` development grid (extract 0.59,
+later-stage 0.67 / 0.76, hybrid select 0.88) stays an ablation. On that
+older raw, selected-evidence render never changed
+`selected_event_ids` (219 kind changes; 167 Purist rescues; three
+harms).
 
 The development table repeats the locked shape at extract and encode.
-At select the two hybrids are four letters apart (664 vs 660). “Rules
+At select the two hybrids are four letters apart (0.89 vs 0.88). “Rules
 then LLM is stronger overall” is a small locked-select edge on top of
 a larger extract/encode gap, not a claim that every development
 letter prefers pre-suggestion.
@@ -164,29 +165,29 @@ select without a new call.
 ## Why Rules then LLM is stronger overall
 
 On the locked set the method that is submitted is the select column.
-Rules then LLM is 358/450. That is 29 letters above standalone rules
+Rules then LLM is 0.80. That is 29 letters above standalone rules
 and 1 above LLM then rules.
 
 The cause is visible earlier than select.
 
 **The extract gap is the large one.** Standalone rules already have
-329 correct labels. Gemini without candidates has 246. Candidates add
-19 locked letters at extract (265) and 19 more scorable rows (316
+0.73. Gemini without candidates has 0.55. Candidates add
+19 locked letters at extract (0.59) and 19 more scorable rows (316
 versus 297). Pre-suggestion does not make extract as strong as
 standalone rules. It makes the *model ledger* less empty and less
 wrong before anyone encodes it.
 
 **Encode then spends a better ledger.** Rule encode on the
-pre-suggestion raw is 345. On the free-extract raw it is 335. Same
+pre-suggestion raw is 0.77. On the free-extract raw it is 0.74. Same
 renderer, different events. The eight-letter encode gap is already
 most of the four-letter select gap.
 
 **Select does the last current-state work on both hybrids.** The
 post stack is the same ledger-only families. On development Rules then
-LLM is four letters ahead (664 vs 660). On the locked set it is one
+LLM is four letters ahead (0.89 vs 0.88). On the locked set it is one
 letter ahead. That is a method comparison of two requests, not proof
 that pre-suggestion is necessary on any named holdout letter. The
-old four-letter locked gap (372 vs 368) included clinic-date select
+old four-letter locked gap (0.83 vs 0.82) included clinic-date select
 that later-stage Gemini cannot do.
 
 The short account: **rules are better first readers of this gold’s
@@ -197,10 +198,10 @@ Rules then LLM is the only method that uses that order.
 
 ## Why LLM then rules beats LLM on encode and select
 
-These two rows share one extract (246 / 444). The difference is who
+These two rows share one extract (0.55 / 0.59). The difference is who
 finishes the ledger.
 
-### Encode: 291 → 335 locked; 506 → 608 development
+### Encode: 0.65 → 0.74 locked; 0.67 → 0.81 development
 
 Later-stage Gemini encode sees `event_id`, stated value, and quote. It
 writes one label per event from the shared form list. The extract pick
@@ -217,7 +218,7 @@ letter loses 131 development letters that rule encode gets right.
 The locked lift (44 letters) is the same kind of work: dialect, not a
 new reading.
 
-### Select: 320 → 357 locked; 568 → 660 development
+### Select: 0.71 → 0.79 locked; 0.76 → 0.88 development
 
 Later-stage Gemini select sees the labelled events plus the extract
 pick as a hint. It may keep that pick or write a new label from the
@@ -375,7 +376,7 @@ letter because the extract already holds the current-rate quote.
    why Rules then LLM still leads on the locked grid, by one letter at
    select, after the two hybrids share a ledger-only post stack.
 4. **Putting rules after a free extract is still worth a large
-   locked lift** (246 → 335 → 357) because most of the work is
+   locked lift** (0.55 → 0.74 → 0.79) because most of the work is
    rendering and named ledger policy, not a second reading of the
    letter. That is why LLM then rules still beats later-stage Gemini
    encode and select after the comparison is equalised.

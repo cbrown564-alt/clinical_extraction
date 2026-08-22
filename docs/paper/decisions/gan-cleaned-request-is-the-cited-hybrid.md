@@ -17,7 +17,7 @@ cells. Do not cite Sol 381/450, or the rest of that panel, as the
 paper hybrid.
 
 Grok, Luna, and Gemini `dev750` on the cleaned request are on disk.
-Grok cleaned `test450` is on disk (375/450). DeepSeek, Qwen, and
+Grok cleaned `test450` is on disk (0.83). DeepSeek, Qwen, and
 living Gemma on `dev750`, and the other five models on
 aggregate-only `test450`, remain allowed blanks.
 
@@ -30,7 +30,7 @@ enveloped cells would describe the wrong call.
 ## Consequences
 
 - New writing cites the Gemini cleaned-request cells where they
-  exist. Grok cleaned `test450` (375/450) remains a companion
+  exist. Grok cleaned `test450` (0.83) remains a companion
   locked total. Wait for the remaining models before a six-model
   holdout table.
 - Existing enveloped hybrid fills stay historical.

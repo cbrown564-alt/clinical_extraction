@@ -23,9 +23,9 @@ Replay of the current post stack. No new model calls. Purist.
 
 | Cell | Default | Other adjacent swaps | Diary before elapsed |
 | --- | ---: | --- | --- |
-| Grok hybrid | 681/750 | 0 help, 0 harm | 0 help, 2 harm (679) |
-| Luna hybrid | 669/750 | 0 help, 0 harm | 0 help, 2 harm (667) |
-| Luna pre-post | 683/750 | 0 help, 0 harm | 0 / 0 |
+| Grok hybrid | 0.91 | 0 help, 0 harm | 0 help, 2 harm (0.91) |
+| Luna hybrid | 0.89 | 0 help, 0 harm | 0 help, 2 harm (0.89) |
+| Luna pre-post | 0.91 | 0 help, 0 harm | 0 / 0 |
 
 The two harmed letters are the same on Grok and Luna hybrid:
 **2932** (`seizure free for 9 month` → `13 per 2 month`) and

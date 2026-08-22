@@ -24,19 +24,21 @@ the later rule changes, and the submitted answer. It does not claim
 access to a model's internal reasoning, or that a visible step is
 clinically correct.
 
-Headline table: four methods — Rules, LLM, LLM then rules, Rules
-then LLM — against extract / encode / select. Gan and ExECT LLM
-encode and LLM select are promoted Gemini later-stage cells. LLM
-then rules is the three stops on `gan_llm_with_rules` /
-`exect_llm_only`. Rules then LLM is the three stops on `*_pre_post`.
+Gan headline table: five methods — Rules, Rules then LLM, LLM then
+rules, LLM then select rules, LLM — against extract / encode /
+select. ExECT keeps four methods. Gan LLM extract and encode are
+the codebook extract; LLM select reads that ledger. See
+[methods](methods.md) and
+[five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md).
 `gan_llm_only` is not a results column. Full ledger is the only
-comparator when cited—not a headline method. See [methods](methods.md).
+comparator when cited—not a headline method.
 
 | File | Job |
 | --- | --- |
 | [methods](methods.md) | Proposed method, baselines, roster, splits, scorers |
-| [method × stage](../research/paper/five_rungs_of_rule_help_2026-08-20.md) | Plain-language four-method grid, with one Gan and one ExECT development example |
-| [Gan rules and models](../research/paper/gan_rules_and_llms_across_stages_2026-08-21.md) | Gemini four-method reading: roles, order, encode/select lift |
+| [method × stage](../research/paper/five_rungs_of_rule_help_2026-08-20.md) | Plain-language method × stage grid, with one Gan and one ExECT development example |
+| [Gan rules and models](../research/paper/gan_rules_and_llms_across_stages_2026-08-21.md) | Gemini Gan reading: roles, order, encode/select lift |
+| [five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md) | Cited Gemini frequency five-cell totals |
 | [rule catalogue](../research/paper/rule_catalogue_schema_format_post_2026-08-21.md) | Named extract / encode / select rules on both tasks |
 | [claims](claims.md) | What the paper may say, and how strongly |
 | [lineage](lineage.md) | How the living requests were reached and what kind of method change each revision made |

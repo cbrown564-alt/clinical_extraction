@@ -78,7 +78,7 @@ method. Do not relabel those cells as `gan_llm_with_rules`.
 The cleaned Gan request is a different call. Existing six-model
 hybrid fills stay historical. They are not paper cells. Grok, Luna,
 and Gemini `dev750` on the cleaned request are on disk. Grok cleaned
-`test450` is on disk (375/450). DeepSeek, Qwen, and living Gemma on
+`test450` is on disk (0.83). DeepSeek, Qwen, and living Gemma on
 `dev750`, and the other five models on aggregate-only `test450`,
 remain allowed blanks.
 
@@ -89,7 +89,7 @@ Known blanks on primary methods:
 | Cell | Why it is allowed |
 | --- | --- |
 | Qwen 3.8 Compact `dev140`, then aggregate-only `test60` | Local living Compact is unfinished. Do not invent numbers. |
-| Gan `gan_llm_with_rules` on the cleaned request: DeepSeek, Qwen, and living Gemma on `dev750`, then the remaining five models on aggregate-only `test450` | The paper method is the cleaned request. Grok cleaned `test450` (375/450) and Grok, Luna, Gemini `dev750` are on disk. Do not inspect holdout rows. Do not start new Sol live calls. |
+| Gan `gan_llm_with_rules` on the cleaned request: DeepSeek, Qwen, and living Gemma on `dev750`, then the remaining five models on aggregate-only `test450` | The paper method is the cleaned request. Grok cleaned `test450` (0.83) and Grok, Luna, Gemini `dev750` are on disk. Do not inspect holdout rows. Do not start new Sol live calls. |
 | DeepSeek, Qwen 3.8, and living Gemma Gan LLM-only `dev750` and `test450` | `gan_llm_only` is a six-model paper table. Grok cells are on disk. |
 
 Full ledger comparator cells that already exist do not need a new

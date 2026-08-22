@@ -20,8 +20,8 @@ saved identity that still contains the word.
 
 | Identifier | Plain description | Use the identifier when… |
 | --- | --- | --- |
-| `V12` | Gan multi-model comparison, 379/450 Purist on locked test450 | Linking to its saved aggregate report |
-| `v0_reference` | Gan single-pass event extractor, 364/450 Purist on locked test450 | Joining saved runs or citing its lineage |
+| `V12` | Gan multi-model comparison, 0.84 Purist on locked test450 | Linking to its saved aggregate report |
+| `v0_reference` | Gan single-pass event extractor, 0.81 Purist on locked test450 | Joining saved runs or citing its lineage |
 | `v08` | Historical ExECT LLM-with-rules development control, 0.9202 clinical fact F1 on dev140 (superseded value 0.9189, pre the disclosed Diagnosis subsumption-guard fix, commit 41165adc, 2026-08-11); not the final decision-0040 architecture | Replaying its selected files or discussing its exact version |
 | `GEPA` | Optimizer used for the selected ExECT LLM-only negative comparison | Describing the optimization method |
 

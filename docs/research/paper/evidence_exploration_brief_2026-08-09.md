@@ -532,8 +532,8 @@ that job:
    stories, with each metric, split, shown method, evidence owner, and
    limit visible. Gan shows Grok LLM-only against cleaned hybrid;
    ExECT shows rules, Grok LLM only, and Grok LLM with rules.
-   (Update, 2026-08-19: tables cite Grok 4.6. Gan `test450` is 327/450
-   LLM-only and 375/450 cleaned hybrid; rules-only remains 329/450.
+   (Update, 2026-08-19: tables cite Grok 4.6. Gan `test450` is 0.73
+   LLM-only and 0.83 cleaned hybrid; rules-only remains 0.73.
    ExECT `test60` is 0.7726 raw / 0.805 hybrid against rules 0.7937.)
    The view keeps the tasks' scorers and method sets separate.
 3. **Component-role and failure-boundary source.** The four-slide

@@ -5,8 +5,10 @@ Turn epilepsy clinic letters into structured clinical facts.
 This repository is research code and a working demonstration. The proposed
 method translates clinic letters into structured clinical facts in a designed
 form, with quoted source text. A model collects the facts and evidence;
-recorded rules shape them into the required form. The comparison is four methods (Rules, LLM, LLM then rules, Rules
-then LLM) against stages (extract, encode, select), not an on/off
+recorded rules shape them into the required form. On Gan the
+comparison is five methods (Rules, Rules then LLM, LLM then rules,
+LLM then select rules, LLM) against stages (extract, encode,
+select). ExECT keeps four methods. Neither table is an on/off
 hybrid switch. The public golds are the evaluation
 forms used here, not the task. Tables cite Gemini 3.7 Flash so the
 story stays on the method. Grok, Luna, DeepSeek, Qwen, and Gemma are
@@ -28,12 +30,13 @@ in every rules column.
 
 **Gan 2026** (Purist, locked `test450`):
 
-| | Extract | Encode | Select |
-| --- | ---: | ---: | ---: |
-| **Rules** | 0.73 | 0.73 | 0.73 |
-| **LLM** | 0.55 | 0.65 | 0.71 |
-| **LLM then rules** | 0.55 | 0.74 | 0.79 |
-| **Rules then LLM** | 0.59 | 0.77 | 0.80 |
+| LLM | Rules | Extract | Encode | Select |
+| --- | --- | ---: | ---: | ---: |
+| | extract, encode and select | 0.73 | 0.73 | 0.73 |
+| extract | extract, encode and select | 0.82 | 0.80 | 0.82 |
+| extract | encode, select | 0.79 | 0.77 | 0.80 |
+| extract, encode | select | 0.79 | 0.79 | 0.82 |
+| extract, encode and select | | 0.79 | 0.79 | 0.79 |
 
 **ExECTv2** (clinical fact F1, locked `test60`):
 
@@ -44,14 +47,18 @@ in every rules column.
 | **LLM then rules** | 0.80 | 0.81 | 0.79 |
 | **Rules then LLM** | 0.80 | 0.82 | 0.80 |
 
-Gan **LLM** encode and select are later-stage Gemini cells. ExECT
-**LLM** encode and select are the matching later-stage Gemini cells,
-rescored with exact `clinical_headline_unit_keys` and promoted
-2026-08-22 (no new model calls). **LLM then rules** is the three
-stops on `gan_llm_with_rules` / `exect_llm_only`. **Rules then LLM**
-is the three stops on `*_pre_post`. Gan hybrid select is ledger-only.
-Gemini Rules then LLM select is 358/450; Gemini LLM then rules
-select is 357/450. Those living Gan cells match the select stops.
+Gan **LLM** extract and encode are the codebook extract
+(`gan_llm_extract_label_forms`). Gan **LLM** select reads that
+extract. **LLM then rules** replays rule encode and select on that
+raw. **LLM then select rules** runs select families only. **Rules
+then LLM** is `gan_llm_pre_post_label_forms`. Gemini Rules then LLM
+select and LLM then select rules are both 0.82. LLM select is
+0.79. The source-near `gan_llm_with_rules` grid stays an
+ablation. ExECT **LLM** encode and select are later-stage Gemini
+cells, rescored with exact `clinical_headline_unit_keys` and
+promoted 2026-08-22 (no new model calls). ExECT **LLM then rules**
+replays `exect_llm_only`. ExECT **Rules then LLM** is
+`exect_llm_pre_post`. Gan hybrid select is ledger-only.
 `gan_llm_only` is not a results column. ExECT rule-stop cells are a
 2026-08-22 no-call replay of the saved Gemini raws through the
 current exact scorer and the encode/select split (qualifier overwrite
@@ -59,7 +66,7 @@ and SF type/bound are select).
 
 - **Gan 2026:** Purist accuracy on the locked `test450` split (one current
   seizure-frequency label per letter). The living Grok companion LLM
-  then rules select is 375/450; do not read an enveloped `v0.5` score
+  then rules select is 0.83; do not read an enveloped `v0.5` score
   into that cell.
 - **ExECTv2:** de-duplicated clinical fact F1 on the locked `test60` split
   (diagnosis, seizure frequency, prescriptions, and investigations).
@@ -79,14 +86,19 @@ Scores are not interchangeable across tasks.
 | Locked test split | `test450` (aggregate scores only) | `test60` (aggregate scores only) |
 | Primary score | Purist accuracy | Clinical fact F1 |
 
-Each task uses the same four methods against extract / encode / select.
+Gan uses five methods against extract / encode / select. ExECT keeps
+four.
 
 - **Rules** — deterministic code; one score in every stage column.
-- **LLM** — parsed model ledger, then Gemini later-stage encode and
-  select on the same freeze.
-- **LLM then rules** — `gan_llm_with_rules` / `exect_llm_only` at
-  extract, encode, and select.
-- **Rules then LLM** — `*_pre_post` at extract, encode, and select.
+- **Rules then LLM** — `gan_llm_pre_post_label_forms` /
+  `exect_llm_pre_post` at extract, then rule encode and select.
+- **LLM then rules** — codebook extract / `exect_llm_only`, then
+  rule encode and select.
+- **LLM then select rules** — Gan only: codebook extract, then
+  select families without rule encode.
+- **LLM** — Gan codebook extract is extract and encode; select
+  reads that ledger. ExECT LLM encode and select are later-stage
+  Gemini cells.
 
 ## How it works
 

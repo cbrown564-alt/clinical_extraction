@@ -30,7 +30,7 @@ record:
 6. [Why the proposed method is a model plus recorded rules](research/paper/why_hybrid_architecture_2026-08-09.md) — the proposed method; phrase lists: [Gan](research/paper/gan_gold_phrase_variants_2026-08-13.md), [ExECT](research/paper/exect_gold_phrase_variants_2026-08-13.md)
 7. [Five rungs of rule help](research/paper/five_rungs_of_rule_help_2026-08-20.md) — plain-language rungs; Gan row 10 and ExECT `EA0007`
 7a. [Rule catalogue](research/paper/rule_catalogue_schema_format_post_2026-08-21.md) — named schema / format / post rules on both tasks
-7b. [Rules and models across stages (Gan, Gemini)](research/paper/gan_rules_and_llms_across_stages_2026-08-21.md) — four-method reading of the locked Gemini grid; ExECT is a later report
+7b. [Rules and models across stages (Gan, Gemini)](research/paper/gan_rules_and_llms_across_stages_2026-08-21.md) — Gemini Gan reading of the locked five-cell grid; ExECT is a later report
 8. [How the proposed method divides the work](research/artifacts/hybrid_architecture_2026-08-10.html)
 9. [Parallel performance view](research/artifacts/parallel_two_task_performance_view_2026-08-09.html) — two holdout comparisons, kept separate. Tables cite Gemini; Grok is a companion row.
 10. [Gan story](research/paper/gan_story_2026-08-10.md) and [ExECT story](research/paper/exect_story_2026-08-12.md) — ExECT hybrid numbers are Compact hybrid F1; standalone Compact LLM-only is raw F1 ([methods](paper/methods.md); [cells](../paper_experiments/exect/README.md))

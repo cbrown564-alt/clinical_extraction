@@ -116,9 +116,9 @@ hybrid label. Not a `dev750` score. No prompt retune from these
 Luna `gan_llm_pre_post` finished: 750/750 rows, 700 new calls, 50
 resumed, 0 call failures. Artifact:
 `experiments/paper/gan_llm_pre_post/gpt56luna/dev750/`.
-Purist 676/750 (0.9013), Pragmatic 692/750 (0.9227). Living Luna
-hybrid is 663/750. Rules-only is 681/750. Grok rung-4 replay is
-675/750. 4 invalid JSON. Not holdout. Not a Grok cell.
+Purist 0.90, Pragmatic 0.92. Living Luna
+hybrid is 0.88. Rules-only is 0.91. Grok rung-4 replay is
+0.90. 4 invalid JSON. Not holdout. Not a Grok cell.
 
 Hop audit: 64/74 misses are already wrong at model selection.
 Post first-failure harms are 3 monthly-diary and 3
@@ -137,8 +137,8 @@ miss.
 Luna `gan_llm_pre_post` finished: 450/450 calls, 0 reused, 0
 call failures. Promoted to
 `paper_experiments/gan/gan_llm_pre_post/gpt56luna/test450/`.
-Purist 369/450 (0.82), Pragmatic 379/450 (0.8422). 2 parse or
-validation failures. Locked Grok rung 4 is 375/450. Aggregate
+Purist 0.82, Pragmatic 0.84. 2 parse or
+validation failures. Locked Grok rung 4 is 0.83. Aggregate
 only. Not a Grok cell. Do not inspect rows. Do not retune from
 this cell.
 

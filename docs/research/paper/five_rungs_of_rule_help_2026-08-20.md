@@ -1,14 +1,16 @@
-# Method × stage grid: four methods against extract / encode / select
+# Method × stage grid: methods against extract / encode / select
 
 Date: 2026-08-20
-Revised: 2026-08-21 (refile: Rules / LLM / LLM then rules / Rules then LLM)
+Revised: 2026-08-22 (Gan cited grid is five methods)
 Status: paper source; development illustrations only
 Owners: [methods](../../paper/methods.md), [claims](../../paper/claims.md),
 this file for the worked reading
 
-The headline table is four methods — **Rules**, **LLM**, **LLM then
-rules**, **Rules then LLM** — against stages **extract**, **encode**,
-and **select**.
+The cited Gan table is five methods — **Rules**, **Rules then LLM**,
+**LLM then rules**, **LLM then select rules**, **LLM** — against
+stages **extract**, **encode**, and **select**. ExECT keeps four
+methods. Locked Gan totals:
+[five-cell grid](../gan2026/gan_five_cell_grid_2026-08-22.md).
 This page is the plain-language owner for what those cells are, how
 they run on one Gan letter and one ExECT letter, and what the full
 design is worth. Replayable numbers stay in

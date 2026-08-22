@@ -1,16 +1,17 @@
 # Paper methods
 
 Date: 2026-08-17
-Revised: 2026-08-21 (headline is four methods × three stages)
+Revised: 2026-08-22 (Gan headline is five methods × three stages)
 Status: current
 Owner: this file
 
 Two tasks. The proposed method translates clinic letters into structured
-facts in a designed form, with quoted source text. The headline table is
-four methods — **Rules**, **LLM**, **LLM then rules**, **Rules then
-LLM** — against stages **extract**, **encode**, and **select**. It is
-not five depths of one hybrid switch. Scores are not interchangeable
-across tasks.
+facts in a designed form, with quoted source text. The Gan headline
+table is five methods — **Rules**, **Rules then LLM**, **LLM then
+rules**, **LLM then select rules**, **LLM** — against stages
+**extract**, **encode**, and **select**. ExECT keeps four methods.
+Neither table is five depths of one hybrid switch. Scores are not
+interchangeable across tasks.
 
 | | Gan 2026 | ExECTv2 |
 | --- | --- | --- |
@@ -41,12 +42,13 @@ are a design property, not a third evaluated task.
 | Submitted answer | One canonical frequency label | One de-duplicated fact inventory |
 | How this paper scores it | Label mapped to a monthly Purist band | Four-family clinical fact F1 |
 
-On Gan, **LLM then rules** is `gan_llm_with_rules`: extract, encode,
-and select are the three stops on that raw. **Rules then LLM** is
-`gan_llm_pre_post`: the same three stops on that other raw.
-**LLM** is later-stage encode and select on the frozen
-`gan_llm_with_rules` extract ledger. `gan_llm_only` is a third
-prompt. It is not a results column.
+On Gan, **LLM** extract and encode are `gan_llm_extract_label_forms`.
+**LLM** select is `gan_llm_select_from_extract`. **LLM then rules**
+is rule encode and rule select on that raw. **LLM then select
+rules** is select families only. **Rules then LLM** is
+`gan_llm_pre_post_label_forms`. `gan_llm_with_rules` is the
+source-near ablation. `gan_llm_only` is a third prompt. It is not
+a results column.
 
 On ExECT, **LLM then rules** is `exect_llm_only` replayed at
 extract / encode / select. **Rules then LLM** is
@@ -85,16 +87,23 @@ records it. A visible step is not described as clinically correct.
 
 ## Identities
 
-The headline is four methods × three stages. Same names on both
-tasks. Scores stay task-specific. The plain-language owner is
+Gan is five methods × three stages. ExECT is four. Scores stay
+task-specific. The plain-language owner is
 [five rungs of rule help](../research/paper/five_rungs_of_rule_help_2026-08-20.md).
 
-| | Extract | Encode | Select |
-| --- | --- | --- | --- |
-| **Rules** | `gan_rules` / `exect_rules`. Same submitted answer in all three columns. No model. This rule set is not the encode/select stack on a model ledger. | same | same |
-| **LLM** | Frozen extract ledger only (parsed `gan_llm_with_rules` / `exect_llm_only`). | Gemini later-stage `gan_llm_encode` / `exect_llm_encode`. | Gemini later-stage `gan_llm_select` / `exect_llm_select`. |
-| **LLM then rules** | `gan_llm_with_rules` / `exect_llm_only` at extract (raw model label / flatten). | The same raw at rule encode. | The same raw at rule select. |
-| **Rules then LLM** | `gan_llm_pre_post` / `exect_llm_pre_post` at extract. | The same raw at rule encode. | The same raw at rule select. |
+Gan rows name which stages each side runs:
+
+| LLM | Rules | Request / repair |
+| --- | --- | --- |
+| | extract, encode and select | Standalone `gan_rules`. |
+| extract | extract, encode and select | `gan_llm_pre_post_label_forms`, then rule encode and select. |
+| extract | encode, select | `gan_llm_extract_label_forms`, then rule encode and select. |
+| extract, encode | select | Same extract; select families only (`llm_select_only`). |
+| extract, encode and select | | Same extract; `gan_llm_select_from_extract`. |
+
+ExECT stays four methods: Rules; LLM later-stage encode/select on
+`exect_llm_only`; LLM then rules on that raw; Rules then LLM on
+`exect_llm_pre_post`.
 
 `gan_llm_only` remains a live runner for existing cells. It is not a
 results column. Do not use it as llm extract.
