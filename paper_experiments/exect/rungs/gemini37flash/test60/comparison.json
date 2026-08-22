@@ -39,15 +39,15 @@
       "source": "living_exect_llm_pre_post"
     },
     "llm_select": {
-      "clinical_fact_f1": 0.7869,
+      "clinical_fact_f1": 0.8161,
       "family_f1": {
-        "Diagnosis": 0.7009,
+        "Diagnosis": 0.7713,
         "Investigations": 0.9362,
-        "Prescription": 0.9091,
-        "SeizureFrequency": 0.6715
+        "Prescription": 0.9157,
+        "SeizureFrequency": 0.6861
       },
-      "precision": 0.8511,
-      "recall": 0.7317
+      "precision": 0.8664,
+      "recall": 0.7713
     },
     "rules_only": {
       "clinical_fact_f1": 0.7937,

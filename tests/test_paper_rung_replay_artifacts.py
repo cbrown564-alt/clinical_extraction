@@ -55,9 +55,9 @@ def test_exect_dev140_rungs_score_format_render_not_materialized_format_only() -
     assert check["same_as_schema"] is False
     assert "same-fact format" in check["note"]
     rungs = normalize_rungs_payload(payload["rungs"])
-    assert rungs["llm_extract"]["clinical_fact_f1"] == 0.6485
-    assert rungs["llm_encode"]["clinical_fact_f1"] == 0.8197
-    assert rungs["llm_select"]["clinical_fact_f1"] == 0.904
+    assert rungs["llm_extract"]["clinical_fact_f1"] == 0.8183
+    assert rungs["llm_encode"]["clinical_fact_f1"] == 0.8677
+    assert rungs["llm_select"]["clinical_fact_f1"] == 0.8806
     assert rungs["rules_only"]["clinical_fact_f1"] == 0.9042
     assert rungs["llm_pre_post"]["clinical_fact_f1"] == 0.8998
     assert payload["shared_raw_output"] == "exect_llm_only"

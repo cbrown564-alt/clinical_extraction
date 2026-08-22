@@ -216,31 +216,13 @@
   "suggested_evidence": [
     {
       "category": "diagnosis_assertion",
-      "evidence": "Clinic note: known focal epilepsy.",
+      "evidence": "focal epilepsy",
       "family": "diagnosis",
       "name_hint": "focal epilepsy"
     },
     {
-      "category": "active_rate",
-      "evidence": "Two seizures per month over the last year.",
-      "family": "seizure_frequency",
-      "name_hint": "seizures"
-    },
-    {
-      "category": "seizure_free_anchor",
-      "evidence": "Last seizure was yesterday.",
-      "family": "seizure_frequency",
-      "name_hint": "seizure"
-    },
-    {
-      "category": "current_regimen",
-      "evidence": "Continues levetiracetam 500mg twice daily.",
-      "family": "medication",
-      "name_hint": "levetiracetam"
-    },
-    {
       "category": "performed_investigation",
-      "evidence": "MRI brain reported normal.",
+      "evidence": "MRI brain reported normal",
       "family": "investigation",
       "name_hint": "MRI"
     }

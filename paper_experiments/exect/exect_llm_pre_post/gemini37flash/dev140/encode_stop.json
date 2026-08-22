@@ -1,15 +1,15 @@
 {
   "claim_boundary": "ExECT development pre-post rule encode. Not holdout.",
   "encode": {
-    "clinical_fact_f1": 0.8616,
+    "clinical_fact_f1": 0.8629,
     "family_f1": {
-      "Diagnosis": 0.7852,
+      "Diagnosis": 0.7889,
       "Investigations": 0.9668,
       "Prescription": 0.9582,
       "SeizureFrequency": 0.7771
     },
-    "precision": 0.8967,
-    "recall": 0.8291
+    "precision": 0.8981,
+    "recall": 0.8304
   },
   "encode_same_as_extract": false,
   "extract": {
@@ -30,15 +30,15 @@
   "row_count": 140,
   "row_policy": "development_review_permitted",
   "select": {
-    "clinical_fact_f1": 0.8695,
+    "clinical_fact_f1": 0.8773,
     "family_f1": {
-      "Diagnosis": 0.8046,
+      "Diagnosis": 0.8172,
       "Investigations": 0.9594,
-      "Prescription": 0.9432,
-      "SeizureFrequency": 0.8026
+      "Prescription": 0.9554,
+      "SeizureFrequency": 0.8066
     },
-    "precision": 0.9249,
-    "recall": 0.8204
+    "precision": 0.9236,
+    "recall": 0.8354
   },
   "source_raw": "paper_experiments/exect/exect_llm_pre_post/gemini37flash/dev140/structured.jsonl",
   "split": "dev140",

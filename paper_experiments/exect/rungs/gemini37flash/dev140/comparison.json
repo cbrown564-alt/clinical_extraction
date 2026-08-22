@@ -12,15 +12,15 @@
   "row_policy": "development_review_permitted",
   "rungs": {
     "llm_encode": {
-      "clinical_fact_f1": 0.8529,
+      "clinical_fact_f1": 0.8543,
       "family_f1": {
-        "Diagnosis": 0.7608,
+        "Diagnosis": 0.7647,
         "Investigations": 0.9513,
         "Prescription": 0.9576,
         "SeizureFrequency": 0.7862
       },
-      "precision": 0.9114,
-      "recall": 0.8015
+      "precision": 0.9129,
+      "recall": 0.8028
     },
     "llm_extract": {
       "clinical_fact_f1": 0.8027,
@@ -39,15 +39,15 @@
       "source": "living_exect_llm_pre_post"
     },
     "llm_select": {
-      "clinical_fact_f1": 0.855,
+      "clinical_fact_f1": 0.8771,
       "family_f1": {
-        "Diagnosis": 0.7665,
+        "Diagnosis": 0.8204,
         "Investigations": 0.9438,
-        "Prescription": 0.9353,
-        "SeizureFrequency": 0.817
+        "Prescription": 0.9502,
+        "SeizureFrequency": 0.8208
       },
-      "precision": 0.9279,
-      "recall": 0.7927
+      "precision": 0.9309,
+      "recall": 0.8291
     },
     "rules_only": {
       "clinical_fact_f1": 0.9042,
