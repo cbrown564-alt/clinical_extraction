@@ -394,6 +394,7 @@ def replay_exect_pre_post_encode(split: str, *, slug: str = "gemini37flash") -> 
     before = structured.PROMPT_VERSION
     encode_rows: list[dict[str, Any]] = []
     extract_rows: list[dict[str, Any]] = []
+    select_rows: list[dict[str, Any]] = []
     try:
         structured.set_active_prompt_version(structured.EXECT_LLM_PRE_POST)
         for letter_id, raw_output in sorted(raws.items()):
@@ -406,10 +407,19 @@ def replay_exect_pre_post_encode(split: str, *, slug: str = "gemini37flash") -> 
                 split="test" if holdout else "dev",
                 config=StructuredMethodConfig.selected(),
             )
+            assembled = assemble_structured_rows(
+                [letter],
+                [dict(producer.row)],
+                config=StructuredMethodConfig.selected(),
+            )[letter.letter_id]
             schema_rows = schema_mention_rows(producer)
             format_rows = format_render_mention_rows(producer, letter.note_text)
+            select_mentions = list(
+                assembled["prediction_surfaces"].get("residual_benchmark_added") or []
+            )
             schema_keys = _family_keys(letter, schema_rows)
             format_keys = _family_keys(letter, format_rows)
+            select_keys = _family_keys(letter, select_mentions)
             for family in FAMILIES:
                 gold_keys = Counter(
                     clinical_headline_unit_keys(
@@ -436,10 +446,18 @@ def replay_exect_pre_post_encode(split: str, *, slug: str = "gemini37flash") -> 
                         "pred_keys": _counter_rows(format_keys[family]),
                     }
                 )
+                select_rows.append(
+                    {
+                        "family": family,
+                        "gold_keys": _counter_rows(gold_keys),
+                        "pred_keys": _counter_rows(select_keys[family]),
+                    }
+                )
     finally:
         structured.set_active_prompt_version(before)
     extract = _surface_prf(extract_rows)
     encode = _surface_prf(encode_rows)
+    select = _surface_prf(select_rows)
     summary = {
         "claim_boundary": (
             "ExECT aggregate-only test60 pre-post rule encode. "
@@ -458,6 +476,7 @@ def replay_exect_pre_post_encode(split: str, *, slug: str = "gemini37flash") -> 
         "surface": RUNG3_REPLAY_SURFACE,
         "extract": extract,
         "encode": encode,
+        "select": select,
         "encode_same_as_extract": extract == encode,
     }
     if raw_path.parent.name == PRE_POST_METHOD:
