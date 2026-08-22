@@ -1,16 +1,18 @@
 # Method × stage grid: methods against extract / encode / select
 
 Date: 2026-08-20
-Revised: 2026-08-22 (Gan cited grid is five methods)
+Revised: 2026-08-22 (wording ablation labeled; five role rows)
 Status: paper source; development illustrations only
 Owners: [methods](../../paper/methods.md), [claims](../../paper/claims.md),
 this file for the worked reading
 
-The cited Gan table is five methods — **Rules**, **Rules then LLM**,
-**LLM then rules**, **LLM then select rules**, **LLM** — against
-stages **extract**, **encode**, and **select**. ExECT keeps four
-methods. Locked Gan totals:
+The cited Gan table is five role rows. Each of **extract**,
+**encode**, and **select** is **rules**, **LLM**, or **both**. The
+cited score is the select stop. ExECT uses the same five role rows.
+Locked Gan totals:
 [five-cell grid](../gan2026/gan_five_cell_grid_2026-08-22.md).
+Locked ExECT cell 4:
+[rule-select-after-LLM-encode](../exectv2/exect_rule_select_after_llm_encode_2026-08-22.md).
 This page is the plain-language owner for what those cells are, how
 they run on one Gan letter and one ExECT letter, and what the full
 design is worth. Replayable numbers stay in
@@ -30,18 +32,17 @@ facts in a designed form, with quoted source text. A model collects a
 ledger. Recorded rules then shape that ledger. The same saved model
 output can be replayed through those rules without a new call.
 
-The framing is **four methods × three stages**:
+Both tasks name who runs each stage (rules, LLM, or both):
 
-- **Rules** — no model. One submitted answer, shown in all three
-  stage columns. That rule set is not the encode/select stack on a
-  model ledger.
-- **LLM** — model only. Extract is the parsed `gan_llm_with_rules` /
-  `exect_llm_only` ledger. Encode and select are later-stage model
-  calls on that ledger.
-- **LLM then rules** — `gan_llm_with_rules` / `exect_llm_only`.
-  Extract, encode, and select are the three stops on that raw.
-- **Rules then LLM** — `gan_llm_pre_post` / `exect_llm_pre_post`.
-  Extract, encode, and select are the three stops on that raw.
+- **rules / rules / rules** — no model.
+- **both / rules / rules** — `gan_llm_pre_post_label_forms` /
+  `exect_llm_pre_post`, then rule encode and select.
+- **LLM / rules / rules** — codebook extract / `exect_llm_only`,
+  then rule encode and select.
+- **LLM / LLM / rules** — Gan: codebook extract, then select only.
+  ExECT: later-stage encode, then accepted Select rules.
+- **LLM / LLM / LLM** — Gan `gan_llm_select_from_extract`. ExECT
+  later-stage `exect_llm_select`.
 
 The two public golds are evaluation forms, not the task. Gan asks for
 one current seizure-frequency label. ExECT asks for a complete
@@ -52,14 +53,18 @@ A later cell is not automatically better. A recorded hop is not a
 clinically correct step. The score is how the submitted answer is
 judged. Do not recode the stack; this is a refile of the claim.
 
-## The grid
+## The Gan grid
 
-| | Extract | Encode | Select |
+| Extract | Encode | Select | What runs |
 | --- | --- | --- | --- |
-| **Rules** | `gan_rules` / `exect_rules`. Same score in every stage column. | same | same |
-| **LLM** | Parsed model ledger. Blank Gan `final_label` stays unscorable. Not `gan_llm_only`. | Gemini `gan_llm_encode` / `exect_llm_encode`. | Gemini `gan_llm_select` / `exect_llm_select`. |
-| **LLM then rules** | `gan_llm_with_rules` / `exect_llm_only` extract stop. | Encode stop on that raw. | Select stop on that raw. |
-| **Rules then LLM** | `*_pre_post` extract stop. | Encode stop on that raw. | Select stop on that raw. |
+| rules | rules | rules | `gan_rules` |
+| both | rules | rules | `gan_llm_pre_post_label_forms`, then rule encode and select |
+| LLM | rules | rules | `gan_llm_extract_label_forms`, then codebook encode and rule select |
+| LLM | LLM | rules | Same extract; select families only |
+| LLM | LLM | LLM | Same extract; `gan_llm_select_from_extract` |
+
+ExECT LLM encode is a second letter-out call. LLM / LLM / rules is
+accepted Select on that encode ledger.
 
 Three hop effects on one raw support the reading (the paper table need
 not list every revise subtype):
@@ -68,15 +73,13 @@ not list every revise subtype):
 - **Encode** — codebook / designed form / Gan selected-evidence renderer.
 - **Select** — gate, drop, rewrite, reselect, invent.
 
-On Gan, LLM then rules is the three stops on one
-`gan_llm_with_rules` raw. Rules then LLM is the three stops on one
-`gan_llm_pre_post` raw. LLM encode and select are later-stage
-Gemini calls. Tables cite Gemini 3.7 Flash. Luna is the development
-iterator for the Rules then LLM request.
+On Gan the cited extract is the codebook request, not
+`gan_llm_with_rules`. LLM encode in the headline table is that
+extract, not a later-stage encode call. Tables cite Gemini 3.7 Flash.
 
-On ExECT, LLM then rules is the three stops on one `exect_llm_only`
-raw. Rules then LLM is the three stops on living
-`exect_llm_pre_post`. `exect_llm_with_rules` is the live alias.
+On ExECT, cells 2–4 replay one `exect_llm_only` raw. **both / rules /
+rules** is a different request (`exect_llm_pre_post`). `exect_llm_with_rules`
+is the live alias of that request, not the cited extract.
 
 The paper records every submitted-answer version as a hop log. A
 **score projection** converts the submitted answer to the unit the
@@ -86,7 +89,8 @@ object.
 ## Gan worked example: a bound becomes a gold label
 
 **Letter:** Gan development source row `10`. **Model:** Grok 4.6.
-**Shared raw:** `gan_llm_with_rules`. **Score:** Purist.
+**Wording ablation raw:** `gan_llm_with_rules` (not the cited
+codebook extract). **Score:** Purist.
 **Artifacts:** `paper_experiments/gan/rungs/grok46/dev750/` and
 `paper_experiments/gan/gan_llm_with_rules/grok46/dev750/`.
 
@@ -97,39 +101,41 @@ The letter states a current rate as an upper bound:
 Gold is `4 per day`. That is a Gan gold-dialect convention. The bound
 stays in the quoted span. It is not in the submitted label.
 
-| | Extract | Encode | Select |
+| Role row | Extract | Encode | Select |
 | --- | --- | --- | --- |
-| **Rules** | `4 per day` (correct) | same | same |
-| **LLM** | `≤ 4 per day` (incorrect) | — | — |
-| **Hybrid** | — (other request) | `4 per day` (correct) | `4 per day` (correct) |
+| **rules / rules / rules** | `4 per day` (correct) | same | same |
+| **Wording ablation** (`gan_llm_with_rules`) | `≤ 4 per day` (incorrect) | `4 per day` (correct) | `4 per day` (correct) |
+| **both / rules / rules** | `4 per day` (correct) | — | `4 per day` (correct) |
 
-LLM extract and hybrid encode / select share one Grok
+The wording-ablation extract and rule encode / select share one Grok
 `gan_llm_with_rules` output. The model already selected the
-accommodation-log event. LLM extract keeps the inequality, so Purist
-misses. Hybrid encode **encodes** that already chosen event into the
-evaluation form and does not change `selected_event_ids`. Hybrid
+accommodation-log event. Source-near extract keeps the inequality, so
+Purist misses. Rule encode **encodes** that already chosen event into the
+evaluation form and does not change `selected_event_ids`. Rule
 select does not switch the event on this letter.
 
 This is why encode exists as its own stop. The clinical fact is the
 same rate the model chose. The designed form is a different string.
 Turning selected-evidence repair off disables that whole renderer, not
 only bound flattening. The same raw can be replayed with the renderer
-off. Hybrid extract is a different request (`gan_llm_pre_post`),
-not a replay of this letter's `gan_llm_with_rules` raw.
+off. **both / rules / rules** is a different request
+(`gan_llm_pre_post_label_forms`), not a replay of this letter's
+wording-ablation raw.
 
 **Contrast, still development:** source row `15431`. Gold is the
 two-part cluster label `1 cluster per 4 month, 5 per cluster`. Rules
-submit that label and are Purist-correct. LLM extract writes a long
-cluster-after-quiet phrase and misses. Hybrid encode and hybrid
-select both submit `seizure free for multiple month` and miss. Select
+submit that label and are Purist-correct. Wording-ablation extract
+writes a long cluster-after-quiet phrase and misses. Rule encode and
+rule select on that raw both submit `seizure free for multiple month`
+and miss. Select
 does not recover a two-part cluster once the model has collapsed the
 reading. Visibility is the point: the hops name the collapse.
 
 ## ExECT worked example: a hedge becomes a diagnosis concept
 
 **Letter:** ExECT development `EA0007`. **Model:** Grok 4.6.
-**Shared raw for cells 2–4:** `exect_llm_only`. **Cell 5:** living
-`exect_llm_pre_post`. **Score:** four-family clinical fact F1.
+**Shared raw for cells 2–4:** `exect_llm_only`. **Cell 2 (both /
+rules / rules):** `exect_llm_pre_post`. **Score:** four-family clinical fact F1.
 **Artifacts:** `paper_experiments/exect/rungs/grok46/dev140/` and
 `paper_experiments/exect/exect_llm_pre_post/grok46/dev140/`.
 
@@ -153,11 +159,11 @@ prescription name/unit/dose, seizure-frequency encoding, and
 investigation attribute strip. Evidence reject, SF state projection,
 unknown suppression, and family lenses are clinical revise and
 land on cell 4.
-
-Living cell 5 on the same letter has hybrid headline F1 1.0 and
-four-family letter-exact true. The unrepaired hybrid raw on that
-request is not schema (cell 2). Cell 2 is the separate `exect_llm_only`
-call.
+**both / rules / rules** on the same letter has select F1 1.0 and
+four-family letter-exact true. The unrepaired `exect_llm_pre_post` body
+on that request is the extract stop (cell 2), not the select stop.
+Cell 3 (`exect_llm_only` plus rule encode and select) is the
+six-model row and a separate saved call.
 
 The rewrite is a task-format commitment. It is not an unqualified
 clinical diagnosis. The object keeps the quoted hedge, the named
@@ -190,9 +196,9 @@ not a promise that the last cell always wins.
    aggregate. Those facts can both be true because they compare
    different objects.
 6. **Pre-suggestion is a different request.** Candidates in the prompt
-   change what the model is asked to collect. That is why ExECT cell 5
-   is living `exect_llm_pre_post`, and why an unrepaired hybrid answer
-   is not ExECT schema.
+   change what the model is asked to collect. That is why ExECT cell 2
+   is `exect_llm_pre_post`, and why an unrepaired pre-post body is not
+   LLM extract.
 
 The files do not support a claim that every deterministic step is
 safe, that a visible hop is clinically correct, that development hop

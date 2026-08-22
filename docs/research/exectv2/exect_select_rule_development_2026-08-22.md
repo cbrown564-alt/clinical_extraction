@@ -262,6 +262,14 @@ saved development distributions; it is not an independent split, holdout
 generalization, or clinical validation. The result has not replaced the
 promoted paper rung artifacts. `test60` remains sealed.
 
+The accepted rules are replay stops for the cited table. On saved
+`exect_llm_only` raw they define cell 3 rule select after rule encode
+(the six-model roster row, not the peak). On saved later-stage encode
+they define cell 4 rule select (Gemini only). ExECT uses the same five
+role rows as Gan; the cited score is the select stop. `exect_llm_with_rules`
+is the live alias of `exect_llm_pre_post` (both extract); it is not a
+second headline method. A living producer raw F1 is not LLM extract.
+
 ## Post-study portability correction
 
 After the study freeze, the accepted Diagnosis and SF rules were rewritten so

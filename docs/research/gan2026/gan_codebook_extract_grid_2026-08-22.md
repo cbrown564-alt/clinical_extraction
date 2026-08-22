@@ -1,13 +1,20 @@
 # Gan codebook-extract grid result
 
 Date: 2026-08-22
+Revised: 2026-08-22 (development grid; cited table is five-cell)
 Status: development answer
 Owner: [protocol](gan_codebook_extract_grid_protocol_2026-08-22.md)
 Machine artifact: `experiments/paper/gan_codebook_extract_grid/gemini37flash/dev750/grid.json`
 
+Development grid that chose the cited LLM extract and both extract
+(`gan_llm_pre_post_label_forms`). `gan_llm_with_rules` is the source-near
+wording ablation, not the paper extract. Living `gan_llm_pre_post` is not
+the cited both row. Leftover living extracts stay on disk; they are not
+the paper primary.
+
 ## Answer
 
-The codebook extract is the better Gemini extract. Later-stage LLM
+The codebook extract is the cited Gemini LLM extract. Later-stage LLM
 encode on that ledger **lowers** the score. Rules after the same raw
 still raise it. A new Rules-then-LLM request with the same form list
 moves most of the gain into extract; rule encode then adds nothing on
@@ -63,9 +70,9 @@ Purist. Rule select is 0.89, one letter above the living no-forms cell
 
 ## Claim boundary
 
-Development candidate grid. Not holdout. Not a replacement for the
-published Gemini `test450` table. Do not retune `label_forms`. Do not
-overwrite `gan_llm_with_rules`.
+Development candidate grid. Not holdout. Informed the cited five-cell
+`test450` table; does not replace it. Do not retune `label_forms`. Do
+not overwrite `gan_llm_with_rules` or living `gan_llm_pre_post`.
 
 ## Next
 

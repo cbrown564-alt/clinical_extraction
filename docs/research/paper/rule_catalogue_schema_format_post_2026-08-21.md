@@ -59,7 +59,9 @@ Status:
 ## Gan 2026
 
 One current seizure-frequency label. Replay cells 2–4 share one
-`gan_llm_with_rules` raw. Default revise mode is `llm_revise`
+`gan_llm_extract_label_forms` raw (codebook extract). The source-near
+`gan_llm_with_rules` stack is the wording ablation, not the cited
+extract. Default revise mode is `llm_revise`
 (legacy alias: `hybrid_full_stack`).
 
 ### Schema
@@ -118,7 +120,8 @@ Applied in `DEFAULT_SEMANTIC_FAMILY_ORDER` when the matching flag is on.
 ## ExECTv2
 
 Four-family inventory. Replay cells 2–4 share one `exect_llm_only` raw.
-Cell 4 is living assembly (`residual_benchmark_added`).
+Cell 4 select is rule assembly (`residual_benchmark_added`). Cell 2
+is a different request (`exect_llm_pre_post`).
 
 ### Shared (all families)
 

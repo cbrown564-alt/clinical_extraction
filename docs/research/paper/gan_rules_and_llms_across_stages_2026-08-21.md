@@ -1,13 +1,13 @@
 # Rules and models across extract, encode, and select (Gan 2026)
 
 Date: 2026-08-21
-Revised: 2026-08-22 (codebook-extract five-cell grid)
+Revised: 2026-08-22 (five-cell headline; select stop; wording ablation)
 Status: paper source; Gan only; Gemini 3.7 Flash
 Owners: [methods](../../paper/methods.md), [claims](../../paper/claims.md),
 [method × stage](five_rungs_of_rule_help_2026-08-20.md)
 
-This report reads the locked Gemini Gan grid. The cited table is now
-five methods on the codebook extract; see
+This report reads the locked Gemini Gan grid. The cited table is
+five role rows; the headline score is the select stop. See
 [five-cell grid](../gan2026/gan_five_cell_grid_2026-08-22.md).
 Worked letters below are development illustrations, some still on
 the source-near `gan_llm_with_rules` ledger. Holdout is
@@ -26,17 +26,21 @@ Gan asks for one current seizure-frequency label. A letter can hold a
 usual rate, a dated count, a cluster, a quiet interval, and older
 history. Several of those statements can be true. The gold keeps one.
 
-The four methods are different ways of dividing that work between
-written rules and Gemini:
+The headline table is five role rows. Each of **extract**, **encode**,
+and **select** is **rules**, **LLM**, or **both**. The cited score is
+the select stop:
 
-| Method | What happens |
-| --- | --- |
-| **Rules** | Standalone deterministic pipeline. No model. One answer, shown in every stage column. That rule set is not the encode/select stack on a model ledger. |
-| **LLM** | Gemini only. Extract is the parsed `gan_llm_with_rules` ledger. Encode and select are later-stage Gemini calls on that ledger. They do not re-read the letter. |
-| **LLM then rules** | The same `gan_llm_with_rules` raw, stopped at extract, then rule encode, then rule select. |
-| **Rules then LLM** | A different request (`gan_llm_pre_post`): rules first suggest candidate quotes, Gemini collects and picks, then the same rule encode and select stack runs. |
+| Extract | Encode | Select | What runs |
+| --- | --- | --- | --- |
+| rules | rules | rules | `gan_rules` — standalone deterministic pipeline; not the encode/select stack on a model ledger |
+| both | rules | rules | `gan_llm_pre_post_label_forms`, then rule encode and select |
+| LLM | rules | rules | `gan_llm_extract_label_forms` (codebook), then codebook encode and rule select — **six-model row** |
+| LLM | LLM | rules | Same codebook extract; select families only |
+| LLM | LLM | LLM | Same extract; `gan_llm_select_from_extract` |
 
-`gan_llm_only` is a third prompt. It is not a results column.
+`gan_llm_with_rules` is the source-near **wording ablation**, not the
+cited extract. `gan_llm_only` is a third prompt. It is not a results
+column.
 
 Extract, encode, and select are different jobs:
 
@@ -54,39 +58,41 @@ object.
 
 ## The locked Gemini grid
 
-Named Gemini `test450` totals on the codebook extract.
+Named Gemini `test450` select stops. Extract and encode stops are
+ablations in the five-cell owner.
 
-| LLM | Rules | Extract | Encode | Select |
-| --- | --- | ---: | ---: | ---: |
-| | extract, encode and select | 0.73 | 0.73 | 0.73 |
-| extract | extract, encode and select | 0.82 | 0.80 | 0.82 |
-| extract | encode, select | 0.79 | 0.77 | 0.80 |
-| extract, encode | select | 0.79 | 0.79 | 0.82 |
-| extract, encode and select | | 0.79 | 0.79 | 0.79 |
+| Extract | Encode | Select | Purist |
+| --- | --- | --- | ---: |
+| rules | rules | rules | 0.73 |
+| both | rules | rules | 0.82 |
+| LLM | rules | rules | 0.83 |
+| LLM | LLM | rules | 0.82 |
+| LLM | LLM | LLM | 0.79 |
 
 The source-near `gan_llm_with_rules` grid (LLM extract 0.55,
 later-stage select 0.71, hybrid select 0.79) is an ablation.
 
 Select on both hybrid rows is ledger-only: drop, regroup, or relabel
 events already collected. `elapsed_anchor` and `residual_jerk` are
-off. The source-near living Gemini `gan_llm_with_rules` cell is
-0.79. The living no-forms `gan_llm_pre_post` cell is 0.80. The
-paper may not say which holdout letters moved.
+off. The source-near wording ablation (`gan_llm_with_rules`) reaches
+0.79 at select. **both** / rules / rules is 0.82. The paper may not
+say which holdout letters moved. It may not say the softer extract
+preserves clinical reasoning.
 
 Three patterns sit in that table.
 
-1. **Extract is where standalone rules used to dominate.** On the
-   source-near request that was true (0.73 rules vs 0.55 Gemini
-   extract). On the codebook extract Gemini is 0.79, above rules.
-2. **Encode is where a model ledger plus rules first beats rules.**
-   Rule encode on a Gemini ledger is 0.74 or 0.77. That is already above
-   standalone rules (0.73) and well above later-stage Gemini encode
-   (0.65).
-3. **Select is where both hybrids still clear later-stage Gemini, and
-   almost meet each other.** 0.79 and 0.80 sit above rules (0.73) and
-   above later-stage Gemini select (0.71). Once both hybrids use the
-   same ledger bound as the LLM select cell, the last-mile gap is one
-   letter.
+1. **The headline is the submitted (select) label.** LLM extract plus
+   codebook encode plus rule select is 0.83. Rule select without
+   encode, and both-then-rules, are 0.82. LLM select is 0.79.
+   Standalone rules are 0.73.
+2. **Codebook extract already writes the form.** The LLM encode
+   column is that extract, not a later-stage encode call. Later-stage
+   Gemini encode on this ledger is an ablation (it drops the extract
+   stop).
+3. **The historical selected-evidence encoder is also an ablation.**
+   It dropped the locked extract stop (0.79 → 0.77). The cited encode
+   on the LLM / rules / rules row is codebook encode (0.80), then
+   select 0.83.
 
 Those are locked totals. They compare methods. They do not attribute a
 holdout letter to one named rule.
@@ -96,13 +102,13 @@ holdout letter to one named rule.
 Named Gemini `dev750`. Same identities. Letters on this split may be
 read.
 
-| LLM | Rules | Extract | Encode | Select |
-| --- | --- | ---: | ---: | ---: |
-| | extract, encode and select | 0.89 | 0.89 | 0.89 |
-| extract | extract, encode and select | 0.86 | 0.86 | 0.89 |
-| extract | encode, select | 0.78 | 0.80 | 0.86 |
-| extract, encode | select | 0.78 | 0.78 | 0.85 |
-| extract, encode and select | | 0.78 | 0.78 | 0.79 |
+| Extract | Encode | Select | Purist |
+| --- | --- | --- | ---: |
+| rules | rules | rules | 0.89 |
+| both | rules | rules | 0.89 |
+| LLM | rules | rules | 0.86 |
+| LLM | LLM | rules | 0.85 |
+| LLM | LLM | LLM | 0.79 |
 
 The source-near `gan_llm_with_rules` development grid (extract 0.59,
 later-stage 0.67 / 0.76, hybrid select 0.88) stays an ablation. On that
@@ -143,7 +149,8 @@ select missed.
 **Weaknesses.** The written label often is not the Gan form. Extract
 leaves 153 of 450 locked letters unscorable. Later-stage encode, with
 no letter, writes `unknown` or a cluster template where the gold wants
-a simple rate. Later-stage select and living hybrid select now share
+a simple rate. Later-stage select and rule select on the wording
+ablation now share
 the same ledger bound: they may regroup or relabel collected events,
 and they may not convert a clinic date or mine leftover dates from
 the letter. The remaining select gap is therefore policy on the same
@@ -162,44 +169,46 @@ the call write the dialect and apply the named current-state
 policies. The same saved output can be stopped at extract, encode, or
 select without a new call.
 
-## Why Rules then LLM is stronger overall
+## Why pre-suggestion still matters (both / rules / rules)
 
-On the locked set the method that is submitted is the select column.
-Rules then LLM is 0.80. That is 29 letters above standalone rules
-and 1 above LLM then rules.
+On the locked set the cited score is the select stop. The headline row
+is **LLM / rules / rules** at 0.83. **both / rules / rules** is 0.82 —
+one letter below the headline, nine above standalone rules (0.73).
 
-The cause is visible earlier than select.
+The cause is still visible earlier than select, but the numbers below
+are on the **wording ablation** (`gan_llm_with_rules`), not the cited
+codebook extract.
 
-**The extract gap is the large one.** Standalone rules already have
-0.73. Gemini without candidates has 0.55. Candidates add
-19 locked letters at extract (0.59) and 19 more scorable rows (316
-versus 297). Pre-suggestion does not make extract as strong as
-standalone rules. It makes the *model ledger* less empty and less
-wrong before anyone encodes it.
+**The extract gap is the large one on that ablation.** Standalone rules
+already have 0.73. Gemini codebook extract without candidates scores
+0.55 on the source-near raw. Candidates add 19 locked letters at
+extract (0.59) and 19 more scorable rows (316 versus 297).
+Pre-suggestion does not make extract as strong as standalone rules. It
+makes the *model ledger* less empty and less wrong before anyone
+encodes it.
 
 **Encode then spends a better ledger.** Rule encode on the
-pre-suggestion raw is 0.77. On the free-extract raw it is 0.74. Same
-renderer, different events. The eight-letter encode gap is already
-most of the four-letter select gap.
+pre-suggestion raw is 0.77 on the ablation stack. On the free-extract
+source-near raw it is 0.74. Same renderer, different events.
 
-**Select does the last current-state work on both hybrids.** The
-post stack is the same ledger-only families. On development Rules then
-LLM is four letters ahead (0.89 vs 0.88). On the locked set it is one
-letter ahead. That is a method comparison of two requests, not proof
-that pre-suggestion is necessary on any named holdout letter. The
-old four-letter locked gap (0.83 vs 0.82) included clinic-date select
-that later-stage Gemini cannot do.
+**Select on the locked codebook grid.** On development, **both** /
+rules / rules is 0.89 versus LLM / rules / rules 0.86 — four letters
+apart. On the locked set the headline is LLM / rules / rules (0.83).
+That is a method comparison of two extract requests, not proof that
+pre-suggestion is necessary on any named holdout letter.
 
 The short account: **rules are better first readers of this gold’s
 surface forms; the model is a better collector of leftover paraphrase
 once those forms are on the page; recorded rules are a better last
 writer than asking Gemini to finish the form without the letter.**
-Rules then LLM is the only method that uses that order.
+**both / rules / rules** is the only row that uses candidate quotes
+before the call.
 
-## Why LLM then rules beats LLM on encode and select
+## Why rule encode and select lift the wording ablation
 
-These two rows share one extract (0.55 / 0.59). The difference is who
-finishes the ledger.
+These comparisons are on the source-near **wording ablation**
+(`gan_llm_with_rules`), not the cited codebook extract. They explain
+why rule stops after a softer extract still recover score.
 
 ### Encode: 0.65 → 0.74 locked; 0.67 → 0.81 development
 
@@ -222,7 +231,8 @@ new reading.
 
 Later-stage Gemini select sees the labelled events plus the extract
 pick as a hint. It may keep that pick or write a new label from the
-same form list. Living hybrid select now uses the same licence: usual
+same form list. Rule select on the wording ablation uses the same
+licence: usual
 interval, typical-over-year-to-date, breakthrough, non-epileptic,
 on-event diary, on-event dated sequence, and post-change burst.
 Elapsed-window and residual-jerk conversion are off on both sides
@@ -249,12 +259,11 @@ The letter states a current rate as an upper bound:
 Gold is `4 per day`. That is a Gan gold-dialect convention. The bound
 stays in the quoted span.
 
-| | Extract | Encode | Select |
+| Role row | Extract | Encode | Select |
 | --- | --- | --- | --- |
-| **Rules** | `4 per day` | same | same |
-| **LLM** | `up to 4 per day` (miss; unscorable) | `4 per day` | `4 per day` |
-| **LLM then rules** | `up to 4 per day` (same raw) | `4 per day` (`gan.render.selected_evidence`) | `4 per day` (no event switch) |
-| **Rules then LLM** | living cell `4 per day` | — | living cell `4 per day` |
+| **rules / rules / rules** | `4 per day` | same | same |
+| **Wording ablation** (`gan_llm_with_rules`) | `up to 4 per day` (miss; unscorable) | `4 per day` | `4 per day` |
+| **both / rules / rules** | `4 per day` | — | `4 per day` |
 
 Gemini already selected event `e2` and quoted the bound. Extract keeps
 the inequality, so Purist misses. Rule encode writes the gold form and
@@ -271,17 +280,17 @@ Evidence:
 
 Gold is `1 per 7 to 9 day`.
 
-| | Extract | Encode | Select |
+| Role row | Extract | Encode | Select |
 | --- | --- | --- | --- |
-| **Rules** | `1 per 7 to 9 day` | same | same |
-| **LLM** | `1 cluster every 7 to 9 days` (miss) | `unknown` | `unknown` |
-| **LLM then rules** | same extract | `1 per 7 to 9 day` | `1 per 7 to 9 day` |
-| **Rules then LLM** | living cell `1 per 7 to 9 day` | — | living cell `1 per 7 to 9 day` |
+| **rules / rules / rules** | `1 per 7 to 9 day` | same | same |
+| **Wording ablation** | `1 cluster every 7 to 9 days` (miss) | `1 per 7 to 9 day` | `1 per 7 to 9 day` |
+| **both / rules / rules** | `1 per 7 to 9 day` | — | `1 per 7 to 9 day` |
 
 This is why rule encode beats later-stage Gemini encode on the same
 ledger. The model collected the span. The renderer maps cluster-worded
 cadence onto the gold rate. Gemini encode, without the letter, writes
-`unknown` and select cannot recover. LLM then rules is 44 locked
+`unknown` and select cannot recover. Rule encode on the wording
+ablation is 44 locked
 letters ahead of LLM at encode because this class of mapping is
 stable, replayable, and not a new extract.
 
@@ -293,19 +302,19 @@ week`, later-stage Gemini encode keeps a cluster template
 ### 3. A two-part cluster the free extract flattened (row `15431`)
 
 Gold is `1 cluster per 4 month, 5 per cluster`. Rules submit that
-label. Gemini `gan_llm_with_rules` extract writes `5 per day` from
+label. The wording ablation (`gan_llm_with_rules`) extract writes `5 per day` from
 
 > experience clusters of 5 seizures in a single day
 
 and rule encode and rule select keep `5 per day`. The two-part reading
 is already gone.
 
-| | Extract | Encode | Select |
+| Role row | Extract | Encode | Select |
 | --- | --- | --- | --- |
-| **Rules** | `1 cluster per 4 month, 5 per cluster` | same | same |
-| **LLM** | `5 per day` | `unknown, 5 per cluster` | `1 cluster per 4 month, 5 per cluster` |
-| **LLM then rules** | `5 per day` | `5 per day` | `5 per day` |
-| **Rules then LLM** | living cell `1 cluster per 4 month, 5 per cluster` | — | living cell `1 cluster per 4 month, 5 per cluster` |
+| **rules / rules / rules** | `1 cluster per 4 month, 5 per cluster` | same | same |
+| **Wording ablation** | `5 per day` | `5 per day` | `5 per day` |
+| **LLM / LLM / LLM** | `5 per day` | `unknown, 5 per cluster` | `1 cluster per 4 month, 5 per cluster` |
+| **both / rules / rules** | `1 cluster per 4 month, 5 per cluster` | — | `1 cluster per 4 month, 5 per cluster` |
 
 Three readings sit together.
 
@@ -315,7 +324,7 @@ Three readings sit together.
 - Later-stage Gemini select, looking at a quiet-interval event and a
   cluster-burden event, composes the gold label. That is a real model
   strength at select.
-- Rules then LLM also lands on gold, because the suggested candidates
+- **both / rules / rules** also lands on gold, because the suggested candidates
   put both pieces in the extract.
 
 This letter is why the paper should not say the last cell always
@@ -331,12 +340,12 @@ Evidence:
 
 Gold is `1 per 1 to 2 week`. Gemini extract writes `1 to 2 per week`.
 Rule encode and rule select leave that string. Purist misses;
-Pragmatic hits. Standalone rules and the living Rules then LLM cell
+Pragmatic hits. Standalone rules and **both / rules / rules**
 write the gold order. Later-stage Gemini encode and select also write
 `1 per 1 to 2 week` on this letter.
 
 The object makes the disagreement inspectable. The score’s strictness
-is a gold-dialect fact, not lost evidence. Rules then LLM can inherit
+is a gold-dialect fact, not lost evidence. **both / rules / rules** can inherit
 the rule book’s order because those candidates were on the page
 before the call.
 
@@ -350,7 +359,7 @@ Rule encode lengthens that to `seizure free for multiple year`.
 Ledger-only rule select no longer runs `elapsed_anchor`, so the hop
 stays on that encoded label and still misses. Gold is `2 to 4 per
 month`. Later-stage Gemini select stays on `seizure free`. Standalone
-rules and the living Rules then LLM cell are Purist-correct
+rules and **both / rules / rules** are Purist-correct
 (`2 to 4 per month` / `2 to 4 per 1 month`).
 
 The earlier letter-clock select on this raw rewrote the quiet
@@ -372,14 +381,16 @@ letter because the extract already holds the current-rate quote.
    from a ledger. Neither role is “intelligence” in the abstract.
 3. **Order matters because extract is the bottleneck.** Encode and
    select cannot restore facts the ledger never held. Candidates
-   before the call are the only method that changes extract. That is
-   why Rules then LLM still leads on the locked grid, by one letter at
-   select, after the two hybrids share a ledger-only post stack.
-4. **Putting rules after a free extract is still worth a large
-   locked lift** (0.55 → 0.74 → 0.79) because most of the work is
-   rendering and named ledger policy, not a second reading of the
-   letter. That is why LLM then rules still beats later-stage Gemini
-   encode and select after the comparison is equalised.
+   before the call are the only row that changes extract. That is
+   why **both / rules / rules** still leads on development select
+   (0.89 vs 0.86), even though the locked headline is LLM / rules /
+   rules (0.83).
+4. **Putting rules after a softer extract is still worth a large
+   locked lift on the wording ablation** (0.55 → 0.74 → 0.79)
+   because most of the work is rendering and named ledger policy, not
+   a second reading of the letter. The paper may say wording can be
+   kept and later mapped into the gold form. It may not say the softer
+   extract preserves clinical reasoning.
 5. **The recorded object is the claim.** The span, the named hop, and
    the submitted label can be replayed. The score can discard a bound
    or an interval order. A reader can disagree with the mapping
@@ -391,10 +402,11 @@ letter because the extract already holds the current-rate quote.
 
 ## Claim boundary
 
-This report may say the locked Gemini totals above, that Rules then
-LLM is the strongest overall method on this grid, and that LLM then
-rules beats later-stage Gemini encode and select on the same extract.
-It may use the development letters as mechanism. It may not treat a
+This report may say the locked Gemini totals above, that LLM / rules /
+rules is the headline row on this grid, that **both / rules / rules**
+beats standalone rules, and that rule encode and select lift the
+wording ablation on the same source-near raw. It may use the
+development letters as mechanism. It may not treat a
 development hop share as a holdout component estimate, inspect
 `test450` rows, cite `gan_llm_only` as extract, treat Luna as the
 cited model, or move these scores onto ExECT.

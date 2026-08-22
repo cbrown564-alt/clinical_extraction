@@ -74,6 +74,19 @@
     button { font: inherit; }
     :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 
+    .historical-banner {
+      margin: 0 0 22px;
+      padding: 14px 18px;
+      background: var(--warn-soft);
+      border: 1px solid oklch(0.78 0.06 42);
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: .92rem;
+      line-height: 1.45;
+    }
+    .historical-banner strong { display: block; margin-bottom: 4px; color: var(--warn); }
+    .historical-banner a { font-weight: 600; }
+
     .page {
       position: relative;
       z-index: 1;
@@ -486,6 +499,10 @@
 </head>
 <body>
   <main class="page">
+    <div class="historical-banner" role="note">
+      <strong>Historical exhibit — not the cited paper table.</strong>
+      This page shows a Grok two-method holdout view (rules / LLM-only / LLM+rules). The cited headline tables are Gemini five-cell grids (select stop); six-model is cell 3 only. See <a href="../../paper/claims.md">paper claims</a> and <a href="../README.md">research README</a>.
+    </div>
     <div class="topline">
       <a class="back" href="../../NAVIGATION.md#paper-source-library">← Paper-source library</a>
       <span class="authority">locked-test totals · paper provenance C16 / C17</span>
@@ -495,7 +512,7 @@
       <div>
         <p class="kicker">Parallel holdout comparison</p>
         <h1>Two locked tests. Two different stories.</h1>
-        <p class="lede">On each task, Grok with rules is compared with the other living methods we can report for that locked test. Read the panels separately. They use different scores and answer different clinical questions. Grok is the cited model so the story stays on the method. Gemini is in the same band where both cells exist.</p>
+        <p class="lede">Historical two-method holdout view: on each task, Grok with rules is compared with the other methods reported for that locked test at the time. Read the panels separately. They use different scores and answer different clinical questions. Gemini is now the cited model; this page is not the five-cell headline table.</p>
       </div>
       <p class="claim-limit"><strong>What this does not prove</strong>On both locked tests shown here, the proposed method is highest among the methods in that panel. That is not state of the art, not clinical validation, and not proof that a model plus recorded rules always wins. The golds are evaluation forms, not the task.</p>
     </header>

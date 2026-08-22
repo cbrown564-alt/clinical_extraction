@@ -115,6 +115,13 @@ A positive result is a development answer for the frozen Gemini
 support a transfer hypothesis for the same-fact rules. It is not holdout
 evidence, clinical validation, or permission to report a new `test60` result.
 
+The accepted rules are the rule-encode component of cell 3 (`exect_llm_only`,
+then rule encode and rule select—the six-model roster row, not the peak).
+They are not the later-stage LLM encode used by cell 4 (Gemini only). ExECT
+uses the same five role rows as Gan; the cited score is the select stop.
+`exect_llm_with_rules` is the live alias of `exect_llm_pre_post`; it is not
+a second headline method. A living producer raw F1 is not LLM extract.
+
 ## Initial completion (superseded by the extension)
 
 Four independently stoppable rule families were accepted in the first pass. On the exact rung

@@ -1,33 +1,41 @@
 # ExECTv2: recovering a complete clinical fact inventory
 
 Date: 2026-08-12
-Revised: 2026-08-19 (proposed method named without Grok or hybrid shorthand)
+Revised: 2026-08-22 (five-cell headline; cited score is select)
 
 Status: paper source; selected results and development mechanism evidence
 
-> **Current boundary (2026-08-19):** The proposed ExECT method is ExECT LLM
-> with rules (`exect_llm_with_rules`; cite hybrid F1). ExECT LLM only
-> (`exect_llm_only`; cite raw F1) and ExECT rules are baselines. They are
-> different requests. Grok 4.6 is the cited model. Full ledger is a
-> comparison control only. See `docs/paper/*`.
+> **Current boundary (2026-08-22):** ExECT uses the same five role rows as
+> Gan. Each of extract, encode, and select is rules, LLM, or both. The cited
+> score is the select stop. LLM extract is `exect_llm_only`. **both** extract
+> is `exect_llm_pre_post` (`exect_llm_with_rules` is the live alias). The
+> six-model row is cell 3 — LLM extract, rules encode, rules select. See
+> `docs/paper/*`.
 
 ## The result
 
 ExECT asks for a complete set of diagnoses, seizure-frequency facts,
 prescriptions, and investigations from one letter. On the locked `test60`
-split, living **Grok 4.6** scored under four-family clinical fact F1:
+split, the headline table is five role rows. Named Gemini 3.7 Flash
+`test60` select stops under four-family clinical fact F1:
 
-| Method | `test60` F1 | `dev140` F1 |
-| --- | ---: | ---: |
-| ExECT rules | 0.7937 | 0.9042 |
-| Grok LLM only (raw) | 0.7726 | 0.8212 |
-| Grok LLM with rules (hybrid) | 0.805 | 0.8998 |
+| Extract | Encode | Select | `test60` F1 |
+| --- | --- | --- | ---: |
+| rules | rules | rules | 0.79 |
+| both | rules | rules | 0.80 |
+| LLM | rules | rules | 0.82 |
+| LLM | LLM | rules | 0.82 |
+| LLM | LLM | LLM | 0.80 |
 
-Gemini `test60` is 0.8129 and Luna `test60` is 0.7827, both on the
-proposed method. Grok is the cited model. Qwen both methods, and
-DeepSeek/Gemma LLM only, are still missing. Holdout is aggregate-only. The
-metric is not the published ExECT benchmark. Do not cite Sol Compact 0.8031 or
-Full-ledger Sol 0.8302 as living cells.
+Development select stops live in
+[rule-select-after-LLM-encode](../exectv2/exect_rule_select_after_llm_encode_2026-08-22.md).
+
+The headline row is **LLM / LLM / rules** (later-stage encode, then rule
+select) at 0.8173. The **six-model comparison row** is **LLM / rules /
+rules** at living rungs 0.8161. Both read 0.82 at two decimals. Holdout is
+aggregate-only. The metric is not the
+published ExECT benchmark. Do not cite Sol Compact 0.8031 or Full-ledger
+Sol 0.8302 as headline cells.
 
 ## What the task requires
 
@@ -53,7 +61,7 @@ attribute to the wrong event, or invent a rate the letter does not support.
 The final F1 records set agreement; it cannot identify which earlier step
 caused the difference.
 
-## Where the hybrid helps
+## Where rule encode and select help
 
 The model proposes all four families in one structured call. Deterministic
 stages then project attributes, apply selected family rules, require evidence,
@@ -88,7 +96,7 @@ study classified each family's own first-rescue hop on `dev140`:
 | Prescription | 10 | All 10 rewrite a drug the model already named (dose split, rescue recode, unit clean-up) | 0 |
 | Investigations | 2 | Both drop an extra or empty investigation key | 0 |
 
-On living Grok `EA0007`, the hedge *is* inside the quoted
+On development `EA0007` (Grok, cell 2), the hedge *is* inside the quoted
 seizure-frequency span. The diagnosis dictionary rewrites `focal onset`
 to `focal epilepsy`. That is a use-quote / convention rewrite, not the
 retired Sol unquoted-letter add.
@@ -98,24 +106,23 @@ and the [exhibit](../artifacts/rescue_source_provenance_2026-08-13.html).
 
 ## Where the difficulty remains
 
-The cited Grok run of the proposed method is the living holdout row, but the
-gain is uneven across families. Holdout ranges below cover the Full-ledger
-six-model panel and are not Compact holdout floors.
+The cited Gemini headline row is aggregate-only, but the gain is uneven
+across families. Holdout ranges below cover the Full-ledger six-model
+panel on cell 3 and are not Compact holdout floors.
 
-- **Seizure frequency is the holdout floor.** Hybrid family F1 ranges from
+- **Seizure frequency is the holdout floor.** Cell-3 family F1 ranges from
   0.49 to 0.61. Rules-only is 0.58. Named windows, missed states, and mixed
   inventories persist after the producer check.
-- **Diagnosis improves the concept inventory**, with hybrid holdout about
+- **Diagnosis improves the concept inventory**, with cell-3 holdout about
   0.79–0.85 against rules-only 0.86. Single-seizure diagnosis remains a
-  shared LLM-only difficulty in the corrected category cuts.
-- **Prescription is strong, with a measured harm surface.** Hybrid holdout
+  shared difficulty in the corrected category cuts.
+- **Prescription is strong, with a measured harm surface.** Cell-3 holdout
   ranges from 0.78 to 0.86. The v10 simplification transferred better than
   v09; that does not make every prescription rule safe.
 - **Investigations is no longer the rules-only collapse.** After the 15 Aug
   result-binding rewrite, rules-only Investigations is 0.87 on aggregate
-  holdout. LLM-only and hybrid still range from about 0.79 to 0.92 because
-  the selected hybrid investigations transform does not change the scored
-  answer.
+  holdout. Cell 3 still ranges from about 0.79 to 0.92 because the selected
+  hybrid investigations transform does not change the scored answer.
 
 The main residual problem is not JSON formatting. It is keeping a complete,
 unmerged, evidence-supported set under the project's four-family definition.
@@ -124,8 +131,8 @@ unmerged, evidence-supported set under the project's four-family definition.
 
 In development letter `EA0007`, Grok quoted both “epilepsy – unclassified”
 and “seizures every 3 to 4 weeks, possibly focal onset.” The diagnosis
-dictionary rewrote the quoted hedge to `focal epilepsy`. Hybrid
-four-family letter-exact is true and hybrid headline F1 is 1.0.
+dictionary rewrote the quoted hedge to `focal epilepsy`. Cell 2 select
+four-family letter-exact is true and select F1 is 1.0.
 
 The trace keeps the quoted hedge and names the dictionary rewrite. The
 rewrite is a gold-format rule, not an unqualified clinical diagnosis. The
@@ -136,14 +143,14 @@ for the recorded object.
 
 ## What this evidence supports
 
-The retained evidence supports this account of the proposed method, cited on Grok:
+The retained evidence supports this account of the proposed method:
 
 - the model proposes a four-family inventory with source text;
 - recorded rules then shape families into the designed form, with family-specific
   rescues, harms, and a no-op;
 - those mappings can be replayed without a new model call;
-- the locked hybrid total is slightly above standalone rules and above the
-  model alone;
+- the locked headline row (LLM / LLM / rules) is 0.82 on Gemini;
+- the six-model row (LLM / rules / rules) is 0.8161 (0.82 at two decimals);
 - only Diagnosis has a measured unquoted-letter add class;
 - seizure frequency remains the holdout floor. Standalone rules now recover
   investigations; the selected hybrid investigations transform is still a

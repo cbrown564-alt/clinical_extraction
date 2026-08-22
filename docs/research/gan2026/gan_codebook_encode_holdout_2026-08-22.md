@@ -1,9 +1,14 @@
 # Gan codebook-encode holdout
 
 Date: 2026-08-22
-Status: holdout aggregates written; not promoted
+Status: holdout aggregates written; cell 3 promoted into the cited select table
 Owner: [protocol](gan_codebook_encode_holdout_protocol_2026-08-22.md)
 Artifact: `experiments/gan_codebook_encode_holdout_20260822/summary.json`
+
+Frozen holdout for cell 3 (LLM / rules / rules), the six-model row:
+codebook extract, `llm_encode_codebook`, rule select (**0.83** select
+stop). Leftover living extracts stay on disk; they are not the paper
+primary.
 
 ## Answer
 
@@ -14,9 +19,10 @@ living select families is **373/450 (0.83)**, above historical encode
 then select **362/450 (0.80)** and select-without-encode **368/450
 (0.82)**.
 
-The replay reproduced every locked stop used as a comparator. No
-holdout rows were inspected. `claims.md` and the cited five-cell
-artifact were not overwritten.
+The replay reproduced every historical stop used as a comparator. No
+holdout rows were inspected. The cited five-cell artifact now uses
+codebook encode for the LLM / rules / rules row. Headline scores are
+the select stop.
 
 ## Protocol
 
@@ -73,14 +79,10 @@ column.
 ## Claim boundary
 
 Holdout evidence for the frozen codebook-encode candidate. Aggregate
-only. Do not inspect `test450` rows. Do not retune rules from this
-total. Do not treat this table as the cited Gemini grid until
-promoted.
+only. Promoted as the cited LLM / rules / rules row. Do not inspect
+`test450` rows. Do not retune rules from this total.
 
 ## Next
 
-Decide whether to replace the cited cell-3 encode/select with
-`llm_encode_codebook` / `llm_select_after_codebook`. If yes, update
-`claims.md`, `README.md`, and
-`paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json`
-in a separate promotion cut.
+Done: cited artifact uses `llm_encode_codebook` /
+`llm_select_after_codebook`. Headline is the select stop.

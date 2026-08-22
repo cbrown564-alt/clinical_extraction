@@ -1,10 +1,15 @@
 # Gan semantic family order
 
 Date: 2026-08-20
+Revised: 2026-08-22 (replays source-near ablation cells, not cited table)
 Status: development answer
 Owner: this file
 Protocol: [gan_semantic_family_order_protocol_2026-08-20.md](gan_semantic_family_order_protocol_2026-08-20.md)
 Artifact: `experiments/paper/gan_semantic_family_order/dev750_adjacent_swaps.json`
+
+Replay uses saved `gan_llm_with_rules` and living `gan_llm_pre_post`
+outputs — source-near ablation cells, not the cited five-cell table.
+Leftover living extracts stay on disk; they are not the paper primary.
 
 ## Question
 
@@ -23,11 +28,11 @@ Replay of the current post stack. No new model calls. Purist.
 
 | Cell | Default | Other adjacent swaps | Diary before elapsed |
 | --- | ---: | --- | --- |
-| Grok hybrid | 0.91 | 0 help, 0 harm | 0 help, 2 harm (0.91) |
-| Luna hybrid | 0.89 | 0 help, 0 harm | 0 help, 2 harm (0.89) |
+| Grok source-near (`gan_llm_with_rules`) | 0.91 | 0 help, 0 harm | 0 help, 2 harm (0.91) |
+| Luna source-near (`gan_llm_with_rules`) | 0.89 | 0 help, 0 harm | 0 help, 2 harm (0.89) |
 | Luna pre-post | 0.91 | 0 help, 0 harm | 0 / 0 |
 
-The two harmed letters are the same on Grok and Luna hybrid:
+The two harmed letters are the same on Grok and Luna source-near:
 **2932** (`seizure free for 9 month` → `13 per 2 month`) and
 **8089** (`seizure free for 16 month` → `1 per 1 month`). Diary
 first overwrites a dated freedom window with a countable month
@@ -36,7 +41,7 @@ vetoed.
 
 Luna pre-post already survives diary-first on those two letters,
 so the known pair is not a lift there; it is still required for
-the living hybrid cells.
+the source-near ablation cells.
 
 No adjacent swap met the adopt rule (help ≥ 1 and harm = 0 on all
 three cells).

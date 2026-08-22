@@ -149,6 +149,14 @@ distributions and exact ExECT clinical-fact scorer. Cross-model no-call replay
 may support a bounded transfer hypothesis. It is not holdout evidence,
 clinical validation, or permission to inspect or update `test60`.
 
+The accepted rules feed the cited table. On saved `exect_llm_only` raw
+they are cell 3 rule encode and rule select (six-model roster
+comparison, not the peak row). On saved later-stage encode they are
+cell 4 rule select (Gemini only). ExECT uses the same five role rows
+as Gan; the cited score is the select stop. `exect_llm_with_rules` is
+the live alias of `exect_llm_pre_post`; it is not a second headline
+method. A living producer raw F1 is not LLM extract.
+
 ## Completion record
 
 The study accepted seven rules and rejected one. The combined candidate moves

@@ -1,13 +1,19 @@
 # Gan candidate-suggestion protocol
 
 Date: 2026-08-20
+Revised: 2026-08-22 (cited both extract is `gan_llm_pre_post_label_forms`)
 Status: development
 Owner: this file
-Identity: `gan_llm_pre_post` (paper rung 5, `llm_pre_post`)
+Identity: `gan_llm_pre_post` (development iterator; cited both extract is
+`gan_llm_pre_post_label_forms`)
+
+The cited both extract is `gan_llm_pre_post_label_forms`, not this living
+`gan_llm_pre_post` body. Leftover living extracts stay on disk; they are
+not the paper primary.
 
 ## Question
 
-If the Gan hybrid request is given the same deterministic candidate
+If the source-near Gan extract (`gan_llm_with_rules`) is given the same deterministic candidate
 quotes that `gan_rules` already extracts, does the model keep, reject,
 split, or merge those rows and still scan the rest of the letter so
 that the later clinical post stack is working from a better event
@@ -99,7 +105,7 @@ dataset name. Prompt frozen. Do not cite the interrupted
 
 Luna `luna_hybrid_misses` finished: 87/87 calls, 0 call failures.
 Artifact: `experiments/paper/gan_llm_pre_post/gpt56luna/slice_luna_hybrid_misses/dev750/`.
-Purist 35/87, Pragmatic 45/87. Living Luna hybrid is 0/87 here by
+Purist 35/87, Pragmatic 45/87. Luna source-near (`gan_llm_with_rules`) is 0/87 here by
 construction. Deterministic `gan_rules` is 73/87 on the same IDs.
 
 Of the 35 recoveries: 1 schema (hybrid unscorable), 16 dialect or
@@ -107,7 +113,7 @@ count-form (mostly `multiple per week` / `multiple per cluster` to a
 count), 18 selection (mostly seizure-free / no-reference / unknown
 to a count the rules already had). 33 of 35 recoveries are also
 rules-correct. Two beat rules (10996, 15834). 40 rules-correct
-letters remain wrong; 36 of 52 remaining misses share the living
+letters remain wrong; 36 of 52 remaining misses share the source-near
 hybrid label. Not a `dev750` score. No prompt retune from these
 52.
 
@@ -116,8 +122,7 @@ hybrid label. Not a `dev750` score. No prompt retune from these
 Luna `gan_llm_pre_post` finished: 750/750 rows, 700 new calls, 50
 resumed, 0 call failures. Artifact:
 `experiments/paper/gan_llm_pre_post/gpt56luna/dev750/`.
-Purist 0.90, Pragmatic 0.92. Living Luna
-hybrid is 0.88. Rules-only is 0.91. Grok rung-4 replay is
+Purist 0.90, Pragmatic 0.92. Luna source-near (`gan_llm_with_rules`) is 0.88. Rules-only is 0.91. Grok rung-4 replay is
 0.90. 4 invalid JSON. Not holdout. Not a Grok cell.
 
 Hop audit: 64/74 misses are already wrong at model selection.
@@ -149,7 +154,7 @@ Rendered payload inspected on the placeholder note
 
 - Model-facing: task, instructions, schemas, suggested evidence, note.
 - Parser-facing: event field names and kind lists reused from the
-  living hybrid schema.
+  source-near hybrid schema.
 - Research-facing keys (`prompt_version`, `source_row_index`, `Gan`)
   are not in the payload.
 - New instructions use ordinary verbs (read, treat, keep, reject,

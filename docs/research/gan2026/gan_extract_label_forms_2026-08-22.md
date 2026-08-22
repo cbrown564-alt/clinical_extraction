@@ -1,10 +1,17 @@
 # Gan extract label-forms result
 
 Date: 2026-08-22
+Revised: 2026-08-22 (cited LLM extract column)
 Status: development answer plus locked aggregate
 Owner: [protocol](gan_extract_label_forms_protocol_2026-08-22.md)
 Work cells: `experiments/paper/gan_llm_extract_label_forms/gemini37flash/dev750/`
 and scratch `.../test450/` (aggregate only).
+
+This request is the cited Gemini LLM extract
+(`gan_llm_extract_label_forms`). `gan_llm_with_rules` is the source-near
+wording ablation (extract ~0.55 holdout; rules recover to ~0.79), not the
+paper extract column. Leftover living extracts stay on disk; they are not
+the paper primary.
 
 ## Answer
 
@@ -50,11 +57,12 @@ ceiling for a letter-in extract change.
 ## Claim boundary
 
 Development answer on Gemini `dev750`, plus a frozen-prompt
-aggregate on `test450`. Not a replacement for `gan_llm_with_rules`,
-later-stage encode, or hybrid encode/select. Do not retune
+aggregate on `test450`. Cited as the LLM extract column in the five-cell
+table. `gan_llm_with_rules` remains the source-near wording ablation. Do
+not retune
 `label_forms` from development misses or holdout totals. Do not
 inspect holdout rows.
 
 ## Next
 
-Stop. Promote only if the paper wants a second extract prompt.
+Stop. Promoted as the cited LLM extract column.

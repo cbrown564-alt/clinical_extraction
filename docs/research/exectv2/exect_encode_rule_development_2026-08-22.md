@@ -235,6 +235,14 @@ tests portability across saved model distributions on the same development
 split; it is not independent validation, clinical validation, or holdout
 generalization. `test60` remains sealed.
 
+The accepted rules are the rule-encode stop for cell 3 (`exect_llm_only`,
+then rule encode and rule select—the six-model roster row, not the peak).
+They are not the later-stage LLM encode ledger used by cell 4 (Gemini
+only). ExECT uses the same five role rows as Gan; the cited score is the
+select stop. `exect_llm_with_rules` is the live alias of
+`exect_llm_pre_post`; it is not a second headline method. A living
+producer raw F1 is not LLM extract.
+
 ## Authority correction
 
 After this result, Diagnosis qualifier overwrite was moved out of encode.

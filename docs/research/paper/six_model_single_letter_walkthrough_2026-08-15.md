@@ -1,24 +1,25 @@
 # Six-Model Single-Letter Walkthrough for Clinical Extraction Tasks
 
-Date: 2026-08-19  
-Status: active paper source; illustrative comparative case layer; Grok is the cited model  
+Date: 2026-08-19
+Revised: 2026-08-22 (six-model row is cell 3 only)
+Status: active paper source; illustrative comparative case layer
 Parent: [Paper source library](../../NAVIGATION.md#paper-source-library) | [Flagship 3-letter suite](flagship_3_letter_suite_2026-08-11.md) | [Two reviewable evidence-to-output cases](reviewable_case_pair_2026-08-09.md)  
 
 ## Purpose and Research Boundary
 
-This document provides an illustrative comparative layer for the manuscript: **a single clinical letter evaluated across all six roster models under identical pipeline contracts**, with one deep-dive case for **Gan 2026** (single-label frequency selection & normalization) and one for **ExECTv2** (multi-entity, multi-family phenotyping).
+This document provides an illustrative comparative layer for the manuscript: **a single clinical letter evaluated across all six roster models on cell 3 only** (LLM extract, rules encode, rules select), with one deep-dive case for **Gan 2026** (single-label frequency selection & normalization) and one for **ExECTv2** (multi-entity, multi-family phenotyping).
 
 Rather than showing only aggregate tables, these two letters illustrate why models diverge, how different LLMs collect the same facts through different pathways, where specific failure modes occur (schema corruption, evidence drift, under-extraction, recency confusion), and how recorded rules then shape each model's output into the designed form.
 
 ### Safeguards and Provenance
 - All cases are drawn exclusively from development splits: **Row 13190** from Gan `dev750` and **Letter EA0133** from ExECT `dev140`.
 - Locked holdout splits (`test450` and `test60`) remain sealed and un-inspected.
-- Traces are replayed from living paper cells (saved `raw_output`, no new
-  calls). Grok 4.6 is the cited model so the story stays on the method.
-  - Gan hybrid `dev750` on disk: Grok, Luna, Gemini.
-    DeepSeek, Qwen, and Gemma Gan hybrid `dev750` are missing; do not invent them.
-  - ExECT hybrid `dev140` on disk: Grok, Luna, Gemini, DeepSeek, Gemma.
-    Qwen ExECT hybrid is missing. Sol Compact dump paths are historical.
+- Traces are replayed from saved cell-3 runs (`raw_output`, no new
+  calls). Gemini 3.7 Flash is the cited model for headline tables.
+  - Gan cell 3 `dev750` on disk: Grok, Luna, Gemini.
+    DeepSeek, Qwen, and Gemma Gan cell 3 `dev750` are missing; do not invent them.
+  - ExECT cell 3 `dev140` on disk: Grok, Luna, Gemini, DeepSeek, Gemma.
+    Qwen ExECT cell 3 is missing. Sol Compact dump paths are historical.
 
 ---
 
@@ -73,12 +74,12 @@ annotation manual. Lineage:
 
 ### Six-Model Comparison Table (Gan Row 13190)
 
-| Model | Living hybrid final label | Purist | What the living cell did |
+| Model | Cell 3 final label | Purist | What cell 3 did |
 | :--- | :--- | :--- | :--- |
 | **Grok 4.6** (identity) | `no seizure frequency reference` | **Wrong** | Extracted the 5-month free interval and the Thursday breakthrough; selected the last-event events. Repair: `'last event three Thursdays ago' -> 'no seizure frequency reference'`. LLM-only: `unknown`. Gold `1 per 5 month` was not synthesized. |
-| **GPT-5.6 Luna** | `unknown` | **Wrong** | Hybrid and LLM-only both `unknown`. No evidence-reconciliation rescue on this letter. |
+| **GPT-5.6 Luna** | `unknown` | **Wrong** | Cell 3 stays `unknown`. No evidence-reconciliation rescue on this letter. |
 | **Gemini 3.7 Flash** | `no seizure frequency reference` | **Wrong** | Repair: `'1 seizure three Thursdays ago' -> 'no seizure frequency reference'`. LLM-only: `unknown`. |
-| **DeepSeek / Qwen / Gemma** | — | pending | No living Gan `dev750` hybrid cell. Do not reuse the old Sol-era walkthrough labels. |
+| **DeepSeek / Qwen / Gemma** | — | pending | No Gan cell 3 `dev750` run. Do not reuse the old Sol-era walkthrough labels. |
 
 ```mermaid
 flowchart TD
@@ -86,7 +87,7 @@ flowchart TD
   Note --> Grok["Grok + rules: no seizure frequency reference"]
   Note --> Luna["Luna + rules: unknown"]
   Note --> Gemini["Gemini + rules: no seizure frequency reference"]
-  Grok --> Miss["None of the three living Gan cells synthesize 1 per 5 month"]
+  Grok --> Miss["None of the three cell-3 Gan runs synthesize 1 per 5 month"]
   Luna --> Miss
   Gemini --> Miss
 ```
@@ -163,14 +164,14 @@ The shared prompt tells models to skip most of that list. See [Appendix A](#appe
 
 Promoted `exect_llm_with_rules` `dev140` cells, replayed 2026-08-19. Qwen is missing.
 
-| Model | Hybrid headline F1 | Hybrid four-family letter-exact | Diagnosis / SF / Rx / Inv exact | Notes |
+| Model | Cell 3 select F1 | Four-family letter-exact | Diagnosis / SF / Rx / Inv exact | Notes |
 | :--- | ---: | :---: | :--- | :--- |
 | **Grok 4.6** | 0.90 | no | F / T / T / T | Heading + narrative epilepsy, convulsive seizure, both heading rates, both AEDs, CT. Dictionary rewrote SSE. |
 | **GPT-5.6 Luna** | 0.8889 | no | F / T / T / T | Heading types + epilepsy; skipped some narrative seizure mentions Grok kept. |
 | **Gemini 3.7 Flash** | 0.8571 | no | F / F / T / T | Convulsive + focal narrative; SF family not letter-exact. |
-| **DeepSeek V4 Flash** | 0.8889 | no | F / T / T / T | No living LLM-only cell. |
+| **DeepSeek V4 Flash** | 0.8889 | no | F / T / T / T | No separate extract-only cell on disk. |
 | **Gemma 4 26B** | 0.7619 | no | F / F / F / T | Extra levetiracetam / 600 mg plan; weakest hybrid F1. |
-| **Qwen 3.8 27B** | — | pending | — | No living cell. |
+| **Qwen 3.8 27B** | — | pending | — | No cell 3 run. |
 
 ---
 
@@ -312,7 +313,7 @@ The rest of Gemma's raw events on this letter:
 10. **Did emit** the current `Carbamazepine 400mg bd` and `Sodium Valproate 500mg bd`, heading SSE, narrative `focal seizures` Diagnosis, and CT. Those five are the clean raw hits.
 11. **Did not emit** cardio drugs, migraine, febrile seizures, or head injury — same as the other models.
 
-Hybrid dictionary after that: rewrite SSE → `symptomatic structural focal epilepsy`; drop the family-history `epilepsy` mention as convention noise; add residual heading diagnoses `focal motor seizures` and `focal to bilateral convulsive seizures`. That is why the assembled letter has 12 predicted mentions from 11 raw (11 − 1 + 2). Dictionary does **not** restore the two missing heading SeizureFrequency mentions.
+Cell 3 dictionary after that: rewrite SSE → `symptomatic structural focal epilepsy`; drop the family-history `epilepsy` mention as convention noise; add residual heading diagnoses `focal motor seizures` and `focal to bilateral convulsive seizures`. That is why the assembled letter has 12 predicted mentions from 11 raw (11 − 1 + 2). Dictionary does **not** restore the two missing heading SeizureFrequency mentions.
 
 #### 5. Gemini and DeepSeek, briefly
 
@@ -324,7 +325,7 @@ DeepSeek emitted those heading seizure types twice as Diagnosis: once as standal
 
 ## 3. Summary of Key Architectural Insights
 
-1. **Deterministic stages change answers that already look clean.** On living Gan Row 13190, Grok/Luna/Gemini do **not** synthesize `1 per 5 month`. On ExECT EA0133, the diagnosis dictionary still rewrites letter-exact `Symptomatic structural epilepsy` to gold `symptomatic structural focal epilepsy` for Grok and the other present hybrid cells.
+1. **Deterministic stages change answers that already look clean.** On Gan Row 13190, Grok/Luna/Gemini cell 3 do **not** synthesize `1 per 5 month`. On ExECT EA0133, the diagnosis dictionary still rewrites letter-exact `Symptomatic structural epilepsy` to gold `symptomatic structural focal epilepsy` for Grok and the other present cell-3 runs.
 2. **Schema and evidence gates are specific, not a generic “open-weight crash pad”.** Gemma's illegal `Affinted` is dropped, not mapped to `Affirmed`, and it sits on a family-history mention the dictionary later removes. Qwen needed substring repair, not enum repair.
 3. **The same prompt produces different keep/reject sets.** Medication guidance (`anti-seizure` only; reject plans and past trials), SF-recall (prefer heading rates), dual-family rendering, and `diagnosis_context_only` are the instructions the six models split on. Luna's smaller inventory is heading-only conservatism, not a failure to extract Clopidogrel. Gemma's larger inventory is narrative-ledger over-read plus missed heading rates.
 4. **Gan and ExECT still fail differently.** DeepSeek's recency arithmetic on Gan Row 13190 does not reappear on this ExECT letter; here DeepSeek's cost is duplicate Diagnosis renders. Do not transfer a model's Gan failure mode onto ExECT.
@@ -340,7 +341,7 @@ are in
 
 Source: `prompt_input_json` on every structured one-call row for this letter. Prompt version **`exectv2_hybrid_key_family_event_ledger_v0.9.24`**. Profile `full`.
 
-The live call also included **49 worked examples** from the same version. They are omitted here (they are not letter-specific). Prompt text below is the shared living ExECT LLM-with-rules request. Do not treat Compact-dump Sol artifacts as the identity trace.
+The live call also included **49 worked examples** from the same version. They are omitted here (they are not letter-specific). Prompt text below is the shared ExECT pre-post request (cell 2 wording). Do not treat Compact-dump Sol artifacts as the identity trace.
 
 In heading lists, `⇥` marks a tab. Those tabs are part of the exact-substring contract.
 

@@ -10,7 +10,11 @@ This document establishes the **flagship 3-letter suite per task** (6 full clini
 
 It provides both:
 1. **Rich Clinical & Benchmark Context**: Full un-truncated clinical excerpts, gold targets, task taxonomy categories, and detailed explanations of why each note is hard for LLMs versus deterministic rules.
-2. **Reviewable 6-Step Evidence Journeys**: Living Grok 4.6 traces from the promoted `gan_llm_with_rules` / `exect_llm_with_rules` development cells, replayed from saved `raw_output` with no new model calls. Sol journeys are retired. Some letters that Sol rescued are Grok misses; the tables record that.
+2. **Reviewable 6-Step Evidence Journeys**: Grok 4.6 traces from development
+   cells, replayed from saved `raw_output` with no new model calls. Gan
+   journeys use the **wording ablation** (`gan_llm_with_rules`), not the cited
+   codebook extract. ExECT journeys use cell 2 (`exect_llm_pre_post`) or cell 3
+   as noted per letter. Sol journeys are retired.
 
 $$\text{Raw LLM Output} \longrightarrow \text{Format Check} \longrightarrow \text{Initial Normalization} \longrightarrow \text{Quoted Evidence} \longrightarrow \text{Deterministic Repair} \longrightarrow \text{Final Output}$$
 
@@ -64,9 +68,9 @@ flowchart LR
 | **1. Grok structured events** | Cluster event: `clusters of 5 seizures in a single day after up to 4 month seizure-free` | Model quoted the two-part pattern and selected that event |
 | **2. Format Repair** | Clean JSON | No format retry |
 | **3. Selected evidence** | *"She may remain seizure-free for up to 4 month, but then will experience clusters of 5 seizures in a single day."* | Quoted on the selected event |
-| **4. Label repair** | `'1 cluster of 5 seizures after up to 4 months seizure-free' -> 'seizure free for multiple month'` | Living stack dropped the cluster grammar and kept the quiet interval |
-| **5. Final `gan_llm_with_rules` output** | `seizure free for multiple month` | **Purist miss** versus gold `1 cluster per 4 month, 5 per cluster` |
-| **6. Grok LLM only** | `no seizure frequency reference` | Also Purist-wrong; no cluster render without rules |
+| **4. Label repair** | `'1 cluster of 5 seizures after up to 4 months seizure-free' -> 'seizure free for multiple month'` | Wording-ablation stack dropped the cluster grammar and kept the quiet interval |
+| **5. Wording ablation output** (`gan_llm_with_rules`) | `seizure free for multiple month` | **Purist miss** versus gold `1 cluster per 4 month, 5 per cluster` |
+| **6. Note** | `gan_llm_only` is not a results column | Also Purist-wrong without cluster render |
 
 ---
 
@@ -100,8 +104,8 @@ flowchart LR
 | **2. Format Repair** | Clean JSON | No format retry |
 | **3. First label repair** | `'seizure free since then' -> 'seizure free for multiple month'` | Normalizer mapped the current free interval |
 | **4. Second label repair** | `'seizure free for multiple month' -> '2 to 3 per 1 month'` | Range repair recovered the post-withdrawal count |
-| **5. Final `gan_llm_with_rules` output** | `2 to 3 per 1 month` | **Purist match** (gold `2 to 3 per month`) |
-| **6. Grok LLM only** | `unknown` | Purist miss; the range rescue is hybrid-only on this letter |
+| **5. Wording ablation output** | `2 to 3 per 1 month` | **Purist match** (gold `2 to 3 per month`) |
+| **6. Note** | Range rescue is rule-select on this ablation raw | `gan_llm_only` is not a results column |
 
 ---
 
@@ -134,9 +138,8 @@ flowchart LR
 | **1. Grok structured events** | `frequent petit mal recently`; increasing absences over six weeks | Qualitative current burden, no count |
 | **2. Format Repair** | Clean JSON | No format retry |
 | **3. Selected evidence** | *"Patient reports frequent petit mal recently, particularly on waking..."* | Quoted |
-| **4. Label repair** | `'frequent' -> 'multiple per day'` | Living stack did **not** force `unknown` |
-| **5. Final `gan_llm_with_rules` output** | `multiple per day` | Gold is `unknown`. Purist still marks the row correct because both labels sit in the unknown band |
-| **6. Grok LLM only** | `unknown` | Also Purist-correct; closer to the gold string |
+| **4. Label repair** | `'frequent' -> 'multiple per day'` | Wording-ablation stack did **not** force `unknown` |
+| **5. Wording ablation output** | `multiple per day` | Gold is `unknown`. Purist still marks the row correct because both labels sit in the unknown band |
 
 ---
 
@@ -182,17 +185,17 @@ A 50-year-old male presenting with a recurrent seizure after a long period of co
 
 ```mermaid
 flowchart LR
-  E1_S1["1. Grok quoted last-month seizure + heading Dx"] --> E1_S6["6. Hybrid F1 0.9412; SF family not letter-exact"]
+  E1_S1["1. Grok quoted last-month seizure + heading Dx"] --> E1_S6["6. Cell 2 select F1 0.9412; SF family not letter-exact"]
 ```
 
 | Step | Recorded Value | Rationale & Mechanism |
 | :--- | :--- | :--- |
-| **1. Grok raw / hybrid mentions** | Dx `Symptomatic structural focal epilepsy`; SF `seizure` last month and dated 2017 convulsive; Rx lamotrigine 75 mg bd; MRI/EEG | Living cell `exect_llm_with_rules/grok46/dev140` |
+| **1. Grok raw mentions** | Dx `Symptomatic structural focal epilepsy`; SF `seizure` last month and dated 2017 convulsive; Rx lamotrigine 75 mg bd; MRI/EEG | Cell 2 `exect_llm_pre_post/grok46/dev140` |
 | **2. Format** | Parse OK | No format retry recorded |
 | **3. Diagnosis** | Family letter-exact true on raw and hybrid | Heading diagnosis already gold-shaped |
 | **4. Seizure frequency** | Family letter-exact false on raw and hybrid | Last-month event recovered; 10-month quiet interval not letter-exact |
 | **5. Prescription / Investigations** | Letter-exact true | Lamotrigine 75 mg bd; MRI and EEG abnormal |
-| **6. Scores** | Hybrid headline F1 **0.9412**, same as this letter's Grok LLM-only F1 | No hybrid lift on this letter; not a four-family exact |
+| **6. Scores** | Cell 2 select F1 **0.9412** | Not a four-family exact; six-model row is cell 3 |
 
 ---
 
@@ -223,7 +226,7 @@ A 56-year-old male with dual neurological diagnoses: symptomatic structural epil
 
 ```mermaid
 flowchart LR
-  E2_S1["1. Grok kept structural epilepsy + quiet epileptic rates"] --> E2_S6["6. Hybrid F1 0.80; missed dissociative 2/week"]
+  E2_S1["1. Grok kept structural epilepsy + quiet epileptic rates"] --> E2_S6["6. Cell 2 select F1 0.80; missed dissociative 2/week"]
 ```
 
 | Step | Recorded Value | Rationale & Mechanism |
@@ -232,7 +235,7 @@ flowchart LR
 | **2. Seizure frequency** | `0` in 2 years for “seizure like this”; last GTC Christmas 2009 | Quiet epileptic history recovered |
 | **3. Missing gold fact** | No `dissociative seizures` `2` per `Week` mention | The twice-weekly non-epileptic rate is not in the Grok model-plus-rules inventory |
 | **4. Prescription / Investigations** | Levetiracetam 1000 mg bd; MRI abnormal | Family letter-exact true |
-| **5. Scores** | Hybrid headline F1 **0.80** (raw 0.625 on the same hybrid request; Grok LLM-only 0.75) | Diagnosis and SF families remain not letter-exact |
+| **5. Scores** | Cell 2 select F1 **0.80** | Diagnosis and SF families remain not letter-exact |
 | **6. Teaching point** | Dual diagnosis is still the difficulty | Grok did not conflate 2/week onto focal epilepsy; it dropped the dissociative rate |
 
 ---
@@ -263,17 +266,17 @@ A 40-year-old woman with focal cortical dysplasia right temporal lobe considerin
 
 ```mermaid
 flowchart LR
-  E3_S1["1. Grok quoted both AEDs and both rates"] --> E3_S6["6. Hybrid letter-exact; F1 1.0"]
+  E3_S1["1. Grok quoted both AEDs and both rates"] --> E3_S6["6. Cell 2 letter-exact; select F1 1.0"]
 ```
 
 | Step | Recorded Value | Rationale & Mechanism |
 | :--- | :--- | :--- |
-| **1. Diagnosis** | Dictionary rewrote `Symptomatic structural epilepsy` to `symptomatic structural focal epilepsy` | Same heading convention as other living models |
+| **1. Diagnosis** | Dictionary rewrote `Symptomatic structural epilepsy` to `symptomatic structural focal epilepsy` | Same heading convention as other cell-2 runs |
 | **2. Seizure frequency** | CPS 1–2 per month; secondary generalised 3–4 per year | Letter-exact true |
 | **3. Carbamazepine** | Dictionary set DrugName `carbamazapine` → `carbamazepine`; Frequency=2 | Regular bd regimen |
-| **4. Clobazam** | `Frequency=As_Required`; evidence *“Clobazam 10-20mg bd for seizure clusters”* | No last-rule action recorded; the living hybrid already stores rescue frequency |
+| **4. Clobazam** | `Frequency=As_Required`; evidence *“Clobazam 10-20mg bd for seizure clusters”* | No last-rule action recorded; cell 2 already stores rescue frequency |
 | **5. Investigations** | MRI and EEG abnormal | Letter-exact true |
-| **6. Scores** | Hybrid headline F1 **1.0**, four-family letter-exact; Grok LLM-only F1 0.7778 | Hybrid lift is diagnosis convention plus attribute completion, not a Sol-style Frequency=2 → As_Required hop |
+| **6. Scores** | Cell 2 select F1 **1.0**, four-family letter-exact | Lift is diagnosis convention plus attribute completion |
 
 ---
 
@@ -305,5 +308,5 @@ claim that the suite covers the full gold taxonomy.
 
 - **Gan Dev750 Split**: `data/Gan (2026)/synthetic_data_subset_1500.json` (`gan2026_split_v1.json`).
 - **ExECT Dev140 Split**: `data/ExECTv2 (2025)/Gold1-200_corrected_spelling/` (`exectv2_split_v2.json`).
-- **Living Grok cells**: `paper_experiments/gan/gan_llm_with_rules/grok46/dev750/` and `paper_experiments/exect/exect_llm_with_rules/grok46/dev140/` (replayed 2026-08-19 from saved `raw_output`).
+- **Development replay cells**: Gan wording ablation `paper_experiments/gan/gan_llm_with_rules/grok46/dev750/`; ExECT cell 2 `paper_experiments/exect/exect_llm_with_rules/grok46/dev140/` (replayed from saved `raw_output`).
 - **Gold Taxonomies**: [Gan Gold Taxonomy](../gan2026/gold_task_taxonomy_2026-08-06.md), [ExECT Gold Taxonomy](../exectv2/gold_task_taxonomy_2026-08-06.md).

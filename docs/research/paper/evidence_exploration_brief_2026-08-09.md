@@ -235,11 +235,11 @@ project's scores.
 C10, C11, and C15–C17; [Decision 0046](../../decisions/0046-exect-primary-method-comparison-boundary.md);
 and the [six-model comparison](../shared/six_model_comparison_report_2026-07-18.md).
 
-**Boundary:** the cleanest three-method comparison is living Grok on ExECT
-rules, ExECT LLM only (raw F1), and ExECT LLM with rules (hybrid F1),
-on `dev140` and aggregate-only `test60`. Full ledger is the named
-control, not the headline. Clinical-fact F1 is an internal research
-measure, not the published ExECT benchmark.
+**Boundary:** headline tables are five role rows; the cited score is the
+select stop. The six-model comparison is cell 3 only (LLM extract, rules
+encode, rules select) on both tasks. Full ledger is the named control, not
+the headline. Clinical-fact F1 is an internal research measure, not the
+published ExECT benchmark.
 Gan has retained task-specific method and six-model comparisons, but prompt,
 repair, replay, provider-route, and historical-versus-final ruleset identities
 must remain visible. These results do not show state of the art or a universal
@@ -334,7 +334,8 @@ system clinically validated.
 **State:** bounded support for reuse of architecture and evaluation discipline;
 performance transfer is unsupported.
 
-**Tentative claim:** the same package, three method forms, stage-ownership
+**Tentative claim:** the same package, five role rows at extract / encode /
+select, stage-ownership
 discipline, and reliability questions are applied to a deep single-label
 seizure-frequency task and a broad multi-mention phenotype task, while each
 task retains its own schema, clinical policies, and measures.
@@ -528,13 +529,10 @@ that job:
    requested one.
 2. **Parallel two-task performance view.** The initial standalone
    [HTML evidence view](../artifacts/parallel_two_task_performance_view_2026-08-09.html)
-   presents the living Grok holdout method comparisons as two separate task
-   stories, with each metric, split, shown method, evidence owner, and
-   limit visible. Gan shows Grok LLM-only against cleaned hybrid;
-   ExECT shows rules, Grok LLM only, and Grok LLM with rules.
-   (Update, 2026-08-19: tables cite Grok 4.6. Gan `test450` is 0.73
-   LLM-only and 0.83 cleaned hybrid; rules-only remains 0.73.
-   ExECT `test60` is 0.7726 raw / 0.805 hybrid against rules 0.7937.)
+   presents Gemini five-cell holdout comparisons as two separate task
+   stories, with each metric, split, shown role row, evidence owner, and
+   limit visible. Gan cites select-stop Purist on the five role rows;
+   ExECT cites select-stop clinical fact F1 on the same grid.
    The view keeps the tasks' scorers and method sets separate.
 3. **Component-role and failure-boundary source.** The four-slide
    [component roles and limits deck](../artifacts/paper_source_component_roles_and_limits_2026-08-09.pptx)

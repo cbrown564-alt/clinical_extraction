@@ -32,6 +32,18 @@
     body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 var(--sans); }
     a { color: inherit; text-underline-offset: 3px; }
     :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+    .historical-banner {
+      margin: 0 0 22px;
+      padding: 14px 18px;
+      background: var(--warning-soft);
+      border: 1px solid oklch(0.78 0.06 38);
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: .92rem;
+      line-height: 1.45;
+    }
+    .historical-banner strong { display: block; margin-bottom: 4px; color: var(--warning); }
+    .historical-banner a { font-weight: 600; }
     .page { max-width: 1240px; margin: 0 auto; padding: 30px 32px 42px; }
     .topline { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 46px; color: var(--quiet); font-size: .82rem; }
     .topline a { text-decoration: none; }
@@ -102,6 +114,10 @@
 </head>
 <body>
   <main class="page">
+    <div class="historical-banner" role="note">
+      <strong>Historical exhibit — not the cited paper table.</strong>
+      This architecture view was written when tables cited Grok two-method bars. The cited headline tables are Gemini five-cell grids (select stop); six-model is cell 3 only. See <a href="../../paper/claims.md">paper claims</a> and <a href="../README.md">research README</a>.
+    </div>
     <div class="topline">
       <a href="../../NAVIGATION.md#paper-source-library">← Paper-source library</a>
       <span class="authority">implemented architecture · bounded project evidence</span>

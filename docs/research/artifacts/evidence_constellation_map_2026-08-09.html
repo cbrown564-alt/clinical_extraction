@@ -39,6 +39,18 @@
     button { min-width: 44px; min-height: 44px; font: inherit; }
     :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 
+    .historical-banner {
+      margin: 0 0 22px;
+      padding: 14px 18px;
+      background: var(--gap-soft);
+      border: 1px solid oklch(0.78 0.06 38);
+      border-radius: var(--radius);
+      color: var(--muted);
+      font-size: .92rem;
+      line-height: 1.45;
+    }
+    .historical-banner strong { display: block; margin-bottom: 4px; color: var(--gap); }
+    .historical-banner a { font-weight: 600; }
     .page { max-width: 1440px; margin: 0 auto; padding: 32px; }
     .masthead {
       display: grid;
@@ -227,6 +239,10 @@
 </head>
 <body>
   <main class="page">
+    <div class="historical-banner" role="note">
+      <strong>Historical exhibit — not the cited paper table.</strong>
+      Linked performance views use a Grok two-method framing from an earlier campaign. The cited headline tables are Gemini five-cell grids (select stop); six-model is cell 3 only. See <a href="../../paper/claims.md">paper claims</a> and <a href="../README.md">research README</a>.
+    </div>
     <header class="masthead">
       <div>
         <h1>Paper evidence constellation</h1>
@@ -351,7 +367,7 @@
               <p class="skeptic"><span>Skeptic question</span>Are methods truly like-for-like, are development and holdout separate, and are negative or mixed results shown alongside gains?</p>
               <div class="lane-grid">
                 <section class="lane literature"><h4><span class="swatch lit"></span>Literature / dataset lane</h4><p>Defines benchmark tasks, comparator context, and metric or label limits. It cannot strengthen project scores.</p></section>
-                <section class="lane project"><h4><span class="swatch project"></span>Project / system lane</h4><p>Supports the living Grok three-method comparison on each task. Sol-matched fills are historical.</p></section>
+                <section class="lane project"><h4><span class="swatch project"></span>Project / system lane</h4><p>Historical Grok three-method comparison on each task. The cited headline is Gemini five-cell (select stop); six-model is cell 3 only. Sol-matched fills remain historical.</p></section>
               </div>
               <div class="evidence-grid">
                 <div>
@@ -359,7 +375,7 @@
                   <div class="exhibits">
                     <a class="exhibit" href="./parallel_two_task_performance_view_2026-08-09.html"><span class="arrow">→</span><span><strong>Parallel two-task performance view</strong><small>The bounded writing view: separate method comparisons, metrics, identities, and limits.</small></span></a>
                     <a class="exhibit" href="../shared/six_model_comparison_report_2026-07-18.md"><span class="arrow">→</span><span><strong>Parallel six-model comparison</strong><small>Separate Gan and ExECT outcomes, identities, splits, and score boundaries.</small></span></a>
-                    <a class="exhibit" href="../../paper/methods.md"><span class="arrow">→</span><span><strong>ExECT paper methods</strong><small>Locks ExECT rules, LLM only (raw F1), and LLM with rules (hybrid F1). Grok is the cited model.</small></span></a>
+                    <a class="exhibit" href="../../paper/methods.md"><span class="arrow">→</span><span><strong>ExECT paper methods</strong><small>Cited ExECT headline is the Gemini five-cell (select stop). Six-model is cell 3 only. This map is a historical route, not the table.</small></span></a>
                     <a class="exhibit" href="../../../experiments/six_model_final_panel_20260803/panel_aggregate.json"><span class="arrow">→</span><span><strong>Final panel aggregate</strong><small>Machine-readable selected aggregate results; no row inspection.</small></span></a>
                   </div>
                   <p class="section-label">Canonical owners</p>

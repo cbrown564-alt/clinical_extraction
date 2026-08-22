@@ -72,6 +72,19 @@
     button, summary { font: inherit; }
     :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 
+    .historical-banner {
+      margin: 0 0 22px;
+      padding: 14px 18px;
+      background: var(--warn-soft);
+      border: 1px solid oklch(0.78 0.06 42);
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: .92rem;
+      line-height: 1.45;
+    }
+    .historical-banner strong { display: block; margin-bottom: 4px; color: var(--warn); }
+    .historical-banner a { font-weight: 600; }
+
     .page {
       position: relative;
       z-index: 1;
@@ -432,6 +445,10 @@
 </head>
 <body>
   <div class="page">
+    <div class="historical-banner" role="note">
+      <strong>Historical exhibit — not the cited paper table.</strong>
+      Case cells shown here use Grok from an earlier campaign. The cited headline tables are Gemini five-cell grids (select stop); six-model is cell 3 only. See <a href="../../paper/claims.md">paper claims</a> and <a href="../README.md">research README</a>.
+    </div>
     <div class="topline">
       <a class="back" href="../../NAVIGATION.md#paper-source-library">← Paper-source library</a>
       <span class="authority">development cases · not holdout</span>
