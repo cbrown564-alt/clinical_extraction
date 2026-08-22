@@ -2,9 +2,9 @@
 """Letter-level ExECT rules-only four-family scores on dev140.
 
 Regenerates no-call rules-only predictions and scores them with the same
-clinical_headline helper used by the six-model category-cut builder, so letter
-buckets can include the rules surface. Also checks Decision 0046
-headline_target overall F1 (0.8160).
+exact clinical-headline helper used by the six-model category-cut builder, so
+letter buckets can include the active rules surface. Records the historical
+Decision 0046 result as a reference, not as an expected current score.
 
 No model calls. Development rows only.
 """
@@ -36,7 +36,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indic
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
     aggregate_scores,
-    clinical_headline_scores,
+    exact_clinical_headline_scores,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -44,7 +44,7 @@ DATE_STAMP = "20260806"
 REPORT_DATE = "2026-08-06"
 PROTOCOL = "docs/research/shared/six_model_category_cut_protocol_2026-08-06.md"
 DECISION_0046 = "docs/decisions/0046-exect-primary-method-comparison-boundary.md"
-EXPECTED_HEADLINE_F1 = 0.8160
+DECISION_0046_REFERENCE_F1 = 0.8160
 OUT_JSONL = (
     REPO_ROOT
     / f"experiments/exectv2_rules_only_four_family_letter_scores_dev140_{DATE_STAMP}.jsonl"
@@ -125,7 +125,7 @@ def main() -> None:
         pred_exect = _predicted_letter_to_exect(pred)
         gold_scored.append(gold_four)
         pred_scored.append(pred_exect)
-        family_scores = clinical_headline_scores([gold_four], [pred_exect])
+        family_scores = exact_clinical_headline_scores([gold_four], [pred_exect])
         overall = aggregate_scores(family_scores.values())
         rows.append(
             {
@@ -154,7 +154,7 @@ def main() -> None:
             }
         )
 
-    helper_family = clinical_headline_scores(gold_scored, pred_scored)
+    helper_family = exact_clinical_headline_scores(gold_scored, pred_scored)
     helper_overall = aggregate_scores(helper_family.values())
 
     _views, score_ladder, _headline = build_scoring_views(
@@ -166,11 +166,6 @@ def main() -> None:
     )
     headline = score_ladder["headline_target"]
     headline_f1 = float(headline["overall"]["f1"])
-    if abs(headline_f1 - EXPECTED_HEADLINE_F1) > 1e-4:
-        raise RuntimeError(
-            f"Decision 0046 headline_target mismatch: got {headline_f1:.4f}, "
-            f"expected {EXPECTED_HEADLINE_F1:.4f}"
-        )
 
     summary: dict[str, Any] = {
         "schema_version": (
@@ -186,7 +181,7 @@ def main() -> None:
         "method": {
             "pipeline": "deterministic_all9",
             "production_rule": "restrict_and_rescore",
-            "scoring_helper": "clinical_headline_scores",
+            "scoring_helper": "exact_clinical_headline_scores",
             "decision_0046_surface": "assembly_headline_target",
             "include_diagnosis_resolution_candidate": False,
             "include_diagnosis_benchmark_residuals": False,
@@ -205,7 +200,7 @@ def main() -> None:
                 for family, values in helper_family.items()
             },
         },
-        "decision_0046_headline_target": {
+        "active_headline_target": {
             "f1": headline_f1,
             "precision": float(headline["overall"]["precision"]),
             "recall": float(headline["overall"]["recall"]),
@@ -217,15 +212,19 @@ def main() -> None:
                 }
                 for family, values in headline["by_indicator"].items()
             },
-            "matches_expected": True,
+        },
+        "decision_0046_reference": {
+            "f1": DECISION_0046_REFERENCE_F1,
+            "matches_active": abs(headline_f1 - DECISION_0046_REFERENCE_F1) <= 1e-4,
         },
         "letter_scores_path": OUT_JSONL.relative_to(REPO_ROOT).as_posix(),
         "claim_boundary": (
             "Development letter-level rules-only four-family scores on ExECT "
-            "dev140 for category-cut three-method packaging. Decision 0046 "
-            "headline_target overall remains 0.8160. Letter-bucket cuts use the "
-            "clinical_headline helper for parity with llm / llm_with_rules "
-            "surfaces in the category-cut artifact. Not holdout evidence."
+            "dev140 for category-cut three-method packaging. The active-rules "
+            "score is not a reproduction of the retained Decision 0046 result. "
+            "Letter-bucket cuts use the exact clinical-headline helper for parity "
+            "with llm / llm_with_rules surfaces in the category-cut artifact. "
+            "Not holdout evidence."
         ),
     }
 

@@ -21,7 +21,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
     aggregate_scores,
     annotation_from_mapping,
-    clinical_headline_scores,
+    exact_clinical_headline_scores,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import load_records_for_split
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import boundary_band
@@ -462,7 +462,7 @@ def _score_exect_rows(rows: list[dict[str, Any]], *, field: str) -> dict[str, An
                 ),
             )
         )
-    family = clinical_headline_scores(gold_letters, pred_letters)
+    family = exact_clinical_headline_scores(gold_letters, pred_letters)
     overall = aggregate_scores(family.values())
     return {
         "n_letters": len(rows),
@@ -520,7 +520,7 @@ def _score_exect_subtype(
             }
         )
     score = _score_exect_rows(subtype_rows, field="predicted_mentions")["counts"][family]
-    family_score = clinical_headline_scores(
+    family_score = exact_clinical_headline_scores(
         [
             ExectLetter(
                 letter_id=str(row["letter_id"]),
@@ -694,9 +694,9 @@ def build_exect_section() -> dict[str, Any]:
         "prediction_field": "predicted_mentions",
         "system_note": (
             "Single deterministic method, not a six-model surface. "
-            "Category-cut scores use clinical_headline helper for parity with "
-            "llm / llm_with_rules. Decision 0046 primary fill remains "
-            "assembly headline_target 0.8160."
+            "Category-cut scores use the exact clinical-headline helper for "
+            "parity with llm / llm_with_rules. The retained Decision 0046 score "
+            "is a historical reference, not the active-rules result."
         ),
         "overall": rules_overall,
         "within_family_subtypes": _exect_within_family_scores(
@@ -706,7 +706,8 @@ def build_exect_section() -> dict[str, Any]:
         "diag_letter_multiplicity": rules_diag,
         "sf_empty": rules_sf_empty,
         "sf_mention_letter_groups": rules_sf_groups,
-        "decision_0046_headline_target": rules_summary["decision_0046_headline_target"],
+        "active_headline_target": rules_summary["active_headline_target"],
+        "decision_0046_reference": rules_summary["decision_0046_reference"],
     }
 
     return {
@@ -725,10 +726,10 @@ def build_exect_section() -> dict[str, Any]:
             "Lens assignment still uses the same x/y/z thresholds."
         ),
         "rules_scoring_note": (
-            "rules uses the same clinical_headline helper on regenerated "
-            "four-family deterministic predictions. Helper overall may differ "
-            "slightly from Decision 0046 headline_target (0.8160); letter-bucket "
-            "cuts stay on the helper for surface parity."
+            "rules uses the same exact clinical-headline helper on regenerated "
+            "four-family deterministic predictions. The active score can differ "
+            "from the historical Decision 0046 result as the ruleset changes; "
+            "letter-bucket cuts stay on the current helper for surface parity."
         ),
         "methods": {
             "rules": {"rules_only": rules_method},

@@ -60,6 +60,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     semantic_config_for,
     source_near_diagnostic,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
+    exact_clinical_headline_prf1_scores,
+)
 
 PIPELINE_FAMILY = "exectv2_clinical_recovery"
 MODEL = "(model-independent)"
@@ -194,6 +197,7 @@ def _headline_scores(
     prescription = score_prescription_components(gold_letters, pred_letters)
     investigations = score_investigations_components(gold_letters, pred_letters)
     frequency = score_frequency_state(gold_letters, pred_letters)
+    exact = exact_clinical_headline_prf1_scores(gold_letters, pred_letters)
     scores: dict[str, Any] = {
         PRESCRIPTION.name: {
             "headline_kind": "Clinical Component Score",
@@ -211,8 +215,16 @@ def _headline_scores(
             "headline": frequency.clinical_headline,
             "components": frequency,
         },
+        DIAGNOSIS.name: {
+            "headline_kind": "Exact Clinical-Fact Score",
+            "headline": exact[DIAGNOSIS.name],
+        },
     }
     for entity in CLASS_B_ENTITIES:
+        # Diagnosis is a reported target and is scored exactly above. The
+        # permissive concept matcher remains only for non-target diagnostics.
+        if entity == DIAGNOSIS.name:
+            continue
         concept = score_concept_identity(gold_letters, pred_letters, entity)
         scores[entity] = {
             "headline_kind": "Concept-Identity Headline",

@@ -40,7 +40,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
     aggregate_scores,
-    clinical_headline_scores,
+    exact_clinical_headline_scores,
 )
 
 FAMILIES: tuple[str, ...] = (
@@ -286,7 +286,7 @@ def _deterministic_run(root: Path, gold_letters: Sequence[ExectLetter]) -> dict[
         to_exect_letter(prediction, note_text=gold.note_text)
         for prediction, gold in zip(predictions, gold_letters, strict=True)
     ]
-    family_scores = clinical_headline_scores(list(gold_letters), pred_letters)
+    family_scores = exact_clinical_headline_scores(list(gold_letters), pred_letters)
     surface = {
         "overall": aggregate_scores(family_scores.values()),
         "by_indicator": family_scores,

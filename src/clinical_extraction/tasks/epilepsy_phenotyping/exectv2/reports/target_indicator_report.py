@@ -11,6 +11,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     PRESCRIPTION,
     SEIZURE_FREQUENCY,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
+    aggregate_scores as aggregate_exact_clinical_headline_scores,
+)
 
 TARGET_INDICATORS: tuple[str, ...] = (
     DIAGNOSIS.name,
@@ -22,8 +25,8 @@ DEFAULT_TARGET_F1 = 0.9
 ADR_PATH = "docs/decisions/0030-four-exact-indicators-drive-exectv2-plan11.md"
 HEADLINE_SCORE_POLICIES: dict[str, str] = {
     DIAGNOSIS.name: (
-        "projected clinical-fact concept_only score after deterministic "
-        "Diagnosis normalization/projection; scored as projected core facts per letter"
+        "exact per-letter clinical-fact unit-key score after deterministic "
+        "Diagnosis normalization/projection"
     ),
     SEIZURE_FREQUENCY.name: (
         "projected seizure-state clinical_headline score after deterministic "
@@ -155,11 +158,10 @@ def render_target_indicator_markdown(report: Mapping[str, Any]) -> str:
         "## Clinical Fidelity Companions",
         "",
         (
-            "Headline keys deliberately demote projectable attributes, but two keys "
-            "also forgive a genuine clinical judgement. These companions expose that "
-            "gap so the headline is not read as the whole story: Diagnosis "
-            "`concept_only` forgives Negation; SeizureFrequency `clinical_headline` "
-            "forgives rate magnitude (e.g. 2-4/month and 6-9/week share one key)."
+            "Headline keys deliberately demote projectable attributes. The "
+            "SeizureFrequency companion exposes one clinical-fidelity gap: its "
+            "`clinical_headline` forgives rate magnitude (for example, 2-4/month "
+            "and 6-9/week share one key)."
         ),
         "",
         (
@@ -242,29 +244,7 @@ def _target_only_errors(candidate: Mapping[str, Any]) -> dict[str, dict[str, int
 
 
 def _aggregate_scores(scores: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
-    precision_tp = recall_tp = pred_count = gold_count = 0
-    for score in scores:
-        precision_tp += int(score.get("precision_tp", score.get("tp", 0)))
-        recall_tp += int(score.get("recall_tp", score.get("tp", 0)))
-        pred_default = int(score.get("tp", 0)) + int(score.get("fp", 0))
-        gold_default = int(score.get("tp", 0)) + int(score.get("fn", 0))
-        pred_count += int(score.get("pred_count", pred_default))
-        gold_count += int(score.get("gold_count", gold_default))
-    precision = precision_tp / pred_count if pred_count else 0.0
-    recall = recall_tp / gold_count if gold_count else 0.0
-    f1 = (2 * precision * recall / (precision + recall)) if precision + recall else 0.0
-    return {
-        "precision": round(precision, 4),
-        "recall": round(recall, 4),
-        "f1": round(f1, 4),
-        "tp": recall_tp,
-        "precision_tp": precision_tp,
-        "recall_tp": recall_tp,
-        "fp": max(0, pred_count - precision_tp),
-        "fn": max(0, gold_count - recall_tp),
-        "pred_count": pred_count,
-        "gold_count": gold_count,
-    }
+    return aggregate_exact_clinical_headline_scores(dict(score) for score in scores)
 
 
 def _best_candidate_for_indicator(

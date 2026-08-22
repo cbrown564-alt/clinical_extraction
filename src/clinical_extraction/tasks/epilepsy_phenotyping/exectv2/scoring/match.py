@@ -200,11 +200,15 @@ def score_concept_identity(
     pred_letters: Sequence[ExectLetter],
     entity: str,
 ) -> ConceptIdentityScores:
-    """Score a Class-B clinical concept with entity-agnostic recall.
+    """Diagnostic concept recovery with entity-agnostic recall.
 
     Recall is credited from any predicted entity whose normalized clinical
     concept maps to ``entity``. Precision is home-tagged: only predictions emitted
     on ``entity`` enter the precision denominator.
+
+    This is intentionally more permissive than the canonical ExECT clinical-fact
+    scorer. Do not use it for reported pipeline, rung, or paper results; those use
+    exact per-letter :func:`clinical_headline_unit_keys`.
     """
 
     return ConceptIdentityScores(

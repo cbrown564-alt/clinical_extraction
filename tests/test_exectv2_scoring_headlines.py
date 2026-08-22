@@ -11,11 +11,21 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
     load_letters,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports import (
+    clinical_recovery_scorecard,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first.recovery import (
+    score_for_primary,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     score_concept_identity,
     score_entity,
     score_frequency_state,
     score_prescription_components,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
+    aggregate_scores,
+    exact_clinical_headline_scores,
 )
 
 
@@ -165,11 +175,11 @@ def test_empty_predictions_score_zero_recall() -> None:
     assert score.per_letter.fn == 142
 
 
-def test_diagnosis_headline_credits_gold_parent_when_pred_emits_descendant() -> None:
-    """Hypothesis example (D1): gold=[epilepsy], pred=[epilepsy, focal epilepsy].
+def test_diagnosis_concept_diagnostic_credits_parent_for_descendant() -> None:
+    """Diagnostic example: gold=[epilepsy], pred=[epilepsy, focal epilepsy].
     Per-side collapse leaves gold={epilepsy}, pred={focal epilepsy}; the
-    hierarchy-aware match credits the verbatim-correct diagnosis instead of
-    scoring it as a paired FN+FP."""
+    hierarchy-aware diagnostic credits the relation. This is not the reported
+    exact clinical-headline scorer."""
     gold = [ExectLetter("L1", "note", (_dx("epilepsy"),))]
     pred = [ExectLetter("L1", "note", (_dx("epilepsy"), _dx("focal epilepsy")))]
 
@@ -178,3 +188,69 @@ def test_diagnosis_headline_credits_gold_parent_when_pred_emits_descendant() -> 
     assert score.f1 == 1.0
     assert score.precision_tp == 1 and score.recall_tp == 1
     assert score.pred_count == 1 and score.gold_count == 1
+
+
+def test_reported_diagnosis_headline_requires_exact_concept_identity() -> None:
+    gold = [ExectLetter("L1", "note", (_dx("epilepsy"),))]
+    pred = [ExectLetter("L1", "note", (_dx("focal epilepsy"),))]
+
+    score = exact_clinical_headline_scores(gold, pred)[DIAGNOSIS.name]
+
+    assert score["tp"] == 0
+    assert score["fp"] == 1
+    assert score["fn"] == 1
+    assert score["f1"] == 0.0
+
+
+def test_clinical_recovery_scorecard_uses_exact_diagnosis_headline() -> None:
+    gold = [ExectLetter("L1", "note", (_dx("epilepsy"),))]
+    pred = [ExectLetter("L1", "note", (_dx("epilepsy"), _dx("focal epilepsy")))]
+
+    entry = clinical_recovery_scorecard._headline_scores(gold, pred)[DIAGNOSIS.name]
+
+    assert entry["headline_kind"] == "Exact Clinical-Fact Score"
+    assert entry["headline"].f1 == 0.0
+
+
+def test_llm_first_primary_uses_exact_diagnosis_headline() -> None:
+    exact = {"f1": 0.0}
+    permissive = {"f1": 1.0}
+    scorecard = {
+        "headline_scores": {
+            DIAGNOSIS.name: {"headline": exact, "concept_only": permissive}
+        }
+    }
+
+    assert score_for_primary(DIAGNOSIS.name, scorecard) is exact
+
+
+def test_reported_diagnosis_headline_does_not_use_other_family_recall() -> None:
+    gold = [ExectLetter("L1", "note", (_dx("focal seizures"),))]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(SEIZURE_FREQUENCY.name, "focal seizures", NumberOfSeizures="1"),),
+        )
+    ]
+
+    score = exact_clinical_headline_scores(gold, pred)[DIAGNOSIS.name]
+
+    assert score["tp"] == 0
+    assert score["recall_tp"] == 0
+    assert score["fn"] == 1
+
+
+def test_reported_headline_aggregate_rejects_asymmetric_diagnostic_counts() -> None:
+    with pytest.raises(ValueError, match="symmetric exact unit keys"):
+        aggregate_scores(
+            (
+                {
+                    "tp": 1,
+                    "precision_tp": 0,
+                    "recall_tp": 1,
+                    "fp": 0,
+                    "fn": 0,
+                },
+            )
+        )
