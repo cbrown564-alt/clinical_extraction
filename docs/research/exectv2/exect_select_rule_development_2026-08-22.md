@@ -262,3 +262,34 @@ saved development distributions; it is not an independent split, holdout
 generalization, or clinical validation. The result has not replaced the
 promoted paper rung artifacts. `test60` remains sealed.
 
+## Post-study portability correction
+
+After the study freeze, the accepted Diagnosis and SF rules were rewritten so
+they state a hierarchy instead of the rescue phrases that first justified
+them. Scores above remain the frozen study reading; this section is a
+mechanism correction, not a new scored arm.
+
+- `selection.diagnosis_specificity_hierarchy` now treats laterality as an
+  epilepsy classification (`possible/probable generalised`, `generalised
+  epilepsy`), not as the adjective in generalised tonic clonic seizures. A
+  `namely` / `i.e.` clause cannot overwrite the source concept. A named lobe
+  wins over a same-branch etiology form, and the structural-epilepsy prefix
+  no longer strips the lobe.
+- `selection.diagnosis_source_local_specificity` restores a source fact only
+  when the later rewrite is broader, an etiology sibling of a named lobe, or
+  a laterality child the hierarchy does not authorize. The
+  `longstanding…GTC` and `namely genetic generalised` regexes are gone.
+- `selection.diagnosis_explicit_heading_phenotype` uses a syndrome-owns-
+  phenotype table. JME still owns absence and myoclonus; temporal lobe
+  epilepsy does not. Heading myoclonus can be retained when no owning
+  syndrome is present.
+- `selection.sf_named_type_identity` permits parent/child refinements
+  (absences ⊂ typical absence; focal seizures ⊂ focal seizures with altered
+  awareness) instead of two CUI pairs plus an exact surface.
+- `selection.sf_to_diagnosis_explicit_type` states always-project versus
+  heading-only CUIs, and projects named absence refinements as
+  `absence seizures`.
+- `selection.prescription_active_titration` treats `prescribe` / `start` /
+  `commence` / `initiate` as the planned-treatment class. Letter openers are
+  test examples, not the rule.
+

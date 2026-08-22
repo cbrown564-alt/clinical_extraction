@@ -103,6 +103,24 @@ def test_source_local_specificity_restores_overbroad_diagnosis_rewrites() -> Non
     assert {action["rule_id"] for action in actions} == {DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY}
 
 
+def test_source_local_specificity_restores_unauthorized_laterality() -> None:
+    evidence = "Diagnosis: longstanding epilepsy with generalised tonic clonic seizures"
+    source = [_mention("Diagnosis", "epilepsy", evidence, {"DiagCategory": "Epilepsy"})]
+    selected = [
+        _mention(
+            "Diagnosis",
+            "generalised epilepsy",
+            evidence,
+            {"DiagCategory": "Epilepsy"},
+        )
+    ]
+
+    repaired, actions = _apply(selected, source, DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY)
+
+    assert [row["text"] for row in repaired] == ["epilepsy"]
+    assert len(actions) == 1
+
+
 def test_source_local_specificity_keeps_explicit_probable_classification() -> None:
     evidence = "Diagnosis: Epilepsy – unclassified, possibly generalised."
     source = [_mention("Diagnosis", "epilepsy", evidence, {"DiagCategory": "Epilepsy"})]
@@ -136,6 +154,34 @@ def test_explicit_diagnosis_heading_retains_only_the_heading_phenotype() -> None
     assert actions[0]["rule_id"] == DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE
 
 
+def test_explicit_heading_myoclonus_is_retained_without_an_owning_syndrome() -> None:
+    heading = "Medical diagnosis:\tGeneralised epilepsy with myoclonus"
+    source = [_mention("Diagnosis", "myoclonus", heading, {"DiagCategory": "MultipleSeizures"})]
+
+    repaired, actions = _apply([], source, DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE)
+
+    assert [row["text"] for row in repaired] == ["myoclonus"]
+    assert actions[0]["rule_id"] == DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE
+
+
+def test_explicit_heading_absence_is_kept_beside_temporal_lobe_epilepsy() -> None:
+    heading = "Diagnosis: temporal lobe epilepsy with absences"
+    source = [
+        _mention(
+            "Diagnosis",
+            "temporal lobe epilepsy",
+            heading,
+            {"DiagCategory": "Epilepsy"},
+        ),
+        _mention("Diagnosis", "absence seizures", heading, {"DiagCategory": "MultipleSeizures"}),
+    ]
+
+    repaired, actions = _apply([source[0]], source, DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE)
+
+    assert [row["text"] for row in repaired] == ["temporal lobe epilepsy", "absence seizures"]
+    assert len(actions) == 1
+
+
 def test_explicit_heading_phenotype_stays_suppressed_under_jme() -> None:
     heading = (
         "Diagnosis: Probable Juvenile Myoclonic Epilepsy (JME) "
@@ -157,7 +203,8 @@ def test_explicit_heading_phenotype_stays_suppressed_under_jme() -> None:
     ]
     selected = [source[0]]
 
-    repaired, actions = _apply(selected, source, DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE)
+    myoclonus = _mention("Diagnosis", "myoclonus", heading, {"DiagCategory": "MultipleSeizures"})
+    repaired, actions = _apply(selected, [*source, myoclonus], DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE)
 
     assert repaired == selected
     assert actions == []
@@ -224,6 +271,22 @@ def test_active_titration_keeps_current_regimen_but_not_a_true_future_start() ->
 
     assert [row["text"] for row in repaired] == ["lamotrigine"]
     assert actions[0]["rule_id"] == PRESCRIPTION_ACTIVE_TITRATION
+
+
+def test_active_titration_rejects_a_start_request_without_letter_openers() -> None:
+    source = [
+        _mention(
+            "Prescription",
+            "levetiracetam",
+            "Start levetiracetam 250mg once daily and increase in two weeks.",
+            {"DrugName": "levetiracetam", "DrugDose": "250", "DoseUnit": "mg", "Frequency": "1"},
+        )
+    ]
+
+    repaired, actions = _apply([], source, PRESCRIPTION_ACTIVE_TITRATION)
+
+    assert repaired == []
+    assert actions == []
 
 
 def test_active_titration_rejects_prescribe_requests_and_target_doses() -> None:
@@ -539,6 +602,27 @@ def test_recent_event_is_kept_over_a_historical_seizure_free_sibling() -> None:
     assert repaired[0]["evidence"] == active["evidence"]
     assert repaired[0]["attributes"] == active["attributes"]
     assert {action["action"] for action in actions} == {"add", "drop"}
+
+
+def test_named_sf_to_diagnosis_projects_named_absence_refinements() -> None:
+    evidence = "Typical absences continue weekly."
+    sf = _mention(
+        "SeizureFrequency",
+        "typical absences",
+        evidence,
+        {
+            "CUI": "C4316903",
+            "CUIPhrase": "typical absences",
+            "NumberOfSeizures": "1",
+            "TimePeriod": "Week",
+        },
+    )
+
+    repaired, actions = _apply([sf], [sf], SF_TO_DIAGNOSIS_EXPLICIT_TYPE)
+
+    diagnosis = [row for row in repaired if row["entity"] == "Diagnosis"]
+    assert [row["text"] for row in diagnosis] == ["absence seizures"]
+    assert actions[0]["rule_id"] == SF_TO_DIAGNOSIS_EXPLICIT_TYPE
 
 
 def test_named_sf_to_diagnosis_is_ledger_only_and_concept_deduplicated() -> None:

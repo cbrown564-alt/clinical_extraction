@@ -24,6 +24,7 @@ from .diagnosis import (
     drop_syndrome_covered_phenotypes,
     is_diagnosis_convention_noise,
     is_redundant_diagnosis_residual_addition,
+    owned_heading_phenotypes,
 )
 from .investigations import (
     investigation_convention_attribute_repairs,
@@ -79,6 +80,7 @@ __all__ = [
     "normalize_dose_unit",
     "normalize_dose_value",
     "normalize_drug_name",
+    "owned_heading_phenotypes",
     "prescription_convention_attribute_repairs",
     "prescription_base_drug_name",
     "prescription_format_attribute_repairs",

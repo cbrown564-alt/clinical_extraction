@@ -187,7 +187,7 @@ _DIAGNOSIS_FAMILY_CONTEXT = re.compile(
 _PREFIX_DIAGNOSIS_CONVENTION_REPAIRS: tuple[tuple[re.Pattern[str], str], ...] = (
     (
         re.compile(
-            r"\bsymptomatic structural (?:frontal lobe |temporal lobe )?epilepsy\b",
+            r"\bsymptomatic structural(?:\s+focal)?\s+epilepsy\b",
             re.IGNORECASE,
         ),
         "symptomatic structural focal epilepsy",
@@ -458,8 +458,22 @@ _PROBABLE_CUE = re.compile(
     re.IGNORECASE,
 )
 _POSSIBLE_CUE = re.compile(r"\b(?:possible|possibly)\b|\?", re.IGNORECASE)
-_LATERAL_FOCAL = re.compile(r"\bfocal(?:\s+onset)?\b", re.IGNORECASE)
-_LATERAL_GENERALISED = re.compile(r"\bgenerali[sz]ed\b", re.IGNORECASE)
+_ELABORATION_TAIL = re.compile(
+    r"[,;:]?\s*\b(?:namely|i\.e\.|ie|that is(?:\s+to\s+say)?)\b.*$",
+    re.IGNORECASE,
+)
+_LATERAL_FOCAL = re.compile(
+    r"(?<!structural\s)\bfocal(?:\s+onset)?\s+epilepsy\b|"
+    r"\b(?:possible|possibly|probable|probably|likely|most\s+likely)\s+"
+    r"focal(?:\s+onset)?\b(?!\s+seizure)",
+    re.IGNORECASE,
+)
+_LATERAL_GENERALISED = re.compile(
+    r"\bgenerali[sz]ed\s+epilepsy\b|"
+    r"\b(?:possible|possibly|probable|probably|likely|most\s+likely)\s+"
+    r"generali[sz]ed\b(?!\s+(?:tonic|clonic|seizure|convuls))",
+    re.IGNORECASE,
+)
 _FOCAL_DIAGNOSIS_CLASS = re.compile(
     r"\bfocal(?:\s+onset)?\s+epilepsy\b|"
     r"\b(?:probable|probably|possible|possibly)\s+focal(?:\s+onset)?\b",
@@ -473,7 +487,8 @@ _DIAGNOSIS_CONTEXT_CUE = re.compile(
 
 
 def _local_specificity_blob(text: str, evidence: str) -> str:
-    return " ".join(part for part in (text, evidence) if part)
+    evidence_core = _ELABORATION_TAIL.sub("", evidence)
+    return " ".join(part for part in (text, evidence_core) if part)
 
 
 def _certainty_rank(blob: str) -> int:
@@ -526,9 +541,12 @@ def _may_overwrite_diagnosis(mention: str, target: str) -> bool:
         return False
     if is_diagnosis_descendant(target_concept, mention_concept):
         return True
-    return mention_concept in _ETIOLOGY_FOCAL_FORMS and is_diagnosis_descendant(
+    if mention_concept in _ETIOLOGY_FOCAL_FORMS and is_diagnosis_descendant(
         target_concept, "focal epilepsy"
-    )
+    ):
+        return True
+    named_lobe = _lobe_from_blob(mention, certainty=_CERTAINTY_PROBABLE)
+    return named_lobe is not None and named_lobe == target_concept
 
 
 def diagnosis_select_specificity_target(text: str, evidence: str) -> str | None:
@@ -536,8 +554,11 @@ def diagnosis_select_specificity_target(text: str, evidence: str) -> str | None:
 
     Select authority: a probable anatomical modifier, or a possible laterality
     class, may overwrite a less specific epilepsy mention on the same branch.
-    Possible or queried onset does not create a lobe syndrome. A generalised
-    mention is not overwritten by a temporal sibling.
+    Laterality classifies the epilepsy, not a seizure-type adjective.
+    Elaborating ``namely`` / ``i.e.`` clauses do not overwrite. Possible or
+    queried onset does not create a lobe syndrome. A generalised mention is
+    not overwritten by a temporal sibling. A named lobe wins over a
+    same-branch etiology form.
     """
 
     blob = _local_specificity_blob(text, evidence)
@@ -602,8 +623,13 @@ def diagnosis_format_target(
         or re.search(r"\bonly\b[^.\n]{0,30}\bone\b", evidence, re.IGNORECASE)
     ):
         return None
-    if surface == "symptomatic structural temporal lobe epilepsy":
-        return "temporal lobe epilepsy"
+    structural_lobe = re.search(
+        r"\bsymptomatic structural (temporal|frontal|parietal|occipital) lobe epilepsy\b",
+        surface,
+        re.IGNORECASE,
+    )
+    if structural_lobe is not None:
+        return f"{structural_lobe.group(1).lower()} lobe epilepsy"
     if " with occasional secondary generalisation" in surface:
         return re.sub(
             r"\bwith\s+occasional\s+secondary\s+generalisation\b",
@@ -668,18 +694,31 @@ def diagnosis_convention_attribute_repairs(
 _Finding = TypeVar("_Finding")
 
 _JME_SYNDROME = "juvenile myoclonic epilepsy"
-_JME_COVERED_PHENOTYPES = frozenset(
-    {
-        "absence",
-        "absence like seizures",
-        "absence seizure",
-        "absence seizures",
-        "absences",
-        "myoclonic jerk",
-        "myoclonic jerks",
-        "myoclonus",
-    }
-)
+SYNDROME_OWNED_PHENOTYPES: dict[str, frozenset[str]] = {
+    _JME_SYNDROME: frozenset(
+        {
+            "absence",
+            "absence like seizures",
+            "absence seizure",
+            "absence seizures",
+            "absences",
+            "typical absence",
+            "typical absences",
+            "myoclonic jerk",
+            "myoclonic jerks",
+            "myoclonus",
+        }
+    )
+}
+
+
+def owned_heading_phenotypes(concepts: set[str]) -> set[str]:
+    """Return phenotypes already owned by a selected named syndrome."""
+
+    owned: set[str] = set()
+    for concept in concepts:
+        owned.update(SYNDROME_OWNED_PHENOTYPES.get(concept, ()))
+    return owned
 
 
 def _finding_text(item: Any) -> str:
@@ -689,15 +728,16 @@ def _finding_text(item: Any) -> str:
 
 
 def drop_syndrome_covered_phenotypes(findings: Sequence[_Finding]) -> list[_Finding]:
-    """Drop jerk/absence Diagnosis siblings when JME is already emitted."""
+    """Drop phenotypes already owned by a selected named syndrome."""
 
     concepts = {canonicalize_diagnosis_concept(_finding_text(item)) for item in findings}
-    if _JME_SYNDROME not in concepts:
+    owned = owned_heading_phenotypes(concepts)
+    if not owned:
         return list(findings)
     return [
         item
         for item in findings
-        if canonicalize_diagnosis_concept(_finding_text(item)) not in _JME_COVERED_PHENOTYPES
+        if canonicalize_diagnosis_concept(_finding_text(item)) not in owned
     ]
 
 

@@ -297,7 +297,8 @@ RULE_RECORDS: tuple[RuleRecord, ...] = (
         "live",
         notes=(
             "clinical_epilepsy; probable lobe modifier or possible laterality "
-            "may overwrite a less specific same-branch epilepsy mention"
+            "may overwrite a less specific same-branch epilepsy mention; "
+            "seizure-type generalised and namely-clauses do not classify epilepsy"
         ),
     ),
     RuleRecord(
@@ -308,7 +309,8 @@ RULE_RECORDS: tuple[RuleRecord, ...] = (
         "live",
         notes=(
             "clinical_epilepsy; restore the encoded source diagnosis when a "
-            "later Select rewrite broadens it or conflates a sibling class"
+            "later rewrite is broader, an etiology sibling of a named lobe, "
+            "or an unauthorized laterality child"
         ),
     ),
     RuleRecord(
@@ -318,8 +320,8 @@ RULE_RECORDS: tuple[RuleRecord, ...] = (
         "reselect",
         "live",
         notes=(
-            "benchmark_format; retain an explicitly emitted absence phenotype "
-            "under a Diagnosis heading unless JME owns the phenotype"
+            "benchmark_format; retain a heading-listed phenotype unless a "
+            "selected named syndrome already owns that phenotype"
         ),
     ),
     RuleRecord("diagnosis_convention_noise_drop", "exectv2", "llm_select", "drop", "live"),

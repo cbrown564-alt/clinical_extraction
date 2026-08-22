@@ -68,33 +68,30 @@ _RULE_PORTABILITY_BY_ID = {
     SF_TO_DIAGNOSIS_EXPLICIT_TYPE: "benchmark_format",
 }
 
-_EXPLICIT_CLASSIFICATION_RE = re.compile(
-    r"\b(?:possible|possibly|probable|probably|likely)\s+generali[sz]ed\b",
-    re.IGNORECASE,
-)
-_LONGSTANDING_WITH_GTC_RE = re.compile(
-    r"\blongstanding\s+epilepsy\s+with\s+generali[sz]ed\s+tonic[- ]clonic\s+seizures?\b",
-    re.IGNORECASE,
-)
-_NAMELY_SPECIFIC_EPILEPSY_RE = re.compile(
-    r"\bepilepsy\s*,?\s*namely\s+(?:genetic\s+)?generali[sz]ed\s+epilepsy\b",
-    re.IGNORECASE,
-)
 _DIAGNOSIS_HEADING_RE = re.compile(
     r"^\s*(?:medical\s+)?diagnosis\s*:",
     re.IGNORECASE,
 )
-_ABSENCE_DIAGNOSIS_NAMES = frozenset(
-    {"absence", "absence seizure", "absence seizures", "typical absences"}
+_HEADING_PHENOTYPE_NAMES = frozenset(
+    {
+        "absence",
+        "absence like seizures",
+        "absence seizure",
+        "absence seizures",
+        "absences",
+        "typical absence",
+        "typical absences",
+        "myoclonic jerk",
+        "myoclonic jerks",
+        "myoclonus",
+    }
 )
 _TITRATION_RE = re.compile(
     r"\b(?:increas(?:e|es|ed|ing)|titra(?:te|tes|ted|ting|tion))\b",
     re.IGNORECASE,
 )
 _FUTURE_START_RE = re.compile(
-    r"\b(?:please(?:\s+can\s+you)?|i\s+would\s+be\s+grateful\s+if\s+you\s+could)\b"
-    r"[^.\n]{0,100}\b(?:prescribe|start|commence|initiate)\b|"
-    r"\b(?:plan(?:ned)?\s+to\s+|will\s+|to\s+)?(?:start|commence|initiate)\b",
+    r"\b(?:plan(?:ned)?\s+to\s+|will\s+|to\s+)?(?:prescribe|start|commence|initiate)\b",
     re.IGNORECASE,
 )
 _DOSE_RE = re.compile(
@@ -120,16 +117,25 @@ _HISTORICAL_FREE_BEFORE_EVENT_RE = re.compile(
 )
 
 _GENERIC_SF_CUIS = frozenset({"", "C0036572"})
+# Always-project named SF types: the Diagnosis view is the same clinical fact.
 _DIRECT_SF_DIAGNOSIS_TEXT_BY_CUI: dict[str, str] = {
     "C0877017": "focal to bilateral convulsive seizures",
     "C0270834": "focal seizures with altered awareness",
     "C0016399": "focal motor seizures",
     "C0234533": "generalised seizures",
     "C0751495": "focal seizures",
+    "C4316903": "absence seizures",
 }
+# Heading-only aliases: gold keeps these in Diagnosis only under a type heading.
 _HEADING_ONLY_SF_DIAGNOSIS_TEXT_BY_CUI: dict[str, str] = {
     "C0494475": "generalised tonic clonic seizures",
     "C0270838": "secondary generalised seizures",
+}
+_ABSENCE_FAMILY_CUIS = frozenset({"C0563606", "C4316903"})
+_NAMED_ABSENCE_SURFACES = frozenset({"typical absence", "typical absences"})
+_SF_TYPE_PARENT_CUI = {
+    "C4316903": "C0563606",
+    "C0270834": "C0751495",
 }
 _EMBEDDED_DIAGNOSIS_ALIASES_BY_CUI: dict[str, tuple[str, ...]] = {
     "C0016399": ("focal motor seizure", "partial motor seizure"),
@@ -233,18 +239,28 @@ def _should_restore_diagnosis(source: Mapping[str, Any], selected: Mapping[str, 
     selected_text = str(selected.get("text") or "")
     source_concept = canonicalize_diagnosis_concept(source_text)
     selected_concept = canonicalize_diagnosis_concept(selected_text)
-    if source_concept != selected_concept and is_diagnosis_descendant(
-        source_concept, selected_concept
-    ):
+    if source_concept == selected_concept:
+        return False
+    if is_diagnosis_descendant(source_concept, selected_concept):
         return True
-    if source_concept != "epilepsy" or selected_concept != "generalised epilepsy":
+    if source_concept in {
+        "temporal lobe epilepsy",
+        "frontal lobe epilepsy",
+        "parietal lobe epilepsy",
+        "occipital lobe epilepsy",
+    } and selected_concept in {
+        "localisation related epilepsy",
+        "localization related epilepsy",
+        "symptomatic focal epilepsy",
+        "symptomatic structural focal epilepsy",
+    }:
+        return True
+    if not is_diagnosis_descendant(selected_concept, source_concept):
         return False
-    evidence = str(source.get("evidence") or "")
-    if _EXPLICIT_CLASSIFICATION_RE.search(evidence):
-        return False
-    return bool(
-        _LONGSTANDING_WITH_GTC_RE.search(evidence) or _NAMELY_SPECIFIC_EPILEPSY_RE.search(evidence)
+    authorized = sd.diagnosis_select_specificity_target(
+        source_text, str(source.get("evidence") or "")
     )
+    return canonicalize_diagnosis_concept(authorized or "") != selected_concept
 
 
 def _restore_explicit_heading_phenotypes(
@@ -253,18 +269,24 @@ def _restore_explicit_heading_phenotypes(
     diagnosis_rows = [
         mention for mention in (*selected, *source) if _entity(mention) == "Diagnosis"
     ]
-    if any(
-        canonicalize_diagnosis_concept(str(mention.get("text") or ""))
-        == "juvenile myoclonic epilepsy"
-        for mention in diagnosis_rows
-    ):
-        return selected, []
+    owned = sd.owned_heading_phenotypes(
+        {
+            canonicalize_diagnosis_concept(str(mention.get("text") or ""))
+            for mention in diagnosis_rows
+        }
+    )
     out = list(selected)
     actions: list[dict[str, Any]] = []
     for mention in source:
         if _entity(mention) != "Diagnosis":
             continue
-        if normalize_phrase(str(mention.get("text") or "")) not in _ABSENCE_DIAGNOSIS_NAMES:
+        phenotype = canonicalize_diagnosis_concept(str(mention.get("text") or ""))
+        if (
+            phenotype not in _HEADING_PHENOTYPE_NAMES
+            and normalize_phrase(str(mention.get("text") or "")) not in _HEADING_PHENOTYPE_NAMES
+        ):
+            continue
+        if phenotype in owned:
             continue
         if _DIAGNOSIS_HEADING_RE.search(str(mention.get("evidence") or "")) is None:
             continue
@@ -489,15 +511,19 @@ def _restore_named_sf_identity(
     return out, actions
 
 
+def _is_sf_type_descendant(child_cui: str, parent_cui: str) -> bool:
+    current = child_cui
+    seen: set[str] = set()
+    while current in _SF_TYPE_PARENT_CUI and current not in seen:
+        seen.add(current)
+        current = _SF_TYPE_PARENT_CUI[current]
+        if current == parent_cui:
+            return True
+    return False
+
+
 def _is_allowed_named_refinement(source: Mapping[str, Any], selected: Mapping[str, Any]) -> bool:
-    pair = (_sf_cui(source), _sf_cui(selected))
-    return pair in {
-        ("C0563606", "C4316903"),
-        ("C0751495", "C0270834"),
-    } and (
-        pair != ("C0563606", "C4316903")
-        or normalize_phrase(str(selected.get("text") or "")) == "typical absence"
-    )
+    return _is_sf_type_descendant(_sf_cui(selected), _sf_cui(source))
 
 
 def _prefer_recent_event_over_historical_free(
@@ -570,21 +596,7 @@ def _project_named_sf_to_diagnosis(
     for mention in list(selected):
         if _entity(mention) != "SeizureFrequency":
             continue
-        cui = _sf_cui(mention)
-        text = _DIRECT_SF_DIAGNOSIS_TEXT_BY_CUI.get(cui)
-        if (
-            text is None
-            and cui == "C0563606"
-            and normalize_phrase(str(mention.get("text") or "")) == "typical absence"
-        ):
-            text = "absence seizures"
-        if text is None:
-            text = _HEADING_ONLY_SF_DIAGNOSIS_TEXT_BY_CUI.get(cui)
-            if (
-                text is not None
-                and _TYPE_HEADING_RE.search(str(mention.get("evidence") or "")) is None
-            ):
-                text = None
+        text = _sf_diagnosis_projection_text(mention)
         if text is None:
             continue
         concept = diagnosis_concept(text)
@@ -604,6 +616,29 @@ def _project_named_sf_to_diagnosis(
         existing_dx_cuis.add(concept.cui)
         actions.append(_action(SF_TO_DIAGNOSIS_EXPLICIT_TYPE, "add", after=addition))
     return out, actions
+
+
+def _sf_diagnosis_projection_text(mention: Mapping[str, Any]) -> str | None:
+    """Return the Diagnosis view of a selected named SF fact, or None.
+
+    Always-project CUIs are the same clinical fact in both families. Heading-only
+    CUIs are a gold-view alias kept only under an explicit type heading. Generic
+    ``absences`` stay in SeizureFrequency; a named absence refinement may
+    project as ``absence seizures``.
+    """
+
+    cui = _sf_cui(mention)
+    surface = normalize_phrase(str(mention.get("text") or ""))
+    if cui in _DIRECT_SF_DIAGNOSIS_TEXT_BY_CUI:
+        return _DIRECT_SF_DIAGNOSIS_TEXT_BY_CUI[cui]
+    if cui in _ABSENCE_FAMILY_CUIS and surface in _NAMED_ABSENCE_SURFACES:
+        return "absence seizures"
+    heading_text = _HEADING_ONLY_SF_DIAGNOSIS_TEXT_BY_CUI.get(cui)
+    if heading_text is None:
+        return None
+    if _TYPE_HEADING_RE.search(str(mention.get("evidence") or "")) is None:
+        return None
+    return heading_text
 
 
 def _has_embedded_diagnosis_alias(mentions: Sequence[Mapping[str, Any]], target_cui: str) -> bool:

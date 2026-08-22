@@ -104,6 +104,63 @@ def test_laterality_may_upgrade_generic_epilepsy_at_possible() -> None:
     )
 
 
+def test_seizure_type_generalised_is_not_epilepsy_laterality() -> None:
+    assert (
+        sd.diagnosis_select_specificity_target(
+            "epilepsy",
+            "Diagnosis: longstanding epilepsy with generalised tonic clonic seizures",
+        )
+        is None
+    )
+
+
+def test_focal_seizure_type_is_not_epilepsy_laterality() -> None:
+    assert (
+        sd.diagnosis_select_specificity_target(
+            "epilepsy",
+            "focal to bilateral convulsive seizure at the time of diagnosis of his epilepsy",
+        )
+        is None
+    )
+
+
+def test_etiology_form_does_not_classify_generic_epilepsy_as_focal() -> None:
+    assert (
+        sd.diagnosis_select_specificity_target(
+            "epilepsy",
+            "Diagnosis: symptomatic structural focal epilepsy",
+        )
+        is None
+    )
+
+
+def test_namely_clause_does_not_overwrite_generic_epilepsy() -> None:
+    assert (
+        sd.diagnosis_select_specificity_target(
+            "epilepsy",
+            "there is a diagnosis of epilepsy, namely genetic generalised epilepsy.",
+        )
+        is None
+    )
+
+
+def test_named_lobe_wins_over_etiology_altitude() -> None:
+    assert (
+        sd.diagnosis_convention_target(
+            "symptomatic structural temporal lobe epilepsy",
+            "He has symptomatic structural temporal lobe epilepsy caused by encephalitis.",
+        )
+        == "temporal lobe epilepsy"
+    )
+    assert (
+        sd.diagnosis_format_target(
+            "symptomatic structural frontal lobe epilepsy",
+            "symptomatic structural frontal lobe epilepsy",
+        )
+        == "frontal lobe epilepsy"
+    )
+
+
 def test_hierarchy_blocks_cross_branch_and_sibling_overwrite() -> None:
     assert (
         sd.diagnosis_select_specificity_target(
