@@ -147,8 +147,6 @@ def verify_gan(
         if gan_llm_only.PROMPT_VERSION != gan_llm_only.GAN_LLM_ONLY:
             raise RuntimeError("gan_llm_only live default drifted")
     elif method == "gan_llm_extract_label_forms":
-        if slug is not None and slug != LATER_STAGE_SLUG:
-            raise RuntimeError("gan_llm_extract_label_forms runs on Gemini only")
         before = hybrid_structured_events.PROMPT_VERSION
         payload = json.loads(
             hybrid_structured_events.build_prompt_input(

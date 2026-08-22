@@ -4,8 +4,6 @@ from __future__ import annotations
 
 import json
 
-import pytest
-
 from clinical_extraction.paper.gan import verify_gan
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     FrequencyLabelKind,
@@ -78,7 +76,7 @@ def test_hybrid_dispatch_keeps_default_with_rules() -> None:
     assert variant["label_forms"] == label_forms_payload()
 
 
-def test_extract_label_forms_verify_is_gemini_only() -> None:
+def test_extract_label_forms_verify_accepts_roster_models() -> None:
     payload = verify_gan("gan_llm_extract_label_forms", "dev750", "gemini37flash")
     assert payload["ok"] is True
     assert payload["prompt_version"] == GAN_LLM_EXTRACT_LABEL_FORMS
@@ -86,5 +84,7 @@ def test_extract_label_forms_verify_is_gemini_only() -> None:
     holdout = verify_gan("gan_llm_extract_label_forms", "test450", "gemini37flash")
     assert holdout["row_policy"] == "aggregate_only"
     assert holdout["holdout_scratch"].endswith("gan_llm_extract_label_forms")
-    with pytest.raises(RuntimeError, match="Gemini only"):
-        verify_gan("gan_llm_extract_label_forms", "dev750", "grok46")
+    for slug in ("grok46", "gpt56luna", "deepseek_v4_flash"):
+        roster = verify_gan("gan_llm_extract_label_forms", "dev750", slug)
+        assert roster["ok"] is True
+        assert roster["model_slug"] == slug
