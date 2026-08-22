@@ -266,3 +266,59 @@ def test_repair_does_not_fill_kind_when_siblings_disagree() -> None:
     )
 
     assert "kind" not in payload["events"][2]
+
+
+def test_repair_fills_omitted_selected_event_ids_with_empty_list() -> None:
+    payload = repair_structured_extraction_payload(
+        {
+            "events": [_event("e1", kind="unknown_frequency")],
+            "selection": {
+                "final_kind": "unknown",
+                "final_label": "unknown",
+                "evidence": "increase in brief absence episodes",
+                "confidence": "high",
+                "rationale": "The absence count was not quantified.",
+            },
+        }
+    )
+
+    assert payload["selection"]["selected_event_ids"] == []
+    assert payload["selection"]["final_label"] == "unknown"
+
+
+def test_repair_treats_null_selected_event_ids_as_omitted() -> None:
+    payload = repair_structured_extraction_payload(
+        {
+            "events": [_event("e1", kind="seizure_free")],
+            "selection": {
+                "selected_event_ids": None,
+                "final_kind": "unknown",
+                "final_label": "unknown",
+                "evidence": "events have been sparse",
+                "confidence": "medium",
+                "rationale": "No countable rate was written.",
+            },
+        }
+    )
+
+    assert payload["selection"]["selected_event_ids"] == []
+
+
+def test_repair_does_not_invent_selected_event_ids_from_the_event_list() -> None:
+    payload = repair_structured_extraction_payload(
+        {
+            "events": [
+                _event("e1", kind="seizure_free"),
+                _event("e2", kind="frequency_rate"),
+            ],
+            "selection": {
+                "final_kind": "unknown",
+                "final_label": "unknown",
+                "evidence": "events have been sparse",
+                "confidence": "medium",
+                "rationale": "No countable rate was written.",
+            },
+        }
+    )
+
+    assert payload["selection"]["selected_event_ids"] == []

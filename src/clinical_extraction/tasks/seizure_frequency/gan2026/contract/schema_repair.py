@@ -44,10 +44,11 @@ def repair_structured_extraction_payload(payload: Any) -> Any:
     """Repair schema aliases in a structured extraction payload.
 
     This repairs output-shape aliases such as enum names and numeric
-    confidence, and fills an omitted required event ``kind`` from sibling
-    events or the already-written selection. It does not repair Gan
-    benchmark labels; that remains in normalize.py so deterministic and
-    LLM pipelines share the same label policy.
+    confidence, fills omitted ``selected_event_ids`` with an empty list,
+    and fills an omitted required event ``kind`` from sibling events or
+    the already-written selection. It does not invent a selected event
+    or repair Gan benchmark labels; that remains in normalize.py so
+    deterministic and LLM pipelines share the same label policy.
     """
 
     if not isinstance(payload, dict):
@@ -86,6 +87,8 @@ def repair_structured_extraction_payload(payload: Any) -> Any:
         repaired_selection = repair_decision_payload(selection)
         _move_key_alias(repaired_selection, "rationality", "rationale")
         repaired_selection.setdefault("confidence", "medium")
+        if repaired_selection.get("selected_event_ids") is None:
+            repaired_selection["selected_event_ids"] = []
         repaired["selection"] = repaired_selection
     _fill_omitted_event_kinds(repaired)
     return repaired
