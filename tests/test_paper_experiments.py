@@ -100,6 +100,14 @@ def test_inventory_covers_present_and_missing_cells() -> None:
         ("gemini37flash", "gan_llm_only", "test450"),
         ("gemini37flash", "gan_llm_with_rules", "dev750"),
         ("gemini37flash", "gan_llm_with_rules", "test450"),
+        ("gemini37flash", "gan_llm_encode", "dev750"),
+        ("gemini37flash", "gan_llm_encode", "test450"),
+        ("gemini37flash", "gan_llm_select", "dev750"),
+        ("gemini37flash", "gan_llm_select", "test450"),
+        ("gemini37flash", "exect_llm_encode", "dev140"),
+        ("gemini37flash", "exect_llm_encode", "test60"),
+        ("gemini37flash", "exect_llm_select", "dev140"),
+        ("gemini37flash", "exect_llm_select", "test60"),
     }
     assert "gan_llm_with_rules" in missing_methods
     missing_cells = {

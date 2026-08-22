@@ -33,6 +33,21 @@ LIVE_METHODS: dict[str, dict[str, object]] = {
         "splits": ("dev750", "test450"),
         "prompt_attr": "GAN_LLM_SELECT",
     },
+    "gan_llm_select_from_extract": {
+        "task": "gan2026",
+        "splits": ("dev750", "test450"),
+        "prompt_attr": "GAN_LLM_SELECT",
+    },
+    "gan_llm_extract_label_forms": {
+        "task": "gan2026",
+        "splits": ("dev750", "test450"),
+        "prompt_attr": "GAN_LLM_EXTRACT_LABEL_FORMS",
+    },
+    "gan_llm_pre_post_label_forms": {
+        "task": "gan2026",
+        "splits": ("dev750", "test450"),
+        "prompt_attr": "GAN_LLM_PRE_POST_LABEL_FORMS",
+    },
     "exect_llm_pre_post": {
         "task": "exectv2",
         "splits": ("dev140", "test60"),

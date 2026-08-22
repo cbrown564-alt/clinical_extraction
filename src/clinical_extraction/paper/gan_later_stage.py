@@ -56,9 +56,16 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_select i
     build_llm_select_prompt_input,
 )
 
-LaterStageMethod = Literal["gan_llm_encode", "gan_llm_select"]
+LaterStageMethod = Literal[
+    "gan_llm_encode",
+    "gan_llm_select",
+    "gan_llm_select_from_extract",
+]
 CITED_SLUG = "gemini37flash"
-EXTRACT_METHOD = "gan_llm_with_rules"
+EXTRACT_METHOD = "gan_llm_extract_label_forms"
+GAN_LLM_SELECT_FROM_EXTRACT = "gan_llm_select_from_extract"
+LLM_ENCODE_IS_EXTRACT = True
+LLM_SELECT_METHOD = GAN_LLM_SELECT_FROM_EXTRACT
 MAX_TOKENS = 8000
 ROOT = discover_repo_root(start=Path(__file__))
 SPLIT_MANIFEST = "gan2026_split_v1"
@@ -69,6 +76,8 @@ HOLDOUT_SCRATCH = ROOT / "scratch/holdout/paper"
 def prompt_version(method: LaterStageMethod) -> str:
     if method == "gan_llm_encode":
         return GAN_LLM_ENCODE
+    if method == "gan_llm_select_from_extract":
+        return GAN_LLM_SELECT_FROM_EXTRACT
     return GAN_LLM_SELECT
 
 
@@ -88,13 +97,25 @@ def parse_extract_ledger(
 
 
 def extract_rows_path(split: str, slug: str = CITED_SLUG) -> Path:
-    return (
+    holdout = holdout_is_aggregate_only(split)
+    candidates = [
+        (HOLDOUT_SCRATCH if holdout else WORK_ROOT)
+        / EXTRACT_METHOD
+        / slug
+        / split
+        / "rows.jsonl",
         ROOT
         / "paper_experiments/gan"
         / EXTRACT_METHOD
         / slug
         / split
-        / "rows.jsonl"
+        / "rows.jsonl",
+    ]
+    for path in candidates:
+        if path.is_file():
+            return path
+    raise FileNotFoundError(
+        f"missing {EXTRACT_METHOD} extract rows for {slug} {split}"
     )
 
 
@@ -104,11 +125,28 @@ def later_stage_work_root(
     split: str = "dev750",
 ) -> Path:
     root = HOLDOUT_SCRATCH if holdout_is_aggregate_only(split) else WORK_ROOT
-    return root / method / slug / split
+    return root / method / slug / EXTRACT_METHOD / split
 
 
 def encode_work_rows_path(split: str, slug: str = CITED_SLUG) -> Path:
     return later_stage_work_root("gan_llm_encode", slug, split) / "rows.jsonl"
+
+
+def extract_events_as_select_ledger(
+    extract: StructuredExtractionRecord,
+) -> list[dict[str, Any]]:
+    """Label extract events for select without an encode call."""
+
+    selected = set(extract.selection.selected_event_ids)
+    events: list[dict[str, Any]] = []
+    for event in extract.events:
+        row = event.model_dump()
+        if event.event_id in selected and extract.selection.final_label:
+            row["label"] = extract.selection.final_label
+        else:
+            row["label"] = event.raw_value or ""
+        events.append(row)
+    return events
 
 
 def parse_encode_labels(raw_output: str) -> list[dict[str, str]]:
@@ -300,6 +338,7 @@ def run_later_stage(
         "row_policy": (
             "aggregate_only" if holdout else "development_review_permitted"
         ),
+        "extract_ledger": EXTRACT_METHOD,
         "prompt_version": prompt,
         "started_utc": started,
         "finished_utc": datetime.now(UTC).isoformat(),
@@ -310,7 +349,10 @@ def run_later_stage(
         "claim_boundary": (
             "Gan aggregate-only test450 later-stage cell. Do not inspect holdout rows."
             if holdout
-            else "Gan development later-stage cell. Not holdout. No hybrid post-stack."
+            else (
+                "Gan development later-stage cell on gan_llm_extract_label_forms. "
+                "Not holdout. No hybrid post-stack."
+            )
         ),
     }
     if not holdout:
@@ -344,10 +386,38 @@ def score_later_stage_row(
     split: str,
     machine: str,
 ) -> dict[str, Any]:
-    extract = parse_extract_ledger(
-        str(extract_row["raw_output"]),
-        note_text=record.note_text,
-    )
+    try:
+        extract = parse_extract_ledger(
+            str(extract_row["raw_output"]),
+            note_text=record.note_text,
+        )
+    except ValueError as exc:
+        comparison = {
+            "predicted_label": None,
+            "scorable": False,
+            "purist_correct": False,
+            "pragmatic_correct": False,
+        }
+        return {
+            "source_row_index": record.source_row_index,
+            "split": machine,
+            "paper_split": split,
+            "split_manifest": SPLIT_MANIFEST,
+            "prompt_version": prompt_version(method),
+            "prompt_input_json": "",
+            "raw_output": "",
+            "call_error": None,
+            "parse_errors": [f"extract_raw_unparsed: {exc}"],
+            "structured_record": None,
+            "encoded_events": [],
+            "row_trace": {"scoring": comparison},
+            "reference": {
+                "gold_label": record.gold_label,
+                "gold_monthly_frequency": record.gold_monthly_frequency,
+                "row_ok": record.row_ok,
+            },
+            "comparison": comparison,
+        }
     parse_errors: list[str] = []
     call_error = None if raw_output else "missing_raw_output"
     submitted = extract.model_copy(deep=True)
@@ -375,9 +445,12 @@ def score_later_stage_row(
                 }
             )
         else:
-            if encode_row is None:
-                raise RuntimeError("select row is missing its encode row")
-            encoded_events = list(encode_row["encoded_events"])
+            if method == "gan_llm_select_from_extract":
+                encoded_events = extract_events_as_select_ledger(extract)
+            else:
+                if encode_row is None:
+                    raise RuntimeError("select row is missing its encode row")
+                encoded_events = list(encode_row["encoded_events"])
             labels_by_id = {
                 str(event["event_id"]): str(event["label"]) for event in encoded_events
             }
@@ -533,13 +606,22 @@ def _batch_items(
 ) -> list[BatchChatItem]:
     items: list[BatchChatItem] = []
     for record in records:
-        extract = parse_extract_ledger(
-            str(extract_by_index[record.source_row_index]["raw_output"]),
-            note_text=record.note_text,
-        )
+        try:
+            extract = parse_extract_ledger(
+                str(extract_by_index[record.source_row_index]["raw_output"]),
+                note_text=record.note_text,
+            )
+        except ValueError:
+            continue
         if method == "gan_llm_encode":
             prompt_input = build_llm_encode_prompt_input(
                 [event.model_dump() for event in extract.events]
+            )
+        elif method == "gan_llm_select_from_extract":
+            prompt_input = build_llm_select_prompt_input(
+                extract_events_as_select_ledger(extract),
+                extract_selected_event_ids=extract.selection.selected_event_ids,
+                extract_label=extract.selection.final_label,
             )
         else:
             encoded_events = list(

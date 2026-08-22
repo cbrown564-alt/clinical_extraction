@@ -69,8 +69,15 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     llm as gan_llm_only,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    prompt_llm_pre_post_label_forms as pre_post_label_forms,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_encode import (
     LLM_ENCODE_AUTHORED_KEYS,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_extract_label_forms import (
+    GAN_LLM_EXTRACT_LABEL_FORMS,
+    LLM_EXTRACT_LABEL_FORMS_AUTHORED_KEYS,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_pre_post import (
     LLM_PRE_POST_AUTHORED_KEYS,
@@ -94,8 +101,11 @@ MAX_TOKENS = {
     "gan_llm_only": 1200,
     "gan_llm_with_rules": 5000,
     "gan_llm_pre_post": 5000,
+    "gan_llm_extract_label_forms": 5000,
+    "gan_llm_pre_post_label_forms": 5000,
     "gan_llm_encode": LATER_STAGE_MAX_TOKENS,
     "gan_llm_select": LATER_STAGE_MAX_TOKENS,
+    "gan_llm_select_from_extract": LATER_STAGE_MAX_TOKENS,
 }
 DEEPSEEK_MAX_TOKENS = 24000
 HIGH_REASONING_GAN_LLM_ONLY_MAX_TOKENS = 16000
@@ -136,7 +146,67 @@ def verify_gan(
             raise RuntimeError("LLM-only payload check changed the live default")
         if gan_llm_only.PROMPT_VERSION != gan_llm_only.GAN_LLM_ONLY:
             raise RuntimeError("gan_llm_only live default drifted")
-    elif method in {"gan_llm_encode", "gan_llm_select"}:
+    elif method == "gan_llm_extract_label_forms":
+        if slug is not None and slug != LATER_STAGE_SLUG:
+            raise RuntimeError("gan_llm_extract_label_forms runs on Gemini only")
+        before = hybrid_structured_events.PROMPT_VERSION
+        payload = json.loads(
+            hybrid_structured_events.build_prompt_input(
+                _placeholder_record(),
+                prompt_version=GAN_LLM_EXTRACT_LABEL_FORMS,
+            )
+        )
+        authored = list(LLM_EXTRACT_LABEL_FORMS_AUTHORED_KEYS)
+        blob = json.dumps(payload)
+        if set(payload) != set(authored):
+            raise RuntimeError(
+                "gan_llm_extract_label_forms prompt drifted from authored keys"
+            )
+        if "prompt_version" in payload or "source_row_index" in payload:
+            raise RuntimeError(
+                "gan_llm_extract_label_forms request still emits the research envelope"
+            )
+        if "Gan 2026" in blob:
+            raise RuntimeError("gan_llm_extract_label_forms request still names the dataset")
+        if "label_forms" not in payload:
+            raise RuntimeError("gan_llm_extract_label_forms request dropped label_forms")
+        if hybrid_structured_events.PROMPT_VERSION != before:
+            raise RuntimeError("extract label-forms payload check changed the live default")
+        if hybrid_structured_events.PROMPT_VERSION != hybrid_structured_events.GAN_LLM_WITH_RULES:
+            raise RuntimeError("gan_llm_with_rules live default drifted")
+    elif method == "gan_llm_pre_post_label_forms":
+        if slug is not None and slug != LATER_STAGE_SLUG:
+            raise RuntimeError("gan_llm_pre_post_label_forms runs on Gemini only")
+        before = hybrid_structured_events.PROMPT_VERSION
+        payload = json.loads(
+            hybrid_structured_events.build_prompt_input(
+                _placeholder_record(),
+                prompt_version=pre_post_label_forms.GAN_LLM_PRE_POST_LABEL_FORMS,
+            )
+        )
+        authored = list(pre_post_label_forms.LLM_PRE_POST_LABEL_FORMS_AUTHORED_KEYS)
+        blob = json.dumps(payload)
+        if set(payload) != set(authored):
+            raise RuntimeError(
+                "gan_llm_pre_post_label_forms prompt drifted from authored keys"
+            )
+        if "prompt_version" in payload or "source_row_index" in payload:
+            raise RuntimeError(
+                "gan_llm_pre_post_label_forms request still emits the research envelope"
+            )
+        if "Gan 2026" in blob:
+            raise RuntimeError("gan_llm_pre_post_label_forms request still names the dataset")
+        if "label_forms" not in payload or "suggested_evidence" not in payload:
+            raise RuntimeError("gan_llm_pre_post_label_forms request dropped a required block")
+        if hybrid_structured_events.PROMPT_VERSION != before:
+            raise RuntimeError("pre_post label-forms payload check changed the live default")
+        if hybrid_structured_events.PROMPT_VERSION != hybrid_structured_events.GAN_LLM_WITH_RULES:
+            raise RuntimeError("gan_llm_with_rules live default drifted")
+    elif method in {
+        "gan_llm_encode",
+        "gan_llm_select",
+        "gan_llm_select_from_extract",
+    }:
         if slug is not None and slug != LATER_STAGE_SLUG:
             raise RuntimeError("later-stage Gan encode and select run on Gemini only")
         verify_later_stage_prompt(method)
@@ -235,7 +305,11 @@ def run_gan(
     verify_gan(method, split, slug)
     if not live:
         raise RuntimeError("run_gan requires live=True")
-    if method in {"gan_llm_encode", "gan_llm_select"}:
+    if method in {
+        "gan_llm_encode",
+        "gan_llm_select",
+        "gan_llm_select_from_extract",
+    }:
         return run_later_stage(
             method,
             slug,
@@ -320,7 +394,7 @@ def run_gan(
         api_base=resolved_base,
         timeout=timeout or spec.timeout,
         prompt_version=prompt,
-        repair_mode="llm_select" if method != "gan_llm_only" else None,
+        repair_mode=_repair_mode(method),
     )
     batch_raws: dict[str, str] = {}
     call_transport = "sync"
@@ -436,9 +510,25 @@ def _prompt_version(method: str) -> str:
         return hybrid_structured_events.GAN_LLM_WITH_RULES
     if method == "gan_llm_pre_post":
         return hybrid_structured_events.GAN_LLM_PRE_POST
-    if method in {"gan_llm_encode", "gan_llm_select"}:
+    if method == "gan_llm_extract_label_forms":
+        return GAN_LLM_EXTRACT_LABEL_FORMS
+    if method == "gan_llm_pre_post_label_forms":
+        return pre_post_label_forms.GAN_LLM_PRE_POST_LABEL_FORMS
+    if method in {
+        "gan_llm_encode",
+        "gan_llm_select",
+        "gan_llm_select_from_extract",
+    }:
         return later_stage_prompt_version(method)
     raise ValueError(method)
+
+
+def _repair_mode(method: str) -> str | None:
+    if method == "gan_llm_only":
+        return None
+    if method == "gan_llm_extract_label_forms":
+        return "raw_model"
+    return "llm_select"
 
 
 def _placeholder_record() -> GanFrequencyRecord:
@@ -525,7 +615,7 @@ def hydrate_saved_raw_row(
         architecture="llm" if method == "gan_llm_only" else "llm_with_rules",
         dspy_cache=False,
         prompt_version=_prompt_version(method),
-        repair_mode="llm_select" if method != "gan_llm_only" else None,
+        repair_mode=_repair_mode(method),
     )
     return _run_record(
         method,
