@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import pytest
 
+from clinical_extraction.paper.exect_rule_select_after_encode import (
+    apply_rule_select_after_llm_encode,
+)
 from clinical_extraction.paper.rule_records import RULE_BY_NAME
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select_rules import (
@@ -800,3 +803,30 @@ def test_accepted_select_rules_have_live_component_records() -> None:
         assert record.runs_at == "llm_select"
         assert record.authority == authority
         assert record.status == "live"
+
+
+def test_rule_select_after_llm_encode_uses_extract_as_source_ledger() -> None:
+    evidence = "Diagnosis: longstanding epilepsy with generalised tonic clonic seizures"
+    extract = [
+        _mention("Diagnosis", "epilepsy", evidence, {"DiagCategory": "Epilepsy"}),
+    ]
+    encoded = [
+        {
+            **_mention(
+                "Diagnosis",
+                "generalised epilepsy",
+                evidence,
+                {"DiagCategory": "Epilepsy"},
+            ),
+            "standard_name": "generalised epilepsy",
+            "mention_id": "dx-1",
+        }
+    ]
+    selected, actions = apply_rule_select_after_llm_encode(
+        encoded,
+        extract,
+        evidence,
+        enabled_rule_ids=frozenset({DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY}),
+    )
+    assert selected[0]["text"] == "epilepsy"
+    assert actions[0]["action"] == "rewrite"
