@@ -14,7 +14,7 @@ from collections import Counter
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 import dspy
 from dspy.adapters.chat_adapter import ChatAdapter
@@ -40,6 +40,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequenc
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     llm_structured_temporal,
     prompt_llm_with_rules,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    prompt_llm_pre_post_label_forms as pre_post_label_forms,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_monthly_diary import (
     monthly_diary_label_from_events as _monthly_diary_label_from_events,
@@ -77,6 +80,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.parse_diagnostics i
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.parse_diagnostics import (
     has_repair_note as _has_repair_note,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_extract_label_forms import (
+    GAN_LLM_EXTRACT_LABEL_FORMS,
+    build_llm_extract_label_forms_prompt_input,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_pre_post import (
     GAN_LLM_PRE_POST,
     build_llm_pre_post_prompt_input,
@@ -91,6 +98,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.post_stack_fix_flags import (
     post_stack_fix_flags,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.selected_evidence.codebook_encode import (
+    repair_codebook_label_with_evidence,
 )
 
 _clinic_date = llm_structured_temporal.clinic_date
@@ -120,6 +130,8 @@ _SUPPORTED_PROMPT_VERSIONS = frozenset(
     {
         GAN_LLM_WITH_RULES,
         GAN_LLM_PRE_POST,
+        pre_post_label_forms.GAN_LLM_PRE_POST_LABEL_FORMS,
+        GAN_LLM_EXTRACT_LABEL_FORMS,
     }
 )
 
@@ -184,7 +196,10 @@ StructuredRepairMode = Literal[
     "json_dialect_only",
     "raw_model",
     "llm_encode",
+    "llm_encode_codebook",
     "llm_select",
+    "llm_select_after_codebook",
+    "llm_select_only",
     "custom",
 ]
 # Sealed artifacts and older CLI flags may still emit these strings.
@@ -309,6 +324,7 @@ class StructuredRepairConfig:
     json_dialect_repair: bool = True
     basic_label_repair: bool = True
     selected_evidence_repair: bool = True
+    codebook_label_repair: bool = False
     monthly_diary_repair: bool = True
     usual_interval_repair: bool = True
     typical_over_ytd_repair: bool = True
@@ -328,7 +344,7 @@ class StructuredRepairConfig:
         and ``llm_revise`` still load as aliases for ``encode`` and ``select``.
         """
 
-        mode = _STRUCTURED_REPAIR_MODE_ALIASES.get(mode, mode)  # type: ignore[assignment]
+        mode = cast(StructuredRepairMode, _STRUCTURED_REPAIR_MODE_ALIASES.get(mode, mode))
         if mode == "strict_json_raw_model":
             return cls(
                 repair_mode=mode,
@@ -391,8 +407,37 @@ class StructuredRepairConfig:
                 dated_sequence_repair=False,
                 elapsed_anchor_repair=False,
             )
+        if mode == "llm_encode_codebook":
+            return cls(
+                repair_mode=mode,
+                basic_label_repair=False,
+                selected_evidence_repair=False,
+                codebook_label_repair=True,
+                monthly_diary_repair=False,
+                usual_interval_repair=False,
+                typical_over_ytd_repair=False,
+                breakthrough_repair=False,
+                non_epileptic_repair=False,
+                residual_jerk_repair=False,
+                post_change_burst_repair=False,
+                dated_sequence_repair=False,
+                elapsed_anchor_repair=False,
+            )
         if mode == "llm_select":
             return cls(repair_mode=mode)
+        if mode == "llm_select_after_codebook":
+            return cls(
+                repair_mode=mode,
+                basic_label_repair=False,
+                selected_evidence_repair=False,
+                codebook_label_repair=True,
+            )
+        if mode == "llm_select_only":
+            return cls(
+                repair_mode=mode,
+                basic_label_repair=False,
+                selected_evidence_repair=False,
+            )
         return cls(repair_mode=mode)  # type: ignore[arg-type]
 
     @property
@@ -405,7 +450,10 @@ class StructuredRepairConfig:
             "json_dialect_only",
             "raw_model",
             "llm_encode",
+            "llm_encode_codebook",
             "llm_select",
+            "llm_select_after_codebook",
+            "llm_select_only",
         ):
             named = StructuredRepairConfig.for_mode(mode)
             if (
@@ -418,7 +466,11 @@ class StructuredRepairConfig:
     def encode_enabled(self) -> bool:
         """True when this mode may write a designed-form label."""
 
-        return self.selected_evidence_repair or self.basic_label_repair
+        return (
+            self.selected_evidence_repair
+            or self.basic_label_repair
+            or self.codebook_label_repair
+        )
 
     def select_enabled(self) -> bool:
         """True when a named select family may change the facts."""
@@ -432,6 +484,7 @@ class StructuredRepairConfig:
             "json_dialect_repair": self.json_dialect_repair,
             "basic_label_repair": self.basic_label_repair,
             "selected_evidence_repair": self.selected_evidence_repair,
+            "codebook_label_repair": self.codebook_label_repair,
             "monthly_diary_repair": self.monthly_diary_repair,
             "usual_interval_repair": self.usual_interval_repair,
             "typical_over_ytd_repair": self.typical_over_ytd_repair,
@@ -497,6 +550,10 @@ def build_prompt_input(
 
     if selected_prompt_version == GAN_LLM_PRE_POST:
         return build_llm_pre_post_prompt_input(record)
+    if selected_prompt_version == pre_post_label_forms.GAN_LLM_PRE_POST_LABEL_FORMS:
+        return pre_post_label_forms.build_llm_pre_post_label_forms_prompt_input(record)
+    if selected_prompt_version == GAN_LLM_EXTRACT_LABEL_FORMS:
+        return build_llm_extract_label_forms_prompt_input(record)
     return build_llm_with_rules_prompt_input(record)
 
 
@@ -666,10 +723,34 @@ def parse_structured_json_with_trace(
             evidence_exact=evidence_exact,
             operands=operands,
         )
+    if repair_config.codebook_label_repair:
+        selected_ids = set(extraction.selection.selected_event_ids)
+        selected_kinds = [
+            str(event.kind) for event in extraction.events if event.event_id in selected_ids
+        ]
+        codebook_trace = repair_codebook_label_with_evidence(
+            repaired_label,
+            extraction.selection.evidence,
+            selected_event_kinds=selected_kinds,
+            context_text=note_text,
+        )
+        for event in codebook_trace.events:
+            repaired_label = _record_label_repair(
+                errors,
+                hops,
+                stage_id=event.rule_id,
+                effect_class="encode",
+                cell_id="llm_encode",
+                before=repaired_label,
+                after=event.after,
+                evidence=evidence,
+                evidence_exact=evidence_exact,
+                operands=operands,
+            )
     repaired_label = _apply_semantic_families(
         extraction,
         repaired_label,
-        note_text=note_text,
+        note_text=note_text or "",
         repair_config=repair_config,
         errors=errors,
         hops=hops,

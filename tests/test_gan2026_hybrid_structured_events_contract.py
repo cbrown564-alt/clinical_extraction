@@ -107,6 +107,21 @@ def test_build_prompt_input_rejects_deleted_study_versions(version: str) -> None
         build_prompt_input(_record(), prompt_version=version)
 
 
+def test_parse_keeps_written_label_when_selected_event_ids_are_omitted() -> None:
+    payload = json.loads(_raw_structured("unknown"))
+    del payload["selection"]["selected_event_ids"]
+    extraction, _, errors = parse_structured_json(
+        json.dumps(payload),
+        note_text=_record().note_text,
+        repair_config=StructuredRepairConfig.for_mode("raw_model"),
+    )
+
+    assert extraction is not None
+    assert extraction.selection.selected_event_ids == []
+    assert extraction.selection.final_label == "unknown"
+    assert not any(str(error).startswith("schema_validation_error:") for error in errors)
+
+
 def test_parse_structured_json_quarantines_schema_invalid_unselected_event() -> None:
     payload = json.loads(_raw_structured())
     payload["events"].append(
@@ -176,6 +191,36 @@ def test_extract_keeps_model_label_and_encode_owns_resolve() -> None:
         hop["stage_id"] == "gan.encode.resolve_label"
         for hop in extract_trace["answer_states"]
     )
+
+
+def test_llm_select_after_codebook_keeps_select_and_named_encode() -> None:
+    after = StructuredRepairConfig.for_mode("llm_select_after_codebook")
+    living = StructuredRepairConfig.for_mode("llm_select")
+    codebook = StructuredRepairConfig.for_mode("llm_encode_codebook")
+    assert after.encode_enabled() is True
+    assert after.select_enabled() is True
+    assert after.codebook_label_repair is True
+    assert after.selected_evidence_repair is False
+    assert after.basic_label_repair is False
+    assert after.resolved_repair_mode == "llm_select_after_codebook"
+    assert after.residual_jerk_repair is living.residual_jerk_repair
+    assert after.elapsed_anchor_repair is living.elapsed_anchor_repair
+    assert after.monthly_diary_repair is living.monthly_diary_repair
+    assert codebook.select_enabled() is False
+
+
+def test_llm_select_only_keeps_select_families_and_drops_encode() -> None:
+    only = StructuredRepairConfig.for_mode("llm_select_only")
+    living = StructuredRepairConfig.for_mode("llm_select")
+    assert only.encode_enabled() is False
+    assert only.select_enabled() is True
+    assert only.basic_label_repair is False
+    assert only.selected_evidence_repair is False
+    assert only.resolved_repair_mode == "llm_select_only"
+    assert only.residual_jerk_repair is living.residual_jerk_repair
+    assert only.elapsed_anchor_repair is living.elapsed_anchor_repair
+    assert only.dated_sequence_repair is living.dated_sequence_repair
+    assert only.usual_interval_repair is living.usual_interval_repair
 
 
 def test_living_hybrid_select_drops_jerk_and_elapsed() -> None:
