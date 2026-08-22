@@ -13,7 +13,6 @@ from dotenv import load_dotenv
 from dspy.adapters.chat_adapter import ChatAdapter
 
 from clinical_extraction.core.paths import discover_repo_root
-from clinical_extraction.core.scoring import prf1_from_counts
 from clinical_extraction.paper.batch import BatchChatItem, complete_chat_batch
 from clinical_extraction.paper.exect import (
     MODELS,
@@ -62,9 +61,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.contra
     StructuredMethodConfig,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
+    aggregate_scores,
     annotation_from_mapping,
-    clinical_headline_scores,
-    score_dict,
+    exact_clinical_headline_scores,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
@@ -75,6 +74,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.parse_diagnostics i
 )
 
 LaterStageMethod = Literal["exect_llm_encode", "exect_llm_select"]
+LATER_STAGE_SCORER = "clinical_headline_unit_keys"
 _CROSS_FAMILIES = frozenset({"Diagnosis", "SeizureFrequency"})
 CITED_SLUG = "gemini37flash"
 EXTRACT_SLUG = "gemini37flash"
@@ -125,6 +125,132 @@ def later_stage_work_root(
 
 def encode_work_rows_path(split: str, slug: str = CITED_SLUG) -> Path:
     return later_stage_work_root("exect_llm_encode", slug, split) / "rows.jsonl"
+
+
+def later_stage_pred_key(method: LaterStageMethod) -> str:
+    return "selected_mentions" if method == "exect_llm_select" else "encoded_mentions"
+
+
+def comparison_from_later_stage_rows(
+    method: LaterStageMethod,
+    letters: Sequence[ExectLetter],
+    rows: Sequence[Mapping[str, Any]],
+    *,
+    existing: Mapping[str, Any] | None,
+    slug: str,
+    model: str,
+    split: str,
+    prompt: str,
+) -> dict[str, Any]:
+    """Score joined later-stage mentions with the exact clinical-fact scorer."""
+
+    pred_key = later_stage_pred_key(method)
+    pred_letters = [
+        ExectLetter(
+            letter_id=letter.letter_id,
+            note_text=letter.note_text,
+            annotations=tuple(
+                annotation_from_mapping(mention)
+                for mention in row[pred_key]
+            ),
+        )
+        for letter, row in zip(letters, rows, strict=True)
+    ]
+    family_scores = exact_clinical_headline_scores(letters, pred_letters)
+    overall = aggregate_scores(family_scores.values())
+    holdout = holdout_is_aggregate_only(split)
+    prior = None if existing is None else existing.get("four_family_headline_f1")
+    artifact: dict[str, Any] = {
+        "schema_version": f"paper.{method}.v1",
+        "generated_on": datetime.now(UTC).date().isoformat(),
+        "method": method,
+        "model_slug": slug,
+        "model": model,
+        "split": split,
+        "split_machine": exect_machine_split(split),
+        "row_count": len(letters),
+        "row_policy": (
+            "aggregate_only" if holdout else "development_review_permitted"
+        ),
+        "prompt_version": prompt,
+        "started_utc": None if existing is None else existing.get("started_utc"),
+        "finished_utc": None if existing is None else existing.get("finished_utc"),
+        "live": False if existing is None else existing.get("live", False),
+        "call_transport": (
+            None if existing is None else existing.get("call_transport")
+        ),
+        "model_calls": 0 if existing is None else existing.get("model_calls", 0),
+        "scorer": LATER_STAGE_SCORER,
+        "clinical_headline": family_scores,
+        "four_family_headline_f1": overall["f1"],
+        "summary": overall,
+        "claim_boundary": (
+            "ExECT aggregate-only test60 later-stage cell. Do not inspect holdout rows."
+            if holdout
+            else (
+                "ExECT development later-stage cell. Not holdout. "
+                "Join only. CUI is decoration."
+            )
+        ),
+    }
+    if prior is not None and prior != overall["f1"]:
+        artifact["prior_four_family_headline_f1"] = prior
+        artifact["rescored_utc"] = datetime.now(UTC).isoformat()
+    return artifact
+
+
+def rescore_later_stage(
+    method: LaterStageMethod,
+    slug: str,
+    split: str,
+) -> dict[str, Any]:
+    """Rewrite a finished later-stage comparison with the exact scorer."""
+
+    if method not in {"exect_llm_encode", "exect_llm_select"}:
+        raise RuntimeError(f"unsupported later-stage method {method}")
+    if slug != CITED_SLUG:
+        raise RuntimeError("later-stage ExECT encode and select run on Gemini only")
+    work_root = later_stage_work_root(method, slug, split)
+    rows_path = work_root / "rows.jsonl"
+    comparison_path = work_root / "comparison.json"
+    if not rows_path.is_file() or not comparison_path.is_file():
+        raise RuntimeError(f"missing finished later-stage {method} {slug} {split} run")
+    letters = letters_for_split(split)
+    expected = exect_row_count(split)
+    if len(letters) != expected:
+        raise RuntimeError(f"expected {expected} {split} letters, found {len(letters)}")
+    rows = load_jsonl_rows(rows_path)
+    if len(rows) != expected:
+        raise RuntimeError(f"{rows_path} has {len(rows)} rows, expected {expected}")
+    by_id = {str(row["letter_id"]): row for row in rows}
+    ordered = [by_id[letter.letter_id] for letter in letters]
+    existing = json.loads(comparison_path.read_text(encoding="utf-8"))
+    if existing.get("split") != split or existing.get("method") != method:
+        raise RuntimeError(f"{comparison_path} is not this paper cell")
+    artifact = comparison_from_later_stage_rows(
+        method,
+        letters,
+        ordered,
+        existing=existing,
+        slug=slug,
+        model=str(existing.get("model") or "gemini/gemini-3.7-flash"),
+        split=split,
+        prompt=prompt_version(method),
+    )
+    comparison_path.write_text(
+        json.dumps(artifact, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return {
+        "ok": True,
+        "artifact": comparison_path.relative_to(ROOT).as_posix(),
+        "method": method,
+        "split": split,
+        "model_slug": slug,
+        "scorer": LATER_STAGE_SCORER,
+        "summary": artifact["summary"],
+        "four_family_headline_f1": artifact["four_family_headline_f1"],
+    }
 
 
 def verify_later_stage_prompt(method: LaterStageMethod) -> None:
@@ -430,50 +556,22 @@ def run_later_stage(
         raise RuntimeError(f"{method} {split} has {len(by_id)} rows, expected {len(letters)}")
     rows = [by_id[letter.letter_id] for letter in letters]
     write_jsonl_rows(rows, rows_path)
-    pred_key = "selected_mentions" if method == "exect_llm_select" else "encoded_mentions"
-    pred_letters = [
-        ExectLetter(
-            letter_id=letter.letter_id,
-            note_text=letter.note_text,
-            annotations=tuple(
-                annotation_from_mapping(mention)
-                for mention in row[pred_key]
-            ),
-        )
-        for letter, row in zip(letters, rows, strict=True)
-    ]
-    family_scores = clinical_headline_scores(letters, pred_letters)
-    overall = _overall_from_families(family_scores)
-    artifact = {
-        "schema_version": f"paper.{method}.v1",
-        "generated_on": datetime.now(UTC).date().isoformat(),
-        "method": method,
-        "model_slug": spec.slug,
-        "model": spec.model,
-        "split": split,
-        "split_machine": exect_machine_split(split),
-        "row_count": len(letters),
-        "row_policy": (
-            "aggregate_only" if holdout else "development_review_permitted"
-        ),
-        "prompt_version": prompt,
-        "started_utc": started,
-        "finished_utc": datetime.now(UTC).isoformat(),
-        "live": True,
-        "call_transport": "openrouter_batch",
-        "model_calls": len(todo),
-        "clinical_headline": family_scores,
-        "four_family_headline_f1": overall["f1"],
-        "summary": overall,
-        "claim_boundary": (
-            "ExECT aggregate-only test60 later-stage cell. Do not inspect holdout rows."
-            if holdout
-            else (
-                "ExECT development later-stage cell. Not holdout. "
-                "Join only. CUI is decoration."
-            )
-        ),
-    }
+    artifact = comparison_from_later_stage_rows(
+        method,
+        letters,
+        rows,
+        existing={
+            "started_utc": started,
+            "finished_utc": datetime.now(UTC).isoformat(),
+            "live": True,
+            "call_transport": "openrouter_batch",
+            "model_calls": len(todo),
+        },
+        slug=spec.slug,
+        model=spec.model,
+        split=split,
+        prompt=prompt,
+    )
     out = work_root / "comparison.json"
     out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return {
@@ -546,13 +644,6 @@ def score_later_stage_row(
         "encoded_mentions": encoded,
         "selected_mentions": selected,
     }
-
-
-def _overall_from_families(family_scores: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
-    tp = sum(int(score["tp"]) for score in family_scores.values())
-    fp = sum(int(score["fp"]) for score in family_scores.values())
-    fn = sum(int(score["fn"]) for score in family_scores.values())
-    return score_dict(prf1_from_counts(tp, fp, fn))
 
 
 def _existing_complete_rows(path: Path, prompt_version_name: str) -> list[dict[str, Any]]:

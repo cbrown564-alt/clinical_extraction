@@ -9,6 +9,13 @@ from typing import Any, Literal
 
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.paper.exect import compact_metrics_from_structured
+from clinical_extraction.paper.exect_later_stage import (
+    CITED_SLUG as LATER_STAGE_SLUG,
+)
+from clinical_extraction.paper.exect_later_stage import (
+    later_stage_work_root,
+    rescore_later_stage,
+)
 from clinical_extraction.paper.exect_rung_replay import exect_rung_out_dir
 from clinical_extraction.paper.methods import (
     exect_row_count,
@@ -42,6 +49,7 @@ LEGACY_METHOD = "exect_llm_with_rules"
 LLM_ONLY_METHOD = "exect_llm_only"
 REQUEST_METHODS = (LLM_ONLY_METHOD, METHOD)
 EXECT_METHODS = REQUEST_METHODS
+LATER_STAGE_METHODS = ("exect_llm_encode", "exect_llm_select")
 PANEL_METHODS = RUNG_IDS
 PROMOTE_SPLIT = "dev140"
 HOLDOUT_FORBIDDEN = ("letter_ids", "changed_rows")
@@ -77,7 +85,7 @@ def paper_llm_only_cell_root(slug: str, split: str = PROMOTE_SPLIT) -> Path:
 def paper_method_cell_root(method: str, slug: str, split: str = PROMOTE_SPLIT) -> Path:
     """Return the tracked paper directory for one ExECT paper method cell."""
 
-    if method not in EXECT_METHODS:
+    if method not in EXECT_METHODS and method not in LATER_STAGE_METHODS:
         raise ValueError(f"unsupported ExECT paper method {method}")
     return PAPER_EXECT / method / slug / split
 
@@ -277,6 +285,93 @@ def promote_exect_llm_only(slug: str, split: str) -> dict[str, Any]:
         }
     )
     _ensure_missing_standalone_llm_only()
+    return {"cell": cell}
+
+
+def promote_exect_later_stage(method: str, slug: str, split: str) -> dict[str, Any]:
+    """Copy a rescored Gemini later-stage encode or select cell."""
+
+    spec = method_spec(method)
+    if spec["task"] != "exectv2" or method not in LATER_STAGE_METHODS:
+        raise RuntimeError("promote-exect later-stage is exect_llm_encode or exect_llm_select")
+    if slug != LATER_STAGE_SLUG:
+        raise RuntimeError("later-stage ExECT encode and select run on Gemini only")
+    split_for(method, split)
+    holdout = holdout_is_aggregate_only(split)
+    model = model_by_slug(slug)
+    rescore_later_stage(method, slug, split)
+    source = later_stage_work_root(method, slug, split)
+    rows_path = source / "rows.jsonl"
+    comparison_path = source / "comparison.json"
+    if not rows_path.is_file() or not comparison_path.is_file():
+        raise RuntimeError(f"missing finished later-stage {method} {slug} {split} run")
+    rows = load_jsonl_rows(rows_path)
+    expected = exect_row_count(split)
+    if len(rows) != expected:
+        raise RuntimeError(f"{rows_path} has {len(rows)} rows, expected {expected}")
+    comparison = json.loads(comparison_path.read_text(encoding="utf-8"))
+    if comparison.get("split") != split or comparison.get("method") != method:
+        raise RuntimeError(f"{comparison_path} is not this paper cell")
+    if comparison.get("scorer") != "clinical_headline_unit_keys":
+        raise RuntimeError("later-stage comparison must use the exact clinical-fact scorer")
+    if comparison.get("reasoning_effort") not in {None, "low"}:
+        raise RuntimeError(
+            "promote only the living low-effort cell, not a non-living-effort repeat"
+        )
+    if holdout:
+        _assert_aggregate_only(comparison)
+    dest = paper_method_cell_root(method, slug, split)
+    dest.mkdir(parents=True, exist_ok=True)
+    replay, empty = _public_replay(rows)
+    write_jsonl_rows(replay, dest / "rows.jsonl")
+    (dest / "comparison.json").write_text(
+        json.dumps(comparison, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    cell = {
+        "model_slug": slug,
+        "model": model["model"],
+        "method": method,
+        "program": method,
+        "split": split,
+        "split_machine": "test" if holdout else "dev",
+        "n": expected,
+        "row_count": expected,
+        "row_policy": "aggregate_only" if holdout else "development_review_permitted",
+        "id_field": "letter_id",
+        "replay_fields": list(REPLAY_FIELDS),
+        "empty_raw_count": empty,
+        "source": source.relative_to(ROOT).as_posix(),
+        "living_effort": _living_effort(slug),
+        "rows": "rows.jsonl",
+        "comparison": "comparison.json",
+        "four_family_headline_f1": comparison.get("four_family_headline_f1"),
+        "scorer": comparison.get("scorer"),
+    }
+    if not holdout:
+        scored = _public_later_stage_scored(method, rows)
+        if len(scored) != expected:
+            raise RuntimeError(f"{slug} scored {len(scored)} letters, expected {expected}")
+        write_jsonl_rows(scored, dest / "scored.jsonl")
+        cell["scored"] = "scored.jsonl"
+    (dest / "cell.json").write_text(
+        json.dumps(cell, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    _upsert_present(
+        {
+            "model_slug": slug,
+            "model": model["model"],
+            "method": method,
+            "replay_alias": method,
+            "split": split,
+            "n": expected,
+            "row_policy": "aggregate_only" if holdout else "development_review_permitted",
+            "path": (dest / "rows.jsonl").relative_to(ROOT).as_posix(),
+            "status": "present",
+            "empty_raw_count": empty,
+        }
+    )
     return {"cell": cell}
 
 
@@ -775,6 +870,22 @@ def _living_effort(slug: str) -> str:
     if slug == "deepseek_v4_flash":
         return "thinking_on_provider_default"
     return "none"
+
+
+def _public_later_stage_scored(
+    method: str, rows: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    scored: list[dict[str, Any]] = []
+    for row in rows:
+        scored.append(
+            {
+                "letter_id": str(row["letter_id"]),
+                "method": method,
+                "parse_ok": not bool(row.get("call_error"))
+                and bool(str(row.get("raw_output") or "").strip()),
+            }
+        )
+    return scored
 
 
 def _public_replay(rows: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], int]:

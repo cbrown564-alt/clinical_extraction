@@ -635,6 +635,54 @@
       "row_policy": "aggregate_only",
       "split": "test450",
       "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "exect_llm_encode",
+      "model": "gemini/gemini-3.7-flash",
+      "model_slug": "gemini37flash",
+      "n": 140,
+      "path": "paper_experiments/exect/exect_llm_encode/gemini37flash/dev140/rows.jsonl",
+      "replay_alias": "exect_llm_encode",
+      "row_policy": "development_review_permitted",
+      "split": "dev140",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "exect_llm_select",
+      "model": "gemini/gemini-3.7-flash",
+      "model_slug": "gemini37flash",
+      "n": 140,
+      "path": "paper_experiments/exect/exect_llm_select/gemini37flash/dev140/rows.jsonl",
+      "replay_alias": "exect_llm_select",
+      "row_policy": "development_review_permitted",
+      "split": "dev140",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "exect_llm_encode",
+      "model": "gemini/gemini-3.7-flash",
+      "model_slug": "gemini37flash",
+      "n": 59,
+      "path": "paper_experiments/exect/exect_llm_encode/gemini37flash/test60/rows.jsonl",
+      "replay_alias": "exect_llm_encode",
+      "row_policy": "aggregate_only",
+      "split": "test60",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "exect_llm_select",
+      "model": "gemini/gemini-3.7-flash",
+      "model_slug": "gemini37flash",
+      "n": 59,
+      "path": "paper_experiments/exect/exect_llm_select/gemini37flash/test60/rows.jsonl",
+      "replay_alias": "exect_llm_select",
+      "row_policy": "aggregate_only",
+      "split": "test60",
+      "status": "present"
     }
   ],
   "purpose": "Replayable paper cells. Holdout files keep only replay keys.",

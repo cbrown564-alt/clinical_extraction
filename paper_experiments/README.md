@@ -10,7 +10,9 @@ Roster: [`roster.json`](roster.json). Inventory: [`inventory.json`](inventory.js
 | Path | What it is |
 | --- | --- |
 | `exect/exect_llm_pre_post/` | ExECT rung 5 (cite hybrid F1). `exect_llm_with_rules` is the live alias. |
-| `exect/exect_llm_only/` | ExECT LLM only (cite raw F1). |
+| `exect/exect_llm_only/` | ExECT LLM only (cite raw F1 / flatten extract). |
+| `exect/exect_llm_encode/` | ExECT later-stage LLM encode. Gemini only, `dev140` and aggregate-only `test60`. |
+| `exect/exect_llm_select/` | ExECT later-stage LLM select. Gemini only, `dev140` and aggregate-only `test60`. |
 | `exect/dev140_panel.json` | Rectangular living six-model ExECT `dev140` index for the frontend |
 | `exect/exect_rules/` | ExECT rules headlines |
 | `gan/gan_llm_only/` | Existing Gan LLM-only cells. Not a results column |
@@ -47,6 +49,7 @@ finished living replay file with:
 python -m clinical_extraction.paper promote-gan --method gan_llm_only --model grok46 --split test450
 python -m clinical_extraction.paper promote-exect --method exect_llm_pre_post --model qwen38_27b --split test60
 python -m clinical_extraction.paper promote-exect --method exect_llm_only --model gpt56luna --split dev140
+python -m clinical_extraction.paper promote-exect --method exect_llm_encode --model gemini37flash --split test60
 ```
 
 `/exectv2/runs` is the July explorer payload (Sol + Qwen 3.6). The

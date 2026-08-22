@@ -1,0 +1,25 @@
+{
+  "comparison": "comparison.json",
+  "empty_raw_count": 0,
+  "four_family_headline_f1": 0.8213,
+  "id_field": "letter_id",
+  "living_effort": "low",
+  "method": "exect_llm_select",
+  "model": "gemini/gemini-3.7-flash",
+  "model_slug": "gemini37flash",
+  "n": 140,
+  "program": "exect_llm_select",
+  "replay_fields": [
+    "letter_id",
+    "prompt_version",
+    "raw_output"
+  ],
+  "row_count": 140,
+  "row_policy": "development_review_permitted",
+  "rows": "rows.jsonl",
+  "scored": "scored.jsonl",
+  "scorer": "clinical_headline_unit_keys",
+  "source": "experiments/paper/exect_llm_select/gemini37flash/dev140",
+  "split": "dev140",
+  "split_machine": "dev"
+}
