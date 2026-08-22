@@ -111,7 +111,7 @@ describe("Gan architecture options", () => {
           model_slug: "gpt56luna",
           model: "openai/gpt-5.6-luna",
           label: "GPT-5.6 Luna",
-          method: "gan_llm_with_rules",
+          method: "llm_select",
           status: "present",
           n: 750,
           purist_correct: 663,
@@ -121,7 +121,7 @@ describe("Gan architecture options", () => {
           model_slug: "grok46",
           model: "xai/grok-4.6",
           label: "Grok 4.6",
-          method: "gan_llm_with_rules",
+          method: "llm_select",
           status: "present",
           n: 750,
           purist_correct: 675,
@@ -131,14 +131,14 @@ describe("Gan architecture options", () => {
           model_slug: "qwen38_27b",
           model: "ollama_chat/qwen3.8:27b",
           label: "Qwen 3.8 27B",
-          method: "gan_llm_with_rules",
+          method: "llm_select",
           status: "pending",
           n: 750,
         },
       ],
     });
 
-    expect(ganPaperRunId("gan_llm_with_rules", "grok46")).toBe(
+    expect(ganPaperRunId("llm_select", "grok46")).toBe(
       "gan2026_validation750_grok46_llm_with_rules"
     );
     expect(families.map((item) => item.model)).toEqual([

@@ -24,7 +24,7 @@ from clinical_extraction.paper.methods import (
     split_for,
 )
 from clinical_extraction.paper.roster import living_models, model_by_slug
-from clinical_extraction.paper.rungs import RUNG_IDS, normalize_cell_id
+from clinical_extraction.paper.rungs import normalize_cell_id, normalize_rungs_payload
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
 )
@@ -50,7 +50,7 @@ LLM_ONLY_METHOD = "exect_llm_only"
 REQUEST_METHODS = (LLM_ONLY_METHOD, METHOD)
 EXECT_METHODS = REQUEST_METHODS
 LATER_STAGE_METHODS = ("exect_llm_encode", "exect_llm_select")
-PANEL_METHODS = RUNG_IDS
+PANEL_METHODS = ("rules_only", "llm_extract", "llm_encode", "llm_select")
 PROMOTE_SPLIT = "dev140"
 HOLDOUT_FORBIDDEN = ("letter_ids", "changed_rows")
 
@@ -417,7 +417,7 @@ def ensure_exect_dev140_scored(slug: str) -> Path:
 
 
 def rebuild_dev140_panel() -> dict[str, Any]:
-    """Write the rectangular living ExECT five-rung development index."""
+    """Write the rectangular ExECT cell-3 development index."""
 
     cells: list[dict[str, Any]] = []
     rules_path = PAPER_EXECT / "exect_rules" / "dev140.json"
@@ -435,7 +435,10 @@ def rebuild_dev140_panel() -> dict[str, Any]:
             if rung_comparison_path.is_file()
             else {}
         )
-        rung_scores = rung_payload.get("rungs") or {}
+        raw_rungs = rung_payload.get("rungs") or {}
+        rung_scores = (
+            normalize_rungs_payload(raw_rungs) if isinstance(raw_rungs, dict) else {}
+        )
         pre_post_dest = paper_method_cell_root(METHOD, slug)
         for method in PANEL_METHODS:
             if method == "rules_only":
@@ -548,7 +551,7 @@ def rebuild_dev140_panel() -> dict[str, Any]:
                     }
                 )
     panel = {
-        "schema_version": "paper_experiments.exect.dev140_panel.v2",
+        "schema_version": "paper_experiments.exect.dev140_panel.v3",
         "split": PROMOTE_SPLIT,
         "split_machine": "dev",
         "row_policy": "development_review_permitted",
@@ -567,10 +570,9 @@ def rebuild_dev140_panel() -> dict[str, Any]:
         "models": [item["slug"] for item in living_models()],
         "cells": cells,
         "claim_boundary": (
-            "Living six-model ExECT development panel. Headline columns are "
-            "the five rungs. Rungs 2-4 replay exect_llm_only. Rung 5 is "
-            "living exect_llm_pre_post. Not holdout. The July explorer "
-            "runs.json roster is historical."
+            "ExECT cell-3 development panel: rules, then extract / encode / "
+            "select on exect_llm_only. Not holdout. Living exect_llm_pre_post "
+            "is the both-extract alias and is not a panel column."
         ),
     }
     PANEL_PATH.parent.mkdir(parents=True, exist_ok=True)

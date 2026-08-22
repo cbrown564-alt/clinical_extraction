@@ -14,7 +14,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
 
-from clinical_extraction.paper.gan_panel import load_dev750_panel
 from clinical_extraction.paper.roster import living_models
 
 TRACE_SCHEMA_VERSION = "gan2026.row_trace.v1"
@@ -179,63 +178,74 @@ def _overlay_paper_dev750(
 ) -> None:
     """Prefer tracked paper_experiments rows for living development cells."""
 
-    panel = load_dev750_panel()
     by_run = {str(family["run_id"]): family for family in families}
     models = {item["slug"]: item for item in living_models()}
-    for cell in panel.get("cells", []):
-        if not isinstance(cell, dict) or cell.get("status") != "present":
-            continue
-        method = str(cell["method"])
-        slug = str(cell["model_slug"])
-        rows_path = repo_root / str(cell["rows"])
-        if not rows_path.is_file():
-            continue
-        row_count = int(cell.get("n") or 750)
-        purist_correct = int(cell.get("purist_correct") or 0)
-        purist_accuracy = float(cell.get("purist_accuracy") or 0.0)
-        inspection = {
-            "complete": True,
-            "row_count": row_count,
-            "metrics": {
-                "row_count": row_count,
-                "purist_correct": purist_correct,
-                "purist_accuracy": purist_accuracy,
-                "pragmatic_correct": 0,
-                "pragmatic_accuracy": 0.0,
-            },
-        }
-        run_id = paper_run_id(method, slug)
-        artifacts[run_id] = rows_path.resolve()
-        model = models.get(slug, {})
-        family = _paper_family(cell, model, inspection)
-        existing = by_run.get(run_id)
-        if existing is None:
-            families.insert(-1, family)
-        else:
-            families[families.index(existing)] = family
-        by_run[run_id] = family
-        registry[:] = [item for item in registry if item["run_id"] != run_id]
-        registry.append(
-            {
-                "run_id": run_id,
-                "artifact_paths": [rows_path.relative_to(repo_root).as_posix()],
-                "date": "2026-08-18",
-                "decision": "development_comparison",
-                "mode": "replay",
-                "model": cell.get("model") or model.get("model"),
-                "model_role": family["display_label"],
-                "pipeline_family": family["pipeline_family"],
-                "primary_metrics": family["metrics"],
-                "repair_mode": family["repair_mode"],
-                "replay_status": "paper_dev750_raw_replay",
-                "row_count": 750,
-                "split": "validation",
-                "registry_roles": ["paper_dev750_panel"],
-                "evidence_validity": (
-                    "Row-level Gan validation development evidence; not holdout evidence."
-                ),
+    paper_gan = repo_root / "paper_experiments" / "gan"
+    for model in living_models():
+        slug = str(model["slug"])
+        for method in ("gan_llm_only", "gan_llm_with_rules"):
+            dest = paper_gan / method / slug / "dev750"
+            rows_path = dest / "rows.jsonl"
+            comparison_path = dest / "comparison.json"
+            if not rows_path.is_file() or not comparison_path.is_file():
+                continue
+            comparison = json.loads(comparison_path.read_text(encoding="utf-8"))
+            summary = comparison.get("summary") or {}
+            cell = {
+                "method": method,
+                "model_slug": slug,
+                "model": model["model"],
+                "label": model["label"],
+                "n": 750,
+                "purist_correct": summary.get("purist_correct"),
+                "purist_accuracy": summary.get("purist_accuracy"),
             }
-        )
+            row_count = 750
+            purist_correct = int(cell.get("purist_correct") or 0)
+            purist_accuracy = float(cell.get("purist_accuracy") or 0.0)
+            inspection = {
+                "complete": True,
+                "row_count": row_count,
+                "metrics": {
+                    "row_count": row_count,
+                    "purist_correct": purist_correct,
+                    "purist_accuracy": purist_accuracy,
+                    "pragmatic_correct": 0,
+                    "pragmatic_accuracy": 0.0,
+                },
+            }
+            run_id = paper_run_id(method, slug)
+            artifacts[run_id] = rows_path.resolve()
+            roster_model = models.get(slug, {})
+            family = _paper_family(cell, roster_model, inspection)
+            existing = by_run.get(run_id)
+            if existing is None:
+                families.insert(-1, family)
+            else:
+                families[families.index(existing)] = family
+            by_run[run_id] = family
+            registry[:] = [item for item in registry if item["run_id"] != run_id]
+            registry.append(
+                {
+                    "run_id": run_id,
+                    "artifact_paths": [rows_path.relative_to(repo_root).as_posix()],
+                    "date": "2026-08-18",
+                    "decision": "development_comparison",
+                    "mode": "replay",
+                    "model": cell.get("model") or roster_model.get("model"),
+                    "model_role": family["display_label"],
+                    "pipeline_family": family["pipeline_family"],
+                    "primary_metrics": family["metrics"],
+                    "repair_mode": family["repair_mode"],
+                    "replay_status": "paper_dev750_raw_replay",
+                    "row_count": 750,
+                    "split": "validation",
+                    "registry_roles": ["paper_dev750_panel"],
+                    "evidence_validity": (
+                        "Row-level Gan validation development evidence; not holdout evidence."
+                    ),
+                }
+            )
 
 
 def _paper_family(

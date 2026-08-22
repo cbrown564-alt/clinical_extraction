@@ -300,8 +300,9 @@ def test_frontend_api_serves_the_living_gan_dev750_panel(client: TestClient) -> 
     body = panel.json()
     assert body["split"] == "dev750"
     assert body["method_identity"] == "gemini37flash"
-    assert len(body["cells"]) == 12
-    grok = client.get("/paper/gan/dev750/gan_llm_with_rules/grok46/scored")
+    assert len(body["cells"]) == 24
+    assert body["methods"] == ["rules_only", "llm_extract", "llm_encode", "llm_select"]
+    grok = client.get("/paper/gan/dev750/llm_select/grok46/scored")
     assert grok.status_code == 200
     scored = grok.json()
     assert scored["count"] == 750
@@ -312,7 +313,7 @@ def test_frontend_api_serves_the_living_gan_dev750_panel(client: TestClient) -> 
     scored_ids = {row["letter_id"] for row in scored["rows"]}
     assert letter_ids
     assert scored_ids & letter_ids
-    pending = client.get("/paper/gan/dev750/gan_llm_only/qwen38_27b/scored")
+    pending = client.get("/paper/gan/dev750/llm_select/qwen38_27b/scored")
     assert pending.status_code == 404
 
 
@@ -339,13 +340,12 @@ def test_frontend_api_serves_the_living_exect_dev140_panel(client: TestClient) -
         "llm_extract",
         "llm_encode",
         "llm_select",
-        "llm_pre_post",
     ]
-    assert len(body["cells"]) == 30
-    grok = client.get("/paper/exect/dev140/exect_llm_pre_post/grok46/scored")
+    assert len(body["cells"]) == 24
+    grok = client.get("/paper/exect/dev140/llm_select/grok46/scored")
     assert grok.status_code == 200
     scored = grok.json()
-    assert scored["method"] == "exect_llm_pre_post"
+    assert scored["method"] == "llm_select"
     assert scored["count"] == 140
     llm_only = client.get("/paper/exect/dev140/exect_llm_only/grok46/scored")
     assert llm_only.status_code == 200
@@ -361,4 +361,4 @@ def test_frontend_api_serves_the_living_exect_dev140_panel(client: TestClient) -
     assert pending.status_code == 404
     alias = client.get("/paper/exect/dev140/grok46/scored")
     assert alias.status_code == 200
-    assert alias.json()["method"] == "exect_llm_pre_post"
+    assert alias.json()["method"] == "llm_select"

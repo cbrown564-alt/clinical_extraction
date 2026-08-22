@@ -69,7 +69,13 @@ export function fetchRegistry() {
   return request<import("../types").RegistryResponse>("/registry");
 }
 
-export type GanDev750Method = "gan_llm_only" | "gan_llm_with_rules";
+export type GanDev750Method =
+  | "rules_only"
+  | "llm_extract"
+  | "llm_encode"
+  | "llm_select"
+  | "gan_llm_only"
+  | "gan_llm_with_rules";
 
 export type GanDev750PanelCell = {
   model_slug: string;
@@ -134,6 +140,7 @@ export type ExectDev140Method =
   | "exect_llm_pre_post"
   | "exect_llm_with_rules"
   | "exect_rules"
+  | "rules_only"
   | "llm_extract"
   | "llm_encode"
   | "llm_select"

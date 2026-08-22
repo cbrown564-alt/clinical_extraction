@@ -115,13 +115,10 @@ def test_promote_writes_replay_scored_and_panel(
     panel = rebuild_dev750_panel()
     assert panel["method_identity"] == "gemini37flash"
     assert panel["living_effort"]["hosted_reasoning"] == "low"
-    assert len(panel["cells"]) == 12
-    present = [cell for cell in panel["cells"] if cell["status"] == "present"]
-    pending = [cell for cell in panel["cells"] if cell["status"] == "pending"]
-    assert [(cell["model_slug"], cell["method"]) for cell in present] == [
-        ("grok46", "gan_llm_only")
-    ]
-    assert len(pending) == 11
+    assert panel["methods"] == ["rules_only", "llm_extract", "llm_encode", "llm_select"]
+    assert len(panel["cells"]) == 24
+    assert all(cell["status"] == "pending" for cell in panel["cells"])
+    assert not any(cell["method"] in {"gan_llm_only", "gan_llm_with_rules"} for cell in panel["cells"])
     assert payload["cell"]["n"] == 750
     slugs = [item["slug"] for item in living_models()]
     assert panel["models"] == slugs
@@ -174,12 +171,7 @@ def test_rebuild_keeps_historical_present_when_panel_slot_is_pending(
     )
     _patch_panel_paths(tmp_path, monkeypatch)
     panel = rebuild_dev750_panel()
-    gemma = next(
-        cell
-        for cell in panel["cells"]
-        if cell["model_slug"] == "gemma4_26b" and cell["method"] == "gan_llm_only"
-    )
-    assert gemma["status"] == "pending"
+    assert not any(cell["method"] == "gan_llm_only" for cell in panel["cells"])
     synced = json.loads((tmp_path / "paper_experiments/inventory.json").read_text(encoding="utf-8"))
     assert historical in synced["present"]
 
@@ -322,8 +314,8 @@ def test_promote_gan_llm_pre_post_writes_inventory_without_changing_the_two_meth
     assert holdout["cell"]["row_policy"] == "aggregate_only"
     assert "panel" not in development
     panel = rebuild_dev750_panel()
-    assert panel["methods"] == ["gan_llm_only", "gan_llm_with_rules"]
-    assert len(panel["cells"]) == 12
+    assert panel["methods"] == ["rules_only", "llm_extract", "llm_encode", "llm_select"]
+    assert len(panel["cells"]) == 24
     synced = json.loads((tmp_path / "paper_experiments/inventory.json").read_text(encoding="utf-8"))
     present = {(row["model_slug"], row["method"], row["split"]) for row in synced["present"]}
     assert ("gpt56luna", "gan_llm_pre_post", "dev750") in present
@@ -356,7 +348,7 @@ def test_promote_gan_later_stage_writes_inventory_without_changing_the_two_metho
     assert holdout["cell"]["row_policy"] == "aggregate_only"
     assert "panel" not in development
     panel = rebuild_dev750_panel()
-    assert panel["methods"] == ["gan_llm_only", "gan_llm_with_rules"]
+    assert panel["methods"] == ["rules_only", "llm_extract", "llm_encode", "llm_select"]
     synced = json.loads((tmp_path / "paper_experiments/inventory.json").read_text())
     present = {(row["model_slug"], row["method"], row["split"]) for row in synced["present"]}
     assert ("gemini37flash", "gan_llm_encode", "dev750") in present

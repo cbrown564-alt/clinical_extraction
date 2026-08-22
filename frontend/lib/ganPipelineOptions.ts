@@ -61,7 +61,13 @@ export type GanDev750PanelCell = {
   model_slug: string;
   model: string;
   label: string;
-  method: "gan_llm_only" | "gan_llm_with_rules";
+  method:
+    | "rules_only"
+    | "llm_extract"
+    | "llm_encode"
+    | "llm_select"
+    | "gan_llm_only"
+    | "gan_llm_with_rules";
   status: "present" | "pending";
   n: number;
   purist_correct?: number | null;
@@ -77,7 +83,12 @@ export function ganPaperRunId(
   method: GanDev750PanelCell["method"],
   slug: string
 ): string {
-  const suffix = method === "gan_llm_with_rules" ? "llm_with_rules" : "llm_only";
+  const suffix =
+    method === "llm_select" || method === "gan_llm_with_rules"
+      ? "llm_with_rules"
+      : method === "rules_only"
+        ? "rules"
+        : "llm_only";
   return `gan2026_validation750_${slug}_${suffix}`;
 }
 
@@ -104,9 +115,17 @@ export function ganFamiliesFromDev750Panel(
   panel: GanDev750PanelLike
 ): PipelineFamilyItem[] {
   return [
-    ...panel.cells.map((cell) => {
+    ...panel.cells
+      .filter((cell) =>
+        ["llm_select", "gan_llm_with_rules", "llm_extract", "gan_llm_only"].includes(
+          cell.method
+        )
+      )
+      .map((cell) => {
       const kind =
-        cell.method === "gan_llm_with_rules" ? "llm_with_rules" : "llm";
+        cell.method === "llm_select" || cell.method === "gan_llm_with_rules"
+          ? "llm_with_rules"
+          : "llm";
       const present = cell.status === "present";
       const runId = ganPaperRunId(cell.method, cell.model_slug);
       const modeLabel = kind === "llm_with_rules" ? "LLM + rules" : "LLM only";

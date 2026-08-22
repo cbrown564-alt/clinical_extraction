@@ -3,6 +3,53 @@
     {
       "clinical_fact_f1": 0.9042,
       "comparison": "paper_experiments/exect/exect_rules/dev140.json",
+      "label": "Gemini 3.7 Flash",
+      "method": "rules_only",
+      "model": "gemini/gemini-3.7-flash",
+      "model_slug": "gemini37flash",
+      "n": 140,
+      "path": "paper_experiments/exect/exect_rules/",
+      "status": "present"
+    },
+    {
+      "clinical_fact_f1": 0.8027,
+      "comparison": "paper_experiments/exect/rungs/gemini37flash/dev140/comparison.json",
+      "label": "Gemini 3.7 Flash",
+      "method": "llm_extract",
+      "model": "gemini/gemini-3.7-flash",
+      "model_slug": "gemini37flash",
+      "n": 140,
+      "path": "paper_experiments/exect/rungs/gemini37flash/dev140/",
+      "scored": "paper_experiments/exect/rungs/gemini37flash/dev140/scored.jsonl",
+      "status": "present"
+    },
+    {
+      "clinical_fact_f1": 0.8543,
+      "comparison": "paper_experiments/exect/rungs/gemini37flash/dev140/comparison.json",
+      "label": "Gemini 3.7 Flash",
+      "method": "llm_encode",
+      "model": "gemini/gemini-3.7-flash",
+      "model_slug": "gemini37flash",
+      "n": 140,
+      "path": "paper_experiments/exect/rungs/gemini37flash/dev140/",
+      "scored": "paper_experiments/exect/rungs/gemini37flash/dev140/scored.jsonl",
+      "status": "present"
+    },
+    {
+      "clinical_fact_f1": 0.8771,
+      "comparison": "paper_experiments/exect/rungs/gemini37flash/dev140/comparison.json",
+      "label": "Gemini 3.7 Flash",
+      "method": "llm_select",
+      "model": "gemini/gemini-3.7-flash",
+      "model_slug": "gemini37flash",
+      "n": 140,
+      "path": "paper_experiments/exect/rungs/gemini37flash/dev140/",
+      "scored": "paper_experiments/exect/rungs/gemini37flash/dev140/scored.jsonl",
+      "status": "present"
+    },
+    {
+      "clinical_fact_f1": 0.9042,
+      "comparison": "paper_experiments/exect/exect_rules/dev140.json",
       "label": "Grok 4.6",
       "method": "rules_only",
       "model": "xai/grok-4.6",
@@ -12,7 +59,7 @@
       "status": "present"
     },
     {
-      "clinical_fact_f1": 0.8212,
+      "clinical_fact_f1": 0.8183,
       "comparison": "paper_experiments/exect/rungs/grok46/dev140/comparison.json",
       "label": "Grok 4.6",
       "method": "llm_extract",
@@ -24,7 +71,7 @@
       "status": "present"
     },
     {
-      "clinical_fact_f1": 0.8324,
+      "clinical_fact_f1": 0.8677,
       "comparison": "paper_experiments/exect/rungs/grok46/dev140/comparison.json",
       "label": "Grok 4.6",
       "method": "llm_encode",
@@ -36,7 +83,7 @@
       "status": "present"
     },
     {
-      "clinical_fact_f1": 0.904,
+      "clinical_fact_f1": 0.8806,
       "comparison": "paper_experiments/exect/rungs/grok46/dev140/comparison.json",
       "label": "Grok 4.6",
       "method": "llm_select",
@@ -45,22 +92,6 @@
       "n": 140,
       "path": "paper_experiments/exect/rungs/grok46/dev140/",
       "scored": "paper_experiments/exect/rungs/grok46/dev140/scored.jsonl",
-      "status": "present"
-    },
-    {
-      "clinical_fact_f1": 0.8998,
-      "comparison": "paper_experiments/exect/exect_llm_pre_post/grok46/dev140/comparison.json",
-      "hybrid_headline_f1": 0.8998,
-      "label": "Grok 4.6",
-      "living_effort": "low",
-      "method": "llm_pre_post",
-      "model": "xai/grok-4.6",
-      "model_slug": "grok46",
-      "n": 140,
-      "path": "paper_experiments/exect/exect_llm_pre_post/grok46/dev140/",
-      "raw_headline_f1": 0.8202,
-      "rows": "paper_experiments/exect/exect_llm_pre_post/grok46/dev140/structured.jsonl",
-      "scored": "paper_experiments/exect/exect_llm_pre_post/grok46/dev140/scored.jsonl",
       "status": "present"
     },
     {
@@ -75,7 +106,7 @@
       "status": "present"
     },
     {
-      "clinical_fact_f1": 0.7912,
+      "clinical_fact_f1": 0.6485,
       "comparison": "paper_experiments/exect/rungs/gpt56luna/dev140/comparison.json",
       "label": "GPT-5.6 Luna",
       "method": "llm_extract",
@@ -87,7 +118,7 @@
       "status": "present"
     },
     {
-      "clinical_fact_f1": 0.7987,
+      "clinical_fact_f1": 0.7922,
       "comparison": "paper_experiments/exect/rungs/gpt56luna/dev140/comparison.json",
       "label": "GPT-5.6 Luna",
       "method": "llm_encode",
@@ -111,85 +142,6 @@
       "status": "present"
     },
     {
-      "clinical_fact_f1": 0.888,
-      "comparison": "paper_experiments/exect/exect_llm_pre_post/gpt56luna/dev140/comparison.json",
-      "hybrid_headline_f1": 0.888,
-      "label": "GPT-5.6 Luna",
-      "living_effort": "low",
-      "method": "llm_pre_post",
-      "model": "openai/gpt-5.6-luna",
-      "model_slug": "gpt56luna",
-      "n": 140,
-      "path": "paper_experiments/exect/exect_llm_pre_post/gpt56luna/dev140/",
-      "raw_headline_f1": 0.8105,
-      "rows": "paper_experiments/exect/exect_llm_pre_post/gpt56luna/dev140/structured.jsonl",
-      "scored": "paper_experiments/exect/exect_llm_pre_post/gpt56luna/dev140/scored.jsonl",
-      "status": "present"
-    },
-    {
-      "clinical_fact_f1": 0.9042,
-      "comparison": "paper_experiments/exect/exect_rules/dev140.json",
-      "label": "Gemini 3.7 Flash",
-      "method": "rules_only",
-      "model": "gemini/gemini-3.7-flash",
-      "model_slug": "gemini37flash",
-      "n": 140,
-      "path": "paper_experiments/exect/exect_rules/",
-      "status": "present"
-    },
-    {
-      "clinical_fact_f1": 0.8037,
-      "comparison": "paper_experiments/exect/rungs/gemini37flash/dev140/comparison.json",
-      "label": "Gemini 3.7 Flash",
-      "method": "llm_extract",
-      "model": "gemini/gemini-3.7-flash",
-      "model_slug": "gemini37flash",
-      "n": 140,
-      "path": "paper_experiments/exect/rungs/gemini37flash/dev140/",
-      "scored": "paper_experiments/exect/rungs/gemini37flash/dev140/scored.jsonl",
-      "status": "present"
-    },
-    {
-      "clinical_fact_f1": 0.8133,
-      "comparison": "paper_experiments/exect/rungs/gemini37flash/dev140/comparison.json",
-      "label": "Gemini 3.7 Flash",
-      "method": "llm_encode",
-      "model": "gemini/gemini-3.7-flash",
-      "model_slug": "gemini37flash",
-      "n": 140,
-      "path": "paper_experiments/exect/rungs/gemini37flash/dev140/",
-      "scored": "paper_experiments/exect/rungs/gemini37flash/dev140/scored.jsonl",
-      "status": "present"
-    },
-    {
-      "clinical_fact_f1": 0.8933,
-      "comparison": "paper_experiments/exect/rungs/gemini37flash/dev140/comparison.json",
-      "label": "Gemini 3.7 Flash",
-      "method": "llm_select",
-      "model": "gemini/gemini-3.7-flash",
-      "model_slug": "gemini37flash",
-      "n": 140,
-      "path": "paper_experiments/exect/rungs/gemini37flash/dev140/",
-      "scored": "paper_experiments/exect/rungs/gemini37flash/dev140/scored.jsonl",
-      "status": "present"
-    },
-    {
-      "clinical_fact_f1": 0.8946,
-      "comparison": "paper_experiments/exect/exect_llm_pre_post/gemini37flash/dev140/comparison.json",
-      "hybrid_headline_f1": 0.8946,
-      "label": "Gemini 3.7 Flash",
-      "living_effort": "low",
-      "method": "llm_pre_post",
-      "model": "gemini/gemini-3.7-flash",
-      "model_slug": "gemini37flash",
-      "n": 140,
-      "path": "paper_experiments/exect/exect_llm_pre_post/gemini37flash/dev140/",
-      "raw_headline_f1": 0.8238,
-      "rows": "paper_experiments/exect/exect_llm_pre_post/gemini37flash/dev140/structured.jsonl",
-      "scored": "paper_experiments/exect/exect_llm_pre_post/gemini37flash/dev140/scored.jsonl",
-      "status": "present"
-    },
-    {
       "clinical_fact_f1": 0.9042,
       "comparison": "paper_experiments/exect/exect_rules/dev140.json",
       "label": "DeepSeek V4 Flash",
@@ -201,7 +153,7 @@
       "status": "present"
     },
     {
-      "clinical_fact_f1": 0.8137,
+      "clinical_fact_f1": 0.6393,
       "comparison": "paper_experiments/exect/rungs/deepseek_v4_flash/dev140/comparison.json",
       "label": "DeepSeek V4 Flash",
       "method": "llm_extract",
@@ -213,7 +165,7 @@
       "status": "present"
     },
     {
-      "clinical_fact_f1": 0.8332,
+      "clinical_fact_f1": 0.8127,
       "comparison": "paper_experiments/exect/rungs/deepseek_v4_flash/dev140/comparison.json",
       "label": "DeepSeek V4 Flash",
       "method": "llm_encode",
@@ -237,22 +189,6 @@
       "status": "present"
     },
     {
-      "clinical_fact_f1": 0.88,
-      "comparison": "paper_experiments/exect/exect_llm_pre_post/deepseek_v4_flash/dev140/comparison.json",
-      "hybrid_headline_f1": 0.88,
-      "label": "DeepSeek V4 Flash",
-      "living_effort": "thinking_on_provider_default",
-      "method": "llm_pre_post",
-      "model": "deepseek/deepseek-v4-flash",
-      "model_slug": "deepseek_v4_flash",
-      "n": 140,
-      "path": "paper_experiments/exect/exect_llm_pre_post/deepseek_v4_flash/dev140/",
-      "raw_headline_f1": 0.601,
-      "rows": "paper_experiments/exect/exect_llm_pre_post/deepseek_v4_flash/dev140/structured.jsonl",
-      "scored": "paper_experiments/exect/exect_llm_pre_post/deepseek_v4_flash/dev140/scored.jsonl",
-      "status": "present"
-    },
-    {
       "clinical_fact_f1": 0.9042,
       "comparison": "paper_experiments/exect/exect_rules/dev140.json",
       "label": "Qwen 3.8 27B",
@@ -288,15 +224,6 @@
       "model_slug": "qwen38_27b",
       "n": 140,
       "path": "paper_experiments/exect/rungs/qwen38_27b/dev140/",
-      "status": "pending"
-    },
-    {
-      "label": "Qwen 3.8 27B",
-      "method": "llm_pre_post",
-      "model": "ollama_chat/qwen3.8:27b",
-      "model_slug": "qwen38_27b",
-      "n": 140,
-      "path": "paper_experiments/exect/exect_llm_pre_post/qwen38_27b/dev140/",
       "status": "pending"
     },
     {
@@ -336,25 +263,9 @@
       "n": 140,
       "path": "paper_experiments/exect/rungs/gemma4_26b/dev140/",
       "status": "pending"
-    },
-    {
-      "clinical_fact_f1": 0.7674,
-      "comparison": "paper_experiments/exect/exect_llm_pre_post/gemma4_26b/dev140/comparison.json",
-      "hybrid_headline_f1": 0.7674,
-      "label": "Gemma 4 26B",
-      "living_effort": "none",
-      "method": "llm_pre_post",
-      "model": "ollama_chat/gemma4:26b",
-      "model_slug": "gemma4_26b",
-      "n": 140,
-      "path": "paper_experiments/exect/exect_llm_pre_post/gemma4_26b/dev140/",
-      "raw_headline_f1": 0.4751,
-      "rows": "paper_experiments/exect/exect_llm_pre_post/gemma4_26b/dev140/structured.jsonl",
-      "scored": "paper_experiments/exect/exect_llm_pre_post/gemma4_26b/dev140/scored.jsonl",
-      "status": "present"
     }
   ],
-  "claim_boundary": "Living six-model ExECT development panel. Headline columns are the five rungs. Rungs 2-4 replay exect_llm_only. Rung 5 is living exect_llm_pre_post. Not holdout. The July explorer runs.json roster is historical.",
+  "claim_boundary": "ExECT cell-3 development panel: rules, then extract / encode / select on exect_llm_only. Not holdout. Living exect_llm_pre_post is the both-extract alias and is not a panel column.",
   "living_effort": {
     "deepseek": "thinking_on_provider_default",
     "hosted_reasoning": "low",
@@ -365,8 +276,7 @@
     "rules_only",
     "llm_extract",
     "llm_encode",
-    "llm_select",
-    "llm_pre_post"
+    "llm_select"
   ],
   "models": [
     "gemini37flash",
@@ -385,7 +295,7 @@
     "exect_llm_pre_post"
   ],
   "row_policy": "development_review_permitted",
-  "schema_version": "paper_experiments.exect.dev140_panel.v2",
+  "schema_version": "paper_experiments.exect.dev140_panel.v3",
   "split": "dev140",
   "split_machine": "dev"
 }

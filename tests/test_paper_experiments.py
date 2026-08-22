@@ -157,13 +157,13 @@ def test_gan_dev750_panel_is_rectangular() -> None:
     panel = json.loads(
         (ROOT / "paper_experiments/gan/dev750_panel.json").read_text(encoding="utf-8")
     )
-    assert panel["schema_version"] == "paper_experiments.gan.dev750_panel.v1"
+    assert panel["schema_version"] == "paper_experiments.gan.dev750_panel.v2"
     assert panel["split"] == "dev750"
     assert panel["method_identity"] == "gemini37flash"
     assert panel["living_effort"]["hosted_reasoning"] == "low"
     assert panel["models"] == list(LIVING_SLUGS)
-    assert panel["methods"] == ["gan_llm_only", "gan_llm_with_rules"]
-    assert len(panel["cells"]) == 12
+    assert panel["methods"] == ["rules_only", "llm_extract", "llm_encode", "llm_select"]
+    assert len(panel["cells"]) == 24
     present = {
         (cell["model_slug"], cell["method"])
         for cell in panel["cells"]
@@ -175,20 +175,14 @@ def test_gan_dev750_panel_is_rectangular() -> None:
         if cell["status"] == "pending"
     }
     assert present == {
-        ("grok46", "gan_llm_only"),
-        ("grok46", "gan_llm_with_rules"),
-        ("gpt56luna", "gan_llm_only"),
-        ("gpt56luna", "gan_llm_with_rules"),
-        ("gemini37flash", "gan_llm_only"),
-        ("gemini37flash", "gan_llm_with_rules"),
+        (slug, method)
+        for slug in ("grok46", "gpt56luna", "gemini37flash")
+        for method in ("rules_only", "llm_extract", "llm_encode", "llm_select")
     }
     assert pending == {
-        ("deepseek_v4_flash", "gan_llm_only"),
-        ("deepseek_v4_flash", "gan_llm_with_rules"),
-        ("qwen38_27b", "gan_llm_only"),
-        ("qwen38_27b", "gan_llm_with_rules"),
-        ("gemma4_26b", "gan_llm_only"),
-        ("gemma4_26b", "gan_llm_with_rules"),
+        (slug, method)
+        for slug in ("deepseek_v4_flash", "qwen38_27b", "gemma4_26b")
+        for method in ("rules_only", "llm_extract", "llm_encode", "llm_select")
     }
     for cell in panel["cells"]:
         if cell["status"] != "present":
@@ -201,15 +195,15 @@ def test_gan_dev750_panel_is_rectangular() -> None:
         ]
         assert len(rows) == 750
         first = rows[0]
-        assert first["letter_id"] == str(first["source_row_index"])
-        assert {"source_row_index", "letter_id", "predicted_label", "purist_correct"} <= set(first)
+        assert first["source_row_index"] is not None
+        assert cell["method"] in first["rungs"]
 
 
 def test_exect_dev140_panel_is_rectangular() -> None:
     panel = json.loads(
         (ROOT / "paper_experiments/exect/dev140_panel.json").read_text(encoding="utf-8")
     )
-    assert panel["schema_version"] == "paper_experiments.exect.dev140_panel.v2"
+    assert panel["schema_version"] == "paper_experiments.exect.dev140_panel.v3"
     assert panel["split"] == "dev140"
     assert panel["method_identity"] == "gemini37flash"
     assert panel["living_effort"]["hosted_reasoning"] == "low"
@@ -219,10 +213,9 @@ def test_exect_dev140_panel_is_rectangular() -> None:
         "llm_extract",
         "llm_encode",
         "llm_select",
-        "llm_pre_post",
     ]
     assert panel["request_methods"] == ["exect_llm_only", "exect_llm_pre_post"]
-    assert len(panel["cells"]) == 30
+    assert len(panel["cells"]) == 24
     present = {
         (cell["model_slug"], cell["method"])
         for cell in panel["cells"]
@@ -233,8 +226,9 @@ def test_exect_dev140_panel_is_rectangular() -> None:
         for cell in panel["cells"]
         if cell["status"] == "pending"
     }
-    assert {("grok46", "rules_only"), ("grok46", "llm_pre_post")} <= present
-    assert ("qwen38_27b", "llm_pre_post") in pending
+    assert {("grok46", "rules_only"), ("grok46", "llm_select")} <= present
+    assert ("qwen38_27b", "llm_select") in pending
+    assert not any(cell["method"] == "llm_pre_post" for cell in panel["cells"])
     for cell in panel["cells"]:
         if cell["status"] != "present" or not cell.get("scored"):
             continue
@@ -247,12 +241,6 @@ def test_exect_dev140_panel_is_rectangular() -> None:
         assert len(rows) == 140
         first = rows[0]
         assert first["letter_id"].startswith("EA")
-        if cell["method"] == "llm_pre_post":
-            assert first["method"] == "exect_llm_pre_post"
-            assert {
-                "hybrid_headline_f1",
-                "hybrid_four_family_letter_exact",
-            } <= set(first)
 
 
 def test_exect_hybrid_cells_have_raw_and_hybrid() -> None:

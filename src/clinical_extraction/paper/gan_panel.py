@@ -16,6 +16,7 @@ from clinical_extraction.paper.methods import (
     split_for,
 )
 from clinical_extraction.paper.roster import living_models, model_by_slug
+from clinical_extraction.paper.rungs import normalize_rungs_payload
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
     write_jsonl_rows,
@@ -29,6 +30,7 @@ PANEL_PATH = PAPER_GAN / "dev750_panel.json"
 INVENTORY_PATH = ROOT / "paper_experiments/inventory.json"
 REPLAY_FIELDS = ("source_row_index", "prompt_version", "raw_output")
 GAN_METHODS = ("gan_llm_only", "gan_llm_with_rules")
+PANEL_METHODS = ("rules_only", "llm_extract", "llm_encode", "llm_select")
 PROMOTE_SPLIT = "dev750"
 HOLDOUT_FORBIDDEN = ("incorrect_source_row_indices", "letter_ids", "changed_rows")
 
@@ -141,24 +143,26 @@ def promote_gan(method: str, slug: str, split: str) -> dict[str, Any]:
 
 
 def rebuild_dev750_panel() -> dict[str, Any]:
-    """Write the rectangular living Gan dev750 index for the frontend."""
+    """Write the rectangular Gan cell-3 development index for the frontend."""
 
     cells: list[dict[str, Any]] = []
     for model in living_models():
         slug = str(model["slug"])
-        for method in GAN_METHODS:
-            dest = paper_cell_root(method, slug, PROMOTE_SPLIT)
-            rows_path = dest / "rows.jsonl"
-            comparison_path = dest / "comparison.json"
-            cell_path = dest / "cell.json"
-            if rows_path.is_file() and comparison_path.is_file():
-                comparison = json.loads(comparison_path.read_text(encoding="utf-8"))
-                summary = comparison.get("summary") or {}
-                extra = (
-                    json.loads(cell_path.read_text(encoding="utf-8"))
-                    if cell_path.is_file()
-                    else {}
-                )
+        rung_dir = PAPER_GAN / "rungs" / slug / PROMOTE_SPLIT
+        comparison_path = rung_dir / "comparison.json"
+        scored_path = rung_dir / "scored.jsonl"
+        payload = (
+            json.loads(comparison_path.read_text(encoding="utf-8"))
+            if comparison_path.is_file()
+            else {}
+        )
+        raw_rungs = payload.get("rungs") or {}
+        rungs = (
+            normalize_rungs_payload(raw_rungs) if isinstance(raw_rungs, dict) else {}
+        )
+        for method in PANEL_METHODS:
+            rung = rungs.get(method)
+            if isinstance(rung, Mapping) and rung.get("purist_accuracy") is not None:
                 cells.append(
                     {
                         "model_slug": slug,
@@ -166,16 +170,15 @@ def rebuild_dev750_panel() -> dict[str, Any]:
                         "label": model["label"],
                         "method": method,
                         "status": "present",
-                        "path": dest.relative_to(ROOT).as_posix() + "/",
-                        "rows": (dest / "rows.jsonl").relative_to(ROOT).as_posix(),
-                        "scored": (dest / "scored.jsonl").relative_to(ROOT).as_posix()
-                        if (dest / "scored.jsonl").is_file()
+                        "path": rung_dir.relative_to(ROOT).as_posix() + "/",
+                        "scored": scored_path.relative_to(ROOT).as_posix()
+                        if scored_path.is_file()
                         else None,
                         "comparison": comparison_path.relative_to(ROOT).as_posix(),
                         "n": gan_row_count(PROMOTE_SPLIT),
-                        "purist_correct": summary.get("purist_correct"),
-                        "purist_accuracy": summary.get("purist_accuracy"),
-                        "living_effort": extra.get("living_effort"),
+                        "purist_correct": rung.get("purist_correct"),
+                        "purist_accuracy": rung.get("purist_accuracy"),
+                        "shared_raw_output": payload.get("shared_raw_output"),
                     }
                 )
             else:
@@ -186,12 +189,12 @@ def rebuild_dev750_panel() -> dict[str, Any]:
                         "label": model["label"],
                         "method": method,
                         "status": "pending",
-                        "path": dest.relative_to(ROOT).as_posix() + "/",
+                        "path": rung_dir.relative_to(ROOT).as_posix() + "/",
                         "n": gan_row_count(PROMOTE_SPLIT),
                     }
                 )
     panel = {
-        "schema_version": "paper_experiments.gan.dev750_panel.v1",
+        "schema_version": "paper_experiments.gan.dev750_panel.v2",
         "split": PROMOTE_SPLIT,
         "split_machine": "validation",
         "row_policy": "development_review_permitted",
@@ -205,17 +208,20 @@ def rebuild_dev750_panel() -> dict[str, Any]:
             "split_machine": "validation",
             "frontend": "/datasets/gan2026/letters",
         },
-        "methods": list(GAN_METHODS),
+        "methods": list(PANEL_METHODS),
         "models": [item["slug"] for item in living_models()],
         "cells": cells,
         "claim_boundary": (
-            "Living six-model Gan development panel. Non-living-effort repeats stay under "
-            "experiments/paper/.../reasoning_* or thinking_disabled/. Not holdout."
+            "Gan cell-3 development panel: rules, then extract / encode / "
+            "select. Not holdout. gan_llm_only is not a panel column. "
+            "gan_llm_with_rules is the source-near ablation. Hosted rungs "
+            "on disk still replay that source-near raw until codebook "
+            "extract cells are the panel source."
         ),
     }
     PANEL_PATH.parent.mkdir(parents=True, exist_ok=True)
     PANEL_PATH.write_text(json.dumps(panel, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    _sync_inventory(panel)
+    _sync_inventory()
     return panel
 
 
@@ -230,8 +236,30 @@ def load_dev750_panel() -> dict[str, Any]:
 def load_scored_rows(method: str, slug: str) -> list[dict[str, Any]]:
     """Return frontend-joinable scored rows for one present cell."""
 
-    method_spec(method)
     model_by_slug(slug)
+    if method in PANEL_METHODS:
+        path = PAPER_GAN / "rungs" / slug / PROMOTE_SPLIT / "scored.jsonl"
+        if not path.is_file():
+            raise FileNotFoundError(path)
+        rows: list[dict[str, Any]] = []
+        for row in load_jsonl_rows(path):
+            rungs = row.get("rungs") or {}
+            rung = rungs.get(method) if isinstance(rungs, Mapping) else None
+            if not isinstance(rung, Mapping):
+                continue
+            source_row_index = int(row["source_row_index"])
+            rows.append(
+                {
+                    "source_row_index": source_row_index,
+                    "letter_id": str(source_row_index),
+                    "method": method,
+                    "predicted_label": rung.get("predicted_label"),
+                    "purist_correct": rung.get("purist_correct"),
+                    "pragmatic_correct": rung.get("pragmatic_correct"),
+                }
+            )
+        return rows
+    method_spec(method)
     path = paper_cell_root(method, slug, PROMOTE_SPLIT) / "scored.jsonl"
     if not path.is_file():
         raise FileNotFoundError(path)
@@ -315,7 +343,7 @@ def _predicted_label(row: Mapping[str, Any]) -> str | None:
     return None
 
 
-def _sync_inventory(panel: Mapping[str, Any]) -> None:
+def _sync_inventory() -> None:
     inventory = json.loads(INVENTORY_PATH.read_text(encoding="utf-8"))
     living_slugs = {item["slug"] for item in living_models()}
     existing_present = {
@@ -344,43 +372,48 @@ def _sync_inventory(panel: Mapping[str, Any]) -> None:
         if not living_dev750(row) and not generic_gan_blank(row)
     ]
     by_slug = {item["slug"]: item for item in living_models()}
-    for cell in panel["cells"]:
-        slug = str(cell["model_slug"])
-        method = str(cell["method"])
-        key = (slug, method, PROMOTE_SPLIT)
-        if cell["status"] == "present":
+    for model in living_models():
+        slug = str(model["slug"])
+        for method in GAN_METHODS:
+            key = (slug, method, PROMOTE_SPLIT)
             dest = paper_cell_root(method, slug, PROMOTE_SPLIT)
-            cell_meta = json.loads((dest / "cell.json").read_text(encoding="utf-8"))
-            present.append(
+            rows_path = dest / "rows.jsonl"
+            cell_path = dest / "cell.json"
+            if rows_path.is_file() and cell_path.is_file():
+                cell_meta = json.loads(cell_path.read_text(encoding="utf-8"))
+                present.append(
+                    {
+                        "model_slug": slug,
+                        "model": by_slug[slug]["model"],
+                        "method": method,
+                        "replay_alias": cell_meta["program"],
+                        "split": PROMOTE_SPLIT,
+                        "n": gan_row_count(PROMOTE_SPLIT),
+                        "row_policy": "development_review_permitted",
+                        "path": rows_path.relative_to(ROOT).as_posix(),
+                        "status": "present",
+                        "empty_raw_count": cell_meta["empty_raw_count"],
+                    }
+                )
+                continue
+            historical = existing_present.get(key)
+            if historical is not None:
+                present.append(historical)
+                continue
+            missing.append(
                 {
                     "model_slug": slug,
                     "model": by_slug[slug]["model"],
                     "method": method,
-                    "replay_alias": cell_meta["program"],
                     "split": PROMOTE_SPLIT,
                     "n": gan_row_count(PROMOTE_SPLIT),
-                    "row_policy": "development_review_permitted",
-                    "path": (dest / "rows.jsonl").relative_to(ROOT).as_posix(),
-                    "status": "present",
-                    "empty_raw_count": cell_meta["empty_raw_count"],
+                    "status": "missing",
+                    "note": (
+                        "Source-near or leftover Gan extract. Not a panel "
+                        "column. Promote when the run finishes."
+                    ),
                 }
             )
-            continue
-        historical = existing_present.get(key)
-        if historical is not None:
-            present.append(historical)
-            continue
-        missing.append(
-            {
-                "model_slug": slug,
-                "model": by_slug[slug]["model"],
-                "method": method,
-                "split": PROMOTE_SPLIT,
-                "n": gan_row_count(PROMOTE_SPLIT),
-                "status": "missing",
-                "note": "Living-effort Gan development cell. Promote when the run finishes.",
-            }
-        )
     inventory["present"] = present
     inventory["missing"] = missing
     INVENTORY_PATH.write_text(

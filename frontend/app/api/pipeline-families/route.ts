@@ -17,7 +17,13 @@ export function GET() {
         model_slug: string;
         model: string;
         label: string;
-        method: "gan_llm_only" | "gan_llm_with_rules";
+        method:
+          | "rules_only"
+          | "llm_extract"
+          | "llm_encode"
+          | "llm_select"
+          | "gan_llm_only"
+          | "gan_llm_with_rules";
         status: "present" | "pending";
         n: number;
         purist_correct?: number | null;

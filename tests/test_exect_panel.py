@@ -144,15 +144,14 @@ def test_promote_strips_replay_and_writes_scored_panel(
         "llm_extract",
         "llm_encode",
         "llm_select",
-        "llm_pre_post",
     ]
     assert panel["request_methods"] == ["exect_llm_only", "exect_llm_pre_post"]
-    assert len(panel["cells"]) == 30
+    assert len(panel["cells"]) == 24
     present = [cell for cell in panel["cells"] if cell["status"] == "present"]
     pending = [cell for cell in panel["cells"] if cell["status"] == "pending"]
-    assert [cell["model_slug"] for cell in present] == ["grok46"]
-    assert present[0]["method"] == "llm_pre_post"
-    assert len(pending) == 29
+    assert present == []
+    assert len(pending) == 24
+    assert not any(cell["method"] == "llm_pre_post" for cell in panel["cells"])
     assert payload["cell"]["n"] == 140
     assert panel["models"] == [item["slug"] for item in living_models()]
     synced = json.loads(
@@ -219,13 +218,7 @@ def test_rebuild_keeps_existing_compact_present_without_cell_json(
     _write_inventory(tmp_path, present=[historical])
     _patch_panel_paths(tmp_path, monkeypatch)
     panel = rebuild_dev140_panel()
-    luna = next(
-        cell
-        for cell in panel["cells"]
-        if cell["model_slug"] == "gpt56luna" and cell["method"] == "llm_pre_post"
-    )
-    assert luna["status"] == "present"
-    assert luna["hybrid_headline_f1"] == 0.8818
+    assert not any(cell["method"] == "llm_pre_post" for cell in panel["cells"])
     synced = json.loads(
         (tmp_path / "paper_experiments/inventory.json").read_text(encoding="utf-8")
     )
