@@ -7,7 +7,7 @@
 
 Method id: `exectv2_llm_only`  
 Role: **selected**  
-Stages: 6  
+Stages: 6
 Stages that may change clinical meaning: 1
 
 ## One sentence

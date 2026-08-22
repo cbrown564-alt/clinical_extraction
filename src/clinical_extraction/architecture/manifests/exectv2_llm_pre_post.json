@@ -9,9 +9,9 @@
     "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py",
     "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_pre_post_letter"
   },
-  "one_sentence": "ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms reconcile those findings into the scored representation (hybrid F1).",
-  "sixty_second": "ExECT LLM pre-post (`exect_llm_pre_post`) uses its own request (suggested-evidence scan included), separate from ExECT LLM only (`exect_llm_only`). One structured call per letter asks the named model for candidate findings across Diagnosis, Seizure Frequency, Prescription, and Investigations. No deterministic extractor proposes findings and none is unioned in - that is the family-ownership rule from decision 0040. After the call, code parses Compact events and may make one format-only retry, projects the model's seizure-frequency facts into the required state representation, and suppresses a narrowly defined class of unsupported unknown states. Raw and scored findings are both registered in a finding store, so every later change stays attributable. Then one family transform runs per entity, and the four behave differently: Diagnosis applies the active standard dictionary to model findings; Seizure Frequency is a thin assembly over the earlier projection; Prescription applies dictionary-driven regimen processing with bounded correction; Investigations is a behavior-preserving adapter while its residual providers remain prompt-side. Every final finding must carry exact source evidence, and the scored views are then materialized. Hybrid-call raw is not LLM-only.",
-  "prediction_owner": "the named model proposes all four families (exect.llm_pre_post.model_call); four family transforms may change findings afterwards",
+  "one_sentence": "ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms and named Select rules reconcile those findings into the scored representation (hybrid F1).",
+  "sixty_second": "ExECT LLM pre-post (`exect_llm_pre_post`) uses its own request (suggested-evidence scan included), separate from ExECT LLM only (`exect_llm_only`). One structured call per letter asks the named model for candidate findings across Diagnosis, Seizure Frequency, Prescription, and Investigations. No deterministic extractor proposes findings and none is unioned in - that is the family-ownership rule from decision 0040. After the call, code parses Compact events and may make one format-only retry, projects the model's seizure-frequency facts into the required state representation, and suppresses a narrowly defined class of unsupported unknown states. Raw and scored findings are both registered in a finding store, so every later change stays attributable. Then one family transform runs per entity, and the four behave differently: Diagnosis applies the active standard dictionary to model findings; Seizure Frequency is a thin assembly over the earlier projection; Prescription applies dictionary-driven regimen processing with bounded correction; Investigations is a behavior-preserving adapter while its residual providers remain prompt-side. A named, independently ablatable Select stack then corrects source-local specificity, regimen scope, duplicate or titration selection, seizure-type identity, and explicit cross-family seizure-type ownership. Every final finding must carry exact source evidence, and the scored views are then materialized. Hybrid-call raw is not LLM-only.",
+  "prediction_owner": "the named model proposes all four families (exect.llm_pre_post.model_call); four family transforms and the named Select-rule stack may change findings afterwards",
   "scored_representation": "A PredictedLetter of four-family mentions materialized into named score views; the primary view is clinical fact recovery (`clinical_headline`, hybrid F1).",
   "stages": [
     {
@@ -272,6 +272,31 @@
         "lanes.Investigations.lens_diagnostics"
       ],
       "paper_wording": "The Investigations assembly stage preserves model-selected findings; residual providers remain available to prompt construction but are not consumed by this no-op lens."
+    },
+    {
+      "stage_id": "exect.llm_pre_post.select_rules",
+      "runtime_action": "apply_accepted_select_rule_stack",
+      "name": "Apply the accepted Select rules",
+      "operation": "Apply seven independently switchable, source-bound Select rules after the family transforms. They may restore source-local Diagnosis or Prescription facts, remove one exact historical Prescription duplicate, preserve the selected seizure type, or expose a selected named seizure type in the Diagnosis view.",
+      "owner": "deterministic",
+      "rule_category": "general",
+      "effect_class": "clinical_meaning",
+      "input_type": "post-lens findings plus the model-produced fact ledger",
+      "input_example": "a named seizure-frequency fact selected from exact evidence but absent from the Diagnosis view",
+      "output_type": "selected findings plus one action record per change",
+      "output_example": "the same named seizure type appears in Diagnosis with its original exact evidence and a selection.sf_to_diagnosis_explicit_type action",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/select_rules.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select_rules:apply_select_rules"
+      },
+      "governing_test": "tests/test_exectv2_select_rule_stack.py",
+      "trace_fields": [
+        "post_lens_mentions",
+        "select_rule_actions",
+        "policy.select_rule_ids"
+      ],
+      "paper_wording": "Seven named deterministic Select rules make bounded, source-supported selection corrections after the family transforms.",
+      "notes": "The selected policy uses ACCEPTED_SELECT_RULE_IDS. This stage is an execution group containing clinical_epilepsy, seizure_frequency, and benchmark_format rules; each action retains its own named rule id. An explicit rule-id set is an archived ablation and requires archived_replay=True. The rules never scan unused note text for a new concept; cross-family additions are projections of already-selected named seizure-frequency facts."
     },
     {
       "stage_id": "exect.llm_pre_post.evidence_requirement",

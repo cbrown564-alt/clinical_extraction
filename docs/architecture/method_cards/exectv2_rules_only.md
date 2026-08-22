@@ -7,7 +7,7 @@
 
 Method id: `exectv2_rules_only`  
 Role: **selected**  
-Stages: 4  
+Stages: 4
 Stages that may change clinical meaning: 2
 
 ## One sentence

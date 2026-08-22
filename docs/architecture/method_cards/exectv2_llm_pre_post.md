@@ -7,24 +7,24 @@
 
 Method id: `exectv2_llm_pre_post`  
 Role: **selected**  
-Stages: 14  
-Stages that may change clinical meaning: 6
+Stages: 15
+Stages that may change clinical meaning: 7
 
 ## One sentence
 
-> ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms reconcile those findings into the scored representation (hybrid F1).
+> ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms and named Select rules reconcile those findings into the scored representation (hybrid F1).
 
 ## Sixty seconds
 
-ExECT LLM pre-post (`exect_llm_pre_post`) uses its own request (suggested-evidence scan included), separate from ExECT LLM only (`exect_llm_only`). One structured call per letter asks the named model for candidate findings across Diagnosis, Seizure Frequency, Prescription, and Investigations. No deterministic extractor proposes findings and none is unioned in - that is the family-ownership rule from decision 0040. After the call, code parses Compact events and may make one format-only retry, projects the model's seizure-frequency facts into the required state representation, and suppresses a narrowly defined class of unsupported unknown states. Raw and scored findings are both registered in a finding store, so every later change stays attributable. Then one family transform runs per entity, and the four behave differently: Diagnosis applies the active standard dictionary to model findings; Seizure Frequency is a thin assembly over the earlier projection; Prescription applies dictionary-driven regimen processing with bounded correction; Investigations is a behavior-preserving adapter while its residual providers remain prompt-side. Every final finding must carry exact source evidence, and the scored views are then materialized. Hybrid-call raw is not LLM-only.
+ExECT LLM pre-post (`exect_llm_pre_post`) uses its own request (suggested-evidence scan included), separate from ExECT LLM only (`exect_llm_only`). One structured call per letter asks the named model for candidate findings across Diagnosis, Seizure Frequency, Prescription, and Investigations. No deterministic extractor proposes findings and none is unioned in - that is the family-ownership rule from decision 0040. After the call, code parses Compact events and may make one format-only retry, projects the model's seizure-frequency facts into the required state representation, and suppresses a narrowly defined class of unsupported unknown states. Raw and scored findings are both registered in a finding store, so every later change stays attributable. Then one family transform runs per entity, and the four behave differently: Diagnosis applies the active standard dictionary to model findings; Seizure Frequency is a thin assembly over the earlier projection; Prescription applies dictionary-driven regimen processing with bounded correction; Investigations is a behavior-preserving adapter while its residual providers remain prompt-side. A named, independently ablatable Select stack then corrects source-local specificity, regimen scope, duplicate or titration selection, seizure-type identity, and explicit cross-family seizure-type ownership. Every final finding must carry exact source evidence, and the scored views are then materialized. Hybrid-call raw is not LLM-only.
 
 ## The five recall questions
 
 | Question | Answer |
 | --- | --- |
 | What enters? | ExectLetter - see `exect.llm_pre_post.build_prompt` |
-| Who first proposes the clinical answer? | the named model proposes all four families (exect.llm_pre_post.model_call); four family transforms may change findings afterwards |
-| Which later stages may change clinical meaning? | `exect.llm_pre_post.project_and_gate`, `exect.llm_pre_post.sf_state_projection`, `exect.llm_pre_post.sf_unknown_suppression`, `exect.llm_pre_post.lens.diagnosis`, `exect.llm_pre_post.lens.prescription` |
+| Who first proposes the clinical answer? | the named model proposes all four families (exect.llm_pre_post.model_call); four family transforms and the named Select-rule stack may change findings afterwards |
+| Which later stages may change clinical meaning? | `exect.llm_pre_post.project_and_gate`, `exect.llm_pre_post.sf_state_projection`, `exect.llm_pre_post.sf_unknown_suppression`, `exect.llm_pre_post.lens.diagnosis`, `exect.llm_pre_post.lens.prescription`, `exect.llm_pre_post.select_rules` |
 | What final representation is scored? | A PredictedLetter of four-family mentions materialized into named score views; the primary view is clinical fact recovery (`clinical_headline`, hybrid F1). |
 | What evidence shows whether each component helped or harmed? | `docs/paper/decisions/exect-compact-is-the-cited-hybrid.md`, `docs/paper/methods.md`, `docs/paper/claims.md` |
 
@@ -45,9 +45,10 @@ Read the `Effect` column first. `CLINICAL MEANING` marks every stage that can ch
 | 9 | `exect.llm_pre_post.lens.seizure_frequency`<br>Seizure Frequency family transform | rules | representation | Assemble the already-projected and already-suppressed seizure-frequency findings; a thin transform that adds no further clinical change. |
 | 10 | `exect.llm_pre_post.lens.prescription`<br>Prescription family transform | rules | CLINICAL MEANING | Normalize the surfaces the dictionary owns (generic drug name, canonical dose unit, dose value) and split an explicitly stated uneven once-daily regimen into one fact per dose. |
 | 11 | `exect.llm_pre_post.lens.investigations`<br>Investigations family transform | rules | representation | Assemble model-selected Investigations findings without an additional dictionary rule pass. |
-| 12 | `exect.llm_pre_post.evidence_requirement`<br>Require exact evidence for every finding | rules | gate | Reject the assembled letter if any final finding lacks evidence or carries evidence that is not an exact substring of the note. |
-| 13 | `exect.llm_pre_post.materialize_views`<br>Materialize the score views | rules | benchmark projection | Build the named prediction views - raw candidate, post-lens assembled findings, and clinical fact recovery - from the same assembled findings. |
-| 14 | `exect.llm_pre_post.score`<br>Score against gold | scorer | benchmark projection | Match the materialized view's mentions to gold annotations and report per-entity and overall precision, recall, and F1. |
+| 12 | `exect.llm_pre_post.select_rules`<br>Apply the accepted Select rules | rules | CLINICAL MEANING | Apply seven independently switchable, source-bound Select rules after the family transforms. They may restore source-local Diagnosis or Prescription facts, remove one exact historical Prescription duplicate, preserve the selected seizure type, or expose a selected named seizure type in the Diagnosis view. |
+| 13 | `exect.llm_pre_post.evidence_requirement`<br>Require exact evidence for every finding | rules | gate | Reject the assembled letter if any final finding lacks evidence or carries evidence that is not an exact substring of the note. |
+| 14 | `exect.llm_pre_post.materialize_views`<br>Materialize the score views | rules | benchmark projection | Build the named prediction views - raw candidate, post-lens assembled findings, and clinical fact recovery - from the same assembled findings. |
+| 15 | `exect.llm_pre_post.score`<br>Score against gold | scorer | benchmark projection | Match the materialized view's mentions to gold annotations and report per-entity and overall precision, recall, and F1. |
 
 ## Stage walkthrough
 
@@ -243,7 +244,25 @@ Assemble model-selected Investigations findings without an additional dictionary
 - Proven in a trace by: `lanes.Investigations.lens_diagnostics`
 - Paper wording: The Investigations assembly stage preserves model-selected findings; residual providers remain available to prompt construction but are not consumed by this no-op lens.
 
-### 12. Require exact evidence for every finding
+### 12. Apply the accepted Select rules
+
+`exect.llm_pre_post.select_rules` - rules-owned, CLINICAL MEANING, rule category `general`
+
+Apply seven independently switchable, source-bound Select rules after the family transforms. They may restore source-local Diagnosis or Prescription facts, remove one exact historical Prescription duplicate, preserve the selected seizure type, or expose a selected named seizure type in the Diagnosis view.
+
+|  | Type | Example |
+| --- | --- | --- |
+| In | post-lens findings plus the model-produced fact ledger | a named seizure-frequency fact selected from exact evidence but absent from the Diagnosis view |
+| Out | selected findings plus one action record per change | the same named seizure type appears in Diagnosis with its original exact evidence and a selection.sf_to_diagnosis_explicit_type action |
+
+> The selected policy uses ACCEPTED_SELECT_RULE_IDS. This stage is an execution group containing clinical_epilepsy, seizure_frequency, and benchmark_format rules; each action retains its own named rule id. An explicit rule-id set is an archived ablation and requires archived_replay=True. The rules never scan unused note text for a new concept; cross-family additions are projections of already-selected named seizure-frequency facts.
+
+- Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/select_rules.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/select_rules.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select_rules:apply_select_rules`)
+- Test: [`tests/test_exectv2_select_rule_stack.py`](../../../tests/test_exectv2_select_rule_stack.py)
+- Proven in a trace by: `post_lens_mentions`, `select_rule_actions`, `policy.select_rule_ids`
+- Paper wording: Seven named deterministic Select rules make bounded, source-supported selection corrections after the family transforms.
+
+### 13. Require exact evidence for every finding
 
 `exect.llm_pre_post.evidence_requirement` - rules-owned, gate, rule category `general`
 
@@ -261,7 +280,7 @@ Reject the assembled letter if any final finding lacks evidence or carries evide
 - Proven in a trace by: `n_evidence_invalid`
 - Paper wording: Every final finding is required to carry evidence that appears verbatim in the source note.
 
-### 13. Materialize the score views
+### 14. Materialize the score views
 
 `exect.llm_pre_post.materialize_views` - rules-owned, benchmark projection, rule category `benchmark_format`
 
@@ -279,7 +298,7 @@ Build the named prediction views - raw candidate, post-lens assembled findings, 
 - Proven in a trace by: `prediction_surfaces`
 - Paper wording: Findings are materialized into named scoring views; the primary view is clinical fact recovery (`clinical_headline`).
 
-### 14. Score against gold
+### 15. Score against gold
 
 `exect.llm_pre_post.score` - scorer-owned, benchmark projection
 
@@ -312,6 +331,7 @@ Entry point: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orches
 | `exect.llm_pre_post.lens.seizure_frequency` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.seizure_frequency:SeizureFrequencyLens` | `tests/test_exectv2_llm_pre_post_vertical_slice.py` |
 | `exect.llm_pre_post.lens.prescription` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.prescription:PrescriptionDictionaryLens` | `tests/test_exectv2_prescription_extraction.py` |
 | `exect.llm_pre_post.lens.investigations` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.investigations:InvestigationsDictionaryLens` | `tests/test_exectv2_llm_pre_post_vertical_slice.py` |
+| `exect.llm_pre_post.select_rules` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select_rules:apply_select_rules` | `tests/test_exectv2_select_rule_stack.py` |
 | `exect.llm_pre_post.evidence_requirement` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.letter_assembly:assemble_letter` | `tests/test_exectv2_llm_pre_post_vertical_slice.py` |
 | `exect.llm_pre_post.materialize_views` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.views:build_scoring_views` | `tests/test_exectv2_scoring_headlines.py` |
 | `exect.llm_pre_post.score` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match:score_overall` | `tests/test_exectv2_scoring_match_fidelity.py` |

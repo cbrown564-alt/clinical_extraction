@@ -5,7 +5,7 @@
 
 # ExECTv2 LLM pre-post: stage diagram
 
-> ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms reconcile those findings into the scored representation (hybrid F1).
+> ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms and named Select rules reconcile those findings into the scored representation (hybrid F1).
 
 Node shape carries the ownership. Rounded nodes are model-owned. Rectangles are deterministic. Hexagons are gates. Stages that may change clinical meaning are highlighted.
 
@@ -34,8 +34,10 @@ flowchart TD
   exect_llm_pre_post_lens_seizure_frequency --> exect_llm_pre_post_lens_prescription
   exect_llm_pre_post_lens_investigations["Investigations family transform"]
   exect_llm_pre_post_lens_prescription --> exect_llm_pre_post_lens_investigations
+  exect_llm_pre_post_select_rules["Apply the accepted Select rules"]
+  exect_llm_pre_post_lens_investigations --> exect_llm_pre_post_select_rules
   exect_llm_pre_post_evidence_requirement{{"Require exact evidence for every finding"}}
-  exect_llm_pre_post_lens_investigations --> exect_llm_pre_post_evidence_requirement
+  exect_llm_pre_post_select_rules --> exect_llm_pre_post_evidence_requirement
   exect_llm_pre_post_materialize_views["Materialize the score views"]
   exect_llm_pre_post_evidence_requirement --> exect_llm_pre_post_materialize_views
   exect_llm_pre_post_score["Score against gold"]
@@ -52,6 +54,7 @@ flowchart TD
   class exect_llm_pre_post_lens_seizure_frequency representation;
   class exect_llm_pre_post_lens_prescription clinical_meaning;
   class exect_llm_pre_post_lens_investigations representation;
+  class exect_llm_pre_post_select_rules clinical_meaning;
   class exect_llm_pre_post_evidence_requirement validation_gate;
   class exect_llm_pre_post_materialize_views benchmark_projection;
   class exect_llm_pre_post_score benchmark_projection;
@@ -72,3 +75,4 @@ flowchart TD
 | `exect.llm_pre_post.sf_unknown_suppression` | rules | Remove seizure-frequency findings whose state is unknown and unsupported under the narrowly defined suppression rule. |
 | `exect.llm_pre_post.lens.diagnosis` | rules | Reconcile Diagnosis findings with the active standard dictionary; may rewrite, drop, or add bounded concepts. |
 | `exect.llm_pre_post.lens.prescription` | rules | Normalize the surfaces the dictionary owns (generic drug name, canonical dose unit, dose value) and split an explicitly stated uneven once-daily regimen into one fact per dose. |
+| `exect.llm_pre_post.select_rules` | rules | Apply seven independently switchable, source-bound Select rules after the family transforms. They may restore source-local Diagnosis or Prescription facts, remove one exact historical Prescription duplicate, preserve the selected seizure type, or expose a selected named seizure type in the Diagnosis view. |

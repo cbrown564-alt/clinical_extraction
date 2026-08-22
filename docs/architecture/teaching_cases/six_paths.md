@@ -134,14 +134,14 @@ The first clinical proposer is the named model (stage exect.llm.model_call); det
 
 ### ExECTv2 — LLM pre-post
 
-**Letter:** `EA0186` · **Final output:** `Diagnosis: focal epilepsy; focal to bilateral convulsive seizure; focal motor seizure
+**Letter:** `EA0186` · **Final output:** `Diagnosis: focal epilepsy; focal to bilateral convulsive seizure
 Seizure frequency: seizure (active-rate); focal to bilateral convulsive seizure (active-rate)
 Prescription: lamotrigine 75 mg ×2
 Investigations: MRI performed abnormal; EEG performed abnormal` · **Status:** no correctness verdict is claimed for this trace
 
 Lenses run on the four families after parse, gates, and store.
 
-The first clinical proposer is the named model proposes all four families (exect.llm_pre_post.model_call); four family transforms may change findings afterwards. Open the [method card](../method_cards/exectv2_llm_pre_post.md) for the contract, then the [full stage trace](ea0186.md#llm-pre-post) for the observed inputs, outputs, and ownership at each stage.
+The first clinical proposer is the named model proposes all four families (exect.llm_pre_post.model_call); four family transforms and the named Select-rule stack may change findings afterwards. Open the [method card](../method_cards/exectv2_llm_pre_post.md) for the contract, then the [full stage trace](ea0186.md#llm-pre-post) for the observed inputs, outputs, and ownership at each stage.
 
 This is a mechanism example from a development letter and a replayed model output, not a holdout result.
 
@@ -184,6 +184,6 @@ Investigations: MRI performed abnormal` · **Status:** no correctness verdict is
 
 The diagnosis lens rewrites the structural-epilepsy phrase; the other three families assemble without a further rewrite.
 
-The first clinical proposer is the named model proposes all four families (exect.llm_pre_post.model_call); four family transforms may change findings afterwards. Open the [method card](../method_cards/exectv2_llm_pre_post.md) for the contract, then the [full stage trace](ea0057.md#llm-pre-post) for the observed inputs, outputs, and ownership at each stage.
+The first clinical proposer is the named model proposes all four families (exect.llm_pre_post.model_call); four family transforms and the named Select-rule stack may change findings afterwards. Open the [method card](../method_cards/exectv2_llm_pre_post.md) for the contract, then the [full stage trace](ea0057.md#llm-pre-post) for the observed inputs, outputs, and ownership at each stage.
 
 This is a mechanism example from a development letter and a replayed model output, not a holdout result.

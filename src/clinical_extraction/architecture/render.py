@@ -80,7 +80,7 @@ def render_method_card(manifest: MethodManifest) -> str:
     lines.append("")
     lines.append(f"Method id: `{manifest.method_id}`  ")
     lines.append(f"Role: **{manifest.role}**  ")
-    lines.append(f"Stages: {len(manifest.stages)}  ")
+    lines.append(f"Stages: {len(manifest.stages)}")
     lines.append(
         f"Stages that may change clinical meaning: "
         f"{len(manifest.clinical_meaning_stages)}"

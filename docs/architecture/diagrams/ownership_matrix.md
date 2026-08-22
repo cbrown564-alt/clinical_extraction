@@ -26,7 +26,7 @@ Every stage of every selected method, counted by what it is allowed to change. A
 | Gan 2026 | LLM with rules | 20 | 3 | 2 | 11 | 1 | 3 |
 | ExECTv2 | Rules only | 4 | 0 | 1 | 2 | 1 | 0 |
 | ExECTv2 | LLM only | 6 | 2 | 0 | 1 | 2 | 1 |
-| ExECTv2 | LLM pre-post | 14 | 3 | 2 | 6 | 2 | 1 |
+| ExECTv2 | LLM pre-post | 15 | 3 | 2 | 7 | 2 | 1 |
 
 ## Who owns the first clinical answer
 
@@ -37,7 +37,7 @@ Every stage of every selected method, counted by what it is allowed to change. A
 | Gan 2026 | LLM with rules | the model proposes and selects (gan.llm_with_rules.model_call); ten deterministic repair families may change the answer afterwards | One Gan label string per letter, projected to a Purist and a Pragmatic category. |
 | ExECTv2 | Rules only | the nine deterministic extractors (stage exect.rules.extract_entities); the four-family projection is scorer-facing | An all-nine PredictedLetter plus an explicit four-family comparison projection, each scored under its named view. |
 | ExECTv2 | LLM only | the named model (stage exect.llm.model_call); deterministic stages only parse, represent, and gate its findings | The raw_candidate four-family PredictedLetter from the ExECT LLM only request, scored per entity and overall (raw F1). |
-| ExECTv2 | LLM pre-post | the named model proposes all four families (exect.llm_pre_post.model_call); four family transforms may change findings afterwards | A PredictedLetter of four-family mentions materialized into named score views; the primary view is clinical fact recovery (`clinical_headline`, hybrid F1). |
+| ExECTv2 | LLM pre-post | the named model proposes all four families (exect.llm_pre_post.model_call); four family transforms and the named Select-rule stack may change findings afterwards | A PredictedLetter of four-family mentions materialized into named score views; the primary view is clinical fact recovery (`clinical_headline`, hybrid F1). |
 
 ## Every clinical-meaning stage in the system
 
@@ -67,3 +67,4 @@ Every stage of every selected method, counted by what it is allowed to change. A
 | ExECTv2 | LLM pre-post | `exect.llm_pre_post.sf_unknown_suppression` | rules | seizure_frequency |
 | ExECTv2 | LLM pre-post | `exect.llm_pre_post.lens.diagnosis` | rules | clinical_epilepsy |
 | ExECTv2 | LLM pre-post | `exect.llm_pre_post.lens.prescription` | rules | clinical_epilepsy |
+| ExECTv2 | LLM pre-post | `exect.llm_pre_post.select_rules` | rules | general |

@@ -92,7 +92,7 @@ flowchart LR
 
 ## ExECTv2 - LLM pre-post
 
-First proposer: the named model proposes all four families (exect.llm_pre_post.model_call); four family transforms may change findings afterwards
+First proposer: the named model proposes all four families (exect.llm_pre_post.model_call); four family transforms and the named Select-rule stack may change findings afterwards
 
 ```mermaid
 flowchart LR
@@ -109,4 +109,6 @@ flowchart LR
   origin_exectv2_llm_pre_post --> exect_llm_pre_post_lens_diagnosis
   exect_llm_pre_post_lens_prescription["Prescription family transform"]
   origin_exectv2_llm_pre_post --> exect_llm_pre_post_lens_prescription
+  exect_llm_pre_post_select_rules["Apply the accepted Select rules"]
+  origin_exectv2_llm_pre_post --> exect_llm_pre_post_select_rules
 ```

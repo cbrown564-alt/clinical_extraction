@@ -7,7 +7,7 @@
 
 Method id: `gan2026_llm_only`  
 Role: **selected**  
-Stages: 8  
+Stages: 8
 Stages that may change clinical meaning: 2
 
 ## One sentence
