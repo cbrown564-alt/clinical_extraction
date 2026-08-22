@@ -35,6 +35,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import
     sf_state_projection,
     sf_unknown_suppression,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select_rules import (
+    ACCEPTED_SELECT_RULE_IDS,
+    apply_select_rules,
+)
 
 from .contracts import StructuredMethodConfig
 
@@ -81,9 +85,7 @@ def assemble_structured_rows(
         "structured_key_family_event_ledger": {
             str(row["letter_id"]): row for row in structured_rows
         },
-        "sf_model_projection_suppression": {
-            str(row["letter_id"]): row for row in suppressed_rows
-        },
+        "sf_model_projection_suppression": {str(row["letter_id"]): row for row in suppressed_rows},
     }
     producers = {
         producer_id: SavedJsonlProducer.from_manifest(producer_manifest)
@@ -221,6 +223,27 @@ def assemble_letter(
             "prediction_surfaces": lane_surface_rows,
         }
 
+    post_lens_mentions = list(predicted_mentions)
+    enabled_select_rules = (
+        frozenset(ACCEPTED_SELECT_RULE_IDS)
+        if config.select_rule_ids is None
+        else config.select_rule_ids
+    )
+    source_ledger = source_rows["structured_key_family_event_ledger"][letter.letter_id]
+    predicted_mentions, select_rule_actions = apply_select_rules(
+        predicted_mentions,
+        source_mentions=list(source_ledger.get("predicted_mentions", [])),
+        note_text=letter.note_text,
+        enabled_rule_ids=enabled_select_rules,
+    )
+    prediction_surfaces["residual_benchmark_added"] = list(predicted_mentions)
+    for entity in TARGET_ENTITIES:
+        entity_mentions = [
+            mention for mention in predicted_mentions if str(mention.get("entity") or "") == entity
+        ]
+        lane_blocks[entity]["predicted_mentions"] = entity_mentions
+        lane_blocks[entity]["prediction_surfaces"]["residual_benchmark_added"] = entity_mentions
+
     invalid = [
         mention
         for mention in predicted_mentions
@@ -245,13 +268,16 @@ def assemble_letter(
             if annotation.entity in TARGET_ENTITIES
         ],
         "predicted_mentions": predicted_mentions,
+        "post_lens_mentions": post_lens_mentions,
         "raw_lane_mentions": raw_mentions,
         "prediction_surfaces": prediction_surfaces,
         "lanes": lane_blocks,
+        "select_rule_actions": select_rule_actions,
         "policy": {
             "diagnosis_policy_variant": config.diagnosis_policy_variant,
             "prescription_policy_variant": config.prescription_policy_variant,
             "sf_projection_ablation": config.sf_projection_ablation,
+            "select_rule_ids": sorted(enabled_select_rules),
         },
     }
 
@@ -352,8 +378,7 @@ def _manifest_payload(
         "split": "operational",
         "row_count": row_count,
         "claim_boundary": (
-            "One-call model-led extraction with deterministic assembly; "
-            "no implicit gold use."
+            "One-call model-led extraction with deterministic assembly; no implicit gold use."
         ),
         "baseline_producer": "structured_key_family_event_ledger",
         "producers": {

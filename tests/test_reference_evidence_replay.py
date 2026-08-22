@@ -60,5 +60,6 @@ def test_replay_exectv2_gepa_predictions_uses_current_scorer() -> None:
     )
 
     assert result["row_count"] == 140
-    assert result["clinical_headline_f1"] == 0.7410
+    # Canonical exact per-letter/per-family clinical-fact scorer.
+    assert result["clinical_headline_f1"] == 0.7237
     assert result["strict_benchmark_per_item_f1"] == 0.1356

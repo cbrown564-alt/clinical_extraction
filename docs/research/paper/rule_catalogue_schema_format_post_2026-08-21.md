@@ -126,17 +126,23 @@ Cell 4 is living assembly (`residual_benchmark_added`).
 
 | Rule | Class | Status | Authority | What it does |
 | --- | --- | --- | --- | --- |
+| `encoding.diagnosis_standard_name` | Encode | format-replay | encode | Write the same extracted diagnosis with a closed benchmark name; spelling, abbreviations, and word-order only; no qualifier overwrite |
 | Surface spelling / alias (`DIAGNOSIS_SURFACE_CONVENTION_REPAIRS`, alias map) | Revise in the lens (some rows are spelling-only) | live lens | dialect when spelling-only; rewrite when concept remap | Rewrite submitted concept text toward gold wording; includes both spelling and concept remaps |
 | `diagnosis_convention_attribute_repairs` | Encode when text already rewritten | live, on rewrite | encode (encode-when-already-rewritten) | Fill `DiagCategory` / Certainty / Negation |
 | Concept remap from evidence (`epilepsy` + intractable cue; FCD → syndrome; `focal onset` → `focal epilepsy`) | Revise | live lens | rewrite | Different submitted concept |
+| `selection.diagnosis_specificity_hierarchy` | Revise | live lens | rewrite | Stated hierarchy: lobe syndromes under focal epilepsy under epilepsy; generalised epilepsy on the other branch. A probable temporal/frontal/parietal/occipital modifier (or a named lobe syndrome) may overwrite `epilepsy`, `focal epilepsy`, or a structural-etiology form. Possible laterality may overwrite generic `epilepsy`. Possible or queried onset does not create a lobe syndrome. Cross-branch sibling facts stay put. |
+| `selection.diagnosis_source_local_specificity` | Revise | live Select stack | rewrite | Restore the encoded source diagnosis when a later Select rewrite broadens an already-specific diagnosis or conflates a generic diagnosis with a sibling class |
+| `selection.diagnosis_explicit_heading_phenotype` | Revise | live Select stack | reselect | Retain an absence row explicitly emitted under a Diagnosis heading unless JME is present and owns that phenotype |
 | Convention-noise drop | Revise | live | gate | Delete standalone symptoms, weak generic epilepsy, family-history context, PNES/febrile |
 | JME covers phenotype drop | Revise | live | gate | Delete absence/jerk siblings when JME is present |
 | Bounded residual-add | Revise | live | invent | Invent a Diagnosis from a source pattern |
 | Residual redundancy skip | Revise | live | gate | Block an add already implied by kept concepts |
 
-Diagnosis encode-replay does **not** run the convention rewrite. Cell 3
-keeps written `epilepsy` and may attach a CUI (encode). Concept remap
-is revise at the revise stop.
+Diagnosis encode-replay runs only `encoding.diagnosis_standard_name`, the
+same-fact subset of the convention dictionary. Qualifier overwrite
+(`focal epilepsy` plus probable temporal → `temporal lobe epilepsy`) is
+select, not encode. Finding/cause-to-syndrome remaps and any add, drop,
+split, or merge remain revise operations.
 
 ### SeizureFrequency
 
@@ -149,6 +155,12 @@ is revise at the revise stop.
 | `encoding.last_clinic_frame` | Encode | format-replay + projection | Complete a last-clinic frame |
 | `encoding.dated_heading_count` | Encode | format-replay + projection | Complete a dated heading count |
 | `encoding.mention_text_cleanup` | Encode | format-replay + projection | Same mention, cleaner text |
+| `encoding.sf_local_evidence` | Encode | format-replay | Write explicit `seizure free` when the same mention is already a zero count and the local evidence says so; no type retarget or invented bound |
+| `selection.sf_named_type_from_evidence` | Revise | live projection | rewrite | Generic `seizure`/`episode`, or parent `absence`, may take one unambiguous named type from the mention's own evidence |
+| `selection.sf_explicit_recurrence_lower_bound` | Revise | live projection | rewrite | Explicit `has had further … seizures` with no count writes `LowerNumberOfSeizures=1` |
+| `selection.sf_named_type_identity` | Revise | live Select stack | rewrite | Reconcile all named SF rows in one evidence/state group so a row cannot be reassigned to a sibling seizure type; permits explicit more-specific refinements |
+| `selection.sf_to_diagnosis_explicit_type` | Revise | live Select stack | invent | Add the Diagnosis view of an already-selected named SF fact. This is a ledger-only benchmark-format projection, not an unused-note scan |
+| `encoding.sf_standard_name` | Encode | format-replay | Write the same seizure type with a closed 16-head name; attach its CUI at `project_cuis` |
 | Count / unit / month normalize | Encode | live helpers | Designed-form tokens |
 | CUIPhrase-preserve bundle | Encode | live, inside ownership | Keep phrase after CUI attach |
 | Exact-mention dedupe | Encode | live projection | Collapse identical mentions |
@@ -180,6 +192,9 @@ add is invent.
 
 | Rule | Class | Status | Authority | What it does |
 | --- | --- | --- | --- | --- |
+| `encoding.prescription_local_slots` | Encode | format-replay | encode | Prefer cadence in the regimen's own mention over a sibling rescue phrase; repair one explicit local dose/unit pair; leave ranges and multi-dose text unchanged |
+| `encoding.prescription_formulation_name` | Encode | format-replay | dialect | Strip a controlled/extended/modified/prolonged/sustained-release suffix when the remaining base drug is known |
+| `encoding.prescription_standard_name` | Encode | format-replay | dialect | Write ordinary-regimen mention text as the resolved generic `DrugName`; preserve rescue, future-plan, and weight-based context |
 | Brand → generic (`resolve_drug_surface` then `normalize_drug_name`) | Encode | format-replay; lens uses `normalize_drug_name` only | dialect | Same regimen, standard name |
 | `DoseUnit` respell | Encode | format-replay + live lens | dialect | `mgs` → `mg` |
 | `DrugDose` value normalize | Encode | format-replay + live lens | dialect | Same regimen |
@@ -190,6 +205,9 @@ add is invent.
 | Split explicit uneven once-daily | Revise | live lens | rewrite | Multiplicity change |
 | Drop non-ASM | Revise | **live leftover** | gate | Deletes the finding; manifest says the lens never removes |
 | Drop planned-start / titration-only | Revise | **live leftover** | gate | Deletes the finding |
+| `selection.prescription_local_regimen_scope` | Revise | live Select stack | rewrite | Keep a rescue cadence local to its named medicine instead of spreading it to sibling regimens in the same evidence window |
+| `selection.prescription_active_titration` | Revise | live Select stack | reselect | Retain the explicit initial current regimen before a future titration; prescribe/start requests and target-dose rows remain suppressed |
+| `selection.prescription_exact_regimen_dedupe` | Revise | live Select stack | drop | Drop a historical-initiation assertion only when a current assertion carries the same exact regimen; identical current assertions retain benchmark multiplicity |
 
 ### Investigations
 
@@ -197,6 +215,7 @@ add is invent.
 | --- | --- | --- | --- | --- |
 | Strip cross-modality `*_Performed='No'` not in the mention text | Encode | format-replay + live lens | encode | Same test, drop junk attrs |
 | Infer `*_Performed='Yes'` when a result is present | Encode | format-replay + live lens | encode | Same finding |
+| `encoding.investigation_local_result` | Encode | format-replay | encode | Make an already-selected test abnormal when its modality-local evidence has an explicit unnegated abnormal finding |
 | Pending-cue drop | Revise | live lens | gate | Delete await/request/appointment without a completed result |
 
 ---

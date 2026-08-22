@@ -63,7 +63,7 @@ def replay_exectv2_saved_predictions(path: Path, *, split: str) -> dict[str, int
     )
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
         aggregate_scores,
-        clinical_headline_scores,
+        exact_clinical_headline_scores,
     )
 
     rows = _load_jsonl(path)
@@ -94,7 +94,7 @@ def replay_exectv2_saved_predictions(path: Path, *, split: str) -> dict[str, int
             )
         )
 
-    family_scores = clinical_headline_scores(gold_letters, pred_letters)
+    family_scores = exact_clinical_headline_scores(gold_letters, pred_letters)
     aggregate = aggregate_scores(family_scores.values())
     strict = score_overall(
         gold_letters,

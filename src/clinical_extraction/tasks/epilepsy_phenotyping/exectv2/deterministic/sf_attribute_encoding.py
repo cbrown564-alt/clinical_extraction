@@ -14,6 +14,9 @@ from typing import Any
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     SEIZURE_FREQUENCY,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.lexicon import (
+    evidence_refined_seizure_type_name,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalizer import (
     normalize_count,
     normalize_unit,
@@ -55,6 +58,10 @@ _LAST_CLINIC_RE = re.compile(
     r"\bsince (?:her |his |the )?last clinic\b",
     re.IGNORECASE,
 )
+_EXPLICIT_FURTHER_SEIZURES_RE = re.compile(
+    r"\b(?:has|have|had)\s+had\s+further\b[^.;\n]{0,120}\bseizures?\b",
+    re.IGNORECASE,
+)
 
 
 def apply_sf_attribute_encoding(
@@ -90,6 +97,81 @@ def apply_sf_attribute_encoding(
                 working = _copy_mention(rewritten)
         out.append(working)
     return out, actions
+
+
+SF_SELECT_NAMED_TYPE_RULE = "selection.sf_named_type_from_evidence"
+SF_SELECT_RECURRENCE_BOUND_RULE = "selection.sf_explicit_recurrence_lower_bound"
+
+
+def apply_sf_select_local_evidence(
+    mentions: Sequence[Mapping[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, str]]]:
+    """Apply select-authority SF type and recurrence rewrites."""
+
+    out: list[dict[str, Any]] = []
+    actions: list[dict[str, str]] = []
+    for mention in mentions:
+        working = _copy_mention(mention)
+        if str(working.get("entity") or "") != SEIZURE_FREQUENCY.name:
+            out.append(working)
+            continue
+        bound = complete_explicit_nonzero_state(working)
+        if bound is not working:
+            working = _copy_mention(bound)
+            actions.append(
+                {
+                    "action": "repair",
+                    "rule_id": SF_SELECT_RECURRENCE_BOUND_RULE,
+                    "text": str(working.get("text") or ""),
+                }
+            )
+        attrs = dict(working.get("attributes") or {})
+        if attrs.get("NumberOfSeizures") != "0":
+            text = str(working.get("text") or "")
+            refined = evidence_refined_seizure_type_name(
+                text, str(working.get("evidence") or "")
+            )
+            if refined != text:
+                working["text"] = refined
+                actions.append(
+                    {
+                        "action": "repair",
+                        "rule_id": SF_SELECT_NAMED_TYPE_RULE,
+                        "text": text,
+                    }
+                )
+        out.append(working)
+    return out, actions
+
+
+def complete_explicit_nonzero_state(
+    mention: Mapping[str, Any],
+) -> dict[str, Any] | Mapping[str, Any]:
+    """Select a nonzero lower bound from explicit ``has had further seizures``.
+
+    The wording proves recurrence but not an exact count, so the rule writes a
+    lower bound of one rather than fabricating a point estimate. It only acts on
+    an already-selected seizure-frequency mention with no count attributes.
+    """
+
+    attrs = dict(mention.get("attributes") or {})
+    if any(
+        attrs.get(key)
+        for key in (
+            "NumberOfSeizures",
+            "LowerNumberOfSeizures",
+            "UpperNumberOfSeizures",
+        )
+    ):
+        return mention
+    evidence = str(mention.get("evidence") or "")
+    if _EXPLICIT_FURTHER_SEIZURES_RE.search(evidence) is None:
+        return mention
+    repaired = _copy_mention(mention)
+    attrs["LowerNumberOfSeizures"] = "1"
+    repaired["attributes"] = attrs
+    repaired["component_owner"] = COMPONENT_OWNER
+    return repaired
 
 
 def _rewrite_word_number(mention: Mapping[str, Any]) -> dict[str, Any] | Mapping[str, Any]:

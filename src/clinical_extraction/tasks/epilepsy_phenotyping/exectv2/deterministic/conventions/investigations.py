@@ -40,6 +40,23 @@ _INVESTIGATION_ABNORMAL_RESULT_CUE = re.compile(
     r"sclerosis|meningioma|signal|gliosis|infarct|lesion|focus|atrophy)\b",
     re.IGNORECASE,
 )
+_MODALITY_ABNORMAL_RESULT_CUES: dict[str, re.Pattern[str]] = {
+    "EEG": re.compile(
+        r"\b(?:abnormal|epileptiform|spikes?|sharp(?:ened)?\s+waves?|"
+        r"slow(?:ing|\s+waves?)|discharges?|paroxysms?|focus)\b",
+        re.IGNORECASE,
+    ),
+    "MRI": re.compile(
+        r"\b(?:abnormal|dysplasia|sclerosis|meningioma|gliosis|infarct|"
+        r"lesion|atrophy|cavernoma|encephalitis|ischaemic\s+change)\b",
+        re.IGNORECASE,
+    ),
+    "CT": re.compile(
+        r"\b(?:abnormal|infarct|lesion|atrophy|haemorrhage|hemorrhage|"
+        r"pathology)\b",
+        re.IGNORECASE,
+    ),
+}
 
 
 def investigation_convention_attribute_repairs(
@@ -81,6 +98,80 @@ def investigation_convention_attribute_repairs(
         if result_key is not None and repaired.get(result_key) == "Unknown":
             repaired.pop(result_key, None)
     return repaired
+
+
+def investigation_local_result_repairs(
+    text: str,
+    *,
+    evidence: str,
+    attributes: Mapping[str, Any],
+) -> dict[str, str]:
+    """Encode an explicit result cue on an already-selected test mention.
+
+    A stated abnormal finding makes the test abnormal even when the sentence
+    later says it was "otherwise normal". The rule is local to the mention's
+    modality and never creates another investigation.
+    """
+
+    repaired = {str(key): str(value) for key, value in attributes.items()}
+    modalities = _modalities_in_text(text) or {
+        modality
+        for modality, (performed_key, result_key) in _INVESTIGATION_MODALITY_ATTRS.items()
+        if repaired.get(performed_key) == "Yes" or repaired.get(result_key or "")
+    }
+    for modality in modalities:
+        surface = _modality_local_surface(modality, evidence or text)
+        if not _has_unnegated_abnormal_cue(modality, surface):
+            continue
+        performed_key, result_key = _INVESTIGATION_MODALITY_ATTRS[modality]
+        repaired[performed_key] = "Yes"
+        if result_key is not None:
+            repaired[result_key] = "Abnormal"
+    return repaired
+
+
+def _modality_local_surface(modality: str, evidence: str) -> str:
+    """Return the evidence clause belonging to ``modality``."""
+
+    own = _INVESTIGATION_MODALITY_PATTERNS[modality].search(evidence)
+    if own is None:
+        return evidence
+    start = max(0, own.start() - 40)
+    end = len(evidence)
+    for other_modality, pattern in _INVESTIGATION_MODALITY_PATTERNS.items():
+        if other_modality == modality:
+            continue
+        earlier = tuple(pattern.finditer(evidence, 0, own.start()))
+        if earlier:
+            previous = earlier[-1]
+            between = evidence[previous.end() : own.start()]
+            boundaries = tuple(
+                re.finditer(r"\b(?:and|but|while|whereas)\b|[;,]", between, re.IGNORECASE)
+            )
+            start = previous.end() + boundaries[-1].end() if boundaries else own.start()
+        later = pattern.search(evidence, own.end())
+        if later is not None:
+            between = evidence[own.end() : later.start()]
+            boundaries = tuple(
+                re.finditer(r"\b(?:and|but|while|whereas)\b|[;,]", between, re.IGNORECASE)
+            )
+            boundary = own.end() + boundaries[-1].start() if boundaries else later.start()
+            end = min(end, boundary)
+    return evidence[start:end]
+
+
+def _has_unnegated_abnormal_cue(modality: str, surface: str) -> bool:
+    for match in _MODALITY_ABNORMAL_RESULT_CUES[modality].finditer(surface):
+        prefix = surface[max(0, match.start() - 50) : match.start()]
+        if re.search(
+            r"\b(?:no|not|without|did\s+not|does\s+not|didn't|doesn't)\b"
+            r"[^.;\n]{0,45}$",
+            prefix,
+            re.IGNORECASE,
+        ):
+            continue
+        return True
+    return False
 
 
 def is_pending_investigation(

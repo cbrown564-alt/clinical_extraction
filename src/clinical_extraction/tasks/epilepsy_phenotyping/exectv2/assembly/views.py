@@ -342,22 +342,24 @@ def _fidelity_companions(arch: Mapping[str, Any]) -> dict[str, Any]:
     companions = arch["clinical_recovery"].get("fidelity_companions", {})
     dx = companions.get(DIAGNOSIS.name, {})
     sf = companions.get(SEIZURE_FREQUENCY.name, {})
-    return {
-        DIAGNOSIS.name: {
+    out: dict[str, Any] = {}
+    if dx:
+        out[DIAGNOSIS.name] = {
             "concept_negation": {
                 "f1": float(dx.get("companion_f1", 0.0)),
                 "headline_f1": float(dx.get("headline_f1", 0.0)),
                 "fidelity_gap": float(dx.get("fidelity_gap", 0.0)),
             }
-        },
-        SEIZURE_FREQUENCY.name: {
+        }
+    if sf:
+        out[SEIZURE_FREQUENCY.name] = {
             "active_rate_fidelity": {
                 "f1": float(sf.get("companion_f1", 0.0)),
                 "headline_f1": float(sf.get("headline_f1", 0.0)),
                 "fidelity_gap": float(sf.get("fidelity_gap", 0.0)),
             }
-        },
-    }
+        }
+    return out
 
 
 def _predicted_mention(row: Mapping[str, Any]) -> PredictedMention:

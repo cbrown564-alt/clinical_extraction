@@ -10,6 +10,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
     canonicalize_diagnosis_concept,
     diagnosis_category_for_concept,
+    is_diagnosis_descendant,
 )
 
 DIAGNOSIS_STANDALONE_NOISE: frozenset[str] = frozenset(
@@ -54,6 +55,20 @@ DIAGNOSIS_CONVENTION_ALIAS_REPAIRS: dict[str, str] = {
     "tonic clonic seizures alone": "epilepsy with generalised tonic clonic seizures alone",
 }
 
+# Same-fact name aliases permitted at the encode stop. The broader convention
+# table above also contains clinical concept remaps (for example focal cortical
+# dysplasia -> an epilepsy syndrome); those remain selection/revision rules.
+DIAGNOSIS_FORMAT_ALIAS_REPAIRS: dict[str, str] = {
+    key: value
+    for key, value in DIAGNOSIS_CONVENTION_ALIAS_REPAIRS.items()
+    if key
+    not in {
+        "focal cortical dysplasia",
+        "focal cortical dysplasia right temporal lobe",
+        "right hippocampal sclerosis",
+    }
+}
+
 DIAGNOSIS_SURFACE_CONVENTION_REPAIRS: dict[str, str] = {
     "epilepsy due to perinatal insult": "epilepsy",
     "epilepsy probable focal": "focal epilepsy",
@@ -79,6 +94,17 @@ DIAGNOSIS_SURFACE_CONVENTION_REPAIRS: dict[str, str] = {
     "temporal lobe": "temporal lobe epilepsy",
     "tle": "temporal lobe epilepsy",
     "unclassified epilepsy": "epilepsy",
+}
+
+DIAGNOSIS_FORMAT_SURFACE_REPAIRS: dict[str, str] = {
+    "absence": "absence seizures",
+    "complex partial": "complex partial seizures",
+    "focal dyscognitive seizure": "dyscognitive seizures",
+    "focal epileptic seizure": "focal seizures",
+    "focal (occipital lobe) epilepsy": "occipital lobe epilepsy",
+    "gtcs": "generalised tonic clonic seizures",
+    "nocturnal generalised tonic clonic seizure": ("generalised tonic clonic seizures"),
+    "secondarily generalised seizure": "secondary generalised seizures",
 }
 
 DIAGNOSIS_RESIDUAL_CONVENTION_NOISE: frozenset[str] = frozenset(
@@ -399,6 +425,137 @@ _RESOLUTION_CANDIDATE_SOURCE_CONCEPT_PATTERNS: tuple[
     tuple[re.Pattern[str], str], ...
 ] = ((_PATIENT_ABSENCE_SEIZURES, "absence seizures"),)
 
+_CERTAINTY_POSSIBLE = 1
+_CERTAINTY_PROBABLE = 2
+_LOBE_SYNDROMES: dict[str, str] = {
+    "temporal": "temporal lobe epilepsy",
+    "frontal": "frontal lobe epilepsy",
+    "parietal": "parietal lobe epilepsy",
+    "occipital": "occipital lobe epilepsy",
+}
+_ETIOLOGY_FOCAL_FORMS: frozenset[str] = frozenset(
+    {
+        "localisation related epilepsy",
+        "localization related epilepsy",
+        "symptomatic focal epilepsy",
+        "symptomatic structural focal epilepsy",
+    }
+)
+_NAMED_LOBE_SYNDROME = re.compile(
+    r"\b(?:left|right|bilateral)?\s*"
+    r"(temporal|frontal|parietal|occipital)\s+lobe\s+epilepsy\b"
+    r"|\btle\b",
+    re.IGNORECASE,
+)
+_LOBE_ANY = re.compile(
+    r"\b(?:left|right|bilateral)?\s*"
+    r"(temporal|frontal|parietal|occipital)"
+    r"(?:\s+lobe)?(?P<onset>\s+onset)?\b",
+    re.IGNORECASE,
+)
+_PROBABLE_CUE = re.compile(
+    r"\b(?:probable|probably|likely|most\s+likely)\b",
+    re.IGNORECASE,
+)
+_POSSIBLE_CUE = re.compile(r"\b(?:possible|possibly)\b|\?", re.IGNORECASE)
+_LATERAL_FOCAL = re.compile(r"\bfocal(?:\s+onset)?\b", re.IGNORECASE)
+_LATERAL_GENERALISED = re.compile(r"\bgenerali[sz]ed\b", re.IGNORECASE)
+_FOCAL_DIAGNOSIS_CLASS = re.compile(
+    r"\bfocal(?:\s+onset)?\s+epilepsy\b|"
+    r"\b(?:probable|probably|possible|possibly)\s+focal(?:\s+onset)?\b",
+    re.IGNORECASE,
+)
+_INVESTIGATION_CUE = re.compile(r"\b(?:mri|eeg|ct|imaging|scan)\b", re.IGNORECASE)
+_DIAGNOSIS_CONTEXT_CUE = re.compile(
+    r"\b(?:diagnos|epilepsy|syndrome|impression|seizure)\b",
+    re.IGNORECASE,
+)
+
+
+def _local_specificity_blob(text: str, evidence: str) -> str:
+    return " ".join(part for part in (text, evidence) if part)
+
+
+def _certainty_rank(blob: str) -> int:
+    if _PROBABLE_CUE.search(blob):
+        return _CERTAINTY_PROBABLE
+    if _POSSIBLE_CUE.search(blob):
+        return _CERTAINTY_POSSIBLE
+    return 3
+
+
+def _laterality_from_blob(blob: str) -> str | None:
+    has_focal = _LATERAL_FOCAL.search(blob) is not None
+    has_generalised = _LATERAL_GENERALISED.search(blob) is not None
+    if has_focal and has_generalised:
+        return None
+    if has_focal:
+        return "focal epilepsy"
+    if has_generalised:
+        return "generalised epilepsy"
+    return None
+
+
+def _lobe_from_blob(blob: str, *, certainty: int) -> str | None:
+    named = _NAMED_LOBE_SYNDROME.search(blob)
+    if named is not None:
+        if named.group(0).lower() == "tle":
+            return "temporal lobe epilepsy"
+        return _LOBE_SYNDROMES[named.group(1).lower()]
+    modifiers: list[str] = []
+    onsets: list[str] = []
+    for match in _LOBE_ANY.finditer(blob):
+        lobe = match.group(1).lower()
+        if match.group("onset"):
+            onsets.append(lobe)
+        else:
+            modifiers.append(lobe)
+    if modifiers:
+        return _LOBE_SYNDROMES[modifiers[0]]
+    if onsets and certainty >= _CERTAINTY_PROBABLE:
+        return _LOBE_SYNDROMES[onsets[0]]
+    return None
+
+
+def _may_overwrite_diagnosis(mention: str, target: str) -> bool:
+    mention_concept = canonicalize_diagnosis_concept(mention)
+    target_concept = canonicalize_diagnosis_concept(target)
+    if mention_concept == target_concept:
+        return False
+    if is_diagnosis_descendant(mention_concept, target_concept):
+        return False
+    if is_diagnosis_descendant(target_concept, mention_concept):
+        return True
+    return mention_concept in _ETIOLOGY_FOCAL_FORMS and is_diagnosis_descendant(
+        target_concept, "focal epilepsy"
+    )
+
+
+def diagnosis_select_specificity_target(text: str, evidence: str) -> str | None:
+    """Rewrite a kept Diagnosis to a more specific closed name.
+
+    Select authority: a probable anatomical modifier, or a possible laterality
+    class, may overwrite a less specific epilepsy mention on the same branch.
+    Possible or queried onset does not create a lobe syndrome. A generalised
+    mention is not overwritten by a temporal sibling.
+    """
+
+    blob = _local_specificity_blob(text, evidence)
+    if _INVESTIGATION_CUE.search(blob) and not _DIAGNOSIS_CONTEXT_CUE.search(blob):
+        return None
+    certainty = _certainty_rank(blob)
+    target = None
+    lobe = _lobe_from_blob(blob, certainty=certainty)
+    if lobe is not None and certainty >= _CERTAINTY_PROBABLE:
+        target = lobe
+    if target is None:
+        laterality = _laterality_from_blob(blob)
+        if laterality is not None and certainty >= _CERTAINTY_POSSIBLE:
+            target = laterality
+    if target is None or not _may_overwrite_diagnosis(text, target):
+        return None
+    return target
+
 
 def diagnosis_convention_target(text: str, evidence: str) -> str | None:
     """Return the convention-repaired Diagnosis text, or ``None`` if unchanged.
@@ -408,6 +565,9 @@ def diagnosis_convention_target(text: str, evidence: str) -> str | None:
     (alias repair first, then residual benchmark).
     """
 
+    specific = diagnosis_select_specificity_target(text, evidence)
+    if specific is not None:
+        return specific
     surface = normalize_phrase(text.replace("–", " ").replace("—", " ").replace("-", " "))
     if surface == "epilepsy" and re.search(r"\bintractable epilepsy\b", evidence, re.IGNORECASE):
         return "intractable epilepsy"
@@ -420,6 +580,49 @@ def diagnosis_convention_target(text: str, evidence: str) -> str | None:
 
     concept = canonicalize_diagnosis_concept(text)
     return DIAGNOSIS_CONVENTION_ALIAS_REPAIRS.get(concept)
+
+
+def diagnosis_format_target(
+    text: str,
+    evidence: str,
+    *,
+    diag_category: str | None = None,
+) -> str | None:
+    """Return a closed standard name for the same extracted Diagnosis fact.
+
+    This is the encode-only subset of :func:`diagnosis_convention_target`.
+    It may repair spelling, abbreviations, word order, and benchmark name
+    altitude already stated on the mention's own row. It deliberately excludes
+    cause/finding-to-syndrome remaps, which remain semantic revision.
+    """
+
+    surface = normalize_phrase(text.replace("–", " ").replace("—", " ").replace("-", " "))
+    if surface == "secondarily generalised seizure" and (
+        diag_category == "SingleSeizure"
+        or re.search(r"\bonly\b[^.\n]{0,30}\bone\b", evidence, re.IGNORECASE)
+    ):
+        return None
+    if surface == "symptomatic structural temporal lobe epilepsy":
+        return "temporal lobe epilepsy"
+    if " with occasional secondary generalisation" in surface:
+        return re.sub(
+            r"\bwith\s+occasional\s+secondary\s+generalisation\b",
+            "with secondary generalisation",
+            text,
+            flags=re.IGNORECASE,
+        )
+    if surface == "focal" and _FOCAL_DIAGNOSIS_CLASS.search(evidence):
+        return "focal epilepsy"
+    surface_target = DIAGNOSIS_FORMAT_SURFACE_REPAIRS.get(
+        surface
+    ) or DIAGNOSIS_SURFACE_CONVENTION_REPAIRS.get(surface)
+    if surface_target is not None:
+        return surface_target
+    for pattern, target in _PREFIX_DIAGNOSIS_CONVENTION_REPAIRS:
+        if pattern.search(text):
+            return target
+    concept = canonicalize_diagnosis_concept(text)
+    return DIAGNOSIS_FORMAT_ALIAS_REPAIRS.get(concept)
 
 
 def diagnosis_convention_attribute_repairs(

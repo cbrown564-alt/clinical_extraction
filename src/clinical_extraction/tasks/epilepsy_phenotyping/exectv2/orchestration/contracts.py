@@ -110,18 +110,15 @@ class StructuredMethodConfig:
     diagnosis_resolution_candidate: bool = False
     model_preserving_policy_candidate: bool = False
     prescription_rescue_scope_candidate: bool = False
+    select_rule_ids: frozenset[str] | None = None
 
     def __post_init__(self) -> None:
         if self.diagnosis_policy_variant != "default":
             raise ValueError("diagnosis_policy_variant must be 'default'")
         if self.prescription_policy_variant not in {"default", "combined"}:
-            raise ValueError(
-                "prescription_policy_variant must be 'default' or 'combined'"
-            )
+            raise ValueError("prescription_policy_variant must be 'default' or 'combined'")
         if self.has_archived_policy and not self.archived_replay:
-            raise ValueError(
-                "non-selected policy requires archived_replay=True"
-            )
+            raise ValueError("non-selected policy requires archived_replay=True")
 
     @property
     def has_archived_policy(self) -> bool:
@@ -134,6 +131,7 @@ class StructuredMethodConfig:
             or self.diagnosis_resolution_candidate
             or self.model_preserving_policy_candidate
             or self.prescription_rescue_scope_candidate
+            or self.select_rule_ids is not None
         )
 
     @property
@@ -148,13 +146,11 @@ class StructuredMethodConfig:
         if not self.is_selected:
             raise ValueError(
                 "selected ExECT method requires default/default policy, combined SF "
-                "projection, and no archived or candidate switches"
+                "projection, accepted Select rules, and no archived or candidate switches"
             )
 
     @classmethod
-    def selected(
-        cls, *, prompt_profile: Literal["full"] = "full"
-    ) -> StructuredMethodConfig:
+    def selected(cls, *, prompt_profile: Literal["full"] = "full") -> StructuredMethodConfig:
         return cls(prompt_profile=prompt_profile)
 
     @classmethod

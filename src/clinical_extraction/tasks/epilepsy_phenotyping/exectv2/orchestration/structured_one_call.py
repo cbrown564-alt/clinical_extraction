@@ -431,6 +431,18 @@ def _run_llm_pre_post_letter(
                 ),
             )
         )
+    stages.append(
+        ExectStageEvent(
+            stage_id="exect.llm_pre_post.select_rules",
+            owner="deterministic",
+            effect_class="clinical_meaning",
+            input_value=assembled["post_lens_mentions"],
+            output_value=assembled["predicted_mentions"],
+            changed=bool(assembled["select_rule_actions"]),
+            action="apply_accepted_select_rule_stack",
+            rule_category="general",
+        )
+    )
     stages.extend(
         [
             ExectStageEvent(

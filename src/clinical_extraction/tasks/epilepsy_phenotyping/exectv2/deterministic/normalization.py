@@ -126,6 +126,9 @@ DIAGNOSIS_PARENT: dict[str, str] = {
     "focal epilepsy": "epilepsy",
     "focal onset epilepsy": "focal epilepsy",
     "temporal lobe epilepsy": "focal epilepsy",
+    "frontal lobe epilepsy": "focal epilepsy",
+    "parietal lobe epilepsy": "focal epilepsy",
+    "occipital lobe epilepsy": "focal epilepsy",
     "symptomatic structural focal epilepsy": "focal epilepsy",
     "generalised epilepsy": "epilepsy",
     "juvenile myoclonic epilepsy": "generalised epilepsy",
@@ -365,10 +368,16 @@ def _has_specific_descendant(concept: str, present: set[str]) -> bool:
     return any(_is_descendant(candidate, concept) for candidate in present if candidate != concept)
 
 
-def _is_descendant(candidate: str, ancestor: str) -> bool:
+def is_diagnosis_descendant(candidate: str, ancestor: str) -> bool:
+    """True when *candidate* is below *ancestor* in ``DIAGNOSIS_PARENT``."""
+
     current = DIAGNOSIS_PARENT.get(candidate)
     while current is not None:
         if current == ancestor:
             return True
         current = DIAGNOSIS_PARENT.get(current)
     return False
+
+
+def _is_descendant(candidate: str, ancestor: str) -> bool:
+    return is_diagnosis_descendant(candidate, ancestor)

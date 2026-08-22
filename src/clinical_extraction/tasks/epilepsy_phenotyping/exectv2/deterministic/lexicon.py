@@ -46,6 +46,8 @@ import re
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 
+_QUOTES = str.maketrans("", "", "\"'“”‘’‚‛")
+
 _CLUSTER_OF_SEIZURES_RE = re.compile(r"\bclusters?\s+of\s+seizures?\b", re.I)
 _GENERLISED_RE = re.compile(r"generlised", re.I)
 
@@ -133,6 +135,16 @@ _COLLISION_RESOLUTION: dict[str, str] = {
     "focal": "C0877017",  # vs C0751495 (focal), C0016399 (focal-motor)
 }
 
+# Model extract rows sometimes use a generic event word or omit the noun after
+# a well-known type adjective. These are standard-name repairs only after the
+# row has already been typed as SeizureFrequency; they are not extraction
+# aliases and are intentionally narrow.
+_SF_STANDARD_NAME_ALIASES: dict[str, str] = {
+    "episode": "C0036572",
+    "episodes": "C0036572",
+    "tonic clonic": "C0494475",
+}
+
 
 def _build_phrase_to_cui() -> dict[str, str]:
     inverted: dict[str, str] = {}
@@ -179,6 +191,73 @@ def fold_seizure_type_phrase(phrase: str, cui: str | None = None) -> str:
     if resolved in SF_CUI_LEXICON:
         return normalize_phrase(SF_CUI_LEXICON[resolved][0])
     return normalize_phrase(phrase)
+
+
+def canonical_seizure_type_name(phrase: str) -> str:
+    """Return the closed 16-head standard name for a known SF type phrase."""
+
+    normalized = normalize_phrase(phrase)
+    resolved = assign_cui(phrase) or _longest_known_phrase_cui(phrase)
+    if resolved is None:
+        resolved = _SF_STANDARD_NAME_ALIASES.get(normalized)
+    if resolved in SF_CUI_LEXICON:
+        return SF_CUI_LEXICON[resolved][0]
+    return phrase
+
+
+def evidence_refined_seizure_type_name(phrase: str, evidence: str) -> str:
+    """Use one unambiguous named type in local evidence to refine ``phrase``.
+
+    This only changes generic seizure names, or the parent ``absence`` name
+    when the evidence explicitly says ``typical absence``. If the evidence
+    names more than one distinct seizure type, ownership remains unresolved and
+    the original phrase is preserved.
+    """
+
+    current_cui = assign_cui(phrase)
+    normalized = normalize_phrase(phrase)
+    if current_cui == "C0563606" and re.search(
+        r"\btypical\s+absences?\b", evidence, re.IGNORECASE
+    ):
+        return SF_CUI_LEXICON["C4316903"][0]
+    evidence_hits = _maximal_evidence_type_hits(evidence)
+    hit_cuis = {cui for _start, _end, cui in evidence_hits}
+    if normalized not in {"seizure", "episode"}:
+        return phrase
+    if len(hit_cuis) != 1:
+        return phrase
+    resolved = next(iter(hit_cuis))
+    return SF_CUI_LEXICON[resolved][0]
+
+
+def _maximal_evidence_type_hits(evidence: str) -> list[tuple[int, int, str]]:
+    """Return non-nested named seizure-type spans from local evidence."""
+
+    normalized_evidence = evidence.translate(_QUOTES).replace("-", " ").lower()
+    hits: list[tuple[int, int, str]] = []
+    for phrase, cui in PHRASE_TO_CUI.items():
+        if cui in GENERIC_SF_CUIS or len(phrase.split()) < 2:
+            continue
+        pattern_text = re.escape(phrase)
+        for singular in ("seizure", "absence", "jerk", "convulsion", "episode"):
+            if phrase.endswith(singular):
+                pattern_text = re.escape(phrase[: -len(singular)]) + singular + "s?"
+                break
+        pattern = re.compile(rf"(?<!\w){pattern_text}(?!\w)", re.IGNORECASE)
+        hits.extend(
+            (match.start(), match.end(), cui)
+            for match in pattern.finditer(normalized_evidence)
+        )
+    return [
+        hit
+        for hit in hits
+        if not any(
+            other[0] <= hit[0]
+            and other[1] >= hit[1]
+            and (other[1] - other[0]) > (hit[1] - hit[0])
+            for other in hits
+        )
+    ]
 
 
 def assign_cui(phrase: str) -> str | None:

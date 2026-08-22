@@ -117,6 +117,9 @@ def test_hybrid_identity_and_cli_aliases_are_active() -> None:
 
 
 def test_hybrid_public_runner_uses_canonical_projection_and_fresh_identity() -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select_rules import (  # noqa: E501
+        ACCEPTED_SELECT_RULE_IDS,
+    )
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runner import (
         Exectv2PipelineConfiguration,
         Exectv2PipelineRunner,
@@ -140,6 +143,7 @@ def test_hybrid_public_runner_uses_canonical_projection_and_fresh_identity() -> 
         "diagnosis_policy_variant": "default",
         "prescription_policy_variant": "default",
         "sf_projection_ablation": "combined",
+        "select_rule_ids": sorted(ACCEPTED_SELECT_RULE_IDS),
     }
     assert result.result.stage_events[-1].stage_id == "exect.llm_pre_post.score"
 
@@ -174,6 +178,7 @@ def test_hybrid_runtime_trace_agrees_with_manifest_and_records_noops() -> None:
         "apply_named_family_lens",
         "apply_named_family_lens",
         "apply_named_family_lens",
+        "apply_accepted_select_rule_stack",
         "require_exact_source_evidence",
         "materialize_scoring_views",
         "defer_gold_comparison_to_scorer",
@@ -190,6 +195,7 @@ def test_hybrid_runtime_trace_agrees_with_manifest_and_records_noops() -> None:
         True,
         True,
         True,
+        False,
         False,
         True,
         False,

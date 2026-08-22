@@ -257,6 +257,14 @@ RULE_RECORDS: tuple[RuleRecord, ...] = (
     ),
     # --- ExECT Diagnosis ---
     RuleRecord(
+        "encoding.diagnosis_standard_name",
+        "exectv2",
+        "llm_encode",
+        "encode",
+        "format-replay",
+        notes="same extracted diagnosis; closed name and spelling only; no qualifier overwrite",
+    ),
+    RuleRecord(
         "diagnosis_surface_spelling_alias",
         "exectv2",
         "llm_select",
@@ -280,6 +288,39 @@ RULE_RECORDS: tuple[RuleRecord, ...] = (
         "rewrite",
         "live",
         notes="epilepsy+intractable; FCD→syndrome; focal onset→focal epilepsy",
+    ),
+    RuleRecord(
+        "selection.diagnosis_specificity_hierarchy",
+        "exectv2",
+        "llm_select",
+        "rewrite",
+        "live",
+        notes=(
+            "clinical_epilepsy; probable lobe modifier or possible laterality "
+            "may overwrite a less specific same-branch epilepsy mention"
+        ),
+    ),
+    RuleRecord(
+        "selection.diagnosis_source_local_specificity",
+        "exectv2",
+        "llm_select",
+        "rewrite",
+        "live",
+        notes=(
+            "clinical_epilepsy; restore the encoded source diagnosis when a "
+            "later Select rewrite broadens it or conflates a sibling class"
+        ),
+    ),
+    RuleRecord(
+        "selection.diagnosis_explicit_heading_phenotype",
+        "exectv2",
+        "llm_select",
+        "reselect",
+        "live",
+        notes=(
+            "benchmark_format; retain an explicitly emitted absence phenotype "
+            "under a Diagnosis heading unless JME owns the phenotype"
+        ),
     ),
     RuleRecord("diagnosis_convention_noise_drop", "exectv2", "llm_select", "drop", "live"),
     RuleRecord("jme_covers_phenotype_drop", "exectv2", "llm_select", "drop", "live"),
@@ -320,6 +361,66 @@ RULE_RECORDS: tuple[RuleRecord, ...] = (
         "llm_encode",
         "encode",
         "format-replay",
+    ),
+    RuleRecord(
+        "encoding.sf_local_evidence",
+        "exectv2",
+        "llm_encode",
+        "encode",
+        "format-replay",
+        notes="explicit seizure-free closed name only; no type retarget or invented bound",
+    ),
+    RuleRecord(
+        "selection.sf_named_type_from_evidence",
+        "exectv2",
+        "llm_select",
+        "rewrite",
+        "live",
+        notes=(
+            "seizure_frequency; generic seizure/episode or parent absence may "
+            "take one unambiguous named type from local evidence"
+        ),
+    ),
+    RuleRecord(
+        "selection.sf_explicit_recurrence_lower_bound",
+        "exectv2",
+        "llm_select",
+        "rewrite",
+        "live",
+        notes=(
+            "seizure_frequency; explicit further-seizures wording writes "
+            "LowerNumberOfSeizures=1 when no count is present"
+        ),
+    ),
+    RuleRecord(
+        "selection.sf_named_type_identity",
+        "exectv2",
+        "llm_select",
+        "rewrite",
+        "live",
+        notes=(
+            "seizure_frequency; reconcile shared-evidence groups so one named "
+            "SF row cannot be reassigned to a sibling type"
+        ),
+    ),
+    RuleRecord(
+        "selection.sf_to_diagnosis_explicit_type",
+        "exectv2",
+        "llm_select",
+        "invent",
+        "live",
+        notes=(
+            "benchmark_format; ledger-only cross-family projection of an already "
+            "selected named SF fact into Diagnosis; no unused-note scan"
+        ),
+    ),
+    RuleRecord(
+        "encoding.sf_standard_name",
+        "exectv2",
+        "llm_encode",
+        "encode",
+        "format-replay",
+        notes="same seizure type; write the closed-head standard name",
     ),
     RuleRecord(
         "sf_count_unit_month_normalize",
@@ -437,6 +538,30 @@ RULE_RECORDS: tuple[RuleRecord, ...] = (
     ),
     # --- ExECT Prescription ---
     RuleRecord(
+        "encoding.prescription_local_slots",
+        "exectv2",
+        "llm_encode",
+        "encode",
+        "format-replay",
+        notes="local cadence and single explicit dose beat malformed/shared fields",
+    ),
+    RuleRecord(
+        "encoding.prescription_standard_name",
+        "exectv2",
+        "llm_encode",
+        "dialect",
+        "format-replay",
+        notes="write ordinary mention text as generic DrugName; preserve contextual cues",
+    ),
+    RuleRecord(
+        "encoding.prescription_formulation_name",
+        "exectv2",
+        "llm_encode",
+        "dialect",
+        "format-replay",
+        notes="strip a dosage-form suffix when the base drug is known",
+    ),
+    RuleRecord(
         "brand_to_generic",
         "exectv2",
         "llm_encode",
@@ -485,6 +610,39 @@ RULE_RECORDS: tuple[RuleRecord, ...] = (
         "live",
         notes="live leftover",
     ),
+    RuleRecord(
+        "selection.prescription_local_regimen_scope",
+        "exectv2",
+        "llm_select",
+        "rewrite",
+        "live",
+        notes=(
+            "clinical_epilepsy; keep a rescue cadence local to its named medicine "
+            "instead of spreading it to sibling regimens"
+        ),
+    ),
+    RuleRecord(
+        "selection.prescription_active_titration",
+        "exectv2",
+        "llm_select",
+        "reselect",
+        "live",
+        notes=(
+            "clinical_epilepsy; retain the explicit initial current regimen before "
+            "a future titration; prescribe/start requests remain suppressed"
+        ),
+    ),
+    RuleRecord(
+        "selection.prescription_exact_regimen_dedupe",
+        "exectv2",
+        "llm_select",
+        "drop",
+        "live",
+        notes=(
+            "benchmark_format; drop a historical-initiation duplicate only when a "
+            "current assertion carries the same exact regimen"
+        ),
+    ),
     # --- ExECT Investigations ---
     RuleRecord(
         "strip_cross_modality_performed_no",
@@ -501,6 +659,14 @@ RULE_RECORDS: tuple[RuleRecord, ...] = (
         "encode",
         "live",
         notes="also format-replay",
+    ),
+    RuleRecord(
+        "encoding.investigation_local_result",
+        "exectv2",
+        "llm_encode",
+        "encode",
+        "format-replay",
+        notes="unnegated abnormal cue in the selected modality's local clause",
     ),
     RuleRecord("pending_cue_drop", "exectv2", "llm_select", "drop", "live"),
 )

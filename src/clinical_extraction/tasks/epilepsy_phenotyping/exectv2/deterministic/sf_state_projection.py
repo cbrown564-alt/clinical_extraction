@@ -229,6 +229,15 @@ def project_row(row: Mapping[str, Any], *, ablation: ProjectionAblation) -> dict
         mentions = _apply_state_projection(row, mentions, actions)
     if ablation in {"ownership", "combined"}:
         mentions = _apply_ownership_projection(row, mentions, actions)
+        mentions, select_actions = sf_encoding.apply_sf_select_local_evidence(mentions)
+        for record in select_actions:
+            actions.append(
+                _action(
+                    str(record.get("rule_id") or "selection.sf_local_evidence"),
+                    "repair",
+                    {"text": record.get("text", ""), "evidence": ""},
+                )
+            )
 
     mentions = _dedupe_exact_mentions(mentions)
     predicted = _project_mentions(str(row["letter_id"]), mentions)

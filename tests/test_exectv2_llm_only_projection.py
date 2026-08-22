@@ -11,7 +11,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedMention,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
+    ExectAnnotation,
+    ExectLetter,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
 )
@@ -227,6 +230,45 @@ def test_summarize_rows_scores_only_key_entities() -> None:
     assert summary["diagnostic_ladder"]["source_near"]["overall"]["overlap"]["f1"] == 1.0
 
 
+def test_key_clinical_recovery_does_not_credit_cross_family_diagnosis_recall() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                ExectAnnotation(
+                    DIAGNOSIS.name,
+                    "focal seizures",
+                    {"DiagCategory": "Epilepsy", "Negation": "Affirmed"},
+                ),
+                ExectAnnotation(
+                    SEIZURE_FREQUENCY.name,
+                    "focal seizures",
+                    {"NumberOfSeizures": "1"},
+                ),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                ExectAnnotation(
+                    SEIZURE_FREQUENCY.name,
+                    "focal seizures",
+                    {"NumberOfSeizures": "1"},
+                ),
+            ),
+        )
+    ]
+
+    score = structured._key_clinical_recovery_to_dict(gold, pred)
+
+    assert score["per_entity"][DIAGNOSIS.name]["f1"] == 0.0
+    assert score["overall"]["f1"] == 0.6667
+
+
 def test_write_report_includes_goal_and_diagnostic_ladder(tmp_path) -> None:
     rows = [
         {
@@ -262,5 +304,3 @@ def test_write_report_includes_goal_and_diagnostic_ladder(tmp_path) -> None:
     assert "Goal item F1" in text
     assert "## Key Clinical-Recovery Headlines" in text
     assert "## Diagnostic Scoring Ladder" in text
-
-

@@ -10,6 +10,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import
 
 from .shared import (
     _DOSE_UNIT_RE,
+    _FREQUENCY_PATTERNS,
     _SLASH_DAILY_DOSE_SEQUENCE_RE,
     frequency_code,
     normalize_dose_unit,
@@ -96,7 +97,8 @@ _NON_ANTIEPILEPTIC_DRUGS = frozenset(
 
 
 _PLANNED_START_RE = re.compile(
-    r"\b(?:to\s+start|please\s+start|will\s+start|"
+    r"\b(?:to\s+start|please\s+start|will\s+start|please\s+prescribe|"
+    r"would\s+be\s+(?:very\s+)?grateful\s+if\s+you\s+could\s+prescribe|"
     r"starts\s+\S+(?:\s+\S+){0,6}\s+at\s+a\s+dose|"
     r"start(?:ing)?\s+(?:her\s+|him\s+|the\s+patient\s+)?on)\b",
     re.IGNORECASE,
@@ -117,6 +119,10 @@ _CURRENT_REGIMEN_CUE_RE = re.compile(
     r"\b(?:current(?:ly)?\s+(?:taking|on|antiepileptic)|taking\s+\d+)\b",
     re.IGNORECASE,
 )
+_LOCAL_RESCUE_TAIL_RE = re.compile(
+    r"\b(?:for\s+seizure\s+clusters?|as\s+required|when\s+required|rescue)\b",
+    re.IGNORECASE,
+)
 _FUSED_AM_PM_DOSE_RE = re.compile(
     r"(?P<morning>\d+(?:\.\d+)?)\s*(?:mg|mgs)?\s*"
     r"(?:in\s+the\s+morning|morning|am|mane)\b"
@@ -124,6 +130,11 @@ _FUSED_AM_PM_DOSE_RE = re.compile(
     r"(?P<evening>\d+(?:\.\d+)?)\s*(?:mg|mgs)?\s*"
     r"(?:in\s+the\s+evening|evening|pm|nocte|night)\b",
     re.IGNORECASE | re.DOTALL,
+)
+_DOSAGE_FORM_SUFFIX_RE = re.compile(
+    r"\s+(?:controlled|extended|modified|prolonged|sustained)[- ]release$|"
+    r"\s+(?:cr|er|mr|pr|sr|retard)$",
+    re.IGNORECASE,
 )
 
 
@@ -165,6 +176,11 @@ def is_non_antiepileptic_prescription(
 _DOSE_RANGE_FIELD_RE = re.compile(
     r"^\s*(?P<low>\d+(?:\.\d+)?)\s*(?:mg|mgs)?\s*(?:to|-|–)\s*"
     r"(?P<high>\d+(?:\.\d+)?)\s*(?:mg|mgs)?\s*$",
+    re.IGNORECASE,
+)
+_DOSE_RANGE_IN_TEXT_RE = re.compile(
+    r"\b\d+(?:\.\d+)?\s*(?:mg|mgs)?\s*(?:to|-|–)\s*"
+    r"\d+(?:\.\d+)?\s*(?:mg|mgs)\b",
     re.IGNORECASE,
 )
 _CURRENT_DOSE_RE = re.compile(
@@ -292,6 +308,82 @@ def prescription_convention_attribute_repairs(
         repaired["Frequency"] = frequency
     repaired = _prefer_current_dose_over_range(text, evidence=evidence, attributes=repaired)
     return repaired
+
+
+def prescription_format_attribute_repairs(
+    text: str,
+    *,
+    evidence: str,
+    attributes: Mapping[str, Any],
+) -> dict[str, str]:
+    """Write source-grounded slots for one already-extracted regimen.
+
+    The mention text is the local regimen scope. Its first cadence wins over a
+    rescue cue belonging to a sibling medicine in a shared evidence sentence.
+    A single explicit dose/unit pair also wins over a malformed model field.
+    Multi-dose text is left for the semantic split/revision rules.
+    """
+
+    repaired = prescription_convention_attribute_repairs(
+        text,
+        evidence=evidence,
+        attributes=attributes,
+    )
+    local_frequency = _first_frequency_code(text)
+    local_priority_frequency = frequency_code(text)
+    local_rescue_scope = _has_local_rescue_tail(text, evidence)
+    if local_rescue_scope:
+        repaired["Frequency"] = "As_Required"
+    explicit_rescue = (
+        repaired.get("Frequency") == "As_Required"
+        and (local_priority_frequency == "As_Required" or local_rescue_scope)
+    )
+    if local_frequency is not None and not explicit_rescue:
+        repaired["Frequency"] = local_frequency
+
+    dose_matches = tuple(_DOSE_UNIT_RE.finditer(text))
+    if len(dose_matches) == 1 and _DOSE_RANGE_IN_TEXT_RE.search(text) is None:
+        match = dose_matches[0]
+        repaired["DrugDose"] = normalize_dose_value(match.group(1))
+        repaired["DoseUnit"] = normalize_dose_unit(match.group(2))
+    return repaired
+
+
+def _has_local_rescue_tail(text: str, evidence: str) -> bool:
+    """True when a rescue cue immediately follows this mention's own text."""
+
+    start = evidence.lower().find(text.lower())
+    if start < 0:
+        return False
+    tail_start = start + len(text)
+    tail = evidence[tail_start : tail_start + 60]
+    rescue = _LOCAL_RESCUE_TAIL_RE.search(tail)
+    if rescue is None:
+        return False
+    return _PRESCRIPTION_RESIDUAL_DRUG_RE.search(tail[: rescue.start()]) is None
+
+
+def prescription_base_drug_name(name: str) -> str | None:
+    """Strip an explicit dosage-form suffix when the remaining AED is known."""
+
+    base = _DOSAGE_FORM_SUFFIX_RE.sub("", name).strip()
+    if base == name.strip():
+        return None
+    return normalize_drug_name(base)
+
+
+def _first_frequency_code(text: str) -> str | None:
+    """Return the cadence whose source phrase occurs first in ``text``."""
+
+    first: tuple[int, int, str] | None = None
+    for priority, (pattern, value) in enumerate(_FREQUENCY_PATTERNS):
+        match = pattern.search(text)
+        if match is None:
+            continue
+        candidate = (match.start(), priority, value)
+        if first is None or candidate < first:
+            first = candidate
+    return first[2] if first is not None else None
 
 
 def _prefer_current_dose_over_range(
