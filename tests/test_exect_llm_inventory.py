@@ -88,6 +88,9 @@ def test_inventory_prompt_emits_both_and_leaves_live_default() -> None:
     )
     diagnosis_rules = " ".join(payload["clinical_rules"]["diagnosis"])
     assert "include each as its own diagnosis event" in diagnosis_rules
+    sf_rules = " ".join(payload["clinical_rules"]["seizure_frequency"])
+    assert "write a seizure-frequency event for each named type" in sf_rules.lower()
+    assert "keep a separate generic seizure event" in sf_rules
     assert "Do not add a separate generic epilepsy diagnosis to a specific" not in (
         diagnosis_rules
     )
@@ -96,7 +99,7 @@ def test_inventory_prompt_emits_both_and_leaves_live_default() -> None:
     )
     assert "Onset-history phrases such as" not in diagnosis_rules
     assert list(payload) == list(structured.INVENTORY_AUTHORED_KEYS)
-    assert structured.compact_rule_count(payload["clinical_rules"]) == 48
+    assert structured.compact_rule_count(payload["clinical_rules"]) == 49
     assert len(payload["examples"]) == 2
     blob = json.dumps(payload).lower()
     for phrase in (
@@ -145,3 +148,42 @@ def test_verify_llm_inventory_does_not_change_live_default() -> None:
     assert payload["prompt_version"] == structured.EXECT_LLM_INVENTORY
     assert payload["work_root"] == "experiments/paper/exect_llm_inventory"
     assert structured.PROMPT_VERSION == before == structured.EXECT_LLM_PRE_POST
+
+
+def test_inventory_residuals_add_named_type_and_heading_sf() -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
+        inventory_residuals,
+    )
+
+    note = (
+        "Diagnosis: symptomatic structural focal epilepsy. "
+        "Seizure type and frequency: focal seizures with altered awareness every 3 weeks; "
+        "focal to bilateral convulsive seizures 2014. "
+        "She remains seizure free."
+    )
+    mentions = [
+        {
+            "entity": "Diagnosis",
+            "text": "symptomatic structural focal epilepsy",
+            "attributes": {"DiagCategory": "Epilepsy"},
+        },
+        {
+            "entity": "SeizureFrequency",
+            "text": "focal seizures with altered awareness",
+            "attributes": {
+                "CUIPhrase": "focal seizures with altered awareness",
+                "NumberOfSeizures": "1",
+                "NumberOfTimePeriods": "3",
+                "TimePeriod": "Week",
+            },
+            "evidence": (
+                "Seizure type and frequency: focal seizures with altered awareness "
+                "every 3 weeks; focal to bilateral convulsive seizures 2014."
+            ),
+        },
+    ]
+    updated, stats = inventory_residuals.apply_inventory_residuals(note, mentions)
+    texts = {(row["entity"], row["text"]) for row in updated}
+    assert stats["diagnosis_residual_adds"] >= 1
+    assert ("Diagnosis", "focal seizures with altered awareness") in texts
+    assert stats["sf_adds"] == 0

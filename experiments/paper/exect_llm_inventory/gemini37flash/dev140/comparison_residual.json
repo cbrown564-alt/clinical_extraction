@@ -1,0 +1,153 @@
+{
+  "claim_boundary": "ExECT development inventory-F1 replay of recorded diagnosis residual adds on a frozen Gemini inventory extract. Not a paper cell. Not holdout. No new model calls.",
+  "fired": {
+    "diagnosis_residual_adds": 36,
+    "diagnosis_residual_letter_count": 29,
+    "diagnosis_residual_letters": [
+      "EA0002",
+      "EA0006",
+      "EA0009",
+      "EA0040",
+      "EA0056",
+      "EA0061",
+      "EA0072",
+      "EA0079",
+      "EA0107",
+      "EA0108",
+      "EA0110",
+      "EA0111",
+      "EA0114",
+      "EA0116",
+      "EA0121",
+      "EA0123",
+      "EA0126",
+      "EA0128",
+      "EA0143",
+      "EA0162",
+      "EA0171",
+      "EA0172",
+      "EA0175",
+      "EA0178",
+      "EA0179",
+      "EA0182",
+      "EA0184",
+      "EA0188",
+      "EA0195"
+    ],
+    "sf_adds": 0,
+    "sf_generic_keep_letter_count": 0,
+    "sf_generic_keep_letters": [],
+    "sf_heading_split_letter_count": 0,
+    "sf_heading_split_letters": []
+  },
+  "generated_on": "2026-08-23",
+  "hybrid_family_letter_exact": {
+    "Diagnosis": 76,
+    "Investigations": 128,
+    "Prescription": 129,
+    "SeizureFrequency": 100
+  },
+  "hybrid_family_prf": {
+    "Diagnosis": {
+      "f1": 0.8114,
+      "precision": 0.8477,
+      "recall": 0.7781
+    },
+    "Investigations": {
+      "f1": 0.9363,
+      "precision": 0.9542,
+      "recall": 0.9191
+    },
+    "Prescription": {
+      "f1": 0.958,
+      "precision": 0.9749,
+      "recall": 0.9417
+    },
+    "SeizureFrequency": {
+      "f1": 0.8294,
+      "precision": 0.9254,
+      "recall": 0.7515
+    }
+  },
+  "hybrid_headline_prf": {
+    "f1": 0.8727,
+    "precision": 0.9125,
+    "recall": 0.8361
+  },
+  "method": "exect_llm_inventory",
+  "model": "gemini/gemini-3.7-flash",
+  "new_model_calls": 0,
+  "paper_cell": false,
+  "prompt_version": "exect_llm_inventory",
+  "raw_family_letter_exact": {
+    "Diagnosis": 56,
+    "Investigations": 128,
+    "Prescription": 126,
+    "SeizureFrequency": 92
+  },
+  "raw_family_prf": {
+    "Diagnosis": {
+      "f1": 0.7162,
+      "precision": 0.7152,
+      "recall": 0.7173
+    },
+    "Investigations": {
+      "f1": 0.9363,
+      "precision": 0.9542,
+      "recall": 0.9191
+    },
+    "Prescription": {
+      "f1": 0.9429,
+      "precision": 0.9645,
+      "recall": 0.9223
+    },
+    "SeizureFrequency": {
+      "f1": 0.8,
+      "precision": 0.8714,
+      "recall": 0.7394
+    }
+  },
+  "raw_headline_prf": {
+    "f1": 0.8237,
+    "precision": 0.8434,
+    "recall": 0.805
+  },
+  "residual_family_letter_exact": {
+    "Diagnosis": 82,
+    "Investigations": 128,
+    "Prescription": 129,
+    "SeizureFrequency": 100
+  },
+  "residual_family_prf": {
+    "Diagnosis": {
+      "f1": 0.8602,
+      "precision": 0.8512,
+      "recall": 0.8693
+    },
+    "Investigations": {
+      "f1": 0.9363,
+      "precision": 0.9542,
+      "recall": 0.9191
+    },
+    "Prescription": {
+      "f1": 0.958,
+      "precision": 0.9749,
+      "recall": 0.9417
+    },
+    "SeizureFrequency": {
+      "f1": 0.8294,
+      "precision": 0.9254,
+      "recall": 0.7515
+    }
+  },
+  "residual_headline_prf": {
+    "f1": 0.8912,
+    "precision": 0.9113,
+    "recall": 0.872
+  },
+  "row_policy": "development_review_permitted",
+  "schema_version": "paper.exect_llm_inventory.residual.v1",
+  "scorer": "clinical_inventory_unit_keys",
+  "split": "dev140",
+  "track": "diagnostic inventory residual replay; not a five-cell paper column"
+}

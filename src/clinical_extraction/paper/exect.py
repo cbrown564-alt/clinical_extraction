@@ -29,6 +29,7 @@ from clinical_extraction.paper.exect_score import (
     letters_dev140,
     score_arm,
     write_inventory_baseline_comparison,
+    write_inventory_residual_comparison,
 )
 from clinical_extraction.paper.lm import build_paper_lm, resolve_paper_api_base
 from clinical_extraction.paper.methods import holdout_is_aggregate_only
@@ -560,6 +561,9 @@ def verify_llm_inventory(*, split: str = "dev140", slug: str | None = None) -> d
             raise RuntimeError("inventory still prefers most-specific collapse")
         if "Onset-history phrases such as" in joined:
             raise RuntimeError("inventory still drops onset-history as a diagnosis")
+        sf_joined = " ".join(payload["clinical_rules"]["seizure_frequency"])
+        if "keep a separate generic seizure event" not in sf_joined:
+            raise RuntimeError("inventory lost the heading SF split rule")
         if "include each as its own diagnosis event" not in joined:
             raise RuntimeError("inventory lost the split-compound diagnosis rule")
         if "Write diagnosis fact as only the short syndrome" in joined:
@@ -580,7 +584,7 @@ def verify_llm_inventory(*, split: str = "dev140", slug: str | None = None) -> d
         ):
             if phrase in blob:
                 raise RuntimeError(f"inventory prompt contains evaluation language: {phrase}")
-        if structured.compact_rule_count(payload["clinical_rules"]) != 48:
+        if structured.compact_rule_count(payload["clinical_rules"]) != 49:
             raise RuntimeError("inventory content drifted")
         if not payload.get("examples"):
             raise RuntimeError("inventory lost diagnosis examples")
@@ -635,6 +639,22 @@ def rescore_inventory_baseline(*, slug: str = "gemini37flash") -> dict[str, Any]
         source_structured=source,
         out_path=out,
         letters=letters_dev140(),
+    )
+
+
+def rescore_inventory_residuals(*, slug: str = "gemini37flash") -> dict[str, Any]:
+    """Replay recorded residuals on the saved Gemini inventory DEV140 extract."""
+
+    if slug != "gemini37flash":
+        raise RuntimeError("inventory residual rescore is Gemini DEV140 only")
+    work = INVENTORY_WORK_ROOT / slug / "dev140"
+    return write_inventory_residual_comparison(
+        structured_path=work / "exect_llm_inventory" / "structured.jsonl",
+        assembly_path=work / "exect_llm_inventory" / "assembly.jsonl",
+        out_path=work / "comparison_residual.json",
+        letters=letters_dev140(),
+        prompt_version=INVENTORY_VERSION,
+        model=MODELS[slug].model,
     )
 
 

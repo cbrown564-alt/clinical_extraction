@@ -10,6 +10,7 @@ from typing import Any
 from clinical_extraction.paper.exect import (
     MODELS,
     rescore_inventory_baseline,
+    rescore_inventory_residuals,
     run_compact,
     run_llm_inventory,
     run_llm_only,
@@ -51,6 +52,7 @@ def main(argv: Sequence[str] | None = None) -> None:
             "promote-exect",
             "replay-rungs",
             "score-inventory",
+            "score-inventory-residual",
         ),
     )
     parser.add_argument("--method", required=True, choices=sorted(LIVE_METHODS))
@@ -74,6 +76,19 @@ def main(argv: Sequence[str] | None = None) -> None:
         print(
             json.dumps(
                 rescore_inventory_baseline(slug=args.model or "gemini37flash"),
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return
+    if args.action == "score-inventory-residual":
+        if args.method != "exect_llm_inventory":
+            raise SystemExit("score-inventory-residual requires --method exect_llm_inventory")
+        if args.split != "dev140":
+            raise SystemExit("score-inventory-residual is DEV140 only")
+        print(
+            json.dumps(
+                rescore_inventory_residuals(slug=args.model or "gemini37flash"),
                 indent=2,
                 sort_keys=True,
             )

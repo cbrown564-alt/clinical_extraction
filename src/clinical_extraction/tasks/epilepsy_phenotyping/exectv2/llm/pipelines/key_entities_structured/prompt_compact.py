@@ -668,6 +668,14 @@ _INVENTORY_SPLIT_SYNDROME_AND_TYPE = (
     "diagnosis event."
 )
 
+_INVENTORY_SF_HEADING_SPLIT = (
+    "When a heading names more than one seizure type, write a "
+    "seizure-frequency event for each named type using that type's own rate. "
+    "If the letter also states a generic seizure-free or unknown seizure "
+    "state beside those typed rates, keep a separate generic seizure event "
+    "for that state."
+)
+
 _INVENTORY_FAMILY_GUIDANCE = {
     **_FAMILY_GUIDANCE,
     "diagnosis": (
@@ -688,7 +696,9 @@ def _inventory_sectioned_rules() -> dict[str, list[str]]:
         if row not in _INVENTORY_DROPPED_DIAGNOSIS_RULES
     ]
     diagnosis.insert(1, _INVENTORY_SPLIT_SYNDROME_AND_TYPE)
-    return {**rules, "diagnosis": diagnosis}
+    seizure_frequency = list(rules["seizure_frequency"])
+    seizure_frequency.insert(3, _INVENTORY_SF_HEADING_SPLIT)
+    return {**rules, "diagnosis": diagnosis, "seizure_frequency": seizure_frequency}
 
 
 def build_compact_prompt_input(letter: ExectLetter) -> str:

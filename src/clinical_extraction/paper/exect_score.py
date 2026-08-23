@@ -623,6 +623,138 @@ def write_inventory_baseline_comparison(
     return artifact
 
 
+
+def write_inventory_residual_comparison(
+    *,
+    structured_path: Path,
+    assembly_path: Path,
+    out_path: Path,
+    letters: Sequence[ExectLetter],
+    prompt_version: str,
+    model: str = "gemini/gemini-3.7-flash",
+) -> dict[str, Any]:
+    """Rescore saved inventory extract after replaying recorded residual adds."""
+
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
+        inventory_residuals,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
+        clinical_inventory_unit_keys,
+    )
+
+    letter_rows = _letter_family_rows(
+        gold=letters,
+        structured_path=structured_path,
+        assembly_path=assembly_path,
+        prompt_version=prompt_version,
+        arm="exect_llm_inventory",
+        call_mode="replay",
+        model=model,
+        unit_keys=clinical_inventory_unit_keys,
+    )
+    assembly_rows = {
+        str(row["letter_id"]): row for row in load_jsonl_rows(assembly_path)
+    }
+    residual_by_id: dict[str, list[dict[str, Any]]] = {}
+    fired = {
+        "diagnosis_residual_letters": [],
+        "sf_heading_split_letters": [],
+        "sf_generic_keep_letters": [],
+        "diagnosis_residual_adds": 0,
+        "sf_adds": 0,
+    }
+    for letter in letters:
+        mentions = list(assembly_rows[letter.letter_id].get("predicted_mentions") or [])
+        updated, stats = inventory_residuals.apply_inventory_residuals(letter.note_text, mentions)
+        residual_by_id[letter.letter_id] = updated
+        if stats["diagnosis_residual_adds"]:
+            fired["diagnosis_residual_letters"].append(letter.letter_id)
+            fired["diagnosis_residual_adds"] += int(stats["diagnosis_residual_adds"])
+        if stats["sf_heading_splits"]:
+            fired["sf_heading_split_letters"].append(letter.letter_id)
+        if stats["sf_generic_keeps"]:
+            fired["sf_generic_keep_letters"].append(letter.letter_id)
+        fired["sf_adds"] += int(stats["sf_adds"])
+
+    residual_letters = {
+        letter_id: ExectLetter(
+            letter_id=letter_id,
+            note_text="",
+            annotations=tuple(annotation_from_mapping(mention) for mention in mentions),
+        )
+        for letter_id, mentions in residual_by_id.items()
+    }
+    for row in letter_rows:
+        letter_id = str(row["letter_id"])
+        family = str(row["family"])
+        pred = [
+            mention
+            for mention in residual_letters[letter_id].annotations
+            if mention.entity == family
+        ]
+        gold_mentions = [
+            annotation
+            for annotation in next(
+                item for item in letters if item.letter_id == letter_id
+            ).annotations
+            if annotation.entity == family
+        ]
+        residual_keys = Counter(
+            clinical_inventory_unit_keys(family, pred, "")
+        )
+        gold_keys = Counter(
+            clinical_inventory_unit_keys(family, gold_mentions, "")
+        )
+        row["residual_keys"] = _counter_rows(residual_keys)
+        row["residual_letter_exact"] = residual_keys == gold_keys
+        row["residual_mention_count"] = len(pred)
+
+    raw_prf = _surface_prf(letter_rows, "raw_keys")
+    hybrid_prf = _surface_prf(letter_rows, "hybrid_keys")
+    residual_prf = _surface_prf(letter_rows, "residual_keys")
+    artifact = {
+        "schema_version": "paper.exect_llm_inventory.residual.v1",
+        "generated_on": "2026-08-23",
+        "method": "exect_llm_inventory",
+        "paper_cell": False,
+        "track": "diagnostic inventory residual replay; not a five-cell paper column",
+        "new_model_calls": 0,
+        "split": "dev140",
+        "row_policy": "development_review_permitted",
+        "scorer": "clinical_inventory_unit_keys",
+        "prompt_version": prompt_version,
+        "model": model,
+        "raw_headline_prf": raw_prf["overall"],
+        "raw_family_prf": raw_prf["by_family"],
+        "hybrid_headline_prf": hybrid_prf["overall"],
+        "hybrid_family_prf": hybrid_prf["by_family"],
+        "residual_headline_prf": residual_prf["overall"],
+        "residual_family_prf": residual_prf["by_family"],
+        "raw_family_letter_exact": _family_exact(letter_rows, "raw_letter_exact"),
+        "hybrid_family_letter_exact": _family_exact(letter_rows, "hybrid_letter_exact"),
+        "residual_family_letter_exact": _family_exact(
+            letter_rows, "residual_letter_exact"
+        ),
+        "fired": {
+            **fired,
+            "diagnosis_residual_letter_count": len(fired["diagnosis_residual_letters"]),
+            "sf_heading_split_letter_count": len(fired["sf_heading_split_letters"]),
+            "sf_generic_keep_letter_count": len(fired["sf_generic_keep_letters"]),
+        },
+        "claim_boundary": (
+            "ExECT development inventory-F1 replay of recorded diagnosis residual "
+            "adds on a frozen Gemini inventory extract. "
+            "Not a paper cell. Not holdout. No new model calls."
+        ),
+    }
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(
+        json.dumps(artifact, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return artifact
+
+
 assembly_row = _assembly_row
 changed_rows = _changed_rows
 compare_pair = _compare_pair
