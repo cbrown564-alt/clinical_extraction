@@ -32,7 +32,7 @@ Development select stops live in
 
 The headline row is **LLM / LLM / rules** (later-stage encode, then rule
 select) at 0.8173. The **six-model comparison row** is **LLM / rules /
-rules** at living rungs 0.8161. Both read 0.82 at two decimals. Holdout is
+rules** at five-cell 0.8161. Both read 0.82 at two decimals. Holdout is
 aggregate-only. The metric is not the
 published ExECT benchmark. Do not cite Sol Compact 0.8031 or Full-ledger
 Sol 0.8302 as headline cells.

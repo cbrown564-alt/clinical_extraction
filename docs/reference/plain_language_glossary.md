@@ -1,3 +1,7 @@
+# Plain-language glossary
+
+Paper methods are five cells: who runs extract, encode, and select (rules, LLM, or both). `rules` / `llm` / `llm_with_rules` are live runner families, not the headline table. `hybrid_full_stack` is a load alias for rule select.
+
 # Naming guide
 
 Last updated: 2026-08-03

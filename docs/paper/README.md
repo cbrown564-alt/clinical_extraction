@@ -40,15 +40,16 @@ comparator when cited—not a headline method.
 | File | Job |
 | --- | --- |
 | [methods](methods.md) | Proposed method, baselines, roster, splits, scorers |
-| [method × stage](../research/paper/five_rungs_of_rule_help_2026-08-20.md) | Plain-language method × stage grid, with one Gan and one ExECT development example |
+| [method × stage](method_x_stage.md) | Plain-language method × stage grid, with one Gan and one ExECT development example |
 | [Gan rules and models](../research/paper/gan_rules_and_llms_across_stages_2026-08-21.md) | Gemini Gan reading: roles, order, encode/select lift |
 | [Gan five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md) | Cited Gemini frequency five-cell totals |
 | [ExECT cell 4](../research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md) | Cited Gemini inventory LLM / LLM / rules stop |
-| [rule catalogue](../research/paper/rule_catalogue_schema_format_post_2026-08-21.md) | Named extract / encode / select rules on both tasks |
+| [rule catalogue](rule_catalogue.md) | Named extract / encode / select rules on both tasks |
 | [claims](claims.md) | What the paper may say, and how strongly |
 | [lineage](lineage.md) | How the living requests were reached and what kind of method change each revision made |
 | [decisions](decisions/) | Current decisions |
 | [source library](../research/paper/) | Writing sources |
 | [paper experiments](../../paper_experiments/README.md) | Replayable cells |
-| [scope](../plans/paper_final_repo_scope_2026-08-17.md) | Cut and allowed new runs |
+| [cells and runners](cells_and_runners.md) | Live runner names mapped onto the five cells |
+| [architecture](architecture.md) | Extract / encode / select and rule authority |
 | [decision history](../history/decisions.md) | Closed numbered series |

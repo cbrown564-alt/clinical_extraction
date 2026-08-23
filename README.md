@@ -74,7 +74,7 @@ ledger-only. `gan_llm_only` is not a results column.
   seizure-frequency label per letter).
 - **ExECTv2:** de-duplicated clinical fact F1 on the locked `test60` split
   (diagnosis, seizure frequency, prescriptions, and investigations).
-  Cell 3 (LLM / rules / rules) is the roster row (living rungs select
+  Cell 3 (LLM / rules / rules) is the roster row (five-cell select
   0.8161). Cell 4 (LLM / LLM / rules) is the Gemini-only peak
   (0.8173) after later-stage encode.
 

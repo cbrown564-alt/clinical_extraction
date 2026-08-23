@@ -24,7 +24,7 @@ ExECT cell 4 exists. On the saved Gemini later-stage encode ledger,
 accepted Select rules raise exact clinical-fact F1 from **0.8176 to
 0.8288** on `dev140` and from **0.8059 to 0.8173** on locked `test60`.
 That holdout select stop is above later-stage LLM select (**0.7954**)
-and 0.0012 above living rungs cell 3 select (**0.8161**). The
+and 0.0012 above five-cell cell 3 select (**0.8161**). The
 retired encode/select-split replay of that cell 3 stop was
 **0.7869**.
 

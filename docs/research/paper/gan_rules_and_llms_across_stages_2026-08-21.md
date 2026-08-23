@@ -4,7 +4,7 @@ Date: 2026-08-21
 Revised: 2026-08-22 (five-cell headline; select stop; wording ablation)
 Status: paper source; Gan only; Gemini 3.7 Flash
 Owners: [methods](../../paper/methods.md), [claims](../../paper/claims.md),
-[method × stage](five_rungs_of_rule_help_2026-08-20.md)
+[method × stage](../../paper/method_x_stage.md)
 
 This report reads the locked Gemini Gan grid. The cited table is
 five role rows; the headline score is the select stop. See
@@ -422,7 +422,7 @@ the system is ready for clinical use.
 | --- | --- |
 | Locked wording | [claims](../../paper/claims.md) |
 | Cell identities | [methods](../../paper/methods.md) |
-| Plain-language grid and one letter per task | [method × stage](five_rungs_of_rule_help_2026-08-20.md) |
+| Plain-language grid and one letter per task | [method × stage](../../paper/method_x_stage.md) |
 | Why a model plus recorded rules | [hybrid architecture](why_hybrid_architecture_2026-08-09.md) |
 | Gan later-stage prompt contract | [decision](../../paper/decisions/gan-later-stage-encode-select-prompts.md) |
 | Earlier Gan story (Grok-centred) | [Gan story](gan_story_2026-08-10.md) |

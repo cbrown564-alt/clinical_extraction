@@ -10,8 +10,8 @@ import { ACCENT } from "@/lib/isometricLayout";
 
 const METHODS: { id: MethodType; label: string }[] = [
   { id: "rules", label: "Rules" },
-  { id: "llm", label: "Model" },
-  { id: "llm_with_rules", label: "Hybrid" },
+  { id: "llm", label: "LLM" },
+  { id: "llm_with_rules", label: "LLM + rules" },
 ];
 
 export default function IsometricControls() {

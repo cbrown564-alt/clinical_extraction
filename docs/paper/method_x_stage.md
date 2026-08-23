@@ -1,4 +1,4 @@
-# Method × stage grid: methods against extract / encode / select
+# Method × stage: extract / encode / select
 
 Date: 2026-08-20
 Revised: 2026-08-22 (wording ablation labeled; five role rows)
@@ -212,7 +212,7 @@ second use case.
 | Gan Gemini reading of this grid | [rules and models across stages](gan_rules_and_llms_across_stages_2026-08-21.md) |
 | Locked wording | [claims](../../paper/claims.md) |
 | Identities, splits, scorers | [methods](../../paper/methods.md) |
-| Named schema / format / post rules | [rule catalogue](rule_catalogue_schema_format_post_2026-08-21.md) |
+| Named extract / encode / select rules | [rule catalogue](rule_catalogue.md) |
 | Why a model plus recorded rules | [hybrid architecture](why_hybrid_architecture_2026-08-09.md) |
 | The two golds | [what the two golds already decided](what_the_two_golds_already_decided_2026-08-17.md) |
 | Earlier pair of reviewable traces | [reviewable case pair](reviewable_case_pair_2026-08-09.md) |

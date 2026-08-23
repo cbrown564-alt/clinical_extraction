@@ -5,7 +5,7 @@
 
 # Architecture: how a record moves through each method
 
-This directory answers one question: what happens to a letter, stage by stage, in each of the six implemented task-method runners, and who owns each change. These runners explain mechanism only; they are not the paper's five-cell headline table. For cited methods, scores, and claims see [docs/paper/methods.md](../paper/methods.md).
+This directory answers one question: what happens to a letter, stage by stage, in each of the six implemented task-method runners, and who owns each change. These runners explain mechanism only; they are not the paper's five-cell headline table. Map a runner onto a cell with [cells and runners](../paper/cells_and_runners.md). For cited methods, scores, and claims see [docs/paper/methods.md](../paper/methods.md).
 
 Everything here is generated from the stage manifests in `src/clinical_extraction/architecture/manifests/` and from teaching cases that execute the real pipelines. Do not edit these files by hand - change the manifest or the code, then run `python scripts/build_architecture_docs.py`.
 

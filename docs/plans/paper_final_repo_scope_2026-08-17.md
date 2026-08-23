@@ -1,3 +1,5 @@
+Status: superseded as a paper-methods owner on 2026-08-23. The paper is five cells (extract / encode / select), not five rungs. Use [docs/paper/methods.md](../paper/methods.md).
+
 # Paper-final repository scope
 
 Date: 2026-08-17
@@ -24,7 +26,7 @@ rows. Do not invent numbers.
 
 ## What the paper is
 
-Two tasks, five rungs of rule help, six models. Scores are not
+Two tasks, five cells of rule help, six models. Scores are not
 interchangeable across tasks. This cut amends the 2026-08-17
 three-method table. `gan_llm_only` remains a live runner identity.
 It is not a results column.
@@ -127,7 +129,7 @@ A short current set, written in paper language:
 
 | File | Job |
 | --- | --- |
-| `README.md` | Public front door: two tasks, five rungs, held-out scores |
+| `README.md` | Public front door: two tasks, five cells, held-out scores |
 | `PROJECT_STATUS.md` | What is present, what is missing, what may be run |
 | `docs/NAVIGATION.md` | Paper source library and current owners only |
 | `docs/paper/methods.md` | Authoritative method names, roster, splits, scorers |

@@ -1,7 +1,7 @@
 # What the evidence supports
 
 Date: 2026-08-20
-Revised: 2026-08-22 (cell 3 holdout select is living rungs 0.8161)
+Revised: 2026-08-22 (cell 3 holdout select is five-cell 0.8161)
 Status: current
 Owner: this file
 
@@ -89,7 +89,7 @@ LLM / LLM / rules is accepted Select on that encode ledger. LLM
 select is later-stage `exect_llm_select`. The old `gan_llm_with_rules` grid is the source-near wording
 ablation, not a headline. The six-model row is LLM / rules / rules
 on both tasks. The worked reading is
-[five rungs of rule help](../research/paper/five_rungs_of_rule_help_2026-08-20.md),
+[five cells of rule help](../paper/method_x_stage.md),
 the [Gan five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md),
 and
 [ExECT cell 4](../research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md).

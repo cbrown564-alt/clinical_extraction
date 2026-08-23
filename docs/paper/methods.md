@@ -62,7 +62,7 @@ derived state graph is optional. A recorded hop is not a clinically
 correct step.
 
 The paper uses these change classes consistently (plain-language owner:
-[five rungs](../research/paper/five_rungs_of_rule_help_2026-08-20.md)):
+[five cells](../paper/method_x_stage.md)):
 
 - **Extract:** collect facts and quotes. The model's written label or
   mentions. Parse is code.
@@ -90,7 +90,7 @@ records it. A visible step is not described as clinically correct.
 
 Both tasks are five role rows. Scores stay task-specific. The
 plain-language owner is
-[five rungs of rule help](../research/paper/five_rungs_of_rule_help_2026-08-20.md).
+[five cells of rule help](../paper/method_x_stage.md).
 
 | Extract | Encode | Select | Gan | ExECT |
 | --- | --- | --- | --- | --- |

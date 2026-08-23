@@ -1,8 +1,11 @@
-# Rule catalogue: schema, encode, and revise
+# Rule catalogue
+
+Index by authority (parse, dialect, encode, gate, rewrite, reselect, invent), then by stage. Schema / format / post are not the paper cells.
+
 
 Date: 2026-08-21
 Status: paper source; development inventory
-Owners: [five reported cells](five_rungs_of_rule_help_2026-08-20.md) for cell meaning;
+Owners: [method × stage](method_x_stage.md) for cell meaning;
 this file for the named-rule list
 
 This is the comparable grain for both tasks: **named, independently

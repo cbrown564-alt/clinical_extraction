@@ -27,10 +27,23 @@ RUNG_IDS: tuple[RungId, ...] = (
     "llm_select",
     "llm_pre_post",
 )
-RESULT_COLUMNS: tuple[RungId, ...] = RUNG_IDS
-
-# Report / table order only. Not a climb or better-later axis.
+# README / paper table order. Not replay order and not a depth axis.
+RESULT_COLUMNS: tuple[RungId, ...] = (
+    "rules_only",
+    "llm_pre_post",
+    "llm_extract",
+    "llm_encode",
+    "llm_select",
+)
 CELL_ORDER: dict[RungId, int] = {
+    "rules_only": 1,
+    "llm_pre_post": 2,
+    "llm_extract": 3,
+    "llm_encode": 4,
+    "llm_select": 5,
+}
+# Sealed hops used these ints before the table was reordered.
+LEGACY_HOP_ORDER: dict[RungId, int] = {
     "rules_only": 1,
     "llm_extract": 2,
     "llm_encode": 3,
@@ -122,6 +135,9 @@ EFFECT_CLASS_ALIASES: dict[str, str] = {
     "revise": "select",
 }
 CELL_ORDER_TO_ID: dict[int, RungId] = {order: cell for cell, order in CELL_ORDER.items()}
+LEGACY_HOP_ORDER_TO_ID: dict[int, RungId] = {
+    order: cell for cell, order in LEGACY_HOP_ORDER.items()
+}
 
 
 def normalize_cell_id(value: str) -> RungId:
@@ -157,9 +173,9 @@ def cell_id_from_legacy_rung(rung: int | str | None) -> RungId | None:
     if rung is None:
         return None
     if isinstance(rung, int):
-        return CELL_ORDER_TO_ID.get(rung)
+        return LEGACY_HOP_ORDER_TO_ID.get(rung)
     if isinstance(rung, str) and rung.isdigit():
-        return CELL_ORDER_TO_ID.get(int(rung))
+        return LEGACY_HOP_ORDER_TO_ID.get(int(rung))
     return normalize_cell_id(str(rung))
 
 

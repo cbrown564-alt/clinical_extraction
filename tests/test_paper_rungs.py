@@ -91,21 +91,27 @@ def _bound_raw() -> str:
 
 
 def test_result_columns_are_the_five_cells() -> None:
-    assert RUNG_IDS == (
+    assert set(RUNG_IDS) == {
         "rules_only",
         "llm_extract",
         "llm_encode",
         "llm_select",
         "llm_pre_post",
+    }
+    assert RESULT_COLUMNS == (
+        "rules_only",
+        "llm_pre_post",
+        "llm_extract",
+        "llm_encode",
+        "llm_select",
     )
-    assert RESULT_COLUMNS == RUNG_IDS
     assert "gan_llm_only" not in RESULT_COLUMNS
     assert CELL_ORDER == {
         "rules_only": 1,
-        "llm_extract": 2,
-        "llm_encode": 3,
-        "llm_select": 4,
-        "llm_pre_post": 5,
+        "llm_pre_post": 2,
+        "llm_extract": 3,
+        "llm_encode": 4,
+        "llm_select": 5,
     }
     assert gan_method_for_rung("llm_select") == "gan_llm_with_rules"
     assert gan_method_for_rung("llm_encode") == "gan_llm_encode"
@@ -175,7 +181,7 @@ def test_selected_evidence_render_keeps_the_same_event() -> None:
     assert render_hops
     assert render_hops[0]["effect_class"] == "encode"
     assert render_hops[0]["cell_id"] == "llm_encode"
-    assert render_hops[0]["cell_order"] == 3
+    assert render_hops[0]["cell_order"] == 4
     assert render_hops[0]["operands"] == ["e1"]
 
 
@@ -251,3 +257,11 @@ def test_exect_hops_use_the_same_effect_class_names() -> None:
     assert EXECT_HOP_EFFECT_CLASS["exect.format.stop"] == "encode"
     assert EXECT_HOP_EFFECT_CLASS["exect.select.dictionary"] == "select"
     assert EXECT_HOP_EFFECT_CLASS["exect.select.residual"] == "select"
+
+
+def test_legacy_hop_int_still_means_encode() -> None:
+    from clinical_extraction.paper.rungs import cell_id_from_legacy_rung
+
+    assert cell_id_from_legacy_rung(3) == "llm_encode"
+    assert cell_id_from_legacy_rung(2) == "llm_extract"
+    assert cell_id_from_legacy_rung(5) == "llm_pre_post"
