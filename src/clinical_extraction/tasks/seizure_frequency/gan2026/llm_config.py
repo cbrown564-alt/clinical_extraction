@@ -103,9 +103,15 @@ def build_dspy_lm(
         reasoning_effort
         and not native_openai_reasoning
         and "extra_body" not in kwargs
+        and not model.startswith(DEEPSEEK_PREFIX)
     ):
         kwargs["extra_body"] = {"reasoning": {"effort": reasoning_effort}}
-    _apply_deepseek_thinking(kwargs, model, thinking_type)
+    _apply_deepseek_thinking(
+        kwargs,
+        model,
+        thinking_type,
+        reasoning_effort=reasoning_effort,
+    )
     return dspy.LM(model, **kwargs)
 
 
@@ -113,18 +119,22 @@ def _apply_deepseek_thinking(
     kwargs: dict[str, Any],
     model: str,
     thinking_type: str | None,
+    *,
+    reasoning_effort: str | None = None,
 ) -> None:
     if not model.startswith(DEEPSEEK_PREFIX):
         return
     resolved = (thinking_type or os.environ.get(DEEPSEEK_THINKING_ENV, "")).strip()
-    if not resolved:
-        return
-    if resolved not in DEEPSEEK_THINKING_TYPES:
-        allowed = ", ".join(sorted(DEEPSEEK_THINKING_TYPES))
-        raise ValueError(f"DeepSeek thinking_type must be one of: {allowed}")
     extra = dict(kwargs.get("extra_body") or {})
-    extra["thinking"] = {"type": resolved}
-    kwargs["extra_body"] = extra
+    if resolved:
+        if resolved not in DEEPSEEK_THINKING_TYPES:
+            allowed = ", ".join(sorted(DEEPSEEK_THINKING_TYPES))
+            raise ValueError(f"DeepSeek thinking_type must be one of: {allowed}")
+        extra["thinking"] = {"type": resolved}
+    if reasoning_effort:
+        extra["reasoning_effort"] = reasoning_effort
+    if extra:
+        kwargs["extra_body"] = extra
 
 
 def _uses_native_openai_reasoning_param(model: str) -> bool:

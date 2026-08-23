@@ -16,7 +16,7 @@ report.
 
 Replayable cells:
 `paper_experiments/gan/rungs/gemini37flash/`,
-`paper_experiments/gan/gan_llm_pre_post/gemini37flash/`,
+`paper_experiments/gan/gan_llm_extract_raw/gemini37flash/`,
 `paper_experiments/gan/gan_llm_encode/gemini37flash/`,
 `paper_experiments/gan/gan_llm_select/gemini37flash/`.
 
@@ -34,7 +34,7 @@ the select stop:
 | --- | --- | --- | --- |
 | rules | rules | rules | `gan_rules` — standalone deterministic pipeline; not the encode/select stack on a model ledger |
 | both | rules | rules | `gan_llm_and_rules_extract`, then rule encode and select |
-| LLM | rules | rules | `gan_llm_extract` (codebook), then codebook encode and rule select — **six-model row** |
+| LLM | rules | rules | `gan_llm_extract`, then `gan_rules_encode` and rule select — **six-model row** |
 | LLM | LLM | rules | Same codebook extract; select families only |
 | LLM | LLM | LLM | Same extract; `gan_llm_select_from_extract` |
 
@@ -82,7 +82,7 @@ preserves clinical reasoning.
 Three patterns sit in that table.
 
 1. **The headline is the submitted (select) label.** LLM extract plus
-   codebook encode plus rule select is 0.83. Rule select without
+   `gan_rules_encode` plus rule select is 0.83. Rule select without
    encode, and both-then-rules, are 0.82. LLM select is 0.79.
    Standalone rules are 0.73.
 2. **Codebook extract already writes the form.** The LLM encode

@@ -6,10 +6,10 @@ Status: cited
 Owner: [protocol](gan_five_cell_grid_protocol_2026-08-22.md)
 Paper artifact: `paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json`
 
-Cell 3 (LLM / rules / rules) is the six-model row: codebook extract,
-`gan_rules_encode`, rule select (**0.83** holdout). Leftover living
-extracts (`gan_llm_extract_raw`, living `gan_llm_pre_post`) stay on disk;
-they are not the paper primary.
+Cell 3 (LLM / rules / rules) is the six-model row: `gan_llm_extract`,
+`gan_rules_encode`, rule select (**0.83** holdout). The source-near
+ablation `gan_llm_extract_raw` stays on disk; it is not the paper
+primary.
 
 ## Answer
 
@@ -50,7 +50,7 @@ wrote the codebook form (no rule encode). LLM select is
 | LLM | LLM | rules | 0.79 | 0.79 |
 | LLM | LLM | LLM | 0.79 | 0.79 |
 
-## `dev750` select (codebook encode on the LLM-then-rules row)
+## `dev750` select (`gan_rules_encode` on the LLM-then-rules row)
 
 | Extract | Encode | Select | Purist |
 | --- | --- | --- | ---: |

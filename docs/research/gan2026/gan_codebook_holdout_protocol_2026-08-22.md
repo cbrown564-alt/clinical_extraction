@@ -44,9 +44,9 @@ can replace the published Gemini grid.
 
 ## Fixed comparators
 
-- Source-near ablation grid on `gan_llm_extract_raw` / living
-  `gan_llm_pre_post` (not the cited five-cell table)
-- Do not overwrite those living cells
+- Source-near ablation grid on `gan_llm_extract_raw` (not the cited
+  five-cell table). No-forms `gan_llm_pre_post` is retired.
+- Do not overwrite those ablation cells
 - Do not run later-stage `gan_llm_encode` or encode-then-select
 
 ## Stop rule

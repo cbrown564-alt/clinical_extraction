@@ -8,9 +8,8 @@ Machine artifact: `experiments/paper/gan_codebook_extract_grid/gemini37flash/dev
 
 Development grid that chose the cited LLM extract and both extract
 (`gan_llm_and_rules_extract`). `gan_llm_extract_raw` is the source-near
-wording ablation, not the paper extract. Living `gan_llm_pre_post` is not
-the cited both row. Leftover living extracts stay on disk; they are not
-the paper primary.
+wording ablation, not the paper extract. Retired no-forms
+`gan_llm_pre_post` is not the cited both row.
 
 ## Answer
 
@@ -30,8 +29,9 @@ Gemini 3.7 Flash, Gan `dev750`, Purist. New extract
 `gan_llm_extract`. Fresh later-stage encode and select
 calls on that ledger. Rule encode/select replay on the same raw
 (`note_text` on). Fresh `gan_llm_and_rules_extract`, then the same
-rule stops. Promoted `gan_llm_extract_raw` and living `gan_llm_pre_post`
-were not overwritten. `test450` was not loaded in this cut.
+rule stops. Promoted `gan_llm_extract_raw` and the then-living
+no-forms `gan_llm_pre_post` were not overwritten. `test450` was not
+loaded in this cut.
 
 ## Component result
 
@@ -41,10 +41,11 @@ Purist accuracy.
 | --- | ---: | ---: | ---: |
 | LLM (later-stage on codebook extract) | **0.78** | **0.69** | **0.79** |
 | LLM then rules (rules on that raw) | 0.78 | **0.80** | **0.86** |
-| Rules then LLM (`pre_post` + forms) | **0.86** | **0.86** | **0.89** |
+| Rules then LLM (`gan_llm_and_rules_extract`) | **0.86** | **0.86** | **0.89** |
 | Standalone rules | — | — | 0.89 |
 
-Source-near ablation (`gan_llm_extract_raw` / living `gan_llm_pre_post`):
+Source-near ablation (`gan_llm_extract_raw` / historical no-forms
+`gan_llm_pre_post`):
 
 | Method | Extract | Encode | Select |
 | --- | ---: | ---: | ---: |
@@ -65,14 +66,15 @@ then rules select (0.88), because the new extract already wrote codebook
 strings and changed 219 picks.
 
 Rules then LLM extract jumps from 0.67 to 0.86. Rule encode is flat on
-Purist. Rule select is 0.89, one letter above the living no-forms cell
-(0.89) and four below standalone rules (0.89).
+Purist. Rule select is 0.89, one letter above the historical no-forms
+cell (0.89) and four below standalone rules (0.89).
 
 ## Claim boundary
 
 Development candidate grid. Not holdout. Informed the cited five-cell
 `test450` table; does not replace it. Do not retune `label_forms`. Do
-not overwrite `gan_llm_extract_raw` or living `gan_llm_pre_post`.
+not overwrite `gan_llm_extract_raw` or the retired no-forms
+`gan_llm_pre_post` cells.
 
 ## Next
 

@@ -1,0 +1,25 @@
+{
+  "call_mode": "live_2026-08-17",
+  "comparison": "comparison.json",
+  "empty_raw_count": 0,
+  "id_field": "source_row_index",
+  "living_effort": "thinking_on_provider_default",
+  "method": "gan_llm_extract",
+  "model": "deepseek/deepseek-v4-flash",
+  "model_slug": "deepseek_v4_flash",
+  "n": 450,
+  "program": "gan_llm_extract",
+  "purist_accuracy": 0.7422,
+  "purist_correct": 334,
+  "replay_fields": [
+    "source_row_index",
+    "prompt_version",
+    "raw_output"
+  ],
+  "row_count": 450,
+  "row_policy": "aggregate_only",
+  "rows": "rows.jsonl",
+  "source": "scratch/holdout/paper/gan_llm_extract/deepseek_v4_flash/test450",
+  "split": "test450",
+  "split_machine": "test"
+}

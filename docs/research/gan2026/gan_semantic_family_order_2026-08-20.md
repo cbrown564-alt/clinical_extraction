@@ -7,9 +7,10 @@ Owner: this file
 Protocol: [gan_semantic_family_order_protocol_2026-08-20.md](gan_semantic_family_order_protocol_2026-08-20.md)
 Artifact: `experiments/paper/gan_semantic_family_order/dev750_adjacent_swaps.json`
 
-Replay uses saved `gan_llm_extract_raw` and living `gan_llm_pre_post`
-outputs — source-near ablation cells, not the cited five-cell table.
-Leftover living extracts stay on disk; they are not the paper primary.
+Replay uses saved `gan_llm_extract_raw` and historical no-forms
+`gan_llm_pre_post` outputs — source-near ablation cells, not the
+cited five-cell table. No-forms `gan_llm_pre_post` is not a live
+runner.
 
 ## Question
 

@@ -4,8 +4,9 @@ Date: 2026-08-20
 Revised: 2026-08-22 (replays source-near ablation cells)
 Status: answered — see [gan_semantic_family_order_2026-08-20.md](gan_semantic_family_order_2026-08-20.md)
 Owner: this file
-Identity: replay of source-near `gan_llm_extract_raw` and living
-`gan_llm_pre_post` raw output (not the cited five-cell table)
+Identity: replay of source-near `gan_llm_extract_raw` and historical
+no-forms `gan_llm_pre_post` raw output (not the cited five-cell table).
+No-forms `gan_llm_pre_post` is not a live runner.
 
 ## Question
 

@@ -1,15 +1,16 @@
 # Gan candidate-suggestion protocol
 
 Date: 2026-08-20
-Revised: 2026-08-22 (cited both extract is `gan_llm_and_rules_extract`)
-Status: development
+Revised: 2026-08-23 (no-forms `gan_llm_pre_post` retired)
+Status: retired — this identity is not a live runner
 Owner: this file
-Identity: `gan_llm_pre_post` (development iterator; cited both extract is
-`gan_llm_and_rules_extract`)
+Identity: retired no-forms `gan_llm_pre_post`. Living both-extract is
+`gan_llm_and_rules_extract`.
 
-The cited both extract is `gan_llm_and_rules_extract`, not this living
-`gan_llm_pre_post` body. Leftover living extracts stay on disk; they are
-not the paper primary.
+This file is the development log for the deleted no-forms runner.
+The living both-extract is `gan_llm_and_rules_extract`. Commands
+below that use `--method gan_llm_pre_post` or `--slice` no longer
+run.
 
 ## Question
 

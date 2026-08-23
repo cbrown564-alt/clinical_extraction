@@ -281,6 +281,34 @@ def test_deepseek_thinking_disabled_is_sent_in_extra_body(
     assert captured["extra_body"] == {"thinking": {"type": "disabled"}}
 
 
+def test_deepseek_living_low_sends_thinking_and_effort(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict[str, Any] = {}
+
+    def fake_lm(model: str, **kwargs: Any) -> object:
+        captured["model"] = model
+        captured.update(kwargs)
+        return object()
+
+    monkeypatch.setattr(llm_config.dspy, "LM", fake_lm)
+
+    llm_config.build_dspy_lm(
+        "deepseek/deepseek-v4-flash",
+        temperature=0.0,
+        max_tokens=16000,
+        cache=False,
+        thinking_type="enabled",
+        reasoning_effort="low",
+    )
+
+    assert captured["model"] == "deepseek/deepseek-v4-flash"
+    assert captured["extra_body"] == {
+        "thinking": {"type": "enabled"},
+        "reasoning_effort": "low",
+    }
+
+
 def test_deepseek_omits_thinking_toggle_when_unset(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

@@ -10,8 +10,8 @@ Owner: this file
 If Gemini extract uses the closed `label_forms` list, what are the
 `dev750` extract / encode / select scores for (1) later-stage LLM
 encode and select on that ledger, (2) rule encode and select on that
-same raw, and (3) a new `gan_llm_pre_post` request that also carries
-`label_forms`, then rule encode and select?
+same raw, and (3) a new `gan_llm_and_rules_extract` request that also
+carries `label_forms`, then rule encode and select?
 
 ## Why it matters
 
@@ -45,14 +45,14 @@ would still describe the old ledger.
 ## Fixed comparators (not overwritten)
 
 - Promoted `gan_llm_extract_raw` extract and its later-stage encode/select
-- Promoted `gan_llm_pre_post` without `label_forms`
+- Promoted no-forms `gan_llm_pre_post` (now retired as a live runner)
 - Standalone rules `0.89`
 
 ## Stop rule
 
 Stop after the three `dev750` arms are scored. Do not retune
-`label_forms`. Do not overwrite `gan_llm_extract_raw` or living
-`gan_llm_pre_post`. Do not run holdout in this cut. Do not promote
+`label_forms`. Do not overwrite `gan_llm_extract_raw` or the then-living
+no-forms `gan_llm_pre_post`. Do not run holdout in this cut. Do not promote
 into the claims table until the `dev750` grid is written.
 
 ## Claim boundary
