@@ -139,7 +139,13 @@ describe("Gan architecture options", () => {
     });
 
     expect(ganPaperRunId("llm_select", "grok46")).toBe(
-      "gan2026_validation750_grok46_llm_with_rules"
+      "gan2026_validation750_grok46_llm_select"
+    );
+    expect(ganPaperRunId("llm_encode", "grok46")).toBe(
+      "gan2026_validation750_grok46_llm_encode"
+    );
+    expect(ganPaperRunId("gan_llm_only", "grok46")).toBe(
+      "gan2026_validation750_grok46_llm_only"
     );
     expect(families.map((item) => item.model)).toEqual([
       "openai/gpt-5.6-luna",
@@ -148,10 +154,15 @@ describe("Gan architecture options", () => {
       "(model-independent)",
     ]);
     const grouped = groupGanPipelineOptions(families);
-    expect(grouped[0].options.map((item) => item.model)).toEqual([
+    const selectGroup = grouped.find((group) => group.label === "LLM all the way");
+    expect(selectGroup?.options.map((item) => item.model)).toEqual([
       "xai/grok-4.6",
       "openai/gpt-5.6-luna",
       "ollama_chat/qwen3.8:27b",
+    ]);
+    expect(grouped.map((group) => group.label)).toEqual([
+      "Rules only",
+      "LLM all the way",
     ]);
     expect(families.find((item) => item.model === "xai/grok-4.6")?.availability).toBe(
       "replay"

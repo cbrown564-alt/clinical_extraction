@@ -7,18 +7,16 @@ import {
   type MethodType,
 } from "@/lib/isometricStore";
 import { ACCENT } from "@/lib/isometricLayout";
-
-const METHODS: { id: MethodType; label: string }[] = [
-  { id: "rules", label: "Rules" },
-  { id: "llm", label: "LLM" },
-  { id: "llm_with_rules", label: "LLM + rules" },
-];
+import { PAPER_CELLS, teachingStandInCaption } from "@/lib/paperCells";
 
 export default function IsometricControls() {
   const { cases, selectedCaseId, selectedMethod, setSelectedCaseId, setSelectedMethod } =
     useIsometricStore();
   const activeCase = useIsometricStore(getActiveCase);
   const activeRun = useIsometricStore(getActiveRun);
+  const standIn = activeCase
+    ? teachingStandInCaption(activeCase.task, selectedMethod)
+    : null;
 
   return (
     <div className="border-b border-neutral-200 bg-white px-4 py-2 text-neutral-900">
@@ -39,24 +37,34 @@ export default function IsometricControls() {
       </label>
 
       <div className="flex items-center gap-1">
-        {METHODS.map((method) => {
-          const active = selectedMethod === method.id;
+        {PAPER_CELLS.map((cell) => {
+          const active = selectedMethod === cell.id;
+          const title = cell.headline
+            ? `${cell.displayName} (headline)`
+            : cell.displayName;
           return (
             <button
-              key={method.id}
+              key={cell.id}
               type="button"
-              onClick={() => setSelectedMethod(method.id)}
+              onClick={() => setSelectedMethod(cell.id as MethodType)}
+              title={title}
+              aria-label={title}
               className={`h-8 px-2.5 text-sm ${
                 active ? "font-semibold" : "border border-transparent text-neutral-500"
               }`}
               style={active ? { boxShadow: `inset 0 0 0 1px ${ACCENT}` } : undefined}
             >
-              {method.label}
+              {cell.shortLabel}
             </button>
           );
         })}
       </div>
       </div>
+      {standIn && (
+        <p className="mt-1 max-w-4xl text-xs leading-snug text-neutral-500">
+          {standIn}
+        </p>
+      )}
       {(activeRun?.one_sentence || activeCase?.mechanism) && (
         <p className="mt-2 max-w-4xl text-sm leading-snug text-neutral-700">
           {activeRun?.one_sentence || activeCase?.mechanism}

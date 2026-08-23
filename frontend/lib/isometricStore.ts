@@ -7,10 +7,16 @@ import type {
   MethodManifestData,
   StageObservationData,
   ManifestStageData,
-  MethodId,
 } from "./isometricTypes";
+import {
+  methodIdFor,
+  resolvePaperCellId,
+  type PaperCellId,
+} from "./paperCells";
 
-export type MethodType = "rules" | "llm" | "llm_with_rules";
+export type { PaperCellId };
+export type MethodType = PaperCellId;
+export { methodIdFor };
 
 interface IsometricState {
   cases: TeachingCaseData[];
@@ -52,22 +58,11 @@ interface IsometricState {
   resetPlayback: () => void;
 }
 
-export function methodIdFor(task: "gan2026" | "exectv2", method: MethodType): MethodId {
-  if (task === "gan2026") {
-    if (method === "rules") return "gan_rules";
-    if (method === "llm") return "gan_llm_only";
-    return "gan_llm_with_rules";
-  }
-  if (method === "rules") return "exect_rules";
-  if (method === "llm") return "exect_llm_only";
-  return "exect_llm_pre_post";
-}
-
 export const useIsometricStore = create<IsometricState>((set, get) => ({
   cases: [],
   manifests: [],
   selectedCaseId: "gan2026_cluster_vs_quiet_interval",
-  selectedMethod: "llm_with_rules",
+  selectedMethod: "llm_extract",
   currentStepIndex: 0,
   stepProgress: 0,
   isPlaying: false,
@@ -110,7 +105,7 @@ export const useIsometricStore = create<IsometricState>((set, get) => ({
 
   setSelectedMethod: (method) => {
     set({
-      selectedMethod: method,
+      selectedMethod: resolvePaperCellId(method),
       currentStepIndex: 0,
       stepProgress: 0,
       isPlaying: false,

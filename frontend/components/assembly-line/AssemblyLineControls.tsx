@@ -10,12 +10,7 @@ import {
   useAssemblyLineStore,
 } from "@/lib/assemblyLineStore";
 import type { MethodType } from "@/lib/isometricStore";
-
-const METHODS: { id: MethodType; label: string }[] = [
-  { id: "rules", label: "Rules" },
-  { id: "llm", label: "LLM" },
-  { id: "llm_with_rules", label: "LLM + rules" },
-];
+import { PAPER_CELLS, teachingStandInCaption } from "@/lib/paperCells";
 
 export default function AssemblyLineControls() {
   const cases = useAssemblyLineStore((state) => state.cases);
@@ -23,8 +18,13 @@ export default function AssemblyLineControls() {
   const selectedMethod = useAssemblyLineStore((state) => state.selectedMethod);
   const setSelectedCaseId = useAssemblyLineStore((state) => state.setSelectedCaseId);
   const setSelectedMethod = useAssemblyLineStore((state) => state.setSelectedMethod);
+  const activeCase = useAssemblyLineStore(getActiveAssemblyCase);
+  const standIn = activeCase
+    ? teachingStandInCaption(activeCase.task, selectedMethod)
+    : null;
 
   return (
+    <>
     <ControlBar
       left={
         <ControlField label="Case" htmlFor="assembly-case">
@@ -42,22 +42,27 @@ export default function AssemblyLineControls() {
         </ControlField>
       }
       right={
-        <ControlField label="Method">
+        <ControlField label="Cell">
           <div className="flex items-center gap-1">
-            {METHODS.map((method) => {
-              const active = selectedMethod === method.id;
+            {PAPER_CELLS.map((cell) => {
+              const active = selectedMethod === cell.id;
+              const title = cell.headline
+                ? `${cell.displayName} (headline)`
+                : cell.displayName;
               return (
                 <button
-                  key={method.id}
+                  key={cell.id}
                   type="button"
-                  onClick={() => setSelectedMethod(method.id)}
+                  onClick={() => setSelectedMethod(cell.id as MethodType)}
+                  title={title}
+                  aria-label={title}
                   className={`h-7 rounded-md px-2.5 text-xs ${
                     active
                       ? "bg-deterministic/10 font-semibold text-deterministic"
                       : "text-muted hover:bg-surface-raised hover:text-foreground"
                   }`}
                 >
-                  {method.label}
+                  {cell.shortLabel}
                 </button>
               );
             })}
@@ -65,6 +70,12 @@ export default function AssemblyLineControls() {
         </ControlField>
       }
     />
+    {standIn && (
+      <p className="border-b border-border px-4 py-1.5 text-[12px] leading-snug text-muted">
+        {standIn}
+      </p>
+    )}
+    </>
   );
 }
 

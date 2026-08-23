@@ -208,6 +208,34 @@ export function fetchExectDev140Scored(method: ExectDev140Method, slug: string) 
   }>(`/paper/exect/dev140/${method}/${encodeURIComponent(slug)}/scored`);
 }
 
+export type PaperFiveCellGrid = {
+  task: "gan" | "exect";
+  model: string;
+  split: string;
+  n: number | null;
+  headline: string;
+  claim_boundary: string | null;
+  source: string;
+  cells: Array<{
+    id: string;
+    order: number;
+    display_name: string;
+    short_label: string;
+    extract: string;
+    encode: string;
+    select: string;
+    select_stop: number | null;
+    extract_ablation: number | null;
+    encode_ablation: number | null;
+    headline: boolean;
+  }>;
+};
+
+export function fetchFiveCellGrid(task: "gan" | "exect", model = "gemini37flash") {
+  const params = new URLSearchParams({ task, model });
+  return request<PaperFiveCellGrid>(`/paper/five-cell-grid?${params.toString()}`);
+}
+
 export function fetchArtifact(
   runId: string,
   artifactPath?: string,

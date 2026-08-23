@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type { TeachingCaseData, TeachingRunData } from "./isometricTypes";
 import { methodIdFor, type MethodType } from "./isometricStore";
+import { resolvePaperCellId } from "./paperCells";
 
 interface AssemblyLineState {
   cases: TeachingCaseData[];
@@ -18,7 +19,7 @@ interface AssemblyLineState {
 export const useAssemblyLineStore = create<AssemblyLineState>((set, get) => ({
   cases: [],
   selectedCaseId: "exectv2_epileptic_vs_dissociative",
-  selectedMethod: "llm_with_rules",
+  selectedMethod: "llm_extract",
   selectedFactId: null,
   isLoading: false,
   error: null,
@@ -45,7 +46,7 @@ export const useAssemblyLineStore = create<AssemblyLineState>((set, get) => ({
   },
 
   setSelectedMethod: (method) => {
-    set({ selectedMethod: method, selectedFactId: null });
+    set({ selectedMethod: resolvePaperCellId(method), selectedFactId: null });
   },
 
   setSelectedFactId: (factId) => {

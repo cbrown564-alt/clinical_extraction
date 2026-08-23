@@ -1,4 +1,5 @@
 import { activeMethodLabel } from "./plainLanguageLabels";
+import { PAPER_CELLS, paperCellById, type PaperCellId } from "./paperCells";
 import type { ActiveMethod, PipelineFamilyItem } from "./types";
 
 const MODEL_ORDER = [
@@ -32,7 +33,24 @@ function modelRank(model?: string): number {
   return index < 0 ? MODEL_ORDER.length : index;
 }
 
+function kindForPaperCell(id: PaperCellId): ActiveMethod {
+  if (id === "rules_only") return "rules";
+  if (id === "llm_pre_post") return "llm_with_rules";
+  return "llm";
+}
+
 export function groupGanPipelineOptions(options: PipelineFamilyItem[]) {
+  const withCells = options.filter((option) => option.paper_cell);
+  if (withCells.length > 0) {
+    return PAPER_CELLS.map((cell) => ({
+      method: kindForPaperCell(cell.id),
+      label: cell.displayName,
+      paper_cell: cell.id,
+      options: options
+        .filter((option) => option.paper_cell === cell.id)
+        .sort((a, b) => modelRank(a.model) - modelRank(b.model)),
+    })).filter((group) => group.options.length > 0);
+  }
   return GROUPS.map((group) => ({
     ...group,
     options: options
@@ -84,12 +102,35 @@ export function ganPaperRunId(
   slug: string
 ): string {
   const suffix =
-    method === "llm_select" || method === "gan_llm_with_rules"
-      ? "llm_with_rules"
-      : method === "rules_only"
-        ? "rules"
-        : "llm_only";
+    method === "rules_only"
+      ? "rules"
+      : method === "gan_llm_with_rules"
+        ? "llm_with_rules"
+        : method === "gan_llm_only"
+          ? "llm_only"
+          : method;
   return `gan2026_validation750_${slug}_${suffix}`;
+}
+
+function paperCellForDev750Method(
+  method: GanDev750PanelCell["method"]
+): PaperCellId | undefined {
+  if (
+    method === "rules_only" ||
+    method === "llm_extract" ||
+    method === "llm_encode" ||
+    method === "llm_select"
+  ) {
+    return method;
+  }
+  return undefined;
+}
+
+function modeLabelForCell(method: GanDev750PanelCell["method"]): string {
+  if (method === "gan_llm_only") return "live runner (not a results column)";
+  if (method === "gan_llm_with_rules") return "source-near wording ablation";
+  const cell = paperCellForDev750Method(method);
+  return cell ? paperCellById(cell).displayName : method;
 }
 
 function rulesOnlyFamily(): PipelineFamilyItem {
@@ -101,6 +142,7 @@ function rulesOnlyFamily(): PipelineFamilyItem {
     model_label: "No model",
     executable: true,
     kind: "rules",
+    paper_cell: "rules_only",
     pipeline_family: "rules",
     model: "(model-independent)",
     comparison_role: "control",
@@ -116,19 +158,18 @@ export function ganFamiliesFromDev750Panel(
 ): PipelineFamilyItem[] {
   return [
     ...panel.cells
-      .filter((cell) =>
-        ["llm_select", "gan_llm_with_rules", "llm_extract", "gan_llm_only"].includes(
-          cell.method
-        )
-      )
       .map((cell) => {
-      const kind =
-        cell.method === "llm_select" || cell.method === "gan_llm_with_rules"
+      const paperCell = paperCellForDev750Method(cell.method);
+      const kind: ActiveMethod = paperCell
+        ? kindForPaperCell(paperCell)
+        : cell.method === "gan_llm_with_rules"
           ? "llm_with_rules"
-          : "llm";
+          : cell.method === "rules_only"
+            ? "rules"
+            : "llm";
       const present = cell.status === "present";
       const runId = ganPaperRunId(cell.method, cell.model_slug);
-      const modeLabel = kind === "llm_with_rules" ? "LLM + rules" : "LLM only";
+      const modeLabel = modeLabelForCell(cell.method);
       const family: PipelineFamilyItem = {
         value: runId,
         run_id: runId,
@@ -137,6 +178,7 @@ export function ganFamiliesFromDev750Panel(
         model_label: cell.label,
         executable: false,
         kind,
+        paper_cell: paperCell,
         pipeline_family: kind,
         model: cell.model,
         comparison_role: kind === "llm_with_rules" ? "winner" : "diagnostic",

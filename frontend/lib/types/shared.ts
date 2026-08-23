@@ -136,6 +136,7 @@ export interface PipelineFamilyItem {
   display_label?: string;
   executable: boolean;
   kind: ActiveMethod;
+  paper_cell?: import("../paperCells").PaperCellId;
   pipeline_family: string;
   model?: string;
   model_label?: string;
