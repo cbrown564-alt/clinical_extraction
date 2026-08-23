@@ -5,7 +5,7 @@
 
 # Architecture: how a record moves through each method
 
-This directory answers one question: what happens to a letter, stage by stage, in each of the six implemented task-method runners, and who owns each change. These runners explain mechanism only; they are not the paper's five-cell headline table. Map a runner onto a cell with [cells and runners](../paper/cells_and_runners.md). For cited methods, scores, and claims see [docs/paper/methods.md](../paper/methods.md).
+This directory answers one question: what happens to a letter, stage by stage, in each of the six implemented task-method runners, and who owns each change. These runners explain mechanism only; they are not the paper's five-cell headline table. For cited methods, scores, and claims see [docs/paper/methods.md](../paper/methods.md).
 
 Everything here is generated from the stage manifests in `src/clinical_extraction/architecture/manifests/` and from teaching cases that execute the real pipelines. Do not edit these files by hand - change the manifest or the code, then run `python scripts/build_architecture_docs.py`.
 
@@ -34,7 +34,7 @@ Everything here is generated from the stage manifests in `src/clinical_extractio
 - [Gan 2026 letters](teaching_cases/gan2026.md) - quiet-interval versus cluster grammar, and qualitative frequent versus unknown.
 - [ExECTv2 letters](teaching_cases/exectv2.md) - four-family named windows, and epileptic versus dissociative rates.
 
-- [`GAN-15431`](teaching_cases/gan-15431.md) - Quiet interval and cluster grammar compete; this Grok replay does not assemble the two-part gold.
+- [`GAN-15431`](teaching_cases/gan-15431.md) - Quiet interval and cluster grammar compete; codebook extract does not assemble the two-part gold.
 - [`GAN-2166`](teaching_cases/gan-2166.md) - Qualitative 'frequent' has no countable rate; gold is unknown.
 - [`EA0186`](teaching_cases/ea0186.md) - All four families are present; seizure-frequency windows must stay named, not become a monthly rate.
 - [`EA0057`](teaching_cases/ea0057.md) - Epileptic and dissociative diagnoses share the letter; rates must stay attached to the right one.

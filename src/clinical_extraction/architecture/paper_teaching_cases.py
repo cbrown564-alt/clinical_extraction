@@ -1,7 +1,8 @@
 """Paper flagship letters as explainer teaching cases.
 
-All model raws replay Gemini 3.7 Flash on development splits. No Grok, no
-Luna Compact, no live calls, no locked rows.
+Gan codebook extract prefers Grok 4.6 on dev750. Cell 2 pre-post and cell 5
+select replay Gemini Flash. ExECT extract and pre-post replay Luna Compact;
+later-stage encode/select replay Gemini. No live calls, no locked rows.
 """
 
 from __future__ import annotations
@@ -32,13 +33,15 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
 ROOT = discover_repo_root(start=Path(__file__))
 
 GAN_FIXTURE_NOTE = (
-    "Development letter from Gan 2026 dev750. Model outputs are a Gemini 3.7 "
-    "Flash replay on dev; no live call is made. Cell 4 uses the same codebook "
-    "extract (the extract already wrote the form)."
+    "Development letter from Gan 2026 dev750. Cell 3 extract is a Grok 4.6 "
+    "replay; cell 2 pre-post and cell 5 select replay Gemini Flash. No live "
+    "call is made. Cell 4 uses the same codebook extract (encode already wrote "
+    "the form)."
 )
 EXECT_FIXTURE_NOTE = (
-    "Development letter from ExECTv2 dev140. Model outputs are a Gemini 3.7 "
-    "Flash replay on dev; no live call is made."
+    "Development letter from ExECTv2 dev140. Extract and pre-post replay Luna "
+    "Compact; later-stage encode and select replay Gemini Flash. No live call "
+    "is made."
 )
 
 

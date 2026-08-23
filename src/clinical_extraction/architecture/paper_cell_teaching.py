@@ -1,4 +1,4 @@
-"""Five-cell paper teaching runs. Replay saved Gemini 3.7 Flash development raws only."""
+"""Five-cell paper teaching runs. Replay saved development raws only."""
 
 from __future__ import annotations
 
@@ -46,7 +46,7 @@ PAPER_METHOD_IDS = PAPER_GAN_IDS + PAPER_EXECT_IDS
 
 GAN_EXTRACT_RAW = (
     ROOT
-    / "experiments/paper/gan_llm_extract_label_forms/gemini37flash/dev750/rows.jsonl"
+    / "experiments/paper/gan_llm_extract_label_forms/grok46/dev750/rows.jsonl"
 )
 GAN_PRE_POST_RAW = (
     ROOT
@@ -59,11 +59,11 @@ GAN_SELECT_RAW = (
 )
 EXECT_PRE_POST_RAW = (
     ROOT
-    / "paper_experiments/exect/exect_llm_pre_post/gemini37flash/dev140/structured.jsonl"
+    / "paper_experiments/exect/exect_llm_pre_post/gpt56luna/dev140/structured.jsonl"
 )
 EXECT_ONLY_RAW = (
     ROOT
-    / "paper_experiments/exect/exect_llm_only/gemini37flash/dev140/structured.jsonl"
+    / "paper_experiments/exect/exect_llm_only/gpt56luna/dev140/structured.jsonl"
 )
 EXECT_ENCODE_RAW = (
     ROOT / "experiments/paper/exect_llm_encode/gemini37flash/dev140/rows.jsonl"
