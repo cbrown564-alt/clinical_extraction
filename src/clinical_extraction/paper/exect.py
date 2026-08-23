@@ -547,7 +547,7 @@ def verify_llm_inventory(*, split: str = "dev140", slug: str | None = None) -> d
         payload = json.loads(
             structured.build_prompt_input(letter, prompt_version=INVENTORY_VERSION)
         )
-        if list(payload) != list(structured.LLM_ONLY_AUTHORED_KEYS):
+        if list(payload) != list(structured.INVENTORY_AUTHORED_KEYS):
             raise RuntimeError(f"inventory key order drifted: {list(payload)}")
         if "categories" in payload or "suggested_evidence" in payload:
             raise RuntimeError("inventory still emits suggested evidence")
@@ -556,8 +556,12 @@ def verify_llm_inventory(*, split: str = "dev140", slug: str | None = None) -> d
         joined = " ".join(payload["clinical_rules"]["diagnosis"])
         if "Do not add a separate generic epilepsy diagnosis to a specific" in joined:
             raise RuntimeError("inventory still asks to drop generic epilepsy")
-        if "include both as separate diagnosis events" not in joined:
-            raise RuntimeError("inventory lost the existing include-both diagnosis rule")
+        if "Prefer the most specific epilepsy syndrome or seizure type" in joined:
+            raise RuntimeError("inventory still prefers most-specific collapse")
+        if "Onset-history phrases such as" in joined:
+            raise RuntimeError("inventory still drops onset-history as a diagnosis")
+        if "include each as its own diagnosis event" not in joined:
+            raise RuntimeError("inventory lost the split-compound diagnosis rule")
         blob = json.dumps(payload).lower()
         for phrase in (
             "gold label",
@@ -570,8 +574,10 @@ def verify_llm_inventory(*, split: str = "dev140", slug: str | None = None) -> d
         ):
             if phrase in blob:
                 raise RuntimeError(f"inventory prompt contains evaluation language: {phrase}")
-        if structured.compact_rule_count(payload["clinical_rules"]) != 51:
+        if structured.compact_rule_count(payload["clinical_rules"]) != 49:
             raise RuntimeError("inventory content drifted")
+        if not payload.get("examples"):
+            raise RuntimeError("inventory lost diagnosis examples")
         return payload
 
     return _verify_arm(

@@ -1,6 +1,7 @@
 """Compact structured prompt.
 
-Ordinary-language one-call request. No examples. No research metadata.
+Ordinary-language one-call request. Compact default and llm_only have no
+examples. Inventory may include two diagnosis examples. No research metadata.
 
 Hybrid Compact (``exectv2_compact_ledger`` / ``exect_llm_with_rules``) adds
 suggested evidence and category lanes. LLM-only (``exect_llm_only``) uses the
@@ -36,6 +37,16 @@ LLM_ONLY_AUTHORED_KEYS = (
     "family_guidance",
     "attribute_vocabulary",
     "clinical_rules",
+    "letter_text",
+)
+INVENTORY_AUTHORED_KEYS = (
+    "task",
+    "output_schema",
+    "decision_procedure",
+    "family_guidance",
+    "attribute_vocabulary",
+    "clinical_rules",
+    "examples",
     "letter_text",
 )
 
@@ -82,6 +93,17 @@ _LLM_ONLY_DECISION_PROCEDURE = [
     _SHARED_DECISION_SCAN,
     _SHARED_DECISION_WRITE,
     _SHARED_DECISION_EXACT,
+]
+
+_INVENTORY_DECISION_EXACT = (
+    "Before returning JSON, remove exact duplicate events (same family and "
+    "same fact) and remove events whose evidence or fact is not an exact "
+    "copy from the letter."
+)
+_INVENTORY_DECISION_PROCEDURE = [
+    _SHARED_DECISION_SCAN,
+    _SHARED_DECISION_WRITE,
+    _INVENTORY_DECISION_EXACT,
 ]
 
 _FAMILY_GUIDANCE = {
@@ -545,7 +567,78 @@ _INVENTORY_DROPPED_DIAGNOSIS_RULES = (
         "epilepsy. For example, 'Diagnosis: symptomatic structural focal "
         "epilepsy' includes only 'symptomatic structural focal epilepsy'."
     ),
+    (
+        "Prefer the most specific epilepsy syndrome or seizure type stated in "
+        "the letter, such as focal epilepsy, temporal lobe epilepsy, primary "
+        "generalised epilepsy, or JME. When the letter explicitly states both "
+        "a generic epilepsy diagnosis and a specific syndrome or seizure type, "
+        "include both as separate diagnosis events; do not collapse one into "
+        "the other."
+    ),
+    (
+        "Onset-history phrases such as 'epilepsy started at age 4' are not "
+        "a separate diagnosis event when the same letter already provides "
+        "the current diagnosis or named seizure types."
+    ),
 )
+
+_INVENTORY_EXAMPLES = [
+    {
+        "letter": (
+            "Diagnosis: symptomatic structural focal epilepsy. "
+            "Seizure type and frequency: focal seizures with altered awareness every 3 weeks."
+        ),
+        "clinical_events": [
+            {
+                "family": "diagnosis",
+                "evidence": "Diagnosis: symptomatic structural focal epilepsy.",
+                "fact": "symptomatic structural focal epilepsy",
+                "attributes": {"DiagCategory": "Epilepsy"},
+            },
+            {
+                "family": "diagnosis",
+                "evidence": (
+                    "Seizure type and frequency: focal seizures with altered "
+                    "awareness every 3 weeks."
+                ),
+                "fact": "focal seizures with altered awareness",
+                "attributes": {"DiagCategory": "Epilepsy"},
+            },
+        ],
+    },
+    {
+        "letter": (
+            "She was diagnosed with epilepsy at the age of 4. "
+            "She continues to have juvenile absence epilepsy and tonic clonic seizures."
+        ),
+        "clinical_events": [
+            {
+                "family": "diagnosis",
+                "evidence": "She was diagnosed with epilepsy at the age of 4.",
+                "fact": "epilepsy",
+                "attributes": {"DiagCategory": "Epilepsy"},
+            },
+            {
+                "family": "diagnosis",
+                "evidence": (
+                    "She continues to have juvenile absence epilepsy and "
+                    "tonic clonic seizures."
+                ),
+                "fact": "juvenile absence epilepsy",
+                "attributes": {"DiagCategory": "Epilepsy"},
+            },
+            {
+                "family": "diagnosis",
+                "evidence": (
+                    "She continues to have juvenile absence epilepsy and "
+                    "tonic clonic seizures."
+                ),
+                "fact": "tonic clonic seizures",
+                "attributes": {"DiagCategory": "Epilepsy"},
+            },
+        ],
+    },
+]
 
 
 def _sectioned_rules(*, include_suggested: bool) -> dict[str, list[str]]:
@@ -603,10 +696,11 @@ def build_compact_llm_inventory_prompt_input(letter: ExectLetter) -> str:
     payload = {
         "task": _LLM_ONLY_TASK,
         "output_schema": _OUTPUT_SCHEMA,
-        "decision_procedure": list(_LLM_ONLY_DECISION_PROCEDURE),
+        "decision_procedure": list(_INVENTORY_DECISION_PROCEDURE),
         "family_guidance": dict(_FAMILY_GUIDANCE),
         "attribute_vocabulary": dict(_ATTRIBUTE_VOCABULARY),
         "clinical_rules": _inventory_sectioned_rules(),
+        "examples": list(_INVENTORY_EXAMPLES),
         "letter_text": letter.note_text,
     }
     return json.dumps(payload, ensure_ascii=False)

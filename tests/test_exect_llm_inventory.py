@@ -87,10 +87,17 @@ def test_inventory_prompt_emits_both_and_leaves_live_default() -> None:
         structured.build_prompt_input(letter, prompt_version=INVENTORY_VERSION)
     )
     diagnosis_rules = " ".join(payload["clinical_rules"]["diagnosis"])
-    assert "include both as separate diagnosis events" in diagnosis_rules
+    assert "include each as its own diagnosis event" in diagnosis_rules
     assert "Do not add a separate generic epilepsy diagnosis to a specific" not in (
         diagnosis_rules
     )
+    assert "Prefer the most specific epilepsy syndrome or seizure type" not in (
+        diagnosis_rules
+    )
+    assert "Onset-history phrases such as" not in diagnosis_rules
+    assert list(payload) == list(structured.INVENTORY_AUTHORED_KEYS)
+    assert structured.compact_rule_count(payload["clinical_rules"]) == 49
+    assert len(payload["examples"]) == 2
     blob = json.dumps(payload).lower()
     for phrase in (
         "gold label",
@@ -106,10 +113,14 @@ def test_inventory_prompt_emits_both_and_leaves_live_default() -> None:
         structured.build_prompt_input(letter, prompt_version=structured.EXECT_LLM_ONLY)
     )
     assert payload["family_guidance"] == only["family_guidance"]
-    assert payload["decision_procedure"] == only["decision_procedure"]
-    assert "Do not add a separate generic epilepsy diagnosis to a specific" in " ".join(
-        only["clinical_rules"]["diagnosis"]
-    )
+    assert payload["decision_procedure"] != only["decision_procedure"]
+    assert any("remove exact duplicate events" in step for step in payload["decision_procedure"])
+    assert not any("remove exact duplicate events" in step for step in only["decision_procedure"])
+    only_dx = " ".join(only["clinical_rules"]["diagnosis"])
+    assert "Do not add a separate generic epilepsy diagnosis to a specific" in only_dx
+    assert "Prefer the most specific epilepsy syndrome or seizure type" in only_dx
+    assert "Onset-history phrases such as" in only_dx
+    assert "examples" not in only
     assert structured.PROMPT_VERSION == before == structured.EXECT_LLM_PRE_POST
 
 

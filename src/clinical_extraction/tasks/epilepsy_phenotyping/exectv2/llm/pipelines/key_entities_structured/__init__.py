@@ -71,6 +71,7 @@ from .prompt_builders import (
 )
 from .prompt_compact import (
     COMPACT_AUTHORED_KEYS,
+    INVENTORY_AUTHORED_KEYS,
     LLM_ONLY_AUTHORED_KEYS,
     SHARED_RULE_SECTION_KEYS,
     compact_rule_count,
@@ -130,6 +131,7 @@ __all__ = [
     "EXECT_LLM_WITH_RULES",
     "LEGACY_PROMPT_VERSION_ALIASES",
     "canonicalize_prompt_version",
+    "INVENTORY_AUTHORED_KEYS",
     "LLM_ONLY_AUTHORED_KEYS",
     "SHARED_RULE_SECTION_KEYS",
     "compact_rule_count",
