@@ -128,6 +128,60 @@ but also reliability, auditability and generalisability.
 
 \section{Literature Review}
 
+Epilepsy clinic letters contain diagnoses, seizure frequency, 
+medication, investigations, and treatment changes, often 
+distributed across time, hedged, and tied to more than one 
+event. Several of those statements can be true in the same 
+letter. Published extractors have already chosen which of 
+them to keep. Fonferko-Shadrach \emph{et al.} treat the 
+letter as an inventory of supported facts across diagnosis, 
+frequency, prescriptions, and investigations~\cite{b1,b2}. 
+Xie \emph{et al.}~\cite{b3}, Holgate \emph{et al.}~\cite{b4}, 
+and Gan \emph{et al.}~\cite{b5} treat it as one current 
+seizure-frequency state. These are different questions, and 
+a score on one gold does not answer the other. Structured 
+extraction is therefore not only recognition of medical terms. 
+It is a decision about which true statements the evaluation 
+form is allowed to keep~\cite{b6}. 
+
+Clinical information extraction, as used here, fills a 
+predefined form; it is not full understanding of the letter. By 
+the Message Understanding Conferences the task was 
+already template fill against a prepared answer key~\cite{b7}. 
+Wang \emph{et al.} define clinical IE as the automatic 
+extraction and encoding of clinical information from 
+text~\cite{b8}. Fu \emph{et al.} separate mention detection 
+from concept encoding: a quoted span is not the coded 
+concept~\cite{b6}. Later mapping into the evaluation form is 
+therefore a named step, and it is older than large language 
+models. Xie \emph{et al.} extract a frequency sentence and 
+then apply rules to obtain a number~\cite{b9}. Agrawal 
+\emph{et al.} define a resolver that maps model text onto the 
+evaluation form and report the model with and without that 
+stage~\cite{b10}. In much of the remaining epilepsy literature 
+that later mapping is unpublished, and the headline score is 
+the already-collapsed object: a band, a monthly number, or 
+a feature-identical set. Rule steps that only write the form 
+are also often unnamed~\cite{b11}. The distinction required 
+here is between encode, which writes the already-chosen 
+fact in the designed string, and select, which may change 
+the fact.
+
+Most published systems are trained or tuned on one local 
+corpus. Decker \emph{et al.} report seizure-frequency $F_1$ 
+of 0.82 in-house and 0.40 at a second centre; a rule stack 
+that fits one letter style need not transfer~\cite{b12}. That 
+result is a caution about local assumptions, not an argument 
+against recorded rules. Hybrids that mix models with rules 
+are also not new, and they typically headline one number. 
+The present work uses two public golds that already 
+encode the two questions, names who runs extract, encode, 
+and select (rules, a model, or both), and reports the select 
+stop. Extract and encode are prior-stage ablations. The 
+recorded object keeps the source span and the hop, not only 
+the score.
+
+
 \section{Methods}
 \subsection{Data}
 Two datasets were used to evaluate the performance of the system on
@@ -255,17 +309,18 @@ Please number citations consecutively within brackets \cite{b1}. The
 sentence punctuation follows the bracket \cite{b2}. 
 
 \begin{thebibliography}{00}
-\bibitem{b1} G. Eason, B. Noble, and I. N. Sneddon, ``On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,'' Phil. Trans. Roy. Soc. London, vol. A247, pp. 529--551, April 1955.
-\bibitem{b2} J. Clerk Maxwell, A Treatise on Electricity and Magnetism, 3rd ed., vol. 2. Oxford: Clarendon, 1892, pp.68--73.
-\bibitem{b3} I. S. Jacobs and C. P. Bean, ``Fine particles, thin films and exchange anisotropy,'' in Magnetism, vol. III, G. T. Rado and H. Suhl, Eds. New York: Academic, 1963, pp. 271--350.
-\bibitem{b4} K. Elissa, ``Title of paper if known,'' unpublished.
-\bibitem{b5} R. Nicole, ``Title of paper with only first word capitalized,'' J. Name Stand. Abbrev., in press.
-\bibitem{b6} Y. Yorozu, M. Hirano, K. Oka, and Y. Tagawa, ``Electron spectroscopy studies on magneto-optical media and plastic substrate interface,'' IEEE Transl. J. Magn. Japan, vol. 2, pp. 740--741, August 1987 [Digests 9th Annual Conf. Magnetics Japan, p. 301, 1982].
-\bibitem{b7} M. Young, The Technical Writer's Handbook. Mill Valley, CA: University Science, 1989.
-\bibitem{b8} D. P. Kingma and M. Welling, ``Auto-encoding variational Bayes,'' 2013, arXiv:1312.6114. [Online]. Available: https://arxiv.org/abs/1312.6114
-\bibitem{b9} S. Liu, ``Wi-Fi Energy Detection Testbed (12MTC),'' 2023, gitHub repository. [Online]. Available: https://github.com/liustone99/Wi-Fi-Energy-Detection-Testbed-12MTC
-\bibitem{b10} ``Treatment episode data set: discharges (TEDS-D): concatenated, 2006 to 2009.'' U.S. Department of Health and Human Services, Substance Abuse and Mental Health Services Administration, Office of Applied Studies, August, 2013, DOI:10.3886/ICPSR30122.v2
-\bibitem{b11} K. Eves and J. Valasek, ``Adaptive control for singularly perturbed systems examples,'' Code Ocean, Aug. 2023. [Online]. Available: https://codeocean.com/capsule/4989235/tree
+\bibitem{b1} B. Fonferko-Shadrach \emph{et al.}, ``Using natural language processing to extract structured epilepsy data from unstructured clinic letters: development and validation of the ExECT (extraction of epilepsy clinical text) system,'' \emph{BMJ Open}, vol.~9, no.~4, 2019, Art.~no.~e023232.
+\bibitem{b2} B. Fonferko-Shadrach \emph{et al.}, ``Annotation of epilepsy clinic letters for natural language processing,'' \emph{J. Biomed. Semantics}, vol.~15, no.~17, 2024.
+\bibitem{b3} K. Xie \emph{et al.}, ``Extracting seizure frequency from epilepsy clinic notes: a machine reading approach to natural language processing,'' \emph{J. Amer. Med. Informat. Assoc.}, vol.~29, no.~5, pp.~873--881, 2022.
+\bibitem{b4} B. Holgate, J. Davies, S. Fang, J.~S. Winston, J.~T. Teo, and M.~P. Richardson, ``Fine-tuning LLMs to extract epilepsy seizure frequency data from health records,'' in \emph{Proc. 24th Workshop on Biomedical Language Processing (BioNLP)}, 2025, pp.~44--55.
+\bibitem{b5} Y. Gan \emph{et al.}, ``Reproducible synthetic clinical letters for seizure frequency information extraction,'' arXiv:2603.11407, 2026.
+\bibitem{b6} S. Fu \emph{et al.}, ``Clinical concept extraction: A methodology review,'' \emph{J. Biomed. Informat.}, vol.~109, 2020, Art.~no.~103526.
+\bibitem{b7} R. Grishman and B. Sundheim, ``Message Understanding Conference-6: A brief history,'' in \emph{Proc. 16th Int. Conf. Computational Linguistics (COLING)}, 1996, pp.~466--471.
+\bibitem{b8} Y. Wang \emph{et al.}, ``Clinical information extraction applications: A literature review,'' \emph{J. Biomed. Informat.}, vol.~77, pp.~34--49, 2018.
+\bibitem{b9} K. Xie, B. Litt, D. Roth, and C.~A. Ellis, ``Quantifying clinical outcome measures in patients with epilepsy using the electronic health record,'' in \emph{Proc. BioNLP Workshop}, 2022, pp.~369--375.
+\bibitem{b10} M. Agrawal, S. Hegselmann, H. Lang, Y. Kim, and D. Sontag, ``Large language models are few-shot clinical information extractors,'' in \emph{Proc. Conf. Empirical Methods in Natural Language Processing (EMNLP)}, 2022, pp.~1998--2022.
+\bibitem{b11} L. Chiticariu, Y. Li, and F. Reiss, ``Rule-based information extraction is dead! Long live rule-based information extraction systems!,'' in \emph{Proc. Conf. Empirical Methods in Natural Language Processing (EMNLP)}, 2013, pp.~827--832.
+\bibitem{b12} B.~M. Decker \emph{et al.}, ``Development of a natural language processing algorithm to extract seizure types and frequencies from the electronic health record,'' \emph{Seizure}, vol.~101, pp.~48--51, 2022.
 \end{thebibliography}
 
 \vspace{12pt}

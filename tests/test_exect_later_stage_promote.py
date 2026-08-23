@@ -145,6 +145,8 @@ def test_rescore_later_stage_writes_exact_scorer(
     assert comparison["scorer"] == "clinical_headline_unit_keys"
     assert comparison["four_family_headline_f1"] != 0.8545
     assert comparison["prior_four_family_headline_f1"] == 0.8545
+    assert comparison["predicted_mention_count"] == 1
+    assert comparison["summary"]["predicted_mention_count"] == 1
     assert "letter_ids" not in comparison
 
 

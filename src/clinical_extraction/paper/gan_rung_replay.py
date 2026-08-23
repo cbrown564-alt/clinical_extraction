@@ -157,8 +157,17 @@ def replay_gan_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
     for source_row_index, raw_output in sorted(raw_rows.items()):
         record = records[source_row_index]
         rules_result = gan_rules.run_record(record, rules_config)
+        rules_scored = score_label(record, rules_result.output.final_value)
+        rules_scored["predicted_candidate_count"] = len(
+            rules_result.diagnostics.get("normalized_events") or []
+        )
+        rules_scored["predicted_candidate_count_by_stage"] = {
+            "extract": len(rules_result.diagnostics.get("candidate_events") or []),
+            "encode": len(rules_result.diagnostics.get("normalized_events") or []),
+            "select": len(rules_result.diagnostics.get("normalized_events") or []),
+        }
         by_rung: dict[str, dict[str, Any]] = {
-            "rules_only": score_label(record, rules_result.output.final_value)
+            "rules_only": rules_scored
         }
         schema_ids: list[str] = []
         schema_kind: str | None = None
@@ -178,6 +187,9 @@ def replay_gan_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
                 list(extraction.selection.selected_event_ids) if extraction else []
             )
             scored_rung["selected_event_ids"] = selected_ids
+            scored_rung["predicted_candidate_count"] = (
+                len(extraction.events) if extraction else 0
+            )
             by_rung[rung] = scored_rung
             if rung == "llm_extract":
                 schema_ids = selected_ids
@@ -298,4 +310,7 @@ def _rung_summary(rows: Sequence[Mapping[str, Any]], rung: str) -> dict[str, Any
         "pragmatic_accuracy": round(pragmatic / n, 4) if n else 0.0,
         "scorable": scorable,
         "predicted_kinds": dict(kinds),
+        "predicted_candidate_count": sum(
+            int(row["rungs"][rung].get("predicted_candidate_count") or 0) for row in rows
+        ),
     }

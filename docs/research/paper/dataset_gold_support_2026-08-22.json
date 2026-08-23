@@ -1,0 +1,137 @@
+{
+  "schema_version": "paper.dataset_gold_support.v1",
+  "generated_on": "2026-08-22",
+  "scorer": "clinical_headline_unit_keys",
+  "claim_boundary": "Split-level gold inventory. test60 and test450 are aggregate-only. Not predicted performance.",
+  "exect": {
+    "dev140": {
+      "letter_count": 140,
+      "gold_count": 796,
+      "by_family": {
+        "Diagnosis": 289,
+        "SeizureFrequency": 165,
+        "Prescription": 206,
+        "Investigations": 136
+      },
+      "raw_mention_count": 934,
+      "raw_mentions_by_family": {
+        "Diagnosis": 405,
+        "SeizureFrequency": 187,
+        "Prescription": 206,
+        "Investigations": 136
+      },
+      "letters_with_empty_family": {
+        "Diagnosis": 10,
+        "SeizureFrequency": 41,
+        "Prescription": 27,
+        "Investigations": 62
+      },
+      "letters_with_nonempty_family": {
+        "Diagnosis": 130,
+        "SeizureFrequency": 99,
+        "Prescription": 113,
+        "Investigations": 78
+      },
+      "letters_with_zero_headline_units": 3,
+      "headline_units_per_letter": {"min": 0, "median": 6.0, "max": 12},
+      "families_present_per_letter": {"min": 0, "median": 3.0, "max": 4},
+      "note_chars": {"min": 260, "median": 1180.5, "max": 4281}
+    },
+    "test60": {
+      "letter_count": 59,
+      "gold_count": 328,
+      "by_family": {
+        "Diagnosis": 122,
+        "SeizureFrequency": 74,
+        "Prescription": 85,
+        "Investigations": 47
+      },
+      "raw_mention_count": 375,
+      "raw_mentions_by_family": {
+        "Diagnosis": 166,
+        "SeizureFrequency": 76,
+        "Prescription": 86,
+        "Investigations": 47
+      },
+      "letters_with_empty_family": {
+        "Diagnosis": 1,
+        "SeizureFrequency": 16,
+        "Prescription": 7,
+        "Investigations": 29
+      },
+      "letters_with_nonempty_family": {
+        "Diagnosis": 58,
+        "SeizureFrequency": 43,
+        "Prescription": 52,
+        "Investigations": 30
+      },
+      "letters_with_zero_headline_units": 0,
+      "headline_units_per_letter": {"min": 1, "median": 5, "max": 12},
+      "families_present_per_letter": {"min": 1, "median": 3, "max": 4},
+      "note_chars": {"min": 534, "median": 1190, "max": 3267}
+    }
+  },
+  "gan": {
+    "denominator": "one Purist-mapped label per letter; n is the accuracy denominator",
+    "dev750": {
+      "letter_count": 750,
+      "gold_label_kind": {
+        "frequency": 468,
+        "seizure_free": 112,
+        "unknown": 100,
+        "unresolved_multiple": 43,
+        "no_reference": 27
+      },
+      "purist_band": {
+        "seizure_freq_more1week_less1day": 196,
+        "seizure_freq_unknown": 127,
+        "currently_no_seizure": 112,
+        "seizure_freq_more1mon_less1week": 99,
+        "seizure_freq_1ormore_daily": 81,
+        "seizure_freq_more1per6mon_less1mon": 79,
+        "seizure_freq_1_per_mon": 34,
+        "seizure_freq_1_per_week": 11,
+        "seizure_freq_1_per_6mon": 6,
+        "seizure_freq_1_per_yr": 5
+      },
+      "pragmatic_band": {
+        "seizure_frequent": 387,
+        "seizure_infrequent": 124,
+        "seizure_freq_unknown": 127,
+        "currently_no_seizure": 112
+      },
+      "row_ok": {"true": 718, "false": 32},
+      "note_chars": {"min": 779, "median": 2681.5, "max": 5427}
+    },
+    "test450": {
+      "letter_count": 450,
+      "gold_label_kind": {
+        "frequency": 281,
+        "seizure_free": 67,
+        "unknown": 60,
+        "unresolved_multiple": 26,
+        "no_reference": 16
+      },
+      "purist_band": {
+        "seizure_freq_more1week_less1day": 123,
+        "seizure_freq_unknown": 76,
+        "currently_no_seizure": 67,
+        "seizure_freq_more1mon_less1week": 58,
+        "seizure_freq_more1per6mon_less1mon": 55,
+        "seizure_freq_1ormore_daily": 41,
+        "seizure_freq_1_per_mon": 18,
+        "seizure_freq_1_per_yr": 6,
+        "seizure_freq_1_per_week": 5,
+        "seizure_freq_1_per_6mon": 1
+      },
+      "pragmatic_band": {
+        "seizure_frequent": 227,
+        "seizure_infrequent": 80,
+        "seizure_freq_unknown": 76,
+        "currently_no_seizure": 67
+      },
+      "row_ok": {"true": 430, "false": 20},
+      "note_chars": {"min": 990, "median": 2715.5, "max": 5080}
+    }
+  }
+}

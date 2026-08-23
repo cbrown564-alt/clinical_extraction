@@ -143,6 +143,9 @@ def _score_arm(
         "scored_mention_count": sum(
             int(row.get("n_mentions_scored") or 0) for row in structured_rows
         ),
+        "predicted_mention_count": sum(
+            int(row.get("hybrid_mention_count") or 0) for row in letter_rows
+        ),
         "gate_event_count": sum(len(row.get("gate_warnings") or []) for row in structured_rows),
     }
     return {"summary": summary, "letter_rows": letter_rows, "metrics": metrics}

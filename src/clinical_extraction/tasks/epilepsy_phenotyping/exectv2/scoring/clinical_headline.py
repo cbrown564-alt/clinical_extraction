@@ -81,6 +81,35 @@ def exact_clinical_headline_scores(
     }
 
 
+def gold_headline_support(gold_letters: Sequence[ExectLetter]) -> dict[str, Any]:
+    """Recall denominator for four-family exact clinical-fact F1.
+
+    ``gold_count`` is ``tp + fn``: Diagnosis and SeizureFrequency collapse
+    duplicate headline units in a letter; Prescription and Investigations
+    keep one unit per occurrence after key filtering.
+    """
+
+    empty = [
+        ExectLetter(letter_id=letter.letter_id, note_text=letter.note_text)
+        for letter in gold_letters
+    ]
+    by_family = exact_clinical_headline_scores(gold_letters, empty)
+    overall = aggregate_scores(by_family.values())
+    raw_mentions = {family: 0 for family in CLINICAL_HEADLINE_FAMILIES}
+    for letter in gold_letters:
+        for family in CLINICAL_HEADLINE_FAMILIES:
+            raw_mentions[family] += len(letter.entities(family))
+    return {
+        "letter_count": len(gold_letters),
+        "gold_count": overall["gold_count"],
+        "by_family": {
+            family: by_family[family]["gold_count"] for family in CLINICAL_HEADLINE_FAMILIES
+        },
+        "raw_mention_count": sum(raw_mentions.values()),
+        "raw_mentions_by_family": raw_mentions,
+    }
+
+
 def exact_clinical_headline_prf1_scores(
     gold_letters: Sequence[ExectLetter],
     pred_letters: Sequence[ExectLetter],

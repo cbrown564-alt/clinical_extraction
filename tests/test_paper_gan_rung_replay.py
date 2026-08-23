@@ -9,6 +9,7 @@ import pytest
 
 from clinical_extraction.paper.cli import main
 from clinical_extraction.paper.gan_rung_replay import (
+    _rung_summary,
     gan_hybrid_rows_path,
     gan_rung_out_dir,
     replay_gan_dev750,
@@ -36,6 +37,38 @@ def _scored_row() -> dict[str, object]:
             "llm_select": rung,
         },
     }
+
+
+def test_rung_summary_totals_predicted_candidates() -> None:
+    rows = [
+        {
+            "rungs": {
+                "llm_extract": {
+                    "purist_correct": True,
+                    "pragmatic_correct": True,
+                    "scorable": True,
+                    "predicted_kind": "frequency",
+                    "predicted_candidate_count": 2,
+                }
+            }
+        },
+        {
+            "rungs": {
+                "llm_extract": {
+                    "purist_correct": False,
+                    "pragmatic_correct": False,
+                    "scorable": True,
+                    "predicted_kind": "unknown",
+                    "predicted_candidate_count": 3,
+                }
+            }
+        },
+    ]
+
+    summary = _rung_summary(rows, "llm_extract")
+
+    assert summary["predicted_candidate_count"] == 5
+    assert summary["purist_correct"] == 1
 
 
 def test_gan_rung_paths_follow_slug_and_split() -> None:

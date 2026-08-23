@@ -18,6 +18,7 @@ from clinical_extraction.paper.methods import (
 )
 from clinical_extraction.paper.roster import model_by_slug
 from clinical_extraction.paper.rungs import EXECT_HOP_EFFECT_CLASS, RUNG_IDS
+from clinical_extraction.paper.volume import count_predicted_mentions
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.views import (
     predictions_from_prediction_surface,
 )
@@ -224,6 +225,7 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
     family_rows: dict[str, list[dict[str, Any]]] = {
         rung: [] for rung in ("llm_extract", "llm_encode", "llm_select")
     }
+    mention_counts = {rung: 0 for rung in ("llm_extract", "llm_encode", "llm_select")}
     try:
         structured.set_active_prompt_version(structured.EXECT_LLM_ONLY)
         for letter_id, raw_output in sorted(raws.items()):
@@ -295,9 +297,11 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
             }
             for rung, surface in SURFACE_FOR_RUNG.items():
                 mentions = rung_mentions[rung]
+                mention_counts[rung] += count_predicted_mentions(mentions)
                 by_rung[rung] = {
                     "surface": surface,
                     "inventory_hash": inventory_hash(mentions, letter.note_text),
+                    "predicted_mention_count": count_predicted_mentions(mentions),
                 }
                 keys = _family_keys(letter, mentions)
                 for family in FAMILIES:
@@ -357,6 +361,7 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
         row_count=len(scored),
         rules=rules,
         hybrid_cell=hybrid_cell,
+        mention_counts=mention_counts,
         scored=scored,
     )
     write_exect_rung_artifacts(
@@ -395,6 +400,7 @@ def replay_exect_pre_post_encode(split: str, *, slug: str = "gemini37flash") -> 
     encode_rows: list[dict[str, Any]] = []
     extract_rows: list[dict[str, Any]] = []
     select_rows: list[dict[str, Any]] = []
+    mention_counts = {"extract": 0, "encode": 0, "select": 0}
     try:
         structured.set_active_prompt_version(structured.EXECT_LLM_PRE_POST)
         for letter_id, raw_output in sorted(raws.items()):
@@ -420,6 +426,9 @@ def replay_exect_pre_post_encode(split: str, *, slug: str = "gemini37flash") -> 
             schema_keys = _family_keys(letter, schema_rows)
             format_keys = _family_keys(letter, format_rows)
             select_keys = _family_keys(letter, select_mentions)
+            mention_counts["extract"] += count_predicted_mentions(schema_rows)
+            mention_counts["encode"] += count_predicted_mentions(format_rows)
+            mention_counts["select"] += count_predicted_mentions(select_mentions)
             for family in FAMILIES:
                 gold_keys = Counter(
                     clinical_headline_unit_keys(
@@ -458,6 +467,9 @@ def replay_exect_pre_post_encode(split: str, *, slug: str = "gemini37flash") -> 
     extract = _surface_prf(extract_rows)
     encode = _surface_prf(encode_rows)
     select = _surface_prf(select_rows)
+    extract["predicted_mention_count"] = mention_counts["extract"]
+    encode["predicted_mention_count"] = mention_counts["encode"]
+    select["predicted_mention_count"] = mention_counts["select"]
     summary = {
         "claim_boundary": (
             "ExECT aggregate-only test60 pre-post rule encode. "
@@ -520,6 +532,7 @@ def _comparison_summary(
     row_count: int,
     rules: Mapping[str, Any],
     hybrid_cell: Mapping[str, Any],
+    mention_counts: Mapping[str, int],
     scored: Sequence[Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     nested = rules.get(split)
@@ -533,9 +546,18 @@ def _comparison_summary(
             "clinical_fact_f1": rules_f1,
             "source": "exect_rules",
         },
-        "llm_extract": _surface_prf(family_rows["llm_extract"]),
-        "llm_encode": _surface_prf(family_rows["llm_encode"]),
-        "llm_select": _surface_prf(family_rows["llm_select"]),
+        "llm_extract": {
+            **_surface_prf(family_rows["llm_extract"]),
+            "predicted_mention_count": mention_counts["llm_extract"],
+        },
+        "llm_encode": {
+            **_surface_prf(family_rows["llm_encode"]),
+            "predicted_mention_count": mention_counts["llm_encode"],
+        },
+        "llm_select": {
+            **_surface_prf(family_rows["llm_select"]),
+            "predicted_mention_count": mention_counts["llm_select"],
+        },
     }
     if hybrid_cell.get("hybrid_headline_f1") is not None:
         rungs["llm_pre_post"] = {
@@ -629,6 +651,8 @@ def _surface_prf(letter_rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "clinical_fact_f1": headline["f1"],
         "precision": headline["precision"],
         "recall": headline["recall"],
+        "gold_count": int(overall["tp"]) + int(overall["fn"]),
+        "pred_count": int(overall["tp"]) + int(overall["fp"]),
         "family_f1": {family: by_family[family]["f1"] for family in FAMILIES},
     }
 

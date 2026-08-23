@@ -1370,9 +1370,11 @@ def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         for final_label in [row["structured_record"]["selection"].get("final_label")]
         if isinstance(final_label, str)
     )
+    predicted_candidate_count = sum(_row_candidate_count(row) for row in rows)
     return {
         "examples": len(rows),
         "structured_records": len(structured_rows),
+        "predicted_candidate_count": predicted_candidate_count,
         "call_failures": call_failures,
         "reused_raw_outputs": reused_raw_outputs,
         "parse_or_validation_failures": parse_failures,
@@ -1396,6 +1398,16 @@ def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "pragmatic_accuracy": round(pragmatic_correct / len(rows), 4) if rows else 0.0,
         "final_labels": dict(sorted(final_labels.items())),
     }
+
+
+def _row_candidate_count(row: Mapping[str, Any]) -> int:
+    encoded = row.get("encoded_events")
+    if encoded is not None:
+        return len(encoded)
+    structured = row.get("structured_record")
+    if isinstance(structured, Mapping):
+        return len(structured.get("events") or [])
+    return len(row.get("normalized_events") or [])
 
 
 def write_jsonl(rows: Sequence[Mapping[str, Any]], path: Path) -> None:

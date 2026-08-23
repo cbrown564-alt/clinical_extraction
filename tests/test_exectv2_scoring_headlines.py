@@ -10,6 +10,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
     load_letters,
+    load_letters_for_split,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports import (
     clinical_recovery_scorecard,
@@ -26,6 +27,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
     aggregate_scores,
     exact_clinical_headline_scores,
+    gold_headline_support,
 )
 
 
@@ -239,6 +241,28 @@ def test_reported_diagnosis_headline_does_not_use_other_family_recall() -> None:
     assert score["tp"] == 0
     assert score["recall_tp"] == 0
     assert score["fn"] == 1
+
+
+def test_four_family_gold_support_matches_headline_f1_denominator() -> None:
+    dev = gold_headline_support(load_letters_for_split("dev"))
+    holdout = gold_headline_support(load_letters_for_split("test"))
+
+    assert dev["letter_count"] == 140
+    assert dev["gold_count"] == 796
+    assert dev["by_family"] == {
+        "Diagnosis": 289,
+        "SeizureFrequency": 165,
+        "Prescription": 206,
+        "Investigations": 136,
+    }
+    assert holdout["letter_count"] == 59
+    assert holdout["gold_count"] == 328
+    assert holdout["by_family"] == {
+        "Diagnosis": 122,
+        "SeizureFrequency": 74,
+        "Prescription": 85,
+        "Investigations": 47,
+    }
 
 
 def test_reported_headline_aggregate_rejects_asymmetric_diagnostic_counts() -> None:

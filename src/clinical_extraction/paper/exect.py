@@ -174,6 +174,18 @@ def paper_work_suffix(spec: ModelSpec) -> str | None:
     return None
 
 
+CELL3_THINKING_TOKEN_MULTIPLIER = {"medium": 2, "high": 2}
+
+
+def cell3_thinking_max_tokens(base: int, effort: str | None) -> int:
+    """Raise the cell-3 extract budget for medium and high thinking (both 2x)."""
+
+    multiplier = CELL3_THINKING_TOKEN_MULTIPLIER.get(effort or "")
+    if multiplier is None:
+        return base
+    return base * multiplier
+
+
 def apply_reasoning_effort(spec: ModelSpec, effort: str | None) -> ModelSpec:
     """Pin a non-living reasoning effort on a hosted reasoning model."""
 
@@ -345,6 +357,11 @@ def _run_live(
     if not live:
         raise RuntimeError(arm.run_requires)
     spec = apply_reasoning_effort(MODELS[slug], reasoning_effort)
+    if arm.method == LLM_ONLY_ARM:
+        spec = replace(
+            spec,
+            max_tokens=cell3_thinking_max_tokens(spec.max_tokens, spec.reasoning_effort),
+        )
     if thinking is not None:
         if slug != "deepseek_v4_flash":
             raise RuntimeError("thinking toggle is DeepSeek only")

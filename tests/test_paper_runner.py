@@ -14,6 +14,7 @@ from clinical_extraction.paper.exect import (
     HOSTED_SLUGS,
     LOCAL_SLUGS,
     MODELS,
+    cell3_thinking_max_tokens,
     paper_work_suffix,
     run_compact,
     run_compact_reasoning_ablation,
@@ -209,6 +210,14 @@ def test_verify_gan_pins_paper_identities_without_changing_defaults() -> None:
     assert _max_tokens_for("gan_llm_only", "gpt56luna", "low") == 1200
     assert _max_tokens_for("gan_llm_only", "gpt56luna", "medium") == 1200
     assert _max_tokens_for("gan_llm_only", "gpt56luna", "high") == 16000
+    assert _max_tokens_for("gan_llm_extract_label_forms", "gemini37flash") == 5000
+    assert _max_tokens_for("gan_llm_extract_label_forms", "gemini37flash", "low") == 5000
+    assert _max_tokens_for("gan_llm_extract_label_forms", "gemini37flash", "medium") == 10000
+    assert _max_tokens_for("gan_llm_extract_label_forms", "gemini37flash", "high") == 10000
+    assert cell3_thinking_max_tokens(16000, None) == 16000
+    assert cell3_thinking_max_tokens(16000, "low") == 16000
+    assert cell3_thinking_max_tokens(16000, "medium") == 32000
+    assert cell3_thinking_max_tokens(16000, "high") == 32000
     assert hybrid["ok"] is True
     assert hybrid["model"] == "xai/grok-4.6"
     assert hybrid["method"] == "gan_llm_with_rules"

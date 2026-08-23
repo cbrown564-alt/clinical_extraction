@@ -44,6 +44,7 @@ record:
 16. Row-evidence workbook — cited historically; the file is not in the keep-set. Use promoted `paper_experiments/` scored cells for development rows.
 17. [Reliability view](research/artifacts/reliability_view_2026-08-10.html)
 18. [How the two tasks are scored](research/paper/score_definitions_2026-08-17.md) — writing glossary, not a scoring authority
+18a. [Dataset gold support](research/paper/dataset_gold_support_2026-08-22.md) — four-family F1 denominators, Gan label mix, Methods-section inventory
 19. [Related-work source map](research/paper/related_work_seed_2026-08-17.md)
 
 The source library explains the evidence. It does not replace

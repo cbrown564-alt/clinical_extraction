@@ -27,6 +27,7 @@ from clinical_extraction.paper.exect import (
     OLLAMA_NUM_CTX_ENV,
     ModelSpec,
     apply_reasoning_effort,
+    cell3_thinking_max_tokens,
     paper_work_suffix,
 )
 from clinical_extraction.paper.gan_later_stage import (
@@ -120,7 +121,10 @@ def _max_tokens_for(
         return DEEPSEEK_MAX_TOKENS
     if method == "gan_llm_only" and reasoning_effort == "high":
         return HIGH_REASONING_GAN_LLM_ONLY_MAX_TOKENS
-    return MAX_TOKENS[method]
+    base = MAX_TOKENS[method]
+    if method == "gan_llm_extract_label_forms":
+        return cell3_thinking_max_tokens(base, reasoning_effort)
+    return base
 
 
 def verify_gan(

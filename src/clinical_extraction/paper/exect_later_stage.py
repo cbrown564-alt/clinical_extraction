@@ -30,6 +30,7 @@ from clinical_extraction.paper.methods import (
     exect_row_count,
     holdout_is_aggregate_only,
 )
+from clinical_extraction.paper.volume import count_predicted_mentions
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.lexicon import (
     attach_cui,
@@ -158,6 +159,8 @@ def comparison_from_later_stage_rows(
     ]
     family_scores = exact_clinical_headline_scores(letters, pred_letters)
     overall = aggregate_scores(family_scores.values())
+    predicted_mention_count = sum(count_predicted_mentions(row.get(pred_key)) for row in rows)
+    overall["predicted_mention_count"] = predicted_mention_count
     holdout = holdout_is_aggregate_only(split)
     prior = None if existing is None else existing.get("four_family_headline_f1")
     artifact: dict[str, Any] = {
@@ -183,6 +186,7 @@ def comparison_from_later_stage_rows(
         "scorer": LATER_STAGE_SCORER,
         "clinical_headline": family_scores,
         "four_family_headline_f1": overall["f1"],
+        "predicted_mention_count": predicted_mention_count,
         "summary": overall,
         "claim_boundary": (
             "ExECT aggregate-only test60 later-stage cell. Do not inspect holdout rows."

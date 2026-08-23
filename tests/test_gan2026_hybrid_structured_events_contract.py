@@ -23,6 +23,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_e
     parse_structured_json,
     parse_structured_json_with_trace,
     run_split,
+    summarize_records,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families import (
     dated_sequence_label_from_events,
@@ -642,3 +643,27 @@ def test_parse_structured_json_repairs_schema_aliases_and_normalizes_selected_la
     assert extraction.selection.final_label == "2 per month"
     assert normalized_events[0].normalized_label == "2 per month"
     assert errors == []
+
+
+def test_summarize_records_counts_predicted_candidates() -> None:
+    rows = [
+        {
+            "structured_record": {
+                "events": [{"event_id": "e1"}, {"event_id": "e2"}],
+                "selection": {"final_label": "2 per month"},
+            },
+            "comparison": {"purist_correct": True, "pragmatic_correct": True},
+        },
+        {
+            "encoded_events": [{"event_id": "e1"}, {"event_id": "e2"}, {"event_id": "e3"}],
+            "structured_record": {
+                "events": [{"event_id": "e1"}],
+                "selection": {"final_label": "unknown"},
+            },
+            "comparison": {"purist_correct": False, "pragmatic_correct": False},
+        },
+    ]
+
+    summary = summarize_records(rows)
+
+    assert summary["predicted_candidate_count"] == 5

@@ -122,6 +122,10 @@ def test_format_render_uses_pre_assembly_mentions_not_materialized_format_only()
     rungs = summary["rungs"]
     assert rungs["llm_extract"]["clinical_fact_f1"] != rungs["llm_encode"]["clinical_fact_f1"]
     assert rungs["llm_select"]["clinical_fact_f1"] > rungs["llm_encode"]["clinical_fact_f1"]
+    assert rungs["llm_extract"]["gold_count"] == rungs["llm_encode"]["gold_count"]
+    assert rungs["llm_extract"]["predicted_mention_count"] > 0
+    assert rungs["llm_encode"]["predicted_mention_count"] > 0
+    assert rungs["llm_select"]["predicted_mention_count"] > 0
     assert (
         rungs["llm_encode"]["family_f1"]["SeizureFrequency"]
         < rungs["llm_select"]["family_f1"]["SeizureFrequency"]
