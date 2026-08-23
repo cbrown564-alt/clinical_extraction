@@ -20,8 +20,10 @@ extract, rules encode, rules select.
 6. Gemma 4 26B
 
 Gan extract is `gan_llm_extract`. ExECT extract is
-`exect_llm_only`. Encode and select are the recorded rule stacks
-replayed on that raw.
+`exect_llm_extract` (inventory prompt, 4-family micro F1). Encode and
+select are the recorded rule stacks replayed on that raw.
+`exect_llm_extract_filtered` is the Compact extract ablation, Gemini
+only.
 
 Headline five-cell tables stay Gemini. Later-stage LLM encode and
 LLM select stay Gemini only. Gemini thinking low / medium / high
@@ -38,7 +40,8 @@ pre-0731, Qwen 3.6:35B, Compact dump. Sol is not a paper cell.
 Cell 3 is the same method on both tasks: one extract call, then
 fixed rules. That is the only row that can carry six models without
 paying for later-stage encode or select on the roster. ExECT cell 4
-can be higher; it is still Gemini-only.
+stays Gemini-only. On the inventory extract, cell 3 is also the
+Gemini peak.
 
 ## Consequences
 
@@ -46,5 +49,6 @@ can be higher; it is still Gemini-only.
   six-model later-stage encode or select. Do not start new Sol calls.
 - Do not treat `gan_llm_only` or source-near `gan_llm_extract_raw`
   as the six-model table.
-- DeepSeek thinking-on versus thinking-off is not this cell-3
-  Gemini thinking ablation.
+- Living DeepSeek is thinking enabled at `reasoning_effort=low`,
+  the same living effort as Gemini, Grok, and Luna. Thinking-off
+  is a DeepSeek-only toggle, not the Gemini medium/high ablation.

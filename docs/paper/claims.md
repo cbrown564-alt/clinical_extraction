@@ -1,7 +1,7 @@
 # What the evidence supports
 
 Date: 2026-08-20
-Revised: 2026-08-22 (cell 3 holdout select is five-cell 0.8161)
+Revised: 2026-08-23 (all five Gemini ExECT rows use 4-family micro F1)
 Status: current
 Owner: this file
 
@@ -83,7 +83,8 @@ stop. On Gan, LLM extract is the codebook extract
 `gan_llm_and_rules_extract`. LLM encode means that extract already
 wrote the form. LLM-then-rules encode is `gan_rules_encode`. LLM
 select is `gan_llm_select_from_extract`. ExECT uses the same five
-role rows. LLM extract is `exect_llm_only`. both extract is
+role rows. LLM extract is `exect_llm_extract`. The Compact
+`exect_llm_extract_filtered` extract is a Gemini ablation. both extract is
 `exect_llm_pre_post`. LLM encode is later-stage `exect_llm_encode`.
 LLM / LLM / rules is accepted Select on that encode ledger. LLM
 select is later-stage `exect_llm_select`. The old `gan_llm_extract_raw` grid is the source-near wording
@@ -105,7 +106,7 @@ are not holdout component estimates.
 ### What the locked totals show
 
 On 450 held-out letters, written rules scored 0.73. Gemini LLM
-extract plus codebook encode plus rule select scored 0.83. The paper
+extract (`gan_llm_extract`) plus `gan_rules_encode` plus rule select scored 0.83. The paper
 may say those locked totals and the Gemini grid below.
 It may not treat `gan_llm_only` as a results column.
 That request is a different prompt (one finished label). Its Grok
@@ -216,27 +217,30 @@ need its own gold; this gold still scores `4 per day`.
 
 ### What the locked totals show
 
-On 59 held-out letters, written rules recovered 0.79 of clinical
-facts. Gemini LLM extract plus later-stage encode plus rule select
-scored 0.8173. Living rungs cell 3 (rule encode then rule select) is
-0.8161. The paper may say those locked totals and the Gemini grid
-below, and may write both select stops as 0.82. It may not treat a
-living producer F1 as LLM extract. The retired encode/select-split
-cell 3 select (0.7869) is not the cited row.
+On 59 held-out letters, written rules recovered 0.7725 of clinical
+facts. Gemini both-extract (living extract plus suggested
+candidates, then rule select) scored 0.8592. Gemini extract plus
+rule select scored 0.8674. Later-stage encode plus rule select
+scored 0.8636. Later-stage LLM select scored 0.853. The paper may
+say those locked totals and the Gemini grid below, and may write
+the five select stops as 0.77, 0.86, 0.87, 0.86, and 0.85. It may
+not treat a living producer F1 as LLM extract. The retired
+Compact/headline cell 2 / cell 3 / cell 4 / cell 5 selects (0.8031
+/ 0.8161 / 0.8173 / 0.7954) are not the cited rows.
 
-Named Gemini `test60` headline (aggregate-only; select stop; exact
-`clinical_headline_unit_keys`). Owner:
-[rule-select-after-LLM-encode](../research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md)
+Named Gemini `test60` (aggregate-only; select stop). All five rows
+use 4-family micro F1 (`clinical_inventory_unit_keys`). Owner:
+[both-extract on inventory](../research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md)
 and
 `paper_experiments/exect/five_cell_grid/gemini37flash/test60/comparison.json`.
 
 | Extract | Encode | Select | F1 |
 | --- | --- | --- | ---: |
-| rules | rules | rules | 0.79 |
-| both | rules | rules | 0.80 |
-| LLM | rules | rules | 0.82 |
-| LLM | LLM | rules | 0.82 |
-| LLM | LLM | LLM | 0.80 |
+| rules | rules | rules | 0.77 |
+| both | rules | rules | 0.86 |
+| LLM | rules | rules | 0.87 |
+| LLM | LLM | rules | 0.86 |
+| LLM | LLM | LLM | 0.85 |
 
 On 140 development letters the Grok grid is:
 
@@ -255,12 +259,14 @@ because the clinical-fact key needs the codebook id that format
 attaches. The paper may not say the inventory format stop is empty.
 It may not park a semantic SF projection on the format rung.
 
-On the locked inventory the strongest cited row is still LLM extract
-plus later-stage encode plus rule select (0.8173). Living rungs
-cell 3 (rule encode then rule select) is 0.8161. Both read 0.82 at
-two decimals. Later-stage LLM select is 0.80. The retired
-encode/select-split replay of cell 3 was 0.7869; it is not the cited
-select. Extract and encode stops are prior-stage ablations. Luna after repair recovered 78.3%
+On the locked inventory the strongest cited row is LLM extract plus
+rule select (0.8674). Both-extract plus rule select is 0.8592.
+Later-stage encode plus rule select is 0.8636. Later-stage LLM
+select is 0.853. Standalone rules are 0.7725. Those five reads are
+0.87, 0.86, 0.86, 0.85, and 0.77 at two decimals. The retired
+Compact/headline cell 2–5 stops (0.8031 / 0.8161 / 0.8173 /
+0.7954) are not the cited rows. Extract and encode stops are
+prior-stage ablations. Luna after repair recovered 78.3%
 (88.8% on development) on the prior assembly. DeepSeek and Gemma
 have prior-assembly repair totals on both inventory splits (DeepSeek
 held-out 81.2%; Gemma held-out 69.3%). Their model-alone inventory
@@ -268,10 +274,12 @@ cells are not yet on disk. Qwen is missing both inventory model
 methods.
 
 The paper may say that, with Gemini as the cited model, rule select
-after later-stage encode is the strongest inventory row, and that
-the inventory gain is smaller than the frequency-label gain. It may
-not rank providers, and it may not treat those percentages as the
-2019 benchmark. It may not say which holdout letters moved.
+after the inventory extract is the strongest row, and that
+later-stage encode then the same Select does not raise that holdout
+stop. It may not rank providers, and it may not treat those
+percentages as the 2019 benchmark. It may not say which holdout
+letters moved. It may not compare 4-family micro F1 to
+Compact/headline F1 as if they shared a denominator.
 
 ### What development replay shows about the lift
 
@@ -341,11 +349,12 @@ The files support this account of the proposed method, cited on Grok:
    both-then-rules, are 0.82. LLM select is 0.79. Grok living
    hybrid 0.83 is a different stack on the source-near request.
    `gan_llm_only` is not in that comparison.
-   On the locked inventory, Gemini LLM extract plus later-stage
-   encode plus rule select is 0.8173 against standalone rules 0.79.
-   Living rungs cell 3 is 0.8161. Both cited select stops read 0.82
-   at two decimals. Later-stage LLM select is 0.80. The inventory
-   gain is smaller than the frequency-label gain.
+   On the locked inventory, Gemini LLM extract plus rule select is
+   0.8674 against standalone rules 0.7725, both on 4-family micro
+   F1. Both-extract plus rule select is 0.8592. Later-stage encode
+   plus rule select is 0.8636. Later-stage LLM select is 0.853. The
+   five select stops read 0.87, 0.86, 0.86, 0.85, and 0.77 at two
+   decimals.
    These totals compare methods; they do not attribute holdout
    effects to individual rules. One extraction is not a second use
    case.

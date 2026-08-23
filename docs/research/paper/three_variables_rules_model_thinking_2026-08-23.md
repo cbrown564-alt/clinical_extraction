@@ -10,7 +10,7 @@ Related: [source-near extract and separate encode](gan_source_near_vs_bundled_en
 
 This is the cross-task results reading. It is not a replacement for
 the Gemini five-cell owners. Holdout is aggregate-only. Do not inspect
-`test450` or `test60` rows. DeepSeek Gan `test450` is still running.
+`test450` or `test60` rows.
 
 ## The question
 
@@ -21,7 +21,7 @@ Three variables were expected to move the headline score:
    replay or a later-stage model call.
 2. **Model** — Gemini 3.7 Flash, Grok 4.6, GPT-5.6 Luna, DeepSeek V4
    Flash, on the same cell-3 extract (`gan_llm_extract` /
-   `exect_llm_only`).
+   `exect_llm_extract`).
 3. **Thinking effort** — Gemini only; low (living), medium, and high,
    on extract only.
 
@@ -32,17 +32,17 @@ roster replacements.
 ## Answer
 
 Thinking changes little once rules encode and select. Model choice
-moves the score more than thinking, but only coarsely: Luna is behind;
-Gemini, Grok, and DeepSeek (where scored) sit in a tight band. The
-best mix is a model extract plus recorded post-processing. The exact
-mix differs by task — Gan prefers LLM / rules / rules; ExECT prefers
-LLM / LLM / rules — and both beat all-rules and all-model on holdout.
-A later-stage model call can add a little more, at a second-call cost.
-Rules do the same post-processing job at a better balance of score,
-cost, and flexibility: the change is named, and the same raw can be
-replayed under a new policy without another extract. Better models
-extract better and stay ahead after rules. Rules close much of the
-Luna gap; they do not erase it.
+moves the score more than thinking, but only coarsely: Grok and Gemini
+lead; DeepSeek is mid; Luna is behind. The best mix is a model extract
+plus recorded post-processing. The exact mix differs by task — Gan
+prefers LLM / rules / rules; ExECT prefers LLM / LLM / rules — and
+both beat all-rules and all-model on holdout. A later-stage model call
+can add a little more, at a second-call cost. Rules do the same
+post-processing job at a better balance of score, cost, and
+flexibility: the change is named, and the same raw can be replayed
+under a new policy without another extract. Better models extract
+better and stay ahead after rules. Rules close much of the Luna gap;
+they do not erase it.
 
 ## 1. Stage ownership
 
@@ -51,22 +51,23 @@ is clinical-fact F1.
 
 | Extract | Encode | Select | Gan `test450` | ExECT `test60` |
 | --- | --- | --- | ---: | ---: |
-| rules | rules | rules | 0.73 | 0.79 |
-| both | rules | rules | 0.82 | 0.80 |
-| LLM | rules | rules | **0.83** | 0.82 |
-| LLM | LLM | rules | 0.82 | **0.82** |
-| LLM | LLM | LLM | 0.79 | 0.80 |
+| rules | rules | rules | 0.73 | 0.77 |
+| both | rules | rules | 0.82 | 0.86 |
+| LLM | rules | rules | **0.83** | **0.87** |
+| LLM | LLM | rules | 0.82 | 0.86 |
+| LLM | LLM | LLM | 0.79 | 0.85 |
 
 Gan peak is cell 3 (LLM extract, `gan_rules_encode`, rule select).
-ExECT peak is cell 4 (LLM extract, later-stage `exect_llm_encode`,
-accepted Select). Both mixed rows beat standalone rules and the
-all-model row. The two mixed rows are close; the paper still needs
-both, because Gan encode on a codebook extract is not the same hop
+ExECT peak is cell 3 (extract, then rule select). Cell 4
+(later-stage encode, then the same Select) is 0.86 and does not
+raise the holdout stop. All five ExECT rows use 4-family micro F1.
+The paper still needs both mixed
+rows, because Gan encode on a codebook extract is not the same hop
 as ExECT's later-stage letter-out encode.
 
-Development reverses the all-rules comparison (Gan rules 0.89 vs
-Gemini cell 3 0.86; ExECT rules 0.90 vs Gemini cell 3 0.88). The
-holdout is the claim.
+Development reverses the all-rules comparison on the previous
+Compact/headline scorer (Gan rules 0.89 vs Gemini cell 3 0.86;
+ExECT rules 0.90 vs Gemini cell 3 0.88). The holdout is the claim.
 
 ## 2. Thinking effort (Gemini only)
 
@@ -82,7 +83,7 @@ encode or select.
 | Medium | 0.776 (349) | 0.791 (356) | 0.813 (366) |
 | High | 0.773 (348) | 0.784 (353) | 0.818 (368) |
 
-**ExECT `test60` (F1)**
+**ExECT `test60` (Compact/headline F1).** Not the cited inventory cell 3.
 
 | Thinking | Extract | Encode | Select |
 | --- | ---: | ---: | ---: |
@@ -109,11 +110,9 @@ is flatten; encode is same-fact format; select is rule select.
 | Gemini 3.7 Flash | **0.789** (355) | **0.789** (355) | 0.831 (374) |
 | Grok 4.6 | 0.784 (353) | 0.784 (353) | **0.842** (379) |
 | GPT-5.6 Luna | 0.693 (312) | 0.693 (312) | 0.778 (350) |
-| DeepSeek V4 Flash | — | — | — |
+| DeepSeek V4 Flash | 0.742 (334) | 0.742 (334) | 0.796 (358) |
 
-DeepSeek Gan holdout is incomplete (73/450 as of this draft).
-
-**ExECT `test60` (F1)**
+**ExECT `test60` (Compact/headline F1).** Not the cited inventory roster.
 
 | Model | Extract | Encode | Select |
 | --- | ---: | ---: | ---: |
@@ -132,18 +131,20 @@ unpromoted.
 | GPT-5.6 Luna | 0.717 (538) | 0.717 (538) | 0.819 (614) |
 | DeepSeek V4 Flash | 0.761 (571) | 0.761 (571) | 0.837 (628) |
 
-Luna is the coarse miss. The other three are close after select.
-Rules help Luna most (Gan holdout +38 letters, +0.084; ExECT +0.037)
-and do not bring it level (Gan select still 0.064 behind Grok; ExECT
-select 0.020 behind DeepSeek).
+Luna is the coarse miss. On Gan holdout, DeepSeek sits between Luna
+and the Grok/Gemini pair after select (0.796 vs 0.842 / 0.831). Rules
+help Luna most (Gan holdout +38 letters, +0.084; ExECT +0.037) and do
+not bring it level (Gan select still 0.064 behind Grok; ExECT select
+0.020 behind DeepSeek). DeepSeek Gan select is +24 letters over its
+extract (+0.054) and remains 0.046 behind Grok.
 
 ## Efficiency and flexibility
 
 Later-stage LLM encode or select is a second call on every letter.
 Thinking medium/high doubles the extract token budget. Rule encode
 and select replay the saved extract. That is the cost case for
-keeping cell 3 as the six-model row even where cell 4 is a hair
-higher on ExECT.
+keeping cell 3 as the six-model row. On this inventory extract
+cell 3 is also the Gemini peak.
 
 Rules also name the change and can be edited. A new policy reprocesses
 the same raw without another extract. The paper may say that. It may
@@ -159,16 +160,15 @@ rules are the better encode/select owner when score, cost, and
 replay are taken together. It may say model quality shows up most at
 extract, and that rules shrink but do not close the Luna gap.
 
-It may not treat DeepSeek Gan holdout as scored. It may not promote
-medium or high thinking over living low. It may not treat development
-all-rules wins as the holdout result.
+It may not promote medium or high thinking over living low. It may
+not treat development all-rules wins as the holdout result. It may
+not treat DeepSeek Gan holdout as matching Grok or Gemini.
 
 ## Claim boundary
 
 Working synthesis of already-run cells. Gemini five-cell totals stay
-with their owners. Model stage scores are no-call replays of saved
-`gan_llm_extract` / `exect_llm_only` raws. Luna and DeepSeek ExECT
-`dev140` used the current extract / encode / select surfaces. Gan
-Gemini extract replay can sit one letter above the locked identity
-stop (354/450). Do not inspect holdout rows. Do not retune from these
-bands.
+with their owners. The ExECT stage-ownership table uses inventory F1
+for cells 3–5. The thinking and multi-model ExECT tables below are
+still Compact/headline replays of saved `exect_llm_only` raws. Gan
+model stage scores are no-call replays of saved `gan_llm_extract`
+raws. Do not inspect holdout rows. Do not retune from these bands.

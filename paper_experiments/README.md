@@ -8,8 +8,9 @@ extract / encode / select). The cited score is the select stop. The
 six-model comparison uses cell 3 only (LLM extract, rules encode, rules
 select) on both Gan and ExECT. Gan cell-3 extract is
 `gan_llm_extract`; ExECT cell-3 extract is
-`exect_llm_only`. ExECT cell 4 (LLM encode then rules select) is the
-Gemini-only peak, not the roster row.
+`exect_llm_extract`. ExECT cell 3 is the roster row and the Gemini
+peak. Cell 4 (LLM encode then rule select) stays
+Gemini-only. All five ExECT rows use 4-family micro F1.
 
 Claim wording: [`docs/paper/claims.md`](../docs/paper/claims.md).
 Methods: [`docs/paper/methods.md`](../docs/paper/methods.md).
@@ -21,11 +22,15 @@ Roster: [`roster.json`](roster.json). Inventory: [`inventory.json`](inventory.js
 | --- | --- |
 | `gan/five_cell_grid/` | Gemini Gan five-cell holdout grid |
 | `exect/five_cell_grid/` | Gemini ExECT five-cell holdout grid |
-| `exect/exect_llm_only/` | ExECT cell-3 extract raw; rungs 2–4 replay this raw for stage ablations |
+| `exect/exect_llm_extract/` | ExECT cell-3 inventory extract raw; cells 3–5 replay this raw |
+| `exect/exect_llm_only/` | Historical Compact extract (`exect_llm_extract_filtered`); Gemini ablation |
 | `exect/exect_llm_encode/` | ExECT cell-4 LLM encode. Gemini only, `dev140` and aggregate-only `test60` |
+| `exect/exect_llm_select/` | ExECT cell-5 LLM select. Gemini only, `dev140` and aggregate-only `test60` |
+| `exect/exect_rule_select_after_llm_encode/` | ExECT cell-4 inventory Select on the encode ledger |
+| `exect/exect_llm_pre_post/` | ExECT cell-2 both-extract. Gemini is living extract plus suggested candidates; other models are historical Compact |
 | `exect/exect_rules/` | ExECT rules baseline (cell 1) |
 | `gan/rungs/` | Gan extract / encode / select replay from cell-3 and source-near raws |
-| `exect/rungs/` | ExECT extract / encode / select replay from `exect_llm_only` raw |
+| `exect/rungs/` | Historical ExECT extract / encode / select replay from the Compact extract |
 
 ## Historical / on disk (not headline)
 
@@ -34,13 +39,12 @@ Roster: [`roster.json`](roster.json). Inventory: [`inventory.json`](inventory.js
 | `gan/gan_llm_only/` | Gan LLM-only baseline. Not a results column |
 | `gan/gan_llm_extract_raw/` | Source-near Gan ablation (source wording vs form alignment) |
 | `gan/gan_llm_pre_post/` | No-forms both-extract ablation. Not a headline column |
-| `exect/exect_llm_pre_post/` | Historical two-method hybrid. `exect_llm_with_rules` is a live alias only |
+| `exect/exect_llm_pre_post/` (non-Gemini) | Historical Compact both-extract. `exect_llm_with_rules` is a live alias only |
 | `gan/gan_llm_encode/` | Gan later-stage LLM encode. Gemini only |
 | `gan/gan_llm_select/` | Gan later-stage LLM select. Gemini only |
-| `exect/exect_llm_select/` | ExECT later-stage LLM select. Gemini only |
 | `current_stack/` | Historical Full-ledger / enveloped-Gan fills |
 | `gan/dev750_panel.json` | Frontend cell-3 development index (rules / extract / encode / select). Not `gan_llm_only` or `gan_llm_extract_raw` |
-| `exect/dev140_panel.json` | Frontend cell-3 development index (rules / extract / encode / select on `exect_llm_only`). Not `exect_llm_pre_post` |
+| `exect/dev140_panel.json` | Frontend cell-3 development index. Still the previous Compact extract until the panel is rebuilt from the promoted inventory extract. Not `exect_llm_pre_post` |
 
 Holdout raws keep only replay keys. Do not inspect `test450` or
 `test60` rows.
@@ -59,7 +63,7 @@ Promote a finished replay file with:
 
 ```bash
 python -m clinical_extraction.paper promote-gan --method gan_llm_extract --model gemini37flash --split test450
-python -m clinical_extraction.paper promote-exect --method exect_llm_only --model grok46 --split test60
+python -m clinical_extraction.paper promote-exect --method exect_llm_extract --model grok46 --split test60
 ```
 
 `/exectv2/runs` is the July explorer payload (Sol + Qwen 3.6). Not

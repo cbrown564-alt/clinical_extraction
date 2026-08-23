@@ -20,7 +20,7 @@ accuracy, and stage volume?
 | Item | Value |
 | --- | --- |
 | Data | ExECT `dev140` / `test60`; Gan `dev750` / `test450` |
-| Scorer | ExECT exact `clinical_headline_unit_keys`; Gan one Purist-mapped label |
+| Scorer | ExECT 4-family micro F1 (`clinical_inventory_unit_keys`) for all five cited rows. Headline `clinical_headline_unit_keys` is the historical Compact Diagnosis-collapse ablation. Gan one Purist-mapped label |
 | Inspection | Development rows permitted. `test60` and `test450` aggregate-only |
 | Predictions | None. Gold inventory only |
 | Volume metric | Added on paper stage summaries; not a gold fact |
@@ -30,9 +30,10 @@ No new model calls. Locked letters were not listed or read.
 ## Answer
 
 ExECT four-family F1 is a **unit inventory**, not a letter score. The
-recall denominator is **796** headline units on `dev140` and **328**
-on `test60` (59 letters). Gan accuracy is **one label per letter**:
-**750** and **450**. Those two denominators are not interchangeable.
+cited inventory recall denominator is **836** units on `dev140` and
+**349** on `test60` (59 letters). The Compact/headline collapse is
+**796** / **328**. Gan accuracy is **one label per letter**:
+**750** and **450**. Those denominators are not interchangeable.
 
 Predicted volume is now recorded separately from those golds: ExECT
 `predicted_mention_count` and Gan `predicted_candidate_count` at

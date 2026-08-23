@@ -37,9 +37,9 @@ Both tasks name who runs each stage (rules, LLM, or both):
 - **rules / rules / rules** — no model.
 - **both / rules / rules** — `gan_llm_and_rules_extract` /
   `exect_llm_pre_post`, then rule encode and select.
-- **LLM / rules / rules** — codebook extract / `exect_llm_only`,
+- **LLM / rules / rules** — `gan_llm_extract` / `exect_llm_extract`,
   then rule encode and select.
-- **LLM / LLM / rules** — Gan: codebook extract, then select only.
+- **LLM / LLM / rules** — Gan: `gan_llm_extract`, then select only.
   ExECT: later-stage encode, then accepted Select rules.
 - **LLM / LLM / LLM** — Gan `gan_llm_select_from_extract`. ExECT
   later-stage `exect_llm_select`.
@@ -59,7 +59,7 @@ judged. Do not recode the stack; this is a refile of the claim.
 | --- | --- | --- | --- |
 | rules | rules | rules | `gan_rules` |
 | both | rules | rules | `gan_llm_and_rules_extract`, then rule encode and select |
-| LLM | rules | rules | `gan_llm_extract`, then codebook encode and rule select |
+| LLM | rules | rules | `gan_llm_extract`, then `gan_rules_encode` and rule select |
 | LLM | LLM | rules | Same extract; select families only |
 | LLM | LLM | LLM | Same extract; `gan_llm_select_from_extract` |
 
@@ -73,11 +73,11 @@ not list every revise subtype):
 - **Encode** — codebook / designed form / Gan selected-evidence renderer.
 - **Select** — gate, drop, rewrite, reselect, invent.
 
-On Gan the cited extract is the codebook request, not
+On Gan the cited extract is `gan_llm_extract`, not
 `gan_llm_extract_raw`. LLM encode in the headline table is that
 extract, not a later-stage encode call. Tables cite Gemini 3.7 Flash.
 
-On ExECT, cells 2–4 replay one `exect_llm_only` raw. **both / rules /
+On ExECT, cells 3–5 replay one `exect_llm_extract` raw. **both / rules /
 rules** is a different request (`exect_llm_pre_post`). `exect_llm_with_rules`
 is the live alias of that request, not the cited extract.
 
@@ -134,7 +134,7 @@ reading. Visibility is the point: the hops name the collapse.
 ## ExECT worked example: a hedge becomes a diagnosis concept
 
 **Letter:** ExECT development `EA0007`. **Model:** Grok 4.6.
-**Shared raw for cells 2–4:** `exect_llm_only`. **Cell 2 (both /
+**Shared raw for cells 3–5:** `exect_llm_extract`. **Cell 2 (both /
 rules / rules):** `exect_llm_pre_post`. **Score:** four-family clinical fact F1.
 **Artifacts:** `paper_experiments/exect/rungs/grok46/dev140/` and
 `paper_experiments/exect/exect_llm_pre_post/grok46/dev140/`.
@@ -162,7 +162,7 @@ land on cell 4.
 **both / rules / rules** on the same letter has select F1 1.0 and
 four-family letter-exact true. The unrepaired `exect_llm_pre_post` body
 on that request is the extract stop (cell 2), not the select stop.
-Cell 3 (`exect_llm_only` plus rule encode and select) is the
+Cell 3 (`exect_llm_extract` plus rule encode and select) is the
 six-model row and a separate saved call.
 
 The rewrite is a task-format commitment. It is not an unqualified

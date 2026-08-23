@@ -36,10 +36,12 @@ the label was mapped to a monthly band.
 
 ## ExECT
 
-ExECT's primary internal score is de-duplicated clinical fact recovery across
-the four main families. Code and saved scores still use the identifier
-`clinical_headline`. Phrase, CUI, evidence-valid, and full-attribute scores
-remain separate.
+ExECT's primary internal score is 4-family micro F1
+(`clinical_inventory_unit_keys`). Diagnosis is
+not collapsed to the most-specific concept. De-duplication belongs to
+select, not to scoring. Phrase, CUI, evidence-valid, and full-attribute
+scores remain separate. Historical cells may still carry the identifier
+`clinical_headline`.
 
 Clinical fact recovery is not the published strict ExECT benchmark.
 

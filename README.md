@@ -9,9 +9,10 @@ recorded rules shape them into the required form. Headline tables are Gemini
 five-cell grids: each of extract, encode, and select is rules, LLM, or both.
 The cited score is the select stop; extract and encode stops are stage
 ablations. The six-model comparison uses cell 3 only (LLM extract, rules
-encode, rules select) on both Gan and ExECT. ExECT cell 3 is the roster
-row, not the peak row (cell 4 LLM encode then rules select is higher and
-Gemini-only). Neither table is an on/off hybrid switch. The public golds
+encode, rules select) on both Gan and ExECT. On the inventory extract,
+ExECT cell 3 is both the roster row and the Gemini peak. Cell 4
+(LLM encode then rules select) stays Gemini-only. Neither table is
+an on/off hybrid switch. The public golds
 are the evaluation forms used here, not the task. Tables cite Gemini 3.7
 Flash so the story stays on the method. Grok, Luna, DeepSeek, Qwen, and
 Gemma fill the cell-3 roster. The recorded object keeps the source span
@@ -42,16 +43,16 @@ not use a model.
 | LLM | LLM | rules | 0.82 |
 | LLM | LLM | LLM | 0.79 |
 
-**ExECTv2** (clinical fact F1, locked `test60`). Headline is the
-submitted (select) score:
+**ExECTv2** (4-family micro F1, locked `test60`). Headline is the
+submitted (select) score. All five rows use the same scorer.
 
 | Extract | Encode | Select | F1 |
 | --- | --- | --- | ---: |
-| rules | rules | rules | 0.79 |
-| both | rules | rules | 0.80 |
-| LLM | rules | rules | 0.82 |
-| LLM | LLM | rules | 0.82 |
-| LLM | LLM | LLM | 0.80 |
+| rules | rules | rules | 0.77 |
+| both | rules | rules | 0.86 |
+| LLM | rules | rules | 0.87 |
+| LLM | LLM | rules | 0.86 |
+| LLM | LLM | LLM | 0.85 |
 
 Gan **LLM** extract is the codebook extract
 (`gan_llm_extract`). **both** extract is
@@ -62,9 +63,10 @@ are prior-stage ablations in
 [the five-cell grid](docs/research/gan2026/gan_five_cell_grid_2026-08-22.md).
 The source-near `gan_llm_extract_raw` ablation keeps source wording closer
 to the letter; form alignment is weaker at extract and rules recover
-most at encode and select. ExECT **LLM** extract is `exect_llm_only`.
+most at encode and select. ExECT **LLM** extract is `exect_llm_extract`. The Compact extract
+`exect_llm_extract_filtered` is a Gemini ablation.
 **both** extract is
-`exect_llm_pre_post`. LLM encode is later-stage `exect_llm_encode`
+`exect_llm_pre_post` (living extract plus suggested candidates). LLM encode is later-stage `exect_llm_encode`
 (a second call). LLM / LLM / rules is accepted Select on that encode
 ledger. LLM select is later-stage `exect_llm_select`. Extract and
 encode stops are prior-stage ablations. Gan hybrid select is
@@ -72,17 +74,18 @@ ledger-only. `gan_llm_only` is not a results column.
 
 - **Gan 2026:** Purist accuracy on the locked `test450` split (one current
   seizure-frequency label per letter).
-- **ExECTv2:** de-duplicated clinical fact F1 on the locked `test60` split
+- **ExECTv2:** 4-family micro F1 on the locked `test60` split
   (diagnosis, seizure frequency, prescriptions, and investigations).
-  Cell 3 (LLM / rules / rules) is the roster row (five-cell select
-  0.8161). Cell 4 (LLM / LLM / rules) is the Gemini-only peak
-  (0.8173) after later-stage encode.
+  Cell 3 (LLM / rules / rules) is the roster row and the Gemini
+  peak (five-cell select 0.8674). Cell 4 (LLM / LLM /
+  rules) is Gemini-only later-stage encode then rule select
+  (0.8636).
 
 **Ablations (not headline columns):** Gemini thinking low / medium /
 high on cell 3 only; Gan source-near `gan_llm_extract_raw` (source
 wording vs form alignment); extract and encode stage stops above.
-`gan_llm_only`, no-forms `gan_llm_pre_post`, ExECT producer raw F1,
-Sol, and Full ledger are on disk but not cited as headline results.
+`gan_llm_only`, ExECT producer raw F1, Sol, and Full ledger are on
+disk but not cited as headline results.
 
 Scores are not interchangeable across tasks.
 
@@ -101,7 +104,7 @@ both).
 - **rules / rules / rules** — standalone `gan_rules` / `exect_rules`.
 - **both / rules / rules** — `gan_llm_and_rules_extract` /
   `exect_llm_pre_post`, then rule encode and select.
-- **LLM / rules / rules** — codebook extract / `exect_llm_only`,
+- **LLM / rules / rules** — codebook extract / `exect_llm_extract`,
   then rule encode and select.
 - **LLM / LLM / rules** — Gan: codebook extract, then select only.
   ExECT: later-stage encode, then accepted Select rules.

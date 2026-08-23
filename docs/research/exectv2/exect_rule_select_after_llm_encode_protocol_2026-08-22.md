@@ -1,7 +1,9 @@
 # ExECT rule-select-after-LLM-encode protocol
 
 Date: 2026-08-22
-Status: completed 2026-08-22; promoted
+Revised: 2026-08-23 (cited cells now use the inventory extract)
+Status: superseded for cited numbers by
+[Gemini inventory cells 3–5](exect_gemini_inventory_cells_3_5_protocol_2026-08-23.md)
 Owner: this file
 
 ## Primary question

@@ -1,7 +1,7 @@
 # ExECT LLM with rules is the both-extract alias
 
 Date: 2026-08-17
-Revised: 2026-08-22 (LLM extract is the cited ExECT row)
+Revised: 2026-08-23 (cited extract is `exect_llm_extract`)
 Status: current
 Owner: [paper methods](../methods.md)
 Related: [six-model roster](six-model-roster.md)
@@ -13,7 +13,7 @@ is `exect_llm_with_rules`: one structured call with candidates in
 the prompt, then the same rule encode and rule select stack as cell 3.
 
 This is not the cited paper ExECT method. The cited row is cell 3:
-`exect_llm_only` extract, then rule encode and rule select. See
+`exect_llm_extract` extract, then rule encode and rule select. See
 [six-model roster](six-model-roster.md).
 
 Compact and E5 are lineage labels for this alias. Do not cite them as

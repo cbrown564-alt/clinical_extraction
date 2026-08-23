@@ -1,16 +1,16 @@
 # ExECTv2: recovering a complete clinical fact inventory
 
 Date: 2026-08-12
-Revised: 2026-08-22 (five-cell headline; cited score is select)
+Revised: 2026-08-23 (all five Gemini rows use 4-family micro F1)
 
 Status: paper source; selected results and development mechanism evidence
 
-> **Current boundary (2026-08-22):** ExECT uses the same five role rows as
+> **Current boundary (2026-08-23):** ExECT uses the same five role rows as
 > Gan. Each of extract, encode, and select is rules, LLM, or both. The cited
-> score is the select stop. LLM extract is `exect_llm_only`. **both** extract
+> score is the select stop. LLM extract is `exect_llm_extract`. **both** extract
 > is `exect_llm_pre_post` (`exect_llm_with_rules` is the live alias). The
-> six-model row is cell 3 — LLM extract, rules encode, rules select. See
-> `docs/paper/*`.
+> six-model row is cell 3 — LLM extract, rules encode, rules select. Cells
+> five Gemini rows cite 4-family micro F1. See `docs/paper/*`.
 
 ## The result
 
@@ -21,18 +21,19 @@ split, the headline table is five role rows. Named Gemini 3.7 Flash
 
 | Extract | Encode | Select | `test60` F1 |
 | --- | --- | --- | ---: |
-| rules | rules | rules | 0.79 |
-| both | rules | rules | 0.80 |
-| LLM | rules | rules | 0.82 |
-| LLM | LLM | rules | 0.82 |
-| LLM | LLM | LLM | 0.80 |
+| rules | rules | rules | 0.77 |
+| both | rules | rules | 0.86 |
+| LLM | rules | rules | 0.87 |
+| LLM | LLM | rules | 0.86 |
+| LLM | LLM | LLM | 0.85 |
 
 Development select stops live in
 [rule-select-after-LLM-encode](../exectv2/exect_rule_select_after_llm_encode_2026-08-22.md).
 
-The headline row is **LLM / LLM / rules** (later-stage encode, then rule
-select) at 0.8173. The **six-model comparison row** is **LLM / rules /
-rules** at five-cell 0.8161. Both read 0.82 at two decimals. Holdout is
+The headline row is **LLM / rules / rules** (inventory extract, then
+inventory Select) at 0.8674. **LLM / LLM / rules** (later-stage
+encode, then the same Select) is 0.8636. Those read 0.87 and 0.86
+at two decimals. Holdout is
 aggregate-only. The metric is not the
 published ExECT benchmark. Do not cite Sol Compact 0.8031 or Full-ledger
 Sol 0.8302 as headline cells.
@@ -149,8 +150,8 @@ The retained evidence supports this account of the proposed method:
 - recorded rules then shape families into the designed form, with family-specific
   rescues, harms, and a no-op;
 - those mappings can be replayed without a new model call;
-- the locked headline row (LLM / LLM / rules) is 0.82 on Gemini;
-- the six-model row (LLM / rules / rules) is 0.8161 (0.82 at two decimals);
+- the locked headline row (LLM / rules / rules) is 0.8674 on Gemini;
+- later-stage encode then inventory Select is 0.8636 (0.86 at two decimals);
 - only Diagnosis has a measured unquoted-letter add class;
 - seizure frequency remains the holdout floor. Standalone rules now recover
   investigations; the selected hybrid investigations transform is still a

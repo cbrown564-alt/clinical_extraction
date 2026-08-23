@@ -1,7 +1,7 @@
 # ExECT later-stage encode and select prompts
 
 Date: 2026-08-21
-Revised: 2026-08-22 (Gemini-only ablation; six-model extract is `exect_llm_only`)
+Revised: 2026-08-23 (Gemini-only later stages; six-model extract is `exect_llm_extract`)
 Status: current
 Owner: [paper methods](../methods.md)
 Related: [Gemini is the cited model](gemini-is-the-cited-model.md),
@@ -12,7 +12,7 @@ Related: [Gemini is the cited model](gemini-is-the-cited-model.md),
 
 Later-stage `exect_llm_encode` and `exect_llm_select` are Gemini
 calls that replace rule encode and rule select on a saved
-`exect_llm_only` mention list. They do not re-read the letter.
+`exect_llm_extract` mention list. They do not re-read the letter.
 
 Encode sees `mention_id`, family, clinical name, supporting
 sentence, details, and the closed name list for every family
@@ -60,7 +60,7 @@ name; clinical name stays extract wording.
 ## Claim boundary
 
 A prompt and ownership contract. These calls are Gemini-only
-ablations on a saved `exect_llm_only` extract. They are not the
+ablations on a saved `exect_llm_extract` extract. They are not the
 six-model row and are not authorised on Grok, Luna, DeepSeek, Qwen,
 or Gemma. Clinical-fact SF type now keys the folded seizure-type
 phrase. CUI stay on the mention as secondary attributes and still

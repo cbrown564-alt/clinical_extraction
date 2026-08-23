@@ -29,7 +29,8 @@ encode / select). The cited score is the select stop. The six-model
 row is cell 3 (LLM extract, rules encode, rules select) on both
 tasks. Gemini thinking and the source-near Gan extract are
 ablations. Gan LLM extract is `gan_llm_extract`; ExECT LLM
-encode is a second later-stage call. See
+extract is `exect_llm_extract`. ExECT LLM encode is a second
+later-stage call. See
 [methods](methods.md),
 [Gan five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md),
 and

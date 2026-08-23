@@ -14,12 +14,14 @@ debt. Git history keeps them. The working tree does not.
 No new experiment runs except:
 
 1. Missing cells on a primary paper method for one of the six living
-   models. On ExECT the six-model row is cell 3 only (`exect_llm_only`,
-   rule encode, rule select). Peak inventory is Gemini cell 4 only.
+   models. On ExECT the six-model row is cell 3 only (`exect_llm_extract`,
+   rule encode, rule select). Peak inventory on the living extract is
+   also Gemini cell 3.
 2. Missing cells on a historical method the paper will cite as a
    direct comparison.
-3. Luna `gan_llm_pre_post` on `dev750` (rung 5 development iterator).
-   No Grok or holdout rung-5 in this cut.
+3. Missing Gemini cells on `gan_llm_and_rules_extract` if the paper
+   cites that both-extract row. No-forms `gan_llm_pre_post` was
+   removed as a live runner.
 
 Do not retune from holdout. Do not inspect `test60` or `test450`
 rows. Do not invent numbers.
@@ -59,9 +61,9 @@ Locked machine identities:
 | 2 `llm_schema` | replay of `gan_llm_extract_raw` / `exect_llm_only` | Schema only; shared raw with rungs 3–4 |
 | 3 `llm_format` | same raw | Label-dialect or format stop; must not re-pick the fact |
 | 4 `llm_post` | `gan_llm_extract_raw` / replay `exect_llm_only` assembly | Full clinical post |
-| 5 `llm_pre_post` | `gan_llm_pre_post` / `exect_llm_pre_post` | Candidates in the prompt, then the same post stack |
+| 5 `llm_pre_post` | `gan_llm_and_rules_extract` / `exect_llm_pre_post` | Candidates in the prompt, then the same post stack |
 
-`gan_llm_only` is not a results column. Luna is the Gan pre-post
+`gan_llm_only` is not a results column. Luna was the Gan both-extract
 development iterator. Later-stage LLM encode / select calls are
 Gemini only, on both tasks. Hybrid-call raw is not ExECT extract.
 
@@ -91,7 +93,7 @@ Known blanks on primary methods:
 
 | Cell | Why it is allowed |
 | --- | --- |
-| ExECT cell 3 (`exect_llm_only`, then rule encode and rule select): missing `exect_llm_only` extracts for Qwen, Gemma, and DeepSeek on `dev140`, then aggregate-only `test60` | Six-model row is cell 3 roster comparison, not peak (cell 4 is Gemini only). Rule replay is no-call once extract exists. Do not finish leftover Compact or hybrid panels as the primary job. Do not invent numbers. |
+| ExECT cell 3 (`exect_llm_extract`, then rule encode and rule select): missing `exect_llm_extract` extracts for Qwen, Gemma, and DeepSeek on `dev140`, then aggregate-only `test60` | Six-model row is cell 3 roster comparison. On the living Gemini extract, cell 3 is also the inventory peak. Rule replay is no-call once extract exists. Do not finish leftover Compact or hybrid panels as the primary job. Do not invent numbers. |
 | Gan cell 3 (`gan_llm_extract`, then rule encode and rule select): missing extracts for Qwen, Gemma, and DeepSeek on `dev750`, then aggregate-only `test450` | Six-model row is cell 3 roster comparison, not peak (cell 4 is Gemini only). Rule replay is no-call once extract exists. Do not finish leftover hybrid or LLM-only panels as the primary job. Do not invent numbers. |
 | Gan `gan_llm_extract_raw` on the cleaned request: DeepSeek, Qwen, and living Gemma on `dev750`, then the remaining five models on aggregate-only `test450` | Source-near ablation only. Grok cleaned `test450` (0.83) and Grok, Luna, Gemini `dev750` are on disk. Do not inspect holdout rows. Do not start new Sol live calls. |
 

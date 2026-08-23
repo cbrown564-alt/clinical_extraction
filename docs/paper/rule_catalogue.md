@@ -120,7 +120,7 @@ Applied in `DEFAULT_SEMANTIC_FAMILY_ORDER` when the matching flag is on.
 
 ## ExECTv2
 
-Four-family inventory. Cells 3–5 replay one `exect_llm_only` raw.
+Four-family inventory. Cells 3–5 replay one `exect_llm_extract` raw.
 Cell 5 select is rule assembly (`residual_benchmark_added`). Cell 2
 is a different request (`exect_llm_pre_post`).
 

@@ -51,9 +51,8 @@ cell.
 ## Gan codebook extract and source-near ablation
 
 The cited Gan row is one codebook extract call
-(`gan_llm_extract`), then fixed rule encode and rule
-select. Extract already writes the designed form; encode is that
-same cell.
+(`gan_llm_extract`), then `gan_rules_encode` and rule
+select. Extract already writes the designed form.
 
 The source-near ablation is one structured-events call on the
 cleaned request (`gan_llm_extract_raw`), then the same frozen
