@@ -132,7 +132,7 @@ def test_ea0057_hybrid_lenses_show_clinical_rewrites_not_json() -> None:
         if case.letter_id == "EA0057"
     )
     hybrid = next(
-        run for run in letter.runs if run.method_id == "exectv2_llm_pre_post"
+        run for run in letter.runs if run.method_id == "exect_llm_pre_post"
     )
     lenses = {
         obs.stage_id.split(".")[-1]: obs

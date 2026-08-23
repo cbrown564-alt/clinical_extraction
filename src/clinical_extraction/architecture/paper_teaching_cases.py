@@ -1,8 +1,7 @@
 """Paper flagship letters as explainer teaching cases.
 
-Gan rows replay Grok 4.6 from the local paper stream. ExECT letters replay
-Luna Compact from ``paper_experiments`` (Grok Compact is not on disk yet).
-All four letters are development-split. No locked rows are read.
+All model raws replay Gemini 3.7 Flash on development splits. No Grok, no
+Luna Compact, no live calls, no locked rows.
 """
 
 from __future__ import annotations
@@ -10,14 +9,18 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from clinical_extraction.architecture.teaching_case import (
-    GanCaseSpec,
-    TeachingCase,
-    _exect_llm_only_run,
-    _exect_llm_pre_post_run,
-    _exect_rules_only_run,
-    _gan_case,
+from clinical_extraction.architecture.paper_cell_teaching import (
+    EXECT_ENCODE_RAW,
+    EXECT_ONLY_RAW,
+    EXECT_PRE_POST_RAW,
+    EXECT_SELECT_RAW,
+    GAN_EXTRACT_RAW,
+    GAN_PRE_POST_RAW,
+    GAN_SELECT_RAW,
+    exect_paper_runs,
+    gan_paper_runs,
 )
+from clinical_extraction.architecture.teaching_case import GanCaseSpec, TeachingCase
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     load_letters_for_split,
@@ -28,26 +31,14 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
 
 ROOT = discover_repo_root(start=Path(__file__))
 
-GAN_LLM_ONLY_ROWS = (
-    ROOT / "experiments/paper/gan_llm_only/grok46/dev750/rows.jsonl"
-)
-GAN_HYBRID_ROWS = (
-    ROOT / "experiments/paper/gan_llm_with_rules/grok46/dev750/rows.jsonl"
-)
-EXECT_COMPACT_ROWS = (
-    ROOT
-    / "paper_experiments/exect/exect_llm_pre_post/gpt56luna/dev140/structured.jsonl"
-)
-
 GAN_FIXTURE_NOTE = (
-    "Development letter from Gan 2026 dev750. Model outputs are a Grok 4.6 "
-    "replay; no live call is made. Downstream stages are the selected "
-    "implementation."
+    "Development letter from Gan 2026 dev750. Model outputs are a Gemini 3.7 "
+    "Flash replay on dev; no live call is made. Cell 4 uses the same codebook "
+    "extract (the extract already wrote the form)."
 )
 EXECT_FIXTURE_NOTE = (
-    "Development letter from ExECTv2 dev140. Model outputs are a Luna "
-    "Compact replay; Grok Compact is not on disk yet. No live call is made. "
-    "Downstream stages are the selected implementation."
+    "Development letter from ExECTv2 dev140. Model outputs are a Gemini 3.7 "
+    "Flash replay on dev; no live call is made."
 )
 
 
@@ -76,6 +67,16 @@ def _raw_output_by_letter(path: Path, letter_id: str) -> str:
             return str(raw)
     raise KeyError(f"{path}: missing letter_id {letter_id}")
 
+
+
+def _row_by_letter(path: Path, letter_id: str) -> dict:
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        if row.get("letter_id") == letter_id:
+            return row
+    raise KeyError(f"{path}: missing letter_id {letter_id}")
 
 def _gan_record(source_row_index: int):
     for record in load_records_for_split("validation"):
@@ -113,8 +114,11 @@ def _gan_paper_spec(
         card_why=card_why,
         mechanism_title=mechanism_title,
         mechanism=mechanism,
-        hybrid_raw_output=_raw_output_by_row(GAN_HYBRID_ROWS, source_row_index),
-        llm_only_raw_output=_raw_output_by_row(GAN_LLM_ONLY_ROWS, source_row_index),
+        hybrid_raw_output=_raw_output_by_row(GAN_EXTRACT_RAW, source_row_index),
+        llm_only_raw_output=_raw_output_by_row(GAN_EXTRACT_RAW, source_row_index),
+        extract_label_forms_raw=_raw_output_by_row(GAN_EXTRACT_RAW, source_row_index),
+        pre_post_label_forms_raw=_raw_output_by_row(GAN_PRE_POST_RAW, source_row_index),
+        select_from_extract_raw=_raw_output_by_row(GAN_SELECT_RAW, source_row_index),
         source_row_index=source_row_index,
         fixture_note=GAN_FIXTURE_NOTE,
     )
@@ -131,7 +135,6 @@ def _exect_paper_case(
     mechanism: str,
 ) -> TeachingCase:
     letter = _exect_letter(letter_id)
-    raw_output = _raw_output_by_letter(EXECT_COMPACT_ROWS, letter_id)
     case = TeachingCase(
         case_id=case_id,
         task="exectv2",
@@ -147,11 +150,33 @@ def _exect_paper_case(
         mechanism_title=mechanism_title,
         mechanism=mechanism,
     )
-    case.runs = [
-        _exect_rules_only_run(letter),
-        _exect_llm_only_run(letter, raw_output),
-        _exect_llm_pre_post_run(letter, raw_output),
-    ]
+    case.runs = exect_paper_runs(
+        letter,
+        pre_post_raw=_raw_output_by_letter(EXECT_PRE_POST_RAW, letter_id),
+        only_raw=_raw_output_by_letter(EXECT_ONLY_RAW, letter_id),
+        encode_row=_row_by_letter(EXECT_ENCODE_RAW, letter_id),
+        select_row=_row_by_letter(EXECT_SELECT_RAW, letter_id),
+    )
+    return case
+
+
+def _gan_paper_case(spec: GanCaseSpec) -> TeachingCase:
+    case = TeachingCase(
+        case_id=spec.case_id,
+        task="gan2026",
+        task_label="Gan 2026",
+        letter_id=spec.letter_id,
+        note_text=spec.note_text,
+        gold=spec.gold,
+        gold_note=spec.gold_note,
+        fixture_note=spec.fixture_note or GAN_FIXTURE_NOTE,
+        story=spec.story,
+        gold_reference=spec.gold_reference,
+        card_why=spec.card_why,
+        mechanism_title=spec.mechanism_title,
+        mechanism=spec.mechanism,
+    )
+    case.runs = gan_paper_runs(spec)
     return case
 
 
@@ -162,7 +187,7 @@ def build_paper_teaching_letters() -> tuple[TeachingCase, ...]:
         case_id="gan2026_cluster_vs_quiet_interval",
         source_row_index=15431,
         story=(
-            "Quiet interval and cluster grammar compete; this Grok replay "
+            "Quiet interval and cluster grammar compete; codebook extract "
             "does not assemble the two-part gold."
         ),
         gold_note=(
@@ -171,44 +196,35 @@ def build_paper_teaching_letters() -> tuple[TeachingCase, ...]:
         ),
         card_why={
             "rules": "Rules match the cluster count to the four-month quiet window.",
-            "llm": (
-                "The model kept only `5 per cluster`; selected-evidence repair "
-                "emptied that to no seizure frequency reference."
-            ),
-            "llm_with_rules": (
-                "The model wrote a cluster-after-quiet phrase; selected-evidence "
-                "repair then kept only the quiet interval."
-            ),
+            "llm_pre_post": "Both-extract then rules on the label-forms pre-post raw.",
+            "llm_extract": "Gemini codebook extract, then rule encode and select.",
+            "llm_encode": "Same codebook extract; the extract already wrote the form.",
+            "llm_select": "Gemini later-stage select on the extract ledger.",
         },
         mechanism_title="Quiet interval versus cluster grammar",
         mechanism=(
             "The letter states a seizure-free interval of up to four months and "
-            "clusters of five seizures in a day. Gold needs both parts. On this "
-            "Grok replay, rules get the two-part label; the model-led methods "
-            "collapse to the cluster count or the quiet interval."
+            "clusters of five seizures in a day. Gold needs both parts. Rules "
+            "get the two-part label; model-led cells collapse toward one part."
         ),
     )
     g3 = _gan_paper_spec(
         case_id="gan2026_unknown_vs_qualitative_frequency",
         source_row_index=2166,
-        story=(
-            "Qualitative 'frequent' has no countable rate; gold is unknown."
-        ),
+        story="Qualitative 'frequent' has no countable rate; gold is unknown.",
         gold_note="Gold is the unknown sentinel: the letter has no countable rate.",
         card_why={
             "rules": "Rules find no countable rate and abstain.",
-            "llm": "The model abstains with unknown.",
-            "llm_with_rules": (
-                "Normalize and selected-evidence turn `frequent` into "
-                "`multiple per day`; the unknown bucket still matches gold."
-            ),
+            "llm_pre_post": "Both-extract then rules still sit in the unknown bucket.",
+            "llm_extract": "Codebook extract, then rule encode and select.",
+            "llm_encode": "Same extract; encode already wrote the form.",
+            "llm_select": "Later-stage select on the extract ledger.",
         },
         mechanism_title="Abstain when the letter has no countable rate",
         mechanism=(
             "The letter says frequent petit mal and increasing absences, with no "
-            "number. Gold is unknown. Rules and the one-call model abstain. The "
-            "hybrid path renders a qualitative daily rate; that still sits in "
-            "the unknown bucket on this scorer."
+            "number. Gold is unknown. Rules abstain. Model-led cells may render "
+            "a qualitative rate that still sits in the unknown bucket."
         ),
     )
     e1 = _exect_paper_case(
@@ -224,10 +240,10 @@ def build_paper_teaching_letters() -> tuple[TeachingCase, ...]:
         ),
         card_why={
             "rules": "Nine-entity extractors fill the all-nine baseline.",
-            "llm": "One call proposes four-family findings as written.",
-            "llm_with_rules": (
-                "Lenses run on the four families after parse, gates, and store."
-            ),
+            "llm_pre_post": "Gemini pre-post, then rule encode and select.",
+            "llm_extract": "Gemini extract, then rule encode and select.",
+            "llm_encode": "Later-stage Gemini encode, then accepted select rules.",
+            "llm_select": "Later-stage Gemini select on the encode ledger.",
         },
         mechanism_title="Four families and named time windows",
         mechanism=(
@@ -249,18 +265,16 @@ def build_paper_teaching_letters() -> tuple[TeachingCase, ...]:
         ),
         card_why={
             "rules": "Rules extract both diagnoses and their separate rates.",
-            "llm": "The model may attach the weekly rate to epilepsy.",
-            "llm_with_rules": (
-                "The diagnosis lens rewrites the structural-epilepsy phrase; "
-                "the other three families assemble without a further rewrite."
-            ),
+            "llm_pre_post": "The diagnosis lens rewrites the structural-epilepsy phrase.",
+            "llm_extract": "Gemini extract, then rule encode and select.",
+            "llm_encode": "Later-stage Gemini encode, then accepted select rules.",
+            "llm_select": "Later-stage Gemini select on the encode ledger.",
         },
         mechanism_title="Which rate belongs to which diagnosis",
         mechanism=(
             "The letter states structural epilepsy that is now quiet and "
             "dissociative attacks twice a week. A model that puts the weekly "
-            "rate on epilepsy has mixed the two diagnoses. The diagnosis and "
-            "seizure-frequency lenses exist to keep those facts apart."
+            "rate on epilepsy has mixed the two diagnoses."
         ),
     )
-    return (_gan_case(g1), _gan_case(g3), e1, e2)
+    return (_gan_paper_case(g1), _gan_paper_case(g3), e1, e2)

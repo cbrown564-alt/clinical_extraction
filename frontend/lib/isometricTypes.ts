@@ -13,9 +13,15 @@ export type MethodId =
   | "gan_rules"
   | "gan_llm_only"
   | "gan_llm_with_rules"
+  | "gan_llm_pre_post_label_forms"
+  | "gan_llm_extract_label_forms"
+  | "gan_llm_encode"
+  | "gan_llm_select_from_extract"
   | "exect_rules"
   | "exect_llm_only"
-  | "exect_llm_pre_post";
+  | "exect_llm_pre_post"
+  | "exect_llm_encode"
+  | "exect_llm_select";
 
 export interface StageObservationData {
   stage_id: string;
@@ -56,6 +62,10 @@ export interface TeachingCaseData {
     rules?: string;
     llm?: string;
     llm_with_rules?: string;
+    llm_pre_post?: string;
+    llm_extract?: string;
+    llm_encode?: string;
+    llm_select?: string;
   };
   mechanism_title: string;
   mechanism: string;

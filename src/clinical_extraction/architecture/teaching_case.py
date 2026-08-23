@@ -74,6 +74,9 @@ class GanCaseSpec:
     llm_only_raw_output: str
     source_row_index: int = 1
     fixture_note: str | None = None
+    extract_label_forms_raw: str = ""
+    pre_post_label_forms_raw: str = ""
+    select_from_extract_raw: str = ""
 
 
 GAN_LETTER_ID = "TEACH-GAN-01"
@@ -602,14 +605,24 @@ class MethodRun:
         output_value: Any,
         changed: bool | None = None,
         note: str = "",
+        owner: str | None = None,
+        stage_name: str | None = None,
+        effect_class: str | None = None,
     ) -> None:
-        stage = self.manifest.stage(stage_id)
+        try:
+            stage = self.manifest.stage(stage_id)
+            stage_name = stage.name
+            owner = stage.owner
+            effect_class = stage.effect_class
+        except KeyError:
+            if owner is None or stage_name is None or effect_class is None:
+                raise
         self.observations.append(
             StageObservation(
-                stage_id=stage.stage_id,
-                stage_name=stage.name,
-                owner=stage.owner,
-                effect_class=stage.effect_class,
+                stage_id=stage_id,
+                stage_name=stage_name,
+                owner=owner,
+                effect_class=effect_class,
                 input_value=input_value,
                 output_value=output_value,
                 changed=(
@@ -764,6 +777,9 @@ def _gan_scoring(
             input_value="(no scorable label)",
             output_value=f"gold purist {gold_purist}; no prediction",
             changed=True,
+            owner="scorer",
+            stage_name="Score",
+            effect_class="benchmark_projection",
         )
         return
     predicted = label_to_frequency_record(final_label)
@@ -784,6 +800,9 @@ def _gan_scoring(
         ),
         changed=True,
         note="The scorer turns one label into two categorical verdicts.",
+            owner="scorer",
+            stage_name="Score",
+            effect_class="benchmark_projection",
     )
 
 
@@ -941,16 +960,23 @@ def _gan_llm_only_run(spec: GanCaseSpec) -> MethodRun:
     return run
 
 
-def _gan_llm_with_rules_run(spec: GanCaseSpec) -> MethodRun:
+def _gan_llm_with_rules_run(
+    spec: GanCaseSpec,
+    *,
+    repair_mode: str = "llm_select",
+    method_id: str | None = None,
+    raw_output: str | None = None,
+) -> MethodRun:
     from clinical_extraction.core.evidence import evidence_is_substring
     from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
         hybrid_structured_events as hybrid,
     )
 
     manifest = load_manifest("gan2026_llm_with_rules")
-    run = MethodRun(method_id=manifest.method_id, manifest=manifest)
+    run = MethodRun(method_id=method_id or manifest.method_id, manifest=manifest)
     record = _gan_record(spec)
-    repair_config = hybrid.StructuredRepairConfig.for_mode("llm_select")
+    repair_config = hybrid.StructuredRepairConfig.for_mode(repair_mode)
+    hybrid_raw = raw_output if raw_output is not None else spec.hybrid_raw_output
 
     prompt_input = hybrid.build_prompt_input(record)
     run.record(
@@ -963,7 +989,7 @@ def _gan_llm_with_rules_run(spec: GanCaseSpec) -> MethodRun:
     run.record(
         "gan.llm_with_rules.model_call",
         input_value="prompt input (fixture: no model call is made)",
-        output_value=spec.hybrid_raw_output,
+        output_value=hybrid_raw,
         changed=True,
         note=(
             "Fixture boundary. Note what the model returned: two events AND a "
@@ -972,13 +998,13 @@ def _gan_llm_with_rules_run(spec: GanCaseSpec) -> MethodRun:
     )
 
     extraction, normalized_events, errors, trace = hybrid.parse_structured_json_with_trace(
-        spec.hybrid_raw_output,
+        hybrid_raw,
         note_text=spec.note_text,
         repair_config=repair_config,
     )
     run.record(
         "gan.llm_with_rules.json_schema_repair",
-        input_value=spec.hybrid_raw_output,
+        input_value=hybrid_raw,
         output_value=trace["format_repair"],
         changed=bool(trace["format_repair"]["schema_payload_changed"]),
         note="This fixture is already well formed, so nothing is repaired.",
@@ -1051,6 +1077,9 @@ def _gan_llm_with_rules_run(spec: GanCaseSpec) -> MethodRun:
             output_value=after,
             changed=before != after,
             note=note,
+            owner="deterministic",
+            stage_name=f"Repair {family}",
+            effect_class="clinical_meaning",
         )
     run.record(
         "gan.llm_with_rules.scorable_label_check",
@@ -1158,6 +1187,27 @@ def _gan_repair_walk(
         if repair_config.selected_evidence_repair
         else None,
     )
+    if repair_config.codebook_label_repair:
+        from clinical_extraction.tasks.seizure_frequency.gan2026.selected_evidence.codebook_encode import (
+            repair_codebook_label_with_evidence,
+        )
+
+        selected_ids = set(model_extraction.selection.selected_event_ids)
+        selected_kinds = [
+            str(event.kind)
+            for event in model_extraction.events
+            if event.event_id in selected_ids
+        ]
+        codebook_trace = repair_codebook_label_with_evidence(
+            label,
+            model_extraction.selection.evidence,
+            selected_event_kinds=selected_kinds,
+            context_text=note_text,
+        )
+        codebook_after = label
+        for event in codebook_trace.events:
+            codebook_after = event.after
+        step("codebook", codebook_after if codebook_after != label else None)
 
     diary_label = (
         monthly_diary_label_from_events(model_extraction, note_text=note_text)
@@ -1179,7 +1229,9 @@ def _gan_repair_walk(
     )
     step(
         "typical_over_ytd",
-        families.typical_recurring_rate_over_ytd_from_events(model_extraction, label),
+        families.typical_recurring_rate_over_ytd_from_events(model_extraction, label)
+        if repair_config.typical_over_ytd_repair
+        else None,
     )
     step(
         "breakthrough",
@@ -1759,6 +1811,9 @@ def _exect_scoring(
         output_value=output_value,
         changed=True,
         note=score_note,
+        owner="scorer",
+        stage_name="Score",
+        effect_class="benchmark_projection",
     )
 
 

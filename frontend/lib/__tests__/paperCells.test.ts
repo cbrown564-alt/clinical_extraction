@@ -41,16 +41,22 @@ describe("paper cells", () => {
     expect(COMPARISON_KEY_TO_CELL.llm).toBe("llm_select");
   });
 
-  it("maps cells onto existing teaching MethodId values", () => {
+  it("maps cells onto paper teaching MethodId values", () => {
     expect(methodIdFor("gan2026", "rules_only")).toBe("gan_rules");
-    expect(methodIdFor("gan2026", "llm_pre_post")).toBe("gan_llm_with_rules");
-    expect(methodIdFor("gan2026", "llm_extract")).toBe("gan_llm_only");
-    expect(methodIdFor("gan2026", "llm_encode")).toBe("gan_llm_only");
-    expect(methodIdFor("gan2026", "llm_select")).toBe("gan_llm_with_rules");
+    expect(methodIdFor("gan2026", "llm_pre_post")).toBe(
+      "gan_llm_pre_post_label_forms"
+    );
+    expect(methodIdFor("gan2026", "llm_extract")).toBe(
+      "gan_llm_extract_label_forms"
+    );
+    expect(methodIdFor("gan2026", "llm_encode")).toBe("gan_llm_encode");
+    expect(methodIdFor("gan2026", "llm_select")).toBe(
+      "gan_llm_select_from_extract"
+    );
     expect(methodIdFor("exectv2", "rules_only")).toBe("exect_rules");
     expect(methodIdFor("exectv2", "llm_pre_post")).toBe("exect_llm_pre_post");
     expect(methodIdFor("exectv2", "llm_extract")).toBe("exect_llm_only");
-    expect(methodIdFor("exectv2", "llm_encode")).toBe("exect_llm_only");
-    expect(methodIdFor("exectv2", "llm_select")).toBe("exect_llm_only");
+    expect(methodIdFor("exectv2", "llm_encode")).toBe("exect_llm_encode");
+    expect(methodIdFor("exectv2", "llm_select")).toBe("exect_llm_select");
   });
 });

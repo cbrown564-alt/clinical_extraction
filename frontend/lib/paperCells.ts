@@ -100,46 +100,27 @@ export function paperCellById(id: string): PaperCell {
 
 export type TeachingTask = "gan2026" | "exectv2";
 
-/** Existing teaching MethodId only. Stand-ins are documented in teachingStandInCaption. */
+/** Paper cell identities. Stand-in captions stay null when a real run exists. */
 export function methodIdFor(task: TeachingTask, cell: string): MethodId {
   const id = resolvePaperCellId(cell);
   if (task === "gan2026") {
     if (id === "rules_only") return "gan_rules";
-    if (id === "llm_pre_post") return "gan_llm_with_rules";
-    if (id === "llm_extract" || id === "llm_encode") return "gan_llm_only";
-    return "gan_llm_with_rules";
+    if (id === "llm_pre_post") return "gan_llm_pre_post_label_forms";
+    if (id === "llm_extract") return "gan_llm_extract_label_forms";
+    if (id === "llm_encode") return "gan_llm_encode";
+    return "gan_llm_select_from_extract";
   }
   if (id === "rules_only") return "exect_rules";
   if (id === "llm_pre_post") return "exect_llm_pre_post";
-  return "exect_llm_only";
+  if (id === "llm_extract") return "exect_llm_only";
+  if (id === "llm_encode") return "exect_llm_encode";
+  return "exect_llm_select";
 }
 
 export function teachingStandInCaption(
-  task: TeachingTask,
-  cell: string
+  _task: TeachingTask,
+  _cell: string
 ): string | null {
-  const id = resolvePaperCellId(cell);
-  if (task === "gan2026") {
-    if (id === "llm_pre_post") {
-      return "Teaching stand-in is gan_llm_with_rules, the source-near wording ablation, not cell 2 (gan_llm_pre_post_label_forms).";
-    }
-    if (id === "llm_extract") {
-      return "Teaching stand-in is gan_llm_only, a live runner, not the results column. Cell 3 on disk is gan_llm_extract_label_forms.";
-    }
-    if (id === "llm_encode") {
-      return "Same gan_llm_only teaching run; encode is a later-stage caption. Cell 4 on disk uses the same codebook extract with select families only.";
-    }
-    if (id === "llm_select") {
-      return "Teaching stand-in is gan_llm_with_rules, the only select-ish teaching run. Cell 5 on disk is gan_llm_select_from_extract.";
-    }
-    return null;
-  }
-  if (id === "llm_encode") {
-    return "Encode is later-stage exect_llm_encode; teaching fixture not rebuilt yet. Same raw as exect_llm_only.";
-  }
-  if (id === "llm_select") {
-    return "Select is later-stage exect_llm_select; teaching fixture not rebuilt yet. Same raw as exect_llm_only.";
-  }
   return null;
 }
 

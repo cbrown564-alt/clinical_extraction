@@ -25,7 +25,7 @@ def _run(letter_id: str, method_id: str):
 
 
 def test_paper_hybrid_runs_publish_fact_ids_spans_and_gold() -> None:
-    _, e2 = _run("EA0057", "exectv2_llm_pre_post")
+    _, e2 = _run("EA0057", "exect_llm_pre_post")
     assert e2.facts, "EA0057 hybrid must expose predicted facts"
     for fact in e2.facts:
         assert fact.fact_id
@@ -37,7 +37,7 @@ def test_paper_hybrid_runs_publish_fact_ids_spans_and_gold() -> None:
 
 
 def test_ea0057_hybrid_structural_epilepsy_shows_diagnosis_lens_only() -> None:
-    _, run = _run("EA0057", "exectv2_llm_pre_post")
+    _, run = _run("EA0057", "exect_llm_pre_post")
     fact = next(
         item
         for item in run.facts
@@ -65,8 +65,9 @@ def test_ea0057_hybrid_structural_epilepsy_shows_diagnosis_lens_only() -> None:
     assert propose.note != "Model proposed this mention."
 
 
-def test_gan15431_hybrid_cluster_span_shows_selected_evidence_only() -> None:
-    case, run = _run("GAN-15431", "gan2026_llm_with_rules")
+def test_gan15431_pre_post_reaches_two_part_gold() -> None:
+    case, run = _run("GAN-15431", "gan_llm_pre_post_label_forms")
+    assert run.final_answer == case.gold
     fact = next(
         item
         for item in run.facts
@@ -74,26 +75,17 @@ def test_gan15431_hybrid_cluster_span_shows_selected_evidence_only() -> None:
         and "seizure-free" in item.span.text.lower()
         and "cluster" in item.span.text.lower()
     )
+    assert fact.gold.label == case.gold
     repair_ids = [
         step.stage_id
         for step in fact.transforms
-        if ".repair." in step.stage_id
+        if ".repair." in step.stage_id and not step.idle
     ]
-    assert repair_ids == ["gan.llm_with_rules.repair.selected_evidence"]
-    rewrite = fact.transforms[-2] if fact.transforms[-1].band == "leave" else None
-    selected = next(
-        step
-        for step in fact.transforms
-        if step.stage_id.endswith("repair.selected_evidence")
-    )
-    assert selected.idle is False
-    assert selected.entered != selected.left
-    assert fact.gold.label == case.gold
-    assert rewrite is not None or selected in fact.transforms
+    assert repair_ids == []
 
 
 def test_unattributed_letter_stages_are_not_copied_onto_every_fact() -> None:
-    _, run = _run("GAN-15431", "gan2026_llm_with_rules")
+    _, run = _run("GAN-15431", "gan_llm_pre_post_label_forms")
     for fact in run.facts:
         stage_ids = [step.stage_id for step in fact.transforms]
         assert "gan.llm_with_rules.build_prompt" not in stage_ids
@@ -129,7 +121,7 @@ def test_lineage_render_drops_event_state_scratchpad() -> None:
 
 
 def test_ea0057_parse_does_not_surface_event_state_copy() -> None:
-    _, run = _run("EA0057", "exectv2_llm_pre_post")
+    _, run = _run("EA0057", "exect_llm_pre_post")
     fact = next(
         item
         for item in run.facts
@@ -146,13 +138,12 @@ def test_ea0057_parse_does_not_surface_event_state_copy() -> None:
 
 
 def test_exect_frequency_fact_keeps_attributes_through_parse_and_leave() -> None:
-    _, run = _run("EA0057", "exectv2_llm_pre_post")
+    _, run = _run("EA0057", "exect_llm_pre_post")
     fact = next(
         item
         for item in run.facts
         if item.span is not None
-        and "two years" in item.span.text.lower()
-        and "focal motor" in item.label.lower()
+        and "christmas" in item.span.text.lower()
     )
     parse = next(step for step in fact.transforms if "parse" in step.stage_id)
     leave = next(step for step in fact.transforms if step.band == "leave")
@@ -168,7 +159,7 @@ def test_exect_frequency_fact_keeps_attributes_through_parse_and_leave() -> None
 
 
 def test_g3_rules_has_no_clickable_span_and_still_shows_gold() -> None:
-    case, run = _run("GAN-2166", "gan2026_rules_only")
+    case, run = _run("GAN-2166", "gan_rules")
     clickable = [fact for fact in run.facts if fact.span is not None]
     assert clickable == []
     assert run.gold_unit.label == case.gold
