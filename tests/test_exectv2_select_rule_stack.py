@@ -10,10 +10,14 @@ from clinical_extraction.paper.exect_rule_select_after_encode import (
 from clinical_extraction.paper.rule_records import RULE_BY_NAME
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select_rules import (
+    ACCEPTED_SELECT_RULE_IDS,
     CANDIDATE_SELECT_RULE_IDS,
     DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE,
     DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY,
     EMITTED_ACTIONS_BY_RULE_ID,
+    INVENTORY_KEEP_SOURCE_DIAGNOSIS,
+    INVENTORY_SELECT_RULE_IDS,
+    INVENTORY_WEAK_EPISODE_DROP,
     PRESCRIPTION_ACTIVE_TITRATION,
     PRESCRIPTION_EXACT_REGIMEN_DEDUPE,
     PRESCRIPTION_LOCAL_REGIMEN_SCOPE,
@@ -760,6 +764,127 @@ def test_selected_assembly_applies_accepted_select_rules() -> None:
     assert {action["rule_id"] for action in selected["select_rule_actions"]} == {
         PRESCRIPTION_LOCAL_REGIMEN_SCOPE
     }
+
+
+def test_inventory_keep_source_diagnosis_restores_collapsed_parent() -> None:
+    evidence = "Diagnosis: longstanding epilepsy with focal seizures."
+    source = [
+        _mention("Diagnosis", "epilepsy", evidence, {"DiagCategory": "Epilepsy"}),
+        _mention(
+            "Diagnosis",
+            "focal epilepsy",
+            evidence,
+            {"DiagCategory": "Epilepsy"},
+        ),
+    ]
+    selected = [
+        _mention(
+            "Diagnosis",
+            "focal epilepsy",
+            evidence,
+            {"DiagCategory": "Epilepsy"},
+        ),
+    ]
+    repaired, actions = _apply(selected, source, INVENTORY_KEEP_SOURCE_DIAGNOSIS)
+    texts = [str(row["text"]) for row in repaired if row["entity"] == "Diagnosis"]
+    assert "epilepsy" in texts
+    assert "focal epilepsy" in texts
+    assert actions[0]["rule_id"] == INVENTORY_KEEP_SOURCE_DIAGNOSIS
+    assert actions[0]["action"] == "add"
+
+
+def test_inventory_weak_episode_drop_removes_non_seizure_phrases() -> None:
+    evidence = "He has had no further events."
+    selected = [
+        _mention(
+            "SeizureFrequency",
+            "events",
+            evidence,
+            {"NumberOfSeizures": "0"},
+        ),
+        _mention(
+            "SeizureFrequency",
+            "seizures",
+            evidence,
+            {"NumberOfSeizures": "0"},
+        ),
+        _mention("Diagnosis", "jerk", evidence, {"DiagCategory": "Epilepsy"}),
+        _mention(
+            "Diagnosis",
+            "focal epilepsy",
+            evidence,
+            {"DiagCategory": "Epilepsy"},
+        ),
+    ]
+    repaired, actions = _apply(selected, selected, INVENTORY_WEAK_EPISODE_DROP)
+    texts = {(str(row["entity"]), str(row["text"])) for row in repaired}
+    assert ("SeizureFrequency", "events") not in texts
+    assert ("Diagnosis", "jerk") not in texts
+    assert ("SeizureFrequency", "seizures") in texts
+    assert ("Diagnosis", "focal epilepsy") in texts
+    assert {action["rule_id"] for action in actions} == {INVENTORY_WEAK_EPISODE_DROP}
+    assert {action["action"] for action in actions} == {"drop"}
+
+
+def test_inventory_assembly_keeps_unknown_that_headline_suppression_drops() -> None:
+    evidence = (
+        "Since the last consultation you have started him on lamotrigine, "
+        "and this has helped his seizures."
+    )
+    letter = ExectLetter(letter_id="EA0002", note_text=evidence)
+    row = {
+        "letter_id": letter.letter_id,
+        "predicted_mentions": [
+            {
+                "entity": "SeizureFrequency",
+                "text": "seizures",
+                "attributes": {
+                    "FrequencyChange": "Decreased",
+                    "PointInTime": "DrugChange",
+                },
+                "evidence": evidence,
+            }
+        ],
+        "raw_output": "",
+    }
+    paper = assemble_structured_rows([letter], [row])[letter.letter_id]
+    inventory = assemble_structured_rows(
+        [letter],
+        [row],
+        config=StructuredMethodConfig.inventory(),
+    )[letter.letter_id]
+    paper_sf = [
+        mention
+        for mention in paper["predicted_mentions"]
+        if mention["entity"] == "SeizureFrequency"
+    ]
+    inventory_sf = [
+        mention
+        for mention in inventory["predicted_mentions"]
+        if mention["entity"] == "SeizureFrequency"
+    ]
+    assert paper_sf == []
+    assert inventory_sf
+
+
+def test_inventory_select_profile_does_not_change_paper_selected_stack() -> None:
+    selected = StructuredMethodConfig.selected()
+    inventory = StructuredMethodConfig.inventory()
+    assert selected.select_rule_ids is None
+    assert selected.is_selected is True
+    assert inventory.archived_replay is True
+    assert inventory.is_selected is False
+    assert INVENTORY_KEEP_SOURCE_DIAGNOSIS in inventory.select_rule_ids
+    assert INVENTORY_WEAK_EPISODE_DROP in inventory.select_rule_ids
+    assert SF_NAMED_TYPE_IDENTITY not in inventory.select_rule_ids
+    assert SF_TO_DIAGNOSIS_EXPLICIT_TYPE not in inventory.select_rule_ids
+    assert SF_NAMED_TYPE_IDENTITY in ACCEPTED_SELECT_RULE_IDS
+    assert SF_TO_DIAGNOSIS_EXPLICIT_TYPE in ACCEPTED_SELECT_RULE_IDS
+    assert inventory.sf_projection_ablation == "inventory"
+    assert selected.sf_projection_ablation == "combined"
+    assert inventory.select_rule_ids == frozenset(INVENTORY_SELECT_RULE_IDS)
+    assert INVENTORY_KEEP_SOURCE_DIAGNOSIS not in ACCEPTED_SELECT_RULE_IDS
+    assert INVENTORY_WEAK_EPISODE_DROP not in ACCEPTED_SELECT_RULE_IDS
 
 
 def test_select_rule_ablation_requires_archived_replay() -> None:

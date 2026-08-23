@@ -41,6 +41,10 @@ LEGACY_WORK_ROOT = ROOT / "experiments/paper/exect_llm_with_rules"
 LEGACY_HOLDOUT_ROOT = ROOT / "scratch/holdout/paper/exect_llm_with_rules"
 LLM_ONLY_WORK_ROOT = ROOT / "experiments/paper/exect_llm_only"
 LLM_ONLY_HOLDOUT_ROOT = ROOT / "scratch/holdout/paper/exect_llm_only"
+EXTRACT_WORK_ROOT = ROOT / "experiments/paper/exect_llm_extract"
+EXTRACT_HOLDOUT_ROOT = ROOT / "scratch/holdout/paper/exect_llm_extract"
+FILTERED_WORK_ROOT = ROOT / "experiments/paper/exect_llm_extract_filtered"
+FILTERED_HOLDOUT_ROOT = ROOT / "scratch/holdout/paper/exect_llm_extract_filtered"
 PAPER_EXECT = ROOT / "paper_experiments/exect"
 PANEL_PATH = PAPER_EXECT / "dev140_panel.json"
 INVENTORY_PATH = ROOT / "paper_experiments/inventory.json"
@@ -48,8 +52,12 @@ REPLAY_FIELDS = ("letter_id", "prompt_version", "raw_output")
 METHOD = "exect_llm_pre_post"
 LEGACY_METHOD = "exect_llm_with_rules"
 LLM_ONLY_METHOD = "exect_llm_only"
+EXTRACT_METHOD = "exect_llm_extract"
+FILTERED_METHOD = "exect_llm_extract_filtered"
 REQUEST_METHODS = (LLM_ONLY_METHOD, METHOD)
-EXECT_METHODS = REQUEST_METHODS
+EXECT_METHODS = (
+    REQUEST_METHODS + (EXTRACT_METHOD, FILTERED_METHOD)
+)
 LATER_STAGE_METHODS = ("exect_llm_encode", "exect_llm_select")
 PANEL_METHODS = ("rules_only", "llm_extract", "llm_encode", "llm_select")
 PROMOTE_SPLIT = "dev140"
@@ -96,6 +104,30 @@ def living_llm_only_work_root(slug: str, split: str = PROMOTE_SPLIT) -> Path:
 
     root = LLM_ONLY_HOLDOUT_ROOT if holdout_is_aggregate_only(split) else LLM_ONLY_WORK_ROOT
     return root / slug / split
+
+
+def living_extract_work_root(
+    slug: str,
+    split: str = PROMOTE_SPLIT,
+    *,
+    method: str = EXTRACT_METHOD,
+) -> Path:
+    """Return the living extract or filtered-extract work directory."""
+
+    holdout = holdout_is_aggregate_only(split)
+    if method == EXTRACT_METHOD:
+        root = EXTRACT_HOLDOUT_ROOT if holdout else EXTRACT_WORK_ROOT
+        return root / slug / split
+    roots = (
+        (FILTERED_HOLDOUT_ROOT, LLM_ONLY_HOLDOUT_ROOT)
+        if holdout
+        else (FILTERED_WORK_ROOT, LLM_ONLY_WORK_ROOT)
+    )
+    for root in roots:
+        path = root / slug / split
+        if path.exists():
+            return path
+    return roots[0] / slug / split
 
 
 def promote_exect_dev140(slug: str) -> dict[str, Any]:
@@ -289,6 +321,96 @@ def promote_exect_llm_only(slug: str, split: str) -> dict[str, Any]:
     return {"cell": cell}
 
 
+def promote_exect_llm_extract(slug: str, split: str) -> dict[str, Any]:
+    """Copy a finished inventory-extract cell. Cite inventory F1."""
+
+    spec = method_spec(EXTRACT_METHOD)
+    if spec["task"] != "exectv2":
+        raise RuntimeError("promote-exect extract is ExECT only")
+    split_for(EXTRACT_METHOD, split)
+    holdout = holdout_is_aggregate_only(split)
+    model = model_by_slug(slug)
+    source = living_extract_work_root(slug, split, method=EXTRACT_METHOD)
+    structured_path = _work_structured_path(source, EXTRACT_METHOD)
+    comparison_path = source / "comparison.json"
+    if structured_path is None or not comparison_path.is_file():
+        raise RuntimeError(
+            f"missing finished living-effort {EXTRACT_METHOD} {slug} {split} run"
+        )
+    rows = load_jsonl_rows(structured_path)
+    expected = exect_row_count(split)
+    if len(rows) != expected:
+        raise RuntimeError(f"{structured_path} has {len(rows)} rows, expected {expected}")
+    comparison = json.loads(comparison_path.read_text(encoding="utf-8"))
+    if comparison.get("split") != split:
+        raise RuntimeError(f"{comparison_path} is not this paper cell")
+    if comparison.get("reasoning_effort") not in {None, "low"}:
+        raise RuntimeError(
+            "promote only the living low-effort cell, not a non-living-effort repeat"
+        )
+    if holdout:
+        _assert_aggregate_only(comparison)
+    dest = paper_method_cell_root(EXTRACT_METHOD, slug, split)
+    dest.mkdir(parents=True, exist_ok=True)
+    replay, empty = _public_replay(rows)
+    write_jsonl_rows(replay, dest / "structured.jsonl")
+    (dest / "comparison.json").write_text(
+        json.dumps(comparison, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    arm = _llm_only_arm(comparison)
+    cell = {
+        "model_slug": slug,
+        "model": model["model"],
+        "method": EXTRACT_METHOD,
+        "program": EXTRACT_METHOD,
+        "split": split,
+        "split_machine": "test" if holdout else "dev",
+        "n": expected,
+        "row_count": expected,
+        "row_policy": "aggregate_only" if holdout else "development_review_permitted",
+        "id_field": "letter_id",
+        "replay_fields": list(REPLAY_FIELDS),
+        "empty_raw_count": empty,
+        "source": source.relative_to(ROOT).as_posix(),
+        "living_effort": _living_effort(slug),
+        "rows": "structured.jsonl",
+        "comparison": "comparison.json",
+        "raw_headline_f1": arm.get("raw_headline_f1"),
+    }
+    if not holdout:
+        metrics_path = _work_metrics_path(source, EXTRACT_METHOD)
+        if metrics_path is not None:
+            metrics = load_jsonl_rows(metrics_path)
+        else:
+            metrics = compact_metrics_from_structured(slug, dest / "structured.jsonl")
+        scored = _public_scored_llm_only(metrics)
+        if len(scored) != expected:
+            raise RuntimeError(f"{slug} scored {len(scored)} letters, expected {expected}")
+        write_jsonl_rows(scored, dest / "scored.jsonl")
+        cell["scored"] = "scored.jsonl"
+    (dest / "cell.json").write_text(
+        json.dumps(cell, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    _upsert_present(
+        {
+            "model_slug": slug,
+            "model": model["model"],
+            "method": EXTRACT_METHOD,
+            "replay_alias": EXTRACT_METHOD,
+            "split": split,
+            "n": expected,
+            "row_policy": "aggregate_only" if holdout else "development_review_permitted",
+            "path": (dest / "structured.jsonl").relative_to(ROOT).as_posix(),
+            "status": "present",
+            "empty_raw_count": empty,
+        }
+    )
+    _ensure_missing_standalone_extract()
+    return {"cell": cell}
+
+
 def promote_exect_later_stage(method: str, slug: str, split: str) -> dict[str, Any]:
     """Copy a rescored Gemini later-stage encode or select cell."""
 
@@ -314,8 +436,8 @@ def promote_exect_later_stage(method: str, slug: str, split: str) -> dict[str, A
     comparison = json.loads(comparison_path.read_text(encoding="utf-8"))
     if comparison.get("split") != split or comparison.get("method") != method:
         raise RuntimeError(f"{comparison_path} is not this paper cell")
-    if comparison.get("scorer") != "clinical_headline_unit_keys":
-        raise RuntimeError("later-stage comparison must use the exact clinical-fact scorer")
+    if comparison.get("scorer") != "clinical_inventory_unit_keys":
+        raise RuntimeError("later-stage comparison must use the inventory scorer")
     if comparison.get("reasoning_effort") not in {None, "low"}:
         raise RuntimeError(
             "promote only the living low-effort cell, not a non-living-effort repeat"
@@ -560,7 +682,7 @@ def rebuild_dev140_panel() -> dict[str, Any]:
         "method_identity": "gemini37flash",
         "living_effort": {
             "hosted_reasoning": "low",
-            "deepseek": "thinking_on_provider_default",
+            "deepseek": "low",
             "local": "none",
         },
         "notes_source": {
@@ -766,7 +888,15 @@ def _upsert_present(entry: Mapping[str, Any]) -> None:
 
 
 def _work_structured_path(source: Path, method: str = METHOD) -> Path | None:
-    for name in (method, METHOD, LEGACY_METHOD):
+    for name in (
+        method,
+        EXTRACT_METHOD,
+        "exect_llm_inventory",
+        FILTERED_METHOD,
+        LLM_ONLY_METHOD,
+        METHOD,
+        LEGACY_METHOD,
+    ):
         nested = source / name / "structured.jsonl"
         if nested.is_file():
             return nested
@@ -777,7 +907,15 @@ def _work_structured_path(source: Path, method: str = METHOD) -> Path | None:
 
 
 def _work_metrics_path(source: Path, method: str = METHOD) -> Path | None:
-    for name in (method, METHOD, LEGACY_METHOD):
+    for name in (
+        method,
+        EXTRACT_METHOD,
+        "exect_llm_inventory",
+        FILTERED_METHOD,
+        LLM_ONLY_METHOD,
+        METHOD,
+        LEGACY_METHOD,
+    ):
         nested = source / name / "letter_metrics.jsonl"
         if nested.is_file():
             return nested
@@ -791,7 +929,13 @@ def _llm_only_arm(comparison: Mapping[str, Any]) -> dict[str, Any]:
     arms = comparison.get("arms") or {}
     if not isinstance(arms, Mapping):
         return {}
-    arm = arms.get(LLM_ONLY_METHOD) or {}
+    arm = (
+        arms.get(EXTRACT_METHOD)
+        or arms.get("exect_llm_inventory")
+        or arms.get(FILTERED_METHOD)
+        or arms.get(LLM_ONLY_METHOD)
+        or {}
+    )
     return dict(arm) if isinstance(arm, Mapping) else {}
 
 
@@ -811,6 +955,49 @@ def _public_scored_llm_only(metrics: list[dict[str, Any]]) -> list[dict[str, Any
             }
         )
     return scored
+
+
+def _ensure_missing_standalone_extract() -> None:
+    inventory = json.loads(INVENTORY_PATH.read_text(encoding="utf-8"))
+    present = {
+        (row["model_slug"], row["method"], row["split"]) for row in inventory["present"]
+    }
+    missing = {
+        (row.get("model_slug"), row["method"], row.get("split"))
+        for row in inventory["missing"]
+    }
+    extra: list[dict[str, Any]] = []
+    for model in living_models():
+        slug = str(model["slug"])
+        for split, n, policy in (
+            ("dev140", 140, "development_review_permitted"),
+            ("test60", 59, "aggregate_only"),
+        ):
+            key = (slug, EXTRACT_METHOD, split)
+            if key in present or key in missing:
+                continue
+            extra.append(
+                {
+                    "model_slug": slug,
+                    "model": model["model"],
+                    "method": EXTRACT_METHOD,
+                    "n": n,
+                    "note": (
+                        "Six-model cell-3 extract (ExECT). Inventory prompt "
+                        "and inventory F1."
+                    ),
+                    "primary": True,
+                    "row_policy": policy,
+                    "split": split,
+                    "status": "missing",
+                }
+            )
+    if extra:
+        inventory["missing"].extend(extra)
+        INVENTORY_PATH.write_text(
+            json.dumps(inventory, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
 
 
 def _ensure_missing_standalone_llm_only() -> None:
@@ -869,10 +1056,8 @@ def _compact_arm(comparison: Mapping[str, Any]) -> dict[str, Any]:
 
 
 def _living_effort(slug: str) -> str:
-    if slug in {"grok46", "gpt56luna", "gemini37flash"}:
+    if slug in {"grok46", "gpt56luna", "gemini37flash", "deepseek_v4_flash"}:
         return "low"
-    if slug == "deepseek_v4_flash":
-        return "thinking_on_provider_default"
     return "none"
 
 

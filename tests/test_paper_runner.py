@@ -86,10 +86,17 @@ def test_living_roster_is_the_six_paper_models() -> None:
     assert resolve_paper_api_base("gpt56luna", None) is None
     assert grok_api_base(None) == AI_GATEWAY_OPENAI_BASE
     assert resolve_paper_api_base(GROK46_SLUG, None) == AI_GATEWAY_OPENAI_BASE
+    assert MODELS["deepseek_v4_flash"].reasoning_effort == "low"
+    assert MODELS["deepseek_v4_flash"].thinking_type == "enabled"
     assert thinking_work_segment(MODELS["deepseek_v4_flash"]) is None
     assert (
         thinking_work_segment(replace(MODELS["deepseek_v4_flash"], thinking_type="disabled"))
         == "thinking_disabled"
+    )
+    assert paper_work_suffix(MODELS["deepseek_v4_flash"]) is None
+    assert (
+        paper_work_suffix(replace(MODELS["deepseek_v4_flash"], reasoning_effort="high"))
+        == "reasoning_high"
     )
     assert paper_work_suffix(MODELS["gpt56luna"]) is None
     assert (
@@ -135,6 +142,8 @@ def test_live_methods_are_the_paper_llm_cells() -> None:
         "gan_llm_and_rules_extract",
         "exect_llm_pre_post",
         "exect_llm_with_rules",
+        "exect_llm_extract",
+        "exect_llm_extract_filtered",
         "exect_llm_only",
         "exect_llm_inventory",
         "exect_llm_encode",
@@ -143,6 +152,8 @@ def test_live_methods_are_the_paper_llm_cells() -> None:
     split_for("exect_llm_pre_post", "dev140")
     split_for("exect_llm_with_rules", "dev140")
     split_for("exect_llm_only", "dev140")
+    split_for("exect_llm_extract", "dev140")
+    split_for("exect_llm_extract_filtered", "dev140")
     split_for("gan_llm_extract_raw", "test450")
     with pytest.raises(ValueError, match="does not use split"):
         split_for("exect_llm_with_rules", "test450")
@@ -154,8 +165,8 @@ def test_verify_compact_does_not_change_the_live_default() -> None:
     assert payload["ok"] is True
     assert payload["method"] == "exect_llm_pre_post"
     assert payload["candidate"] == CANDIDATE_VERSION == structured.EXECT_LLM_PRE_POST
-    assert payload["n_rules"] == 54
-    assert payload["n_examples"] == 0
+    assert payload["n_rules"] == 50
+    assert payload["n_examples"] == 5
     assert payload["authored_order"] is True
     assert payload["drops_research_metadata"] is True
     assert payload["split"] == "dev140"
@@ -169,13 +180,13 @@ def test_verify_llm_only_does_not_change_the_live_default() -> None:
     before = structured.PROMPT_VERSION
     payload = verify_llm_only(split="dev140", slug=GROK46_SLUG)
     assert payload["ok"] is True
-    assert payload["method"] == "exect_llm_only"
-    assert payload["prompt_version"] == structured.EXECT_LLM_ONLY
+    assert payload["method"] == "exect_llm_extract_filtered"
+    assert payload["prompt_version"] == structured.EXECT_LLM_EXTRACT_FILTERED
     assert payload["n_rules"] == 52
     assert payload["n_examples"] == 0
     assert payload["authored_order"] is True
     assert payload["drops_research_metadata"] is True
-    assert payload["work_root"] == "experiments/paper/exect_llm_only"
+    assert payload["work_root"] == "experiments/paper/exect_llm_extract_filtered"
     assert structured.PROMPT_VERSION == before == structured.EXECT_LLM_PRE_POST
 
 
@@ -351,14 +362,14 @@ def test_cli_dispatches_grok46_compact(monkeypatch: pytest.MonkeyPatch) -> None:
 
     monkeypatch.setattr("clinical_extraction.paper.cli.run_compact", fake_compact)
     monkeypatch.setattr(
-        "clinical_extraction.paper.cli.run_llm_only",
-        lambda *args, **kwargs: {"ok": True, "method": "exect_llm_only"},
+        "clinical_extraction.paper.cli.run_llm_extract_filtered",
+        lambda *args, **kwargs: {"ok": True, "method": "exect_llm_extract_filtered"},
     )
     payload = run("exect_llm_with_rules", GROK46_SLUG, "dev140")
     assert payload == {"ok": True, "method": "exect_llm_with_rules"}
     assert run("exect_llm_only", GROK46_SLUG, "dev140") == {
         "ok": True,
-        "method": "exect_llm_only",
+        "method": "exect_llm_extract_filtered",
     }
     assert captured == {
         "slug": GROK46_SLUG,

@@ -122,7 +122,7 @@ def test_result_columns_are_the_five_cells() -> None:
     assert GAN_REPAIR_MODE_FOR_RUNG["llm_select"] == "llm_select"
     assert GAN_RUNG_SOURCE["llm_extract"] == "replay_gan_llm_extract_raw"
     assert GAN_RUNG_SOURCE["llm_pre_post"] == "new_request"
-    assert EXECT_RUNG_SOURCE["llm_extract"] == "replay_exect_llm_only"
+    assert EXECT_RUNG_SOURCE["llm_extract"] == "replay_exect_llm_extract"
     assert EXECT_RUNG_SOURCE["llm_pre_post"] == "living_exect_llm_pre_post"
     assert exect_method_for_rung("llm_encode") == "exect_llm_encode"
     assert exect_method_for_rung("llm_select") == "exect_llm_select"

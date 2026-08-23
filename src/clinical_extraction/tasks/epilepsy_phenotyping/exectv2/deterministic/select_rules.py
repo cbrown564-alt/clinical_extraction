@@ -46,6 +46,8 @@ PRESCRIPTION_EXACT_REGIMEN_DEDUPE = "selection.prescription_exact_regimen_dedupe
 SF_NAMED_TYPE_IDENTITY = "selection.sf_named_type_identity"
 SF_RECENT_EVENT_OVER_HISTORICAL_FREE = "selection.sf_recent_event_over_historical_free"
 SF_TO_DIAGNOSIS_EXPLICIT_TYPE = "selection.sf_to_diagnosis_explicit_type"
+INVENTORY_KEEP_SOURCE_DIAGNOSIS = "selection.inventory_keep_source_diagnosis"
+INVENTORY_WEAK_EPISODE_DROP = "selection.inventory_weak_episode_drop"
 
 CANDIDATE_SELECT_RULE_IDS: tuple[str, ...] = (
     DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY,
@@ -56,6 +58,8 @@ CANDIDATE_SELECT_RULE_IDS: tuple[str, ...] = (
     SF_NAMED_TYPE_IDENTITY,
     SF_RECENT_EVENT_OVER_HISTORICAL_FREE,
     SF_TO_DIAGNOSIS_EXPLICIT_TYPE,
+    INVENTORY_KEEP_SOURCE_DIAGNOSIS,
+    INVENTORY_WEAK_EPISODE_DROP,
 )
 ACCEPTED_SELECT_RULE_IDS: tuple[str, ...] = (
     DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY,
@@ -66,6 +70,15 @@ ACCEPTED_SELECT_RULE_IDS: tuple[str, ...] = (
     SF_NAMED_TYPE_IDENTITY,
     SF_TO_DIAGNOSIS_EXPLICIT_TYPE,
 )
+INVENTORY_SELECT_RULE_IDS: tuple[str, ...] = (
+    DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY,
+    DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE,
+    PRESCRIPTION_LOCAL_REGIMEN_SCOPE,
+    PRESCRIPTION_ACTIVE_TITRATION,
+    PRESCRIPTION_EXACT_REGIMEN_DEDUPE,
+    INVENTORY_KEEP_SOURCE_DIAGNOSIS,
+    INVENTORY_WEAK_EPISODE_DROP,
+)
 _RULE_PORTABILITY_BY_ID = {
     DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY: "clinical_epilepsy",
     DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE: "benchmark_format",
@@ -75,6 +88,8 @@ _RULE_PORTABILITY_BY_ID = {
     SF_NAMED_TYPE_IDENTITY: "seizure_frequency",
     SF_RECENT_EVENT_OVER_HISTORICAL_FREE: "seizure_frequency",
     SF_TO_DIAGNOSIS_EXPLICIT_TYPE: "benchmark_format",
+    INVENTORY_KEEP_SOURCE_DIAGNOSIS: "clinical_epilepsy",
+    INVENTORY_WEAK_EPISODE_DROP: "clinical_epilepsy",
 }
 
 EMITTED_ACTIONS_BY_RULE_ID: dict[str, frozenset[str]] = {
@@ -86,6 +101,8 @@ EMITTED_ACTIONS_BY_RULE_ID: dict[str, frozenset[str]] = {
     SF_NAMED_TYPE_IDENTITY: frozenset({"rewrite"}),
     SF_RECENT_EVENT_OVER_HISTORICAL_FREE: frozenset({"add", "drop"}),
     SF_TO_DIAGNOSIS_EXPLICIT_TYPE: frozenset({"add"}),
+    INVENTORY_KEEP_SOURCE_DIAGNOSIS: frozenset({"add"}),
+    INVENTORY_WEAK_EPISODE_DROP: frozenset({"drop"}),
 }
 
 _DIAGNOSIS_HEADING_RE = re.compile(
@@ -126,6 +143,22 @@ _GENERIC_SF_CUIS = frozenset({"", "C0036572"})
 _TYPE_HEADING_RE = re.compile(
     r"^\s*(?:diagnosis|seizure\s+type(?:\s+and\s+frequency)?)\s*:",
     re.IGNORECASE,
+)
+_INVENTORY_WEAK_EPISODE_PHRASES = frozenset(
+    {
+        "attack",
+        "attacks",
+        "drop",
+        "drop attack",
+        "drops",
+        "episdoes",
+        "episode",
+        "episodes",
+        "event",
+        "events",
+        "jerk",
+        "several",
+    }
 )
 
 
@@ -170,8 +203,79 @@ def apply_select_rules(
     if SF_TO_DIAGNOSIS_EXPLICIT_TYPE in enabled_rule_ids:
         working, records = _project_named_sf_to_diagnosis(working)
         actions.extend(records)
+    if INVENTORY_KEEP_SOURCE_DIAGNOSIS in enabled_rule_ids:
+        working, records = _keep_source_ancestor_diagnoses(working, source)
+        actions.extend(records)
+    if INVENTORY_WEAK_EPISODE_DROP in enabled_rule_ids:
+        working, records = _drop_weak_episode_mentions(working)
+        actions.extend(records)
 
     return working, actions
+
+
+def _keep_source_ancestor_diagnoses(
+    selected: list[dict[str, Any]], source: list[dict[str, Any]]
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    selected_concepts = {
+        canonicalize_diagnosis_concept(str(mention.get("text") or ""))
+        for mention in selected
+        if _entity(mention) == "Diagnosis"
+    }
+    out = list(selected)
+    actions: list[dict[str, Any]] = []
+    for mention in source:
+        if _entity(mention) != "Diagnosis":
+            continue
+        concept = canonicalize_diagnosis_concept(str(mention.get("text") or ""))
+        if not concept or concept in _INVENTORY_WEAK_EPISODE_PHRASES:
+            continue
+        if _has_equivalent_diagnosis(out, mention):
+            continue
+        if not any(
+            is_diagnosis_descendant(selected_concept, concept)
+            for selected_concept in selected_concepts
+            if selected_concept
+        ):
+            continue
+        addition = _with_action_provenance(
+            _diagnosis_normalized_copy(mention),
+            rule_id=INVENTORY_KEEP_SOURCE_DIAGNOSIS,
+            action="add",
+        )
+        out.append(addition)
+        actions.append(
+            _action(
+                INVENTORY_KEEP_SOURCE_DIAGNOSIS,
+                "add",
+                after=addition,
+            )
+        )
+    return out, actions
+
+
+def _drop_weak_episode_mentions(
+    selected: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    out: list[dict[str, Any]] = []
+    actions: list[dict[str, Any]] = []
+    for mention in selected:
+        entity = _entity(mention)
+        concept = canonicalize_diagnosis_concept(str(mention.get("text") or ""))
+        if entity in {"Diagnosis", "SeizureFrequency"} and (
+            concept in _INVENTORY_WEAK_EPISODE_PHRASES
+            or normalize_phrase(str(mention.get("text") or ""))
+            in _INVENTORY_WEAK_EPISODE_PHRASES
+        ):
+            actions.append(
+                _action(
+                    INVENTORY_WEAK_EPISODE_DROP,
+                    "drop",
+                    before=mention,
+                )
+            )
+            continue
+        out.append(mention)
+    return out, actions
 
 
 def _restore_source_local_diagnoses(
@@ -844,6 +948,9 @@ __all__ = [
     "DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE",
     "DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY",
     "EMITTED_ACTIONS_BY_RULE_ID",
+    "INVENTORY_KEEP_SOURCE_DIAGNOSIS",
+    "INVENTORY_SELECT_RULE_IDS",
+    "INVENTORY_WEAK_EPISODE_DROP",
     "PRESCRIPTION_ACTIVE_TITRATION",
     "PRESCRIPTION_EXACT_REGIMEN_DEDUPE",
     "PRESCRIPTION_LOCAL_REGIMEN_SCOPE",

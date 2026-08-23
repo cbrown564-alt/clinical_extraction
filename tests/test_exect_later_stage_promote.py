@@ -55,7 +55,7 @@ def _write_work_cell(
         if split == "test60"
         else tmp_path / "experiments/paper"
     )
-    cell = root / method / "gemini37flash" / split
+    cell = root / method / "gemini37flash" / "exect_llm_extract" / split
     cell.mkdir(parents=True)
     (cell / "rows.jsonl").write_text(
         json.dumps(_work_row(mentions=mentions)) + "\n",
@@ -138,11 +138,12 @@ def test_rescore_later_stage_writes_exact_scorer(
     comparison = json.loads(
         (
             tmp_path
-            / "experiments/paper/exect_llm_encode/gemini37flash/dev140/comparison.json"
+            / "experiments/paper/exect_llm_encode/gemini37flash/exect_llm_extract"
+            / "dev140/comparison.json"
         ).read_text(encoding="utf-8")
     )
     assert payload["ok"] is True
-    assert comparison["scorer"] == "clinical_headline_unit_keys"
+    assert comparison["scorer"] == "clinical_inventory_unit_keys"
     assert comparison["four_family_headline_f1"] != 0.8545
     assert comparison["prior_four_family_headline_f1"] == 0.8545
     assert comparison["predicted_mention_count"] == 1
@@ -169,7 +170,7 @@ def test_promote_later_stage_dev140_strips_replay_and_writes_inventory(
     assert result["cell"]["method"] == "exect_llm_encode"
     assert set(replay) == {"letter_id", "prompt_version", "raw_output"}
     assert scored["method"] == "exect_llm_encode"
-    assert comparison["scorer"] == "clinical_headline_unit_keys"
+    assert comparison["scorer"] == "clinical_inventory_unit_keys"
     inventory = json.loads(
         (tmp_path / "paper_experiments/inventory.json").read_text(encoding="utf-8")
     )

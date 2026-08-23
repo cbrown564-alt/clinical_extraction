@@ -12,6 +12,9 @@ from pydantic import BaseModel
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedLetter,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select_rules import (
+    INVENTORY_SELECT_RULE_IDS,
+)
 
 
 class _FrozenDict(dict[str, Any]):
@@ -105,7 +108,9 @@ class StructuredMethodConfig:
     prompt_profile: Literal["full"] = "full"
     diagnosis_policy_variant: str = "default"
     prescription_policy_variant: str = "default"
-    sf_projection_ablation: Literal["none", "state", "ownership", "combined"] = "combined"
+    sf_projection_ablation: Literal[
+        "none", "state", "ownership", "combined", "inventory"
+    ] = "combined"
     archived_replay: bool = False
     diagnosis_resolution_candidate: bool = False
     model_preserving_policy_candidate: bool = False
@@ -161,6 +166,17 @@ class StructuredMethodConfig:
             prompt_profile=prompt_profile,
             prescription_policy_variant="combined",
             archived_replay=True,
+        )
+
+    @classmethod
+    def inventory(cls, *, prompt_profile: Literal["full"] = "full") -> StructuredMethodConfig:
+        """Select profile for diagnostic inventory. Not the paper Compact stack."""
+
+        return cls(
+            prompt_profile=prompt_profile,
+            archived_replay=True,
+            sf_projection_ablation="inventory",
+            select_rule_ids=frozenset(INVENTORY_SELECT_RULE_IDS),
         )
 
 

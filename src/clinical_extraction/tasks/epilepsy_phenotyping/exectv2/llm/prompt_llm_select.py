@@ -38,8 +38,24 @@ INSTRUCTIONS = [
     ),
     "Keep a row when it is its own fact.",
     (
+        "The list may repeat the same fact. Keep one copy. Drop or merge "
+        "the repeats."
+    ),
+    (
+        "Keep both a general diagnosis and a more specific one when both "
+        "are their own facts, such as epilepsy and focal epilepsy."
+    ),
+    (
         "Drop a row when it repeats another row, or when it does not name "
         "a real fact from those rows."
+    ),
+    (
+        "Drop a row that only names a vague episode word such as events, "
+        "episode, jerk, or drops, unless that word is a named seizure type."
+    ),
+    (
+        "Keep a seizure-free or control statement and a typed frequency "
+        "when both are stated."
     ),
     (
         "Merge when two rows are the same fact. Keep one mention_id and "

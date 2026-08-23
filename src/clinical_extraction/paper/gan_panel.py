@@ -108,8 +108,10 @@ def promote_gan(method: str, slug: str, split: str) -> dict[str, Any]:
         "empty_raw_count": empty,
         "source": source.relative_to(ROOT).as_posix(),
         "call_mode": "live_2026-08-17",
-        "living_effort": "low" if slug in {"grok46", "gpt56luna", "gemini37flash"} else (
-            "thinking_on_provider_default" if slug == "deepseek_v4_flash" else "none"
+        "living_effort": (
+            "low"
+            if slug in {"grok46", "gpt56luna", "gemini37flash", "deepseek_v4_flash"}
+            else "none"
         ),
         "rows": "rows.jsonl",
         "comparison": "comparison.json",
@@ -201,7 +203,7 @@ def rebuild_dev750_panel() -> dict[str, Any]:
         "method_identity": "gemini37flash",
         "living_effort": {
             "hosted_reasoning": "low",
-            "deepseek": "thinking_on_provider_default",
+            "deepseek": "low",
             "local": "none",
         },
         "notes_source": {

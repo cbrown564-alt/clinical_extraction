@@ -22,20 +22,20 @@ from clinical_extraction.paper.methods import (
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select_rules import (
-    ACCEPTED_SELECT_RULE_IDS,
+    INVENTORY_SELECT_RULE_IDS,
     apply_select_rules,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
     aggregate_scores,
     annotation_from_mapping,
-    exact_clinical_headline_scores,
+    exact_clinical_inventory_scores,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
 )
 
 ROOT = discover_repo_root(start=Path(__file__))
-STUDY_DIR = ROOT / "experiments/exectv2_rule_select_after_llm_encode_20260822"
+STUDY_DIR = ROOT / "experiments/exectv2_rule_select_after_llm_encode_20260823"
 
 
 def apply_rule_select_after_llm_encode(
@@ -44,14 +44,14 @@ def apply_rule_select_after_llm_encode(
     note_text: str,
     enabled_rule_ids: Set[str] | None = None,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-    """Run accepted Select rules on later-stage encoded mentions."""
+    """Run inventory Select rules on later-stage encoded mentions."""
 
     return apply_select_rules(
         encoded_mentions,
         source_mentions=extract_mentions,
         note_text=note_text,
         enabled_rule_ids=(
-            frozenset(ACCEPTED_SELECT_RULE_IDS)
+            frozenset(INVENTORY_SELECT_RULE_IDS)
             if enabled_rule_ids is None
             else enabled_rule_ids
         ),
@@ -99,17 +99,17 @@ def replay_rule_select_after_llm_encode(split: str) -> dict[str, Any]:
                 annotations=tuple(annotation_from_mapping(m) for m in selected),
             )
         )
-    encode_family = exact_clinical_headline_scores(letters, encode_letters)
-    select_family = exact_clinical_headline_scores(letters, select_letters)
+    encode_family = exact_clinical_inventory_scores(letters, encode_letters)
+    select_family = exact_clinical_inventory_scores(letters, select_letters)
     encode_overall = aggregate_scores(encode_family.values())
     select_overall = aggregate_scores(select_family.values())
     artifact: dict[str, Any] = {
         "schema_version": "paper.exect_rule_select_after_llm_encode.v1",
         "generated_on": datetime.now(UTC).date().isoformat(),
         "method": "exect_rule_select_after_llm_encode",
-        "extract_source": "exect_llm_only",
+        "extract_source": "exect_llm_extract",
         "encode_source": "exect_llm_encode",
-        "select_rules": sorted(ACCEPTED_SELECT_RULE_IDS),
+        "select_rules": sorted(INVENTORY_SELECT_RULE_IDS),
         "model_slug": CITED_SLUG,
         "split": split,
         "split_machine": exect_machine_split(split),

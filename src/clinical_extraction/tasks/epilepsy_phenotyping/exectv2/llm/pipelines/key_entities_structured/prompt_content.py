@@ -94,6 +94,20 @@ def high_priority_evidence_ledger_for_letter(letter: ExectLetter) -> list[dict[s
     return rows[:32]
 
 
+def suggested_evidence_rows(letter: ExectLetter) -> list[dict[str, str]]:
+    """Rules-suggested rows shown to the model as a starting list."""
+
+    return [
+        {
+            "family": str(row["family"]),
+            "evidence": str(row["evidence"]),
+            "name_hint": str(row["anchor_hint"]),
+            "category": str(row["lane_hint"]),
+        }
+        for row in high_priority_evidence_ledger_for_letter(letter)
+    ]
+
+
 def candidate_evidence_ledger_for_letter(
     letter: ExectLetter,
     *,

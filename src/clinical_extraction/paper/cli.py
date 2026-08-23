@@ -12,11 +12,11 @@ from clinical_extraction.paper.exect import (
     rescore_inventory_baseline,
     rescore_inventory_residuals,
     run_compact,
-    run_llm_inventory,
-    run_llm_only,
+    run_llm_extract,
+    run_llm_extract_filtered,
     verify_compact,
-    verify_llm_inventory,
-    verify_llm_only,
+    verify_llm_extract,
+    verify_llm_extract_filtered,
 )
 from clinical_extraction.paper.exect_cell_replay import (
     replay_exect_pre_post_encode,
@@ -34,12 +34,18 @@ from clinical_extraction.paper.exect_later_stage import (
 from clinical_extraction.paper.exect_panel import (
     promote_exect,
     promote_exect_later_stage,
+    promote_exect_llm_extract,
     promote_exect_llm_only,
 )
 from clinical_extraction.paper.gan import run_gan, verify_gan
 from clinical_extraction.paper.gan_cell_replay import replay_gan_rungs
 from clinical_extraction.paper.gan_panel import promote_gan
-from clinical_extraction.paper.methods import LIVE_METHODS, method_spec, split_for
+from clinical_extraction.paper.methods import (
+    LIVE_METHODS,
+    canonical_exect_method,
+    method_spec,
+    split_for,
+)
 
 
 def main(argv: Sequence[str] | None = None) -> None:
@@ -72,8 +78,8 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--slice")
     args = parser.parse_args(argv)
     if args.action == "score-inventory":
-        if args.method != "exect_llm_inventory":
-            raise SystemExit("score-inventory requires --method exect_llm_inventory")
+        if canonical_exect_method(args.method) != "exect_llm_extract":
+            raise SystemExit("score-inventory requires --method exect_llm_extract")
         if args.split != "dev140":
             raise SystemExit("score-inventory is DEV140 only")
         print(
@@ -85,8 +91,10 @@ def main(argv: Sequence[str] | None = None) -> None:
         )
         return
     if args.action == "score-inventory-residual":
-        if args.method != "exect_llm_inventory":
-            raise SystemExit("score-inventory-residual requires --method exect_llm_inventory")
+        if canonical_exect_method(args.method) != "exect_llm_extract":
+            raise SystemExit(
+                "score-inventory-residual requires --method exect_llm_extract"
+            )
         if args.split != "dev140":
             raise SystemExit("score-inventory-residual is DEV140 only")
         print(
@@ -149,7 +157,16 @@ def main(argv: Sequence[str] | None = None) -> None:
             raise SystemExit("promote-exect requires --model")
         if args.split not in {"dev140", "test60"}:
             raise SystemExit("promote-exect only accepts --split dev140 or test60")
-        if args.method == "exect_llm_only":
+        if canonical_exect_method(args.method) == "exect_llm_extract":
+            print(
+                json.dumps(
+                    promote_exect_llm_extract(args.model, args.split),
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+            return
+        if canonical_exect_method(args.method) == "exect_llm_extract_filtered":
             print(
                 json.dumps(
                     promote_exect_llm_only(args.model, args.split),
@@ -232,10 +249,11 @@ def verify(method: str, split: str, slug: str | None = None) -> dict[str, Any]:
                     else "development_review_permitted"
                 ),
             }
-        if method == "exect_llm_only":
-            return verify_llm_only(split=split, slug=slug)
-        if method == "exect_llm_inventory":
-            return verify_llm_inventory(split=split, slug=slug)
+        resolved = canonical_exect_method(method)
+        if resolved == "exect_llm_extract_filtered":
+            return verify_llm_extract_filtered(split=split, slug=slug)
+        if resolved == "exect_llm_extract":
+            return verify_llm_extract(split=split, slug=slug)
         return verify_compact(split=split, slug=slug)
     return verify_gan(method, split, slug)
 
@@ -272,8 +290,9 @@ def run(
                 progress_every=progress_every,
                 reasoning_effort=reasoning_effort,
             )
-        if method == "exect_llm_inventory":
-            return run_llm_inventory(
+        resolved = canonical_exect_method(method)
+        if resolved == "exect_llm_extract":
+            return run_llm_extract(
                 slug,
                 live=True,
                 split=split,
@@ -284,8 +303,8 @@ def run(
                 thinking=thinking,
                 reasoning_effort=reasoning_effort,
             )
-        if method == "exect_llm_only":
-            return run_llm_only(
+        if resolved == "exect_llm_extract_filtered":
+            return run_llm_extract_filtered(
                 slug,
                 live=True,
                 split=split,

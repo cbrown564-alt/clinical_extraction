@@ -319,6 +319,61 @@ def test_openrouter_resumes_existing_batch_id(tmp_path: Path) -> None:
     assert raws == {"11": '{"resumed": true}'}
 
 
+def test_openrouter_overwrite_submits_a_new_batch(tmp_path: Path) -> None:
+    (tmp_path / "batch.json").write_text(
+        json.dumps(
+            {
+                "transport": "openrouter_batch",
+                "batch_id": "batch_or_old",
+                "completed": True,
+            }
+        ),
+        encoding="utf-8",
+    )
+    posts = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.method == "POST":
+            posts["n"] += 1
+            return httpx.Response(200, json={"id": "batch_or_new"})
+        return httpx.Response(
+            200,
+            json={
+                "id": "batch_or_new",
+                "status": "completed",
+                "results": [
+                    {
+                        "custom_id": "11",
+                        "response": {
+                            "status_code": 200,
+                            "body": {
+                                "choices": [{"message": {"content": '{"fresh": true}'}}]
+                            },
+                        },
+                        "error": None,
+                    }
+                ],
+            },
+        )
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    raws = complete_chat_batch(
+        MODELS["gemini37flash"],
+        [BatchChatItem(custom_id="11", messages=[{"role": "user", "content": "note"}])],
+        work_dir=tmp_path,
+        max_tokens=5000,
+        client=client,
+        sleep=lambda _seconds: None,
+        poll_seconds=0,
+        api_key="or-test",
+        overwrite=True,
+    )
+    assert posts["n"] == 1
+    assert raws == {"11": '{"fresh": true}'}
+    state = json.loads((tmp_path / "batch.json").read_text(encoding="utf-8"))
+    assert state["batch_id"] == "batch_or_new"
+
+
 def test_complete_chat_batch_rejects_grok() -> None:
     with pytest.raises(ValueError, match="no provider batch"):
         complete_chat_batch(

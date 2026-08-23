@@ -29,7 +29,7 @@ from __future__ import annotations
 
 import re
 from collections import Counter
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence, Set
 from pathlib import Path
 from typing import Any, Literal, NamedTuple
 
@@ -96,7 +96,14 @@ PROJECTION_VERSION = "exectv2_hybrid_sf_state_projection_v0.19"
 PIPELINE_FAMILY = "exectv2_hybrid_sf_state_projection"
 COMPONENT_OWNER = "deterministic_sf_state_ownership_projection"
 
-ProjectionAblation = Literal["none", "state", "ownership", "combined"]
+ProjectionAblation = Literal["none", "state", "ownership", "combined", "inventory"]
+_INVENTORY_SKIP_STATE_DROPS = frozenset({"state.drop_preceded_by_current_seizure_free"})
+_INVENTORY_SKIP_OWNERSHIP_PASSES = frozenset(
+    {
+        "ownership.drop_umbrella_clone",
+        "ownership.drop_dated_cluster_next_to_free",
+    }
+)
 _OwnershipApply = Callable[
     [Sequence[Mapping[str, Any]]],
     tuple[list[dict[str, Any]], list[dict[str, str]]],
@@ -224,10 +231,18 @@ def project_rows(
 def project_row(row: Mapping[str, Any], *, ablation: ProjectionAblation) -> dict[str, Any]:
     mentions = [_copy_mention(m) for m in row.get("predicted_mentions", [])]
     actions: list[dict[str, str]] = []
+    inventory = ablation == "inventory"
+    run_state = ablation in {"state", "combined", "inventory"}
+    run_ownership = ablation in {"ownership", "combined", "inventory"}
 
-    if ablation in {"state", "combined"}:
-        mentions = _apply_state_projection(row, mentions, actions)
-    if ablation in {"ownership", "combined"}:
+    if run_state:
+        mentions = _apply_state_projection(
+            row,
+            mentions,
+            actions,
+            skip_drop_ids=_INVENTORY_SKIP_STATE_DROPS if inventory else frozenset(),
+        )
+    if run_ownership and not inventory:
         mentions = _apply_ownership_projection(row, mentions, actions)
         mentions, select_actions = sf_encoding.apply_sf_select_local_evidence(mentions)
         for record in select_actions:
@@ -242,8 +257,12 @@ def project_row(row: Mapping[str, Any], *, ablation: ProjectionAblation) -> dict
     mentions = _dedupe_exact_mentions(mentions)
     predicted = _project_mentions(str(row["letter_id"]), mentions)
     projected_mentions = [_mention_to_row(m) for m in predicted.mentions]
-    if ablation in {"ownership", "combined"}:
-        projected_mentions = _apply_landed_ownership_passes(projected_mentions, actions)
+    if run_ownership:
+        projected_mentions = _apply_landed_ownership_passes(
+            projected_mentions,
+            actions,
+            skip_rule_ids=_INVENTORY_SKIP_OWNERSHIP_PASSES if inventory else frozenset(),
+        )
 
     out = dict(row)
     out["source_prompt_version"] = row.get("prompt_version")
@@ -335,9 +354,13 @@ def write_report(
 def _apply_landed_ownership_passes(
     mentions: list[dict[str, Any]],
     actions: list[dict[str, str]],
+    *,
+    skip_rule_ids: Set[str] = frozenset(),
 ) -> list[dict[str, Any]]:
     working = mentions
     for stage in _OWNERSHIP_PASSES:
+        if stage.rule_id in skip_rule_ids:
+            continue
         working, records = stage.apply(working)
         for record in records:
             rule_id = stage.rule_id or f"ownership.{record['action']}"
@@ -349,6 +372,8 @@ def _apply_state_projection(
     row: Mapping[str, Any],
     mentions: list[dict[str, Any]],
     actions: list[dict[str, str]],
+    *,
+    skip_drop_ids: Set[str] = frozenset(),
 ) -> list[dict[str, Any]]:
     mentions, encoding_actions = sf_encoding.apply_sf_attribute_encoding(mentions)
     for record in encoding_actions:
@@ -366,6 +391,8 @@ def _apply_state_projection(
             actions.append(_action("state.last_event_date_to_seizure_free", "repair", mention))
             mention = _copy_mention(dated_free)
         drop_rule = _state_drop_rule(mention, mentions)
+        if drop_rule in skip_drop_ids:
+            drop_rule = None
         if drop_rule:
             actions.append(_action(drop_rule, "drop", mention))
             continue

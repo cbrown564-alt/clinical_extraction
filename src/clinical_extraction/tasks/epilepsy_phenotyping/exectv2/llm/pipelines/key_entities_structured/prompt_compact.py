@@ -1,11 +1,13 @@
 """Compact structured prompt.
 
 Ordinary-language one-call request. Compact default and llm_only have no
-examples. Inventory may include two diagnosis examples. No research metadata.
+examples. No research metadata. Inventory lives in ``prompt_inventory.py``.
 
-Hybrid Compact (``exectv2_compact_ledger`` / ``exect_llm_with_rules``) adds
-suggested evidence and category lanes. LLM-only (``exect_llm_only``) uses the
-same schema, rules, and vocabulary without that scan.
+Historical Compact hybrid (``exectv2_compact_ledger``) adds suggested
+evidence and category lanes. Living both-extract (``exect_llm_pre_post``)
+is the inventory extract plus suggested candidates. LLM-only
+(``exect_llm_extract_filtered``) uses Compact schema and rules without
+that scan.
 
 All model-facing Compact text lives here.
 """
@@ -17,7 +19,7 @@ from typing import Any
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 
-from .prompt_content import high_priority_evidence_ledger_for_letter
+from .prompt_content import suggested_evidence_rows
 
 COMPACT_AUTHORED_KEYS = (
     "task",
@@ -37,16 +39,6 @@ LLM_ONLY_AUTHORED_KEYS = (
     "family_guidance",
     "attribute_vocabulary",
     "clinical_rules",
-    "letter_text",
-)
-INVENTORY_AUTHORED_KEYS = (
-    "task",
-    "output_schema",
-    "decision_procedure",
-    "family_guidance",
-    "attribute_vocabulary",
-    "clinical_rules",
-    "examples",
     "letter_text",
 )
 
@@ -93,17 +85,6 @@ _LLM_ONLY_DECISION_PROCEDURE = [
     _SHARED_DECISION_SCAN,
     _SHARED_DECISION_WRITE,
     _SHARED_DECISION_EXACT,
-]
-
-_INVENTORY_DECISION_EXACT = (
-    "Before returning JSON, remove exact duplicate events (same family and "
-    "same fact) and remove events whose evidence or fact is not an exact "
-    "copy from the letter."
-)
-_INVENTORY_DECISION_PROCEDURE = [
-    _SHARED_DECISION_SCAN,
-    _SHARED_DECISION_WRITE,
-    _INVENTORY_DECISION_EXACT,
 ]
 
 _FAMILY_GUIDANCE = {
@@ -559,176 +540,11 @@ def compact_rule_count(rules: dict[str, list[str]]) -> int:
     return sum(len(section) for section in rules.values())
 
 
-_INVENTORY_DROPPED_DIAGNOSIS_RULES = (
-    (
-        "Do not add a separate generic epilepsy diagnosis to a specific "
-        "epilepsy subtype unless the letter separately states generic epilepsy "
-        "as its own diagnosis or context says the patient has/has known "
-        "epilepsy. For example, 'Diagnosis: symptomatic structural focal "
-        "epilepsy' includes only 'symptomatic structural focal epilepsy'."
-    ),
-    (
-        "Prefer the most specific epilepsy syndrome or seizure type stated in "
-        "the letter, such as focal epilepsy, temporal lobe epilepsy, primary "
-        "generalised epilepsy, or JME. When the letter explicitly states both "
-        "a generic epilepsy diagnosis and a specific syndrome or seizure type, "
-        "include both as separate diagnosis events; do not collapse one into "
-        "the other."
-    ),
-    (
-        "Onset-history phrases such as 'epilepsy started at age 4' are not "
-        "a separate diagnosis event when the same letter already provides "
-        "the current diagnosis or named seizure types."
-    ),
-    (
-        "Write diagnosis fact as only the short syndrome or named seizure "
-        "type. If the letter names a syndrome and a seizure type, such as "
-        "juvenile absence epilepsy and tonic clonic seizures, include each as "
-        "its own diagnosis event. Do not put hedges, timing, or extra anatomy "
-        "into fact: words such as 'probably', 'from sleep', a question-mark "
-        "side of onset, or 'retained awareness' as its own event."
-    ),
-    (
-        "Do not include isolated symptoms or aura features as diagnosis, "
-        "including myoclonic jerks, jerks, flashing lights, odd sensations, "
-        "altered awareness by itself, or dizziness, unless the phrase is part "
-        "of a named seizure type such as 'focal seizures with altered awareness'."
-    ),
-)
-
-_INVENTORY_EXAMPLES = [
-    {
-        "letter": (
-            "Diagnosis: symptomatic structural focal epilepsy. "
-            "Seizure type and frequency: focal seizures with altered awareness every 3 weeks."
-        ),
-        "clinical_events": [
-            {
-                "family": "diagnosis",
-                "evidence": "Diagnosis: symptomatic structural focal epilepsy.",
-                "fact": "symptomatic structural focal epilepsy",
-                "attributes": {"DiagCategory": "Epilepsy"},
-            },
-            {
-                "family": "diagnosis",
-                "evidence": (
-                    "Seizure type and frequency: focal seizures with altered "
-                    "awareness every 3 weeks."
-                ),
-                "fact": "focal seizures with altered awareness",
-                "attributes": {"DiagCategory": "Epilepsy"},
-            },
-        ],
-    },
-    {
-        "letter": (
-            "She was diagnosed with epilepsy at the age of 4. "
-            "She continues to have juvenile absence epilepsy and tonic clonic seizures."
-        ),
-        "clinical_events": [
-            {
-                "family": "diagnosis",
-                "evidence": "She was diagnosed with epilepsy at the age of 4.",
-                "fact": "epilepsy",
-                "attributes": {"DiagCategory": "Epilepsy"},
-            },
-            {
-                "family": "diagnosis",
-                "evidence": (
-                    "She continues to have juvenile absence epilepsy and "
-                    "tonic clonic seizures."
-                ),
-                "fact": "juvenile absence epilepsy",
-                "attributes": {"DiagCategory": "Epilepsy"},
-            },
-            {
-                "family": "diagnosis",
-                "evidence": (
-                    "She continues to have juvenile absence epilepsy and "
-                    "tonic clonic seizures."
-                ),
-                "fact": "tonic clonic seizures",
-                "attributes": {"DiagCategory": "Epilepsy"},
-            },
-        ],
-    },
-    {
-        "letter": (
-            "Diagnosis: juvenile myoclonic epilepsy. "
-            "Seizure types: nocturnal GTCS."
-        ),
-        "clinical_events": [
-            {
-                "family": "diagnosis",
-                "evidence": "Diagnosis: juvenile myoclonic epilepsy.",
-                "fact": "juvenile myoclonic epilepsy",
-                "attributes": {"DiagCategory": "Epilepsy"},
-            },
-            {
-                "family": "diagnosis",
-                "evidence": "Seizure types: nocturnal GTCS.",
-                "fact": "nocturnal GTCS",
-                "attributes": {"DiagCategory": "Epilepsy"},
-            },
-        ],
-    },
-]
-
-
 def _sectioned_rules(*, include_suggested: bool) -> dict[str, list[str]]:
     rules = {key: list(rows) for key, rows in _SHARED_RULE_SECTIONS.items()}
     if include_suggested:
         return {"suggested_evidence": list(_HYBRID_RULES), **rules}
     return rules
-
-
-_INVENTORY_SPLIT_SYNDROME_AND_TYPE = (
-    "If the letter names a syndrome and a seizure type, such as juvenile "
-    "absence epilepsy and tonic clonic seizures, include each as its own "
-    "diagnosis event."
-)
-
-_INVENTORY_HEADING_PLACE_OR_TYPE = (
-    "If the letter states a more specific place or type in the same "
-    "diagnosis heading or the next sentence — such as probable focal, "
-    "? temporal, occipital, frontal, nocturnal GTCS, or a named type "
-    "beside a syndrome — write that as its own diagnosis event as well "
-    "as the heading syndrome. Extra stated types are acceptable; do not "
-    "skip a stated type to stay tidy."
-)
-
-_INVENTORY_SF_HEADING_SPLIT = (
-    "When a heading names more than one seizure type, write a "
-    "seizure-frequency event for each named type using that type's own rate. "
-    "If the letter also states a generic seizure-free or unknown seizure "
-    "state beside those typed rates, keep a separate generic seizure event "
-    "for that state."
-)
-
-_INVENTORY_FAMILY_GUIDANCE = {
-    **_FAMILY_GUIDANCE,
-    "diagnosis": (
-        "Diagnoses such as epilepsy, focal epilepsy, seizure disorder, or "
-        "named seizure types. Include DiagCategory. Do not include vague "
-        "symptoms or non-epileptic alternatives unless the letter states they "
-        "are epileptic diagnoses, even when they appear under a diagnosis or "
-        "problem-list heading."
-    ),
-}
-
-
-def _inventory_sectioned_rules() -> dict[str, list[str]]:
-    rules = _sectioned_rules(include_suggested=False)
-    diagnosis = [
-        row
-        for row in rules["diagnosis"]
-        if row not in _INVENTORY_DROPPED_DIAGNOSIS_RULES
-    ]
-    diagnosis.insert(1, _INVENTORY_SPLIT_SYNDROME_AND_TYPE)
-    diagnosis.insert(2, _INVENTORY_HEADING_PLACE_OR_TYPE)
-    seizure_frequency = list(rules["seizure_frequency"])
-    seizure_frequency.insert(3, _INVENTORY_SF_HEADING_SPLIT)
-    return {**rules, "diagnosis": diagnosis, "seizure_frequency": seizure_frequency}
 
 
 def build_compact_prompt_input(letter: ExectLetter) -> str:
@@ -742,7 +558,7 @@ def build_compact_prompt_input(letter: ExectLetter) -> str:
         "attribute_vocabulary": dict(_ATTRIBUTE_VOCABULARY),
         "categories": {family: list(rows) for family, rows in _CATEGORIES.items()},
         "clinical_rules": _sectioned_rules(include_suggested=True),
-        "suggested_evidence": _suggested_evidence(letter),
+        "suggested_evidence": suggested_evidence_rows(letter),
         "letter_text": letter.note_text,
     }
     return json.dumps(payload, ensure_ascii=False)
@@ -763,29 +579,3 @@ def build_compact_llm_only_prompt_input(letter: ExectLetter) -> str:
     return json.dumps(payload, ensure_ascii=False)
 
 
-def build_compact_llm_inventory_prompt_input(letter: ExectLetter) -> str:
-    """LLM-only payload scored on diagnostic inventory (no most-specific collapse)."""
-
-    payload = {
-        "task": _LLM_ONLY_TASK,
-        "output_schema": _OUTPUT_SCHEMA,
-        "decision_procedure": list(_INVENTORY_DECISION_PROCEDURE),
-        "family_guidance": dict(_INVENTORY_FAMILY_GUIDANCE),
-        "attribute_vocabulary": dict(_ATTRIBUTE_VOCABULARY),
-        "clinical_rules": _inventory_sectioned_rules(),
-        "examples": list(_INVENTORY_EXAMPLES),
-        "letter_text": letter.note_text,
-    }
-    return json.dumps(payload, ensure_ascii=False)
-
-
-def _suggested_evidence(letter: ExectLetter) -> list[dict[str, str]]:
-    return [
-        {
-            "family": str(row["family"]),
-            "evidence": str(row["evidence"]),
-            "name_hint": str(row["anchor_hint"]),
-            "category": str(row["lane_hint"]),
-        }
-        for row in high_priority_evidence_ledger_for_letter(letter)
-    ]

@@ -152,6 +152,7 @@ def complete_chat_batch(
     sleep: Callable[[float], None] = time.sleep,
     poll_seconds: int = 30,
     api_key: str | None = None,
+    overwrite: bool = False,
 ) -> dict[str, str]:
     """Submit one batch, poll until terminal, and return custom_id -> raw text."""
 
@@ -161,6 +162,8 @@ def complete_chat_batch(
         return {}
     work_dir.mkdir(parents=True, exist_ok=True)
     state_path = work_dir / "batch.json"
+    if overwrite and state_path.exists():
+        state_path.unlink()
     owns_client = client is None
     if client is None:
         client = httpx.Client(timeout=60.0)

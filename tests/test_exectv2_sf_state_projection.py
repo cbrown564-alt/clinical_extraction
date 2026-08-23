@@ -103,6 +103,65 @@ def test_ownership_projection_assigns_named_count_to_named_type() -> None:
     assert projected["projection_actions"][0]["rule_id"] == "ownership.generic_active_to_named"
 
 
+def test_inventory_projection_keeps_headline_companion_drops() -> None:
+    until = "She had weekly seizures up until last year."
+    free = "She has been seizure free since then."
+    clone_span = "focal to bilateral seizures last event 10 years ago."
+    row = _row(
+        predicted_mentions=[
+            {
+                "entity": "SeizureFrequency",
+                "text": "seizures",
+                "attributes": {"NumberOfSeizures": "1", "TimePeriod": "Week"},
+                "evidence": until,
+            },
+            {
+                "entity": "SeizureFrequency",
+                "text": "seizures",
+                "attributes": {"NumberOfSeizures": "0"},
+                "evidence": free,
+            },
+            {
+                "entity": "SeizureFrequency",
+                "text": "seizures",
+                "attributes": {
+                    "CUI": "C0036572",
+                    "NumberOfSeizures": "0",
+                    "NumberOfTimePeriods": "10",
+                    "TimePeriod": "Year",
+                },
+                "evidence": clone_span,
+            },
+            {
+                "entity": "SeizureFrequency",
+                "text": "focal to bilateral seizures",
+                "attributes": {
+                    "CUI": "C0877017",
+                    "NumberOfSeizures": "0",
+                    "NumberOfTimePeriods": "10",
+                    "TimePeriod": "Year",
+                },
+                "evidence": clone_span,
+            },
+        ]
+    )
+    combined = projection.project_row(row, ablation="combined")
+    inventory = projection.project_row(row, ablation="inventory")
+    combined_texts = [mention["text"] for mention in combined["predicted_mentions"]]
+    inventory_texts = [mention["text"] for mention in inventory["predicted_mentions"]]
+    assert combined_texts.count("seizures") < inventory_texts.count("seizures")
+    assert "focal to bilateral seizures" in inventory_texts
+    assert "ownership.generic_active_to_named" not in {
+        action["rule_id"] for action in inventory["projection_actions"]
+    }
+    assert "ownership.drop_umbrella_clone" not in {
+        action["rule_id"] for action in inventory["projection_actions"]
+    }
+    assert "state.drop_preceded_by_current_seizure_free" not in {
+        action["rule_id"] for action in inventory["projection_actions"]
+    }
+
+
 def test_project_rows_reports_ablation_metadata() -> None:
     rows = [
         _row(

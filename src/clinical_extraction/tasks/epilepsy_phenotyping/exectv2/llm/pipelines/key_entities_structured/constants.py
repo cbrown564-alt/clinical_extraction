@@ -3,8 +3,9 @@
 Pure relocation of the module-level constants from
 ``llm_only_key_entities_structured``. No logic changes.
 
-Paper names ``exect_llm_pre_post`` and ``exect_llm_only`` are the living
-Compact methods. Legacy prompt strings are accepted on read only via
+Paper names ``exect_llm_pre_post`` and ``exect_llm_extract`` are the
+living methods. ``exect_llm_extract_filtered`` is the Compact extract
+ablation. Legacy prompt strings are accepted on read only via
 ``LEGACY_PROMPT_VERSION_ALIASES``.
 """
 
@@ -22,20 +23,26 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
 
 EXECT_LLM_PRE_POST = "exect_llm_pre_post"
 EXECT_LLM_WITH_RULES = "exect_llm_with_rules"
+EXECT_LLM_EXTRACT = "exect_llm_extract"
+EXECT_LLM_EXTRACT_FILTERED = "exect_llm_extract_filtered"
 EXECT_LLM_ONLY = "exect_llm_only"
 EXECT_LLM_INVENTORY = "exect_llm_inventory"
 COMPACT_LEDGER = "exectv2_compact_ledger"
 
 LEGACY_PROMPT_VERSION_ALIASES: dict[str, str] = {
-    COMPACT_LEDGER: EXECT_LLM_PRE_POST,
     EXECT_LLM_WITH_RULES: EXECT_LLM_PRE_POST,
+    EXECT_LLM_ONLY: EXECT_LLM_EXTRACT_FILTERED,
+    EXECT_LLM_INVENTORY: EXECT_LLM_EXTRACT,
 }
 
-COMPACT_VERSIONS = frozenset({EXECT_LLM_PRE_POST})
-LLM_ONLY_VERSIONS = frozenset({EXECT_LLM_ONLY})
-INVENTORY_VERSIONS = frozenset({EXECT_LLM_INVENTORY})
+COMPACT_VERSIONS = frozenset({COMPACT_LEDGER})
+BOTH_EXTRACT_VERSIONS = frozenset({EXECT_LLM_PRE_POST})
+LLM_ONLY_VERSIONS = frozenset({EXECT_LLM_EXTRACT_FILTERED})
+INVENTORY_VERSIONS = frozenset({EXECT_LLM_EXTRACT})
 PROMPT_VERSION = EXECT_LLM_PRE_POST
-_SUPPORTED_PROMPT_VERSIONS = COMPACT_VERSIONS | LLM_ONLY_VERSIONS | INVENTORY_VERSIONS
+_SUPPORTED_PROMPT_VERSIONS = (
+    COMPACT_VERSIONS | BOTH_EXTRACT_VERSIONS | LLM_ONLY_VERSIONS | INVENTORY_VERSIONS
+)
 PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"
 COMPONENT_OWNER = "hybrid_key_family_event_ledger"
 

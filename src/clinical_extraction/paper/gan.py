@@ -305,6 +305,8 @@ def run_gan(
         if slug != "deepseek_v4_flash":
             raise RuntimeError("thinking toggle is DeepSeek only")
         spec = replace(spec, thinking_type=thinking)
+    elif slug == "deepseek_v4_flash" and spec.reasoning_effort:
+        spec = replace(spec, thinking_type="enabled")
     holdout = holdout_is_aggregate_only(split)
     machine = gan_machine_split(split)
     expected = gan_row_count(split)
@@ -356,6 +358,7 @@ def run_gan(
             _gan_batch_items(method, todo, program),
             work_dir=work_root,
             max_tokens=max_tokens,
+            overwrite=overwrite,
         )
     for index, record in enumerate(todo, start=1):
         raw_output = batch_raws.get(str(record.source_row_index))

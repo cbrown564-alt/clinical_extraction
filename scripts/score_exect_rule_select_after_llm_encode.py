@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replay accepted Select rules on saved Gemini later-stage encode rows."""
+"""Replay inventory Select rules on saved Gemini later-stage encode rows."""
 
 from __future__ import annotations
 

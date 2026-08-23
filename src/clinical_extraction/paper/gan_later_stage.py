@@ -297,6 +297,7 @@ def run_later_stage(
         _batch_items(method, todo, extract_by_index, encode_by_index, program),
         work_dir=work_root,
         max_tokens=MAX_TOKENS,
+        overwrite=overwrite,
     ) if todo else {}
     by_index = {int(row["source_row_index"]): row for row in existing}
     for index, record in enumerate(todo, start=1):

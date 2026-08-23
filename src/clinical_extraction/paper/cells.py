@@ -102,9 +102,9 @@ GAN_RUNG_SOURCE: dict[RungId, str] = {
 }
 EXECT_RUNG_SOURCE: dict[RungId, str] = {
     "rules_only": "standalone_rules",
-    "llm_extract": "replay_exect_llm_only",
-    "llm_encode": "replay_exect_llm_only",
-    "llm_select": "replay_exect_llm_only",
+    "llm_extract": "replay_exect_llm_extract",
+    "llm_encode": "replay_exect_llm_extract",
+    "llm_select": "replay_exect_llm_extract",
     "llm_pre_post": "living_exect_llm_pre_post",
 }
 EXECT_HOP_EFFECT_CLASS: dict[str, str] = {

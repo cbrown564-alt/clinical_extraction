@@ -20,10 +20,7 @@ from clinical_extraction.paper.exect import (
     apply_reasoning_effort,
     letters_for_split,
 )
-from clinical_extraction.paper.exect_cell_replay import (
-    exect_llm_only_rows_path,
-    schema_mention_rows,
-)
+from clinical_extraction.paper.exect_cell_replay import schema_mention_rows
 from clinical_extraction.paper.lm import resolve_paper_api_base
 from clinical_extraction.paper.methods import (
     exect_machine_split,
@@ -64,7 +61,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.contra
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
     aggregate_scores,
     annotation_from_mapping,
-    exact_clinical_headline_scores,
+    exact_clinical_inventory_scores,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
@@ -75,7 +72,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.parse_diagnostics i
 )
 
 LaterStageMethod = Literal["exect_llm_encode", "exect_llm_select"]
-LATER_STAGE_SCORER = "clinical_headline_unit_keys"
+LATER_STAGE_SCORER = "clinical_inventory_unit_keys"
+EXTRACT_METHOD = "exect_llm_extract"
 _CROSS_FAMILIES = frozenset({"Diagnosis", "SeizureFrequency"})
 CITED_SLUG = "gemini37flash"
 EXTRACT_SLUG = "gemini37flash"
@@ -115,13 +113,36 @@ def prompt_version(method: LaterStageMethod) -> str:
     return EXECT_LLM_SELECT
 
 
+def extract_rows_path(split: str, slug: str = EXTRACT_SLUG) -> Path:
+    """Return the living or promoted inventory-extract replay file."""
+
+    holdout = holdout_is_aggregate_only(split)
+    root = HOLDOUT_SCRATCH if holdout else WORK_ROOT
+    candidates = [
+        root / EXTRACT_METHOD / slug / split / EXTRACT_METHOD / "structured.jsonl",
+        root / "exect_llm_inventory" / slug / split / "exect_llm_inventory" / "structured.jsonl",
+        ROOT
+        / "paper_experiments/exect"
+        / EXTRACT_METHOD
+        / slug
+        / split
+        / "structured.jsonl",
+    ]
+    for path in candidates:
+        if path.is_file():
+            return path
+    raise FileNotFoundError(
+        f"missing {EXTRACT_METHOD} extract rows for {slug} {split}"
+    )
+
+
 def later_stage_work_root(
     method: LaterStageMethod,
     slug: str = CITED_SLUG,
     split: str = "dev140",
 ) -> Path:
     root = HOLDOUT_SCRATCH if holdout_is_aggregate_only(split) else WORK_ROOT
-    return root / method / slug / split
+    return root / method / slug / EXTRACT_METHOD / split
 
 
 def encode_work_rows_path(split: str, slug: str = CITED_SLUG) -> Path:
@@ -157,7 +178,7 @@ def comparison_from_later_stage_rows(
         )
         for letter, row in zip(letters, rows, strict=True)
     ]
-    family_scores = exact_clinical_headline_scores(letters, pred_letters)
+    family_scores = exact_clinical_inventory_scores(letters, pred_letters)
     overall = aggregate_scores(family_scores.values())
     predicted_mention_count = sum(count_predicted_mentions(row.get(pred_key)) for row in rows)
     overall["predicted_mention_count"] = predicted_mention_count
@@ -291,7 +312,7 @@ def flatten_extract_mentions(
 
     before = structured.PROMPT_VERSION
     try:
-        structured.set_active_prompt_version(structured.EXECT_LLM_ONLY)
+        structured.set_active_prompt_version(structured.EXECT_LLM_EXTRACT)
         producer = structured_one_call.produce_structured_letter(
             letter,
             model=model,
@@ -477,7 +498,7 @@ def run_later_stage(
         raise RuntimeError(f"expected {expected} {split} letters, found {len(letters)}")
     extract_rows = {
         str(row["letter_id"]): row
-        for row in load_jsonl_rows(exect_llm_only_rows_path(EXTRACT_SLUG, split))
+        for row in load_jsonl_rows(extract_rows_path(split, EXTRACT_SLUG))
     }
     encode_rows: dict[str, dict[str, Any]] = {}
     if method == "exect_llm_select":
@@ -530,6 +551,7 @@ def run_later_stage(
             ],
             work_dir=work_root,
             max_tokens=MAX_TOKENS,
+            overwrite=overwrite,
         )
         if todo
         else {}

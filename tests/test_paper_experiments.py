@@ -65,20 +65,26 @@ def test_inventory_covers_present_and_missing_cells() -> None:
     assert present == {
         ("grok46", "exect_llm_pre_post", "dev140"),
         ("grok46", "exect_llm_pre_post", "test60"),
-        ("grok46", "exect_llm_only", "dev140"),
-        ("grok46", "exect_llm_only", "test60"),
+        ("grok46", "exect_llm_extract_filtered", "dev140"),
+        ("grok46", "exect_llm_extract_filtered", "test60"),
         ("gpt56luna", "exect_llm_pre_post", "dev140"),
         ("gpt56luna", "exect_llm_pre_post", "test60"),
-        ("gpt56luna", "exect_llm_only", "dev140"),
-        ("gpt56luna", "exect_llm_only", "test60"),
+        ("gpt56luna", "exect_llm_extract_filtered", "dev140"),
+        ("gpt56luna", "exect_llm_extract_filtered", "test60"),
         ("gemini37flash", "exect_llm_pre_post", "dev140"),
         ("gemini37flash", "exect_llm_pre_post", "test60"),
+        ("gemini37flash", "exect_llm_extract", "dev140"),
+        ("gemini37flash", "exect_llm_extract", "test60"),
+        ("gemini37flash", "exect_llm_extract_filtered", "dev140"),
+        ("gemini37flash", "exect_llm_extract_filtered", "test60"),
         ("gemini37flash", "exect_llm_only", "dev140"),
-        ("gemini37flash", "exect_llm_only", "test60"),
+        ("grok46", "exect_llm_only", "dev140"),
+        ("gpt56luna", "exect_llm_only", "dev140"),
+        ("deepseek_v4_flash", "exect_llm_only", "dev140"),
         ("deepseek_v4_flash", "exect_llm_pre_post", "dev140"),
         ("deepseek_v4_flash", "exect_llm_pre_post", "test60"),
-        ("deepseek_v4_flash", "exect_llm_only", "dev140"),
-        ("deepseek_v4_flash", "exect_llm_only", "test60"),
+        ("deepseek_v4_flash", "exect_llm_extract_filtered", "dev140"),
+        ("deepseek_v4_flash", "exect_llm_extract_filtered", "test60"),
         ("gemma4_26b", "exect_llm_pre_post", "dev140"),
         ("gemma4_26b", "exect_llm_pre_post", "test60"),
         ("gemma4_26b", "gan_llm_only", "dev750"),
@@ -102,15 +108,17 @@ def test_inventory_covers_present_and_missing_cells() -> None:
         ("gemini37flash", "exect_llm_encode", "test60"),
         ("gemini37flash", "exect_llm_select", "dev140"),
         ("gemini37flash", "exect_llm_select", "test60"),
+        ("deepseek_v4_flash", "gan_llm_extract", "test450"),
     }
     assert "gan_llm_extract_raw" in missing_methods
     missing_cells = {
         (row.get("model_slug"), row["method"], row.get("split")) for row in inventory["missing"]
     }
     assert ("qwen38_27b", "exect_llm_pre_post", "dev140") in missing_cells
-    assert ("grok46", "exect_llm_only", "dev140") not in missing_cells
-    assert ("gemini37flash", "exect_llm_only", "dev140") not in missing_cells
-    assert ("gpt56luna", "exect_llm_only", "dev140") not in missing_cells
+    assert ("grok46", "exect_llm_extract", "dev140") in missing_cells
+    assert ("gemini37flash", "exect_llm_extract", "dev140") not in missing_cells
+    assert ("gpt56luna", "exect_llm_extract", "dev140") in missing_cells
+    assert ("grok46", "exect_llm_extract_filtered", "dev140") not in missing_cells
     assert ("grok46", "exect_llm_pre_post", "dev140") not in missing_cells
     assert ("grok46", "exect_llm_pre_post", "test60") not in missing_cells
     assert ("grok46", "gan_llm_only", "test450") not in missing_cells

@@ -85,7 +85,7 @@ def test_compact_prompt_is_authored_in_one_file() -> None:
 def test_compact_is_authored_as_compact() -> None:
     payload = json.loads(
         structured.build_prompt_input(
-            _LETTER, prompt_version=structured.EXECT_LLM_PRE_POST
+            _LETTER, prompt_version=structured.COMPACT_LEDGER
         )
     )
     assert list(payload) == list(structured.COMPACT_AUTHORED_KEYS)
@@ -110,7 +110,7 @@ def test_compact_is_authored_as_compact() -> None:
 def test_compact_schema_is_flat_fact_events() -> None:
     payload = json.loads(
         structured.build_prompt_input(
-            _LETTER, prompt_version=structured.EXECT_LLM_PRE_POST
+            _LETTER, prompt_version=structured.COMPACT_LEDGER
         )
     )
     event_schema = payload["output_schema"]["clinical_events"][0]
@@ -211,7 +211,7 @@ def test_compact_schema_is_flat_fact_events() -> None:
 def test_compact_seizure_rules_keep_prior_wording() -> None:
     payload = json.loads(
         structured.build_prompt_input(
-            _LETTER, prompt_version=structured.EXECT_LLM_PRE_POST
+            _LETTER, prompt_version=structured.COMPACT_LEDGER
         )
     )
     sf_rules = " ".join(payload["clinical_rules"]["seizure_frequency"])
@@ -241,7 +241,7 @@ def test_compact_seizure_rules_keep_prior_wording() -> None:
 def test_compact_llm_only_omits_suggested_evidence() -> None:
     compact = json.loads(
         structured.build_prompt_input(
-            _LETTER, prompt_version=structured.EXECT_LLM_PRE_POST
+            _LETTER, prompt_version=structured.COMPACT_LEDGER
         )
     )
     llm_only = json.loads(
@@ -272,18 +272,21 @@ def test_compact_llm_only_omits_suggested_evidence() -> None:
     )
 
 
-def test_paper_names_are_aliases_of_compact() -> None:
-    compact = json.loads(
+def test_paper_names_are_aliases_of_both_extract() -> None:
+    both = json.loads(
         structured.build_prompt_input(
             _LETTER, prompt_version=structured.EXECT_LLM_PRE_POST
         )
     )
-    paper_compact = json.loads(
+    alias = json.loads(
         structured.build_prompt_input(
             _LETTER, prompt_version=structured.EXECT_LLM_WITH_RULES
         )
     )
-    assert compact == paper_compact
+    assert both == alias
+    assert list(both) == list(structured.INVENTORY_BOTH_AUTHORED_KEYS)
+    assert "categories" not in both
+    assert "suggested_evidence" in both
 
 
 @pytest.mark.parametrize(

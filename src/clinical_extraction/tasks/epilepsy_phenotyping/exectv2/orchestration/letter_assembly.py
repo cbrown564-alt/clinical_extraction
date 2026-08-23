@@ -72,7 +72,10 @@ def assemble_structured_rows(
         sf_state_projection.project_row(row, ablation=config.sf_projection_ablation)
         for row in direct_rows
     ]
-    suppressed_rows = [sf_unknown_suppression.suppress_row(row) for row in projected_rows]
+    if config.sf_projection_ablation == "inventory":
+        suppressed_rows = [dict(row) for row in projected_rows]
+    else:
+        suppressed_rows = [sf_unknown_suppression.suppress_row(row) for row in projected_rows]
     manifest = manifest_from_mapping(
         _manifest_payload(
             Path("structured.jsonl"),
