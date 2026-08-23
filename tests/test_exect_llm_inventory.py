@@ -96,7 +96,7 @@ def test_inventory_prompt_emits_both_and_leaves_live_default() -> None:
     )
     assert "Onset-history phrases such as" not in diagnosis_rules
     assert list(payload) == list(structured.INVENTORY_AUTHORED_KEYS)
-    assert structured.compact_rule_count(payload["clinical_rules"]) == 49
+    assert structured.compact_rule_count(payload["clinical_rules"]) == 48
     assert len(payload["examples"]) == 2
     blob = json.dumps(payload).lower()
     for phrase in (
@@ -112,7 +112,20 @@ def test_inventory_prompt_emits_both_and_leaves_live_default() -> None:
     only = json.loads(
         structured.build_prompt_input(letter, prompt_version=structured.EXECT_LLM_ONLY)
     )
-    assert payload["family_guidance"] == only["family_guidance"]
+    assert payload["family_guidance"]["medication"] == only["family_guidance"]["medication"]
+    assert payload["family_guidance"]["seizure_frequency"] == only["family_guidance"]["seizure_frequency"]
+    assert payload["family_guidance"]["investigation"] == only["family_guidance"]["investigation"]
+    assert "Write fact as only that short name." not in payload["family_guidance"]["diagnosis"]
+    assert "Write fact as only that short name." in only["family_guidance"]["diagnosis"]
+    assert "Do not include vague symptoms or non-epileptic" in payload["family_guidance"]["diagnosis"]
+    assert "Write diagnosis fact as only the short syndrome" not in diagnosis_rules
+    assert "Do not include isolated symptoms or aura features as diagnosis" not in diagnosis_rules
+    assert "Do not put hedges, timing, or extra anatomy" not in diagnosis_rules
+    assert "Do not include vague symptoms, blackout" in diagnosis_rules
+    assert "A problem-list or diagnosis header is not enough" in diagnosis_rules
+    assert "split compound seizure clauses" in diagnosis_rules
+    assert "Never write 'tonic chronic'" in diagnosis_rules
+    assert "use the exact abbreviation as fact" in diagnosis_rules
     assert payload["decision_procedure"] != only["decision_procedure"]
     assert any("remove exact duplicate events" in step for step in payload["decision_procedure"])
     assert not any("remove exact duplicate events" in step for step in only["decision_procedure"])

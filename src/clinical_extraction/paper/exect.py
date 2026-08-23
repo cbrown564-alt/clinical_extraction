@@ -562,6 +562,12 @@ def verify_llm_inventory(*, split: str = "dev140", slug: str | None = None) -> d
             raise RuntimeError("inventory still drops onset-history as a diagnosis")
         if "include each as its own diagnosis event" not in joined:
             raise RuntimeError("inventory lost the split-compound diagnosis rule")
+        if "Write diagnosis fact as only the short syndrome" in joined:
+            raise RuntimeError("inventory still asks for short-name diagnosis fact")
+        if "Do not include isolated symptoms or aura features as diagnosis" in joined:
+            raise RuntimeError("inventory still drops isolated symptoms as diagnosis")
+        if "Write fact as only that short name." in payload["family_guidance"]["diagnosis"]:
+            raise RuntimeError("inventory family guidance still asks for short-name fact")
         blob = json.dumps(payload).lower()
         for phrase in (
             "gold label",
@@ -574,7 +580,7 @@ def verify_llm_inventory(*, split: str = "dev140", slug: str | None = None) -> d
         ):
             if phrase in blob:
                 raise RuntimeError(f"inventory prompt contains evaluation language: {phrase}")
-        if structured.compact_rule_count(payload["clinical_rules"]) != 49:
+        if structured.compact_rule_count(payload["clinical_rules"]) != 48:
             raise RuntimeError("inventory content drifted")
         if not payload.get("examples"):
             raise RuntimeError("inventory lost diagnosis examples")

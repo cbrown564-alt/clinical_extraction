@@ -580,6 +580,20 @@ _INVENTORY_DROPPED_DIAGNOSIS_RULES = (
         "a separate diagnosis event when the same letter already provides "
         "the current diagnosis or named seizure types."
     ),
+    (
+        "Write diagnosis fact as only the short syndrome or named seizure "
+        "type. If the letter names a syndrome and a seizure type, such as "
+        "juvenile absence epilepsy and tonic clonic seizures, include each as "
+        "its own diagnosis event. Do not put hedges, timing, or extra anatomy "
+        "into fact: words such as 'probably', 'from sleep', a question-mark "
+        "side of onset, or 'retained awareness' as its own event."
+    ),
+    (
+        "Do not include isolated symptoms or aura features as diagnosis, "
+        "including myoclonic jerks, jerks, flashing lights, odd sensations, "
+        "altered awareness by itself, or dizziness, unless the phrase is part "
+        "of a named seizure type such as 'focal seizures with altered awareness'."
+    ),
 )
 
 _INVENTORY_EXAMPLES = [
@@ -648,6 +662,24 @@ def _sectioned_rules(*, include_suggested: bool) -> dict[str, list[str]]:
     return rules
 
 
+_INVENTORY_SPLIT_SYNDROME_AND_TYPE = (
+    "If the letter names a syndrome and a seizure type, such as juvenile "
+    "absence epilepsy and tonic clonic seizures, include each as its own "
+    "diagnosis event."
+)
+
+_INVENTORY_FAMILY_GUIDANCE = {
+    **_FAMILY_GUIDANCE,
+    "diagnosis": (
+        "Diagnoses such as epilepsy, focal epilepsy, seizure disorder, or "
+        "named seizure types. Include DiagCategory. Do not include vague "
+        "symptoms or non-epileptic alternatives unless the letter states they "
+        "are epileptic diagnoses, even when they appear under a diagnosis or "
+        "problem-list heading."
+    ),
+}
+
+
 def _inventory_sectioned_rules() -> dict[str, list[str]]:
     rules = _sectioned_rules(include_suggested=False)
     diagnosis = [
@@ -655,6 +687,7 @@ def _inventory_sectioned_rules() -> dict[str, list[str]]:
         for row in rules["diagnosis"]
         if row not in _INVENTORY_DROPPED_DIAGNOSIS_RULES
     ]
+    diagnosis.insert(1, _INVENTORY_SPLIT_SYNDROME_AND_TYPE)
     return {**rules, "diagnosis": diagnosis}
 
 
@@ -697,7 +730,7 @@ def build_compact_llm_inventory_prompt_input(letter: ExectLetter) -> str:
         "task": _LLM_ONLY_TASK,
         "output_schema": _OUTPUT_SCHEMA,
         "decision_procedure": list(_INVENTORY_DECISION_PROCEDURE),
-        "family_guidance": dict(_FAMILY_GUIDANCE),
+        "family_guidance": dict(_INVENTORY_FAMILY_GUIDANCE),
         "attribute_vocabulary": dict(_ATTRIBUTE_VOCABULARY),
         "clinical_rules": _inventory_sectioned_rules(),
         "examples": list(_INVENTORY_EXAMPLES),
