@@ -160,7 +160,7 @@ def _repair_policy_description(repair_mode: str) -> str:
             "hybrid full deterministic repair stack after structured model selection"
         ),
     }
-    from clinical_extraction.paper.rungs import normalize_repair_mode
+    from clinical_extraction.paper.cells import normalize_repair_mode
 
     return descriptions.get(
         normalize_repair_mode(repair_mode),

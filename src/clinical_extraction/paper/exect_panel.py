@@ -16,7 +16,7 @@ from clinical_extraction.paper.exect_later_stage import (
     later_stage_work_root,
     rescore_later_stage,
 )
-from clinical_extraction.paper.exect_rung_replay import exect_rung_out_dir
+from clinical_extraction.paper.exect_cell_replay import exect_rung_out_dir
 from clinical_extraction.paper.methods import (
     exect_row_count,
     holdout_is_aggregate_only,
@@ -24,7 +24,7 @@ from clinical_extraction.paper.methods import (
     split_for,
 )
 from clinical_extraction.paper.roster import living_models, model_by_slug
-from clinical_extraction.paper.rungs import normalize_cell_id, normalize_rungs_payload
+from clinical_extraction.paper.cells import normalize_cell_id, normalize_rungs_payload
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
 )

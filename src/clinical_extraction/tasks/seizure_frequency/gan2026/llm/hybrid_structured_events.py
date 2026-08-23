@@ -898,7 +898,7 @@ def _answer_hop(
     cell_id: str,
     vetoed: str | None = None,
 ) -> dict[str, Any]:
-    from clinical_extraction.paper.rungs import CELL_ORDER, normalize_cell_id
+    from clinical_extraction.paper.cells import CELL_ORDER, normalize_cell_id
 
     resolved = normalize_cell_id(cell_id)
     return {

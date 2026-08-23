@@ -16,7 +16,7 @@ from clinical_extraction.paper.methods import (
     split_for,
 )
 from clinical_extraction.paper.roster import living_models, model_by_slug
-from clinical_extraction.paper.rungs import normalize_rungs_payload
+from clinical_extraction.paper.cells import normalize_rungs_payload
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
     write_jsonl_rows,

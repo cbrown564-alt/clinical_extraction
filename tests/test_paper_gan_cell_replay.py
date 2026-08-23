@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from clinical_extraction.paper.cli import main
-from clinical_extraction.paper.gan_rung_replay import (
+from clinical_extraction.paper.gan_cell_replay import (
     _rung_summary,
     gan_hybrid_rows_path,
     gan_rung_out_dir,

@@ -16,7 +16,7 @@ from clinical_extraction.paper.methods import (
     gan_row_count,
     holdout_is_aggregate_only,
 )
-from clinical_extraction.paper.rungs import GAN_REPAIR_MODE_FOR_RUNG, RUNG_IDS
+from clinical_extraction.paper.cells import GAN_REPAIR_MODE_FOR_RUNG, RUNG_IDS
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )

@@ -16,7 +16,7 @@ from typing import Any
 
 from clinical_extraction.core.evidence import evidence_is_substring
 from clinical_extraction.core.paths import discover_repo_root
-from clinical_extraction.paper.gan_rung_replay import score_label
+from clinical_extraction.paper.gan_cell_replay import score_label
 from clinical_extraction.paper.methods import gan_machine_split
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,

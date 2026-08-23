@@ -411,7 +411,7 @@ test whether another form makes the same evidence easier to understand and use:
 
 - the paired visual case map (PowerPoint + deck source) was a format
   experiment; recover from git history if needed;
-- the [interactive case explorer](../artifacts/paired_case_explorer_2026-08-09.html)
+- the [interactive case explorer](reviewable_case_pair_2026-08-09.md)
   supports quick case switching and an optional provenance reveal in one
   self-contained local file.
 
@@ -519,7 +519,7 @@ The following four prototypes have one communication job and a form chosen for
 that job:
 
 1. **Evidence-constellation map.** The initial standalone
-   [HTML explorer](../artifacts/evidence_constellation_map_2026-08-09.html)
+   [HTML explorer](failures_and_limits_2026-08-10.md)
    maps the six audited core claims to their skeptic question, evidence lane,
    concrete exhibits, canonical owners, boundary, and gap. It is a navigation
    aid, not an evidence register or proof. **Author test: passed.** Starting
@@ -528,14 +528,14 @@ that job:
    the long audit. The shortcut now closes the default claim before opening the
    requested one.
 2. **Parallel two-task performance view.** The initial standalone
-   [HTML evidence view](../artifacts/parallel_two_task_performance_view_2026-08-09.html)
+   [HTML evidence view](../../paper/methods.md)
    presents Gemini five-cell holdout comparisons as two separate task
    stories, with each metric, split, shown role row, evidence owner, and
    limit visible. Gan cites select-stop Purist on the five role rows;
    ExECT cites select-stop clinical fact F1 on the same grid.
    The view keeps the tasks' scorers and method sets separate.
 3. **Component-role and failure-boundary source.** The four-slide
-   [component roles and limits deck](../artifacts/paper_source_component_roles_and_limits_2026-08-09.pptx)
+   [component roles and limits deck](failures_and_limits_2026-08-10.md)
    uses a sequenced visual argument: the overall claim, the Gan mechanism, the
    ExECT family effects, then the causal boundary. Slides are appropriate
    because the claim accumulates across two task-specific charts and ends in a
@@ -667,14 +667,14 @@ The library now answers each writing question in a form suited to the evidence:
 | What did the two golds already decide? | [Golds brief](what_the_two_golds_already_decided_2026-08-17.md) | Writing brief; diagnostic owner stays in `shared/` |
 | What did prior extractors already do? | [Prior-approaches brief](what_prior_extraction_approaches_already_did_2026-08-17.md) | Related work by shape and method; not novelty |
 | What makes Gan and ExECT different? | [Task-shape source](../shared/task_shape_framework_2026-08-06.md) | Concise explanation and diagram |
-| How does the proposed method keep a source span and shape facts into a designed form? | [Method rationale](why_hybrid_architecture_2026-08-09.md) and [architecture view](../artifacts/hybrid_architecture_2026-08-10.html) | Brief plus visual system map |
+| How does the proposed method keep a source span and shape facts into a designed form? | [Method rationale](why_hybrid_architecture_2026-08-09.md) and [architecture view](../../paper/architecture.md) | Brief plus visual system map |
 | What did Gan achieve, how, and within what limits? | [Gan story](gan_story_2026-08-10.md) | Self-contained task account |
 | What did ExECT achieve, how, and within what limits? | [ExECT story](exect_story_2026-08-12.md) | Self-contained task account |
-| Where do components help, harm, or do nothing? | [Component deck](../artifacts/paper_source_component_roles_and_limits_2026-08-09.pptx) and [failure source](failures_and_limits_2026-08-10.md) | Sequenced visual argument plus concise reference |
-| Which cases make reviewability concrete? | [Paired cases](reviewable_case_pair_2026-08-09.md) and [case explorer](../artifacts/paired_case_explorer_2026-08-09.html) | Two guided journeys |
+| Where do components help, harm, or do nothing? | [Component deck](failures_and_limits_2026-08-10.md) and [failure source](failures_and_limits_2026-08-10.md) | Sequenced visual argument plus concise reference |
+| Which cases make reviewability concrete? | [Paired cases](reviewable_case_pair_2026-08-09.md) and [case explorer](reviewable_case_pair_2026-08-09.md) | Two guided journeys |
 | Which letters show the task difficulties? | [Flagship 3-letter suite](flagship_3_letter_suite_2026-08-11.md) | Six development letters; not a holdout sample |
 | Which rows can be filtered? | [Row-evidence workbook](../artifacts/paper_source_row_evidence_2026-08-10.xlsx) | Sortable selected examples |
-| Which reliability properties were measured? | [Reliability view](../artifacts/reliability_view_2026-08-10.html) | Visual status matrix |
+| Which reliability properties were measured? | [Reliability view](failures_and_limits_2026-08-10.md) | Visual status matrix |
 | How are the two tasks scored? | [Score definitions](score_definitions_2026-08-17.md) | Writing glossary; not a scoring authority |
 | Where is the local PDF? | [Source map](related_work_seed_2026-08-17.md) | Citation lookup; not a literature review |
 

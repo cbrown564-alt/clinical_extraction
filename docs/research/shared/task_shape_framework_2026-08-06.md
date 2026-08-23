@@ -84,7 +84,7 @@ are not. The proposed method is the same on both tasks; tables cite Grok.
 
 Read [why the proposed method is a model plus recorded rules](../paper/why_hybrid_architecture_2026-08-09.md)
 for the design rationale and the
-[architecture view](../artifacts/hybrid_architecture_2026-08-10.html)
+[architecture view](../../paper/architecture.md)
 for the end-to-end system.
 
 ## Evidence and limits

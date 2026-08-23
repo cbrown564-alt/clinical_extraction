@@ -102,7 +102,7 @@ to `focal epilepsy`. That is a use-quote / convention rewrite, not the
 retired Sol unquoted-letter add.
 
 See [rescue source provenance](../shared/hybrid_rescue_source_provenance_2026-08-13.md)
-and the [exhibit](../artifacts/rescue_source_provenance_2026-08-13.html).
+and the [exhibit](../shared/hybrid_rescue_source_provenance_2026-08-13.md).
 
 ## Where the difficulty remains
 
@@ -138,7 +138,7 @@ The trace keeps the quoted hedge and names the dictionary rewrite. The
 rewrite is a gold-format rule, not an unqualified clinical diagnosis. The
 case ledger also records the model reading as defensible.
 
-See the [case explorer](../artifacts/paired_case_explorer_2026-08-09.html)
+See the [case explorer](reviewable_case_pair_2026-08-09.md)
 for the recorded object.
 
 ## What this evidence supports

@@ -20,7 +20,7 @@ from clinical_extraction.paper.exect import (
     apply_reasoning_effort,
     letters_for_split,
 )
-from clinical_extraction.paper.exect_rung_replay import (
+from clinical_extraction.paper.exect_cell_replay import (
     exect_llm_only_rows_path,
     schema_mention_rows,
 )

@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Iterable, Mapping
 from typing import Any
 
-from clinical_extraction.paper.rungs import normalize_repair_mode
+from clinical_extraction.paper.cells import normalize_repair_mode
 
 REPAIR_MODE_METADATA: Mapping[str, Mapping[str, Any]] = {
     "strict_json_raw_model": {

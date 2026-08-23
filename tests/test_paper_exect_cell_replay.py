@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from clinical_extraction.paper.cli import main
-from clinical_extraction.paper.exect_rung_replay import (
+from clinical_extraction.paper.exect_cell_replay import (
     exect_llm_only_rows_path,
     exect_rung_out_dir,
     format_render_mention_rows,

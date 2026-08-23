@@ -25,13 +25,13 @@ from clinical_extraction.paper.exect_panel import (
     promote_exect_later_stage,
     promote_exect_llm_only,
 )
-from clinical_extraction.paper.exect_rung_replay import (
+from clinical_extraction.paper.exect_cell_replay import (
     replay_exect_pre_post_encode,
     replay_exect_rungs,
 )
 from clinical_extraction.paper.gan import run_gan, verify_gan
 from clinical_extraction.paper.gan_panel import promote_gan
-from clinical_extraction.paper.gan_rung_replay import replay_gan_rungs
+from clinical_extraction.paper.gan_cell_replay import replay_gan_rungs
 from clinical_extraction.paper.methods import LIVE_METHODS, method_spec, split_for
 
 

@@ -7,11 +7,11 @@ import json
 import pytest
 
 from clinical_extraction.paper.answer_states import graph_from_hops, make_hop
-from clinical_extraction.paper.exect_rung_replay import (
+from clinical_extraction.paper.exect_cell_replay import (
     exect_pre_post_structured_path,
     replay_exect_pre_post_encode,
 )
-from clinical_extraction.paper.rungs import (
+from clinical_extraction.paper.cells import (
     CELL_ORDER,
     EXECT_HOP_EFFECT_CLASS,
     EXECT_RUNG_SOURCE,
@@ -260,7 +260,7 @@ def test_exect_hops_use_the_same_effect_class_names() -> None:
 
 
 def test_legacy_hop_int_still_means_encode() -> None:
-    from clinical_extraction.paper.rungs import cell_id_from_legacy_rung
+    from clinical_extraction.paper.cells import cell_id_from_legacy_rung
 
     assert cell_id_from_legacy_rung(3) == "llm_encode"
     assert cell_id_from_legacy_rung(2) == "llm_extract"

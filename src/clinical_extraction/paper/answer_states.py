@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Any, Literal
 
-from clinical_extraction.paper.rungs import (
+from clinical_extraction.paper.cells import (
     CELL_ORDER,
     RungId,
     cell_id_from_legacy_rung,
