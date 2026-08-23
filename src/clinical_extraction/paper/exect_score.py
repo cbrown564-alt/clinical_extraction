@@ -8,6 +8,7 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.views import (
     predictions_from_rows,
 )
@@ -24,8 +25,22 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
     has_blocking_parse_issue,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
+    structured_one_call,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.contracts import (
+    StructuredMethodConfig,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     clinical_headline_unit_keys,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
+    aggregate_scores,
+    annotation_from_mapping,
+    exact_clinical_headline_scores,
+    exact_clinical_inventory_scores,
+    gold_headline_support,
+    gold_inventory_support,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
@@ -88,6 +103,7 @@ def _score_arm(
     structured_path: Path,
     assembly_path: Path,
     model: str,
+    unit_keys: Any = None,
 ) -> dict[str, Any]:
     structured_rows = load_jsonl_rows(structured_path)
     if len(structured_rows) != len(letters):
@@ -102,6 +118,7 @@ def _score_arm(
         arm=slug,
         call_mode=call_mode,
         model=model,
+        unit_keys=unit_keys or clinical_headline_unit_keys,
     )
     write_jsonl_rows(letter_rows, structured_path.parent / "letter_family.jsonl")
     metrics = _letter_metrics(
@@ -160,6 +177,7 @@ def _letter_family_rows(
     arm: str,
     call_mode: str,
     model: str,
+    unit_keys: Any = None,
 ) -> list[dict[str, Any]]:
     structured_rows = {
         str(row["letter_id"]): row for row in load_jsonl_rows(structured_path)
@@ -177,6 +195,7 @@ def _letter_family_rows(
             list(assembly_rows.values()), "predicted_mentions"
         )
     }
+    key_fn = unit_keys or clinical_headline_unit_keys
     out: list[dict[str, Any]] = []
     for letter in gold:
         for family in FAMILIES:
@@ -196,13 +215,13 @@ def _letter_family_rows(
                 if annotation.entity == family
             ]
             raw_keys = Counter(
-                clinical_headline_unit_keys(family, raw_mentions, letter.note_text)
+                key_fn(family, raw_mentions, letter.note_text)
             )
             hybrid_keys = Counter(
-                clinical_headline_unit_keys(family, hybrid_mentions, letter.note_text)
+                key_fn(family, hybrid_mentions, letter.note_text)
             )
             gold_keys = Counter(
-                clinical_headline_unit_keys(family, gold_mentions, letter.note_text)
+                key_fn(family, gold_mentions, letter.note_text)
             )
             out.append(
                 {
@@ -501,6 +520,107 @@ def _jsonable(value: Any) -> Any:
     if isinstance(value, dict):
         return {str(key): _jsonable(item) for key, item in value.items()}
     return value
+
+
+FROZEN_GEMINI_LLM_ONLY_DEV140 = (
+    "paper_experiments/exect/exect_llm_only/gemini37flash/dev140/structured.jsonl"
+)
+
+
+def score_structured_inventory(
+    structured_path: Path,
+    letters: Sequence[ExectLetter],
+    *,
+    mention_field: str = "predicted_mentions",
+) -> dict[str, Any]:
+    """Score a saved structured.jsonl with headline and inventory F1. DEV only."""
+
+    rows = load_jsonl_rows(structured_path)
+    pred_by_id = {str(row["letter_id"]): row for row in rows}
+    pred_letters = []
+    surface = "saved_mentions"
+    for letter in letters:
+        saved = pred_by_id.get(letter.letter_id)
+        if saved is None:
+            raise RuntimeError(f"{structured_path} missing {letter.letter_id}")
+        mentions = list(saved.get(mention_field) or [])
+        if not mentions and saved.get("raw_output"):
+            producer = structured_one_call.produce_structured_letter(
+                letter,
+                mode="replay",
+                raw_output=str(saved["raw_output"]),
+                split="dev140",
+                config=StructuredMethodConfig.selected(),
+            )
+            mentions = list(producer.row.get("predicted_mentions") or [])
+            surface = "replayed_raw_output"
+        pred_letters.append(
+            ExectLetter(
+                letter_id=letter.letter_id,
+                note_text=letter.note_text,
+                annotations=tuple(
+                    annotation_from_mapping(mention) for mention in mentions
+                ),
+            )
+        )
+    headline = exact_clinical_headline_scores(letters, pred_letters)
+    inventory = exact_clinical_inventory_scores(letters, pred_letters)
+    headline_overall = aggregate_scores(headline.values())
+    inventory_overall = aggregate_scores(inventory.values())
+    gold_h = gold_headline_support(letters)
+    gold_i = gold_inventory_support(letters)
+    return {
+        "scorer_headline": "clinical_headline_unit_keys",
+        "scorer_inventory": "clinical_inventory_unit_keys",
+        "headline": headline_overall,
+        "headline_by_family": headline,
+        "inventory": inventory_overall,
+        "inventory_by_family": inventory,
+        "gold_headline": gold_h,
+        "gold_inventory": gold_i,
+        "row_count": len(letters),
+        "prediction_surface": surface,
+    }
+
+
+def write_inventory_baseline_comparison(
+    *,
+    source_structured: Path,
+    out_path: Path,
+    letters: Sequence[ExectLetter],
+) -> dict[str, Any]:
+    """Rescore a frozen extract onto inventory F1 and write comparison.json."""
+
+    scored = score_structured_inventory(source_structured, letters)
+    artifact = {
+        "schema_version": "paper.exect_llm_inventory.baseline.v1",
+        "generated_on": "2026-08-23",
+        "method": "exect_llm_inventory",
+        "paper_cell": False,
+        "track": "diagnostic inventory; not a five-cell paper column",
+        "new_model_calls": 0,
+        "split": "dev140",
+        "row_policy": "development_review_permitted",
+        "source_extract": (
+            source_structured.relative_to(discover_repo_root(start=Path(__file__))).as_posix()
+            if source_structured.is_absolute()
+            else source_structured.as_posix()
+        ),
+        "source_prompt_version": "exect_llm_only",
+        "source_model_slug": "gemini37flash",
+        "scorer": "clinical_inventory_unit_keys",
+        **scored,
+        "claim_boundary": (
+            "ExECT development inventory-F1 rescore of a frozen Gemini "
+            "exect_llm_only extract. Not a paper cell. Not holdout."
+        ),
+    }
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(
+        json.dumps(artifact, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return artifact
 
 
 assembly_row = _assembly_row

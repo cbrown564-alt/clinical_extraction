@@ -537,11 +537,32 @@ def compact_rule_count(rules: dict[str, list[str]]) -> int:
     return sum(len(section) for section in rules.values())
 
 
+_INVENTORY_DROPPED_DIAGNOSIS_RULES = (
+    (
+        "Do not add a separate generic epilepsy diagnosis to a specific "
+        "epilepsy subtype unless the letter separately states generic epilepsy "
+        "as its own diagnosis or context says the patient has/has known "
+        "epilepsy. For example, 'Diagnosis: symptomatic structural focal "
+        "epilepsy' includes only 'symptomatic structural focal epilepsy'."
+    ),
+)
+
+
 def _sectioned_rules(*, include_suggested: bool) -> dict[str, list[str]]:
     rules = {key: list(rows) for key, rows in _SHARED_RULE_SECTIONS.items()}
     if include_suggested:
         return {"suggested_evidence": list(_HYBRID_RULES), **rules}
     return rules
+
+
+def _inventory_sectioned_rules() -> dict[str, list[str]]:
+    rules = _sectioned_rules(include_suggested=False)
+    diagnosis = [
+        row
+        for row in rules["diagnosis"]
+        if row not in _INVENTORY_DROPPED_DIAGNOSIS_RULES
+    ]
+    return {**rules, "diagnosis": diagnosis}
 
 
 def build_compact_prompt_input(letter: ExectLetter) -> str:
@@ -571,6 +592,21 @@ def build_compact_llm_only_prompt_input(letter: ExectLetter) -> str:
         "family_guidance": dict(_FAMILY_GUIDANCE),
         "attribute_vocabulary": dict(_ATTRIBUTE_VOCABULARY),
         "clinical_rules": _sectioned_rules(include_suggested=False),
+        "letter_text": letter.note_text,
+    }
+    return json.dumps(payload, ensure_ascii=False)
+
+
+def build_compact_llm_inventory_prompt_input(letter: ExectLetter) -> str:
+    """LLM-only payload scored on diagnostic inventory (no most-specific collapse)."""
+
+    payload = {
+        "task": _LLM_ONLY_TASK,
+        "output_schema": _OUTPUT_SCHEMA,
+        "decision_procedure": list(_LLM_ONLY_DECISION_PROCEDURE),
+        "family_guidance": dict(_FAMILY_GUIDANCE),
+        "attribute_vocabulary": dict(_ATTRIBUTE_VOCABULARY),
+        "clinical_rules": _inventory_sectioned_rules(),
         "letter_text": letter.note_text,
     }
     return json.dumps(payload, ensure_ascii=False)

@@ -59,6 +59,13 @@ LIVE_METHODS: dict[str, dict[str, object]] = {
         "splits": ("dev140", "test60"),
         "prompt_attr": "EXECT_LLM_ONLY",
     },
+    "exect_llm_inventory": {
+        "task": "exectv2",
+        "splits": ("dev140", "test60"),
+        "prompt_attr": "EXECT_LLM_INVENTORY",
+        "scorer": "clinical_inventory_unit_keys",
+        "paper_cell": False,
+    },
     "exect_llm_encode": {
         "task": "exectv2",
         "splits": ("dev140", "test60"),

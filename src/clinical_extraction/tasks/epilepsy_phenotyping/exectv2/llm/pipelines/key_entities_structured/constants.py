@@ -23,6 +23,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
 EXECT_LLM_PRE_POST = "exect_llm_pre_post"
 EXECT_LLM_WITH_RULES = "exect_llm_with_rules"
 EXECT_LLM_ONLY = "exect_llm_only"
+EXECT_LLM_INVENTORY = "exect_llm_inventory"
 COMPACT_LEDGER = "exectv2_compact_ledger"
 
 LEGACY_PROMPT_VERSION_ALIASES: dict[str, str] = {
@@ -32,8 +33,9 @@ LEGACY_PROMPT_VERSION_ALIASES: dict[str, str] = {
 
 COMPACT_VERSIONS = frozenset({EXECT_LLM_PRE_POST})
 LLM_ONLY_VERSIONS = frozenset({EXECT_LLM_ONLY})
+INVENTORY_VERSIONS = frozenset({EXECT_LLM_INVENTORY})
 PROMPT_VERSION = EXECT_LLM_PRE_POST
-_SUPPORTED_PROMPT_VERSIONS = COMPACT_VERSIONS | LLM_ONLY_VERSIONS
+_SUPPORTED_PROMPT_VERSIONS = COMPACT_VERSIONS | LLM_ONLY_VERSIONS | INVENTORY_VERSIONS
 PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"
 COMPONENT_OWNER = "hybrid_key_family_event_ledger"
 

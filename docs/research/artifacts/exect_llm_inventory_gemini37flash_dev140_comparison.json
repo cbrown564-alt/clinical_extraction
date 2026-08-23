@@ -1,0 +1,177 @@
+{
+  "claim_boundary": "ExECT development inventory-F1 rescore of a frozen Gemini exect_llm_only extract. Not a paper cell. Not holdout.",
+  "generated_on": "2026-08-23",
+  "gold_headline": {
+    "by_family": {
+      "Diagnosis": 289,
+      "Investigations": 136,
+      "Prescription": 206,
+      "SeizureFrequency": 165
+    },
+    "gold_count": 796,
+    "letter_count": 140,
+    "raw_mention_count": 934,
+    "raw_mentions_by_family": {
+      "Diagnosis": 405,
+      "Investigations": 136,
+      "Prescription": 206,
+      "SeizureFrequency": 187
+    }
+  },
+  "gold_inventory": {
+    "by_family": {
+      "Diagnosis": 329,
+      "Investigations": 136,
+      "Prescription": 206,
+      "SeizureFrequency": 165
+    },
+    "gold_count": 836,
+    "letter_count": 140,
+    "raw_mention_count": 934,
+    "raw_mentions_by_family": {
+      "Diagnosis": 405,
+      "Investigations": 136,
+      "Prescription": 206,
+      "SeizureFrequency": 187
+    }
+  },
+  "headline": {
+    "f1": 0.8027,
+    "fn": 192,
+    "fp": 105,
+    "gold_count": 796,
+    "precision": 0.8519,
+    "precision_tp": 604,
+    "pred_count": 709,
+    "recall": 0.7588,
+    "recall_tp": 604,
+    "tp": 604
+  },
+  "headline_by_family": {
+    "Diagnosis": {
+      "f1": 0.6447876447876448,
+      "fn": 122,
+      "fp": 62,
+      "gold_count": 289,
+      "precision": 0.7292576419213974,
+      "precision_tp": 167,
+      "pred_count": 229,
+      "recall": 0.5778546712802768,
+      "recall_tp": 167,
+      "tp": 167
+    },
+    "Investigations": {
+      "f1": 0.9438202247191011,
+      "fn": 10,
+      "fp": 5,
+      "gold_count": 136,
+      "precision": 0.9618320610687023,
+      "precision_tp": 126,
+      "pred_count": 131,
+      "recall": 0.9264705882352942,
+      "recall_tp": 126,
+      "tp": 126
+    },
+    "Prescription": {
+      "f1": 0.9376558603491272,
+      "fn": 18,
+      "fp": 7,
+      "gold_count": 206,
+      "precision": 0.9641025641025641,
+      "precision_tp": 188,
+      "pred_count": 195,
+      "recall": 0.912621359223301,
+      "recall_tp": 188,
+      "tp": 188
+    },
+    "SeizureFrequency": {
+      "f1": 0.7711598746081504,
+      "fn": 42,
+      "fp": 31,
+      "gold_count": 165,
+      "precision": 0.7987012987012987,
+      "precision_tp": 123,
+      "pred_count": 154,
+      "recall": 0.7454545454545455,
+      "recall_tp": 123,
+      "tp": 123
+    }
+  },
+  "inventory": {
+    "f1": 0.7992,
+    "fn": 217,
+    "fp": 94,
+    "gold_count": 836,
+    "precision": 0.8682,
+    "precision_tp": 619,
+    "pred_count": 713,
+    "recall": 0.7404,
+    "recall_tp": 619,
+    "tp": 619
+  },
+  "inventory_by_family": {
+    "Diagnosis": {
+      "f1": 0.6476868327402135,
+      "fn": 147,
+      "fp": 51,
+      "gold_count": 329,
+      "precision": 0.7811158798283262,
+      "precision_tp": 182,
+      "pred_count": 233,
+      "recall": 0.5531914893617021,
+      "recall_tp": 182,
+      "tp": 182
+    },
+    "Investigations": {
+      "f1": 0.9438202247191011,
+      "fn": 10,
+      "fp": 5,
+      "gold_count": 136,
+      "precision": 0.9618320610687023,
+      "precision_tp": 126,
+      "pred_count": 131,
+      "recall": 0.9264705882352942,
+      "recall_tp": 126,
+      "tp": 126
+    },
+    "Prescription": {
+      "f1": 0.9376558603491272,
+      "fn": 18,
+      "fp": 7,
+      "gold_count": 206,
+      "precision": 0.9641025641025641,
+      "precision_tp": 188,
+      "pred_count": 195,
+      "recall": 0.912621359223301,
+      "recall_tp": 188,
+      "tp": 188
+    },
+    "SeizureFrequency": {
+      "f1": 0.7711598746081504,
+      "fn": 42,
+      "fp": 31,
+      "gold_count": 165,
+      "precision": 0.7987012987012987,
+      "precision_tp": 123,
+      "pred_count": 154,
+      "recall": 0.7454545454545455,
+      "recall_tp": 123,
+      "tp": 123
+    }
+  },
+  "method": "exect_llm_inventory",
+  "new_model_calls": 0,
+  "paper_cell": false,
+  "prediction_surface": "replayed_raw_output",
+  "row_count": 140,
+  "row_policy": "development_review_permitted",
+  "schema_version": "paper.exect_llm_inventory.baseline.v1",
+  "scorer": "clinical_inventory_unit_keys",
+  "scorer_headline": "clinical_headline_unit_keys",
+  "scorer_inventory": "clinical_inventory_unit_keys",
+  "source_extract": "paper_experiments/exect/exect_llm_only/gemini37flash/dev140/structured.jsonl",
+  "source_model_slug": "gemini37flash",
+  "source_prompt_version": "exect_llm_only",
+  "split": "dev140",
+  "track": "diagnostic inventory; not a five-cell paper column"
+}

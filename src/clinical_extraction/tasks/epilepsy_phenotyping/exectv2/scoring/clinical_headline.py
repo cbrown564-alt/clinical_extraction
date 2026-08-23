@@ -12,6 +12,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match import (
     clinical_headline_unit_keys,
+    clinical_inventory_unit_keys,
 )
 
 CLINICAL_HEADLINE_FAMILIES = (
@@ -157,6 +158,88 @@ def exact_clinical_headline_prf1_scores(
     return scores
 
 
+def exact_clinical_inventory_scores(
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[ExectLetter],
+) -> dict[str, dict[str, Any]]:
+    """Score the four families with inventory unit keys (Diagnosis uncollapsed)."""
+
+    return {
+        family: score_dict(score)
+        for family, score in exact_clinical_inventory_prf1_scores(
+            gold_letters,
+            pred_letters,
+        ).items()
+    }
+
+
+def gold_inventory_support(gold_letters: Sequence[ExectLetter]) -> dict[str, Any]:
+    """Recall denominator for four-family inventory F1."""
+
+    empty = [
+        ExectLetter(letter_id=letter.letter_id, note_text=letter.note_text)
+        for letter in gold_letters
+    ]
+    by_family = exact_clinical_inventory_scores(gold_letters, empty)
+    overall = aggregate_scores(by_family.values())
+    raw_mentions = {family: 0 for family in CLINICAL_HEADLINE_FAMILIES}
+    for letter in gold_letters:
+        for family in CLINICAL_HEADLINE_FAMILIES:
+            raw_mentions[family] += len(letter.entities(family))
+    return {
+        "letter_count": len(gold_letters),
+        "gold_count": overall["gold_count"],
+        "by_family": {
+            family: by_family[family]["gold_count"] for family in CLINICAL_HEADLINE_FAMILIES
+        },
+        "raw_mention_count": sum(raw_mentions.values()),
+        "raw_mentions_by_family": raw_mentions,
+    }
+
+
+def exact_clinical_inventory_prf1_scores(
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[ExectLetter],
+) -> dict[str, PRF1]:
+    """Exact inventory PRF objects by family (Diagnosis unique, not collapsed)."""
+
+    gold_by_id = {letter.letter_id: letter for letter in gold_letters}
+    pred_by_id = {letter.letter_id: letter for letter in pred_letters}
+    letter_ids = sorted(gold_by_id.keys() | pred_by_id.keys())
+    scores: dict[str, PRF1] = {}
+    for family in CLINICAL_HEADLINE_FAMILIES:
+        gold_units: list[tuple[str, Hashable]] = []
+        pred_units: list[tuple[str, Hashable]] = []
+        for letter_id in letter_ids:
+            gold = gold_by_id.get(letter_id)
+            pred = pred_by_id.get(letter_id)
+            note_text = (
+                gold.note_text
+                if gold is not None
+                else pred.note_text if pred is not None else ""
+            )
+            if gold is not None:
+                gold_units.extend(
+                    (letter_id, key)
+                    for key in clinical_inventory_unit_keys(
+                        family,
+                        gold.entities(family),
+                        note_text,
+                    )
+                )
+            if pred is not None:
+                pred_units.extend(
+                    (letter_id, key)
+                    for key in clinical_inventory_unit_keys(
+                        family,
+                        pred.entities(family),
+                        note_text,
+                    )
+                )
+        scores[family] = multiset_prf1(gold_units, pred_units)
+    return scores
+
+
 def score_dict(score: Any) -> dict[str, Any]:
     """Serialize one PRF-style score, retaining any diagnostic match counts."""
 
@@ -225,6 +308,22 @@ def headline_keys(
         if str(mention.get("entity", "")) == family
     ]
     return [repr(key) for key in clinical_headline_unit_keys(family, mentions)]
+
+
+def inventory_keys(
+    row: dict[str, Any],
+    family: str,
+    *,
+    field: str = "predicted_mentions",
+) -> list[str]:
+    """Return inventory scorer keys for one saved row and family."""
+
+    mentions = [
+        annotation_from_mapping(mention)
+        for mention in row.get(field, [])
+        if str(mention.get("entity", "")) == family
+    ]
+    return [repr(key) for key in clinical_inventory_unit_keys(family, mentions)]
 
 
 def row_family_score(row: dict[str, Any], family: str) -> PRF1:

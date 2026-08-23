@@ -9,10 +9,17 @@ from typing import Any
 
 from clinical_extraction.paper.exect import (
     MODELS,
+    rescore_inventory_baseline,
     run_compact,
+    run_llm_inventory,
     run_llm_only,
     verify_compact,
+    verify_llm_inventory,
     verify_llm_only,
+)
+from clinical_extraction.paper.exect_cell_replay import (
+    replay_exect_pre_post_encode,
+    replay_exect_rungs,
 )
 from clinical_extraction.paper.exect_later_stage import (
     run_later_stage as run_exect_later_stage,
@@ -25,13 +32,9 @@ from clinical_extraction.paper.exect_panel import (
     promote_exect_later_stage,
     promote_exect_llm_only,
 )
-from clinical_extraction.paper.exect_cell_replay import (
-    replay_exect_pre_post_encode,
-    replay_exect_rungs,
-)
 from clinical_extraction.paper.gan import run_gan, verify_gan
-from clinical_extraction.paper.gan_panel import promote_gan
 from clinical_extraction.paper.gan_cell_replay import replay_gan_rungs
+from clinical_extraction.paper.gan_panel import promote_gan
 from clinical_extraction.paper.methods import LIVE_METHODS, method_spec, split_for
 
 
@@ -41,7 +44,14 @@ def main(argv: Sequence[str] | None = None) -> None:
     )
     parser.add_argument(
         "action",
-        choices=("verify", "run", "promote-gan", "promote-exect", "replay-rungs"),
+        choices=(
+            "verify",
+            "run",
+            "promote-gan",
+            "promote-exect",
+            "replay-rungs",
+            "score-inventory",
+        ),
     )
     parser.add_argument("--method", required=True, choices=sorted(LIVE_METHODS))
     parser.add_argument("--model", choices=tuple(MODELS))
@@ -56,6 +66,19 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--row-limit", type=int)
     parser.add_argument("--slice")
     args = parser.parse_args(argv)
+    if args.action == "score-inventory":
+        if args.method != "exect_llm_inventory":
+            raise SystemExit("score-inventory requires --method exect_llm_inventory")
+        if args.split != "dev140":
+            raise SystemExit("score-inventory is DEV140 only")
+        print(
+            json.dumps(
+                rescore_inventory_baseline(slug=args.model or "gemini37flash"),
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return
     if args.action == "replay-rungs":
         if args.split in {"dev750", "test450"}:
             slug = args.model or "grok46"
@@ -193,6 +216,8 @@ def verify(method: str, split: str, slug: str | None = None) -> dict[str, Any]:
             }
         if method == "exect_llm_only":
             return verify_llm_only(split=split, slug=slug)
+        if method == "exect_llm_inventory":
+            return verify_llm_inventory(split=split, slug=slug)
         return verify_compact(split=split, slug=slug)
     return verify_gan(method, split, slug)
 
@@ -227,6 +252,18 @@ def run(
                 api_base=api_base,
                 timeout=timeout,
                 progress_every=progress_every,
+                reasoning_effort=reasoning_effort,
+            )
+        if method == "exect_llm_inventory":
+            return run_llm_inventory(
+                slug,
+                live=True,
+                split=split,
+                overwrite=overwrite,
+                api_base=api_base,
+                timeout=timeout,
+                progress_every=progress_every,
+                thinking=thinking,
                 reasoning_effort=reasoning_effort,
             )
         if method == "exect_llm_only":

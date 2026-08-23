@@ -260,6 +260,25 @@ def clinical_headline_unit_keys(
         return _prescription_component_keys(annotations, "clinical_headline", note_text)
     return []
 
+def clinical_inventory_unit_keys(
+    entity: str,
+    annotations: Iterable[ExectAnnotation],
+    note_text: str = "",
+) -> list[Hashable]:
+    """Four-family inventory keys: unique concepts, no most-specific collapse.
+
+    Diagnosis uses ``annotation_clinical_concepts`` then ``dict.fromkeys`` on
+    concept keys, without ``collapse_concepts_to_most_specific``. Other families
+    reuse the headline key list (SeizureFrequency already unique state keys;
+    Investigations and Prescription stay per-occurrence).
+    """
+    if entity == "Diagnosis":
+        return _inventory_concept_keys(annotations, "Diagnosis")
+    return clinical_headline_unit_keys(entity, annotations, note_text)
+
+
+inventory_unit_keys = clinical_inventory_unit_keys
+
 
 def headline_duplicate_tags(
     annotations: Sequence[ExectAnnotation],
@@ -510,6 +529,23 @@ def _concept_overlap_count(
                 needed -= take
                 pred_items[index] = (pred_key, pred_count - take)
     return matched
+
+
+def _inventory_concept_keys(
+    annotations: Iterable[ExectAnnotation],
+    entity: str,
+) -> list[Hashable]:
+    concepts = [
+        concept
+        for annotation in annotations
+        for concept in annotation_clinical_concepts(
+            annotation.entity,
+            annotation.text,
+            annotation.attributes,
+        )
+        if concept.entity == entity
+    ]
+    return list(dict.fromkeys(concept.concept_key for concept in concepts))
 
 
 def _concept_keys(

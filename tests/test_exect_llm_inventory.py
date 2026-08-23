@@ -1,0 +1,123 @@
+"""Diagnostic inventory track: scorer + prompt, not a paper cell."""
+
+from __future__ import annotations
+
+import json
+
+import pytest
+
+from clinical_extraction.paper.cells import CELL_ORDER, RESULT_COLUMNS
+from clinical_extraction.paper.exect import (
+    INVENTORY_VERSION,
+    verify_llm_inventory,
+)
+from clinical_extraction.paper.methods import LIVE_METHODS
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
+    DIAGNOSIS,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
+    ExectAnnotation,
+    ExectLetter,
+    load_letters_for_split,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
+    llm_only_key_entities_structured as structured,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
+    clinical_headline_unit_keys,
+    clinical_inventory_unit_keys,
+    inventory_unit_keys,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
+    gold_headline_support,
+    gold_inventory_support,
+)
+
+pytestmark = pytest.mark.local_corpus
+
+
+def _dx(text: str) -> ExectAnnotation:
+    return ExectAnnotation(
+        entity=DIAGNOSIS.name,
+        text=text,
+        attributes={"DiagCategory": "Epilepsy", "Certainty": "5", "Negation": "Affirmed"},
+    )
+
+
+def test_inventory_method_is_live_but_not_a_paper_cell() -> None:
+    assert "exect_llm_inventory" in LIVE_METHODS
+    assert "exect_llm_inventory" not in RESULT_COLUMNS
+    assert "llm_inventory" not in CELL_ORDER
+    assert LIVE_METHODS["exect_llm_inventory"].get("paper_cell") is False
+
+
+def test_inventory_keeps_generic_and_specific_diagnosis() -> None:
+    mentions = [_dx("epilepsy"), _dx("focal epilepsy")]
+    headline = clinical_headline_unit_keys("Diagnosis", mentions)
+    inventory = clinical_inventory_unit_keys("Diagnosis", mentions)
+    assert inventory_unit_keys is clinical_inventory_unit_keys
+    assert len(inventory) >= len(headline)
+    assert ("Diagnosis", "epilepsy") in inventory
+    assert ("Diagnosis", "focal epilepsy") in inventory
+
+
+def test_dev140_diagnosis_inventory_count_vs_headline() -> None:
+    letters = list(load_letters_for_split("dev"))
+    assert len(letters) == 140
+    headline = gold_headline_support(letters)
+    inventory = gold_inventory_support(letters)
+    dx_h = headline["by_family"]["Diagnosis"]
+    dx_i = inventory["by_family"]["Diagnosis"]
+    assert dx_h == 289
+    assert dx_i >= dx_h
+    assert dx_i == 329
+    assert inventory["by_family"]["SeizureFrequency"] == headline["by_family"][
+        "SeizureFrequency"
+    ]
+    assert inventory["by_family"]["Prescription"] == headline["by_family"]["Prescription"]
+    assert inventory["by_family"]["Investigations"] == headline["by_family"][
+        "Investigations"
+    ]
+
+
+def test_inventory_prompt_emits_both_and_leaves_live_default() -> None:
+    before = structured.PROMPT_VERSION
+    letter = ExectLetter(letter_id="EA0002", note_text="placeholder")
+    payload = json.loads(
+        structured.build_prompt_input(letter, prompt_version=INVENTORY_VERSION)
+    )
+    diagnosis_rules = " ".join(payload["clinical_rules"]["diagnosis"])
+    assert "include both as separate diagnosis events" in diagnosis_rules
+    assert "Do not add a separate generic epilepsy diagnosis to a specific" not in (
+        diagnosis_rules
+    )
+    blob = json.dumps(payload).lower()
+    for phrase in (
+        "gold label",
+        "headline",
+        "unit key",
+        "clinical f1",
+        "scorer",
+        "annotation",
+        "leftover",
+    ):
+        assert phrase not in blob
+    only = json.loads(
+        structured.build_prompt_input(letter, prompt_version=structured.EXECT_LLM_ONLY)
+    )
+    assert payload["family_guidance"] == only["family_guidance"]
+    assert payload["decision_procedure"] == only["decision_procedure"]
+    assert "Do not add a separate generic epilepsy diagnosis to a specific" in " ".join(
+        only["clinical_rules"]["diagnosis"]
+    )
+    assert structured.PROMPT_VERSION == before == structured.EXECT_LLM_PRE_POST
+
+
+def test_verify_llm_inventory_does_not_change_live_default() -> None:
+    before = structured.PROMPT_VERSION
+    payload = verify_llm_inventory(split="dev140")
+    assert payload["ok"] is True
+    assert payload["method"] == "exect_llm_inventory"
+    assert payload["prompt_version"] == structured.EXECT_LLM_INVENTORY
+    assert payload["work_root"] == "experiments/paper/exect_llm_inventory"
+    assert structured.PROMPT_VERSION == before == structured.EXECT_LLM_PRE_POST

@@ -20,6 +20,7 @@ from .pipelines.key_entities_structured import (
     COMPACT_AUTHORED_KEYS,
     COMPACT_LEDGER,
     COMPONENT_OWNER,
+    EXECT_LLM_INVENTORY,
     EXECT_LLM_ONLY,
     EXECT_LLM_PRE_POST,
     EXECT_LLM_WITH_RULES,

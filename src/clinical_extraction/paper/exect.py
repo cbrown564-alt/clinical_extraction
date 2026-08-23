@@ -21,12 +21,14 @@ from clinical_extraction.paper.batch import (
     uses_provider_batch,
 )
 from clinical_extraction.paper.exect_score import (
+    FROZEN_GEMINI_LLM_ONLY_DEV140,
     assembly_row,
     changed_rows,
     compare_pair,
     existing_complete_rows,
     letters_dev140,
     score_arm,
+    write_inventory_baseline_comparison,
 )
 from clinical_extraction.paper.lm import build_paper_lm, resolve_paper_api_base
 from clinical_extraction.paper.methods import holdout_is_aggregate_only
@@ -55,6 +57,8 @@ CANDIDATE_VERSION = structured.EXECT_LLM_PRE_POST
 CANDIDATE_ARM = "exect_llm_pre_post"
 LLM_ONLY_ARM = "exect_llm_only"
 LLM_ONLY_VERSION = structured.EXECT_LLM_ONLY
+INVENTORY_ARM = "exect_llm_inventory"
+INVENTORY_VERSION = structured.EXECT_LLM_INVENTORY
 OLLAMA_NUM_CTX_ENV = "CLINICAL_EXTRACTION_OLLAMA_NUM_CTX"
 HOSTED_SLUGS = ("grok46", "gpt56luna", "gemini37flash", "deepseek_v4_flash")
 LOCAL_SLUGS = ("qwen38_27b", "gemma4_26b")
@@ -63,6 +67,8 @@ WORK_ROOT = ROOT / "experiments/paper/exect_llm_pre_post"
 HOLDOUT_SCRATCH = ROOT / "scratch/holdout/paper/exect_llm_pre_post"
 LLM_ONLY_WORK_ROOT = ROOT / "experiments/paper/exect_llm_only"
 LLM_ONLY_HOLDOUT_SCRATCH = ROOT / "scratch/holdout/paper/exect_llm_only"
+INVENTORY_WORK_ROOT = ROOT / "experiments/paper/exect_llm_inventory"
+INVENTORY_HOLDOUT_SCRATCH = ROOT / "scratch/holdout/paper/exect_llm_inventory"
 
 _DEV140_COMPACT_PAPER = {
     "gemini37flash": (
@@ -130,6 +136,27 @@ _LLM_ONLY_ARM = _ExectArmSpec(
     drift_before="live default drifted before the LLM-only run",
     drift_after="LLM-only arm left the live Compact default changed",
     run_requires="run_llm_only requires live=True",
+    verify_version_key="prompt_version",
+)
+
+_INVENTORY_ARM = _ExectArmSpec(
+    method=INVENTORY_ARM,
+    prompt_version=INVENTORY_VERSION,
+    work_root=INVENTORY_WORK_ROOT,
+    holdout_scratch=INVENTORY_HOLDOUT_SCRATCH,
+    schema_version="paper.exect_llm_inventory.v1",
+    generated_on="2026-08-23",
+    progress_label="llm_inventory",
+    holdout_claim_boundary=(
+        "ExECT aggregate-only inventory track. Not a paper cell."
+    ),
+    dev_claim_boundary=(
+        "ExECT development diagnostic-inventory track. Not a paper cell. "
+        "Not holdout."
+    ),
+    drift_before="live default drifted before the inventory run",
+    drift_after="inventory arm left the live Compact default changed",
+    run_requires="run_llm_inventory requires live=True",
     verify_version_key="prompt_version",
 )
 
@@ -380,6 +407,10 @@ def _run_live(
     if structured.PROMPT_VERSION != structured.EXECT_LLM_PRE_POST:
         raise RuntimeError(arm.drift_before)
     resolved_base = resolve_paper_api_base(spec.slug, api_base)
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
+        clinical_inventory_unit_keys,
+    )
+
     candidate = _run_candidate(
         spec,
         letters,
@@ -392,6 +423,9 @@ def _run_live(
         prompt_version=arm.prompt_version,
         arm=arm.method,
         progress_label=arm.progress_label,
+        unit_keys=(
+            clinical_inventory_unit_keys if arm.method == INVENTORY_ARM else None
+        ),
     )
     if structured.PROMPT_VERSION != structured.EXECT_LLM_PRE_POST:
         raise RuntimeError(arm.drift_after)
@@ -503,6 +537,92 @@ def run_llm_only(
         thinking=thinking,
         reasoning_effort=reasoning_effort,
         verify=verify_llm_only,
+    )
+
+
+def verify_llm_inventory(*, split: str = "dev140", slug: str | None = None) -> dict[str, Any]:
+    """Check inventory-prompt identity without changing the live default."""
+
+    def _payload(letter: ExectLetter) -> Mapping[str, Any]:
+        payload = json.loads(
+            structured.build_prompt_input(letter, prompt_version=INVENTORY_VERSION)
+        )
+        if list(payload) != list(structured.LLM_ONLY_AUTHORED_KEYS):
+            raise RuntimeError(f"inventory key order drifted: {list(payload)}")
+        if "categories" in payload or "suggested_evidence" in payload:
+            raise RuntimeError("inventory still emits suggested evidence")
+        if "letter_id" in payload or "prompt_version" in payload:
+            raise RuntimeError("inventory still emits research metadata")
+        joined = " ".join(payload["clinical_rules"]["diagnosis"])
+        if "Do not add a separate generic epilepsy diagnosis to a specific" in joined:
+            raise RuntimeError("inventory still asks to drop generic epilepsy")
+        if "include both as separate diagnosis events" not in joined:
+            raise RuntimeError("inventory lost the existing include-both diagnosis rule")
+        blob = json.dumps(payload).lower()
+        for phrase in (
+            "gold label",
+            "headline",
+            "unit key",
+            "clinical f1",
+            "scorer",
+            "annotation",
+            "leftover",
+        ):
+            if phrase in blob:
+                raise RuntimeError(f"inventory prompt contains evaluation language: {phrase}")
+        if structured.compact_rule_count(payload["clinical_rules"]) != 51:
+            raise RuntimeError("inventory content drifted")
+        return payload
+
+    return _verify_arm(
+        _INVENTORY_ARM,
+        split=split,
+        slug=slug,
+        verify_payload=_payload,
+        verify_drift_message="inventory verify changed the live Compact default",
+    )
+
+
+def run_llm_inventory(
+    slug: str,
+    *,
+    live: bool,
+    split: str = "dev140",
+    overwrite: bool = False,
+    api_base: str | None = None,
+    timeout: int | None = None,
+    progress_every: int = 1,
+    thinking: str | None = None,
+    reasoning_effort: str | None = None,
+) -> dict[str, Any]:
+    """Run the diagnostic-inventory extract. Does not change the live Compact default."""
+
+    return _run_live(
+        slug,
+        _INVENTORY_ARM,
+        live=live,
+        split=split,
+        overwrite=overwrite,
+        api_base=api_base,
+        timeout=timeout,
+        progress_every=progress_every,
+        thinking=thinking,
+        reasoning_effort=reasoning_effort,
+        verify=verify_llm_inventory,
+    )
+
+
+def rescore_inventory_baseline(*, slug: str = "gemini37flash") -> dict[str, Any]:
+    """Rescore the frozen Gemini llm-only DEV140 extract with inventory F1."""
+
+    if slug != "gemini37flash":
+        raise RuntimeError("inventory baseline rescore is Gemini DEV140 only")
+    source = ROOT / FROZEN_GEMINI_LLM_ONLY_DEV140
+    out = INVENTORY_WORK_ROOT / slug / "dev140" / "comparison.json"
+    return write_inventory_baseline_comparison(
+        source_structured=source,
+        out_path=out,
+        letters=letters_dev140(),
     )
 
 
@@ -737,6 +857,7 @@ def _run_candidate(
     prompt_version: str = CANDIDATE_VERSION,
     arm: str = CANDIDATE_ARM,
     progress_label: str = "compact",
+    unit_keys: Any = None,
 ) -> dict[str, Any]:
     structured_path = out_dir / "structured.jsonl"
     assembly_path = out_dir / "assembly.jsonl"
@@ -840,6 +961,7 @@ def _run_candidate(
         structured_path=structured_path,
         assembly_path=assembly_path,
         model=spec.model,
+        unit_keys=unit_keys,
     )
 
 
