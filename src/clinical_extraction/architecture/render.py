@@ -735,8 +735,11 @@ def render_six_path_walkthrough(cases: Sequence[TeachingCase]) -> str:
             hybrid = gan_runs["gan2026_llm_with_rules"]
             lines.append("### What the three Gan answers show")
             lines.append("")
+            rules_answer = (
+                gan_runs.get("gan2026_rules_only") or gan_runs["gan_rules"]
+            ).final_answer
             lines.append(
-                f"Rules-only returns `{(gan_runs.get('gan2026_rules_only') or gan_runs['gan_rules']).final_answer}`. "
+                f"Rules-only returns `{rules_answer}`. "
                 f"LLM-only returns `{llm_only.final_answer}` "
                 f"({_verdict_phrase(llm_only)}) against gold `{case.gold}`. "
                 f"LLM-with-rules returns `{hybrid.final_answer}` "

@@ -205,7 +205,7 @@ def test_llm_row_has_no_separate_encode_stage() -> None:
     assert LLM_SELECT_METHOD == "gan_llm_select_from_extract"
     assert EXTRACT_METHOD == "gan_llm_extract"
 
-
+@pytest.mark.local_corpus
 def test_later_stage_reads_codebook_extract_work_cell() -> None:
     assert EXTRACT_METHOD == "gan_llm_extract"
     path = extract_rows_path("dev750")

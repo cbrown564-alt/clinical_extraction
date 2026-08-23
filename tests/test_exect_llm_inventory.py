@@ -122,11 +122,17 @@ def test_inventory_prompt_emits_both_and_leaves_live_default() -> None:
         structured.build_prompt_input(letter, prompt_version=structured.EXECT_LLM_ONLY)
     )
     assert payload["family_guidance"]["medication"] == only["family_guidance"]["medication"]
-    assert payload["family_guidance"]["seizure_frequency"] == only["family_guidance"]["seizure_frequency"]
+    assert (
+        payload["family_guidance"]["seizure_frequency"]
+        == only["family_guidance"]["seizure_frequency"]
+    )
     assert payload["family_guidance"]["investigation"] == only["family_guidance"]["investigation"]
     assert "Write fact as only that short name." not in payload["family_guidance"]["diagnosis"]
     assert "Write fact as only that short name." in only["family_guidance"]["diagnosis"]
-    assert "Do not include vague symptoms or non-epileptic" in payload["family_guidance"]["diagnosis"]
+    assert (
+        "Do not include vague symptoms or non-epileptic"
+        in payload["family_guidance"]["diagnosis"]
+    )
     assert "Write diagnosis fact as only the short syndrome" not in diagnosis_rules
     assert "Do not include isolated symptoms or aura features as diagnosis" not in diagnosis_rules
     assert "Do not put hedges, timing, or extra anatomy" not in diagnosis_rules

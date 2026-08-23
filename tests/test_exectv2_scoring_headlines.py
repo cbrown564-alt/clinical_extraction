@@ -242,7 +242,7 @@ def test_reported_diagnosis_headline_does_not_use_other_family_recall() -> None:
     assert score["recall_tp"] == 0
     assert score["fn"] == 1
 
-
+@pytest.mark.local_corpus
 def test_four_family_gold_support_matches_headline_f1_denominator() -> None:
     dev = gold_headline_support(load_letters_for_split("dev"))
     holdout = gold_headline_support(load_letters_for_split("test"))

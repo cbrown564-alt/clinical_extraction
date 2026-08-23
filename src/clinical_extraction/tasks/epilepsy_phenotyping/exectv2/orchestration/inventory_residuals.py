@@ -9,7 +9,7 @@ selected Compact / cell-3 lens.
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from typing import Any
+from typing import Any, TypedDict
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection import (
     attach_benchmark_concept,
@@ -25,10 +25,17 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
 )
 
 
+class InventoryResidualStats(TypedDict):
+    diagnosis_residual_adds: int
+    sf_heading_splits: list[Any]
+    sf_generic_keeps: list[Any]
+    sf_adds: int
+
+
 def apply_inventory_residuals(
     note_text: str,
     mentions: Sequence[Mapping[str, Any]],
-) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+) -> tuple[list[dict[str, Any]], InventoryResidualStats]:
     """Invent-from-letter diagnosis adds. Ablation only; not default hybrid/select."""
 
     out = [dict(mention) for mention in mentions]

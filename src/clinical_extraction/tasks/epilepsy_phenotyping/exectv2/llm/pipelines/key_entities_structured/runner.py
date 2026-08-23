@@ -89,7 +89,7 @@ def run_split(
     checkpoint_jsonl_path: Path | None = None,
     checkpoint_report_path: Path | None = None,
     resume: bool = False,
-    prompt_profile: str = "full",
+    prompt_profile: Literal["full"] = "full",
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Compatibility facade; the one-call producer lives in orchestration."""
 

@@ -5,18 +5,20 @@ from __future__ import annotations
 import json
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from clinical_extraction.core.paths import discover_repo_root
+from clinical_extraction.paper.cells import normalize_cell_id, normalize_rungs_payload
 from clinical_extraction.paper.exect import compact_metrics_from_structured
+from clinical_extraction.paper.exect_cell_replay import exect_rung_out_dir
 from clinical_extraction.paper.exect_later_stage import (
     CITED_SLUG as LATER_STAGE_SLUG,
 )
 from clinical_extraction.paper.exect_later_stage import (
+    LaterStageMethod,
     later_stage_work_root,
     rescore_later_stage,
 )
-from clinical_extraction.paper.exect_cell_replay import exect_rung_out_dir
 from clinical_extraction.paper.methods import (
     exect_row_count,
     holdout_is_aggregate_only,
@@ -24,7 +26,6 @@ from clinical_extraction.paper.methods import (
     split_for,
 )
 from clinical_extraction.paper.roster import living_models, model_by_slug
-from clinical_extraction.paper.cells import normalize_cell_id, normalize_rungs_payload
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
 )
@@ -299,8 +300,9 @@ def promote_exect_later_stage(method: str, slug: str, split: str) -> dict[str, A
     split_for(method, split)
     holdout = holdout_is_aggregate_only(split)
     model = model_by_slug(slug)
-    rescore_later_stage(method, slug, split)
-    source = later_stage_work_root(method, slug, split)
+    later = cast(LaterStageMethod, method)
+    rescore_later_stage(later, slug, split)
+    source = later_stage_work_root(later, slug, split)
     rows_path = source / "rows.jsonl"
     comparison_path = source / "comparison.json"
     if not rows_path.is_file() or not comparison_path.is_file():

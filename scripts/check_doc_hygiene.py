@@ -113,12 +113,24 @@ def _is_file_without_access_error(path: Path) -> bool:
         return False
 
 
-def check_experiments_root_allowlist(root: Path, allowlist: frozenset[str]) -> list[str]:
+def check_experiments_root_allowlist(
+    root: Path,
+    allowlist: frozenset[str],
+    *,
+    tracked_paths: Sequence[str] | None = None,
+) -> list[str]:
     experiments = root / "experiments"
     if not experiments.is_dir():
         return []
 
-    current = frozenset(p.name for p in experiments.glob("*.md"))
+    paths = existing_tracked_paths(root) if tracked_paths is None else tracked_paths
+    current = frozenset(
+        Path(path).name
+        for path in paths
+        if path.startswith("experiments/")
+        and path.count("/") == 1
+        and path.endswith(".md")
+    )
     unexpected = sorted(current - allowlist)
     missing = sorted(allowlist - current)
     if not unexpected and not missing:
@@ -145,7 +157,7 @@ def check_doc_hygiene(root: Path | None = None) -> list[str]:
         + check_root_underscore_dirs(base)
         + check_forbidden_tool_state(base, tracked_paths=tracked_paths)
         + check_forbidden_tracked_roots(base, tracked_paths=tracked_paths)
-        + check_experiments_root_allowlist(base, allowlist)
+        + check_experiments_root_allowlist(base, allowlist, tracked_paths=tracked_paths)
     )
 
 

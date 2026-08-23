@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.contracts import (
@@ -30,7 +30,7 @@ def run_split(
     temperature: float = 0.0,
     max_tokens: int = 0,
     mode: str | None = None,
-    prompt_profile: str = "full",
+    prompt_profile: Literal["full"] = "full",
     dspy_cache: bool = True,
     api_base: str | None = None,
     api_key: str | None = None,
@@ -159,7 +159,7 @@ def _run_llm_split(
     temperature: float,
     max_tokens: int,
     mode: str,
-    prompt_profile: str,
+    prompt_profile: Literal["full"],
     dspy_cache: bool,
     api_base: str | None,
     api_key: str | None,

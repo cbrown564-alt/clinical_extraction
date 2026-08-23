@@ -11,13 +11,13 @@ from typing import Any
 
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.paper.answer_states import graph_from_hops, make_hop
+from clinical_extraction.paper.cells import EXECT_HOP_EFFECT_CLASS, RUNG_IDS
 from clinical_extraction.paper.exect import letters_for_split
 from clinical_extraction.paper.methods import (
     exect_row_count,
     holdout_is_aggregate_only,
 )
 from clinical_extraction.paper.roster import model_by_slug
-from clinical_extraction.paper.cells import EXECT_HOP_EFFECT_CLASS, RUNG_IDS
 from clinical_extraction.paper.volume import count_predicted_mentions
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.views import (
     predictions_from_prediction_surface,

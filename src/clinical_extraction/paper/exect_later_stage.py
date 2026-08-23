@@ -620,8 +620,8 @@ def score_later_stage_row(
         extract_mentions=extract_mentions,
         encode_row=encode_row,
     )
-    encoded = list(extract_mentions)
-    selected = list(extract_mentions)
+    encoded: list[Any] = list(extract_mentions)
+    selected: list[Any] = list(extract_mentions)
     try:
         if method == "exect_llm_encode":
             encoded = join_encode_mentions(

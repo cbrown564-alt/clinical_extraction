@@ -1188,8 +1188,12 @@ def _gan_repair_walk(
         else None,
     )
     if repair_config.codebook_label_repair:
-        from clinical_extraction.tasks.seizure_frequency.gan2026.selected_evidence.codebook_encode import (
-            repair_codebook_label_with_evidence,
+        from clinical_extraction.tasks.seizure_frequency.gan2026.selected_evidence import (
+            codebook_encode,
+        )
+
+        repair_codebook_label_with_evidence = (
+            codebook_encode.repair_codebook_label_with_evidence
         )
 
         selected_ids = set(model_extraction.selection.selected_event_ids)
@@ -1690,7 +1694,8 @@ def _lens_clinically_changed(output_value: Any) -> bool:
             if not isinstance(step, Mapping):
                 continue
             action = str(step.get("action") or "")
-            detail = step.get("detail") if isinstance(step.get("detail"), Mapping) else {}
+            raw_detail = step.get("detail")
+            detail = raw_detail if isinstance(raw_detail, Mapping) else {}
             if action == "rewrote_diagnosis_convention_from_dictionary":
                 return True
             if action == "applied_standard_dictionary_diagnosis_repair" and (
@@ -1718,7 +1723,8 @@ def _lens_teaching_note(output_value: Any) -> str:
             if not isinstance(step, Mapping):
                 continue
             action = str(step.get("action") or "")
-            detail = step.get("detail") if isinstance(step.get("detail"), Mapping) else {}
+            raw_detail = step.get("detail")
+            detail = raw_detail if isinstance(raw_detail, Mapping) else {}
             if action == "rewrote_diagnosis_convention_from_dictionary":
                 source = detail.get("source_text")
                 target = detail.get("target_text")
@@ -1764,8 +1770,9 @@ def _exect_scoring(
         entity = data.get("entity") or "?"
         by_entity[entity] = by_entity.get(entity, 0) + 1
     coverage = "nine entities" if nine_entity else "four families"
-    has_gold = _exect_letter_has_gold(letter)
+    has_gold = letter is not None and _exect_letter_has_gold(letter)
     if has_gold:
+        assert letter is not None
         predicted = ExectLetter(
             letter_id=str(letter.letter_id),
             note_text=letter.note_text,
@@ -1787,7 +1794,7 @@ def _exect_scoring(
             f"{boundary}Gold comparison lives on Workbench."
         )
         score_note = "What left the line. Gold comparison lives on Workbench."
-        output_value = "\n".join(emitted)
+        output_value: Any = "\n".join(emitted)
         input_value = f"{len(mentions)} finding(s) entering the scorer"
     else:
         run.final_answer = ", ".join(

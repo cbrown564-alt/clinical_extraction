@@ -65,7 +65,7 @@ def test_ownership_matrix_covers_every_method() -> None:
     rows = sm.ownership_matrix()
     assert {row["method_id"] for row in rows} == set(sm.METHOD_IDS)
 
-
+@pytest.mark.local_corpus
 def test_teaching_documents_work_the_four_paper_letters() -> None:
     cases = build_paper_teaching_letters()
     assert [case.letter_id for case in cases] == [
@@ -101,7 +101,7 @@ def test_teaching_documents_work_the_four_paper_letters() -> None:
             gan_hub if case.task == "gan2026" else exect_hub
         )
 
-
+@pytest.mark.local_corpus
 def test_paper_exect_score_shows_what_left_the_line() -> None:
     letter = next(
         case
@@ -124,7 +124,7 @@ def test_paper_exect_score_shows_what_left_the_line() -> None:
         assert "vs gold:" not in str(score.output_value)
         assert "Workbench" in score.note
 
-
+@pytest.mark.local_corpus
 def test_ea0057_hybrid_lenses_show_clinical_rewrites_not_json() -> None:
     letter = next(
         case

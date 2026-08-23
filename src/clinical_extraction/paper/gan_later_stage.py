@@ -175,7 +175,7 @@ def parse_encode_labels(raw_output: str) -> list[dict[str, str]]:
 
 def parse_select_answer(raw_output: str) -> dict[str, Any]:
     payload = _payload(raw_output)
-    block = payload
+    block: Mapping[str, Any] = payload
     nested = payload.get("selection")
     if not isinstance(payload.get("selected_event_ids"), list) and isinstance(
         nested, Mapping

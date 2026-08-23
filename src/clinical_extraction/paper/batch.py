@@ -23,11 +23,20 @@ TERMINAL = frozenset({"completed", "failed", "cancelled", "expired"})
 class BatchModel(Protocol):
     """Living paper model fields needed to choose a batch lane."""
 
-    slug: str
-    model: str
-    temperature: float
-    reasoning_effort: str | None
-    credential_env: tuple[str, ...]
+    @property
+    def slug(self) -> str: ...
+
+    @property
+    def model(self) -> str: ...
+
+    @property
+    def temperature(self) -> float: ...
+
+    @property
+    def reasoning_effort(self) -> str | None: ...
+
+    @property
+    def credential_env(self) -> tuple[str, ...]: ...
 
 
 @dataclass(frozen=True)

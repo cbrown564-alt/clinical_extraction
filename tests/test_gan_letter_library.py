@@ -10,6 +10,8 @@ tests fail rather than publish an invented mechanism story.
 
 from __future__ import annotations
 
+import pytest
+
 from clinical_extraction.architecture.teaching_case import (
     build_gan_letter_library,
     build_teaching_letters,
@@ -27,7 +29,7 @@ def _repair_observations(run, family: str):
         if obs.stage_id == f"gan.llm_with_rules.repair.{family}"
     ]
 
-
+@pytest.mark.local_corpus
 def test_library_stays_apart_from_the_paper_explainer_letters():
     library = build_gan_letter_library()
     assert [case.letter_id for case in library] == ["TEACH-GAN-02", "TEACH-GAN-03"]

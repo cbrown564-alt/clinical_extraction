@@ -11,12 +11,12 @@ from typing import Any
 
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.paper.answer_states import graph_from_hops, unused_model_events
+from clinical_extraction.paper.cells import GAN_REPAIR_MODE_FOR_RUNG, RUNG_IDS
 from clinical_extraction.paper.methods import (
     gan_machine_split,
     gan_row_count,
     holdout_is_aggregate_only,
 )
-from clinical_extraction.paper.cells import GAN_REPAIR_MODE_FOR_RUNG, RUNG_IDS
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )

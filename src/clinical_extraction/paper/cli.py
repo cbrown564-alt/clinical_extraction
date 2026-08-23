@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 from collections.abc import Sequence
-from typing import Any
+from typing import Any, cast
 
 from clinical_extraction.paper.exect import (
     MODELS,
@@ -21,6 +21,9 @@ from clinical_extraction.paper.exect import (
 from clinical_extraction.paper.exect_cell_replay import (
     replay_exect_pre_post_encode,
     replay_exect_rungs,
+)
+from clinical_extraction.paper.exect_later_stage import (
+    LaterStageMethod as ExectLaterStageMethod,
 )
 from clinical_extraction.paper.exect_later_stage import (
     run_later_stage as run_exect_later_stage,
@@ -213,7 +216,7 @@ def verify(method: str, split: str, slug: str | None = None) -> dict[str, Any]:
         if method in {"exect_llm_encode", "exect_llm_select"}:
             if slug is not None and slug != "gemini37flash":
                 raise RuntimeError("later-stage ExECT encode and select run on Gemini only")
-            verify_later_stage_prompt(method)
+            verify_later_stage_prompt(cast(ExectLaterStageMethod, method))
             return {
                 "ok": True,
                 "method": method,
@@ -260,7 +263,7 @@ def run(
     if spec["task"] == "exectv2":
         if method in {"exect_llm_encode", "exect_llm_select"}:
             return run_exect_later_stage(
-                method,
+                cast(ExectLaterStageMethod, method),
                 slug,
                 split=split,
                 overwrite=overwrite,
@@ -315,6 +318,4 @@ def run(
         progress_every=progress_every,
         thinking=thinking,
         reasoning_effort=reasoning_effort,
-        row_limit=row_limit,
-        slice_name=slice_name,
     )

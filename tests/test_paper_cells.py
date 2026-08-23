@@ -7,10 +7,6 @@ import json
 import pytest
 
 from clinical_extraction.paper.answer_states import graph_from_hops, make_hop
-from clinical_extraction.paper.exect_cell_replay import (
-    exect_pre_post_structured_path,
-    replay_exect_pre_post_encode,
-)
 from clinical_extraction.paper.cells import (
     CELL_ORDER,
     EXECT_HOP_EFFECT_CLASS,
@@ -23,6 +19,10 @@ from clinical_extraction.paper.cells import (
     exect_method_for_rung,
     gan_method_for_rung,
     normalize_repair_mode,
+)
+from clinical_extraction.paper.exect_cell_replay import (
+    exect_pre_post_structured_path,
+    replay_exect_pre_post_encode,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.letter_assembly import (
     MATERIALIZED_SURFACES,

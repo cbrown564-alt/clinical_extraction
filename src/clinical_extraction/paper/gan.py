@@ -8,7 +8,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import dspy
 from dotenv import load_dotenv
@@ -37,11 +37,12 @@ from clinical_extraction.paper.gan_later_stage import (
     MAX_TOKENS as LATER_STAGE_MAX_TOKENS,
 )
 from clinical_extraction.paper.gan_later_stage import (
-    prompt_version as later_stage_prompt_version,
-)
-from clinical_extraction.paper.gan_later_stage import (
+    LaterStageMethod,
     run_later_stage,
     verify_later_stage_prompt,
+)
+from clinical_extraction.paper.gan_later_stage import (
+    prompt_version as later_stage_prompt_version,
 )
 from clinical_extraction.paper.lm import build_paper_lm, resolve_paper_api_base
 from clinical_extraction.paper.methods import (
@@ -207,7 +208,7 @@ def verify_gan(
     }:
         if slug is not None and slug != LATER_STAGE_SLUG:
             raise RuntimeError("later-stage Gan encode and select run on Gemini only")
-        verify_later_stage_prompt(method)
+        verify_later_stage_prompt(cast(LaterStageMethod, method))
         authored = (
             list(LLM_ENCODE_AUTHORED_KEYS)
             if method == "gan_llm_encode"
@@ -288,7 +289,7 @@ def run_gan(
         "gan_llm_select_from_extract",
     }:
         return run_later_stage(
-            method,
+            cast(LaterStageMethod, method),
             slug,
             split=split,
             overwrite=overwrite,
@@ -459,7 +460,7 @@ def _prompt_version(method: str) -> str:
         "gan_llm_select",
         "gan_llm_select_from_extract",
     }:
-        return later_stage_prompt_version(method)
+        return later_stage_prompt_version(cast(LaterStageMethod, method))
     raise ValueError(method)
 
 

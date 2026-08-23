@@ -6,7 +6,7 @@ import json
 from collections import Counter
 from collections.abc import Mapping, Sequence
 from pathlib import Path
-from typing import Any
+from typing import Any, TypedDict
 
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.views import (
@@ -46,6 +46,15 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
     load_jsonl_rows,
     write_jsonl_rows,
 )
+
+
+class ResidualFired(TypedDict):
+    diagnosis_residual_letters: list[str]
+    sf_heading_split_letters: list[str]
+    sf_generic_keep_letters: list[str]
+    diagnosis_residual_adds: int
+    sf_adds: int
+
 
 FAMILIES = ("Diagnosis", "SeizureFrequency", "Prescription", "Investigations")
 HEADLINE_DROP_LIMIT = 0.05
@@ -657,7 +666,7 @@ def write_inventory_residual_comparison(
         str(row["letter_id"]): row for row in load_jsonl_rows(assembly_path)
     }
     residual_by_id: dict[str, list[dict[str, Any]]] = {}
-    fired = {
+    fired: ResidualFired = {
         "diagnosis_residual_letters": [],
         "sf_heading_split_letters": [],
         "sf_generic_keep_letters": [],

@@ -5,6 +5,8 @@ One predicted fact, the transforms that touched it, gold only at the end.
 
 from __future__ import annotations
 
+import pytest
+
 from clinical_extraction.architecture.fact_lineage import _render_unit
 from clinical_extraction.architecture.paper_teaching_cases import (
     build_paper_teaching_letters,
@@ -23,7 +25,7 @@ def _run(letter_id: str, method_id: str):
     case = _case(letter_id)
     return case, next(run for run in case.runs if run.method_id == method_id)
 
-
+@pytest.mark.local_corpus
 def test_paper_hybrid_runs_publish_fact_ids_spans_and_gold() -> None:
     _, e2 = _run("EA0057", "exect_llm_pre_post")
     assert e2.facts, "EA0057 hybrid must expose predicted facts"
@@ -35,7 +37,7 @@ def test_paper_hybrid_runs_publish_fact_ids_spans_and_gold() -> None:
         assert payload["transforms"][-1]["stage_id"] != "gold"
         assert fact.gold.label
 
-
+@pytest.mark.local_corpus
 def test_ea0057_hybrid_structural_epilepsy_shows_diagnosis_lens_only() -> None:
     _, run = _run("EA0057", "exect_llm_pre_post")
     fact = next(
@@ -64,7 +66,7 @@ def test_ea0057_hybrid_structural_epilepsy_shows_diagnosis_lens_only() -> None:
     assert "DiagCategory" in propose.left
     assert propose.note != "Model proposed this mention."
 
-
+@pytest.mark.local_corpus
 def test_gan15431_pre_post_reaches_two_part_gold() -> None:
     case, run = _run("GAN-15431", "gan_llm_and_rules_extract")
     assert run.final_answer == case.gold
@@ -83,7 +85,7 @@ def test_gan15431_pre_post_reaches_two_part_gold() -> None:
     ]
     assert repair_ids == []
 
-
+@pytest.mark.local_corpus
 def test_unattributed_letter_stages_are_not_copied_onto_every_fact() -> None:
     _, run = _run("GAN-15431", "gan_llm_and_rules_extract")
     for fact in run.facts:
@@ -119,7 +121,7 @@ def test_lineage_render_drops_event_state_scratchpad() -> None:
     assert "event_state" not in rendered
     assert "NumberOfSeizures" in rendered
 
-
+@pytest.mark.local_corpus
 def test_ea0057_parse_does_not_surface_event_state_copy() -> None:
     _, run = _run("EA0057", "exect_llm_pre_post")
     fact = next(
@@ -136,7 +138,7 @@ def test_ea0057_parse_does_not_surface_event_state_copy() -> None:
     assert "confidence" not in parse.left
     assert "mentions" not in parse.left
 
-
+@pytest.mark.local_corpus
 def test_exect_frequency_fact_keeps_attributes_through_parse_and_leave() -> None:
     _, run = _run("EA0057", "exect_llm_pre_post")
     fact = next(
@@ -157,7 +159,7 @@ def test_exect_frequency_fact_keeps_attributes_through_parse_and_leave() -> None
     assert "NumberOfSeizures" in lens.entered
     assert "NumberOfSeizures" in lens.left
 
-
+@pytest.mark.local_corpus
 def test_g3_rules_has_no_clickable_span_and_still_shows_gold() -> None:
     case, run = _run("GAN-2166", "gan_rules")
     clickable = [fact for fact in run.facts if fact.span is not None]
