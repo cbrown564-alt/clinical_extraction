@@ -1,77 +1,67 @@
 # Introduction working outline
 
-Status: a decision record and paragraph-card outline, not draft prose. It records the current focus so that later drafting does not reopen settled choices by accident.
+Status: decision record and paragraph outline for `introduction_draft.md`, not manuscript prose. It records the agreed narrative and claim boundaries so later edits do not reopen settled choices without evidence.
 
 ## Central argument
 
-Epilepsy clinic letters contain rich, relevant, but temporally distributed and uncertain information. Turning that information into a structured output is not a task-neutral act of finding facts: it applies a purpose-specific policy about what to retain and how to represent it. Modern language models can produce rich, evidence-linked candidate records; explicit rules can then make that policy transparent, configurable, and replayable.
+Epilepsy research needs structured information that captures both a broad clinical phenotype and seizure burden or current control. Clinic letters contain this information in temporally distributed, uncertain, and sometimes overlapping statements. The study separates the conversion into three decisions—finding candidate statements, translating them into the required structured form, and deciding what enters the final record—then asks how learned interpretation and written task rules should share those decisions.
 
 ## Scope and claim boundaries
 
-- The paper evaluates an engineering approach to structured extraction, not a deployed clinical decision-support system.
-- Evidence links, model-proposed selections, stated rationales, and deterministic changes support review. They do not prove clinical correctness or expose hidden model reasoning.
-- The study evaluates two public epilepsy-letter datasets with different task demands. This supports breadth and evidence about transferability; it is not automatically formal external clinical validation.
-- The contribution is not that hybrid or neuro-symbolic clinical NLP is new. Prior work already combines rules, retrieval, schemas, validation, and review.
-- The contribution is the controlled comparison of where rule assistance is applied, and the analysis of how explicit policy operates on evidence-rich model candidates in two complementary tasks.
-- Do not claim that greater symbolic authority is always better. The design involves trade-offs among constraint, flexibility, latency, and cost.
+- The paper evaluates structured-extraction methods, not a deployed clinical decision-support system.
+- A broad phenotype and current seizure frequency are complementary research targets. Neither is a complete patient record.
+- Seizure frequency is a core clinical outcome measure, not the only or universally most important marker.
+- Describe ExECT as rules-led and note its statistical components.
+- Hybrid epilepsy NLP already exists. The contribution is the explicit three-decision comparison across two task forms, not the invention of hybrid extraction.
+- Written rules may change clinically consequential choices, including time windows, categories, normalised values, and the selected fact. Do not describe them as formatting alone.
+- Learned methods appear well suited to interpreting variable seizure-frequency language, but studies with different datasets and targets do not establish universal superiority.
+- Quoted evidence and transformation records support review and replay. They do not prove clinical correctness or expose hidden model reasoning.
+- The two public datasets enable independent re-evaluation and reduce dependence on private corpora. They do not isolate institutional transfer because source, task, and annotation policy differ together.
+- Keep task scores separate and do not state this study's results in the Introduction.
 
-## Paragraph 1 - Clinical information creates the technical problem
+## Paragraph 1 — Clinical motivation
 
-**Reader question:** Why does this extraction problem matter?
+**Reader question:** Why does structuring epilepsy letters matter?
 
-**Conclusion:** Important epilepsy information is often contained in narrative clinic letters, limiting the structured information available for several established clinical-information-extraction uses.
+**Conclusion:** Narrative clinic letters contain clinically useful epilepsy information that structured extraction can make available for cohort construction, retrospective review, and longitudinal outcome research.
 
-**Context and content:** Explain that seizure frequency, treatment changes, and related clinical context are often expressed in free text rather than clean structured fields. Cohort identification, retrospective outcome analysis, and longitudinal patient timelines illustrate why clinical information extraction needs such structured information. They motivate the field; this study does not evaluate those downstream uses.
+**Content:** Name diagnoses, seizure types and frequencies, medicines, investigations, and treatment changes. State that manual review is difficult to scale. Bound the paper as a methods study rather than clinical deployment or replacement of clinical judgement.
 
-**Bridge:** A clinically important question becomes a problem of converting flexible narrative into structured information.
+**Source anchors:** Fonferko-Shadrach et al. (2019); Xie et al. (2023).
 
-**Decision:** Keep the clinical motivation focused on the narrative-data bottleneck. Do not introduce drug resistance, seizure-freedom targets, trial cost, or treatment impact.
+## Paragraph 2 — Complementary clinical targets and three decisions
 
-**Still to decide / source:** Select sources for the narrative-data bottleneck and representative downstream uses.
+**Reader question:** What must a useful research record capture, and why is extraction difficult?
 
-## Paragraph 2 - Structured extraction necessarily applies policy
+**Conclusion:** Epilepsy research benefits from both broad phenotype information and seizure-burden or current-control information, while narrative letters may support several temporally or contextually different statements.
 
-**Reader question:** Why is this more difficult than recognising medical terms?
+**Content:** Call seizure frequency a core clinical outcome measure. Explain the three decisions in plain language: find candidate statements, translate them into the required structured form, and decide what enters the final record. Introduce ExECT as the multi-fact inventory task and Gan as the current-frequency task. Present them as complementary research forms, not arbitrary output examples or complete patient records.
 
-**Conclusion:** A letter may support several true, overlapping, temporal, or uncertain statements, whereas a downstream task requires a particular structured representation; every such output therefore applies policy.
+**Source anchors:** Decker et al. (2022); Fonferko-Shadrach et al. (2024); Gan et al. (2026).
 
-**Context and content:** Explain that there is no task-neutral complete extraction of a clinical letter. A task must choose purpose, timeframe, granularity, uncertainty treatment, and what counts as a retained fact. Gan illustrates selection of a current seizure-frequency representation; ExECT illustrates a finite inventory with attributes and inclusion rules.
+## Paragraph 3 — Design question
 
-**Bridge:** The methodological question is how to combine flexible interpretation with an explicit, reviewable representation policy.
+**Reader question:** Why compare written rules, learned methods, and their combinations?
 
-**Decision:** Keep this paragraph fully general. Introduce Gan and ExECT only in the study paragraph.
+**Conclusion:** The central question is which component should make each clinically consequential decision.
 
-**Still to decide / source:** Cite the general clinical-extraction and representation problem without relying on a task-specific example.
+**Content:** Rules are explicit and inspectable but depend on local wording. Learned models handle varied and temporally distributed narrative but are harder to constrain and inspect. Hybrids already exist. Ask how learned interpretation and written task rules should work together across finding, translating, and final choice. Do not introduce detailed experimental cells here.
 
-## Paragraph 3 - Prior methods and the location of rule authority
+**Source anchors:** Yew et al. (2023), with epilepsy-specific hybrid detail reserved for the literature review.
 
-**Reader question:** Why are existing rule-based, model-based, and hybrid approaches insufficient on their own?
+## Paragraph 4 — Study and contribution
 
-**Conclusion:** The decisive hybrid design choice is where symbolic rules enter the pipeline and whether they can influence, validate, or change a model-proposed output.
+**Reader question:** What does this study evaluate?
 
-**Context and content:** Rules are controllable and effective for constrained representations but brittle with varied narrative context. LLMs are flexible in interpretation but need outputs to be reconciled with explicit task requirements. Prior clinical hybrids already use retrieval, schemas, rule guidance, validation, and review. The neuro-symbolic literature frames these variants by symbolic authority rather than by the mere presence of rules.
+**Conclusion:** The study compares alternative divisions of work at the three decisions on two public epilepsy-letter datasets with different sources and target forms.
 
-**Bridge:** This motivates evaluating a division of labour: model-produced, evidence-linked candidates followed by explicit task policy.
+**Content:** State that the system retains quoted evidence and transformation records. Explain that public data allow independent replication or re-evaluation. State the transfer boundary: the design addresses private single-site evaluation but cannot isolate institutional transfer because source, task definition, and annotation policy change together. Do not report findings or imply that one division of work must suit both tasks.
 
-**Decision:** Do not introduce the five experimental configurations in detail here. The Introduction states the architectural question; Methods defines the comparison.
-
-**Still to decide / source:** Cite prior hybrids carefully and do not claim novelty of hybridisation itself.
-
-## Paragraph 4 - This study
-
-**Reader question:** What exactly does this study contribute and test?
-
-**Conclusion:** The study evaluates evidence-backed hybrid extraction across two public epilepsy-letter benchmarks that require different forms of structured representation.
-
-**Context and content:** State the common architecture at a high level: models interpret and produce evidence-linked candidates; deterministic rules apply explicit task policy and record their transformations. Name the two tasks succinctly: Gan evaluates selection and rendering of a current seizure-frequency state; ExECT evaluates construction of a supported multi-family fact inventory. State that rules-only, model-only, and intermediate rule-assistance configurations are compared, with task-specific results kept separate.
-
-**Closing contribution:** The paper examines not only final agreement with benchmark labels but also the role of rule assistance in producing constrained, evidence-linked, reviewable outputs.
-
-**Still to decide / source:** Final wording of research questions and contribution sentence; ensure every claimed property has a corresponding measured result or is described as a design feature.
+**Source anchors:** Fonferko-Shadrach et al. (2024); Gan et al. (2026).
 
 ## Sequence check
 
-1. Why narrative epilepsy information matters.
-2. Why conversion to structure requires explicit choices.
-3. Why the placement and authority of rules is the methodological issue.
-4. What this study evaluates to address that issue.
+1. Narrative epilepsy information motivates structured extraction.
+2. Complementary phenotype and seizure-burden targets expose three decisions.
+3. Rules, learned methods, and existing hybrids motivate the division-of-work question.
+4. Two public tasks provide the study design, reproducibility contribution, and transfer boundary.
