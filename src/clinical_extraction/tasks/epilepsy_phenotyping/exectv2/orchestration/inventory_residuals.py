@@ -1,7 +1,9 @@
-"""Inventory-only replay of recorded diagnosis residual adds.
+"""Optional inventory ablation: invent diagnosis mentions from the letter.
 
-Does not change the selected Compact / cell-3 lens. Applied when rescoring
-the diagnostic-inventory track from a saved extract.
+Not the default inventory score. ``comparison.json`` scores extract then
+select only. This module writes extras onto a saved extract for
+``comparison_residual.json`` (invent-from-letter). Does not change the
+selected Compact / cell-3 lens.
 """
 
 from __future__ import annotations
@@ -27,7 +29,7 @@ def apply_inventory_residuals(
     note_text: str,
     mentions: Sequence[Mapping[str, Any]],
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """Replay recorded ``diagnosis_residual_additions`` onto hybrid mentions."""
+    """Invent-from-letter diagnosis adds. Ablation only; not default hybrid/select."""
 
     out = [dict(mention) for mention in mentions]
     diagnosis_added = _add_diagnosis_residuals(note_text, out)

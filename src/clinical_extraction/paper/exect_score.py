@@ -589,7 +589,7 @@ def write_inventory_baseline_comparison(
     out_path: Path,
     letters: Sequence[ExectLetter],
 ) -> dict[str, Any]:
-    """Rescore a frozen extract onto inventory F1 and write comparison.json."""
+    """Write default inventory comparison.json: extract then select; no residual invent."""
 
     scored = score_structured_inventory(source_structured, letters)
     artifact = {
@@ -611,8 +611,9 @@ def write_inventory_baseline_comparison(
         "scorer": "clinical_inventory_unit_keys",
         **scored,
         "claim_boundary": (
-            "ExECT development inventory-F1 rescore of a frozen Gemini "
-            "exect_llm_only extract. Not a paper cell. Not holdout."
+            "Extract proposes; select filters. Residual dictionary is an "
+            "invent-from-letter ablation, not this default score. "
+            "Not a paper cell. Not holdout."
         ),
     }
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -633,7 +634,7 @@ def write_inventory_residual_comparison(
     prompt_version: str,
     model: str = "gemini/gemini-3.7-flash",
 ) -> dict[str, Any]:
-    """Rescore saved inventory extract after replaying recorded residual adds."""
+    """Optional invent-from-letter ablation. Writes comparison_residual.json only."""
 
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
         inventory_residuals,
@@ -717,7 +718,7 @@ def write_inventory_residual_comparison(
         "generated_on": "2026-08-23",
         "method": "exect_llm_inventory",
         "paper_cell": False,
-        "track": "diagnostic inventory residual replay; not a five-cell paper column",
+        "track": "invent-from-letter residual ablation; not the default inventory score",
         "new_model_calls": 0,
         "split": "dev140",
         "row_policy": "development_review_permitted",
@@ -742,8 +743,8 @@ def write_inventory_residual_comparison(
             "sf_generic_keep_letter_count": len(fired["sf_generic_keep_letters"]),
         },
         "claim_boundary": (
-            "ExECT development inventory-F1 replay of recorded diagnosis residual "
-            "adds on a frozen Gemini inventory extract. "
+            "Invent-from-letter ablation: residual dictionary adds mentions the "
+            "extract did not propose. Not the default inventory score. "
             "Not a paper cell. Not holdout. No new model calls."
         ),
     }

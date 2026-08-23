@@ -88,6 +88,10 @@ def test_inventory_prompt_emits_both_and_leaves_live_default() -> None:
     )
     diagnosis_rules = " ".join(payload["clinical_rules"]["diagnosis"])
     assert "include each as its own diagnosis event" in diagnosis_rules
+    assert "more specific place or type" in diagnosis_rules
+    assert "nocturnal GTCS" in diagnosis_rules or any(
+        "nocturnal GTCS" in json.dumps(ex) for ex in payload["examples"]
+    )
     sf_rules = " ".join(payload["clinical_rules"]["seizure_frequency"])
     assert "write a seizure-frequency event for each named type" in sf_rules.lower()
     assert "keep a separate generic seizure event" in sf_rules
@@ -99,8 +103,8 @@ def test_inventory_prompt_emits_both_and_leaves_live_default() -> None:
     )
     assert "Onset-history phrases such as" not in diagnosis_rules
     assert list(payload) == list(structured.INVENTORY_AUTHORED_KEYS)
-    assert structured.compact_rule_count(payload["clinical_rules"]) == 49
-    assert len(payload["examples"]) == 2
+    assert structured.compact_rule_count(payload["clinical_rules"]) == 50
+    assert len(payload["examples"]) == 3
     blob = json.dumps(payload).lower()
     for phrase in (
         "gold label",
@@ -110,6 +114,8 @@ def test_inventory_prompt_emits_both_and_leaves_live_default() -> None:
         "scorer",
         "annotation",
         "leftover",
+        "residual",
+        "regex",
     ):
         assert phrase not in blob
     only = json.loads(
@@ -150,7 +156,7 @@ def test_verify_llm_inventory_does_not_change_live_default() -> None:
     assert structured.PROMPT_VERSION == before == structured.EXECT_LLM_PRE_POST
 
 
-def test_inventory_residuals_add_named_type_and_heading_sf() -> None:
+def test_inventory_residuals_ablation_invents_named_type() -> None:
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
         inventory_residuals,
     )
@@ -187,3 +193,4 @@ def test_inventory_residuals_add_named_type_and_heading_sf() -> None:
     assert stats["diagnosis_residual_adds"] >= 1
     assert ("Diagnosis", "focal seizures with altered awareness") in texts
     assert stats["sf_adds"] == 0
+    assert "invent" in inventory_residuals.apply_inventory_residuals.__doc__.lower()

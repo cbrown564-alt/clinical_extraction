@@ -652,6 +652,26 @@ _INVENTORY_EXAMPLES = [
             },
         ],
     },
+    {
+        "letter": (
+            "Diagnosis: juvenile myoclonic epilepsy. "
+            "Seizure types: nocturnal GTCS."
+        ),
+        "clinical_events": [
+            {
+                "family": "diagnosis",
+                "evidence": "Diagnosis: juvenile myoclonic epilepsy.",
+                "fact": "juvenile myoclonic epilepsy",
+                "attributes": {"DiagCategory": "Epilepsy"},
+            },
+            {
+                "family": "diagnosis",
+                "evidence": "Seizure types: nocturnal GTCS.",
+                "fact": "nocturnal GTCS",
+                "attributes": {"DiagCategory": "Epilepsy"},
+            },
+        ],
+    },
 ]
 
 
@@ -666,6 +686,15 @@ _INVENTORY_SPLIT_SYNDROME_AND_TYPE = (
     "If the letter names a syndrome and a seizure type, such as juvenile "
     "absence epilepsy and tonic clonic seizures, include each as its own "
     "diagnosis event."
+)
+
+_INVENTORY_HEADING_PLACE_OR_TYPE = (
+    "If the letter states a more specific place or type in the same "
+    "diagnosis heading or the next sentence — such as probable focal, "
+    "? temporal, occipital, frontal, nocturnal GTCS, or a named type "
+    "beside a syndrome — write that as its own diagnosis event as well "
+    "as the heading syndrome. Extra stated types are acceptable; do not "
+    "skip a stated type to stay tidy."
 )
 
 _INVENTORY_SF_HEADING_SPLIT = (
@@ -696,6 +725,7 @@ def _inventory_sectioned_rules() -> dict[str, list[str]]:
         if row not in _INVENTORY_DROPPED_DIAGNOSIS_RULES
     ]
     diagnosis.insert(1, _INVENTORY_SPLIT_SYNDROME_AND_TYPE)
+    diagnosis.insert(2, _INVENTORY_HEADING_PLACE_OR_TYPE)
     seizure_frequency = list(rules["seizure_frequency"])
     seizure_frequency.insert(3, _INVENTORY_SF_HEADING_SPLIT)
     return {**rules, "diagnosis": diagnosis, "seizure_frequency": seizure_frequency}

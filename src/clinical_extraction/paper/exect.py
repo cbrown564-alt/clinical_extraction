@@ -152,8 +152,9 @@ _INVENTORY_ARM = _ExectArmSpec(
         "ExECT aggregate-only inventory track. Not a paper cell."
     ),
     dev_claim_boundary=(
-        "ExECT development diagnostic-inventory track. Not a paper cell. "
-        "Not holdout."
+        "Extract proposes; select filters. Residual dictionary is an "
+        "invent-from-letter ablation, not the default inventory score. "
+        "Not a paper cell. Not holdout."
     ),
     drift_before="live default drifted before the inventory run",
     drift_after="inventory arm left the live Compact default changed",
@@ -566,6 +567,8 @@ def verify_llm_inventory(*, split: str = "dev140", slug: str | None = None) -> d
             raise RuntimeError("inventory lost the heading SF split rule")
         if "include each as its own diagnosis event" not in joined:
             raise RuntimeError("inventory lost the split-compound diagnosis rule")
+        if "more specific place or type" not in joined:
+            raise RuntimeError("inventory lost the heading place-or-type diagnosis rule")
         if "Write diagnosis fact as only the short syndrome" in joined:
             raise RuntimeError("inventory still asks for short-name diagnosis fact")
         if "Do not include isolated symptoms or aura features as diagnosis" in joined:
@@ -581,10 +584,12 @@ def verify_llm_inventory(*, split: str = "dev140", slug: str | None = None) -> d
             "scorer",
             "annotation",
             "leftover",
+            "residual",
+            "regex",
         ):
             if phrase in blob:
                 raise RuntimeError(f"inventory prompt contains evaluation language: {phrase}")
-        if structured.compact_rule_count(payload["clinical_rules"]) != 49:
+        if structured.compact_rule_count(payload["clinical_rules"]) != 50:
             raise RuntimeError("inventory content drifted")
         if not payload.get("examples"):
             raise RuntimeError("inventory lost diagnosis examples")
@@ -643,7 +648,7 @@ def rescore_inventory_baseline(*, slug: str = "gemini37flash") -> dict[str, Any]
 
 
 def rescore_inventory_residuals(*, slug: str = "gemini37flash") -> dict[str, Any]:
-    """Replay recorded residuals on the saved Gemini inventory DEV140 extract."""
+    """Optional invent-from-letter ablation onto comparison_residual.json."""
 
     if slug != "gemini37flash":
         raise RuntimeError("inventory residual rescore is Gemini DEV140 only")
