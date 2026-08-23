@@ -28,7 +28,7 @@ Headline tables: five role rows (rules, LLM, or both at extract /
 encode / select). The cited score is the select stop. The six-model
 row is cell 3 (LLM extract, rules encode, rules select) on both
 tasks. Gemini thinking and the source-near Gan extract are
-ablations. Gan LLM extract is the codebook extract; ExECT LLM
+ablations. Gan LLM extract is `gan_llm_extract`; ExECT LLM
 encode is a second later-stage call. See
 [methods](methods.md),
 [Gan five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md),
@@ -42,6 +42,8 @@ comparator when cited—not a headline method.
 | [methods](methods.md) | Proposed method, baselines, roster, splits, scorers |
 | [method × stage](method_x_stage.md) | Plain-language method × stage grid, with one Gan and one ExECT development example |
 | [Gan rules and models](../research/paper/gan_rules_and_llms_across_stages_2026-08-21.md) | Gemini Gan reading: roles, order, encode/select lift |
+| [Three variables](../research/paper/three_variables_rules_model_thinking_2026-08-23.md) | Draft results: stage ownership, model, thinking |
+| [Source-near vs bundled encode](../research/paper/gan_source_near_vs_bundled_encode_2026-08-23.md) | Draft Gan ablation: codebook request vs second encode call |
 | [Gan five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md) | Cited Gemini frequency five-cell totals |
 | [ExECT cell 4](../research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md) | Cited Gemini inventory LLM / LLM / rules stop |
 | [rule catalogue](rule_catalogue.md) | Named extract / encode / select rules on both tasks |

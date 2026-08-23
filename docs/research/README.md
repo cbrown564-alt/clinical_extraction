@@ -4,6 +4,10 @@ The paper source library is [`paper/`](paper/). Exhibits it uses
 are in [`artifacts/`](artifacts/). The reading order is
 [`docs/NAVIGATION.md`](../NAVIGATION.md).
 
+Draft results (2026-08-23):
+[three variables](paper/three_variables_rules_model_thinking_2026-08-23.md),
+[source-near vs bundled encode](paper/gan_source_near_vs_bundled_encode_2026-08-23.md).
+
 Campaign reports left the working tree. Recover them from git.
 
 **Paper method boundary:** Cited headline tables are Gemini five-cell grids
