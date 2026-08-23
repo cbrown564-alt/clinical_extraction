@@ -1,0 +1,150 @@
+{
+  "arms": {
+    "exect_llm_extract": {
+      "assembly_family_f1": {
+        "Diagnosis": 0.8432,
+        "Investigations": 0.9247,
+        "Prescription": 0.9286,
+        "SeizureFrequency": 0.8082
+      },
+      "assembly_headline_f1": 0.8674,
+      "call_mode": "live",
+      "gate_event_count": 64,
+      "hybrid_family_f1": {
+        "Diagnosis": 0.8432,
+        "Investigations": 0.9247,
+        "Prescription": 0.9286,
+        "SeizureFrequency": 0.8082
+      },
+      "hybrid_family_letter_exact": {
+        "Diagnosis": 35,
+        "Investigations": 54,
+        "Prescription": 50,
+        "SeizureFrequency": 42
+      },
+      "hybrid_family_prf": {
+        "Diagnosis": {
+          "f1": 0.8432,
+          "precision": 0.8403,
+          "recall": 0.8462
+        },
+        "Investigations": {
+          "f1": 0.9247,
+          "precision": 0.9348,
+          "recall": 0.9149
+        },
+        "Prescription": {
+          "f1": 0.9286,
+          "precision": 0.9398,
+          "recall": 0.9176
+        },
+        "SeizureFrequency": {
+          "f1": 0.8082,
+          "precision": 0.8194,
+          "recall": 0.7973
+        }
+      },
+      "hybrid_four_family_letter_exact": 22,
+      "hybrid_headline_f1": 0.8674,
+      "hybrid_headline_prf": {
+        "f1": 0.8674,
+        "precision": 0.8725,
+        "recall": 0.8625
+      },
+      "new_model_calls": 0,
+      "predicted_mention_count": 371,
+      "prompt_version": "exect_llm_extract",
+      "quality": {
+        "illegal_enum": 0,
+        "inexact_evidence": 2,
+        "parse": 0,
+        "schema": 0
+      },
+      "raw_family_f1": {
+        "Diagnosis": 0.7932,
+        "Investigations": 0.9247,
+        "Prescription": 0.9286,
+        "SeizureFrequency": 0.8235
+      },
+      "raw_family_letter_exact": {
+        "Diagnosis": 29,
+        "Investigations": 54,
+        "Prescription": 50,
+        "SeizureFrequency": 41
+      },
+      "raw_family_prf": {
+        "Diagnosis": {
+          "f1": 0.7932,
+          "precision": 0.7697,
+          "recall": 0.8182
+        },
+        "Investigations": {
+          "f1": 0.9247,
+          "precision": 0.9348,
+          "recall": 0.9149
+        },
+        "Prescription": {
+          "f1": 0.9286,
+          "precision": 0.9398,
+          "recall": 0.9176
+        },
+        "SeizureFrequency": {
+          "f1": 0.8235,
+          "precision": 0.7975,
+          "recall": 0.8514
+        }
+      },
+      "raw_four_family_letter_exact": 18,
+      "raw_headline_f1": 0.8491,
+      "raw_headline_prf": {
+        "f1": 0.8491,
+        "precision": 0.8361,
+        "recall": 0.8625
+      },
+      "raw_mention_count": 386,
+      "scored_mention_count": 384
+    }
+  },
+  "cache": false,
+  "claim_boundary": "ExECT aggregate-only test60 inventory extract. Do not inspect holdout rows.",
+  "decision": {
+    "exect_llm_extract": {
+      "hybrid_family_f1": {
+        "Diagnosis": 0.8432,
+        "Investigations": 0.9247,
+        "Prescription": 0.9286,
+        "SeizureFrequency": 0.8082
+      },
+      "hybrid_headline_f1": 0.8674,
+      "parse": 0,
+      "raw_family_f1": {
+        "Diagnosis": 0.7932,
+        "Investigations": 0.9247,
+        "Prescription": 0.9286,
+        "SeizureFrequency": 0.8235
+      },
+      "raw_headline_f1": 0.8491,
+      "schema": 0,
+      "status": "scored"
+    }
+  },
+  "default_prompt_version": "exect_llm_pre_post",
+  "finished_utc": "2026-08-23T20:35:14.537202+00:00",
+  "generated_on": "2026-08-23",
+  "live": true,
+  "max_tokens": 16000,
+  "method": "exect_llm_extract",
+  "model": "gemini/gemini-3.7-flash",
+  "model_calls": 0,
+  "model_label": "Gemini 3.7 Flash",
+  "model_slug": "gemini37flash",
+  "provider_revision": null,
+  "reasoning_effort": "low",
+  "row_count": 59,
+  "row_policy": "aggregate_only",
+  "schema_version": "paper.exect_llm_extract.v1",
+  "split": "test60",
+  "started_utc": "2026-08-23T20:35:14.175457+00:00",
+  "temperature": 0.0,
+  "thinking_type": null
+}

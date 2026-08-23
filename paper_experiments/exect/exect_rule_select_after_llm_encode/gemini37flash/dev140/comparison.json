@@ -1,0 +1,155 @@
+{
+  "call_state": "no_call",
+  "claim_boundary": "ExECT development cell-4 replay. Not holdout.",
+  "encode_source": "exect_llm_encode",
+  "encode_stop": {
+    "clinical_headline": {
+      "Diagnosis": {
+        "f1": 0.7935103244837759,
+        "fn": 60,
+        "fp": 80,
+        "gold_count": 329,
+        "precision": 0.7707736389684814,
+        "precision_tp": 269,
+        "pred_count": 349,
+        "recall": 0.817629179331307,
+        "recall_tp": 269,
+        "tp": 269
+      },
+      "Investigations": {
+        "f1": 0.9591078066914498,
+        "fn": 7,
+        "fp": 4,
+        "gold_count": 136,
+        "precision": 0.9699248120300752,
+        "precision_tp": 129,
+        "pred_count": 133,
+        "recall": 0.9485294117647058,
+        "recall_tp": 129,
+        "tp": 129
+      },
+      "Prescription": {
+        "f1": 0.9582309582309582,
+        "fn": 11,
+        "fp": 6,
+        "gold_count": 206,
+        "precision": 0.9701492537313433,
+        "precision_tp": 195,
+        "pred_count": 201,
+        "recall": 0.9466019417475728,
+        "recall_tp": 195,
+        "tp": 195
+      },
+      "SeizureFrequency": {
+        "f1": 0.8,
+        "fn": 19,
+        "fp": 54,
+        "gold_count": 165,
+        "precision": 0.73,
+        "precision_tp": 146,
+        "pred_count": 200,
+        "recall": 0.8848484848484849,
+        "recall_tp": 146,
+        "tp": 146
+      }
+    },
+    "four_family_headline_f1": 0.8598,
+    "summary": {
+      "f1": 0.8598,
+      "fn": 97,
+      "fp": 144,
+      "gold_count": 836,
+      "precision": 0.8369,
+      "precision_tp": 739,
+      "pred_count": 883,
+      "recall": 0.884,
+      "recall_tp": 739,
+      "tp": 739
+    }
+  },
+  "extract_source": "exect_llm_extract",
+  "generated_on": "2026-08-23",
+  "method": "exect_rule_select_after_llm_encode",
+  "model_slug": "gemini37flash",
+  "row_count": 140,
+  "row_policy": "development_review_permitted",
+  "schema_version": "paper.exect_rule_select_after_llm_encode.v1",
+  "scorer": "clinical_inventory_unit_keys",
+  "select_rules": [
+    "selection.diagnosis_explicit_heading_phenotype",
+    "selection.diagnosis_source_local_specificity",
+    "selection.inventory_keep_source_diagnosis",
+    "selection.inventory_weak_episode_drop",
+    "selection.prescription_active_titration",
+    "selection.prescription_exact_regimen_dedupe",
+    "selection.prescription_local_regimen_scope"
+  ],
+  "select_stop": {
+    "clinical_headline": {
+      "Diagnosis": {
+        "f1": 0.7887740029542097,
+        "fn": 62,
+        "fp": 81,
+        "gold_count": 329,
+        "precision": 0.7672413793103449,
+        "precision_tp": 267,
+        "pred_count": 348,
+        "recall": 0.8115501519756839,
+        "recall_tp": 267,
+        "tp": 267
+      },
+      "Investigations": {
+        "f1": 0.9591078066914498,
+        "fn": 7,
+        "fp": 4,
+        "gold_count": 136,
+        "precision": 0.9699248120300752,
+        "precision_tp": 129,
+        "pred_count": 133,
+        "recall": 0.9485294117647058,
+        "recall_tp": 129,
+        "tp": 129
+      },
+      "Prescription": {
+        "f1": 0.9605911330049262,
+        "fn": 11,
+        "fp": 5,
+        "gold_count": 206,
+        "precision": 0.975,
+        "precision_tp": 195,
+        "pred_count": 200,
+        "recall": 0.9466019417475728,
+        "recall_tp": 195,
+        "tp": 195
+      },
+      "SeizureFrequency": {
+        "f1": 0.8,
+        "fn": 19,
+        "fp": 54,
+        "gold_count": 165,
+        "precision": 0.73,
+        "precision_tp": 146,
+        "pred_count": 200,
+        "recall": 0.8848484848484849,
+        "recall_tp": 146,
+        "tp": 146
+      }
+    },
+    "four_family_headline_f1": 0.8585,
+    "select_action_count": 6,
+    "summary": {
+      "f1": 0.8585,
+      "fn": 99,
+      "fp": 144,
+      "gold_count": 836,
+      "precision": 0.8365,
+      "precision_tp": 737,
+      "pred_count": 881,
+      "recall": 0.8816,
+      "recall_tp": 737,
+      "tp": 737
+    }
+  },
+  "split": "dev140",
+  "split_machine": "dev"
+}

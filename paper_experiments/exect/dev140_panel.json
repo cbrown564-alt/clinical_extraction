@@ -267,7 +267,7 @@
   ],
   "claim_boundary": "ExECT cell-3 development panel: rules, then extract / encode / select on exect_llm_only. Not holdout. Living exect_llm_pre_post is the both-extract alias and is not a panel column.",
   "living_effort": {
-    "deepseek": "thinking_on_provider_default",
+    "deepseek": "low",
     "hosted_reasoning": "low",
     "local": "none"
   },

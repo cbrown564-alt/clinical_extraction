@@ -1,9 +1,9 @@
 {
-  "claim_boundary": "ExECT aggregate-only test60 five-cell grid. Headline is the select stop. Do not inspect holdout rows.",
+  "claim_boundary": "ExECT aggregate-only test60 five-cell grid. Headline is the select stop. All five rows use 4-family micro F1. Do not inspect holdout rows.",
   "split": "test60",
   "row_policy": "aggregate_only",
   "model": "gemini/gemini-3.7-flash",
-  "scorer": "clinical_headline_unit_keys",
+  "scorer": "4-family micro F1",
   "n": 59,
   "headline": "select",
   "role_values": ["rules", "LLM", "both"],
@@ -13,46 +13,50 @@
       "encode_role": "rules",
       "select_role": "rules",
       "extract_source": "exect_rules",
-      "select": 0.7937,
-      "ablation": {"extract": 0.7937, "encode": 0.7937}
+      "select": 0.7725,
+      "ablation": {"extract": 0.7725, "encode": 0.7725}
     },
     "both_extract_then_rules": {
       "extract_role": "both",
       "encode_role": "rules",
       "select_role": "rules",
       "extract_source": "exect_llm_pre_post",
-      "select": 0.7974,
-      "ablation": {"extract": 0.8039, "encode": 0.8188}
+      "prompt": "exect_llm_extract plus suggested candidates",
+      "select": 0.8592,
+      "retired_compact_select": 0.8031,
+      "ablation": {"extract": 0.8319, "encode": 0.8511}
     },
     "llm_extract_then_rules": {
       "extract_role": "LLM",
       "encode_role": "rules",
       "select_role": "rules",
-      "extract_source": "exect_llm_only",
-      "select_source": "paper_experiments/exect/rungs/gemini37flash/test60/comparison.json",
-      "select": 0.8161,
-      "retired_select": 0.7869,
-      "ablation": {"extract": 0.7968, "encode": 0.8104}
+      "extract_source": "exect_llm_extract",
+      "select_source": "paper_experiments/exect/exect_llm_extract/gemini37flash/test60/comparison.json",
+      "select": 0.8674,
+      "retired_select": 0.8161,
+      "ablation": {"extract": 0.8491}
     },
     "llm_extract_encode_then_select_rules": {
       "extract_role": "LLM",
       "encode_role": "LLM",
       "select_role": "rules",
-      "extract_source": "exect_llm_only",
+      "extract_source": "exect_llm_extract",
       "encode_source": "exect_llm_encode",
       "select_source": "exect_rule_select_after_llm_encode",
-      "select": 0.8173,
-      "ablation": {"extract": 0.7968, "encode": 0.8059}
+      "select": 0.8636,
+      "retired_select": 0.8173,
+      "ablation": {"extract": 0.8491, "encode": 0.8649}
     },
     "llm": {
       "extract_role": "LLM",
       "encode_role": "LLM",
       "select_role": "LLM",
-      "extract_source": "exect_llm_only",
+      "extract_source": "exect_llm_extract",
       "encode_source": "exect_llm_encode",
       "select_source": "exect_llm_select",
-      "select": 0.7954,
-      "ablation": {"extract": 0.7968, "encode": 0.8059}
+      "select": 0.853,
+      "retired_select": 0.7954,
+      "ablation": {"extract": 0.8491, "encode": 0.8649}
     }
   }
 }

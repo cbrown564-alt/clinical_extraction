@@ -2,129 +2,135 @@
   "arms": {
     "exect_llm_pre_post": {
       "assembly_family_f1": {
-        "Diagnosis": 0.819,
-        "Investigations": 0.9565,
-        "Prescription": 0.8554,
-        "SeizureFrequency": 0.6462
+        "Diagnosis": 0.8581,
+        "Investigations": 0.9462,
+        "Prescription": 0.9036,
+        "SeizureFrequency": 0.7568
       },
-      "assembly_headline_f1": 0.8129,
+      "assembly_headline_f1": 0.8592,
       "call_mode": "live",
-      "gate_event_count": 66,
+      "gate_event_count": 67,
       "hybrid_family_f1": {
-        "Diagnosis": 0.819,
-        "Investigations": 0.9565,
-        "Prescription": 0.8554,
-        "SeizureFrequency": 0.6462
+        "Diagnosis": 0.8581,
+        "Investigations": 0.9462,
+        "Prescription": 0.9036,
+        "SeizureFrequency": 0.7568
       },
       "hybrid_family_letter_exact": {
-        "Diagnosis": 32,
-        "Investigations": 56,
-        "Prescription": 46,
-        "SeizureFrequency": 30
+        "Diagnosis": 37,
+        "Investigations": 55,
+        "Prescription": 48,
+        "SeizureFrequency": 38
       },
       "hybrid_family_prf": {
         "Diagnosis": {
-          "f1": 0.819,
-          "precision": 0.8636,
-          "recall": 0.7787
+          "f1": 0.8581,
+          "precision": 0.8493,
+          "recall": 0.8671
         },
         "Investigations": {
-          "f1": 0.9565,
-          "precision": 0.9778,
+          "f1": 0.9462,
+          "precision": 0.9565,
           "recall": 0.9362
         },
         "Prescription": {
-          "f1": 0.8554,
-          "precision": 0.8765,
-          "recall": 0.8353
+          "f1": 0.9036,
+          "precision": 0.9259,
+          "recall": 0.8824
         },
         "SeizureFrequency": {
-          "f1": 0.6462,
-          "precision": 0.75,
-          "recall": 0.5676
+          "f1": 0.7568,
+          "precision": 0.7568,
+          "recall": 0.7568
         }
       },
-      "hybrid_four_family_letter_exact": 16,
-      "hybrid_headline_f1": 0.8129,
+      "hybrid_four_family_letter_exact": 22,
+      "hybrid_headline_f1": 0.8592,
       "hybrid_headline_prf": {
-        "f1": 0.8129,
-        "precision": 0.863,
-        "recall": 0.7683
+        "f1": 0.8592,
+        "precision": 0.8617,
+        "recall": 0.8567
       },
       "new_model_calls": 59,
+      "predicted_mention_count": 369,
       "prompt_version": "exect_llm_pre_post",
       "quality": {
         "illegal_enum": 0,
-        "inexact_evidence": 0,
+        "inexact_evidence": 1,
         "parse": 0,
         "schema": 0
       },
       "raw_family_f1": {
-        "Diagnosis": 0.7822,
-        "Investigations": 0.9565,
-        "Prescription": 0.8982,
-        "SeizureFrequency": 0.6567
+        "Diagnosis": 0.8068,
+        "Investigations": 0.9462,
+        "Prescription": 0.9036,
+        "SeizureFrequency": 0.7421
       },
       "raw_family_letter_exact": {
         "Diagnosis": 32,
-        "Investigations": 56,
-        "Prescription": 47,
-        "SeizureFrequency": 29
+        "Investigations": 55,
+        "Prescription": 48,
+        "SeizureFrequency": 33
       },
       "raw_family_prf": {
         "Diagnosis": {
-          "f1": 0.7822,
-          "precision": 0.8544,
-          "recall": 0.7213
+          "f1": 0.8068,
+          "precision": 0.7829,
+          "recall": 0.8322
         },
         "Investigations": {
-          "f1": 0.9565,
-          "precision": 0.9778,
+          "f1": 0.9462,
+          "precision": 0.9565,
           "recall": 0.9362
         },
         "Prescription": {
-          "f1": 0.8982,
-          "precision": 0.9146,
+          "f1": 0.9036,
+          "precision": 0.9259,
           "recall": 0.8824
         },
         "SeizureFrequency": {
-          "f1": 0.6567,
-          "precision": 0.7333,
-          "recall": 0.5946
+          "f1": 0.7421,
+          "precision": 0.6941,
+          "recall": 0.7973
         }
       },
-      "raw_four_family_letter_exact": 15,
-      "raw_headline_f1": 0.8123,
+      "raw_four_family_letter_exact": 18,
+      "raw_headline_f1": 0.8331,
       "raw_headline_prf": {
-        "f1": 0.8123,
-        "precision": 0.8655,
-        "recall": 0.7652
+        "f1": 0.8331,
+        "precision": 0.8159,
+        "recall": 0.851
       },
-      "raw_mention_count": 302,
-      "scored_mention_count": 302
+      "raw_mention_count": 386,
+      "scored_mention_count": 385
     }
   },
   "cache": false,
-  "claim_boundary": "ExECT aggregate-only test60 Compact versus saved Full ledger.",
-  "comparison": {},
+  "claim_boundary": "ExECT aggregate-only test60 both-extract.",
   "decision": {
     "exect_llm_pre_post": {
-      "family_f1_delta": {
-        "Diagnosis": -0.0074,
-        "Investigations": 0.0,
-        "Prescription": -0.0668,
-        "SeizureFrequency": 0.0098
+      "hybrid_family_f1": {
+        "Diagnosis": 0.8581,
+        "Investigations": 0.9462,
+        "Prescription": 0.9036,
+        "SeizureFrequency": 0.7568
       },
-      "four_family_letter_exact_net": -1,
-      "headline_f1_delta": -0.0181,
+      "hybrid_headline_f1": 0.8592,
       "parse": 0,
+      "raw_family_f1": {
+        "Diagnosis": 0.8068,
+        "Investigations": 0.9462,
+        "Prescription": 0.9036,
+        "SeizureFrequency": 0.7421
+      },
+      "raw_headline_f1": 0.8331,
       "schema": 0,
       "status": "scored"
     }
   },
   "default_prompt_version": "exect_llm_pre_post",
-  "finished_utc": "2026-08-18T22:14:07.787679+00:00",
-  "generated_on": "2026-08-17",
+  "finished_utc": "2026-08-23T21:16:43.173653+00:00",
+  "generated_on": "2026-08-23",
   "live": true,
   "max_tokens": 16000,
   "method": "exect_llm_pre_post",
@@ -137,8 +143,9 @@
   "row_count": 59,
   "row_policy": "aggregate_only",
   "schema_version": "paper.exect_llm_pre_post.v1",
+  "scorer": "clinical_inventory_unit_keys",
   "split": "test60",
-  "started_utc": "2026-08-18T22:11:07.502023+00:00",
+  "started_utc": "2026-08-23T21:11:03.747951+00:00",
   "temperature": 0.0,
   "thinking_type": null
 }

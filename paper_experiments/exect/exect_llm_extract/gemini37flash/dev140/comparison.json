@@ -1,60 +1,64 @@
 {
   "arms": {
-    "exect_llm_pre_post": {
+    "exect_llm_extract": {
       "assembly_family_f1": {
-        "Diagnosis": 0.847,
-        "Investigations": 0.9398,
-        "Prescription": 0.9756,
-        "SeizureFrequency": 0.8204
+        "Diagnosis": 0.8413,
+        "Investigations": 0.9591,
+        "Prescription": 0.9604,
+        "SeizureFrequency": 0.8338
       },
-      "assembly_headline_f1": 0.8884,
+      "assembly_headline_f1": 0.8877,
       "call_mode": "live",
-      "gate_event_count": 167,
+      "gate_event_count": 162,
       "hybrid_family_f1": {
-        "Diagnosis": 0.847,
-        "Investigations": 0.9398,
-        "Prescription": 0.9756,
-        "SeizureFrequency": 0.8204
+        "Diagnosis": 0.8413,
+        "Investigations": 0.9591,
+        "Prescription": 0.9604,
+        "SeizureFrequency": 0.8338
       },
       "hybrid_family_letter_exact": {
-        "Diagnosis": 85,
-        "Investigations": 127,
-        "Prescription": 134,
+        "Diagnosis": 80,
+        "Investigations": 130,
+        "Prescription": 130,
         "SeizureFrequency": 98
       },
       "hybrid_family_prf": {
         "Diagnosis": {
-          "f1": 0.847,
-          "precision": 0.8616,
-          "recall": 0.8328
+          "f1": 0.8413,
+          "precision": 0.8531,
+          "recall": 0.8298
         },
         "Investigations": {
-          "f1": 0.9398,
-          "precision": 0.9615,
-          "recall": 0.9191
+          "f1": 0.9591,
+          "precision": 0.9699,
+          "recall": 0.9485
         },
         "Prescription": {
-          "f1": 0.9756,
-          "precision": 0.9804,
-          "recall": 0.9709
+          "f1": 0.9604,
+          "precision": 0.9798,
+          "recall": 0.9417
         },
         "SeizureFrequency": {
-          "f1": 0.8204,
-          "precision": 0.8107,
-          "recall": 0.8303
+          "f1": 0.8338,
+          "precision": 0.8034,
+          "recall": 0.8667
         }
       },
-      "hybrid_four_family_letter_exact": 55,
-      "hybrid_headline_f1": 0.8884,
+      "hybrid_four_family_letter_exact": 51,
+      "hybrid_headline_f1": 0.8877,
       "hybrid_headline_prf": {
-        "f1": 0.8884,
-        "precision": 0.8965,
-        "recall": 0.8804
+        "f1": 0.8877,
+        "precision": 0.8914,
+        "recall": 0.884
       },
       "hybrid_rewrite_letters": [
+        "EA0002",
+        "EA0005",
         "EA0006",
         "EA0007",
+        "EA0009",
         "EA0018",
+        "EA0021",
         "EA0025",
         "EA0026",
         "EA0033",
@@ -68,6 +72,7 @@
         "EA0047",
         "EA0049",
         "EA0050",
+        "EA0052",
         "EA0054",
         "EA0056",
         "EA0057",
@@ -78,6 +83,7 @@
         "EA0085",
         "EA0087",
         "EA0092",
+        "EA0093",
         "EA0096",
         "EA0100",
         "EA0104",
@@ -85,6 +91,7 @@
         "EA0109",
         "EA0110",
         "EA0111",
+        "EA0113",
         "EA0114",
         "EA0121",
         "EA0123",
@@ -102,7 +109,6 @@
         "EA0150",
         "EA0151",
         "EA0152",
-        "EA0153",
         "EA0154",
         "EA0157",
         "EA0158",
@@ -114,16 +120,18 @@
         "EA0172",
         "EA0180",
         "EA0182",
-        "EA0183",
         "EA0184",
         "EA0185",
         "EA0186",
         "EA0188",
-        "EA0189"
+        "EA0189",
+        "EA0191",
+        "EA0198",
+        "EA0200"
       ],
-      "new_model_calls": 140,
-      "predicted_mention_count": 889,
-      "prompt_version": "exect_llm_pre_post",
+      "new_model_calls": 0,
+      "predicted_mention_count": 913,
+      "prompt_version": "exect_llm_extract",
       "quality": {
         "illegal_enum": 0,
         "inexact_evidence": 5,
@@ -131,75 +139,75 @@
         "schema": 0
       },
       "raw_family_f1": {
-        "Diagnosis": 0.7331,
-        "Investigations": 0.9398,
-        "Prescription": 0.9631,
-        "SeizureFrequency": 0.7943
+        "Diagnosis": 0.7197,
+        "Investigations": 0.9591,
+        "Prescription": 0.9507,
+        "SeizureFrequency": 0.7967
       },
       "raw_family_letter_exact": {
-        "Diagnosis": 58,
-        "Investigations": 127,
-        "Prescription": 131,
-        "SeizureFrequency": 88
+        "Diagnosis": 52,
+        "Investigations": 130,
+        "Prescription": 128,
+        "SeizureFrequency": 85
       },
       "raw_family_prf": {
         "Diagnosis": {
-          "f1": 0.7331,
-          "precision": 0.7082,
-          "recall": 0.7599
+          "f1": 0.7197,
+          "precision": 0.686,
+          "recall": 0.7568
         },
         "Investigations": {
-          "f1": 0.9398,
-          "precision": 0.9615,
-          "recall": 0.9191
+          "f1": 0.9591,
+          "precision": 0.9699,
+          "recall": 0.9485
         },
         "Prescription": {
-          "f1": 0.9631,
-          "precision": 0.9751,
-          "recall": 0.9515
+          "f1": 0.9507,
+          "precision": 0.965,
+          "recall": 0.9369
         },
         "SeizureFrequency": {
-          "f1": 0.7943,
-          "precision": 0.7514,
-          "recall": 0.8424
+          "f1": 0.7967,
+          "precision": 0.7286,
+          "recall": 0.8788
         }
       },
-      "raw_four_family_letter_exact": 36,
-      "raw_headline_f1": 0.8328,
+      "raw_four_family_letter_exact": 28,
+      "raw_headline_f1": 0.8273,
       "raw_headline_prf": {
-        "f1": 0.8328,
-        "precision": 0.817,
-        "recall": 0.8493
+        "f1": 0.8273,
+        "precision": 0.8,
+        "recall": 0.8565
       },
-      "raw_mention_count": 936,
-      "scored_mention_count": 931
+      "raw_mention_count": 978,
+      "scored_mention_count": 973
     }
   },
   "cache": false,
-  "claim_boundary": "ExECT development both-extract. Not holdout.",
+  "claim_boundary": "Extract proposes; select filters. Residual dictionary is an invent-from-letter ablation, not the default inventory score. Not holdout.",
   "decision": {
-    "exect_llm_pre_post": {
+    "exect_llm_extract": {
       "hybrid_family_f1": {
-        "Diagnosis": 0.847,
-        "Investigations": 0.9398,
-        "Prescription": 0.9756,
-        "SeizureFrequency": 0.8204
+        "Diagnosis": 0.8413,
+        "Investigations": 0.9591,
+        "Prescription": 0.9604,
+        "SeizureFrequency": 0.8338
       },
-      "hybrid_headline_f1": 0.8884,
+      "hybrid_headline_f1": 0.8877,
       "parse": 0,
       "raw_family_f1": {
-        "Diagnosis": 0.7331,
-        "Investigations": 0.9398,
-        "Prescription": 0.9631,
-        "SeizureFrequency": 0.7943
+        "Diagnosis": 0.7197,
+        "Investigations": 0.9591,
+        "Prescription": 0.9507,
+        "SeizureFrequency": 0.7967
       },
-      "raw_headline_f1": 0.8328,
+      "raw_headline_f1": 0.8273,
       "schema": 0,
       "status": "scored"
     }
   },
   "default_prompt_version": "exect_llm_pre_post",
-  "finished_utc": "2026-08-23T21:10:56.459293+00:00",
+  "finished_utc": "2026-08-23T20:35:15.084610+00:00",
   "generated_on": "2026-08-23",
   "letter_ids": [
     "EA0002",
@@ -345,19 +353,18 @@
   ],
   "live": true,
   "max_tokens": 16000,
-  "method": "exect_llm_pre_post",
+  "method": "exect_llm_extract",
   "model": "gemini/gemini-3.7-flash",
-  "model_calls": 140,
+  "model_calls": 0,
   "model_label": "Gemini 3.7 Flash",
   "model_slug": "gemini37flash",
   "provider_revision": null,
   "reasoning_effort": "low",
   "row_count": 140,
   "row_policy": "development_review_permitted",
-  "schema_version": "paper.exect_llm_pre_post.v1",
-  "scorer": "clinical_inventory_unit_keys",
+  "schema_version": "paper.exect_llm_extract.v1",
   "split": "dev140",
-  "started_utc": "2026-08-23T21:05:12.320302+00:00",
+  "started_utc": "2026-08-23T20:35:14.175350+00:00",
   "temperature": 0.0,
   "thinking_type": null
 }

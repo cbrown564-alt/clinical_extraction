@@ -1,7 +1,7 @@
 {
   "comparison": "comparison.json",
   "empty_raw_count": 0,
-  "hybrid_headline_f1": 0.8129,
+  "hybrid_headline_f1": 0.8592,
   "id_field": "letter_id",
   "living_effort": "low",
   "method": "exect_llm_pre_post",
@@ -9,7 +9,7 @@
   "model_slug": "gemini37flash",
   "n": 59,
   "program": "exect_llm_pre_post",
-  "raw_headline_f1": 0.8123,
+  "raw_headline_f1": 0.8331,
   "replay_fields": [
     "letter_id",
     "prompt_version",
@@ -18,7 +18,7 @@
   "row_count": 59,
   "row_policy": "aggregate_only",
   "rows": "structured.jsonl",
-  "source": "scratch/holdout/paper/exect_llm_with_rules/gemini37flash/test60",
+  "source": "scratch/holdout/paper/exect_llm_pre_post/gemini37flash/test60",
   "split": "test60",
   "split_machine": "test"
 }

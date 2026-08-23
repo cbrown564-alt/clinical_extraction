@@ -1,27 +1,29 @@
 # ExECT paper cells
 
 Headline table: Gemini five-cell grid on locked `test60`. The cited
-score is the select stop. Cell 3 (LLM / rules / rules) is the
-six-model roster row; extract is `exect_llm_only`. Cell 4 (LLM / LLM /
-rules) is the Gemini-only peak after later-stage encode.
+score is the select stop. All five rows use 4-family micro F1.
+Cell 3 is the roster row and the Gemini peak. Cell 4
+stays Gemini-only.
 
 | Extract | Encode | Select | F1 (Gemini `test60`) |
 | --- | --- | --- | ---: |
-| rules | rules | rules | 0.79 |
-| both | rules | rules | 0.80 |
-| LLM | rules | rules | 0.82 |
-| LLM | LLM | rules | 0.82 |
-| LLM | LLM | LLM | 0.80 |
+| rules | rules | rules | 0.77 |
+| both | rules | rules | 0.86 |
+| LLM | rules | rules | 0.87 |
+| LLM | LLM | rules | 0.86 |
+| LLM | LLM | LLM | 0.85 |
 
-Cell-3 roster fills use `exect_llm_only/` plus rule encode and
-select. Cell-4 encode uses `exect_llm_encode/` (Gemini only).
-Extract and encode columns above are stage ablations, not separate
-headline methods.
+Cell-3 roster fills use `exect_llm_extract/` plus inventory Select.
+Cell-4 encode uses `exect_llm_encode/` (Gemini only). Extract and
+encode columns above are stage ablations, not separate headline
+methods.
 
 Historical on disk (not headline):
 
-- `exect_llm_pre_post/` — two-method hybrid from before the five-cell
-  pin. `exect_llm_with_rules` is a live runner alias only.
+- `exect_llm_pre_post/` — living both-extract (extract prompt plus
+  suggested candidates) for Gemini cell 2. Other models on disk are
+  historical Compact both-extract. `exect_llm_with_rules` is a live
+  runner alias only.
 - Producer raw F1 from `exect_llm_only` without rule stops is an
   ablation view, not the cited score.
 

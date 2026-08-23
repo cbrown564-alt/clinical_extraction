@@ -1,0 +1,25 @@
+{
+  "claim_boundary": "4-family micro F1 for Gemini ExECT cells 1-2. Cell 2 is living extract plus suggested candidates, then inventory Select. test60 is aggregate-only. Do not inspect holdout rows.",
+  "generated_on": "2026-08-23",
+  "scorer": "4-family micro F1",
+  "protocol": "docs/research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md",
+  "dev140": {
+    "rules": {"select": 0.8824, "gold_count": 836},
+    "both_extract_then_rules": {
+      "extract": 0.8321,
+      "encode": 0.8754,
+      "select": 0.8884,
+      "gold_count": 836
+    }
+  },
+  "test60": {
+    "row_policy": "aggregate_only",
+    "rules": {"select": 0.7725, "gold_count": 349},
+    "both_extract_then_rules": {
+      "extract": 0.8319,
+      "encode": 0.8511,
+      "select": 0.8592,
+      "gold_count": 349
+    }
+  }
+}

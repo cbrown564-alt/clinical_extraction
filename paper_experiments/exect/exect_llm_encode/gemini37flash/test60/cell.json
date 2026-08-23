@@ -1,7 +1,7 @@
 {
   "comparison": "comparison.json",
   "empty_raw_count": 0,
-  "four_family_headline_f1": 0.8059,
+  "four_family_headline_f1": 0.8649,
   "id_field": "letter_id",
   "living_effort": "low",
   "method": "exect_llm_encode",
@@ -17,8 +17,8 @@
   "row_count": 59,
   "row_policy": "aggregate_only",
   "rows": "rows.jsonl",
-  "scorer": "clinical_headline_unit_keys",
-  "source": "scratch/holdout/paper/exect_llm_encode/gemini37flash/test60",
+  "scorer": "clinical_inventory_unit_keys",
+  "source": "scratch/holdout/paper/exect_llm_encode/gemini37flash/exect_llm_extract/test60",
   "split": "test60",
   "split_machine": "test"
 }
