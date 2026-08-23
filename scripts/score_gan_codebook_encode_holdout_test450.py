@@ -31,7 +31,7 @@ N = gan_row_count(SPLIT)
 ARMS = (
     "raw_model",
     "llm_encode",
-    "llm_encode_codebook",
+    "gan_rules_encode",
     "llm_select_after_codebook",
     "llm_select",
     "llm_select_only",
@@ -146,17 +146,17 @@ def main() -> None:
     if not all(arms[arm]["matches_locked_cell"] for arm in LOCKED_CELL3):
         raise RuntimeError("replay did not reproduce a locked cell-3/4 stop")
 
-    candidate_encode = arms["llm_encode_codebook"]["purist_correct"]
+    candidate_encode = arms["gan_rules_encode"]["purist_correct"]
     candidate_select = arms["llm_select_after_codebook"]["purist_correct"]
     five_cell = {
         "1_rules": LOCKED_GRID["rules"],
         "2_rules_then_llm": {
-            "extract_source": "gan_llm_pre_post_label_forms",
+            "extract_source": "gan_llm_and_rules_extract",
             **LOCKED_GRID["rules_then_llm"],
         },
         "3_llm_then_rules": {
-            "extract_source": "gan_llm_extract_label_forms",
-            "encode_repair_mode": "llm_encode_codebook",
+            "extract_source": "gan_llm_extract",
+            "encode_repair_mode": "gan_rules_encode",
             "select_repair_mode": "llm_select_after_codebook",
             "extract": arms["raw_model"]["purist_correct"],
             "encode": candidate_encode,
@@ -165,14 +165,14 @@ def main() -> None:
             "historical_select": arms["llm_select"]["purist_correct"],
         },
         "4_llm_encode_rules_select": {
-            "extract_source": "gan_llm_extract_label_forms",
+            "extract_source": "gan_llm_extract",
             "repair_mode": "llm_select_only",
             "extract": arms["raw_model"]["purist_correct"],
             "encode": arms["raw_model"]["purist_correct"],
             "select": arms["llm_select_only"]["purist_correct"],
         },
         "5_llm": {
-            "extract_source": "gan_llm_extract_label_forms",
+            "extract_source": "gan_llm_extract",
             **LOCKED_GRID["llm"],
         },
     }
@@ -188,7 +188,7 @@ def main() -> None:
         "row_policy": "aggregate_only",
         "inspection": "Do not inspect holdout rows. Do not dump failure ids.",
         "model": "gemini/gemini-3.7-flash",
-        "prompt_version": "gan_llm_extract_label_forms",
+        "prompt_version": "gan_llm_extract",
         "call_mode": "saved_output_deterministic_replay",
         "model_calls": 0,
         "scorer": "Gan Purist category accuracy",

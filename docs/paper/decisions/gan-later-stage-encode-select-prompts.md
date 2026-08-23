@@ -8,7 +8,7 @@ Related: [Gemini is the cited model](gemini-is-the-cited-model.md)
 
 ## Decision
 
-On the codebook extract (`gan_llm_extract_label_forms`), the Gemini
+On the codebook extract (`gan_llm_extract`), the Gemini
 **LLM** row has no separate encode call. Extract already writes the
 designed form. Encode is that same cell. Select is
 `gan_llm_select_from_extract`: it reads extract events and the
@@ -29,13 +29,13 @@ Later-stage encode never sees extract `final_label`. It rewrites from
 (0.78 → 0.69 on `dev750`). Select from extract is 0.79 versus 0.79 after
 that encode. A separate encode stage is not worth a column.
 
-The source-near `gan_llm_with_rules` ledger still needs a form-writing
+The source-near `gan_llm_extract_raw` ledger still needs a form-writing
 step if that ablation is cited. Rules after extract still encode.
 
 ## Claim boundary
 
 A prompt and ownership contract. Later-stage LLM encode and LLM
 select are Gemini only on both tasks. Headline tables cite the
-codebook extract row. The source-near `gan_llm_with_rules` ledger
+codebook extract row. The source-near `gan_llm_extract_raw` ledger
 may still cite form-writing encode for that ablation only. This
 select is not hybrid select.

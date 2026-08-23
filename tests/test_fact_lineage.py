@@ -66,7 +66,7 @@ def test_ea0057_hybrid_structural_epilepsy_shows_diagnosis_lens_only() -> None:
 
 
 def test_gan15431_pre_post_reaches_two_part_gold() -> None:
-    case, run = _run("GAN-15431", "gan_llm_pre_post_label_forms")
+    case, run = _run("GAN-15431", "gan_llm_and_rules_extract")
     assert run.final_answer == case.gold
     fact = next(
         item
@@ -85,7 +85,7 @@ def test_gan15431_pre_post_reaches_two_part_gold() -> None:
 
 
 def test_unattributed_letter_stages_are_not_copied_onto_every_fact() -> None:
-    _, run = _run("GAN-15431", "gan_llm_pre_post_label_forms")
+    _, run = _run("GAN-15431", "gan_llm_and_rules_extract")
     for fact in run.facts:
         stage_ids = [step.stage_id for step in fact.transforms]
         assert "gan.llm_with_rules.build_prompt" not in stage_ids

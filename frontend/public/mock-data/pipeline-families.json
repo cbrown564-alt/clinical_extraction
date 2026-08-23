@@ -52,7 +52,7 @@
       "evidence_scope": "validation750_row_level",
       "has_replay_artifact": true,
       "split": "validation750",
-      "prompt_version": "gan_llm_with_rules",
+      "prompt_version": "gan_llm_extract_raw",
       "repair_mode": "llm_select",
       "run_count": 1,
       "progress": {
@@ -116,7 +116,7 @@
       "evidence_scope": "validation750_row_level",
       "has_replay_artifact": true,
       "split": "validation750",
-      "prompt_version": "gan_llm_with_rules",
+      "prompt_version": "gan_llm_extract_raw",
       "repair_mode": "llm_select",
       "run_count": 1,
       "progress": {
@@ -180,7 +180,7 @@
       "evidence_scope": "validation750_row_level",
       "has_replay_artifact": true,
       "split": "validation750",
-      "prompt_version": "gan_llm_with_rules",
+      "prompt_version": "gan_llm_extract_raw",
       "repair_mode": "llm_select",
       "run_count": 1,
       "progress": {
@@ -238,7 +238,7 @@
       "evidence_scope": "incomplete_not_served",
       "has_replay_artifact": false,
       "split": "validation750",
-      "prompt_version": "gan_llm_with_rules",
+      "prompt_version": "gan_llm_extract_raw",
       "repair_mode": "llm_select",
       "run_count": 0,
       "progress": {
@@ -290,7 +290,7 @@
       "evidence_scope": "incomplete_not_served",
       "has_replay_artifact": false,
       "split": "validation750",
-      "prompt_version": "gan_llm_with_rules",
+      "prompt_version": "gan_llm_extract_raw",
       "repair_mode": "llm_select",
       "run_count": 0,
       "progress": {
@@ -342,7 +342,7 @@
       "evidence_scope": "incomplete_not_served",
       "has_replay_artifact": false,
       "split": "validation750",
-      "prompt_version": "gan_llm_with_rules",
+      "prompt_version": "gan_llm_extract_raw",
       "repair_mode": "llm_select",
       "run_count": 0,
       "progress": {

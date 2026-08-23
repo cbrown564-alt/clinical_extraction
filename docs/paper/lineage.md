@@ -51,12 +51,12 @@ cell.
 ## Gan codebook extract and source-near ablation
 
 The cited Gan row is one codebook extract call
-(`gan_llm_extract_label_forms`), then fixed rule encode and rule
+(`gan_llm_extract`), then fixed rule encode and rule
 select. Extract already writes the designed form; encode is that
 same cell.
 
 The source-near ablation is one structured-events call on the
-cleaned request (`gan_llm_with_rules`), then the same frozen
+cleaned request (`gan_llm_extract_raw`), then the same frozen
 deterministic stack that chooses the current seizure-frequency label.
 The call keeps letter wording; rule encode and rule select recover
 most of the score. That trade is not the headline method.

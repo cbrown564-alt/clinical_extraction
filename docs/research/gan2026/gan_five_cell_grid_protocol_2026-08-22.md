@@ -35,8 +35,8 @@ only select rules run.
 | Development | `dev750` review permitted |
 | Holdout | `test450` aggregate only. No row inspection. |
 | Model | Gemini 3.7 Flash |
-| Extract | `gan_llm_extract_label_forms` |
-| Cell 2 extract | `gan_llm_pre_post_label_forms` |
+| Extract | `gan_llm_extract` |
+| Cell 2 extract | `gan_llm_and_rules_extract` |
 | Cell 4 repair | new `llm_select_only` (select families on, encode off) |
 | Scorer | Purist |
 

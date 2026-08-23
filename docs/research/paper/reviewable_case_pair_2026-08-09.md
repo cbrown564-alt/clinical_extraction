@@ -18,9 +18,9 @@ clinical truth, clinical safety, or holdout performance.
 ## Gan 2026: a bounded rate becomes one current label
 
 **Case:** validation source row `10`, Grok 4.6, **wording ablation**
-`gan_llm_with_rules` (not the cited codebook extract), Purist scoring.
+`gan_llm_extract_raw` (not the cited codebook extract), Purist scoring.
 Cell:
-`paper_experiments/gan/gan_llm_with_rules/grok46/dev750/`.
+`paper_experiments/gan/gan_llm_extract_raw/grok46/dev750/`.
 
 **Task question:** what single current seizure-frequency label should this
 letter receive?

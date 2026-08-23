@@ -9,7 +9,7 @@ Result:
 ## Question
 
 On Gan `dev750`, what deterministic encode policy is justified after
-`gan_llm_extract_label_forms` has already attempted to write a Gan codebook
+`gan_llm_extract` has already attempted to write a Gan codebook
 label?
 
 The primary comparison is the current `llm_encode` replay against a candidate
@@ -34,9 +34,9 @@ this ruleset is treated as the deterministic encode cell.
 | Split | `dev750` (`gan2026_split_v1` validation) |
 | Row policy | Development inspection permitted |
 | Locked split | Do not load or inspect `test450` |
-| Saved extract | `experiments/paper/gan_llm_extract_label_forms/gemini37flash/dev750/rows.jsonl` |
+| Saved extract | `experiments/paper/gan_llm_extract/gemini37flash/dev750/rows.jsonl` |
 | Model | Gemini 3.7 Flash |
-| Prompt/program | `gan_llm_extract_label_forms` |
+| Prompt/program | `gan_llm_extract` |
 | Call mode | Saved-output deterministic replay; no model calls |
 | Scorer | Gan Purist accuracy; secondary Pragmatic accuracy and scorable count |
 

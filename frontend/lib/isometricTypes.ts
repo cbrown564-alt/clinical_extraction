@@ -12,9 +12,9 @@ export type StageOwner = "model" | "deterministic" | "scorer";
 export type MethodId =
   | "gan_rules"
   | "gan_llm_only"
-  | "gan_llm_with_rules"
-  | "gan_llm_pre_post_label_forms"
-  | "gan_llm_extract_label_forms"
+  | "gan_llm_extract_raw"
+  | "gan_llm_and_rules_extract"
+  | "gan_llm_extract"
   | "gan_llm_encode"
   | "gan_llm_select_from_extract"
   | "exect_rules"

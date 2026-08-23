@@ -34,7 +34,7 @@ def run_gan_notes(notes: Sequence[InputNote], runtime: RuntimeConfig) -> list[di
         api_base=runtime.base_url,
         api_key=runtime.api_key,
         timeout=int(runtime.timeout_seconds),
-        prompt_version="gan_llm_with_rules",
+        prompt_version="gan_llm_extract_raw",
     )
     empty_label = label_to_frequency_record("unknown")
     output: list[dict[str, Any]] = []

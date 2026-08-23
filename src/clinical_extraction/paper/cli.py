@@ -215,12 +215,8 @@ def run(
 
     spec = method_spec(method)
     split_for(method, split)
-    if row_limit is not None and method != "gan_llm_pre_post":
-        raise SystemExit("--row-limit is only for gan_llm_pre_post development slices")
-    if slice_name is not None and method != "gan_llm_pre_post":
-        raise SystemExit("--slice is only for gan_llm_pre_post development slices")
-    if row_limit is not None and slice_name is not None:
-        raise SystemExit("--row-limit and --slice cannot be combined")
+    if row_limit is not None or slice_name is not None:
+        raise SystemExit("--row-limit and --slice were removed with gan_llm_pre_post")
     if spec["task"] == "exectv2":
         if method in {"exect_llm_encode", "exect_llm_select"}:
             return run_exect_later_stage(

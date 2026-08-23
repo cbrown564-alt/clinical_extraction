@@ -152,7 +152,7 @@ def discover_gan2026_validation_runs(
 def paper_run_id(method: str, slug: str) -> str:
     """Workbench run id for a living paper Gan cell."""
 
-    suffix = "llm_with_rules" if method == "gan_llm_with_rules" else "llm_only"
+    suffix = "llm_with_rules" if method == "gan_llm_extract_raw" else "llm_only"
     return f"gan2026_validation750_{slug}_{suffix}"
 
 
@@ -164,7 +164,7 @@ def paper_identity_from_run_id(run_id: str) -> tuple[str, str] | None:
         return None
     rest = run_id[len(prefix) :]
     if rest.endswith("_llm_with_rules"):
-        return "gan_llm_with_rules", rest[: -len("_llm_with_rules")]
+        return "gan_llm_extract_raw", rest[: -len("_llm_with_rules")]
     if rest.endswith("_llm_only"):
         return "gan_llm_only", rest[: -len("_llm_only")]
     return None
@@ -183,7 +183,7 @@ def _overlay_paper_dev750(
     paper_gan = repo_root / "paper_experiments" / "gan"
     for model in living_models():
         slug = str(model["slug"])
-        for method in ("gan_llm_only", "gan_llm_with_rules"):
+        for method in ("gan_llm_only", "gan_llm_extract_raw"):
             dest = paper_gan / method / slug / "dev750"
             rows_path = dest / "rows.jsonl"
             comparison_path = dest / "comparison.json"
@@ -256,7 +256,7 @@ def _paper_family(
     method = str(cell["method"])
     slug = str(cell["model_slug"])
     method_name: Literal["llm_with_rules", "llm"] = (
-        "llm_with_rules" if method == "gan_llm_with_rules" else "llm"
+        "llm_with_rules" if method == "gan_llm_extract_raw" else "llm"
     )
     condition = ModelCondition(
         slug,
@@ -268,7 +268,7 @@ def _paper_family(
         run_suffix="llm_with_rules" if method_name == "llm_with_rules" else "llm_only",
         pipeline_method=method_name,
         prompt_version=(
-            "gan_llm_with_rules"
+            "gan_llm_extract_raw"
             if method_name == "llm_with_rules"
             else "gan_llm_only"
         ),

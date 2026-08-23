@@ -127,13 +127,12 @@ def test_sol_paper_lm_uses_vercel_ai_gateway(monkeypatch: pytest.MonkeyPatch) ->
 def test_live_methods_are_the_paper_llm_cells() -> None:
     assert set(LIVE_METHODS) == {
         "gan_llm_only",
-        "gan_llm_with_rules",
-        "gan_llm_pre_post",
+        "gan_llm_extract_raw",
         "gan_llm_encode",
         "gan_llm_select",
         "gan_llm_select_from_extract",
-        "gan_llm_extract_label_forms",
-        "gan_llm_pre_post_label_forms",
+        "gan_llm_extract",
+        "gan_llm_and_rules_extract",
         "exect_llm_pre_post",
         "exect_llm_with_rules",
         "exect_llm_only",
@@ -143,7 +142,7 @@ def test_live_methods_are_the_paper_llm_cells() -> None:
     split_for("exect_llm_pre_post", "dev140")
     split_for("exect_llm_with_rules", "dev140")
     split_for("exect_llm_only", "dev140")
-    split_for("gan_llm_with_rules", "test450")
+    split_for("gan_llm_extract_raw", "test450")
     with pytest.raises(ValueError, match="does not use split"):
         split_for("exect_llm_with_rules", "test450")
 
@@ -194,7 +193,7 @@ def test_verify_gan_pins_paper_identities_without_changing_defaults() -> None:
     before_only = gan_llm_only.PROMPT_VERSION
     before_hybrid = hybrid_structured_events.PROMPT_VERSION
     only = verify_gan("gan_llm_only", "dev750", "gemma4_26b")
-    hybrid = verify_gan("gan_llm_with_rules", "dev750", "grok46")
+    hybrid = verify_gan("gan_llm_extract_raw", "dev750", "grok46")
     assert only["ok"] is True
     assert only["method"] == "gan_llm_only"
     assert only["prompt_version"] == gan_llm_only.GAN_LLM_ONLY
@@ -210,18 +209,18 @@ def test_verify_gan_pins_paper_identities_without_changing_defaults() -> None:
     assert _max_tokens_for("gan_llm_only", "gpt56luna", "low") == 1200
     assert _max_tokens_for("gan_llm_only", "gpt56luna", "medium") == 1200
     assert _max_tokens_for("gan_llm_only", "gpt56luna", "high") == 16000
-    assert _max_tokens_for("gan_llm_extract_label_forms", "gemini37flash") == 5000
-    assert _max_tokens_for("gan_llm_extract_label_forms", "gemini37flash", "low") == 5000
-    assert _max_tokens_for("gan_llm_extract_label_forms", "gemini37flash", "medium") == 10000
-    assert _max_tokens_for("gan_llm_extract_label_forms", "gemini37flash", "high") == 10000
+    assert _max_tokens_for("gan_llm_extract", "gemini37flash") == 5000
+    assert _max_tokens_for("gan_llm_extract", "gemini37flash", "low") == 5000
+    assert _max_tokens_for("gan_llm_extract", "gemini37flash", "medium") == 10000
+    assert _max_tokens_for("gan_llm_extract", "gemini37flash", "high") == 10000
     assert cell3_thinking_max_tokens(16000, None) == 16000
     assert cell3_thinking_max_tokens(16000, "low") == 16000
     assert cell3_thinking_max_tokens(16000, "medium") == 32000
     assert cell3_thinking_max_tokens(16000, "high") == 32000
     assert hybrid["ok"] is True
     assert hybrid["model"] == "xai/grok-4.6"
-    assert hybrid["method"] == "gan_llm_with_rules"
-    assert hybrid["prompt_version"] == hybrid_structured_events.GAN_LLM_WITH_RULES
+    assert hybrid["method"] == "gan_llm_extract_raw"
+    assert hybrid["prompt_version"] == hybrid_structured_events.GAN_LLM_EXTRACT_RAW
     assert only["authored_keys"] == list(gan_llm_only.LLM_ONLY_AUTHORED_KEYS)
     assert hybrid["authored_keys"] == list(hybrid_structured_events.LLM_WITH_RULES_AUTHORED_KEYS)
     assert hybrid["max_tokens"] == 5000
@@ -229,12 +228,12 @@ def test_verify_gan_pins_paper_identities_without_changing_defaults() -> None:
     assert (
         hybrid_structured_events.PROMPT_VERSION
         == before_hybrid
-        == hybrid_structured_events.GAN_LLM_WITH_RULES
+        == hybrid_structured_events.GAN_LLM_EXTRACT_RAW
     )
 
 
 def test_verify_gan_test450_is_aggregate_only() -> None:
-    payload = verify_gan("gan_llm_with_rules", "test450")
+    payload = verify_gan("gan_llm_extract_raw", "test450")
     assert payload["ok"] is True
     assert payload["split"] == "test450"
     assert payload["split_machine"] == "test"
@@ -282,7 +281,7 @@ def test_cli_dispatches_gan_live(monkeypatch: pytest.MonkeyPatch) -> None:
         "reasoning_effort": None,
     }
     with pytest.raises(RuntimeError, match="requires live=True"):
-        run_gan("gan_llm_with_rules", "gpt56luna", live=False, split="dev750")
+        run_gan("gan_llm_extract_raw", "gpt56luna", live=False, split="dev750")
 
 
 def test_grok46_paper_lm_uses_vercel_ai_gateway(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -453,13 +452,13 @@ def test_cli_dispatches_non_living_effort_to_live_runners(
         "reasoning_effort": "high",
     }
     assert run(
-        "gan_llm_with_rules",
+        "gan_llm_extract_raw",
         "gpt56luna",
         "dev750",
         reasoning_effort="medium",
-    ) == {"ok": True, "method": "gan_llm_with_rules"}
+    ) == {"ok": True, "method": "gan_llm_extract_raw"}
     assert gan == {
-        "method": "gan_llm_with_rules",
+        "method": "gan_llm_extract_raw",
         "slug": "gpt56luna",
         "split": "dev750",
         "reasoning_effort": "medium",

@@ -3,7 +3,7 @@
 Date: 2026-08-22
 Status: development answer
 Owner: [protocol](gan_select_from_extract_protocol_2026-08-22.md)
-Work cell: `experiments/paper/gan_llm_select_from_extract/gemini37flash/gan_llm_extract_label_forms/dev750/`
+Work cell: `experiments/paper/gan_llm_select_from_extract/gemini37flash/gan_llm_extract/dev750/`
 Encode mechanism: [encode on codebook extract](gan_encode_on_codebook_extract_2026-08-22.md)
 
 ## Answer

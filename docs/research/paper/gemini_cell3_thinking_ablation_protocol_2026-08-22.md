@@ -1,7 +1,7 @@
 # Gemini cell-3 thinking ablation protocol
 
 Date: 2026-08-22
-Status: development extracts complete; holdout not started
+Status: development extracts complete; holdout medium/high extracts started, aggregate-only
 Owner: this file
 Related: [methods](../../paper/methods.md),
 [six-model roster](../../paper/decisions/six-model-roster.md)
@@ -22,7 +22,7 @@ results column.
 
 | Item | Value |
 | --- | --- |
-| Tasks | Gan `gan_llm_extract_label_forms`; ExECT `exect_llm_only` |
+| Tasks | Gan `gan_llm_extract`; ExECT `exect_llm_only` |
 | Splits | Development first (`dev750`, `dev140`). Holdout later, aggregate-only. |
 | Model | Gemini 3.7 Flash |
 | Comparator | Living low cells (5000 Gan / 16000 ExECT tokens) |

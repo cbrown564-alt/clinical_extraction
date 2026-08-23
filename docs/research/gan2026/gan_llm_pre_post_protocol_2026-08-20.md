@@ -1,29 +1,29 @@
 # Gan candidate-suggestion protocol
 
 Date: 2026-08-20
-Revised: 2026-08-22 (cited both extract is `gan_llm_pre_post_label_forms`)
+Revised: 2026-08-22 (cited both extract is `gan_llm_and_rules_extract`)
 Status: development
 Owner: this file
 Identity: `gan_llm_pre_post` (development iterator; cited both extract is
-`gan_llm_pre_post_label_forms`)
+`gan_llm_and_rules_extract`)
 
-The cited both extract is `gan_llm_pre_post_label_forms`, not this living
+The cited both extract is `gan_llm_and_rules_extract`, not this living
 `gan_llm_pre_post` body. Leftover living extracts stay on disk; they are
 not the paper primary.
 
 ## Question
 
-If the source-near Gan extract (`gan_llm_with_rules`) is given the same deterministic candidate
+If the source-near Gan extract (`gan_llm_extract_raw`) is given the same deterministic candidate
 quotes that `gan_rules` already extracts, does the model keep, reject,
 split, or merge those rows and still scan the rest of the letter so
 that the later clinical post stack is working from a better event
 list?
 
-This is a new request. It is not a replay of `gan_llm_with_rules`.
+This is a new request. It is not a replay of `gan_llm_extract_raw`.
 
 ## Why it matters
 
-Rungs 2–4 share one saved `gan_llm_with_rules` output and vary only
+Rungs 2–4 share one saved `gan_llm_extract_raw` output and vary only
 rule depth after the call. ExECT already suggests candidates before
 generation. Gan does not. The five-rung table needs a Gan pre-suggestion
 cell before any claim that the two tasks use the same rule-help ladder.
@@ -36,7 +36,7 @@ cell before any claim that the two tasks use the same rule-help ladder.
 | Split | `dev750` (`gan2026_split_v1` validation) |
 | Row policy | Development review permitted |
 | Holdout | Luna `test450` finished. Aggregate-only. Do not inspect rows. Do not start Grok rung-5 unless asked. |
-| Comparator | Replay of the same `dev750` letters through rungs 2–4 from saved Grok `gan_llm_with_rules` raw output |
+| Comparator | Replay of the same `dev750` letters through rungs 2–4 from saved Grok `gan_llm_extract_raw` raw output |
 | Iterator model | GPT-5.6 Luna (`gpt56luna`) |
 | Cited model | Not decided. Luna is the development iterator, not automatically the cited model. |
 
@@ -61,7 +61,7 @@ correct step. Development hop shares are not holdout component estimates.
 1. Freeze the candidate payload and keep/reject language on a 12-letter
    Luna development slice (`source_row_index` order from validation).
 2. Named hard slice `luna_hybrid_misses`: the 87 living Luna
-   `gan_llm_with_rules` `dev750` Purist misses. Comparator is that
+   `gan_llm_extract_raw` `dev750` Purist misses. Comparator is that
    same hybrid cell on the same letters. Question: how many of those
    misses does pre-suggest recover, and are the recoveries schema,
    selection, or dialect?
@@ -105,7 +105,7 @@ dataset name. Prompt frozen. Do not cite the interrupted
 
 Luna `luna_hybrid_misses` finished: 87/87 calls, 0 call failures.
 Artifact: `experiments/paper/gan_llm_pre_post/gpt56luna/slice_luna_hybrid_misses/dev750/`.
-Purist 35/87, Pragmatic 45/87. Luna source-near (`gan_llm_with_rules`) is 0/87 here by
+Purist 35/87, Pragmatic 45/87. Luna source-near (`gan_llm_extract_raw`) is 0/87 here by
 construction. Deterministic `gan_rules` is 73/87 on the same IDs.
 
 Of the 35 recoveries: 1 schema (hybrid unscorable), 16 dialect or
@@ -122,7 +122,7 @@ hybrid label. Not a `dev750` score. No prompt retune from these
 Luna `gan_llm_pre_post` finished: 750/750 rows, 700 new calls, 50
 resumed, 0 call failures. Artifact:
 `experiments/paper/gan_llm_pre_post/gpt56luna/dev750/`.
-Purist 0.90, Pragmatic 0.92. Luna source-near (`gan_llm_with_rules`) is 0.88. Rules-only is 0.91. Grok rung-4 replay is
+Purist 0.90, Pragmatic 0.92. Luna source-near (`gan_llm_extract_raw`) is 0.88. Rules-only is 0.91. Grok rung-4 replay is
 0.90. 4 invalid JSON. Not holdout. Not a Grok cell.
 
 Hop audit: 64/74 misses are already wrong at model selection.

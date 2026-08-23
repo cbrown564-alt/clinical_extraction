@@ -72,6 +72,6 @@
       "scorable": 750
     }
   },
-  "shared_raw_output": "gan_llm_with_rules",
+  "shared_raw_output": "gan_llm_extract_raw",
   "split": "dev750"
 }

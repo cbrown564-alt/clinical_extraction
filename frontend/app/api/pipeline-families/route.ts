@@ -23,7 +23,7 @@ export function GET() {
           | "llm_encode"
           | "llm_select"
           | "gan_llm_only"
-          | "gan_llm_with_rules";
+          | "gan_llm_extract_raw";
         status: "present" | "pending";
         n: number;
         purist_correct?: number | null;

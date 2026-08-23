@@ -54,13 +54,13 @@ submitted (select) score:
 | LLM | LLM | LLM | 0.80 |
 
 Gan **LLM** extract is the codebook extract
-(`gan_llm_extract_label_forms`). **both** extract is
-`gan_llm_pre_post_label_forms`. LLM encode means that extract already
-wrote the form. The LLM-then-rules encode is `llm_encode_codebook`.
+(`gan_llm_extract`). **both** extract is
+`gan_llm_and_rules_extract`. LLM encode means that extract already
+wrote the form. The LLM-then-rules encode is `gan_rules_encode`.
 LLM select is `gan_llm_select_from_extract`. Extract and encode stops
 are prior-stage ablations in
 [the five-cell grid](docs/research/gan2026/gan_five_cell_grid_2026-08-22.md).
-The source-near `gan_llm_with_rules` ablation keeps source wording closer
+The source-near `gan_llm_extract_raw` ablation keeps source wording closer
 to the letter; form alignment is weaker at extract and rules recover
 most at encode and select. ExECT **LLM** extract is `exect_llm_only`.
 **both** extract is
@@ -79,7 +79,7 @@ ledger-only. `gan_llm_only` is not a results column.
   (0.8173) after later-stage encode.
 
 **Ablations (not headline columns):** Gemini thinking low / medium /
-high on cell 3 only; Gan source-near `gan_llm_with_rules` (source
+high on cell 3 only; Gan source-near `gan_llm_extract_raw` (source
 wording vs form alignment); extract and encode stage stops above.
 `gan_llm_only`, no-forms `gan_llm_pre_post`, ExECT producer raw F1,
 Sol, and Full ledger are on disk but not cited as headline results.
@@ -99,7 +99,7 @@ Both tasks name who runs extract, encode, and select (rules, LLM, or
 both).
 
 - **rules / rules / rules** — standalone `gan_rules` / `exect_rules`.
-- **both / rules / rules** — `gan_llm_pre_post_label_forms` /
+- **both / rules / rules** — `gan_llm_and_rules_extract` /
   `exect_llm_pre_post`, then rule encode and select.
 - **LLM / rules / rules** — codebook extract / `exect_llm_only`,
   then rule encode and select.

@@ -79,7 +79,7 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     prompt = json.loads(build_prompt_input(_record()))
     blob = json.dumps(prompt)
 
-    assert PROMPT_VERSION == GAN_LLM_WITH_RULES == "gan_llm_with_rules"
+    assert PROMPT_VERSION == GAN_LLM_WITH_RULES == "gan_llm_extract_raw"
     assert set(prompt) == set(LLM_WITH_RULES_AUTHORED_KEYS)
     assert "prompt_version" not in prompt
     assert "source_row_index" not in prompt
@@ -197,7 +197,7 @@ def test_extract_keeps_model_label_and_encode_owns_resolve() -> None:
 def test_llm_select_after_codebook_keeps_select_and_named_encode() -> None:
     after = StructuredRepairConfig.for_mode("llm_select_after_codebook")
     living = StructuredRepairConfig.for_mode("llm_select")
-    codebook = StructuredRepairConfig.for_mode("llm_encode_codebook")
+    codebook = StructuredRepairConfig.for_mode("gan_rules_encode")
     assert after.encode_enabled() is True
     assert after.select_enabled() is True
     assert after.codebook_label_repair is True

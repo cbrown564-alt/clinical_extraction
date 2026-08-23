@@ -9,14 +9,14 @@ Related: [six-model roster](../../paper/decisions/six-model-roster.md),
 ## Question
 
 Do the remaining hosted roster models produce a complete cell-3
-extract (`gan_llm_extract_label_forms`) on the same frozen prompt as
+extract (`gan_llm_extract`) on the same frozen prompt as
 Gemini, so rule encode and rule select can be replayed no-call?
 
 ## Why it matters
 
 The six-model comparison is cell 3 only. Gemini already has both
 splits. Grok, Luna, and DeepSeek have older Gan extracts
-(`gan_llm_with_rules`, `gan_llm_only`) that are not this row.
+(`gan_llm_extract_raw`, `gan_llm_only`) that are not this row.
 
 ## Data and inspection
 
@@ -26,11 +26,11 @@ splits. Grok, Luna, and DeepSeek have older Gan extracts
 | Splits | `dev750` first, then aggregate-only `test450` |
 | Row policy | Development review on `dev750`. Do not inspect `test450` rows. |
 | Models | `grok46`, `gpt56luna`, `deepseek_v4_flash` |
-| Prompt | Frozen `gan_llm_extract_label_forms` |
+| Prompt | Frozen `gan_llm_extract` |
 | Repair | Extract stop only (`raw_model`) |
 | Reasoning | Living paper setting (`low` for Grok and Luna). DeepSeek uses the living provider default. Max tokens 24000 for DeepSeek. |
-| Work cells | `experiments/paper/gan_llm_extract_label_forms/{slug}/dev750/` |
-| Holdout | `scratch/holdout/paper/gan_llm_extract_label_forms/{slug}/test450/` |
+| Work cells | `experiments/paper/gan_llm_extract/{slug}/dev750/` |
+| Holdout | `scratch/holdout/paper/gan_llm_extract/{slug}/test450/` |
 
 Qwen and Gemma are reserved for a separate local device. Do not
 start later-stage LLM encode or select for these models. Do not

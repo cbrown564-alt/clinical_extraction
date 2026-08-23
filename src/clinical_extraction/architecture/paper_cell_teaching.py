@@ -18,7 +18,7 @@ from clinical_extraction.architecture.teaching_case import (
     _exect_rules_only_run,
     _exect_scoring,
     _gan_llm_only_run,
-    _gan_llm_with_rules_run,
+    _gan_llm_extract_raw_run,
     _gan_record,
     _gan_rules_only_run,
     _gan_scoring,
@@ -30,8 +30,8 @@ ROOT = discover_repo_root(start=Path(__file__))
 
 PAPER_GAN_IDS = (
     "gan_rules",
-    "gan_llm_pre_post_label_forms",
-    "gan_llm_extract_label_forms",
+    "gan_llm_and_rules_extract",
+    "gan_llm_extract",
     "gan_llm_encode",
     "gan_llm_select_from_extract",
 )
@@ -46,16 +46,16 @@ PAPER_METHOD_IDS = PAPER_GAN_IDS + PAPER_EXECT_IDS
 
 GAN_EXTRACT_RAW = (
     ROOT
-    / "experiments/paper/gan_llm_extract_label_forms/gemini37flash/dev750/rows.jsonl"
+    / "experiments/paper/gan_llm_extract/gemini37flash/dev750/rows.jsonl"
 )
 GAN_PRE_POST_RAW = (
     ROOT
-    / "experiments/paper/gan_llm_pre_post_label_forms/gemini37flash/dev750/rows.jsonl"
+    / "experiments/paper/gan_llm_and_rules_extract/gemini37flash/dev750/rows.jsonl"
 )
 GAN_SELECT_RAW = (
     ROOT
     / "experiments/paper/gan_llm_select_from_extract/gemini37flash"
-    / "gan_llm_extract_label_forms/dev750/rows.jsonl"
+    / "gan_llm_extract/dev750/rows.jsonl"
 )
 EXECT_PRE_POST_RAW = (
     ROOT
@@ -74,8 +74,8 @@ EXECT_SELECT_RAW = (
 
 GAN_SOURCE_NOTES = {
     "gan_rules": "rules (no model raw)",
-    "gan_llm_pre_post_label_forms": str(GAN_PRE_POST_RAW.relative_to(ROOT)),
-    "gan_llm_extract_label_forms": str(GAN_EXTRACT_RAW.relative_to(ROOT)),
+    "gan_llm_and_rules_extract": str(GAN_PRE_POST_RAW.relative_to(ROOT)),
+    "gan_llm_extract": str(GAN_EXTRACT_RAW.relative_to(ROOT)),
     "gan_llm_encode": str(GAN_EXTRACT_RAW.relative_to(ROOT)),
     "gan_llm_select_from_extract": str(GAN_SELECT_RAW.relative_to(ROOT)),
 }
@@ -90,7 +90,7 @@ EXECT_SOURCE_NOTES = {
 FRONTEND_METHOD_REMAP = {
     "gan2026_rules_only": "gan_rules",
     "gan2026_llm_only": "gan_llm_only",
-    "gan2026_llm_with_rules": "gan_llm_with_rules",
+    "gan2026_llm_with_rules": "gan_llm_extract_raw",
     "exectv2_rules_only": "exect_rules",
     "exectv2_llm_only": "exect_llm_only",
     "exectv2_llm_pre_post": "exect_llm_pre_post",
@@ -98,8 +98,8 @@ FRONTEND_METHOD_REMAP = {
 
 MANIFEST_CLONE_FROM = {
     "gan_rules": "gan2026_rules_only",
-    "gan_llm_pre_post_label_forms": "gan2026_llm_with_rules",
-    "gan_llm_extract_label_forms": "gan2026_llm_with_rules",
+    "gan_llm_and_rules_extract": "gan2026_llm_with_rules",
+    "gan_llm_extract": "gan2026_llm_with_rules",
     "gan_llm_encode": "gan2026_llm_with_rules",
     "gan_llm_select_from_extract": "gan2026_llm_with_rules",
     "exect_rules": "exectv2_rules_only",
@@ -171,10 +171,10 @@ def gan_paper_runs(spec: GanCaseSpec) -> list[MethodRun]:
     rules.method_id = "gan_rules"
     _collapse_gan_rules(rules)
 
-    pre_post = _gan_llm_with_rules_run(
+    pre_post = _gan_llm_extract_raw_run(
         spec,
         repair_mode="llm_select",
-        method_id="gan_llm_pre_post_label_forms",
+        method_id="gan_llm_and_rules_extract",
         raw_output=pre_post_raw,
     )
     _collapse_gan_hybrid(
@@ -191,10 +191,10 @@ def gan_paper_runs(spec: GanCaseSpec) -> list[MethodRun]:
         select_note="Select families are deterministic.",
     )
 
-    extract = _gan_llm_with_rules_run(
+    extract = _gan_llm_extract_raw_run(
         spec,
         repair_mode="llm_select_after_codebook",
-        method_id="gan_llm_extract_label_forms",
+        method_id="gan_llm_extract",
         raw_output=extract_raw,
     )
     _collapse_gan_hybrid(
@@ -208,7 +208,7 @@ def gan_paper_runs(spec: GanCaseSpec) -> list[MethodRun]:
         select_note="Deterministic select families.",
     )
 
-    encode = _gan_llm_with_rules_run(
+    encode = _gan_llm_extract_raw_run(
         spec,
         repair_mode="llm_select_only",
         method_id="gan_llm_encode",
@@ -226,7 +226,7 @@ def gan_paper_runs(spec: GanCaseSpec) -> list[MethodRun]:
     )
 
     select = _gan_select_from_extract_run(spec, extract_raw, select_raw)
-    extras = [_gan_llm_only_run(spec), _gan_llm_with_rules_run(spec)]
+    extras = [_gan_llm_only_run(spec), _gan_llm_extract_raw_run(spec)]
     return [rules, pre_post, extract, encode, select, *extras]
 
 

@@ -180,14 +180,14 @@ def test_codebook_encode_unknown_wrapper_is_semantic_benchmark_repair() -> None:
 
 
 def test_codebook_encode_repair_mode_only_enables_the_candidate_rules() -> None:
-    config = StructuredRepairConfig.for_mode("llm_encode_codebook")
+    config = StructuredRepairConfig.for_mode("gan_rules_encode")
     assert config.encode_enabled() is True
     assert config.select_enabled() is False
     assert config.codebook_label_repair is True
     assert config.basic_label_repair is False
     assert config.selected_evidence_repair is False
-    assert config.resolved_repair_mode == "llm_encode_codebook"
-    metadata = repair_mode_metadata("llm_encode_codebook")
+    assert config.resolved_repair_mode == "gan_rules_encode"
+    metadata = repair_mode_metadata("gan_rules_encode")
     assert metadata["repair_family"] == (
         "codebook_label_preservation_with_named_gap_repairs"
     )
@@ -223,7 +223,7 @@ def test_codebook_encode_mode_records_named_rule_hop_without_reselecting() -> No
     extraction, _, _, trace = parse_structured_json_with_trace(
         raw,
         note_text="Electrographic seizures frequent on EEG (~9/h)",
-        repair_config=StructuredRepairConfig.for_mode("llm_encode_codebook"),
+        repair_config=StructuredRepairConfig.for_mode("gan_rules_encode"),
     )
     assert extraction is not None
     assert extraction.selection.selected_event_ids == ["e1"]

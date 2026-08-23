@@ -203,12 +203,12 @@ def test_select_from_extract_verify_is_gemini_only() -> None:
 def test_llm_row_has_no_separate_encode_stage() -> None:
     assert LLM_ENCODE_IS_EXTRACT is True
     assert LLM_SELECT_METHOD == "gan_llm_select_from_extract"
-    assert EXTRACT_METHOD == "gan_llm_extract_label_forms"
+    assert EXTRACT_METHOD == "gan_llm_extract"
 
 
 def test_later_stage_reads_codebook_extract_work_cell() -> None:
-    assert EXTRACT_METHOD == "gan_llm_extract_label_forms"
+    assert EXTRACT_METHOD == "gan_llm_extract"
     path = extract_rows_path("dev750")
     assert path.is_file()
-    assert "gan_llm_extract_label_forms" in path.as_posix()
-    assert "gan_llm_with_rules" not in path.as_posix()
+    assert "gan_llm_extract" in path.as_posix()
+    assert "gan_llm_extract_raw" not in path.as_posix()

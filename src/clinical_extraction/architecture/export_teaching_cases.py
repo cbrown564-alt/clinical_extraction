@@ -16,8 +16,8 @@ DEFAULT_OUT = ROOT / "frontend/public/mock-data/teaching-cases.json"
 
 ONE_SENTENCE = {
     "gan_rules": "Rules extract, encode, and select the Gan label.",
-    "gan_llm_pre_post_label_forms": "Both extract, then rule encode and select.",
-    "gan_llm_extract_label_forms": "LLM codebook extract, then rule encode and select.",
+    "gan_llm_and_rules_extract": "Both extract, then rule encode and select.",
+    "gan_llm_extract": "LLM codebook extract, then rule encode and select.",
     "gan_llm_encode": "Same codebook extract already in form; rule select only.",
     "gan_llm_select_from_extract": "LLM extract, encode form, and select.",
     "exect_rules": "Rules extract, encode, and select four-family findings.",

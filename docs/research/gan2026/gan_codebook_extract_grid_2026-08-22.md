@@ -7,7 +7,7 @@ Owner: [protocol](gan_codebook_extract_grid_protocol_2026-08-22.md)
 Machine artifact: `experiments/paper/gan_codebook_extract_grid/gemini37flash/dev750/grid.json`
 
 Development grid that chose the cited LLM extract and both extract
-(`gan_llm_pre_post_label_forms`). `gan_llm_with_rules` is the source-near
+(`gan_llm_and_rules_extract`). `gan_llm_extract_raw` is the source-near
 wording ablation, not the paper extract. Living `gan_llm_pre_post` is not
 the cited both row. Leftover living extracts stay on disk; they are not
 the paper primary.
@@ -20,17 +20,17 @@ still raise it. A new Rules-then-LLM request with the same form list
 moves most of the gain into extract; rule encode then adds nothing on
 Purist and rule select still adds 21 letters.
 
-`gan_llm_with_rules` is kept as a source-near ablation: it can keep
+`gan_llm_extract_raw` is kept as a source-near ablation: it can keep
 wording such as `up to 4 per day` instead of `4 per day`, at a lower
 extract score.
 
 ## Protocol
 
 Gemini 3.7 Flash, Gan `dev750`, Purist. New extract
-`gan_llm_extract_label_forms`. Fresh later-stage encode and select
+`gan_llm_extract`. Fresh later-stage encode and select
 calls on that ledger. Rule encode/select replay on the same raw
-(`note_text` on). Fresh `gan_llm_pre_post_label_forms`, then the same
-rule stops. Promoted `gan_llm_with_rules` and living `gan_llm_pre_post`
+(`note_text` on). Fresh `gan_llm_and_rules_extract`, then the same
+rule stops. Promoted `gan_llm_extract_raw` and living `gan_llm_pre_post`
 were not overwritten. `test450` was not loaded in this cut.
 
 ## Component result
@@ -44,7 +44,7 @@ Purist accuracy.
 | Rules then LLM (`pre_post` + forms) | **0.86** | **0.86** | **0.89** |
 | Standalone rules | — | — | 0.89 |
 
-Source-near ablation (`gan_llm_with_rules` / living `gan_llm_pre_post`):
+Source-near ablation (`gan_llm_extract_raw` / living `gan_llm_pre_post`):
 
 | Method | Extract | Encode | Select |
 | --- | ---: | ---: | ---: |
@@ -72,7 +72,7 @@ Purist. Rule select is 0.89, one letter above the living no-forms cell
 
 Development candidate grid. Not holdout. Informed the cited five-cell
 `test450` table; does not replace it. Do not retune `label_forms`. Do
-not overwrite `gan_llm_with_rules` or living `gan_llm_pre_post`.
+not overwrite `gan_llm_extract_raw` or living `gan_llm_pre_post`.
 
 ## Next
 

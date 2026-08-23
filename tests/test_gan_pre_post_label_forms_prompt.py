@@ -1,4 +1,4 @@
-"""Always-on contract for Gan pre-post plus label-forms."""
+"""Always-on contract for Gan both-extract."""
 
 from __future__ import annotations
 
@@ -12,17 +12,13 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
-    prompt_llm_pre_post_label_forms as pre_post_label_forms,
+    prompt_llm_and_rules_extract as and_rules_extract,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
     build_prompt_input,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_label_forms import (
     label_forms_payload,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_pre_post import (
-    build_llm_pre_post_prompt_input,
-    suggested_evidence_rows,
 )
 
 
@@ -43,14 +39,16 @@ def _record() -> GanFrequencyRecord:
     )
 
 
-def test_pre_post_label_forms_keeps_suggested_rows_and_forms() -> None:
+def test_both_extract_keeps_suggested_rows_and_forms() -> None:
     payload = json.loads(
-        pre_post_label_forms.build_llm_pre_post_label_forms_prompt_input(_record())
+        and_rules_extract.build_llm_and_rules_extract_prompt_input(_record())
     )
     blob = json.dumps(payload)
-    authored = pre_post_label_forms.LLM_PRE_POST_LABEL_FORMS_AUTHORED_KEYS
+    authored = and_rules_extract.LLM_AND_RULES_EXTRACT_AUTHORED_KEYS
     assert set(payload) == set(authored)
-    assert payload["suggested_evidence"] == suggested_evidence_rows(_record())
+    assert payload["suggested_evidence"] == and_rules_extract.suggested_evidence_rows(
+        _record()
+    )
     assert payload["label_forms"] == label_forms_payload()
     assert "keep, reject, split, or merge" in blob
     assert "allowed forms" in blob.lower()
@@ -58,31 +56,23 @@ def test_pre_post_label_forms_keeps_suggested_rows_and_forms() -> None:
     assert "Gan 2026" not in blob
 
 
-def test_pre_post_without_label_forms_is_unchanged() -> None:
-    baseline = json.loads(build_llm_pre_post_prompt_input(_record()))
-    assert "label_forms" not in baseline
-
-
-def test_hybrid_dispatch_keeps_default_pre_post() -> None:
-    default = json.loads(
-        build_prompt_input(_record(), prompt_version="gan_llm_pre_post")
-    )
+def test_hybrid_dispatch_both_extract_adds_forms() -> None:
     variant = json.loads(
         build_prompt_input(
             _record(),
-            prompt_version=pre_post_label_forms.GAN_LLM_PRE_POST_LABEL_FORMS,
+            prompt_version=and_rules_extract.GAN_LLM_AND_RULES_EXTRACT,
         )
     )
-    assert "label_forms" not in default
     assert variant["label_forms"] == label_forms_payload()
+    assert variant["suggested_evidence"]
 
 
-def test_pre_post_label_forms_verify_is_gemini_only() -> None:
-    payload = verify_gan("gan_llm_pre_post_label_forms", "dev750", "gemini37flash")
+def test_both_extract_verify_is_gemini_only() -> None:
+    payload = verify_gan("gan_llm_and_rules_extract", "dev750", "gemini37flash")
     assert payload["ok"] is True
-    assert payload["prompt_version"] == pre_post_label_forms.GAN_LLM_PRE_POST_LABEL_FORMS
-    holdout = verify_gan("gan_llm_pre_post_label_forms", "test450", "gemini37flash")
+    assert payload["prompt_version"] == and_rules_extract.GAN_LLM_AND_RULES_EXTRACT
+    holdout = verify_gan("gan_llm_and_rules_extract", "test450", "gemini37flash")
     assert holdout["row_policy"] == "aggregate_only"
-    assert holdout["holdout_scratch"].endswith("gan_llm_pre_post_label_forms")
+    assert holdout["holdout_scratch"].endswith("gan_llm_and_rules_extract")
     with pytest.raises(RuntimeError, match="Gemini only"):
-        verify_gan("gan_llm_pre_post_label_forms", "dev750", "grok46")
+        verify_gan("gan_llm_and_rules_extract", "dev750", "grok46")

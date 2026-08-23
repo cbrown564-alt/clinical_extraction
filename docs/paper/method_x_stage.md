@@ -35,7 +35,7 @@ output can be replayed through those rules without a new call.
 Both tasks name who runs each stage (rules, LLM, or both):
 
 - **rules / rules / rules** — no model.
-- **both / rules / rules** — `gan_llm_pre_post_label_forms` /
+- **both / rules / rules** — `gan_llm_and_rules_extract` /
   `exect_llm_pre_post`, then rule encode and select.
 - **LLM / rules / rules** — codebook extract / `exect_llm_only`,
   then rule encode and select.
@@ -58,8 +58,8 @@ judged. Do not recode the stack; this is a refile of the claim.
 | Extract | Encode | Select | What runs |
 | --- | --- | --- | --- |
 | rules | rules | rules | `gan_rules` |
-| both | rules | rules | `gan_llm_pre_post_label_forms`, then rule encode and select |
-| LLM | rules | rules | `gan_llm_extract_label_forms`, then codebook encode and rule select |
+| both | rules | rules | `gan_llm_and_rules_extract`, then rule encode and select |
+| LLM | rules | rules | `gan_llm_extract`, then codebook encode and rule select |
 | LLM | LLM | rules | Same extract; select families only |
 | LLM | LLM | LLM | Same extract; `gan_llm_select_from_extract` |
 
@@ -74,7 +74,7 @@ not list every revise subtype):
 - **Select** — gate, drop, rewrite, reselect, invent.
 
 On Gan the cited extract is the codebook request, not
-`gan_llm_with_rules`. LLM encode in the headline table is that
+`gan_llm_extract_raw`. LLM encode in the headline table is that
 extract, not a later-stage encode call. Tables cite Gemini 3.7 Flash.
 
 On ExECT, cells 2–4 replay one `exect_llm_only` raw. **both / rules /
@@ -89,10 +89,10 @@ object.
 ## Gan worked example: a bound becomes a gold label
 
 **Letter:** Gan development source row `10`. **Model:** Grok 4.6.
-**Wording ablation raw:** `gan_llm_with_rules` (not the cited
+**Wording ablation raw:** `gan_llm_extract_raw` (not the cited
 codebook extract). **Score:** Purist.
 **Artifacts:** `paper_experiments/gan/rungs/grok46/dev750/` and
-`paper_experiments/gan/gan_llm_with_rules/grok46/dev750/`.
+`paper_experiments/gan/gan_llm_extract_raw/grok46/dev750/`.
 
 The letter states a current rate as an upper bound:
 
@@ -104,11 +104,11 @@ stays in the quoted span. It is not in the submitted label.
 | Role row | Extract | Encode | Select |
 | --- | --- | --- | --- |
 | **rules / rules / rules** | `4 per day` (correct) | same | same |
-| **Wording ablation** (`gan_llm_with_rules`) | `≤ 4 per day` (incorrect) | `4 per day` (correct) | `4 per day` (correct) |
+| **Wording ablation** (`gan_llm_extract_raw`) | `≤ 4 per day` (incorrect) | `4 per day` (correct) | `4 per day` (correct) |
 | **both / rules / rules** | `4 per day` (correct) | — | `4 per day` (correct) |
 
 The wording-ablation extract and rule encode / select share one Grok
-`gan_llm_with_rules` output. The model already selected the
+`gan_llm_extract_raw` output. The model already selected the
 accommodation-log event. Source-near extract keeps the inequality, so
 Purist misses. Rule encode **encodes** that already chosen event into the
 evaluation form and does not change `selected_event_ids`. Rule
@@ -119,7 +119,7 @@ same rate the model chose. The designed form is a different string.
 Turning selected-evidence repair off disables that whole renderer, not
 only bound flattening. The same raw can be replayed with the renderer
 off. **both / rules / rules** is a different request
-(`gan_llm_pre_post_label_forms`), not a replay of this letter's
+(`gan_llm_and_rules_extract`), not a replay of this letter's
 wording-ablation raw.
 
 **Contrast, still development:** source row `15431`. Gold is the

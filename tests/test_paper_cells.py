@@ -113,14 +113,14 @@ def test_result_columns_are_the_five_cells() -> None:
         "llm_encode": 4,
         "llm_select": 5,
     }
-    assert gan_method_for_rung("llm_select") == "gan_llm_with_rules"
+    assert gan_method_for_rung("llm_select") == "gan_llm_extract_raw"
     assert gan_method_for_rung("llm_encode") == "gan_llm_encode"
-    assert gan_method_for_rung("llm_pre_post") == "gan_llm_pre_post"
+    assert gan_method_for_rung("llm_pre_post") == "gan_llm_and_rules_extract"
     assert GAN_SELECT_PAPER_VIEW == "gan_llm_select"
     assert GAN_REPAIR_MODE_FOR_RUNG["llm_extract"] == "raw_model"
     assert GAN_REPAIR_MODE_FOR_RUNG["llm_encode"] == "llm_encode"
     assert GAN_REPAIR_MODE_FOR_RUNG["llm_select"] == "llm_select"
-    assert GAN_RUNG_SOURCE["llm_extract"] == "replay_gan_llm_with_rules"
+    assert GAN_RUNG_SOURCE["llm_extract"] == "replay_gan_llm_extract_raw"
     assert GAN_RUNG_SOURCE["llm_pre_post"] == "new_request"
     assert EXECT_RUNG_SOURCE["llm_extract"] == "replay_exect_llm_only"
     assert EXECT_RUNG_SOURCE["llm_pre_post"] == "living_exect_llm_pre_post"

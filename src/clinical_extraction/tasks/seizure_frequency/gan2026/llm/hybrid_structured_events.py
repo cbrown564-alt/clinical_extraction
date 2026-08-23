@@ -39,10 +39,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair 
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     llm_structured_temporal,
-    prompt_llm_with_rules,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
-    prompt_llm_pre_post_label_forms as pre_post_label_forms,
+    prompt_llm_extract_raw,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_monthly_diary import (
     monthly_diary_label_from_events as _monthly_diary_label_from_events,
@@ -80,16 +77,16 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.parse_diagnostics i
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.parse_diagnostics import (
     has_repair_note as _has_repair_note,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_extract_label_forms import (
-    GAN_LLM_EXTRACT_LABEL_FORMS,
-    build_llm_extract_label_forms_prompt_input,
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_and_rules_extract import (
+    GAN_LLM_AND_RULES_EXTRACT,
+    build_llm_and_rules_extract_prompt_input,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_pre_post import (
-    GAN_LLM_PRE_POST,
-    build_llm_pre_post_prompt_input,
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_extract import (
+    GAN_LLM_EXTRACT,
+    build_llm_extract_prompt_input,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_with_rules import (
-    build_llm_with_rules_prompt_input,
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_extract_raw import (
+    build_llm_extract_raw_prompt_input,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
@@ -122,16 +119,23 @@ _nearest_event_date = llm_structured_temporal.nearest_event_date
 _nearest_event_month_year = llm_structured_temporal.nearest_event_month_year
 _small_number_words_to_digits = llm_structured_temporal.small_number_words_to_digits
 
-GAN_LLM_WITH_RULES = "gan_llm_with_rules"
-LLM_WITH_RULES_AUTHORED_KEYS = prompt_llm_with_rules.LLM_WITH_RULES_AUTHORED_KEYS
-PROMPT_VERSION = GAN_LLM_WITH_RULES
+GAN_LLM_EXTRACT_RAW = "gan_llm_extract_raw"
+GAN_LLM_WITH_RULES = GAN_LLM_EXTRACT_RAW
+LLM_EXTRACT_RAW_AUTHORED_KEYS = prompt_llm_extract_raw.LLM_EXTRACT_RAW_AUTHORED_KEYS
+LLM_WITH_RULES_AUTHORED_KEYS = LLM_EXTRACT_RAW_AUTHORED_KEYS
+PROMPT_VERSION = GAN_LLM_EXTRACT_RAW
 ROW_TRACE_SCHEMA_VERSION = "gan2026.row_trace.v1"
+PROMPT_VERSION_ALIASES = {
+    "gan_llm_with_rules": GAN_LLM_EXTRACT_RAW,
+    "gan_llm_extract_label_forms": GAN_LLM_EXTRACT,
+    "gan_llm_pre_post_label_forms": GAN_LLM_AND_RULES_EXTRACT,
+}
 _SUPPORTED_PROMPT_VERSIONS = frozenset(
     {
-        GAN_LLM_WITH_RULES,
-        GAN_LLM_PRE_POST,
-        pre_post_label_forms.GAN_LLM_PRE_POST_LABEL_FORMS,
-        GAN_LLM_EXTRACT_LABEL_FORMS,
+        GAN_LLM_EXTRACT_RAW,
+        GAN_LLM_AND_RULES_EXTRACT,
+        GAN_LLM_EXTRACT,
+        *PROMPT_VERSION_ALIASES,
     }
 )
 
@@ -196,7 +200,7 @@ StructuredRepairMode = Literal[
     "json_dialect_only",
     "raw_model",
     "llm_encode",
-    "llm_encode_codebook",
+    "gan_rules_encode",
     "llm_select",
     "llm_select_after_codebook",
     "llm_select_only",
@@ -210,6 +214,7 @@ _STRUCTURED_REPAIR_MODE_ALIASES: dict[str, StructuredRepairMode] = {
     "revise": "llm_select",
     "llm_revise": "llm_select",
     "select": "llm_select",
+    "gan_rules_encode": "gan_rules_encode",
 }
 
 
@@ -407,7 +412,7 @@ class StructuredRepairConfig:
                 dated_sequence_repair=False,
                 elapsed_anchor_repair=False,
             )
-        if mode == "llm_encode_codebook":
+        if mode == "gan_rules_encode":
             return cls(
                 repair_mode=mode,
                 basic_label_repair=False,
@@ -450,7 +455,7 @@ class StructuredRepairConfig:
             "json_dialect_only",
             "raw_model",
             "llm_encode",
-            "llm_encode_codebook",
+            "gan_rules_encode",
             "llm_select",
             "llm_select_after_codebook",
             "llm_select_only",
@@ -534,27 +539,33 @@ class DspyStructuredExtractor(dspy.Module):
         )
 
 
+def normalize_prompt_version(prompt_version: str) -> str:
+    """Map a sealed or live prompt identity onto the current name."""
+
+    return PROMPT_VERSION_ALIASES.get(prompt_version, prompt_version)
+
+
 def build_prompt_input(
     record: GanFrequencyRecord,
     *,
     prompt_version: str | None = None,
 ) -> str:
-    """Dispatch to the paper prompt or the pre/post variant."""
+    """Dispatch to the paper extract prompt or the both-extract variant."""
 
-    selected_prompt_version = prompt_version or PROMPT_VERSION
-    if selected_prompt_version not in _SUPPORTED_PROMPT_VERSIONS:
+    selected_prompt_version = normalize_prompt_version(prompt_version or PROMPT_VERSION)
+    if selected_prompt_version not in _SUPPORTED_PROMPT_VERSIONS - set(
+        PROMPT_VERSION_ALIASES
+    ):
         raise ValueError(
             f"unsupported prompt version {selected_prompt_version!r}; "
             f"expected one of {sorted(_SUPPORTED_PROMPT_VERSIONS)}"
         )
 
-    if selected_prompt_version == GAN_LLM_PRE_POST:
-        return build_llm_pre_post_prompt_input(record)
-    if selected_prompt_version == pre_post_label_forms.GAN_LLM_PRE_POST_LABEL_FORMS:
-        return pre_post_label_forms.build_llm_pre_post_label_forms_prompt_input(record)
-    if selected_prompt_version == GAN_LLM_EXTRACT_LABEL_FORMS:
-        return build_llm_extract_label_forms_prompt_input(record)
-    return build_llm_with_rules_prompt_input(record)
+    if selected_prompt_version == GAN_LLM_AND_RULES_EXTRACT:
+        return build_llm_and_rules_extract_prompt_input(record)
+    if selected_prompt_version == GAN_LLM_EXTRACT:
+        return build_llm_extract_prompt_input(record)
+    return build_llm_extract_raw_prompt_input(record)
 
 
 def parse_structured_json(

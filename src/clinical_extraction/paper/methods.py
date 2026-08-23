@@ -13,15 +13,10 @@ LIVE_METHODS: dict[str, dict[str, object]] = {
         "splits": ("dev750", "test450"),
         "prompt_attr": "GAN_LLM_ONLY",
     },
-    "gan_llm_with_rules": {
+    "gan_llm_extract_raw": {
         "task": "gan2026",
         "splits": ("dev750", "test450"),
-        "prompt_attr": "GAN_LLM_WITH_RULES",
-    },
-    "gan_llm_pre_post": {
-        "task": "gan2026",
-        "splits": ("dev750", "test450"),
-        "prompt_attr": "GAN_LLM_PRE_POST",
+        "prompt_attr": "GAN_LLM_EXTRACT_RAW",
     },
     "gan_llm_encode": {
         "task": "gan2026",
@@ -38,15 +33,15 @@ LIVE_METHODS: dict[str, dict[str, object]] = {
         "splits": ("dev750", "test450"),
         "prompt_attr": "GAN_LLM_SELECT",
     },
-    "gan_llm_extract_label_forms": {
+    "gan_llm_extract": {
         "task": "gan2026",
         "splits": ("dev750", "test450"),
-        "prompt_attr": "GAN_LLM_EXTRACT_LABEL_FORMS",
+        "prompt_attr": "GAN_LLM_EXTRACT",
     },
-    "gan_llm_pre_post_label_forms": {
+    "gan_llm_and_rules_extract": {
         "task": "gan2026",
         "splits": ("dev750", "test450"),
-        "prompt_attr": "GAN_LLM_PRE_POST_LABEL_FORMS",
+        "prompt_attr": "GAN_LLM_AND_RULES_EXTRACT",
     },
     "exect_llm_pre_post": {
         "task": "exectv2",
@@ -76,6 +71,13 @@ LIVE_METHODS: dict[str, dict[str, object]] = {
     },
 }
 
+METHOD_ALIASES = {
+    "gan_llm_with_rules": "gan_llm_extract_raw",
+    "gan_llm_extract_label_forms": "gan_llm_extract",
+    "gan_llm_pre_post_label_forms": "gan_llm_and_rules_extract",
+}
+
+
 HOLDOUT_SPLITS = frozenset({"test450", "test60"})
 GAN_MACHINE_SPLITS = {"dev750": "validation", "test450": "test"}
 GAN_ROW_COUNTS = {"dev750": 750, "test450": 450}
@@ -86,6 +88,7 @@ EXECT_ROW_COUNTS = {"dev140": 140, "test60": 59}
 def method_spec(method: str) -> dict[str, object]:
     """Return the locked paper method, or raise."""
 
+    method = METHOD_ALIASES.get(method, method)
     try:
         return LIVE_METHODS[method]
     except KeyError as exc:

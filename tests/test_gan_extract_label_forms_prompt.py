@@ -1,4 +1,4 @@
-"""Always-on contract for the Gan extract label-forms prompt."""
+"""Always-on contract for the Gan codebook extract prompt."""
 
 from __future__ import annotations
 
@@ -15,15 +15,15 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_e
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_label_forms import (
     label_forms_payload,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_extract_label_forms import (
-    GAN_LLM_EXTRACT_LABEL_FORMS,
-    LLM_EXTRACT_LABEL_FORMS_AUTHORED_KEYS,
-    build_llm_extract_label_forms_prompt_input,
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_extract import (
+    GAN_LLM_EXTRACT,
+    LLM_EXTRACT_AUTHORED_KEYS,
+    build_llm_extract_prompt_input,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_with_rules import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_extract_raw import (
     EVENT_SCHEMA,
     SELECTION_SCHEMA,
-    build_llm_with_rules_prompt_input,
+    build_llm_extract_raw_prompt_input,
 )
 
 
@@ -44,10 +44,10 @@ def _record() -> GanFrequencyRecord:
     )
 
 
-def test_extract_label_forms_payload_keeps_events_source_near() -> None:
-    payload = json.loads(build_llm_extract_label_forms_prompt_input(_record()))
+def test_extract_payload_keeps_events_source_near() -> None:
+    payload = json.loads(build_llm_extract_prompt_input(_record()))
     blob = json.dumps(payload)
-    assert set(payload) == set(LLM_EXTRACT_LABEL_FORMS_AUTHORED_KEYS)
+    assert set(payload) == set(LLM_EXTRACT_AUTHORED_KEYS)
     assert payload["event_schema"] == EVENT_SCHEMA
     assert payload["selection_schema"] == SELECTION_SCHEMA
     assert payload["label_forms"] == label_forms_payload()
@@ -61,30 +61,28 @@ def test_extract_label_forms_payload_keeps_events_source_near() -> None:
     assert "source_row_index" not in payload
 
 
-def test_extract_label_forms_does_not_change_with_rules_payload() -> None:
-    baseline = json.loads(build_llm_with_rules_prompt_input(_record()))
+def test_extract_does_not_change_raw_payload() -> None:
+    baseline = json.loads(build_llm_extract_raw_prompt_input(_record()))
     assert "label_forms" not in baseline
     assert "may be a normalized label such as 1 per day" in json.dumps(baseline)
 
 
-def test_hybrid_dispatch_keeps_default_with_rules() -> None:
+def test_hybrid_dispatch_keeps_default_extract_raw() -> None:
     default = json.loads(build_prompt_input(_record()))
-    variant = json.loads(
-        build_prompt_input(_record(), prompt_version=GAN_LLM_EXTRACT_LABEL_FORMS)
-    )
+    variant = json.loads(build_prompt_input(_record(), prompt_version=GAN_LLM_EXTRACT))
     assert "label_forms" not in default
     assert variant["label_forms"] == label_forms_payload()
 
 
-def test_extract_label_forms_verify_accepts_roster_models() -> None:
-    payload = verify_gan("gan_llm_extract_label_forms", "dev750", "gemini37flash")
+def test_extract_verify_accepts_roster_models() -> None:
+    payload = verify_gan("gan_llm_extract", "dev750", "gemini37flash")
     assert payload["ok"] is True
-    assert payload["prompt_version"] == GAN_LLM_EXTRACT_LABEL_FORMS
+    assert payload["prompt_version"] == GAN_LLM_EXTRACT
     assert payload["row_policy"] == "development_review_permitted"
-    holdout = verify_gan("gan_llm_extract_label_forms", "test450", "gemini37flash")
+    holdout = verify_gan("gan_llm_extract", "test450", "gemini37flash")
     assert holdout["row_policy"] == "aggregate_only"
-    assert holdout["holdout_scratch"].endswith("gan_llm_extract_label_forms")
+    assert holdout["holdout_scratch"].endswith("gan_llm_extract")
     for slug in ("grok46", "gpt56luna", "deepseek_v4_flash"):
-        roster = verify_gan("gan_llm_extract_label_forms", "dev750", slug)
+        roster = verify_gan("gan_llm_extract", "dev750", slug)
         assert roster["ok"] is True
         assert roster["model_slug"] == slug

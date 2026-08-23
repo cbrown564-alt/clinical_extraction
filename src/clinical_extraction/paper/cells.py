@@ -59,6 +59,9 @@ CELL_ID_ALIASES: dict[str, RungId] = {
 }
 METHOD_VIEW_ALIASES: dict[str, str] = {
     "gan_llm_schema": "gan_llm_extract",
+    "gan_llm_extract_label_forms": "gan_llm_extract",
+    "gan_llm_pre_post_label_forms": "gan_llm_and_rules_extract",
+    "gan_llm_with_rules": "gan_llm_extract_raw",
     "gan_llm_format": "gan_llm_encode",
     "gan_llm_revise": "gan_llm_select",
     "exect_llm_schema": "exect_llm_extract",
@@ -66,7 +69,7 @@ METHOD_VIEW_ALIASES: dict[str, str] = {
     "exect_llm_revise": "exect_llm_select",
     "exect_llm_post": "exect_llm_select",
 }
-# Paper/replay view for Gan select; live runner stays gan_llm_with_rules.
+# Paper/replay view for Gan select; live source-near extract is gan_llm_extract_raw.
 GAN_SELECT_PAPER_VIEW = "gan_llm_select"
 GAN_REVISE_PAPER_VIEW = GAN_SELECT_PAPER_VIEW
 
@@ -74,8 +77,8 @@ GAN_METHOD_FOR_RUNG: dict[RungId, str] = {
     "rules_only": "gan_rules",
     "llm_extract": "gan_llm_extract",
     "llm_encode": "gan_llm_encode",
-    "llm_select": "gan_llm_with_rules",
-    "llm_pre_post": "gan_llm_pre_post",
+    "llm_select": "gan_llm_extract_raw",
+    "llm_pre_post": "gan_llm_and_rules_extract",
 }
 EXECT_METHOD_FOR_RUNG: dict[RungId, str] = {
     "rules_only": "exect_rules",
@@ -92,9 +95,9 @@ GAN_REPAIR_MODE_FOR_RUNG: dict[str, str] = {
 }
 GAN_RUNG_SOURCE: dict[RungId, str] = {
     "rules_only": "standalone_rules",
-    "llm_extract": "replay_gan_llm_with_rules",
-    "llm_encode": "replay_gan_llm_with_rules",
-    "llm_select": "replay_gan_llm_with_rules",
+    "llm_extract": "replay_gan_llm_extract_raw",
+    "llm_encode": "replay_gan_llm_extract_raw",
+    "llm_select": "replay_gan_llm_extract_raw",
     "llm_pre_post": "new_request",
 }
 EXECT_RUNG_SOURCE: dict[RungId, str] = {
@@ -127,6 +130,7 @@ REPAIR_MODE_ALIASES: dict[str, str] = {
     "encode": "llm_encode",
     "revise": "llm_select",
     "select": "llm_select",
+    "llm_encode_codebook": "gan_rules_encode",
 }
 EFFECT_CLASS_ALIASES: dict[str, str] = {
     "schema": "extract",

@@ -56,9 +56,9 @@ Locked machine identities:
 | Paper method | Identity | What it is today |
 | --- | --- | --- |
 | 1 `rules_only` | `gan_rules` / `exect_rules` | No model |
-| 2 `llm_schema` | replay of `gan_llm_with_rules` / `exect_llm_only` | Schema only; shared raw with rungs 3–4 |
+| 2 `llm_schema` | replay of `gan_llm_extract_raw` / `exect_llm_only` | Schema only; shared raw with rungs 3–4 |
 | 3 `llm_format` | same raw | Label-dialect or format stop; must not re-pick the fact |
-| 4 `llm_post` | `gan_llm_with_rules` / replay `exect_llm_only` assembly | Full clinical post |
+| 4 `llm_post` | `gan_llm_extract_raw` / replay `exect_llm_only` assembly | Full clinical post |
 | 5 `llm_pre_post` | `gan_llm_pre_post` / `exect_llm_pre_post` | Candidates in the prompt, then the same post stack |
 
 `gan_llm_only` is not a results column. Luna is the Gan pre-post
@@ -76,7 +76,7 @@ Compact dump, Gan `v0.6`/`v0.7`/`v0.8_*`, leftover-form knobs,
 joint/`combined` assembly, ExECT GEPA, Gan multi-model as a separate
 method story.
 Today's Gan hybrid call (`v0.5`, with the envelope) is not the paper
-method. Do not relabel those cells as `gan_llm_with_rules`.
+method. Do not relabel those cells as `gan_llm_extract_raw`.
 
 The cleaned Gan request is a different call. Existing hybrid fills
 stay historical. They are not paper cells. Grok, Luna,
@@ -92,8 +92,8 @@ Known blanks on primary methods:
 | Cell | Why it is allowed |
 | --- | --- |
 | ExECT cell 3 (`exect_llm_only`, then rule encode and rule select): missing `exect_llm_only` extracts for Qwen, Gemma, and DeepSeek on `dev140`, then aggregate-only `test60` | Six-model row is cell 3 roster comparison, not peak (cell 4 is Gemini only). Rule replay is no-call once extract exists. Do not finish leftover Compact or hybrid panels as the primary job. Do not invent numbers. |
-| Gan cell 3 (`gan_llm_extract_label_forms`, then rule encode and rule select): missing extracts for Qwen, Gemma, and DeepSeek on `dev750`, then aggregate-only `test450` | Six-model row is cell 3 roster comparison, not peak (cell 4 is Gemini only). Rule replay is no-call once extract exists. Do not finish leftover hybrid or LLM-only panels as the primary job. Do not invent numbers. |
-| Gan `gan_llm_with_rules` on the cleaned request: DeepSeek, Qwen, and living Gemma on `dev750`, then the remaining five models on aggregate-only `test450` | Source-near ablation only. Grok cleaned `test450` (0.83) and Grok, Luna, Gemini `dev750` are on disk. Do not inspect holdout rows. Do not start new Sol live calls. |
+| Gan cell 3 (`gan_llm_extract`, then rule encode and rule select): missing extracts for Qwen, Gemma, and DeepSeek on `dev750`, then aggregate-only `test450` | Six-model row is cell 3 roster comparison, not peak (cell 4 is Gemini only). Rule replay is no-call once extract exists. Do not finish leftover hybrid or LLM-only panels as the primary job. Do not invent numbers. |
+| Gan `gan_llm_extract_raw` on the cleaned request: DeepSeek, Qwen, and living Gemma on `dev750`, then the remaining five models on aggregate-only `test450` | Source-near ablation only. Grok cleaned `test450` (0.83) and Grok, Luna, Gemini `dev750` are on disk. Do not inspect holdout rows. Do not start new Sol live calls. |
 
 Full ledger comparator cells that already exist do not need a new
 run. A comparator that is not in the manuscript is not a blank.
@@ -109,7 +109,7 @@ paper_experiments/
   README.md
   roster.json
   inventory.json
-  gan/{gan_rules,gan_llm_only,gan_llm_with_rules}/{model}/{split}/
+  gan/{gan_rules,gan_llm_only,gan_llm_extract_raw}/{model}/{split}/
   exect/{exect_rules,exect_llm_only,exect_llm_pre_post}/{model}/{split}/
   comparators/exect_full_ledger/{model}/{split}/   # only if cited
 ```
@@ -168,7 +168,7 @@ Strip from the working tree:
 
 - Gan prompt builders and switches for `v0.6`, `v0.7`, `v0.8_luna_*`,
   and `v0.8_deepseek_unknown`. Keep the cleaned request as
-  `gan_llm_with_rules`. Keep a temporary alias from the old `final`
+  `gan_llm_extract_raw`. Keep a temporary alias from the old `final`
   string until paper cells are rewritten.
 - ExECT prompt identities `v0.9.40`–`v0.9.44`, further-prune
   builders, naming grafts, and mention-unit / leftover-form study
@@ -232,10 +232,10 @@ parallel once a blank has a runner.
    Do not present Full hybrid or Full raw as table peers. GEPA, Gan
    multi-model, mention-encoder study prompts, Compact dump, and extra
    Gan prompt variants are out.
-2. **Gan hybrid payload (2026-08-17).** `gan_llm_with_rules` is the
+2. **Gan hybrid payload (2026-08-17).** `gan_llm_extract_raw` is the
    cleaned request, not today's enveloped `v0.5` call. It is a
    source-near ablation, not the cited Gan method. The six-model row
-   is cell 3 (`gan_llm_extract_label_forms`, rule encode, rule
+   is cell 3 (`gan_llm_extract`, rule encode, rule
    select). Do not cite 381/450 as the paper hybrid.
 3. **Gan LLM-only (2026-08-17).** `gan_llm_only` is a live runner
    identity. It is not a results column and not the six-model table.

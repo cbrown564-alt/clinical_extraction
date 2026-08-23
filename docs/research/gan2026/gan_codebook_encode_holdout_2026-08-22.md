@@ -6,13 +6,13 @@ Owner: [protocol](gan_codebook_encode_holdout_protocol_2026-08-22.md)
 Artifact: `experiments/gan_codebook_encode_holdout_20260822/summary.json`
 
 Frozen holdout for cell 3 (LLM / rules / rules), the six-model row:
-codebook extract, `llm_encode_codebook`, rule select (**0.83** select
+codebook extract, `gan_rules_encode`, rule select (**0.83** select
 stop). Leftover living extracts stay on disk; they are not the paper
 primary.
 
 ## Answer
 
-On locked `test450`, frozen `llm_encode_codebook` is **359/450 (0.80)**.
+On locked `test450`, frozen `gan_rules_encode` is **359/450 (0.80)**.
 That is above identity extract **354/450 (0.79)** and the historical
 selected-evidence encode **346/450 (0.77)**. Codebook encode then the
 living select families is **373/450 (0.83)**, above historical encode
@@ -26,9 +26,9 @@ the select stop.
 
 ## Protocol
 
-Gemini 3.7 Flash, Purist, saved `gan_llm_extract_label_forms` raw,
+Gemini 3.7 Flash, Purist, saved `gan_llm_extract` raw,
 zero model calls. Arms: identity, historical `llm_encode`, frozen
-`llm_encode_codebook`, `llm_select_after_codebook`, historical
+`gan_rules_encode`, `llm_select_after_codebook`, historical
 `llm_select`, and `llm_select_only`.
 
 ## Component result
@@ -47,7 +47,7 @@ the locked cell-3/4 stops.
 
 ## Candidate five-cell Purist
 
-Cell 3 encode is `llm_encode_codebook`. Cell 3 select is
+Cell 3 encode is `gan_rules_encode`. Cell 3 select is
 `llm_select_after_codebook`. Cells 1, 2, 4, and 5 are the locked
 published aggregates.
 
@@ -84,5 +84,5 @@ only. Promoted as the cited LLM / rules / rules row. Do not inspect
 
 ## Next
 
-Done: cited artifact uses `llm_encode_codebook` /
+Done: cited artifact uses `gan_rules_encode` /
 `llm_select_after_codebook`. Headline is the select stop.

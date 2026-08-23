@@ -6,13 +6,13 @@
 # Gan 2026 - LLM with rules
 
 Method id: `gan2026_llm_with_rules`  
-Role: **implemented runner (source-near wording ablation; cited Gan extract is gan_llm_extract_label_forms)**  
+Role: **implemented runner (source-near wording ablation; cited Gan extract is gan_llm_extract)**  
 Stages: 20
 Stages that may change clinical meaning: 11
 
 ## One sentence
 
-> The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer. This is the source-near wording ablation; the cited Gan extract is gan_llm_extract_label_forms.
+> The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer. This is the source-near wording ablation; the cited Gan extract is gan_llm_extract.
 
 ## Sixty seconds
 
@@ -424,7 +424,7 @@ These paths exist and are easy to mistake for this runner. They are named here s
 | --- | --- | --- |
 | `src/clinical_extraction/tasks/seizure_frequency/gan2026/runners/hybrid_structured_events.py` | research entry point | CLI wrapper over run_split; adds no clinical stage. |
 | `src/clinical_extraction/tasks/seizure_frequency/gan2026/experiments/repair_modes.py` | experiment control | Named repair modes switch repair families on and off for ablation. The default comparison uses llm_select. |
-| `src/clinical_extraction/paper/cli.py` | replay path | python -m clinical_extraction.paper run --method gan_llm_with_rules --model <slug> --split <dev750\|test450> |
+| `src/clinical_extraction/paper/cli.py` | replay path | python -m clinical_extraction.paper run --method gan_llm_extract_raw --model <slug> --split <dev750\|test450> |
 
 ## Executable trace
 

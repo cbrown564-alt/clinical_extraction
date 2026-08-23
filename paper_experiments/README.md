@@ -7,7 +7,7 @@ Headline tables are Gemini five-cell grids (rules, LLM, or both at
 extract / encode / select). The cited score is the select stop. The
 six-model comparison uses cell 3 only (LLM extract, rules encode, rules
 select) on both Gan and ExECT. Gan cell-3 extract is
-`gan_llm_extract_label_forms`; ExECT cell-3 extract is
+`gan_llm_extract`; ExECT cell-3 extract is
 `exect_llm_only`. ExECT cell 4 (LLM encode then rules select) is the
 Gemini-only peak, not the roster row.
 
@@ -32,14 +32,14 @@ Roster: [`roster.json`](roster.json). Inventory: [`inventory.json`](inventory.js
 | Path | What it is |
 | --- | --- |
 | `gan/gan_llm_only/` | Gan LLM-only baseline. Not a results column |
-| `gan/gan_llm_with_rules/` | Source-near Gan ablation (source wording vs form alignment) |
+| `gan/gan_llm_extract_raw/` | Source-near Gan ablation (source wording vs form alignment) |
 | `gan/gan_llm_pre_post/` | No-forms both-extract ablation. Not a headline column |
 | `exect/exect_llm_pre_post/` | Historical two-method hybrid. `exect_llm_with_rules` is a live alias only |
 | `gan/gan_llm_encode/` | Gan later-stage LLM encode. Gemini only |
 | `gan/gan_llm_select/` | Gan later-stage LLM select. Gemini only |
 | `exect/exect_llm_select/` | ExECT later-stage LLM select. Gemini only |
 | `current_stack/` | Historical Full-ledger / enveloped-Gan fills |
-| `gan/dev750_panel.json` | Frontend cell-3 development index (rules / extract / encode / select). Not `gan_llm_only` or `gan_llm_with_rules` |
+| `gan/dev750_panel.json` | Frontend cell-3 development index (rules / extract / encode / select). Not `gan_llm_only` or `gan_llm_extract_raw` |
 | `exect/dev140_panel.json` | Frontend cell-3 development index (rules / extract / encode / select on `exect_llm_only`). Not `exect_llm_pre_post` |
 
 Holdout raws keep only replay keys. Do not inspect `test450` or
@@ -58,7 +58,7 @@ Frontend pull:
 Promote a finished replay file with:
 
 ```bash
-python -m clinical_extraction.paper promote-gan --method gan_llm_extract_label_forms --model gemini37flash --split test450
+python -m clinical_extraction.paper promote-gan --method gan_llm_extract --model gemini37flash --split test450
 python -m clinical_extraction.paper promote-exect --method exect_llm_only --model grok46 --split test60
 ```
 

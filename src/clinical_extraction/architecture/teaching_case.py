@@ -960,7 +960,7 @@ def _gan_llm_only_run(spec: GanCaseSpec) -> MethodRun:
     return run
 
 
-def _gan_llm_with_rules_run(
+def _gan_llm_extract_raw_run(
     spec: GanCaseSpec,
     *,
     repair_mode: str = "llm_select",
@@ -1339,7 +1339,7 @@ def _gan_case(spec: GanCaseSpec) -> TeachingCase:
     case.runs = [
         _gan_rules_only_run(spec),
         _gan_llm_only_run(spec),
-        _gan_llm_with_rules_run(spec),
+        _gan_llm_extract_raw_run(spec),
     ]
     return case
 

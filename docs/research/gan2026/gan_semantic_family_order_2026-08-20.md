@@ -7,7 +7,7 @@ Owner: this file
 Protocol: [gan_semantic_family_order_protocol_2026-08-20.md](gan_semantic_family_order_protocol_2026-08-20.md)
 Artifact: `experiments/paper/gan_semantic_family_order/dev750_adjacent_swaps.json`
 
-Replay uses saved `gan_llm_with_rules` and living `gan_llm_pre_post`
+Replay uses saved `gan_llm_extract_raw` and living `gan_llm_pre_post`
 outputs — source-near ablation cells, not the cited five-cell table.
 Leftover living extracts stay on disk; they are not the paper primary.
 
@@ -28,8 +28,8 @@ Replay of the current post stack. No new model calls. Purist.
 
 | Cell | Default | Other adjacent swaps | Diary before elapsed |
 | --- | ---: | --- | --- |
-| Grok source-near (`gan_llm_with_rules`) | 0.91 | 0 help, 0 harm | 0 help, 2 harm (0.91) |
-| Luna source-near (`gan_llm_with_rules`) | 0.89 | 0 help, 0 harm | 0 help, 2 harm (0.89) |
+| Grok source-near (`gan_llm_extract_raw`) | 0.91 | 0 help, 0 harm | 0 help, 2 harm (0.91) |
+| Luna source-near (`gan_llm_extract_raw`) | 0.89 | 0 help, 0 harm | 0 help, 2 harm (0.89) |
 | Luna pre-post | 0.91 | 0 help, 0 harm | 0 / 0 |
 
 The two harmed letters are the same on Grok and Luna source-near:

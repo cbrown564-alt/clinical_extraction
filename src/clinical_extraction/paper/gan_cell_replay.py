@@ -51,7 +51,7 @@ def gan_hybrid_rows_path(slug: str, split: str) -> Path:
 
     return (
         ROOT
-        / "paper_experiments/gan/gan_llm_with_rules"
+        / "paper_experiments/gan/gan_llm_extract_raw"
         / slug
         / split
         / "rows.jsonl"
@@ -133,7 +133,7 @@ def replay_gan_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
     raw_path = gan_hybrid_rows_path(slug, split)
     if not raw_path.is_file():
         raise FileNotFoundError(
-            f"missing gan_llm_with_rules replay file for {slug} {split}: {raw_path}"
+            f"missing gan_llm_extract_raw replay file for {slug} {split}: {raw_path}"
         )
     records = {
         record.source_row_index: record
@@ -290,7 +290,7 @@ def _comparison_summary(
         "rungs": {
             rung: _rung_summary(scored, rung) for rung in RUNG_IDS if rung != "llm_pre_post"
         },
-        "shared_raw_output": "gan_llm_with_rules",
+        "shared_raw_output": "gan_llm_extract_raw",
         "split": split,
     }
 

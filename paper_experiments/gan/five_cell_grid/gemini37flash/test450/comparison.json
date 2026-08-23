@@ -20,7 +20,7 @@
       "extract_role": "both",
       "encode_role": "rules",
       "select_role": "rules",
-      "extract_source": "gan_llm_pre_post_label_forms",
+      "extract_source": "gan_llm_and_rules_extract",
       "select": 368,
       "ablation": {"extract": 371, "encode": 361}
     },
@@ -28,8 +28,8 @@
       "extract_role": "LLM",
       "encode_role": "rules",
       "select_role": "rules",
-      "extract_source": "gan_llm_extract_label_forms",
-      "encode_mode": "llm_encode_codebook",
+      "extract_source": "gan_llm_extract",
+      "encode_mode": "gan_rules_encode",
       "select_mode": "llm_select_after_codebook",
       "select": 373,
       "ablation": {"extract": 354, "encode": 359},
@@ -43,7 +43,7 @@
       "extract_role": "LLM",
       "encode_role": "LLM",
       "select_role": "rules",
-      "extract_source": "gan_llm_extract_label_forms",
+      "extract_source": "gan_llm_extract",
       "repair_mode": "llm_select_only",
       "select": 368,
       "ablation": {"extract": 354, "encode": 354}
@@ -52,13 +52,13 @@
       "extract_role": "LLM",
       "encode_role": "LLM",
       "select_role": "LLM",
-      "extract_source": "gan_llm_extract_label_forms",
+      "extract_source": "gan_llm_extract",
       "select_method": "gan_llm_select_from_extract",
       "select": 357,
       "ablation": {"extract": 354, "encode": 354}
     }
   },
-  "source_near_ablation_gan_llm_with_rules": {
+  "source_near_ablation_gan_llm_extract_raw": {
     "llm": {"extract": 246, "encode": 291, "select": 320},
     "llm_then_rules": {"extract": 246, "encode": 335, "select": 357},
     "rules_then_llm_living_pre_post": {"extract": 265, "encode": 345, "select": 358}

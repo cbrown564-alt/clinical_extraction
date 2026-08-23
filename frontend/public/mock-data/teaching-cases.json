@@ -187,7 +187,7 @@
           }
         },
         {
-          "method_id": "gan_llm_pre_post_label_forms",
+          "method_id": "gan_llm_and_rules_extract",
           "method_label": "LLM with rules",
           "one_sentence": "Both extract, then rule encode and select.",
           "prediction_owner": "the model proposes and selects (gan.llm_with_rules.model_call); ten deterministic repair families may change the answer afterwards",
@@ -196,7 +196,7 @@
           "correctness_note": "purist predicted seizure_freq_more1mon_less1week vs gold seizure_freq_more1mon_less1week; pragmatic predicted seizure_frequent vs gold seizure_frequent",
           "observations": [
             {
-              "stage_id": "gan_llm_pre_post_label_forms.extract",
+              "stage_id": "gan_llm_and_rules_extract.extract",
               "stage_name": "Extract",
               "owner": "model",
               "effect_class": "clinical_meaning",
@@ -206,7 +206,7 @@
               "note": "Cell 2: Gemini 3.7 Flash extract on the label-forms pre-post request; rules own encode and select."
             },
             {
-              "stage_id": "gan_llm_pre_post_label_forms.encode",
+              "stage_id": "gan_llm_and_rules_extract.encode",
               "stage_name": "Encode",
               "owner": "deterministic",
               "effect_class": "representation",
@@ -216,7 +216,7 @@
               "note": "Codebook encode is deterministic after the joint extract."
             },
             {
-              "stage_id": "gan_llm_pre_post_label_forms.select",
+              "stage_id": "gan_llm_and_rules_extract.select",
               "stage_name": "Select",
               "owner": "deterministic",
               "effect_class": "clinical_meaning",
@@ -426,7 +426,7 @@
               "note": "The scorer turns one label into two categorical verdicts."
             },
             {
-              "stage_id": "gan_llm_pre_post_label_forms.score",
+              "stage_id": "gan_llm_and_rules_extract.score",
               "stage_name": "Score",
               "owner": "scorer",
               "effect_class": "benchmark_projection",
@@ -506,7 +506,7 @@
           }
         },
         {
-          "method_id": "gan_llm_extract_label_forms",
+          "method_id": "gan_llm_extract",
           "method_label": "LLM with rules",
           "one_sentence": "LLM codebook extract, then rule encode and select.",
           "prediction_owner": "the model proposes and selects (gan.llm_with_rules.model_call); ten deterministic repair families may change the answer afterwards",
@@ -515,7 +515,7 @@
           "correctness_note": "purist predicted seizure_freq_more1mon_less1week vs gold seizure_freq_more1mon_less1week; pragmatic predicted seizure_frequent vs gold seizure_frequent",
           "observations": [
             {
-              "stage_id": "gan_llm_extract_label_forms.extract",
+              "stage_id": "gan_llm_extract.extract",
               "stage_name": "Extract",
               "owner": "model",
               "effect_class": "clinical_meaning",
@@ -525,7 +525,7 @@
               "note": "Cell 3 headline: Gemini 3.7 Flash codebook extract."
             },
             {
-              "stage_id": "gan_llm_extract_label_forms.encode",
+              "stage_id": "gan_llm_extract.encode",
               "stage_name": "Encode",
               "owner": "deterministic",
               "effect_class": "representation",
@@ -535,7 +535,7 @@
               "note": "Deterministic codebook encode after the extract."
             },
             {
-              "stage_id": "gan_llm_extract_label_forms.select",
+              "stage_id": "gan_llm_extract.select",
               "stage_name": "Select",
               "owner": "deterministic",
               "effect_class": "clinical_meaning",
@@ -755,7 +755,7 @@
               "note": "The scorer turns one label into two categorical verdicts."
             },
             {
-              "stage_id": "gan_llm_extract_label_forms.score",
+              "stage_id": "gan_llm_extract.score",
               "stage_name": "Score",
               "owner": "scorer",
               "effect_class": "benchmark_projection",
@@ -1399,7 +1399,7 @@
           }
         },
         {
-          "method_id": "gan_llm_pre_post_label_forms",
+          "method_id": "gan_llm_and_rules_extract",
           "method_label": "LLM with rules",
           "one_sentence": "Both extract, then rule encode and select.",
           "prediction_owner": "the model proposes and selects (gan.llm_with_rules.model_call); ten deterministic repair families may change the answer afterwards",
@@ -1408,7 +1408,7 @@
           "correctness_note": "purist predicted seizure_freq_unknown vs gold seizure_freq_unknown; pragmatic predicted seizure_freq_unknown vs gold seizure_freq_unknown",
           "observations": [
             {
-              "stage_id": "gan_llm_pre_post_label_forms.extract",
+              "stage_id": "gan_llm_and_rules_extract.extract",
               "stage_name": "Extract",
               "owner": "model",
               "effect_class": "clinical_meaning",
@@ -1418,7 +1418,7 @@
               "note": "Cell 2: Gemini 3.7 Flash extract on the label-forms pre-post request; rules own encode and select."
             },
             {
-              "stage_id": "gan_llm_pre_post_label_forms.encode",
+              "stage_id": "gan_llm_and_rules_extract.encode",
               "stage_name": "Encode",
               "owner": "deterministic",
               "effect_class": "representation",
@@ -1428,7 +1428,7 @@
               "note": "Codebook encode is deterministic after the joint extract."
             },
             {
-              "stage_id": "gan_llm_pre_post_label_forms.select",
+              "stage_id": "gan_llm_and_rules_extract.select",
               "stage_name": "Select",
               "owner": "deterministic",
               "effect_class": "clinical_meaning",
@@ -1638,7 +1638,7 @@
               "note": "The scorer turns one label into two categorical verdicts."
             },
             {
-              "stage_id": "gan_llm_pre_post_label_forms.score",
+              "stage_id": "gan_llm_and_rules_extract.score",
               "stage_name": "Score",
               "owner": "scorer",
               "effect_class": "benchmark_projection",
@@ -1748,7 +1748,7 @@
           }
         },
         {
-          "method_id": "gan_llm_extract_label_forms",
+          "method_id": "gan_llm_extract",
           "method_label": "LLM with rules",
           "one_sentence": "LLM codebook extract, then rule encode and select.",
           "prediction_owner": "the model proposes and selects (gan.llm_with_rules.model_call); ten deterministic repair families may change the answer afterwards",
@@ -1757,7 +1757,7 @@
           "correctness_note": "purist predicted seizure_freq_1_per_yr vs gold seizure_freq_unknown; pragmatic predicted seizure_infrequent vs gold seizure_freq_unknown",
           "observations": [
             {
-              "stage_id": "gan_llm_extract_label_forms.extract",
+              "stage_id": "gan_llm_extract.extract",
               "stage_name": "Extract",
               "owner": "model",
               "effect_class": "clinical_meaning",
@@ -1767,7 +1767,7 @@
               "note": "Cell 3 headline: Gemini 3.7 Flash codebook extract."
             },
             {
-              "stage_id": "gan_llm_extract_label_forms.encode",
+              "stage_id": "gan_llm_extract.encode",
               "stage_name": "Encode",
               "owner": "deterministic",
               "effect_class": "representation",
@@ -1777,7 +1777,7 @@
               "note": "Deterministic codebook encode after the extract."
             },
             {
-              "stage_id": "gan_llm_extract_label_forms.select",
+              "stage_id": "gan_llm_extract.select",
               "stage_name": "Select",
               "owner": "deterministic",
               "effect_class": "clinical_meaning",
@@ -1997,7 +1997,7 @@
               "note": "The scorer turns one label into two categorical verdicts."
             },
             {
-              "stage_id": "gan_llm_extract_label_forms.score",
+              "stage_id": "gan_llm_extract.score",
               "stage_name": "Score",
               "owner": "scorer",
               "effect_class": "benchmark_projection",
@@ -7430,10 +7430,10 @@
       ]
     },
     {
-      "method_id": "gan_llm_pre_post_label_forms",
+      "method_id": "gan_llm_and_rules_extract",
       "task": "gan2026",
       "task_label": "Gan 2026",
-      "method": "gan_llm_pre_post_label_forms",
+      "method": "gan_llm_and_rules_extract",
       "method_label": "LLM with rules",
       "role": "paper cell",
       "entry_point": {
@@ -7446,7 +7446,7 @@
       "scored_representation": "",
       "stages": [
         {
-          "stage_id": "gan_llm_pre_post_label_forms.extract",
+          "stage_id": "gan_llm_and_rules_extract.extract",
           "name": "Extract",
           "operation": "Cell 2: Gemini 3.7 Flash extract on the label-forms pre-post request; rules own encode and select.",
           "owner": "model",
@@ -7465,7 +7465,7 @@
           "paper_wording": "Cell 2: Gemini 3.7 Flash extract on the label-forms pre-post request; rules own encode and select."
         },
         {
-          "stage_id": "gan_llm_pre_post_label_forms.encode",
+          "stage_id": "gan_llm_and_rules_extract.encode",
           "name": "Encode",
           "operation": "Codebook encode is deterministic after the joint extract.",
           "owner": "deterministic",
@@ -7484,7 +7484,7 @@
           "paper_wording": "Codebook encode is deterministic after the joint extract."
         },
         {
-          "stage_id": "gan_llm_pre_post_label_forms.select",
+          "stage_id": "gan_llm_and_rules_extract.select",
           "name": "Select",
           "operation": "Select families are deterministic.",
           "owner": "deterministic",
@@ -7883,7 +7883,7 @@
           "paper_wording": "The scorer turns one label into two categorical verdicts."
         },
         {
-          "stage_id": "gan_llm_pre_post_label_forms.score",
+          "stage_id": "gan_llm_and_rules_extract.score",
           "name": "Score",
           "operation": "The scorer turns one label into two categorical verdicts.",
           "owner": "scorer",
@@ -7904,10 +7904,10 @@
       ]
     },
     {
-      "method_id": "gan_llm_extract_label_forms",
+      "method_id": "gan_llm_extract",
       "task": "gan2026",
       "task_label": "Gan 2026",
-      "method": "gan_llm_extract_label_forms",
+      "method": "gan_llm_extract",
       "method_label": "LLM with rules",
       "role": "paper cell",
       "entry_point": {
@@ -7920,7 +7920,7 @@
       "scored_representation": "",
       "stages": [
         {
-          "stage_id": "gan_llm_extract_label_forms.extract",
+          "stage_id": "gan_llm_extract.extract",
           "name": "Extract",
           "operation": "Cell 3 headline: Gemini 3.7 Flash codebook extract.",
           "owner": "model",
@@ -7939,7 +7939,7 @@
           "paper_wording": "Cell 3 headline: Gemini 3.7 Flash codebook extract."
         },
         {
-          "stage_id": "gan_llm_extract_label_forms.encode",
+          "stage_id": "gan_llm_extract.encode",
           "name": "Encode",
           "operation": "Deterministic codebook encode after the extract.",
           "owner": "deterministic",
@@ -7958,7 +7958,7 @@
           "paper_wording": "Deterministic codebook encode after the extract."
         },
         {
-          "stage_id": "gan_llm_extract_label_forms.select",
+          "stage_id": "gan_llm_extract.select",
           "name": "Select",
           "operation": "Deterministic select families.",
           "owner": "deterministic",
@@ -8376,7 +8376,7 @@
           "paper_wording": "The scorer turns one label into two categorical verdicts."
         },
         {
-          "stage_id": "gan_llm_extract_label_forms.score",
+          "stage_id": "gan_llm_extract.score",
           "name": "Score",
           "operation": "The scorer turns one label into two categorical verdicts.",
           "owner": "scorer",

@@ -87,7 +87,7 @@ describe("api/client", () => {
     }) as unknown as typeof fetch;
 
     await fetchGanDev750Panel();
-    await fetchGanDev750Scored("gan_llm_with_rules", "grok46");
+    await fetchGanDev750Scored("gan_llm_extract_raw", "grok46");
     expect(global.fetch).toHaveBeenNthCalledWith(
       1,
       "/api/paper/gan/dev750",
@@ -95,7 +95,7 @@ describe("api/client", () => {
     );
     expect(global.fetch).toHaveBeenNthCalledWith(
       2,
-      "/api/paper/gan/dev750/gan_llm_with_rules/grok46/scored",
+      "/api/paper/gan/dev750/gan_llm_extract_raw/grok46/scored",
       expect.objectContaining({ headers: { "Content-Type": "application/json" } })
     );
   });

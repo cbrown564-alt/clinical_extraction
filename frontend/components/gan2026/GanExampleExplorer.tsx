@@ -61,7 +61,7 @@ function AggregateInspector() {
           <h3 className="text-sm font-semibold">Aggregate evidence</h3>
         </div>
         <p className="text-sm leading-6 text-foreground">
-          This gan_llm_with_rules condition retains Purist and Pragmatic totals across 450 test rows.
+          This gan_llm_extract_raw condition retains Purist and Pragmatic totals across 450 test rows.
         </p>
         <div className="mt-3 flex items-start gap-2 text-xs leading-5 text-muted">
           <LockKeyhole className="mt-0.5 h-3.5 w-3.5 shrink-0" />

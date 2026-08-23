@@ -42,11 +42,11 @@ are a design property, not a third evaluated task.
 | Submitted answer | One canonical frequency label | One de-duplicated fact inventory |
 | How this paper scores it | Label mapped to a monthly Purist band | Four-family clinical fact F1 |
 
-On Gan, **LLM** extract is `gan_llm_extract_label_forms`. **both**
-extract is `gan_llm_pre_post_label_forms`. LLM encode means that
+On Gan, **LLM** extract is `gan_llm_extract`. **both**
+extract is `gan_llm_and_rules_extract`. LLM encode means that
 extract already wrote the codebook form. LLM-then-rules encode is
-`llm_encode_codebook`. **LLM** select is
-`gan_llm_select_from_extract`. `gan_llm_with_rules` is the
+`gan_rules_encode`. **LLM** select is
+`gan_llm_select_from_extract`. `gan_llm_extract_raw` is the
 source-near ablation. `gan_llm_only` is a third prompt. It is not
 a results column.
 
@@ -95,8 +95,8 @@ plain-language owner is
 | Extract | Encode | Select | Gan | ExECT |
 | --- | --- | --- | --- | --- |
 | rules | rules | rules | `gan_rules` | `exect_rules` |
-| both | rules | rules | `gan_llm_pre_post_label_forms`, then rule encode and select | `exect_llm_pre_post`, then rule encode and select |
-| LLM | rules | rules | `gan_llm_extract_label_forms`, then `llm_encode_codebook` and rule select | `exect_llm_only`, then rule encode and select |
+| both | rules | rules | `gan_llm_and_rules_extract`, then rule encode and select | `exect_llm_pre_post`, then rule encode and select |
+| LLM | rules | rules | `gan_llm_extract`, then `gan_rules_encode` and rule select | `exect_llm_only`, then rule encode and select |
 | LLM | LLM | rules | Same extract; select families only | Same extract; later-stage encode, then accepted Select |
 | LLM | LLM | LLM | `gan_llm_select_from_extract` | later-stage `exect_llm_select` |
 
@@ -114,7 +114,7 @@ five-cell grids. The cited score is the select stop.
 
 **Six-model comparison (both tasks):** only cell 3 — LLM extract,
 rules encode, rules select. Gan extract is
-`gan_llm_extract_label_forms`. ExECT extract is `exect_llm_only`.
+`gan_llm_extract`. ExECT extract is `exect_llm_only`.
 Rule encode and rule select replay on that raw. This row is the
 roster comparison because the model does one extract and the rules
 are fixed. It is not the peak ExECT row (that is LLM encode then
@@ -125,7 +125,7 @@ Flash 0731, Qwen 3.8 27B, Gemma 4 26B. Sol is historical.
 and high thinking. Thinking can change extract only. Do not run a
 thinking grid on later-stage encode or select.
 
-**Source-near Gan ablation (Gemini):** `gan_llm_with_rules` extract
+**Source-near Gan ablation (Gemini):** `gan_llm_extract_raw` extract
 keeps letter wording and scores lower. Rule encode and rule select
 recover most of the score. This shows the method can trade source
 wording against form alignment. It is not a claim that the softer
@@ -134,9 +134,9 @@ extract preserves clinical reasoning. It is not a results column.
 **Stage ablations:** extract and encode stops on the cited rows.
 Later-stage LLM encode and LLM select stay Gemini only.
 
-Do not present leftover living extracts (`gan_llm_only`, no-forms
-`gan_llm_pre_post`, source-near hybrid as a headline, ExECT producer
-raw F1) as primary results.
+Do not present leftover living extracts (`gan_llm_only`, source-near
+`gan_llm_extract_raw` as a headline, ExECT producer raw F1) as
+primary results.
 
 See [Gemini is the cited model](decisions/gemini-is-the-cited-model.md)
 and [six-model roster](decisions/six-model-roster.md).
@@ -151,7 +151,7 @@ Machine roster: [`paper_experiments/roster.json`](../../paper_experiments/roster
 
 Replayable paper numbers live under `paper_experiments/`. Holdout
 files keep only replay keys. A later Gan `test450` rung replay of
-saved `gan_llm_with_rules` raw writes aggregate `comparison.json`
+saved `gan_llm_extract_raw` raw writes aggregate `comparison.json`
 only. Do not inspect `test450` or `test60` rows.
 
 Missing cells and the only allowed new runs are listed in

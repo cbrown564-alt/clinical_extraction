@@ -30,7 +30,7 @@ can replace the published Gemini grid.
 
 ## Candidate arms
 
-1. **LLM extract / encode** — `gan_llm_extract_label_forms` at
+1. **LLM extract / encode** — `gan_llm_extract` at
    extract stop. Same score in both columns. Reuse the existing
    frozen scratch cell if it is complete; do not pay for a second
    extract draw.
@@ -38,13 +38,13 @@ can replace the published Gemini grid.
    ledger. Fresh call. No encode work cell. No hybrid post-stack.
 3. **Cell 4** — no-call `llm_select_only` on the frozen extract
    raw. Aggregate only.
-4. **Rules then LLM** — fresh `gan_llm_pre_post_label_forms`, then
+4. **Rules then LLM** — fresh `gan_llm_and_rules_extract`, then
    no-call rule encode/select on that raw (`note_text` on).
    Aggregate only.
 
 ## Fixed comparators
 
-- Source-near ablation grid on `gan_llm_with_rules` / living
+- Source-near ablation grid on `gan_llm_extract_raw` / living
   `gan_llm_pre_post` (not the cited five-cell table)
 - Do not overwrite those living cells
 - Do not run later-stage `gan_llm_encode` or encode-then-select

@@ -10,7 +10,7 @@ This report reads the locked Gemini Gan grid. The cited table is
 five role rows; the headline score is the select stop. See
 [five-cell grid](../gan2026/gan_five_cell_grid_2026-08-22.md).
 Worked letters below are development illustrations, some still on
-the source-near `gan_llm_with_rules` ledger. Holdout is
+the source-near `gan_llm_extract_raw` ledger. Holdout is
 aggregate-only. Do not inspect `test450` rows. ExECT is a separate
 report.
 
@@ -33,12 +33,12 @@ the select stop:
 | Extract | Encode | Select | What runs |
 | --- | --- | --- | --- |
 | rules | rules | rules | `gan_rules` — standalone deterministic pipeline; not the encode/select stack on a model ledger |
-| both | rules | rules | `gan_llm_pre_post_label_forms`, then rule encode and select |
-| LLM | rules | rules | `gan_llm_extract_label_forms` (codebook), then codebook encode and rule select — **six-model row** |
+| both | rules | rules | `gan_llm_and_rules_extract`, then rule encode and select |
+| LLM | rules | rules | `gan_llm_extract` (codebook), then codebook encode and rule select — **six-model row** |
 | LLM | LLM | rules | Same codebook extract; select families only |
 | LLM | LLM | LLM | Same extract; `gan_llm_select_from_extract` |
 
-`gan_llm_with_rules` is the source-near **wording ablation**, not the
+`gan_llm_extract_raw` is the source-near **wording ablation**, not the
 cited extract. `gan_llm_only` is a third prompt. It is not a results
 column.
 
@@ -69,12 +69,12 @@ ablations in the five-cell owner.
 | LLM | LLM | rules | 0.82 |
 | LLM | LLM | LLM | 0.79 |
 
-The source-near `gan_llm_with_rules` grid (LLM extract 0.55,
+The source-near `gan_llm_extract_raw` grid (LLM extract 0.55,
 later-stage select 0.71, hybrid select 0.79) is an ablation.
 
 Select on both hybrid rows is ledger-only: drop, regroup, or relabel
 events already collected. `elapsed_anchor` and `residual_jerk` are
-off. The source-near wording ablation (`gan_llm_with_rules`) reaches
+off. The source-near wording ablation (`gan_llm_extract_raw`) reaches
 0.79 at select. **both** / rules / rules is 0.82. The paper may not
 say which holdout letters moved. It may not say the softer extract
 preserves clinical reasoning.
@@ -110,7 +110,7 @@ read.
 | LLM | LLM | rules | 0.85 |
 | LLM | LLM | LLM | 0.79 |
 
-The source-near `gan_llm_with_rules` development grid (extract 0.59,
+The source-near `gan_llm_extract_raw` development grid (extract 0.59,
 later-stage 0.67 / 0.76, hybrid select 0.88) stays an ablation. On that
 older raw, selected-evidence render never changed
 `selected_event_ids` (219 kind changes; 167 Purist rescues; three
@@ -176,7 +176,7 @@ is **LLM / rules / rules** at 0.83. **both / rules / rules** is 0.82 —
 one letter below the headline, nine above standalone rules (0.73).
 
 The cause is still visible earlier than select, but the numbers below
-are on the **wording ablation** (`gan_llm_with_rules`), not the cited
+are on the **wording ablation** (`gan_llm_extract_raw`), not the cited
 codebook extract.
 
 **The extract gap is the large one on that ablation.** Standalone rules
@@ -207,7 +207,7 @@ before the call.
 ## Why rule encode and select lift the wording ablation
 
 These comparisons are on the source-near **wording ablation**
-(`gan_llm_with_rules`), not the cited codebook extract. They explain
+(`gan_llm_extract_raw`), not the cited codebook extract. They explain
 why rule stops after a softer extract still recover score.
 
 ### Encode: 0.65 → 0.74 locked; 0.67 → 0.81 development
@@ -262,7 +262,7 @@ stays in the quoted span.
 | Role row | Extract | Encode | Select |
 | --- | --- | --- | --- |
 | **rules / rules / rules** | `4 per day` | same | same |
-| **Wording ablation** (`gan_llm_with_rules`) | `up to 4 per day` (miss; unscorable) | `4 per day` | `4 per day` |
+| **Wording ablation** (`gan_llm_extract_raw`) | `up to 4 per day` (miss; unscorable) | `4 per day` | `4 per day` |
 | **both / rules / rules** | `4 per day` | — | `4 per day` |
 
 Gemini already selected event `e2` and quoted the bound. Extract keeps
@@ -302,7 +302,7 @@ week`, later-stage Gemini encode keeps a cluster template
 ### 3. A two-part cluster the free extract flattened (row `15431`)
 
 Gold is `1 cluster per 4 month, 5 per cluster`. Rules submit that
-label. The wording ablation (`gan_llm_with_rules`) extract writes `5 per day` from
+label. The wording ablation (`gan_llm_extract_raw`) extract writes `5 per day` from
 
 > experience clusters of 5 seizures in a single day
 

@@ -61,7 +61,7 @@ def _hybrid_raw() -> str:
 
 def test_hydrate_saved_hybrid_row_rebuilds_structured_trace() -> None:
     row = hydrate_saved_raw_row(
-        "gan_llm_with_rules",
+        "gan_llm_extract_raw",
         _record(),
         _hybrid_raw(),
     )

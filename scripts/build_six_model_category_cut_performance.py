@@ -937,7 +937,7 @@ def _panel_checks(gan: dict[str, Any], exect: dict[str, Any]) -> dict[str, Any]:
             {
                 "slug": slug,
                 "gan_llm_match": abs(gan_llm - panel_gan["llm_purist_accuracy"]) < 1e-3,
-                "gan_llm_with_rules_match": abs(
+                "gan_llm_extract_raw_match": abs(
                     gan_hybrid - panel_gan["llm_with_rules_purist_accuracy"]
                 )
                 < 1e-3,
@@ -947,8 +947,8 @@ def _panel_checks(gan: dict[str, Any], exect: dict[str, Any]) -> dict[str, Any]:
                 < 1e-3,
                 "gan_llm": gan_llm,
                 "gan_llm_panel": panel_gan["llm_purist_accuracy"],
-                "gan_llm_with_rules": gan_hybrid,
-                "gan_llm_with_rules_panel": panel_gan["llm_with_rules_purist_accuracy"],
+                "gan_llm_extract_raw": gan_hybrid,
+                "gan_llm_extract_raw_panel": panel_gan["llm_with_rules_purist_accuracy"],
                 "exect_llm_with_rules": exect_hybrid,
                 "exect_llm_with_rules_panel": panel_exect["llm_with_rules_clinical_fact_f1"],
                 "exect_llm_helper": exect["methods"]["llm"][slug]["overall"]["clinical_fact_f1"],
@@ -960,7 +960,7 @@ def _panel_checks(gan: dict[str, Any], exect: dict[str, Any]) -> dict[str, Any]:
         "checks": checks,
         "all_gan_and_exect_hybrid_match": all(
             item["gan_llm_match"]
-            and item["gan_llm_with_rules_match"]
+            and item["gan_llm_extract_raw_match"]
             and item["exect_llm_with_rules_match"]
             for item in checks
         ),

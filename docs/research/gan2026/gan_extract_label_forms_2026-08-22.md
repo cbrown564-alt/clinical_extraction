@@ -4,11 +4,11 @@ Date: 2026-08-22
 Revised: 2026-08-22 (cited LLM extract column)
 Status: development answer plus locked aggregate
 Owner: [protocol](gan_extract_label_forms_protocol_2026-08-22.md)
-Work cells: `experiments/paper/gan_llm_extract_label_forms/gemini37flash/dev750/`
+Work cells: `experiments/paper/gan_llm_extract/gemini37flash/dev750/`
 and scratch `.../test450/` (aggregate only).
 
 This request is the cited Gemini LLM extract
-(`gan_llm_extract_label_forms`). `gan_llm_with_rules` is the source-near
+(`gan_llm_extract`). `gan_llm_extract_raw` is the source-near
 wording ablation (extract ~0.55 holdout; rules recover to ~0.79), not the
 paper extract column. Leftover living extracts stay on disk; they are not
 the paper primary.
@@ -25,16 +25,16 @@ Holdout rows were not inspected.
 ## Protocol
 
 Gemini 3.7 Flash, Purist, extract stop (`raw_model`). New request
-`gan_llm_extract_label_forms`. The promoted `gan_llm_with_rules`
+`gan_llm_extract`. The promoted `gan_llm_extract_raw`
 prompt was not changed. `test450` is aggregate-only.
 
 ## Component result
 
 | Cell | Purist | Pragmatic | Scorable |
 | --- | ---: | ---: | ---: |
-| `gan_llm_with_rules` extract | 0.59 | 0.62 | 532 |
+| `gan_llm_extract_raw` extract | 0.59 | 0.62 | 532 |
 | Later-stage encode on that ledger | 0.67 | 0.71 | 750 |
-| `gan_llm_extract_label_forms` extract | **0.78** | **0.82** | **748** |
+| `gan_llm_extract` extract | **0.78** | **0.82** | **748** |
 | Locked `test450` extract (aggregate) | **0.79** | **0.81** | 449 structured |
 
 216 of the 218 previously unscorable extract letters became scorable.
@@ -58,7 +58,7 @@ ceiling for a letter-in extract change.
 
 Development answer on Gemini `dev750`, plus a frozen-prompt
 aggregate on `test450`. Cited as the LLM extract column in the five-cell
-table. `gan_llm_with_rules` remains the source-near wording ablation. Do
+table. `gan_llm_extract_raw` remains the source-near wording ablation. Do
 not retune
 `label_forms` from development misses or holdout totals. Do not
 inspect holdout rows.

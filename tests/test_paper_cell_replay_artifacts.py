@@ -33,7 +33,7 @@ def test_gan_dev750_rungs_use_selected_evidence_as_encode() -> None:
     assert rungs["llm_encode"]["purist_correct"] == 603
     assert rungs["llm_select"]["purist_correct"] == 671
     assert rungs["rules_only"]["purist_correct"] == 669
-    assert payload["shared_raw_output"] == "gan_llm_with_rules"
+    assert payload["shared_raw_output"] == "gan_llm_extract_raw"
     assert payload["claim_boundary"].startswith("Gan development")
     # Sealed file may still emit the old string.
     assert check["repair_mode"] in {

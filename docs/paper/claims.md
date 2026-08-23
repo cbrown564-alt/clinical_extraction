@@ -34,7 +34,7 @@ Gemini 3.7 Flash is the cited model, so the story stays on the
 method. The six-model comparison is cell 3 only (LLM extract, rules
 encode, rules select) on both tasks. Thinking low / medium / high
 is a Gemini cell-3 extract ablation. The source-near Gan extract
-(`gan_llm_with_rules`) is a wording-versus-form ablation, not a
+(`gan_llm_extract_raw`) is a wording-versus-form ablation, not a
 results column. Later-stage LLM encode and LLM select calls are
 Gemini only. Scores do not move between tasks.
 
@@ -79,14 +79,14 @@ research measure. It is not the published 2019 ExECT benchmark.
 The Gan headline comparison is five role combinations (rules, LLM,
 or both at extract / encode / select). The cited score is the select
 stop. On Gan, LLM extract is the codebook extract
-(`gan_llm_extract_label_forms`). **both** extract is
-`gan_llm_pre_post_label_forms`. LLM encode means that extract already
-wrote the form. LLM-then-rules encode is `llm_encode_codebook`. LLM
+(`gan_llm_extract`). **both** extract is
+`gan_llm_and_rules_extract`. LLM encode means that extract already
+wrote the form. LLM-then-rules encode is `gan_rules_encode`. LLM
 select is `gan_llm_select_from_extract`. ExECT uses the same five
 role rows. LLM extract is `exect_llm_only`. both extract is
 `exect_llm_pre_post`. LLM encode is later-stage `exect_llm_encode`.
 LLM / LLM / rules is accepted Select on that encode ledger. LLM
-select is later-stage `exect_llm_select`. The old `gan_llm_with_rules` grid is the source-near wording
+select is later-stage `exect_llm_select`. The old `gan_llm_extract_raw` grid is the source-near wording
 ablation, not a headline. The six-model row is LLM / rules / rules
 on both tasks. The worked reading is
 [five cells of rule help](../paper/method_x_stage.md),
@@ -130,13 +130,13 @@ rules, are 0.82. It may say LLM select is 0.79. It may say extract
 and encode stops are prior-stage ablations, not a second headline
 table. It may not say which letters moved. The historical
 selected-evidence encoder on the codebook extract (encode 0.77,
-select 0.80) stays an ablation. The source-near `gan_llm_with_rules`
+select 0.80) stays an ablation. The source-near `gan_llm_extract_raw`
 grid (LLM extract 0.55, later-stage select 0.71, hybrid select 0.79)
 stays an ablation: the softer extract keeps letter wording and
 scores 0.55; rule encode and rule select recover to 0.79. The paper
 may say that shows wording can be kept and later mapped into the
 gold form. It may not say the softer extract preserves clinical
-reasoning. Grok living `gan_llm_with_rules` 0.83 was not re-scored
+reasoning. Grok living `gan_llm_extract_raw` 0.83 was not re-scored
 on the codebook stack. The six-model comparison for this paper is
 the codebook cell 3, not that source-near hybrid.
 
@@ -165,14 +165,13 @@ Named Gemini `dev750` select stops on the same codebook extract.
 | LLM | LLM | rules | 0.85 |
 | LLM | LLM | LLM | 0.79 |
 
-The source-near `gan_llm_with_rules` development grid (extract 0.59,
+The source-near `gan_llm_extract_raw` development grid (extract 0.59,
 later-stage encode 0.67 / select 0.76, hybrid select 0.88) stays an
 ablation. Locked `test450` stage cuts are in the table under locked
 totals.
 
-Companion Grok LLM then rules on `gan_llm_with_rules`: extract
-0.49, encode 0.80, select 0.89. Grok Rules then LLM on
-`gan_llm_pre_post`: extract 0.62, encode 0.84, select 0.91.
+Companion Grok LLM then rules on `gan_llm_extract_raw`: extract
+0.49, encode 0.80, select 0.89.
 
 On the Gemini raw, selected-evidence render never changed
 `selected_event_ids`, so it is encode. It changed predicted kind 219

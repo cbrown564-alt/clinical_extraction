@@ -62,7 +62,7 @@ LaterStageMethod = Literal[
     "gan_llm_select_from_extract",
 ]
 CITED_SLUG = "gemini37flash"
-EXTRACT_METHOD = "gan_llm_extract_label_forms"
+EXTRACT_METHOD = "gan_llm_extract"
 GAN_LLM_SELECT_FROM_EXTRACT = "gan_llm_select_from_extract"
 LLM_ENCODE_IS_EXTRACT = True
 LLM_SELECT_METHOD = GAN_LLM_SELECT_FROM_EXTRACT
@@ -101,6 +101,11 @@ def extract_rows_path(split: str, slug: str = CITED_SLUG) -> Path:
     candidates = [
         (HOLDOUT_SCRATCH if holdout else WORK_ROOT)
         / EXTRACT_METHOD
+        / slug
+        / split
+        / "rows.jsonl",
+        (HOLDOUT_SCRATCH if holdout else WORK_ROOT)
+        / "gan_llm_extract_label_forms"
         / slug
         / split
         / "rows.jsonl",
@@ -350,7 +355,7 @@ def run_later_stage(
             "Gan aggregate-only test450 later-stage cell. Do not inspect holdout rows."
             if holdout
             else (
-                "Gan development later-stage cell on gan_llm_extract_label_forms. "
+                "Gan development later-stage cell on gan_llm_extract. "
                 "Not holdout. No hybrid post-stack."
             )
         ),

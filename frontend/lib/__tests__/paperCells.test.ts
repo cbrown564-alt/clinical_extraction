@@ -44,10 +44,10 @@ describe("paper cells", () => {
   it("maps cells onto paper teaching MethodId values", () => {
     expect(methodIdFor("gan2026", "rules_only")).toBe("gan_rules");
     expect(methodIdFor("gan2026", "llm_pre_post")).toBe(
-      "gan_llm_pre_post_label_forms"
+      "gan_llm_and_rules_extract"
     );
     expect(methodIdFor("gan2026", "llm_extract")).toBe(
-      "gan_llm_extract_label_forms"
+      "gan_llm_extract"
     );
     expect(methodIdFor("gan2026", "llm_encode")).toBe("gan_llm_encode");
     expect(methodIdFor("gan2026", "llm_select")).toBe(

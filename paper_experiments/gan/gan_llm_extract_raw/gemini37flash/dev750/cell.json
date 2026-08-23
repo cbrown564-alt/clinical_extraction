@@ -1,0 +1,26 @@
+{
+  "call_mode": "live_2026-08-17",
+  "comparison": "comparison.json",
+  "empty_raw_count": 0,
+  "id_field": "source_row_index",
+  "living_effort": "low",
+  "method": "gan_llm_extract_raw",
+  "model": "gemini/gemini-3.7-flash",
+  "model_slug": "gemini37flash",
+  "n": 750,
+  "program": "gan_llm_extract_raw",
+  "purist_accuracy": 0.88,
+  "purist_correct": 660,
+  "replay_fields": [
+    "source_row_index",
+    "prompt_version",
+    "raw_output"
+  ],
+  "row_count": 750,
+  "row_policy": "development_review_permitted",
+  "rows": "rows.jsonl",
+  "scored": "scored.jsonl",
+  "source": "experiments/paper/gan_llm_extract_raw/gemini37flash/dev750",
+  "split": "dev750",
+  "split_machine": "validation"
+}

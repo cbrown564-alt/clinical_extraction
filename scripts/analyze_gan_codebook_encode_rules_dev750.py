@@ -54,7 +54,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.selected_evidence.codeb
 ROOT = discover_repo_root(start=Path(__file__))
 SOURCE_ROWS = (
     ROOT
-    / "experiments/paper/gan_llm_extract_label_forms/gemini37flash/dev750/rows.jsonl"
+    / "experiments/paper/gan_llm_extract/gemini37flash/dev750/rows.jsonl"
 )
 OUT_DIR = ROOT / "experiments/gan_codebook_encode_rule_development_20260822"
 PROTOCOL = (
@@ -62,7 +62,7 @@ PROTOCOL = (
     "gan_codebook_encode_rule_development_protocol_2026-08-22.md"
 )
 MODEL = "gemini/gemini-3.7-flash"
-PROMPT_VERSION = "gan_llm_extract_label_forms"
+PROMPT_VERSION = "gan_llm_extract"
 SCORER = "Gan Purist category accuracy; exact normalized label is diagnostic"
 MANUAL_SCORER_GOLD_ROWS = frozenset({190, 10481})
 MANUAL_SELECT_ROWS = frozenset({13889})
@@ -265,7 +265,7 @@ def _row_artifact(
         raw_output, record, "llm_encode"
     )
     candidate, candidate_events, candidate_errors, candidate_trace = _parse(
-        raw_output, record, "llm_encode_codebook"
+        raw_output, record, "gan_rules_encode"
     )
     full_select, _, full_select_errors, _ = _parse(raw_output, record, "llm_select")
 
@@ -825,7 +825,7 @@ def main() -> None:
         },
         "claim_boundary": (
             "Inspected development evidence on the saved Gemini "
-            "gan_llm_extract_label_forms dev750 raw distribution. "
+            "gan_llm_extract dev750 raw distribution. "
             "Not holdout evidence or clinical validation."
         ),
         "artifacts": {

@@ -40,8 +40,8 @@ REPAIR_MODE_METADATA: Mapping[str, Mapping[str, Any]] = {
         "deterministic_semantic_repair": True,
         "scorer_facing": True,
     },
-    "llm_encode_codebook": {
-        "repair_mode": "llm_encode_codebook",
+    "gan_rules_encode": {
+        "repair_mode": "gan_rules_encode",
         "attribution_source": "llm_codebook_label_plus_guarded_deterministic_repair",
         "repair_family": "codebook_label_preservation_with_named_gap_repairs",
         "semantic_selection_owner": "llm_with_named_deterministic_fallbacks",

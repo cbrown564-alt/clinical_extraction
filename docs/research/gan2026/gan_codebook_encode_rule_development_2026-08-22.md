@@ -9,7 +9,7 @@ Protocol:
 ## Answer
 
 The existing Gan rule encode is the wrong default after
-`gan_llm_extract_label_forms`. It treats selected evidence as a new extraction
+`gan_llm_extract`. It treats selected evidence as a new extraction
 surface and rewrites a model label that has already attempted the Gan codebook.
 On `dev750` it changes 71 labels: 22 Purist rescues, five Purist harms, 31 exact
 label rescues, and 16 exact label harms.
@@ -30,7 +30,7 @@ not loaded or inspected, and the locked five-cell grid is unchanged.
 - Dataset: Gan 2026 synthetic `dev750`, split manifest
   `gan2026_split_v1`.
 - Source: saved Gemini 3.7 Flash
-  `gan_llm_extract_label_forms` raw output.
+  `gan_llm_extract` raw output.
 - Replay: deterministic only; zero model calls.
 - Primary scorer: Gan Purist category accuracy.
 - Diagnostics: Pragmatic accuracy, exact normalized-label accuracy, scorable
@@ -204,8 +204,8 @@ failures; others may need a new select rule or a scorer-policy decision.
 
 1. Keep `llm_encode` as the historical source-near renderer for experiments
    that actually provide source-near values.
-2. Use `llm_encode_codebook` as the frozen development candidate after
-   `gan_llm_extract_label_forms`.
+2. Use `gan_rules_encode` as the frozen development candidate after
+   `gan_llm_extract`.
 3. Define codebook encode as identity plus the eight named gap repairs; do not
    run broad selected-evidence re-derivation.
 4. Keep select/revision separate. Do not promote full-select behavior into

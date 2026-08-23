@@ -29,7 +29,7 @@ PAPER_GAN = ROOT / "paper_experiments/gan"
 PANEL_PATH = PAPER_GAN / "dev750_panel.json"
 INVENTORY_PATH = ROOT / "paper_experiments/inventory.json"
 REPLAY_FIELDS = ("source_row_index", "prompt_version", "raw_output")
-GAN_METHODS = ("gan_llm_only", "gan_llm_with_rules")
+GAN_METHODS = ("gan_llm_only", "gan_llm_extract_raw")
 PANEL_METHODS = ("rules_only", "llm_extract", "llm_encode", "llm_select")
 PROMOTE_SPLIT = "dev750"
 HOLDOUT_FORBIDDEN = ("incorrect_source_row_indices", "letter_ids", "changed_rows")
@@ -214,7 +214,7 @@ def rebuild_dev750_panel() -> dict[str, Any]:
         "claim_boundary": (
             "Gan cell-3 development panel: rules, then extract / encode / "
             "select. Not holdout. gan_llm_only is not a panel column. "
-            "gan_llm_with_rules is the source-near ablation. Hosted rungs "
+            "gan_llm_extract_raw is the source-near ablation. Hosted rungs "
             "on disk still replay that source-near raw until codebook "
             "extract cells are the panel source."
         ),

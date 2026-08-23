@@ -73,10 +73,10 @@ def test_rung_summary_totals_predicted_candidates() -> None:
 
 def test_gan_rung_paths_follow_slug_and_split() -> None:
     assert gan_hybrid_rows_path("grok46", "dev750").as_posix().endswith(
-        "paper_experiments/gan/gan_llm_with_rules/grok46/dev750/rows.jsonl"
+        "paper_experiments/gan/gan_llm_extract_raw/grok46/dev750/rows.jsonl"
     )
     assert gan_hybrid_rows_path("gemini37flash", "test450").as_posix().endswith(
-        "paper_experiments/gan/gan_llm_with_rules/gemini37flash/test450/rows.jsonl"
+        "paper_experiments/gan/gan_llm_extract_raw/gemini37flash/test450/rows.jsonl"
     )
     assert gan_rung_out_dir("grok46", "test450").as_posix().endswith(
         "paper_experiments/gan/rungs/grok46/test450"
@@ -169,7 +169,7 @@ def test_cli_replay_rungs_accepts_test450(monkeypatch: pytest.MonkeyPatch) -> No
         [
             "replay-rungs",
             "--method",
-            "gan_llm_with_rules",
+            "gan_llm_extract_raw",
             "--model",
             "grok46",
             "--split",

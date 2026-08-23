@@ -60,8 +60,8 @@ Status:
 ## Gan 2026
 
 One current seizure-frequency label. Cells 3–5 replay one
-`gan_llm_extract_label_forms` raw (codebook extract). Cell 2 is a
-different request. The source-near `gan_llm_with_rules` stack is the
+`gan_llm_extract` raw (codebook extract). Cell 2 is a
+different request. The source-near `gan_llm_extract_raw` stack is the
 wording ablation, not the cited extract. Default select mode is
 `llm_select` (legacy alias: `hybrid_full_stack`).
 

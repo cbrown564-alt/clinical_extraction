@@ -4,7 +4,7 @@ Date: 2026-08-20
 Revised: 2026-08-22 (replays source-near ablation cells)
 Status: answered — see [gan_semantic_family_order_2026-08-20.md](gan_semantic_family_order_2026-08-20.md)
 Owner: this file
-Identity: replay of source-near `gan_llm_with_rules` and living
+Identity: replay of source-near `gan_llm_extract_raw` and living
 `gan_llm_pre_post` raw output (not the cited five-cell table)
 
 ## Question
@@ -35,8 +35,8 @@ historical, not a measured order, except the diary/elapsed pair.
 
 ## Cells
 
-- Grok source-near (`gan_llm_with_rules`): `paper_experiments/gan/gan_llm_with_rules/grok46/dev750/rows.jsonl`
-- Luna source-near (`gan_llm_with_rules`): `paper_experiments/gan/gan_llm_with_rules/gpt56luna/dev750/rows.jsonl`
+- Grok source-near (`gan_llm_extract_raw`): `paper_experiments/gan/gan_llm_extract_raw/grok46/dev750/rows.jsonl`
+- Luna source-near (`gan_llm_extract_raw`): `paper_experiments/gan/gan_llm_extract_raw/gpt56luna/dev750/rows.jsonl`
 - Luna pre-post: `experiments/paper/gan_llm_pre_post/gpt56luna/dev750/rows.jsonl`
 
 Comparator: current default order with diary after elapsed-anchor.

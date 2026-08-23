@@ -9,7 +9,7 @@
     {
       "method": "llm_with_rules",
       "pipeline": "llm_with_rules",
-      "prompt_version": "gan_llm_with_rules",
+      "prompt_version": "gan_llm_extract_raw",
       "repair_mode": "hybrid_full_stack"
     },
     {

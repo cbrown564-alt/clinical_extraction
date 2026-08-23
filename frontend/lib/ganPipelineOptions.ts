@@ -85,7 +85,7 @@ export type GanDev750PanelCell = {
     | "llm_encode"
     | "llm_select"
     | "gan_llm_only"
-    | "gan_llm_with_rules";
+    | "gan_llm_extract_raw";
   status: "present" | "pending";
   n: number;
   purist_correct?: number | null;
@@ -104,7 +104,7 @@ export function ganPaperRunId(
   const suffix =
     method === "rules_only"
       ? "rules"
-      : method === "gan_llm_with_rules"
+      : method === "gan_llm_extract_raw"
         ? "llm_with_rules"
         : method === "gan_llm_only"
           ? "llm_only"
@@ -128,7 +128,7 @@ function paperCellForDev750Method(
 
 function modeLabelForCell(method: GanDev750PanelCell["method"]): string {
   if (method === "gan_llm_only") return "live runner (not a results column)";
-  if (method === "gan_llm_with_rules") return "source-near wording ablation";
+  if (method === "gan_llm_extract_raw") return "source-near wording ablation";
   const cell = paperCellForDev750Method(method);
   return cell ? paperCellById(cell).displayName : method;
 }
@@ -162,7 +162,7 @@ export function ganFamiliesFromDev750Panel(
       const paperCell = paperCellForDev750Method(cell.method);
       const kind: ActiveMethod = paperCell
         ? kindForPaperCell(paperCell)
-        : cell.method === "gan_llm_with_rules"
+        : cell.method === "gan_llm_extract_raw"
           ? "llm_with_rules"
           : cell.method === "rules_only"
             ? "rules"

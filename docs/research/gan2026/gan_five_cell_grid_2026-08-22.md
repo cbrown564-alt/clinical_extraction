@@ -7,8 +7,8 @@ Owner: [protocol](gan_five_cell_grid_protocol_2026-08-22.md)
 Paper artifact: `paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json`
 
 Cell 3 (LLM / rules / rules) is the six-model row: codebook extract,
-`llm_encode_codebook`, rule select (**0.83** holdout). Leftover living
-extracts (`gan_llm_with_rules`, living `gan_llm_pre_post`) stay on disk;
+`gan_rules_encode`, rule select (**0.83** holdout). Leftover living
+extracts (`gan_llm_extract_raw`, living `gan_llm_pre_post`) stay on disk;
 they are not the paper primary.
 
 ## Answer
@@ -34,11 +34,11 @@ encoder on the same extract is an ablation (encode 0.77, select 0.80).
 | LLM | LLM | rules | 0.82 |
 | LLM | LLM | LLM | 0.79 |
 
-`both` extract is `gan_llm_pre_post_label_forms`. LLM extract is
-`gan_llm_extract_label_forms`. LLM encode means the extract already
+`both` extract is `gan_llm_and_rules_extract`. LLM extract is
+`gan_llm_extract`. LLM encode means the extract already
 wrote the codebook form (no rule encode). LLM select is
 `gan_llm_select_from_extract`. The LLM-then-rules encode is
-`llm_encode_codebook`.
+`gan_rules_encode`.
 
 ## Prior-stage ablation (same rows)
 
@@ -60,7 +60,7 @@ wrote the codebook form (no rule encode). LLM select is
 | LLM | LLM | rules | 0.85 |
 | LLM | LLM | LLM | 0.79 |
 
-Holdout rows were not inspected. The old `gan_llm_with_rules` grid
+Holdout rows were not inspected. The old `gan_llm_extract_raw` grid
 is the source-near ablation.
 
 ## Post-grid development diagnosis

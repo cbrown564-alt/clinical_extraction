@@ -91,7 +91,7 @@ def test_promote_writes_replay_scored_and_panel(
         "present": [],
         "missing": [
             {
-                "method": "gan_llm_with_rules",
+                "method": "gan_llm_extract_raw",
                 "status": "missing",
                 "note": "old blob",
             }
@@ -118,7 +118,8 @@ def test_promote_writes_replay_scored_and_panel(
     assert panel["methods"] == ["rules_only", "llm_extract", "llm_encode", "llm_select"]
     assert len(panel["cells"]) == 24
     assert all(cell["status"] == "pending" for cell in panel["cells"])
-    assert not any(cell["method"] in {"gan_llm_only", "gan_llm_with_rules"} for cell in panel["cells"])
+    leftover = {"gan_llm_only", "gan_llm_extract_raw"}
+    assert not any(cell["method"] in leftover for cell in panel["cells"])
     assert payload["cell"]["n"] == 750
     slugs = [item["slug"] for item in living_models()]
     assert panel["models"] == slugs
@@ -137,7 +138,7 @@ def test_promote_writes_replay_scored_and_panel(
     } == {
         (slug, method)
         for slug in slugs
-        for method in ("gan_llm_only", "gan_llm_with_rules")
+        for method in ("gan_llm_only", "gan_llm_extract_raw")
         if (slug, method) != ("grok46", "gan_llm_only")
     }
 
@@ -282,11 +283,11 @@ def test_promote_gan_test450_strips_replay_and_updates_inventory(
     )
 
 
-def test_promote_gan_llm_pre_post_writes_inventory_without_changing_the_two_method_panel(
+def test_promote_gan_llm_and_rules_extract_writes_inventory_without_changing_the_two_method_panel(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    _write_work_cell(tmp_path, "gan_llm_pre_post", "gpt56luna", label="1 per month")
-    _write_holdout_work_cell(tmp_path, "gan_llm_pre_post", "gpt56luna")
+    _write_work_cell(tmp_path, "gan_llm_and_rules_extract", "gemini37flash", label="1 per month")
+    _write_holdout_work_cell(tmp_path, "gan_llm_and_rules_extract", "gemini37flash")
     (tmp_path / "paper_experiments").mkdir()
     (tmp_path / "paper_experiments/inventory.json").write_text(
         json.dumps(
@@ -301,16 +302,18 @@ def test_promote_gan_llm_pre_post_writes_inventory_without_changing_the_two_meth
     )
     _patch_panel_paths(tmp_path, monkeypatch)
 
-    development = promote_gan("gan_llm_pre_post", "gpt56luna", "dev750")
-    holdout = promote_gan("gan_llm_pre_post", "gpt56luna", "test450")
+    development = promote_gan("gan_llm_and_rules_extract", "gemini37flash", "dev750")
+    holdout = promote_gan("gan_llm_and_rules_extract", "gemini37flash", "test450")
 
-    dev_dest = tmp_path / "paper_experiments/gan/gan_llm_pre_post/gpt56luna/dev750"
-    holdout_dest = tmp_path / "paper_experiments/gan/gan_llm_pre_post/gpt56luna/test450"
+    dev_dest = tmp_path / "paper_experiments/gan/gan_llm_and_rules_extract/gemini37flash/dev750"
+    holdout_dest = (
+        tmp_path / "paper_experiments/gan/gan_llm_and_rules_extract/gemini37flash/test450"
+    )
     assert (dev_dest / "rows.jsonl").is_file()
     assert (dev_dest / "scored.jsonl").is_file()
     assert (holdout_dest / "rows.jsonl").is_file()
     assert not (holdout_dest / "scored.jsonl").is_file()
-    assert development["cell"]["method"] == "gan_llm_pre_post"
+    assert development["cell"]["method"] == "gan_llm_and_rules_extract"
     assert holdout["cell"]["row_policy"] == "aggregate_only"
     assert "panel" not in development
     panel = rebuild_dev750_panel()
@@ -318,8 +321,8 @@ def test_promote_gan_llm_pre_post_writes_inventory_without_changing_the_two_meth
     assert len(panel["cells"]) == 24
     synced = json.loads((tmp_path / "paper_experiments/inventory.json").read_text(encoding="utf-8"))
     present = {(row["model_slug"], row["method"], row["split"]) for row in synced["present"]}
-    assert ("gpt56luna", "gan_llm_pre_post", "dev750") in present
-    assert ("gpt56luna", "gan_llm_pre_post", "test450") in present
+    assert ("gemini37flash", "gan_llm_and_rules_extract", "dev750") in present
+    assert ("gemini37flash", "gan_llm_and_rules_extract", "test450") in present
 
 
 def test_promote_gan_later_stage_writes_inventory_without_changing_the_two_method_panel(
@@ -358,9 +361,9 @@ def test_promote_gan_later_stage_writes_inventory_without_changing_the_two_metho
 def test_promote_gan_test450_rejects_row_level_comparison(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    _write_holdout_work_cell(tmp_path, "gan_llm_with_rules", "grok46")
+    _write_holdout_work_cell(tmp_path, "gan_llm_extract_raw", "grok46")
     comparison_path = (
-        tmp_path / "scratch/holdout/paper/gan_llm_with_rules/grok46/test450/comparison.json"
+        tmp_path / "scratch/holdout/paper/gan_llm_extract_raw/grok46/test450/comparison.json"
     )
     comparison = json.loads(comparison_path.read_text(encoding="utf-8"))
     comparison["incorrect_source_row_indices"] = [10]
@@ -372,4 +375,4 @@ def test_promote_gan_test450_rejects_row_level_comparison(
     )
     _patch_panel_paths(tmp_path, monkeypatch)
     with pytest.raises(RuntimeError, match="aggregate-only"):
-        promote_gan("gan_llm_with_rules", "grok46", "test450")
+        promote_gan("gan_llm_extract_raw", "grok46", "test450")

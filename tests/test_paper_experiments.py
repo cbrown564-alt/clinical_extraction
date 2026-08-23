@@ -85,21 +85,15 @@ def test_inventory_covers_present_and_missing_cells() -> None:
         ("gemma4_26b", "gan_llm_only", "test450"),
         ("grok46", "gan_llm_only", "dev750"),
         ("grok46", "gan_llm_only", "test450"),
-        ("grok46", "gan_llm_with_rules", "dev750"),
-        ("grok46", "gan_llm_with_rules", "test450"),
+        ("grok46", "gan_llm_extract_raw", "dev750"),
+        ("grok46", "gan_llm_extract_raw", "test450"),
         ("gpt56luna", "gan_llm_only", "dev750"),
-        ("gpt56luna", "gan_llm_with_rules", "dev750"),
-        ("gpt56luna", "gan_llm_with_rules", "test450"),
-        ("gpt56luna", "gan_llm_pre_post", "dev750"),
-        ("gpt56luna", "gan_llm_pre_post", "test450"),
-        ("gemini37flash", "gan_llm_pre_post", "dev750"),
-        ("gemini37flash", "gan_llm_pre_post", "test450"),
-        ("grok46", "gan_llm_pre_post", "dev750"),
-        ("grok46", "gan_llm_pre_post", "test450"),
+        ("gpt56luna", "gan_llm_extract_raw", "dev750"),
+        ("gpt56luna", "gan_llm_extract_raw", "test450"),
         ("gemini37flash", "gan_llm_only", "dev750"),
         ("gemini37flash", "gan_llm_only", "test450"),
-        ("gemini37flash", "gan_llm_with_rules", "dev750"),
-        ("gemini37flash", "gan_llm_with_rules", "test450"),
+        ("gemini37flash", "gan_llm_extract_raw", "dev750"),
+        ("gemini37flash", "gan_llm_extract_raw", "test450"),
         ("gemini37flash", "gan_llm_encode", "dev750"),
         ("gemini37flash", "gan_llm_encode", "test450"),
         ("gemini37flash", "gan_llm_select", "dev750"),
@@ -109,7 +103,7 @@ def test_inventory_covers_present_and_missing_cells() -> None:
         ("gemini37flash", "exect_llm_select", "dev140"),
         ("gemini37flash", "exect_llm_select", "test60"),
     }
-    assert "gan_llm_with_rules" in missing_methods
+    assert "gan_llm_extract_raw" in missing_methods
     missing_cells = {
         (row.get("model_slug"), row["method"], row.get("split")) for row in inventory["missing"]
     }
@@ -120,13 +114,13 @@ def test_inventory_covers_present_and_missing_cells() -> None:
     assert ("grok46", "exect_llm_pre_post", "dev140") not in missing_cells
     assert ("grok46", "exect_llm_pre_post", "test60") not in missing_cells
     assert ("grok46", "gan_llm_only", "test450") not in missing_cells
-    assert ("grok46", "gan_llm_with_rules", "test450") not in missing_cells
+    assert ("grok46", "gan_llm_extract_raw", "test450") not in missing_cells
     assert ("deepseek_v4_flash", "gan_llm_only", "dev750") in missing_cells
-    assert ("deepseek_v4_flash", "gan_llm_with_rules", "dev750") in missing_cells
+    assert ("deepseek_v4_flash", "gan_llm_extract_raw", "dev750") in missing_cells
     assert ("qwen38_27b", "gan_llm_only", "dev750") in missing_cells
-    assert ("qwen38_27b", "gan_llm_with_rules", "dev750") in missing_cells
-    assert ("gemma4_26b", "gan_llm_with_rules", "dev750") in missing_cells
-    assert ("grok46", "gan_llm_with_rules", "dev750") not in missing_cells
+    assert ("qwen38_27b", "gan_llm_extract_raw", "dev750") in missing_cells
+    assert ("gemma4_26b", "gan_llm_extract_raw", "dev750") in missing_cells
+    assert ("grok46", "gan_llm_extract_raw", "dev750") not in missing_cells
     gan_fields = set(inventory["strip"]["gan"])
     exect_fields = set(inventory["strip"]["exect"])
     for row in inventory["present"]:

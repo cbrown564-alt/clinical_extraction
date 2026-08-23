@@ -27,7 +27,7 @@ may be skippable on the LLM row.
 | Holdout | Do not load or inspect `test450` |
 | Model | Gemini 3.7 Flash |
 | Scorer | Purist; secondary Pragmatic and scorable count |
-| Extract source | Saved `gan_llm_extract_label_forms` raw |
+| Extract source | Saved `gan_llm_extract` raw |
 
 ## Candidate
 

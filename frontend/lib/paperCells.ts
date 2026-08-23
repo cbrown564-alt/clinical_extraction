@@ -105,8 +105,8 @@ export function methodIdFor(task: TeachingTask, cell: string): MethodId {
   const id = resolvePaperCellId(cell);
   if (task === "gan2026") {
     if (id === "rules_only") return "gan_rules";
-    if (id === "llm_pre_post") return "gan_llm_pre_post_label_forms";
-    if (id === "llm_extract") return "gan_llm_extract_label_forms";
+    if (id === "llm_pre_post") return "gan_llm_and_rules_extract";
+    if (id === "llm_extract") return "gan_llm_extract";
     if (id === "llm_encode") return "gan_llm_encode";
     return "gan_llm_select_from_extract";
   }

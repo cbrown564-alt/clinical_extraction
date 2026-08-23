@@ -4,12 +4,12 @@
   "task_label": "Gan 2026",
   "method": "llm_with_rules",
   "method_label": "LLM with rules",
-  "role": "implemented runner (source-near wording ablation; cited Gan extract is gan_llm_extract_label_forms)",
+  "role": "implemented runner (source-near wording ablation; cited Gan extract is gan_llm_extract)",
   "entry_point": {
     "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestration/llm_with_rules.py",
     "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.llm_with_rules:run_record"
   },
-  "one_sentence": "The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer. This is the source-near wording ablation; the cited Gan extract is gan_llm_extract_label_forms.",
+  "one_sentence": "The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer. This is the source-near wording ablation; the cited Gan extract is gan_llm_extract.",
   "sixty_second": "One structured call returns two linked objects: an event ledger of source-near seizure-frequency facts, and a selection naming which event IDs won, the answer kind, the final label, evidence, confidence, and rationale. The model therefore makes the initial clinical selection - this is the single most misread fact about the method. Deterministic code then repairs JSON and schema, normalizes every event to a comparable rate, resolves an initial label from the model's chosen events, and runs ten named repair families in a fixed order. Each family can rewrite the final label, and each records a named event when it fires, so a changed answer is always attributable to one rule. The repaired label is checked for scorability and exact evidence, then projected to Purist and Pragmatic categories. Model owns the first answer; rules own every subsequent change to it.",
   "prediction_owner": "the model proposes and selects (gan.llm_with_rules.model_call); ten deterministic repair families may change the answer afterwards",
   "scored_representation": "One Gan label string per letter, projected to a Purist and a Pragmatic category.",
@@ -466,7 +466,7 @@
       "name": "Paper live runner",
       "role": "replay path",
       "path": "src/clinical_extraction/paper/cli.py",
-      "note": "python -m clinical_extraction.paper run --method gan_llm_with_rules --model <slug> --split <dev750|test450>"
+      "note": "python -m clinical_extraction.paper run --method gan_llm_extract_raw --model <slug> --split <dev750|test450>"
     }
   ],
   "evidence_owners": [

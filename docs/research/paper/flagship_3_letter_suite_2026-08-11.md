@@ -12,7 +12,7 @@ It provides both:
 1. **Rich Clinical & Benchmark Context**: Full un-truncated clinical excerpts, gold targets, task taxonomy categories, and detailed explanations of why each note is hard for LLMs versus deterministic rules.
 2. **Reviewable 6-Step Evidence Journeys**: Grok 4.6 traces from development
    cells, replayed from saved `raw_output` with no new model calls. Gan
-   journeys use the **wording ablation** (`gan_llm_with_rules`), not the cited
+   journeys use the **wording ablation** (`gan_llm_extract_raw`), not the cited
    codebook extract. ExECT journeys use cell 2 (`exect_llm_pre_post`) or cell 3
    as noted per letter. Sol journeys are retired.
 
@@ -69,7 +69,7 @@ flowchart LR
 | **2. Format Repair** | Clean JSON | No format retry |
 | **3. Selected evidence** | *"She may remain seizure-free for up to 4 month, but then will experience clusters of 5 seizures in a single day."* | Quoted on the selected event |
 | **4. Label repair** | `'1 cluster of 5 seizures after up to 4 months seizure-free' -> 'seizure free for multiple month'` | Wording-ablation stack dropped the cluster grammar and kept the quiet interval |
-| **5. Wording ablation output** (`gan_llm_with_rules`) | `seizure free for multiple month` | **Purist miss** versus gold `1 cluster per 4 month, 5 per cluster` |
+| **5. Wording ablation output** (`gan_llm_extract_raw`) | `seizure free for multiple month` | **Purist miss** versus gold `1 cluster per 4 month, 5 per cluster` |
 | **6. Note** | `gan_llm_only` is not a results column | Also Purist-wrong without cluster render |
 
 ---
@@ -308,5 +308,5 @@ claim that the suite covers the full gold taxonomy.
 
 - **Gan Dev750 Split**: `data/Gan (2026)/synthetic_data_subset_1500.json` (`gan2026_split_v1.json`).
 - **ExECT Dev140 Split**: `data/ExECTv2 (2025)/Gold1-200_corrected_spelling/` (`exectv2_split_v2.json`).
-- **Development replay cells**: Gan wording ablation `paper_experiments/gan/gan_llm_with_rules/grok46/dev750/`; ExECT cell 2 `paper_experiments/exect/exect_llm_with_rules/grok46/dev140/` (replayed from saved `raw_output`).
+- **Development replay cells**: Gan wording ablation `paper_experiments/gan/gan_llm_extract_raw/grok46/dev750/`; ExECT cell 2 `paper_experiments/exect/exect_llm_with_rules/grok46/dev140/` (replayed from saved `raw_output`).
 - **Gold Taxonomies**: [Gan Gold Taxonomy](../gan2026/gold_task_taxonomy_2026-08-06.md), [ExECT Gold Taxonomy](../exectv2/gold_task_taxonomy_2026-08-06.md).

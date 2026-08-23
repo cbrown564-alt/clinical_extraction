@@ -75,7 +75,7 @@ export type GanDev750Method =
   | "llm_encode"
   | "llm_select"
   | "gan_llm_only"
-  | "gan_llm_with_rules";
+  | "gan_llm_extract_raw";
 
 export type GanDev750PanelCell = {
   model_slug: string;

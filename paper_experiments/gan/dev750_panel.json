@@ -11,7 +11,7 @@
       "purist_accuracy": 0.892,
       "purist_correct": 669,
       "scored": "paper_experiments/gan/rungs/gemini37flash/dev750/scored.jsonl",
-      "shared_raw_output": "gan_llm_with_rules",
+      "shared_raw_output": "gan_llm_extract_raw",
       "status": "present"
     },
     {
@@ -25,7 +25,7 @@
       "purist_accuracy": 0.592,
       "purist_correct": 444,
       "scored": "paper_experiments/gan/rungs/gemini37flash/dev750/scored.jsonl",
-      "shared_raw_output": "gan_llm_with_rules",
+      "shared_raw_output": "gan_llm_extract_raw",
       "status": "present"
     },
     {
@@ -39,7 +39,7 @@
       "purist_accuracy": 0.8107,
       "purist_correct": 608,
       "scored": "paper_experiments/gan/rungs/gemini37flash/dev750/scored.jsonl",
-      "shared_raw_output": "gan_llm_with_rules",
+      "shared_raw_output": "gan_llm_extract_raw",
       "status": "present"
     },
     {
@@ -53,7 +53,7 @@
       "purist_accuracy": 0.88,
       "purist_correct": 660,
       "scored": "paper_experiments/gan/rungs/gemini37flash/dev750/scored.jsonl",
-      "shared_raw_output": "gan_llm_with_rules",
+      "shared_raw_output": "gan_llm_extract_raw",
       "status": "present"
     },
     {
@@ -67,7 +67,7 @@
       "purist_accuracy": 0.892,
       "purist_correct": 669,
       "scored": "paper_experiments/gan/rungs/grok46/dev750/scored.jsonl",
-      "shared_raw_output": "gan_llm_with_rules",
+      "shared_raw_output": "gan_llm_extract_raw",
       "status": "present"
     },
     {
@@ -81,7 +81,7 @@
       "purist_accuracy": 0.4947,
       "purist_correct": 371,
       "scored": "paper_experiments/gan/rungs/grok46/dev750/scored.jsonl",
-      "shared_raw_output": "gan_llm_with_rules",
+      "shared_raw_output": "gan_llm_extract_raw",
       "status": "present"
     },
     {
@@ -95,7 +95,7 @@
       "purist_accuracy": 0.804,
       "purist_correct": 603,
       "scored": "paper_experiments/gan/rungs/grok46/dev750/scored.jsonl",
-      "shared_raw_output": "gan_llm_with_rules",
+      "shared_raw_output": "gan_llm_extract_raw",
       "status": "present"
     },
     {
@@ -109,7 +109,7 @@
       "purist_accuracy": 0.8947,
       "purist_correct": 671,
       "scored": "paper_experiments/gan/rungs/grok46/dev750/scored.jsonl",
-      "shared_raw_output": "gan_llm_with_rules",
+      "shared_raw_output": "gan_llm_extract_raw",
       "status": "present"
     },
     {
@@ -123,7 +123,7 @@
       "purist_accuracy": 0.892,
       "purist_correct": 669,
       "scored": "paper_experiments/gan/rungs/gpt56luna/dev750/scored.jsonl",
-      "shared_raw_output": "gan_llm_with_rules",
+      "shared_raw_output": "gan_llm_extract_raw",
       "status": "present"
     },
     {
@@ -137,7 +137,7 @@
       "purist_accuracy": 0.564,
       "purist_correct": 423,
       "scored": "paper_experiments/gan/rungs/gpt56luna/dev750/scored.jsonl",
-      "shared_raw_output": "gan_llm_with_rules",
+      "shared_raw_output": "gan_llm_extract_raw",
       "status": "present"
     },
     {
@@ -151,7 +151,7 @@
       "purist_accuracy": 0.7947,
       "purist_correct": 596,
       "scored": "paper_experiments/gan/rungs/gpt56luna/dev750/scored.jsonl",
-      "shared_raw_output": "gan_llm_with_rules",
+      "shared_raw_output": "gan_llm_extract_raw",
       "status": "present"
     },
     {
@@ -165,7 +165,7 @@
       "purist_accuracy": 0.8987,
       "purist_correct": 674,
       "scored": "paper_experiments/gan/rungs/gpt56luna/dev750/scored.jsonl",
-      "shared_raw_output": "gan_llm_with_rules",
+      "shared_raw_output": "gan_llm_extract_raw",
       "status": "present"
     },
     {
@@ -277,7 +277,7 @@
       "status": "pending"
     }
   ],
-  "claim_boundary": "Gan cell-3 development panel: rules, then extract / encode / select. Not holdout. gan_llm_only is not a panel column. gan_llm_with_rules is the source-near ablation. Hosted rungs on disk still replay that source-near raw until codebook extract cells are the panel source.",
+  "claim_boundary": "Gan cell-3 development panel: rules, then extract / encode / select. Not holdout. gan_llm_only is not a panel column. gan_llm_extract_raw is the source-near ablation. Hosted rungs on disk still replay that source-near raw until codebook extract cells are the panel source.",
   "living_effort": {
     "deepseek": "thinking_on_provider_default",
     "hosted_reasoning": "low",
