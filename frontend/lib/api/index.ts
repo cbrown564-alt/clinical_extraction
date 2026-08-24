@@ -136,6 +136,7 @@ export function fetchGanDev750Scored(method: GanDev750Method, slug: string) {
 }
 
 export type ExectDev140Method =
+  | "exect_llm_extract"
   | "exect_llm_only"
   | "exect_llm_pre_post"
   | "exect_llm_with_rules"
@@ -161,6 +162,8 @@ export type ExectDev140PanelCell = {
   rows?: string;
   scored?: string | null;
   comparison?: string;
+  four_family_micro_f1?: number | null;
+  clinical_fact_f1?: number | null;
   raw_headline_f1?: number | null;
   hybrid_headline_f1?: number | null;
   living_effort?: string | null;

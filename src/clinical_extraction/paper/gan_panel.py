@@ -9,6 +9,10 @@ from typing import Any
 
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.paper.cells import normalize_rungs_payload
+from clinical_extraction.paper.comparison_contract import (
+    adapt_legacy_comparison,
+    stage_metric,
+)
 from clinical_extraction.paper.methods import (
     gan_machine_split,
     gan_row_count,
@@ -46,6 +50,28 @@ def paper_cell_root(method: str, slug: str, split: str) -> Path:
     """Return the tracked paper directory for a Gan cell."""
 
     return PAPER_GAN / method / slug / split
+
+
+def _living_extract_stages(slug: str) -> dict[str, float] | None:
+    dest = paper_cell_root("gan_llm_extract", slug, PROMOTE_SPLIT)
+    comparison_path = dest / "comparison.json"
+    if not comparison_path.is_file():
+        return None
+    living = adapt_legacy_comparison(
+        json.loads(comparison_path.read_text(encoding="utf-8"))
+    )
+    if living is None:
+        return None
+    extract = stage_metric(living, "extract")
+    encode = stage_metric(living, "encode")
+    select = stage_metric(living, "select")
+    if extract is None or select is None:
+        return None
+    return {
+        "llm_extract": extract,
+        "llm_encode": encode if encode is not None else extract,
+        "llm_select": select,
+    }
 
 
 def promote_gan_dev750(method: str, slug: str) -> dict[str, Any]:
@@ -150,6 +176,7 @@ def rebuild_dev750_panel() -> dict[str, Any]:
     cells: list[dict[str, Any]] = []
     for model in living_models():
         slug = str(model["slug"])
+        extract_stages = _living_extract_stages(slug)
         rung_dir = PAPER_GAN / "rungs" / slug / PROMOTE_SPLIT
         comparison_path = rung_dir / "comparison.json"
         scored_path = rung_dir / "scored.jsonl"
@@ -162,8 +189,39 @@ def rebuild_dev750_panel() -> dict[str, Any]:
         rungs = (
             normalize_rungs_payload(raw_rungs) if isinstance(raw_rungs, dict) else {}
         )
+        extract_dest = paper_cell_root("gan_llm_extract", slug, PROMOTE_SPLIT)
+        extract_comparison = extract_dest / "comparison.json"
+        extract_scored = extract_dest / "scored.jsonl"
         for method in PANEL_METHODS:
+            extract_metric = (
+                extract_stages.get(method) if extract_stages is not None else None
+            )
             rung = rungs.get(method)
+            if extract_metric is not None and method != "rules_only":
+                cells.append(
+                    {
+                        "model_slug": slug,
+                        "model": model["model"],
+                        "label": model["label"],
+                        "method": method,
+                        "status": "present",
+                        "path": extract_dest.relative_to(ROOT).as_posix() + "/",
+                        "scored": extract_scored.relative_to(ROOT).as_posix()
+                        if extract_scored.is_file()
+                        else (
+                            scored_path.relative_to(ROOT).as_posix()
+                            if scored_path.is_file()
+                            else None
+                        ),
+                        "comparison": extract_comparison.relative_to(ROOT).as_posix()
+                        if extract_comparison.is_file()
+                        else None,
+                        "n": gan_row_count(PROMOTE_SPLIT),
+                        "purist_accuracy": extract_metric,
+                        "shared_raw_output": "gan_llm_extract",
+                    }
+                )
+                continue
             if isinstance(rung, Mapping) and rung.get("purist_accuracy") is not None:
                 cells.append(
                     {
@@ -196,7 +254,7 @@ def rebuild_dev750_panel() -> dict[str, Any]:
                     }
                 )
     panel = {
-        "schema_version": "paper_experiments.gan.dev750_panel.v2",
+        "schema_version": "paper_experiments.gan.dev750_panel.v3",
         "split": PROMOTE_SPLIT,
         "split_machine": "validation",
         "row_policy": "development_review_permitted",
@@ -215,10 +273,9 @@ def rebuild_dev750_panel() -> dict[str, Any]:
         "cells": cells,
         "claim_boundary": (
             "Gan cell-3 development panel: rules, then extract / encode / "
-            "select. Not holdout. gan_llm_only is not a panel column. "
-            "gan_llm_extract_raw is the source-near ablation. Hosted rungs "
-            "on disk still replay that source-near raw until codebook "
-            "extract cells are the panel source."
+            "select on living gan_llm_extract. Not holdout. gan_llm_only "
+            "is not a panel column. Source-near rungs remain a fallback "
+            "until a model has a living extract envelope."
         ),
     }
     PANEL_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -382,6 +439,10 @@ def _sync_inventory() -> None:
             rows_path = dest / "rows.jsonl"
             cell_path = dest / "cell.json"
             if rows_path.is_file() and cell_path.is_file():
+                historical = existing_present.get(key)
+                if historical is not None:
+                    present.append(historical)
+                    continue
                 cell_meta = json.loads(cell_path.read_text(encoding="utf-8"))
                 present.append(
                     {

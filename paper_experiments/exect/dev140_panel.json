@@ -1,8 +1,9 @@
 {
   "cells": [
     {
-      "clinical_fact_f1": 0.9042,
+      "clinical_fact_f1": 0.8824,
       "comparison": "paper_experiments/exect/exect_rules/dev140.json",
+      "four_family_micro_f1": 0.8824,
       "label": "Gemini 3.7 Flash",
       "method": "rules_only",
       "model": "gemini/gemini-3.7-flash",
@@ -12,44 +13,48 @@
       "status": "present"
     },
     {
-      "clinical_fact_f1": 0.8027,
-      "comparison": "paper_experiments/exect/rungs/gemini37flash/dev140/comparison.json",
+      "clinical_fact_f1": 0.8273,
+      "comparison": "paper_experiments/exect/exect_llm_extract/gemini37flash/dev140/comparison.json",
+      "four_family_micro_f1": 0.8273,
       "label": "Gemini 3.7 Flash",
       "method": "llm_extract",
       "model": "gemini/gemini-3.7-flash",
       "model_slug": "gemini37flash",
       "n": 140,
-      "path": "paper_experiments/exect/rungs/gemini37flash/dev140/",
-      "scored": "paper_experiments/exect/rungs/gemini37flash/dev140/scored.jsonl",
+      "path": "paper_experiments/exect/exect_llm_extract/gemini37flash/dev140/",
+      "scored": "paper_experiments/exect/exect_llm_extract/gemini37flash/dev140/scored.jsonl",
       "status": "present"
     },
     {
-      "clinical_fact_f1": 0.8543,
-      "comparison": "paper_experiments/exect/rungs/gemini37flash/dev140/comparison.json",
+      "clinical_fact_f1": 0.8273,
+      "comparison": "paper_experiments/exect/exect_llm_extract/gemini37flash/dev140/comparison.json",
+      "four_family_micro_f1": 0.8273,
       "label": "Gemini 3.7 Flash",
       "method": "llm_encode",
       "model": "gemini/gemini-3.7-flash",
       "model_slug": "gemini37flash",
       "n": 140,
-      "path": "paper_experiments/exect/rungs/gemini37flash/dev140/",
-      "scored": "paper_experiments/exect/rungs/gemini37flash/dev140/scored.jsonl",
+      "path": "paper_experiments/exect/exect_llm_extract/gemini37flash/dev140/",
+      "scored": "paper_experiments/exect/exect_llm_extract/gemini37flash/dev140/scored.jsonl",
       "status": "present"
     },
     {
-      "clinical_fact_f1": 0.8771,
-      "comparison": "paper_experiments/exect/rungs/gemini37flash/dev140/comparison.json",
+      "clinical_fact_f1": 0.8877,
+      "comparison": "paper_experiments/exect/exect_llm_extract/gemini37flash/dev140/comparison.json",
+      "four_family_micro_f1": 0.8877,
       "label": "Gemini 3.7 Flash",
       "method": "llm_select",
       "model": "gemini/gemini-3.7-flash",
       "model_slug": "gemini37flash",
       "n": 140,
-      "path": "paper_experiments/exect/rungs/gemini37flash/dev140/",
-      "scored": "paper_experiments/exect/rungs/gemini37flash/dev140/scored.jsonl",
+      "path": "paper_experiments/exect/exect_llm_extract/gemini37flash/dev140/",
+      "scored": "paper_experiments/exect/exect_llm_extract/gemini37flash/dev140/scored.jsonl",
       "status": "present"
     },
     {
-      "clinical_fact_f1": 0.9042,
+      "clinical_fact_f1": 0.8824,
       "comparison": "paper_experiments/exect/exect_rules/dev140.json",
+      "four_family_micro_f1": 0.8824,
       "label": "Grok 4.6",
       "method": "rules_only",
       "model": "xai/grok-4.6",
@@ -61,6 +66,7 @@
     {
       "clinical_fact_f1": 0.8183,
       "comparison": "paper_experiments/exect/rungs/grok46/dev140/comparison.json",
+      "four_family_micro_f1": 0.8183,
       "label": "Grok 4.6",
       "method": "llm_extract",
       "model": "xai/grok-4.6",
@@ -73,6 +79,7 @@
     {
       "clinical_fact_f1": 0.8677,
       "comparison": "paper_experiments/exect/rungs/grok46/dev140/comparison.json",
+      "four_family_micro_f1": 0.8677,
       "label": "Grok 4.6",
       "method": "llm_encode",
       "model": "xai/grok-4.6",
@@ -85,6 +92,7 @@
     {
       "clinical_fact_f1": 0.8806,
       "comparison": "paper_experiments/exect/rungs/grok46/dev140/comparison.json",
+      "four_family_micro_f1": 0.8806,
       "label": "Grok 4.6",
       "method": "llm_select",
       "model": "xai/grok-4.6",
@@ -95,8 +103,9 @@
       "status": "present"
     },
     {
-      "clinical_fact_f1": 0.9042,
+      "clinical_fact_f1": 0.8824,
       "comparison": "paper_experiments/exect/exect_rules/dev140.json",
+      "four_family_micro_f1": 0.8824,
       "label": "GPT-5.6 Luna",
       "method": "rules_only",
       "model": "openai/gpt-5.6-luna",
@@ -108,6 +117,7 @@
     {
       "clinical_fact_f1": 0.6485,
       "comparison": "paper_experiments/exect/rungs/gpt56luna/dev140/comparison.json",
+      "four_family_micro_f1": 0.6485,
       "label": "GPT-5.6 Luna",
       "method": "llm_extract",
       "model": "openai/gpt-5.6-luna",
@@ -120,6 +130,7 @@
     {
       "clinical_fact_f1": 0.7922,
       "comparison": "paper_experiments/exect/rungs/gpt56luna/dev140/comparison.json",
+      "four_family_micro_f1": 0.7922,
       "label": "GPT-5.6 Luna",
       "method": "llm_encode",
       "model": "openai/gpt-5.6-luna",
@@ -132,6 +143,7 @@
     {
       "clinical_fact_f1": 0.8708,
       "comparison": "paper_experiments/exect/rungs/gpt56luna/dev140/comparison.json",
+      "four_family_micro_f1": 0.8708,
       "label": "GPT-5.6 Luna",
       "method": "llm_select",
       "model": "openai/gpt-5.6-luna",
@@ -142,8 +154,9 @@
       "status": "present"
     },
     {
-      "clinical_fact_f1": 0.9042,
+      "clinical_fact_f1": 0.8824,
       "comparison": "paper_experiments/exect/exect_rules/dev140.json",
+      "four_family_micro_f1": 0.8824,
       "label": "DeepSeek V4 Flash",
       "method": "rules_only",
       "model": "deepseek/deepseek-v4-flash",
@@ -155,6 +168,7 @@
     {
       "clinical_fact_f1": 0.6393,
       "comparison": "paper_experiments/exect/rungs/deepseek_v4_flash/dev140/comparison.json",
+      "four_family_micro_f1": 0.6393,
       "label": "DeepSeek V4 Flash",
       "method": "llm_extract",
       "model": "deepseek/deepseek-v4-flash",
@@ -167,6 +181,7 @@
     {
       "clinical_fact_f1": 0.8127,
       "comparison": "paper_experiments/exect/rungs/deepseek_v4_flash/dev140/comparison.json",
+      "four_family_micro_f1": 0.8127,
       "label": "DeepSeek V4 Flash",
       "method": "llm_encode",
       "model": "deepseek/deepseek-v4-flash",
@@ -179,6 +194,7 @@
     {
       "clinical_fact_f1": 0.8987,
       "comparison": "paper_experiments/exect/rungs/deepseek_v4_flash/dev140/comparison.json",
+      "four_family_micro_f1": 0.8987,
       "label": "DeepSeek V4 Flash",
       "method": "llm_select",
       "model": "deepseek/deepseek-v4-flash",
@@ -189,8 +205,9 @@
       "status": "present"
     },
     {
-      "clinical_fact_f1": 0.9042,
+      "clinical_fact_f1": 0.8824,
       "comparison": "paper_experiments/exect/exect_rules/dev140.json",
+      "four_family_micro_f1": 0.8824,
       "label": "Qwen 3.8 27B",
       "method": "rules_only",
       "model": "ollama_chat/qwen3.8:27b",
@@ -227,8 +244,9 @@
       "status": "pending"
     },
     {
-      "clinical_fact_f1": 0.9042,
+      "clinical_fact_f1": 0.8824,
       "comparison": "paper_experiments/exect/exect_rules/dev140.json",
+      "four_family_micro_f1": 0.8824,
       "label": "Gemma 4 26B",
       "method": "rules_only",
       "model": "ollama_chat/gemma4:26b",
@@ -265,7 +283,7 @@
       "status": "pending"
     }
   ],
-  "claim_boundary": "ExECT cell-3 development panel: rules, then extract / encode / select on exect_llm_only. Not holdout. Living exect_llm_pre_post is the both-extract alias and is not a panel column.",
+  "claim_boundary": "ExECT cell-3 development panel: rules, then extract / encode / select on living exect_llm_extract. Not holdout. Compact exect_llm_only rungs remain a fallback until a model has a living extract envelope.",
   "living_effort": {
     "deepseek": "low",
     "hosted_reasoning": "low",
@@ -291,11 +309,10 @@
     "split_machine": "dev"
   },
   "request_methods": [
-    "exect_llm_only",
-    "exect_llm_pre_post"
+    "exect_llm_extract"
   ],
   "row_policy": "development_review_permitted",
-  "schema_version": "paper_experiments.exect.dev140_panel.v3",
+  "schema_version": "paper_experiments.exect.dev140_panel.v4",
   "split": "dev140",
   "split_machine": "dev"
 }
