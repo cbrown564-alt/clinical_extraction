@@ -1,0 +1,43 @@
+{
+  "generated_by": "scripts/build_subgroup_results_report.py",
+  "generated_on": "2026-08-24",
+  "model": "gemini/gemini-3.7-flash",
+  "held_out": {
+    "exect_test60": {
+      "split": "test60",
+      "n": 59,
+      "row_policy": "aggregate_only",
+      "cell": "llm_extract_then_rules",
+      "metric": "4-family micro F1",
+      "select": 0.8674,
+      "family_f1": {
+        "Diagnosis": 0.81,
+        "Investigations": 0.91,
+        "Prescription": 0.95,
+        "SeizureFrequency": 0.81
+      }
+    },
+    "gan_test450": {
+      "split": "test450",
+      "n": 450,
+      "row_policy": "aggregate_only",
+      "cell": "llm_extract_then_rules",
+      "metric": "purist",
+      "select": 373
+    }
+  },
+  "development_subgroups": {
+    "status": "unavailable_in_this_worktree",
+    "split": "dev140 for ExECT; dev750 for Gan",
+    "method_cell": "Gemini LLM candidate extraction / rules encoding / rules selection",
+    "metric": "ExECT 4-family micro F1; Gan Purist accuracy",
+    "sample_count": "not computable without a current-cell scored artifact keyed to the predefined categories",
+    "reason": "The requested category-cut JSONs and current preferred-cell category-keyed development scores are absent. Existing historical six-model cuts and other Gemini cells are not substituted."
+  },
+  "source_audit": {
+    "experiments/six_model_category_cut_performance_20260806.json": false,
+    "experiments/exectv2_family_error_catalog_20260806.json": false,
+    "experiments/category_cut_representative_examples_20260808.json": false
+  },
+  "holdout_policy": "Aggregate-only; no held-out individual rows inspected or published."
+}
