@@ -35,7 +35,8 @@ Do not use a version code as if it explains the method.
 
 | Plain name | Code or saved term | Important limit |
 | --- | --- | --- |
-| Clinical fact recovery / clinical fact F1 | `clinical_headline`, `headline_target` | Internal research score, not the published strict benchmark |
+| 4-family micro F1 | `clinical_inventory_unit_keys` | Paper-cited ExECT primary metric |
+| Clinical fact recovery / clinical fact F1 | `clinical_headline`, `headline_target` | Historical Compact/headline view id and internal research score; not the paper-cited primary |
 | Seizure-frequency state profile | `state_profile` | Used for seizure-frequency development only |
 | Purist | Purist | Strict Gan label accuracy; primary Gan holdout score |
 | Pragmatic | Pragmatic | Gan accuracy with specified label equivalences; secondary score |

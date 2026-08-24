@@ -40,12 +40,13 @@ ExECT's primary internal score is 4-family micro F1
 (`clinical_inventory_unit_keys`). Diagnosis is
 not collapsed to the most-specific concept. De-duplication belongs to
 select, not to scoring. Phrase, CUI, evidence-valid, and full-attribute
-scores remain separate. Historical cells may still carry the identifier
-`clinical_headline`.
+scores remain separate. Historical Compact/headline cells may still
+carry `clinical_headline` (`clinical_headline_unit_keys`). That
+Diagnosis-collapse ablation is not the cited primary.
 
 Clinical fact recovery is not the published strict ExECT benchmark.
 
-Clinical fact F1 cannot show which upstream component caused an omission or
+4-family micro F1 cannot show which upstream component caused an omission or
 addition, whether an exact quote was decisive, or whether an unannotated fact
 was clinically reasonable. Those questions require the saved translation
 trace and development case analysis.
@@ -77,8 +78,9 @@ selected fills, holdout limits, or claim strength.
 ## Writing test
 
 **Question:** can the author name the primary Gan measure, the primary ExECT
-internal measure, and the one sentence that keeps clinical fact recovery
-from being called the published benchmark?
+internal measure (4-family micro F1 / `clinical_inventory_unit_keys`), and
+the one sentence that keeps clinical fact recovery from being called the
+published benchmark?
 
 **Success:** those three facts are locatable here without reopening the
 scoring canon or a results table.

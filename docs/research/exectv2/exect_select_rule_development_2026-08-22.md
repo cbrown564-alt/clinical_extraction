@@ -262,13 +262,17 @@ saved development distributions; it is not an independent split, holdout
 generalization, or clinical validation. The result has not replaced the
 promoted paper rung artifacts. `test60` remains sealed.
 
-The accepted rules are replay stops for the cited table. On saved
-`exect_llm_only` raw they define cell 3 rule select after rule encode
-(the six-model roster row, not the peak). On saved later-stage encode
-they define cell 4 rule select (Gemini only). ExECT uses the same five
-role rows as Gan; the cited score is the select stop. `exect_llm_with_rules`
-is the live alias of `exect_llm_pre_post` (both extract); it is not a
-second headline method. A living producer raw F1 is not LLM extract.
+The accepted rules are replay stops for rule development on filtered
+extract. On saved `exect_llm_extract_filtered` raw (protocol-time
+`exect_llm_only`) they define the six-model roster rule-encode/select
+row; on saved later-stage encode they define inventory Select after
+encode inputs. All figures above use `clinical_headline_unit_keys`; they
+are not the paper's cited 4-family micro F1 five-cell grid. Cited
+holdout select stops:
+[cells 3–5](exect_gemini_inventory_cells_3_5_protocol_2026-08-23.md),
+cell 2
+[both-extract](exect_both_extract_on_inventory_protocol_2026-08-23.md).
+`exect_llm_pre_post` is both-extract on the living extract.
 
 ## Post-study portability correction
 

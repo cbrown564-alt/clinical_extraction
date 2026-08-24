@@ -5,7 +5,7 @@
 
 # ExECTv2 LLM pre-post: stage diagram
 
-> ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms and named Select rules reconcile those findings into the scored representation (hybrid F1). This is the both-extract row; the paper's cited select stop uses later-stage encode/select per docs/paper/methods.md.
+> ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms and named Select rules reconcile those findings into the scored representation. This is the both-extract row (`exect_llm_pre_post`); the paper's cited ExECT peak is cell 3 rule select after `exect_llm_extract`, scored on 4-family micro F1. See docs/paper/methods.md.
 
 Node shape carries the ownership. Rounded nodes are model-owned. Rectangles are deterministic. Hexagons are gates. Stages that may change clinical meaning are highlighted.
 

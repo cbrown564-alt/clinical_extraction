@@ -142,6 +142,33 @@ def test_paper_gan_raw_row_hydrates_structured_trace(client: TestClient) -> None
     assert row["row_trace"]["method"] == "llm_with_rules"
 
 
+def test_paper_gan_five_cell_encode_is_replayable(client: TestClient) -> None:
+    families = client.get("/pipeline-families")
+    assert families.status_code == 200
+    encode = next(
+        family
+        for family in families.json()["families"]
+        if family["run_id"] == "gan2026_validation750_gemini37flash_llm_encode"
+    )
+    assert encode["paper_cell"] == "llm_encode"
+    assert encode["availability"] == "replay"
+    assert encode["model"] == "gemini/gemini-3.7-flash"
+    catalog = families.json()["families"]
+    rules = [family for family in catalog if family.get("paper_cell") == "rules_only"]
+    assert len(rules) == 1
+    assert rules[0]["run_id"] == "rules"
+
+    response = client.get(
+        "/artifacts/gan2026_validation750_gemini37flash_llm_encode",
+        params={"letter_id": "103"},
+    )
+    assert response.status_code == 200
+    row = response.json()["content"][0]
+    assert row["source_row_index"] == 103
+    assert row["structured_record"]["selection"]["final_label"]
+    assert row["normalized_events"]
+
+
 def test_saved_artifact_replay_is_allowlisted_and_bounded(client: TestClient) -> None:
     run_id = "gan2026_hybrid_multi_component_staged_assembly_v1_validation750_2026-06-05"
     response = client.get(f"/artifacts/{run_id}", params={"limit": 2})
@@ -327,6 +354,26 @@ def test_exect_workbench_run_uses_living_paper_raws(client: TestClient) -> None:
     assert letter["predicted_mentions"]
     entities = {item["entity"] for item in letter["predicted_mentions"]}
     assert "Diagnosis" in entities
+
+
+def test_exect_workbench_five_cell_encode_is_replayable(client: TestClient) -> None:
+    catalog = client.get("/exectv2/runs")
+    assert catalog.status_code == 200
+    encode = next(
+        run
+        for run in catalog.json()["runs"]
+        if run["run_id"] == "exectv2_dev140_gemini37flash_llm_encode"
+    )
+    assert encode["paper_cell"] == "llm_encode"
+    rules = [run for run in catalog.json()["runs"] if run.get("run_id") == "rules"]
+    assert len(rules) == 1
+
+    response = client.get("/exectv2/runs/exectv2_dev140_gemini37flash_llm_encode")
+    assert response.status_code == 200
+    letter = next(
+        item for item in response.json()["run"]["letters"] if item["letter_id"] == "EA0002"
+    )
+    assert letter["predicted_mentions"]
 
 
 def test_frontend_api_serves_the_living_exect_dev140_panel(client: TestClient) -> None:

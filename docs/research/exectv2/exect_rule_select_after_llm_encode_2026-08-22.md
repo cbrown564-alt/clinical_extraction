@@ -10,8 +10,8 @@ Promoted copy: `paper_experiments/exect/exect_rule_select_after_llm_encode/gemin
 ## Paper table
 
 ExECT uses the same five role rows as Gan. Each of extract, encode,
-and select is rules, LLM, or both. The cited score is the select
-stop. This study is **cell 4** (LLM / LLM / rules): saved
+and select is rules, LLM, or both. The cited score is the 4-family
+micro F1 select stop. This study is **cell 4** (LLM / LLM / rules): saved
 `exect_llm_extract`, later-stage `exect_llm_encode`, then inventory
 Select. On this extract it is **not** the peak Gemini inventory
 row. The peak is cell 3 (`exect_llm_extract`, inventory Select).
@@ -21,8 +21,8 @@ Later-stage encode and select stay Gemini only. The Compact/headline
 ## Answer
 
 ExECT cell 4 exists on the inventory extract. On the saved Gemini
-later-stage encode ledger, inventory Select changes exact inventory
-F1 from **0.8598 to 0.8585** on `dev140` and from **0.8649 to
+later-stage encode ledger, inventory Select changes 4-family micro F1
+from **0.8598 to 0.8585** on `dev140` and from **0.8649 to
 0.8636** on locked `test60`. That holdout select stop is above
 later-stage LLM select (**0.853**) and below cell 3 inventory
 Select (**0.8674**).
@@ -38,7 +38,7 @@ ledger.
 
 ## Component result
 
-Exact `clinical_inventory_unit_keys`.
+Exact 4-family micro F1 (`clinical_inventory_unit_keys`).
 
 | Split | Encode stop | Cell 4 select | Select actions |
 | --- | ---: | ---: | ---: |

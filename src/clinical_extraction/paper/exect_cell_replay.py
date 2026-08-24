@@ -47,6 +47,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
     load_jsonl_rows,
     write_jsonl_rows,
 )
+from clinical_extraction.trace_explorer.exectv2_comparison import _frontend_letter
 
 ROOT = discover_repo_root(start=Path(__file__))
 FAMILIES = ("Diagnosis", "SeizureFrequency", "Prescription", "Investigations")
@@ -187,6 +188,62 @@ def schema_mention_rows(producer: StructuredProducerResult) -> list[dict[str, An
             for mention in structured.schema_mentions(producer.spelled_mentions)
         ]
     )
+
+
+def hydrate_exect_five_cell_letter(
+    letter: ExectLetter,
+    raw_output: str,
+    *,
+    model: str,
+    cell: str,
+    split: str = "dev140",
+) -> dict[str, Any]:
+    """Rebuild one five-cell ExECT letter from a saved extract raw_output."""
+
+    if cell not in SURFACE_FOR_RUNG:
+        raise ValueError(f"unsupported ExECT five-cell replay {cell!r}")
+    holdout = holdout_is_aggregate_only(split)
+    machine = "test" if holdout else "dev"
+    assembly = StructuredMethodConfig.inventory()
+    before = structured.PROMPT_VERSION
+    try:
+        structured.set_active_prompt_version(structured.EXECT_LLM_EXTRACT)
+        producer = structured_one_call.produce_structured_letter(
+            letter,
+            model=model,
+            mode="replay",
+            raw_output=raw_output,
+            split=machine,
+            config=assembly,
+        )
+        if cell == "llm_extract":
+            predicted = schema_mention_rows(producer)
+        elif cell == "llm_encode":
+            predicted = format_render_mention_rows(producer, letter.note_text)
+        else:
+            assembled = assemble_structured_rows(
+                [letter],
+                [dict(producer.row)],
+                config=assembly,
+            )[letter.letter_id]
+            predicted = list(
+                assembled["prediction_surfaces"].get("residual_benchmark_added") or []
+            )
+    finally:
+        structured.set_active_prompt_version(before)
+    full = _frontend_letter(gold=letter, predicted=predicted, source_model=model)
+    return {
+        "letter_id": full["letter_id"],
+        "split": full["split"],
+        "stage": full["stage"],
+        "predicted_mentions": full["predicted_mentions"],
+        "predicted_family_counts": full["family_counts"]["predicted"],
+        "evidence_spans": [
+            span
+            for span in full["evidence_spans"]
+            if isinstance(span, dict) and span.get("kind") == "llm"
+        ],
+    }
 
 
 def format_render_mention_rows(

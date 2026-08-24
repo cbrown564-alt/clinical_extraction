@@ -110,7 +110,7 @@ evidence must remain visible rather than being diluted by unrelated results.
 
 | Criterion | Gan 2026 | ExECTv2 | Current cross-task use |
 | --- | --- | --- | --- |
-| Clinical correctness and generalization | Purist accuracy primary; Pragmatic secondary; validation and locked test separate | `clinical_headline` F1 overall and for the four fixed families; dev140 and aggregate-only test60 separate | Construct only |
+| Clinical correctness and generalization | Purist accuracy primary; Pragmatic secondary; validation and locked test separate | 4-family micro F1 (`clinical_inventory_unit_keys`) for the four fixed families; dev140 and aggregate-only test60 separate | Construct only |
 | Clinical selection and unsupported inference | Unknown-gold active-rate over-read; current-versus-historical and faithful-but-wrong counts | Preserve the six-model SF zero-denominator result; a rate requires independently governed exhaustive review | Not comparable |
 | Evidence support and faithfulness | Textual grounding at the named stage; semantic support separately | Six-model final exact evidence; independent semantic-support review separately | Construct only until stage and review match |
 | Uncertainty and selective action | Confidence coverage, calibration, failure detection, risk-coverage, and review burden at their recorded scope | Internal scoring-rule calibration and the bounded historical three-model routing result | Construct only |

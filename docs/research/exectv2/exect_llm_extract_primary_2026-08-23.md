@@ -7,10 +7,10 @@ Track: [inventory](exect_llm_inventory_track.md)
 
 ## Primary question
 
-Can ExECT cell 3 use the recall-first inventory extract and inventory
-F1 as the cited method and scorer, leaving filtering and de-duplication
-to select, with the older Compact extract kept only as a Gemini
-ablation?
+Can ExECT cell 3 use the recall-first inventory extract and 4-family
+micro F1 (`clinical_inventory_unit_keys`) as the cited method and
+scorer, leaving filtering and de-duplication to select, with the older
+Compact extract kept only as a Gemini ablation?
 
 ## Why this matters
 
@@ -30,7 +30,7 @@ secondary role as `gan_llm_extract_raw` beside `gan_llm_extract`.
 | Splits | `dev140` (review permitted); `test60` aggregate-only |
 | Candidate | `exect_llm_extract` (was `exect_llm_inventory`) |
 | Comparator / ablation | Gemini `exect_llm_extract_filtered` (was `exect_llm_only`) |
-| Scorer | `clinical_inventory_unit_keys` |
+| Scorer | 4-family micro F1 (`clinical_inventory_unit_keys`) |
 | Cell 3 roster this machine | Luna, Grok, DeepSeek on both splits |
 | Cell 3 roster other device | Qwen, Gemma |
 | Cells 4–5 | Gemini only, on the new extract. Encode prompt unchanged. Select prompt adjusted for the larger extract. |
@@ -45,9 +45,10 @@ Grok, or DeepSeek on the filtered extract.
 
 ## Stop rule
 
-Answer when the new method id is the living cell-3 extract, inventory
-F1 is the cited scorer, the filtered Gemini cell is an ablation only,
-and the named live cells have started or finished under those names.
+Answer when the new method id is the living cell-3 extract, 4-family
+micro F1 is the cited scorer, the filtered Gemini cell is an ablation
+only, and the named live cells have started or finished under those
+names.
 
 ## Claim boundary
 

@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 from clinical_extraction.paper.exect import hydrate_saved_exect_letter
+from clinical_extraction.paper.exect_cell_replay import hydrate_exect_five_cell_letter
 from clinical_extraction.paper.exect_panel import (
     paper_exect_catalog_runs,
     paper_exect_identity,
@@ -42,6 +43,12 @@ from clinical_extraction.trace_explorer.gan2026_comparison import (
 )
 
 DatasetId = Literal["gan2026", "exectv2"]
+
+_FIVE_CELL_REPAIR = {
+    "gan_llm_extract": "raw_model",
+    "gan_llm_encode": "llm_encode",
+    "gan_llm_select_from_extract": "llm_select",
+}
 
 _NAMED_RESOURCES: dict[str, str] = {
     "registry": "registry.json",
@@ -373,7 +380,7 @@ class FrontendDataStore:
         cached = self._paper_exect_run_cache.get(run_id)
         if cached is not None:
             return copy.deepcopy(cached)
-        slug, lane = identity
+        _slug, method = identity
         summary = next(
             (item for item in paper_exect_catalog_runs() if item["run_id"] == run_id),
             None,
@@ -393,10 +400,22 @@ class FrontendDataStore:
             gold = gold_by_id.get(letter_id)
             if gold is None:
                 continue
+            raw_output = str(row.get("raw_output") or "")
+            if method in {"llm_extract", "llm_encode", "llm_select"}:
+                letters.append(
+                    hydrate_exect_five_cell_letter(
+                        gold,
+                        raw_output,
+                        model=str(summary["model"]),
+                        cell=method,
+                    )
+                )
+                continue
+            lane = "llm" if method == "exect_llm_only" else "llm_with_rules"
             letters.append(
                 hydrate_saved_exect_letter(
                     gold,
-                    str(row.get("raw_output") or ""),
+                    raw_output,
                     model=str(summary["model"]),
                     lane=lane,
                 )
@@ -424,7 +443,18 @@ class FrontendDataStore:
         record = self._validation_dataset_records.get(int(source))
         if record is None:
             return row
-        return hydrate_saved_raw_row(method, record, str(row.get("raw_output") or ""))
+        hydrate_method = method
+        repair_mode = _FIVE_CELL_REPAIR.get(method)
+        if repair_mode is not None:
+            hydrate_method = "gan_llm_extract_raw"
+        if hydrate_method not in {"gan_llm_extract_raw", "gan_llm_only"}:
+            return row
+        return hydrate_saved_raw_row(
+            hydrate_method,
+            record,
+            str(row.get("raw_output") or ""),
+            repair_mode=repair_mode,
+        )
 
     @classmethod
     def _read_jsonl_matching(cls, path: Path, letter_id: str) -> dict[str, Any] | None:
@@ -521,7 +551,7 @@ class FrontendDataStore:
             "exectv2_deterministic_all9_dev140",
         }:
             return run
-        canonical = {**run, "run_id": "rules"}
+        canonical = {**run, "run_id": "rules", "paper_cell": "rules_only"}
         saved_run_id = str(
             canonical.setdefault("saved_run_id", "exectv2_deterministic_all9_dev140")
         )

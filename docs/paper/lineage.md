@@ -43,10 +43,11 @@ clinical fact.
 
 A later dump used a different request shape (alphabetical JSON,
 those fields present). That dump is not the living method. The
-paper cites hybrid F1 for ExECT LLM with rules and raw F1 for
-ExECT LLM only. Full ledger is the longer control when cited; it
-is not a headline method or a peer column. Grok has no Full ledger
-cell.
+paper cites 4-family micro F1 for the living inventory extract
+(`exect_llm_extract`) and for ExECT LLM with rules. Compact/hybrid
+F1 is lineage, not the headline score. Full ledger is the longer
+control when cited; it is not a headline method or a peer column.
+Grok has no Full ledger cell.
 
 ## Gan codebook extract and source-near ablation
 

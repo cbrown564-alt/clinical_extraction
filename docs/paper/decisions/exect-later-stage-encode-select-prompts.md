@@ -1,7 +1,7 @@
 # ExECT later-stage encode and select prompts
 
 Date: 2026-08-21
-Revised: 2026-08-23 (Gemini-only later stages; six-model extract is `exect_llm_extract`)
+Revised: 2026-08-23 (Gemini-only later stages; cited score is 4-family micro F1)
 Status: current
 Owner: [paper methods](../methods.md)
 Related: [Gemini is the cited model](gemini-is-the-cited-model.md),
@@ -66,7 +66,8 @@ or Gemma. Clinical-fact SF type now keys the folded seizure-type
 phrase. CUI stay on the mention as secondary attributes and still
 feed the published with-CUI diagnostic. Gemini later-stage
 `exect_llm_encode` and `exect_llm_select` have been run and
-promoted; cite the exact-scorer cells, not the 21 Aug hierarchy
-F1s. Living hybrid select no longer unions residual letter-scan
+promoted; cite the 4-family micro F1 (`clinical_inventory_unit_keys`)
+cells, not Compact/headline F1 or `clinical_headline_unit_keys`.
+Living hybrid select no longer unions residual letter-scan
 findings after the call. Pre-post still shows those cues as
 suggested evidence.

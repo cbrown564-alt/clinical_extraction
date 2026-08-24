@@ -6,13 +6,20 @@ import {
 } from "../paperCells";
 
 describe("paper cells", () => {
-  it("orders five role cells and keeps the headline on LLM extract then rules", () => {
+  it("orders five role cells and keeps the headline on LLM extract, rules encode, rules select", () => {
     expect(PAPER_CELLS.map((cell) => cell.id)).toEqual([
       "rules_only",
       "llm_pre_post",
       "llm_extract",
       "llm_encode",
       "llm_select",
+    ]);
+    expect(PAPER_CELLS.map((cell) => cell.displayName)).toEqual([
+      "Rules extract, rules encode, rules select",
+      "LLM and rules extract, rules encode, rules select",
+      "LLM extract, rules encode, rules select",
+      "LLM extract, LLM encode, rules select",
+      "LLM extract, LLM encode, LLM select",
     ]);
     expect(PAPER_CELLS.map((cell) => cell.shortLabel)).toEqual([
       "R / R / R",

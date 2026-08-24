@@ -25,9 +25,11 @@ const METHOD_CLASSES: Record<ActiveMethod, string> = {
 
 export function MethodBadge({
   method,
+  label,
   className = "",
 }: {
   method: ActiveMethod;
+  label?: string;
   className?: string;
 }) {
   return (
@@ -41,7 +43,7 @@ export function MethodBadge({
       ) : (
         <Braces className="h-3 w-3" aria-hidden="true" />
       )}
-      {activeMethodLabel(method)}
+      {label ?? activeMethodLabel(method)}
     </span>
   );
 }

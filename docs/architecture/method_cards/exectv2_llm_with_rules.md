@@ -12,7 +12,7 @@ Stages that may change clinical meaning: 6
 
 ## One sentence
 
-> ExECT LLM with rules: the model proposes findings for four families in one request; deterministic family transforms reconcile those findings into the scored representation (hybrid F1).
+> ExECT LLM with rules: the model proposes findings for four families in one request; deterministic family transforms reconcile those findings into the scored representation. Paper headline tables use 4-family micro F1 (`clinical_inventory_unit_keys`); `clinical_headline` is the historical Compact/headline view id.
 
 ## Sixty seconds
 
@@ -25,7 +25,7 @@ ExECT LLM with rules (`exect_llm_with_rules`) uses its own request (suggested-ev
 | What enters? | ExectLetter - see `exect.llm_with_rules.build_prompt` |
 | Who first proposes the clinical answer? | the named model proposes all four families (exect.llm_with_rules.model_call); four family transforms may change findings afterwards |
 | Which later stages may change clinical meaning? | `exect.llm_with_rules.project_and_gate`, `exect.llm_with_rules.sf_state_projection`, `exect.llm_with_rules.sf_unknown_suppression`, `exect.llm_with_rules.lens.diagnosis`, `exect.llm_with_rules.lens.prescription` |
-| What final representation is scored? | A PredictedLetter of four-family mentions materialized into named score views; the primary view is clinical fact recovery (`clinical_headline`, hybrid F1). |
+| What final representation is scored? | A PredictedLetter of four-family mentions materialized into named score views; paper primary is 4-family micro F1 (`clinical_inventory_unit_keys`); `clinical_headline` is the historical Compact/headline view id. |
 | What evidence shows whether each component helped or harmed? | `docs/paper/decisions/exect-compact-is-the-cited-hybrid.md`, `docs/paper/methods.md`, `docs/paper/claims.md` |
 
 ## Stages
@@ -287,14 +287,14 @@ Build the named prediction views - raw candidate, post-lens assembled findings, 
 |  | Type | Example |
 | --- | --- | --- |
 | In | assembled findings | four families of reconciled findings |
-| Out | named FindingViewResult views | a clinical fact recovery (`clinical_headline`) view holding the unit keys |
+| Out | named FindingViewResult views | views including `clinical_inventory_unit_keys` (paper primary) and `clinical_headline` (historical Compact/headline view id) |
 
 > One set of findings, several numbers. Naming the view is part of naming the result.
 
 - Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/views.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/views.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.views:build_scoring_views`)
 - Test: [`tests/test_exectv2_scoring_headlines.py`](../../../tests/test_exectv2_scoring_headlines.py)
 - Proven in a trace by: `prediction_surfaces`
-- Paper wording: Findings are materialized into named scoring views; the primary view is clinical fact recovery (`clinical_headline`).
+- Paper wording: Findings are materialized into named scoring views; the paper primary is 4-family micro F1 on `clinical_inventory_unit_keys`.
 
 ### 15. Score against gold
 
@@ -304,8 +304,8 @@ Match the materialized view's mentions to gold annotations and report per-entity
 
 |  | Type | Example |
 | --- | --- | --- |
-| In | materialized view plus gold annotations | clinical fact recovery view against the four-family gold |
-| Out | OverallScore plus per-entity EntityScore | a clinical fact recovery overall F1 |
+| In | materialized view plus gold annotations | 4-family micro F1 view (`clinical_inventory_unit_keys`) against the four-family gold |
+| Out | OverallScore plus per-entity EntityScore | a 4-family micro F1 overall score |
 
 - Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/match.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/match.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match:score_overall`)
 - Test: [`tests/test_exectv2_scoring_match_fidelity.py`](../../../tests/test_exectv2_scoring_match_fidelity.py)

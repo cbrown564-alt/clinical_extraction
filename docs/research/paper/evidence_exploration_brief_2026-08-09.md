@@ -238,8 +238,9 @@ and the [six-model comparison](../shared/six_model_comparison_report_2026-07-18.
 **Boundary:** headline tables are five role rows; the cited score is the
 select stop. The six-model comparison is cell 3 only (LLM extract, rules
 encode, rules select) on both tasks. Full ledger is the named control, not
-the headline. Clinical-fact F1 is an internal research measure, not the
-published ExECT benchmark.
+the headline. 4-family micro F1 (`clinical_inventory_unit_keys`) is
+the cited internal measure; Compact/headline is a historical ablation,
+not the published ExECT benchmark.
 Gan has retained task-specific method and six-model comparisons, but prompt,
 repair, replay, provider-route, and historical-versus-final ruleset identities
 must remain visible. These results do not show state of the art or a universal
@@ -532,7 +533,7 @@ that job:
    presents Gemini five-cell holdout comparisons as two separate task
    stories, with each metric, split, shown role row, evidence owner, and
    limit visible. Gan cites select-stop Purist on the five role rows;
-   ExECT cites select-stop clinical fact F1 on the same grid.
+   ExECT cites select-stop 4-family micro F1 on the same grid.
    The view keeps the tasks' scorers and method sets separate.
 3. **Component-role and failure-boundary source.** The four-slide
    [component roles and limits deck](failures_and_limits_2026-08-10.md)

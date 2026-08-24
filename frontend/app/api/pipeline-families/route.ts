@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { ganFamiliesFromDev750Panel } from "@/lib/ganPipelineOptions";
 import { readMockJson } from "../_mock";
+import { proxyPython } from "../_upstream";
 
 export const dynamic = "force-static";
 
@@ -9,7 +10,9 @@ function panelPath() {
   return join(process.cwd(), "..", "paper_experiments", "gan", "dev750_panel.json");
 }
 
-export function GET() {
+export async function GET() {
+  const upstream = await proxyPython("/pipeline-families");
+  if (upstream) return upstream;
   try {
     const panel = JSON.parse(readFileSync(panelPath(), "utf8")) as {
       claim_boundary?: string;

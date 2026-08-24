@@ -14,7 +14,7 @@ the Gemini five-cell owners. Holdout is aggregate-only. Do not inspect
 
 ## The question
 
-Three variables were expected to move the headline score:
+Three variables were expected to move the cited select stop:
 
 1. **Stage ownership** — who runs extract, encode, and select (rules,
    LLM, or both). Extra encode or select work can be a recorded rule
@@ -34,10 +34,10 @@ roster replacements.
 Thinking changes little once rules encode and select. Model choice
 moves the score more than thinking, but only coarsely: Grok and Gemini
 lead; DeepSeek is mid; Luna is behind. The best mix is a model extract
-plus recorded post-processing. The exact mix differs by task — Gan
-prefers LLM / rules / rules; ExECT prefers LLM / LLM / rules — and
-both beat all-rules and all-model on holdout. A later-stage model call
-can add a little more, at a second-call cost. Rules do the same
+plus recorded post-processing. On holdout both peaks are LLM / rules /
+rules (Gan 0.83; ExECT 0.87 / 0.8674). ExECT cell 4 (later-stage
+encode) is 0.86 and does not raise the stop. Both beat all-rules and
+all-model on holdout. Rules do the same
 post-processing job at a better balance of score, cost, and
 flexibility: the change is named, and the same raw can be replayed
 under a new policy without another extract. Better models extract
@@ -47,7 +47,7 @@ they do not erase it.
 ## 1. Stage ownership
 
 Gemini 3.7 Flash, locked holdout, select stop. Gan is Purist. ExECT
-is clinical-fact F1.
+is 4-family micro F1 (`clinical_inventory_unit_keys`).
 
 | Extract | Encode | Select | Gan `test450` | ExECT `test60` |
 | --- | --- | --- | ---: | ---: |
@@ -155,8 +155,8 @@ reasoning is visible.
 
 It may say the three variables were tested, and thinking moved the
 least. It may say a model-plus-rules mix beats all-rules and
-all-model on holdout, with the peak mix task-specific. It may say
-rules are the better encode/select owner when score, cost, and
+all-model on holdout, with both holdout peaks at LLM / rules / rules.
+It may say rules are the better encode/select owner when score, cost, and
 replay are taken together. It may say model quality shows up most at
 extract, and that rules shrink but do not close the Luna gap.
 
@@ -167,8 +167,9 @@ not treat DeepSeek Gan holdout as matching Grok or Gemini.
 ## Claim boundary
 
 Working synthesis of already-run cells. Gemini five-cell totals stay
-with their owners. The ExECT stage-ownership table uses inventory F1
-for cells 3–5. The thinking and multi-model ExECT tables below are
-still Compact/headline replays of saved `exect_llm_only` raws. Gan
+with their owners. The ExECT stage-ownership table uses 4-family
+micro F1 for cells 1–5. The thinking and multi-model ExECT tables
+below are still Compact/headline replays of saved `exect_llm_only`
+raws. Gan
 model stage scores are no-call replays of saved `gan_llm_extract`
 raws. Do not inspect holdout rows. Do not retune from these bands.

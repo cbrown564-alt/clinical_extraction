@@ -12,10 +12,12 @@ const METHOD_CLASSES: Record<ActiveMethod, string> = {
 export function Exectv2ModeBadge({
   run,
   method,
+  label,
   className = "",
 }: {
   run?: Exectv2RunSummary;
   method?: ActiveMethod;
+  label?: string;
   className?: string;
 }) {
   const activeMethod = method ?? (run ? exectv2RunActiveMethod(run) : "llm_with_rules");
@@ -30,7 +32,7 @@ export function Exectv2ModeBadge({
       ) : (
         <Braces className="h-3 w-3" aria-hidden="true" />
       )}
-      {exectActiveMethodLabel(activeMethod)}
+      {label ?? exectActiveMethodLabel(activeMethod)}
     </span>
   );
 }

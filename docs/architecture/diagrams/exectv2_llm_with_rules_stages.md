@@ -5,7 +5,7 @@
 
 # ExECTv2 LLM with rules: stage diagram
 
-> ExECT LLM with rules: the model proposes findings for four families in one request; deterministic family transforms reconcile those findings into the scored representation (hybrid F1).
+> ExECT LLM with rules: the model proposes findings for four families in one request; deterministic family transforms reconcile those findings into the scored representation. Paper headline tables use 4-family micro F1 (`clinical_inventory_unit_keys`); `clinical_headline` is the historical Compact/headline view id.
 
 Node shape carries the ownership. Rounded nodes are model-owned. Rectangles are deterministic. Hexagons are gates. Stages that may change clinical meaning are highlighted.
 

@@ -1,4 +1,5 @@
 import { exectv2Payload, ganLetters, jsonError } from "../../../_mock";
+import { proxyPython } from "../../../_upstream";
 
 export const dynamic = "force-static";
 
@@ -7,6 +8,8 @@ export async function GET(
   { params }: { params: Promise<{ dataset: string }> }
 ) {
   const { dataset } = await params;
+  const upstream = await proxyPython(`/datasets/${encodeURIComponent(dataset)}/letters`);
+  if (upstream) return upstream;
   if (dataset === "gan2026") {
     const letters = ganLetters();
     return Response.json({ dataset, split: "dev750", count: letters.length, letters });

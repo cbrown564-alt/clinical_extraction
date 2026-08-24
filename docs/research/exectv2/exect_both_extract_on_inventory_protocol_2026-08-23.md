@@ -27,7 +27,7 @@ that same extract plus the candidate list.
 | Select | inventory Select |
 | Development | `dev140`, review permitted |
 | Holdout | `test60`, aggregate only. Do not inspect rows. |
-| Scorer | 4-family micro F1 |
+| Scorer | 4-family micro F1 (`clinical_inventory_unit_keys`) |
 | Batches | `batch-1787519113-cqUTTcC7jIRcee44vuyR` (`dev140`); `batch-1787519464-Dh4Ndp9NpOsWLRIQvwUU` (`test60`) |
 
 An earlier `--overwrite` resume reused Compact OpenRouter batches.

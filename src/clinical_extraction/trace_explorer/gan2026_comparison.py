@@ -131,6 +131,7 @@ def discover_gan2026_validation_runs(
 
     families.append(_rules_only_family())
     _overlay_paper_dev750(repo_root, families, registry, artifacts)
+    _overlay_paper_five_cell(repo_root, families, registry, artifacts)
     return GanValidationDiscovery(
         catalog={
             "generated_on": "2026-08-19",
@@ -149,10 +150,35 @@ def discover_gan2026_validation_runs(
     )
 
 
+_RUN_ID_SUFFIXES: tuple[tuple[str, str], ...] = (
+    ("_llm_with_rules", "gan_llm_extract_raw"),
+    ("_llm_select", "gan_llm_select_from_extract"),
+    ("_llm_extract", "gan_llm_extract"),
+    ("_llm_encode", "gan_llm_encode"),
+    ("_llm_only", "gan_llm_only"),
+    ("_rules", "gan_rules"),
+)
+
+_RUN_ID_METHOD_SUFFIX: dict[str, str] = {
+    "gan_llm_extract_raw": "llm_with_rules",
+    "gan_llm_only": "llm_only",
+    "gan_llm_extract": "llm_extract",
+    "llm_extract": "llm_extract",
+    "gan_llm_encode": "llm_encode",
+    "llm_encode": "llm_encode",
+    "gan_llm_select_from_extract": "llm_select",
+    "llm_select": "llm_select",
+    "gan_rules": "rules",
+    "rules_only": "rules",
+}
+
+
 def paper_run_id(method: str, slug: str) -> str:
     """Workbench run id for a living paper Gan cell."""
 
-    suffix = "llm_with_rules" if method == "gan_llm_extract_raw" else "llm_only"
+    suffix = _RUN_ID_METHOD_SUFFIX.get(method)
+    if suffix is None:
+        suffix = "llm_with_rules" if method == "gan_llm_extract_raw" else "llm_only"
     return f"gan2026_validation750_{slug}_{suffix}"
 
 
@@ -163,10 +189,9 @@ def paper_identity_from_run_id(run_id: str) -> tuple[str, str] | None:
     if not run_id.startswith(prefix):
         return None
     rest = run_id[len(prefix) :]
-    if rest.endswith("_llm_with_rules"):
-        return "gan_llm_extract_raw", rest[: -len("_llm_with_rules")]
-    if rest.endswith("_llm_only"):
-        return "gan_llm_only", rest[: -len("_llm_only")]
+    for suffix, method in _RUN_ID_SUFFIXES:
+        if rest.endswith(suffix):
+            return method, rest[: -len(suffix)]
     return None
 
 
@@ -246,6 +271,109 @@ def _overlay_paper_dev750(
                     ),
                 }
             )
+
+
+_PANEL_CELL_METHODS = frozenset(
+    {"llm_extract", "llm_encode", "llm_select", "llm_pre_post"}
+)
+_PANEL_REPAIR_MODE = {
+    "llm_extract": "raw_model",
+    "llm_encode": "llm_encode",
+    "llm_select": "llm_select",
+    "llm_pre_post": "llm_select",
+}
+
+
+def _overlay_paper_five_cell(
+    repo_root: Path,
+    families: list[dict[str, Any]],
+    registry: list[dict[str, Any]],
+    artifacts: dict[str, Path],
+) -> None:
+    """Serve living five-cell rows from the shared extract raw."""
+
+    panel_path = repo_root / "paper_experiments" / "gan" / "dev750_panel.json"
+    if not panel_path.is_file():
+        return
+    panel = json.loads(panel_path.read_text(encoding="utf-8"))
+    cells = panel.get("cells")
+    if not isinstance(cells, list):
+        return
+    models = {item["slug"]: item for item in living_models()}
+    by_run = {str(family["run_id"]): family for family in families}
+    for cell in cells:
+        if not isinstance(cell, dict):
+            continue
+        method = str(cell.get("method") or "")
+        if method not in _PANEL_CELL_METHODS:
+            continue
+        slug = str(cell.get("model_slug") or "")
+        roster = models.get(slug, {})
+        raw_name = str(cell.get("shared_raw_output") or "gan_llm_extract_raw")
+        rows_path = (
+            repo_root / "paper_experiments" / "gan" / raw_name / slug / "dev750" / "rows.jsonl"
+        )
+        present = cell.get("status") == "present" and rows_path.is_file()
+        run_id = paper_run_id(method, slug)
+        row_count = int(cell.get("n") or 0)
+        purist_correct = int(cell.get("purist_correct") or 0)
+        purist_accuracy = float(cell.get("purist_accuracy") or 0.0)
+        inspection = {
+            "complete": present,
+            "row_count": row_count if present else 0,
+            "metrics": {
+                "row_count": row_count,
+                "purist_correct": purist_correct,
+                "purist_accuracy": purist_accuracy,
+                "pragmatic_correct": 0,
+                "pragmatic_accuracy": 0.0,
+            },
+        }
+        condition = ModelCondition(
+            slug,
+            str(cell.get("model") or roster.get("model") or ""),
+            str(cell.get("label") or roster.get("label") or slug),
+        )
+        family = _model_family(
+            condition,
+            run_suffix=_RUN_ID_METHOD_SUFFIX[method],
+            pipeline_method="llm_with_rules",
+            prompt_version=raw_name,
+            repair_mode=_PANEL_REPAIR_MODE[method],
+            inspection=inspection,
+            paper_cell=method,
+        )
+        existing = by_run.get(run_id)
+        if existing is None:
+            families.insert(-1, family)
+        else:
+            families[families.index(existing)] = family
+        by_run[run_id] = family
+        if not present:
+            continue
+        artifacts[run_id] = rows_path.resolve()
+        registry[:] = [item for item in registry if item["run_id"] != run_id]
+        registry.append(
+            {
+                "run_id": run_id,
+                "artifact_paths": [rows_path.relative_to(repo_root).as_posix()],
+                "date": "2026-08-23",
+                "decision": "development_comparison",
+                "mode": "replay",
+                "model": condition.route,
+                "model_role": family["display_label"],
+                "pipeline_family": family["pipeline_family"],
+                "primary_metrics": family["metrics"],
+                "repair_mode": family["repair_mode"],
+                "replay_status": "paper_dev750_five_cell_replay",
+                "row_count": 750,
+                "split": "validation",
+                "registry_roles": ["paper_dev750_panel"],
+                "evidence_validity": (
+                    "Row-level Gan validation development evidence; not holdout evidence."
+                ),
+            }
+        )
 
 
 def _paper_family(
@@ -376,6 +504,7 @@ def _model_family(
     prompt_version: str,
     repair_mode: str,
     inspection: dict[str, Any],
+    paper_cell: str | None = None,
 ) -> dict[str, Any]:
     active_method = "llm_with_rules" if pipeline_method == "llm_with_rules" else "llm"
     kind = active_method
@@ -405,6 +534,8 @@ def _model_family(
         "run_count": 1 if complete else 0,
         "progress": {"completed_rows": inspection["row_count"], "expected_rows": 750},
     }
+    if paper_cell is not None:
+        result["paper_cell"] = paper_cell
     if complete:
         result["metrics"] = inspection["metrics"]
     else:
@@ -424,6 +555,7 @@ def _rules_only_family() -> dict[str, Any]:
         "model_label": "No model",
         "executable": True,
         "kind": "rules",
+        "paper_cell": "rules_only",
         "architecture_family": "rules",
         "pipeline_family": "rules",
         "model": "(model-independent)",

@@ -130,7 +130,7 @@ These paths exist and are easy to mistake for this runner. They are named here s
 
 | Path | Role | Why it is not this runner |
 | --- | --- | --- |
-| `src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/published.py` | historical performance control | Reproduces the paper-derived metric view, which is not the internal clinical fact recovery scorer (`clinical_headline`). |
+| `src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/published.py` | historical performance control | Reproduces a paper-derived metric view; the paper primary is 4-family micro F1 (`clinical_inventory_unit_keys`), not the historical Compact/headline view (`clinical_headline`). |
 | `src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/all_entities/diagnosis.py` | rejected candidate or ablation | include_diagnosis_resolution_candidate and include_diagnosis_benchmark_residuals are off in the selected baseline. |
 
 ## Executable trace

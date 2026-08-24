@@ -564,6 +564,7 @@ def hydrate_saved_raw_row(
     raw_output: str,
     *,
     split: str = "dev750",
+    repair_mode: str | None = None,
 ) -> dict[str, Any]:
     """Rebuild parse, repair, and row_trace from a promoted paper raw_output."""
 
@@ -576,7 +577,7 @@ def hydrate_saved_raw_row(
         architecture="llm" if method == "gan_llm_only" else "llm_with_rules",
         dspy_cache=False,
         prompt_version=_prompt_version(method),
-        repair_mode=_repair_mode(method),
+        repair_mode=_repair_mode(method) if repair_mode is None else repair_mode,
     )
     return _run_record(
         method,

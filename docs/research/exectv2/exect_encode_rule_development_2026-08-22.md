@@ -235,13 +235,18 @@ tests portability across saved model distributions on the same development
 split; it is not independent validation, clinical validation, or holdout
 generalization. `test60` remains sealed.
 
-The accepted rules are the rule-encode stop for cell 3 (`exect_llm_only`,
-then rule encode and rule select—the six-model roster row, not the peak).
-They are not the later-stage LLM encode ledger used by cell 4 (Gemini
-only). ExECT uses the same five role rows as Gan; the cited score is the
-select stop. `exect_llm_with_rules` is the live alias of
-`exect_llm_pre_post`; it is not a second headline method. A living
-producer raw F1 is not LLM extract.
+The accepted rules are the rule-encode stop for the six-model roster
+row on filtered extract (`exect_llm_extract_filtered`, protocol-time
+`exect_llm_only`), then rule encode and rule select. They are not the
+later-stage LLM encode ledger used by cited cell 4 (Gemini only, living
+extract). All figures above use `clinical_headline_unit_keys`; they are
+development evidence, not the paper's cited 4-family micro F1 five-cell
+grid. Cited holdout select stops:
+[cells 3–5](exect_gemini_inventory_cells_3_5_protocol_2026-08-23.md),
+cell 2
+[both-extract](exect_both_extract_on_inventory_protocol_2026-08-23.md).
+`exect_llm_pre_post` is both-extract; `exect_llm_extract_filtered` is
+the retired Compact ablation.
 
 ## Authority correction
 

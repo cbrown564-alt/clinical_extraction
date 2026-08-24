@@ -417,5 +417,5 @@ paper is a list of bans.
 | A three-pass multi-model frequency score | A different architecture |
 | The 60-plus-140 inventory letters as one independent test | A development-inclusive audit, not a locked test |
 
-Grok has no Full-ledger cell. Clinical fact recovery is not the 2019
+Grok has no Full-ledger cell. 4-family micro F1 is not the 2019
 published score. Held-out letters are not read and not cited by row.

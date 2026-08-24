@@ -170,7 +170,7 @@ Promoted `exect_llm_with_rules` `dev140` cells, replayed 2026-08-19. Qwen is mis
 | **GPT-5.6 Luna** | 0.8889 | no | F / T / T / T | Heading types + epilepsy; skipped some narrative seizure mentions Grok kept. |
 | **Gemini 3.7 Flash** | 0.8571 | no | F / F / T / T | Convulsive + focal narrative; SF family not letter-exact. |
 | **DeepSeek V4 Flash** | 0.8889 | no | F / T / T / T | No separate extract-only cell on disk. |
-| **Gemma 4 26B** | 0.7619 | no | F / F / F / T | Extra levetiracetam / 600 mg plan; weakest hybrid F1. |
+| **Gemma 4 26B** | 0.7619 | no | F / F / F / T | Extra levetiracetam / 600 mg plan; weakest cell-3 F1 on this letter. |
 | **Qwen 3.8 27B** | — | pending | — | No cell 3 run. |
 
 ---

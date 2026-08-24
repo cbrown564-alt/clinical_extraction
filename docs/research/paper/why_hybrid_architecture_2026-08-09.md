@@ -109,10 +109,11 @@ be replaced by rules. It is that the closed output dialect, winner or inventory
 policy, and later mappings should have named owners rather than be re-derived
 or hidden inside generated prose on every letter.
 
-The paper-cited ExECT hybrid instruction is Compact ledger: the same
-one-call hybrid written in ordinary language, without the example zoo
-and without the non-seizure-frequency encoding rules
-([Decision 0058](../../decisions/0058-compact-ledger-is-the-paper-cited-exect-hybrid.md)).
+The cited ExECT row uses inventory extract (`exect_llm_extract`) with
+rule encode and rule select (cell 3). Compact ledger is a historical
+ablation: the same one-call hybrid written in ordinary language,
+without the example zoo and without the non-seizure-frequency encoding
+rules ([Decision 0058](../../decisions/0058-compact-ledger-is-the-paper-cited-exect-hybrid.md)).
 Full ledger remains the longer control book.
 
 ## The implemented response

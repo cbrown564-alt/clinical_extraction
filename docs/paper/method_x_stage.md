@@ -135,7 +135,7 @@ reading. Visibility is the point: the hops name the collapse.
 
 **Letter:** ExECT development `EA0007`. **Model:** Grok 4.6.
 **Shared raw for cells 3–5:** `exect_llm_extract`. **Cell 2 (both /
-rules / rules):** `exect_llm_pre_post`. **Score:** four-family clinical fact F1.
+rules / rules):** `exect_llm_pre_post`. **Score:** 4-family micro F1.
 **Artifacts:** `paper_experiments/exect/rungs/grok46/dev140/` and
 `paper_experiments/exect/exect_llm_pre_post/grok46/dev140/`.
 
@@ -187,7 +187,7 @@ not a promise that the last cell always wins.
    which class of change occurred. ExECT’s encode cell already includes
    CUI attach on encode-replay.
 4. **The score can throw distinctions away.** Purist accepts `4 per
-   day` and rejects `≤ 4 per day` on the same span. Clinical fact F1
+   day` and rejects `≤ 4 per day` on the same span. 4-family micro F1
    can match gold after a dictionary rewrite. The object still holds
    the bound and the hedge.
 5. **Rules only is a baseline, not the post stack.** On row `15431`

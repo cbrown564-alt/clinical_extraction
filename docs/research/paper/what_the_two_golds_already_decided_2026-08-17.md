@@ -36,7 +36,7 @@ distinction.
 | Selection or assembly | Choose one current state; other true statements are not additional answers | Retain all guideline-supported mentions; preserve multiplicity and family membership |
 | Unknown or silence | Explicit `unknown` and no-reference labels | Empty family means not annotated under the guideline |
 | Submitted object | One label | One de-duplicated fact set |
-| Scored unit | Monthly Purist or Pragmatic band | Feature-defined mention or clinical-fact set comparison |
+| Scored unit | Monthly Purist or Pragmatic band | 4-family inventory units (`clinical_inventory_unit_keys`) |
 | Information that may be discarded | Bounds, temporal detail, alternative true statements, and distinctions within a band | Unannotated clinical nuance, hedging or defaults not represented by the scored features |
 
 The paper should therefore treat annotation policy as the evaluation form

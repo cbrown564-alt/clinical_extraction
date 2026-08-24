@@ -22,8 +22,9 @@ remaining errors depend on where the proposed method first goes wrong: the
 model misses or flattens evidence, a rule switches the reading, the inventory
 is incomplete, or the gold discards a distinction the span still holds.
 Family floors below are the Full-ledger development and holdout
-panel unless a Compact cell is named. Compact ledger is the paper-cited
-ExECT hybrid ([Decision 0058](../../decisions/0058-compact-ledger-is-the-paper-cited-exect-hybrid.md)).
+panel unless a Compact/headline cell is named. Those Compact figures
+use the historical Diagnosis-collapse scorer, not the cited 4-family
+micro F1 (`clinical_inventory_unit_keys`).
 
 - **Gan still struggles with clinical selection.** Clusters remain the shared
   holdout floor. Unknown cases show that a rule can turn justified uncertainty

@@ -37,7 +37,7 @@ Every stage of every implemented runner, counted by what it is allowed to change
 | Gan 2026 | LLM with rules | the model proposes and selects (gan.llm_with_rules.model_call); ten deterministic repair families may change the answer afterwards | One Gan label string per letter, projected to a Purist and a Pragmatic category. |
 | ExECTv2 | Rules only | the nine deterministic extractors (stage exect.rules.extract_entities); the four-family projection is scorer-facing | An all-nine PredictedLetter plus an explicit four-family comparison projection, each scored under its named view. |
 | ExECTv2 | LLM only | the named model (stage exect.llm.model_call); deterministic stages only parse, represent, and gate its findings | The raw_candidate four-family PredictedLetter from the ExECT LLM only request, scored per entity and overall (raw F1). |
-| ExECTv2 | LLM pre-post | the named model proposes all four families (exect.llm_pre_post.model_call); four family transforms and the named Select-rule stack may change findings afterwards | A PredictedLetter of four-family mentions materialized into named score views; the primary view is clinical fact recovery (`clinical_headline`, hybrid F1). |
+| ExECTv2 | LLM pre-post | the named model proposes all four families (exect.llm_pre_post.model_call); four family transforms and the named Select-rule stack may change findings afterwards | A PredictedLetter of four-family mentions materialized into named score views; paper primary is 4-family micro F1 (`clinical_inventory_unit_keys`); `clinical_headline` is the historical Compact/headline view id. |
 
 ## Every clinical-meaning stage in the system
 

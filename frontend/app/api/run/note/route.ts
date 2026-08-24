@@ -1,9 +1,17 @@
 import { ganRecord } from "../../_mock";
+import { proxyPython } from "../../_upstream";
 
 export const dynamic = "force-static";
 
 export async function POST(request: Request) {
-  const body = (await request.json()) as {
+  const raw = await request.text();
+  const upstream = await proxyPython("/run/note", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: raw,
+  });
+  if (upstream) return upstream;
+  const body = JSON.parse(raw) as {
     source_row_index?: number;
     gold_label?: string;
   };

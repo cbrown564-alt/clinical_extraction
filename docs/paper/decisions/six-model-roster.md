@@ -1,7 +1,7 @@
 # Six-model roster
 
 Date: 2026-08-17
-Revised: 2026-08-22 (cell 3 only)
+Revised: 2026-08-23 (ExECT cited score is 4-family micro F1)
 Status: current
 Owner: [paper methods](../methods.md)
 Roster: [`paper_experiments/roster.json`](../../../paper_experiments/roster.json)
@@ -25,9 +25,11 @@ select are the recorded rule stacks replayed on that raw.
 `exect_llm_extract_filtered` is the Compact extract ablation, Gemini
 only.
 
-Headline five-cell tables stay Gemini. Later-stage LLM encode and
-LLM select stay Gemini only. Gemini thinking low / medium / high
-is a cell-3 extract ablation, not a roster table.
+Headline five-cell tables stay Gemini. On ExECT they score 4-family
+micro F1 (`clinical_inventory_unit_keys`); Compact/headline F1 is
+not the cited metric. Later-stage LLM encode and LLM select stay
+Gemini only. Gemini thinking low / medium / high is a cell-3 extract
+ablation, not a roster table.
 
 `gan_llm_extract_raw` and `gan_llm_only` are ablations or historical
 cells. They are not the six-model comparison.
@@ -40,8 +42,8 @@ pre-0731, Qwen 3.6:35B, Compact dump. Sol is not a paper cell.
 Cell 3 is the same method on both tasks: one extract call, then
 fixed rules. That is the only row that can carry six models without
 paying for later-stage encode or select on the roster. ExECT cell 4
-stays Gemini-only. On the inventory extract, cell 3 is also the
-Gemini peak.
+stays Gemini-only. On 4-family micro F1, cell 3 is the Gemini peak
+(0.8674 on `test60`).
 
 ## Consequences
 

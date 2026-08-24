@@ -75,6 +75,18 @@ def test_hydrate_saved_hybrid_row_rebuilds_structured_trace() -> None:
     assert row["comparison"]["purist_correct"] is True
 
 
+def test_hydrate_saved_hybrid_row_can_stop_at_encode_rules() -> None:
+    row = hydrate_saved_raw_row(
+        "gan_llm_extract_raw",
+        _record(),
+        _hybrid_raw(),
+        repair_mode="llm_encode",
+    )
+
+    assert row["structured_record"]["selection"]["final_label"] == "2 per month"
+    assert row["row_trace"]["method"] == "llm_with_rules"
+
+
 def test_hydrate_saved_llm_only_row_rebuilds_decision_trace() -> None:
     raw = json.dumps(
         {

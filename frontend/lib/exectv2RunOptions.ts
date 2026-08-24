@@ -1,4 +1,5 @@
 import { isBrowsableSplit } from "./datasets/splits";
+import { PAPER_CELLS, isPaperCellId, paperCellById } from "./paperCells";
 import { exectActiveMethodLabel } from "./plainLanguageLabels";
 import type {
   ActiveMethod,
@@ -117,6 +118,78 @@ export function resolveExectv2RunId(
   return matches.length === 1 ? matches[0].run_id : null;
 }
 
+export function exectPickerMethodId(run: Exectv2RunSummary): string {
+  if (run.paper_cell) return run.paper_cell;
+  if (run.kind === "rules" || run.run_id === "rules" || run.pipeline_family === "rules") {
+    return "rules_only";
+  }
+  if (run.kind === "llm" || run.active_method === "llm" || run.method_id === "llm") {
+    return "exect_llm_only";
+  }
+  return "llm_pre_post";
+}
+
+export function exectPickerMethodLabel(methodId: string): string {
+  return paperCellById(methodId).displayName;
+}
+
+export function exectMethodRequiresModel(methodId: string): boolean {
+  return methodId !== "rules_only";
+}
+
+const EXECT_METHOD_ORDER = PAPER_CELLS.map((cell) => cell.id);
+
+function exectMethodRank(methodId: string): number {
+  const index = EXECT_METHOD_ORDER.indexOf(
+    methodId as (typeof EXECT_METHOD_ORDER)[number]
+  );
+  return index < 0 ? EXECT_METHOD_ORDER.length : index;
+}
+
+export function exectMethodChoices(runs: Exectv2RunSummary[]) {
+  const seen = new Set<string>();
+  const choices: Array<{ id: string; label: string; requiresModel: boolean }> = [];
+  for (const run of runs) {
+    const id = exectPickerMethodId(run);
+    if (!isPaperCellId(id) || seen.has(id)) continue;
+    seen.add(id);
+    choices.push({
+      id,
+      label: exectPickerMethodLabel(id),
+      requiresModel: exectMethodRequiresModel(id),
+    });
+  }
+  return choices.sort((left, right) => exectMethodRank(left.id) - exectMethodRank(right.id));
+}
+
+export function exectModelsForMethod(
+  runs: Exectv2RunSummary[],
+  methodId: string
+): Exectv2RunSummary[] {
+  return runs
+    .filter((run) => exectPickerMethodId(run) === methodId)
+    .sort(
+      (a, b) =>
+        (MODEL_RANK.get(a.model) ?? MODEL_ORDER.length) -
+        (MODEL_RANK.get(b.model) ?? MODEL_ORDER.length)
+    );
+}
+
+export function resolveExectMethodModel(
+  runs: Exectv2RunSummary[],
+  methodId: string,
+  model?: string
+): Exectv2RunSummary | undefined {
+  const models = exectModelsForMethod(runs, methodId);
+  if (!exectMethodRequiresModel(methodId)) {
+    return models.find((run) => run.run_id === "rules") ?? models[0];
+  }
+  return (
+    models.find((run) => run.model === model) ??
+    models[0]
+  );
+}
+
 export function groupExectv2Runs(runs: Exectv2RunSummary[]): Exectv2RunGroup[] {
   return GROUPS.map((group) => ({
     ...group,
@@ -131,7 +204,9 @@ export function groupExectv2Runs(runs: Exectv2RunSummary[]): Exectv2RunGroup[] {
 }
 
 export function sortExectv2Runs(runs: Exectv2RunSummary[]): Exectv2RunSummary[] {
-  return groupExectv2Runs(runs).flatMap((group) => group.runs);
+  return exectMethodChoices(runs).flatMap((method) =>
+    exectModelsForMethod(runs, method.id)
+  );
 }
 
 export function hydrateExectv2Runs(

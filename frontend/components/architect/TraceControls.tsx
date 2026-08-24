@@ -17,12 +17,19 @@ import { fetchRegistry, fetchArtifact, fetchLetter } from "@/lib/api";
 import { firstReplayableArtifactPath } from "@/lib/registryArtifacts";
 import { adaptDeterministicTrace, adaptTrace, isReplaySupported } from "@/lib/traceAdapter";
 import {
+  ganMethodChoices,
+  ganMethodRequiresModel,
+  ganModelsForMethod,
   ganOverallScore,
+  ganPickerMethodId,
+  ganPickerMethodLabel,
   ganPipelineOptionLabel,
-  groupGanPipelineOptions,
   isGanAggregateRunId,
+  paperGanFamilies,
+  resolveGanMethodModel,
   resolveGanPipelineOption,
 } from "@/lib/ganPipelineOptions";
+import { isPaperCellId } from "@/lib/paperCells";
 import {
   ControlBar,
   ControlField,
@@ -71,16 +78,23 @@ export default function TraceControls() {
   const familiesQuery = usePipelineFamilies();
 
   const pipelineOptions = useMemo(
-    () => familiesQuery.data?.families ?? [],
+    () => paperGanFamilies(familiesQuery.data?.families ?? []),
     [familiesQuery.data?.families]
   );
-  const pipelineGroups = useMemo(
-    () => groupGanPipelineOptions(pipelineOptions),
+  const methodChoices = useMemo(
+    () => ganMethodChoices(pipelineOptions),
     [pipelineOptions]
   );
   const selectedOption = useMemo(
     () => pipelineOptions.find((option) => option.run_id === selectedRunId),
     [pipelineOptions, selectedRunId]
+  );
+  const selectedMethodId = selectedOption
+    ? ganPickerMethodId(selectedOption)
+    : "rules_only";
+  const modelOptions = useMemo(
+    () => ganModelsForMethod(pipelineOptions, selectedMethodId),
+    [pipelineOptions, selectedMethodId]
   );
   const isAggregateOnly =
     selectedOption?.availability === "aggregate_only" ||
@@ -105,7 +119,9 @@ export default function TraceControls() {
     const requestedOption = pipelineOptions.find(
       (option) => option.run_id === requestedRunId
     );
-    if (!requestedOption) return;
+    if (!requestedOption || !isPaperCellId(ganPickerMethodId(requestedOption))) {
+      return;
+    }
     const current = useArchitectStore.getState();
     if (
       requestedOption.run_id !== current.selectedRunId ||
@@ -118,13 +134,24 @@ export default function TraceControls() {
   // Keep adapter family aligned, or fall back from a legacy registry run id.
   useEffect(() => {
     if (pipelineOptions.length === 0) return;
-    if (pipelineOptions.some((option) => option.run_id === requestedRunId)) return;
-    const option = resolveGanPipelineOption(pipelineOptions, selectedRunId);
     if (
-      option &&
-      (option.run_id !== selectedRunId || option.pipeline_family !== pipelineFamily)
+      requestedRunId &&
+      pipelineOptions.some((option) => option.run_id === requestedRunId)
     ) {
-      setSelectedRunId(option.run_id, option.pipeline_family);
+      return;
+    }
+    const option = resolveGanPipelineOption(pipelineOptions, selectedRunId);
+    const selectedIsPaper =
+      option !== undefined && isPaperCellId(ganPickerMethodId(option));
+    const next = selectedIsPaper
+      ? option
+      : resolveGanMethodModel(pipelineOptions, "llm_extract") ??
+        resolveGanMethodModel(pipelineOptions, "rules_only");
+    if (
+      next &&
+      (next.run_id !== selectedRunId || next.pipeline_family !== pipelineFamily)
+    ) {
+      setSelectedRunId(next.run_id, next.pipeline_family);
     }
   }, [pipelineOptions, pipelineFamily, requestedRunId, selectedRunId, setSelectedRunId]);
 
@@ -135,18 +162,10 @@ export default function TraceControls() {
       try {
         const registry = await fetchRegistry();
         const matchingRun = registry.runs.find((r) => r.run_id === selectedRunId);
-        if (!matchingRun) {
-          setError(`No replay artifact found for ${selectedRunId}`);
-          return;
-        }
-        const replayPath = firstReplayableArtifactPath(matchingRun.artifact_paths);
-        if (!replayPath) {
-          setError(`No replay artifact found for ${selectedRunId}`);
-          return;
-        }
+        const replayPath = firstReplayableArtifactPath(matchingRun?.artifact_paths);
         const [record, artifact] = await Promise.all([
           fetchLetter("gan2026", String(letterIndex)),
-          fetchArtifact(matchingRun.run_id, replayPath, undefined, String(letterIndex)),
+          fetchArtifact(selectedRunId, replayPath, undefined, String(letterIndex)),
         ]);
         const row = artifact.content[0];
         if (!row) {
@@ -155,7 +174,7 @@ export default function TraceControls() {
         }
         setNoteText(record.note_text);
         setSourceRowIndex(letterIndex);
-        setReplayRunId(matchingRun.run_id);
+        setReplayRunId(selectedRunId);
         setReplayArtifactRows([row]);
         setReplayRowIndex(0);
         if (!isReplaySupported(pipelineFamily)) {
@@ -274,21 +293,26 @@ export default function TraceControls() {
 
   const methodItems = useMemo(
     () =>
-      pipelineGroups.flatMap((group) =>
-        group.options.map((opt) => ({
-          value: opt.run_id,
-          label:
-            ganPipelineOptionLabel(opt.label) +
-            (opt.availability === "aggregate_only"
-              ? " · aggregate only"
-              : opt.availability === "not_retained"
-                ? " · not retained"
-                : ""),
-          group: group.label,
-          disabled: opt.availability === "not_retained",
-        }))
-      ),
-    [pipelineGroups]
+      methodChoices.map((method) => ({
+        value: method.id,
+        label: method.label,
+      })),
+    [methodChoices]
+  );
+  const modelItems = useMemo(
+    () =>
+      modelOptions.map((opt) => ({
+        value: opt.model ?? opt.run_id,
+        label:
+          ganPipelineOptionLabel(opt.model_label ?? opt.label) +
+          (opt.availability === "aggregate_only"
+            ? " · aggregate only"
+            : opt.availability === "not_retained"
+              ? " · not retained"
+              : ""),
+        disabled: opt.availability === "not_retained",
+      })),
+    [modelOptions]
   );
 
   return (
@@ -298,22 +322,51 @@ export default function TraceControls() {
           {/* Method selection on the far left */}
           <ControlField label="Method" htmlFor="architect-method-select">
             {selectedOption?.kind && (
-              <MethodBadge method={selectedOption.kind} />
+              <MethodBadge
+                method={selectedOption.kind}
+                label={ganPickerMethodLabel(selectedMethodId)}
+              />
             )}
             <ControlCombobox
               id="architect-method-select"
               noun="method"
-              className="min-w-0 flex-1 sm:min-w-[240px] sm:flex-none"
+              className="min-w-0 flex-1 sm:min-w-[220px] sm:flex-none"
               items={methodItems}
-              value={selectedRunId}
-              onChange={(runId) => {
-                const option = pipelineOptions.find((opt) => opt.run_id === runId);
+              value={selectedMethodId}
+              onChange={(methodId) => {
+                const option = resolveGanMethodModel(
+                  pipelineOptions,
+                  methodId,
+                  selectedOption?.model
+                );
                 if (option) {
                   setSelectedRunId(option.run_id, option.pipeline_family);
                 }
               }}
             />
           </ControlField>
+
+          {ganMethodRequiresModel(selectedMethodId) && (
+            <ControlField label="Model" htmlFor="architect-model-select">
+              <ControlCombobox
+                id="architect-model-select"
+                noun="model"
+                className="min-w-0 flex-1 sm:min-w-[200px] sm:flex-none"
+                items={modelItems}
+                value={selectedOption?.model ?? ""}
+                onChange={(model) => {
+                  const option = resolveGanMethodModel(
+                    pipelineOptions,
+                    selectedMethodId,
+                    model
+                  );
+                  if (option) {
+                    setSelectedRunId(option.run_id, option.pipeline_family);
+                  }
+                }}
+              />
+            </ControlField>
+          )}
 
           {!isAggregateOnly && (
             <ControlField label="Letter" htmlFor="architect-row-select" icon={<FileText className="h-3 w-3 text-muted" />}>

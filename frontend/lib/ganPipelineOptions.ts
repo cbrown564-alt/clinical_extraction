@@ -1,5 +1,5 @@
 import { activeMethodLabel } from "./plainLanguageLabels";
-import { PAPER_CELLS, paperCellById, type PaperCellId } from "./paperCells";
+import { PAPER_CELLS, isPaperCellId, paperCellById, type PaperCellId } from "./paperCells";
 import type { ActiveMethod, PipelineFamilyItem } from "./types";
 
 const MODEL_ORDER = [
@@ -34,9 +34,76 @@ function modelRank(model?: string): number {
 }
 
 function kindForPaperCell(id: PaperCellId): ActiveMethod {
-  if (id === "rules_only") return "rules";
-  if (id === "llm_pre_post") return "llm_with_rules";
-  return "llm";
+  return id === "rules_only" ? "rules" : "llm_with_rules";
+}
+
+export function ganPickerMethodId(option: PipelineFamilyItem): string {
+  if (option.paper_cell) return option.paper_cell;
+  if (option.kind === "rules" || option.run_id === "rules") return "rules_only";
+  if (option.kind === "llm") return "gan_llm_only";
+  return "gan_llm_extract_raw";
+}
+
+export function ganPickerMethodLabel(methodId: string): string {
+  return paperCellById(methodId).displayName;
+}
+
+export function ganMethodRequiresModel(methodId: string): boolean {
+  return methodId !== "rules_only";
+}
+
+const METHOD_ORDER = PAPER_CELLS.map((cell) => cell.id);
+
+export function paperGanFamilies(options: PipelineFamilyItem[]): PipelineFamilyItem[] {
+  return options.filter((option) => isPaperCellId(ganPickerMethodId(option)));
+}
+
+export function ganMethodChoices(options: PipelineFamilyItem[]) {
+  const seen = new Set<string>();
+  const choices: Array<{ id: string; label: string; requiresModel: boolean }> =
+    [];
+  for (const option of options) {
+    const id = ganPickerMethodId(option);
+    if (!isPaperCellId(id) || seen.has(id)) continue;
+    seen.add(id);
+    choices.push({
+      id,
+      label: ganPickerMethodLabel(id),
+      requiresModel: ganMethodRequiresModel(id),
+    });
+  }
+  return choices.sort((left, right) => methodRank(left.id) - methodRank(right.id));
+}
+
+function methodRank(methodId: string): number {
+  const index = METHOD_ORDER.indexOf(methodId as (typeof METHOD_ORDER)[number]);
+  return index < 0 ? METHOD_ORDER.length : index;
+}
+
+export function ganModelsForMethod(
+  options: PipelineFamilyItem[],
+  methodId: string
+): PipelineFamilyItem[] {
+  return options
+    .filter((option) => ganPickerMethodId(option) === methodId)
+    .sort((a, b) => modelRank(a.model) - modelRank(b.model));
+}
+
+export function resolveGanMethodModel(
+  options: PipelineFamilyItem[],
+  methodId: string,
+  model?: string
+): PipelineFamilyItem | undefined {
+  const models = ganModelsForMethod(options, methodId);
+  if (!ganMethodRequiresModel(methodId)) {
+    return models.find((option) => option.run_id === "rules") ?? models[0];
+  }
+  return (
+    models.find((option) => option.model === model && option.availability !== "not_retained") ??
+    models.find((option) => option.model === model) ??
+    models.find((option) => option.availability !== "not_retained") ??
+    models[0]
+  );
 }
 
 export function groupGanPipelineOptions(options: PipelineFamilyItem[]) {
@@ -158,6 +225,10 @@ export function ganFamiliesFromDev750Panel(
 ): PipelineFamilyItem[] {
   return [
     ...panel.cells
+      .filter(
+        (cell) =>
+          cell.method !== "rules_only" && paperCellForDev750Method(cell.method)
+      )
       .map((cell) => {
       const paperCell = paperCellForDev750Method(cell.method);
       const kind: ActiveMethod = paperCell

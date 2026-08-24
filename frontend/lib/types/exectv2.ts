@@ -82,6 +82,7 @@ export interface Exectv2RunSummary {
   label: string;
   model: string;
   kind?: ActiveMethod;
+  paper_cell?: import("../paperCells").PaperCellId;
   architecture_family: string;
   pipeline_family: string;
   split: string;

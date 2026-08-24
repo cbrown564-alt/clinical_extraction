@@ -145,17 +145,20 @@ gain depends on gold labels, row ids, batch multiplicity, unsupported source
 inference, or unacceptable comparator-correct damage.
 
 A positive result is a development answer for the named saved `dev140`
-distributions and exact ExECT clinical-fact scorer. Cross-model no-call replay
-may support a bounded transfer hypothesis. It is not holdout evidence,
-clinical validation, or permission to inspect or update `test60`.
+distributions and headline clinical-fact scorer
+(`clinical_headline_unit_keys`). Cross-model no-call replay may support a
+bounded transfer hypothesis. It is not holdout evidence, clinical
+validation, or the paper's cited 4-family micro F1 grid.
 
-The accepted rules feed the cited table. On saved `exect_llm_only` raw
-they are cell 3 rule encode and rule select (six-model roster
-comparison, not the peak row). On saved later-stage encode they are
-cell 4 rule select (Gemini only). ExECT uses the same five role rows
-as Gan; the cited score is the select stop. `exect_llm_with_rules` is
-the live alias of `exect_llm_pre_post`; it is not a second headline
-method. A living producer raw F1 is not LLM extract.
+The accepted rules feed rule-development replay on filtered extract. On
+saved `exect_llm_extract_filtered` raw (protocol-time `exect_llm_only`)
+they are the six-model roster rule-encode/select comparison; on saved
+later-stage encode they are inventory Select inputs. Cited holdout select
+stops:
+[cells 3–5](exect_gemini_inventory_cells_3_5_protocol_2026-08-23.md),
+cell 2
+[both-extract](exect_both_extract_on_inventory_protocol_2026-08-23.md).
+`exect_llm_pre_post` is both-extract on the living extract.
 
 ## Completion record
 

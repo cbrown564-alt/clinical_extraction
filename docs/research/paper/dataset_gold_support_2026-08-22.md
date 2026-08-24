@@ -40,14 +40,17 @@ Predicted volume is now recorded separately from those golds: ExECT
 extract, encode, and select. That is a pipeline inventory, not a
 second gold.
 
-## ExECT gold (clinical-fact F1 denominator)
+## ExECT gold (4-family micro F1 denominator)
 
-Headline units are de-duplicated for Diagnosis and SeizureFrequency
-inside a letter. Prescription and Investigations keep one unit per
-occurrence after key filtering. Raw mention counts are larger where
-the headline collapses repeats.
+Headline units in the table below are the **Compact/headline collapse**
+(796 / 328). The **cited inventory** recall denominator is **836** /
+**349** (`clinical_inventory_unit_keys`). Diagnosis and SeizureFrequency
+are de-duplicated inside a letter under Compact scoring only; the
+inventory scorer does not collapse Diagnosis. Prescription and
+Investigations keep one unit per occurrence after key filtering. Raw
+mention counts are larger where the headline collapses repeats.
 
-| Split | Letters | Diagnosis | SeizureFrequency | Prescription | Investigations | Headline gold | Raw four-family mentions |
+| Split | Letters | Diagnosis | SeizureFrequency | Prescription | Investigations | Compact/headline gold | Raw four-family mentions |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `dev140` | 140 | 289 | 165 | 206 | 136 | **796** | 934 |
 | `test60` | 59 | 122 | 74 | 85 | 47 | **328** | 375 |
@@ -106,7 +109,7 @@ fields; they appear on the next no-call replay or later-stage
 rescore.
 
 Volume answers “how large was the ledger at this stop?” It does not
-replace Purist accuracy or clinical-fact F1.
+replace Purist accuracy or 4-family micro F1.
 
 ## Hidden-family and slice notes
 
@@ -137,8 +140,9 @@ replayable. They are not a clinical-quality metric.
 ## Decision
 
 Methods should state the scored unit and its split counts, not only
-letter n. For ExECT that is 796 / 328 four-family headline units. For
-Gan that is 750 / 450 labels, with the sentinel and band mix named.
+letter n. For ExECT the cited inventory denominator is 836 / 349
+four-family units; Compact/headline collapse is 796 / 328. For Gan
+that is 750 / 450 labels, with the sentinel and band mix named.
 
 ## What Methods should include
 
@@ -149,9 +153,11 @@ supplement if space allows.
 
 ### Include in the main Methods paragraph
 
-1. **Scored unit and denominator.** ExECT: de-duplicated four-family
-   clinical facts (796 / 328). Gan: one Purist-mapped current
-   label (750 / 450). Letter n is not the ExECT F1 denominator.
+1. **Scored unit and denominator.** ExECT cited inventory: four-family
+   units without Diagnosis collapse (836 / 349); Compact/headline
+   collapse (796 / 328) is a historical ablation view. Gan: one
+   Purist-mapped current label (750 / 450). Letter n is not the ExECT
+   F1 denominator.
 2. **`test60` is 59 letters.** The split name is historical. The
    locked loadable set is 59.
 3. **Golds are evaluation forms.** One current state versus a
@@ -161,7 +167,7 @@ supplement if space allows.
    the new counts make that sentence quantitative.
 4. **Family gold mass.** Diagnosis is the largest ExECT family;
    Investigations is the smallest and the most often empty. That is
-   why a Diagnosis encode change can move the headline more than an
+   why a Diagnosis encode change can move 4-family micro F1 more than an
    Investigations change of the same letter count.
 5. **Gan label mix.** Numeric frequency is the majority, but
    seizure-free, unknown, no-reference, and unresolved-multiple are
@@ -173,12 +179,12 @@ supplement if space allows.
 
 ### Useful in Methods or a short supplement table
 
-7. **Raw mentions versus headline units.** 934→796 and 375→328.
-   Shows that the paper score already collapses Diagnosis and
-   SeizureFrequency repeats. Predicted mention counts will often
-   exceed `pred_count`.
-8. **Facts per letter.** Median 6 / 5 headline units, max 12. The
-   inventory task is dense relative to letter count.
+7. **Raw mentions versus Compact/headline units.** 934→796 and
+   375→328. Shows that the historical Compact score collapses
+   Diagnosis and SeizureFrequency repeats. Predicted mention counts
+   will often exceed `pred_count`.
+8. **Facts per letter.** Median 6 / 5 Compact/headline units, max 12.
+   The inventory task is dense relative to letter count.
 9. **Letter length.** ExECT median ~1.2k characters; Gan median
    ~2.7k. Same architecture, different context size and temporal
    density. Do not treat them as matched corpora.
@@ -204,9 +210,10 @@ supplement if space allows.
 
 ## Attribution
 
-The gold counts come from `gold_headline_support()` and Gan split
-records. They match the later-stage ExECT `gold_count` fields already
-on disk (796 / 328). The volume metric is new paper instrumentation.
+The gold counts come from `gold_headline_support()` (Compact/headline
+796 / 328) and Gan split records. Cited inventory denominators are
+836 / 349. Compact/headline `gold_count` fields on disk remain
+796 / 328. The volume metric is new paper instrumentation.
 
 ## Next
 

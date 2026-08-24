@@ -17,7 +17,8 @@ Status: paper source; selected results and development mechanism evidence
 ExECT asks for a complete set of diagnoses, seizure-frequency facts,
 prescriptions, and investigations from one letter. On the locked `test60`
 split, the headline table is five role rows. Named Gemini 3.7 Flash
-`test60` select stops under four-family clinical fact F1:
+`test60` select stops under 4-family micro F1
+(`clinical_inventory_unit_keys`):
 
 | Extract | Encode | Select | `test60` F1 |
 | --- | --- | --- | ---: |
@@ -30,13 +31,13 @@ split, the headline table is five role rows. Named Gemini 3.7 Flash
 Development select stops live in
 [rule-select-after-LLM-encode](../exectv2/exect_rule_select_after_llm_encode_2026-08-22.md).
 
-The headline row is **LLM / rules / rules** (inventory extract, then
-inventory Select) at 0.8674. **LLM / LLM / rules** (later-stage
+The headline row is **LLM / rules / rules** (inventory extract,
+`exect_llm_extract`, then inventory Select) at 0.8674. **LLM / LLM / rules** (later-stage
 encode, then the same Select) is 0.8636. Those read 0.87 and 0.86
-at two decimals. Holdout is
-aggregate-only. The metric is not the
-published ExECT benchmark. Do not cite Sol Compact 0.8031 or Full-ledger
-Sol 0.8302 as headline cells.
+at two decimals. Holdout is aggregate-only. 4-family micro F1 is the cited internal
+comparison; it is not the published ExECT benchmark. Do not cite Sol
+Compact 0.8031 or Full-ledger Sol 0.8302 as cited inventory cells.
+Compact/headline is a historical ablation.
 
 ## What the task requires
 
@@ -107,7 +108,7 @@ and the [exhibit](../shared/hybrid_rescue_source_provenance_2026-08-13.md).
 
 ## Where the difficulty remains
 
-The cited Gemini headline row is aggregate-only, but the gain is uneven
+The cited Gemini inventory row is aggregate-only, but the gain is uneven
 across families. Holdout ranges below cover the Full-ledger six-model
 panel on cell 3 and are not Compact holdout floors.
 
@@ -150,7 +151,7 @@ The retained evidence supports this account of the proposed method:
 - recorded rules then shape families into the designed form, with family-specific
   rescues, harms, and a no-op;
 - those mappings can be replayed without a new model call;
-- the locked headline row (LLM / rules / rules) is 0.8674 on Gemini;
+- the locked cited row (LLM / rules / rules) is 0.8674 on Gemini;
 - later-stage encode then inventory Select is 0.8636 (0.86 at two decimals);
 - only Diagnosis has a measured unquoted-letter add class;
 - seizure frequency remains the holdout floor. Standalone rules now recover
@@ -163,9 +164,10 @@ improves F1.
 
 ## Evidence owners
 
-- [Decision 0058](../../decisions/0058-compact-ledger-is-the-paper-cited-exect-hybrid.md)
 - [Decision 0046](../../decisions/0046-exect-primary-method-comparison-boundary.md)
-- [Paper Compact cells](../../../paper_experiments/exectv2_compact_ledger/README.md)
+- [Inventory both-extract protocol](../exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md)
+- [Decision 0058](../../decisions/0058-compact-ledger-is-the-paper-cited-exect-hybrid.md) (Compact/headline ablation; not cited score)
+- [Paper Compact cells](../../../paper_experiments/exectv2_compact_ledger/README.md) (historical ablation artifacts)
 - [Paper claim status C10, C17, C18, and C19](../../canon/10_paper_provenance.md)
 - [Six-model comparison](../shared/six_model_comparison_report_2026-07-18.md)
 - [ExECT stage replay](../exectv2/hybrid_stage_ablation_2026-08-06.md)

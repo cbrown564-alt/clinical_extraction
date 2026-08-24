@@ -1,8 +1,12 @@
 import {
+  exectMethodChoices,
+  exectMethodRequiresModel,
+  exectPickerMethodId,
   exectv2OptionLabel,
   groupExectv2Runs,
   hydrateExectv2Run,
   hydrateExectv2Runs,
+  resolveExectMethodModel,
   resolveExectv2RunId,
 } from "../exectv2RunOptions";
 import type {
@@ -296,6 +300,53 @@ describe("ExECTv2 architecture options", () => {
     };
     const hydrated = hydrateExectv2Run(wire);
     expect(hydrated.letters.map((letter) => letter.letter_id)).toEqual(["EA0002"]);
+  });
+
+  it("keeps Rules only model-independent and splits methods from models", () => {
+    const rules = {
+      ...run("rules", "(model-independent)", 0),
+      run_id: "rules",
+      paper_cell: "rules_only" as const,
+    };
+    const encode = {
+      ...run("llm_with_rules", MODELS[2], 1),
+      run_id: "exectv2_dev140_gemini37flash_llm_encode",
+      paper_cell: "llm_encode" as const,
+      model: MODELS[2],
+      label: "Gemini 3.7 Flash · llm_encode",
+    };
+    const geminiRules = {
+      ...run("rules", MODELS[2], 2),
+      run_id: "exectv2_dev140_gemini37flash_rules",
+      paper_cell: "rules_only" as const,
+      model: MODELS[2],
+    };
+
+    const catalog = [geminiRules, encode, rules];
+    expect(exectPickerMethodId(rules)).toBe("rules_only");
+    expect(exectMethodRequiresModel("rules_only")).toBe(false);
+    expect(exectMethodChoices(catalog).map((item) => item.id)).toEqual([
+      "rules_only",
+      "llm_encode",
+    ]);
+    expect(resolveExectMethodModel(catalog, "rules_only")?.run_id).toBe("rules");
+    expect(resolveExectMethodModel(catalog, "llm_encode")?.run_id).toBe(
+      "exectv2_dev140_gemini37flash_llm_encode"
+    );
+    const withExtra = [
+      ...catalog,
+      {
+        ...run("llm", MODELS[0], 4),
+        run_id: "exectv2_dev140_grok46_llm_only",
+        kind: "llm" as const,
+        active_method: "llm",
+        method_id: "llm",
+      },
+    ];
+    expect(exectMethodChoices(withExtra).map((item) => item.id)).toEqual([
+      "rules_only",
+      "llm_encode",
+    ]);
   });
 
   it("formats option labels with just the model name or Deterministic rules", () => {

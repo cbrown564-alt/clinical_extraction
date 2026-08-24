@@ -8,15 +8,16 @@ Result owner: [cell 4](exect_rule_select_after_llm_encode_2026-08-22.md)
 
 ## Primary question
 
-What are the cited Gemini inventory-F1 select stops for ExECT cells
-3, 4, and 5 on the living `exect_llm_extract` raw?
+What are the cited Gemini 4-family micro F1 select stops for ExECT
+cells 3, 4, and 5 on the living `exect_llm_extract` raw?
 
 ## Why it matters
 
-Cells 3–5 now sit on the inventory extract and
-`clinical_inventory_unit_keys`. The Compact/headline five-cell numbers
-(0.8161 / 0.8173 / 0.7954) are a different extract and scorer. The
-paper owners still cite those.
+Cells 3–5 sit on the living extract and
+`clinical_inventory_unit_keys` (4-family micro F1). Retired Compact/
+headline select stops (0.8161 / 0.8173 / 0.7954) used
+`exect_llm_extract_filtered` and `clinical_headline_unit_keys`. Do not
+cite them as the paper grid.
 
 ## Data and inspection
 
@@ -33,20 +34,24 @@ paper owners still cite those.
 | Calls | none |
 | Scorer | exact `clinical_inventory_unit_keys` |
 
-Cells 1–2 stay the previous Compact/headline totals until a separate
-inventory rescore. Do not mix those with inventory F1 without saying so.
+Cells 1–2 cited totals are 4-family micro F1 in
+[cells 1–2](exect_four_family_micro_f1_cells_1_2_protocol_2026-08-23.md)
+(cell 1) and
+[both-extract on inventory](exect_both_extract_on_inventory_protocol_2026-08-23.md)
+(cell 2). Do not mix headline-collapse scores with this scorer.
 
 ## Candidate and comparator
 
 - Candidate: living Gemini inventory extract, later-stage encode, and
   later-stage select, with inventory Select as the cell-3 and cell-4
   rule stop.
-- Comparator: the Compact/headline five-cell grid still on disk.
+- Comparator: retired Compact/headline grid on disk (different extract
+  and scorer).
 
 ## Stop rule
 
-Answer when both splits have inventory-F1 select stops for cells 3–5,
-those cells are promoted, and the paper owners cite them. Do not
+Answer when both splits have 4-family micro F1 select stops for cells
+3–5, those cells are promoted, and the paper owners cite them. Do not
 retune from holdout.
 
 ## Answer

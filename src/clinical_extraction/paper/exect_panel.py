@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Any, Literal, cast
+from typing import Any, cast
 
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.paper.cells import normalize_cell_id, normalize_rungs_payload
@@ -14,7 +14,10 @@ from clinical_extraction.paper.comparison_contract import (
     stage_metric,
 )
 from clinical_extraction.paper.exect import compact_metrics_from_structured
-from clinical_extraction.paper.exect_cell_replay import exect_rung_out_dir
+from clinical_extraction.paper.exect_cell_replay import (
+    exect_living_extract_rows_path,
+    exect_rung_out_dir,
+)
 from clinical_extraction.paper.exect_later_stage import (
     CITED_SLUG as LATER_STAGE_SLUG,
 )
@@ -758,29 +761,49 @@ def load_dev140_panel() -> dict[str, Any]:
     return json.loads(PANEL_PATH.read_text(encoding="utf-8"))
 
 
-def paper_exect_run_id(slug: str, lane: Literal["llm", "llm_with_rules"]) -> str:
-    """Workbench run id for a living Compact cell."""
+_EXECT_RUN_ID_SUFFIX: dict[str, str] = {
+    "llm": "llm_only",
+    "llm_with_rules": "llm_plus_rules",
+    "exect_llm_only": "llm_only",
+    "exect_llm_pre_post": "llm_plus_rules",
+    "llm_extract": "llm_extract",
+    "llm_encode": "llm_encode",
+    "llm_select": "llm_select",
+}
+_EXECT_RUN_ID_METHODS: tuple[tuple[str, str], ...] = (
+    ("_llm_plus_rules", "exect_llm_pre_post"),
+    ("_llm_extract", "llm_extract"),
+    ("_llm_encode", "llm_encode"),
+    ("_llm_select", "llm_select"),
+    ("_llm_only", "exect_llm_only"),
+)
+_FIVE_CELL_METHODS = frozenset({"llm_extract", "llm_encode", "llm_select"})
 
-    suffix = "llm_plus_rules" if lane == "llm_with_rules" else "llm_only"
+
+def paper_exect_run_id(slug: str, method: str) -> str:
+    """Workbench run id for a living Compact or five-cell ExECT row."""
+
+    suffix = _EXECT_RUN_ID_SUFFIX.get(method)
+    if suffix is None:
+        suffix = "llm_plus_rules" if method == "llm_with_rules" else "llm_only"
     return f"exectv2_dev140_{slug}_{suffix}"
 
 
-def paper_exect_identity(run_id: str) -> tuple[str, Literal["llm", "llm_with_rules"]] | None:
-    """Return (model slug, lane) for a living Compact workbench run id."""
+def paper_exect_identity(run_id: str) -> tuple[str, str] | None:
+    """Return (model slug, paper method) for a living ExECT workbench run id."""
 
     prefix = "exectv2_dev140_"
     if not run_id.startswith(prefix):
         return None
     rest = run_id[len(prefix) :]
-    if rest.endswith("_llm_plus_rules"):
-        return rest[: -len("_llm_plus_rules")], "llm_with_rules"
-    if rest.endswith("_llm_only"):
-        return rest[: -len("_llm_only")], "llm"
+    for suffix, method in _EXECT_RUN_ID_METHODS:
+        if rest.endswith(suffix):
+            return rest[: -len(suffix)], method
     return None
 
 
 def paper_exect_catalog_runs() -> list[dict[str, Any]]:
-    """Present living Compact cells as workbench raw and hybrid runs."""
+    """Present living paper cells; Compact LLM-only extras stay off the picker."""
 
     panel = load_dev140_panel()
     runs: list[dict[str, Any]] = []
@@ -790,6 +813,8 @@ def paper_exect_catalog_runs() -> list[dict[str, Any]]:
         label = str(by_slug[slug]["label"])
         model = str(by_slug[slug]["model"])
         for method in REQUEST_METHODS:
+            if method == LLM_ONLY_METHOD:
+                continue
             rows_path = paper_method_cell_root(method, slug) / "structured.jsonl"
             if not rows_path.is_file():
                 continue
@@ -797,44 +822,6 @@ def paper_exect_catalog_runs() -> list[dict[str, Any]]:
             cell_path = rows_path.parent / "cell.json"
             if cell_path.is_file():
                 extra = json.loads(cell_path.read_text(encoding="utf-8"))
-            if method == LLM_ONLY_METHOD:
-                runs.append(
-                    {
-                        "run_id": paper_exect_run_id(slug, "llm"),
-                        "task": "exectv2",
-                        "label": f"{label} · LLM only",
-                        "model": model,
-                        "kind": "llm",
-                        "active_method": "llm",
-                        "method_id": "llm",
-                        "architecture_family": LLM_ONLY_METHOD,
-                        "pipeline_family": "llm",
-                        "split": "dev140",
-                        "row_count": 140,
-                        "date": "2026-08-18",
-                        "decision": "development_comparison",
-                        "promotion_decision": "living ExECT LLM only",
-                        "claim_boundary": panel.get("claim_boundary"),
-                        "scorer_view": "raw_lane_score",
-                        "artifact_paths": [rows_path.relative_to(ROOT).as_posix()],
-                        "source_paths": [rows_path.relative_to(ROOT).as_posix()],
-                        "metrics": {
-                            "overall_f1": extra.get("raw_headline_f1"),
-                            "precision": None,
-                            "recall": None,
-                            "families": {},
-                        },
-                        "operational": {
-                            "call_failures": 0,
-                            "parse_schema_failures": 0,
-                            "evidence_invalid_dropped": 0,
-                            "exact_evidence_rate": None,
-                            "by_family": {},
-                        },
-                        "letters": [],
-                    }
-                )
-                continue
             runs.append(
                 {
                     "run_id": paper_exect_run_id(slug, "llm_with_rules"),
@@ -844,6 +831,7 @@ def paper_exect_catalog_runs() -> list[dict[str, Any]]:
                     "kind": "llm_with_rules",
                     "active_method": "llm_with_rules",
                     "method_id": "llm_with_rules",
+                    "paper_cell": "llm_pre_post",
                     "architecture_family": METHOD,
                     "pipeline_family": METHOD,
                     "split": "dev140",
@@ -871,6 +859,73 @@ def paper_exect_catalog_runs() -> list[dict[str, Any]]:
                     "letters": [],
                 }
             )
+    runs.extend(_five_cell_catalog_runs(panel, by_slug))
+    return runs
+
+
+def _five_cell_catalog_runs(
+    panel: dict[str, Any],
+    by_slug: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Present extract / encode / select panel cells that have extract raws."""
+
+    runs: list[dict[str, Any]] = []
+    cells = panel.get("cells")
+    if not isinstance(cells, list):
+        return runs
+    for cell in cells:
+        if not isinstance(cell, dict):
+            continue
+        method = str(cell.get("method") or "")
+        if method not in _FIVE_CELL_METHODS or cell.get("status") != "present":
+            continue
+        slug = str(cell.get("model_slug") or "")
+        roster = by_slug.get(slug, {})
+        rows_path = exect_living_extract_rows_path(slug, PROMOTE_SPLIT)
+        if not rows_path.is_file():
+            continue
+        label = str(cell.get("label") or roster.get("label") or slug)
+        model = str(cell.get("model") or roster.get("model") or "")
+        score = cell.get("four_family_micro_f1")
+        if score is None:
+            score = cell.get("clinical_fact_f1")
+        runs.append(
+            {
+                "run_id": paper_exect_run_id(slug, method),
+                "task": "exectv2",
+                "label": f"{label} · {method}",
+                "model": model,
+                "kind": "llm_with_rules",
+                "active_method": "llm_with_rules",
+                "method_id": method,
+                "paper_cell": method,
+                "architecture_family": method,
+                "pipeline_family": method,
+                "split": "dev140",
+                "row_count": int(cell.get("n") or 140),
+                "date": "2026-08-23",
+                "decision": "development_comparison",
+                "promotion_decision": "living ExECT five-cell",
+                "claim_boundary": panel.get("claim_boundary"),
+                "scorer_view": "headline_target",
+                "artifact_paths": [rows_path.relative_to(ROOT).as_posix()],
+                "source_paths": [rows_path.relative_to(ROOT).as_posix()],
+                "metrics": {
+                    "overall_f1": score,
+                    "precision": None,
+                    "recall": None,
+                    "families": {},
+                },
+                "operational": {
+                    "call_failures": 0,
+                    "parse_schema_failures": 0,
+                    "evidence_invalid_dropped": 0,
+                    "exact_evidence_rate": None,
+                    "by_family": {},
+                },
+                "letters": [],
+            }
+        )
     return runs
 
 

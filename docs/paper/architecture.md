@@ -11,7 +11,7 @@ letter
   -> extract   (rules, LLM, or both)   collect candidates / a first pick
   -> encode    (rules or LLM)          write the already-chosen fact in the designed form
   -> select    (rules or LLM)          may change the fact (gate, rewrite, reselect, invent)
-  -> score     Purist (Gan) or four-family clinical fact F1 (ExECT)
+  -> score     Purist (Gan) or 4-family micro F1 (ExECT)
 ```
 
 Encode does not reselect. A quoted span is not proof the right statement

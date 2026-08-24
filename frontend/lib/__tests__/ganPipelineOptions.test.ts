@@ -1,10 +1,15 @@
 import { activeMethodLabel } from "../plainLanguageLabels";
 import {
   ganFamiliesFromDev750Panel,
+  ganMethodChoices,
+  ganMethodRequiresModel,
   ganPaperRunId,
+  ganPickerMethodId,
   ganPipelineOptionLabel,
   groupGanPipelineOptions,
   isGanAggregateRunId,
+  paperGanFamilies,
+  resolveGanMethodModel,
   resolveGanPipelineOption,
 } from "../ganPipelineOptions";
 import type { ActiveMethod, PipelineFamilyItem } from "../types";
@@ -154,15 +159,17 @@ describe("Gan architecture options", () => {
       "(model-independent)",
     ]);
     const grouped = groupGanPipelineOptions(families);
-    const selectGroup = grouped.find((group) => group.label === "LLM all the way");
+    const selectGroup = grouped.find(
+      (group) => group.label === "LLM extract, LLM encode, LLM select"
+    );
     expect(selectGroup?.options.map((item) => item.model)).toEqual([
       "xai/grok-4.6",
       "openai/gpt-5.6-luna",
       "ollama_chat/qwen3.8:27b",
     ]);
     expect(grouped.map((group) => group.label)).toEqual([
-      "Rules only",
-      "LLM all the way",
+      "Rules extract, rules encode, rules select",
+      "LLM extract, LLM encode, LLM select",
     ]);
     expect(families.find((item) => item.model === "xai/grok-4.6")?.availability).toBe(
       "replay"
@@ -170,6 +177,95 @@ describe("Gan architecture options", () => {
     expect(
       families.find((item) => item.model === "ollama_chat/qwen3.8:27b")?.availability
     ).toBe("not_retained");
+  });
+
+  it("keeps Rules only model-independent and splits methods from models", () => {
+    const families = ganFamiliesFromDev750Panel({
+      cells: [
+        {
+          model_slug: "gemini37flash",
+          model: "gemini/gemini-3.7-flash",
+          label: "Gemini 3.7 Flash",
+          method: "rules_only",
+          status: "present",
+          n: 750,
+          purist_accuracy: 0.892,
+        },
+        {
+          model_slug: "gemini37flash",
+          model: "gemini/gemini-3.7-flash",
+          label: "Gemini 3.7 Flash",
+          method: "llm_encode",
+          status: "present",
+          n: 750,
+          purist_accuracy: 0.8107,
+        },
+      ],
+    });
+
+    const rules = families.filter((item) => ganPickerMethodId(item) === "rules_only");
+    expect(rules).toHaveLength(1);
+    expect(rules[0]).toMatchObject({
+      run_id: "rules",
+      model: "(model-independent)",
+    });
+    expect(ganMethodChoices(families).map((item) => item.id)).toEqual([
+      "rules_only",
+      "llm_encode",
+    ]);
+    expect(ganMethodRequiresModel("rules_only")).toBe(false);
+    expect(resolveGanMethodModel(families, "llm_encode")?.run_id).toBe(
+      "gan2026_validation750_gemini37flash_llm_encode"
+    );
+    expect(resolveGanMethodModel(families, "llm_encode")?.kind).toBe("llm_with_rules");
+  });
+
+  it("hides Gan extra runners from the method picker", () => {
+    const families = ganFamiliesFromDev750Panel({
+      cells: [
+        {
+          model_slug: "grok46",
+          model: "xai/grok-4.6",
+          label: "Grok 4.6",
+          method: "gan_llm_only",
+          status: "present",
+          n: 750,
+        },
+        {
+          model_slug: "grok46",
+          model: "xai/grok-4.6",
+          label: "Grok 4.6",
+          method: "gan_llm_extract_raw",
+          status: "present",
+          n: 750,
+        },
+        {
+          model_slug: "grok46",
+          model: "xai/grok-4.6",
+          label: "Grok 4.6",
+          method: "llm_extract",
+          status: "present",
+          n: 750,
+        },
+      ],
+    });
+
+    expect(families.map((item) => item.paper_cell)).toEqual([
+      "llm_extract",
+      "rules_only",
+    ]);
+    expect(ganMethodChoices(families).map((item) => item.id)).toEqual([
+      "rules_only",
+      "llm_extract",
+    ]);
+    expect(ganMethodChoices(families).map((item) => item.label)).toEqual([
+      "Rules extract, rules encode, rules select",
+      "LLM extract, rules encode, rules select",
+    ]);
+    expect(paperGanFamilies(families).map((item) => item.paper_cell)).toEqual([
+      "llm_extract",
+      "rules_only",
+    ]);
   });
 
   it("recognises only the sealed Gan winning-mode run ids as aggregate-only", () => {

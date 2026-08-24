@@ -61,7 +61,8 @@ The retained GPT, DeepSeek, and Qwen artifacts used
   suppression, union arbitration, Prescription repair, and finding assembly;
 - output views: raw candidate, evidence-valid, `clinical_headline`, fidelity
   companion, and benchmark/CUI;
-- primary comparison scorer: the current ExECT `clinical_headline` owner, with
+- primary comparison scorer: 4-family micro F1
+  (`clinical_inventory_unit_keys`), with historical `clinical_headline` and
   strict phrase/CUI/attribute companions reported separately;
 - standard prompt profile: `full`, temperature `0`, with the committed prompt
   snapshots as the required semantic schema;
@@ -93,9 +94,10 @@ All new six-model evidence must implement
   all-entity or Prescription extractor;
 - Investigations remains model output through evidence, normalization, and
   deduplication adapters;
-- `clinical_headline` remains the declared overall compatibility scorer;
-  Seizure Frequency must additionally report the `state_profile` primary
-  family score required by decision 0037; and
+- 4-family micro F1 (`clinical_inventory_unit_keys`) is the paper-cited
+  primary scorer; `clinical_headline` remains the historical Compact/headline
+  compatibility view id; Seizure Frequency must additionally report the
+  `state_profile` primary family score required by decision 0037; and
 - output records preserve model origin, deterministic changes, exact-evidence
   status, rule-added and rule-removed facts, and schema/parse failures.
 

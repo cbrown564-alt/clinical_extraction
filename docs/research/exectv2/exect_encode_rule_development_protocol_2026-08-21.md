@@ -111,16 +111,18 @@ been audited, and remaining LLM gains have been classified as encodeable,
 missing extraction operands, or semantic selection.
 
 A positive result is a development answer for the frozen Gemini
-`exect_llm_only` raw distribution and the ExECT clinical-fact scorer. It may
-support a transfer hypothesis for the same-fact rules. It is not holdout
-evidence, clinical validation, or permission to report a new `test60` result.
+`exect_llm_extract_filtered` raw distribution and the headline clinical-fact
+scorer (`clinical_headline_unit_keys`). It may support a transfer hypothesis
+for the same-fact rules. It is not holdout evidence, clinical validation, or
+the paper's cited 4-family micro F1 grid.
 
-The accepted rules are the rule-encode component of cell 3 (`exect_llm_only`,
-then rule encode and rule select—the six-model roster row, not the peak).
-They are not the later-stage LLM encode used by cell 4 (Gemini only). ExECT
-uses the same five role rows as Gan; the cited score is the select stop.
-`exect_llm_with_rules` is the live alias of `exect_llm_pre_post`; it is not
-a second headline method. A living producer raw F1 is not LLM extract.
+The accepted rules are the rule-encode component of the six-model roster
+row on filtered extract (protocol-time `exect_llm_only`), then rule encode
+and rule select. They are not the later-stage LLM encode used by cited
+cell 4 (Gemini only, living extract). Cited holdout select stops:
+[cells 3–5](exect_gemini_inventory_cells_3_5_protocol_2026-08-23.md).
+`exect_llm_pre_post` is both-extract; `exect_llm_extract_filtered` is the
+retired Compact ablation.
 
 ## Initial completion (superseded by the extension)
 

@@ -28,7 +28,7 @@ export const PAPER_CELLS: readonly PaperCell[] = [
     encode: "rules",
     select: "rules",
     shortLabel: "R / R / R",
-    displayName: "Rules only",
+    displayName: "Rules extract, rules encode, rules select",
     headline: false,
   },
   {
@@ -38,7 +38,7 @@ export const PAPER_CELLS: readonly PaperCell[] = [
     encode: "rules",
     select: "rules",
     shortLabel: "both / R / R",
-    displayName: "Both then rules",
+    displayName: "LLM and rules extract, rules encode, rules select",
     headline: false,
   },
   {
@@ -48,7 +48,7 @@ export const PAPER_CELLS: readonly PaperCell[] = [
     encode: "rules",
     select: "rules",
     shortLabel: "L / R / R",
-    displayName: "LLM extract then rules",
+    displayName: "LLM extract, rules encode, rules select",
     headline: true,
   },
   {
@@ -58,7 +58,7 @@ export const PAPER_CELLS: readonly PaperCell[] = [
     encode: "LLM",
     select: "rules",
     shortLabel: "L / L / R",
-    displayName: "LLM extract+encode then rules",
+    displayName: "LLM extract, LLM encode, rules select",
     headline: false,
   },
   {
@@ -68,7 +68,7 @@ export const PAPER_CELLS: readonly PaperCell[] = [
     encode: "LLM",
     select: "LLM",
     shortLabel: "L / L / L",
-    displayName: "LLM all the way",
+    displayName: "LLM extract, LLM encode, LLM select",
     headline: false,
   },
 ] as const;
@@ -91,6 +91,10 @@ const LOAD_ALIASES: Record<string, PaperCellId> = {
 export function resolvePaperCellId(value: string | null | undefined): PaperCellId {
   if (!value) return "llm_extract";
   return LOAD_ALIASES[value] ?? "llm_extract";
+}
+
+export function isPaperCellId(value: string): value is PaperCellId {
+  return PAPER_CELLS.some((cell) => cell.id === value);
 }
 
 export function paperCellById(id: string): PaperCell {

@@ -26,7 +26,7 @@ Everything here is generated from the stage manifests in `src/clinical_extractio
 | Gan 2026 | LLM with rules | The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer. This is the source-near wording ablation; the cited Gan extract is gan_llm_extract. | [card](method_cards/gan2026_llm_with_rules.md) |
 | ExECTv2 | Rules only | Nine independent deterministic extractors produce the all-nine prediction, while an explicit four-family projection defines the primary model comparison. | [card](method_cards/exectv2_rules_only.md) |
 | ExECTv2 | LLM only | ExECT LLM only: one model call on the note proposes four-family findings, and the raw-candidate view scores those findings without family repair. | [card](method_cards/exectv2_llm_only.md) |
-| ExECTv2 | LLM pre-post | ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms and named Select rules reconcile those findings into the scored representation (hybrid F1). This is the both-extract row; the paper's cited select stop uses later-stage encode/select per docs/paper/methods.md. | [card](method_cards/exectv2_llm_pre_post.md) |
+| ExECTv2 | LLM pre-post | ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms and named Select rules reconcile those findings into the scored representation. This is the both-extract row (`exect_llm_pre_post`); the paper's cited ExECT peak is cell 3 rule select after `exect_llm_extract`, scored on 4-family micro F1. See docs/paper/methods.md. | [card](method_cards/exectv2_llm_pre_post.md) |
 
 ## Teaching cases
 

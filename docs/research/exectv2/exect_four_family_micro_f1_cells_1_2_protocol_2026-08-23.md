@@ -28,7 +28,7 @@ SeizureFrequency, Prescription, and Investigations.
 | Dataset | ExECTv2 |
 | Model | none (cell 1); saved Gemini 3.7 Flash both-extract (cell 2) |
 | Cell 1 | `exect_rules` |
-| Cell 2 | saved `exect_llm_pre_post`, then the Compact rule encode/select stack |
+| Cell 2 | superseded rescore: saved `exect_llm_pre_post`, Compact encode/select. Cited cell 2: living both-extract plus inventory Select |
 | Development | `dev140`, review permitted |
 | Holdout | `test60`, aggregate only. Do not inspect rows. |
 | Calls | none |

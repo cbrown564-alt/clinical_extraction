@@ -257,8 +257,8 @@ the controlled comparisons in the main Methods section.
 ## F. Evaluation protocol
 
 Evaluation was defined separately for the two task forms. The primary
-reported measures are Purist accuracy for Gan 2026 and four-family
-clinical-fact micro-F1 for ExECTv2. These are the measures used for the
+reported measures are Purist accuracy for Gan 2026 and 4-family
+micro F1 for ExECTv2. These are the measures used for the
 headline configuration comparisons because they match the submitted
 object required by each task. Additional task-specific measures are
 reported to make the headline scores interpretable: Pragmatic accuracy
@@ -275,7 +275,7 @@ projection. Set-based precision, recall, and F1 are not reported for
 Gan because each letter contributes one target answer rather than a set
 of independently countable clinical facts (Gan et al., 2026).
 
-For ExECTv2, the primary measure is exact clinical-fact micro-F1 across
+For ExECTv2, the primary measure is 4-family micro F1 across
 diagnoses, seizure-frequency facts, prescriptions, and investigations.
 The four families were selected as a focused evaluation scope: each
 represents clinically central information for epilepsy follow-up and

@@ -27,7 +27,16 @@ import {
   type MetricChip,
   type HighlightTone,
 } from "@/components/surface";
-import { exectv2OptionLabel, groupExectv2Runs, resolveExectv2RunId } from "@/lib/exectv2RunOptions";
+import {
+  exectMethodChoices,
+  exectMethodRequiresModel,
+  exectModelsForMethod,
+  exectPickerMethodId,
+  exectPickerMethodLabel,
+  exectv2OptionLabel,
+  resolveExectMethodModel,
+  resolveExectv2RunId,
+} from "@/lib/exectv2RunOptions";
 import {
   attributeRank,
   sortedAttributeKeys,
@@ -708,8 +717,6 @@ export default function Exectv2ExampleExplorer() {
   const { runs, isLoading, error } = useExectv2Runs();
   const { get, set } = useExectv2UrlState();
   const [activeFamily, setActiveFamily] = useState<FamilyFilter>("all");
-  const runGroups = useMemo(() => groupExectv2Runs(runs), [runs]);
-
   const selectedRunSummary = useMemo(
     () => {
       const requested = get("run");
@@ -740,16 +747,24 @@ export default function Exectv2ExampleExplorer() {
     });
   }, [selectedRun]);
 
+  const selectedMethodId = selectedRunSummary
+    ? exectPickerMethodId(selectedRunSummary)
+    : "rules_only";
   const methodItems = useMemo(
     () =>
-      runGroups.flatMap((group) =>
-        group.runs.map((run) => ({
-          value: run.run_id,
-          label: exectv2OptionLabel(run),
-          group: group.label,
-        }))
-      ),
-    [runGroups]
+      exectMethodChoices(runs).map((method) => ({
+        value: method.id,
+        label: method.label,
+      })),
+    [runs]
+  );
+  const modelItems = useMemo(
+    () =>
+      exectModelsForMethod(runs, selectedMethodId).map((run) => ({
+        value: run.model,
+        label: exectv2OptionLabel(run),
+      })),
+    [runs, selectedMethodId]
   );
 
   if (isLoading || selectedRunQuery.isLoading) {
@@ -798,17 +813,47 @@ export default function Exectv2ExampleExplorer() {
         left={
           <>
             <ControlField label="Method" htmlFor="exect-method-select">
-              <Exectv2ModeBadge run={selectedRun} />
+              <Exectv2ModeBadge
+                run={selectedRun}
+                label={exectPickerMethodLabel(selectedMethodId)}
+              />
               <ControlCombobox
                 id="exect-method-select"
                 noun="method"
                 items={methodItems}
-                value={selectedRun.run_id}
+                value={selectedMethodId}
                 title={selectedRun.claim_boundary}
-                onChange={(run) => set({ run })}
-                className="min-w-0 flex-1 sm:min-w-[240px] sm:flex-none"
+                onChange={(methodId) => {
+                  const next = resolveExectMethodModel(
+                    runs,
+                    methodId,
+                    selectedRun.model
+                  );
+                  if (next) set({ run: next.run_id });
+                }}
+                className="min-w-0 flex-1 sm:min-w-[220px] sm:flex-none"
               />
             </ControlField>
+
+            {exectMethodRequiresModel(selectedMethodId) && (
+              <ControlField label="Model" htmlFor="exect-model-select">
+                <ControlCombobox
+                  id="exect-model-select"
+                  noun="model"
+                  items={modelItems}
+                  value={selectedRun.model}
+                  onChange={(model) => {
+                    const next = resolveExectMethodModel(
+                      runs,
+                      selectedMethodId,
+                      model
+                    );
+                    if (next) set({ run: next.run_id });
+                  }}
+                  className="min-w-0 flex-1 sm:min-w-[200px] sm:flex-none"
+                />
+              </ControlField>
+            )}
 
             <ControlField label="Letter" htmlFor="exect-letter-select" icon={<FileText className="h-3 w-3 text-muted" />}>
               <LetterPicker
