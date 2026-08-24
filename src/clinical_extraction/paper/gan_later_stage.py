@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.paper.batch import BatchChatItem, complete_chat_batch
+from clinical_extraction.paper.comparison_contract import attach_living_envelope, gan_stage
 from clinical_extraction.paper.exect import (
     MODELS,
     OLLAMA_NUM_CTX_ENV,
@@ -367,6 +368,18 @@ def run_later_stage(
             for row in rows
             if not (row.get("comparison") or {}).get("purist_correct")
         ]
+    select = gan_stage(
+        purist_correct=int(summary.get("purist_correct") or 0),
+        n=len(records),
+        pragmatic_correct=int(summary.get("pragmatic_correct") or 0),
+    )
+    artifact = attach_living_envelope(
+        artifact,
+        method=method,
+        stages={"extract": dict(select), "encode": dict(select), "select": dict(select)},
+        replay_mode="live",
+        prompt_version=prompt,
+    )
     out = work_root / "comparison.json"
     out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return {

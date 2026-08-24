@@ -14,6 +14,10 @@ from dspy.adapters.chat_adapter import ChatAdapter
 
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.paper.batch import BatchChatItem, complete_chat_batch
+from clinical_extraction.paper.comparison_contract import (
+    attach_living_envelope,
+    exect_stage,
+)
 from clinical_extraction.paper.exect import (
     MODELS,
     _prepare_live_runtime,
@@ -221,7 +225,19 @@ def comparison_from_later_stage_rows(
     if prior is not None and prior != overall["f1"]:
         artifact["prior_four_family_headline_f1"] = prior
         artifact["rescored_utc"] = datetime.now(UTC).isoformat()
-    return artifact
+    stage = exect_stage(
+        four_family_micro_f1=float(overall["f1"]),
+        family_f1={name: scores["f1"] for name, scores in family_scores.items()},
+        precision=float(overall["precision"]),
+        recall=float(overall["recall"]),
+    )
+    return attach_living_envelope(
+        artifact,
+        method=method,
+        stages={"extract": dict(stage), "encode": dict(stage), "select": dict(stage)},
+        replay_mode="live" if artifact.get("live") else "no_call",
+        prompt_version=prompt,
+    )
 
 
 def rescore_later_stage(

@@ -1,4 +1,4 @@
-"""Replay ExECT rungs 1-4 from saved llm_only raw_output. No new model calls."""
+"""Replay ExECT rungs 1-4 from saved extract raw_output. No new model calls."""
 
 from __future__ import annotations
 
@@ -41,6 +41,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.letter
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     clinical_headline_unit_keys,
+    clinical_inventory_unit_keys,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
@@ -59,7 +60,7 @@ PRE_POST_METHOD = "exect_llm_pre_post"
 
 
 def exect_llm_only_rows_path(slug: str, split: str) -> Path:
-    """Return the living llm-only replay file for one model and split."""
+    """Return the Compact / filtered-extract ablation replay file."""
 
     return (
         ROOT
@@ -68,6 +69,36 @@ def exect_llm_only_rows_path(slug: str, split: str) -> Path:
         / split
         / "structured.jsonl"
     )
+
+
+def exect_living_extract_rows_path(slug: str, split: str) -> Path:
+    """Return the living inventory extract replay file."""
+
+    holdout = holdout_is_aggregate_only(split)
+    roots = (
+        ROOT
+        / "paper_experiments/exect/exect_llm_extract"
+        / slug
+        / split
+        / "structured.jsonl",
+        ROOT
+        / ("scratch/holdout/paper" if holdout else "experiments/paper")
+        / "exect_llm_extract"
+        / slug
+        / split
+        / "exect_llm_extract"
+        / "structured.jsonl",
+        ROOT
+        / ("scratch/holdout/paper" if holdout else "experiments/paper")
+        / "exect_llm_extract"
+        / slug
+        / split
+        / "structured.jsonl",
+    )
+    for path in roots:
+        if path.is_file():
+            return path
+    return roots[0]
 
 
 def exect_pre_post_structured_path(slug: str, split: str) -> Path:
@@ -172,7 +203,12 @@ def format_render_mention_rows(
     )
 
 
-def inventory_hash(mentions: Sequence[Mapping[str, Any]], note_text: str) -> str:
+def inventory_hash(
+    mentions: Sequence[Mapping[str, Any]],
+    note_text: str,
+    *,
+    unit_keys: Any = clinical_inventory_unit_keys,
+) -> str:
     """Stable hash of the four-family clinical-fact inventory."""
 
     predicted = predictions_from_prediction_surface(
@@ -187,30 +223,56 @@ def inventory_hash(mentions: Sequence[Mapping[str, Any]], note_text: str) -> str
             for annotation in predicted_letter.annotations
             if annotation.entity == family
         ]
-        for key in clinical_headline_unit_keys(family, family_mentions, note_text):
+        for key in unit_keys(family, family_mentions, note_text):
             keys.append(json.dumps(key, sort_keys=True, default=str))
     return "|".join(sorted(keys))
 
 
-def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
-    """Replay saved llm_only raw_output through rungs 1-4. No new model calls."""
+def replay_exect_rungs(
+    split: str,
+    *,
+    slug: str = "grok46",
+    source: str = "living",
+) -> dict[str, Any]:
+    """Replay saved extract raw_output through rungs 1-4. No new model calls."""
 
     if split not in {"dev140", "test60"}:
         raise ValueError("ExECT rung replay accepts split dev140 or test60")
+    if source not in {"living", "ablation"}:
+        raise ValueError("ExECT replay source must be living or ablation")
     holdout = holdout_is_aggregate_only(split)
     expected_n = exect_row_count(split)
-    raw_path = exect_llm_only_rows_path(slug, split)
+    raw_path = (
+        exect_llm_only_rows_path(slug, split)
+        if source == "ablation"
+        else exect_living_extract_rows_path(slug, split)
+    )
     if not raw_path.is_file():
         raise FileNotFoundError(
-            f"missing exect_llm_only replay file for {slug} {split}: {raw_path}"
+            f"missing exect extract replay file for {slug} {split}: {raw_path}"
         )
     letters = {letter.letter_id: letter for letter in letters_for_split(split)}
     structured_rows = load_jsonl_rows(raw_path)
     raws = {str(row["letter_id"]): str(row["raw_output"]) for row in structured_rows}
     if len(raws) != expected_n:
         raise RuntimeError(
-            f"expected {expected_n} llm_only raw rows for {split}, found {len(raws)}"
+            f"expected {expected_n} extract raw rows for {split}, found {len(raws)}"
         )
+    unit_keys = (
+        clinical_headline_unit_keys
+        if source == "ablation"
+        else clinical_inventory_unit_keys
+    )
+    assembly = (
+        StructuredMethodConfig.selected()
+        if source == "ablation"
+        else StructuredMethodConfig.inventory()
+    )
+    prompt_version = (
+        structured.EXECT_LLM_ONLY
+        if source == "ablation"
+        else structured.EXECT_LLM_EXTRACT
+    )
     rules = json.loads(exect_rules_path(split).read_text(encoding="utf-8"))
     hybrid_cell_path = exect_pre_post_cell_path(slug, split)
     hybrid_cell = (
@@ -227,7 +289,7 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
     }
     mention_counts = {rung: 0 for rung in ("llm_extract", "llm_encode", "llm_select")}
     try:
-        structured.set_active_prompt_version(structured.EXECT_LLM_ONLY)
+        structured.set_active_prompt_version(prompt_version)
         for letter_id, raw_output in sorted(raws.items()):
             letter = letters[letter_id]
             producer = structured_one_call.produce_structured_letter(
@@ -236,24 +298,32 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
                 mode="replay",
                 raw_output=raw_output,
                 split="test" if holdout else "dev",
-                config=StructuredMethodConfig.selected(),
+                config=assembly,
             )
             assembled = assemble_structured_rows(
                 [letter],
                 [dict(producer.row)],
-                config=StructuredMethodConfig.selected(),
+                config=assembly,
             )[letter.letter_id]
             surfaces = assembled["prediction_surfaces"]
             schema_rows = schema_mention_rows(producer)
             format_render_mentions = format_render_mention_rows(producer, letter.note_text)
-            schema_hash = inventory_hash(schema_rows, letter.note_text)
-            format_hash = inventory_hash(format_render_mentions, letter.note_text)
+            schema_hash = inventory_hash(
+                schema_rows, letter.note_text, unit_keys=unit_keys
+            )
+            format_hash = inventory_hash(
+                format_render_mentions, letter.note_text, unit_keys=unit_keys
+            )
             materialized_format_only = list(surfaces.get("format_only") or [])
             dict_hash = inventory_hash(
-                surfaces.get("dictionary_normalized") or [], letter.note_text
+                surfaces.get("dictionary_normalized") or [],
+                letter.note_text,
+                unit_keys=unit_keys,
             )
             post_hash = inventory_hash(
-                surfaces["residual_benchmark_added"], letter.note_text
+                surfaces["residual_benchmark_added"],
+                letter.note_text,
+                unit_keys=unit_keys,
             )
             hops = [
                 make_hop(
@@ -300,13 +370,15 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
                 mention_counts[rung] += count_predicted_mentions(mentions)
                 by_rung[rung] = {
                     "surface": surface,
-                    "inventory_hash": inventory_hash(mentions, letter.note_text),
+                    "inventory_hash": inventory_hash(
+                        mentions, letter.note_text, unit_keys=unit_keys
+                    ),
                     "predicted_mention_count": count_predicted_mentions(mentions),
                 }
-                keys = _family_keys(letter, mentions)
+                keys = _family_keys(letter, mentions, unit_keys=unit_keys)
                 for family in FAMILIES:
                     gold_keys = Counter(
-                        clinical_headline_unit_keys(
+                        unit_keys(
                             family,
                             [
                                 annotation
@@ -338,8 +410,16 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
                     "letter_id": letter_id,
                     "rungs": by_rung,
                     "format_render_vs_materialized_format_only": (
-                        inventory_hash(format_render_mentions, letter.note_text)
-                        != inventory_hash(materialized_format_only, letter.note_text)
+                        inventory_hash(
+                            format_render_mentions,
+                            letter.note_text,
+                            unit_keys=unit_keys,
+                        )
+                        != inventory_hash(
+                            materialized_format_only,
+                            letter.note_text,
+                            unit_keys=unit_keys,
+                        )
                     ),
                 }
             )
@@ -363,6 +443,9 @@ def replay_exect_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
         hybrid_cell=hybrid_cell,
         mention_counts=mention_counts,
         scored=scored,
+        shared_raw_output=(
+            "exect_llm_only" if source == "ablation" else "exect_llm_extract"
+        ),
     )
     write_exect_rung_artifacts(
         exect_rung_out_dir(slug, split),
@@ -534,15 +617,21 @@ def _comparison_summary(
     hybrid_cell: Mapping[str, Any],
     mention_counts: Mapping[str, int],
     scored: Sequence[Mapping[str, Any]] | None = None,
+    shared_raw_output: str = "exect_llm_extract",
 ) -> dict[str, Any]:
     nested = rules.get(split)
-    if isinstance(nested, Mapping) and nested.get("four_family_headline_f1") is not None:
+    if isinstance(nested, Mapping) and shared_raw_output != "exect_llm_only":
+        rules_f1 = nested.get("four_family_micro_f1")
+        if rules_f1 is None:
+            rules_f1 = nested.get("four_family_headline_f1")
+    elif isinstance(nested, Mapping) and nested.get("four_family_headline_f1") is not None:
         rules_f1 = nested["four_family_headline_f1"]
     else:
         headline = rules.get("clinical_headline") or {}
         rules_f1 = headline.get("f1") if isinstance(headline, Mapping) else None
     rungs: dict[str, Any] = {
         "rules_only": {
+            "four_family_micro_f1": rules_f1,
             "clinical_fact_f1": rules_f1,
             "source": "exect_rules",
         },
@@ -598,13 +687,21 @@ def _comparison_summary(
         "row_count": row_count,
         "row_policy": "aggregate_only" if holdout else "development_review_permitted",
         "rungs": {rung: rungs[rung] for rung in RUNG_IDS if rung in rungs},
-        "shared_raw_output": "exect_llm_only",
+        "shared_raw_output": shared_raw_output,
         "split": split,
+        "scorer": (
+            "clinical_headline_unit_keys"
+            if shared_raw_output == "exect_llm_only"
+            else "clinical_inventory_unit_keys"
+        ),
     }
 
 
 def _family_keys(
-    letter: ExectLetter, mentions: Sequence[Mapping[str, Any]]
+    letter: ExectLetter,
+    mentions: Sequence[Mapping[str, Any]],
+    *,
+    unit_keys: Any = clinical_inventory_unit_keys,
 ) -> dict[str, Counter[Any]]:
     predicted = predictions_from_prediction_surface(
         [{"letter_id": letter.letter_id, "prediction_surfaces": {"all": list(mentions)}}],
@@ -613,7 +710,7 @@ def _family_keys(
     predicted_letter = to_exect_letter(predicted, letter.note_text)
     return {
         family: Counter(
-            clinical_headline_unit_keys(
+            unit_keys(
                 family,
                 [
                     annotation
@@ -648,6 +745,7 @@ def _surface_prf(letter_rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         by_family[family] = _prf(counts)
     headline = _prf(overall)
     return {
+        "four_family_micro_f1": headline["f1"],
         "clinical_fact_f1": headline["f1"],
         "precision": headline["precision"],
         "recall": headline["recall"],

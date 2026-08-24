@@ -9,6 +9,7 @@ import pytest
 
 from clinical_extraction.paper.cli import main
 from clinical_extraction.paper.exect_cell_replay import (
+    exect_living_extract_rows_path,
     exect_llm_only_rows_path,
     exect_rung_out_dir,
     format_render_mention_rows,
@@ -33,6 +34,11 @@ def _scored_row() -> dict[str, object]:
 
 
 def test_exect_rung_paths_follow_slug_and_split() -> None:
+    assert exect_living_extract_rows_path(
+        "gemini37flash", "test60"
+    ).as_posix().endswith(
+        "paper_experiments/exect/exect_llm_extract/gemini37flash/test60/structured.jsonl"
+    )
     assert exect_llm_only_rows_path("grok46", "dev140").as_posix().endswith(
         "paper_experiments/exect/exect_llm_only/grok46/dev140/structured.jsonl"
     )
@@ -114,7 +120,7 @@ def test_replay_exect_dev140_stays_a_development_alias() -> None:
 
 @pytest.mark.local_corpus
 def test_format_render_uses_pre_assembly_mentions_not_materialized_format_only() -> None:
-    summary = replay_exect_rungs("dev140", slug="grok46")
+    summary = replay_exect_rungs("dev140", slug="grok46", source="ablation")
     check = summary["format_only_check"]
     assert check["surface"] == "format_render"
     assert check["same_as_schema"] is False
@@ -183,9 +189,12 @@ def test_format_render_is_not_schema_or_gated_predicted_mentions() -> None:
 def test_cli_replay_rungs_accepts_test60(monkeypatch: pytest.MonkeyPatch) -> None:
     captured: dict[str, object] = {}
 
-    def fake_replay(split: str, *, slug: str = "grok46") -> dict[str, object]:
+    def fake_replay(
+        split: str, *, slug: str = "grok46", source: str = "living"
+    ) -> dict[str, object]:
         captured["split"] = split
         captured["slug"] = slug
+        captured["source"] = source
         return {"split": split, "model_slug": slug, "row_policy": "aggregate_only"}
 
     monkeypatch.setattr(
@@ -202,4 +211,4 @@ def test_cli_replay_rungs_accepts_test60(monkeypatch: pytest.MonkeyPatch) -> Non
             "test60",
         ]
     )
-    assert captured == {"split": "test60", "slug": "gpt56luna"}
+    assert captured == {"split": "test60", "slug": "gpt56luna", "source": "ablation"}

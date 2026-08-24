@@ -12,6 +12,7 @@ from typing import Any
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.paper.answer_states import graph_from_hops, unused_model_events
 from clinical_extraction.paper.cells import GAN_REPAIR_MODE_FOR_RUNG, RUNG_IDS
+from clinical_extraction.paper.comparison_contract import gan_stage
 from clinical_extraction.paper.methods import (
     gan_machine_split,
     gan_row_count,
@@ -46,8 +47,29 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.runners.config import (
 ROOT = discover_repo_root(start=Path(__file__))
 
 
-def gan_hybrid_rows_path(slug: str, split: str) -> Path:
-    """Return the living hybrid replay file for one model and split."""
+def gan_living_extract_rows_path(slug: str, split: str) -> Path:
+    """Return the living codebook extract replay file."""
+
+    holdout = holdout_is_aggregate_only(split)
+    roots = (
+        ROOT / "paper_experiments/gan/gan_llm_extract" / slug / split / "rows.jsonl",
+        (
+            ROOT
+            / ("scratch/holdout/paper" if holdout else "experiments/paper")
+            / "gan_llm_extract"
+            / slug
+            / split
+            / "rows.jsonl"
+        ),
+    )
+    for path in roots:
+        if path.is_file():
+            return path
+    return roots[0]
+
+
+def gan_source_near_rows_path(slug: str, split: str) -> Path:
+    """Return the source-near ablation replay file."""
 
     return (
         ROOT
@@ -56,6 +78,74 @@ def gan_hybrid_rows_path(slug: str, split: str) -> Path:
         / split
         / "rows.jsonl"
     )
+
+
+def gan_hybrid_rows_path(slug: str, split: str) -> Path:
+    """Return the living codebook extract, falling back to source-near."""
+
+    living = gan_living_extract_rows_path(slug, split)
+    if living.is_file():
+        return living
+    return gan_source_near_rows_path(slug, split)
+
+
+def living_gan_stages(
+    rows: Sequence[Mapping[str, Any]],
+    records: Mapping[int, GanFrequencyRecord],
+    *,
+    method: str,
+) -> dict[str, dict[str, Any]]:
+    """Score extract / encode / select on saved Gan rows without new calls."""
+
+    n = len(rows)
+    select_correct = sum(
+        1 for row in rows if (row.get("comparison") or {}).get("purist_correct")
+    )
+    select_prag = sum(
+        1 for row in rows if (row.get("comparison") or {}).get("pragmatic_correct")
+    )
+    select = gan_stage(
+        purist_correct=select_correct,
+        n=n,
+        pragmatic_correct=select_prag,
+    )
+    if method in {
+        "gan_llm_only",
+        "gan_llm_encode",
+        "gan_llm_select",
+        "gan_llm_select_from_extract",
+    }:
+        return {"extract": dict(select), "encode": dict(select), "select": dict(select)}
+    extract_correct = 0
+    encode_correct = 0
+    extract_prag = 0
+    encode_prag = 0
+    for row in rows:
+        record = records[int(row["source_row_index"])]
+        raw = str(row.get("raw_output") or "")
+        for mode, bucket in (("raw_model", "extract"), ("llm_encode", "encode")):
+            extraction, _, _, _ = parse_structured_json_with_trace(
+                raw,
+                note_text=record.note_text,
+                repair_config=StructuredRepairConfig.for_mode(mode),
+            )
+            label = extraction.selection.final_label if extraction else None
+            scored = score_label(record, label)
+            if bucket == "extract":
+                extract_correct += int(scored["purist_correct"])
+                extract_prag += int(scored["pragmatic_correct"])
+            else:
+                encode_correct += int(scored["purist_correct"])
+                encode_prag += int(scored["pragmatic_correct"])
+    return {
+        "extract": gan_stage(
+            purist_correct=extract_correct, n=n, pragmatic_correct=extract_prag
+        ),
+        "encode": gan_stage(
+            purist_correct=encode_correct, n=n, pragmatic_correct=encode_prag
+        ),
+        "select": select,
+    }
 
 
 def gan_rung_out_dir(slug: str, split: str) -> Path:
@@ -123,17 +213,28 @@ def write_gan_rung_artifacts(
     return comparison
 
 
-def replay_gan_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
-    """Replay saved hybrid raw_output through rungs 1-4. No new model calls."""
+def replay_gan_rungs(
+    split: str,
+    *,
+    slug: str = "grok46",
+    source: str = "living",
+) -> dict[str, Any]:
+    """Replay saved extract raw_output through rungs 1-4. No new model calls."""
 
     if split not in {"dev750", "test450"}:
         raise ValueError("Gan rung replay accepts split dev750 or test450")
+    if source not in {"living", "ablation"}:
+        raise ValueError("Gan replay source must be living or ablation")
     holdout = holdout_is_aggregate_only(split)
     expected_n = gan_row_count(split)
-    raw_path = gan_hybrid_rows_path(slug, split)
+    raw_path = (
+        gan_source_near_rows_path(slug, split)
+        if source == "ablation"
+        else gan_living_extract_rows_path(slug, split)
+    )
     if not raw_path.is_file():
         raise FileNotFoundError(
-            f"missing gan_llm_extract_raw replay file for {slug} {split}: {raw_path}"
+            f"missing gan extract replay file for {slug} {split}: {raw_path}"
         )
     records = {
         record.source_row_index: record
@@ -237,6 +338,9 @@ def replay_gan_rungs(split: str, *, slug: str = "grok46") -> dict[str, Any]:
         kind_changes=kind_changes,
         format_rescues=format_rescues,
         format_harms=format_harms,
+        shared_raw_output=(
+            "gan_llm_extract_raw" if source == "ablation" else "gan_llm_extract"
+        ),
     )
     write_gan_rung_artifacts(
         gan_rung_out_dir(slug, split),
@@ -264,6 +368,7 @@ def _comparison_summary(
     kind_changes: int,
     format_rescues: int,
     format_harms: int,
+    shared_raw_output: str = "gan_llm_extract",
 ) -> dict[str, Any]:
     return {
         "claim_boundary": (
@@ -290,7 +395,7 @@ def _comparison_summary(
         "rungs": {
             rung: _rung_summary(scored, rung) for rung in RUNG_IDS if rung != "llm_pre_post"
         },
-        "shared_raw_output": "gan_llm_extract_raw",
+        "shared_raw_output": shared_raw_output,
         "split": split,
     }
 

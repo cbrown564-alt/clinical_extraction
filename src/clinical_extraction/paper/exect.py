@@ -20,6 +20,10 @@ from clinical_extraction.paper.batch import (
     complete_chat_batch,
     uses_provider_batch,
 )
+from clinical_extraction.paper.comparison_contract import (
+    attach_living_envelope,
+    living_exect_stages_from_surfaces,
+)
 from clinical_extraction.paper.exect_score import (
     FROZEN_GEMINI_LLM_ONLY_DEV140,
     assembly_row,
@@ -499,9 +503,22 @@ def _run_live(
             if _uses_inventory_select(arm.method)
             else "clinical_headline_unit_keys"
         ),
+        "prompt_version": arm.prompt_version,
     }
     if not holdout:
         artifact["letter_ids"] = [letter.letter_id for letter in letters]
+    if arm.method in {
+        "exect_llm_extract",
+        "exect_llm_pre_post",
+        "exect_llm_extract_filtered",
+    }:
+        artifact = attach_living_envelope(
+            artifact,
+            method=arm.method,
+            stages=living_exect_stages_from_surfaces(candidate["summary"]),
+            replay_mode="live",
+            prompt_version=arm.prompt_version,
+        )
     out = work_root / "comparison.json"
     out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return {
