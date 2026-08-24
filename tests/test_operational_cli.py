@@ -132,9 +132,10 @@ def test_score_projection_maps_unknown_without_gold_comparison() -> None:
     assert "gold_purist_category" not in projection
 
 
-def test_run_gan_notes_includes_score_projection(
+def test_run_gan_notes_uses_codebook_extract(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    captured: dict[str, object] = {}
     fake_result = SimpleNamespace(
         output=SimpleNamespace(
             final_value="2 per month",
@@ -152,9 +153,14 @@ def test_run_gan_notes_includes_score_projection(
             ],
         },
     )
+
+    def fake_run(record, config, **kwargs):
+        captured["prompt_version"] = config.prompt_version
+        return fake_result
+
     monkeypatch.setattr(
         "clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.llm_with_rules.run_record",
-        lambda *args, **kwargs: fake_result,
+        fake_run,
     )
 
     rows = run_gan_notes(
@@ -166,6 +172,9 @@ def test_run_gan_notes_includes_score_projection(
         ),
     )
 
+    assert captured["prompt_version"] == "gan_llm_extract"
+    assert rows[0]["pipeline"] == "gan_llm_extract"
+    assert rows[0]["prompt_version"] == "gan_llm_extract"
     assert "normalized_events" not in rows[0]
     assert rows[0]["score_projection"]["purist_category"] == (
         "seizure_freq_more1mon_less1week"

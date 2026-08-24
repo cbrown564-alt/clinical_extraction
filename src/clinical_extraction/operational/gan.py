@@ -1,4 +1,4 @@
-"""Operational wrapper for the selected Gan LLM-with-rules pipeline."""
+"""Operational wrapper for the cited Gan codebook extract."""
 
 from __future__ import annotations
 
@@ -14,6 +14,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequenc
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
     map_pragmatic,
     map_purist,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_extract import (
+    GAN_LLM_EXTRACT,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners.config import (
     PipelineConfiguration,
@@ -34,7 +37,7 @@ def run_gan_notes(notes: Sequence[InputNote], runtime: RuntimeConfig) -> list[di
         api_base=runtime.base_url,
         api_key=runtime.api_key,
         timeout=int(runtime.timeout_seconds),
-        prompt_version="gan_llm_extract_raw",
+        prompt_version=GAN_LLM_EXTRACT,
     )
     empty_label = label_to_frequency_record("unknown")
     output: list[dict[str, Any]] = []
@@ -61,7 +64,7 @@ def run_gan_notes(notes: Sequence[InputNote], runtime: RuntimeConfig) -> list[di
                     "task": "gan",
                     "status": "ok",
                     "model": runtime.api_model,
-                    "pipeline": "llm_with_rules",
+                    "pipeline": GAN_LLM_EXTRACT,
                     "prompt_version": config.prompt_version,
                     "prediction": {
                         "seizure_frequency": result.output.final_value,
@@ -105,6 +108,6 @@ def _error_row(note_id: str, model: str, exc: Exception) -> dict[str, Any]:
         "task": "gan",
         "status": "error",
         "model": model,
-        "pipeline": "llm_with_rules",
+        "pipeline": GAN_LLM_EXTRACT,
         "error": {"type": type(exc).__name__, "message": str(exc)},
     }

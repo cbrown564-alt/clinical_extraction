@@ -1,7 +1,10 @@
 # Run against a local vLLM server
 
-This walkthrough runs the selected Gan seizure-frequency pipeline
-(`llm_with_rules`) against your own data.
+This walkthrough runs the cited Gan codebook extract
+(`gan_llm_extract`) against your own data. The model writes frequency
+labels in the allowed forms; recorded rules then encode and select.
+This is `clinical-extract gan`, not the source-near ablation
+(`gan_llm_extract_raw`).
 
 It also includes a worked example for three synthetic clinic letters. The letters are
 fixed in `[examples/vllm_gan_three_letters.jsonl](examples/vllm_gan_three_letters.jsonl)`,
@@ -67,8 +70,8 @@ A successful probe prints a JSON object to stdout:
 `response_model` is the name the server used. If these disagree with the name
 after `vllm/`, fix the identifier before extracting notes.
 
-The input is JSONL with one `id` and `text` object per line. Run the selected
-Gan seizure-frequency pipeline with:
+The input is JSONL with one `id` and `text` object per line. Run the cited
+Gan codebook extract with:
 
 ```sh
 clinical-extract gan \
@@ -120,8 +123,8 @@ Each output line keeps the input `id`. A successful row looks like this:
   "task": "gan",
   "status": "ok",
   "model": "deepseek-v4-flash",
-  "pipeline": "llm_with_rules",
-  "prompt_version": "gan2026_hybrid_structured_events_v0.5",
+  "pipeline": "gan_llm_extract",
+  "prompt_version": "gan_llm_extract",
   "prediction": {
     "seizure_frequency": "2 per month",
     "evidence": "Her typical pattern remains two focal seizures a month",
@@ -129,8 +132,38 @@ Each output line keeps the input `id`. A successful row looks like this:
   },
   "parse_errors": [],
   "structured_record": {
-    "events": [],
-    "selection": {}
+    "events": [
+      {
+        "event_id": "e1",
+        "kind": "frequency_rate",
+        "raw_value": "two focal seizures a month",
+        "applies_to": "focal seizures",
+        "time_window": "typical pattern",
+        "temporality": "current",
+        "assertion_status": "asserted",
+        "evidence": "Her typical pattern remains two focal seizures a month",
+        "notes": null
+      },
+      {
+        "event_id": "e2",
+        "kind": "frequency_rate",
+        "raw_value": "five seizures so far this year",
+        "applies_to": "seizures",
+        "time_window": "this year",
+        "temporality": "recent",
+        "assertion_status": "asserted",
+        "evidence": "She has had five seizures so far this year",
+        "notes": null
+      }
+    ],
+    "selection": {
+      "selected_event_ids": ["e1"],
+      "final_kind": "frequency",
+      "final_label": "2 per month",
+      "evidence": "Her typical pattern remains two focal seizures a month",
+      "confidence": "high",
+      "rationale": "The stated typical rate is the current frequency."
+    }
   },
   "score_projection": {
     "normalized_label": "2 per month",
@@ -146,11 +179,13 @@ Each output line keeps the input `id`. A successful row looks like this:
 
 | Field                          | Meaning                                                                                                                      |
 | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
-| `prediction.seizure_frequency` | The current frequency label the pipeline selected                                                                            |
+| `pipeline`                     | Cited method id: `gan_llm_extract`. Not `llm_with_rules` and not the source-near ablation.                                   |
+| `prompt_version`               | Request sent to the model: `gan_llm_extract` (allowed label forms).                                                          |
+| `prediction.seizure_frequency` | The current frequency label after extract, encode, and select                                                                |
 | `prediction.evidence`          | Supporting text the pipeline cited from the letter                                                                           |
 | `prediction.rationale`         | Why that label was selected                                                                                                  |
 | `parse_errors`                 | Format problems from the model call, if any                                                                                  |
-| `structured_record`            | Extracted events and the chosen selection, after repair                                                                      |
+| `structured_record`            | Extracted events (note wording in `raw_value`) and the form-aligned selection, after repair                                  |
 | `score_projection`             | The selected label mapped into Gan Purist and Pragmatic categories. This is not a gold comparison and not a benchmark score. |
 
 
@@ -163,7 +198,7 @@ usable prediction:
   "task": "gan",
   "status": "error",
   "model": "deepseek-v4-flash",
-  "pipeline": "llm_with_rules",
+  "pipeline": "gan_llm_extract",
   "error": {"type": "TimeoutError", "message": "Request timed out."}
 }
 ```
