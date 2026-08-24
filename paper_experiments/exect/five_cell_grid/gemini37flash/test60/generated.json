@@ -1,0 +1,76 @@
+{
+  "cells": {
+    "both_extract_then_rules": {
+      "ablation": {
+        "encode": 0.8331,
+        "extract": 0.8331
+      },
+      "encode_role": "rules",
+      "extract_role": "both",
+      "extract_source": "exect_llm_pre_post",
+      "prompt": "exect_llm_extract plus suggested candidates",
+      "select": 0.8592,
+      "select_role": "rules"
+    },
+    "llm": {
+      "ablation": {
+        "encode": 0.8649,
+        "extract": 0.8491
+      },
+      "encode_role": "LLM",
+      "encode_source": "exect_llm_encode",
+      "extract_role": "LLM",
+      "extract_source": "exect_llm_extract",
+      "select": 0.853,
+      "select_role": "LLM",
+      "select_source": "exect_llm_select"
+    },
+    "llm_extract_encode_then_select_rules": {
+      "ablation": {
+        "encode": 0.8649,
+        "extract": 0.8491
+      },
+      "encode_role": "LLM",
+      "encode_source": "exect_llm_encode",
+      "extract_role": "LLM",
+      "extract_source": "exect_llm_extract",
+      "select": 0.8636,
+      "select_role": "rules",
+      "select_source": "exect_rule_select_after_llm_encode"
+    },
+    "llm_extract_then_rules": {
+      "ablation": {
+        "extract": 0.8491
+      },
+      "encode_role": "rules",
+      "extract_role": "LLM",
+      "extract_source": "exect_llm_extract",
+      "select": 0.8674,
+      "select_role": "rules"
+    },
+    "rules": {
+      "ablation": {
+        "encode": 0.7725,
+        "extract": 0.7725
+      },
+      "encode_role": "rules",
+      "extract_role": "rules",
+      "extract_source": "exect_rules",
+      "select": 0.7725,
+      "select_role": "rules"
+    }
+  },
+  "claim_boundary": "ExECT aggregate-only test60 five-cell grid. Headline is the select stop. All five rows use 4-family micro F1. Do not inspect holdout rows.",
+  "generated_from": "living_cells",
+  "headline": "select",
+  "model": "gemini/gemini-3.7-flash",
+  "n": 59,
+  "role_values": [
+    "rules",
+    "LLM",
+    "both"
+  ],
+  "row_policy": "aggregate_only",
+  "scorer": "4-family micro F1",
+  "split": "test60"
+}

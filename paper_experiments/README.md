@@ -21,7 +21,7 @@ Roster: [`roster.json`](roster.json). Inventory: [`inventory.json`](inventory.js
 | Path | Role |
 | --- | --- |
 | `gan/five_cell_grid/` | Gemini Gan five-cell holdout grid |
-| `exect/five_cell_grid/` | Gemini ExECT five-cell holdout grid |
+| `exect/five_cell_grid/` | Gemini ExECT five-cell holdout grid (4-family micro F1; cell 3 peak). Owner: [both-extract on inventory](../docs/research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md) |
 | `exect/exect_llm_extract/` | ExECT cell-3 inventory extract raw; cells 3–5 replay this raw |
 | `exect/exect_llm_only/` | Historical Compact extract (`exect_llm_extract_filtered`); Gemini ablation |
 | `exect/exect_llm_encode/` | ExECT cell-4 LLM encode. Gemini only, `dev140` and aggregate-only `test60` |

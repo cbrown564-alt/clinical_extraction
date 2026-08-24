@@ -37,6 +37,7 @@ from clinical_extraction.paper.exect_panel import (
     promote_exect_llm_extract,
     promote_exect_llm_only,
 )
+from clinical_extraction.paper.five_cell import write_five_cell_grid
 from clinical_extraction.paper.gan import run_gan, verify_gan
 from clinical_extraction.paper.gan_cell_replay import replay_gan_rungs
 from clinical_extraction.paper.gan_panel import promote_gan
@@ -60,6 +61,7 @@ def main(argv: Sequence[str] | None = None) -> None:
             "promote-gan",
             "promote-exect",
             "replay-rungs",
+            "write-five-cell",
             "score-inventory",
             "score-inventory-residual",
         ),
@@ -105,12 +107,29 @@ def main(argv: Sequence[str] | None = None) -> None:
             )
         )
         return
+    if args.action == "write-five-cell":
+        slug = args.model or "gemini37flash"
+        print(
+            json.dumps(
+                write_five_cell_grid(args.method, slug=slug, split=args.split),
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return
     if args.action == "replay-rungs":
+        ablation = args.method in {
+            "gan_llm_extract_raw",
+            "gan_llm_only",
+            "exect_llm_only",
+            "exect_llm_extract_filtered",
+        }
+        source = "ablation" if ablation else "living"
         if args.split in {"dev750", "test450"}:
             slug = args.model or "grok46"
             print(
                 json.dumps(
-                    replay_gan_rungs(args.split, slug=slug),
+                    replay_gan_rungs(args.split, slug=slug, source=source),
                     indent=2,
                     sort_keys=True,
                 )
@@ -129,7 +148,7 @@ def main(argv: Sequence[str] | None = None) -> None:
                 return
             print(
                 json.dumps(
-                    replay_exect_rungs(args.split, slug=slug),
+                    replay_exect_rungs(args.split, slug=slug, source=source),
                     indent=2,
                     sort_keys=True,
                 )
