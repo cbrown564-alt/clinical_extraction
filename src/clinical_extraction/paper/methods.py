@@ -12,11 +12,13 @@ LIVE_METHODS: dict[str, dict[str, object]] = {
         "task": "gan2026",
         "splits": ("dev750", "test450"),
         "prompt_attr": "GAN_LLM_ONLY",
+        "paper_cell": False,
     },
     "gan_llm_extract_raw": {
         "task": "gan2026",
         "splits": ("dev750", "test450"),
         "prompt_attr": "GAN_LLM_EXTRACT_RAW",
+        "paper_cell": False,
     },
     "gan_llm_encode": {
         "task": "gan2026",
