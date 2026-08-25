@@ -1109,6 +1109,7 @@ def _gan_llm_extract_raw_run(
         model_events = list(extraction.events)
     elif trace["model_prediction"]["record"]:
         model_events = list(trace["model_prediction"]["record"].get("events") or [])
+    selection_record = extraction.selection if extraction is not None else None
     run.facts = build_gan_hybrid_facts(
         spec.note_text,
         model_events,
@@ -1118,6 +1119,10 @@ def _gan_llm_extract_raw_run(
             "model_final_label": selection_block["model_final_label"],
             "resolved_label": selection_block["resolved_label"],
             "evidence": evidence,
+            "confidence": getattr(selection_record, "confidence", None),
+            "rationale": getattr(selection_record, "rationale", None),
+            "final_kind": getattr(selection_record, "final_kind", None),
+            "final_label": getattr(selection_record, "final_label", None) or final_label,
         },
         walk,
         final_label,

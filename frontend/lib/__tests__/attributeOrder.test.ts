@@ -63,5 +63,7 @@ describe("sortedAttributeKeys", () => {
     expect(attributeRank("UpperNumberOfSeizures", "SeizureFrequency")).toBe("primary");
     expect(attributeRank("LowerNumberOfTimePeriods", "SeizureFrequency")).toBe("primary");
     expect(attributeRank("UpperNumberOfTimePeriods", "SeizureFrequency")).toBe("primary");
+    expect(attributeRank("kind", "GanEvent")).toBe("primary");
+    expect(attributeRank("temporality", "GanEvent")).toBe("payload");
   });
 });

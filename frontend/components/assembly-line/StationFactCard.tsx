@@ -95,7 +95,7 @@ function rowMarkClass(mark: AttributeMark): string | undefined {
 }
 
 function FamilyBadge({ family }: { family: string }) {
-  if (!family) return null;
+  if (!family || family === "GanEvent") return null;
   const { label, tone } = familyMeta(family);
   return (
     <span
@@ -163,6 +163,46 @@ function AttributeTable({
   );
 }
 
+function GanExtractBody({
+  fact,
+  previous,
+}: {
+  fact: Extract<StationFactView, { kind: "gan_extract" }>;
+  previous?: Extract<StationFactView, { kind: "gan_extract" }>;
+}) {
+  const previousById = new Map(
+    (previous?.events ?? []).map((event) => [event.attributes.event_id ?? event.phrase, event])
+  );
+  return (
+    <div className="space-y-3">
+      {fact.events.map((event, index) => (
+        <div key={event.attributes.event_id ?? `${event.phrase}:${index}`}>
+          {fact.events.length > 1 ? (
+            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted">
+              Event {event.attributes.event_id || index + 1}
+            </p>
+          ) : null}
+          <StructuredBody
+            fact={event}
+            previous={previousById.get(event.attributes.event_id ?? event.phrase)}
+          />
+        </div>
+      ))}
+      {fact.selection ? (
+        <div className="border-t border-border/60 pt-3">
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted">
+            Selection
+          </p>
+          <StructuredBody
+            fact={fact.selection}
+            previous={previous?.selection ?? undefined}
+          />
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function StructuredBody({
   fact,
   previous,
@@ -175,6 +215,11 @@ function StructuredBody({
     <div>
       <div className="flex flex-wrap items-center gap-2">
         <FamilyBadge family={fact.family} />
+        {fact.family === "GanEvent" && fact.attributes.kind ? (
+          <span className="rounded border border-deterministic/25 bg-deterministic/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-deterministic">
+            {fact.attributes.kind.replace(/_/g, " ")}
+          </span>
+        ) : null}
         <p
           className={`font-serif text-base leading-snug text-foreground ${
             phraseChanged ? "rounded bg-llm/10 px-1" : ""
@@ -191,7 +236,9 @@ function StructuredBody({
         previous={previous?.attributes}
         current={fact.attributes}
       />
-      {fact.confidence || fact.rationale ? (
+      {(fact.confidence || fact.rationale) &&
+      !fact.attributes.confidence &&
+      !fact.attributes.rationale ? (
         <p className="mt-2 text-[10px] font-semibold uppercase tracking-wider text-muted">
           {[fact.confidence, fact.rationale].filter(Boolean).join(" · ")}
         </p>
@@ -224,6 +271,13 @@ function FactBody({
             previous={previous?.kind === "structured" ? previous : undefined}
           />
         </div>
+      );
+    case "gan_extract":
+      return (
+        <GanExtractBody
+          fact={fact}
+          previous={previous?.kind === "gan_extract" ? previous : undefined}
+        />
       );
     case "prose":
       return fact.text ? (

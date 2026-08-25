@@ -42,6 +42,28 @@ const FAMILY_PAYLOAD_ORDER: Record<string, readonly string[]> = {
     "AgeUpper",
     "AgeUnit",
   ],
+  GanEvent: [
+    "event_id",
+    "kind",
+    "raw_value",
+    "label",
+    "normalized_label",
+    "semantic_kind",
+    "assertion_status",
+    "temporality",
+    "applies_to",
+    "time_window",
+    "notes",
+    "rule_id",
+    "rule_group",
+    "selected_event_ids",
+    "final_kind",
+    "final_label",
+    "model_final_label",
+    "resolved_label",
+    "confidence",
+    "rationale",
+  ],
 };
 
 const FAMILY_PRIMARY_KEYS: Record<string, readonly string[]> = {
@@ -56,6 +78,7 @@ const FAMILY_PRIMARY_KEYS: Record<string, readonly string[]> = {
     "UpperNumberOfTimePeriods",
   ],
   Investigations: ["CT_Results", "EEG_Results", "MRI_Results"],
+  GanEvent: ["kind", "normalized_label", "final_label", "label"],
 };
 
 export function isIdentityAttributeKey(key: string): boolean {

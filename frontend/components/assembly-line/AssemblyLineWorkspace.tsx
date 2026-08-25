@@ -15,7 +15,6 @@ import {
   getActiveAssemblyRun,
   useAssemblyLineStore,
 } from "@/lib/assemblyLineStore";
-import FiveCellGridTable from "@/components/paper/FiveCellGridTable";
 import AssemblyLineControls, { AssemblyLineStory } from "./AssemblyLineControls";
 import AssemblyLineSidebar from "./AssemblyLineSidebar";
 
@@ -57,7 +56,6 @@ export default function AssemblyLineWorkspace() {
 
   return (
     <SurfaceLayout variant="fill">
-      <FiveCellGridTable />
       <AssemblyLineControls />
       <AssemblyLineStory />
       <ExplorerBody

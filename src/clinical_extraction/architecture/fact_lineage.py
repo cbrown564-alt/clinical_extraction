@@ -175,8 +175,25 @@ _KEEP_FIELDS = (
     "confidence",
     "rationale",
     "event_id",
+    "kind",
     "raw_value",
+    "label",
     "normalized_label",
+    "semantic_kind",
+    "assertion_status",
+    "temporality",
+    "applies_to",
+    "time_window",
+    "notes",
+    "rule_id",
+    "rule_group",
+    "selected_event_ids",
+    "final_kind",
+    "final_label",
+    "model_final_label",
+    "resolved_label",
+    "events",
+    "selection",
 )
 
 
@@ -204,6 +221,18 @@ def _public_fields(data: Mapping[str, Any]) -> dict[str, Any]:
             ]
             if mentions:
                 cleaned[key] = mentions
+        elif key == "events" and isinstance(item, Sequence):
+            events = [
+                _public_fields(mapped)
+                for mapped in (_as_mapping(event) for event in item)
+                if mapped is not None
+            ]
+            if events:
+                cleaned[key] = events
+        elif key == "selection" and isinstance(item, Mapping):
+            selection = _public_fields(item)
+            if selection:
+                cleaned[key] = selection
         else:
             cleaned[key] = item
     return cleaned
@@ -554,38 +583,49 @@ def build_gan_rules_facts(
     selected_ids = {str(item) for item in selection.get("selected_event_ids") or []}
     facts: list[PredictedFact] = []
     normalized_by_id = {
-        _event_mapping(event)["event_id"]: _event_mapping(event) for event in normalized
+        _event_mapping(event)["event_id"]: event for event in normalized
     }
     for event in candidates:
         parts = _event_mapping(event)
         event_id = parts["event_id"] or f"event_{len(facts) + 1}"
-        norm = normalized_by_id.get(event_id, {})
+        norm = normalized_by_id.get(event_id)
+        norm_parts = _event_mapping(norm) if norm is not None else {}
         selected = event_id in selected_ids or (
-            not selected_ids and final_label == (norm.get("normalized_label") or parts["label"])
+            not selected_ids
+            and final_label == (norm_parts.get("normalized_label") or parts["label"])
         )
+        extracted = _render_unit(event)
+        encoded = _render_unit(norm) if norm is not None else extracted
         transforms = [
             _transform(
                 run,
                 "gan.rules.extract",
                 entered="(letter)",
-                left=f"{event_id}: {parts['raw_value'] or parts['evidence']}",
+                left=extracted,
                 idle=False,
             ),
             _transform(
                 run,
                 "gan.rules.normalize",
-                entered=f"{event_id}: {parts['raw_value'] or parts['evidence']}",
-                left=f"{event_id}: {norm.get('normalized_label') or parts['label']}",
+                entered=extracted,
+                left=encoded,
                 idle=False,
             ),
         ]
         if selected:
+            answer = _render_unit(
+                {
+                    "event_id": event_id,
+                    "final_label": final_label or selection.get("final_label") or "",
+                    "selected_event_ids": list(selected_ids),
+                }
+            )
             transforms.append(
                 _transform(
                     run,
                     "gan.rules.select_and_render",
-                    entered=f"{event_id}: {norm.get('normalized_label') or parts['label']}",
-                    left=str(final_label or selection.get("final_label") or ""),
+                    entered=encoded,
+                    left=answer,
                     idle=False,
                 )
             )
@@ -612,8 +652,8 @@ def build_gan_rules_facts(
         facts.append(
             PredictedFact(
                 fact_id=event_id,
-                label=str(norm.get("normalized_label") or parts["label"] or event_id),
-                span=_clickable_span(note_text, {**parts, **norm}),
+                label=str(parts["raw_value"] or parts["evidence"] or event_id),
+                span=_clickable_span(note_text, {**parts, **norm_parts}),
                 transforms=tuple(transforms),
                 gold=FactGold(label=gold_label, has_counterpart=True),
             )
@@ -638,12 +678,14 @@ def build_gan_llm_facts(
     if span is None:
         return []
     prefix = method_prefix
+    proposed = _render_unit({"label": before_label, "evidence": evidence})
+    repaired = _render_unit({"label": after_label, "evidence": evidence})
     transforms = [
         _transform(
             run,
             f"{prefix}.model_call",
             entered="(none)",
-            left=f"{before_label} [{evidence}]",
+            left=proposed,
             idle=False,
             note="One-call label plus its quoted span.",
         )
@@ -653,8 +695,8 @@ def build_gan_llm_facts(
             _transform(
                 run,
                 f"{prefix}.selected_evidence_repair",
-                entered=before_label,
-                left=after_label,
+                entered=proposed,
+                left=repaired,
                 idle=False,
             )
         )
@@ -689,6 +731,21 @@ def build_gan_llm_facts(
     ]
 
 
+def _gan_selection_payload(selection: Mapping[str, Any]) -> dict[str, Any]:
+    return {
+        "selected_event_ids": list(selection.get("selected_event_ids") or []),
+        "final_kind": selection.get("final_kind"),
+        "final_label": selection.get("final_label")
+        or selection.get("resolved_label")
+        or "",
+        "model_final_label": selection.get("model_final_label"),
+        "resolved_label": selection.get("resolved_label"),
+        "evidence": selection.get("evidence"),
+        "confidence": selection.get("confidence"),
+        "rationale": selection.get("rationale"),
+    }
+
+
 def build_gan_hybrid_facts(
     note_text: str,
     events: Sequence[Any],
@@ -700,81 +757,89 @@ def build_gan_hybrid_facts(
     *,
     gold_label: str,
 ) -> list[PredictedFact]:
-    selected_ids = {str(item) for item in selection.get("selected_event_ids") or []}
     selection_evidence = str(selection.get("evidence") or "")
+    selection_payload = _gan_selection_payload(selection)
     normalized_by_id = {
-        _event_mapping(event)["event_id"]: _event_mapping(event)
-        for event in normalized_events
+        _event_mapping(event)["event_id"]: event for event in normalized_events
     }
+    encoded_events = []
+    for event in events:
+        parts = _event_mapping(event)
+        event_id = parts["event_id"]
+        encoded_events.append(normalized_by_id[event_id] if event_id in normalized_by_id else event)
+    extracted = _render_unit({"events": list(events), "selection": selection_payload})
+    encoded = _render_unit({"events": encoded_events, "selection": selection_payload})
+    answer = _render_unit(selection_payload)
+    transforms = [
+        _transform(
+            run,
+            "gan.llm_with_rules.model_call",
+            entered="(none)",
+            left=extracted,
+            idle=False,
+            note="Model extract: events and selection.",
+        ),
+        _transform(
+            run,
+            "gan.llm_with_rules.normalize_events",
+            entered=extracted,
+            left=encoded,
+            idle=False,
+        ),
+        _transform(
+            run,
+            "gan.llm_with_rules.resolve_label",
+            entered=encoded,
+            left=answer,
+            idle=False,
+        ),
+    ]
+    for family, before, after, _vetoed in repair_walk:
+        if before == after:
+            continue
+        transforms.append(
+            _transform(
+                run,
+                f"gan.llm_with_rules.repair.{family}",
+                entered=before,
+                left=after,
+                idle=False,
+            )
+        )
+    if selection_evidence:
+        transforms.append(
+            _transform(
+                run,
+                "gan.llm_with_rules.evidence_containment",
+                entered=selection_evidence,
+                left="evidence accepted",
+                idle=True,
+            )
+        )
+    transforms.append(
+        _transform(
+            run,
+            "gan.llm_with_rules.score",
+            entered=str(final_label or ""),
+            left=str(final_label or ""),
+            idle=True,
+            note="What left the line.",
+        )
+    )
+    answer_label = str(
+        selection.get("final_label")
+        or selection.get("resolved_label")
+        or final_label
+        or ""
+    )
     facts: list[PredictedFact] = []
     for event in events:
         parts = _event_mapping(event)
         event_id = parts["event_id"] or f"e{len(facts) + 1}"
-        norm = normalized_by_id.get(event_id, {})
-        selected = event_id in selected_ids
-        transforms = [
-            _transform(
-                run,
-                "gan.llm_with_rules.model_call",
-                entered="(none)",
-                left=f"{event_id}: {parts['raw_value'] or parts['evidence']}",
-                idle=False,
-                note="Model proposed this event.",
-            ),
-            _transform(
-                run,
-                "gan.llm_with_rules.normalize_events",
-                entered=f"{event_id}: {parts['raw_value'] or parts['evidence']}",
-                left=f"{event_id}: {norm.get('normalized_label') or parts['raw_value']}",
-                idle=False,
-            ),
-        ]
-        if selected:
-            transforms.append(
-                _transform(
-                    run,
-                    "gan.llm_with_rules.resolve_label",
-                    entered=str(selection.get("model_final_label") or parts["raw_value"]),
-                    left=str(selection.get("resolved_label") or ""),
-                    idle=False,
-                )
-            )
-            for family, before, after, _vetoed in repair_walk:
-                if before == after:
-                    continue
-                transforms.append(
-                    _transform(
-                        run,
-                        f"gan.llm_with_rules.repair.{family}",
-                        entered=before,
-                        left=after,
-                        idle=False,
-                    )
-                )
-            if selection_evidence and selection_evidence == parts["evidence"]:
-                transforms.append(
-                    _transform(
-                        run,
-                        "gan.llm_with_rules.evidence_containment",
-                        entered=selection_evidence,
-                        left="evidence accepted",
-                        idle=True,
-                    )
-                )
-            transforms.append(
-                _transform(
-                    run,
-                    "gan.llm_with_rules.score",
-                    entered=str(final_label or ""),
-                    left=str(final_label or ""),
-                    idle=True,
-                    note="What left the line.",
-                )
-            )
         facts.append(
             PredictedFact(
                 fact_id=event_id,
-                label=str(norm.get("normalized_label") or parts["raw_value"] or event_id),
+                label=answer_label or parts["raw_value"] or parts["evidence"] or event_id,
                 span=_clickable_span(note_text, parts),
                 transforms=tuple(transforms),
                 gold=FactGold(label=gold_label, has_counterpart=True),

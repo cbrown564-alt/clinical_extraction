@@ -78,6 +78,22 @@ def test_gan15431_pre_post_reaches_two_part_gold() -> None:
         and "cluster" in item.span.text.lower()
     )
     assert fact.gold.label == case.gold
+    assert "cluster" in fact.label.lower()
+    propose = next(step for step in fact.transforms if step.stage_id.endswith("model_call"))
+    normalize = next(
+        step for step in fact.transforms if step.stage_id.endswith("normalize_events")
+    )
+    resolve = next(step for step in fact.transforms if step.stage_id.endswith("resolve_label"))
+    assert "e1:" not in propose.left
+    assert '"events"' in propose.left
+    assert '"selection"' in propose.left
+    assert "cluster_frequency" in propose.left
+    assert "raw_value" in propose.left
+    assert "1 cluster per 4 month, 5 per cluster" in propose.left
+    assert "unknown" in normalize.left
+    assert "normalized_label" in normalize.left
+    assert '"events"' in normalize.left
+    assert "final_label" in resolve.left
     repair_ids = [
         step.stage_id
         for step in fact.transforms
@@ -120,6 +136,55 @@ def test_lineage_render_drops_event_state_scratchpad() -> None:
     )
     assert "event_state" not in rendered
     assert "NumberOfSeizures" in rendered
+
+
+def test_lineage_render_keeps_gan_event_slots() -> None:
+    rendered = _render_unit(
+        {
+            "event_id": "e1",
+            "kind": "cluster_frequency",
+            "raw_value": "clusters of 5 seizures in a single day every up to 4 month",
+            "evidence": "She may remain seizure-free for up to 4 month",
+            "assertion_status": "asserted",
+            "temporality": "current",
+            "yearly_bounds": (0.0, 12.0),
+            "validation_errors": [],
+        }
+    )
+    assert "cluster_frequency" in rendered
+    assert "raw_value" in rendered
+    assert "assertion_status" in rendered
+    assert "yearly_bounds" not in rendered
+    assert "validation_errors" not in rendered
+
+
+def test_lineage_render_keeps_extract_events_and_selection() -> None:
+    rendered = _render_unit(
+        {
+            "events": [
+                {
+                    "event_id": "e1",
+                    "kind": "cluster_frequency",
+                    "raw_value": "clusters of 5",
+                    "evidence": "clusters of 5 seizures",
+                    "assertion_status": "asserted",
+                    "temporality": "current",
+                }
+            ],
+            "selection": {
+                "selected_event_ids": ["e1"],
+                "final_kind": "frequency",
+                "final_label": "1 cluster per 4 month, 5 per cluster",
+                "evidence": "clusters of 5 seizures",
+                "confidence": "high",
+                "rationale": "cluster pattern",
+            },
+        }
+    )
+    assert '"events"' in rendered
+    assert '"selection"' in rendered
+    assert "1 cluster per 4 month, 5 per cluster" in rendered
+    assert "cluster_frequency" in rendered
 
 @pytest.mark.local_corpus
 def test_ea0057_parse_does_not_surface_event_state_copy() -> None:

@@ -431,8 +431,6 @@ export interface EventsArtifactRow {
       model_normalized_clinical_label?: string;
       temporality?: string;
       notes?: string;
-      certainty?: string;
-      clinical_quantity?: Record<string, unknown>;
     }>;
     selection?: {
       selected_event_ids?: string[];

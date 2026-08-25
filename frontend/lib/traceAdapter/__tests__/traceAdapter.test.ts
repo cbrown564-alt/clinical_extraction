@@ -74,6 +74,7 @@ async function loadFirstArtifactRow(family: string): Promise<unknown> {
               model_normalized_clinical_label: "1 per month",
               temporality: "current",
               assertion_status: "asserted",
+              applies_to: "focal seizures",
             },
           ],
           selection: {
@@ -222,6 +223,14 @@ describe("adaptTrace", () => {
     expect(active.extract.items).toEqual(legacy.extract.items);
     expect(active.select.finalLabel).toBe(legacy.select.finalLabel);
     expect(active.select.evidence).toBe(legacy.select.evidence);
+    expect(active.extract.items[0]?.metadata).toMatchObject({
+      temporality: "current",
+      assertion_status: "asserted",
+      applies_to: "focal seizures",
+    });
+    expect(active.extract.items[0]?.metadata).not.toHaveProperty("certainty");
+    expect(active.extract.items[0]?.metadata).not.toHaveProperty("clinical_quantity");
+    expect(active.extract.items[0]?.metadata).not.toHaveProperty("time_window");
   });
 
   it("throws for unsupported families", () => {

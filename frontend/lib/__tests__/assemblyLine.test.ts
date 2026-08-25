@@ -134,6 +134,62 @@ describe("assembly line facts", () => {
     expect(view.phrase).toBe("focal to bilateral convulsive seizures");
   });
 
+  it("reads gan event slots as a structured fact", () => {
+    const view = parseStationFact(
+      JSON.stringify({
+        event_id: "e1",
+        kind: "cluster_frequency",
+        raw_value: "clusters of 5 seizures in a single day every up to 4 month",
+        evidence: "She may remain seizure-free for up to 4 month",
+        assertion_status: "asserted",
+        temporality: "current",
+        label: "unknown",
+      })
+    );
+    expect(view.kind).toBe("structured");
+    if (view.kind !== "structured") return;
+    expect(view.family).toBe("GanEvent");
+    expect(view.phrase).toBe(
+      "clusters of 5 seizures in a single day every up to 4 month"
+    );
+    expect(view.evidence).toContain("seizure-free");
+    expect(view.attributes.kind).toBe("cluster_frequency");
+    expect(view.attributes.assertion_status).toBe("asserted");
+    expect(view.attributes.label).toBe("unknown");
+  });
+
+  it("reads a gan extract object as events plus selection", () => {
+    const view = parseStationFact(
+      JSON.stringify({
+        events: [
+          {
+            event_id: "e1",
+            kind: "cluster_frequency",
+            raw_value: "clusters of 5 seizures in a single day every up to 4 month",
+            evidence: "She may remain seizure-free for up to 4 month",
+            assertion_status: "asserted",
+            temporality: "current",
+          },
+        ],
+        selection: {
+          selected_event_ids: ["e1"],
+          final_kind: "frequency",
+          final_label: "1 cluster per 4 month, 5 per cluster",
+          evidence: "She may remain seizure-free for up to 4 month",
+          confidence: "high",
+          rationale: "cluster pattern",
+        },
+      })
+    );
+    expect(view.kind).toBe("gan_extract");
+    if (view.kind !== "gan_extract") return;
+    expect(view.events).toHaveLength(1);
+    expect(view.events[0]?.phrase).toContain("clusters of 5");
+    expect(view.events[0]?.attributes.kind).toBe("cluster_frequency");
+    expect(view.selection?.phrase).toBe("1 cluster per 4 month, 5 per cluster");
+    expect(view.selection?.attributes.selected_event_ids).toBe("e1");
+  });
+
   it("keeps gan one-liners as prose and marks lens as compare stages", () => {
     expect(parseStationFact("5 per cluster [quiet interval]")).toEqual({
       kind: "prose",
@@ -142,6 +198,8 @@ describe("assembly line facts", () => {
     expect(isShapeCompareStage("exect.llm.parse_and_retry")).toBe(false);
     expect(isShapeCompareStage("exect.llm_pre_post.lens.diagnosis")).toBe(true);
     expect(isShapeCompareStage("exect.llm.model_call")).toBe(false);
+    expect(isShapeCompareStage("gan.llm_with_rules.normalize_events")).toBe(true);
+    expect(isShapeCompareStage("gan.rules.normalize")).toBe(true);
     expect(hasMentionList('{"mentions":[{"entity":"Diagnosis"}]}')).toBe(true);
     expect(hasMentionList('{"entity":"Diagnosis","attributes":{}}')).toBe(false);
   });

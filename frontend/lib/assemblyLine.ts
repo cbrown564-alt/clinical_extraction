@@ -62,15 +62,22 @@ export function sameOutgoing(previous: string | undefined, current: string): boo
   return left.length > 0 && left === right;
 }
 
+export type StructuredStationFact = {
+  kind: "structured";
+  family: string;
+  phrase: string;
+  attributes: Record<string, string>;
+  evidence: string;
+  confidence: string;
+  rationale: string;
+};
+
 export type StationFactView =
+  | StructuredStationFact
   | {
-      kind: "structured";
-      family: string;
-      phrase: string;
-      attributes: Record<string, string>;
-      evidence: string;
-      confidence: string;
-      rationale: string;
+      kind: "gan_extract";
+      events: StructuredStationFact[];
+      selection: StructuredStationFact | null;
     }
   | { kind: "prose"; text: string };
 
@@ -87,10 +94,106 @@ function stringMap(value: unknown): Record<string, string> {
   const out: Record<string, string> = {};
   for (const [key, item] of Object.entries(record)) {
     if (item == null || item === "") continue;
+    if (Array.isArray(item)) {
+      const joined = item.map((entry) => String(entry)).filter(Boolean).join(", ");
+      if (joined) out[key] = joined;
+      continue;
+    }
     if (typeof item === "object") continue;
     out[key] = String(item);
   }
   return out;
+}
+
+const GAN_EVENT_KINDS = new Set([
+  "frequency_rate",
+  "cluster_frequency",
+  "seizure_free",
+  "last_event_only",
+  "unknown_frequency",
+  "no_reference",
+]);
+
+const GAN_SLOT_KEYS = [
+  "event_id",
+  "kind",
+  "raw_value",
+  "label",
+  "normalized_label",
+  "semantic_kind",
+  "assertion_status",
+  "temporality",
+  "applies_to",
+  "time_window",
+  "notes",
+  "rule_id",
+  "rule_group",
+  "selected_event_ids",
+  "final_kind",
+  "final_label",
+  "model_final_label",
+  "resolved_label",
+  "confidence",
+  "rationale",
+] as const;
+
+function ganSlotMap(data: Record<string, unknown>): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const key of GAN_SLOT_KEYS) {
+    const item = data[key];
+    if (item == null || item === "" || key === "evidence" || key === "raw_value") continue;
+    if (Array.isArray(item)) {
+      const joined = item.map((entry) => String(entry)).filter(Boolean).join(", ");
+      if (joined) out[key] = joined;
+      continue;
+    }
+    if (typeof item === "object") continue;
+    out[key] = String(item);
+  }
+  return out;
+}
+
+function structuredGanFact(data: Record<string, unknown>): StructuredStationFact | null {
+  const attributes = ganSlotMap(data);
+  const phrase = String(
+    data.raw_value ?? data.label ?? data.final_label ?? data.normalized_label ?? ""
+  ).trim();
+  const evidence = String(data.evidence ?? "").trim();
+  if (!phrase && Object.keys(attributes).length === 0) {
+    return null;
+  }
+  return {
+    kind: "structured",
+    family: "GanEvent",
+    phrase: phrase || String(data.event_id ?? "event"),
+    attributes,
+    evidence,
+    confidence: String(data.confidence ?? ""),
+    rationale: String(data.rationale ?? ""),
+  };
+}
+
+function isGanExtractPayload(data: Record<string, unknown>): boolean {
+  return Array.isArray(data.events);
+}
+
+function isGanStationPayload(data: Record<string, unknown>): boolean {
+  if (isGanExtractPayload(data)) {
+    return false;
+  }
+  if (Array.isArray(data.mentions) || data.entity || data.family || data.attributes) {
+    return false;
+  }
+  const kind = String(data.kind ?? "");
+  return Boolean(
+    data.event_id ||
+      GAN_EVENT_KINDS.has(kind) ||
+      data.normalized_label ||
+      data.selected_event_ids ||
+      data.final_label ||
+      (data.raw_value && data.evidence) ||
+      (data.label && data.evidence)
+  );
 }
 
 function entityFromFamily(family: string): string {
@@ -123,6 +226,22 @@ export function parseStationFact(raw: string): StationFactView {
     if (!data) {
       return { kind: "prose", text };
     }
+    if (isGanExtractPayload(data)) {
+      const eventItems = Array.isArray(data.events) ? data.events : [];
+      const events = eventItems
+        .map((item) => asRecord(item))
+        .flatMap((item) => (item ? [structuredGanFact(item)] : []))
+        .filter((item): item is StructuredStationFact => item !== null);
+      const selectionRecord = asRecord(data.selection);
+      const selection = selectionRecord ? structuredGanFact(selectionRecord) : null;
+      if (events.length === 0 && selection === null) {
+        return { kind: "prose", text: displayPayload(text) };
+      }
+      return { kind: "gan_extract", events, selection };
+    }
+    if (isGanStationPayload(data)) {
+      return structuredGanFact(data) ?? { kind: "prose", text: displayPayload(text) };
+    }
     const mentions = Array.isArray(data.mentions) ? data.mentions : [];
     const firstMention = mentions.length > 0 ? asRecord(mentions[0]) : null;
     const mentionAttrs = firstMention ? stringMap(firstMention.attributes) : {};
@@ -153,7 +272,14 @@ export function parseStationFact(raw: string): StationFactView {
 
 export function isShapeCompareStage(stageId: string): boolean {
   const tail = stageId.split(".").pop() ?? "";
-  return stageId.includes(".lens.");
+  switch (tail) {
+    case "normalize":
+    case "normalize_events":
+    case "selected_evidence_repair":
+      return true;
+    default:
+      return stageId.includes(".lens.");
+  }
 }
 
 function isAssemblyHighlightTone(tone: string): tone is AssemblyHighlightTone {

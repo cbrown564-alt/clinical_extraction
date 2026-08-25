@@ -30,9 +30,8 @@ export function adaptEventsTrace(
       metadata: {
         temporality: evt.temporality,
         assertion_status: evt.assertion_status,
-        certainty: evt.certainty,
+        applies_to: evt.applies_to,
         notes: evt.notes,
-        clinical_quantity: evt.clinical_quantity,
       },
     };
   });
@@ -76,7 +75,6 @@ export function adaptEventsTrace(
             evt.model_normalized_clinical_label;
           const normStr =
             evt.model_normalized_clinical_label ??
-            (typeof evt.clinical_quantity === "string" ? evt.clinical_quantity : undefined) ??
             evt.kind;
           const evText = evt.evidence ?? evt.raw_phrase ?? evt.raw_value ?? "";
           const span = evText ? findEvidenceSpan(record.note_text, evText) : null;
