@@ -64,7 +64,7 @@ are prior-stage ablations in
 The source-near `gan_llm_extract_raw` ablation keeps source wording closer
 to the letter; form alignment is weaker at extract and rules recover
 most at encode and select. ExECT **LLM** extract is `exect_llm_extract`. The Compact extract
-`exect_llm_extract_filtered` is a Gemini ablation.
+`exect_llm_extract_and_select` is a Gemini ablation.
 **both** extract is
 `exect_llm_pre_post` (living extract plus suggested candidates). LLM encode is later-stage `exect_llm_encode`
 (a second call). LLM / LLM / rules is accepted Select on that encode

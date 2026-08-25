@@ -4,8 +4,10 @@ Pure relocation of the module-level constants from
 ``llm_only_key_entities_structured``. No logic changes.
 
 Paper names ``exect_llm_pre_post`` and ``exect_llm_extract`` are the
-living methods. ``exect_llm_extract_filtered`` is the Compact extract
-ablation. Legacy prompt strings are accepted on read only via
+living methods. ``exect_llm_extract_and_select`` is the one-call
+extract-and-select ablation. Legacy prompt strings
+(``exect_llm_extract_filtered``, ``exect_llm_only``) are accepted on
+read only via
 ``LEGACY_PROMPT_VERSION_ALIASES``.
 """
 
@@ -24,24 +26,24 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
 EXECT_LLM_PRE_POST = "exect_llm_pre_post"
 EXECT_LLM_WITH_RULES = "exect_llm_with_rules"
 EXECT_LLM_EXTRACT = "exect_llm_extract"
-EXECT_LLM_EXTRACT_FILTERED = "exect_llm_extract_filtered"
+EXECT_LLM_EXTRACT_AND_SELECT = "exect_llm_extract_and_select"
+EXECT_LLM_EXTRACT_FILTERED = EXECT_LLM_EXTRACT_AND_SELECT
 EXECT_LLM_ONLY = "exect_llm_only"
 EXECT_LLM_INVENTORY = "exect_llm_inventory"
-COMPACT_LEDGER = "exectv2_compact_ledger"
 
 LEGACY_PROMPT_VERSION_ALIASES: dict[str, str] = {
     EXECT_LLM_WITH_RULES: EXECT_LLM_PRE_POST,
-    EXECT_LLM_ONLY: EXECT_LLM_EXTRACT_FILTERED,
+    EXECT_LLM_ONLY: EXECT_LLM_EXTRACT_AND_SELECT,
+    "exect_llm_extract_filtered": EXECT_LLM_EXTRACT_AND_SELECT,
     EXECT_LLM_INVENTORY: EXECT_LLM_EXTRACT,
 }
 
-COMPACT_VERSIONS = frozenset({COMPACT_LEDGER})
 BOTH_EXTRACT_VERSIONS = frozenset({EXECT_LLM_PRE_POST})
-LLM_ONLY_VERSIONS = frozenset({EXECT_LLM_EXTRACT_FILTERED})
+LLM_ONLY_VERSIONS = frozenset({EXECT_LLM_EXTRACT_AND_SELECT})
 INVENTORY_VERSIONS = frozenset({EXECT_LLM_EXTRACT})
 PROMPT_VERSION = EXECT_LLM_PRE_POST
 _SUPPORTED_PROMPT_VERSIONS = (
-    COMPACT_VERSIONS | BOTH_EXTRACT_VERSIONS | LLM_ONLY_VERSIONS | INVENTORY_VERSIONS
+    BOTH_EXTRACT_VERSIONS | LLM_ONLY_VERSIONS | INVENTORY_VERSIONS
 )
 PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"
 COMPONENT_OWNER = "hybrid_key_family_event_ledger"
@@ -112,7 +114,7 @@ _SEIZURE_STATE_RE = re.compile(
 
 
 def canonicalize_prompt_version(version: str) -> str:
-    """Map legacy Compact prompt strings to the living paper name."""
+    """Map legacy extract-and-select prompt strings to the living name."""
 
     return LEGACY_PROMPT_VERSION_ALIASES.get(version, version)
 
@@ -132,7 +134,7 @@ def set_active_prompt_version(version: str) -> None:
 
 
 def prompt_version_for(*, prompt_version: str | None = None) -> str:
-    """Resolve the living Compact prompt identity."""
+    """Resolve the living prompt identity."""
 
     selected = canonicalize_prompt_version(prompt_version or PROMPT_VERSION)
     if selected not in _SUPPORTED_PROMPT_VERSIONS:

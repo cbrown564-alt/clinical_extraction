@@ -1,15 +1,7 @@
-"""Compact structured prompt.
+"""Extract-and-select structured prompt.
 
-Ordinary-language one-call request. Compact default and llm_only have no
-examples. No research metadata. Inventory lives in ``prompt_inventory.py``.
-
-Historical Compact hybrid (``exectv2_compact_ledger``) adds suggested
-evidence and category lanes. Living both-extract (``exect_llm_pre_post``)
-is the inventory extract plus suggested candidates. LLM-only
-(``exect_llm_extract_filtered``) uses Compact schema and rules without
-that scan.
-
-All model-facing Compact text lives here.
+Ordinary-language one-call extract-and-select request. No examples and
+no research metadata. Inventory extract lives in ``prompt_inventory.py``.
 """
 
 from __future__ import annotations
@@ -19,19 +11,6 @@ from typing import Any
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 
-from .prompt_content import suggested_evidence_rows
-
-COMPACT_AUTHORED_KEYS = (
-    "task",
-    "output_schema",
-    "decision_procedure",
-    "family_guidance",
-    "attribute_vocabulary",
-    "categories",
-    "clinical_rules",
-    "suggested_evidence",
-    "letter_text",
-)
 LLM_ONLY_AUTHORED_KEYS = (
     "task",
     "output_schema",
@@ -40,13 +19,6 @@ LLM_ONLY_AUTHORED_KEYS = (
     "attribute_vocabulary",
     "clinical_rules",
     "letter_text",
-)
-
-_HYBRID_TASK = (
-    "Read the clinical letter once. Use the suggested evidence as a starting "
-    "point, then list the medication, diagnosis, seizure-frequency, and "
-    "investigation facts the letter states. If one fact belongs to more than "
-    "one of those families, include each valid family separately."
 )
 
 _LLM_ONLY_TASK = (
@@ -65,26 +37,15 @@ _SHARED_DECISION_WRITE = (
     "Counts, dates, result status, and dose belong in attributes, not in "
     "made-up wording."
 )
-_SHARED_DECISION_EXACT = (
-    "Before returning JSON, remove duplicates and remove events whose "
-    "evidence or fact is not an exact copy from the letter."
+_LLM_ONLY_DECISION_EXACT = (
+    "Before returning JSON, remove events whose evidence or fact is not "
+    "an exact copy from the letter."
 )
-
-_HYBRID_DECISION_PROCEDURE = [
-    _SHARED_DECISION_SCAN,
-    (
-        "Treat suggested-evidence rows as likely supporting sentences, but do "
-        "not include a fact unless the full sentence supports that family."
-    ),
-    "For each suggested row, choose a category, then keep, reject, split, or merge.",
-    _SHARED_DECISION_WRITE,
-    _SHARED_DECISION_EXACT,
-]
 
 _LLM_ONLY_DECISION_PROCEDURE = [
     _SHARED_DECISION_SCAN,
     _SHARED_DECISION_WRITE,
-    _SHARED_DECISION_EXACT,
+    _LLM_ONLY_DECISION_EXACT,
 ]
 
 _FAMILY_GUIDANCE = {
@@ -96,10 +57,12 @@ _FAMILY_GUIDANCE = {
     ),
     "diagnosis": (
         "Diagnoses such as epilepsy, focal epilepsy, seizure disorder, or "
-        "named seizure types. Write fact as only that short name. Include "
-        "DiagCategory. Do not include vague symptoms or non-epileptic "
-        "alternatives unless the letter states they are epileptic diagnoses, "
-        "even when they appear under a diagnosis or problem-list heading."
+        "named seizure types, including heading types such as myoclonic jerks "
+        "or absences. Write fact as only that short name. Include "
+        "DiagCategory. Keep a generic epilepsy diagnosis when the letter "
+        "states it, even if a more specific syndrome or seizure type is also "
+        "present. Blackouts, anxiety, or dissociative events are not "
+        "diagnoses unless the letter states they are epileptic."
     ),
     "seizure_frequency": (
         "How often a seizure type occurs, including seizure-free duration, "
@@ -183,49 +146,12 @@ _ATTRIBUTE_VOCABULARY: dict[str, dict[str, Any]] = {
     },
 }
 
-_CATEGORIES = {
-    "medication": [
-        "current_regimen: current/taking/on medication with dose or frequency",
-        "rescue_regimen: as required, if necessary, or for clusters",
-        "future_or_historical_medication: start/introduce/increase/previous/stopped/trial",
-        "reject: non-anti-seizure medication or unsupported plan",
-    ],
-    "diagnosis": [
-        "diagnosis_assertion: this patient's epilepsy syndrome or named seizure type",
-        "diagnosis_context_only: discussion, family history, risk, SUDEP, or education",
-        "symptom_or_nonepileptic: blackout, collapse, anxiety, dissociative event, aura only",
-        "reject: no explicit epileptic diagnosis or named epileptic seizure type",
-    ],
-    "seizure_frequency": [
-        "active_rate: count or rate for generic or named seizures",
-        "seizure_free_anchor: no further seizures, seizure-free, last seizure/event date",
-        "qualitative_change: frequent/infrequent/increased/decreased/returned/controlled",
-        "reject: diagnosis-only, family history, unnamed events, or an old best period",
-    ],
-    "investigation": [
-        "performed_investigation: completed MRI/CT/EEG/telemetry, especially with result",
-        "planned_investigation: arrange/request/repeat/future/follow-up",
-        "reject: a test name with no completed or result status",
-    ],
-}
-
-_HYBRID_RULES = [
-    (
-        "First classify each suggested-evidence row into a category: "
-        "current_regimen, rescue_regimen, future_or_historical_medication, "
-        "diagnosis_assertion, diagnosis_context_only, active_rate, "
-        "seizure_free_anchor, qualitative_change, performed_investigation, "
-        "planned_investigation, or reject."
-    ),
-    (
-        "Suggested-evidence rows are only hints. Keep, reject, split, merge, "
-        "or add events based only on the full letter and exact evidence."
-    ),
-]
-
 _SHARED_RULE_SECTIONS: dict[str, list[str]] = {
     "shared": [
-        "Use one event per medication, diagnostic concept, seizure-rate statement, or test.",
+        (
+            "Write a separate event for each stated medication, diagnosis, "
+            "named seizure type, frequency or control statement, or test."
+        ),
         (
             "Do not include negated resemblance statements as diagnosis or "
             "seizure frequency. Phrases such as 'no events which resemble "
@@ -253,24 +179,22 @@ _SHARED_RULE_SECTIONS: dict[str, list[str]] = {
         "side of onset, or 'retained awareness' as its own event."
     ),
     (
-        "Prefer the most specific epilepsy syndrome or seizure type stated in "
-        "the letter, such as focal epilepsy, temporal lobe epilepsy, primary "
-        "generalised epilepsy, or JME. When the letter explicitly states both "
-        "a generic epilepsy diagnosis and a specific syndrome or seizure type, "
-        "include both as separate diagnosis events; do not collapse one into "
-        "the other."
+        "Keep a generic epilepsy diagnosis when the letter states it, "
+        "even if a more specific syndrome or seizure type is also "
+        "present. Include each as its own diagnosis event; do not "
+        "collapse one into the other."
     ),
     (
-        "Do not add a separate generic epilepsy diagnosis to a specific "
-        "epilepsy subtype unless the letter separately states generic epilepsy "
-        "as its own diagnosis or context says the patient has/has known "
-        "epilepsy. For example, 'Diagnosis: symptomatic structural focal "
-        "epilepsy' includes only 'symptomatic structural focal epilepsy'."
+        "If a heading says epilepsy with probable, possible, "
+        "unclassified, or a question-mark place such as probable "
+        "focal or ? temporal, write epilepsy and the implied "
+        "syndrome or place, for example focal epilepsy or temporal "
+        "lobe epilepsy. Do not write the hedge word alone as the fact."
     ),
     (
-        "Onset-history phrases such as 'epilepsy started at age 4' are not "
-        "a separate diagnosis event when the same letter already provides "
-        "the current diagnosis or named seizure types."
+        "Every named seizure type in a seizure-type or frequency "
+        "heading is also a diagnosis event, even when it only "
+        "appears in that heading."
     ),
     (
         "For abbreviated syndromes, use the exact abbreviation as fact when "
@@ -283,10 +207,12 @@ _SHARED_RULE_SECTIONS: dict[str, list[str]] = {
         "epilepsy diagnosis, or named seizure type."
     ),
     (
-        "Do not include isolated symptoms or aura features as diagnosis, "
-        "including myoclonic jerks, jerks, flashing lights, odd sensations, "
-        "altered awareness by itself, or dizziness, unless the phrase is part "
-        "of a named seizure type such as 'focal seizures with altered awareness'."
+        "Do not include isolated symptoms or aura features as "
+        "diagnosis, including jerks, flashing lights, odd "
+        "sensations, altered awareness by itself, or dizziness, "
+        "unless the phrase is a named seizure type or appears in a "
+        "seizure-type or frequency heading, such as myoclonic jerks "
+        "or 'focal seizures with altered awareness'."
     ),
     (
         "For tonic-clonic seizure wording, preserve 'tonic clonic' or "
@@ -535,37 +461,17 @@ SHARED_RULE_SECTION_KEYS = tuple(_SHARED_RULE_SECTIONS)
 
 
 def compact_rule_count(rules: dict[str, list[str]]) -> int:
-    """Count authored Compact rules across sections."""
+    """Count authored extract-and-select rules across sections."""
 
     return sum(len(section) for section in rules.values())
 
 
-def _sectioned_rules(*, include_suggested: bool) -> dict[str, list[str]]:
-    rules = {key: list(rows) for key, rows in _SHARED_RULE_SECTIONS.items()}
-    if include_suggested:
-        return {"suggested_evidence": list(_HYBRID_RULES), **rules}
-    return rules
-
-
-def build_compact_prompt_input(letter: ExectLetter) -> str:
-    """Build the ExECT LLM with rules payload, including suggested evidence."""
-
-    payload = {
-        "task": _HYBRID_TASK,
-        "output_schema": _OUTPUT_SCHEMA,
-        "decision_procedure": list(_HYBRID_DECISION_PROCEDURE),
-        "family_guidance": dict(_FAMILY_GUIDANCE),
-        "attribute_vocabulary": dict(_ATTRIBUTE_VOCABULARY),
-        "categories": {family: list(rows) for family, rows in _CATEGORIES.items()},
-        "clinical_rules": _sectioned_rules(include_suggested=True),
-        "suggested_evidence": suggested_evidence_rows(letter),
-        "letter_text": letter.note_text,
-    }
-    return json.dumps(payload, ensure_ascii=False)
+def _sectioned_rules() -> dict[str, list[str]]:
+    return {key: list(rows) for key, rows in _SHARED_RULE_SECTIONS.items()}
 
 
 def build_compact_llm_only_prompt_input(letter: ExectLetter) -> str:
-    """Build the ExECT LLM only payload, without suggested evidence."""
+    """Build the extract-and-select payload."""
 
     payload = {
         "task": _LLM_ONLY_TASK,
@@ -573,7 +479,7 @@ def build_compact_llm_only_prompt_input(letter: ExectLetter) -> str:
         "decision_procedure": list(_LLM_ONLY_DECISION_PROCEDURE),
         "family_guidance": dict(_FAMILY_GUIDANCE),
         "attribute_vocabulary": dict(_ATTRIBUTE_VOCABULARY),
-        "clinical_rules": _sectioned_rules(include_suggested=False),
+        "clinical_rules": _sectioned_rules(),
         "letter_text": letter.note_text,
     }
     return json.dumps(payload, ensure_ascii=False)

@@ -31,6 +31,7 @@ CELL_FOR_METHOD: dict[str, PaperCell] = {
     "exect_llm_select": 5,
     "gan_llm_only": "ablation",
     "gan_llm_extract_raw": "ablation",
+    "exect_llm_extract_and_select": "ablation",
     "exect_llm_extract_filtered": "ablation",
 }
 
@@ -49,6 +50,7 @@ TASK_FOR_METHOD: dict[str, str] = {
     "exect_llm_encode": "exectv2",
     "exect_rule_select_after_llm_encode": "exectv2",
     "exect_llm_select": "exectv2",
+    "exect_llm_extract_and_select": "exectv2",
     "exect_llm_extract_filtered": "exectv2",
 }
 
@@ -235,8 +237,12 @@ def adapt_legacy_comparison(payload: Mapping[str, Any]) -> dict[str, Any] | None
             ):
                 if key in arms:
                     method = (
-                        "exect_llm_extract_filtered"
-                        if key in {"exect_llm_only", "compact_ledger"}
+                        "exect_llm_extract_and_select"
+                        if key in {
+                            "exect_llm_only",
+                            "exect_llm_extract_filtered",
+                            "compact_ledger",
+                        }
                         else ("exect_llm_pre_post" if key != "exect_llm_extract" else key)
                     )
                     break

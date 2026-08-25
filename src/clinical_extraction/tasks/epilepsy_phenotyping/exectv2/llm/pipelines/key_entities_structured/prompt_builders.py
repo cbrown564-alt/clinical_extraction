@@ -4,14 +4,12 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLet
 
 from .constants import (
     BOTH_EXTRACT_VERSIONS,
-    COMPACT_VERSIONS,
     INVENTORY_VERSIONS,
     LLM_ONLY_VERSIONS,
     prompt_version_for,
 )
 from .prompt_compact import (
     build_compact_llm_only_prompt_input,
-    build_compact_prompt_input,
 )
 from .prompt_inventory import (
     build_inventory_both_prompt_input,
@@ -33,9 +31,7 @@ def build_prompt_input(
         return build_inventory_both_prompt_input(letter)
     if selected in LLM_ONLY_VERSIONS:
         return build_compact_llm_only_prompt_input(letter)
-    if selected in COMPACT_VERSIONS:
-        return build_compact_prompt_input(letter)
-    raise ValueError(f"unsupported Compact prompt version {selected!r}")
+    raise ValueError(f"unsupported prompt version {selected!r}")
 
 
 __all__ = ["build_prompt_input"]

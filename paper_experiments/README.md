@@ -23,14 +23,13 @@ Roster: [`roster.json`](roster.json). Inventory: [`inventory.json`](inventory.js
 | `gan/five_cell_grid/` | Gemini Gan five-cell holdout grid |
 | `exect/five_cell_grid/` | Gemini ExECT five-cell holdout grid (4-family micro F1; cell 3 peak). Owner: [both-extract on inventory](../docs/research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md) |
 | `exect/exect_llm_extract/` | ExECT cell-3 inventory extract raw; cells 3–5 replay this raw |
-| `exect/exect_llm_only/` | Historical Compact extract (`exect_llm_extract_filtered`); Gemini ablation |
 | `exect/exect_llm_encode/` | ExECT cell-4 LLM encode. Gemini only, `dev140` and aggregate-only `test60` |
 | `exect/exect_llm_select/` | ExECT cell-5 LLM select. Gemini only, `dev140` and aggregate-only `test60` |
 | `exect/exect_rule_select_after_llm_encode/` | ExECT cell-4 inventory Select on the encode ledger |
-| `exect/exect_llm_pre_post/` | ExECT cell-2 both-extract. Gemini is living extract plus suggested candidates; other models are historical Compact |
+| `exect/exect_llm_pre_post/` | ExECT cell-2 both-extract. Gemini is living extract plus suggested candidates |
 | `exect/exect_rules/` | ExECT rules baseline (cell 1) |
 | `gan/rungs/` | Gan extract / encode / select replay from cell-3 and source-near raws |
-| `exect/rungs/` | Historical ExECT extract / encode / select replay from the Compact extract |
+| `exect/rungs/` | Historical ExECT extract / encode / select replay |
 
 ## Historical / on disk (not headline)
 

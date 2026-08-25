@@ -94,41 +94,16 @@
       "YearDate": "string copied from the letter."
     }
   },
-  "categories": {
-    "diagnosis": [
-      "diagnosis_assertion: this patient's epilepsy syndrome or named seizure type",
-      "diagnosis_context_only: discussion, family history, risk, SUDEP, or education",
-      "symptom_or_nonepileptic: blackout, collapse, anxiety, dissociative event, aura only",
-      "reject: no explicit epileptic diagnosis or named epileptic seizure type"
-    ],
-    "investigation": [
-      "performed_investigation: completed MRI/CT/EEG/telemetry, especially with result",
-      "planned_investigation: arrange/request/repeat/future/follow-up",
-      "reject: a test name with no completed or result status"
-    ],
-    "medication": [
-      "current_regimen: current/taking/on medication with dose or frequency",
-      "rescue_regimen: as required, if necessary, or for clusters",
-      "future_or_historical_medication: start/introduce/increase/previous/stopped/trial",
-      "reject: non-anti-seizure medication or unsupported plan"
-    ],
-    "seizure_frequency": [
-      "active_rate: count or rate for generic or named seizures",
-      "seizure_free_anchor: no further seizures, seizure-free, last seizure/event date",
-      "qualitative_change: frequent/infrequent/increased/decreased/returned/controlled",
-      "reject: diagnosis-only, family history, unnamed events, or an old best period"
-    ]
-  },
   "clinical_rules": {
     "diagnosis": [
       "For diagnosis, split compound seizure clauses into separate diagnoses when the letter names more than one seizure type.",
       "Write diagnosis fact as only the short syndrome or named seizure type. If the letter names a syndrome and a seizure type, such as juvenile absence epilepsy and tonic clonic seizures, include each as its own diagnosis event. Do not put hedges, timing, or extra anatomy into fact: words such as 'probably', 'from sleep', a question-mark side of onset, or 'retained awareness' as its own event.",
-      "Prefer the most specific epilepsy syndrome or seizure type stated in the letter, such as focal epilepsy, temporal lobe epilepsy, primary generalised epilepsy, or JME. When the letter explicitly states both a generic epilepsy diagnosis and a specific syndrome or seizure type, include both as separate diagnosis events; do not collapse one into the other.",
-      "Do not add a separate generic epilepsy diagnosis to a specific epilepsy subtype unless the letter separately states generic epilepsy as its own diagnosis or context says the patient has/has known epilepsy. For example, 'Diagnosis: symptomatic structural focal epilepsy' includes only 'symptomatic structural focal epilepsy'.",
-      "Onset-history phrases such as 'epilepsy started at age 4' are not a separate diagnosis event when the same letter already provides the current diagnosis or named seizure types.",
+      "Keep a generic epilepsy diagnosis when the letter states it, even if a more specific syndrome or seizure type is also present. Include each as its own diagnosis event; do not collapse one into the other.",
+      "If a heading says epilepsy with probable, possible, unclassified, or a question-mark place such as probable focal or ? temporal, write epilepsy and the implied syndrome or place, for example focal epilepsy or temporal lobe epilepsy. Do not write the hedge word alone as the fact.",
+      "Every named seizure type in a seizure-type or frequency heading is also a diagnosis event, even when it only appears in that heading.",
       "For abbreviated syndromes, use the exact abbreviation as fact when that is the wording in the letter, for example 'JME' or 'jme'.",
       "Do not include vague symptoms, blackout/loss-of-consciousness descriptions, anxiety, or non-epileptic events as diagnosis unless the same phrase is explicitly asserted as an epileptic seizure, epilepsy diagnosis, or named seizure type.",
-      "Do not include isolated symptoms or aura features as diagnosis, including myoclonic jerks, jerks, flashing lights, odd sensations, altered awareness by itself, or dizziness, unless the phrase is part of a named seizure type such as 'focal seizures with altered awareness'.",
+      "Do not include isolated symptoms or aura features as diagnosis, including jerks, flashing lights, odd sensations, altered awareness by itself, or dizziness, unless the phrase is a named seizure type or appears in a seizure-type or frequency heading, such as myoclonic jerks or 'focal seizures with altered awareness'.",
       "For tonic-clonic seizure wording, preserve 'tonic clonic' or 'tonic-clonic'. Never write 'tonic chronic'.",
       "A problem-list or diagnosis header is not enough by itself: still exclude anxiety, dissociative/non-epileptic events, blackouts, collapse, and loss of consciousness from diagnosis unless the phrase is explicitly asserted as epileptic."
     ],
@@ -180,24 +155,18 @@
       "Include at most one seizure-frequency event per distinct rate statement. Do not include both a generic 'seizures' event and a named-type event for the same single count in the same clause."
     ],
     "shared": [
-      "Use one event per medication, diagnostic concept, seizure-rate statement, or test.",
+      "Write a separate event for each stated medication, diagnosis, named seizure type, frequency or control statement, or test.",
       "Do not include negated resemblance statements as diagnosis or seizure frequency. Phrases such as 'no events which resemble absences, myoclonus or focal seizures' are explicit absence of those events, not affirmed diagnoses or seizure-frequency states.",
       "For named seizure types, preserve clinically meaningful modifiers that are part of the exact phrase, including 'with altered awareness', 'focal to bilateral', lobe qualifiers, convulsive, tonic clonic, absence-like, and myoclonic."
-    ],
-    "suggested_evidence": [
-      "First classify each suggested-evidence row into a category: current_regimen, rescue_regimen, future_or_historical_medication, diagnosis_assertion, diagnosis_context_only, active_rate, seizure_free_anchor, qualitative_change, performed_investigation, planned_investigation, or reject.",
-      "Suggested-evidence rows are only hints. Keep, reject, split, merge, or add events based only on the full letter and exact evidence."
     ]
   },
   "decision_procedure": [
     "Scan the whole letter for medication, diagnosis, seizure frequency, and investigations. Do not stop at section headers.",
-    "Treat suggested-evidence rows as likely supporting sentences, but do not include a fact unless the full sentence supports that family.",
-    "For each suggested row, choose a category, then keep, reject, split, or merge.",
     "Write the listed items only after the state is clear from the letter. Counts, dates, result status, and dose belong in attributes, not in made-up wording.",
-    "Before returning JSON, remove duplicates and remove events whose evidence or fact is not an exact copy from the letter."
+    "Before returning JSON, remove events whose evidence or fact is not an exact copy from the letter."
   ],
   "family_guidance": {
-    "diagnosis": "Diagnoses such as epilepsy, focal epilepsy, seizure disorder, or named seizure types. Write fact as only that short name. Include DiagCategory. Do not include vague symptoms or non-epileptic alternatives unless the letter states they are epileptic diagnoses, even when they appear under a diagnosis or problem-list heading.",
+    "diagnosis": "Diagnoses such as epilepsy, focal epilepsy, seizure disorder, or named seizure types, including heading types such as myoclonic jerks or absences. Write fact as only that short name. Include DiagCategory. Keep a generic epilepsy diagnosis when the letter states it, even if a more specific syndrome or seizure type is also present. Blackouts, anxiety, or dissociative events are not diagnoses unless the letter states they are epileptic.",
     "investigation": "EEG, MRI, and CT statements. Include EEG_Performed, EEG_Results, MRI_Performed, MRI_Results, CT_Performed, and CT_Results only for completed tests or tests with a result, not planned repeats or a test name with no result.",
     "medication": "Anti-seizure medicines. Include name, dose, unit, and frequency when stated. Copy the medication wording from the letter: the full short regimen when it appears in a list, or the drug name alone when that is all the note states.",
     "seizure_frequency": "How often a seizure type occurs, including seizure-free duration, ranges, interval rates, cluster counts, dated counts, and frequency change. Keep the stated seizure words and time period; do not turn them into a guessed rate. Exclude non-epileptic events and blackouts unless the letter states they are epileptic seizures."
@@ -213,19 +182,5 @@
       }
     ]
   },
-  "suggested_evidence": [
-    {
-      "category": "diagnosis_assertion",
-      "evidence": "focal epilepsy",
-      "family": "diagnosis",
-      "name_hint": "focal epilepsy"
-    },
-    {
-      "category": "performed_investigation",
-      "evidence": "MRI brain reported normal",
-      "family": "investigation",
-      "name_hint": "MRI"
-    }
-  ],
-  "task": "Read the clinical letter once. Use the suggested evidence as a starting point, then list the medication, diagnosis, seizure-frequency, and investigation facts the letter states. If one fact belongs to more than one of those families, include each valid family separately."
+  "task": "Read the clinical letter once. List the medication, diagnosis, seizure-frequency, and investigation facts the letter states. If one fact belongs to more than one of those families, include each valid family separately."
 }

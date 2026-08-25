@@ -60,7 +60,7 @@ def test_extract_is_the_living_cell_3_method() -> None:
     )
     assert LIVE_METHODS["exect_llm_extract"].get("paper_cell") is not False
     assert LIVE_METHODS["exect_llm_extract_filtered"].get("paper_cell") is False
-    assert LIVE_METHODS["exect_llm_only"]["alias_of"] == "exect_llm_extract_filtered"
+    assert LIVE_METHODS["exect_llm_only"]["alias_of"] == "exect_llm_extract_and_select"
     assert LIVE_METHODS["exect_llm_inventory"]["alias_of"] == "exect_llm_extract"
     assert "exect_llm_extract" not in RESULT_COLUMNS
     assert "llm_inventory" not in CELL_ORDER
@@ -196,12 +196,20 @@ def test_inventory_prompt_emits_both_and_leaves_live_default() -> None:
     assert "tonic chronic" in diagnosis_rules
     assert "use the exact abbreviation as fact" in diagnosis_rules
     assert payload["decision_procedure"] != only["decision_procedure"]
-    assert any("remove duplicates" in step for step in only["decision_procedure"])
+    assert all("remove duplicates" not in step for step in only["decision_procedure"])
     only_dx = " ".join(only["clinical_rules"]["diagnosis"])
     only_sf = " ".join(only["clinical_rules"]["seizure_frequency"])
-    assert "Do not add a separate generic epilepsy diagnosis to a specific" in only_dx
-    assert "Prefer the most specific epilepsy syndrome or seizure type" in only_dx
-    assert "Onset-history phrases such as" in only_dx
+    only_shared = " ".join(only["clinical_rules"]["shared"])
+    assert "Do not add a separate generic epilepsy diagnosis to a specific" not in (
+        only_dx
+    )
+    assert "Prefer the most specific epilepsy syndrome or seizure type" not in (
+        only_dx
+    )
+    assert "Onset-history phrases such as" not in only_dx
+    assert "Use one event per medication, diagnostic concept" not in only_shared
+    assert "Keep a generic epilepsy diagnosis when the letter states it" in only_dx
+    assert "named seizure type in a seizure-type or frequency heading" in only_dx
     assert "Never include a seizure-frequency event with empty attributes" in only_sf
     assert "examples" not in only
     assert structured.PROMPT_VERSION == before == structured.EXECT_LLM_PRE_POST

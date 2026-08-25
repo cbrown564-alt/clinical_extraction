@@ -82,35 +82,30 @@ def test_compact_prompt_is_authored_in_one_file() -> None:
     assert "_clean_rule_text" not in source
 
 
-def test_compact_is_authored_as_compact() -> None:
+def test_extract_and_select_is_authored_without_suggested_evidence() -> None:
     payload = json.loads(
         structured.build_prompt_input(
-            _LETTER, prompt_version=structured.COMPACT_LEDGER
+            _LETTER, prompt_version=structured.EXECT_LLM_EXTRACT_AND_SELECT
         )
     )
-    assert list(payload) == list(structured.COMPACT_AUTHORED_KEYS)
+    assert list(payload) == list(structured.LLM_ONLY_AUTHORED_KEYS)
     assert "architecture" not in payload
     assert "worked_examples" not in payload
     assert "letter_id" not in payload
     assert "prompt_version" not in payload
     assert "candidate_evidence_ledger" not in payload
     assert "event_lane_guide" not in payload
-    assert list(payload["clinical_rules"]) == [
-        "suggested_evidence",
-        *structured.SHARED_RULE_SECTION_KEYS,
-    ]
-    assert structured.compact_rule_count(payload["clinical_rules"]) == 54
-    assert payload["task"].startswith(
-        "Read the clinical letter once. Use the suggested evidence"
-    )
-    assert payload["suggested_evidence"]
-    assert "medication" in payload["categories"]
+    assert "categories" not in payload
+    assert "suggested_evidence" not in payload
+    assert list(payload["clinical_rules"]) == list(structured.SHARED_RULE_SECTION_KEYS)
+    assert structured.compact_rule_count(payload["clinical_rules"]) == 52
+    assert payload["task"].startswith("Read the clinical letter once. List the")
 
 
 def test_compact_schema_is_flat_fact_events() -> None:
     payload = json.loads(
         structured.build_prompt_input(
-            _LETTER, prompt_version=structured.COMPACT_LEDGER
+            _LETTER, prompt_version=structured.EXECT_LLM_EXTRACT_AND_SELECT
         )
     )
     event_schema = payload["output_schema"]["clinical_events"][0]
@@ -211,13 +206,10 @@ def test_compact_schema_is_flat_fact_events() -> None:
 def test_compact_seizure_rules_keep_prior_wording() -> None:
     payload = json.loads(
         structured.build_prompt_input(
-            _LETTER, prompt_version=structured.COMPACT_LEDGER
+            _LETTER, prompt_version=structured.EXECT_LLM_EXTRACT_AND_SELECT
         )
     )
     sf_rules = " ".join(payload["clinical_rules"]["seizure_frequency"])
-    assert payload["categories"]["seizure_frequency"][2] == (
-        "qualitative_change: frequent/infrequent/increased/decreased/returned/controlled"
-    )
     assert (
         "must include NumberOfSeizures, LowerNumberOfSeizures, "
         "FrequencyChange, TimeSince_or_TimeOfEvent, PointInTime, DayDate, "
@@ -238,38 +230,23 @@ def test_compact_seizure_rules_keep_prior_wording() -> None:
     assert "Do not set change='returned'" not in sf_rules
 
 
-def test_compact_llm_only_omits_suggested_evidence() -> None:
-    compact = json.loads(
+def test_extract_and_select_alias_matches_living_name() -> None:
+    living = json.loads(
         structured.build_prompt_input(
-            _LETTER, prompt_version=structured.COMPACT_LEDGER
+            _LETTER, prompt_version=structured.EXECT_LLM_EXTRACT_AND_SELECT
         )
     )
-    llm_only = json.loads(
+    alias = json.loads(
         structured.build_prompt_input(
             _LETTER, prompt_version=structured.EXECT_LLM_ONLY
         )
     )
-    assert list(llm_only) == list(structured.LLM_ONLY_AUTHORED_KEYS)
-    assert "suggested_evidence" not in llm_only
-    assert "suggested" not in json.dumps(
-        {key: value for key, value in llm_only.items() if key != "letter_text"}
-    ).lower()
-    assert llm_only["output_schema"] == compact["output_schema"]
-    assert llm_only["attribute_vocabulary"] == compact["attribute_vocabulary"]
-    assert llm_only["family_guidance"] == compact["family_guidance"]
-    assert "categories" not in llm_only
-    assert list(llm_only["clinical_rules"]) == list(structured.SHARED_RULE_SECTION_KEYS)
-    assert structured.compact_rule_count(llm_only["clinical_rules"]) == 52
-    assert llm_only["clinical_rules"] == {
-        key: compact["clinical_rules"][key] for key in structured.SHARED_RULE_SECTION_KEYS
-    }
-    assert compact["clinical_rules"]["suggested_evidence"][0].startswith(
-        "First classify each suggested-evidence row"
-    )
-    assert llm_only["task"].startswith("Read the clinical letter once. List the")
-    assert all(
-        "Keep, reject, split" not in step for step in llm_only["decision_procedure"]
-    )
+    assert living == alias
+    assert "suggested_evidence" not in living
+    assert "heading types such as myoclonic jerks" in living["family_guidance"][
+        "diagnosis"
+    ]
+    assert all("Keep, reject, split" not in step for step in living["decision_procedure"])
 
 
 def test_paper_names_are_aliases_of_both_extract() -> None:
@@ -301,6 +278,7 @@ def test_paper_names_are_aliases_of_both_extract() -> None:
         "exectv2_hybrid_key_family_event_ledger_v0.9.40_combo_clinical_name",
         "exectv2_full_ledger_drop_examples",
         "exectv2_full_ledger_drop_encoding_non_sf",
+        "exectv2_compact_ledger",
         "exectv2_compact_ledger_further_prune",
         "exectv2_compact_ledger_plus_encoding",
         "exectv2_compact_ledger_plus_encoding_examples",

@@ -63,8 +63,8 @@ from clinical_extraction.trace_explorer.exectv2_comparison import _frontend_lett
 ROOT = discover_repo_root(start=Path(__file__))
 CANDIDATE_VERSION = structured.EXECT_LLM_PRE_POST
 CANDIDATE_ARM = "exect_llm_pre_post"
-LLM_ONLY_ARM = "exect_llm_extract_filtered"
-LLM_ONLY_VERSION = structured.EXECT_LLM_EXTRACT_FILTERED
+LLM_ONLY_ARM = "exect_llm_extract_and_select"
+LLM_ONLY_VERSION = structured.EXECT_LLM_EXTRACT_AND_SELECT
 EXTRACT_ARM = "exect_llm_extract"
 EXTRACT_VERSION = structured.EXECT_LLM_EXTRACT
 INVENTORY_ARM = EXTRACT_ARM
@@ -138,17 +138,17 @@ _LLM_ONLY_ARM = _ExectArmSpec(
     holdout_scratch=LLM_ONLY_HOLDOUT_SCRATCH,
     schema_version="paper.exect_llm_extract_filtered.v1",
     generated_on="2026-08-18",
-    progress_label="llm_extract_filtered",
+    progress_label="extract_and_select",
     holdout_claim_boundary=(
-        "ExECT aggregate-only test60 filtered extract ablation. "
+        "ExECT aggregate-only test60 extract-and-select ablation. "
         "Not the cited cell-3 extract."
     ),
     dev_claim_boundary=(
-        "ExECT development filtered extract ablation. Gemini comparison "
+        "ExECT development extract-and-select ablation. Gemini comparison "
         "only. Not holdout."
     ),
-    drift_before="live default drifted before the filtered-extract run",
-    drift_after="filtered extract left the live Compact default changed",
+    drift_before="live default drifted before the extract-and-select run",
+    drift_after="extract-and-select left the live default changed",
     run_requires="run_llm_extract_filtered requires live=True",
     verify_version_key="prompt_version",
 )
@@ -382,6 +382,23 @@ def verify_llm_extract_filtered(
             raise RuntimeError("LLM-only rule sections drifted")
         if structured.compact_rule_count(payload["clinical_rules"]) != 52:
             raise RuntimeError("LLM-only content drifted")
+        diagnosis = " ".join(payload["clinical_rules"]["diagnosis"])
+        shared = " ".join(payload["clinical_rules"]["shared"])
+        procedure = " ".join(payload["decision_procedure"])
+        if "Prefer the most specific epilepsy syndrome or seizure type" in diagnosis:
+            raise RuntimeError("one-call extract still prefers most-specific collapse")
+        if "Do not add a separate generic epilepsy diagnosis to a specific" in diagnosis:
+            raise RuntimeError("one-call extract still asks to drop generic epilepsy")
+        if "Onset-history phrases such as" in diagnosis:
+            raise RuntimeError("one-call extract still drops onset-history as a diagnosis")
+        if "Use one event per medication, diagnostic concept" in shared:
+            raise RuntimeError("one-call extract still asks for one diagnostic concept")
+        if "remove duplicates" in procedure:
+            raise RuntimeError("one-call extract still asks to remove duplicates")
+        if "Keep a generic epilepsy diagnosis when the letter states it" not in diagnosis:
+            raise RuntimeError("one-call extract lost the keep-generic diagnosis rule")
+        if "named seizure type in a seizure-type or frequency heading" not in diagnosis:
+            raise RuntimeError("one-call extract lost the heading-type-is-diagnosis rule")
         return payload
 
     return _verify_arm(
@@ -393,6 +410,7 @@ def verify_llm_extract_filtered(
     )
 
 
+verify_llm_extract_and_select = verify_llm_extract_filtered
 verify_llm_only = verify_llm_extract_filtered
 
 
@@ -510,6 +528,7 @@ def _run_live(
     if arm.method in {
         "exect_llm_extract",
         "exect_llm_pre_post",
+        LLM_ONLY_ARM,
         "exect_llm_extract_filtered",
     }:
         artifact = attach_living_envelope(
@@ -573,7 +592,7 @@ def run_llm_extract_filtered(
     thinking: str | None = None,
     reasoning_effort: str | None = None,
 ) -> dict[str, Any]:
-    """Run the Compact filtered extract ablation. Gemini comparison only."""
+    """Run the extract-and-select ablation. Gemini comparison only."""
 
     return _run_live(
         slug,
@@ -590,6 +609,7 @@ def run_llm_extract_filtered(
     )
 
 
+run_llm_extract_and_select = run_llm_extract_filtered
 run_llm_only = run_llm_extract_filtered
 
 
@@ -716,7 +736,7 @@ run_llm_inventory = run_llm_extract
 
 
 def rescore_inventory_baseline(*, slug: str = "gemini37flash") -> dict[str, Any]:
-    """Rescore the frozen Gemini llm-only DEV140 extract with inventory F1."""
+    """Rescore the frozen Gemini inventory extract on DEV140."""
 
     if slug != "gemini37flash":
         raise RuntimeError("inventory baseline rescore is Gemini DEV140 only")
@@ -920,6 +940,7 @@ def _uses_inventory_select(arm: str) -> bool:
         arm == INVENTORY_ARM
         or arm == CANDIDATE_ARM
         or arm.startswith(f"{CANDIDATE_ARM}_")
+        or arm in {LLM_ONLY_ARM, "exect_llm_extract_filtered", "exect_llm_only"}
     )
 
 

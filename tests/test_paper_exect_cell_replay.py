@@ -120,7 +120,7 @@ def test_replay_exect_dev140_stays_a_development_alias() -> None:
 
 @pytest.mark.local_corpus
 def test_format_render_uses_pre_assembly_mentions_not_materialized_format_only() -> None:
-    summary = replay_exect_rungs("dev140", slug="grok46", source="ablation")
+    summary = replay_exect_rungs("dev140", slug="gemini37flash", source="living")
     check = summary["format_only_check"]
     assert check["surface"] == "format_render"
     assert check["same_as_schema"] is False
@@ -156,7 +156,7 @@ def test_format_render_is_not_schema_or_gated_predicted_mentions() -> None:
     )
 
     letter = next(iter(letters_for_split("dev140")))
-    raw_path = exect_llm_only_rows_path("grok46", "dev140")
+    raw_path = exect_living_extract_rows_path("gemini37flash", "dev140")
     raw_output = next(
         row["raw_output"]
         for row in load_jsonl_rows(raw_path)
@@ -164,10 +164,10 @@ def test_format_render_is_not_schema_or_gated_predicted_mentions() -> None:
     )
     before = structured.PROMPT_VERSION
     try:
-        structured.set_active_prompt_version(structured.EXECT_LLM_ONLY)
+        structured.set_active_prompt_version(structured.EXECT_LLM_EXTRACT)
         producer = structured_one_call.produce_structured_letter(
             letter,
-            model=str(model_by_slug("grok46")["model"]),
+            model=str(model_by_slug("gemini37flash")["model"]),
             mode="replay",
             raw_output=str(raw_output),
             split="dev",

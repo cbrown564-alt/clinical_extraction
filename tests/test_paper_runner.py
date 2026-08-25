@@ -143,6 +143,7 @@ def test_live_methods_are_the_paper_llm_cells() -> None:
         "exect_llm_pre_post",
         "exect_llm_with_rules",
         "exect_llm_extract",
+        "exect_llm_extract_and_select",
         "exect_llm_extract_filtered",
         "exect_llm_only",
         "exect_llm_inventory",
@@ -180,8 +181,8 @@ def test_verify_llm_only_does_not_change_the_live_default() -> None:
     before = structured.PROMPT_VERSION
     payload = verify_llm_only(split="dev140", slug=GROK46_SLUG)
     assert payload["ok"] is True
-    assert payload["method"] == "exect_llm_extract_filtered"
-    assert payload["prompt_version"] == structured.EXECT_LLM_EXTRACT_FILTERED
+    assert payload["method"] == "exect_llm_extract_and_select"
+    assert payload["prompt_version"] == structured.EXECT_LLM_EXTRACT_AND_SELECT
     assert payload["n_rules"] == 52
     assert payload["n_examples"] == 0
     assert payload["authored_order"] is True

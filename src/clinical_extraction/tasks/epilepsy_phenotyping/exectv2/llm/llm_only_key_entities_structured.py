@@ -6,7 +6,7 @@ helpers and the ``parse_json_payload_with_schema_repair`` / ``write_jsonl``
 pass-throughs are also re-exported because other modules import this module as
 ``structured`` and access those attributes directly.
 
-Public names are the living Compact methods.
+Public names are the living extract methods.
 """
 # ruff: noqa: F401 — thin re-export facade; all symbols are intentionally re-exported.
 
@@ -17,10 +17,9 @@ from .pipelines.key_entities_structured import (
     _SEIZURE_STATE_RE,
     _SF_STATE_ATTRS,
     ALLOWED_EVENT_FAMILIES,
-    COMPACT_AUTHORED_KEYS,
-    COMPACT_LEDGER,
     COMPONENT_OWNER,
     EXECT_LLM_EXTRACT,
+    EXECT_LLM_EXTRACT_AND_SELECT,
     EXECT_LLM_EXTRACT_FILTERED,
     EXECT_LLM_INVENTORY,
     EXECT_LLM_ONLY,

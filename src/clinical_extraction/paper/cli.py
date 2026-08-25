@@ -123,6 +123,7 @@ def main(argv: Sequence[str] | None = None) -> None:
             "gan_llm_only",
             "exect_llm_only",
             "exect_llm_extract_filtered",
+            "exect_llm_extract_and_select",
         }
         source = "ablation" if ablation else "living"
         if args.split in {"dev750", "test450"}:
@@ -185,7 +186,7 @@ def main(argv: Sequence[str] | None = None) -> None:
                 )
             )
             return
-        if canonical_exect_method(args.method) == "exect_llm_extract_filtered":
+        if canonical_exect_method(args.method) == "exect_llm_extract_and_select":
             print(
                 json.dumps(
                     promote_exect_llm_only(args.model, args.split),
@@ -269,7 +270,7 @@ def verify(method: str, split: str, slug: str | None = None) -> dict[str, Any]:
                 ),
             }
         resolved = canonical_exect_method(method)
-        if resolved == "exect_llm_extract_filtered":
+        if resolved == "exect_llm_extract_and_select":
             return verify_llm_extract_filtered(split=split, slug=slug)
         if resolved == "exect_llm_extract":
             return verify_llm_extract(split=split, slug=slug)
@@ -322,7 +323,7 @@ def run(
                 thinking=thinking,
                 reasoning_effort=reasoning_effort,
             )
-        if resolved == "exect_llm_extract_filtered":
+        if resolved == "exect_llm_extract_and_select":
             return run_llm_extract_filtered(
                 slug,
                 live=True,

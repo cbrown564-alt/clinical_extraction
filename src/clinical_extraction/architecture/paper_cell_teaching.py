@@ -63,7 +63,7 @@ EXECT_PRE_POST_RAW = (
 )
 EXECT_ONLY_RAW = (
     ROOT
-    / "paper_experiments/exect/exect_llm_only/gemini37flash/dev140/structured.jsonl"
+    / "paper_experiments/exect/exect_llm_extract/gemini37flash/dev140/structured.jsonl"
 )
 EXECT_ENCODE_RAW = (
     ROOT / "experiments/paper/exect_llm_encode/gemini37flash/dev140/rows.jsonl"
