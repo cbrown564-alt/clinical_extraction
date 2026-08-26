@@ -68,6 +68,8 @@ python -m clinical_extraction.paper promote-exect --method exect_llm_extract --m
 `/exectv2/runs` is the July explorer payload (Sol + Qwen 3.6). Not
 the cited comparison.
 
-Present for cell-3 roster: Grok, Luna, Gemini on both tasks (partial
-holdout). Pending: Qwen, Gemma, remaining DeepSeek holdout fills.
-See [`inventory.json`](inventory.json).
+Present for cell-3 extract: Gemini on both tasks; Qwen and Gemma
+inventory and codebook extracts on both splits. Pending: Grok, Luna,
+and DeepSeek `exect_llm_extract`; remaining DeepSeek Gan fills; encode
+and select replay for the new local extracts. See
+[`inventory.json`](inventory.json).

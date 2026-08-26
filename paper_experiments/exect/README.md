@@ -49,10 +49,11 @@ table.
 | Gemma 4 26B | `dev140` | 0.7674 | — |
 | Gemma 4 26B | `test60` | 0.6933 | — |
 
-Still missing: Qwen 3.8 cell-3 fills on both splits. ExECT LLM
-only for Gemma and Qwen. `dev140` cell-3 rungs are in the frontend
-panel (`exect/dev140_panel.json`). `exect_llm_pre_post` is not a
-panel column. `test60` is aggregate-only.
+Qwen and Gemma `exect_llm_extract` cells are promoted on both splits.
+Encode and select replay for those extracts is still pending.
+`dev140` cell-3 rungs are in the frontend panel
+(`exect/dev140_panel.json`). `exect_llm_pre_post` is not a panel
+column. `test60` is aggregate-only.
 
 Frontend pull: `GET /paper/exect/dev140` and
 `GET /paper/exect/dev140/{method}/{slug}/scored`.

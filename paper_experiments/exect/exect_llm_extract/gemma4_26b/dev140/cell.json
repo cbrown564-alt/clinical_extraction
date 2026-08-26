@@ -1,0 +1,24 @@
+{
+  "comparison": "comparison.json",
+  "empty_raw_count": 0,
+  "id_field": "letter_id",
+  "living_effort": "none",
+  "method": "exect_llm_extract",
+  "model": "ollama_chat/gemma4:26b",
+  "model_slug": "gemma4_26b",
+  "n": 140,
+  "program": "exect_llm_extract",
+  "raw_headline_f1": 0.7075,
+  "replay_fields": [
+    "letter_id",
+    "prompt_version",
+    "raw_output"
+  ],
+  "row_count": 140,
+  "row_policy": "development_review_permitted",
+  "rows": "structured.jsonl",
+  "scored": "scored.jsonl",
+  "source": "experiments/paper/exect_llm_extract/gemma4_26b/dev140",
+  "split": "dev140",
+  "split_machine": "dev"
+}
