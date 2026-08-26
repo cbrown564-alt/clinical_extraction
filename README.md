@@ -212,8 +212,8 @@ clinical-extract probe \
   --model vllm/deepseek-v4-flash
 ```
 
-The input is JSONL with one `id` and `text` object per line. Run the selected
-Gan seizure-frequency pipeline with:
+The input is JSONL with one `id` and `text` object per line. Run the cited
+Gan codebook extract (`gan_llm_extract`) with:
 
 ```sh
 clinical-extract gan \

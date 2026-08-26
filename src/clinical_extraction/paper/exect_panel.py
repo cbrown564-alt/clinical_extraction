@@ -9,6 +9,10 @@ from typing import Any, Literal, cast
 
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.paper.cells import normalize_cell_id, normalize_rungs_payload
+from clinical_extraction.paper.comparison_contract import (
+    adapt_legacy_comparison,
+    stage_metric,
+)
 from clinical_extraction.paper.exect import compact_metrics_from_structured
 from clinical_extraction.paper.exect_cell_replay import exect_rung_out_dir
 from clinical_extraction.paper.exect_later_stage import (
@@ -55,6 +59,7 @@ LLM_ONLY_METHOD = "exect_llm_only"
 EXTRACT_METHOD = "exect_llm_extract"
 FILTERED_METHOD = "exect_llm_extract_filtered"
 REQUEST_METHODS = (LLM_ONLY_METHOD, METHOD)
+PANEL_REQUEST_METHODS = (EXTRACT_METHOD,)
 EXECT_METHODS = (
     REQUEST_METHODS + (EXTRACT_METHOD, FILTERED_METHOD)
 )
@@ -548,9 +553,12 @@ def rebuild_dev140_panel() -> dict[str, Any]:
     rules_f1 = None
     if rules_path.is_file():
         rules = json.loads(rules_path.read_text(encoding="utf-8"))
-        rules_f1 = rules.get("dev140", {}).get("four_family_headline_f1")
+        rules_f1 = rules.get("dev140", {}).get("four_family_micro_f1")
+        if rules_f1 is None:
+            rules_f1 = rules.get("dev140", {}).get("four_family_headline_f1")
     for model in living_models():
         slug = str(model["slug"])
+        extract_stages = _living_extract_stages(slug)
         rung_dir = PAPER_EXECT / "rungs" / slug / PROMOTE_SPLIT
         rung_comparison_path = rung_dir / "comparison.json"
         rung_scored = rung_dir / "scored.jsonl"
@@ -581,6 +589,7 @@ def rebuild_dev140_panel() -> dict[str, Any]:
                             ).relative_to(ROOT).as_posix(),
                             "n": exect_row_count(PROMOTE_SPLIT),
                             "clinical_fact_f1": rules_f1,
+                            "four_family_micro_f1": rules_f1,
                         }
                     )
                 else:
@@ -644,8 +653,38 @@ def rebuild_dev140_panel() -> dict[str, Any]:
                         }
                     )
                 continue
+            extract_metric = (
+                extract_stages.get(method) if extract_stages is not None else None
+            )
+            extract_dest = paper_method_cell_root(EXTRACT_METHOD, slug)
+            extract_comparison = extract_dest / "comparison.json"
+            extract_scored = extract_dest / "scored.jsonl"
             rung = rung_scores.get(method)
-            if isinstance(rung, Mapping) and rung.get("clinical_fact_f1") is not None:
+            if extract_metric is not None:
+                cells.append(
+                    {
+                        "model_slug": slug,
+                        "model": model["model"],
+                        "label": model["label"],
+                        "method": method,
+                        "status": "present",
+                        "path": extract_dest.relative_to(ROOT).as_posix() + "/",
+                        "scored": extract_scored.relative_to(ROOT).as_posix()
+                        if extract_scored.is_file()
+                        else (
+                            rung_scored.relative_to(ROOT).as_posix()
+                            if rung_scored.is_file()
+                            else None
+                        ),
+                        "comparison": extract_comparison.relative_to(ROOT).as_posix()
+                        if extract_comparison.is_file()
+                        else None,
+                        "n": exect_row_count(PROMOTE_SPLIT),
+                        "clinical_fact_f1": extract_metric,
+                        "four_family_micro_f1": extract_metric,
+                    }
+                )
+            elif isinstance(rung, Mapping) and rung.get("clinical_fact_f1") is not None:
                 cells.append(
                     {
                         "model_slug": slug,
@@ -660,6 +699,8 @@ def rebuild_dev140_panel() -> dict[str, Any]:
                         "comparison": rung_comparison_path.relative_to(ROOT).as_posix(),
                         "n": exect_row_count(PROMOTE_SPLIT),
                         "clinical_fact_f1": rung.get("clinical_fact_f1"),
+                        "four_family_micro_f1": rung.get("four_family_micro_f1")
+                        or rung.get("clinical_fact_f1"),
                     }
                 )
             else:
@@ -675,7 +716,7 @@ def rebuild_dev140_panel() -> dict[str, Any]:
                     }
                 )
     panel = {
-        "schema_version": "paper_experiments.exect.dev140_panel.v3",
+        "schema_version": "paper_experiments.exect.dev140_panel.v4",
         "split": PROMOTE_SPLIT,
         "split_machine": "dev",
         "row_policy": "development_review_permitted",
@@ -690,13 +731,14 @@ def rebuild_dev140_panel() -> dict[str, Any]:
             "frontend": "/datasets/exectv2/letters",
         },
         "methods": list(PANEL_METHODS),
-        "request_methods": list(REQUEST_METHODS),
+        "request_methods": list(PANEL_REQUEST_METHODS),
         "models": [item["slug"] for item in living_models()],
         "cells": cells,
         "claim_boundary": (
             "ExECT cell-3 development panel: rules, then extract / encode / "
-            "select on exect_llm_only. Not holdout. Living exect_llm_pre_post "
-            "is the both-extract alias and is not a panel column."
+            "select on living exect_llm_extract. Not holdout. Compact "
+            "exect_llm_only rungs remain a fallback until a model has a "
+            "living extract envelope."
         ),
     }
     PANEL_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -1053,6 +1095,28 @@ def _compact_arm(comparison: Mapping[str, Any]) -> dict[str, Any]:
         or {}
     )
     return dict(arm) if isinstance(arm, Mapping) else {}
+
+
+def _living_extract_stages(slug: str) -> dict[str, float] | None:
+    dest = paper_method_cell_root(EXTRACT_METHOD, slug)
+    comparison_path = dest / "comparison.json"
+    if not comparison_path.is_file():
+        return None
+    living = adapt_legacy_comparison(
+        json.loads(comparison_path.read_text(encoding="utf-8"))
+    )
+    if living is None:
+        return None
+    extract = stage_metric(living, "extract")
+    encode = stage_metric(living, "encode")
+    select = stage_metric(living, "select")
+    if extract is None or select is None:
+        return None
+    return {
+        "llm_extract": extract,
+        "llm_encode": encode if encode is not None else extract,
+        "llm_select": select,
+    }
 
 
 def _living_effort(slug: str) -> str:

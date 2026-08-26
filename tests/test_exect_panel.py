@@ -145,7 +145,7 @@ def test_promote_strips_replay_and_writes_scored_panel(
         "llm_encode",
         "llm_select",
     ]
-    assert panel["request_methods"] == ["exect_llm_only", "exect_llm_pre_post"]
+    assert panel["request_methods"] == ["exect_llm_extract"]
     assert len(panel["cells"]) == 24
     present = [cell for cell in panel["cells"] if cell["status"] == "present"]
     pending = [cell for cell in panel["cells"] if cell["status"] == "pending"]

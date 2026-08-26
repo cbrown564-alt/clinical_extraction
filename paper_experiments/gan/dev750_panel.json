@@ -277,9 +277,9 @@
       "status": "pending"
     }
   ],
-  "claim_boundary": "Gan cell-3 development panel: rules, then extract / encode / select. Not holdout. gan_llm_only is not a panel column. gan_llm_extract_raw is the source-near ablation. Hosted rungs on disk still replay that source-near raw until codebook extract cells are the panel source.",
+  "claim_boundary": "Gan cell-3 development panel: rules, then extract / encode / select on living gan_llm_extract. Not holdout. gan_llm_only is not a panel column. Source-near rungs remain a fallback until a model has a living extract envelope.",
   "living_effort": {
-    "deepseek": "thinking_on_provider_default",
+    "deepseek": "low",
     "hosted_reasoning": "low",
     "local": "none"
   },
@@ -303,7 +303,7 @@
     "split_machine": "validation"
   },
   "row_policy": "development_review_permitted",
-  "schema_version": "paper_experiments.gan.dev750_panel.v2",
+  "schema_version": "paper_experiments.gan.dev750_panel.v3",
   "split": "dev750",
   "split_machine": "validation"
 }

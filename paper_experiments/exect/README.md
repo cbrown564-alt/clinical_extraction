@@ -1,9 +1,10 @@
 # ExECT paper cells
 
 Headline table: Gemini five-cell grid on locked `test60`. The cited
-score is the select stop. All five rows use 4-family micro F1.
-Cell 3 is the roster row and the Gemini peak. Cell 4
-stays Gemini-only.
+score is the select stop. All five rows use 4-family micro F1
+(`clinical_inventory_unit_keys`). Cell 3 is the roster row and the
+Gemini peak. Cell 4 stays Gemini-only. Owner:
+[both-extract on inventory](../../docs/research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md).
 
 | Extract | Encode | Select | F1 (Gemini `test60`) |
 | --- | --- | --- | ---: |

@@ -10,8 +10,9 @@ import pytest
 from clinical_extraction.paper.cli import main
 from clinical_extraction.paper.gan_cell_replay import (
     _rung_summary,
-    gan_hybrid_rows_path,
+    gan_living_extract_rows_path,
     gan_rung_out_dir,
+    gan_source_near_rows_path,
     replay_gan_dev750,
     write_gan_rung_artifacts,
 )
@@ -72,10 +73,9 @@ def test_rung_summary_totals_predicted_candidates() -> None:
 
 
 def test_gan_rung_paths_follow_slug_and_split() -> None:
-    assert gan_hybrid_rows_path("grok46", "dev750").as_posix().endswith(
-        "paper_experiments/gan/gan_llm_extract_raw/grok46/dev750/rows.jsonl"
-    )
-    assert gan_hybrid_rows_path("gemini37flash", "test450").as_posix().endswith(
+    living = gan_living_extract_rows_path("grok46", "dev750").as_posix()
+    assert living.endswith("gan_llm_extract/grok46/dev750/rows.jsonl")
+    assert gan_source_near_rows_path("gemini37flash", "test450").as_posix().endswith(
         "paper_experiments/gan/gan_llm_extract_raw/gemini37flash/test450/rows.jsonl"
     )
     assert gan_rung_out_dir("grok46", "test450").as_posix().endswith(
@@ -157,9 +157,12 @@ def test_replay_gan_dev750_stays_a_development_alias() -> None:
 def test_cli_replay_rungs_accepts_test450(monkeypatch: pytest.MonkeyPatch) -> None:
     captured: dict[str, object] = {}
 
-    def fake_replay(split: str, *, slug: str = "grok46") -> dict[str, object]:
+    def fake_replay(
+        split: str, *, slug: str = "grok46", source: str = "living"
+    ) -> dict[str, object]:
         captured["split"] = split
         captured["slug"] = slug
+        captured["source"] = source
         return {"split": split, "model_slug": slug, "row_policy": "aggregate_only"}
 
     monkeypatch.setattr(
@@ -176,4 +179,4 @@ def test_cli_replay_rungs_accepts_test450(monkeypatch: pytest.MonkeyPatch) -> No
             "test450",
         ]
     )
-    assert captured == {"split": "test450", "slug": "grok46"}
+    assert captured == {"split": "test450", "slug": "grok46", "source": "ablation"}

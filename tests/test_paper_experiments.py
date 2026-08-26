@@ -159,7 +159,7 @@ def test_gan_dev750_panel_is_rectangular() -> None:
     panel = json.loads(
         (ROOT / "paper_experiments/gan/dev750_panel.json").read_text(encoding="utf-8")
     )
-    assert panel["schema_version"] == "paper_experiments.gan.dev750_panel.v2"
+    assert panel["schema_version"] == "paper_experiments.gan.dev750_panel.v3"
     assert panel["split"] == "dev750"
     assert panel["method_identity"] == "gemini37flash"
     assert panel["living_effort"]["hosted_reasoning"] == "low"
@@ -205,7 +205,7 @@ def test_exect_dev140_panel_is_rectangular() -> None:
     panel = json.loads(
         (ROOT / "paper_experiments/exect/dev140_panel.json").read_text(encoding="utf-8")
     )
-    assert panel["schema_version"] == "paper_experiments.exect.dev140_panel.v3"
+    assert panel["schema_version"] == "paper_experiments.exect.dev140_panel.v4"
     assert panel["split"] == "dev140"
     assert panel["method_identity"] == "gemini37flash"
     assert panel["living_effort"]["hosted_reasoning"] == "low"
@@ -216,7 +216,7 @@ def test_exect_dev140_panel_is_rectangular() -> None:
         "llm_encode",
         "llm_select",
     ]
-    assert panel["request_methods"] == ["exect_llm_only", "exect_llm_pre_post"]
+    assert panel["request_methods"] == ["exect_llm_extract"]
     assert len(panel["cells"]) == 24
     present = {
         (cell["model_slug"], cell["method"])

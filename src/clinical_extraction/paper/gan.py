@@ -20,6 +20,7 @@ from clinical_extraction.paper.batch import (
     complete_chat_batch,
     uses_provider_batch,
 )
+from clinical_extraction.paper.comparison_contract import attach_living_envelope
 from clinical_extraction.paper.exect import (
     HOSTED_SLUGS,
     LOCAL_SLUGS,
@@ -30,6 +31,7 @@ from clinical_extraction.paper.exect import (
     cell3_thinking_max_tokens,
     paper_work_suffix,
 )
+from clinical_extraction.paper.gan_cell_replay import living_gan_stages
 from clinical_extraction.paper.gan_later_stage import (
     CITED_SLUG as LATER_STAGE_SLUG,
 )
@@ -434,6 +436,17 @@ def run_gan(
             for row in rows
             if not (row.get("comparison") or {}).get("purist_correct")
         ]
+    artifact = attach_living_envelope(
+        artifact,
+        method=method,
+        stages=living_gan_stages(
+            rows,
+            {record.source_row_index: record for record in records},
+            method=method,
+        ),
+        replay_mode="live",
+        prompt_version=prompt,
+    )
     out = work_root / "comparison.json"
     out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return {
