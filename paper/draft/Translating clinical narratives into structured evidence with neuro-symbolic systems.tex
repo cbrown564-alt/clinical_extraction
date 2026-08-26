@@ -71,121 +71,215 @@ natural language processing
 
 \section{Introduction}
 
-Clinical information extraction is the process of turning clinical 
-narratives into structured facts suitable for clinical use and 
-research.
+Clinical notes in electronic health records (EHRs) are 
+among the most valuable sources of medical information 
+available, recording diagnoses, medications, medical 
+investigations and more in rich narrative form. This form is 
+both a strength and a weakness. Patient demographics are 
+routinely collected in structured forms for administrative 
+purposes, and this structured form makes them easy to 
+use in clinical research. Information about the patient's 
+diagnoses and treatment outcomes often exist solely in 
+narrative form in hospital discharge summaries or letters 
+from clinicians. This makes them useful to deeply 
+understand an individual patient, but very difficult to use 
+to build a broad understanding of a patient population.
 
-\subsection{Medical framing}
-Epilepsy is one of the most common neurological diseases. 30 
-percent of patients are drug resistant and research progress has 
-been stubbornly slow. We need a deeper understanding of who 
-these patients are, how they are treated, how outcomes differ over 
-time and across groups. The most important clinical markers are 
-trapped in unstructured notes. Costly chart review is required for 
-constructing patient timelines, identifying research cohorts, 
-conducting retrospective studies.
+Epilepsy is one of the most common neurological 
+diseases, affecting over [x]m people globally. Clinicians use 
+the type of epilepsy, type of seizures and frequency of 
+seizures to determine the severity of the patient's disease. [1]
+Clinical trials typically use seizure freedom as their target 
+outcome. [2] The only place this information is routinely 
+recorded is in clinic letters from an epilepsy specialist to 
+the patient's primary care doctor after the patient visits the 
+clinic. To gather this information at scale, experts are 
+required to complete manual chart review: review each 
+letter, interpret the key details and translate them into a 
+standard form. This process is costly, time-consuming, 
+and error prone. [3] Making this information available in a 
+structured form that you can query in a database to 
+summarise, group and filter can make large-scale
+research efforts viable.
 
-They struggle through that anyway because it’s so valuable, but it’s 
-not just costly it’s error prone. 
+To make this type of structured data available, there are
+two broad approaches: collect the data in a structured 
+form or process unstructured data into that form. It is 
+simple to collect medication in a more structured form by 
+using separate fields for medication, dose, unit and 
+frequency, rather than writing 'Topiramate 100 mg BD' . 
+Applying that to seizure frequency is more difficult 
+because they are not simple facts to record in a single,
+consistent form. A typical example is, \emph{"focal 
+impaired-awareness seizures have been occurring 
+more often, 2 times per week, whereas previously 
+they only happened once or twice a month."} 
+Imprecise language like this is known as hedging[5], 
+and paradoxically, stripping it down to a single number 
+would make it less precise and less useful. A system 
+that enables clinicians to record these richer 
+observations and then processes them into a 
+standardised form is ideal.
 
-Entity extraction vs. entity relational 
-extraction and reasoning. NLP solved entity extraction a while back, 
-but this is a temporal and clinical reasoning problem - how to 
-represent a clinical state in a rigorous way. It’s not just computers 
-that struggle with this problem, but doctors too - they all describe 
-things differently and experts struggle to interpret them identically 
+Natural language processing (NLP) and the subdomain
+of information extraction (IE) offers a solution for this. 
+Rules-based methods have successfully extracted
+information on medications and diagnoses, but struggled
+with the imprecise language and diverse forms
+of seizure frequency statements. '2 to 3 seizures a week', 
+'frequent bouts of seizures' and '4 since her last visit' are
+all valid descriptions of the same fact. Large language 
+models (LLMs) have demonstrated significant 
+improvements in semantic understanding than prior 
+methods and have successfully extracted seizure 
+frequency information, but they occasionally hallucinate
+facts. Combining the semantic understanding of an LLM
+with the transparency of a rules-based system could
+provide the most accurate, trustworthy results.
 
-\subsection{Prior system summary}
-Rules-based systems are good at entity extraction but require 
-extensive annotation and perform poorly on logic. BERT-based 
-systems require extensive annotations and again, perform poorly 
-on logic. GPT-based systems are very semantically flexible and 
-strong on reasoning, but they’re a bit too flexible - hallucination, 
-rambling prose, it’s unstructured data to unstructured data. 
-Monolithic LLMs provide the least visibility into the most dangerous
-task, clinical reasoning.
+Effective IE can be broken down into three key stages: 
+extracting relevant candidate facts, encoding those facts 
+into a particular form, and selecting which facts to keep 
+and which to filter out. A clinic letter can contain multiple 
+descriptions of seizures, some are historical events while 
+others are current, some are certain seizures while others 
+may be "absence-like episodes", some are describing the 
+same event but in another context. Seizure frequencies 
+can be expressed as a rate, a vague quantity and a 
+duration. A transparent system would allow you to see not 
+just the final answer, but which steps were taken to achieve 
+it.
 
-Most of the LLMs tested and performing well as monolithic systems 
-were closed-source, which creates privacy concerns. These 
-problems lead to systems generalising poorly to new tasks and styles. 
-We need the modularity and reliability of rules-based systems to constrain 
-the flexibility of the LLMs and audit their outputs.
-
-\subsection{Hybrid solution}
-I present a modular, evidence-grounded LLM framework for clinical 
-information extraction from epilepsy clinical letters. It decomposes 
-extraction into configurable stages for semantic interpretation, relation 
-extraction, temporal resolution, concept normalisation, schema validation 
-and evidence verification. It is evaluated across two independently 
-developed, publicly shareable epilepsy benchmarks assessing two 
-different capabilities: broad phenotype extraction in ExECTv2 and 
-temporally complex seizure-frequency extraction from synthetic letters.
-
-By directly comparing rules-only, LLM-only and hybrid configurations, plus 
-component ablations and error analysis, we show how modular, 
-evidence-grounded hybrid systems not only improve field-level F1 scores 
-but also reliability, auditability and generalisability.
+This paper evaluates the ideal combination of LLMs and 
+rules across those three stages: extraction, encoding and 
+selection. It was evaluated on two sets of annotated 
+epilepsy clinic letters that reflect two common clinical IE 
+tasks: producing a single label to determine a patient's 
+current status, and producing a broad inventory of clinical 
+facts, past and present. The paper demonstrates that a 
+modular system combining LLMs and rules can extract 
+information with comparable accuracy to past methods 
+while preserving a richer evidence chain. The system 
+is available as an open source package at INSERT LINK.
+Figure 1 displays the web app illustrating some of that 
+chain from evidence to final answer.
 
 \section{Literature Review}
 
-Epilepsy clinic letters contain diagnoses, seizure frequency, 
-medication, investigations, and treatment changes, often 
-distributed across time, hedged, and tied to more than one 
-event. Several of those statements can be true in the same 
-letter. Published extractors have already chosen which of 
-them to keep. Fonferko-Shadrach \emph{et al.} treat the 
-letter as an inventory of supported facts across diagnosis, 
-frequency, prescriptions, and investigations~\cite{b1,b2}. 
-Xie \emph{et al.}~\cite{b3}, Holgate \emph{et al.}~\cite{b4}, 
-and Gan \emph{et al.}~\cite{b5} treat it as one current 
-seizure-frequency state. These are different questions, and 
-a score on one gold does not answer the other. Structured 
-extraction is therefore not only recognition of medical terms. 
-It is a decision about which true statements the evaluation 
-form is allowed to keep~\cite{b6}. 
+Epilepsy clinic letters contain facts about medication, 
+diagnoses, investigations and seizure frequency, often
+covering multiple time periods and with many hedged\cite{b1}
+observations. Fonferko-Shadrach \emph{et al.} treat the 
+letter as an inventory of supported facts across prescriptions, 
+diagnosie, investigations and frequency\cite{b1,b2}. 
+Xie \emph{et al.}~\cite{b3}, Holgate \emph{et al.}~\cite{b4}, and 
+Gan \emph{et al.}~\cite{b5} treat it as one current 
+seizure-frequency state. The decisions about which facts
+to extract, how to represent them and which facts to keep
+in the final representation are often bundled into one 
+single task definition. This paper demonstrates that 
+breaking them up into discrete stages with explicit 
+subjective choices can the make the system more 
+transparent and flexible.
 
-Clinical information extraction, as used here, fills a 
-predefined form; it is not full understanding of the letter. By 
-the Message Understanding Conferences the task was 
-already template fill against a prepared answer key~\cite{b7}. 
 Wang \emph{et al.} define clinical IE as the automatic 
 extraction and encoding of clinical information from 
 text~\cite{b8}. Fu \emph{et al.} separate mention detection 
-from concept encoding: a quoted span is not the coded 
-concept~\cite{b6}. Later mapping into the evaluation form is 
-therefore a named step, and it is older than large language 
-models. Xie \emph{et al.} extract a frequency sentence and 
-then apply rules to obtain a number~\cite{b9}. Agrawal 
-\emph{et al.} define a resolver that maps model text onto the 
-evaluation form and report the model with and without that 
-stage~\cite{b10}. In much of the remaining epilepsy literature 
-that later mapping is unpublished, and the headline score is 
-the already-collapsed object: a band, a monthly number, or 
-a feature-identical set. Rule steps that only write the form 
-are also often unnamed~\cite{b11}. The distinction required 
-here is between encode, which writes the already-chosen 
-fact in the designed string, and select, which may change 
-the fact.
+from concept encoding: the quoted span is distinct from
+the coded concept~\cite{b6}. Xie \emph{et al.} extract a frequency 
+sentence and then apply rules to encode it into a number~\cite{b9}. 
+In much of the remaining epilepsy literature encoding is 
+bundled into the extraction phase, with the model 
+extracting e.g. '4 per month' from a raw statement 'about once 
+a week'. When rules are used to format the answers, they are 
+often described as simple post-processing steps for scoring 
+instead of distinct stages in the pipeline. Those paper shows 
+that recognising extract and encode as separate stages 
+allows you to preserve more of the evidence while still 
+being able to encode it into the required form for 
+downstream use.
 
-Most published systems are trained or tuned on one local 
-corpus. Decker \emph{et al.} report seizure-frequency $F_1$ 
-of 0.82 in-house and 0.40 at a second centre; a rule stack 
-that fits one letter style need not transfer~\cite{b12}. That 
-result is a caution about local assumptions, not an argument 
-against recorded rules. Hybrids that mix models with rules 
-are also not new, and they typically headline one number. 
-The present work uses two public golds that already 
-encode the two questions, names who runs extract, encode, 
-and select (rules, a model, or both), and reports the select 
-stop. Extract and encode are prior-stage ablations. The 
-recorded object keeps the source span and the hop, not only 
-the score.
+INSERT A REVIEW OF EVALUATION PERFORMANCE
 
+Chiticariu \emph{et al.} show that academic papers tend to focus 
+exclusively on benchmark accuracy, while practitioners tend 
+to value transparency, configurability and efficiency at the 
+cost of some accuracy. Fu \emph{et al.} show that this 
+translates to the clinical setting too, and model interpretability 
+is also a critical factor in successful deployment in clinical 
+settings. Clinicians are highly trained in using deductive 
+logic to draw conclusions and they expect systems to 
+expose transparent, interpretable evidence that they can  
+reliably use to make decisions that demand high 
+accountability. Fonferko-Shadrach \emph{et al.} expose 
+evidence spans as a consequence of using a rules-based 
+system, and Gan \emph{et al.} utilise evidence spans as a 
+training signal. This paper presents a transparent evidence 
+chain from exact text to final answer as part of the core 
+output to improve interpretability for downstream users.
+
+Most papers present results of a system trained or tuned on 
+one local corpus. Decker \emph{et al.} show that a highly 
+tuned system on one set of epilepsy letters can perform 
+significantly worse on a set from another epilepsy centre, 
+with seizure-frequency $F_1$ dropping from 0.82 in-house 
+to 0.40 at a second centre~\cite{b12}. This is further 
+compounded by the fact that because medical data is highly
+sensitive, most papers report results on private datasets 
+that cannot be reproduced or evaluated on other systems. 
+Fonferko-Shadrach \emph{et al.} and c
+are the two exceptions in this domain. This paper is the
+first to assess a method on two distinct tasks using two
+public datasets. 
 
 \section{Methods}
 \subsection{Data}
-Two datasets were used to evaluate the performance of the system on
-two distinct tasks. Dataset 1 assesses the system's ability to extract a 
+
+Two datasets were used in this paper. Both datasets
+are collections of epilepsy clinic letters which record 
+a UK patient's consultation with an epilepsy specialist, 
+often a neurologist or specialist nurse. \cite{b2,b3} 
+The NHS requires that clinic letters are sent to the 
+patient's GP after all outpatient visits such as these. \cite{b13} 
+They are often the only record of a patient's diagnoses,
+treatments and outcomes in neurological disorders, 
+and they are written in narrative form. Both datasets 
+are synthetic letters written in part by neurology 
+specialists and modelled on real clinic letters. The 
+letters were annotated by trained researchers and 
+clinicians. 
+
+Dataset 1, produced by Fonferko-Shadrach \emph{et al.}, 
+annotates a broad inventory of entities across 9 
+clinical categories. This paper focuses on the four 
+most important categories - medication, diagnoses,  
+investigations and seizure frequency facts - which 
+were also the focus of the authors' prior paper. The
+distinguishing feature of this dataset is both the 
+breadth of categories covered and the depth of
+coverage within them. Each category can include
+multiple entities per letter, and each entity includes
+multiple attributes. Figure 1 illustrates an example
+of this, with multiple medications, diagnoses and
+investigations. An individual diagnosis mention then
+includes the attributes DiagCategory, CUI and 
+CUIPhrase. The CUI is the concept unique 
+identifier assigned to each concept in the 
+Unified Medical Language System (UMLS)\cite{b1}. 
+
+\begin{figure*}[t]
+    \centering
+
+    \includegraphics[width=\linewidth]{fig1.png}
+    \caption{The left pane is a letter from Fonferko-Shadrach \emph{et al.}'s dataset. Relevant facts about medication, diagnosis, investigations and seizure frequency are highlighted in different colours, reflecting the predictions made in the pipeline. The right pane includes a few diagnoses predictions matched against the gold standard annotations in the source dataset. This illustrates the final outputs of the primary pipeline, and the link between the final answers selected and the raw evidence cited.}
+    \label{fig1}
+\end{figure*}
+
+The second dataset, produced by Gan \emph{et al.}~\cite{b3} , 
+annotates a single label representing the patient's current seizure 
+frequency burden, often selecting one fact from among many. 
+
+Dataset 1 assesses the system's ability to extract a 
 broad inventory of clinical facts and attributes, often with multiple facts 
 per category e.g. multiple kinds of medication, each with its own dose, 
 unit and frequency. Dataset 2 assesses the system's ability to extract
@@ -227,26 +321,41 @@ gold-standard annotation consists of a single label describing the patient's
 current seizure frequency burden, e.g. seizure free for 5 months. An example 
 letter is shown in Figure 2a.
 
-\begin{figure*}[t]
-    \centering
+\begin{tabularx}{\linewidth}{|Y|Y|Y|Y|}
+\hline
+\textbf{} &
+\textbf{Dataset 1} &
+\textbf{Dataset 2} \\
+\hline
 
-    \begin{subfigure}[t]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{fig1.png}
-        \caption{Example clinical letter from the Swansea Bay with relevant facts about medication, diagnosis, investigations and seizure frequency highlighted.}
-        \label{fig:first}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{fig2.png}
-        \caption{Example clinical letter from King's College Hospital with relevant seizure frequency events highlighted.}
-        \label{fig:second}
-    \end{subfigure}
+Number of letters (dev/test) &
+200 (140/60) &
+1,200 (750/450) \\
+\hline
 
-    \caption{Example clinical letters from Swansea Bay (a) and King's College Hospital (b). Highlighted sections of the letter illustrate the areas where the pipeline identified relevant clinical facts for the task.}
-    \label{fig:combined}
-\end{figure*}
+Mean words per letter  &
+Method improves over baseline in 3 key ways &
+F1, evidence, schema validity, uncertainty \\
+\hline
+
+Figure 1: Architecture &
+Method is modular, transparent, reproducible, and clinically logical &
+Pipeline stages, representative example \\
+\hline
+
+Table 3: Ablation &
+Deterministic and LLM components are complementary &
+LLM-only, rules-only, LLM + schema validation, LLM + evidence verifier,
+LLM + concept normalisation, LLM + temporal resolver, full hybrid \\
+\hline
+
+Figure 2: Error Analysis &
+Deterministic and LLM components have distinct error profiles that you can calibrate for &
+Hallucinations, low recall, schema validity, evidence coverage,
+normalisation errors, temporal contradiction, abstention rate  \\
+\hline
+\end{tabularx}
+
 
 \subsection{Architecture}
 
@@ -311,9 +420,9 @@ sentence punctuation follows the bracket \cite{b2}.
 \begin{thebibliography}{00}
 \bibitem{b1} B. Fonferko-Shadrach \emph{et al.}, ``Using natural language processing to extract structured epilepsy data from unstructured clinic letters: development and validation of the ExECT (extraction of epilepsy clinical text) system,'' \emph{BMJ Open}, vol.~9, no.~4, 2019, Art.~no.~e023232.
 \bibitem{b2} B. Fonferko-Shadrach \emph{et al.}, ``Annotation of epilepsy clinic letters for natural language processing,'' \emph{J. Biomed. Semantics}, vol.~15, no.~17, 2024.
-\bibitem{b3} K. Xie \emph{et al.}, ``Extracting seizure frequency from epilepsy clinic notes: a machine reading approach to natural language processing,'' \emph{J. Amer. Med. Informat. Assoc.}, vol.~29, no.~5, pp.~873--881, 2022.
-\bibitem{b4} B. Holgate, J. Davies, S. Fang, J.~S. Winston, J.~T. Teo, and M.~P. Richardson, ``Fine-tuning LLMs to extract epilepsy seizure frequency data from health records,'' in \emph{Proc. 24th Workshop on Biomedical Language Processing (BioNLP)}, 2025, pp.~44--55.
-\bibitem{b5} Y. Gan \emph{et al.}, ``Reproducible synthetic clinical letters for seizure frequency information extraction,'' arXiv:2603.11407, 2026.
+\bibitem{b3} Y. Gan \emph{et al.}, ``Reproducible synthetic clinical letters for seizure frequency information extraction,'' arXiv:2603.11407, 2026.
+\bibitem{b4} K. Xie \emph{et al.}, ``Extracting seizure frequency from epilepsy clinic notes: a machine reading approach to natural language processing,'' \emph{J. Amer. Med. Informat. Assoc.}, vol.~29, no.~5, pp.~873--881, 2022.
+\bibitem{b5} B. Holgate, J. Davies, S. Fang, J.~S. Winston, J.~T. Teo, and M.~P. Richardson, ``Fine-tuning LLMs to extract epilepsy seizure frequency data from health records,'' in \emph{Proc. 24th Workshop on Biomedical Language Processing (BioNLP)}, 2025, pp.~44--55.
 \bibitem{b6} S. Fu \emph{et al.}, ``Clinical concept extraction: A methodology review,'' \emph{J. Biomed. Informat.}, vol.~109, 2020, Art.~no.~103526.
 \bibitem{b7} R. Grishman and B. Sundheim, ``Message Understanding Conference-6: A brief history,'' in \emph{Proc. 16th Int. Conf. Computational Linguistics (COLING)}, 1996, pp.~466--471.
 \bibitem{b8} Y. Wang \emph{et al.}, ``Clinical information extraction applications: A literature review,'' \emph{J. Biomed. Informat.}, vol.~77, pp.~34--49, 2018.
@@ -321,6 +430,7 @@ sentence punctuation follows the bracket \cite{b2}.
 \bibitem{b10} M. Agrawal, S. Hegselmann, H. Lang, Y. Kim, and D. Sontag, ``Large language models are few-shot clinical information extractors,'' in \emph{Proc. Conf. Empirical Methods in Natural Language Processing (EMNLP)}, 2022, pp.~1998--2022.
 \bibitem{b11} L. Chiticariu, Y. Li, and F. Reiss, ``Rule-based information extraction is dead! Long live rule-based information extraction systems!,'' in \emph{Proc. Conf. Empirical Methods in Natural Language Processing (EMNLP)}, 2013, pp.~827--832.
 \bibitem{b12} B.~M. Decker \emph{et al.}, ``Development of a natural language processing algorithm to extract seizure types and frequencies from the electronic health record,'' \emph{Seizure}, vol.~101, pp.~48--51, 2022.
+\bibitem{b13} interoperability-standard-contract
 \end{thebibliography}
 
 \vspace{12pt}
