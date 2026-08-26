@@ -83,8 +83,10 @@ stop. On Gan, LLM extract is the codebook extract
 `gan_llm_and_rules_extract`. LLM encode means that extract already
 wrote the form. LLM-then-rules encode is `gan_rules_encode`. LLM
 select is `gan_llm_select_from_extract`. ExECT uses the same five
-role rows. LLM extract is `exect_llm_extract`. The Compact
-`exect_llm_extract_filtered` extract is a Gemini ablation. both extract is
+role rows. LLM extract is `exect_llm_extract`. One-call extract-and-select
+(`exect_llm_extract_and_select`; read-only aliases
+`exect_llm_extract_filtered`, `exect_llm_only`) is a Gemini
+ablation, not cell 3. both extract is
 `exect_llm_pre_post`. LLM encode is later-stage `exect_llm_encode`.
 LLM / LLM / rules is accepted Select on that encode ledger. LLM
 select is later-stage `exect_llm_select`. The old `gan_llm_extract_raw` grid is the source-near wording

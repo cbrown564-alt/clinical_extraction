@@ -34,12 +34,13 @@ neuro-symbolic `paper/draft/` tex, or the 9–10 Aug HTML pack.
 7. [Rules and models across stages (Gan, Gemini)](research/paper/gan_rules_and_llms_across_stages_2026-08-21.md)
 8. [Three variables: stages, model, thinking](research/paper/three_variables_rules_model_thinking_2026-08-23.md) — draft results
 9. [Source-near extract vs bundled encode](research/paper/gan_source_near_vs_bundled_encode_2026-08-23.md) — Gan ablation
-10. [How the two tasks are scored](research/paper/score_definitions_2026-08-17.md)
-11. [ExECT paper scoring is not our comparison](research/paper/exect_published_metric_is_not_the_comparison_2026-08-24.md)
-12. [Dataset gold support](research/paper/dataset_gold_support_2026-08-22.md)
-13. [Failures and limits](research/paper/failures_and_limits_2026-08-10.md)
-14. [Two reviewable cases](research/paper/reviewable_case_pair_2026-08-09.md) — development letters only
-15. [Flagship 3-letter suite](research/paper/flagship_3_letter_suite_2026-08-11.md) — development letters, not holdout
+10. [Extract then Select vs extract-and-select](research/paper/exect_extract_vs_extract_and_select_2026-08-25.md) — ExECT ablation
+11. [How the two tasks are scored](research/paper/score_definitions_2026-08-17.md)
+12. [ExECT paper scoring is not our comparison](research/paper/exect_published_metric_is_not_the_comparison_2026-08-24.md)
+13. [Dataset gold support](research/paper/dataset_gold_support_2026-08-22.md)
+14. [Failures and limits](research/paper/failures_and_limits_2026-08-10.md)
+15. [Two reviewable cases](research/paper/reviewable_case_pair_2026-08-09.md) — development letters only
+16. [Flagship 3-letter suite](research/paper/flagship_3_letter_suite_2026-08-11.md) — development letters, not holdout
 
 The source library explains the evidence. It does not replace
 [claims](paper/claims.md) or `paper_experiments/`.

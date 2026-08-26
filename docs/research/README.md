@@ -6,7 +6,8 @@ are in [`artifacts/`](artifacts/). The reading order is
 
 Draft results (2026-08-23):
 [three variables](paper/three_variables_rules_model_thinking_2026-08-23.md),
-[source-near vs bundled encode](paper/gan_source_near_vs_bundled_encode_2026-08-23.md).
+[source-near vs bundled encode](paper/gan_source_near_vs_bundled_encode_2026-08-23.md),
+[extract then Select vs extract-and-select](paper/exect_extract_vs_extract_and_select_2026-08-25.md).
 
 Campaign reports left the working tree. Recover them from git.
 

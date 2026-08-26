@@ -22,11 +22,12 @@ def load(path: str) -> dict:
 def main() -> None:
     exect = load("paper_experiments/exect/five_cell_grid/gemini37flash/test60/comparison.json")
     gan = load("paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json")
-    requested = {
-        "experiments/six_model_category_cut_performance_20260806.json": False,
-        "experiments/exectv2_family_error_catalog_20260806.json": False,
-        "experiments/category_cut_representative_examples_20260808.json": False,
-    }
+    requested_paths = [
+        "experiments/six_model_category_cut_performance_20260806.json",
+        "experiments/exectv2_family_error_catalog_20260806.json",
+        "experiments/category_cut_representative_examples_20260808.json",
+    ]
+    requested = {path: (ROOT / path).is_file() for path in requested_paths}
     payload = {
         "generated_by": "scripts/build_subgroup_results_report.py",
         "generated_on": "2026-08-24",
@@ -48,12 +49,12 @@ def main() -> None:
             },
         },
         "development_subgroups": {
-            "status": "unavailable_in_this_worktree",
+            "status": "current_gemini_category_scores_unavailable",
             "split": "dev140 for ExECT; dev750 for Gan",
             "method_cell": "Gemini LLM candidate extraction / rules encoding / rules selection",
             "metric": "ExECT 4-family micro F1; Gan Purist accuracy",
             "sample_count": "not computable without a current-cell scored artifact keyed to the predefined categories",
-            "reason": "The requested category-cut JSONs and current preferred-cell category-keyed development scores are absent. Existing historical six-model cuts and other Gemini cells are not substituted.",
+            "reason": "Historical category-cut and case artifacts are available, but no current-Gemini preferred-cell category-keyed development score is available. Existing historical six-model cuts and other Gemini cells are not substituted.",
         },
         "source_audit": requested,
         "holdout_policy": "Aggregate-only; no held-out individual rows inspected or published.",

@@ -1,7 +1,8 @@
 # Subgroup and residual-results audit
 
 Date: 2026-08-24  
-Status: reproducible aggregate report; subgroup computation is blocked by missing permitted inputs in this worktree.
+Status: reproducible aggregate report; historical category inputs are present,
+but current-Gemini preferred-cell category scores are unavailable.
 
 ## Scope and method cell
 
@@ -17,9 +18,19 @@ Gan `test450` has `n=450`, aggregate-only policy, and Purist scoring. The prefer
 
 ## Development subgroup results
 
-The requested predefined Gan label categories and ExECT diagnosis/seizure-frequency subgroup/error categories cannot be recomputed safely from the files present here. The named inputs `experiments/six_model_category_cut_performance_20260806.json`, `experiments/exectv2_family_error_catalog_20260806.json`, and `experiments/category_cut_representative_examples_20260808.json` are absent. The current Gemini development directories contain scores for related cells, but not a category-keyed score for the preferred cell that can establish every subgroup’s split, metric, method cell, and sample count.
+The historical category-cut, family-error, and representative-case artifacts
+are present in this worktree. They do not, however, contain a category-keyed
+score for the current Gemini preferred cell. The current Gemini development
+directories contain scores for related cells, but not the subgroup score needed
+to establish every category's split, metric, method cell, and sample count.
 
-Accordingly, no historical six-model category result, other Gemini cell, or test aggregate is relabeled as the requested current-Gemini subgroup result. The development subgroup status is **unavailable in this worktree**. The valid closest artifacts are the Gemini `dev140` ExECT cell reports and Gemini `dev750` Gan cell reports, but they are explicitly only comparator/development evidence and do not answer the missing category cuts.
+Accordingly, no historical six-model category result, other Gemini cell, or
+test aggregate is relabeled as the requested current-Gemini subgroup result.
+The development subgroup status is **unavailable for the current Gemini
+preferred cell**. The valid closest artifacts are the Gemini `dev140` ExECT
+cell reports and Gemini `dev750` Gan cell reports, but they are explicitly
+only comparator/development evidence and do not answer the missing category
+cuts.
 
 ## Qualitative mapping, with limits
 

@@ -27,17 +27,17 @@
     }
   },
   "development_subgroups": {
-    "status": "unavailable_in_this_worktree",
+    "status": "current_gemini_category_scores_unavailable",
     "split": "dev140 for ExECT; dev750 for Gan",
     "method_cell": "Gemini LLM candidate extraction / rules encoding / rules selection",
     "metric": "ExECT 4-family micro F1; Gan Purist accuracy",
     "sample_count": "not computable without a current-cell scored artifact keyed to the predefined categories",
-    "reason": "The requested category-cut JSONs and current preferred-cell category-keyed development scores are absent. Existing historical six-model cuts and other Gemini cells are not substituted."
+    "reason": "Historical category-cut and case artifacts are available, but no current-Gemini preferred-cell category-keyed development score is available. Existing historical six-model cuts and other Gemini cells are not substituted."
   },
   "source_audit": {
-    "experiments/six_model_category_cut_performance_20260806.json": false,
-    "experiments/exectv2_family_error_catalog_20260806.json": false,
-    "experiments/category_cut_representative_examples_20260808.json": false
+    "experiments/six_model_category_cut_performance_20260806.json": true,
+    "experiments/exectv2_family_error_catalog_20260806.json": true,
+    "experiments/category_cut_representative_examples_20260808.json": true
   },
   "holdout_policy": "Aggregate-only; no held-out individual rows inspected or published."
 }
