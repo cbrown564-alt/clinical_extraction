@@ -15,6 +15,7 @@ from clinical_extraction.paper.comparison_contract import (
 )
 from clinical_extraction.paper.exect import compact_metrics_from_structured
 from clinical_extraction.paper.exect_cell_replay import (
+    FAMILIES,
     exect_living_extract_rows_path,
     exect_rung_out_dir,
 )
@@ -780,6 +781,72 @@ _EXECT_RUN_ID_METHODS: tuple[tuple[str, str], ...] = (
 _FIVE_CELL_METHODS = frozenset({"llm_extract", "llm_encode", "llm_select"})
 
 
+def _family_f1_metrics(family_f1: object) -> dict[str, dict[str, float]]:
+    families: dict[str, dict[str, float]] = {}
+    if not isinstance(family_f1, Mapping):
+        return families
+    for family in FAMILIES:
+        value = family_f1.get(family)
+        if isinstance(value, int | float):
+            families[family] = {"f1": float(value)}
+    return families
+
+
+def _catalog_prf_metrics(
+    overall: object,
+    family_f1: object,
+    *,
+    precision: object = None,
+    recall: object = None,
+) -> dict[str, Any]:
+    return {
+        "overall_f1": overall,
+        "precision": precision,
+        "recall": recall,
+        "families": _family_f1_metrics(family_f1),
+    }
+
+
+def _catalog_rung_metrics(
+    rung: Mapping[str, Any] | None,
+    fallback_overall: object,
+) -> dict[str, Any]:
+    overall = fallback_overall
+    family_f1 = None
+    precision = None
+    recall = None
+    if rung is not None:
+        overall = rung.get("four_family_micro_f1")
+        if overall is None:
+            overall = rung.get("clinical_fact_f1")
+        if overall is None:
+            overall = fallback_overall
+        family_f1 = rung.get("family_f1")
+        precision = rung.get("precision")
+        recall = rung.get("recall")
+    return _catalog_prf_metrics(
+        overall, family_f1, precision=precision, recall=recall
+    )
+
+
+def _rungs_for_slug(
+    cache: dict[str, dict[str, Any]], slug: str
+) -> dict[str, Any]:
+    cached = cache.get(slug)
+    if cached is not None:
+        return cached
+    path = exect_rung_out_dir(slug, PROMOTE_SPLIT) / "comparison.json"
+    if not path.is_file():
+        cache[slug] = {}
+        return cache[slug]
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    raw = payload.get("rungs") or {}
+    cache[slug] = (
+        normalize_rungs_payload(raw) if isinstance(raw, dict) else {}
+    )
+    return cache[slug]
+
+
 def paper_exect_run_id(slug: str, method: str) -> str:
     """Workbench run id for a living Compact or five-cell ExECT row."""
 
@@ -822,6 +889,11 @@ def paper_exect_catalog_runs() -> list[dict[str, Any]]:
             cell_path = rows_path.parent / "cell.json"
             if cell_path.is_file():
                 extra = json.loads(cell_path.read_text(encoding="utf-8"))
+            comparison_path = rows_path.parent / "comparison.json"
+            family_f1 = None
+            if comparison_path.is_file():
+                comparison = json.loads(comparison_path.read_text(encoding="utf-8"))
+                family_f1 = _compact_arm(comparison).get("hybrid_family_f1")
             runs.append(
                 {
                     "run_id": paper_exect_run_id(slug, "llm_with_rules"),
@@ -843,12 +915,10 @@ def paper_exect_catalog_runs() -> list[dict[str, Any]]:
                     "scorer_view": "headline_target",
                     "artifact_paths": [rows_path.relative_to(ROOT).as_posix()],
                     "source_paths": [rows_path.relative_to(ROOT).as_posix()],
-                    "metrics": {
-                        "overall_f1": extra.get("hybrid_headline_f1"),
-                        "precision": None,
-                        "recall": None,
-                        "families": {},
-                    },
+                    "metrics": _catalog_prf_metrics(
+                        extra.get("hybrid_headline_f1"),
+                        family_f1,
+                    ),
                     "operational": {
                         "call_failures": 0,
                         "parse_schema_failures": 0,
@@ -873,6 +943,7 @@ def _five_cell_catalog_runs(
     cells = panel.get("cells")
     if not isinstance(cells, list):
         return runs
+    rungs_by_slug: dict[str, dict[str, Any]] = {}
     for cell in cells:
         if not isinstance(cell, dict):
             continue
@@ -889,6 +960,10 @@ def _five_cell_catalog_runs(
         score = cell.get("four_family_micro_f1")
         if score is None:
             score = cell.get("clinical_fact_f1")
+        # L/R/R is the inventory select stop; the panel cell stores extract-stage F1.
+        score_method = "llm_select" if method == "llm_extract" else method
+        rung = _rungs_for_slug(rungs_by_slug, slug).get(score_method)
+        metrics = _catalog_rung_metrics(rung if isinstance(rung, Mapping) else None, score)
         runs.append(
             {
                 "run_id": paper_exect_run_id(slug, method),
@@ -910,12 +985,7 @@ def _five_cell_catalog_runs(
                 "scorer_view": "headline_target",
                 "artifact_paths": [rows_path.relative_to(ROOT).as_posix()],
                 "source_paths": [rows_path.relative_to(ROOT).as_posix()],
-                "metrics": {
-                    "overall_f1": score,
-                    "precision": None,
-                    "recall": None,
-                    "families": {},
-                },
+                "metrics": metrics,
                 "operational": {
                     "call_failures": 0,
                     "parse_schema_failures": 0,

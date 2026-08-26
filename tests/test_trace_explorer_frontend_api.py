@@ -154,6 +154,20 @@ def test_paper_gan_five_cell_encode_is_replayable(client: TestClient) -> None:
     assert encode["availability"] == "replay"
     assert encode["model"] == "gemini/gemini-3.7-flash"
     catalog = families.json()["families"]
+    extract = next(
+        family
+        for family in catalog
+        if family["run_id"] == "gan2026_validation750_gemini37flash_llm_extract"
+    )
+    select = next(
+        family
+        for family in catalog
+        if family["run_id"] == "gan2026_validation750_gemini37flash_llm_select"
+    )
+    assert extract["metrics"]["purist_accuracy"] == select["metrics"]["purist_accuracy"]
+    assert extract["metrics"]["purist_accuracy"] == 0.88
+    assert encode["metrics"]["purist_accuracy"] == 0.8107
+    assert extract["repair_mode"] == "llm_select"
     rules = [family for family in catalog if family.get("paper_cell") == "rules_only"]
     assert len(rules) == 1
     assert rules[0]["run_id"] == "rules"

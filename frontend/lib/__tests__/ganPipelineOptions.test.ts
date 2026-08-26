@@ -15,9 +15,9 @@ import {
 import type { ActiveMethod, PipelineFamilyItem } from "../types";
 
 const MODELS = [
+  "gemini/gemini-3.7-flash",
   "xai/grok-4.6",
   "openai/gpt-5.6-luna",
-  "gemini/gemini-3.7-flash",
   "deepseek/deepseek-v4-flash",
   "ollama_chat/qwen3.8:27b",
   "ollama_chat/gemma4:26b",
@@ -109,7 +109,7 @@ describe("Gan architecture options", () => {
     expect(resolveGanPipelineOption(options, "rules")?.run_id).toBe("rules");
   });
 
-  it("builds living catalog rows from the Gan dev750 panel, Grok first", () => {
+  it("builds living catalog rows from the Gan dev750 panel, Gemini first", () => {
     const families = ganFamiliesFromDev750Panel({
       cells: [
         {
@@ -218,6 +218,66 @@ describe("Gan architecture options", () => {
       "gan2026_validation750_gemini37flash_llm_encode"
     );
     expect(resolveGanMethodModel(families, "llm_encode")?.kind).toBe("llm_with_rules");
+  });
+
+  it("defaults a method to Gemini 3.7 Flash when several models are present", () => {
+    const families = ganFamiliesFromDev750Panel({
+      cells: [
+        {
+          model_slug: "grok46",
+          model: "xai/grok-4.6",
+          label: "Grok 4.6",
+          method: "llm_extract",
+          status: "present",
+          n: 750,
+          purist_accuracy: 0.8,
+        },
+        {
+          model_slug: "gemini37flash",
+          model: "gemini/gemini-3.7-flash",
+          label: "Gemini 3.7 Flash",
+          method: "llm_extract",
+          status: "present",
+          n: 750,
+          purist_accuracy: 0.83,
+        },
+      ],
+    });
+    expect(resolveGanMethodModel(families, "llm_extract")?.model).toBe(
+      "gemini/gemini-3.7-flash"
+    );
+  });
+
+  it("shows the rules-select stop for the L/R/R extract cell", () => {
+    const families = ganFamiliesFromDev750Panel({
+      cells: [
+        {
+          model_slug: "gemini37flash",
+          model: "gemini/gemini-3.7-flash",
+          label: "Gemini 3.7 Flash",
+          method: "llm_extract",
+          status: "present",
+          n: 750,
+          purist_correct: 444,
+          purist_accuracy: 0.592,
+        },
+        {
+          model_slug: "gemini37flash",
+          model: "gemini/gemini-3.7-flash",
+          label: "Gemini 3.7 Flash",
+          method: "llm_select",
+          status: "present",
+          n: 750,
+          purist_correct: 660,
+          purist_accuracy: 0.88,
+        },
+      ],
+    });
+    const extract = families.find((item) => item.paper_cell === "llm_extract");
+    const select = families.find((item) => item.paper_cell === "llm_select");
+    expect(extract?.metrics?.purist_accuracy).toBe(0.88);
+    expect(extract?.metrics?.purist_correct).toBe(660);
+    expect(select?.metrics?.purist_accuracy).toBe(0.88);
   });
 
   it("hides Gan extra runners from the method picker", () => {

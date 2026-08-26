@@ -45,3 +45,33 @@ def test_paper_exect_catalog_includes_gemini_five_cell_and_one_rules_lane() -> N
         run.get("kind") == "llm" or run["run_id"].endswith("_llm_only")
         for run in runs
     )
+
+
+def test_paper_exect_catalog_shows_select_stop_metrics_for_extract_cell() -> None:
+    runs = paper_exect_catalog_runs()
+    extract = next(
+        run
+        for run in runs
+        if run["run_id"] == "exectv2_dev140_gemini37flash_llm_extract"
+    )
+    metrics = extract["metrics"]
+    assert metrics["overall_f1"] == 0.8877
+    assert metrics["families"]["Diagnosis"]["f1"] == 0.8413
+    assert metrics["families"]["SeizureFrequency"]["f1"] == 0.8338
+    assert metrics["families"]["Prescription"]["f1"] == 0.9604
+    assert metrics["families"]["Investigations"]["f1"] == 0.9591
+
+    encode = next(
+        run
+        for run in runs
+        if run["run_id"] == "exectv2_dev140_gemini37flash_llm_encode"
+    )
+    assert encode["metrics"]["overall_f1"] == 0.8699
+    assert encode["metrics"]["families"]["Diagnosis"]["f1"] == 0.8146
+
+    pre_post = next(
+        run
+        for run in runs
+        if run["run_id"] == "exectv2_dev140_gemini37flash_llm_plus_rules"
+    )
+    assert pre_post["metrics"]["families"]["Diagnosis"]["f1"] == 0.847

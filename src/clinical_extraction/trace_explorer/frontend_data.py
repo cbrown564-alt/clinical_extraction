@@ -45,7 +45,7 @@ from clinical_extraction.trace_explorer.gan2026_comparison import (
 DatasetId = Literal["gan2026", "exectv2"]
 
 _FIVE_CELL_REPAIR = {
-    "gan_llm_extract": "raw_model",
+    "gan_llm_extract": "llm_select",
     "gan_llm_encode": "llm_encode",
     "gan_llm_select_from_extract": "llm_select",
 }

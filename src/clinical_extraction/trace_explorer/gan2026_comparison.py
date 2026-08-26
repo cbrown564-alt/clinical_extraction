@@ -277,7 +277,7 @@ _PANEL_CELL_METHODS = frozenset(
     {"llm_extract", "llm_encode", "llm_select", "llm_pre_post"}
 )
 _PANEL_REPAIR_MODE = {
-    "llm_extract": "raw_model",
+    "llm_extract": "llm_select",
     "llm_encode": "llm_encode",
     "llm_select": "llm_select",
     "llm_pre_post": "llm_select",
@@ -301,6 +301,13 @@ def _overlay_paper_five_cell(
         return
     models = {item["slug"]: item for item in living_models()}
     by_run = {str(family["run_id"]): family for family in families}
+    select_by_slug = {
+        str(cell["model_slug"]): cell
+        for cell in cells
+        if isinstance(cell, dict)
+        and cell.get("method") == "llm_select"
+        and cell.get("status") == "present"
+    }
     for cell in cells:
         if not isinstance(cell, dict):
             continue
@@ -316,8 +323,10 @@ def _overlay_paper_five_cell(
         present = cell.get("status") == "present" and rows_path.is_file()
         run_id = paper_run_id(method, slug)
         row_count = int(cell.get("n") or 0)
-        purist_correct = int(cell.get("purist_correct") or 0)
-        purist_accuracy = float(cell.get("purist_accuracy") or 0.0)
+        # L/R/R is the rules-select stop; the panel cell stores extract-stage accuracy.
+        score_cell = select_by_slug.get(slug, cell) if method == "llm_extract" else cell
+        purist_correct = int(score_cell.get("purist_correct") or 0)
+        purist_accuracy = float(score_cell.get("purist_accuracy") or 0.0)
         inspection = {
             "complete": present,
             "row_count": row_count if present else 0,

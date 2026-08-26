@@ -3,9 +3,9 @@ import { PAPER_CELLS, isPaperCellId, paperCellById, type PaperCellId } from "./p
 import type { ActiveMethod, PipelineFamilyItem } from "./types";
 
 const MODEL_ORDER = [
+  "gemini/gemini-3.7-flash",
   "xai/grok-4.6",
   "openai/gpt-5.6-luna",
-  "gemini/gemini-3.7-flash",
   "deepseek/deepseek-v4-flash",
   "ollama_chat/qwen3.8:27b",
   "ollama_chat/gemma4:26b",
@@ -223,6 +223,13 @@ function rulesOnlyFamily(): PipelineFamilyItem {
 export function ganFamiliesFromDev750Panel(
   panel: GanDev750PanelLike
 ): PipelineFamilyItem[] {
+  const selectBySlug = new Map(
+    panel.cells
+      .filter(
+        (cell) => cell.method === "llm_select" && cell.status === "present"
+      )
+      .map((cell) => [cell.model_slug, cell] as const)
+  );
   return [
     ...panel.cells
       .filter(
@@ -241,6 +248,10 @@ export function ganFamiliesFromDev750Panel(
       const present = cell.status === "present";
       const runId = ganPaperRunId(cell.method, cell.model_slug);
       const modeLabel = modeLabelForCell(cell.method);
+      const scoreCell =
+        cell.method === "llm_extract"
+          ? selectBySlug.get(cell.model_slug) ?? cell
+          : cell;
       const family: PipelineFamilyItem = {
         value: runId,
         run_id: runId,
@@ -267,8 +278,8 @@ export function ganFamiliesFromDev750Panel(
       if (present) {
         family.metrics = {
           row_count: cell.n,
-          purist_correct: cell.purist_correct ?? 0,
-          purist_accuracy: cell.purist_accuracy ?? 0,
+          purist_correct: scoreCell.purist_correct ?? 0,
+          purist_accuracy: scoreCell.purist_accuracy ?? 0,
           pragmatic_correct: 0,
           pragmatic_accuracy: 0,
         };
