@@ -1,0 +1,25 @@
+{
+  "call_mode": "live_2026-08-17",
+  "comparison": "comparison.json",
+  "empty_raw_count": 0,
+  "id_field": "source_row_index",
+  "living_effort": "none",
+  "method": "gan_llm_extract",
+  "model": "ollama_chat/qwen3.8:27b",
+  "model_slug": "qwen38_27b",
+  "n": 450,
+  "program": "gan_llm_extract",
+  "purist_accuracy": 0.7,
+  "purist_correct": 315,
+  "replay_fields": [
+    "source_row_index",
+    "prompt_version",
+    "raw_output"
+  ],
+  "row_count": 450,
+  "row_policy": "aggregate_only",
+  "rows": "rows.jsonl",
+  "source": "scratch/holdout/paper/gan_llm_extract/qwen38_27b/test450",
+  "split": "test450",
+  "split_machine": "test"
+}

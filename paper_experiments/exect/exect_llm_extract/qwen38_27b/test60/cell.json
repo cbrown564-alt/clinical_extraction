@@ -1,0 +1,23 @@
+{
+  "comparison": "comparison.json",
+  "empty_raw_count": 0,
+  "id_field": "letter_id",
+  "living_effort": "none",
+  "method": "exect_llm_extract",
+  "model": "ollama_chat/qwen3.8:27b",
+  "model_slug": "qwen38_27b",
+  "n": 59,
+  "program": "exect_llm_extract",
+  "raw_headline_f1": 0.726,
+  "replay_fields": [
+    "letter_id",
+    "prompt_version",
+    "raw_output"
+  ],
+  "row_count": 59,
+  "row_policy": "aggregate_only",
+  "rows": "structured.jsonl",
+  "source": "scratch/holdout/paper/exect_llm_extract/qwen38_27b/test60",
+  "split": "test60",
+  "split_machine": "test"
+}
