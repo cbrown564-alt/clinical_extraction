@@ -212,3 +212,53 @@ def test_cli_replay_rungs_accepts_test60(monkeypatch: pytest.MonkeyPatch) -> Non
         ]
     )
     assert captured == {"split": "test60", "slug": "gpt56luna", "source": "ablation"}
+
+
+def test_frontend_hydrate_uses_select_surface(monkeypatch: pytest.MonkeyPatch) -> None:
+    from clinical_extraction.paper import exect_cell_replay as replay
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
+
+    seen: dict[str, object] = {}
+
+    class _Producer:
+        row = {"letter_id": "EA0000"}
+        spelled_mentions: list[object] = []
+
+    def fake_produce(*_args: object, **_kwargs: object) -> _Producer:
+        return _Producer()
+
+    def fake_assemble(*_args: object, **_kwargs: object) -> dict[str, object]:
+        seen["assembled"] = True
+        return {
+            "EA0000": {
+                "prediction_surfaces": {
+                    "residual_benchmark_added": [
+                        {"entity": "Diagnosis", "text": "epilepsy", "attributes": {}}
+                    ]
+                }
+            }
+        }
+
+    def fake_frontend(**kwargs: object) -> dict[str, object]:
+        seen["predicted"] = kwargs["predicted"]
+        return {
+            "letter_id": "EA0000",
+            "split": "dev",
+            "stage": "dev140",
+            "predicted_mentions": [],
+            "family_counts": {"predicted": {}},
+            "evidence_spans": [],
+        }
+
+    monkeypatch.setattr(replay.structured_one_call, "produce_structured_letter", fake_produce)
+    monkeypatch.setattr(replay, "assemble_structured_rows", fake_assemble)
+    monkeypatch.setattr(replay, "_frontend_letter", fake_frontend)
+
+    letter = ExectLetter(letter_id="EA0000", note_text="x")
+    replay.hydrate_exect_five_cell_letter(
+        letter, "{}", model="test", cell="llm_extract"
+    )
+    assert seen["assembled"] is True
+    assert seen["predicted"] == [
+        {"entity": "Diagnosis", "text": "epilepsy", "attributes": {}}
+    ]

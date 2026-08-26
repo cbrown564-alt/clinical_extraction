@@ -137,7 +137,7 @@ export function useArchitectUrlSync() {
     preserveWorkbenchDataset(params, searchParams);
     if (selectedRunId && selectedRunId !== "rules") params.set("run", selectedRunId);
     if (sourceRowIndex !== null) params.set("row", String(sourceRowIndex));
-    if (activeStage && activeStage !== "extract") params.set("stage", activeStage);
+    if (activeStage && activeStage !== "select") params.set("stage", activeStage);
 
     const newUrl = `${pathname}?${params.toString()}`;
     router.replace(newUrl, { scroll: false });

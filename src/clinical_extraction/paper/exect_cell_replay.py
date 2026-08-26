@@ -216,19 +216,14 @@ def hydrate_exect_five_cell_letter(
             split=machine,
             config=assembly,
         )
-        if cell == "llm_extract":
-            predicted = schema_mention_rows(producer)
-        elif cell == "llm_encode":
-            predicted = format_render_mention_rows(producer, letter.note_text)
-        else:
-            assembled = assemble_structured_rows(
-                [letter],
-                [dict(producer.row)],
-                config=assembly,
-            )[letter.letter_id]
-            predicted = list(
-                assembled["prediction_surfaces"].get("residual_benchmark_added") or []
-            )
+        assembled = assemble_structured_rows(
+            [letter],
+            [dict(producer.row)],
+            config=assembly,
+        )[letter.letter_id]
+        predicted = list(
+            assembled["prediction_surfaces"].get("residual_benchmark_added") or []
+        )
     finally:
         structured.set_active_prompt_version(before)
     full = _frontend_letter(gold=letter, predicted=predicted, source_model=model)

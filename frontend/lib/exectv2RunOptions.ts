@@ -25,9 +25,9 @@ const ACTIVE_METHOD_ALIASES: Readonly<Record<string, string>> = {
 };
 
 const MODEL_ORDER = [
+  "gemini/gemini-3.7-flash",
   "xai/grok-4.6",
   "openai/gpt-5.6-luna",
-  "gemini/gemini-3.7-flash",
   "deepseek/deepseek-v4-flash",
   "ollama_chat/qwen3.8:27b",
   "ollama_chat/gemma4:26b",
@@ -188,6 +188,19 @@ export function resolveExectMethodModel(
     models.find((run) => run.model === model) ??
     models[0]
   );
+}
+
+/** Workbench default: headline cell (LLM extract / rules encode / rules select). */
+export function defaultExectWorkbenchRun(
+  runs: Exectv2RunSummary[],
+  requested?: string | null
+): Exectv2RunSummary | undefined {
+  if (requested) {
+    const resolved = resolveExectv2RunId(runs, requested);
+    const matched = runs.find((run) => run.run_id === resolved);
+    if (matched) return matched;
+  }
+  return resolveExectMethodModel(runs, "llm_extract") ?? runs[0];
 }
 
 export function groupExectv2Runs(runs: Exectv2RunSummary[]): Exectv2RunGroup[] {
