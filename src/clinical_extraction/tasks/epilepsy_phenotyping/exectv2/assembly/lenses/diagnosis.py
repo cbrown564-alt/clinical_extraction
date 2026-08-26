@@ -12,6 +12,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.finding_sto
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lens_ops import (
     LensPolicy,
     LensResult,
+    diagnosis_finding_with_category_convention,
     diagnosis_finding_with_text,
     rewrite_counts,
     text_counts,
@@ -84,7 +85,10 @@ class DiagnosisDictionaryLens(ThinArtifactLens):
                 continue
             kept.append(current)
 
-        kept = list(sd.drop_syndrome_covered_phenotypes(kept))
+        kept = [
+            diagnosis_finding_with_category_convention(finding)
+            for finding in sd.drop_syndrome_covered_phenotypes(kept)
+        ]
 
         added: list[ClinicalFinding] = []
         addition_rule_categories: list[str] = []

@@ -1,6 +1,7 @@
 """Exemplars for ExECT frontend last-rule provenance labels."""
 
 from clinical_extraction.trace_explorer.exectv2_comparison import (
+    _project_predicted_cuis,
     last_diverging_provenance_action,
     last_rule_label,
 )
@@ -62,3 +63,28 @@ def test_prescription_label_names_attribute_before_and_after() -> None:
         last_rule_label(mention)
         == "Dictionary set DrugName from tegretol to carbamazepine"
     )
+
+
+def test_explorer_repairs_epilepsy_category_on_named_seizure_types() -> None:
+    projected = _project_predicted_cuis(
+        [
+            {
+                "entity": "Diagnosis",
+                "text": "focal seizures without change in awareness",
+                "attributes": {"DiagCategory": "Epilepsy"},
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "secondary generalised seizures",
+                "attributes": {"DiagCategory": "Epilepsy"},
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "epilepsy",
+                "attributes": {"DiagCategory": "Epilepsy"},
+            },
+        ]
+    )
+    assert projected[0]["attributes"]["DiagCategory"] == "MultipleSeizures"
+    assert projected[1]["attributes"]["DiagCategory"] == "MultipleSeizures"
+    assert projected[2]["attributes"]["DiagCategory"] == "Epilepsy"

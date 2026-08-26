@@ -91,8 +91,6 @@ def _add_diagnosis_residuals(
         concept = diagnosis_concept(text) or diagnosis_fragment_concept(text)
         if concept is not None:
             attributes = attach_benchmark_concept(attributes, concept)
-            if concept.canonical in {"Epilepsy", "MultipleSeizures", "SingleSeizure"}:
-                attributes["DiagCategory"] = concept.canonical
         added.append(
             {
                 "entity": "Diagnosis",

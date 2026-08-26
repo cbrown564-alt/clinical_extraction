@@ -28,6 +28,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
     load_letters_for_split,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    standard_dictionary as sd,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
     rules,
     structured_one_call,
@@ -440,7 +443,14 @@ def _project_predicted_cuis(
     out: list[dict[str, Any]] = []
     for item, mention in zip(predicted, letter.mentions, strict=True):
         payload = dict(item)
-        payload["attributes"] = dict(projected[id(mention)].attributes)
+        attributes = dict(projected[id(mention)].attributes)
+        if mention.entity == "Diagnosis":
+            current = attributes.get("DiagCategory")
+            if current not in {"MultipleSeizures", "SingleSeizure"}:
+                attributes["DiagCategory"] = sd.diagnosis_convention_category(
+                    mention.text
+                )
+        payload["attributes"] = attributes
         out.append(payload)
     return out
 

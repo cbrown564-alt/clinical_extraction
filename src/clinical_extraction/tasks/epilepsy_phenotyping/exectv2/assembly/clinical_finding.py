@@ -118,6 +118,24 @@ class ClinicalFinding:
             raw_surface=raw_surface,
         )
 
+    def with_attributes(self, attributes: Mapping[str, str]) -> ClinicalFinding:
+        return ClinicalFinding(
+            finding_id=self.finding_id,
+            letter_id=self.letter_id,
+            entity=self.entity,
+            text=self.text,
+            attributes=attributes,
+            evidence=self.evidence,
+            normalized_concept=self.normalized_concept,
+            assertion=self.assertion,
+            confidence=self.confidence,
+            source=self.source,
+            provenance=self.provenance,
+            rationale=self.rationale,
+            evidence_valid=self.evidence_valid,
+            raw_surface=self.raw_surface,
+        )
+
     def with_provenance(self, event: ProvenanceEvent) -> ClinicalFinding:
         return ClinicalFinding(
             finding_id=self.finding_id,

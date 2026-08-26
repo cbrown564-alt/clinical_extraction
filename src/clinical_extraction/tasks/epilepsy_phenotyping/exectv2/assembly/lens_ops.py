@@ -175,7 +175,6 @@ def diagnosis_finding_with_text(
         evidence=finding.evidence or finding.text,
         attributes=attributes,
     )
-    attributes.setdefault("DiagCategory", diagnosis_category_for_concept(text))
     concept = diagnosis_concept(text) or diagnosis_fragment_concept(text)
     if concept is not None:
         attributes = attach_benchmark_concept(attributes, concept)
@@ -210,6 +209,20 @@ def diagnosis_finding_with_text(
     )
 
 
+def diagnosis_finding_with_category_convention(finding: ClinicalFinding) -> ClinicalFinding:
+    """Overwrite DiagCategory from the kept phrase after select noise drop."""
+
+    attributes = dict(finding.attributes)
+    current = attributes.get("DiagCategory")
+    if current in {"MultipleSeizures", "SingleSeizure"}:
+        return finding
+    category = sd.diagnosis_convention_category(finding.text)
+    if current == category:
+        return finding
+    attributes["DiagCategory"] = category
+    return finding.with_attributes(attributes)
+
+
 def diagnosis_added_finding(
     store: ClinicalFindingStore,
     *,
@@ -237,8 +250,6 @@ def diagnosis_added_finding(
     concept = diagnosis_concept(text) or diagnosis_fragment_concept(text)
     if concept is not None:
         attributes = attach_benchmark_concept(attributes, concept)
-        if concept.canonical in {"Epilepsy", "MultipleSeizures", "SingleSeizure"}:
-            attributes["DiagCategory"] = concept.canonical
     return ClinicalFinding(
         finding_id=(
             f"{store.letter_id}:{policy.producer_id}:Diagnosis:lens:{lens_id}:"

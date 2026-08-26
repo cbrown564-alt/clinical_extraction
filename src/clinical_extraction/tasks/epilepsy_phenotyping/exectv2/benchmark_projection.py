@@ -165,7 +165,17 @@ _DIAGNOSIS_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = (
             "focal to bilateral convulsive seizure",
             "bilateral convulsive seizures",
             "bilateral convulsive seizure",
+        ),
+    ),
+    (
+        BenchmarkConcept(
+            "MultipleSeizures",
+            "C0877017",
+            "secondary-generalised-tonic-clonic-seizures",
+        ),
+        (
             "secondary generalised tonic clonic seizures",
+            "secondary generalised tonic clonic seizure",
         ),
     ),
     (

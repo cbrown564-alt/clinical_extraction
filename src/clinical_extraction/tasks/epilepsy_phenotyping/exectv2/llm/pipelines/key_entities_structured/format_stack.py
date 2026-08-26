@@ -213,7 +213,12 @@ def _format_diagnosis(mention: PredictedMention) -> PredictedMention:
     )
     if not target or target == mention.text:
         return mention
-    return mention.model_copy(update={"text": target})
+    attributes = sd.diagnosis_convention_attribute_repairs(
+        target,
+        evidence=mention.evidence or mention.text,
+        attributes=mention.attributes,
+    )
+    return mention.model_copy(update={"text": target, "attributes": attributes})
 
 
 def _format_prescription(

@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection import (
+    diagnosis_concept,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     DIAGNOSIS,
     INVESTIGATIONS,
@@ -37,6 +40,17 @@ def _mention(
         confidence="high",
         rationale="fixture",
     )
+
+
+def test_secondary_generalised_tonic_clonic_keeps_gold_cuiphrase() -> None:
+    concept = diagnosis_concept("secondary generalised tonic clonic seizures")
+    assert concept is not None
+    assert concept.cui == "C0877017"
+    assert concept.cui_phrase == "secondary-generalised-tonic-clonic-seizures"
+    modern = diagnosis_concept("focal to bilateral convulsive seizures")
+    assert modern is not None
+    assert modern.cui == "C0877017"
+    assert modern.cui_phrase == "focal-to-bilateral-convulsive-seizures"
 
 
 def test_schema_keeps_written_findings_without_cui() -> None:
@@ -328,6 +342,20 @@ def test_format_repairs_residual_same_fact_diagnosis_names() -> None:
         "She has only ever had one secondarily generalised seizure.",
     )
     assert single[0].text == "secondarily generalised seizures"
+    assert single[0].attributes["DiagCategory"] == "Epilepsy"
+
+    rewritten, _warnings = structured.apply_format_stack(
+        [
+            _mention(
+                DIAGNOSIS.name,
+                "secondarily generalised seizures",
+                attributes={"DiagCategory": "Epilepsy"},
+            )
+        ],
+        "She continues to have secondarily generalised seizures.",
+    )
+    assert rewritten[0].text == "secondary generalised seizures"
+    assert rewritten[0].attributes["DiagCategory"] == "MultipleSeizures"
 
 
 def test_format_does_not_overwrite_diagnosis_from_a_local_qualifier() -> None:

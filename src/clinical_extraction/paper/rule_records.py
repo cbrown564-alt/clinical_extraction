@@ -422,7 +422,10 @@ RULE_RECORDS: tuple[RuleRecord, ...] = (
         'encode',
         'live',
         'benchmark_format',
-        notes="format when text already rewritten",
+        notes=(
+            "encode when text already rewritten; select overwrites DiagCategory "
+            "on kept mentions after noise drop"
+        ),
     ),
     RuleRecord(
         'diagnosis_concept_remap_from_evidence',

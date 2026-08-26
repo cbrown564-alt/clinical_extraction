@@ -301,5 +301,12 @@ def test_inventory_residuals_ablation_invents_named_type() -> None:
     texts = {(row["entity"], row["text"]) for row in updated}
     assert stats["diagnosis_residual_adds"] >= 1
     assert ("Diagnosis", "focal seizures with altered awareness") in texts
+    added = next(
+        row
+        for row in updated
+        if row["entity"] == "Diagnosis"
+        and row["text"] == "focal seizures with altered awareness"
+    )
+    assert added["attributes"]["DiagCategory"] == "MultipleSeizures"
     assert stats["sf_adds"] == 0
     assert "invent" in inventory_residuals.apply_inventory_residuals.__doc__.lower()

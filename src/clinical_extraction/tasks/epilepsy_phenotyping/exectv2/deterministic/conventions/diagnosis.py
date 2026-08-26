@@ -666,6 +666,16 @@ def diagnosis_format_target(
     return DIAGNOSIS_FORMAT_ALIAS_REPAIRS.get(concept)
 
 
+def diagnosis_convention_category(text: str) -> str:
+    """Gold-scheme DiagCategory for a kept or rewritten diagnosis phrase."""
+
+    surface = " ".join(text.replace("-", " ").replace("—", " ").replace("–", " ").lower().split())
+    surface = surface.replace("generalized", "generalised")
+    if surface in DIAGNOSIS_SINGLE_SEIZURE_SURFACES:
+        return "SingleSeizure"
+    return diagnosis_category_for_concept(text)
+
+
 def diagnosis_convention_attribute_repairs(
     text: str,
     *,
@@ -675,11 +685,9 @@ def diagnosis_convention_attribute_repairs(
     """Return benchmark-format assertion repairs for a convention-rewritten diagnosis."""
 
     repaired = {str(key): str(value) for key, value in attributes.items()}
-    repaired["DiagCategory"] = (
-        "SingleSeizure"
-        if normalize_phrase(text) in DIAGNOSIS_SINGLE_SEIZURE_SURFACES
-        else diagnosis_category_for_concept(text)
-    )
+    current = repaired.get("DiagCategory")
+    if current not in {"MultipleSeizures", "SingleSeizure"}:
+        repaired["DiagCategory"] = diagnosis_convention_category(text)
     concept = canonicalize_diagnosis_concept(text)
     if concept == "epilepsy" and re.search(
         r"Diagnosis:\s*Epilepsy\s*[-–]\s*unclassified", evidence, re.IGNORECASE
