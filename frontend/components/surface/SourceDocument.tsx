@@ -2,6 +2,7 @@
 
 import { useMemo, type ReactNode } from "react";
 import * as Tooltip from "@radix-ui/react-tooltip";
+import { normalizeLetterDisplay } from "@/lib/letterDisplay";
 
 /**
  * The eight highlight hues both datasets draw on the source document. These map
@@ -195,8 +196,24 @@ export default function SourceDocument({
   children?: ReactNode;
   onSpanSelect?: (id: string) => void;
 }) {
-  const cleanText = useMemo(() => unescapeText(text), [text]);
-  const segments = useMemo(() => buildSegments(cleanText, spans), [cleanText, spans]);
+  const display = useMemo(
+    () => normalizeLetterDisplay(unescapeText(text)),
+    [text]
+  );
+  const displaySpans = useMemo(
+    () =>
+      spans.map((span) => ({
+        ...span,
+        start: display.remap(span.start),
+        end: display.remap(span.end),
+      })),
+    [display, spans]
+  );
+  const cleanText = display.text;
+  const segments = useMemo(
+    () => buildSegments(cleanText, displaySpans),
+    [cleanText, displaySpans]
+  );
 
   return (
     <div className="relative rounded-xl border border-border bg-surface p-5 shadow-sm">

@@ -22,7 +22,6 @@ import {
   ganModelsForMethod,
   ganOverallScore,
   ganPickerMethodId,
-  ganPickerMethodLabel,
   ganPipelineOptionLabel,
   isGanAggregateRunId,
   paperGanFamilies,
@@ -35,7 +34,6 @@ import {
   ControlField,
   ControlCombobox,
   LetterPicker,
-  MethodBadge,
   MetricChips,
 } from "@/components/surface";
 
@@ -91,7 +89,7 @@ export default function TraceControls() {
   );
   const selectedMethodId = selectedOption
     ? ganPickerMethodId(selectedOption)
-    : "rules_only";
+    : "llm_extract";
   const modelOptions = useMemo(
     () => ganModelsForMethod(pipelineOptions, selectedMethodId),
     [pipelineOptions, selectedMethodId]
@@ -321,12 +319,6 @@ export default function TraceControls() {
         <>
           {/* Method selection on the far left */}
           <ControlField label="Method" htmlFor="architect-method-select">
-            {selectedOption?.kind && (
-              <MethodBadge
-                method={selectedOption.kind}
-                label={ganPickerMethodLabel(selectedMethodId)}
-              />
-            )}
             <ControlCombobox
               id="architect-method-select"
               noun="method"

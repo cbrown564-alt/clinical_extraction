@@ -120,3 +120,13 @@ export function sortedAttributeKeys(
   });
   return [...identity, ...middle, ...qualifiers];
 }
+
+/** ExECT workbench tables no longer display Certainty or Negation. */
+export function workbenchAttributeKeys(
+  keys: Iterable<string>,
+  family?: string
+): string[] {
+  return sortedAttributeKeys(keys, family).filter(
+    (key) => !isQualifierAttributeKey(key)
+  );
+}

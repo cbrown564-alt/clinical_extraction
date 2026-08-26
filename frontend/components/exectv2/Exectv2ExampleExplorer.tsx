@@ -32,14 +32,13 @@ import {
   exectMethodRequiresModel,
   exectModelsForMethod,
   exectPickerMethodId,
-  exectPickerMethodLabel,
   exectv2OptionLabel,
+  defaultExectWorkbenchRun,
   resolveExectMethodModel,
-  resolveExectv2RunId,
 } from "@/lib/exectv2RunOptions";
 import {
   attributeRank,
-  sortedAttributeKeys,
+  workbenchAttributeKeys,
   type AttributeRank,
 } from "@/lib/attributeOrder";
 import { lastRuleActionLabel } from "@/lib/plainLanguageLabels";
@@ -58,7 +57,6 @@ import {
   useExectv2Runs,
   useExectv2UrlState,
 } from "./useExectv2";
-import { Exectv2ModeBadge } from "./Exectv2ModeBadge";
 
 const FAMILY_IDS = EXECTV2_FAMILIES.map((f) => f.id as Exectv2Entity);
 
@@ -259,7 +257,7 @@ function AttributeDiffTable({
   goldAttrs?: Record<string, string>;
   predAttrs?: Record<string, string>;
 }) {
-  const allKeys = sortedAttributeKeys(
+  const allKeys = workbenchAttributeKeys(
     [...Object.keys(goldAttrs), ...Object.keys(predAttrs)],
     family
   );
@@ -349,7 +347,7 @@ function MentionRow({
   label?: string;
   badgeTone?: string;
 }) {
-  const attrs = sortedAttributeKeys(
+  const attrs = workbenchAttributeKeys(
     Object.keys(mention.attributes),
     mention.entity
   ).flatMap((key) => {
@@ -718,11 +716,7 @@ export default function Exectv2ExampleExplorer() {
   const { get, set } = useExectv2UrlState();
   const [activeFamily, setActiveFamily] = useState<FamilyFilter>("all");
   const selectedRunSummary = useMemo(
-    () => {
-      const requested = get("run");
-      const resolved = requested ? resolveExectv2RunId(runs, requested) : null;
-      return runs.find((run) => run.run_id === resolved) ?? runs[0];
-    },
+    () => defaultExectWorkbenchRun(runs, get("run")),
     [runs, get]
   );
   const selectedRunQuery = useExectv2Run(selectedRunSummary?.run_id);
@@ -749,7 +743,7 @@ export default function Exectv2ExampleExplorer() {
 
   const selectedMethodId = selectedRunSummary
     ? exectPickerMethodId(selectedRunSummary)
-    : "rules_only";
+    : "llm_extract";
   const methodItems = useMemo(
     () =>
       exectMethodChoices(runs).map((method) => ({
@@ -813,10 +807,6 @@ export default function Exectv2ExampleExplorer() {
         left={
           <>
             <ControlField label="Method" htmlFor="exect-method-select">
-              <Exectv2ModeBadge
-                run={selectedRun}
-                label={exectPickerMethodLabel(selectedMethodId)}
-              />
               <ControlCombobox
                 id="exect-method-select"
                 noun="method"

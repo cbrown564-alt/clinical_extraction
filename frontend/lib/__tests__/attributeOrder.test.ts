@@ -1,4 +1,8 @@
-import { attributeRank, sortedAttributeKeys } from "../attributeOrder";
+import {
+  attributeRank,
+  sortedAttributeKeys,
+  workbenchAttributeKeys,
+} from "../attributeOrder";
 
 describe("sortedAttributeKeys", () => {
   it("pins CUI then CUIPhrase, then Diagnosis payload, then qualifiers", () => {
@@ -65,5 +69,16 @@ describe("sortedAttributeKeys", () => {
     expect(attributeRank("UpperNumberOfTimePeriods", "SeizureFrequency")).toBe("primary");
     expect(attributeRank("kind", "GanEvent")).toBe("primary");
     expect(attributeRank("temporality", "GanEvent")).toBe("payload");
+  });
+});
+
+describe("workbenchAttributeKeys", () => {
+  it("omits Certainty and Negation from ExECT workbench tables", () => {
+    expect(
+      workbenchAttributeKeys(
+        ["Negation", "CUIPhrase", "Certainty", "DiagCategory", "CUI"],
+        "Diagnosis"
+      )
+    ).toEqual(["CUI", "CUIPhrase", "DiagCategory"]);
   });
 });
