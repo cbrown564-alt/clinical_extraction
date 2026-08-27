@@ -37,6 +37,18 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.projec
     NAMED_ABSENCE_SURFACES,
     SF_TYPE_PARENT_CUI,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.recognise_ledger import (
+    SF_HEADING_STATE,
+    SF_NAMED_TYPE,
+    SF_SEIZURE_FREE,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
+    annotation_from_mapping,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.seizure_frequency import (
+    _frequency_state,
+    _frequency_state_keys,
+)
 
 DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY = "selection.diagnosis_source_local_specificity"
 DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE = "selection.diagnosis_explicit_heading_phenotype"
@@ -46,10 +58,13 @@ PRESCRIPTION_EXACT_REGIMEN_DEDUPE = "selection.prescription_exact_regimen_dedupe
 SF_NAMED_TYPE_IDENTITY = "selection.sf_named_type_identity"
 SF_RECENT_EVENT_OVER_HISTORICAL_FREE = "selection.sf_recent_event_over_historical_free"
 SF_TO_DIAGNOSIS_EXPLICIT_TYPE = "selection.sf_to_diagnosis_explicit_type"
+SF_SUPPORTED_STATE_PROMOTION = "selection.sf_supported_state_promotion"
 INVENTORY_KEEP_SOURCE_DIAGNOSIS = "selection.inventory_keep_source_diagnosis"
 INVENTORY_WEAK_EPISODE_DROP = "selection.inventory_weak_episode_drop"
 INVESTIGATION_SAME_RESULT_DEDUPE = "selection.investigation_same_result_dedupe"
 SF_RATELESS_ANCHOR_DROP = "selection.sf_rateless_anchor_drop"
+SF_GENERIC_DUPLICATE_DROP = "selection.sf_generic_duplicate_of_named_type_drop"
+SF_SEIZURE_FREE_POSITIVE_COUNT_DROP = "selection.sf_seizure_free_positive_count_drop"
 
 CANDIDATE_SELECT_RULE_IDS: tuple[str, ...] = (
     DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY,
@@ -60,10 +75,13 @@ CANDIDATE_SELECT_RULE_IDS: tuple[str, ...] = (
     SF_NAMED_TYPE_IDENTITY,
     SF_RECENT_EVENT_OVER_HISTORICAL_FREE,
     SF_TO_DIAGNOSIS_EXPLICIT_TYPE,
+    SF_SUPPORTED_STATE_PROMOTION,
     INVENTORY_KEEP_SOURCE_DIAGNOSIS,
     INVENTORY_WEAK_EPISODE_DROP,
     INVESTIGATION_SAME_RESULT_DEDUPE,
     SF_RATELESS_ANCHOR_DROP,
+    SF_GENERIC_DUPLICATE_DROP,
+    SF_SEIZURE_FREE_POSITIVE_COUNT_DROP,
 )
 ACCEPTED_SELECT_RULE_IDS: tuple[str, ...] = (
     DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY,
@@ -97,10 +115,13 @@ _RULE_PORTABILITY_BY_ID = {
     SF_NAMED_TYPE_IDENTITY: "seizure_frequency",
     SF_RECENT_EVENT_OVER_HISTORICAL_FREE: "seizure_frequency",
     SF_TO_DIAGNOSIS_EXPLICIT_TYPE: "benchmark_format",
+    SF_SUPPORTED_STATE_PROMOTION: "seizure_frequency",
     INVENTORY_KEEP_SOURCE_DIAGNOSIS: "clinical_epilepsy",
     INVENTORY_WEAK_EPISODE_DROP: "clinical_epilepsy",
     INVESTIGATION_SAME_RESULT_DEDUPE: "clinical_epilepsy",
     SF_RATELESS_ANCHOR_DROP: "seizure_frequency",
+    SF_GENERIC_DUPLICATE_DROP: "seizure_frequency",
+    SF_SEIZURE_FREE_POSITIVE_COUNT_DROP: "seizure_frequency",
 }
 
 EMITTED_ACTIONS_BY_RULE_ID: dict[str, frozenset[str]] = {
@@ -112,10 +133,13 @@ EMITTED_ACTIONS_BY_RULE_ID: dict[str, frozenset[str]] = {
     SF_NAMED_TYPE_IDENTITY: frozenset({"rewrite"}),
     SF_RECENT_EVENT_OVER_HISTORICAL_FREE: frozenset({"add", "drop"}),
     SF_TO_DIAGNOSIS_EXPLICIT_TYPE: frozenset({"add"}),
+    SF_SUPPORTED_STATE_PROMOTION: frozenset({"add"}),
     INVENTORY_KEEP_SOURCE_DIAGNOSIS: frozenset({"add"}),
     INVENTORY_WEAK_EPISODE_DROP: frozenset({"drop"}),
     INVESTIGATION_SAME_RESULT_DEDUPE: frozenset({"drop"}),
     SF_RATELESS_ANCHOR_DROP: frozenset({"drop"}),
+    SF_GENERIC_DUPLICATE_DROP: frozenset({"drop"}),
+    SF_SEIZURE_FREE_POSITIVE_COUNT_DROP: frozenset({"drop"}),
 }
 
 _DIAGNOSIS_HEADING_RE = re.compile(
@@ -151,11 +175,24 @@ _HISTORICAL_FREE_BEFORE_EVENT_RE = re.compile(
     r"\bbefore\s+(?:this|the|that)\s+seizure\b.*\bseizure[- ]free\b",
     re.IGNORECASE,
 )
+_EXPLICIT_SEIZURE_FREE_EVIDENCE_RE = re.compile(
+    r"\bseizure\s*[-]?\s*free\b|"
+    r"\bno\s+(?:further|more)\s+seizures\b|\bremains?\s+seizure\s*[-]?\s*free\b",
+    re.IGNORECASE,
+)
+
+
+def _has_explicit_seizure_free_evidence(evidence: str) -> bool:
+    return bool(_EXPLICIT_SEIZURE_FREE_EVIDENCE_RE.search(evidence))
+
 
 _GENERIC_SF_CUIS = frozenset({"", "C0036572"})
 _TYPE_HEADING_RE = re.compile(
     r"^\s*(?:diagnosis|seizure\s+type(?:\s+and\s+frequency)?)\s*:",
     re.IGNORECASE,
+)
+_SF_DEFERRED_PROMOTION_CLASSES = frozenset(
+    {SF_NAMED_TYPE, SF_HEADING_STATE, SF_SEIZURE_FREE}
 )
 _INVENTORY_WEAK_EPISODE_PHRASES = frozenset(
     {
@@ -187,7 +224,7 @@ def apply_select_rules(
     unknown_rule_ids = set(enabled_rule_ids) - set(CANDIDATE_SELECT_RULE_IDS)
     if unknown_rule_ids:
         raise ValueError(f"unknown deterministic Select rule id(s): {sorted(unknown_rule_ids)}")
-    del note_text  # Exact evidence validation remains the assembly owner's job.
+    verbatim_note_text = note_text
     working = [_copy_mention(row) for row in selected_mentions]
     source = [_copy_mention(row) for row in source_mentions]
     actions: list[dict[str, Any]] = []
@@ -216,6 +253,9 @@ def apply_select_rules(
     if SF_TO_DIAGNOSIS_EXPLICIT_TYPE in enabled_rule_ids:
         working, records = _project_named_sf_to_diagnosis(working)
         actions.extend(records)
+    if SF_SUPPORTED_STATE_PROMOTION in enabled_rule_ids:
+        working, records = _promote_supported_sf_deferred(working, source, verbatim_note_text)
+        actions.extend(records)
     if INVENTORY_KEEP_SOURCE_DIAGNOSIS in enabled_rule_ids:
         working, records = _keep_source_ancestor_diagnoses(working, source)
         actions.extend(records)
@@ -227,6 +267,12 @@ def apply_select_rules(
         actions.extend(records)
     if SF_RATELESS_ANCHOR_DROP in enabled_rule_ids:
         working, records = _drop_rateless_sf_anchors(working)
+        actions.extend(records)
+    if SF_GENERIC_DUPLICATE_DROP in enabled_rule_ids:
+        working, records = _drop_generic_sf_duplicates_of_named_type(working)
+        actions.extend(records)
+    if SF_SEIZURE_FREE_POSITIVE_COUNT_DROP in enabled_rule_ids:
+        working, records = _drop_seizure_free_positive_count_sf(working)
         actions.extend(records)
 
     return working, actions
@@ -348,6 +394,193 @@ def _drop_rateless_sf_anchors(
             actions.append(_action(SF_RATELESS_ANCHOR_DROP, "drop", before=mention))
             continue
         out.append(mention)
+    return out, actions
+
+
+_SF_FREQUENCY_STATE_RATE_KEYS: tuple[str, ...] = (
+    "NumberOfSeizures",
+    "LowerNumberOfSeizures",
+    "UpperNumberOfSeizures",
+    "TimePeriod",
+    "NumberOfTimePeriods",
+)
+_SEIZURE_FREE_CUI = "C1299590"
+
+
+def _sf_frequency_state_unit_key(mention: Mapping[str, Any]) -> tuple[Any, ...]:
+    attrs = _attrs(mention)
+    state = _frequency_state(attrs)
+    rate = tuple(
+        sorted(
+            (key, str(attrs[key]))
+            for key in _SF_FREQUENCY_STATE_RATE_KEYS
+            if attrs.get(key)
+        )
+    )
+    return (state, rate)
+
+
+def _is_generic_sf_mention(mention: Mapping[str, Any]) -> bool:
+    return _entity(mention) == "SeizureFrequency" and _sf_cui(mention) in _GENERIC_SF_CUIS
+
+
+def _is_named_sf_mention(mention: Mapping[str, Any]) -> bool:
+    return _entity(mention) == "SeizureFrequency" and _sf_cui(mention) not in _GENERIC_SF_CUIS
+
+
+def _drop_generic_sf_duplicates_of_named_type(
+    selected: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    named_units = {
+        _sf_frequency_state_unit_key(mention)
+        for mention in selected
+        if _is_named_sf_mention(mention)
+    }
+    out: list[dict[str, Any]] = []
+    actions: list[dict[str, Any]] = []
+    for mention in selected:
+        if (
+            _is_generic_sf_mention(mention)
+            and _sf_frequency_state_unit_key(mention) in named_units
+        ):
+            actions.append(_action(SF_GENERIC_DUPLICATE_DROP, "drop", before=mention))
+            continue
+        out.append(mention)
+    return out, actions
+
+
+def _is_seizure_free_surface(mention: Mapping[str, Any]) -> bool:
+    if _entity(mention) != "SeizureFrequency":
+        return False
+    attrs = _attrs(mention)
+    if attrs.get("CUI") == _SEIZURE_FREE_CUI:
+        return True
+    phrase = normalize_phrase(str(mention.get("text") or ""))
+    cuiphrase = normalize_phrase(str(attrs.get("CUIPhrase") or ""))
+    return phrase == "seizure free" or cuiphrase == "seizure free"
+
+
+def _has_positive_sf_count(mention: Mapping[str, Any]) -> bool:
+    attrs = _attrs(mention)
+    for key in ("NumberOfSeizures", "LowerNumberOfSeizures", "UpperNumberOfSeizures"):
+        value = str(attrs.get(key) or "")
+        if not value or value == "0":
+            continue
+        try:
+            if float(value) > 0:
+                return True
+        except ValueError:
+            return True
+    return False
+
+
+def _drop_seizure_free_positive_count_sf(
+    selected: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    out: list[dict[str, Any]] = []
+    actions: list[dict[str, Any]] = []
+    for mention in selected:
+        if _is_seizure_free_surface(mention) and _has_positive_sf_count(mention):
+            actions.append(
+                _action(SF_SEIZURE_FREE_POSITIVE_COUNT_DROP, "drop", before=mention)
+            )
+            continue
+        out.append(mention)
+    return out, actions
+
+
+def _sf_inventory_unit_keys(mention: Mapping[str, Any]) -> tuple[Any, ...]:
+    annotation = annotation_from_mapping(dict(mention))
+    return tuple(_frequency_state_keys([annotation], "clinical_headline"))
+
+
+def _selected_sf_inventory_unit_keys(selected: Sequence[Mapping[str, Any]]) -> set[Any]:
+    keys: set[Any] = set()
+    for mention in selected:
+        if _entity(mention) == "SeizureFrequency":
+            keys.update(_sf_inventory_unit_keys(mention))
+    return keys
+
+
+def _evidence_on_frequency_section_line(evidence: str, note_text: str) -> bool:
+    for line in note_text.splitlines():
+        if evidence not in line:
+            continue
+        if "seizure type and frequency" in line.lower():
+            return True
+    return False
+
+
+def _sf_deferred_candidate_supported(
+    mention: Mapping[str, Any],
+    *,
+    note_text: str,
+) -> bool:
+    candidate_class = str(mention.get("candidate_class") or "")
+    evidence = str(mention.get("evidence") or "")
+    if candidate_class == SF_NAMED_TYPE:
+        return _evidence_on_frequency_section_line(evidence, note_text)
+    if candidate_class == SF_SEIZURE_FREE:
+        return _has_explicit_seizure_free_evidence(evidence)
+    if candidate_class == SF_HEADING_STATE:
+        return _frequency_state(_attrs(mention)) != "unknown"
+    return False
+
+
+def _should_promote_sf_deferred_candidate(
+    mention: Mapping[str, Any],
+    *,
+    selected_units: set[Any],
+) -> bool:
+    candidate_class = str(mention.get("candidate_class") or "")
+    unit_keys = _sf_inventory_unit_keys(mention)
+    if not unit_keys:
+        return False
+    if any(unit in selected_units for unit in unit_keys):
+        return False
+    if candidate_class == SF_NAMED_TYPE:
+        return True
+    state = _frequency_state(_attrs(mention))
+    return state != "unknown"
+
+
+def _promote_supported_sf_deferred(
+    selected: list[dict[str, Any]],
+    source: list[dict[str, Any]],
+    note_text: str,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    selected_units = _selected_sf_inventory_unit_keys(selected)
+    out = list(selected)
+    actions: list[dict[str, Any]] = []
+    for mention in source:
+        if str(mention.get("candidate_class") or "") not in _SF_DEFERRED_PROMOTION_CLASSES:
+            continue
+        if _entity(mention) != "SeizureFrequency":
+            continue
+        evidence = str(mention.get("evidence") or "")
+        if not evidence or evidence not in note_text:
+            continue
+        if not _sf_deferred_candidate_supported(mention, note_text=note_text):
+            continue
+        if not _should_promote_sf_deferred_candidate(
+            mention,
+            selected_units=selected_units,
+        ):
+            continue
+        addition = _with_action_provenance(
+            _copy_mention(mention),
+            rule_id=SF_SUPPORTED_STATE_PROMOTION,
+            action="add",
+        )
+        out.append(addition)
+        selected_units.update(_sf_inventory_unit_keys(addition))
+        actions.append(
+            _action(
+                SF_SUPPORTED_STATE_PROMOTION,
+                "add",
+                after=addition,
+            )
+        )
     return out, actions
 
 
@@ -1027,11 +1260,14 @@ __all__ = [
     "INVESTIGATION_SAME_RESULT_DEDUPE",
     "RULES_ONLY_SELECT_RULE_IDS",
     "SF_RATELESS_ANCHOR_DROP",
+    "SF_GENERIC_DUPLICATE_DROP",
+    "SF_SEIZURE_FREE_POSITIVE_COUNT_DROP",
     "PRESCRIPTION_ACTIVE_TITRATION",
     "PRESCRIPTION_EXACT_REGIMEN_DEDUPE",
     "PRESCRIPTION_LOCAL_REGIMEN_SCOPE",
     "SF_NAMED_TYPE_IDENTITY",
     "SF_RECENT_EVENT_OVER_HISTORICAL_FREE",
+    "SF_SUPPORTED_STATE_PROMOTION",
     "SF_TO_DIAGNOSIS_EXPLICIT_TYPE",
     "apply_select_rules",
 ]

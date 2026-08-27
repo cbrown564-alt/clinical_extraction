@@ -21,8 +21,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select
     PRESCRIPTION_ACTIVE_TITRATION,
     PRESCRIPTION_EXACT_REGIMEN_DEDUPE,
     PRESCRIPTION_LOCAL_REGIMEN_SCOPE,
+    RULES_ONLY_SELECT_RULE_IDS,
+    SF_GENERIC_DUPLICATE_DROP,
     SF_NAMED_TYPE_IDENTITY,
     SF_RECENT_EVENT_OVER_HISTORICAL_FREE,
+    SF_SEIZURE_FREE_POSITIVE_COUNT_DROP,
     SF_TO_DIAGNOSIS_EXPLICIT_TYPE,
     apply_select_rules,
 )
@@ -900,6 +903,15 @@ def test_select_rule_stack_rejects_unknown_rule_ids() -> None:
             note_text="",
             enabled_rule_ids=frozenset({"selection.typo"}),
         )
+
+
+def test_sf_candidate_drop_rules_are_catalogued_but_not_accepted() -> None:
+    for rule_id in (SF_GENERIC_DUPLICATE_DROP, SF_SEIZURE_FREE_POSITIVE_COUNT_DROP):
+        assert rule_id in CANDIDATE_SELECT_RULE_IDS
+        assert rule_id not in RULES_ONLY_SELECT_RULE_IDS
+        assert rule_id not in ACCEPTED_SELECT_RULE_IDS
+        assert rule_id not in INVENTORY_SELECT_RULE_IDS
+        assert EMITTED_ACTIONS_BY_RULE_ID[rule_id] == frozenset({"drop"})
 
 
 def test_emitted_actions_by_rule_id_covers_candidate_rules() -> None:

@@ -40,10 +40,16 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
 )
 
-from .association import associate_attributes_to_anchors
-from .candidates import AnchorCandidate, AttributeExtraction
+from .association import (
+    _MAX_ASSOCIATION_GAP,
+    _gap,
+    _sentence_breaks,
+    _sentence_index,
+    associate_attributes_to_anchors,
+)
+from .candidates import AnchorCandidate, AttributeExtraction, AttributeKind
 from .frequency_section import frequency_section_mentions
-from .lexicon import assign_cui
+from .lexicon import GENERIC_SF_CUIS, assign_cui
 from .overlap import resolve_overlapping_anchors, resolve_overlapping_attributes
 from .rule_metadata import DEFAULT_ABLATION, AblationConfig, ExtractionContext
 from .sf_surface_registry.adapters.extraction import (
@@ -54,6 +60,16 @@ from .sf_surface_registry.adapters.extraction import (
     TEMPORAL_RULES,
 )
 from .statement_parser import statement_mentions
+
+_EXPLICIT_SEIZURE_FREE_EVIDENCE_RE = re.compile(
+    r"\bseizure\s*[-]?\s*free\b|"
+    r"\bno\s+(?:further|more)\s+seizures\b|\bremains?\s+seizure\s*[-]?\s*free\b",
+    re.IGNORECASE,
+)
+
+
+def _has_explicit_seizure_free_evidence(evidence: str) -> bool:
+    return bool(_EXPLICIT_SEIZURE_FREE_EVIDENCE_RE.search(evidence))
 
 
 def _collect_anchors(text: str, ablation: AblationConfig) -> list[AnchorCandidate]:
@@ -443,6 +459,175 @@ def extract_seizure_frequency(
             "mention_count": len(mentions),
         },
     )
+
+
+def _default_sf_mention_keys(
+    text: str,
+    ablation: AblationConfig,
+) -> set[tuple[str, str, tuple[tuple[str, str], ...]]]:
+    letter = ExectLetter(letter_id="", note_text=text)
+    prediction = extract_seizure_frequency(letter, ablation)
+    return {_mention_key(mention) for mention in prediction.mentions}
+
+
+def _has_heading_frequency_state(mention: PredictedMention) -> bool:
+    if not mention.component_owner.startswith("deterministic_frequency_section"):
+        return False
+    semantic_keys = set(mention.attributes) - {"CUI", "CUIPhrase"}
+    return bool(semantic_keys)
+
+
+def _is_named_type_anchor(anchor: AnchorCandidate) -> bool:
+    cui = assign_cui(anchor.text)
+    return cui is not None and cui not in GENERIC_SF_CUIS
+
+
+def _unassociated_attributes(
+    anchors: list[AnchorCandidate],
+    attributes: list[AttributeExtraction],
+    text: str,
+) -> list[AttributeExtraction]:
+    if not anchors:
+        return list(attributes)
+
+    breaks = _sentence_breaks(text)
+    anchor_sentences = [_sentence_index(anchor.span[0], breaks) for anchor in anchors]
+    associated: set[int] = set()
+    for attr_index, attr in enumerate(attributes):
+        attr_sentence = _sentence_index(attr.span[0], breaks)
+        same_sentence = [
+            index for index, sentence in enumerate(anchor_sentences) if sentence == attr_sentence
+        ]
+        if not same_sentence:
+            continue
+        nearest_idx = min(
+            same_sentence,
+            key=lambda index: (
+                _gap(anchors[index].span, attr.span),
+                abs(anchors[index].span[0] - attr.span[0]),
+            ),
+        )
+        if _gap(anchors[nearest_idx].span, attr.span) <= _MAX_ASSOCIATION_GAP:
+            associated.add(attr_index)
+    return [attributes[index] for index in range(len(attributes)) if index not in associated]
+
+
+def _mention_from_orphan_seizure_free(attr: AttributeExtraction) -> PredictedMention:
+    evidence = attr.evidence
+    attrs = {**dict(attr.attributes), "CUI": "C1299590", "CUIPhrase": "seizure"}
+    return PredictedMention(
+        entity=SEIZURE_FREQUENCY.name,
+        text="seizure",
+        attributes=attrs,
+        evidence=evidence,
+        component_owner="deterministic",
+    )
+
+
+def _deferred_sf_named_type_candidates(
+    text: str,
+    ablation: AblationConfig,
+) -> tuple:
+    from .recognise_ledger import SF_NAMED_TYPE, RecogniseCandidate
+
+    anchors = _collect_anchors(text, ablation)
+    attributes = _collect_attributes(text, ablation)
+    anchors = [anchor for anchor in anchors if anchor.evidence and anchor.evidence in text]
+    pairs = associate_attributes_to_anchors(anchors, attributes, text)
+    paired_spans = {anchor.span for anchor, _attrs in pairs}
+    candidates: list[RecogniseCandidate] = []
+    for anchor in anchors:
+        if anchor.span in paired_spans:
+            continue
+        if not _is_named_type_anchor(anchor):
+            continue
+        mention = _mention_from_pair(anchor, {})
+        candidates.append(
+            RecogniseCandidate(
+                mention=mention,
+                candidate_class=SF_NAMED_TYPE,
+                rule_id="recognise.sf_named_type",
+            )
+        )
+    return tuple(candidates)
+
+
+def _deferred_sf_heading_state_candidates(
+    text: str,
+    ablation: AblationConfig,
+) -> tuple:
+    from .recognise_ledger import SF_HEADING_STATE, RecogniseCandidate
+
+    default_keys = _default_sf_mention_keys(text, ablation)
+    candidates: list[RecogniseCandidate] = []
+    for mention in frequency_section_mentions(text):
+        if not _has_heading_frequency_state(mention):
+            continue
+        if _mention_key(mention) in default_keys:
+            continue
+        candidates.append(
+            RecogniseCandidate(
+                mention=mention,
+                candidate_class=SF_HEADING_STATE,
+                rule_id="recognise.sf_heading_state",
+            )
+        )
+    return tuple(candidates)
+
+
+def _deferred_sf_seizure_free_candidates(
+    text: str,
+    ablation: AblationConfig,
+) -> tuple:
+    from .recognise_ledger import SF_SEIZURE_FREE, RecogniseCandidate
+
+    anchors = _collect_anchors(text, ablation)
+    attributes = _collect_attributes(text, ablation)
+    anchors = [anchor for anchor in anchors if anchor.evidence and anchor.evidence in text]
+    attributes = [attr for attr in attributes if attr.evidence and attr.evidence in text]
+    orphans = _unassociated_attributes(anchors, attributes, text)
+    default_keys = _default_sf_mention_keys(text, ablation)
+    candidates: list[RecogniseCandidate] = []
+    for attr in orphans:
+        if attr.kind != AttributeKind.SEIZURE_FREE:
+            continue
+        if not _has_explicit_seizure_free_evidence(attr.evidence):
+            continue
+        mention = _mention_from_orphan_seizure_free(attr)
+        if _mention_key(mention) in default_keys:
+            continue
+        candidates.append(
+            RecogniseCandidate(
+                mention=mention,
+                candidate_class=SF_SEIZURE_FREE,
+                rule_id="recognise.sf_seizure_free",
+            )
+        )
+    return tuple(candidates)
+
+
+def deferred_sf_candidates(
+    letter: ExectLetter,
+    enabled_classes: frozenset[str],
+) -> tuple:
+    """Deferred SeizureFrequency recognise candidates for reconstruction move M3."""
+
+    from .recognise_ledger import (
+        SF_HEADING_STATE,
+        SF_NAMED_TYPE,
+        SF_SEIZURE_FREE,
+    )
+
+    text = letter.note_text
+    ablation = DEFAULT_ABLATION
+    candidates: list = []
+    if SF_NAMED_TYPE in enabled_classes:
+        candidates.extend(_deferred_sf_named_type_candidates(text, ablation))
+    if SF_HEADING_STATE in enabled_classes:
+        candidates.extend(_deferred_sf_heading_state_candidates(text, ablation))
+    if SF_SEIZURE_FREE in enabled_classes:
+        candidates.extend(_deferred_sf_seizure_free_candidates(text, ablation))
+    return tuple(candidates)
 
 
 def run_on_letters(
