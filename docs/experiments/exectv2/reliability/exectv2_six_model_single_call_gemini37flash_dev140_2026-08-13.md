@@ -1,0 +1,103 @@
+# ExECTv2 Focused-Lane Component-Evidence Replay
+
+- Generated: `2026-08-13`
+- Split/stage: `dev140` / `dev140140`
+- Candidate: `exectv2_six_model_single_call_gemini37flash_dev140`
+- Gate decision: **same-core-model-swap-dev140-readout**
+- Claim boundary: ExECTv2 dev140 Gemini 3.7 Flash successor-roster candidate only.
+- JSON: `experiments/exectv2_six_model_single_call_gemini37flash_dev140_20260813.json`
+- JSONL: `experiments/exectv2_six_model_single_call_gemini37flash_dev140_20260813.jsonl`
+
+## Finding Assembly
+
+This replay builds a per-letter clinical finding store, applies entity-specific lenses, and renders scoring views from the same final findings. It is a structural replay over frozen artifacts; it introduces no live model calls.
+
+| Entity | Producer | Lens | Ownership |
+| --- | --- | --- | --- |
+| Diagnosis | `experiments/exectv2_six_model_single_call_gemini37flash_dev140_20260813_structured.jsonl` | `diagnosis_heading_recovery_residual_benchmark_v05` | `named_model_structured_diagnosis_plus_rules` |
+| SeizureFrequency | `experiments/exectv2_six_model_single_call_gemini37flash_dev140_20260813_sf_unknown_suppression.jsonl` | `sf_state_projection_suppression_v01` | `named_model_sf_plus_projection_suppression` |
+| Prescription | `experiments/exectv2_six_model_single_call_gemini37flash_dev140_20260813_structured.jsonl` | `prescription_dictionary_v09` | `named_model_prescription_plus_shared_rules` |
+| Investigations | `experiments/exectv2_six_model_single_call_gemini37flash_dev140_20260813_structured.jsonl` | `investigations_result_v01` | `named_model_investigations` |
+
+## Score Views
+
+| View | Legacy surface | Overall F1 | Diagnosis | SeizureFrequency | Prescription | Investigations |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| raw_candidate | `raw_lane_score` | 0.8444 | 0.7640 | 0.7634 | 0.9580 | 0.9470 |
+| post_lens | `post_lens_score` | 0.8864 | 0.8715 | 0.7732 | 0.9559 | 0.9470 |
+| benchmark_cui | `cui_projection_companion` | 0.8864 | 0.8715 | 0.7732 | 0.9559 | 0.9470 |
+| clinical_headline | `headline_target` | 0.8952 | 0.8715 | 0.8179 | 0.9559 | 0.9470 |
+
+## Materialized Intermediate Surfaces
+
+| Surface | Overall F1 | Diagnosis | SeizureFrequency | Prescription | Investigations |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `source_scored` | 0.8466 | 0.7640 | 0.7732 | 0.9580 | 0.9470 |
+| `evidence_valid` | 0.8466 | 0.7640 | 0.7732 | 0.9580 | 0.9470 |
+| `protocol_model_preserving_canonical` | 0.8466 | 0.7640 | 0.7732 | 0.9580 | 0.9470 |
+| `dictionary_normalized` | 0.8684 | 0.8212 | 0.7732 | 0.9559 | 0.9470 |
+| `residual_benchmark_added` | 0.8864 | 0.8715 | 0.7732 | 0.9559 | 0.9470 |
+
+## Fact-Origin Accounting
+
+| Surface | post_model_rescue | target_model_generated |
+| --- | ---: | ---: |
+| `source_scored` | 0 | 827 |
+| `evidence_valid` | 0 | 827 |
+| `protocol_model_preserving_canonical` | 0 | 827 |
+| `dictionary_normalized` | 0 | 818 |
+| `residual_benchmark_added` | 44 | 818 |
+
+## Benchmark And Fidelity Views
+
+| Surface | Value |
+| --- | ---: |
+| Benchmark raw | 0.5111 |
+| Benchmark after CUI/projection | 0.5457 |
+| Diagnosis.concept_negation | 0.8614 |
+| SeizureFrequency.active_rate_fidelity | 0.6587 |
+
+## Gate Summary
+
+| Gate | Status | Detail |
+| --- | --- | --- |
+| Prescription control regression | pass | delta vs v0.42 control +0.1345; floor -0.0100 |
+| Investigations control regression | pass | delta vs v0.42 control +0.0855; floor -0.0100 |
+| Diagnosis headline | pass | 0.8715; must beat 0.6693 and tie/beat 0.7127 |
+| Diagnosis concept_negation | pass | 0.8614; baseline 0.6693 |
+| SeizureFrequency headline | pass | 0.8179; must beat 0.5572 and tie/beat 0.6321 |
+| SeizureFrequency active_rate_fidelity | pass | 0.6587; baseline 0.2887 |
+| Prescription changed-row control | fail | 41 changed rows |
+| Investigations changed-row control | pass | 0 changed rows |
+
+## Lens Diagnostics
+
+| Entity | Call failures | Parse/schema failures | Evidence-invalid dropped | Exact evidence rate |
+| --- | ---: | ---: | ---: | ---: |
+| Diagnosis | 0 | 0 | 0 | 1.0000 |
+| SeizureFrequency | 0 | 0 | 0 | 1.0000 |
+| Prescription | 0 | 0 | 0 | 1.0000 |
+| Investigations | 0 | 0 | 0 | 1.0000 |
+
+## Changed Rows
+
+| Comparison | Indicator | Changed rows | Categories |
+| --- | --- | ---: | --- |
+| versus_v042_default_quarantine | Diagnosis | 58 | assertion_or_negation_change=40, hierarchy_reconciliation_or_duplicate_collapse=40, hierarchy_reconciliation=16, projection_only=2 |
+| versus_v042_default_quarantine | SeizureFrequency | 34 | seizure_free=20, projection_action=33, unknown_or_change_state=10, reject_or_drop=1, active_rate=19 |
+| versus_v042_default_quarantine | Prescription | 41 | model_output=41 |
+| versus_v042_default_quarantine | Investigations | 0 | none |
+
+Every row-level mention carries source artifact, source lane, ownership, producer provenance, lens provenance, evidence-valid status, and the rendered scoring view can be reconstructed from the JSONL.
+
+
+## Same-Core Model-Swap Contract
+
+- Architecture core: `exectv2_decision_0041_six_model_single_call_dev140_v1`
+- Model: `Gemini 3.7 Flash` (`gemini/gemini-3.7-flash`)
+- Runtime: `gemini_openai_compat`
+- Prompt profile: `full`
+- Calls per letter: `1.0`
+- Live call components: `structured_key_family_event_ledger`
+- Replayed/no-call components: `sf_structured_direct_adapter, sf_state_projection, sf_unknown_suppression, prescription_dictionary_lens, finding_assembly`
+- Row inspection policy: `dev140_only_no_full200_or_holdout_row_level_inspection`
