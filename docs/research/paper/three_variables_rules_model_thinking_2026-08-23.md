@@ -1,6 +1,7 @@
 # Three variables: stage ownership, model, and thinking
 
 Date: 2026-08-23
+Revised: 2026-08-27 (ExECT six-model roster cites inventory `exect_llm_extract`)
 Status: working results draft; not a cited table owner
 Owners: [methods](../../paper/methods.md),
 [claims](../../paper/claims.md),
@@ -172,7 +173,8 @@ least. It may say a model-plus-rules mix beats all-rules and
 all-model on holdout, with both holdout peaks at LLM / rules / rules.
 It may say rules are the better encode/select owner when score, cost, and
 replay are taken together. It may say model quality shows up most at
-recognise, and that rules shrink but do not close the Luna gap.
+recognise, and that rules shrink but do not close the Luna / local-model
+gaps on either task.
 
 It may not promote medium or high thinking over living low. It may
 not treat development all-rules wins as the holdout result. It may

@@ -1,7 +1,7 @@
 # Six-model roster
 
 Date: 2026-08-17
-Revised: 2026-08-23 (ExECT cited score is 4-family micro F1)
+Revised: 2026-08-27 (ExECT inventory cell-3 roster complete for all six models)
 Status: current
 Owner: [paper methods](../methods.md)
 Roster: [`paper_experiments/roster.json`](../../../paper_experiments/roster.json)
