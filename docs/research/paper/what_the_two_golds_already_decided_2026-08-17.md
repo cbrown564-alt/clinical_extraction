@@ -40,7 +40,7 @@ distinction.
 | Information that may be discarded | Bounds, temporal detail, alternative true statements, and distinctions within a band | Unannotated clinical nuance, hedging or defaults not represented by the scored features |
 
 The paper should therefore treat annotation policy as the evaluation form
-used here, not as passive bookkeeping after extraction, and not as the
+used here, not as passive bookkeeping after recognition, and not as the
 definition of the method.
 
 ## ExECT decided that the inventory is the object

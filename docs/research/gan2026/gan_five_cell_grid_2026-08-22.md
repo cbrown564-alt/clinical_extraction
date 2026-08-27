@@ -13,12 +13,12 @@ primary.
 
 ## Answer
 
-The cited Gemini table is five role combinations. Each of extract,
+The cited Gemini table is five role combinations. Each of recognise,
 encode, and select is **rules**, **LLM**, or **both**. The headline
-score is the select stop (the submitted label). Extract and encode
+score is the select stop (the submitted label). Recognise and encode
 stops are prior-stage ablations. `gan_llm_only` is not a results column.
 
-On locked `test450`, LLM extract plus codebook rule encode plus rule
+On locked `test450`, LLM recognise plus codebook rule encode plus rule
 select is the strongest row (**0.83**). Rule select without that
 encode is **0.82**, matching both-then-rules. LLM select is **0.79**.
 Standalone rules are **0.73**. The historical selected-evidence
@@ -26,7 +26,7 @@ encoder on the same extract is an ablation (encode 0.77, select 0.80).
 
 ## Locked `test450` headline (select stop, aggregate only)
 
-| Extract | Encode | Select | Purist |
+| Recognise | Encode | Select | Purist |
 | --- | --- | --- | ---: |
 | rules | rules | rules | 0.73 |
 | both | rules | rules | 0.82 |
@@ -34,15 +34,15 @@ encoder on the same extract is an ablation (encode 0.77, select 0.80).
 | LLM | LLM | rules | 0.82 |
 | LLM | LLM | LLM | 0.79 |
 
-`both` extract is `gan_llm_and_rules_extract`. LLM extract is
-`gan_llm_extract`. LLM encode means the extract already
+`both` recognise is `gan_llm_and_rules_extract`. LLM recognise is
+`gan_llm_extract`. LLM encode means the recognise already
 wrote the codebook form (no rule encode). LLM select is
 `gan_llm_select_from_extract`. The LLM-then-rules encode is
 `gan_rules_encode`.
 
 ## Prior-stage ablation (same rows)
 
-| Extract | Encode | Select | Extract stop | Encode stop |
+| Recognise | Encode | Select | Recognise stop | Encode stop |
 | --- | --- | --- | ---: | ---: |
 | rules | rules | rules | 0.73 | 0.73 |
 | both | rules | rules | 0.82 | 0.80 |
@@ -52,7 +52,7 @@ wrote the codebook form (no rule encode). LLM select is
 
 ## `dev750` select (`gan_rules_encode` on the LLM-then-rules row)
 
-| Extract | Encode | Select | Purist |
+| Recognise | Encode | Select | Purist |
 | --- | --- | --- | ---: |
 | rules | rules | rules | 0.89 |
 | both | rules | rules | 0.89 |

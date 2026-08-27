@@ -8,14 +8,16 @@ Code: [`src/clinical_extraction/paper/comparison_contract.py`](../../../src/clin
 ## Decision
 
 Every new living paper cell writes one envelope. The cited number is
-the **select** stop. Extract and encode are prior-stage scores on the
+the **select** stop. Recognise and encode are prior-stage scores on the
 same raw. Gan uses Purist. ExECT uses 4-family micro F1
 (`clinical_inventory_unit_keys`).
 
 Required identity: `task`, `method`, `cell`, `model_slug`, `split`,
 `row_policy`, `scorer`, `prompt_version`, `replay_mode`,
 `headline` (`select`). Required stages: `extract`, `encode`,
-`select`. Each stage carries the cited metric and counts.
+`select` (paper language: recognise / encode / select; the first
+envelope key is still `extract`). Each stage carries the cited
+metric and counts.
 
 Living ExECT cells must not use `hybrid_headline_f1` or
 `four_family_headline_f1` as the primary field. Those names remain

@@ -27,14 +27,14 @@ in ExECT—Pragmatic accuracy for Gan and precision and recall for ExECT are
 reported as complementary measures to show how each configuration's errors are
 distributed. Scores are reported separately and are not pooled across tasks.
 
-## B. Model-led extraction with rule-based later stages gave the strongest result
+## B. Model-led recognition with rule-based later stages gave the strongest result
 
 Across both held-out tasks, the five-cell comparison found that Gemini
-candidate extraction followed by rule-based encoding and selection was the
+candidate recognition followed by rule-based encoding and selection was the
 best-performing allocation, outperforming both standalone rules and the
 end-to-end model configuration (Table 1).
 
-| Candidate extraction | Task encoding | Final selection | Gan `test450` Purist accuracy | ExECT `test60` four-family micro F1 |
+| Candidate recognition | Task encoding | Final selection | Gan `test450` Purist accuracy | ExECT `test60` four-family micro F1 |
 | --- | --- | --- | ---: | ---: |
 | Rules | Rules | Rules | 0.73 | 0.77 |
 | Model and rules | Rules | Rules | 0.82 | 0.86 |
@@ -46,7 +46,7 @@ end-to-end model configuration (Table 1).
 Flash. The cited score is the output after final selection. Gan and ExECT use
 different metrics and are displayed side by side rather than combined.
 
-On Gan, replacing rule-based candidate extraction with Gemini raised Purist
+On Gan, replacing rule-based candidate recognition with Gemini raised Purist
 accuracy from 0.73 to 0.83 when encoding and selection remained rule based,
 while assigning those later stages to the model reduced the final score to
 0.79.
@@ -78,13 +78,13 @@ held-out prevalence, clinical safety, or causal necessity.
 taxonomy, and representative development cases. The main paper should retain
 only the subgroup finding needed to explain the headline scores.
 
-## D. Source-faithful extraction incurred a small performance cost *(optional)*
+## D. Source-faithful recognition incurred a small performance cost *(optional)*
 
 The Gan source-form ablation held the multi-candidate output schema constant
 and changed only the form written by the model: the headline request emitted
 gold-aligned encoded candidates, whereas the source-near request retained the
 wording and uncertainty of the letter. Later rule encoding and selection
-recovered much of the source-near deficit, but the bundled extract-and-encode
+recovered much of the source-near deficit, but the bundled recognise-and-encode
 request retained the better final score.
 
 This is a choice between task performance and source fidelity, rather than a
@@ -98,7 +98,7 @@ this subsection to supporting material.]**
 ## E. More reasoning effort did not materially improve the preferred pipeline
 
 Across the tested effort levels, increasing Gemini's reasoning budget produced
-little or no improvement in the model-extract, rule-encode, rule-select
+little or no improvement in the model-recognise, rule-encode, rule-select
 pipeline. On Gan, low effort achieved the best final Purist result (0.831),
 compared with 0.813 at medium effort and 0.818 at high effort. The ExECT
 thinking comparison is reported as a clearly labelled secondary
@@ -108,14 +108,14 @@ high effort.
 
 Higher-effort settings increased computational cost and latency without a
 corresponding improvement in the primary task metrics. The practical finding
-is therefore bounded: once the model's role is fixed to candidate extraction,
+is therefore bounded: once the model's role is fixed to candidate recognition,
 the study does not support spending additional reasoning budget on this
 pipeline.
 
 ## F. Rules reduced, but did not remove, differences between models
 
 The six-model cell-3 comparison assesses whether the preferred allocation is
-stable when only the candidate-extraction model changes. It should report the
+stable when only the candidate-recognition model changes. It should report the
 performance pattern across the completed roster without treating Gemini as the
 object of the comparison: stronger models are expected to form a close group,
 while weaker models provide a more demanding test of the later rule stages.
@@ -124,14 +124,14 @@ while weaker models provide a more demanding test of the later rule stages.
 Later rule-based encoding and selection narrowed, but did not remove,
 performance differences between models: rules can correct task-form and
 selection errors in an existing candidate record, but cannot reconstruct a
-clinically relevant distinction omitted or collapsed at extraction. This
+clinically relevant distinction omitted or collapsed at recognition. This
 provides the deployment trade-off relevant to local open-source models: later
 rules may compensate for some weaker extraction, but model capability remains
 material.
 
 **Figure 1.** Six-model cell-3 comparison before and after later rule-based
 processing. Plot each completed model separately for Gan and ExECT, with the
-model-extract output and final rule-processed output connected. The caption
+model-recognise output and final rule-processed output connected. The caption
 should state the split, scorer, configuration, and whether the ExECT surface
 uses the cited four-family inventory scorer or a clearly labelled secondary
 surface.

@@ -6,9 +6,9 @@ Status: current
 Owner: this file
 
 This page is the paper's reading of the living comparison. Method names
-and splits are on [methods](methods.md). The Gan headline table is five role rows. Each of extract, encode,
+and splits are on [methods](methods.md). The Gan headline table is five role rows. Each of recognise, encode,
 and select is rules, LLM, or both. The cited score is the select
-stop. Extract and encode stops are prior-stage ablations. ExECT
+stop. Recognise and encode stops are prior-stage ablations. ExECT
 uses the same five role rows. Neither table is five depths of one
 hybrid switch. Replayable
 numbers live in
@@ -31,9 +31,9 @@ the page is the supported reading, not a list of things to avoid.
 | **Unsupported** | The files do not bear the sentence. |
 
 Gemini 3.7 Flash is the cited model, so the story stays on the
-method. The six-model comparison is cell 3 only (LLM extract, rules
+method. The six-model comparison is cell 3 only (LLM recognise, rules
 encode, rules select) on both tasks. Thinking low / medium / high
-is a Gemini cell-3 extract ablation. The source-near Gan extract
+is a Gemini cell-3 recognise ablation. The source-near Gan recognise
 (`gan_llm_extract_raw`) is a wording-versus-form ablation, not a
 results column. Later-stage LLM encode and LLM select calls are
 Gemini only. Scores do not move between tasks.
@@ -77,16 +77,16 @@ is how completely those four kinds of fact were recovered. It is a
 research measure. It is not the published 2019 ExECT benchmark.
 
 The Gan headline comparison is five role combinations (rules, LLM,
-or both at extract / encode / select). The cited score is the select
-stop. On Gan, LLM extract is the codebook extract
-(`gan_llm_extract`). **both** extract is
-`gan_llm_and_rules_extract`. LLM encode means that extract already
+or both at recognise / encode / select). The cited score is the select
+stop. On Gan, LLM recognise is the codebook recognise
+(`gan_llm_extract`). **both** recognise is
+`gan_llm_and_rules_extract`. LLM encode means that recognise already
 wrote the form. LLM-then-rules encode is `gan_rules_encode`. LLM
 select is `gan_llm_select_from_extract`. ExECT uses the same five
-role rows. LLM extract is `exect_llm_extract`. One-call extract-and-select
+role rows. LLM recognise is `exect_llm_extract`. One-call recognise-and-select
 (`exect_llm_extract_and_select`; read-only aliases
 `exect_llm_extract_filtered`, `exect_llm_only`) is a Gemini
-ablation, not cell 3. both extract is
+ablation, not cell 3. both recognise is
 `exect_llm_pre_post`. LLM encode is later-stage `exect_llm_encode`.
 LLM / LLM / rules is accepted Select on that encode ledger. LLM
 select is later-stage `exect_llm_select`. The old `gan_llm_extract_raw` grid is the source-near wording
@@ -97,7 +97,7 @@ the [Gan five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md),
 and
 [ExECT cell 4](../research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md).
 `gan_llm_only` is a different prompt and is not a results column.
-An unrepaired `*_pre_post` body is not LLM extract.
+An unrepaired `*_pre_post` body is not LLM recognise.
 A recorded rule may change clinical meaning; deterministic does not
 mean neutral or safe. A recorded hop is not a clinically correct
 step. A later cell is not automatically better. Development hop shares
@@ -108,16 +108,16 @@ are not holdout component estimates.
 ### What the locked totals show
 
 On 450 held-out letters, written rules scored 0.73. Gemini LLM
-extract (`gan_llm_extract`) plus `gan_rules_encode` plus rule select scored 0.83. The paper
+recognise (`gan_llm_extract`) plus `gan_rules_encode` plus rule select scored 0.83. The paper
 may say those locked totals and the Gemini grid below.
 It may not treat `gan_llm_only` as a results column.
 That request is a different prompt (one finished label). Its Grok
-holdout cell is 0.73; it is not extract or encode.
+holdout cell is 0.73; it is not recognise or encode.
 
 Named Gemini `test450` headline (aggregate-only; select stop). Owner:
 [five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md).
 
-| Extract | Encode | Select | Purist |
+| Recognise | Encode | Select | Purist |
 | --- | --- | --- | ---: |
 | rules | rules | rules | 0.73 |
 | both | rules | rules | 0.82 |
@@ -127,18 +127,18 @@ Named Gemini `test450` headline (aggregate-only; select stop). Owner:
 
 Hybrid select is ledger-only (`elapsed_anchor` and `residual_jerk`
 off). The paper may say that, with Gemini as the cited model, the
-strongest row is LLM extract plus codebook rule encode plus rule
+strongest row is LLM recognise plus codebook rule encode plus rule
 select (0.83). It may say rule select without encode, and both-then-
-rules, are 0.82. It may say LLM select is 0.79. It may say extract
+rules, are 0.82. It may say LLM select is 0.79. It may say recognise
 and encode stops are prior-stage ablations, not a second headline
 table. It may not say which letters moved. The historical
-selected-evidence encoder on the codebook extract (encode 0.77,
+selected-evidence encoder on the codebook recognise (encode 0.77,
 select 0.80) stays an ablation. The source-near `gan_llm_extract_raw`
-grid (LLM extract 0.55, later-stage select 0.71, hybrid select 0.79)
-stays an ablation: the softer extract keeps letter wording and
+grid (LLM recognise 0.55, later-stage select 0.71, hybrid select 0.79)
+stays an ablation: the softer recognise keeps letter wording and
 scores 0.55; rule encode and rule select recover to 0.79. The paper
 may say that shows wording can be kept and later mapped into the
-gold form. It may not say the softer extract preserves clinical
+gold form. It may not say the softer recognise preserves clinical
 reasoning. Grok living `gan_llm_extract_raw` 0.83 was not re-scored
 on the codebook stack. The six-model comparison for this paper is
 the codebook cell 3, not that source-near hybrid.
@@ -154,13 +154,13 @@ On development letters, most first corrections after the model are
 recorded rules, not a new reading of the letter. In a six-model
 development provenance study, 1,437 of 1,539 first rescues (93%)
 rendered a span the model had already selected. Eighty-nine composed a
-label from events the model had already extracted. Thirteen promoted
-another extracted event. None invented a rate from text the model never
+label from events the model had already recognised. Thirteen promoted
+another recognised event. None invented a rate from text the model never
 quoted.
 
-Named Gemini `dev750` select stops on the same codebook extract.
+Named Gemini `dev750` select stops on the same codebook recognise.
 
-| Extract | Encode | Select | Purist |
+| Recognise | Encode | Select | Purist |
 | --- | --- | --- | ---: |
 | rules | rules | rules | 0.89 |
 | both | rules | rules | 0.89 |
@@ -168,21 +168,21 @@ Named Gemini `dev750` select stops on the same codebook extract.
 | LLM | LLM | rules | 0.85 |
 | LLM | LLM | LLM | 0.79 |
 
-The source-near `gan_llm_extract_raw` development grid (extract 0.59,
+The source-near `gan_llm_extract_raw` development grid (recognise 0.59,
 later-stage encode 0.67 / select 0.76, hybrid select 0.88) stays an
 ablation. Locked `test450` stage cuts are in the table under locked
 totals.
 
-Companion Grok LLM then rules on `gan_llm_extract_raw`: extract
+Companion Grok LLM then rules on `gan_llm_extract_raw`: recognise
 0.49, encode 0.80, select 0.89.
 
 On the Gemini raw, selected-evidence render never changed
 `selected_event_ids`, so it is encode. It changed predicted kind 219
 times and rescued 167 Purist letters (three harms). Those scores
 explain the *kind* of work recorded encode does. They are not holdout
-component shares. The paper may say the lift is stepwise (extract →
+component shares. The paper may say the lift is stepwise (recognise →
 encode → select) on one raw, and that Rules then LLM is a
-different extract request. It may
+different recognise request. It may
 not treat a development hop share as a holdout component estimate.
 
 The paper may say the mass first change is label rendering of a span
@@ -220,23 +220,23 @@ need its own gold; this gold still scores `4 per day`.
 ### What the locked totals show
 
 On 59 held-out letters, written rules recovered 0.7725 of clinical
-facts. Gemini both-extract (living extract plus suggested
-candidates, then rule select) scored 0.8592. Gemini extract plus
+facts. Gemini both-recognise (living recognise plus suggested
+candidates, then rule select) scored 0.8592. Gemini recognise plus
 rule select scored 0.8674. Later-stage encode plus rule select
 scored 0.8636. Later-stage LLM select scored 0.853. The paper may
 say those locked totals and the Gemini grid below, and may write
 the five select stops as 0.77, 0.86, 0.87, 0.86, and 0.85. It may
-not treat a living producer F1 as LLM extract. The retired
+not treat a living producer F1 as LLM recognise. The retired
 Compact/headline cell 2 / cell 3 / cell 4 / cell 5 selects (0.8031
 / 0.8161 / 0.8173 / 0.7954) are not the cited rows.
 
 Named Gemini `test60` (aggregate-only; select stop). All five rows
 use 4-family micro F1 (`clinical_inventory_unit_keys`). Owner:
-[both-extract on inventory](../research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md)
+[both-recognise on inventory](../research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md)
 and
 `paper_experiments/exect/five_cell_grid/gemini37flash/test60/comparison.json`.
 
-| Extract | Encode | Select | F1 |
+| Recognise | Encode | Select | F1 |
 | --- | --- | --- | ---: |
 | rules | rules | rules | 0.77 |
 | both | rules | rules | 0.86 |
@@ -246,7 +246,7 @@ and
 
 On 140 development letters the Grok grid is:
 
-| | Extract | Encode | Select |
+| | Recognise | Encode | Select |
 | --- | ---: | ---: | ---: |
 | **Rules** | 0.9042 | 0.9042 | 0.9042 |
 | **LLM** | 0.6485 (flatten only) | — | — |
@@ -256,18 +256,18 @@ On 140 development letters the Grok grid is:
 Rungs 2–4 share one `exect_llm_only` output. Rung 5 is a different
 request. Dictionary rewrite is revise, not encode. Live
 `exect_llm_only` Grok `dev140` raw F1 remains 0.8212; that gated
-producer view is not llm extract. SeizureFrequency schema F1 is 0.0
+producer view is not llm recognise. SeizureFrequency schema F1 is 0.0
 because the clinical-fact key needs the codebook id that format
 attaches. The paper may not say the inventory format stop is empty.
 It may not park a semantic SF projection on the format rung.
 
-On the locked inventory the strongest cited row is LLM extract plus
-rule select (0.8674). Both-extract plus rule select is 0.8592.
+On the locked inventory the strongest cited row is LLM recognise plus
+rule select (0.8674). Both-recognise plus rule select is 0.8592.
 Later-stage encode plus rule select is 0.8636. Later-stage LLM
 select is 0.853. Standalone rules are 0.7725. Those five reads are
 0.87, 0.86, 0.86, 0.85, and 0.77 at two decimals. The retired
 Compact/headline cell 2–5 stops (0.8031 / 0.8161 / 0.8173 /
-0.7954) are not the cited rows. Extract and encode stops are
+0.7954) are not the cited rows. Recognise and encode stops are
 prior-stage ablations. Luna after repair recovered 78.3%
 (88.8% on development) on the prior assembly. DeepSeek and Gemma
 have prior-assembly repair totals on both inventory splits (DeepSeek
@@ -276,7 +276,7 @@ cells are not yet on disk. Qwen is missing both inventory model
 methods.
 
 The paper may say that, with Gemini as the cited model, rule select
-after the inventory extract is the strongest row, and that
+after the inventory recognise is the strongest row, and that
 later-stage encode then the same Select does not raise that holdout
 stop. It may not rank providers, and it may not treat those
 percentages as the 2019 benchmark. It may not say which holdout
@@ -345,15 +345,15 @@ The files support this account of the proposed method, cited on Grok:
    be replayed without a new call. A named family is not always a free
    switch: removing breakthrough helps some unknowns and harms the
    wider ledger.
-4. On locked frequency letters, Gemini LLM extract plus codebook
+4. On locked frequency letters, Gemini LLM recognise plus codebook
    encode plus rule select raises the locked score by 0.10 against
    standalone rules (0.83 vs 0.73). Rule select without encode, and
    both-then-rules, are 0.82. LLM select is 0.79. Grok living
    hybrid 0.83 is a different stack on the source-near request.
    `gan_llm_only` is not in that comparison.
-   On the locked inventory, Gemini LLM extract plus rule select is
+   On the locked inventory, Gemini LLM recognise plus rule select is
    0.8674 against standalone rules 0.7725, both on 4-family micro
-   F1. Both-extract plus rule select is 0.8592. Later-stage encode
+   F1. Both-recognise plus rule select is 0.8592. Later-stage encode
    plus rule select is 0.8636. Later-stage LLM select is 0.853. The
    five select stops read 0.87, 0.86, 0.86, 0.85, and 0.77 at two
    decimals.
@@ -413,7 +413,7 @@ paper is a list of bans.
 | Sol 381/450, or any Gan hybrid that still sent lab labels to the model | The enveloped request, not the cleaned frequency method |
 | Compact-dump scores as model-plus-repair | A different inventory request shape |
 | Full-ledger headlines as a sixth rung | The long control book, not a peer of the five-rung table |
-| `gan_llm_only` as extract or encode | A different prompt, not the shared hybrid raw |
+| `gan_llm_only` as recognise or encode | A different prompt, not the shared hybrid raw |
 | Later-stage LLM encode / select on Grok, Luna, DeepSeek, Qwen, or Gemma | A run the paper did not authorise; those calls are Gemini only |
 | GEPA, historical `v08`, full200, or all-nine paper-derived metrics as the inventory comparison | A different evaluation object |
 | A three-pass multi-model frequency score | A different architecture |

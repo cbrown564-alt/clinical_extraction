@@ -13,7 +13,7 @@ It provides both:
 2. **Reviewable 6-Step Evidence Journeys**: Grok 4.6 traces from development
    cells, replayed from saved `raw_output` with no new model calls. Gan
    journeys use the **wording ablation** (`gan_llm_extract_raw`), not the cited
-   codebook extract. ExECT journeys use cell 2 (`exect_llm_pre_post`) or cell 3
+   codebook recognise. ExECT journeys use cell 2 (`exect_llm_pre_post`) or cell 3
    as noted per letter. Sol journeys are retired.
 
 $$\text{Raw LLM Output} \longrightarrow \text{Format Check} \longrightarrow \text{Initial Normalization} \longrightarrow \text{Quoted Evidence} \longrightarrow \text{Deterministic Repair} \longrightarrow \text{Final Output}$$

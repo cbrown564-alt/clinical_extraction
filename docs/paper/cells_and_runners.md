@@ -4,22 +4,22 @@ Date: 2026-08-23
 Status: current
 Owner: this file
 
-The headline table is five role rows. Each of extract, encode, and
+The headline table is five role rows. Each of recognise, encode, and
 select is rules, LLM, or both. Live runner names are not the table.
 
-| Cell | Extract | Encode | Select | Gan runner / identity | ExECT runner / identity |
+| Cell | Recognise | Encode | Select | Gan runner / identity | ExECT runner / identity |
 | --- | --- | --- | --- | --- | --- |
 | 1 | rules | rules | rules | `gan_rules` | `exect_rules` |
-| 2 | both | rules | rules | `gan_llm_and_rules_extract` | `exect_llm_pre_post` (living extract plus suggested candidates; `exect_llm_with_rules` is the live alias) |
+| 2 | both | rules | rules | `gan_llm_and_rules_extract` | `exect_llm_pre_post` (living recognise plus suggested candidates; `exect_llm_with_rules` is the live alias) |
 | 3 | LLM | rules | rules | `gan_llm_extract` then `gan_rules_encode` and rule select | `exect_llm_extract` then rule encode and select |
-| 4 | LLM | LLM | rules | Same codebook extract; select families only (extract already wrote the form) | Later-stage `exect_llm_encode`, then inventory Select |
+| 4 | LLM | LLM | rules | Same codebook recognise; select families only (recognise already wrote the form) | Later-stage `exect_llm_encode`, then inventory Select |
 | 5 | LLM | LLM | LLM | `gan_llm_select_from_extract` | Later-stage `exect_llm_select` |
 
 `gan_llm_only` is a live runner. It is not a results column.
 `gan_llm_extract_raw` is the source-near wording ablation, not cell 3.
-`exect_llm_extract_filtered` is the Compact extract ablation, Gemini
+`exect_llm_extract_filtered` is the Compact recognise ablation, Gemini
 only.
-On Gan, LLM encode in the table means the extract already wrote the
+On Gan, LLM encode in the table means the recognise already wrote the
 codebook form. On ExECT, LLM encode is a second call.
 
 Replay cells 3–5 on ExECT share one `exect_llm_extract` raw. Cell 2 is a

@@ -1,6 +1,6 @@
 # Run against a local vLLM server
 
-This walkthrough runs the cited Gan codebook extract
+This walkthrough runs the cited Gan codebook recognise
 (`gan_llm_extract`) against your own data. The model writes frequency
 labels in the allowed forms; recorded rules then encode and select.
 This is `clinical-extract gan`, not the source-near ablation
@@ -71,7 +71,7 @@ A successful probe prints a JSON object to stdout:
 after `vllm/`, fix the identifier before extracting notes.
 
 The input is JSONL with one `id` and `text` object per line. Run the cited
-Gan codebook extract with:
+Gan codebook recognise with:
 
 ```sh
 clinical-extract gan \
@@ -181,7 +181,7 @@ Each output line keeps the input `id`. A successful row looks like this:
 | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
 | `pipeline`                     | Cited method id: `gan_llm_extract`. Not `llm_with_rules` and not the source-near ablation.                                   |
 | `prompt_version`               | Request sent to the model: `gan_llm_extract` (allowed label forms).                                                          |
-| `prediction.seizure_frequency` | The current frequency label after extract, encode, and select                                                                |
+| `prediction.seizure_frequency` | The current frequency label after recognise, encode, and select                                                                |
 | `prediction.evidence`          | Supporting text the pipeline cited from the letter                                                                           |
 | `prediction.rationale`         | Why that label was selected                                                                                                  |
 | `parse_errors`                 | Format problems from the model call, if any                                                                                  |

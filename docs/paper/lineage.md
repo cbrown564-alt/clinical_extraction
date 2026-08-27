@@ -1,7 +1,7 @@
 # How the cited methods were reached
 
 Date: 2026-08-17
-Revised: 2026-08-22 (Gan cited row is codebook extract; cleaned hybrid is ablation)
+Revised: 2026-08-22 (Gan cited row is codebook recognise; cleaned hybrid is ablation)
 Status: current
 Owner: this file
 
@@ -11,7 +11,7 @@ This history distinguishes changes by what they can alter:
 
 | Change class | Meaning |
 | --- | --- |
-| Request or extraction change | Changes what evidence or candidate facts a model or rule method can produce |
+| Request or recognition change | Changes what evidence or candidate facts a model or rule method can produce |
 | Representation change | Changes the event, state, fact, or attribute structure available to later stages |
 | Task-decision change | Changes which current state wins or which facts enter the final inventory |
 | Semantic deterministic change | Changes a clinical concept, state, attribute, multiplicity, evidence acceptance, or unknown status |
@@ -43,17 +43,17 @@ clinical fact.
 
 A later dump used a different request shape (alphabetical JSON,
 those fields present). That dump is not the living method. The
-paper cites 4-family micro F1 for the living inventory extract
+paper cites 4-family micro F1 for the living inventory recognise
 (`exect_llm_extract`) and for ExECT LLM with rules. Compact/hybrid
 F1 is lineage, not the headline score. Full ledger is the longer
 control when cited; it is not a headline method or a peer column.
 Grok has no Full ledger cell.
 
-## Gan codebook extract and source-near ablation
+## Gan codebook recognise and source-near ablation
 
-The cited Gan row is one codebook extract call
+The cited Gan row is one codebook recognise call
 (`gan_llm_extract`), then `gan_rules_encode` and rule
-select. Extract already writes the designed form.
+select. Recognise already writes the designed form.
 
 The source-near ablation is one structured-events call on the
 cleaned request (`gan_llm_extract_raw`), then the same frozen

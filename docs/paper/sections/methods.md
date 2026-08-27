@@ -8,7 +8,7 @@ Owner: this file
 ## Research questions
 
 This study treats the route from a clinic letter to a submitted
-task answer as three distinct stages: **candidate extraction**,
+task answer as three distinct stages: **candidate recognition**,
 **task encoding**, and **final selection**. This is a study-specific
 decomposition, not a replacement taxonomy for clinical NLP. It makes
 explicit three decisions that are often folded together in an
@@ -16,7 +16,7 @@ end-to-end system: what evidence and candidate facts to collect, how
 to write an already chosen fact in the task's required form, and what
 the final answer should contain.
 
-**Primary question.** When candidate extraction, task encoding, and
+**Primary question.** When candidate recognition, task encoding, and
 final selection are treated as distinct stages in clinical information
 extraction, how should language models and recorded deterministic
 rules be combined across those stages to produce structured epilepsy
@@ -25,13 +25,13 @@ information?
 **Supporting questions.**
 
 1. How do final results change when models and rules take different
-   responsibilities for candidate extraction, task encoding, and
+   responsibilities for candidate recognition, task encoding, and
    final selection?
 2. Does the preferred division of responsibility differ between one
    current seizure-frequency answer (Gan 2026) and a multi-fact
    clinical inventory (ExECTv2)?
 3. When the later rule-based stages are held constant, how much do the
-   final results depend on the model used for candidate extraction and
+   final results depend on the model used for candidate recognition and
    on the reasoning budget given to that model?
 
 The five role rows answer the first two questions. The six-model
@@ -46,8 +46,8 @@ This study examines how a clinical information-extraction system
 should divide work between language models and recorded deterministic
 rules. Rather than treating extraction as one indivisible operation,
 it distinguishes three stages in the route from a clinic letter to a
-submitted structured answer: candidate extraction, task encoding, and
-final selection. Candidate extraction identifies evidence-linked
+submitted structured answer: candidate recognition, task encoding, and
+final selection. Candidate recognition identifies evidence-linked
 clinical facts; task encoding expresses an already chosen fact in the
 representation required by the task; and final selection determines
 which candidate facts, if any, form the submitted answer. The study
@@ -127,17 +127,17 @@ used to develop and inspect mechanisms, while the held-out splits were
 kept locked for final aggregate evaluation. All five model--rule
 configurations received the same parsed source text and the same split
 assignments; there was no substantive corpus transformation before the
-evaluated candidate-extraction, task-encoding, and final-selection
+evaluated candidate-recognition, task-encoding, and final-selection
 stages.
 
-## C. Candidate extraction, task encoding, and final selection
+## C. Candidate recognition, task encoding, and final selection
 
-Candidate extraction produces a candidate record of plausible clinical
+Candidate recognition produces a candidate record of plausible clinical
 facts from a clinic letter, each linked to supporting source text. For
 Gan 2026, candidates may describe seizure events, seizure-free
 intervals, uncertainty, or competing possible current states. For
 ExECTv2, they may describe diagnoses, seizure-frequency facts,
-prescriptions, and investigations. Candidate extraction is intentionally
+prescriptions, and investigations. Candidate recognition is intentionally
 broader than the final task answer: a letter can contain several
 relevant facts even where Gan requires only one submitted label. Models,
 rules, or their combination may perform this stage, but all
@@ -151,7 +151,7 @@ label, or other task-specific field, while retaining the underlying
 clinical fact and its evidence link. For example, it may convert a
 frequency phrase into Gan's required label form or map an ExECTv2
 medicine mention to its structured field representation. Encoding is
-therefore distinct from candidate extraction: it does not search the
+therefore distinct from candidate recognition: it does not search the
 letter for an additional fact, and it is distinct from final selection:
 it does not choose a different clinical state simply because its form
 is easier to score.
@@ -170,17 +170,17 @@ to be scored separately.
 
 ```mermaid
 flowchart LR
-    letter[Clinic letter] --> extract[Candidate extraction<br/>creates a candidate record]
-    extract --> encode[Task encoding]
+    letter[Clinic letter] --> recognise[Candidate recognition<br/>creates a candidate record]
+    recognise --> encode[Task encoding]
     encode --> select[Final selection]
     select --> output[Structured task output]
 
     classDef stage fill:#dbeafe,stroke:#2563eb,color:#173b65,stroke-width:1.5px;
-    class extract,encode,select stage;
+    class recognise,encode,select stage;
 ```
 
 **Figure 1.** General staged pipeline for clinical information
-extraction. Candidate extraction creates a record of plausible,
+extraction. Candidate recognition creates a record of plausible,
 evidence-linked facts from a clinic letter. Task encoding expresses
 those facts in the form required by the task, and final selection
 determines the submitted structured output. The highlighted stages are
@@ -189,21 +189,21 @@ the configuration.
 
 ## D. Stage-ownership configurations
 
-| Configuration | Candidate extraction | Task encoding | Final selection |
+| Configuration | Candidate recognition | Task encoding | Final selection |
 | --- | --- | --- | --- |
 | 1. Rules throughout | Recorded rules | Recorded rules | Recorded rules |
-| 2. Combined candidate extraction | Language model and recorded rules | Recorded rules | Recorded rules |
-| 3. Model candidate extraction | Language model | Recorded rules | Recorded rules |
-| 4. Model extraction and encoding | Language model | Language model | Recorded rules |
+| 2. Combined candidate recognition | Language model and recorded rules | Recorded rules | Recorded rules |
+| 3. Model candidate recognition | Language model | Recorded rules | Recorded rules |
+| 4. Model recognition and encoding | Language model | Language model | Recorded rules |
 | 5. Model throughout | Language model | Language model | Language model |
 
 The study evaluates the same five ways of dividing the work between a
 language model and recorded rules on Gan 2026 and ExECTv2. In the
 rules-throughout condition, recorded deterministic procedures construct,
-encode, and select the submitted answer. The combined-extraction
+encode, and select the submitted answer. The combined-recognition
 condition permits both a model and rules to contribute candidate facts,
 after which encoding and selection remain rule based. The remaining
-conditions place candidate extraction, then task encoding, then final
+conditions place candidate recognition, then task encoding, then final
 selection with the model. The table therefore shows which role each
 component plays in each configuration. A language-model stage is its
 saved output; a recorded-rule stage is a deterministic transformation or
@@ -211,9 +211,9 @@ decision policy specified before held-out evaluation.
 
 Gemini 3.7 Flash is the primary model for the five-configuration
 comparison. The secondary model-configuration analyses hold the third
-configuration fixed: model candidate extraction followed by rule-based
+configuration fixed: model candidate recognition followed by rule-based
 encoding and final selection, while varying either the model or the
-reasoning budget used for candidate extraction.
+reasoning budget used for candidate recognition.
 
 The five configurations are comparisons of which component performs
 each stage, rather than five depths of a single hybrid setting. Moving
@@ -304,7 +304,7 @@ This is an internal research measure, not a replication of the published
 strict ExECT benchmark (Fonferko-Shadrach et al., 2024). The five
 configurations are compared within each
 task; model and reasoning-budget analyses use the fixed
-model-candidate-extraction, rules-encoding, rules-selection condition,
+model-candidate-recognition, rules-encoding, rules-selection condition,
 and locked-test results are reported only as aggregates.
 
 ## Supporting implementation material

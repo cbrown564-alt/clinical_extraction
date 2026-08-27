@@ -11,7 +11,7 @@ this file for the named-rule list
 This is the comparable grain for both tasks: **named, independently
 stoppable rules**, classed by the locked assignment rule.
 
-- **Extract** = model ledger. Parse is code. On Gan, score the model's
+- **Recognise** = model ledger. Parse is code. On Gan, score the model's
   `final_label` only. `_normalize_event` / `_resolve_final_label` run
   at encode.
 - **Encode** = same finding written into the designed / gold
@@ -26,18 +26,18 @@ catalogue. Live ExECT `exect_llm_only` still scores the mixed
 
 ## Two rule programs, one vocabulary
 
-Each task also has a **rules-only** extract registry: `RuleSpec`
+Each task also has a **rules-only** recognise registry: `RuleSpec`
 pattern+builder catalogs under `deterministic/rules/` (or equivalent),
 with metadata enums in that task's `rule_metadata.py`. Those programs
 use their own rule ids (`rate.*`, `cluster.*`, `diary.*`, …). This
-catalogue names the rules that act on the **model ledger** at extract,
+catalogue names the rules that act on the **model ledger** at recognise,
 encode, and select stops. The two are different programs and different
 namespaces. They share the same authority and portability vocabulary.
 A rules-only id will not appear here; that is intentional.
 
 ### How to read: runs at vs authority
 
-- **Runs at** — where the flag fires: extract (parse), encode, or select.
+- **Runs at** — where the flag fires: recognise (parse), encode, or select.
 - **Authority** — what kind of hop the rule is: parse, dialect,
   encode, gate, rewrite, reselect, invent.
 - **Portability** — task/domain scope for a rule. A typed field on
@@ -60,12 +60,12 @@ Status:
 ## Gan 2026
 
 One current seizure-frequency label. Cells 3–5 replay one
-`gan_llm_extract` raw (codebook extract). Cell 2 is a
+`gan_llm_extract` raw (codebook recognise). Cell 2 is a
 different request. The source-near `gan_llm_extract_raw` stack is the
-wording ablation, not the cited extract. Default select mode is
+wording ablation, not the cited recognise. Default select mode is
 `llm_select` (legacy alias: `hybrid_full_stack`).
 
-### Extract (parse)
+### Recognise (parse)
 
 | Rule | Status | Authority | What it does |
 | --- | --- | --- | --- |
@@ -128,9 +128,9 @@ is a different request (`exect_llm_pre_post`).
 
 | Rule | Class | Status | Authority | What it does |
 | --- | --- | --- | --- | --- |
-| Parse Compact events + flatten (`mentions_from_events`) | Extract | live | parse | Typed mention per event; attribute name aliases (`name` → `DrugName`) |
-| Format-only JSON retry | Extract | live on eligible local **calls**; not in cells 2–4 replay | parse | One re-ask after schema fail |
-| Drop out-of-scope entity | Extract | live | gate | Non-four-family names never enter the inventory |
+| Parse Compact events + flatten (`mentions_from_events`) | Recognise | live | parse | Typed mention per event; attribute name aliases (`name` → `DrugName`) |
+| Format-only JSON retry | Recognise | live on eligible local **calls**; not in cells 2–4 replay | parse | One re-ask after schema fail |
+| Drop out-of-scope entity | Recognise | live | gate | Non-four-family names never enter the inventory |
 | Evidence copy from mention text (Dx / Rx) | Encode | live + encode-replay | encode | Same finding; fill evidence from exact mention text |
 | Exact-substring evidence whitespace repair | Encode | live + encode-replay | dialect | Same finding |
 | Strip model `CUI` / `CUIPhrase` | Encode | live + encode-replay | encode | Drop model-supplied codebook ids |
@@ -240,7 +240,7 @@ add is invent.
 
 ## How to read a comparison
 
-Extract parse is the same kind of thing on both tasks: get a typed object
+Recognise parse is the same kind of thing on both tasks: get a typed object
 (with Gan’s known label-render leak). Gan encode is one selected-
 evidence renderer on one selected event. ExECT encode is several
 same-fact writers across four families; the largest score move is
