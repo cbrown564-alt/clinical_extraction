@@ -33,8 +33,9 @@ roster replacements.
 ## Answer
 
 Thinking changes little once rules encode and select. Model choice
-moves the score more than thinking, but only coarsely: Grok and Gemini
-lead; DeepSeek is mid; Luna is behind. The best mix is a model recognise
+moves the score more than thinking, but only coarsely: on ExECT
+inventory holdout Gemini leads, then Grok / DeepSeek / Luna, then
+Qwen / Gemma. The best mix is a model recognise
 plus recorded post-processing. On holdout both peaks are LLM / rules /
 rules (Gan 0.83; ExECT 0.87 / 0.8674). ExECT cell 4 (later-stage
 encode) is 0.86 and does not raise the stop. Both beat all-rules and
@@ -113,14 +114,23 @@ is flatten; encode is same-fact format; select is rule select.
 | GPT-5.6 Luna | 0.693 (312) | 0.693 (312) | 0.778 (350) |
 | DeepSeek V4 Flash | 0.742 (334) | 0.742 (334) | 0.796 (358) |
 
-**ExECT `test60` (Compact/headline F1).** Not the cited inventory roster.
+**ExECT `test60` (4-family inventory micro F1).** Cited cell-3 roster:
+`exect_llm_extract` then rule encode / select. Recognise is the raw
+stop; select is the hybrid stop. Sources:
+`paper_experiments/exect/exect_llm_extract/{slug}/test60/comparison.json`.
 
-| Model | Recognise | Encode | Select |
-| --- | ---: | ---: | ---: |
-| Gemini 3.7 Flash | 0.797 | 0.810 | 0.816 |
-| Grok 4.6 | 0.788 | 0.814 | 0.814 |
-| GPT-5.6 Luna | 0.764 | 0.792 | 0.801 |
-| DeepSeek V4 Flash | **0.803** | **0.824** | **0.821** |
+| Model | Recognise | Select |
+| --- | ---: | ---: |
+| Gemini 3.7 Flash | **0.8491** | **0.8674** |
+| Grok 4.6 | 0.7874 | 0.8146 |
+| DeepSeek V4 Flash | 0.7830 | 0.8099 |
+| GPT-5.6 Luna | 0.7650 | 0.7983 |
+| Qwen 3.8 27B | 0.7260 | 0.7644 |
+| Gemma 4 26B | 0.7198 | 0.7573 |
+
+The Compact/headline ExECT model swap (`exect_llm_only` rung replay)
+is retired for the roster table. It remains only as a labelled
+secondary surface where an older draft still needs it.
 
 **Gan `dev750` (Purist), same stack** — DeepSeek recognise is on disk,
 unpromoted.
@@ -132,12 +142,15 @@ unpromoted.
 | GPT-5.6 Luna | 0.717 (538) | 0.717 (538) | 0.819 (614) |
 | DeepSeek V4 Flash | 0.761 (571) | 0.761 (571) | 0.837 (628) |
 
-Luna is the coarse miss. On Gan holdout, DeepSeek sits between Luna
-and the Grok/Gemini pair after select (0.796 vs 0.842 / 0.831). Rules
-help Luna most (Gan holdout +38 letters, +0.084; ExECT +0.037) and do
-not bring it level (Gan select still 0.064 behind Grok; ExECT select
-0.020 behind DeepSeek). DeepSeek Gan select is +24 letters over its
-recognise (+0.054) and remains 0.046 behind Grok.
+Luna is the coarse miss on Gan. On Gan holdout, DeepSeek sits between
+Luna and the Grok/Gemini pair after select (0.796 vs 0.842 / 0.831).
+Rules help Luna most on Gan (+38 letters, +0.084) and do not bring it
+level (select still 0.064 behind Grok). On the cited ExECT inventory
+roster, Gemini leads after select (**0.8674**); Grok **0.8146**,
+DeepSeek **0.8099**, and Luna **0.7983** form the next band; Qwen and
+Gemma trail (**0.7644** / **0.7573**). Rules raise every ExECT model
+over its recognise stop and shrink gaps without erasing them (Luna
+still 0.016 behind Grok after select; Gemma 0.110 behind Gemini).
 
 ## Efficiency and flexibility
 
@@ -168,9 +181,9 @@ not treat DeepSeek Gan holdout as matching Grok or Gemini.
 ## Claim boundary
 
 Working synthesis of already-run cells. Gemini five-cell totals stay
-with their owners. The ExECT stage-ownership table uses 4-family
-micro F1 for cells 1–5. The thinking and multi-model ExECT tables
-below are still Compact/headline replays of saved `exect_llm_only`
-raws. Gan
-model stage scores are no-call replays of saved `gan_llm_extract`
-raws. Do not inspect holdout rows. Do not retune from these bands.
+with their owners. The ExECT stage-ownership table and the six-model
+ExECT cell-3 roster use 4-family micro F1. The Gemini thinking ExECT
+band above remains a Compact/headline secondary surface
+(`exect_llm_only`). Gan model stage scores are no-call replays of
+saved `gan_llm_extract` raws. Do not inspect holdout rows. Do not
+retune from these bands.

@@ -115,16 +115,32 @@ pipeline.
 ## F. Rules reduced, but did not remove, differences between models
 
 The six-model cell-3 comparison assesses whether the preferred allocation is
-stable when only the candidate-recognition model changes. It should report the
-performance pattern across the completed roster without treating Gemini as the
-object of the comparison: stronger models are expected to form a close group,
-while weaker models provide a more demanding test of the later rule stages.
-**[Insert completed Qwen and Gemma rows before finalising.]**
+stable when only the candidate-recognition model changes. On ExECT, every
+roster model now has a promoted inventory `exect_llm_extract` cell on locked
+`test60` (aggregate-only). Recognise is the raw stop; select is after rule
+encode and select. Scorer: 4-family micro F1.
+
+| Model | Recognise | Select |
+| --- | ---: | ---: |
+| Gemini 3.7 Flash | **0.8491** | **0.8674** |
+| Grok 4.6 | 0.7874 | 0.8146 |
+| DeepSeek V4 Flash | 0.7830 | 0.8099 |
+| GPT-5.6 Luna | 0.7650 | 0.7983 |
+| Qwen 3.8 27B | 0.7260 | 0.7644 |
+| Gemma 4 26B | 0.7198 | 0.7573 |
+
+**Table 2.** Locked aggregate-only ExECT cell-3 roster
+(`exect_llm_extract` → rules). Sources:
+`paper_experiments/exect/exect_llm_extract/{slug}/test60/comparison.json`.
+Gan cell-3 Purist totals for the hosted models remain in
+[three variables](../../research/paper/three_variables_rules_model_thinking_2026-08-23.md).
 
 Later rule-based encoding and selection narrowed, but did not remove,
-performance differences between models: rules can correct task-form and
-selection errors in an existing candidate record, but cannot reconstruct a
-clinically relevant distinction omitted or collapsed at recognition. This
+performance differences between models: rules raise every ExECT model over
+its recognise stop, but Gemini remains ahead after select, and the local
+open-source models stay behind the hosted band. Rules can correct task-form
+and selection errors in an existing candidate record, but cannot reconstruct
+a clinically relevant distinction omitted or collapsed at recognition. This
 provides the deployment trade-off relevant to local open-source models: later
 rules may compensate for some weaker extraction, but model capability remains
 material.
@@ -132,9 +148,8 @@ material.
 **Figure 1.** Six-model cell-3 comparison before and after later rule-based
 processing. Plot each completed model separately for Gan and ExECT, with the
 model-recognise output and final rule-processed output connected. The caption
-should state the split, scorer, configuration, and whether the ExECT surface
-uses the cited four-family inventory scorer or a clearly labelled secondary
-surface.
+should state the split, scorer, and configuration; ExECT uses the cited
+four-family inventory scorer.
 
 ## Visual and supporting-material plan
 
