@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420">
+<rect width="100%" height="100%" fill="#FBFCFD"/>
+<text x="36" y="36" fill="#25313C" font-family="DejaVu Sans, Arial, sans-serif" font-size="20" font-weight="700">ExECT DeepSeek: prior vs 0731</text>
+<text x="36" y="58" fill="#66727D" font-family="DejaVu Sans, Arial, sans-serif" font-size="12">Ruleset-matched on dev140; test60 uses retained prior panel vs live 0731</text>
+<line x1="280.0" y1="90" x2="280.0" y2="300" stroke="#DDE3E8" stroke-width="1"/>
+<text x="280.0" y="326" fill="#66727D" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="middle">0.72</text>
+<line x1="440.0" y1="90" x2="440.0" y2="300" stroke="#DDE3E8" stroke-width="1"/>
+<text x="440.0" y="326" fill="#66727D" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="middle">0.77</text>
+<line x1="600.0" y1="90" x2="600.0" y2="300" stroke="#DDE3E8" stroke-width="1"/>
+<text x="600.0" y="326" fill="#66727D" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="middle">0.83</text>
+<line x1="760.0" y1="90" x2="760.0" y2="300" stroke="#DDE3E8" stroke-width="1"/>
+<text x="760.0" y="326" fill="#66727D" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="middle">0.88</text>
+<line x1="920.0" y1="90" x2="920.0" y2="300" stroke="#DDE3E8" stroke-width="1"/>
+<text x="920.0" y="326" fill="#66727D" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="middle">0.94</text>
+<text x="24" y="122" fill="#25313C" font-family="DejaVu Sans, Arial, sans-serif" font-size="13">dev140 · llm only</text>
+<line x1="493.4" y1="118" x2="558.0" y2="118" stroke="#DDE3E8" stroke-width="4" stroke-linecap="round"/>
+<circle cx="493.4" cy="118" r="7" fill="#FBFCFD" stroke="#2563A6" stroke-width="2.4"/>
+<circle cx="558.0" cy="118" r="7" fill="#167C80" stroke="#167C80"/>
+<text x="483.4" y="122" fill="#25313C" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="end">0.791</text>
+<text x="568.0" y="122" fill="#25313C" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start">0.814</text>
+<text x="24" y="174" fill="#25313C" font-family="DejaVu Sans, Arial, sans-serif" font-size="13">dev140 · llm + rules</text>
+<line x1="739.2" y1="170" x2="804.6" y2="170" stroke="#DDE3E8" stroke-width="4" stroke-linecap="round"/>
+<circle cx="739.2" cy="170" r="7" fill="#FBFCFD" stroke="#2563A6" stroke-width="2.4"/>
+<circle cx="804.6" cy="170" r="7" fill="#167C80" stroke="#167C80"/>
+<text x="729.2" y="174" fill="#25313C" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="end">0.877</text>
+<text x="814.6" y="174" fill="#25313C" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start">0.899</text>
+<text x="24" y="226" fill="#25313C" font-family="DejaVu Sans, Arial, sans-serif" font-size="13">test60 · llm only</text>
+<line x1="395.4" y1="222" x2="455.9" y2="222" stroke="#DDE3E8" stroke-width="4" stroke-linecap="round"/>
+<circle cx="395.4" cy="222" r="7" fill="#FBFCFD" stroke="#2563A6" stroke-width="2.4"/>
+<circle cx="455.9" cy="222" r="7" fill="#167C80" stroke="#167C80"/>
+<text x="385.4" y="226" fill="#25313C" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="end">0.757</text>
+<text x="465.9" y="226" fill="#25313C" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start">0.778</text>
+<text x="24" y="278" fill="#25313C" font-family="DejaVu Sans, Arial, sans-serif" font-size="13">test60 · llm + rules</text>
+<line x1="483.6" y1="274" x2="552.0" y2="274" stroke="#DDE3E8" stroke-width="4" stroke-linecap="round"/>
+<circle cx="483.6" cy="274" r="7" fill="#FBFCFD" stroke="#2563A6" stroke-width="2.4"/>
+<circle cx="552.0" cy="274" r="7" fill="#167C80" stroke="#167C80"/>
+<text x="473.6" y="278" fill="#25313C" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="end">0.788</text>
+<text x="562.0" y="278" fill="#25313C" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start">0.812</text>
+<circle cx="280" cy="386" r="6" fill="#FBFCFD" stroke="#2563A6" stroke-width="2.2"/><text x="294" y="390" fill="#66727D" font-family="DejaVu Sans, Arial, sans-serif" font-size="12">Prior (ruleset-matched)</text><circle cx="500" cy="386" r="6" fill="#167C80"/><text x="514" y="390" fill="#66727D" font-family="DejaVu Sans, Arial, sans-serif" font-size="12">0731 live</text><text x="680" y="390" fill="#66727D" font-family="DejaVu Sans, Arial, sans-serif" font-size="12">Clinical fact F1</text>
+</svg>

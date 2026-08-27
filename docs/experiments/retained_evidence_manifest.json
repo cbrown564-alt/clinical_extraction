@@ -1,0 +1,1867 @@
+{
+  "schema_version": "retained-evidence-v3",
+  "generated_date": "2026-08-16",
+  "authority": "Machine-readable companion to docs/experiments/retained_evidence_manifest.md. Canonical claim status remains docs/canon/10_paper_provenance.md.",
+  "architecture_freeze": {
+    "freeze_id": "retained_comparison_architecture_20260816",
+    "created_date": "2026-08-16",
+    "status": "frozen_for_new_evidence",
+    "source_commit": "47ca4f88af07f8a0d469f91eb1b91b1963e9f705",
+    "source_commit_scope": "Supersedes retained_comparison_architecture_20260811. Living reference cells are Decision 0050 current-stack fills, Decision 0046 E5/G5 rules peers, and Sol raw_lane LLM-only. Retired v08, 2-call, June 7 three-way, July 18 v0.7 rows, and the 13 Aug explorer tree.",
+    "python_version": "3.11",
+    "mutation_policy": "A semantic prompt, scorer, split, repair, runtime route, component-graph, or deterministic extraction-ruleset change requires a new freeze ID and complete replay. Always-on validation hashes sealed result artifacts and split manifests only. Living source, configs, prompts, docs, and CI files are presence-checked; their identity is git plus no-call replay. The Gan rules-only extraction ruleset is pinned by the hash of the reference cell's replay artifact, not by a policy_files entry; policy_files roles are a closed set and no role fits an extraction rule module. Re-run scripts/verify_reference_evidence.py to detect a rules-lane change.",
+    "reference_cell_ids": [
+      "exectv2_rules_reference",
+      "exectv2_llm_only_reference",
+      "exectv2_hybrid_reference",
+      "gan2026_rules_reference",
+      "gan2026_llm_only_reference",
+      "gan2026_hybrid_reference"
+    ],
+    "policy_files": [
+      {
+        "role": "dependency",
+        "path": "pyproject.toml",
+        "sha256": "591515cab087e526be4f0bb588b12086f7a0a21ed7f0749639b460b16bd7035a",
+        "bytes": 1877
+      },
+      {
+        "role": "dependency",
+        "path": "uv.lock",
+        "sha256": "371e4187d54eec0ee2e6d5104d0e3c28e35f5bbfe5c83b853868eb8d8c95525d",
+        "bytes": 716973
+      },
+      {
+        "role": "model",
+        "path": "docs/design/model_strategy.md",
+        "sha256": "17a2cda9a62021bf6ae4cd656c0837f16c4fd47fe0318fb789cc596130302c0f",
+        "bytes": 7665
+      },
+      {
+        "role": "prompt",
+        "path": "experiments/exectv2_gepa_dedup_gpt41mini_h2mb8_20260628.instruction.txt",
+        "sha256": "0696442eb95c6b03ce9183a5cc66493557c0a1d5c1f66702d8ad95badc5954c0",
+        "bytes": 1986
+      },
+      {
+        "role": "prompt",
+        "path": "tests/snapshots/prompt_contracts/exectv2__structured_key_families.txt",
+        "sha256": "93f8a798e1c40c3963bbc0d9448d4e5fe2c2d0a3a4d9c4a6c8ccf0192f75ec05",
+        "bytes": 67621
+      },
+      {
+        "role": "prompt",
+        "path": "tests/snapshots/prompt_contracts/gan2026__hybrid_structured_events_v0.7.txt",
+        "sha256": "4ea331bdd24ca70e4fc35f9f6bd502e7a7d0d5a4ffb080d99269a3af89262dda",
+        "bytes": 6450
+      },
+      {
+        "role": "prompt",
+        "path": "tests/snapshots/prompt_contracts/gan2026__llm_only_canonical_pipeline.txt",
+        "sha256": "639b01944a93128131b49d7b1d9a5d49c92c079b682048dac13a902b01b8312e",
+        "bytes": 13191
+      },
+      {
+        "role": "prompt",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/prompt_builders_full.py",
+        "sha256": "327a43905dea7e7f1c30675ed59518acb0921fa6323975bd7c3ffefa812c17e9",
+        "bytes": 4726
+      },
+      {
+        "role": "quality",
+        "path": ".github/workflows/ci.yml",
+        "sha256": "c1d36e9551abe5bc7b83ee1d46b152fc5f301a74916439ffa02b50aabe7f1159",
+        "bytes": 492
+      },
+      {
+        "role": "repair",
+        "path": "docs/design/llm_repair_attribution_protocol_2026-06-22.md",
+        "sha256": "86f15943c8f63d6f82e22465a78cd99a29370c3a197e82c7cf9d1f8ac3f7a535",
+        "bytes": 11030
+      },
+      {
+        "role": "repair",
+        "path": "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v08_p7_dev140.yaml",
+        "sha256": "d8b7720f1982395dcadf4f0a58bda8f6dcba437bd2a9efd6b444a35b6080fe1e",
+        "bytes": 3297
+      },
+      {
+        "role": "repair",
+        "path": "configs/exectv2/model_swap/exectv2_2call_no_sf_adjudicator_gpt41mini_dev140.json",
+        "sha256": "d2f3d2f0ebe5960896420596c9846d8e8d12c5a795f3b269700516d4e12ddc7f",
+        "bytes": 5215
+      },
+      {
+        "role": "repair",
+        "path": "configs/exectv2/model_swap/exectv2_2call_no_sf_adjudicator_deepseek_dev140.json",
+        "sha256": "b1aeb5c887da366242cec9662caf0fdb0ba31c142051ab4fcc925b7f7aa5aa16",
+        "bytes": 5093
+      },
+      {
+        "role": "repair",
+        "path": "configs/exectv2/model_swap/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140.json",
+        "sha256": "c25da07009c9e497ac02092729ed7f8fe76047886c0cd136b46048ce888e8f23",
+        "bytes": 5497
+      },
+      {
+        "role": "repair",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/contract/repair.py",
+        "sha256": "b0b29c9729b0811732db3b8855b788a953184d3700eee48303219bbe2d5a441d",
+        "bytes": 3837
+      },
+      {
+        "role": "repair",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/benchmark_prediction_repair.py",
+        "sha256": "3f24807df0a022c9e10b833b687991774ca32c6bf551c76bd27e8d3cec501523",
+        "bytes": 35060
+      },
+      {
+        "role": "repair",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/schema_repair.py",
+        "sha256": "3999353d227899882b72e2a4e1a4ae976f1d59410705066b7506192d37e7089c",
+        "bytes": 12175
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/__init__.py",
+        "sha256": "78232b0661ba7e9378ea76d70dbe2b7887a3d52fb88d6846b0dbc8e5b3436c27",
+        "bytes": 4087
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/bootstrap.py",
+        "sha256": "95c73308152bd5162cb5ae3dedcd548342b57a156fc1fbd0f5cfe697c0573bef",
+        "bytes": 3098
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/investigations.py",
+        "sha256": "5ddcc75b29e5f7af46d428b91d6e6c7ad3d325a228d27d1cdbd03872f8892a88",
+        "bytes": 4450
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/match.py",
+        "sha256": "6f81874e1bf4cee072ba0bd5e57533ba524dcf6b0e121c74c39a58ca8a62742e",
+        "bytes": 28183
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/normalize.py",
+        "sha256": "58ac373e795a1d97ee28bffe04ac7c866f46f066e9311b3c0451e6f75b0d6e9c",
+        "bytes": 5392
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/prescription.py",
+        "sha256": "c31fdc333a5d3c938e2fdffeb0e425b361d68e0bdbd1dff2e8a9e72213e7ae70",
+        "bytes": 16307
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/reporting.py",
+        "sha256": "2dff396718f4352670a8e6a9a35d0a19ab15bf7fc4ff00b9b3348a6a49e9e67e",
+        "bytes": 621
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/seizure_frequency.py",
+        "sha256": "4efe0e56f88e5cb8f98d34b7cd6ddee25ffaf0cb280ec1877444fc8283c1c700",
+        "bytes": 19419
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/clinical_headline.py",
+        "sha256": "6ee73acd980ff84de70ffe33e2573dcb819ea4fbc5b8adf10e38b524c3b3f194",
+        "bytes": 5607
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/evaluate.py",
+        "sha256": "ea3fe53c5ec235fd84df8bfe785667418516d34141dd3e0a53fb2f36ecf9fc7a",
+        "bytes": 4439
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/normalize.py",
+        "sha256": "234c2fa3cc0684d8313017e950b2d8ba5e952bb3593565581ddd1661bc49ae75",
+        "bytes": 9633
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/labels.py",
+        "sha256": "8d79d223e53e8cfdf5a0c4ef19b4864108968f67d9558454f798a7cbe82c715d",
+        "bytes": 7253
+      },
+      {
+        "role": "split",
+        "path": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+        "sha256": "bb1b87ada6812efd73971eb7397a71dba56b9689dfbfefb182634e2153642116",
+        "bytes": 4672
+      },
+      {
+        "role": "split",
+        "path": "data/Gan (2026)/splits/gan2026_split_v1.json",
+        "sha256": "c5f512d8744261916bd6d92562430489a3ba0494b0bf7c6575bfaa9e58680143",
+        "bytes": 23621
+      },
+      {
+        "role": "split_runbook",
+        "path": "docs/runbooks/gated_blockers_2026-06-18.md",
+        "sha256": "4a211f616e3d48ed5a9ed3e7649790f688e77534fdab82db77bcdde856db3415",
+        "bytes": 1992
+      }
+    ],
+    "model_policy": {
+      "retained_runtime_ids": [
+        "openai/gpt-5.6-luna",
+        "gemini/gemini-3.7-flash",
+        "openai/gpt-5.6-sol",
+        "deepseek/deepseek-v4-flash",
+        "ollama_chat/qwen3.6:35b",
+        "ollama_chat/gemma4:26b"
+      ],
+      "comparison_roster_status": "six_of_six_current_stack_retained",
+      "new_runtime_rule": "Name every exact provider/API identifier and runtime condition in a predeclaration before calls; a completed local run is not retained holdout evidence until its aggregate-only summary is committed and hash-selected.",
+      "route_policy": "Hosted and local routes retain their recorded transport, thinking, context, endpoint, and hardware conditions; provider differences remain comparison caveats."
+    },
+    "execution_policy": {
+      "model_calls": "Predeclaration required; this architecture freeze does not authorize new model calls.",
+      "required_commands": [
+        "python scripts/check_retained_evidence_manifest.py",
+        "python scripts/verify_reference_evidence.py",
+        "python scripts/check_exectv2_model_led_audit.py",
+        "python scripts/check_doc_hygiene.py",
+        "python -m pytest",
+        "python -m ruff check .",
+        "python -m mypy src"
+      ]
+    },
+    "supersedes": "retained_comparison_architecture_20260811"
+  },
+  "registry_path": "experiments/registry.jsonl",
+  "reference_cells": [
+    {
+      "id": "exectv2_rules_reference",
+      "task": "exectv2",
+      "architecture_family": "rules_only",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "split": "dev",
+      "row_count": 140,
+      "row_inspection_policy": "dev140_rows_permitted",
+      "scorer": "ExECTv2 finalized clinical_headline plus phrase/CUI/attribute-bundle companion scorers",
+      "model": "(model-independent)",
+      "model_role": "Decision 0046 four-family rules-only peer; E5 remasure",
+      "prompt_program_version": "exectv2_rules_only_campaign_e5_remeasure_20260815",
+      "cache_replay_mode": "current-stack no-call fills; no holdout row inspection",
+      "repair_policy": "No model repair; deterministic extraction, normalization, projection, schema checks, and evidence checks.",
+      "claim_boundary": "Selected ExECT rules-only fills are the 15 Aug E5 four-family remasure. The all-nine published-metric replay remains a secondary package, not this cell.",
+      "story_ids": [
+        "S1",
+        "S2",
+        "S6",
+        "S7"
+      ],
+      "result_summary": {
+        "benchmark_per_item_f1": 0.3589,
+        "clinical_headline_prescription_f1": 0.9615,
+        "evidence_validity_rate": 1.0
+      },
+      "closure": {
+        "entrypoints": [
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/cli/deterministic_all9_scorecard.py"
+        ],
+        "implementation": [
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/deterministic_all9_scorecard.py",
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/all_entities/orchestrator.py"
+        ],
+        "scoring": [
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/__init__.py",
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/clinical_headline.py"
+        ],
+        "data_contract": [
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/data.py",
+          "data/ExECTv2 (2025)/splits/exectv2_split_v1.json"
+        ],
+        "configurations": [
+          "data/ExECTv2 (2025)/splits/exectv2_split_v1.json"
+        ],
+        "tests": [
+          "tests/test_exectv2_deterministic_all9.py",
+          "tests/test_exectv2_scoring_headlines.py",
+          "tests/test_exectv2_scoring_match_fidelity.py",
+          "tests/test_exectv2_data.py"
+        ]
+      },
+      "verification": {
+        "replay": "current_stack_primary",
+        "inputs": {
+          "fills": "paper_experiments/current_stack/latest/fills.json",
+          "sources": "paper_experiments/current_stack/SOURCES.json",
+          "e5": "paper_experiments/exectv2_rules_only_campaign_e5_remeasure_20260815.json"
+        },
+        "expected": {
+          "exect_rules_dev140_f1": 0.9042,
+          "exect_rules_test60_f1": 0.7937
+        }
+      },
+      "artifacts": [
+        {
+          "path": "paper_experiments/current_stack/latest/fills.json",
+          "sha256": "1f2d3cd9b2e2fe4405a53a2df8871253dd2325d3e6a3a1cc49220164bdd9fda9",
+          "bytes": 6707,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "paper_experiments/current_stack/SOURCES.json",
+          "sha256": "88ad87e14751968a45f83868a5d775ab1e75114df85c93971e007097eec109c6",
+          "bytes": 7745,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "paper_experiments/exectv2_rules_only_campaign_e5_remeasure_20260815.json",
+          "sha256": "2d453d98a7273228bdf0cd8686be4227dc71d1e57ccea4906a016bed4cca0e02",
+          "bytes": 924,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "paper_experiments/exectv2_rules_only_campaign_e5_remeasure_20260815.json",
+          "sha256": "2d453d98a7273228bdf0cd8686be4227dc71d1e57ccea4906a016bed4cca0e02",
+          "bytes": 924,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "paper_experiments/exectv2_rules_only_four_family_clinical_headline_test60_20260815.json",
+          "sha256": "360caab7ad3f1bd2a77d7d646e222c0804b3bc802473f81f59f06bb49a514e96",
+          "bytes": 2342,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_deterministic_all9_dev_20260714.md",
+          "sha256": "100c964a188b3bbb2e9992ab7f29069f5ae1b384c0258ae27809a00e181d9249",
+          "bytes": 4066,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "exectv2_llm_only_reference",
+      "task": "exectv2",
+      "architecture_family": "llm_only",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "split": "dev",
+      "row_count": 140,
+      "row_inspection_policy": "dev140_rows_permitted",
+      "scorer": "ExECTv2 finalized clinical_headline; strict benchmark companion",
+      "model": "openai/gpt-5.6-sol",
+      "model_role": "Decision 0046 Sol raw_lane LLM-only peer",
+      "prompt_program_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24 raw_lane",
+      "cache_replay_mode": "current-stack no-call fills; no holdout row inspection",
+      "repair_policy": "dedup_clinical_facts_adapter; no promotion to hybrid control",
+      "claim_boundary": "Selected ExECT LLM-only fills are the current-stack Sol raw_lane scores. GEPA remains a negative architecture package.",
+      "story_ids": [
+        "S1",
+        "S2",
+        "S5",
+        "S6"
+      ],
+      "result_summary": {
+        "clinical_headline_overall_f1": 0.741,
+        "strict_benchmark_per_item_f1": 0.1356
+      },
+      "closure": {
+        "entrypoints": [
+          "experiments/gepa_h2_minibatch_exectv2.py"
+        ],
+        "implementation": [
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/run_gepa.py",
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/program.py",
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/metric.py",
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/dedup_adapter.py"
+        ],
+        "scoring": [
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/__init__.py",
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/clinical_headline.py"
+        ],
+        "data_contract": [
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/data.py",
+          "data/ExECTv2 (2025)/splits/exectv2_split_v1.json"
+        ],
+        "configurations": [
+          "experiments/exectv2_gepa_dedup_gpt41mini_h2mb8_20260628.instruction.txt"
+        ],
+        "tests": [
+          "tests/test_exectv2_scoring_headlines.py",
+          "tests/test_exectv2_scoring_match_fidelity.py"
+        ]
+      },
+      "verification": {
+        "replay": "current_stack_primary",
+        "inputs": {
+          "fills": "paper_experiments/current_stack/latest/fills.json",
+          "sources": "paper_experiments/current_stack/SOURCES.json",
+          "e5": "paper_experiments/exectv2_rules_only_campaign_e5_remeasure_20260815.json"
+        },
+        "expected": {
+          "exect_sol_llm_only_dev140_f1": 0.8097,
+          "exect_sol_llm_only_test60_f1": 0.7771
+        }
+      },
+      "artifacts": [
+        {
+          "path": "paper_experiments/current_stack/latest/fills.json",
+          "sha256": "1f2d3cd9b2e2fe4405a53a2df8871253dd2325d3e6a3a1cc49220164bdd9fda9",
+          "bytes": 6707,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "paper_experiments/current_stack/SOURCES.json",
+          "sha256": "88ad87e14751968a45f83868a5d775ab1e75114df85c93971e007097eec109c6",
+          "bytes": 7745,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "paper_experiments/exectv2_rules_only_campaign_e5_remeasure_20260815.json",
+          "sha256": "2d453d98a7273228bdf0cd8686be4227dc71d1e57ccea4906a016bed4cca0e02",
+          "bytes": 924,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "exectv2_hybrid_reference",
+      "task": "exectv2",
+      "architecture_family": "hybrid",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "split": "dev",
+      "row_count": 140,
+      "row_inspection_policy": "dev140_rows_permitted",
+      "scorer": "ExECTv2 finalized clinical_headline plus evidence-valid, raw, benchmark/CUI, and fidelity views",
+      "model": "openai/gpt-5.6-sol",
+      "model_role": "Decision 0050 current-stack one-call hybrid",
+      "prompt_program_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+      "cache_replay_mode": "current-stack no-call fills; no holdout row inspection",
+      "repair_policy": "Diagnosis heading recovery, SF state union, Prescription P7 clause-scope repair, and Investigations result lens remain separately attributable.",
+      "claim_boundary": "Selected ExECT hybrid fills are the current-stack no-call replay of saved raws named in SOURCES.json. v08 is demoted.",
+      "story_ids": [
+        "S1",
+        "S2",
+        "S6",
+        "S7",
+        "S8"
+      ],
+      "result_summary": {
+        "clinical_headline_f1": 0.9202,
+        "artifact_benchmark_cui_overall_f1": 0.4729,
+        "current_replay_benchmark_cui_overall_f1": 0.4661,
+        "benchmark_cui_replay_status": "Open companion-scorer drift; primary clinical-headline and evidence-valid scores reproduce exactly against the current post-fix code.",
+        "min_exact_evidence_rate": 1.0
+      },
+      "closure": {
+        "entrypoints": [
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/runners/run_finding_assembly.py"
+        ],
+        "implementation": [
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/manifests.py",
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/pipeline.py",
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/views.py"
+        ],
+        "scoring": [
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/__init__.py",
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/clinical_headline.py"
+        ],
+        "data_contract": [
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/data.py",
+          "data/ExECTv2 (2025)/splits/exectv2_split_v1.json"
+        ],
+        "configurations": [
+          "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v08_p7_dev140.yaml"
+        ],
+        "tests": [
+          "tests/test_exectv2_clinical_finding_assembly.py",
+          "tests/test_exectv2_scoring_headlines.py",
+          "tests/test_exectv2_scoring_match_fidelity.py",
+          "tests/test_exectv2_data.py"
+        ]
+      },
+      "verification": {
+        "replay": "current_stack_primary",
+        "inputs": {
+          "fills": "paper_experiments/current_stack/latest/fills.json",
+          "sources": "paper_experiments/current_stack/SOURCES.json",
+          "e5": "paper_experiments/exectv2_rules_only_campaign_e5_remeasure_20260815.json"
+        },
+        "expected": {
+          "exect_sol_hybrid_dev140_f1": 0.9119,
+          "exect_sol_hybrid_test60_f1": 0.8302
+        }
+      },
+      "artifacts": [
+        {
+          "path": "paper_experiments/current_stack/latest/fills.json",
+          "sha256": "1f2d3cd9b2e2fe4405a53a2df8871253dd2325d3e6a3a1cc49220164bdd9fda9",
+          "bytes": 6707,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "paper_experiments/current_stack/SOURCES.json",
+          "sha256": "88ad87e14751968a45f83868a5d775ab1e75114df85c93971e007097eec109c6",
+          "bytes": 7745,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "paper_experiments/exectv2_rules_only_campaign_e5_remeasure_20260815.json",
+          "sha256": "2d453d98a7273228bdf0cd8686be4227dc71d1e57ccea4906a016bed4cca0e02",
+          "bytes": 924,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715_structured.jsonl",
+          "sha256": "a58cc07a13b668aeaae60f6d265ad5f0ebc4af2021b4a2b1b98a22e402fb7ac2",
+          "bytes": 9830395,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/current_stack/sidecars/exect_test60/gpt56sol.jsonl",
+          "sha256": "e44457aa68601163709728aaa7eac7fc0b3233c519f317a7d2c4d534e2a3aee0",
+          "bytes": 169743,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_holistic_finding_assembly_v08_dev140_p7_treatment_20260702.md",
+          "sha256": "eb36af5e5e87dfb2483c10662d17becea16786daba92c9634fabfb9aa685c2e6",
+          "bytes": 5196,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v08_p7_dev140.yaml",
+          "sha256": "d8b7720f1982395dcadf4f0a58bda8f6dcba437bd2a9efd6b444a35b6080fe1e",
+          "bytes": 3297,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "gan2026_rules_reference",
+      "task": "gan2026",
+      "architecture_family": "rules_only",
+      "dataset": "Gan 2026 synthetic seizure-frequency subset",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "split": "validation",
+      "row_count": 750,
+      "row_inspection_policy": "validation750_rows_permitted",
+      "scorer": "Gan 2026 Purist and Pragmatic normalization/scoring",
+      "model": "none (deterministic rules pipeline; no LLM calls)",
+      "model_role": "deterministic baseline comparator routed through the staged canonical-pipeline architecture -- rules-only; no model calls; portable ruleset with benchmark-specific shorthand variants removed",
+      "prompt_program_version": "staged deterministic canonical pipeline at the 2026-08-10 portable ruleset (post 2026-06-09 GAN_SHORTHAND de-overfitting)",
+      "cache_replay_mode": "no-call deterministic execution; no model calls",
+      "repair_policy": "No model repair; deterministic benchmark-format rendering remains distinct from clinical rules.",
+      "claim_boundary": "Validation comparator on the current portable ruleset; no model calls and not a holdout result. Rendered is lane-specific: 673/741 uses final_label != 'unknown' (9 null rows), 682/750 counts all rows. The superseded 2026-06-07 run scored 688/741 on a ruleset since retired for benchmark overfitting; do not mix the two.",
+      "story_ids": [
+        "S1",
+        "S2",
+        "S6"
+      ],
+      "run_id": "gan2026_rules_only_canonical_validation750_20260810",
+      "result_summary": {
+        "purist_correct_of_rendered": 673,
+        "pragmatic_correct_of_rendered": 681,
+        "rendered_rows": 741,
+        "null_rows": 9,
+        "purist_correct_all_rows": 682,
+        "evidence_valid_rows": 750
+      },
+      "closure": {
+        "entrypoints": [
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/cli/llm_pipeline_cli.py",
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/runner.py"
+        ],
+        "implementation": [
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/runners/deterministic_canonical.py",
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/deterministic_canonical_stages.py"
+        ],
+        "scoring": [
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/evaluate.py",
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/normalize.py",
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/labels.py"
+        ],
+        "data_contract": [
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/data.py",
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/label_parser.py",
+          "data/Gan (2026)/splits/gan2026_split_v1.json"
+        ],
+        "configurations": [
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/runners/config.py"
+        ],
+        "tests": [
+          "tests/test_gan2026_deterministic_canonical_pipeline.py",
+          "tests/test_gan2026_evaluate.py",
+          "tests/test_gan2026_labels.py"
+        ]
+      },
+      "verification": {
+        "replay": "gan_saved_comparisons",
+        "inputs": {
+          "path": "experiments/gan2026_rules_only_canonical_validation750_20260810.jsonl"
+        },
+        "expected": {
+          "rows": 750,
+          "purist_correct": 682,
+          "pragmatic_correct": 690,
+          "prediction_records": 750
+        }
+      },
+      "artifacts": [
+        {
+          "path": "experiments/gan2026_rules_only_canonical_validation750_20260810.jsonl",
+          "sha256": "7b78e5d4177f7ca41533024f79421dcfec0a78ef8a6930e5ee6538af30a06a23",
+          "bytes": 2964477,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/gan2026_rules_only_validation750_parity_20260810.json",
+          "sha256": "f8d178f1edaf0da0c9d8f5ed2fbc9bea972d884537189afb32ed57767b8efd09",
+          "bytes": 8036,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/research/gan2026/rules_only_validation750_gate_a_2026-08-10.md",
+          "sha256": "303f018e1ee1a34c1882893c5cf432c66cf79a39f55d771a82054f6b44f3651b",
+          "bytes": 6021,
+          "retrieval": "git_path"
+        }
+      ],
+      "supersedes": [
+        "gan2026_three_way_comparison_validation750_deterministic_canonical_pipeline_gpt41mini_2026-06-07"
+      ]
+    },
+    {
+      "id": "gan2026_llm_only_reference",
+      "task": "gan2026",
+      "architecture_family": "llm_only",
+      "dataset": "Gan 2026 synthetic seizure-frequency subset",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "split": "validation",
+      "row_count": 750,
+      "row_inspection_policy": "validation750_rows_permitted",
+      "scorer": "Gan 2026 Purist and Pragmatic normalization/scoring",
+      "model": "openai/gpt-5.6-sol",
+      "model_role": "Decision 0046 / 0050 Sol LLM-only holdout fill",
+      "prompt_program_version": "gan2026_hybrid_structured_events_v0.5 llm_only",
+      "cache_replay_mode": "current-stack no-call fills; no holdout row inspection",
+      "repair_policy": "Single DSPy pass owns extract/select/normalize/project/render; only schema/format adapters and scoring follow.",
+      "claim_boundary": "Selected Gan LLM-only holdout fill is the current-stack unchanged primary. The June 7 mini cell is historical.",
+      "story_ids": [
+        "S1",
+        "S2",
+        "S5",
+        "S6"
+      ],
+      "result_summary": {
+        "purist_correct_of_rendered": 581,
+        "rendered_rows": 750,
+        "evidence_grounded_rate": 0.9547
+      },
+      "closure": {
+        "entrypoints": [
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/cli/llm_pipeline_cli.py",
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/runner.py"
+        ],
+        "implementation": [
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/runners/llm_only_canonical.py",
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_canonical_pipeline.py"
+        ],
+        "scoring": [
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/evaluate.py",
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/normalize.py",
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/labels.py"
+        ],
+        "data_contract": [
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/data.py",
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/label_parser.py",
+          "data/Gan (2026)/splits/gan2026_split_v1.json"
+        ],
+        "configurations": [
+          "tests/snapshots/prompt_contracts/gan2026__llm_only_canonical_pipeline.txt"
+        ],
+        "tests": [
+          "tests/test_gan2026_llm_pipeline.py",
+          "tests/test_gan2026_canonical_orchestrators.py",
+          "tests/test_gan2026_llm_prompt_hygiene.py",
+          "tests/test_gan2026_labels.py"
+        ]
+      },
+      "verification": {
+        "replay": "current_stack_primary",
+        "inputs": {
+          "fills": "paper_experiments/current_stack/latest/fills.json",
+          "sources": "paper_experiments/current_stack/SOURCES.json",
+          "e5": "paper_experiments/exectv2_rules_only_campaign_e5_remeasure_20260815.json"
+        },
+        "expected": {
+          "gan_sol_llm_only_rate": 0.7444
+        }
+      },
+      "artifacts": [
+        {
+          "path": "paper_experiments/current_stack/latest/fills.json",
+          "sha256": "1f2d3cd9b2e2fe4405a53a2df8871253dd2325d3e6a3a1cc49220164bdd9fda9",
+          "bytes": 6707,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "paper_experiments/current_stack/SOURCES.json",
+          "sha256": "88ad87e14751968a45f83868a5d775ab1e75114df85c93971e007097eec109c6",
+          "bytes": 7745,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "paper_experiments/exectv2_rules_only_campaign_e5_remeasure_20260815.json",
+          "sha256": "2d453d98a7273228bdf0cd8686be4227dc71d1e57ccea4906a016bed4cca0e02",
+          "bytes": 924,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "gan2026_hybrid_reference",
+      "task": "gan2026",
+      "architecture_family": "hybrid",
+      "dataset": "Gan 2026 synthetic seizure-frequency subset",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "split": "validation",
+      "row_count": 750,
+      "row_inspection_policy": "validation750_rows_permitted",
+      "scorer": "Gan 2026 Purist and Pragmatic normalization/scoring",
+      "model": "openai/gpt-5.6-sol",
+      "model_role": "Decision 0050 current-stack hybrid holdout",
+      "prompt_program_version": "gan2026_hybrid_structured_events_v0.5",
+      "cache_replay_mode": "current-stack no-call fills; no holdout row inspection",
+      "repair_policy": "LLM owns structured clinical events; deterministic code owns Gan normalization, evidence validation, and scoring.",
+      "claim_boundary": "Selected Gan hybrid holdout fill is the current-stack Sol 381/450 Purist replay. The June 7 mini cell is historical.",
+      "story_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S5",
+        "S6",
+        "S8"
+      ],
+      "result_summary": {
+        "purist_correct_of_rendered": 661,
+        "rendered_rows": 748,
+        "evidence_grounded_rate": 0.9213
+      },
+      "closure": {
+        "entrypoints": [
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/cli/llm_pipeline_cli.py",
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/runner.py"
+        ],
+        "implementation": [
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/runners/hybrid_structured_events.py",
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/hybrid_structured_events.py"
+        ],
+        "scoring": [
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/evaluate.py",
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/normalize.py",
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/labels.py"
+        ],
+        "data_contract": [
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/data.py",
+          "src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/label_parser.py",
+          "data/Gan (2026)/splits/gan2026_split_v1.json"
+        ],
+        "configurations": [
+          "tests/snapshots/prompt_contracts/gan2026__hybrid_structured_events_v0.7.txt"
+        ],
+        "tests": [
+          "tests/test_gan2026_hybrid_structured_events_contract.py",
+          "tests/test_gan2026_llm_prompt_hygiene.py",
+          "tests/test_gan2026_labels.py"
+        ]
+      },
+      "verification": {
+        "replay": "current_stack_primary",
+        "inputs": {
+          "fills": "paper_experiments/current_stack/latest/fills.json",
+          "sources": "paper_experiments/current_stack/SOURCES.json",
+          "e5": "paper_experiments/exectv2_rules_only_campaign_e5_remeasure_20260815.json"
+        },
+        "expected": {
+          "gan_sol_hybrid_purist": 381
+        }
+      },
+      "artifacts": [
+        {
+          "path": "paper_experiments/current_stack/latest/fills.json",
+          "sha256": "1f2d3cd9b2e2fe4405a53a2df8871253dd2325d3e6a3a1cc49220164bdd9fda9",
+          "bytes": 6707,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "paper_experiments/current_stack/SOURCES.json",
+          "sha256": "88ad87e14751968a45f83868a5d775ab1e75114df85c93971e007097eec109c6",
+          "bytes": 7745,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "paper_experiments/exectv2_rules_only_campaign_e5_remeasure_20260815.json",
+          "sha256": "2d453d98a7273228bdf0cd8686be4227dc71d1e57ccea4906a016bed4cca0e02",
+          "bytes": 924,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/current_stack/sidecars/gan_test450/gpt56sol.jsonl",
+          "sha256": "629b3c58ad7fa13589088dea4bbe9ad79ebce29ddb444ae4fbcce8b54808cab9",
+          "bytes": 722170,
+          "retrieval": "git_path"
+        }
+      ]
+    }
+  ],
+  "evidence_packages": [
+    {
+      "id": "gan2026_holdout_quality_and_efficiency_subject",
+      "task": "gan2026",
+      "architecture_family": "cross_family",
+      "dataset": "Gan 2026 synthetic seizure-frequency subset",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "split": "test",
+      "row_count": 450,
+      "row_inspection_policy": "aggregate_only",
+      "scorer": "Gan 2026 frozen Purist and Pragmatic aggregate scoring",
+      "model": "openai/gpt-4.1-mini operational; openai/gpt-4.1 V12 reviewer",
+      "model_role": "Frozen aggregate comparison of four architectures plus V12 ceiling",
+      "prompt_program_version": "hybrid structured-events v0.5; fresh-evidence reasoner v0.4",
+      "cache_replay_mode": "single-pass saved live aggregate; V12 final audit made 450 live reasoner calls over two saved upstream traces; no-call efficiency audit",
+      "repair_policy": "Recorded format repair and safety gates; no post-holdout semantic tuning",
+      "claim_boundary": "Supports the 364/450 versus 379/450 quality comparison and the one-pass versus three-pass cold architecture comparison. Matched tokens, cost, latency, hardware, retries, and cache telemetry are unavailable and must not be claimed.",
+      "story_ids": [
+        "S2",
+        "S3",
+        "S8"
+      ],
+      "result_summary": {
+        "operational_purist": "364/450",
+        "ceiling_purist": "379/450",
+        "operational_cold_model_passes_per_note": 1,
+        "ceiling_cold_model_passes_per_note": 3,
+        "efficiency_status": "bounded_complete"
+      },
+      "artifacts": [
+        {
+          "path": "experiments/gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.json",
+          "sha256": "253f6990c9b34301fe9477922aa305cc4a682805ee86a2f237cc99e9f303b8d6",
+          "bytes": 3871,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.md",
+          "sha256": "f66ab491f4c930f0b77661dc59de2ac63079921def60ab93945e5e8eb14d249d",
+          "bytes": 6371,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.md",
+          "sha256": "2e3a6d0bf68a7c54ae94f16a53ac0e1928ab0a21878a22b744593c8be1beabf5",
+          "bytes": 1918,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/research/gan2026/architecture/simplest_near_ceiling_architecture_results_2026-06-16.md",
+          "sha256": "de25bfc645f28e32e9701a13d566bc06c6f97669d29466b910508d225ad0a13f",
+          "bytes": 14547,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/gan2026_single_vs_multimodel_efficiency_2026-07-14.json",
+          "sha256": "2e57a1d556c7c6e31cc1486b29dbc88117d110ea13da77514670aa7830cd677c",
+          "bytes": 6484,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/research/gan2026/efficiency/single_vs_multimodel_efficiency_protocol_2026-07-14.md",
+          "sha256": "f549fcc8ba815cc7055fb62c7722793d996ce973c2f90c01563e182030ac29a7",
+          "bytes": 3886,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/research/gan2026/efficiency/single_vs_multimodel_efficiency_report_2026-07-14.md",
+          "sha256": "395d81ed1c45a09d56627805ea12618ed843af6e3fb54b0bb8e20a82f51a82bf",
+          "bytes": 3731,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "scripts/check_gan2026_efficiency_comparison.py",
+          "sha256": "a816ee9cd7ff076b2561fb3a9552204580cd51fb5cdd4b5003b7c3f250fe3994",
+          "bytes": 5440,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "gan2026_reliability_subject",
+      "task": "gan2026",
+      "architecture_family": "cross_family",
+      "dataset": "Gan 2026 synthetic seizure-frequency subset",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "split": "validation750+test450",
+      "row_count": 1200,
+      "row_inspection_policy": "aggregate_only",
+      "scorer": "Gan reliability transforms named in the master scorecard",
+      "model": "recorded comparators; see scorecard",
+      "model_role": "Reliability analysis over the retained Gan subjects",
+      "prompt_program_version": "Gan reliability scorecard phase 0",
+      "cache_replay_mode": "saved-output and aggregate-only analysis; no development inspection of locked rows",
+      "repair_policy": "Each subscore preserves its stated frozen transform and policy.",
+      "claim_boundary": "Grounding, calibration, routing, consistency, robustness, and operational evidence; not a deployment validation claim.",
+      "story_ids": [
+        "S5",
+        "S8"
+      ],
+      "result_summary": {
+        "scope": "mixed validation and aggregate-only holdout"
+      },
+      "artifacts": [
+        {
+          "path": "experiments/gan2026_reliability_master_scorecard_2026-06-17.json",
+          "sha256": "eee03abfe92e22156e8abf513a97d3e2ba3fddba2addba392d1297cfebffc043",
+          "bytes": 4261,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/gan2026_reliability_master_scorecard_2026-06-17.md",
+          "sha256": "ced55e06d65251addf3fab68302a8afe69084b0c5497d3aea5ee891b803a5cfd",
+          "bytes": 3369,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "cross_task_component_ablation_subject",
+      "task": "cross_task",
+      "architecture_family": "cross_family",
+      "dataset": "ExECTv2 2025 + Gan 2026",
+      "split_manifest": "ExECTv2 split v1 + Gan split v1",
+      "split": "exectv2_dev140+gan_validation750",
+      "row_count": 890,
+      "row_inspection_policy": "development_rows_permitted",
+      "scorer": "ExECT clinical_headline and Gan Purist, kept separate",
+      "model": "none; saved-output replay",
+      "model_role": "Cross-task component contribution harness",
+      "prompt_program_version": "cross_task_shared_component_ablation 2026-06-27",
+      "cache_replay_mode": "saved-output replay; no model calls",
+      "repair_policy": "Component-off changes are isolated; scoring follows each task contract.",
+      "claim_boundary": "Validation-side evidence only: score-inert evidence gate does not prove the gate is unnecessary.",
+      "story_ids": [
+        "S1",
+        "S6"
+      ],
+      "result_summary": {
+        "normalization_delta_exectv2": 0.0389,
+        "normalization_delta_gan2026": 0.0293,
+        "evidence_gate_delta_both": 0.0
+      },
+      "artifacts": [
+        {
+          "path": "docs/experiments/reliability/cross_task_shared_component_ablation_2026-06-27.md",
+          "sha256": "ffe250a4783a75a19e1ba6d4819155989dc86292b4ff1bc37d09f324b6d4cf59",
+          "bytes": 3880,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/cross_task_shared_component_ablation_2026-06-27.json",
+          "sha256": "79e22c9b688d45e8e06d250727a8ca2412d350a0ed12b5a82904029c337bfa47",
+          "bytes": 3879,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/component_ablation/definitions.yaml",
+          "sha256": "658b69357862104747b6c984f8d79f995a7b7744f038bdb1a9ce3bae0b57caf1",
+          "bytes": 3424,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "exectv2_calibration_subject",
+      "task": "exectv2",
+      "architecture_family": "cross_family",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "split": "full200_aggregate",
+      "row_count": 200,
+      "row_inspection_policy": "aggregate_only",
+      "scorer": "ExECT grouped logistic correctness scoring rule",
+      "model": "none; internal grouped logistic scoring rule",
+      "model_role": "Broad-task reliability scoring and signal probes",
+      "prompt_program_version": "ExECT calibration scoring-rule redesign 2026-07-07",
+      "cache_replay_mode": "dev140 fit; aggregate-only full200 validation; no new model calls",
+      "repair_policy": "L2=0.03 regularization; external signals retained as negative evidence and not folded into the promoted rule.",
+      "claim_boundary": "Internal scoring-rule calibration, not model-reported confidence and not deployment-ready probability validation.",
+      "story_ids": [
+        "S5",
+        "S8"
+      ],
+      "result_summary": {
+        "brier": 0.2225,
+        "base_rate_brier": 0.234,
+        "ece": 0.0587,
+        "model_confidence_status": "separate frozen negative study completed"
+      },
+      "artifacts": [
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_calibration_redesign_2026-07-07.md",
+          "sha256": "5059cb5d31cdd74d76850df5ce291d3e94246892304ee5884249f782755564bd",
+          "bytes": 10047,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_calibration_validation_audit_2026-06-25.md",
+          "sha256": "f88402959a151b305d7015026e705b586cbb4bf6fcfab2da1cf1f9c64d305f53",
+          "bytes": 4383,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_calibration_signal_probe_2026-07-07.json",
+          "sha256": "d94dadf2aac39c2264b11732508685d9c2ab854e67addd68cdc15c892cd5e2c0",
+          "bytes": 2952,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "exectv2_model_led_dev140_regression_subject",
+      "task": "exectv2",
+      "architecture_family": "hybrid",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v2.json",
+      "split": "dev140",
+      "row_count": 140,
+      "row_inspection_policy": "development_rows_permitted; test60 rows excluded before assembly",
+      "scorer": "Primary family-local clinical_headline key equality; secondary entity-agnostic compatibility view",
+      "model": "GPT-4.1-mini; historical DeepSeek chat; Qwen 3.6 35B repair v02",
+      "model_role": "Saved historical model-owned family outputs before and after attributable deterministic clinical changes",
+      "prompt_program_version": "Recorded per producer in the retained row artifact",
+      "cache_replay_mode": "Historical Git-blob replay filtered to dev140; no model calls",
+      "repair_policy": "Decision-0040 current policy analyzed without changing rules, gold, prompts, or scorer",
+      "claim_boundary": "Inspected dev140 mechanism evidence only; not test60 transfer, clinical validity, a promoted policy, or final six-model evidence.",
+      "story_ids": [
+        "S4",
+        "S8"
+      ],
+      "result_summary": {
+        "changed_model_family_rows": 319,
+        "family_local_wrong_to_correct": 160,
+        "family_local_correct_to_wrong": 41,
+        "family_local_changed_still_wrong": 118,
+        "sf_family_local_correct_to_wrong": 0,
+        "diagnosis_family_local_correct_to_wrong": 18,
+        "prescription_family_local_correct_to_wrong": 23,
+        "minimum_exact_evidence_rate": 1.0,
+        "new_model_calls": 0
+      },
+      "artifacts": [
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_model_led_dev140_regression_analysis_protocol_2026-07-15.md",
+          "sha256": "51e6df329ff70ffc3c87a9654b09e6b4e215b31d68e7060fbe2024536ea70039",
+          "bytes": 4790,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_model_led_dev140_regression_analysis_2026-07-15.md",
+          "sha256": "5d69177240f0fa7ac3d5a6f025a24524fbc51c8b627d0654ac99c913e07e955d",
+          "bytes": 9272,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_model_led_dev140_regression_analysis_20260715.json",
+          "sha256": "d59cfcdc52ea8abc2079e414ec42497b9694b64039cac909f2fa70b5cc1bcd76",
+          "bytes": 1542633,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "scripts/analyze_exectv2_model_led_dev140_regressions.py",
+          "sha256": "330c0bd4bf37f1758187ccd4d4a00a77a1255cf6cc941091ff6820b3c8fcc673",
+          "bytes": 24390,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/model_led_dev_regressions.py",
+          "sha256": "11904581caf36e5343e0fac3756f8d6c2174c1fb7f0cc214753e47de2a9a39bf",
+          "bytes": 1851,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "exectv2_model_reported_confidence_subject",
+      "task": "exectv2",
+      "architecture_family": "hybrid",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "split": "dev140+test60_aggregate",
+      "row_count": 200,
+      "row_inspection_policy": "dev140 permitted; test60 aggregate only with no row identifiers, text, predictions, or failures emitted",
+      "scorer": "Exact family-cell clinical_headline correctness",
+      "model": "GPT-4.1-mini; historical DeepSeek chat; Qwen 3.6 35B repair v02",
+      "model_role": "Saved historical model-source confidence labels evaluated against corrected final outputs",
+      "prompt_program_version": "Recorded per producer in the retained aggregate artifact",
+      "cache_replay_mode": "Historical Git-blob replay; no model calls",
+      "repair_policy": "Fixed decision-0040 replay; source and final correctness reported separately",
+      "claim_boundary": "Aggregate out-of-sample negative evidence for three saved historical outputs; not deployment calibration, independent clinical validation, a six-model conclusion, or evidence for the final DeepSeek V4 Flash runtime.",
+      "story_ids": [
+        "S5",
+        "S8"
+      ],
+      "result_summary": {
+        "gpt41mini_failure_auroc_test60": 0.5394,
+        "historical_deepseek_failure_auroc_test60": 0.5503,
+        "qwen_failure_auroc_test60": 0.4895,
+        "review_policy_adopted": false,
+        "test60_rows_emitted": 0,
+        "new_model_calls": 0
+      },
+      "artifacts": [
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_model_reported_confidence_protocol_2026-07-15.md",
+          "sha256": "b2f58b805756506358faaa1273e31a4bad4c824038c6915f440e0b5e733bbd3a",
+          "bytes": 3599,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_model_reported_confidence_out_of_sample_2026-07-15.md",
+          "sha256": "f7d78ac36b3d82822b87cd223db57a7f8ee2957185767d185ba96549383e8a32",
+          "bytes": 2758,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_model_reported_confidence_out_of_sample_20260715.json",
+          "sha256": "6fd0f5c19cbdd5fe06cee03902faea94e66e08f4a86623f367a8d251ff1cbf50",
+          "bytes": 79803,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "scripts/check_exectv2_model_reported_confidence.py",
+          "sha256": "d200ac783a2e4febee44cc8cbcae6bb8b037582ef2706a7475c7ab4374d4d345",
+          "bytes": 15014,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/model_reported_confidence.py",
+          "sha256": "89a9a24a8785d056590519914f75db55ccdc8f60b59529b874f3401474c1844f",
+          "bytes": 5965,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "exectv2_published_metric_subject",
+      "task": "exectv2",
+      "architecture_family": "rules_only",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "split": "dev140",
+      "row_count": 140,
+      "row_inspection_policy": "development_rows_permitted",
+      "scorer": "ExECTv2 paper-derived normalized-phrase, CUI, and all-feature macro scorer v1",
+      "model": "none; deterministic rules-only replay",
+      "model_role": "Paper-derived metric-family development reproduction",
+      "prompt_program_version": "none; deterministic_all9",
+      "cache_replay_mode": "no-call replay from deterministic predictions",
+      "repair_policy": "Raw selected phrase normalized for phrase view; missing CUIs never match; entity-specific paper attribute policy",
+      "claim_boundary": "Development metric implementation over all nine entity types. It does not reproduce the original ExECT system, annotation process, or reported 0.87/0.90 validation scores and does not replace the frozen six-cell reference matrix.",
+      "story_ids": [
+        "S7"
+      ],
+      "result_summary": {
+        "normalized_phrase_macro_item_f1": 0.5687,
+        "cui_macro_item_f1": 0.7144,
+        "all_features_macro_item_f1": 0.602,
+        "normalized_phrase_macro_letter_f1": 0.7518,
+        "cui_macro_letter_f1": 0.8534,
+        "all_features_macro_letter_f1": 0.7922,
+        "original_score_reproduction": false
+      },
+      "artifacts": [
+        {
+          "path": "experiments/exectv2_published_metric_reproduction_deterministic_all9_dev140_20260714.json",
+          "sha256": "c3cd4cc66c57e06d669869d1bd27e58061a8e42b2617a5b2a5cef4843f2d10d2",
+          "bytes": 44130,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_published_metric_reproduction_2026-07-14.md",
+          "sha256": "48d2675e2724dca8d9538f645fc1646243817fedb738273b6218c310d40d2398",
+          "bytes": 7376,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_published_metric_reproduction_results_2026-07-14.md",
+          "sha256": "243ddf98937780a09754b0065b6b780a119aa20beb5fc43ef9b013c5d4a9e6c6",
+          "bytes": 4862,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "exectv2_fixed_six_model_panel_subject",
+      "task": "exectv2",
+      "architecture_family": "hybrid",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "split": "dev140+test60_aggregate",
+      "row_count": 199,
+      "row_inspection_policy": "dev140 development inspection permitted; test60 aggregate only with sealed rows excluded",
+      "scorer": "ExECTv2 clinical_headline aggregate scorer",
+      "model": "GPT-4.1-mini; GPT-5.6 Luna; GPT-5.6 Sol; DeepSeek V4 Flash; Qwen 3.6:35B; Gemma 4 26B",
+      "model_role": "Fixed decision-0041 six-model comparison",
+      "prompt_program_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+      "cache_replay_mode": "live dev140 and test60 calls with cache disabled; retained test60 readout is aggregate only",
+      "repair_policy": "Decision-0040 model-led family boundary with the selected joint bounded deterministic policy",
+      "claim_boundary": "Six-model development and aggregate-only internal holdout evidence; not the published ExECT benchmark or clinical validation. Hosted and local runtime routes remain comparison caveats.",
+      "story_ids": [
+        "S4",
+        "S6",
+        "S8"
+      ],
+      "result_summary": {
+        "dev140_clinical_headline_f1": {
+          "gpt41mini": 0.8202,
+          "luna": 0.8832,
+          "sol": 0.892,
+          "deepseek_thinking": 0.8767,
+          "qwen": 0.8571,
+          "gemma": 0.8016
+        },
+        "test60_clinical_headline_f1": {
+          "gpt41mini": 0.7572,
+          "luna": 0.795,
+          "sol": 0.8047,
+          "deepseek_thinking": 0.7881,
+          "qwen": 0.7872,
+          "gemma": 0.7169
+        },
+        "test60_row_count": 59,
+        "local_conditions_retained_at_equal_status": true
+      },
+      "artifacts": [
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_hosted_test60_protocol_2026-07-15.md",
+          "sha256": "cf9b745460e1ab698b07f48d20ba190457788323d2af4ff20fd4de2f98325825",
+          "bytes": 5252,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "configs/exectv2/six_model_comparison/gpt41mini_dev140.json",
+          "sha256": "ecbda0e4620e9a85649744a2013a6a5d1452b71f7a2f9d215438c29aa994e479",
+          "bytes": 4320,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_six_model_single_call_gpt41mini_dev140_2026-07-15.md",
+          "sha256": "b97548e52fda6704c40f088bb69abdbe19cf8dc6540ffd993cb4292c1a7b5919",
+          "bytes": 5476,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "configs/exectv2/six_model_comparison/gpt56luna_dev140.json",
+          "sha256": "1ef9afb79009b4db9e412b0d1d6080930f3c218fabea05044ee89ab1944f77e9",
+          "bytes": 4320,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json",
+          "sha256": "b0c42b47b6322d3a160425966f2f721e009cb4ec17e801685e718064641049ba",
+          "bytes": 443433,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_six_model_single_call_gpt56luna_dev140_2026-07-15.md",
+          "sha256": "3643d536f93b9d36b114e67172019e53d2252d7adfe642e19139b06dbda38c0e",
+          "bytes": 5449,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "configs/exectv2/six_model_comparison/gpt56sol_dev140.json",
+          "sha256": "3cd1ef2d0d8064cd61c5c885b603207700ce43db543e6f2fcf5a26696a696eeb",
+          "bytes": 4412,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json",
+          "sha256": "fd4977e6dbde568b6fe464a7309250f65c66efc01637ae4d1ff3eb8d9614fcbb",
+          "bytes": 448199,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_six_model_single_call_gpt56sol_dev140_2026-07-15.md",
+          "sha256": "93b71502252f2d24273f6d9978a34cbd1f4a4a8467dc8839023c11a02888ad32",
+          "bytes": 5400,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "configs/exectv2/six_model_comparison/deepseek_v4_flash_dev140.json",
+          "sha256": "e7c57d9e66edae98d86c1719860308ee8cbe52ad5a00a4295841cee2d123e25b",
+          "bytes": 4676,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_six_model_single_call_deepseek_v4_flash_dev140_2026-07-15.md",
+          "sha256": "030d437ceadee0bed835616557e0f223531abc365a349ac6731dc29a3222cff4",
+          "bytes": 5550,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "configs/exectv2/six_model_comparison/qwen36_35b_dev140.json",
+          "sha256": "afe7fb1ee5214ffc46adca5ea7ce49bb056c8cabe4707344ea4204cc36321e13",
+          "bytes": 4773,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json",
+          "sha256": "334fe8a69b25b6e27d0a5ae9517af8bd9105c3b98cc5f31c2b8466bcfa9bbeeb",
+          "bytes": 470439,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_six_model_single_call_qwen36_35b_dev140_2026-07-15.md",
+          "sha256": "df66dd8718a6ca77e0f4b17050fe3886190f7efd58d5cd8b947346a3285f6b72",
+          "bytes": 5482,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "configs/exectv2/six_model_comparison/gemma4_26b_dev140.json",
+          "sha256": "2d07f1dbd0ee797d3612d6dedc8d36a8e32c1209bc1ba2fe483ad6fc0700647e",
+          "bytes": 4915,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json",
+          "sha256": "3e55d102ea104b8a25ae4bed7e86b7469f7cbfc6bc5c3c675ce565efc7ef19e7",
+          "bytes": 547345,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_six_model_single_call_gemma4_26b_dev140_2026-07-15.md",
+          "sha256": "985941742f27565ec351d027c0b29bce679998a16e96f14849b0e642afc9d7f4",
+          "bytes": 5514,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "gan2026_matched_six_model_panel_subject",
+      "task": "gan2026",
+      "architecture_family": "hybrid",
+      "dataset": "Gan 2026 seizure-frequency benchmark",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "split": "test450_aggregate",
+      "row_count": 450,
+      "row_inspection_policy": "locked aggregate only; sealed rows excluded",
+      "scorer": "Gan 2026 Purist and Pragmatic label accuracy",
+      "model": "GPT-4.1-mini; GPT-5.6 Luna; GPT-5.6 Sol; DeepSeek V4 Flash; Qwen 3.6:35B; Gemma 4 26B",
+      "model_role": "Selected matched prompt-v0.5 six-model comparison",
+      "prompt_program_version": "gan2026_hybrid_structured_events_v0.5",
+      "cache_replay_mode": "hosted live calls and aggregate-only no-call reparse of sealed local outputs",
+      "repair_policy": "hybrid_full_stack after structured model selection",
+      "claim_boundary": "Matched aggregate-only v0.5 panel on a previously used locked holdout; not a pristine one-shot or model-neutral ranking. Current-schema replay and provider-route differences remain explicit. Matched v0.5 dev750 coverage is pending.",
+      "story_ids": [
+        "S4",
+        "S8"
+      ],
+      "result_summary": {
+        "purist_correct": {
+          "gpt41mini": 361,
+          "luna": 362,
+          "sol": 373,
+          "deepseek_thinking": 344,
+          "qwen": 362,
+          "gemma": 355
+        },
+        "pragmatic_correct": {
+          "gpt41mini": 379,
+          "luna": 375,
+          "sol": 384,
+          "deepseek_thinking": 366,
+          "qwen": 384,
+          "gemma": 374
+        },
+        "denominator": 450,
+        "local_conditions_retained_at_equal_status": true
+      },
+      "artifacts": [
+        {
+          "path": "experiments/gan2026_matched_v05_test450_aggregate_20260716.json",
+          "sha256": "0836a0b8ff72bce03f3fc21a5c45227becdb72a7a7e16867c88059a487ec3cfd",
+          "bytes": 4458,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/gan2026/gan2026_matched_v05_test450_protocol_2026-07-16.md",
+          "sha256": "9822e4c23271aa3453f6097ab561c52f863f6601d25eeae66733a461e95f7ed0",
+          "bytes": 9253,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/gan2026/gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md",
+          "sha256": "9d8ca845d5b552705f3b93f31802cda469e73e50d901d638ed068cb44169cbee",
+          "bytes": 6056,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "exectv2_six_model_sf_overinference_subject",
+      "task": "exectv2",
+      "architecture_family": "hybrid",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "split": "dev140",
+      "row_count": 840,
+      "row_inspection_policy": "dev140 row analysis permitted; no test60 row access",
+      "scorer": "change-aware frequency_state_faithful per-letter state set",
+      "model": "GPT-4.1-mini; GPT-5.6 Luna; GPT-5.6 Sol; DeepSeek V4 Flash; Qwen 3.6:35B; Gemma 4 26B",
+      "model_role": "Fixed decision-0041 structured SF comparator versus final deterministic projection and suppression",
+      "prompt_program_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+      "cache_replay_mode": "saved-output replay; zero model calls",
+      "repair_policy": "selected joint bounded policy with SF state projection v0.6 and unsupported-state suppression v0.7",
+      "claim_boundary": "ExECTv2 dev140 development evidence for the named six model conditions. The unknown-only primary denominator is empty, so the result does not establish Gan-to-ExECT transfer, factuality prevalence, test60 behavior, or clinical validity.",
+      "story_ids": [
+        "S5",
+        "S8"
+      ],
+      "result_summary": {
+        "unique_letters": 140,
+        "model_letter_rows": 840,
+        "unknown_only_denominator": 0,
+        "primary_evidence_state": "diagnostic",
+        "state_profile_f1_comparator": {
+          "gpt41mini": 0.734,
+          "luna": 0.8357,
+          "sol": 0.8509,
+          "deepseek_thinking": 0.8104,
+          "qwen": 0.7517,
+          "gemma": 0.6894
+        },
+        "state_profile_f1_final": {
+          "gpt41mini": 0.7845,
+          "luna": 0.8551,
+          "sol": 0.8603,
+          "deepseek_thinking": 0.8429,
+          "qwen": 0.7986,
+          "gemma": 0.7386
+        },
+        "wrong_to_correct_transitions": 54,
+        "correct_to_wrong_transitions": 1,
+        "final_exact_evidence_rate_all_models": 1.0
+      },
+      "artifacts": [
+        {
+          "path": "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json",
+          "sha256": "e7f6007d5cbb61fba325ecd057a6db70656298ba962c96bb26241a50ec9e373c",
+          "bytes": 895330,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_six_model_sf_overinference_protocol_2026-07-18.md",
+          "sha256": "d0a3931d28abef8697f6e33f5735e3abd066beab8d722e68dba2df0d34b888c4",
+          "bytes": 4187,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_six_model_sf_overinference_2026-07-18.md",
+          "sha256": "1ae8dcb0625f274f2b4f7401931339f51ff2b6381885b1ca805ea1b8e90eb7c5",
+          "bytes": 4657,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "scripts/build_exectv2_six_model_sf_overinference.py",
+          "sha256": "a9d83c0335fdaebccf0b70fa8258db0a44e6410d7b76b43e473921cdc1279490",
+          "bytes": 21401,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "cross_task_six_model_report_subject",
+      "task": "cross_task",
+      "architecture_family": "cross_family",
+      "dataset": "Retained ExECTv2 dev140/test60 and Gan 2026 test450 panels",
+      "split_manifest": "Task-specific split manifests named in the underlying retained packages",
+      "split": "exectv2_dev140+test60_aggregate; gan2026_test450_aggregate",
+      "row_count": 649,
+      "row_inspection_policy": "ExECT dev140 rows permitted; ExECT test60 and Gan test450 aggregate only",
+      "scorer": "Task-specific ExECT clinical_headline F1 and Gan Purist/Pragmatic accuracy",
+      "model": "GPT-4.1-mini; GPT-5.6 Luna; GPT-5.6 Sol; DeepSeek V4 Flash; Qwen 3.6:35B; Gemma 4 26B",
+      "model_role": "Cross-task synthesis of the two retained fixed six-model panels",
+      "prompt_program_version": "Task-specific fixed prompts named in the retained panel protocols",
+      "cache_replay_mode": "report synthesis from retained development and aggregate-only holdout artifacts",
+      "repair_policy": "Task-specific fixed repair policies; no cross-task score pooling",
+      "claim_boundary": "Bounded synthesis of task-specific panels plus external Artificial Analysis Intelligence/Healthcare Index and labelled list-price context. It is not a shared-metric ranking, a pristine one-shot comparison, Gan-to-ExECT reliability transfer, matched run cost telemetry, the published ExECT benchmark, or clinical validation.",
+      "story_ids": [
+        "S4",
+        "S5",
+        "S8"
+      ],
+      "result_summary": {
+        "models": 6,
+        "exectv2_test_rank_leader": "GPT-5.6 Sol",
+        "gan2026_test_rank_leader": "GPT-5.6 Sol",
+        "cross_task_spearman_rank_correlation": 0.61,
+        "sf_unknown_only_denominator": 0
+      },
+      "artifacts": [
+        {
+          "path": "docs/research/shared/six_model_comparison_report_2026-07-18.md",
+          "sha256": "248c5373235fdc3a6e456aa2e6f2daa3ad23cf25a4fb20d3a173c8bcee8aae65",
+          "bytes": 25529,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/six_model_external_capability_cost_snapshot_20260731.json",
+          "sha256": "90a589022a860cc2c62bd1e9ebd1120891e08bc3da24687943965b9271d34879",
+          "bytes": 7526,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "annotation_quality_subject",
+      "task": "exectv2",
+      "architecture_family": "cross_family",
+      "dataset": "ExECTv2 2025 permitted development evidence",
+      "split_manifest": "ExECTv2 split v1/v2 as stated per source",
+      "split": "dev140_retained_annotation_records",
+      "row_count": 584,
+      "row_inspection_policy": "development_rows_permitted",
+      "scorer": "Original scorers plus explicitly separate sensitivity/adjudication views",
+      "model": "none; human/mechanical adjudication records",
+      "model_role": "Generated annotation defect, convention, ambiguity, multiplicity, scoring, handling, sensitivity, and review-status evidence",
+      "prompt_program_version": "exectv2_annotation_evidence_synthesis_v1 + retained source ledgers and reviews",
+      "cache_replay_mode": "analysis only; permitted development rows",
+      "repair_policy": "Original benchmark scores remain primary; adjustments and sensitivity views stay separate.",
+      "claim_boundary": "Internal adjudication, pattern-assisted review, mechanical defect, and blind-replication evidence. Original scores remain primary, superseded Diagnosis adjustments remain historical, and independent clinical review is still required for clinical-validity claims.",
+      "story_ids": [
+        "S7",
+        "S9"
+      ],
+      "result_summary": {
+        "consolidation_status": "complete_with_explicit_legacy_row_gap",
+        "taxonomy_entries": 584,
+        "retained_sources_hash_checked": 13,
+        "explicitly_cited_letters_mapped": 57,
+        "explicitly_cited_letters_unmapped": 0,
+        "current_diagnosis_review_rows": 246,
+        "direct_gold_issues_open": 3,
+        "direct_gold_issues_fixed": 1,
+        "historical_diagnosis_rows_aggregate_only": 10,
+        "independent_clinical_review": "open"
+      },
+      "artifacts": [
+        {
+          "path": "experiments/gold_case_ledger_diagnosis.jsonl",
+          "sha256": "ce38371c0798855518a6f23371893cfee838506207d34ef87fcd2c9e7eb74479",
+          "bytes": 450698,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/gold_case_ledger_investigations.jsonl",
+          "sha256": "30b750c379ac379a6a6897bdefffc25738fd584dd3af66f826c5d6cebbb0b9b9",
+          "bytes": 93975,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/gold_case_ledger_prescription.jsonl",
+          "sha256": "90df5fba464a500d7877e49ac3a899f0bfa90a908f7a5a9a974a9bf45f338356",
+          "bytes": 95420,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/gold_case_ledger_seizurefrequency.jsonl",
+          "sha256": "91bdb89f1201a3e5394e93a27009427a98b16f506e3b0de4ef4c9b435846beda",
+          "bytes": 146167,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/gold_data_issues.jsonl",
+          "sha256": "52e66f2c4c8df8588509affbd30e77ca1855e30674017b72f76d9e27da287dcf",
+          "bytes": 6046,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/seizure_frequency/exectv2_sf_canonical_metric_row_analysis_2026-06-29.md",
+          "sha256": "739d9e60ba52eeb08e9e5859b35f05e87cd7339470e621a7f10ac5c221771cd7",
+          "bytes": 24633,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/diagnosis/exectv2_dx_canonical_row_analysis_2026-06-30.md",
+          "sha256": "ffbc5dd0971760acf113c38f7f00e9ae2973dd922eb0a7c5f3bb9ec34348e03a",
+          "bytes": 11165,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_gold_quality_adjudication_blind_replication_2026-07-01.md",
+          "sha256": "3d032be36687e67dc8c654858a2ab5a2e0d363cf7b4a1a02bb13550a5937d33e",
+          "bytes": 14583,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/research/exectv2/annotation_guidelines_v9_extracted.md",
+          "sha256": "7836f109cdcb7be9ca315747e0d15b29739f2c0e1b5baf83871ec2bdffb6a9fb",
+          "bytes": 39986,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_annotation_evidence_synthesis_20260715.json",
+          "sha256": "fc3962530daad73768ad16a1b7dc4f51e3dd6c82b28def6377bca9b16d00902e",
+          "bytes": 882571,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "scripts/build_exectv2_annotation_evidence_synthesis.py",
+          "sha256": "11787d11da6a2d19a0ecdc6a9bb75ac9145dbc0dd62c420aad5973b7a8ca5235",
+          "bytes": 32993,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_annotation_evidence_synthesis_protocol_2026-07-15.md",
+          "sha256": "ad9aad51cfc5357a2cc62f2c7a8b01322a8d4242faeeaf964b5a2d48dbb4b55b",
+          "bytes": 4941,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_annotation_evidence_synthesis_2026-07-15.md",
+          "sha256": "42ebb5d50d32ae14c3a9e9723c9dac2db2528fcbc49a033d913b9d8da114d17f",
+          "bytes": 7456,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "exectv2_semantic_support_review_subject",
+      "task": "exectv2",
+      "architecture_family": "cross_family",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "split": "dev140_stratified_review_sample",
+      "row_count": 48,
+      "row_inspection_policy": "dev140 rows permitted; test60 excluded by source path and validator",
+      "scorer": "Independent semantic-support review fields; review not started",
+      "model": "GPT-4.1-mini; GPT-5.6 Luna; GPT-5.6 Sol; DeepSeek V4 Flash; Qwen 3.6:35B; Gemma 4 26B",
+      "model_role": "Two final evidence-valid findings per model and fixed clinical family, selected without outcome labels",
+      "prompt_program_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24 final assembled findings",
+      "cache_replay_mode": "no-call deterministic sampling from retained dev140 outputs",
+      "repair_policy": "Review the retained final conclusion without changing it",
+      "claim_boundary": "Unreviewed development sampling substrate only. It is not semantic-support evidence, independent clinical validation, or a six-model comparative result.",
+      "story_ids": [
+        "S8"
+      ],
+      "result_summary": {
+        "review_status": "pending_independent_clinical_review",
+        "models": 6,
+        "families": 4,
+        "sample_per_model_family": 2,
+        "review_items": 48,
+        "test60_rows": 0,
+        "review_conclusions": 0
+      },
+      "artifacts": [
+        {
+          "path": "experiments/exectv2_semantic_support_review_substrate_dev140_20260718.json",
+          "sha256": "8d28404c72ec1219416ffd3c9532e050dc91ea56a25b50d15f3d231a363138ad",
+          "bytes": 77570,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md",
+          "sha256": "47db96e7d0b4a134edcc29091f8ce3c54187b22b26c07b33643a663120327e08",
+          "bytes": 4415,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "scripts/build_exectv2_semantic_support_review_substrate.py",
+          "sha256": "5050d4bc01a52ca1f443230d14b498bf659e6e2137532ae641cd9d4183f206aa",
+          "bytes": 11549,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.jsonl",
+          "sha256": "2d3b9509a24988eb21e0d0a23c57550097defaa514436f361ba4412e4184abed",
+          "bytes": 27988981,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.jsonl",
+          "sha256": "db2c2a84c681908cbf8865ba1b2bbb420b7e901559f5af9fdadb8bc20a97d50a",
+          "bytes": 28675509,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.jsonl",
+          "sha256": "5fbce07a825c5a6cb780fdb2c2d1777a661ac54a9aac8843e2529edb463e74d2",
+          "bytes": 30591521,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.jsonl",
+          "sha256": "f199dcc05b0b0aaaf2e5941c942d9385c8398294338286ef8a9d78d8ed2f4640",
+          "bytes": 33132336,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "shared_reliability_framework_subject",
+      "task": "cross_task",
+      "architecture_family": "cross_family",
+      "dataset": "ExECTv2 2025 + Gan 2026 retained evidence",
+      "split_manifest": "ExECTv2 split v1 + Gan split v1",
+      "split": "retained_development_and_aggregate_holdout_evidence",
+      "row_count": 16,
+      "row_inspection_policy": "No new row inspection; locked evidence remains aggregate-only",
+      "scorer": "Eight shared criteria with task-specific measurement objects; no pooled score",
+      "model": "none; deterministic no-call evidence synthesis",
+      "model_role": "Cross-task reliability evaluation and claim-boundary framework",
+      "prompt_program_version": "shared reliability framework 2026-07-18",
+      "cache_replay_mode": "retained-artifact replay; no model calls",
+      "repair_policy": "Preserve task scorers, score stages, repair boundaries, and denominators",
+      "claim_boundary": "Framework implementation evidence only. The scorecard is not a shared metric, composite score, clinical validation result, or cross-task model ranking.",
+      "story_ids": [
+        "S8"
+      ],
+      "result_summary": {
+        "criteria": 8,
+        "task_cells": 16,
+        "shared_metric": false,
+        "composite_score": false,
+        "independent_clinical_review": "not_completed"
+      },
+      "artifacts": [
+        {
+          "path": "docs/decisions/0044-shared-reliability-criteria-use-task-specific-measures.md",
+          "sha256": "148a7d4d049ec002ca6024bdb974426298fc2fde3c5c4bb9ce980a710038885e",
+          "bytes": 3970,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/design/reliability_evaluation_framework.md",
+          "sha256": "845fe30119bb34457e02de622313b9905ce54bf649663cf30bae81f3c3d26899",
+          "bytes": 9928,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/shared_reliability_scorecard_20260718.json",
+          "sha256": "9948b72c66e3ad404b4cadad7ab824085d6d4edaf2e2c6d750829c805018c6ba",
+          "bytes": 166537,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/research/shared/reliability_scorecard_2026-07-18.md",
+          "sha256": "207631b1d86437f94b966ec42711526be0a9ca9019dcb4e2089ad981191e8d6c",
+          "bytes": 16496,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "scripts/build_shared_reliability_scorecard.py",
+          "sha256": "8700ea04d93277904d47f6a6fe4f0577f6ed4778d67084808eb876fe6663f763",
+          "bytes": 26891,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "src/clinical_extraction/core/shared_reliability_schema.py",
+          "sha256": "91d37016bf648a5830a1bad4b4a051744ef4340ef358ffb970b9a4bf6e2871a5",
+          "bytes": 21429,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "src/clinical_extraction/core/shared_reliability_gan_measurements.py",
+          "sha256": "be39c728209d1be5ac18d234e4b3b24fafa9840d4ff98f71bc538130145d8a5b",
+          "bytes": 27579,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "src/clinical_extraction/core/shared_reliability_exect_measurements.py",
+          "sha256": "839a84a7f9d73e31cb2e001941d0e833f8a069e98db339feff8bd6c5758c5fb4",
+          "bytes": 25947,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "src/clinical_extraction/core/shared_reliability_report.py",
+          "sha256": "36ad1fc147bd754cba855be99dcd3bafbf3edf829bef5c175739fa19f9276237",
+          "bytes": 8629,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/canon/09_cross_task_reliability.md",
+          "sha256": "e97fb305514206c8d22ddb1522137cc53d0d4129e7ae9d0d7767266105b6437e",
+          "bytes": 3661,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/canon/10_paper_provenance.md",
+          "sha256": "5cd90ec2c18ec39b1d8a7c9e8e0bf8740931f2d8b4a2359178c90e602a4ff34b",
+          "bytes": 16382,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "exectv2_gepa_negative_architecture_subject",
+      "task": "exectv2",
+      "architecture_family": "llm_only",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "split": "dev",
+      "row_count": 140,
+      "row_inspection_policy": "dev140_rows_permitted",
+      "scorer": "ExECTv2 finalized clinical_headline; strict benchmark companion",
+      "model": "openai/gpt-4.1-mini",
+      "model_role": "Architecture slot 2: GEPA dedup negative comparator",
+      "prompt_program_version": "Exact retained instruction file plus GEPA h2/mb8 program",
+      "cache_replay_mode": "live; live",
+      "repair_policy": "dedup_clinical_facts_adapter; no promotion to hybrid control",
+      "claim_boundary": "Negative optimizer-only development comparator. Not the Decision 0046 Sol raw_lane peer.",
+      "story_ids": [
+        "S1",
+        "S2",
+        "S5",
+        "S6"
+      ],
+      "result_summary": {
+        "clinical_headline_overall_f1": 0.741,
+        "strict_benchmark_per_item_f1": 0.1356
+      },
+      "artifacts": [
+        {
+          "path": "experiments/exectv2_gepa_dedup_gpt41mini_h2mb8_20260628.json",
+          "sha256": "f77efe9371d2c47965f57674c8652efd20ace4c4c20e34314b6b165ffd56f78f",
+          "bytes": 1755,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_gepa_dedup_gpt41mini_h2mb8_20260628.md",
+          "sha256": "050a9430d6780e4d460fde3b622c4026e34a1c8d8e2f3acca2d3e774dfd53ad8",
+          "bytes": 4035,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_gepa_dedup_gpt41mini_h2mb8_20260628.jsonl",
+          "sha256": "bcba59267f37edcfe271ae7e51ca1587a331545b16e452b8fad09fe2faa269d2",
+          "bytes": 163203,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_gepa_dedup_gpt41mini_h2mb8_20260628.instruction.txt",
+          "sha256": "0696442eb95c6b03ce9183a5cc66493557c0a1d5c1f66702d8ad95badc5954c0",
+          "bytes": 1986,
+          "retrieval": "git_path"
+        }
+      ]
+    }
+  ]
+}
