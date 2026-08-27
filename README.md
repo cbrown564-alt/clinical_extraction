@@ -81,6 +81,23 @@ ledger-only. `gan_llm_only` is not a results column.
   rules) is Gemini-only later-stage encode then rule select
   (0.8636).
 
+**ExECT cell-3 roster** (4-family micro F1, locked `test60`,
+aggregate-only). LLM recognise (`exect_llm_extract`) then rules.
+Select is the cited stop:
+
+| Model | Recognise | Select |
+| --- | ---: | ---: |
+| Gemini 3.7 Flash | 0.85 | **0.87** |
+| Grok 4.6 | 0.79 | 0.81 |
+| DeepSeek V4 Flash | 0.78 | 0.81 |
+| GPT-5.6 Luna | 0.77 | 0.80 |
+| Qwen 3.8 27B | 0.73 | 0.76 |
+| Gemma 4 26B | 0.72 | 0.76 |
+
+Exact totals and sources:
+[three variables](docs/research/paper/three_variables_rules_model_thinking_2026-08-23.md),
+`paper_experiments/exect/exect_llm_extract/`.
+
 **Ablations (not headline columns):** Gemini thinking low / medium /
 high on cell 3 only; Gan source-near `gan_llm_extract_raw` (source
 wording vs form alignment); recognise and encode stage stops above.
