@@ -201,7 +201,7 @@ def _extract_investigations(text: str) -> tuple[PredictedMention, ...]:
                 ),
             )
         )
-    return _collapse_same_result(mentions)
+    return tuple(mentions)
 
 
 def _sentence_bounds(text: str, pos: int) -> tuple[int, int]:

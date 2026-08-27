@@ -387,6 +387,8 @@ def _should_keep_mention(mention: PredictedMention) -> bool:
 def extract_seizure_frequency(
     letter: ExectLetter,
     ablation: AblationConfig = DEFAULT_ABLATION,
+    *,
+    keep_unassociated_anchors: bool = False,
 ) -> PredictedLetter:
     """Extract all SeizureFrequency mentions from one letter.
 
@@ -406,6 +408,12 @@ def extract_seizure_frequency(
     attributes = [a for a in attributes if a.evidence and a.evidence in text]
 
     pairs = associate_attributes_to_anchors(anchors, attributes, text)
+    paired_spans = {anchor.span for anchor, _attrs in pairs}
+    rateless_mentions = tuple(
+        _mention_from_pair(anchor, {})
+        for anchor in anchors
+        if keep_unassociated_anchors and anchor.span not in paired_spans
+    )
     associated_mentions = _split_mixed_mentions(
         tuple(
             _mention_from_pair(anchor, merged)
@@ -422,7 +430,7 @@ def extract_seizure_frequency(
     structured_mentions = tuple(
         mention for mention in structured_candidates if _mention_key(mention) not in associated_keys
     )
-    mentions = (*kept_associated_mentions, *structured_mentions)
+    mentions = (*kept_associated_mentions, *structured_mentions, *rateless_mentions)
     mentions = (*mentions, *_projection_alias_mentions(mentions))
     mentions = tuple(mention for mention in mentions if _should_keep_mention(mention))
     return PredictedLetter(

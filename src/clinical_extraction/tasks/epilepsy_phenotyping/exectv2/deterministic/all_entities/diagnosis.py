@@ -30,9 +30,30 @@ def _surface_pattern(name: str) -> str:
     return r"[ \t-]+".join(re.escape(part) for part in name.split())
 
 
+_RECALL_FIRST_SURFACES: tuple[str, ...] = (
+    "symptomatic structural focal epilepsy",
+    "symptomatic structural epilepsy",
+    "localisation related epilepsy",
+    "localization related epilepsy",
+    "focal onset epilepsy",
+    "epilepsy probable focal onset",
+    "epilepsy probable focal",
+)
+_RECOGNISE_SURFACES: tuple[str, ...] = tuple(
+    dict.fromkeys(
+        (
+            *sorted(_RECALL_FIRST_SURFACES, key=len, reverse=True),
+            *sorted(DIAGNOSIS_SURFACE_FORMS, key=len, reverse=True),
+        )
+    )
+)
+_PROBABLE_FOCAL_PATTERN = re.compile(
+    r"\b(epilepsy\s*[-–,]\s*probable\s+focal(?:\s+onset)?)\b",
+    re.IGNORECASE,
+)
 _BASELINE_DIAGNOSIS_PATTERN = re.compile(
     r"\b("
-    + "|".join(re.escape(name) for name in sorted(DIAGNOSIS_SURFACE_FORMS, key=len, reverse=True))
+    + "|".join(re.escape(name) for name in _RECOGNISE_SURFACES)
     + r")\b",
     re.IGNORECASE,
 )
@@ -86,12 +107,13 @@ def _extract_diagnoses(
 ) -> tuple[PredictedMention, ...]:
     mentions: list[PredictedMention] = []
     occupied: list[tuple[int, int]] = []
+    pattern = (
+        _RESOLUTION_DIAGNOSIS_PATTERN
+        if include_resolution_candidate
+        else _BASELINE_DIAGNOSIS_PATTERN
+    )
     matches = sorted(
-        (
-            _RESOLUTION_DIAGNOSIS_PATTERN
-            if include_resolution_candidate
-            else _BASELINE_DIAGNOSIS_PATTERN
-        ).finditer(text),
+        (*pattern.finditer(text), *_PROBABLE_FOCAL_PATTERN.finditer(text)),
         key=lambda m: m.end() - m.start(),
         reverse=True,
     )
@@ -106,7 +128,12 @@ def _extract_diagnoses(
         ):
             continue
         phrase = match.group(1)
-        concept = diagnosis_concept(phrase)
+        format_target = sd.diagnosis_format_target(phrase, phrase)
+        concept = (
+            diagnosis_concept(phrase)
+            or diagnosis_concept(canonicalize_diagnosis_concept(phrase))
+            or (diagnosis_concept(format_target) if format_target else None)
+        )
         if concept is None:
             continue
         attrs = {
@@ -120,7 +147,7 @@ def _extract_diagnoses(
                 entity=DIAGNOSIS.name,
                 text=phrase,
                 attributes=attrs,
-                evidence=phrase,
+                evidence=_sentence_window(text, match.start(), match.end()),
                 evidence_span=match_span(match),
                 component_owner=_owner(
                     "deterministic_diagnosis_phrase",

@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from typing import Any
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.views import (
+    mention_to_dict,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     DIAGNOSIS,
     INVESTIGATIONS,
@@ -13,8 +17,16 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedLetter,
+    PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select_rules import (
+    RULES_ONLY_SELECT_RULE_IDS,
+    apply_select_rules,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines import (
+    key_entities_structured as structured,
+)
 
 from ..deterministic.all_entities.orchestrator import extract_deterministic_all9
 from .contracts import ExectStageEvent
@@ -38,6 +50,64 @@ class RulesRecordResult:
     @property
     def output(self) -> PredictedLetter:
         return self.prediction
+
+
+def _mention_from_row(row: Mapping[str, Any]) -> PredictedMention:
+    attributes = row.get("attributes") or {}
+    if not isinstance(attributes, Mapping):
+        attributes = {}
+    return PredictedMention(
+        entity=str(row.get("entity") or ""),
+        text=str(row.get("text") or ""),
+        attributes={str(key): str(value) for key, value in attributes.items()},
+        evidence=str(row.get("evidence") or ""),
+        component_owner=str(row.get("component_owner") or ""),
+    )
+
+
+def apply_rules_only_later_stages(
+    letter: ExectLetter,
+    prediction: PredictedLetter,
+) -> PredictedLetter:
+    """Encode then inventory-Select the four comparison families."""
+
+    four = tuple(
+        mention
+        for mention in prediction.mentions
+        if mention.entity in PRIMARY_COMPARISON_ENTITIES
+    )
+    other = tuple(
+        mention
+        for mention in prediction.mentions
+        if mention.entity not in PRIMARY_COMPARISON_ENTITIES
+    )
+    diagnosis = tuple(mention for mention in four if mention.entity == DIAGNOSIS.name)
+    unchanged = tuple(mention for mention in four if mention.entity != DIAGNOSIS.name)
+    encoded_diagnosis, _warnings = structured.apply_format_stack(
+        diagnosis,
+        letter.note_text,
+        letter_id=letter.letter_id,
+    )
+    encoded = (*unchanged, *encoded_diagnosis)
+    source_rows = [mention_to_dict(mention) for mention in four]
+    encoded_rows = [mention_to_dict(mention) for mention in encoded]
+    selected, actions = apply_select_rules(
+        encoded_rows,
+        source_mentions=source_rows,
+        note_text=letter.note_text,
+        enabled_rule_ids=set(RULES_ONLY_SELECT_RULE_IDS),
+    )
+    selected_mentions = tuple(_mention_from_row(row) for row in selected)
+    return prediction.model_copy(
+        update={
+            "mentions": (*other, *selected_mentions),
+            "diagnostics": {
+                **dict(prediction.diagnostics),
+                "rules_only_later_stages": "encode_then_inventory_select",
+                "select_action_count": len(actions),
+            },
+        }
+    )
 
 
 def project_primary_comparison(prediction: PredictedLetter) -> PredictedLetter:
@@ -72,6 +142,7 @@ def run_letter(
         include_diagnosis_resolution_candidate=include_diagnosis_resolution_candidate,
         include_diagnosis_benchmark_residuals=include_diagnosis_benchmark_residuals,
     )
+    prediction = apply_rules_only_later_stages(letter, prediction)
     comparison = project_primary_comparison(prediction)
     stage_events = build_stage_events(letter, prediction, comparison)
     return RulesRecordResult(

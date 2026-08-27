@@ -48,6 +48,8 @@ SF_RECENT_EVENT_OVER_HISTORICAL_FREE = "selection.sf_recent_event_over_historica
 SF_TO_DIAGNOSIS_EXPLICIT_TYPE = "selection.sf_to_diagnosis_explicit_type"
 INVENTORY_KEEP_SOURCE_DIAGNOSIS = "selection.inventory_keep_source_diagnosis"
 INVENTORY_WEAK_EPISODE_DROP = "selection.inventory_weak_episode_drop"
+INVESTIGATION_SAME_RESULT_DEDUPE = "selection.investigation_same_result_dedupe"
+SF_RATELESS_ANCHOR_DROP = "selection.sf_rateless_anchor_drop"
 
 CANDIDATE_SELECT_RULE_IDS: tuple[str, ...] = (
     DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY,
@@ -60,6 +62,8 @@ CANDIDATE_SELECT_RULE_IDS: tuple[str, ...] = (
     SF_TO_DIAGNOSIS_EXPLICIT_TYPE,
     INVENTORY_KEEP_SOURCE_DIAGNOSIS,
     INVENTORY_WEAK_EPISODE_DROP,
+    INVESTIGATION_SAME_RESULT_DEDUPE,
+    SF_RATELESS_ANCHOR_DROP,
 )
 ACCEPTED_SELECT_RULE_IDS: tuple[str, ...] = (
     DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY,
@@ -79,6 +83,11 @@ INVENTORY_SELECT_RULE_IDS: tuple[str, ...] = (
     INVENTORY_KEEP_SOURCE_DIAGNOSIS,
     INVENTORY_WEAK_EPISODE_DROP,
 )
+RULES_ONLY_SELECT_RULE_IDS: tuple[str, ...] = (
+    DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY,
+    DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE,
+    INVENTORY_KEEP_SOURCE_DIAGNOSIS,
+)
 _RULE_PORTABILITY_BY_ID = {
     DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY: "clinical_epilepsy",
     DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE: "benchmark_format",
@@ -90,6 +99,8 @@ _RULE_PORTABILITY_BY_ID = {
     SF_TO_DIAGNOSIS_EXPLICIT_TYPE: "benchmark_format",
     INVENTORY_KEEP_SOURCE_DIAGNOSIS: "clinical_epilepsy",
     INVENTORY_WEAK_EPISODE_DROP: "clinical_epilepsy",
+    INVESTIGATION_SAME_RESULT_DEDUPE: "clinical_epilepsy",
+    SF_RATELESS_ANCHOR_DROP: "seizure_frequency",
 }
 
 EMITTED_ACTIONS_BY_RULE_ID: dict[str, frozenset[str]] = {
@@ -103,6 +114,8 @@ EMITTED_ACTIONS_BY_RULE_ID: dict[str, frozenset[str]] = {
     SF_TO_DIAGNOSIS_EXPLICIT_TYPE: frozenset({"add"}),
     INVENTORY_KEEP_SOURCE_DIAGNOSIS: frozenset({"add"}),
     INVENTORY_WEAK_EPISODE_DROP: frozenset({"drop"}),
+    INVESTIGATION_SAME_RESULT_DEDUPE: frozenset({"drop"}),
+    SF_RATELESS_ANCHOR_DROP: frozenset({"drop"}),
 }
 
 _DIAGNOSIS_HEADING_RE = re.compile(
@@ -209,6 +222,12 @@ def apply_select_rules(
     if INVENTORY_WEAK_EPISODE_DROP in enabled_rule_ids:
         working, records = _drop_weak_episode_mentions(working)
         actions.extend(records)
+    if INVESTIGATION_SAME_RESULT_DEDUPE in enabled_rule_ids:
+        working, records = _dedupe_same_investigation_results(working)
+        actions.extend(records)
+    if SF_RATELESS_ANCHOR_DROP in enabled_rule_ids:
+        working, records = _drop_rateless_sf_anchors(working)
+        actions.extend(records)
 
     return working, actions
 
@@ -273,6 +292,60 @@ def _drop_weak_episode_mentions(
                     before=mention,
                 )
             )
+            continue
+        out.append(mention)
+    return out, actions
+
+
+def _investigation_result_key(mention: Mapping[str, Any]) -> tuple[str, str] | None:
+    if _entity(mention) != "Investigations":
+        return None
+    attrs = _attrs(mention)
+    modality = next(
+        (
+            name
+            for name in ("EEG", "MRI", "CT")
+            if attrs.get(f"{name}_Performed") == "Yes"
+        ),
+        str(mention.get("text") or ""),
+    )
+    result = str(attrs.get(f"{modality}_Results") or "")
+    if not modality:
+        return None
+    return (modality, result)
+
+
+def _dedupe_same_investigation_results(
+    selected: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    out: list[dict[str, Any]] = []
+    actions: list[dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
+    for mention in selected:
+        key = _investigation_result_key(mention)
+        if key is None:
+            out.append(mention)
+            continue
+        if key in seen:
+            actions.append(_action(INVESTIGATION_SAME_RESULT_DEDUPE, "drop", before=mention))
+            continue
+        seen.add(key)
+        out.append(mention)
+    return out, actions
+
+
+def _has_frequency_attributes(mention: Mapping[str, Any]) -> bool:
+    return bool(set(_attrs(mention)) - {"CUI", "CUIPhrase"})
+
+
+def _drop_rateless_sf_anchors(
+    selected: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    out: list[dict[str, Any]] = []
+    actions: list[dict[str, Any]] = []
+    for mention in selected:
+        if _entity(mention) == "SeizureFrequency" and not _has_frequency_attributes(mention):
+            actions.append(_action(SF_RATELESS_ANCHOR_DROP, "drop", before=mention))
             continue
         out.append(mention)
     return out, actions
@@ -951,6 +1024,9 @@ __all__ = [
     "INVENTORY_KEEP_SOURCE_DIAGNOSIS",
     "INVENTORY_SELECT_RULE_IDS",
     "INVENTORY_WEAK_EPISODE_DROP",
+    "INVESTIGATION_SAME_RESULT_DEDUPE",
+    "RULES_ONLY_SELECT_RULE_IDS",
+    "SF_RATELESS_ANCHOR_DROP",
     "PRESCRIPTION_ACTIVE_TITRATION",
     "PRESCRIPTION_EXACT_REGIMEN_DEDUPE",
     "PRESCRIPTION_LOCAL_REGIMEN_SCOPE",

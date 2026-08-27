@@ -69,6 +69,14 @@ ENTITY_EVALUATION_POLICIES.update(
             entity=DIAGNOSIS.name,
             phrase_target="cuiphrase",
         ),
+        INVESTIGATIONS.name: EntityEvaluationPolicy(
+            entity=INVESTIGATIONS.name,
+            preserve_distinct_occurrences=True,
+        ),
+        PRESCRIPTION.name: EntityEvaluationPolicy(
+            entity=PRESCRIPTION.name,
+            preserve_distinct_occurrences=True,
+        ),
         PATIENT_HISTORY.name: EntityEvaluationPolicy(
             entity=PATIENT_HISTORY.name,
             preserve_distinct_occurrences=True,

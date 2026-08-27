@@ -50,10 +50,14 @@ def extract_deterministic_all9(
     *,
     include_diagnosis_resolution_candidate: bool = False,
     include_diagnosis_benchmark_residuals: bool = False,
+    keep_unassociated_sf_anchors: bool = False,
 ) -> PredictedLetter:
     """Extract the active deterministic baseline entities from one letter."""
 
-    sf_prediction = extract_seizure_frequency(letter)
+    sf_prediction = extract_seizure_frequency(
+        letter,
+        keep_unassociated_anchors=keep_unassociated_sf_anchors,
+    )
     mentions = (
         *_extract_diagnoses(
             letter.note_text,
