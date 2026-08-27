@@ -48,7 +48,7 @@ submitted (select) score. All five rows use the same scorer.
 
 | Recognise | Encode | Select | F1 |
 | --- | --- | --- | ---: |
-| rules | rules | rules | 0.77 |
+| rules | rules | rules | 0.80 |
 | both | rules | rules | 0.86 |
 | LLM | rules | rules | 0.87 |
 | LLM | LLM | rules | 0.86 |

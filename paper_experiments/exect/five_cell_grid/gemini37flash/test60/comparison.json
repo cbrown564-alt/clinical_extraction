@@ -13,8 +13,8 @@
       "encode_role": "rules",
       "select_role": "rules",
       "extract_source": "exect_rules",
-      "select": 0.7725,
-      "ablation": {"extract": 0.7725, "encode": 0.7725}
+      "select": 0.8018,
+      "ablation": {"extract": 0.8018, "encode": 0.8018}
     },
     "both_extract_then_rules": {
       "extract_role": "both",

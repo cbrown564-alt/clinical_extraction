@@ -219,13 +219,13 @@ need its own gold; this gold still scores `4 per day`.
 
 ### What the locked totals show
 
-On 59 held-out letters, written rules recovered 0.7725 of clinical
+On 59 held-out letters, written rules recovered 0.8018 of clinical
 facts. Gemini both-recognise (living recognise plus suggested
 candidates, then rule select) scored 0.8592. Gemini recognise plus
 rule select scored 0.8674. Later-stage encode plus rule select
 scored 0.8636. Later-stage LLM select scored 0.853. The paper may
 say those locked totals and the Gemini grid below, and may write
-the five select stops as 0.77, 0.86, 0.87, 0.86, and 0.85. It may
+the five select stops as 0.80, 0.86, 0.87, 0.86, and 0.85. It may
 not treat a living producer F1 as LLM recognise. The retired
 Compact/headline cell 2 / cell 3 / cell 4 / cell 5 selects (0.8031
 / 0.8161 / 0.8173 / 0.7954) are not the cited rows.
@@ -238,7 +238,7 @@ and
 
 | Recognise | Encode | Select | F1 |
 | --- | --- | --- | ---: |
-| rules | rules | rules | 0.77 |
+| rules | rules | rules | 0.80 |
 | both | rules | rules | 0.86 |
 | LLM | rules | rules | 0.87 |
 | LLM | LLM | rules | 0.86 |
@@ -264,8 +264,8 @@ It may not park a semantic SF projection on the format rung.
 On the locked inventory the strongest cited row is LLM recognise plus
 rule select (0.8674). Both-recognise plus rule select is 0.8592.
 Later-stage encode plus rule select is 0.8636. Later-stage LLM
-select is 0.853. Standalone rules are 0.7725. Those five reads are
-0.87, 0.86, 0.86, 0.85, and 0.77 at two decimals. The retired
+select is 0.853. Standalone rules are 0.8018. Those five reads are
+0.87, 0.86, 0.86, 0.85, and 0.80 at two decimals. The retired
 Compact/headline cell 2–5 stops (0.8031 / 0.8161 / 0.8173 /
 0.7954) are not the cited rows. Recognise and encode stops are
 prior-stage ablations. Luna after repair recovered 78.3%
@@ -352,7 +352,7 @@ The files support this account of the proposed method, cited on Grok:
    hybrid 0.83 is a different stack on the source-near request.
    `gan_llm_only` is not in that comparison.
    On the locked inventory, Gemini LLM recognise plus rule select is
-   0.8674 against standalone rules 0.7725, both on 4-family micro
+   0.8674 against standalone rules 0.8018, both on 4-family micro
    F1. Both-recognise plus rule select is 0.8592. Later-stage encode
    plus rule select is 0.8636. Later-stage LLM select is 0.853. The
    five select stops read 0.87, 0.86, 0.86, 0.85, and 0.77 at two

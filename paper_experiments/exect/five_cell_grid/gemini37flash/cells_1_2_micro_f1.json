@@ -4,7 +4,7 @@
   "scorer": "4-family micro F1",
   "protocol": "docs/research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md",
   "dev140": {
-    "rules": {"select": 0.8824, "gold_count": 836},
+    "rules": {"select": 0.9167, "gold_count": 836},
     "both_extract_then_rules": {
       "extract": 0.8321,
       "encode": 0.8754,
@@ -14,7 +14,7 @@
   },
   "test60": {
     "row_policy": "aggregate_only",
-    "rules": {"select": 0.7725, "gold_count": 349},
+    "rules": {"select": 0.8018, "gold_count": 349},
     "both_extract_then_rules": {
       "extract": 0.8319,
       "encode": 0.8511,
