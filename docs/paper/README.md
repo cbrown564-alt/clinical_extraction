@@ -44,6 +44,7 @@ comparator when cited—not a headline method.
 | File | Job |
 | --- | --- |
 | [methods](methods.md) | Proposed method, baselines, roster, splits, scorers |
+| [hardware](hardware_details.md) | Local workstation for Qwen/Gemma; hosted accelerators undisclosed |
 | [method × stage](method_x_stage.md) | Plain-language method × stage grid, with one Gan and one ExECT development example |
 | [Gan rules and models](../research/paper/gan_rules_and_llms_across_stages_2026-08-21.md) | Gemini Gan reading: roles, order, encode/select lift |
 | [Three variables](../research/paper/three_variables_rules_model_thinking_2026-08-23.md) | Draft results: stage ownership, model, thinking |
