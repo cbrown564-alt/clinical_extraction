@@ -1,0 +1,109 @@
+{
+  "schema_version": "paper.dataset_description.v1",
+  "generated_on": "2026-08-26",
+  "word_count": "whitespace-split official cleaned note_text",
+  "exect_gold": "clinical_inventory_unit_keys",
+  "gan_gold": "one Purist-mapped current-frequency label per letter",
+  "claim_boundary": "Split-level letter length and gold density. test60 and test450 are aggregate-only. Not predicted performance.",
+  "exect": {
+    "public_corpus": {
+      "letter_count": 200,
+      "words": {"mean": 216.4, "median": 199.5, "min": 49, "max": 693},
+      "chars": {"mean": 1304.1, "median": 1183.0, "min": 260, "max": 4281},
+      "inventory_units": {"total": 1188, "mean": 5.94, "median": 6.0, "min": 0, "max": 14, "zero_letters": 3},
+      "headline_units": {"total": 1127, "mean": 5.63, "median": 5.0, "min": 0, "max": 12, "zero_letters": 3}
+    },
+    "paper_union": {
+      "letter_count": 199,
+      "note": "dev140 + test60; one public letter is outside both paper splits",
+      "words": {"mean": 216.6, "median": 200.0, "min": 49, "max": 693},
+      "chars": {"mean": 1305.5, "median": 1185.0, "min": 260, "max": 4281},
+      "inventory_units": {"total": 1185, "mean": 5.95, "median": 6.0, "min": 0, "max": 14, "zero_letters": 3},
+      "headline_units": {"total": 1124, "mean": 5.65, "median": 5.0, "min": 0, "max": 12, "zero_letters": 3},
+      "occupied_families": {"mean": 3.03, "median": 3.0, "min": 0, "max": 4}
+    },
+    "dev140": {
+      "letter_count": 140,
+      "words": {"mean": 215.9, "median": 198.5, "min": 49, "max": 693},
+      "chars": {"mean": 1298.8, "median": 1180.5, "min": 260, "max": 4281},
+      "inventory_units": {"total": 836, "mean": 5.97, "median": 6.0, "min": 0, "max": 14, "zero_letters": 3},
+      "headline_units": {"total": 796, "mean": 5.69, "median": 6.0, "min": 0, "max": 12, "zero_letters": 3},
+      "occupied_families": {"mean": 3.0, "median": 3.0, "min": 0, "max": 4}
+    },
+    "test60": {
+      "letter_count": 59,
+      "note": "split name is historical; loadable locked set is 59",
+      "words": {"mean": 218.2, "median": 202.0, "min": 96, "max": 552},
+      "chars": {"mean": 1321.4, "median": 1190.0, "min": 534, "max": 3267},
+      "inventory_units": {"total": 349, "mean": 5.92, "median": 6.0, "min": 1, "max": 12, "zero_letters": 0},
+      "headline_units": {"total": 328, "mean": 5.56, "median": 5.0, "min": 1, "max": 12, "zero_letters": 0},
+      "occupied_families": {"mean": 3.1, "median": 3.0, "min": 1, "max": 4}
+    }
+  },
+  "gan": {
+    "public_corpus": {
+      "letter_count": 1500,
+      "words": {"mean": 400.2, "median": 395.0, "min": 115, "max": 756},
+      "chars": {"mean": 2748.3, "median": 2707.0, "min": 779, "max": 5427},
+      "gold_label_kind": {
+        "frequency": 937,
+        "seizure_free": 223,
+        "unknown": 200,
+        "unresolved_multiple": 86,
+        "no_reference": 54
+      },
+      "row_ok_false": 65
+    },
+    "paper_union": {
+      "letter_count": 1200,
+      "note": "dev750 + test450; train300 is not a paper surface",
+      "words": {"mean": 399.2, "median": 393.0, "min": 115, "max": 756},
+      "gold_label_kind": {
+        "frequency": 749,
+        "seizure_free": 179,
+        "unknown": 160,
+        "unresolved_multiple": 69,
+        "no_reference": 43
+      },
+      "row_ok_false": 52,
+      "chars": {"mean": 2741.9, "median": 2689.5, "min": 779, "max": 5427},
+      "gold_labels_per_letter": 1,
+      "numeric_rate": 749,
+      "non_rate": 451
+    },
+    "dev750": {
+      "letter_count": 750,
+      "split_machine": "validation",
+      "words": {"mean": 397.6, "median": 391.5, "min": 115, "max": 756},
+      "chars": {"mean": 2735.5, "median": 2681.5, "min": 779, "max": 5427},
+      "gold_labels_per_letter": 1,
+      "gold_label_kind": {
+        "frequency": 468,
+        "seizure_free": 112,
+        "unknown": 100,
+        "unresolved_multiple": 43,
+        "no_reference": 27
+      },
+      "numeric_rate": 468,
+      "non_rate": 282,
+      "row_ok_false": 32
+    },
+    "test450": {
+      "letter_count": 450,
+      "split_machine": "test",
+      "words": {"mean": 401.8, "median": 395.0, "min": 146, "max": 740},
+      "chars": {"mean": 2752.6, "median": 2715.5, "min": 990, "max": 5080},
+      "gold_labels_per_letter": 1,
+      "gold_label_kind": {
+        "frequency": 281,
+        "seizure_free": 67,
+        "unknown": 60,
+        "unresolved_multiple": 26,
+        "no_reference": 16
+      },
+      "numeric_rate": 281,
+      "non_rate": 169,
+      "row_ok_false": 20
+    }
+  }
+}
