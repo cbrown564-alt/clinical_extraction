@@ -43,7 +43,10 @@ Cell 3 is the same method on both tasks: one recognise call, then
 fixed rules. That is the only row that can carry six models without
 paying for later-stage encode or select on the roster. ExECT cell 4
 stays Gemini-only. On 4-family micro F1, cell 3 is the Gemini peak
-(0.8674 on `test60`).
+(0.8674 on `test60`). All six ExECT `exect_llm_extract` roster cells
+are promoted on `dev140` and aggregate-only `test60`; cite those
+inventory select stops in the six-model table, not Compact/headline
+`exect_llm_only` replays.
 
 ## Consequences
 
@@ -51,6 +54,10 @@ stays Gemini-only. On 4-family micro F1, cell 3 is the Gemini peak
   six-model later-stage encode or select. Do not start new Sol calls.
 - Do not treat `gan_llm_only` or source-near `gan_llm_extract_raw`
   as the six-model table.
+- Cite ExECT roster totals from promoted
+  `paper_experiments/exect/exect_llm_extract/{slug}/test60/`
+  (4-family micro F1). Do not substitute Compact/headline
+  `exect_llm_only` for that table.
 - Living DeepSeek is thinking enabled at `reasoning_effort=low`,
   the same living effort as Gemini, Grok, and Luna. Thinking-off
   is a DeepSeek-only toggle, not the Gemini medium/high ablation.
