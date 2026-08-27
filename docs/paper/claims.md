@@ -268,12 +268,16 @@ select is 0.853. Standalone rules are 0.8018. Those five reads are
 0.87, 0.86, 0.86, 0.85, and 0.80 at two decimals. The retired
 Compact/headline cell 2–5 stops (0.8031 / 0.8161 / 0.8173 /
 0.7954) are not the cited rows. Recognise and encode stops are
-prior-stage ablations. Luna after repair recovered 78.3%
-(88.8% on development) on the prior assembly. DeepSeek and Gemma
-have prior-assembly repair totals on both inventory splits (DeepSeek
-held-out 81.2%; Gemma held-out 69.3%). Their model-alone inventory
-cells are not yet on disk. Qwen is missing both inventory model
-methods.
+prior-stage ablations. On the locked ExECT inventory cell-3 roster
+(`exect_llm_extract` → rules; 4-family micro F1; aggregate-only
+`test60`), select stops are Gemini **0.8674**, Grok **0.8146**,
+DeepSeek **0.8099**, Luna **0.7983**, Qwen **0.7644**, and Gemma
+**0.7573**. Recognise stops for those models are 0.8491 / 0.7874 /
+0.7830 / 0.7650 / 0.7260 / 0.7198. Rules raise every model over its
+recognise stop and do not erase the gaps. Owner:
+[three variables](../research/paper/three_variables_rules_model_thinking_2026-08-23.md).
+Compact/headline Luna / DeepSeek / Gemma repair totals from the prior
+assembly remain on disk as secondary surfaces, not the cited roster.
 
 The paper may say that, with Gemini as the cited model, rule select
 after the inventory recognise is the strongest row, and that
@@ -392,12 +396,12 @@ estimate and not an independent clinical review.
 
 Frequency development cells exist for Grok, Luna, and Gemini, both
 model methods. Frequency locked totals exist for Grok and Gemini, both
-model methods, and for rules. Inventory repair cells exist for Grok,
-Luna, Gemini, DeepSeek, and Gemma on both splits. Inventory model-
-alone cells exist for Grok, Luna, and Gemini on both splits. Inventory
-rules exist for Grok. Qwen is pending on both tasks. DeepSeek and
-Gemma model-alone inventory, and the remaining frequency locked
-totals, are not yet present.
+model methods, and for rules. Inventory cell-3 `exect_llm_extract`
+cells exist for all six roster models on `dev140` and aggregate-only
+`test60`. Inventory both-recognise / repair cells also exist for Grok,
+Luna, Gemini, DeepSeek, and Gemma on both splits. Inventory rules exist
+for Gemini (cited) and are replayable. Qwen and Gemma Gan codebook
+extracts are promoted; remaining Gan blanks stay with inventory.
 
 A missing cell is a missing cell. The paper reports the panel that
 exists.
