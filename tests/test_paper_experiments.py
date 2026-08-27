@@ -33,8 +33,8 @@ def test_paper_hybrid_fills_are_present() -> None:
             encoding="utf-8"
         )
     )
-    assert e5["dev140"]["four_family_headline_f1"] == 0.9042
-    assert e5["test60"]["four_family_headline_f1"] == 0.7937
+    assert e5["dev140"]["four_family_micro_f1"] == 0.9167
+    assert e5["test60"]["four_family_micro_f1"] == 0.8018
     test60 = json.loads(
         (ROOT / "paper_experiments/exect/exect_rules/test60.json").read_text(
             encoding="utf-8"
@@ -42,6 +42,7 @@ def test_paper_hybrid_fills_are_present() -> None:
     )
     assert test60["split"] == "test60"
     assert test60["row_policy"] == "aggregate_only"
+    assert test60["clinical_inventory"]["f1"] == 0.8018
 
 
 def test_roster_locks_the_living_six() -> None:
@@ -63,49 +64,63 @@ def test_inventory_covers_present_and_missing_cells() -> None:
     present = {(row["model_slug"], row["method"], row["split"]) for row in inventory["present"]}
     missing_methods = {row["method"] for row in inventory["missing"]}
     assert present == {
-        ("grok46", "exect_llm_pre_post", "dev140"),
-        ("grok46", "exect_llm_pre_post", "test60"),
-        ("gpt56luna", "exect_llm_pre_post", "dev140"),
-        ("gpt56luna", "exect_llm_pre_post", "test60"),
-        ("gemini37flash", "exect_llm_pre_post", "dev140"),
-        ("gemini37flash", "exect_llm_pre_post", "test60"),
-        ("gemini37flash", "exect_llm_extract", "dev140"),
-        ("gemini37flash", "exect_llm_extract", "test60"),
+        ("deepseek_v4_flash", "exect_llm_extract", "dev140"),
+        ("deepseek_v4_flash", "exect_llm_extract", "test60"),
         ("deepseek_v4_flash", "exect_llm_pre_post", "dev140"),
         ("deepseek_v4_flash", "exect_llm_pre_post", "test60"),
-        ("gemma4_26b", "exect_llm_pre_post", "dev140"),
-        ("gemma4_26b", "exect_llm_pre_post", "test60"),
-        ("gemma4_26b", "gan_llm_only", "dev750"),
-        ("gemma4_26b", "gan_llm_only", "test450"),
-        ("grok46", "gan_llm_only", "dev750"),
-        ("grok46", "gan_llm_only", "test450"),
-        ("grok46", "gan_llm_extract_raw", "dev750"),
-        ("grok46", "gan_llm_extract_raw", "test450"),
-        ("gpt56luna", "gan_llm_only", "dev750"),
-        ("gpt56luna", "gan_llm_extract_raw", "dev750"),
-        ("gpt56luna", "gan_llm_extract_raw", "test450"),
-        ("gemini37flash", "gan_llm_only", "dev750"),
-        ("gemini37flash", "gan_llm_only", "test450"),
-        ("gemini37flash", "gan_llm_extract_raw", "dev750"),
-        ("gemini37flash", "gan_llm_extract_raw", "test450"),
-        ("gemini37flash", "gan_llm_encode", "dev750"),
-        ("gemini37flash", "gan_llm_encode", "test450"),
-        ("gemini37flash", "gan_llm_select", "dev750"),
-        ("gemini37flash", "gan_llm_select", "test450"),
+        ("deepseek_v4_flash", "gan_llm_extract", "test450"),
         ("gemini37flash", "exect_llm_encode", "dev140"),
         ("gemini37flash", "exect_llm_encode", "test60"),
+        ("gemini37flash", "exect_llm_extract", "dev140"),
+        ("gemini37flash", "exect_llm_extract", "test60"),
+        ("gemini37flash", "exect_llm_pre_post", "dev140"),
+        ("gemini37flash", "exect_llm_pre_post", "test60"),
         ("gemini37flash", "exect_llm_select", "dev140"),
         ("gemini37flash", "exect_llm_select", "test60"),
-        ("deepseek_v4_flash", "gan_llm_extract", "test450"),
+        ("gemini37flash", "gan_llm_encode", "dev750"),
+        ("gemini37flash", "gan_llm_encode", "test450"),
+        ("gemini37flash", "gan_llm_extract_raw", "dev750"),
+        ("gemini37flash", "gan_llm_extract_raw", "test450"),
+        ("gemini37flash", "gan_llm_only", "dev750"),
+        ("gemini37flash", "gan_llm_only", "test450"),
+        ("gemini37flash", "gan_llm_select", "dev750"),
+        ("gemini37flash", "gan_llm_select", "test450"),
+        ("gemma4_26b", "exect_llm_extract", "dev140"),
+        ("gemma4_26b", "exect_llm_extract", "test60"),
+        ("gemma4_26b", "exect_llm_pre_post", "dev140"),
+        ("gemma4_26b", "exect_llm_pre_post", "test60"),
+        ("gemma4_26b", "gan_llm_extract", "dev750"),
+        ("gemma4_26b", "gan_llm_extract", "test450"),
+        ("gemma4_26b", "gan_llm_only", "dev750"),
+        ("gemma4_26b", "gan_llm_only", "test450"),
+        ("gpt56luna", "exect_llm_extract", "dev140"),
+        ("gpt56luna", "exect_llm_extract", "test60"),
+        ("gpt56luna", "exect_llm_pre_post", "dev140"),
+        ("gpt56luna", "exect_llm_pre_post", "test60"),
+        ("gpt56luna", "gan_llm_extract_raw", "dev750"),
+        ("gpt56luna", "gan_llm_extract_raw", "test450"),
+        ("gpt56luna", "gan_llm_only", "dev750"),
+        ("grok46", "exect_llm_extract", "dev140"),
+        ("grok46", "exect_llm_extract", "test60"),
+        ("grok46", "exect_llm_pre_post", "dev140"),
+        ("grok46", "exect_llm_pre_post", "test60"),
+        ("grok46", "gan_llm_extract_raw", "dev750"),
+        ("grok46", "gan_llm_extract_raw", "test450"),
+        ("grok46", "gan_llm_only", "dev750"),
+        ("grok46", "gan_llm_only", "test450"),
+        ("qwen38_27b", "exect_llm_extract", "dev140"),
+        ("qwen38_27b", "exect_llm_extract", "test60"),
+        ("qwen38_27b", "gan_llm_extract", "dev750"),
+        ("qwen38_27b", "gan_llm_extract", "test450"),
     }
     assert "gan_llm_extract_raw" in missing_methods
     missing_cells = {
         (row.get("model_slug"), row["method"], row.get("split")) for row in inventory["missing"]
     }
     assert ("qwen38_27b", "exect_llm_pre_post", "dev140") in missing_cells
-    assert ("grok46", "exect_llm_extract", "dev140") in missing_cells
     assert ("gemini37flash", "exect_llm_extract", "dev140") not in missing_cells
-    assert ("gpt56luna", "exect_llm_extract", "dev140") in missing_cells
+    assert ("grok46", "exect_llm_extract", "dev140") not in missing_cells
+    assert ("gpt56luna", "exect_llm_extract", "dev140") not in missing_cells
     assert ("gemini37flash", "exect_llm_extract_and_select", "dev140") not in present
     assert ("grok46", "exect_llm_pre_post", "dev140") not in missing_cells
     assert ("grok46", "exect_llm_pre_post", "test60") not in missing_cells
