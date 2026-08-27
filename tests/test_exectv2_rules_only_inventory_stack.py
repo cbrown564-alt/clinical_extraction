@@ -28,7 +28,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.recogn
     DIAGNOSIS_NONDIAGNOSTIC_CONTEXT,
     SF_NAMED_TYPE,
     SF_SEIZURE_FREE,
-    RecogniseConfig,
     build_recognise_ledger,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select_rules import (
@@ -560,7 +559,9 @@ def test_run_letter_three_stage_default_recognise_config_matches_comparator() ->
     )
     assert (
         run_letter(letter).comparison_projection.mentions
-        == run_letter_three_stage(letter, ACCEPTED_THREE_STAGE_CONFIG).comparison_projection.mentions
+        == run_letter_three_stage(
+            letter, ACCEPTED_THREE_STAGE_CONFIG
+        ).comparison_projection.mentions
     )
     assert (
         run_letter(letter).comparison_projection.mentions

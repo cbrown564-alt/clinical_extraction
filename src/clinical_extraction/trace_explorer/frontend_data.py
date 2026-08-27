@@ -411,7 +411,9 @@ class FrontendDataStore:
                     )
                 )
                 continue
-            lane = "llm" if method == "exect_llm_only" else "llm_with_rules"
+            lane: Literal["llm", "llm_with_rules"] = (
+                "llm" if method == "exect_llm_only" else "llm_with_rules"
+            )
             letters.append(
                 hydrate_saved_exect_letter(
                     gold,

@@ -36,6 +36,7 @@ See
 [methods](methods.md),
 [Gan five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md),
 [ExECT inventory grid](../research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md),
+[six-model ExECT inventory roster](../research/paper/three_variables_rules_model_thinking_2026-08-23.md),
 and
 [ExECT cell 4](../research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md).
 `gan_llm_only` is not a results column. Full ledger is the only
