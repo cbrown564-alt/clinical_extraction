@@ -1,7 +1,7 @@
-# 0050: Current-stack no-call hybrid fills are the selected primary scores
+# 0050: Current-stack no-call hybrid fills (historical)
 
 Date: 2026-08-13  
-Status: accepted  
+Status: superseded 2026-08-28  
 Amends: numeric hybrid fills implied by
 [decision 0046](0046-exect-primary-method-comparison-boundary.md),
 [canon scoring](../canon/04_scoring.md), and
@@ -12,6 +12,17 @@ comparison; `raw_lane_score` as LLM-only; `v08` and GEPA remain secondary),
 identity, or rules-only / LLM-only fills (those cells were not replayed).
 Six-model slot amendment: [decision 0052](0052-gemini-37-flash-holdout-six-model-slot.md)
 replaces GPT-4.1-mini with Gemini 3.7 Flash in the living panel.
+
+## 2026-08-28 amendment — not a living cite
+
+Do not cite this decision, Sol, or `llm_with_rules` current-stack
+fills as living paper scores. The selected comparison is the Gemini
+3.7 Flash five-cell grid (select stop). Gan owner:
+[five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md)
+and [`paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json`](../../paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json).
+ExECT owner: [claims](../paper/claims.md) and the Gemini inventory
+five-cell. Sol 380/450, Sol 381/450, and ExECT Sol 0.8302 stay in
+this file as the 13–15 Aug current-stack snapshot only.
 
 ## Decision
 
@@ -26,7 +37,7 @@ Repeat the readout with
 The 14 Aug Sol snapshot (method-identity fill set after SF projection
 v0.14 and Diagnosis convention/noise refinements) is:
 
-| Cell | Selected primary hybrid fill |
+| Cell | Historical 14 Aug current-stack snapshot |
 | --- | ---: |
 | ExECT Sol `dev140` | clinical fact F1 **0.9119** |
 | ExECT Sol `test60` | clinical fact F1 **0.8302** |
