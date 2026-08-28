@@ -14,6 +14,7 @@ from clinical_extraction.paper.exect import (
     HOSTED_SLUGS,
     LOCAL_SLUGS,
     MODELS,
+    apply_temperature,
     cell3_thinking_max_tokens,
     paper_work_suffix,
     run_compact,
@@ -71,7 +72,7 @@ def test_living_roster_is_the_six_paper_models() -> None:
     assert MODELS["grok46"].credential_env == ("AI_GATEWAY_API_KEY",)
     assert MODELS["grok46"].reasoning_effort == "low"
     assert MODELS["grok46"].timeout == 600
-    assert MODELS["grok46"].temperature == 1.0
+    assert MODELS["grok46"].temperature == 0.0
     assert MODELS["gpt56luna"].credential_env == ("OPENAI_API_KEY",)
     assert MODELS["gpt56luna"].reasoning_effort == "low"
     assert MODELS["gpt56luna"].model == "openai/gpt-5.6-luna"
@@ -107,6 +108,14 @@ def test_living_roster_is_the_six_paper_models() -> None:
         paper_work_suffix(replace(MODELS["gpt56luna"], reasoning_effort="high"))
         == "reasoning_high"
     )
+    assert paper_work_suffix(MODELS["grok46"]) is None
+    assert (
+        paper_work_suffix(replace(MODELS["grok46"], temperature=1.0)) == "temperature_1"
+    )
+    assert apply_temperature(MODELS["grok46"], None) is MODELS["grok46"]
+    assert apply_temperature(MODELS["grok46"], 1.0).temperature == 1.0
+    with pytest.raises(RuntimeError, match="living paper setting"):
+        apply_temperature(MODELS["grok46"], 0.0)
 
 
 def test_sol_paper_lm_uses_vercel_ai_gateway(monkeypatch: pytest.MonkeyPatch) -> None:

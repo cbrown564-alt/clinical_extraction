@@ -217,6 +217,10 @@ def paper_work_suffix(spec: ModelSpec) -> str | None:
     living_effort = living.reasoning_effort if living is not None else None
     if spec.reasoning_effort and spec.reasoning_effort != living_effort:
         return f"reasoning_{spec.reasoning_effort}"
+    if living is not None and spec.temperature != living.temperature:
+        value = spec.temperature
+        label = str(int(value)) if value == int(value) else str(value)
+        return f"temperature_{label}"
     return None
 
 
@@ -246,6 +250,18 @@ def apply_reasoning_effort(spec: ModelSpec, effort: str | None) -> ModelSpec:
     return replace(spec, reasoning_effort=effort)
 
 
+def apply_temperature(spec: ModelSpec, temperature: float | None) -> ModelSpec:
+    """Pin a non-living temperature on a paper model."""
+
+    if temperature is None:
+        return spec
+    if temperature == spec.temperature:
+        raise RuntimeError(
+            f"{temperature} is the living paper setting for {spec.slug}; omit --temperature"
+        )
+    return replace(spec, temperature=temperature)
+
+
 def _spec_for(item: Mapping[str, Any]) -> ModelSpec:
     slug = str(item["slug"])
     hosted = item["route"] == "hosted"
@@ -260,7 +276,7 @@ def _spec_for(item: Mapping[str, Any]) -> ModelSpec:
         slug=slug,
         model=str(item["model"]),
         label=str(item["label"]),
-        temperature=1.0 if slug in {"grok46", "gpt56luna"} else 0.0,
+        temperature=1.0 if slug == "gpt56luna" else 0.0,
         max_tokens=64000 if slug == "deepseek_v4_flash" else 16000,
         route=str(item["route"]),
         credential_env=credentials.get(slug, ()),

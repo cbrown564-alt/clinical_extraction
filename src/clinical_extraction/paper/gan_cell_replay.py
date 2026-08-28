@@ -218,6 +218,8 @@ def replay_gan_rungs(
     *,
     slug: str = "grok46",
     source: str = "living",
+    rows_path: Path | None = None,
+    out_dir: Path | None = None,
 ) -> dict[str, Any]:
     """Replay saved extract raw_output through rungs 1-4. No new model calls."""
 
@@ -227,7 +229,7 @@ def replay_gan_rungs(
         raise ValueError("Gan replay source must be living or ablation")
     holdout = holdout_is_aggregate_only(split)
     expected_n = gan_row_count(split)
-    raw_path = (
+    raw_path = rows_path or (
         gan_source_near_rows_path(slug, split)
         if source == "ablation"
         else gan_living_extract_rows_path(slug, split)
@@ -343,7 +345,7 @@ def replay_gan_rungs(
         ),
     )
     write_gan_rung_artifacts(
-        gan_rung_out_dir(slug, split),
+        out_dir or gan_rung_out_dir(slug, split),
         summary,
         scored=scored,
         hops=hops_rows,

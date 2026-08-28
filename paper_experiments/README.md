@@ -22,13 +22,14 @@ Roster: [`roster.json`](roster.json). Inventory: [`inventory.json`](inventory.js
 | --- | --- |
 | `gan/five_cell_grid/` | Gemini Gan five-cell holdout grid |
 | `exect/five_cell_grid/` | Gemini ExECT five-cell holdout grid (4-family micro F1; cell 3 peak). Owner: [both-recognise on inventory](../docs/research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md) |
+| `gan/gan_llm_extract/` | Gan cell-3 codebook recognise raw; all six models, both splits |
 | `exect/exect_llm_extract/` | ExECT cell-3 inventory recognise raw; cells 3–5 replay this raw |
 | `exect/exect_llm_encode/` | ExECT cell-4 LLM encode. Gemini only, `dev140` and aggregate-only `test60` |
 | `exect/exect_llm_select/` | ExECT cell-5 LLM select. Gemini only, `dev140` and aggregate-only `test60` |
 | `exect/exect_rule_select_after_llm_encode/` | ExECT cell-4 inventory Select on the encode ledger |
 | `exect/exect_llm_pre_post/` | ExECT cell-2 both-recognise. Gemini is living recognise plus suggested candidates |
 | `exect/exect_rules/` | ExECT rules baseline (cell 1) |
-| `gan/rungs/` | Gan recognise / encode / select replay from cell-3 and source-near raws |
+| `gan/rungs/` | Gan recognise / encode / select replay from living `gan_llm_extract` |
 | `exect/rungs/` | Historical ExECT recognise / encode / select replay |
 
 ## Historical / on disk (not headline)
@@ -68,8 +69,7 @@ python -m clinical_extraction.paper promote-exect --method exect_llm_extract --m
 `/exectv2/runs` is the July explorer payload (Sol + Qwen 3.6). Not
 the cited comparison.
 
-Present for cell-3 recognise: Gemini on both tasks; Qwen and Gemma
-inventory and codebook recognises on both splits. Pending: Grok, Luna,
-and DeepSeek `exect_llm_extract`; remaining DeepSeek Gan fills; encode
-and select replay for the new local recognise raws. See
-[`inventory.json`](inventory.json).
+Present for cell-3 recognise: all six models on ExECT inventory extract
+and the cited Gan codebook extract where promoted. Leftover
+`gan_llm_extract_raw` / `gan_llm_only` for DeepSeek, Qwen, and Gemma
+will not be run. See [`inventory.json`](inventory.json).

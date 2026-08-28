@@ -131,16 +131,10 @@ def test_promote_writes_replay_scored_and_panel(
         for row in synced["present"]
     )
     assert not any(row.get("note") == "old blob" for row in synced["missing"])
-    assert {
-        (row["model_slug"], row["method"])
+    assert not any(
+        row.get("method") in leftover and row.get("split") == "dev750"
         for row in synced["missing"]
-        if row.get("split") == "dev750"
-    } == {
-        (slug, method)
-        for slug in slugs
-        for method in ("gan_llm_only", "gan_llm_extract_raw")
-        if (slug, method) != ("grok46", "gan_llm_only")
-    }
+    )
 
 
 def test_rebuild_keeps_historical_present_when_panel_slot_is_pending(

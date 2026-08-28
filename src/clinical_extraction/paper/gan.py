@@ -28,6 +28,7 @@ from clinical_extraction.paper.exect import (
     OLLAMA_NUM_CTX_ENV,
     ModelSpec,
     apply_reasoning_effort,
+    apply_temperature,
     cell3_thinking_max_tokens,
     paper_work_suffix,
 )
@@ -278,6 +279,7 @@ def run_gan(
     progress_every: int = 1,
     thinking: str | None = None,
     reasoning_effort: str | None = None,
+    temperature: float | None = None,
 ) -> dict[str, Any]:
     """Run one allowed Gan paper cell."""
 
@@ -290,6 +292,8 @@ def run_gan(
         "gan_llm_select",
         "gan_llm_select_from_extract",
     }:
+        if temperature is not None:
+            raise RuntimeError("--temperature is not used for later-stage Gan cells")
         return run_later_stage(
             cast(LaterStageMethod, method),
             slug,
@@ -302,7 +306,10 @@ def run_gan(
         )
     if slug not in MODELS:
         raise RuntimeError(f"{slug} is not a living paper model")
-    spec = apply_reasoning_effort(MODELS[slug], reasoning_effort)
+    spec = apply_temperature(
+        apply_reasoning_effort(MODELS[slug], reasoning_effort),
+        temperature,
+    )
     if thinking is not None:
         if slug != "deepseek_v4_flash":
             raise RuntimeError("thinking toggle is DeepSeek only")
@@ -556,6 +563,108 @@ def _programs(method: str) -> tuple[Any, Any]:
     if method == "gan_llm_only":
         return gan_llm_only.DspyCanonicalLlmExtractor(), None
     return hybrid_structured_events.DspyStructuredExtractor(), FormatOnlyJsonRetry()
+
+
+def reparse_gan_llm_extract_raw(slug: str, split: str) -> dict[str, Any]:
+    """Rebuild parse and scores from saved source-near raw_output. No model calls."""
+
+    if slug not in MODELS:
+        raise RuntimeError(f"{slug} is not a living paper model")
+    split_for("gan_llm_extract_raw", split)
+    holdout = holdout_is_aggregate_only(split)
+    dest = ROOT / "paper_experiments/gan/gan_llm_extract_raw" / slug / split
+    rows_path = dest / "rows.jsonl"
+    comparison_path = dest / "comparison.json"
+    if not rows_path.is_file() or not comparison_path.is_file():
+        raise FileNotFoundError(f"missing promoted gan_llm_extract_raw {slug} {split}")
+    expected = gan_row_count(split)
+    saved = load_jsonl_rows(rows_path)
+    if len(saved) != expected:
+        raise RuntimeError(f"{rows_path} has {len(saved)} rows, expected {expected}")
+    machine = gan_machine_split(split)
+    records = {record.source_row_index: record for record in load_records_for_split(machine)}
+    hydrated: list[dict[str, Any]] = []
+    for row in saved:
+        source = int(row["source_row_index"])
+        raw_output = str(row.get("raw_output") or "")
+        if not raw_output.strip():
+            raise RuntimeError(f"{rows_path} has an empty raw_output")
+        rebuilt = hydrate_saved_raw_row(
+            "gan_llm_extract_raw",
+            records[source],
+            raw_output,
+            split=split,
+        )
+        if rebuilt["raw_output"] != raw_output:
+            raise RuntimeError("reparse changed saved raw_output")
+        if not rebuilt.get("reused_raw_output"):
+            raise RuntimeError("reparse did not reuse saved raw_output")
+        hydrated.append(rebuilt)
+    existing = json.loads(comparison_path.read_text(encoding="utf-8"))
+    summary = _summarize("gan_llm_extract_raw", hydrated)
+    artifact = dict(existing)
+    artifact["live"] = False
+    artifact["model_calls"] = 0
+    artifact["finished_utc"] = datetime.now(UTC).isoformat()
+    artifact["summary"] = _public_summary(summary, holdout=holdout)
+    artifact["claim_boundary"] = (
+        "Gan aggregate-only test450. Do not inspect holdout rows."
+        if holdout
+        else "Gan development cell. Not holdout."
+    )
+    if holdout:
+        artifact.pop("incorrect_source_row_indices", None)
+        artifact["row_policy"] = "aggregate_only"
+    else:
+        artifact["incorrect_source_row_indices"] = [
+            int(row["source_row_index"])
+            for row in hydrated
+            if not (row.get("comparison") or {}).get("purist_correct")
+        ]
+    artifact = attach_living_envelope(
+        artifact,
+        method="gan_llm_extract_raw",
+        stages=living_gan_stages(hydrated, records, method="gan_llm_extract_raw"),
+        replay_mode="no_call",
+        prompt_version=_prompt_version("gan_llm_extract_raw"),
+    )
+    dest.mkdir(parents=True, exist_ok=True)
+    comparison_path.write_text(
+        json.dumps(artifact, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    if holdout:
+        (dest / "scored.jsonl").unlink(missing_ok=True)
+    else:
+        scored = [
+            {
+                "source_row_index": int(row["source_row_index"]),
+                "letter_id": str(row["source_row_index"]),
+                "method": "gan_llm_extract_raw",
+                "predicted_label": (
+                    ((row.get("structured_record") or {}).get("selection") or {}).get(
+                        "final_label"
+                    )
+                ),
+                "purist_correct": (row.get("comparison") or {}).get("purist_correct"),
+                "pragmatic_correct": (row.get("comparison") or {}).get(
+                    "pragmatic_correct"
+                ),
+                "parse_ok": row.get("structured_record") is not None,
+            }
+            for row in hydrated
+        ]
+        write_jsonl_rows(scored, dest / "scored.jsonl")
+    return {
+        "artifact": comparison_path.relative_to(ROOT).as_posix(),
+        "method": "gan_llm_extract_raw",
+        "model_slug": slug,
+        "split": split,
+        "replay_mode": "no_call",
+        "model_calls": 0,
+        "reused_raw_outputs": int(summary.get("reused_raw_outputs") or 0),
+        "summary": artifact["summary"],
+    }
 
 
 def hydrate_saved_raw_row(

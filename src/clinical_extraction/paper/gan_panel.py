@@ -143,6 +143,7 @@ def promote_gan(method: str, slug: str, split: str) -> dict[str, Any]:
         "comparison": "comparison.json",
         "purist_correct": summary.get("purist_correct"),
         "purist_accuracy": summary.get("purist_accuracy"),
+        "micro_f1": summary.get("micro_f1", summary.get("purist_accuracy")),
     }
     if not holdout:
         cell["scored"] = "scored.jsonl"
@@ -218,6 +219,7 @@ def rebuild_dev750_panel() -> dict[str, Any]:
                         else None,
                         "n": gan_row_count(PROMOTE_SPLIT),
                         "purist_accuracy": extract_metric,
+                        "micro_f1": extract_metric,
                         "shared_raw_output": "gan_llm_extract",
                     }
                 )
@@ -238,6 +240,7 @@ def rebuild_dev750_panel() -> dict[str, Any]:
                         "n": gan_row_count(PROMOTE_SPLIT),
                         "purist_correct": rung.get("purist_correct"),
                         "purist_accuracy": rung.get("purist_accuracy"),
+                        "micro_f1": rung.get("micro_f1", rung.get("purist_accuracy")),
                         "shared_raw_output": payload.get("shared_raw_output"),
                     }
                 )
@@ -463,20 +466,6 @@ def _sync_inventory() -> None:
             if historical is not None:
                 present.append(historical)
                 continue
-            missing.append(
-                {
-                    "model_slug": slug,
-                    "model": by_slug[slug]["model"],
-                    "method": method,
-                    "split": PROMOTE_SPLIT,
-                    "n": gan_row_count(PROMOTE_SPLIT),
-                    "status": "missing",
-                    "note": (
-                        "Source-near or leftover Gan extract. Not a panel "
-                        "column. Promote when the run finishes."
-                    ),
-                }
-            )
     inventory["present"] = present
     inventory["missing"] = missing
     INVENTORY_PATH.write_text(

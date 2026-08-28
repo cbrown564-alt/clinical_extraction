@@ -15,6 +15,8 @@ ARTIFACTS = (
     ROOT / "experiments/six_model_holdout_category_aggregates_20260806.json",
     ROOT / "experiments/gan2026_rules_only_test450_20260810.json",
     ROOT / "experiments/exect_rules_only_three_stage_test60_aggregate_20260827.json",
+    ROOT / "experiments/exect_rules_only_stage_rungs_test60_aggregate_20260827.json",
+    ROOT / "experiments/exect_rules_only_recall_first_test60_aggregate_20260827.json",
 )
 FORBIDDEN_KEYS = {
     "letter_id", "letter_ids", "source_row_index", "source_row_indices",
