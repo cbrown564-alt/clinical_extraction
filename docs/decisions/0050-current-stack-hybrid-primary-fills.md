@@ -24,14 +24,13 @@ ExECT owner: [claims](../paper/claims.md) and the Gemini inventory
 five-cell. Sol 380/450, Sol 381/450, and ExECT Sol 0.8302 stay in
 this file as the 13–15 Aug current-stack snapshot only.
 
-## Decision
+## Decision (13 Aug 2026; historical)
 
-The selected primary **LLM-with-rules** scores are the latest current-stack
-no-call replay of the saved raws named in
+This decision recorded the current-stack no-call replay of the saved
+raws named in
 [`paper_experiments/current_stack/SOURCES.json`](../../paper_experiments/current_stack/SOURCES.json).
-Living numbers live in
-[`paper_experiments/current_stack/latest/fills.json`](../../paper_experiments/current_stack/latest/fills.json).
-Repeat the readout with
+Those numbers are a snapshot. They are not living paper scores.
+Replay the snapshot with
 [the current-stack runbook](../runbooks/current_stack_six_model_replay.md).
 
 The 14 Aug Sol snapshot (method-identity fill set after SF projection
@@ -82,7 +81,7 @@ method-identity change.
 - After each remasure, run `assemble` then the promote checklist. Do not
   silently edit canon or README from the machine stage.
 - Keep `experiments/six_model_final_panel_20260803/` as the historical 3 Aug
-  panel. Living machine cites use `paper_experiments/current_stack/latest/`.
+  panel. Do not cite this snapshot. Living Gan cite is `paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json`.
 - Do not rewrite retained-evidence `result_summary` for the original live-run
   packages; those hashes still describe the saved raw artifacts.
 - Do not change LLM-only primary fills from this hybrid remasure.
@@ -94,7 +93,7 @@ method-identity change.
 ## Evidence
 
 - [Runbook](../runbooks/current_stack_six_model_replay.md)
-- [Living fills](../../paper_experiments/current_stack/latest/fills.json)
-- [Living panel](../../paper_experiments/current_stack/latest/panel_aggregate.json)
+- [Historical current-stack fills](../../paper_experiments/current_stack/latest/fills.json)
+- [Historical current-stack panel](../../paper_experiments/current_stack/latest/panel_aggregate.json)
 - [13 Aug remaining-cell report](../research/shared/six_model_current_stack_remaining_cells_replay_2026-08-13.md)
 - [0731 matched comparison](../research/shared/deepseek_v4_flash_0731_matched_comparison_report_2026-08-03.md)

@@ -31,12 +31,10 @@ delta or composite reliability score is reported.
 Both tasks have retained evidence for all eight questions, but the evidence is
 not equally complete:
 
-- The fixed six-model panels provide task-specific correctness and aggregate
-  holdout evidence. Sol is the ExECT method-identity row at `0.8289`
-  clinical fact F1; Gemini 3.7 Flash leads the six-model table at
-  `0.8459`;
-  Sol leads the selected Gan v0.5 test450 current-stack panel at `380/450`
-  Purist ([decision 0050](../decisions/0050-current-stack-hybrid-primary-fills.md)).
+- The living comparison is the Gemini 3.7 Flash five-cell on both
+  tasks. Sol current-stack fills (`0.8289` ExECT, `380/450` Gan) are
+  historical ([decision 0050](../decisions/0050-current-stack-hybrid-primary-fills.md)
+  superseded 2026-08-28).
 - Exact source presence is measured separately from semantic support. The
   48-item ExECT dev140 semantic-support sample is prepared across six models
   and four families, but independent review has not started.
