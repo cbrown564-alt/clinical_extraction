@@ -224,6 +224,7 @@ def _overlay_paper_dev750(
                 "n": 750,
                 "purist_correct": summary.get("purist_correct"),
                 "purist_accuracy": summary.get("purist_accuracy"),
+                "micro_f1": summary.get("micro_f1", summary.get("purist_accuracy")),
             }
             row_count = 750
             purist_correct = int(cell.get("purist_correct") or 0)
@@ -234,6 +235,7 @@ def _overlay_paper_dev750(
                 "metrics": {
                     "row_count": row_count,
                     "purist_correct": purist_correct,
+                    "micro_f1": purist_accuracy,
                     "purist_accuracy": purist_accuracy,
                     "pragmatic_correct": 0,
                     "pragmatic_accuracy": 0.0,
@@ -333,6 +335,7 @@ def _overlay_paper_five_cell(
             "metrics": {
                 "row_count": row_count,
                 "purist_correct": purist_correct,
+                "micro_f1": purist_accuracy,
                 "purist_accuracy": purist_accuracy,
                 "pragmatic_correct": 0,
                 "pragmatic_accuracy": 0.0,
@@ -495,12 +498,16 @@ def _inspect_rows(
     )
     result: dict[str, Any] = {"complete": complete, "row_count": row_count}
     if complete:
+        purist_rate = round(purist_correct / row_count, 4)
+        pragmatic_rate = round(pragmatic_correct / row_count, 4)
         result["metrics"] = {
             "row_count": row_count,
             "purist_correct": purist_correct,
-            "purist_accuracy": round(purist_correct / row_count, 4),
+            "micro_f1": purist_rate,
+            "purist_accuracy": purist_rate,
             "pragmatic_correct": pragmatic_correct,
-            "pragmatic_accuracy": round(pragmatic_correct / row_count, 4),
+            "pragmatic_micro_f1": pragmatic_rate,
+            "pragmatic_accuracy": pragmatic_rate,
         }
     return result
 

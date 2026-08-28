@@ -91,11 +91,14 @@ def gan_stage(
     payload: dict[str, Any] = {
         "purist_correct": purist_correct,
         "n": n,
+        "micro_f1": accuracy,
         "purist_accuracy": accuracy,
     }
     if pragmatic_correct is not None:
+        pragmatic_rate = round(pragmatic_correct / n, 4) if n else 0.0
         payload["pragmatic_correct"] = pragmatic_correct
-        payload["pragmatic_accuracy"] = round(pragmatic_correct / n, 4) if n else 0.0
+        payload["pragmatic_micro_f1"] = pragmatic_rate
+        payload["pragmatic_accuracy"] = pragmatic_rate
     return payload
 
 
@@ -176,6 +179,7 @@ def attach_living_envelope(
     if task == "gan2026":
         payload["score"] = {
             "purist_correct": select["purist_correct"],
+            "micro_f1": select.get("micro_f1", select["purist_accuracy"]),
             "purist_accuracy": select["purist_accuracy"],
             "n": select["n"],
         }
@@ -327,6 +331,8 @@ def stage_metric(payload: Mapping[str, Any], stage: str) -> float | None:
         return None
     if "four_family_micro_f1" in block:
         return float(block["four_family_micro_f1"])
+    if "micro_f1" in block:
+        return float(block["micro_f1"])
     if "purist_accuracy" in block:
         return float(block["purist_accuracy"])
     return None

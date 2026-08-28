@@ -32,10 +32,10 @@ The six-model roster compares cell 3 only. Companion Grok cells stay on
 disk. GPT-5.6 Sol cells stay historical. Rules are deterministic and do
 not use a model.
 
-**Gan 2026** (Purist, locked `test450`). Headline is the submitted
+**Gan 2026** (Purist micro-F1, locked `test450`). Headline is the submitted
 (select) score:
 
-| Recognise | Encode | Select | Purist |
+| Recognise | Encode | Select | Purist micro-F1 |
 | --- | --- | --- | ---: |
 | rules | rules | rules | 0.73 |
 | both | rules | rules | 0.82 |
@@ -72,8 +72,8 @@ ledger. LLM select is later-stage `exect_llm_select`. Extract and
 encode stops are prior-stage ablations. Gan hybrid select is
 ledger-only. `gan_llm_only` is not a results column.
 
-- **Gan 2026:** Purist accuracy on the locked `test450` split (one current
-  seizure-frequency label per letter).
+- **Gan 2026:** Purist micro-F1 on the locked `test450` split (one current
+  seizure-frequency label per letter). Micro-F1 equals accuracy here.
 - **ExECTv2:** 4-family micro F1 on the locked `test60` split
   (diagnosis, seizure frequency, prescriptions, and investigations).
   Cell 3 (LLM / rules / rules) is the roster row and the Gemini
@@ -113,7 +113,7 @@ Scores are not interchangeable across tasks.
 | Question | What is the patient's current seizure frequency? | What diagnosis, frequency, prescriptions, and investigations does the letter support? |
 | Development split | `dev750` | `dev140` |
 | Locked test split | `test450` (aggregate scores only) | `test60` (aggregate scores only) |
-| Primary score | Purist accuracy | Clinical fact F1 |
+| Primary score | Purist micro-F1 | Clinical fact F1 |
 
 Both tasks name who runs recognise, encode, and select (rules, LLM, or
 both).

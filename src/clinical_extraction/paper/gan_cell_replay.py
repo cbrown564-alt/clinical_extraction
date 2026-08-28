@@ -408,11 +408,15 @@ def _rung_summary(rows: Sequence[Mapping[str, Any]], rung: str) -> dict[str, Any
     kinds = Counter(
         str(row["rungs"][rung].get("predicted_kind") or "unscorable") for row in rows
     )
+    purist_rate = round(purist / n, 4) if n else 0.0
+    pragmatic_rate = round(pragmatic / n, 4) if n else 0.0
     return {
         "purist_correct": purist,
-        "purist_accuracy": round(purist / n, 4) if n else 0.0,
+        "micro_f1": purist_rate,
+        "purist_accuracy": purist_rate,
         "pragmatic_correct": pragmatic,
-        "pragmatic_accuracy": round(pragmatic / n, 4) if n else 0.0,
+        "pragmatic_micro_f1": pragmatic_rate,
+        "pragmatic_accuracy": pragmatic_rate,
         "scorable": scorable,
         "predicted_kinds": dict(kinds),
         "predicted_candidate_count": sum(

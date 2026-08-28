@@ -1,7 +1,7 @@
 # Gan five-cell prefix grid
 
 Date: 2026-08-22
-Revised: 2026-08-22 (headline is select; cell 3 is six-model row)
+Revised: 2026-08-28 (living primary is Purist micro-F1; class report + Qwen COT compare)
 Status: cited
 Owner: [protocol](gan_five_cell_grid_protocol_2026-08-22.md)
 Paper artifact: `paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json`
@@ -26,7 +26,7 @@ encoder on the same extract is an ablation (encode 0.77, select 0.80).
 
 ## Locked `test450` headline (select stop, aggregate only)
 
-| Recognise | Encode | Select | Purist |
+| Recognise | Encode | Select | Purist micro-F1 |
 | --- | --- | --- | ---: |
 | rules | rules | rules | 0.73 |
 | both | rules | rules | 0.82 |
@@ -52,7 +52,7 @@ wrote the codebook form (no rule encode). LLM select is
 
 ## `dev750` select (`gan_rules_encode` on the LLM-then-rules row)
 
-| Recognise | Encode | Select | Purist |
+| Recognise | Encode | Select | Purist micro-F1 |
 | --- | --- | --- | ---: |
 | rules | rules | rules | 0.89 |
 | both | rules | rules | 0.89 |
@@ -83,5 +83,8 @@ select is 373/450 (0.83).
 ## Claim boundary
 
 Frozen-prompt holdout aggregates. Cited in `claims.md` and
-`README.md`. Headline is the select stop. Do not retune
+`README.md`. Headline is the select stop.
+Class report: [gan_test450_classification_report_2026-08-28.md](gan_test450_classification_report_2026-08-28.md).
+Equivalent Qwen COT synthetic compare:
+[gan_gemini_vs_qwen25_14b_cot_synthetic_2026-08-28.md](gan_gemini_vs_qwen25_14b_cot_synthetic_2026-08-28.md). Do not retune
 `label_forms`. Do not inspect holdout rows.

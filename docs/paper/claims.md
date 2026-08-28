@@ -67,8 +67,8 @@ system asks two different questions of those letters.
 
 **Current seizure frequency** (Gan 2026) asks for one current label per
 letter. Several statements in the letter can be true; only one is the
-scored current state. The primary score is the share of letters whose
-fine frequency band is correct.
+scored current state. The primary score is Purist micro-F1: the share of letters whose
+fine frequency band is correct (micro-F1 equals accuracy here).
 
 **Clinical inventory** (ExECT) asks for the supported set of diagnoses,
 frequency facts, medicines, and investigations. Missing a fact, merging
@@ -116,8 +116,9 @@ holdout cell is 0.73; it is not recognise or encode.
 
 Named Gemini `test450` headline (aggregate-only; select stop). Owner:
 [five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md).
+Class report: [gan_test450_classification_report_2026-08-28.md](../research/gan2026/gan_test450_classification_report_2026-08-28.md).
 
-| Recognise | Encode | Select | Purist |
+| Recognise | Encode | Select | Purist micro-F1 |
 | --- | --- | --- | ---: |
 | rules | rules | rules | 0.73 |
 | both | rules | rules | 0.82 |
@@ -160,7 +161,7 @@ quoted.
 
 Named Gemini `dev750` select stops on the same codebook recognise.
 
-| Recognise | Encode | Select | Purist |
+| Recognise | Encode | Select | Purist micro-F1 |
 | --- | --- | --- | ---: |
 | rules | rules | rules | 0.89 |
 | both | rules | rules | 0.89 |

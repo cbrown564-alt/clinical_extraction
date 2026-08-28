@@ -12,6 +12,8 @@ The dense pointer log is [decision history](history/decisions.md).
 | What is present, missing, and allowed to run | [project status](../PROJECT_STATUS.md) |
 | Paper methods, claims, cells | [paper keep-set](paper/README.md) |
 | Cited Gemini five-cell grids | [Gan grid](research/gan2026/gan_five_cell_grid_2026-08-22.md), [ExECT inventory grid](research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md) (4-family micro F1; [`paper_experiments/exect/five_cell_grid/`](../paper_experiments/exect/five_cell_grid/)), [ExECT cell 4](research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md) |
+| Gan test450 class report | [Purist/Pragmatic class report](research/gan2026/gan_test450_classification_report_2026-08-28.md) |
+| Gemini vs Qwen COT synthetic | [synthetic-to-synthetic compare](research/gan2026/gan_gemini_vs_qwen25_14b_cot_synthetic_2026-08-28.md) |
 | Six-model cell-3 roster | [roster decision](paper/decisions/six-model-roster.md), [`paper_experiments/roster.json`](../paper_experiments/roster.json) |
 | Live runner mapped onto a cell | [cells and runners](paper/cells_and_runners.md) |
 | Stage story | [architecture](paper/architecture.md) |

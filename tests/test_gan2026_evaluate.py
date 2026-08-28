@@ -7,10 +7,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.evaluate import (
 def test_evaluate_predictions_matches_expected_micro_macro_weighted_metrics() -> None:
     results = evaluate_predictions([0, 1.0, 4.0], [0, 1.0, 30.0], method="purist")
 
+    assert results["micro_f1"] == 0.6667
     assert results["micro"] == {
         "precision": 0.6667,
         "recall": 0.6667,
         "f1": 0.6667,
+        "micro_f1": 0.6667,
         "accuracy": 0.6667,
     }
     assert results["macro"]["f1"] == 0.5

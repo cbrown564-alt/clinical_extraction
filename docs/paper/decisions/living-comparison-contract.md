@@ -9,7 +9,7 @@ Code: [`src/clinical_extraction/paper/comparison_contract.py`](../../../src/clin
 
 Every new living paper cell writes one envelope. The cited number is
 the **select** stop. Recognise and encode are prior-stage scores on the
-same raw. Gan uses Purist. ExECT uses 4-family micro F1
+same raw. Gan uses Purist micro-F1 (also written as `purist_accuracy` on existing artifacts). ExECT uses 4-family micro F1
 (`clinical_inventory_unit_keys`).
 
 Required identity: `task`, `method`, `cell`, `model_slug`, `split`,
@@ -33,7 +33,7 @@ adapter.
 
 ## Why
 
-Live runners still emit one hybrid Purist or a `headline_f1` field
+Live runners still emit one hybrid Purist micro-F1 or a `headline_f1` field
 while the scorer is inventory. Replay-rungs still start from Compact
 or source-near raws. The paper table cannot be assembled from those
 shapes without renaming.
