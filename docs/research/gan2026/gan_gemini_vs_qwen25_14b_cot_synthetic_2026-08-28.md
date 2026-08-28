@@ -57,18 +57,20 @@ Living headline: cell 3 LLM extract / rules encode / rules select.
 
 | Recognise | Encode | Select | Purist micro-F1 | Pragmatic micro-F1 |
 | --- | --- | --- | ---: | ---: |
-| rules | rules | rules | 329/450 = 0.7311 cited 0.73 | 341/450 = 0.7578 |
-| both | rules | rules | 368/450 = 0.82 | — not recorded |
+| rules | rules | rules | 321/450 = 0.7133 | 341/450 = 0.7578 |
+| both | rules | rules | 368/450 = 0.82 | 380/450 = 0.8444 |
 | LLM | rules | rules (cell 3) | **373/450 = 0.8289 cited 0.83** | 382/450 = 0.8489 cited 0.85 |
 | LLM | LLM | rules | 368/450 = 0.82 | 377/450 = 0.8378 cited 0.84 |
-| LLM | LLM | LLM | 357/450 = 0.79 | — not recorded |
+| LLM | LLM | LLM | 357/450 = 0.79 | 369/450 = 0.8200 |
 
 Purist select stops: `paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json`.
 Rules Pragmatic: [class report](gan_test450_classification_report_2026-08-28.md).
 Cell 3 / cell 4 Pragmatic: [codebook-encode holdout](gan_codebook_encode_holdout_2026-08-22.md).
-Both / rules / rules and LLM / LLM / LLM Pragmatic are not already recorded.
+Cell 5 Pragmatic: [class report](gan_test450_classification_report_2026-08-28.md).
+Cell 2 Pragmatic: [class report](gan_test450_classification_report_2026-08-28.md) / `gan_llm_and_rules_extract` comparison.
 
-Gemini five-cell per-class P/R is not on disk in that comparison.json.
+Gemini five-cell per-class P/R for cells 1, 3, and 5 is in
+[class report](gan_test450_classification_report_2026-08-28.md).
 
 ## Mix (UNK class)
 

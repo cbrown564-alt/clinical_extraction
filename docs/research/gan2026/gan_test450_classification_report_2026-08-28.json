@@ -13,8 +13,8 @@
   },
   "living": {
     "selected_results": "Gemini 3.7 Flash five-cell (select stop). Prompt v0.5.",
-    "rules_per_class": "five-cell rules cell (same as Gemini five-cell cell 1)",
-    "gemini_five_cell_per_class": "Not on disk in paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json. Not computed from sealed test450 predicted-label ledgers.",
+    "rules_per_class": "five-cell cell 1 (rules / rules / rules)",
+    "gemini_five_cell_per_class": "Cells 1, 3, and 5 use living gold_monthly_frequency (UNK support 76/450).",
     "historical_not_living": [
       "Decision 0050 / Sol 380/450 / 381/450",
       "Sol current-stack hybrid fills",
@@ -31,12 +31,13 @@
           "recognise": "rules",
           "encode": "rules",
           "select": "rules",
-          "purist_correct": 329,
-          "purist_micro_f1": 0.7311,
-          "cited": 0.73,
+          "purist_correct": 321,
+          "purist_micro_f1": 0.7133,
+          "cited": null,
           "pragmatic_correct": 341,
           "pragmatic_micro_f1": 0.7578,
-          "pragmatic_source": "this class report / rules_only_test450_aggregate_2026-08-10.md"
+          "pragmatic_source": "living gan_rules replay / this class report",
+          "note": "Living gold. Curated five-cell comparison.json still lists 329 from the 2026-08-10 gold epsilon."
         },
         {
           "recognise": "both",
@@ -45,9 +46,9 @@
           "purist_correct": 368,
           "purist_micro_f1": 0.8178,
           "cited": 0.82,
-          "pragmatic_correct": null,
-          "pragmatic_micro_f1": null,
-          "pragmatic_source": "not already recorded for this five-cell select stop"
+          "pragmatic_correct": 380,
+          "pragmatic_micro_f1": 0.8444,
+          "pragmatic_source": "gan_llm_and_rules_extract test450 comparison.json / rule_stops.json"
         },
         {
           "recognise": "LLM",
@@ -81,35 +82,35 @@
           "purist_correct": 357,
           "purist_micro_f1": 0.7933,
           "cited": 0.79,
-          "pragmatic_correct": null,
-          "pragmatic_micro_f1": null,
-          "pragmatic_source": "not already recorded for this five-cell select stop"
+          "pragmatic_correct": 369,
+          "pragmatic_micro_f1": 0.82,
+          "pragmatic_source": "this class report cell 5"
         }
       ]
     }
   },
   "cells": {
     "rules": {
-      "identity": "rules_only",
-      "path": "scratch/holdout/gan2026_rules_only_test450_20260810/rows.jsonl",
+      "identity": "living gan_rules.run_record",
+      "cell": 1,
+      "gold_epsilon": "living gold_monthly_frequency",
       "n": 450,
       "dropped": 0,
+      "purist_correct": 321,
+      "pragmatic_correct": 341,
       "purist": {
         "n": 450,
-        "micro_f1": 0.731111111111111,
-        "micro_precision": 0.7311111111111112,
-        "micro_recall": 0.7311111111111112,
-        "accuracy": 0.7311111111111112,
-        "micro_equals_accuracy": true,
+        "micro_f1": 0.7133333333333334,
+        "correct": 321,
         "macro": {
-          "precision": 0.7463795357960118,
-          "recall": 0.7505513116694401,
-          "f1": 0.7322242049535241
+          "precision": 0.7224745487664505,
+          "recall": 0.7380261823692539,
+          "f1": 0.7116056447050201
         },
         "weighted": {
-          "precision": 0.7488237824835842,
-          "recall": 0.7311111111111112,
-          "f1": 0.7328845808272935
+          "precision": 0.7448974466921874,
+          "recall": 0.7133333333333334,
+          "f1": 0.7182644055454799
         },
         "per_class": [
           {
@@ -134,82 +135,82 @@
           },
           {
             "label": "(1/6M,1/M)",
-            "precision": 0.7962962962962963,
-            "recall": 0.8269230769230769,
-            "f1": 0.8113207547169811,
-            "support": 52,
-            "tp": 43,
+            "precision": 0.8,
+            "recall": 0.8,
+            "f1": 0.8000000000000002,
+            "support": 55,
+            "tp": 44,
             "fp": 11,
-            "fn": 9
+            "fn": 11
           },
           {
             "label": "=1/M",
-            "precision": 0.6,
-            "recall": 0.45,
-            "f1": 0.5142857142857143,
-            "support": 20,
-            "tp": 9,
+            "precision": 0.5384615384615384,
+            "recall": 0.3888888888888889,
+            "f1": 0.45161290322580644,
+            "support": 18,
+            "tp": 7,
             "fp": 6,
             "fn": 11
           },
           {
             "label": "(1/M,1/W)",
-            "precision": 0.8245614035087719,
-            "recall": 0.7580645161290323,
-            "f1": 0.7899159663865545,
-            "support": 62,
+            "precision": 0.7966101694915254,
+            "recall": 0.8103448275862069,
+            "f1": 0.8034188034188032,
+            "support": 58,
             "tp": 47,
-            "fp": 10,
-            "fn": 15
+            "fp": 12,
+            "fn": 11
           },
           {
             "label": "=1/W",
-            "precision": 0.8571428571428571,
+            "precision": 0.8333333333333334,
             "recall": 1.0,
-            "f1": 0.923076923076923,
-            "support": 6,
-            "tp": 6,
+            "f1": 0.9090909090909091,
+            "support": 5,
+            "tp": 5,
             "fp": 1,
             "fn": 0
           },
           {
             "label": "(1/W,1/D)",
-            "precision": 0.9166666666666666,
-            "recall": 0.7857142857142857,
-            "f1": 0.8461538461538461,
-            "support": 98,
-            "tp": 77,
+            "precision": 0.9270833333333334,
+            "recall": 0.7235772357723578,
+            "f1": 0.8127853881278538,
+            "support": 123,
+            "tp": 89,
             "fp": 7,
-            "fn": 21
+            "fn": 34
           },
           {
-            "label": "≥1/D",
-            "precision": 0.6857142857142857,
-            "recall": 0.6666666666666666,
-            "f1": 0.676056338028169,
-            "support": 36,
-            "tp": 24,
-            "fp": 11,
-            "fn": 12
+            "label": "\u22651/D",
+            "precision": 0.6341463414634146,
+            "recall": 0.6341463414634146,
+            "f1": 0.6341463414634146,
+            "support": 41,
+            "tp": 26,
+            "fp": 15,
+            "fn": 15
           },
           {
             "label": "UNK",
-            "precision": 0.5797101449275363,
-            "recall": 0.7843137254901961,
-            "f1": 0.6666666666666666,
-            "support": 102,
-            "tp": 80,
-            "fp": 58,
-            "fn": 22
+            "precision": 0.5042016806722689,
+            "recall": 0.7894736842105263,
+            "f1": 0.6153846153846154,
+            "support": 76,
+            "tp": 60,
+            "fp": 59,
+            "fn": 16
           },
           {
             "label": "NS",
-            "precision": 0.7037037037037037,
+            "precision": 0.6909090909090909,
             "recall": 0.5671641791044776,
-            "f1": 0.6280991735537191,
+            "f1": 0.6229508196721312,
             "support": 67,
             "tp": 38,
-            "fp": 16,
+            "fp": 17,
             "fn": 29
           }
         ]
@@ -217,253 +218,61 @@
       "pragmatic": {
         "n": 450,
         "micro_f1": 0.7577777777777778,
-        "micro_precision": 0.7577777777777778,
-        "micro_recall": 0.7577777777777778,
-        "accuracy": 0.7577777777777778,
-        "micro_equals_accuracy": true,
+        "correct": 341,
         "macro": {
-          "precision": 0.7415638446714712,
-          "recall": 0.7275486339378651,
-          "f1": 0.728236914600551
+          "precision": 0.7236840348808898,
+          "recall": 0.7241539592208215,
+          "f1": 0.7135132626935906
         },
         "weighted": {
-          "precision": 0.7765612711151002,
+          "precision": 0.7893532869525881,
           "recall": 0.7577777777777778,
-          "f1": 0.7615747081201627
+          "f1": 0.7656612482841991
         },
         "per_class": [
           {
             "label": "infrequent",
-            "precision": 0.7866666666666666,
-            "recall": 0.7468354430379747,
-            "f1": 0.7662337662337663,
-            "support": 79,
-            "tp": 59,
+            "precision": 0.7837837837837838,
+            "recall": 0.725,
+            "f1": 0.7532467532467533,
+            "support": 80,
+            "tp": 58,
             "fp": 16,
-            "fn": 20
-          },
-          {
-            "label": "frequent",
-            "precision": 0.8961748633879781,
-            "recall": 0.8118811881188119,
-            "f1": 0.851948051948052,
-            "support": 202,
-            "tp": 164,
-            "fp": 19,
-            "fn": 38
-          },
-          {
-            "label": "UNK",
-            "precision": 0.5797101449275363,
-            "recall": 0.7843137254901961,
-            "f1": 0.6666666666666666,
-            "support": 102,
-            "tp": 80,
-            "fp": 58,
             "fn": 22
           },
           {
+            "label": "frequent",
+            "precision": 0.9158415841584159,
+            "recall": 0.8149779735682819,
+            "f1": 0.8624708624708625,
+            "support": 227,
+            "tp": 185,
+            "fp": 17,
+            "fn": 42
+          },
+          {
+            "label": "UNK",
+            "precision": 0.5042016806722689,
+            "recall": 0.7894736842105263,
+            "f1": 0.6153846153846154,
+            "support": 76,
+            "tp": 60,
+            "fp": 59,
+            "fn": 16
+          },
+          {
             "label": "NS",
-            "precision": 0.7037037037037037,
+            "precision": 0.6909090909090909,
             "recall": 0.5671641791044776,
-            "f1": 0.6280991735537191,
+            "f1": 0.6229508196721312,
             "support": 67,
             "tp": 38,
-            "fp": 16,
+            "fp": 17,
             "fn": 29
           }
         ]
       },
-      "living": true,
-      "status": "living five-cell rules cell (same as Gemini five-cell cell 1)"
-    },
-    "Sol hybrid": {
-      "identity": "llm_with_rules / gpt56sol / current-stack",
-      "path": "scratch/validation/current_stack/latest/gan_test450/gpt56sol/test450.rows.jsonl",
-      "n": 450,
-      "dropped": 0,
-      "purist": {
-        "n": 450,
-        "micro_f1": 0.8466666666666667,
-        "micro_precision": 0.8466666666666667,
-        "micro_recall": 0.8466666666666667,
-        "accuracy": 0.8466666666666667,
-        "micro_equals_accuracy": true,
-        "macro": {
-          "precision": 0.7403140623780983,
-          "recall": 0.7502689259598263,
-          "f1": 0.742733308498131
-        },
-        "weighted": {
-          "precision": 0.851169655974907,
-          "recall": 0.8466666666666667,
-          "f1": 0.846430392773904
-        },
-        "per_class": [
-          {
-            "label": "<1/6M",
-            "precision": 0.5714285714285714,
-            "recall": 0.6666666666666666,
-            "f1": 0.6153846153846153,
-            "support": 6,
-            "tp": 4,
-            "fp": 3,
-            "fn": 2
-          },
-          {
-            "label": "=1/6M",
-            "precision": 0.0,
-            "recall": 0.0,
-            "f1": 0.0,
-            "support": 1,
-            "tp": 0,
-            "fp": 2,
-            "fn": 1
-          },
-          {
-            "label": "(1/6M,1/M)",
-            "precision": 0.8205128205128205,
-            "recall": 0.6153846153846154,
-            "f1": 0.7032967032967034,
-            "support": 52,
-            "tp": 32,
-            "fp": 7,
-            "fn": 20
-          },
-          {
-            "label": "=1/M",
-            "precision": 0.8260869565217391,
-            "recall": 0.95,
-            "f1": 0.8837209302325583,
-            "support": 20,
-            "tp": 19,
-            "fp": 4,
-            "fn": 1
-          },
-          {
-            "label": "(1/M,1/W)",
-            "precision": 0.8360655737704918,
-            "recall": 0.8225806451612904,
-            "f1": 0.829268292682927,
-            "support": 62,
-            "tp": 51,
-            "fp": 10,
-            "fn": 11
-          },
-          {
-            "label": "=1/W",
-            "precision": 0.8333333333333334,
-            "recall": 0.8333333333333334,
-            "f1": 0.8333333333333334,
-            "support": 6,
-            "tp": 5,
-            "fp": 1,
-            "fn": 1
-          },
-          {
-            "label": "(1/W,1/D)",
-            "precision": 0.9680851063829787,
-            "recall": 0.9285714285714286,
-            "f1": 0.9479166666666666,
-            "support": 98,
-            "tp": 91,
-            "fp": 3,
-            "fn": 7
-          },
-          {
-            "label": "≥1/D",
-            "precision": 0.9210526315789473,
-            "recall": 0.9722222222222222,
-            "f1": 0.9459459459459458,
-            "support": 36,
-            "tp": 35,
-            "fp": 3,
-            "fn": 1
-          },
-          {
-            "label": "UNK",
-            "precision": 0.7589285714285714,
-            "recall": 0.8333333333333334,
-            "f1": 0.794392523364486,
-            "support": 102,
-            "tp": 85,
-            "fp": 27,
-            "fn": 17
-          },
-          {
-            "label": "NS",
-            "precision": 0.8676470588235294,
-            "recall": 0.8805970149253731,
-            "f1": 0.874074074074074,
-            "support": 67,
-            "tp": 59,
-            "fp": 9,
-            "fn": 8
-          }
-        ]
-      },
-      "pragmatic": {
-        "n": 450,
-        "micro_f1": 0.8711111111111111,
-        "micro_precision": 0.8711111111111111,
-        "micro_recall": 0.8711111111111111,
-        "accuracy": 0.8711111111111111,
-        "micro_equals_accuracy": true,
-        "macro": {
-          "precision": 0.8518275723659129,
-          "recall": 0.8491023389132792,
-          "f1": 0.8494441639066059
-        },
-        "weighted": {
-          "precision": 0.8734226684044226,
-          "recall": 0.8711111111111111,
-          "f1": 0.8714480713335311
-        },
-        "per_class": [
-          {
-            "label": "infrequent",
-            "precision": 0.8309859154929577,
-            "recall": 0.7468354430379747,
-            "f1": 0.7866666666666666,
-            "support": 79,
-            "tp": 59,
-            "fp": 12,
-            "fn": 20
-          },
-          {
-            "label": "frequent",
-            "precision": 0.949748743718593,
-            "recall": 0.9356435643564357,
-            "f1": 0.9426433915211971,
-            "support": 202,
-            "tp": 189,
-            "fp": 10,
-            "fn": 13
-          },
-          {
-            "label": "UNK",
-            "precision": 0.7589285714285714,
-            "recall": 0.8333333333333334,
-            "f1": 0.794392523364486,
-            "support": 102,
-            "tp": 85,
-            "fp": 27,
-            "fn": 17
-          },
-          {
-            "label": "NS",
-            "precision": 0.8676470588235294,
-            "recall": 0.8805970149253731,
-            "f1": 0.874074074074074,
-            "support": 67,
-            "tp": 59,
-            "fp": 9,
-            "fn": 8
-          }
-        ]
-      },
-      "living": false,
-      "status": "historical current-stack / llm_with_rules; not a living paper column"
+      "status": "living paper cell; aligned gold with cells 3 and 5"
     },
     "Luna hybrid": {
       "identity": "llm_with_rules / gpt56luna / current-stack",
@@ -559,7 +368,7 @@
             "fn": 13
           },
           {
-            "label": "≥1/D",
+            "label": "\u22651/D",
             "precision": 0.875,
             "recall": 0.9722222222222222,
             "f1": 0.9210526315789473,
@@ -747,7 +556,7 @@
             "fn": 10
           },
           {
-            "label": "≥1/D",
+            "label": "\u22651/D",
             "precision": 0.8717948717948718,
             "recall": 0.9444444444444444,
             "f1": 0.9066666666666667,
@@ -935,7 +744,7 @@
             "fn": 10
           },
           {
-            "label": "≥1/D",
+            "label": "\u22651/D",
             "precision": 0.9166666666666666,
             "recall": 0.9166666666666666,
             "f1": 0.9166666666666666,
@@ -1123,7 +932,7 @@
             "fn": 16
           },
           {
-            "label": "≥1/D",
+            "label": "\u22651/D",
             "precision": 0.8095238095238095,
             "recall": 0.9444444444444444,
             "f1": 0.8717948717948718,
@@ -1311,7 +1120,7 @@
             "fn": 22
           },
           {
-            "label": "≥1/D",
+            "label": "\u22651/D",
             "precision": 0.8157894736842105,
             "recall": 0.8611111111111112,
             "f1": 0.8378378378378377,
@@ -1404,194 +1213,6 @@
       },
       "living": false,
       "status": "historical current-stack; not a living paper column"
-    },
-    "Luna llm-only": {
-      "identity": "llm / gpt56luna",
-      "path": "scratch/holdout/paper/gan_llm_only/gpt56luna/test450/rows.jsonl",
-      "n": 450,
-      "dropped": 0,
-      "purist": {
-        "n": 450,
-        "micro_f1": 0.7266666666666666,
-        "micro_precision": 0.7266666666666667,
-        "micro_recall": 0.7266666666666667,
-        "accuracy": 0.7266666666666667,
-        "micro_equals_accuracy": true,
-        "macro": {
-          "precision": 0.6924146034691041,
-          "recall": 0.5665688892003106,
-          "f1": 0.600664999819135
-        },
-        "weighted": {
-          "precision": 0.7550596763301219,
-          "recall": 0.7266666666666667,
-          "f1": 0.7211819191508574
-        },
-        "per_class": [
-          {
-            "label": "<1/6M",
-            "precision": 1.0,
-            "recall": 0.3333333333333333,
-            "f1": 0.5,
-            "support": 6,
-            "tp": 2,
-            "fp": 0,
-            "fn": 4
-          },
-          {
-            "label": "=1/6M",
-            "precision": 0.0,
-            "recall": 0.0,
-            "f1": 0.0,
-            "support": 1,
-            "tp": 0,
-            "fp": 3,
-            "fn": 1
-          },
-          {
-            "label": "(1/6M,1/M)",
-            "precision": 0.6764705882352942,
-            "recall": 0.4423076923076923,
-            "f1": 0.5348837209302325,
-            "support": 52,
-            "tp": 23,
-            "fp": 11,
-            "fn": 29
-          },
-          {
-            "label": "=1/M",
-            "precision": 0.6666666666666666,
-            "recall": 0.5,
-            "f1": 0.5714285714285715,
-            "support": 20,
-            "tp": 10,
-            "fp": 5,
-            "fn": 10
-          },
-          {
-            "label": "(1/M,1/W)",
-            "precision": 0.8333333333333334,
-            "recall": 0.4838709677419355,
-            "f1": 0.6122448979591837,
-            "support": 62,
-            "tp": 30,
-            "fp": 6,
-            "fn": 32
-          },
-          {
-            "label": "=1/W",
-            "precision": 0.6,
-            "recall": 0.5,
-            "f1": 0.5454545454545454,
-            "support": 6,
-            "tp": 3,
-            "fp": 2,
-            "fn": 3
-          },
-          {
-            "label": "(1/W,1/D)",
-            "precision": 0.8736842105263158,
-            "recall": 0.8469387755102041,
-            "f1": 0.8601036269430051,
-            "support": 98,
-            "tp": 83,
-            "fp": 12,
-            "fn": 15
-          },
-          {
-            "label": "≥1/D",
-            "precision": 0.9117647058823529,
-            "recall": 0.8611111111111112,
-            "f1": 0.8857142857142858,
-            "support": 36,
-            "tp": 31,
-            "fp": 3,
-            "fn": 5
-          },
-          {
-            "label": "UNK",
-            "precision": 0.5796178343949044,
-            "recall": 0.8921568627450981,
-            "f1": 0.7027027027027027,
-            "support": 102,
-            "tp": 91,
-            "fp": 66,
-            "fn": 11
-          },
-          {
-            "label": "NS",
-            "precision": 0.782608695652174,
-            "recall": 0.8059701492537313,
-            "f1": 0.7941176470588236,
-            "support": 67,
-            "tp": 54,
-            "fp": 15,
-            "fn": 13
-          }
-        ]
-      },
-      "pragmatic": {
-        "n": 450,
-        "micro_f1": 0.7688888888888887,
-        "micro_precision": 0.7688888888888888,
-        "micro_recall": 0.7688888888888888,
-        "accuracy": 0.7688888888888888,
-        "micro_equals_accuracy": true,
-        "macro": {
-          "precision": 0.7593474821849722,
-          "recall": 0.7484445240236453,
-          "f1": 0.738563564277636
-        },
-        "weighted": {
-          "precision": 0.8024566109324228,
-          "recall": 0.7688888888888888,
-          "f1": 0.7714397088161195
-        },
-        "per_class": [
-          {
-            "label": "infrequent",
-            "precision": 0.7222222222222222,
-            "recall": 0.4936708860759494,
-            "f1": 0.5864661654135338,
-            "support": 79,
-            "tp": 39,
-            "fp": 15,
-            "fn": 40
-          },
-          {
-            "label": "frequent",
-            "precision": 0.9529411764705882,
-            "recall": 0.801980198019802,
-            "f1": 0.8709677419354839,
-            "support": 202,
-            "tp": 162,
-            "fp": 8,
-            "fn": 40
-          },
-          {
-            "label": "UNK",
-            "precision": 0.5796178343949044,
-            "recall": 0.8921568627450981,
-            "f1": 0.7027027027027027,
-            "support": 102,
-            "tp": 91,
-            "fp": 66,
-            "fn": 11
-          },
-          {
-            "label": "NS",
-            "precision": 0.782608695652174,
-            "recall": 0.8059701492537313,
-            "f1": 0.7941176470588236,
-            "support": 67,
-            "tp": 54,
-            "fp": 15,
-            "fn": 13
-          }
-        ]
-      },
-      "living": false,
-      "status": "historical gan_llm_only; not a living paper column"
     },
     "Gemini llm-only": {
       "identity": "llm / gemini37flash",
@@ -1687,7 +1308,7 @@
             "fn": 11
           },
           {
-            "label": "≥1/D",
+            "label": "\u22651/D",
             "precision": 0.8888888888888888,
             "recall": 0.9142857142857143,
             "f1": 0.9014084507042254,
@@ -1875,7 +1496,7 @@
             "fn": 13
           },
           {
-            "label": "≥1/D",
+            "label": "\u22651/D",
             "precision": 0.8421052631578947,
             "recall": 0.8888888888888888,
             "f1": 0.8648648648648649,
@@ -2063,7 +1684,7 @@
             "fn": 11
           },
           {
-            "label": "≥1/D",
+            "label": "\u22651/D",
             "precision": 0.868421052631579,
             "recall": 0.9166666666666666,
             "f1": 0.8918918918918918,
@@ -2156,6 +1777,541 @@
       },
       "living": false,
       "status": "historical gan_llm_only; not a living paper column"
+    },
+    "gemini_cell_3": {
+      "identity": "gemini37flash / LLM / rules / rules / llm_select_after_codebook",
+      "cell": 3,
+      "gold_epsilon": "living gold_monthly_frequency",
+      "n": 450,
+      "dropped": 0,
+      "cited_five_cell_purist_correct": 373,
+      "replay_purist_correct": 374,
+      "cited_five_cell_pragmatic_correct": 382,
+      "replay_pragmatic_correct": 383,
+      "purist": {
+        "n": 450,
+        "micro_f1": 0.8311111111111111,
+        "correct": 374,
+        "macro": {
+          "precision": 0.7710171734658037,
+          "recall": 0.6790341034427836,
+          "f1": 0.7103511630547162
+        },
+        "weighted": {
+          "precision": 0.8471980154548648,
+          "recall": 0.8311111111111111,
+          "f1": 0.8308080236725449
+        },
+        "per_class": [
+          {
+            "label": "<1/6M",
+            "precision": 0.75,
+            "recall": 0.5,
+            "f1": 0.6,
+            "support": 6,
+            "tp": 3,
+            "fp": 1,
+            "fn": 3
+          },
+          {
+            "label": "=1/6M",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1,
+            "tp": 0,
+            "fp": 0,
+            "fn": 1
+          },
+          {
+            "label": "(1/6M,1/M)",
+            "precision": 0.875,
+            "recall": 0.6363636363636364,
+            "f1": 0.7368421052631579,
+            "support": 55,
+            "tp": 35,
+            "fp": 5,
+            "fn": 20
+          },
+          {
+            "label": "=1/M",
+            "precision": 0.9166666666666666,
+            "recall": 0.6111111111111112,
+            "f1": 0.7333333333333334,
+            "support": 18,
+            "tp": 11,
+            "fp": 1,
+            "fn": 7
+          },
+          {
+            "label": "(1/M,1/W)",
+            "precision": 0.8833333333333333,
+            "recall": 0.9137931034482759,
+            "f1": 0.8983050847457628,
+            "support": 58,
+            "tp": 53,
+            "fp": 7,
+            "fn": 5
+          },
+          {
+            "label": "=1/W",
+            "precision": 1.0,
+            "recall": 0.6,
+            "f1": 0.7499999999999999,
+            "support": 5,
+            "tp": 3,
+            "fp": 0,
+            "fn": 2
+          },
+          {
+            "label": "(1/W,1/D)",
+            "precision": 0.9553571428571429,
+            "recall": 0.8699186991869918,
+            "f1": 0.9106382978723403,
+            "support": 123,
+            "tp": 107,
+            "fp": 5,
+            "fn": 16
+          },
+          {
+            "label": "\u22651/D",
+            "precision": 0.9047619047619048,
+            "recall": 0.926829268292683,
+            "f1": 0.9156626506024096,
+            "support": 41,
+            "tp": 38,
+            "fp": 4,
+            "fn": 3
+          },
+          {
+            "label": "UNK",
+            "precision": 0.6442307692307693,
+            "recall": 0.881578947368421,
+            "f1": 0.7444444444444444,
+            "support": 76,
+            "tp": 67,
+            "fp": 37,
+            "fn": 9
+          },
+          {
+            "label": "NS",
+            "precision": 0.7808219178082192,
+            "recall": 0.8507462686567164,
+            "f1": 0.8142857142857143,
+            "support": 67,
+            "tp": 57,
+            "fp": 16,
+            "fn": 10
+          }
+        ]
+      },
+      "pragmatic": {
+        "n": 450,
+        "micro_f1": 0.8511111111111112,
+        "correct": 383,
+        "macro": {
+          "precision": 0.8169486556307148,
+          "recall": 0.817483837045932,
+          "f1": 0.8063160849925556
+        },
+        "weighted": {
+          "precision": 0.8687867251322842,
+          "recall": 0.8511111111111112,
+          "f1": 0.8522482426403994
+        },
+        "per_class": [
+          {
+            "label": "infrequent",
+            "precision": 0.875,
+            "recall": 0.6125,
+            "f1": 0.7205882352941178,
+            "support": 80,
+            "tp": 49,
+            "fp": 7,
+            "fn": 31
+          },
+          {
+            "label": "frequent",
+            "precision": 0.967741935483871,
+            "recall": 0.9251101321585903,
+            "f1": 0.9459459459459458,
+            "support": 227,
+            "tp": 210,
+            "fp": 7,
+            "fn": 17
+          },
+          {
+            "label": "UNK",
+            "precision": 0.6442307692307693,
+            "recall": 0.881578947368421,
+            "f1": 0.7444444444444444,
+            "support": 76,
+            "tp": 67,
+            "fp": 37,
+            "fn": 9
+          },
+          {
+            "label": "NS",
+            "precision": 0.7808219178082192,
+            "recall": 0.8507462686567164,
+            "f1": 0.8142857142857143,
+            "support": 67,
+            "tp": 57,
+            "fp": 16,
+            "fn": 10
+          }
+        ]
+      },
+      "status": "living paper cell; replay is +1 vs cited five-cell"
+    },
+    "gemini_cell_5": {
+      "identity": "gemini37flash / LLM / LLM / LLM / gan_llm_select_from_extract",
+      "cell": 5,
+      "gold_epsilon": "living gold_monthly_frequency",
+      "n": 450,
+      "dropped": 0,
+      "purist_correct": 357,
+      "pragmatic_correct": 369,
+      "unscorable_rows_counted_incorrect": 2,
+      "purist": {
+        "n": 450,
+        "micro_f1": 0.7933333333333333,
+        "correct": 357,
+        "per_class": [
+          {
+            "label": "<1/6M",
+            "precision": 1.0,
+            "recall": 0.6666666666666666,
+            "f1": 0.8,
+            "support": 6,
+            "tp": 4,
+            "fp": 0,
+            "fn": 2
+          },
+          {
+            "label": "=1/6M",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0,
+            "support": 1,
+            "tp": 0,
+            "fp": 1,
+            "fn": 1
+          },
+          {
+            "label": "(1/6M,1/M)",
+            "precision": 0.9444444444444444,
+            "recall": 0.6181818181818182,
+            "f1": 0.7472527472527473,
+            "support": 55,
+            "tp": 34,
+            "fp": 2,
+            "fn": 21
+          },
+          {
+            "label": "=1/M",
+            "precision": 0.6428571428571429,
+            "recall": 0.5,
+            "f1": 0.5625000000000001,
+            "support": 18,
+            "tp": 9,
+            "fp": 5,
+            "fn": 9
+          },
+          {
+            "label": "(1/M,1/W)",
+            "precision": 0.8888888888888888,
+            "recall": 0.6896551724137931,
+            "f1": 0.7766990291262136,
+            "support": 58,
+            "tp": 40,
+            "fp": 5,
+            "fn": 18
+          },
+          {
+            "label": "=1/W",
+            "precision": 1.0,
+            "recall": 0.6,
+            "f1": 0.7499999999999999,
+            "support": 5,
+            "tp": 3,
+            "fp": 0,
+            "fn": 2
+          },
+          {
+            "label": "(1/W,1/D)",
+            "precision": 0.9369369369369369,
+            "recall": 0.8455284552845529,
+            "f1": 0.888888888888889,
+            "support": 123,
+            "tp": 104,
+            "fp": 7,
+            "fn": 19
+          },
+          {
+            "label": "\u22651/D",
+            "precision": 0.9047619047619048,
+            "recall": 0.926829268292683,
+            "f1": 0.9156626506024096,
+            "support": 41,
+            "tp": 38,
+            "fp": 4,
+            "fn": 3
+          },
+          {
+            "label": "UNK",
+            "precision": 0.6106194690265486,
+            "recall": 0.9078947368421053,
+            "f1": 0.7301587301587302,
+            "support": 76,
+            "tp": 69,
+            "fp": 44,
+            "fn": 7
+          },
+          {
+            "label": "NS",
+            "precision": 0.691358024691358,
+            "recall": 0.835820895522388,
+            "f1": 0.7567567567567567,
+            "support": 67,
+            "tp": 56,
+            "fp": 25,
+            "fn": 11
+          }
+        ]
+      },
+      "pragmatic": {
+        "n": 450,
+        "micro_f1": 0.82,
+        "correct": 369,
+        "per_class": [
+          {
+            "label": "infrequent",
+            "precision": 0.8727272727272727,
+            "recall": 0.6,
+            "f1": 0.711111111111111,
+            "support": 80,
+            "tp": 48,
+            "fp": 7,
+            "fn": 32
+          },
+          {
+            "label": "frequent",
+            "precision": 0.9751243781094527,
+            "recall": 0.8634361233480177,
+            "f1": 0.9158878504672897,
+            "support": 227,
+            "tp": 196,
+            "fp": 5,
+            "fn": 31
+          },
+          {
+            "label": "UNK",
+            "precision": 0.6106194690265486,
+            "recall": 0.9078947368421053,
+            "f1": 0.7301587301587302,
+            "support": 76,
+            "tp": 69,
+            "fp": 44,
+            "fn": 7
+          },
+          {
+            "label": "NS",
+            "precision": 0.691358024691358,
+            "recall": 0.835820895522388,
+            "f1": 0.7567567567567567,
+            "support": 67,
+            "tp": 56,
+            "fp": 25,
+            "fn": 11
+          }
+        ]
+      },
+      "status": "living paper cell; Purist matches cited five-cell 357/450"
+    },
+    "gemini_cell_2": {
+      "identity": "gemini37flash / both / rules / rules / gan_llm_and_rules_extract",
+      "cell": 2,
+      "gold_epsilon": "living gold_monthly_frequency",
+      "n": 450,
+      "dropped": 0,
+      "purist_correct": 368,
+      "pragmatic_correct": 380,
+      "purist": {
+        "n": 450,
+        "micro_f1": 0.8177777777777778,
+        "correct": 368,
+        "macro": {
+          "precision": 0.7136266410540457,
+          "recall": 0.7036979238292236,
+          "f1": 0.7064474224837249
+        },
+        "weighted": {
+          "precision": 0.8252847365714879,
+          "recall": 0.8177777777777778,
+          "f1": 0.818872110036203
+        },
+        "per_class": [
+          {
+            "label": "<1/6M",
+            "precision": 0.6666666666666666,
+            "recall": 0.6666666666666666,
+            "f1": 0.6666666666666666,
+            "support": 6,
+            "tp": 4,
+            "fp": 2,
+            "fn": 2
+          },
+          {
+            "label": "=1/6M",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1,
+            "tp": 0,
+            "fp": 2,
+            "fn": 1
+          },
+          {
+            "label": "(1/6M,1/M)",
+            "precision": 0.8,
+            "recall": 0.6545454545454545,
+            "f1": 0.7200000000000001,
+            "support": 55,
+            "tp": 36,
+            "fp": 9,
+            "fn": 19
+          },
+          {
+            "label": "=1/M",
+            "precision": 0.7333333333333333,
+            "recall": 0.6111111111111112,
+            "f1": 0.6666666666666666,
+            "support": 18,
+            "tp": 11,
+            "fp": 4,
+            "fn": 7
+          },
+          {
+            "label": "(1/M,1/W)",
+            "precision": 0.8392857142857143,
+            "recall": 0.8103448275862069,
+            "f1": 0.8245614035087718,
+            "support": 58,
+            "tp": 47,
+            "fp": 9,
+            "fn": 11
+          },
+          {
+            "label": "=1/W",
+            "precision": 0.8,
+            "recall": 0.8,
+            "f1": 0.8000000000000002,
+            "support": 5,
+            "tp": 4,
+            "fp": 1,
+            "fn": 1
+          },
+          {
+            "label": "(1/W,1/D)",
+            "precision": 0.956140350877193,
+            "recall": 0.8861788617886179,
+            "f1": 0.919831223628692,
+            "support": 123,
+            "tp": 109,
+            "fp": 5,
+            "fn": 14
+          },
+          {
+            "label": "\u22651/D",
+            "precision": 0.8863636363636364,
+            "recall": 0.9512195121951219,
+            "f1": 0.9176470588235294,
+            "support": 41,
+            "tp": 39,
+            "fp": 5,
+            "fn": 2
+          },
+          {
+            "label": "UNK",
+            "precision": 0.6781609195402298,
+            "recall": 0.7763157894736842,
+            "f1": 0.7239263803680982,
+            "support": 76,
+            "tp": 59,
+            "fp": 28,
+            "fn": 17
+          },
+          {
+            "label": "NS",
+            "precision": 0.7763157894736842,
+            "recall": 0.8805970149253731,
+            "f1": 0.8251748251748251,
+            "support": 67,
+            "tp": 59,
+            "fp": 17,
+            "fn": 8
+          }
+        ]
+      },
+      "pragmatic": {
+        "n": 450,
+        "micro_f1": 0.8444444444444444,
+        "correct": 380,
+        "macro": {
+          "precision": 0.7995915113926135,
+          "recall": 0.8120530909676058,
+          "f1": 0.8028915903204054
+        },
+        "weighted": {
+          "precision": 0.8504021623566265,
+          "recall": 0.8444444444444444,
+          "f1": 0.8453654183935622
+        },
+        "per_class": [
+          {
+            "label": "infrequent",
+            "precision": 0.7941176470588235,
+            "recall": 0.675,
+            "f1": 0.7297297297297296,
+            "support": 80,
+            "tp": 54,
+            "fp": 14,
+            "fn": 26
+          },
+          {
+            "label": "frequent",
+            "precision": 0.9497716894977168,
+            "recall": 0.9162995594713657,
+            "f1": 0.9327354260089686,
+            "support": 227,
+            "tp": 208,
+            "fp": 11,
+            "fn": 19
+          },
+          {
+            "label": "UNK",
+            "precision": 0.6781609195402298,
+            "recall": 0.7763157894736842,
+            "f1": 0.7239263803680982,
+            "support": 76,
+            "tp": 59,
+            "fp": 28,
+            "fn": 17
+          },
+          {
+            "label": "NS",
+            "precision": 0.7763157894736842,
+            "recall": 0.8805970149253731,
+            "f1": 0.8251748251748251,
+            "support": 67,
+            "tp": 59,
+            "fp": 17,
+            "fn": 8
+          }
+        ]
+      },
+      "status": "living select-stop aggregates; per-class not a paper table"
     }
   },
   "historical_micro_f1_across_cells": {
