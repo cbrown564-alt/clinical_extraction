@@ -380,14 +380,18 @@ def _comparison_summary(
         ),
         "format_only_check": {
             "repair_mode": GAN_REPAIR_MODE_FOR_RUNG["llm_encode"],
+            "select_repair_mode": GAN_REPAIR_MODE_FOR_RUNG["llm_select"],
             "selected_event_id_changes": event_id_changes,
             "predicted_kind_changes": kind_changes,
             "purist_rescues": format_rescues,
             "purist_harms": format_harms,
             "used_as_rung_3": event_id_changes == 0,
             "note": (
-                "Cell 3 is encode (selected-evidence derivation). It stays encode-only "
-                "only when selected_event_ids never change."
+                "Living cell 3 is codebook encode then rule select "
+                "(gan_rules_encode, llm_select_after_codebook). "
+                "selected_event_id_changes still records whether encode "
+                "kept the extract pick. Historical llm_encode is the "
+                "five-cell encode ablation, not this roster."
             ),
         },
         "generated_on": datetime.now(UTC).date().isoformat(),

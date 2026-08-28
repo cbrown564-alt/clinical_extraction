@@ -63,7 +63,9 @@ codebook rungs (`paper_experiments/gan/rungs/{slug}/`), not
   `exect_llm_only` for that table.
 - Cite Gan roster totals from promoted
   `paper_experiments/gan/rungs/{slug}/test450/` replayed on
-  `gan_llm_extract`. Do not substitute `gan_llm_extract_raw`.
+  `gan_llm_extract` with living cell-3 modes `gan_rules_encode` then
+  `llm_select_after_codebook`. Do not substitute
+  `gan_llm_extract_raw` or historical `llm_encode` / `llm_select`.
 - Living DeepSeek is thinking enabled at `reasoning_effort=low`,
   the same living effort as Gemini, Grok, and Luna. Thinking-off
   is a DeepSeek-only toggle, not the Gemini medium/high ablation.

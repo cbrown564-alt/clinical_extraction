@@ -18,29 +18,23 @@ from clinical_extraction.paper.cells import (
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_gan_dev750_rungs_use_selected_evidence_as_encode() -> None:
+def test_gan_dev750_rungs_use_codebook_encode_as_cell_3() -> None:
     payload = json.loads(
         (
             ROOT / "paper_experiments/gan/rungs/grok46/dev750/comparison.json"
         ).read_text(encoding="utf-8")
     )
     check = payload["format_only_check"]
-    assert check["selected_event_id_changes"] == 0
-    assert check["used_as_rung_3"] is True
-    assert normalize_repair_mode(check["repair_mode"]) == "llm_encode"
+    assert normalize_repair_mode(check["repair_mode"]) == "gan_rules_encode"
+    assert check["select_repair_mode"] == "llm_select_after_codebook"
     rungs = normalize_rungs_payload(payload["rungs"])
     assert rungs["llm_extract"]["purist_correct"] == 585
-    assert rungs["llm_encode"]["purist_correct"] == 620
-    assert rungs["llm_select"]["purist_correct"] == 663
+    assert rungs["llm_encode"]["purist_correct"] == 611
+    assert rungs["llm_select"]["purist_correct"] == 657
     assert rungs["rules_only"]["purist_correct"] == 669
     assert payload["shared_raw_output"] == "gan_llm_extract"
     assert payload["claim_boundary"].startswith("Gan development")
-    # Sealed file may still emit the old string.
-    assert check["repair_mode"] in {
-        "llm_encode",
-        "encode",
-        "selected_evidence_derivation",
-    }
+    assert "codebook" in check["note"]
     assert normalize_cell_id("llm_format") == "llm_encode"
 
 

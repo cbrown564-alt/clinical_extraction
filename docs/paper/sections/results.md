@@ -199,53 +199,53 @@ now 0; temperature 1 is the earlier cited Grok cell. Luna remains at
 
 | Model | Split | Stop | Temp. 0 | Temp. 1 | Letters (1 − 0) |
 | --- | --- | --- | ---: | ---: | ---: |
-| Gemini 3.7 Flash | `test450` | Select | 0.831 (374) | 0.807 (363) | −11 |
+| Gemini 3.7 Flash | `test450` | Select | 0.831 (374) | 0.824 (371) | −3 |
 | Gemini 3.7 Flash | `dev750` | Select | 0.865 (649) | 0.867 (650) | +1 |
-| Grok 4.6 | `test450` | Select | 0.816 (367) | 0.842 (379) | +12 |
-| Grok 4.6 | `dev750` | Select | 0.884 (663) | 0.867 (650) | −13 |
+| Grok 4.6 | `test450` | Select | 0.838 (377) | 0.842 (379) | +2 |
 
-**Table 3.** Gan Purist temperature ablation. Gemini temperature 0
-select is the cited five-cell row, not the later six-model rung.
-Sources:
+**Table 3.** Gan Purist temperature ablation on the living cell-3
+stack (`gan_llm_extract`, then `gan_rules_encode`, then
+`llm_select_after_codebook`). Gemini temperature 0 select is the
+living codebook replay (374/450). Table 1 still cites 373/450.
+Grok `dev750` temperature 1 is omitted: those codebook extract raws
+were overwritten. Sources:
 [Grok temperature 0](../../research/gan2026/gan_grok46_temperature_0_2026-08-28.md),
 [Gemini temperature 1](../../research/gan2026/gan_gemini37flash_temperature_1_2026-08-28.md).
 
-The signs reverse by model and split. Holdout select prefers Gemini
-at 0 and Grok at 1; development is flat for Gemini and prefers Grok
-at 0. The holdout band is 11–12 letters, next to thinking’s 8. The
-five-cell stage allocation on the same Gemini holdout is 0.71 rules
-versus 0.83 cell 3 (54 letters). Temperature is relatively
-inconsequential beside that three-stage pipeline. Temperature 0 is
-the appropriate living default for every model that accepts it. Luna
-was not measured at 0; the mixed Gemini and Grok results do not
-predict that Luna would rise or fall if the same setting were
-allowed.
+The signs reverse by model. Holdout select prefers Gemini at 0 and
+Grok at 1 by two or three letters. Development is flat for Gemini.
+The holdout band is smaller than thinking’s 8. The five-cell stage
+allocation on the same Gemini holdout is 0.71 rules versus 0.83
+cell 3 (54 letters). Temperature is relatively inconsequential
+beside that three-stage pipeline. Temperature 0 is the appropriate
+living default for every model that accepts it. Luna was not
+measured at 0; the mixed Gemini and Grok results do not predict
+that Luna would rise or fall if the same setting were allowed.
 
 ## F. Rules reduced, but did not remove, differences between models
 
 The six-model comparison holds the same cell-3 stack and changes only
 the candidate-recognition model: `gan_llm_extract` (model already
-encodes), then `gan_rules_encode` and rule select. The promoted
-roster on locked `test450` is:
+encodes), then `gan_rules_encode` and `llm_select_after_codebook`.
+The promoted roster on locked `test450` is:
 
 | Model | Recognise | Encode | Select |
 | --- | ---: | ---: | ---: |
-| Gemini 3.7 Flash | 0.789 (355) | 0.769 (346) | 0.804 (362) |
-| Grok 4.6 | 0.789 (355) | 0.789 (355) | **0.816** (367) |
-| GPT-5.6 Luna | 0.693 (312) | 0.733 (330) | 0.780 (351) |
-| DeepSeek V4 Flash | 0.742 (334) | 0.751 (338) | 0.789 (355) |
-| Qwen 3.8 27B | 0.700 (315) | 0.742 (334) | 0.762 (343) |
-| Gemma 4 26B | 0.664 (299) | 0.696 (313) | 0.727 (327) |
+| Gemini 3.7 Flash | 0.789 (355) | 0.800 (360) | 0.831 (374) |
+| Grok 4.6 | 0.789 (355) | 0.811 (365) | **0.838** (377) |
+| GPT-5.6 Luna | 0.693 (312) | 0.738 (332) | 0.778 (350) |
+| DeepSeek V4 Flash | 0.742 (334) | 0.758 (341) | 0.796 (358) |
+| Qwen 3.8 27B | 0.700 (315) | 0.731 (329) | 0.753 (339) |
+| Gemma 4 26B | 0.664 (299) | 0.682 (307) | 0.718 (323) |
 
 **Table 4.** Locked aggregate-only Gan cell-3 roster from
 `paper_experiments/gan/rungs/{slug}/test450/` on promoted
-`gan_llm_extract`. Encode here is the historical selected-evidence
-replay (`llm_encode`), not the cited codebook encode. Grok living
-temperature is 0. Gemini’s cited five-cell select stop remains
-**0.83** (373/450) in Table 1; that grid is Gemini-only and is not
-this six-row table. The 362/450 Gemini rung is the same historical
-encode ablation recorded on the five-cell cell (346 encode / 362
-select).
+`gan_llm_extract`. Encode is `gan_rules_encode`; select is
+`llm_select_after_codebook`. Grok living temperature is 0. Gemini
+select here is the living codebook replay (374/450). Table 1 cites
+the curated five-cell total **0.83** (373/450); do not retune from
+the one-count gap. Historical selected-evidence encode (346 / 362
+on Gemini) remains the five-cell encode ablation, not this table.
 
 Later rules raised every model over its recognise stop and helped
 Luna most, but did not bring Luna or the local models level with Grok.

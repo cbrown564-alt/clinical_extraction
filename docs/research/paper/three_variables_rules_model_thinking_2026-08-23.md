@@ -1,7 +1,7 @@
 # Three variables: stage ownership, model, and thinking
 
 Date: 2026-08-23
-Revised: 2026-08-28 (Gan six-model roster; temperature 0/1 ablation)
+Revised: 2026-08-28 (Gan cell-3 codebook roster replay)
 Status: working results draft; not a cited table owner
 Owners: [methods](../../paper/methods.md),
 [claims](../../paper/claims.md),
@@ -110,29 +110,26 @@ Same Gan cell-3 recognise, then codebook rule encode and rule select.
 Gemini living is temperature 0; the temperature-1 row is a non-promoted
 ablation. Grok living is now temperature 0; the temperature-1 row is
 the earlier cited Grok cell. Luna stays at 1 because the provider
-rejects 0. Select is a no-call `llm_select` replay.
+rejects 0. Select is a no-call `llm_select_after_codebook` replay.
 
 **Gan Purist, temperature 0 versus 1**
 
 | Model | Split | Stop | Temp. 0 | Temp. 1 | Δ (1 − 0) |
 | --- | --- | --- | ---: | ---: | ---: |
 | Gemini 3.7 Flash | `test450` | Recognise | 0.789 (355) | 0.778 (350) | −5 |
-| Gemini 3.7 Flash | `test450` | Select | 0.831 (374) | 0.807 (363) | −11 |
+| Gemini 3.7 Flash | `test450` | Select | 0.831 (374) | 0.824 (371) | −3 |
 | Gemini 3.7 Flash | `dev750` | Recognise | 0.781 (586) | 0.788 (591) | +5 |
 | Gemini 3.7 Flash | `dev750` | Select | 0.865 (649) | 0.867 (650) | +1 |
 | Grok 4.6 | `test450` | Recognise | 0.789 (355) | 0.784 (353) | −2 |
-| Grok 4.6 | `test450` | Select | 0.816 (367) | 0.842 (379) | +12 |
-| Grok 4.6 | `dev750` | Recognise | 0.780 (585) | 0.784 (588) | +3 |
-| Grok 4.6 | `dev750` | Select | 0.884 (663) | 0.867 (650) | −13 |
+| Grok 4.6 | `test450` | Select | 0.838 (377) | 0.842 (379) | +2 |
 
-Gemini select at temperature 0 is the cited five-cell / thinking
-row (374/450), not the later six-model rung replay (362/450). Grok
-temperature 0 is the living promoted cell.
+Gemini select at temperature 0 is the living codebook replay
+(374/450). Table 1 still cites 373/450. Grok `dev750` temperature 1
+is omitted: those codebook extract raws were overwritten.
 
-The signs flip by model and split. Holdout select prefers Gemini at
-0 and Grok at 1; development select is flat for Gemini and prefers
-Grok at 0. The holdout select band is 11–12 letters, next to
-thinking’s 8. Stage ownership on the same Gemini holdout is 0.71
+The signs flip by model. Holdout select prefers Gemini at 0 and Grok
+at 1 by two or three letters. Development select is flat for Gemini.
+The holdout select band is smaller than thinking’s 8. Stage ownership on the same Gemini holdout is 0.71
 rules versus 0.83 cell 3 (54 letters). Temperature is mixed and
 small beside that three-stage allocation. Living temperature 0 for
 every model that accepts it is the right default. Luna was not run
@@ -142,9 +139,9 @@ would rise or fall if the provider allowed it.
 ## 3. Model (cell 3)
 
 Gan recognise is `gan_llm_extract`. Encode and select are codebook
-rule replays on that raw (`llm_encode` / `llm_select`). ExECT
-recognise is flatten; encode is same-fact format; select is rule
-select.
+rule replays on that raw (`gan_rules_encode` /
+`llm_select_after_codebook`). ExECT recognise is flatten; encode is
+same-fact format; select is rule select.
 
 **Gan `test450` (Purist).** Sources:
 `paper_experiments/gan/rungs/{slug}/test450/comparison.json` on
@@ -152,15 +149,15 @@ promoted `gan_llm_extract`. Grok temperature is 0.
 
 | Model | Recognise | Encode | Select |
 | --- | ---: | ---: | ---: |
-| Gemini 3.7 Flash | **0.789** (355) | 0.769 (346) | 0.804 (362) |
-| Grok 4.6 | **0.789** (355) | **0.789** (355) | **0.816** (367) |
-| GPT-5.6 Luna | 0.693 (312) | 0.733 (330) | 0.780 (351) |
-| DeepSeek V4 Flash | 0.742 (334) | 0.751 (338) | 0.789 (355) |
-| Qwen 3.8 27B | 0.700 (315) | 0.742 (334) | 0.762 (343) |
-| Gemma 4 26B | 0.664 (299) | 0.696 (313) | 0.727 (327) |
+| Gemini 3.7 Flash | **0.789** (355) | 0.800 (360) | 0.831 (374) |
+| Grok 4.6 | **0.789** (355) | **0.811** (365) | **0.838** (377) |
+| GPT-5.6 Luna | 0.693 (312) | 0.738 (332) | 0.778 (350) |
+| DeepSeek V4 Flash | 0.742 (334) | 0.758 (341) | 0.796 (358) |
+| Qwen 3.8 27B | 0.700 (315) | 0.731 (329) | 0.753 (339) |
+| Gemma 4 26B | 0.664 (299) | 0.682 (307) | 0.718 (323) |
 
-Gemini’s cited five-cell select remains 0.83 (373/450). That is the
-Gemini-only grid, not this roster.
+Gemini’s cited five-cell select remains 0.83 (373/450). The living
+codebook roster replay is 374/450 on the same stack.
 
 **ExECT `test60` (4-family inventory micro F1).** Cited cell-3 roster:
 `exect_llm_extract` then rule encode / select. Recognise is the raw
@@ -185,18 +182,18 @@ secondary surface where an older draft still needs it.
 
 | Model | Recognise | Encode | Select |
 | --- | ---: | ---: | ---: |
-| Gemini 3.7 Flash | 0.781 (586) | 0.805 (604) | 0.864 (648) |
-| Grok 4.6 | 0.780 (585) | **0.827** (620) | **0.884** (663) |
-| GPT-5.6 Luna | 0.717 (538) | 0.792 (594) | 0.841 (631) |
-| DeepSeek V4 Flash | 0.727 (545) | 0.787 (590) | 0.833 (625) |
-| Qwen 3.8 27B | 0.673 (505) | 0.755 (566) | 0.816 (612) |
-| Gemma 4 26B | 0.668 (501) | 0.755 (566) | 0.812 (609) |
+| Gemini 3.7 Flash | 0.781 (586) | 0.811 (608) | 0.865 (649) |
+| Grok 4.6 | 0.780 (585) | **0.815** (611) | **0.876** (657) |
+| GPT-5.6 Luna | 0.717 (538) | 0.765 (574) | 0.819 (614) |
+| DeepSeek V4 Flash | 0.727 (545) | 0.773 (580) | 0.824 (618) |
+| Qwen 3.8 27B | 0.673 (505) | 0.708 (531) | 0.765 (574) |
+| Gemma 4 26B | 0.668 (501) | 0.699 (524) | 0.752 (564) |
 
 Luna is the coarse miss on Gan holdout recognise. After select on
-`test450`, Grok leads (**0.816**), then Gemini **0.804**, DeepSeek
-**0.789**, Luna **0.780**, Qwen **0.762**, and Gemma **0.727**. Rules
+`test450`, Grok leads (**0.838**), then Gemini **0.831**, DeepSeek
+**0.796**, Luna **0.778**, Qwen **0.753**, and Gemma **0.718**. Rules
 raise every model over its recognise stop and help Luna most
-(+39 letters, +0.087) without bringing Luna or the local models level
+(+38 letters) without bringing Luna or the local models level
 with Grok. On the cited ExECT inventory roster, Gemini leads after
 select (**0.8674**); Grok **0.8146**, DeepSeek **0.8099**, and Luna
 **0.7983** form the next band; Qwen and Gemma trail (**0.7644** /

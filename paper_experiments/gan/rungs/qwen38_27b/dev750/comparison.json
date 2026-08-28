@@ -1,11 +1,12 @@
 {
   "claim_boundary": "Gan development replay. Not holdout.",
   "format_only_check": {
-    "note": "Cell 3 is encode (selected-evidence derivation). It stays encode-only only when selected_event_ids never change.",
-    "predicted_kind_changes": 51,
-    "purist_harms": 3,
-    "purist_rescues": 64,
-    "repair_mode": "llm_encode",
+    "note": "Living cell 3 is codebook encode then rule select (gan_rules_encode, llm_select_after_codebook). selected_event_id_changes still records whether encode kept the extract pick. Historical llm_encode is the five-cell encode ablation, not this roster.",
+    "predicted_kind_changes": 21,
+    "purist_harms": 0,
+    "purist_rescues": 26,
+    "repair_mode": "gan_rules_encode",
+    "select_repair_mode": "llm_select_after_codebook",
     "selected_event_id_changes": 0,
     "used_as_rung_3": true
   },
@@ -15,22 +16,22 @@
   "row_policy": "development_review_permitted",
   "rungs": {
     "llm_encode": {
-      "micro_f1": 0.7547,
-      "pragmatic_accuracy": 0.8013,
-      "pragmatic_correct": 601,
-      "pragmatic_micro_f1": 0.8013,
+      "micro_f1": 0.708,
+      "pragmatic_accuracy": 0.7667,
+      "pragmatic_correct": 575,
+      "pragmatic_micro_f1": 0.7667,
       "predicted_candidate_count": 1687,
       "predicted_kinds": {
-        "frequency": 382,
-        "no_reference": 29,
+        "frequency": 362,
+        "no_reference": 28,
         "seizure_free": 157,
-        "unknown": 135,
-        "unresolved_multiple": 40,
-        "unscorable": 7
+        "unknown": 147,
+        "unresolved_multiple": 38,
+        "unscorable": 18
       },
-      "purist_accuracy": 0.7547,
-      "purist_correct": 566,
-      "scorable": 743
+      "purist_accuracy": 0.708,
+      "purist_correct": 531,
+      "scorable": 732
     },
     "llm_extract": {
       "micro_f1": 0.6733,
@@ -51,22 +52,22 @@
       "scorable": 726
     },
     "llm_select": {
-      "micro_f1": 0.816,
-      "pragmatic_accuracy": 0.8587,
-      "pragmatic_correct": 644,
-      "pragmatic_micro_f1": 0.8587,
+      "micro_f1": 0.7653,
+      "pragmatic_accuracy": 0.82,
+      "pragmatic_correct": 615,
+      "pragmatic_micro_f1": 0.82,
       "predicted_candidate_count": 1687,
       "predicted_kinds": {
-        "frequency": 420,
-        "no_reference": 28,
-        "seizure_free": 143,
-        "unknown": 111,
-        "unresolved_multiple": 41,
-        "unscorable": 7
+        "frequency": 396,
+        "no_reference": 27,
+        "seizure_free": 146,
+        "unknown": 125,
+        "unresolved_multiple": 38,
+        "unscorable": 18
       },
-      "purist_accuracy": 0.816,
-      "purist_correct": 612,
-      "scorable": 743
+      "purist_accuracy": 0.7653,
+      "purist_correct": 574,
+      "scorable": 732
     },
     "rules_only": {
       "micro_f1": 0.892,

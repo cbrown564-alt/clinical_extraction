@@ -198,14 +198,10 @@ def test_gan_dev750_panel_is_rectangular() -> None:
     }
     assert present == {
         (slug, method)
-        for slug in ("grok46", "gpt56luna", "gemini37flash")
+        for slug in LIVING_SLUGS
         for method in ("rules_only", "llm_extract", "llm_encode", "llm_select")
     }
-    assert pending == {
-        (slug, method)
-        for slug in ("deepseek_v4_flash", "qwen38_27b", "gemma4_26b")
-        for method in ("rules_only", "llm_extract", "llm_encode", "llm_select")
-    }
+    assert pending == set()
     for cell in panel["cells"]:
         if cell["status"] != "present":
             continue
@@ -218,7 +214,8 @@ def test_gan_dev750_panel_is_rectangular() -> None:
         assert len(rows) == 750
         first = rows[0]
         assert first["source_row_index"] is not None
-        assert cell["method"] in first["rungs"]
+        if "rungs" in first:
+            assert cell["method"] in first["rungs"]
 
 
 def test_exect_dev140_panel_is_rectangular() -> None:

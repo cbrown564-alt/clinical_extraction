@@ -1,11 +1,12 @@
 {
   "claim_boundary": "Gan development replay. Not holdout.",
   "format_only_check": {
-    "note": "Cell 3 is encode (selected-evidence derivation). It stays encode-only only when selected_event_ids never change.",
-    "predicted_kind_changes": 22,
-    "purist_harms": 5,
-    "purist_rescues": 23,
-    "repair_mode": "llm_encode",
+    "note": "Living cell 3 is codebook encode then rule select (gan_rules_encode, llm_select_after_codebook). selected_event_id_changes still records whether encode kept the extract pick. Historical llm_encode is the five-cell encode ablation, not this roster.",
+    "predicted_kind_changes": 18,
+    "purist_harms": 0,
+    "purist_rescues": 22,
+    "repair_mode": "gan_rules_encode",
+    "select_repair_mode": "llm_select_after_codebook",
     "selected_event_id_changes": 0,
     "used_as_rung_3": true
   },
@@ -15,7 +16,7 @@
   "row_policy": "development_review_permitted",
   "rungs": {
     "llm_encode": {
-      "micro_f1": 0.8053,
+      "micro_f1": 0.8107,
       "pragmatic_accuracy": 0.8427,
       "pragmatic_correct": 632,
       "pragmatic_micro_f1": 0.8427,
@@ -23,12 +24,12 @@
       "predicted_kinds": {
         "frequency": 411,
         "no_reference": 21,
-        "seizure_free": 137,
-        "unknown": 145,
-        "unresolved_multiple": 36
+        "seizure_free": 135,
+        "unknown": 149,
+        "unresolved_multiple": 34
       },
-      "purist_accuracy": 0.8053,
-      "purist_correct": 604,
+      "purist_accuracy": 0.8107,
+      "purist_correct": 608,
       "scorable": 750
     },
     "llm_extract": {
@@ -49,20 +50,20 @@
       "scorable": 750
     },
     "llm_select": {
-      "micro_f1": 0.864,
+      "micro_f1": 0.8653,
       "pragmatic_accuracy": 0.8867,
       "pragmatic_correct": 665,
       "pragmatic_micro_f1": 0.8867,
       "predicted_candidate_count": 1619,
       "predicted_kinds": {
-        "frequency": 438,
+        "frequency": 437,
         "no_reference": 21,
         "seizure_free": 124,
-        "unknown": 131,
-        "unresolved_multiple": 36
+        "unknown": 134,
+        "unresolved_multiple": 34
       },
-      "purist_accuracy": 0.864,
-      "purist_correct": 648,
+      "purist_accuracy": 0.8653,
+      "purist_correct": 649,
       "scorable": 750
     },
     "rules_only": {

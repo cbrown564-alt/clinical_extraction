@@ -276,9 +276,10 @@ def rebuild_dev750_panel() -> dict[str, Any]:
         "cells": cells,
         "claim_boundary": (
             "Gan cell-3 development panel: rules, then extract / encode / "
-            "select on living gan_llm_extract. Not holdout. gan_llm_only "
-            "is not a panel column. Source-near rungs remain a fallback "
-            "until a model has a living extract envelope."
+            "select on living gan_llm_extract with gan_rules_encode and "
+            "llm_select_after_codebook. Not holdout. gan_llm_only is not "
+            "a panel column. Source-near rungs remain a fallback until a "
+            "model has a living extract envelope."
         ),
     }
     PANEL_PATH.parent.mkdir(parents=True, exist_ok=True)

@@ -58,7 +58,9 @@ The runner may read locked notes only to make the frozen calls.
 
 Do not write these runs into the living Gemini work cell or promote
 them to `paper_experiments/`. Do not start later-stage LLM encode or
-select. Select is a no-call `llm_select` replay of the new raws.
+select. Living cell-3 select is a no-call `gan_rules_encode` then
+`llm_select_after_codebook` replay of the new raws. A first-pass
+historical `llm_select` replay is not the cell-3 score.
 Do not retune from holdout rows.
 
 ## Stop rule

@@ -1,11 +1,12 @@
 {
   "claim_boundary": "Gan development replay. Not holdout.",
   "format_only_check": {
-    "note": "Cell 3 is encode (selected-evidence derivation). It stays encode-only only when selected_event_ids never change.",
-    "predicted_kind_changes": 24,
-    "purist_harms": 5,
-    "purist_rescues": 40,
-    "repair_mode": "llm_encode",
+    "note": "Living cell 3 is codebook encode then rule select (gan_rules_encode, llm_select_after_codebook). selected_event_id_changes still records whether encode kept the extract pick. Historical llm_encode is the five-cell encode ablation, not this roster.",
+    "predicted_kind_changes": 14,
+    "purist_harms": 1,
+    "purist_rescues": 27,
+    "repair_mode": "gan_rules_encode",
+    "select_repair_mode": "llm_select_after_codebook",
     "selected_event_id_changes": 0,
     "used_as_rung_3": true
   },
@@ -15,20 +16,20 @@
   "row_policy": "development_review_permitted",
   "rungs": {
     "llm_encode": {
-      "micro_f1": 0.8267,
-      "pragmatic_accuracy": 0.8667,
-      "pragmatic_correct": 650,
-      "pragmatic_micro_f1": 0.8667,
+      "micro_f1": 0.8147,
+      "pragmatic_accuracy": 0.86,
+      "pragmatic_correct": 645,
+      "pragmatic_micro_f1": 0.86,
       "predicted_candidate_count": 1813,
       "predicted_kinds": {
-        "frequency": 412,
-        "no_reference": 22,
-        "seizure_free": 146,
-        "unknown": 127,
+        "frequency": 409,
+        "no_reference": 23,
+        "seizure_free": 144,
+        "unknown": 131,
         "unresolved_multiple": 43
       },
-      "purist_accuracy": 0.8267,
-      "purist_correct": 620,
+      "purist_accuracy": 0.8147,
+      "purist_correct": 611,
       "scorable": 750
     },
     "llm_extract": {
@@ -49,20 +50,20 @@
       "scorable": 750
     },
     "llm_select": {
-      "micro_f1": 0.884,
-      "pragmatic_accuracy": 0.9027,
-      "pragmatic_correct": 677,
-      "pragmatic_micro_f1": 0.9027,
+      "micro_f1": 0.876,
+      "pragmatic_accuracy": 0.8973,
+      "pragmatic_correct": 673,
+      "pragmatic_micro_f1": 0.8973,
       "predicted_candidate_count": 1813,
       "predicted_kinds": {
-        "frequency": 439,
+        "frequency": 435,
         "no_reference": 22,
-        "seizure_free": 134,
-        "unknown": 111,
+        "seizure_free": 135,
+        "unknown": 114,
         "unresolved_multiple": 44
       },
-      "purist_accuracy": 0.884,
-      "purist_correct": 663,
+      "purist_accuracy": 0.876,
+      "purist_correct": 657,
       "scorable": 750
     },
     "rules_only": {
