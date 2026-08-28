@@ -109,7 +109,7 @@ export function useArchitectUrlSync() {
       setSelectedRunId(resolved, family);
     }
     if (rowParam) setSourceRowIndex(parseInt(rowParam, 10));
-    if (stageParam) setActiveStage(stageParam);
+    if (stageParam && stageParam !== "repair") setActiveStage(stageParam);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

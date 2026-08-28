@@ -3,6 +3,7 @@
  */
 
 import { adaptTrace, isReplaySupported } from "../index";
+import { formatMonthlyFrequency, monthlyFrequencyFromLabel } from "../utils";
 import type { FullRecordResponse, PipelineTrace } from "../../types";
 
 const mockRecord: FullRecordResponse = {
@@ -299,5 +300,17 @@ describe("adaptTrace", () => {
       beforeValue: "{'final_label': 'up to 4 per day'}",
     });
     expect(trace.repair?.afterValue).toContain('"final_label": "up to 4 per day"');
+  });
+});
+
+describe("monthlyFrequencyFromLabel", () => {
+  it("keeps a 6-month window instead of collapsing it to 1 per month", () => {
+    expect(monthlyFrequencyFromLabel("3 per 6 month")).toBeCloseTo(0.5069, 3);
+    expect(formatMonthlyFrequency(monthlyFrequencyFromLabel("3 per 6 month")!)).toBe("0.5");
+  });
+
+  it("uses the Gan yearly-midpoint conversion for week labels", () => {
+    expect(monthlyFrequencyFromLabel("multiple per week")).toBeCloseTo(8.6905, 3);
+    expect(monthlyFrequencyFromLabel("1 per 2 to 3 week")).toBeCloseTo(1.8105, 3);
   });
 });

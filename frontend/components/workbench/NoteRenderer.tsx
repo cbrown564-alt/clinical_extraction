@@ -102,7 +102,7 @@ function getSpansForStage(
           ruleId: c.rule_id,
           ruleGroup: c.rule_group,
           portability: c.portability,
-          tooltip: `Normalised: ${c.raw_value ?? c.evidence}`,
+          tooltip: `Encoded: ${c.raw_value ?? c.evidence}`,
         });
       }
     }
