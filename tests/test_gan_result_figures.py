@@ -1,0 +1,136 @@
+"""Figure loaders read aggregate comparison.json only."""
+
+from __future__ import annotations
+
+import pytest
+
+from clinical_extraction.paper.gan_result_figures import (
+    gemini_cells_1_3_5,
+    gemini_cells_1_3_5_barbell,
+    load_living_gemini_cells,
+    load_living_gemini_dev_vs_test,
+    load_living_six_model_cell3,
+    six_model_cell3,
+    wrap_category_label,
+)
+
+
+def test_wrap_category_label_keeps_tokens_intact() -> None:
+    assert wrap_category_label("Gemini 3.7 Flash", width=10) == "Gemini 3.7\nFlash"
+    assert wrap_category_label("DeepSeek V4 Flash", width=10) == "DeepSeek\nV4 Flash"
+    assert wrap_category_label("Grok 4.6", width=10) == "Grok 4.6"
+
+
+def test_gemini_cells_use_five_cell_ablations_and_cited_select() -> None:
+    payload = {
+        "n": 450,
+        "cells": {
+            "rules": {"select": 321, "ablation": {"extract": 321, "encode": 321}},
+            "llm_extract_then_rules": {
+                "select": 373,
+                "ablation": {"extract": 354, "encode": 359},
+            },
+            "llm": {"select": 357, "ablation": {"extract": 354, "encode": 354}},
+        },
+    }
+
+    chart = gemini_cells_1_3_5(payload)
+
+    assert chart.n == 450
+    assert chart.categories == ["Rules", "Both", "LLM"]
+    assert chart.series["Recognise"] == [321 / 450, 354 / 450, 354 / 450]
+    assert chart.series["Encode"] == [321 / 450, 359 / 450, 354 / 450]
+    assert chart.series["Select"] == [321 / 450, 373 / 450, 357 / 450]
+
+
+def test_six_model_cell3_uses_codebook_rungs_ordered_by_select() -> None:
+    rungs = {
+        "gemini37flash": {
+            "rungs": {
+                "llm_extract": {"purist_correct": 355},
+                "llm_encode": {"purist_correct": 360},
+                "llm_select": {"purist_correct": 374},
+            },
+            "format_only_check": {
+                "repair_mode": "gan_rules_encode",
+                "select_repair_mode": "llm_select_after_codebook",
+            },
+            "row_count": 450,
+        },
+        "grok46": {
+            "rungs": {
+                "llm_extract": {"purist_correct": 355},
+                "llm_encode": {"purist_correct": 365},
+                "llm_select": {"purist_correct": 377},
+            },
+            "format_only_check": {
+                "repair_mode": "gan_rules_encode",
+                "select_repair_mode": "llm_select_after_codebook",
+            },
+            "row_count": 450,
+        },
+        "gpt56luna": {
+            "rungs": {
+                "llm_extract": {"purist_correct": 312},
+                "llm_encode": {"purist_correct": 332},
+                "llm_select": {"purist_correct": 350},
+            },
+            "format_only_check": {
+                "repair_mode": "gan_rules_encode",
+                "select_repair_mode": "llm_select_after_codebook",
+            },
+            "row_count": 450,
+        },
+    }
+
+    chart = six_model_cell3(rungs)
+
+    assert chart.categories == ["Grok 4.6", "Gemini 3.7 Flash", "GPT-5.6 Luna"]
+    assert chart.series["Select"] == [377 / 450, 374 / 450, 350 / 450]
+    assert chart.series["Recognise"] == [355 / 450, 355 / 450, 312 / 450]
+
+
+def test_six_model_cell3_rejects_historical_encode() -> None:
+    with pytest.raises(ValueError, match="gan_rules_encode"):
+        six_model_cell3(
+            {
+                "grok46": {
+                    "row_count": 450,
+                    "format_only_check": {
+                        "repair_mode": "llm_encode",
+                        "select_repair_mode": "llm_select_after_codebook",
+                    },
+                    "rungs": {
+                        "llm_extract": {"purist_correct": 355},
+                        "llm_encode": {"purist_correct": 365},
+                        "llm_select": {"purist_correct": 377},
+                    },
+                }
+            }
+        )
+
+
+def test_living_figure_sources_match_sealed_aggregates() -> None:
+    cells = load_living_gemini_cells()
+    models = load_living_six_model_cell3()
+    assert cells.categories == ["Rules", "Both", "LLM"]
+    assert cells.series["Select"] == [321 / 450, 373 / 450, 357 / 450]
+    assert models.categories[0] == "Grok 4.6"
+    assert models.series["Select"][0] == 377 / 450
+
+
+def test_gemini_barbell_uses_select_stops_on_both_splits() -> None:
+    chart = gemini_cells_1_3_5_barbell(
+        development={"n": 750, "select": {"rules": 669, "hybrid": 649, "llm": 590}},
+        holdout={"n": 450, "select": {"rules": 321, "hybrid": 373, "llm": 357}},
+    )
+
+    assert chart.categories == ["Rules only", "LLM + rules", "LLM only"]
+    assert chart.development == [669 / 750, 649 / 750, 590 / 750]
+    assert chart.holdout == [321 / 450, 373 / 450, 357 / 450]
+
+
+def test_living_barbell_matches_sealed_cell_selects() -> None:
+    chart = load_living_gemini_dev_vs_test()
+    assert chart.development == [669 / 750, 649 / 750, 590 / 750]
+    assert chart.holdout == [321 / 450, 373 / 450, 357 / 450]
