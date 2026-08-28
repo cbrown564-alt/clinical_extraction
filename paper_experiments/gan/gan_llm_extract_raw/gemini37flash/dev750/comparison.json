@@ -1,8 +1,10 @@
 {
   "cache": false,
+  "cell": "ablation",
   "claim_boundary": "Gan development cell. Not holdout.",
-  "finished_utc": "2026-08-18T01:22:38.730185+00:00",
+  "finished_utc": "2026-08-27T17:56:41.906785+00:00",
   "generated_on": "2026-08-21",
+  "headline": "select",
   "incorrect_source_row_indices": [
     743,
     1165,
@@ -95,22 +97,53 @@
     16867,
     17135
   ],
-  "live": true,
+  "live": false,
+  "living_schema_version": "paper.living_cell.v1",
   "max_tokens": 5000,
   "method": "gan_llm_extract_raw",
   "model": "gemini/gemini-3.7-flash",
-  "model_calls": 750,
+  "model_calls": 0,
   "model_label": "Gemini 3.7 Flash",
   "model_slug": "gemini37flash",
   "prompt_version": "gan_llm_extract_raw",
   "repair_mode": "llm_select",
+  "replay_mode": "no_call",
   "row_count": 750,
   "row_policy": "development_review_permitted",
   "schema_version": "paper.gan_llm_extract_raw.v1",
+  "score": {
+    "n": 750,
+    "purist_accuracy": 0.88,
+    "purist_correct": 660
+  },
+  "scorer": "purist",
   "select_bound": "ledger_only",
   "split": "dev750",
   "split_machine": "validation",
   "split_manifest": "gan2026_split_v1",
+  "stages": {
+    "encode": {
+      "n": 750,
+      "pragmatic_accuracy": 0.8493,
+      "pragmatic_correct": 637,
+      "purist_accuracy": 0.8107,
+      "purist_correct": 608
+    },
+    "extract": {
+      "n": 750,
+      "pragmatic_accuracy": 0.62,
+      "pragmatic_correct": 465,
+      "purist_accuracy": 0.592,
+      "purist_correct": 444
+    },
+    "select": {
+      "n": 750,
+      "pragmatic_accuracy": 0.9027,
+      "pragmatic_correct": 677,
+      "purist_accuracy": 0.88,
+      "purist_correct": 660
+    }
+  },
   "started_utc": "2026-08-18T00:19:48.819459+00:00",
   "summary": {
     "call_failures": 0,
@@ -387,12 +420,14 @@
     "parse_or_validation_failures": 0,
     "pragmatic_accuracy": 0.9027,
     "pragmatic_correct": 677,
+    "predicted_candidate_count": 1707,
     "purist_accuracy": 0.88,
     "purist_correct": 660,
     "repair_notes": 461,
     "reused_raw_outputs": 750,
     "structured_records": 750
   },
+  "task": "gan2026",
   "temperature": 0.0,
   "thinking_type": null
 }

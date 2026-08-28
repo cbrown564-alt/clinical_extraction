@@ -1,7 +1,8 @@
 {
-  "claim_boundary": "Gan aggregate-only test450 five-cell grid. Headline is the select stop. Extract and encode counts are prior-stage ablations. Do not inspect holdout rows.",
+  "claim_boundary": "Gan aggregate-only test450 five-cell grid. Headline is the select stop. Extract and encode counts are prior-stage ablations. Rules counts use living gold_monthly_frequency. Do not inspect holdout rows.",
   "split": "test450",
   "row_policy": "aggregate_only",
+  "gold_epsilon": "living gold_monthly_frequency",
   "model": "gemini/gemini-3.7-flash",
   "scorer": "purist",
   "n": 450,
@@ -13,8 +14,8 @@
       "encode_role": "rules",
       "select_role": "rules",
       "extract_source": "gan_rules",
-      "select": 329,
-      "ablation": {"extract": 329, "encode": 329}
+      "select": 321,
+      "ablation": {"extract": 321, "encode": 321}
     },
     "both_extract_then_rules": {
       "extract_role": "both",

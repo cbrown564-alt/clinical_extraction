@@ -2,64 +2,78 @@
   "claim_boundary": "Gan aggregate-only test450 replay. Do not inspect holdout rows.",
   "format_only_check": {
     "note": "Cell 3 is encode (selected-evidence derivation). It stays encode-only only when selected_event_ids never change.",
-    "predicted_kind_changes": 167,
-    "purist_harms": 3,
-    "purist_rescues": 106,
+    "predicted_kind_changes": 32,
+    "purist_harms": 8,
+    "purist_rescues": 26,
     "repair_mode": "llm_encode",
     "selected_event_id_changes": 0,
     "used_as_rung_3": true
   },
-  "generated_on": "2026-08-21",
+  "generated_on": "2026-08-28",
   "model_slug": "gpt56luna",
   "row_count": 450,
   "row_policy": "aggregate_only",
   "rungs": {
     "llm_encode": {
-      "pragmatic_accuracy": 0.7756,
-      "pragmatic_correct": 349,
+      "micro_f1": 0.7333,
+      "pragmatic_accuracy": 0.7822,
+      "pragmatic_correct": 352,
+      "pragmatic_micro_f1": 0.7822,
+      "predicted_candidate_count": 1102,
       "predicted_kinds": {
-        "frequency": 216,
-        "no_reference": 49,
-        "seizure_free": 84,
-        "unknown": 72,
-        "unresolved_multiple": 29
+        "frequency": 236,
+        "no_reference": 22,
+        "seizure_free": 74,
+        "unknown": 95,
+        "unresolved_multiple": 22,
+        "unscorable": 1
       },
-      "purist_accuracy": 0.7267,
-      "purist_correct": 327,
-      "scorable": 450
+      "purist_accuracy": 0.7333,
+      "purist_correct": 330,
+      "scorable": 449
     },
     "llm_extract": {
-      "pragmatic_accuracy": 0.5356,
-      "pragmatic_correct": 241,
+      "micro_f1": 0.6933,
+      "pragmatic_accuracy": 0.7467,
+      "pragmatic_correct": 336,
+      "pragmatic_micro_f1": 0.7467,
+      "predicted_candidate_count": 1102,
       "predicted_kinds": {
-        "frequency": 104,
-        "no_reference": 16,
-        "seizure_free": 83,
-        "unknown": 60,
-        "unresolved_multiple": 34,
-        "unscorable": 153
+        "frequency": 220,
+        "no_reference": 14,
+        "seizure_free": 72,
+        "unknown": 108,
+        "unresolved_multiple": 18,
+        "unscorable": 18
       },
-      "purist_accuracy": 0.4978,
-      "purist_correct": 224,
-      "scorable": 297
+      "purist_accuracy": 0.6933,
+      "purist_correct": 312,
+      "scorable": 432
     },
     "llm_select": {
-      "pragmatic_accuracy": 0.8533,
-      "pragmatic_correct": 384,
+      "micro_f1": 0.78,
+      "pragmatic_accuracy": 0.8067,
+      "pragmatic_correct": 363,
+      "pragmatic_micro_f1": 0.8067,
+      "predicted_candidate_count": 1102,
       "predicted_kinds": {
-        "frequency": 260,
-        "no_reference": 36,
-        "seizure_free": 63,
-        "unknown": 62,
-        "unresolved_multiple": 29
+        "frequency": 250,
+        "no_reference": 22,
+        "seizure_free": 69,
+        "unknown": 85,
+        "unresolved_multiple": 23,
+        "unscorable": 1
       },
-      "purist_accuracy": 0.8089,
-      "purist_correct": 364,
-      "scorable": 450
+      "purist_accuracy": 0.78,
+      "purist_correct": 351,
+      "scorable": 449
     },
     "rules_only": {
+      "micro_f1": 0.7133,
       "pragmatic_accuracy": 0.7578,
       "pragmatic_correct": 341,
+      "pragmatic_micro_f1": 0.7578,
+      "predicted_candidate_count": 724,
       "predicted_kinds": {
         "frequency": 258,
         "no_reference": 119,
@@ -71,6 +85,6 @@
       "scorable": 450
     }
   },
-  "shared_raw_output": "gan_llm_extract_raw",
+  "shared_raw_output": "gan_llm_extract",
   "split": "test450"
 }

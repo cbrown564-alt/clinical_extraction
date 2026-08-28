@@ -1,0 +1,27 @@
+{
+  "call_mode": "live_2026-08-17",
+  "comparison": "comparison.json",
+  "empty_raw_count": 0,
+  "id_field": "source_row_index",
+  "living_effort": "low",
+  "method": "gan_llm_extract",
+  "micro_f1": 0.7173,
+  "model": "openai/gpt-5.6-luna",
+  "model_slug": "gpt56luna",
+  "n": 750,
+  "program": "gan_llm_extract",
+  "purist_accuracy": 0.7173,
+  "purist_correct": 538,
+  "replay_fields": [
+    "source_row_index",
+    "prompt_version",
+    "raw_output"
+  ],
+  "row_count": 750,
+  "row_policy": "development_review_permitted",
+  "rows": "rows.jsonl",
+  "scored": "scored.jsonl",
+  "source": "experiments/paper/gan_llm_extract/gpt56luna/dev750",
+  "split": "dev750",
+  "split_machine": "validation"
+}
