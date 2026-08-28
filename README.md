@@ -28,16 +28,15 @@ local research checkout and are not cloned.
 
 Held-out test scores for Gemini 3.7 Flash (2 d.p.), the cited model.
 Recognise and encode columns are stage ablations; select is the headline.
-The six-model roster compares cell 3 only. Companion Grok cells stay on
-disk. GPT-5.6 Sol cells stay historical. Rules are deterministic and do
-not use a model.
+The six-model roster compares cell 3 only on both tasks. GPT-5.6 Sol
+cells stay historical. Rules are deterministic and do not use a model.
 
 **Gan 2026** (Purist micro-F1, locked `test450`). Headline is the submitted
 (select) score:
 
 | Recognise | Encode | Select | Purist micro-F1 |
 | --- | --- | --- | ---: |
-| rules | rules | rules | 0.73 |
+| rules | rules | rules | 0.71 |
 | both | rules | rules | 0.82 |
 | LLM | rules | rules | 0.83 |
 | LLM | LLM | rules | 0.82 |
@@ -80,6 +79,23 @@ ledger-only. `gan_llm_only` is not a results column.
   peak (five-cell select 0.8674). Cell 4 (LLM / LLM /
   rules) is Gemini-only later-stage encode then rule select
   (0.8636).
+
+**Gan cell-3 roster** (Purist, locked `test450`, aggregate-only).
+LLM recognise (`gan_llm_extract`) then codebook rules. Select is the
+roster stop. Gemini five-cell select remains **0.83**.
+
+| Model | Recognise | Select |
+| --- | ---: | ---: |
+| Gemini 3.7 Flash | 0.79 | 0.80 |
+| Grok 4.6 | 0.79 | **0.82** |
+| GPT-5.6 Luna | 0.69 | 0.78 |
+| DeepSeek V4 Flash | 0.74 | 0.79 |
+| Qwen 3.8 27B | 0.70 | 0.76 |
+| Gemma 4 26B | 0.66 | 0.73 |
+
+Exact totals:
+[three variables](docs/research/paper/three_variables_rules_model_thinking_2026-08-23.md),
+`paper_experiments/gan/rungs/`.
 
 **ExECT cell-3 roster** (4-family micro F1, locked `test60`,
 aggregate-only). LLM recognise (`exect_llm_extract`) then rules.

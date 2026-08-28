@@ -35,8 +35,8 @@ information?
    on the reasoning budget given to that model?
 
 The five role rows answer the first two questions. The six-model
-cell-3 comparison and Gemini low/medium/high thinking ablation answer
-the third. Saved outputs, evidence spans, and replayed rule stages are
+cell-3 comparison, Gemini low/medium/high thinking, and the Gemini
+and Grok temperature 0 versus 1 ablation answer the third. Saved outputs, evidence spans, and replayed rule stages are
 the experimental controls that make the comparisons possible; they are
 not a separate research question.
 

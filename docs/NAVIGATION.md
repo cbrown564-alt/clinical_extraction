@@ -11,6 +11,8 @@ The dense pointer log is [decision history](history/decisions.md).
 | Public front door | [README](../README.md) |
 | What is present, missing, and allowed to run | [project status](../PROJECT_STATUS.md) |
 | Paper methods, claims, cells | [paper keep-set](paper/README.md) |
+| Dissertation scope | [Gan is the dissertation paper](paper/decisions/gan-is-the-dissertation-paper.md) |
+| Gan inventory feasibility | [100-letter descriptive study](research/gan2026/gan_inventory_feasibility_dev750_n100_2026-08-28.md) |
 | Cited Gemini five-cell grids | [Gan grid](research/gan2026/gan_five_cell_grid_2026-08-22.md), [ExECT inventory grid](research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md) (4-family micro F1; [`paper_experiments/exect/five_cell_grid/`](../paper_experiments/exect/five_cell_grid/)), [ExECT cell 4](research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md) |
 | Gan test450 class report | [Purist/Pragmatic class report](research/gan2026/gan_test450_classification_report_2026-08-28.md) |
 | Gemini vs Qwen COT synthetic | [synthetic-to-synthetic compare](research/gan2026/gan_gemini_vs_qwen25_14b_cot_synthetic_2026-08-28.md) |
@@ -34,7 +36,7 @@ neuro-symbolic `paper/draft/` tex, or the 9–10 Aug HTML pack.
 5. [Method × stage](paper/method_x_stage.md) — five cells; Gan row 10 and ExECT `EA0007`
 6. [Rule catalogue](paper/rule_catalogue.md) — named rules by authority, then stage
 7. [Rules and models across stages (Gan, Gemini)](research/paper/gan_rules_and_llms_across_stages_2026-08-21.md)
-8. [Three variables: stages, model, thinking](research/paper/three_variables_rules_model_thinking_2026-08-23.md) — draft results
+8. [Three variables: stages, model, thinking](research/paper/three_variables_rules_model_thinking_2026-08-23.md) — draft results; temperature 0/1 ablation
 9. [Source-near recognise vs bundled encode](research/paper/gan_source_near_vs_bundled_encode_2026-08-23.md) — Gan ablation
 10. [Recognise then Select vs recognise-and-select](research/paper/exect_extract_vs_extract_and_select_2026-08-25.md) — ExECT ablation
 11. [How the two tasks are scored](research/paper/score_definitions_2026-08-17.md)

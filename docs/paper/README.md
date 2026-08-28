@@ -36,7 +36,8 @@ See
 [methods](methods.md),
 [Gan five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md),
 [ExECT inventory grid](../research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md),
-[six-model ExECT inventory roster](../research/paper/three_variables_rules_model_thinking_2026-08-23.md),
+[six-model roster](../research/paper/three_variables_rules_model_thinking_2026-08-23.md)
+(Gan `gan_llm_extract` rungs and ExECT inventory extract),
 and
 [ExECT cell 4](../research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md).
 `gan_llm_only` is not a results column. Full ledger is the only
@@ -45,19 +46,23 @@ comparator when cited—not a headline method.
 | File | Job |
 | --- | --- |
 | [methods](methods.md) | Proposed method, baselines, roster, splits, scorers |
-| [hardware](hardware_details.md) | Local workstation for Qwen/Gemma; hosted accelerators undisclosed |
+| [experiment environment](experiment_environment.md) | Mac mini orchestration + Dell XPS 16 local serving; hosted accelerators undisclosed |
+| [hardware](hardware_details.md) | Dated local-device snapshot for Qwen/Gemma |
 | [method × stage](method_x_stage.md) | Plain-language method × stage grid, with one Gan and one ExECT development example |
 | [Gan rules and models](../research/paper/gan_rules_and_llms_across_stages_2026-08-21.md) | Gemini Gan reading: roles, order, encode/select lift |
-| [Three variables](../research/paper/three_variables_rules_model_thinking_2026-08-23.md) | Draft results: stage ownership, model, thinking |
+| [Three variables](../research/paper/three_variables_rules_model_thinking_2026-08-23.md) | Draft results: stage ownership, model, thinking; temperature 0/1 ablation |
 | [Source-near vs bundled encode](../research/paper/gan_source_near_vs_bundled_encode_2026-08-23.md) | Draft Gan ablation: codebook request vs second encode call |
 | [Recognise then Select vs recognise-and-select](../research/paper/exect_extract_vs_extract_and_select_2026-08-25.md) | Draft ExECT ablation: inventory recognise vs one-call filter |
 | [Gan five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md) | Cited Gemini frequency five-cell totals |
 | [ExECT inventory grid](../research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md) | Cited Gemini ExECT five-cell grid (4-family micro F1; cell 3 peak). Replay: [`paper_experiments/exect/five_cell_grid/`](../../paper_experiments/exect/five_cell_grid/) |
 | [ExECT cell 4](../research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md) | Cited Gemini inventory LLM / LLM / rules stop |
 | [rule catalogue](rule_catalogue.md) | Named recognise / encode / select rules on both tasks |
-| [claims](claims.md) | What the paper may say, and how strongly |
+| [claims](claims.md) | Repository evidence reading; stale as a dissertation claim list |
+| [results](sections/results.md) | Gan-only dissertation results draft, including the inventory feasibility panel |
 | [lineage](lineage.md) | How the living requests were reached and what kind of method change each revision made |
 | [decisions](decisions/) | Current decisions |
+| [Gan is the dissertation paper](decisions/gan-is-the-dissertation-paper.md) | Dissertation cites Gan only; ExECT is a later paper; inventory feasibility is descriptive |
+| [Gan inventory feasibility](../research/gan2026/gan_inventory_feasibility_dev750_n100_2026-08-28.md) | Descriptive 100-letter `dev750` inventory panel; not an accuracy table |
 | [living comparison contract](decisions/living-comparison-contract.md) | Envelope, stage stops, forbidden living names |
 | [source library](../research/paper/) | Writing sources |
 | [paper experiments](../../paper_experiments/README.md) | Replayable cells |

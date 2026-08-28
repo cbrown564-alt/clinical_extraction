@@ -1,7 +1,7 @@
 # Six-model roster
 
 Date: 2026-08-17
-Revised: 2026-08-27 (ExECT inventory cell-3 roster complete for all six models)
+Revised: 2026-08-28 (Gan and ExECT cell-3 rosters complete for all six models)
 Status: current
 Owner: [paper methods](../methods.md)
 Roster: [`paper_experiments/roster.json`](../../../paper_experiments/roster.json)
@@ -46,7 +46,10 @@ stays Gemini-only. On 4-family micro F1, cell 3 is the Gemini peak
 (0.8674 on `test60`). All six ExECT `exect_llm_extract` roster cells
 are promoted on `dev140` and aggregate-only `test60`; cite those
 inventory select stops in the six-model table, not Compact/headline
-`exect_llm_only` replays.
+`exect_llm_only` replays. All six Gan `gan_llm_extract` roster cells
+are promoted on `dev750` and aggregate-only `test450`; cite those
+codebook rungs (`paper_experiments/gan/rungs/{slug}/`), not
+`gan_llm_extract_raw`. Grok living temperature is `0`.
 
 ## Consequences
 
@@ -58,6 +61,9 @@ inventory select stops in the six-model table, not Compact/headline
   `paper_experiments/exect/exect_llm_extract/{slug}/test60/`
   (4-family micro F1). Do not substitute Compact/headline
   `exect_llm_only` for that table.
+- Cite Gan roster totals from promoted
+  `paper_experiments/gan/rungs/{slug}/test450/` replayed on
+  `gan_llm_extract`. Do not substitute `gan_llm_extract_raw`.
 - Living DeepSeek is thinking enabled at `reasoning_effort=low`,
   the same living effort as Gemini, Grok, and Luna. Thinking-off
   is a DeepSeek-only toggle, not the Gemini medium/high ablation.

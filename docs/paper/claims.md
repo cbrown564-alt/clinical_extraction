@@ -1,9 +1,15 @@
 # What the evidence supports
 
 Date: 2026-08-20
-Revised: 2026-08-23 (all five Gemini ExECT rows use 4-family micro F1)
-Status: current
+Revised: 2026-08-28 (dissertation scope is Gan-only; this page still holds later-paper ExECT readings)
+Status: current for repository evidence; stale as a dissertation claim list
 Owner: this file
+Dissertation writing: [Gan is the dissertation paper](decisions/gan-is-the-dissertation-paper.md),
+[results](sections/results.md)
+
+The dissertation cites Gan 2026 only. ExECT locked totals on this
+page are later-paper evidence. Do not copy “both tasks” sentences
+into the manuscript.
 
 This page is the paper's reading of the living comparison. Method names
 and splits are on [methods](methods.md). The Gan headline table is five role rows. Each of recognise, encode,
@@ -107,7 +113,7 @@ are not holdout component estimates.
 
 ### What the locked totals show
 
-On 450 held-out letters, written rules scored 0.73. Gemini LLM
+On 450 held-out letters, written rules scored 0.71. Gemini LLM
 recognise (`gan_llm_extract`) plus `gan_rules_encode` plus rule select scored 0.83. The paper
 may say those locked totals and the Gemini grid below.
 It may not treat `gan_llm_only` as a results column.
@@ -120,7 +126,7 @@ Class report: [gan_test450_classification_report_2026-08-28.md](../research/gan2
 
 | Recognise | Encode | Select | Purist micro-F1 |
 | --- | --- | --- | ---: |
-| rules | rules | rules | 0.73 |
+| rules | rules | rules | 0.71 |
 | both | rules | rules | 0.82 |
 | LLM | rules | rules | 0.83 |
 | LLM | LLM | rules | 0.82 |
@@ -140,9 +146,9 @@ stays an ablation: the softer recognise keeps letter wording and
 scores 0.55; rule encode and rule select recover to 0.79. The paper
 may say that shows wording can be kept and later mapped into the
 gold form. It may not say the softer recognise preserves clinical
-reasoning. Grok living `gan_llm_extract_raw` 0.83 was not re-scored
-on the codebook stack. The six-model comparison for this paper is
-the codebook cell 3, not that source-near hybrid.
+reasoning. The six-model comparison is the codebook cell 3
+(`gan_llm_extract` rungs on all six models), not
+`gan_llm_extract_raw`.
 
 The rule baseline is a standalone deterministic pipeline. It is not the
 same rule set that later repairs model events. The gap from rules to
@@ -352,7 +358,7 @@ The files support this account of the proposed method, cited on Grok:
    wider ledger.
 4. On locked frequency letters, Gemini LLM recognise plus codebook
    encode plus rule select raises the locked score by 0.10 against
-   standalone rules (0.83 vs 0.73). Rule select without encode, and
+   standalone rules (0.83 vs 0.71). Rule select without encode, and
    both-then-rules, are 0.82. LLM select is 0.79. Grok living
    hybrid 0.83 is a different stack on the source-near request.
    `gan_llm_only` is not in that comparison.
@@ -406,6 +412,18 @@ extracts are promoted; remaining Gan blanks stay with inventory.
 
 A missing cell is a missing cell. The paper reports the panel that
 exists.
+
+## Gan inventory feasibility (descriptive only)
+
+On a prespecified 100-letter Gan `dev750` sample, the frozen
+four-family inventory program emitted at least one fact in 97 letters
+(483 facts; median 5 per letter). Owner:
+[feasibility report](../research/gan2026/gan_inventory_feasibility_dev750_n100_2026-08-28.md).
+
+**Development mechanism / descriptive output.** The sentence may say
+the schema produced those counts and subtypes. It may not say the
+facts are precise, complete, or clinically valid, and it may not
+treat the sample as a Gan classification result.
 
 ## Identities that would change the reading
 
