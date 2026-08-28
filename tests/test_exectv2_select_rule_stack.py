@@ -917,6 +917,13 @@ def test_sf_candidate_drop_rules_are_catalogued_but_not_accepted() -> None:
 def test_emitted_actions_by_rule_id_covers_candidate_rules() -> None:
     assert frozenset(EMITTED_ACTIONS_BY_RULE_ID) == frozenset(CANDIDATE_SELECT_RULE_IDS)
     for rule_id, actions in EMITTED_ACTIONS_BY_RULE_ID.items():
+        if rule_id.startswith("selection.keep_"):
+            # Keep rules are gates consulted by the recall-first drop;
+            # they never emit actions of their own.
+            assert actions == frozenset(), (
+                f"keep rule {rule_id} must not declare emitted actions"
+            )
+            continue
         assert actions, f"{rule_id} must declare at least one action kind"
         assert actions <= frozenset({"rewrite", "add", "drop"}), (
             f"{rule_id} declares invalid action kinds: {sorted(actions)}"

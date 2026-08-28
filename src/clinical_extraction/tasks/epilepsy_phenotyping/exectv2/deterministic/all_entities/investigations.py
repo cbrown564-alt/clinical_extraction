@@ -33,6 +33,56 @@ from ..mention_identity import match_span
 from ..rule_metadata import Portability, RuleGroup
 from .common import _canonical_modality, _owner, _sentence_window
 
+
+def result_variant_investigation_candidates(
+    mentions: Sequence[PredictedMention],
+):
+    """Recall-first result variants for result-less Investigations mentions.
+
+    A result-less mention inherits the letter-level bound result of its
+    modality when one exists (the prose result belongs to every completed
+    mention of that test), otherwise ``Unknown`` (performed, result not
+    stated). Runs on the direct prediction; Select owns the drop.
+    """
+
+    from ..recognise_ledger import INV_RESULT_VARIANT, RecogniseCandidate
+
+    investigation_mentions = [
+        mention for mention in mentions if mention.entity == INVESTIGATIONS.name
+    ]
+    bound_results: dict[str, str] = {}
+    for mention in investigation_mentions:
+        for key, value in dict(mention.attributes).items():
+            if key.endswith("_Results") and value:
+                bound_results.setdefault(key[: -len("_Results")], value)
+
+    candidates: list[RecogniseCandidate] = []
+    for mention in investigation_mentions:
+        attrs = dict(mention.attributes)
+        modalities = [
+            key[: -len("_Performed")]
+            for key in attrs
+            if key.endswith("_Performed")
+        ]
+        if len(modalities) != 1:
+            continue
+        modality = modalities[0]
+        if attrs.get(f"{modality}_Results"):
+            continue
+        variant_attrs = {
+            **attrs,
+            f"{modality}_Results": bound_results.get(modality, "Unknown"),
+        }
+        candidates.append(
+            RecogniseCandidate(
+                mention=mention.model_copy(update={"attributes": variant_attrs}),
+                candidate_class=INV_RESULT_VARIANT,
+                rule_id="recognise.inv_result_variant",
+            )
+        )
+    return tuple(candidates)
+
+
 _INVESTIGATION_PATTERN = re.compile(
     r"\b(?:VEEG|video[-\s]+EEG|EEGs?|MRI|MR\s+brain|CT)(?:\s+(?:brain|scan|head))?\b",
     re.IGNORECASE,
@@ -147,7 +197,37 @@ _EEG_TYPE_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
 )
 
 
-def _extract_investigations(text: str) -> tuple[PredictedMention, ...]:
+def _resultless_mention(
+    text: str,
+    match: re.Match[str],
+    modality: str,
+) -> PredictedMention:
+    """A completed modality mention that never bound a result.
+
+    Emitted only under the recall-first emission switch; the paired
+    Select rule (selection.investigation_resultless_drop) owns the
+    result requirement.
+    """
+
+    return PredictedMention(
+        entity=INVESTIGATIONS.name,
+        text=modality,
+        attributes={f"{modality}_Performed": "Yes"},
+        evidence=_sentence_window(text, match.start(), match.end()),
+        evidence_span=match_span(match),
+        component_owner=_owner(
+            "investigation_resultless",
+            RuleGroup.ANCHOR_PHRASE,
+            Portability.CLINICAL_EPILEPSY,
+        ),
+    )
+
+
+def _extract_investigations(
+    text: str,
+    *,
+    emit_resultless: bool = False,
+) -> tuple[PredictedMention, ...]:
     matches = list(_INVESTIGATION_PATTERN.finditer(text))
     if not matches:
         return ()
@@ -171,6 +251,8 @@ def _extract_investigations(text: str) -> tuple[PredictedMention, ...]:
                 if result is not None:
                     evidence = f"{local} {following}".strip()
         if result is None:
+            if emit_resultless:
+                mentions.append(_resultless_mention(text, match, modality))
             continue
 
         attrs = {

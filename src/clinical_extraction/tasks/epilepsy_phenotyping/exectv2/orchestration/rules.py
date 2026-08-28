@@ -21,7 +21,21 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.recognise_ledger import (
+    DIAGNOSIS_COMPONENT_TOKEN,
+    DIAGNOSIS_EXPANSION_SURFACE,
+    DIAGNOSIS_HEADING_DECOMPOSITION,
+    DIAGNOSIS_HIERARCHY_ANCESTOR,
+    DIAGNOSIS_NESTED_SURFACE,
+    DIAGNOSIS_NONDIAGNOSTIC_CONTEXT,
+    DIAGNOSIS_UNRESTRICTED_SURFACE,
     DIRECT,
+    INV_RESULT_VARIANT,
+    RECALL_FIRST_CLASS_TAG,
+    RX_RECALL_EXPANSION,
+    SF_HEADING_STATE,
+    SF_NAMED_TYPE,
+    SF_SEIZURE_FREE,
+    SF_STATE_VARIANT,
     RecogniseCandidate,
     RecogniseConfig,
     RecogniseLedger,
@@ -29,9 +43,17 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.recogn
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select_rules import (
     INVENTORY_WEAK_EPISODE_DROP,
+    INVESTIGATION_RESULTLESS_DROP,
+    KEEP_DX_HEADING_DECOMPOSITION,
+    KEEP_INV_RESULT_VARIANT,
+    KEEP_RX_RECALL_EXPANSION,
+    KEEP_SF_STATE_VARIANT,
+    RECALL_FIRST_UNSUPPORTED_DROP,
     RULES_ONLY_SELECT_RULE_IDS,
+    SF_RATELESS_ANCHOR_DROP,
     SF_SEIZURE_FREE_POSITIVE_COUNT_DROP,
     apply_select_rules,
+    flatten_family_select_plan,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines import (
     key_entities_structured as structured,
@@ -48,12 +70,38 @@ PRIMARY_COMPARISON_ENTITIES: tuple[str, ...] = (
 )
 
 
+# Named encoders available to per-family encode sequences. Each encoder is a
+# same-fact normalizer; it must never add or remove facts.
+ENCODE_FORMAT_STACK = "encode.format_stack"
+
+
 @dataclass(frozen=True)
 class ThreeStageConfig:
     deferred_classes: frozenset[str] = frozenset()
     encode_families: frozenset[str] = frozenset({DIAGNOSIS.name})
     select_rule_ids: tuple[str, ...] = RULES_ONLY_SELECT_RULE_IDS
     recognise: RecogniseConfig | None = None
+    # Recall-first: classed producer candidates emitted as tagged direct
+    # mentions. The Select gate (selection.recall_first_unsupported_drop)
+    # owns their keep/drop decision.
+    direct_classes: frozenset[str] = frozenset()
+    # Per-family stage plans. When set, they take precedence over the flat
+    # legacy fields above: family_encoders maps family -> ordered encoder
+    # ids, family_select maps family (or cross_family) -> ordered Select
+    # rule ids, validated and flattened by flatten_family_select_plan.
+    # Tuples of pairs keep the frozen config hashable.
+    family_encoders: tuple[tuple[str, tuple[str, ...]], ...] | None = None
+    family_select: tuple[tuple[str, tuple[str, ...]], ...] | None = None
+
+    def resolved_select_rule_ids(self) -> tuple[str, ...]:
+        if self.family_select is not None:
+            return flatten_family_select_plan(dict(self.family_select))
+        return self.select_rule_ids
+
+    def resolved_family_encoders(self) -> dict[str, tuple[str, ...]]:
+        if self.family_encoders is not None:
+            return dict(self.family_encoders)
+        return {family: (ENCODE_FORMAT_STACK,) for family in self.encode_families}
 
 
 # Frozen 2026-08-27 development candidate of the three-stage reconstruction
@@ -72,6 +120,77 @@ ACCEPTED_THREE_STAGE_CONFIG = ThreeStageConfig(
         SF_SEIZURE_FREE_POSITIVE_COUNT_DROP,
         INVENTORY_WEAK_EPISODE_DROP,
     ),
+)
+
+# Frozen 2026-08-27 recall-first restructure candidate (Phase C accepted).
+# Recognise emits every recall-first candidate class as tagged direct
+# mentions (dev140 recognise recall: Diagnosis 0.9666, SF 0.9212,
+# Prescription 0.9854, Investigations 1.0). Select keeps only the four
+# gated classes (heading decomposition, SF state variant, Rx recall
+# expansion, Inv result variant; the last three conditional) and drops
+# the rest. Accepted on dev140: select F1 0.9167 -> 0.9266, zero
+# comparator-exact regressions, every keep isolated-positive and
+# leave-one-out-negative. Do not change without a new development
+# candidate under the recall-first restructure protocol.
+RECALL_FIRST_THREE_STAGE_CONFIG = ThreeStageConfig(
+    recognise=RecogniseConfig(
+        diagnosis_service_context_exclusion=True,
+        diagnosis_secondary_to_retention=True,
+        diagnosis_focal_onset_alias=True,
+        sf_keep_unassociated_anchors=True,
+        investigations_emit_resultless=True,
+    ),
+    select_rule_ids=(
+        RECALL_FIRST_UNSUPPORTED_DROP,
+        *RULES_ONLY_SELECT_RULE_IDS,
+        SF_SEIZURE_FREE_POSITIVE_COUNT_DROP,
+        INVENTORY_WEAK_EPISODE_DROP,
+        SF_RATELESS_ANCHOR_DROP,
+        INVESTIGATION_RESULTLESS_DROP,
+        KEEP_DX_HEADING_DECOMPOSITION,
+        KEEP_SF_STATE_VARIANT,
+        KEEP_RX_RECALL_EXPANSION,
+        KEEP_INV_RESULT_VARIANT,
+    ),
+    direct_classes=frozenset(
+        {
+            DIAGNOSIS_NONDIAGNOSTIC_CONTEXT,
+            DIAGNOSIS_NESTED_SURFACE,
+            DIAGNOSIS_HEADING_DECOMPOSITION,
+            DIAGNOSIS_UNRESTRICTED_SURFACE,
+            DIAGNOSIS_EXPANSION_SURFACE,
+            DIAGNOSIS_HIERARCHY_ANCESTOR,
+            DIAGNOSIS_COMPONENT_TOKEN,
+            SF_NAMED_TYPE,
+            SF_HEADING_STATE,
+            SF_SEIZURE_FREE,
+            SF_STATE_VARIANT,
+            RX_RECALL_EXPANSION,
+            INV_RESULT_VARIANT,
+        }
+    ),
+)
+
+# 2026-08-27 development candidate after Phase D: keep only the
+# mechanisms whose aggregate-only family bands transferred (Rx recall
+# expansion, SF state variant). Do not emit or keep heading
+# decomposition or Investigations result variants. Frozen Phase C
+# config above is unchanged. Not promoted; run_letter stays accepted.
+TRANSFERRED_RECALL_FIRST_THREE_STAGE_CONFIG = ThreeStageConfig(
+    recognise=RecogniseConfig(
+        diagnosis_service_context_exclusion=True,
+        diagnosis_secondary_to_retention=True,
+        diagnosis_focal_onset_alias=True,
+    ),
+    select_rule_ids=(
+        RECALL_FIRST_UNSUPPORTED_DROP,
+        *RULES_ONLY_SELECT_RULE_IDS,
+        SF_SEIZURE_FREE_POSITIVE_COUNT_DROP,
+        INVENTORY_WEAK_EPISODE_DROP,
+        KEEP_SF_STATE_VARIANT,
+        KEEP_RX_RECALL_EXPANSION,
+    ),
+    direct_classes=frozenset({RX_RECALL_EXPANSION, SF_STATE_VARIANT}),
 )
 
 
@@ -108,29 +227,57 @@ def _candidate_to_source_row(candidate: RecogniseCandidate) -> dict[str, Any]:
     return row
 
 
+def _apply_format_stack_encoder(
+    mentions: tuple[PredictedMention, ...],
+    letter: ExectLetter,
+) -> tuple[PredictedMention, ...]:
+    encoded, _warnings = structured.apply_format_stack(
+        mentions,
+        letter.note_text,
+        letter_id=letter.letter_id,
+    )
+    return tuple(encoded)
+
+
+_ENCODER_REGISTRY: dict[str, Any] = {
+    ENCODE_FORMAT_STACK: _apply_format_stack_encoder,
+}
+
+
 def _encode_four_family_direct_mentions(
     direct_four_family: tuple[PredictedMention, ...],
     letter: ExectLetter,
-    encode_families: frozenset[str],
+    family_encoders: Mapping[str, tuple[str, ...]],
 ) -> tuple[PredictedMention, ...]:
+    def _bypasses_encode(mention: PredictedMention) -> bool:
+        # Recall-first tagged candidates pass encode unchanged; their
+        # keep/drop (and any encoding) is owned by Select-stage rules.
+        if RECALL_FIRST_CLASS_TAG in mention.component_owner:
+            return True
+        encoder_ids = family_encoders.get(mention.entity) or ()
+        return not encoder_ids
+
     unchanged = tuple(
-        mention for mention in direct_four_family if mention.entity not in encode_families
+        mention for mention in direct_four_family if _bypasses_encode(mention)
     )
     encoded_parts: list[PredictedMention] = []
     for entity in PRIMARY_COMPARISON_ENTITIES:
-        if entity not in encode_families:
+        encoder_ids = family_encoders.get(entity) or ()
+        if not encoder_ids:
             continue
         family_mentions = tuple(
-            mention for mention in direct_four_family if mention.entity == entity
+            mention
+            for mention in direct_four_family
+            if mention.entity == entity and not _bypasses_encode(mention)
         )
         if not family_mentions:
             continue
-        encoded, _warnings = structured.apply_format_stack(
-            family_mentions,
-            letter.note_text,
-            letter_id=letter.letter_id,
-        )
-        encoded_parts.extend(encoded)
+        for encoder_id in encoder_ids:
+            encoder = _ENCODER_REGISTRY.get(encoder_id)
+            if encoder is None:
+                raise ValueError(f"unknown encoder id: {encoder_id!r}")
+            family_mentions = encoder(family_mentions, letter)
+        encoded_parts.extend(family_mentions)
     return (*unchanged, *encoded_parts)
 
 
@@ -246,29 +393,50 @@ def run_letter(
     return run_letter_three_stage(letter, ACCEPTED_THREE_STAGE_CONFIG)
 
 
-def run_letter_three_stage(
+@dataclass(frozen=True)
+class ThreeStagePass:
+    """One three-stage run with the four-family mentions at each stop."""
+
+    ledger: RecogniseLedger
+    all9_prediction: PredictedLetter
+    recognise_mentions: tuple[PredictedMention, ...]
+    encode_mentions: tuple[PredictedMention, ...]
+    select_mentions: tuple[PredictedMention, ...]
+    select_action_count: int
+
+
+@dataclass(frozen=True)
+class ThreeStageStops:
+    """Four-family mentions at the recognise, encode, and select stops."""
+
+    recognise: tuple[PredictedMention, ...]
+    encode: tuple[PredictedMention, ...]
+    select: tuple[PredictedMention, ...]
+
+
+def _run_three_stage_pass(
     letter: ExectLetter,
-    config: ThreeStageConfig | None = None,
-) -> RulesRecordResult:
-    """Run recognise, encode, and select stages for rules-only reconstruction."""
-
-    resolved_config = config or ThreeStageConfig()
-
+    config: ThreeStageConfig,
+) -> ThreeStagePass:
     ledger, all9_prediction = build_recognise_ledger(
         letter,
-        enabled_deferred_classes=resolved_config.deferred_classes,
-        recognise=resolved_config.recognise,
+        enabled_deferred_classes=config.deferred_classes,
+        recognise=config.recognise,
+        direct_classes=config.direct_classes,
     )
     direct_four_family = tuple(
         candidate.mention
         for candidate in ledger.candidates
-        if candidate.candidate_class == DIRECT
+        if (
+            candidate.candidate_class == DIRECT
+            or candidate.candidate_class in config.direct_classes
+        )
         and candidate.mention.entity in PRIMARY_COMPARISON_ENTITIES
     )
     encoded_four_family = _encode_four_family_direct_mentions(
         direct_four_family,
         letter,
-        resolved_config.encode_families,
+        config.resolved_family_encoders(),
     )
     source_rows = _four_family_source_rows(ledger)
     encoded_rows = [mention_to_dict(mention) for mention in encoded_four_family]
@@ -276,9 +444,43 @@ def run_letter_three_stage(
         encoded_rows,
         source_mentions=source_rows,
         note_text=letter.note_text,
-        enabled_rule_ids=set(resolved_config.select_rule_ids),
+        enabled_rule_ids=set(config.resolved_select_rule_ids()),
     )
-    selected_mentions = tuple(_mention_from_row(row) for row in selected)
+    return ThreeStagePass(
+        ledger=ledger,
+        all9_prediction=all9_prediction,
+        recognise_mentions=direct_four_family,
+        encode_mentions=encoded_four_family,
+        select_mentions=tuple(_mention_from_row(row) for row in selected),
+        select_action_count=len(actions),
+    )
+
+
+def three_stage_stop_mentions(
+    letter: ExectLetter,
+    config: ThreeStageConfig | None = None,
+) -> ThreeStageStops:
+    """Read the four-family mentions at each stop of one three-stage run."""
+
+    stage_pass = _run_three_stage_pass(letter, config or ThreeStageConfig())
+    return ThreeStageStops(
+        recognise=stage_pass.recognise_mentions,
+        encode=stage_pass.encode_mentions,
+        select=stage_pass.select_mentions,
+    )
+
+
+def run_letter_three_stage(
+    letter: ExectLetter,
+    config: ThreeStageConfig | None = None,
+) -> RulesRecordResult:
+    """Run recognise, encode, and select stages for rules-only reconstruction."""
+
+    resolved_config = config or ThreeStageConfig()
+    stage_pass = _run_three_stage_pass(letter, resolved_config)
+    ledger = stage_pass.ledger
+    all9_prediction = stage_pass.all9_prediction
+    selected_mentions = stage_pass.select_mentions
     other = tuple(
         mention
         for mention in all9_prediction.mentions
@@ -291,12 +493,16 @@ def run_letter_three_stage(
                 **dict(all9_prediction.diagnostics),
                 "rules_only_program": "three_stage_reconstruction",
                 "deferred_classes": sorted(resolved_config.deferred_classes),
-                "encode_families": sorted(resolved_config.encode_families),
-                "select_rule_ids": list(resolved_config.select_rule_ids),
+                "encode_families": sorted(
+                    family
+                    for family, encoders in resolved_config.resolved_family_encoders().items()
+                    if encoders
+                ),
+                "select_rule_ids": list(resolved_config.resolved_select_rule_ids()),
                 "ledger_candidate_counts_by_class": dict(
                     ledger.diagnostics.get("candidate_counts_by_class", {})
                 ),
-                "select_action_count": len(actions),
+                "select_action_count": stage_pass.select_action_count,
             },
         }
     )

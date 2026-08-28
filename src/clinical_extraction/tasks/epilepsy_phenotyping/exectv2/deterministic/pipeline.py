@@ -606,6 +606,76 @@ def _deferred_sf_seizure_free_candidates(
     return tuple(candidates)
 
 
+# Recall-first state-variant patterns (2026-08-27 restructure, Phase B).
+# Each tuple: (pattern, mention text, CUIPhrase, extra attributes). The
+# attributes fix the frequency state the surface asserts: a zero count is
+# seizure-free, a positive count is an active rate.
+_SF_STATE_VARIANT_PATTERNS: tuple[tuple[re.Pattern[str], str, str, dict[str, str]], ...] = (
+    # Typo form of the GTC anchor with an implied single recent event.
+    (
+        re.compile(
+            r"\b(?:a\s+recent|a\s+further|another|one)\s+"
+            r"generalised\s+tonic\s+chronic\s+seizures?\b",
+            re.IGNORECASE,
+        ),
+        "generalised tonic clonic seizure",
+        "generalised-tonic-clonic-seizure",
+        {"NumberOfSeizures": "1"},
+    ),
+    # Plural surface of the seizure-free state ("remains seizures free").
+    (
+        re.compile(r"\bseizures\s+free\b", re.IGNORECASE),
+        "seizures free",
+        "seizure-free",
+        {"NumberOfSeizures": "0"},
+    ),
+    # Last-event phrasing asserts current seizure freedom for the type.
+    (
+        re.compile(r"\blast\s+seizures?\s+(?:was|were)\b", re.IGNORECASE),
+        "seizure",
+        "seizure",
+        {"NumberOfSeizures": "0"},
+    ),
+    # A cluster is a (single) active event burst, not an unknown state.
+    (
+        re.compile(r"\bcluster\s+of\s+seizures\b", re.IGNORECASE),
+        "cluster of seizures",
+        "cluster-of-seizures",
+        {"NumberOfSeizures": "1"},
+    ),
+)
+
+
+def _deferred_sf_state_variant_candidates(text: str) -> tuple:
+    from .recognise_ledger import SF_STATE_VARIANT, RecogniseCandidate
+
+    candidates: list[RecogniseCandidate] = []
+    seen: set[tuple[str, str]] = set()
+    for pattern, mention_text, cui_phrase, extra_attrs in _SF_STATE_VARIANT_PATTERNS:
+        for match in pattern.finditer(text):
+            key = (cui_phrase, extra_attrs.get("NumberOfSeizures", ""))
+            if key in seen:
+                continue
+            seen.add(key)
+            line_start = text.rfind("\n", 0, match.start()) + 1
+            line_end = text.find("\n", match.end())
+            evidence = text[line_start : line_end if line_end != -1 else len(text)].strip()
+            candidates.append(
+                RecogniseCandidate(
+                    mention=PredictedMention(
+                        entity=SEIZURE_FREQUENCY.name,
+                        text=mention_text,
+                        attributes={"CUIPhrase": cui_phrase, **extra_attrs},
+                        evidence=evidence,
+                        component_owner="deterministic",
+                    ),
+                    candidate_class=SF_STATE_VARIANT,
+                    rule_id="recognise.sf_state_variant",
+                )
+            )
+    return tuple(candidates)
+
+
 def deferred_sf_candidates(
     letter: ExectLetter,
     enabled_classes: frozenset[str],
@@ -616,6 +686,7 @@ def deferred_sf_candidates(
         SF_HEADING_STATE,
         SF_NAMED_TYPE,
         SF_SEIZURE_FREE,
+        SF_STATE_VARIANT,
     )
 
     text = letter.note_text
@@ -627,6 +698,8 @@ def deferred_sf_candidates(
         candidates.extend(_deferred_sf_heading_state_candidates(text, ablation))
     if SF_SEIZURE_FREE in enabled_classes:
         candidates.extend(_deferred_sf_seizure_free_candidates(text, ablation))
+    if SF_STATE_VARIANT in enabled_classes:
+        candidates.extend(_deferred_sf_state_variant_candidates(text))
     return tuple(candidates)
 
 

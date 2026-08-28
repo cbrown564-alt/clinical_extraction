@@ -38,9 +38,21 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.projec
     SF_TYPE_PARENT_CUI,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.recognise_ledger import (
+    DIAGNOSIS_COMPONENT_TOKEN,
+    DIAGNOSIS_EXPANSION_SURFACE,
+    DIAGNOSIS_HEADING_DECOMPOSITION,
+    DIAGNOSIS_HIERARCHY_ANCESTOR,
+    DIAGNOSIS_NESTED_ANCESTOR,
+    DIAGNOSIS_NESTED_SURFACE,
+    DIAGNOSIS_NONDIAGNOSTIC_CONTEXT,
+    DIAGNOSIS_UNRESTRICTED_SURFACE,
+    INV_RESULT_VARIANT,
+    RX_RECALL_EXPANSION,
     SF_HEADING_STATE,
     SF_NAMED_TYPE,
     SF_SEIZURE_FREE,
+    SF_STATE_VARIANT,
+    recall_first_class_of,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
     annotation_from_mapping,
@@ -65,8 +77,48 @@ INVESTIGATION_SAME_RESULT_DEDUPE = "selection.investigation_same_result_dedupe"
 SF_RATELESS_ANCHOR_DROP = "selection.sf_rateless_anchor_drop"
 SF_GENERIC_DUPLICATE_DROP = "selection.sf_generic_duplicate_of_named_type_drop"
 SF_SEIZURE_FREE_POSITIVE_COUNT_DROP = "selection.sf_seizure_free_positive_count_drop"
+RECALL_FIRST_UNSUPPORTED_DROP = "selection.recall_first_unsupported_drop"
+INVESTIGATION_RESULTLESS_DROP = "selection.investigation_resultless_drop"
+
+# Phase C keep rules (2026-08-27 restructure): each retains one recall-first
+# recognise class at Select. They carry no handler of their own; the
+# RECALL_FIRST_UNSUPPORTED_DROP gate consults them (with the per-class
+# condition in RECALL_FIRST_KEEP_CONDITIONS, when one is registered).
+KEEP_DX_NONDIAGNOSTIC_CONTEXT = "selection.keep_dx_nondiagnostic_context"
+KEEP_DX_NESTED_ANCESTOR = "selection.keep_dx_nested_ancestor"
+KEEP_DX_NESTED_SURFACE = "selection.keep_dx_nested_surface"
+KEEP_DX_HEADING_DECOMPOSITION = "selection.keep_dx_heading_decomposition"
+KEEP_DX_UNRESTRICTED_SURFACE = "selection.keep_dx_unrestricted_surface"
+KEEP_DX_EXPANSION_SURFACE = "selection.keep_dx_expansion_surface"
+KEEP_DX_HIERARCHY_ANCESTOR = "selection.keep_dx_hierarchy_ancestor"
+KEEP_DX_COMPONENT_TOKEN = "selection.keep_dx_component_token"
+KEEP_SF_NAMED_TYPE = "selection.keep_sf_named_type"
+KEEP_SF_HEADING_STATE = "selection.keep_sf_heading_state"
+KEEP_SF_SEIZURE_FREE = "selection.keep_sf_seizure_free"
+KEEP_SF_STATE_VARIANT = "selection.keep_sf_state_variant"
+KEEP_RX_RECALL_EXPANSION = "selection.keep_rx_recall_expansion"
+KEEP_INV_RESULT_VARIANT = "selection.keep_inv_result_variant"
+
+_KEEP_RULE_IDS: tuple[str, ...] = (
+    KEEP_DX_NONDIAGNOSTIC_CONTEXT,
+    KEEP_DX_NESTED_ANCESTOR,
+    KEEP_DX_NESTED_SURFACE,
+    KEEP_DX_HEADING_DECOMPOSITION,
+    KEEP_DX_UNRESTRICTED_SURFACE,
+    KEEP_DX_EXPANSION_SURFACE,
+    KEEP_DX_HIERARCHY_ANCESTOR,
+    KEEP_DX_COMPONENT_TOKEN,
+    KEEP_SF_NAMED_TYPE,
+    KEEP_SF_HEADING_STATE,
+    KEEP_SF_SEIZURE_FREE,
+    KEEP_SF_STATE_VARIANT,
+    KEEP_RX_RECALL_EXPANSION,
+    KEEP_INV_RESULT_VARIANT,
+)
 
 CANDIDATE_SELECT_RULE_IDS: tuple[str, ...] = (
+    RECALL_FIRST_UNSUPPORTED_DROP,
+    *_KEEP_RULE_IDS,
     DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY,
     DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE,
     PRESCRIPTION_LOCAL_REGIMEN_SCOPE,
@@ -82,6 +134,7 @@ CANDIDATE_SELECT_RULE_IDS: tuple[str, ...] = (
     SF_RATELESS_ANCHOR_DROP,
     SF_GENERIC_DUPLICATE_DROP,
     SF_SEIZURE_FREE_POSITIVE_COUNT_DROP,
+    INVESTIGATION_RESULTLESS_DROP,
 )
 ACCEPTED_SELECT_RULE_IDS: tuple[str, ...] = (
     DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY,
@@ -106,7 +159,78 @@ RULES_ONLY_SELECT_RULE_IDS: tuple[str, ...] = (
     DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE,
     INVENTORY_KEEP_SOURCE_DIAGNOSIS,
 )
+CROSS_FAMILY = "cross_family"
+# Family that owns each Select rule. A rule reading or writing more than
+# one family is CROSS_FAMILY. Used by flatten_family_select_plan to
+# validate per-family Select sequences in ThreeStageConfig.
+RULE_FAMILY_BY_ID: dict[str, str] = {
+    KEEP_DX_NONDIAGNOSTIC_CONTEXT: "Diagnosis",
+    KEEP_DX_NESTED_ANCESTOR: "Diagnosis",
+    KEEP_DX_NESTED_SURFACE: "Diagnosis",
+    KEEP_DX_HEADING_DECOMPOSITION: "Diagnosis",
+    KEEP_DX_UNRESTRICTED_SURFACE: "Diagnosis",
+    KEEP_DX_EXPANSION_SURFACE: "Diagnosis",
+    KEEP_DX_HIERARCHY_ANCESTOR: "Diagnosis",
+    KEEP_DX_COMPONENT_TOKEN: "Diagnosis",
+    KEEP_SF_NAMED_TYPE: "SeizureFrequency",
+    KEEP_SF_HEADING_STATE: "SeizureFrequency",
+    KEEP_SF_SEIZURE_FREE: "SeizureFrequency",
+    KEEP_SF_STATE_VARIANT: "SeizureFrequency",
+    KEEP_RX_RECALL_EXPANSION: "Prescription",
+    KEEP_INV_RESULT_VARIANT: "Investigations",
+    DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY: "Diagnosis",
+    DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE: "Diagnosis",
+    PRESCRIPTION_LOCAL_REGIMEN_SCOPE: "Prescription",
+    PRESCRIPTION_ACTIVE_TITRATION: "Prescription",
+    PRESCRIPTION_EXACT_REGIMEN_DEDUPE: "Prescription",
+    SF_NAMED_TYPE_IDENTITY: "SeizureFrequency",
+    SF_RECENT_EVENT_OVER_HISTORICAL_FREE: "SeizureFrequency",
+    SF_TO_DIAGNOSIS_EXPLICIT_TYPE: CROSS_FAMILY,
+    SF_SUPPORTED_STATE_PROMOTION: "SeizureFrequency",
+    INVENTORY_KEEP_SOURCE_DIAGNOSIS: "Diagnosis",
+    INVENTORY_WEAK_EPISODE_DROP: CROSS_FAMILY,
+    INVESTIGATION_SAME_RESULT_DEDUPE: "Investigations",
+    SF_RATELESS_ANCHOR_DROP: "SeizureFrequency",
+    SF_GENERIC_DUPLICATE_DROP: "SeizureFrequency",
+    SF_SEIZURE_FREE_POSITIVE_COUNT_DROP: "SeizureFrequency",
+    RECALL_FIRST_UNSUPPORTED_DROP: CROSS_FAMILY,
+    INVESTIGATION_RESULTLESS_DROP: "Investigations",
+}
+_SELECT_PLAN_FAMILIES = frozenset(
+    {"Diagnosis", "SeizureFrequency", "Prescription", "Investigations", CROSS_FAMILY}
+)
+
+
+def flatten_family_select_plan(
+    plan: Mapping[str, Sequence[str]],
+) -> tuple[str, ...]:
+    """Validate a per-family Select plan and flatten it to execution order.
+
+    Every rule must be listed under the family that owns it. The flattened
+    sequence follows the canonical registry order used by
+    ``apply_select_rules`` so a family plan is exactly equivalent to
+    enabling the same rule set.
+    """
+
+    requested: set[str] = set()
+    for family, rule_ids in plan.items():
+        if family not in _SELECT_PLAN_FAMILIES:
+            raise ValueError(f"unknown Select plan family: {family!r}")
+        for rule_id in rule_ids:
+            owner = RULE_FAMILY_BY_ID.get(rule_id)
+            if owner is None:
+                raise ValueError(f"unknown deterministic Select rule id: {rule_id!r}")
+            if owner != family:
+                raise ValueError(
+                    f"Select rule {rule_id!r} belongs to family {owner!r}, "
+                    f"not {family!r}"
+                )
+            requested.add(rule_id)
+    return tuple(rule_id for rule_id in CANDIDATE_SELECT_RULE_IDS if rule_id in requested)
+
+
 _RULE_PORTABILITY_BY_ID = {
+    **{rule_id: "clinical_epilepsy" for rule_id in _KEEP_RULE_IDS},
     DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY: "clinical_epilepsy",
     DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE: "benchmark_format",
     PRESCRIPTION_LOCAL_REGIMEN_SCOPE: "clinical_epilepsy",
@@ -122,9 +246,13 @@ _RULE_PORTABILITY_BY_ID = {
     SF_RATELESS_ANCHOR_DROP: "seizure_frequency",
     SF_GENERIC_DUPLICATE_DROP: "seizure_frequency",
     SF_SEIZURE_FREE_POSITIVE_COUNT_DROP: "seizure_frequency",
+    RECALL_FIRST_UNSUPPORTED_DROP: "clinical_epilepsy",
+    INVESTIGATION_RESULTLESS_DROP: "clinical_epilepsy",
 }
 
 EMITTED_ACTIONS_BY_RULE_ID: dict[str, frozenset[str]] = {
+    # Keep rules never emit actions; the recall-first gate records drops.
+    **{rule_id: frozenset() for rule_id in _KEEP_RULE_IDS},
     DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY: frozenset({"rewrite"}),
     DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE: frozenset({"add"}),
     PRESCRIPTION_LOCAL_REGIMEN_SCOPE: frozenset({"rewrite"}),
@@ -140,6 +268,28 @@ EMITTED_ACTIONS_BY_RULE_ID: dict[str, frozenset[str]] = {
     SF_RATELESS_ANCHOR_DROP: frozenset({"drop"}),
     SF_GENERIC_DUPLICATE_DROP: frozenset({"drop"}),
     SF_SEIZURE_FREE_POSITIVE_COUNT_DROP: frozenset({"drop"}),
+    RECALL_FIRST_UNSUPPORTED_DROP: frozenset({"drop"}),
+    INVESTIGATION_RESULTLESS_DROP: frozenset({"drop"}),
+}
+
+# Keep rules that retain a recall-first direct candidate class at Select.
+# A class survives the gate only when its keep rule is enabled; a class
+# with a condition in RECALL_FIRST_KEEP_CONDITIONS must also satisfy it.
+RECALL_FIRST_KEEP_RULE_BY_CLASS: dict[str, str] = {
+    DIAGNOSIS_NONDIAGNOSTIC_CONTEXT: KEEP_DX_NONDIAGNOSTIC_CONTEXT,
+    DIAGNOSIS_NESTED_ANCESTOR: KEEP_DX_NESTED_ANCESTOR,
+    DIAGNOSIS_NESTED_SURFACE: KEEP_DX_NESTED_SURFACE,
+    DIAGNOSIS_HEADING_DECOMPOSITION: KEEP_DX_HEADING_DECOMPOSITION,
+    DIAGNOSIS_UNRESTRICTED_SURFACE: KEEP_DX_UNRESTRICTED_SURFACE,
+    DIAGNOSIS_EXPANSION_SURFACE: KEEP_DX_EXPANSION_SURFACE,
+    DIAGNOSIS_HIERARCHY_ANCESTOR: KEEP_DX_HIERARCHY_ANCESTOR,
+    DIAGNOSIS_COMPONENT_TOKEN: KEEP_DX_COMPONENT_TOKEN,
+    SF_NAMED_TYPE: KEEP_SF_NAMED_TYPE,
+    SF_HEADING_STATE: KEEP_SF_HEADING_STATE,
+    SF_SEIZURE_FREE: KEEP_SF_SEIZURE_FREE,
+    SF_STATE_VARIANT: KEEP_SF_STATE_VARIANT,
+    RX_RECALL_EXPANSION: KEEP_RX_RECALL_EXPANSION,
+    INV_RESULT_VARIANT: KEEP_INV_RESULT_VARIANT,
 }
 
 _DIAGNOSIS_HEADING_RE = re.compile(
@@ -229,6 +379,11 @@ def apply_select_rules(
     source = [_copy_mention(row) for row in source_mentions]
     actions: list[dict[str, Any]] = []
 
+    if RECALL_FIRST_UNSUPPORTED_DROP in enabled_rule_ids:
+        working, source, records = _drop_unsupported_recall_first(
+            working, source, enabled_rule_ids, note_text=verbatim_note_text
+        )
+        actions.extend(records)
     if DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY in enabled_rule_ids:
         working, records = _restore_source_local_diagnoses(working, source)
         actions.extend(records)
@@ -274,8 +429,152 @@ def apply_select_rules(
     if SF_SEIZURE_FREE_POSITIVE_COUNT_DROP in enabled_rule_ids:
         working, records = _drop_seizure_free_positive_count_sf(working)
         actions.extend(records)
+    if INVESTIGATION_RESULTLESS_DROP in enabled_rule_ids:
+        working, records = _drop_resultless_investigations(working)
+        actions.extend(records)
 
     return working, actions
+
+
+def _mention_recall_first_class(mention: Mapping[str, Any]) -> str | None:
+    return recall_first_class_of(str(mention.get("component_owner") or ""))
+
+
+# A result variant is kept only when its evidence asserts the test event
+# itself ("had a CT head", "underwent an MRI", "recent EEG results") and
+# names the modality exactly once. Planned tests and anaphoric references
+# to an already-reported result ("the EEG changes", "requesting an MRI")
+# stay dropped, as does a sentence that names the modality again with its
+# result ("had an EEG ... no EEG changes"): there the result-less token
+# belongs to the same test event, not a separate reportable mention.
+_INV_TEST_EVENT_RE = re.compile(
+    r"\b(?:had|underwent)\s+an?\b(?P<window>[^.\n]{0,30})"
+    r"|\brecent\s+(?P<recent>\w+)\s+results?\b",
+    re.IGNORECASE,
+)
+
+
+def _inv_result_variant_condition(
+    mention: Mapping[str, Any], note_text: str
+) -> bool:
+    modalities = {
+        key[: -len("_Performed")].lower()
+        for key in _attrs(mention)
+        if key.endswith("_Performed")
+    }
+    evidence = str(mention.get("evidence") or "")
+    evidence_words = [word.lower() for word in re.findall(r"\w+", evidence)]
+    if any(evidence_words.count(modality) != 1 for modality in modalities):
+        return False
+    for match in _INV_TEST_EVENT_RE.finditer(evidence):
+        window = match.group("window") or match.group("recent") or ""
+        if any(word.lower() in modalities for word in re.findall(r"\w+", window)):
+            return True
+    return False
+
+
+# An Rx recall candidate is kept only when its evidence describes the
+# current regimen. Conditional requests ("if you could prescribe"),
+# queries and refusals ("asked about whether", "wouldn't recommend"),
+# and transitional doses inside an upward titration ("400mg od,
+# increasing to 800mg od") are proposals, not prescriptions.
+_RX_NONCURRENT_RE = re.compile(
+    r"\bif\s+you\s+could\s+prescribe\b"
+    r"|\basked\s+about\s+whether\b"
+    r"|\b(?:would\s+not|wouldn[\u2019']t|not)\s+recommend\b"
+    r"|\bincreasing\s+to\b",
+    re.IGNORECASE,
+)
+
+
+def _rx_recall_expansion_condition(
+    mention: Mapping[str, Any], note_text: str
+) -> bool:
+    return not _RX_NONCURRENT_RE.search(str(mention.get("evidence") or ""))
+
+
+# SF state variants: the cluster surface counts as an active event only
+# when the letter reports it happened ("had a cluster of seizures");
+# hypothetical or descriptive references stay dropped. The plural
+# "seizures free" surface only fills a gap when the well-formed singular
+# surface is absent from the letter (otherwise the direct path already
+# owns that state and the variant would double-count it).
+_SF_CLUSTER_EVENT_RE = re.compile(
+    r"\bhad\s+a\s+cluster\s+of\s+seizures\b", re.IGNORECASE
+)
+_SF_SINGULAR_FREE_RE = re.compile(r"\bseizure\s+free\b", re.IGNORECASE)
+
+
+def _sf_state_variant_condition(mention: Mapping[str, Any], note_text: str) -> bool:
+    phrase = str(_attrs(mention).get("CUIPhrase") or "")
+    if phrase == "cluster-of-seizures":
+        return bool(
+            _SF_CLUSTER_EVENT_RE.search(str(mention.get("evidence") or ""))
+        )
+    if phrase == "seizure-free":
+        return not _SF_SINGULAR_FREE_RE.search(note_text)
+    return True
+
+
+# Per-class keep conditions. A class without an entry is kept
+# unconditionally when its keep rule is enabled.
+RECALL_FIRST_KEEP_CONDITIONS: dict[str, Any] = {
+    INV_RESULT_VARIANT: _inv_result_variant_condition,
+    RX_RECALL_EXPANSION: _rx_recall_expansion_condition,
+    SF_STATE_VARIANT: _sf_state_variant_condition,
+}
+
+
+def _drop_unsupported_recall_first(
+    working: list[dict[str, Any]],
+    source: list[dict[str, Any]],
+    enabled_rule_ids: Set[str],
+    *,
+    note_text: str = "",
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
+    """Gate recall-first direct candidates before any other Select rule runs.
+
+    A tagged candidate survives only when its class has a registered keep
+    rule that is enabled (Phase C) and passes that class's keep condition,
+    if one is registered; otherwise it is removed from both the working
+    set and the source view so downstream rules observe exactly the
+    pre-restructure ledger.
+    """
+
+    def _keep(mention: Mapping[str, Any]) -> bool:
+        candidate_class = _mention_recall_first_class(mention)
+        if candidate_class is None:
+            return True
+        keep_rule = RECALL_FIRST_KEEP_RULE_BY_CLASS.get(candidate_class)
+        if keep_rule is None or keep_rule not in enabled_rule_ids:
+            return False
+        condition = RECALL_FIRST_KEEP_CONDITIONS.get(candidate_class)
+        return condition is None or condition(mention, note_text)
+
+    kept_working: list[dict[str, Any]] = []
+    actions: list[dict[str, Any]] = []
+    for mention in working:
+        if _keep(mention):
+            kept_working.append(mention)
+            continue
+        actions.append(_action(RECALL_FIRST_UNSUPPORTED_DROP, "drop", before=mention))
+    kept_source = [mention for mention in source if _keep(mention)]
+    return kept_working, kept_source, actions
+
+
+def _drop_resultless_investigations(
+    selected: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    out: list[dict[str, Any]] = []
+    actions: list[dict[str, Any]] = []
+    for mention in selected:
+        if _entity(mention) == "Investigations" and not any(
+            key.endswith("_Results") for key in _attrs(mention)
+        ):
+            actions.append(_action(INVESTIGATION_RESULTLESS_DROP, "drop", before=mention))
+            continue
+        out.append(mention)
+    return out, actions
 
 
 def _keep_source_ancestor_diagnoses(
@@ -1251,6 +1550,9 @@ def _action(
 __all__ = [
     "ACCEPTED_SELECT_RULE_IDS",
     "CANDIDATE_SELECT_RULE_IDS",
+    "CROSS_FAMILY",
+    "RULE_FAMILY_BY_ID",
+    "flatten_family_select_plan",
     "DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE",
     "DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY",
     "EMITTED_ACTIONS_BY_RULE_ID",

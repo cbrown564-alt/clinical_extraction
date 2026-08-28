@@ -50,8 +50,8 @@
     },
     "rules": {
       "ablation": {
-        "encode": 0.8018,
-        "extract": 0.8018
+        "encode": 0.7994,
+        "extract": 0.7934
       },
       "encode_role": "rules",
       "extract_role": "rules",

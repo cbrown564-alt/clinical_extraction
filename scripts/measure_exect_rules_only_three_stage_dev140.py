@@ -36,7 +36,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.rules import (
     ACCEPTED_THREE_STAGE_CONFIG,
     ThreeStageConfig,
-    run_letter,
     run_letter_retune_stack,
     run_letter_three_stage,
 )

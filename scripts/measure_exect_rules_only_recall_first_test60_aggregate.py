@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Aggregate-only test60 replay for ACCEPTED_THREE_STAGE_CONFIG.
+"""Aggregate-only test60 stage-rung replay for RECALL_FIRST_THREE_STAGE_CONFIG.
 
-Protocol: docs/research/exectv2/exect_rules_only_three_stage_test60_aggregate_protocol_2026-08-27.md
+Protocol:
+docs/research/exectv2/exect_rules_only_recall_first_test60_aggregate_protocol_2026-08-27.md
 Gate A (dev140 parity) must pass before running this script.
 Do not inspect or quote holdout rows from the sealed output.
 """
@@ -23,9 +24,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     load_letters_for_split,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.rules import (
-    ACCEPTED_THREE_STAGE_CONFIG,
-    run_letter_retune_stack,
-    run_letter_three_stage,
+    RECALL_FIRST_THREE_STAGE_CONFIG,
+    run_letter,
+    three_stage_stop_mentions,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import (
     TARGET_INDICATORS,
@@ -38,25 +39,39 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_hea
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL = (
     "docs/research/exectv2/"
-    "exect_rules_only_three_stage_test60_aggregate_protocol_2026-08-27.md"
+    "exect_rules_only_recall_first_test60_aggregate_protocol_2026-08-27.md"
 )
 OUT_JSON = (
-    REPO_ROOT / "experiments/exect_rules_only_three_stage_test60_aggregate_20260827.json"
+    REPO_ROOT
+    / "experiments/exect_rules_only_recall_first_test60_aggregate_20260827.json"
 )
-SEALED_ROOT = REPO_ROOT / "scratch/holdout/exect_rules_only_three_stage_test60_20260827"
+SEALED_ROOT = (
+    REPO_ROOT / "scratch/holdout/exect_rules_only_recall_first_test60_20260827"
+)
 LETTER_ID_RE = re.compile(r"\bEA\d{4}\b")
 TEST_ROW_COUNT = 59
+STOPS = ("recognise", "encode", "select")
 
 
 def main() -> None:
     letters = sorted(load_letters_for_split("test"), key=lambda item: item.letter_id)
     if len(letters) != TEST_ROW_COUNT:
-        raise RuntimeError(f"expected {TEST_ROW_COUNT} test letters, found {len(letters)}")
+        raise RuntimeError(
+            f"expected {TEST_ROW_COUNT} test letters, found {len(letters)}"
+        )
     gold = [_gold_view(letter) for letter in letters]
     comparator_preds = [_predict_comparator(letter) for letter in letters]
-    candidate_preds = [_predict_candidate(letter) for letter in letters]
-    payload = _build_payload(gold, comparator_preds, candidate_preds)
-    sealed_path = _write_sealed(comparator_preds, candidate_preds)
+    candidate_stops = {stop: [] for stop in STOPS}
+    for letter in letters:
+        stops = three_stage_stop_mentions(letter, RECALL_FIRST_THREE_STAGE_CONFIG)
+        candidate_stops["recognise"].append(
+            _to_exect(letter.letter_id, stops.recognise)
+        )
+        candidate_stops["encode"].append(_to_exect(letter.letter_id, stops.encode))
+        candidate_stops["select"].append(_to_exect(letter.letter_id, stops.select))
+
+    payload = _build_payload(gold, comparator_preds, candidate_stops)
+    sealed_path = _write_sealed(comparator_preds, candidate_stops["select"])
     payload["sealed_predictions"] = {
         "local_path": sealed_path.relative_to(REPO_ROOT).as_posix(),
         "sha256": _sha256(sealed_path),
@@ -69,10 +84,15 @@ def main() -> None:
     OUT_JSON.parent.mkdir(parents=True, exist_ok=True)
     OUT_JSON.write_text(text, encoding="utf-8")
     print(OUT_JSON)
-    for arm in ("comparator", "candidate"):
-        overall = payload["arms"][arm]["overall"]
+    comp_overall = payload["arms"]["comparator_select"]["overall"]
+    print(
+        f"comparator select: F1 {comp_overall['f1']:.4f} "
+        f"P {comp_overall['precision']:.4f} R {comp_overall['recall']:.4f}"
+    )
+    for stop in STOPS:
+        overall = payload["arms"]["candidate_stage_rungs"][stop]["overall"]
         print(
-            f"{arm}: F1 {overall['f1']:.4f} "
+            f"candidate {stop}: F1 {overall['f1']:.4f} "
             f"P {overall['precision']:.4f} R {overall['recall']:.4f}"
         )
 
@@ -90,12 +110,7 @@ def _gold_view(letter: ExectLetter) -> ExectLetter:
 
 
 def _predict_comparator(letter: ExectLetter) -> ExectLetter:
-    result = run_letter_retune_stack(letter)
-    return _to_exect(letter.letter_id, result.comparison_projection.mentions)
-
-
-def _predict_candidate(letter: ExectLetter) -> ExectLetter:
-    result = run_letter_three_stage(letter, ACCEPTED_THREE_STAGE_CONFIG)
+    result = run_letter(letter)
     return _to_exect(letter.letter_id, result.comparison_projection.mentions)
 
 
@@ -125,36 +140,30 @@ def _score_arm(
     }
 
 
-def _family_delta(
-    comparator: dict[str, object], candidate: dict[str, object]
-) -> dict[str, dict[str, float]]:
-    comp_families = comparator["by_family"]
-    cand_families = candidate["by_family"]
-    deltas: dict[str, dict[str, float]] = {}
+def _build_payload(
+    gold: list[ExectLetter],
+    comparator_preds: list[ExectLetter],
+    candidate_stops: dict[str, list[ExectLetter]],
+) -> dict[str, object]:
+    comparator = _score_arm(gold, comparator_preds)
+    candidate_rungs = {
+        stop: _score_arm(gold, candidate_stops[stop]) for stop in STOPS
+    }
+    comp_overall = comparator["overall"]
+    cand_overall = candidate_rungs["select"]["overall"]
+    deltas_by_family: dict[str, dict[str, float]] = {}
     for family in TARGET_INDICATORS:
-        comp = comp_families[family]
-        cand = cand_families[family]
-        deltas[family] = {
+        comp = comparator["by_family"][family]
+        cand = candidate_rungs["select"]["by_family"][family]
+        deltas_by_family[family] = {
             "f1_delta": round(float(cand["f1"]) - float(comp["f1"]), 4),
             "precision_delta": round(
                 float(cand["precision"]) - float(comp["precision"]), 4
             ),
             "recall_delta": round(float(cand["recall"]) - float(comp["recall"]), 4),
         }
-    return deltas
-
-
-def _build_payload(
-    gold: list[ExectLetter],
-    comparator_preds: list[ExectLetter],
-    candidate_preds: list[ExectLetter],
-) -> dict[str, object]:
-    comparator = _score_arm(gold, comparator_preds)
-    candidate = _score_arm(gold, candidate_preds)
-    comp_overall = comparator["overall"]
-    cand_overall = candidate["overall"]
     return {
-        "schema_version": "exect.rules_only.three_stage_test60_aggregate.v1",
+        "schema_version": "exect.rules_only.recall_first_test60_aggregate.v1",
         "protocol": PROTOCOL,
         "generated_on": date.today().isoformat(),
         "split": "test60",
@@ -164,44 +173,46 @@ def _build_payload(
         "holdout_loaded": True,
         "model_calls": 0,
         "scorer": "clinical_inventory_unit_keys",
-        "candidate_config": "ACCEPTED_THREE_STAGE_CONFIG",
-        "comparator": "run_letter accepted 2026-08-27 retune stack",
-        "cited_comparator_f1": 0.7725,
+        "candidate_config": "RECALL_FIRST_THREE_STAGE_CONFIG",
+        "comparator": "run_letter (ACCEPTED_THREE_STAGE_CONFIG), cited test60 row 0.8018",
         "arms": {
-            "comparator": comparator,
-            "candidate": candidate,
+            "comparator_select": comparator,
+            "candidate_stage_rungs": candidate_rungs,
         },
         "deltas": {
             "overall": {
-                "f1_delta": round(float(cand_overall["f1"]) - float(comp_overall["f1"]), 4),
+                "f1_delta": round(
+                    float(cand_overall["f1"]) - float(comp_overall["f1"]), 4
+                ),
                 "precision_delta": round(
-                    float(cand_overall["precision"]) - float(comp_overall["precision"]),
+                    float(cand_overall["precision"])
+                    - float(comp_overall["precision"]),
                     4,
                 ),
                 "recall_delta": round(
-                    float(cand_overall["recall"]) - float(comp_overall["recall"]), 4,
+                    float(cand_overall["recall"]) - float(comp_overall["recall"]), 4
                 ),
             },
-            "by_family": _family_delta(comparator, candidate),
+            "by_family": deltas_by_family,
         },
-        "supersedes_cited_comparator": True,
         "claim_boundary": (
-            "Aggregate-only holdout replay of ACCEPTED_THREE_STAGE_CONFIG. "
-            "Family P/R expectations were predeclared in the protocol before "
-            "execution. No letter identifiers or row mechanisms in public "
-            "artifacts. Not clinical validation."
+            "Aggregate-only holdout stage-rung replay of "
+            "RECALL_FIRST_THREE_STAGE_CONFIG. Family expectations were "
+            "predeclared in the protocol before execution. No letter "
+            "identifiers or row mechanisms in public artifacts. Not "
+            "clinical validation."
         ),
     }
 
 
 def _write_sealed(
     comparator_preds: list[ExectLetter],
-    candidate_preds: list[ExectLetter],
+    candidate_select_preds: list[ExectLetter],
 ) -> Path:
     SEALED_ROOT.mkdir(parents=True, exist_ok=True)
     path = SEALED_ROOT / "inventory_predictions.jsonl"
     with path.open("w", encoding="utf-8") as handle:
-        for comp, cand in zip(comparator_preds, candidate_preds, strict=True):
+        for comp, cand in zip(comparator_preds, candidate_select_preds, strict=True):
             row = {
                 "letter_id": comp.letter_id,
                 "comparator_annotations": [

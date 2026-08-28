@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection import (
@@ -18,6 +19,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import
     standard_dictionary as sd,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
+    DIAGNOSIS_PARENT,
     canonicalize_diagnosis_concept,
     diagnosis_category_for_concept,
     is_diagnosis_descendant,
@@ -51,6 +53,55 @@ _RECOGNISE_SURFACES: tuple[str, ...] = tuple(
             *sorted(DIAGNOSIS_SURFACE_FORMS, key=len, reverse=True),
         )
     )
+)
+# Recall-first lexicon expansion: surfaces the direct benchmark lexicon
+# misses. Matched only by the unrestricted-surface producer, so a Select
+# keep rule must accept them before they can reach the select stop.
+_RECALL_EXPANSION_SURFACES: tuple[str, ...] = (
+    "epilepsy with generalised tonic clonic seizures alone",
+    "epilepsy with generalized tonic clonic seizures alone",
+    "temporal lobe onset seizures",
+    "temporal lobe onset seizure",
+    "frontal lobe onset seizures",
+    "frontal lobe onset seizure",
+    "drug resistant epilepsy",
+    "drug refractory epilepsies",
+    "drug refractory epilepsy",
+    "refractory epilepsies",
+    "refractory epilepsy",
+    "temporal lobe seizures",
+    "temporal lobe seizure",
+    "epileptic attacks",
+    "epileptic attack",
+    "nocturnal seizures",
+    "nocturnal seizure",
+)
+_EXPANDED_RECOGNISE_SURFACES: tuple[str, ...] = tuple(
+    dict.fromkeys(
+        (
+            *sorted(_RECALL_EXPANSION_SURFACES, key=len, reverse=True),
+            *_RECOGNISE_SURFACES,
+        )
+    )
+)
+# Adjectival tokens annotators sometimes split out of compound diagnosis
+# phrases as standalone gold units. Emitted only inside a matched surface.
+_COMPONENT_TOKENS: frozenset[str] = frozenset(
+    {
+        "focal",
+        "generalised",
+        "generalized",
+        "temporal",
+        "frontal",
+        "occipital",
+        "parietal",
+        "symptomatic",
+        "secondary",
+        "drug",
+        "epileptic",
+        "refractory",
+        "nocturnal",
+    }
 )
 _PROBABLE_FOCAL_PATTERN = re.compile(
     r"\b(epilepsy\s*[-–,]\s*probable\s+focal(?:\s+onset)?)\b",
@@ -429,10 +480,14 @@ def nondiagnostic_context_diagnosis_candidates(
     return tuple(candidates)
 
 
-def nested_ancestor_diagnosis_candidates(
+def _nested_diagnosis_candidates(
     note_text: str,
+    *,
+    require_hierarchy: bool,
+    candidate_class: str,
+    rule_id: str,
 ) -> tuple[RecogniseCandidate, ...]:
-    from ..recognise_ledger import DIAGNOSIS_NESTED_ANCESTOR, RecogniseCandidate
+    from ..recognise_ledger import RecogniseCandidate
 
     direct_mentions = _extract_diagnoses(note_text)
     direct_concepts = {
@@ -458,11 +513,13 @@ def nested_ancestor_diagnosis_candidates(
             continue
         candidate_mention = _predicted_diagnosis_from_match(note_text, match)
         if candidate_mention is None:
-            continue
+            if require_hierarchy:
+                continue
+            candidate_mention = _conceptless_diagnosis_from_match(note_text, match)
         candidate_concept = canonicalize_diagnosis_concept(candidate_mention.text)
         if not candidate_concept or candidate_concept in direct_concepts:
             continue
-        if not any(
+        if require_hierarchy and not any(
             accepted_concept != candidate_concept
             and is_diagnosis_descendant(accepted_concept, candidate_concept)
             for accepted_span, accepted_concept in accepted_spans
@@ -475,10 +532,474 @@ def nested_ancestor_diagnosis_candidates(
         candidates.append(
             RecogniseCandidate(
                 mention=candidate_mention,
-                candidate_class=DIAGNOSIS_NESTED_ANCESTOR,
-                rule_id="recognise.diagnosis_nested_ancestor",
+                candidate_class=candidate_class,
+                rule_id=rule_id,
             )
         )
+    return tuple(candidates)
+
+
+def nested_ancestor_diagnosis_candidates(
+    note_text: str,
+) -> tuple[RecogniseCandidate, ...]:
+    from ..recognise_ledger import DIAGNOSIS_NESTED_ANCESTOR
+
+    return _nested_diagnosis_candidates(
+        note_text,
+        require_hierarchy=True,
+        candidate_class=DIAGNOSIS_NESTED_ANCESTOR,
+        rule_id="recognise.diagnosis_nested_ancestor",
+    )
+
+
+def nested_surface_diagnosis_candidates(
+    note_text: str,
+) -> tuple[RecogniseCandidate, ...]:
+    """Recall-first: every distinct shorter surface overlapping an accepted
+    span, with no hierarchy requirement. Select owns dedupe/specificity."""
+
+    from ..recognise_ledger import DIAGNOSIS_NESTED_SURFACE
+
+    return _nested_diagnosis_candidates(
+        note_text,
+        require_hierarchy=False,
+        candidate_class=DIAGNOSIS_NESTED_SURFACE,
+        rule_id="recognise.diagnosis_nested_surface",
+    )
+
+
+def _conceptless_diagnosis_from_match(
+    text: str, match: re.Match[str]
+) -> PredictedMention:
+    """Candidate mention for a surface with no benchmark concept mapping.
+
+    Inventory unit keys derive from canonicalized text, so a recall-first
+    candidate is scoreable without a CUI. Only used on candidate paths;
+    the direct path still requires a resolvable concept.
+    """
+
+    phrase = match.group(1) if match.groups() else match.group(0)
+    return PredictedMention(
+        entity=DIAGNOSIS.name,
+        text=phrase,
+        attributes={
+            "DiagCategory": canonicalize_diagnosis_concept(phrase),
+            "Certainty": "5",
+            "Negation": "Affirmed",
+        },
+        evidence=_sentence_window(text, match.start(), match.end()),
+        evidence_span=match_span(match),
+        component_owner=_owner(
+            "deterministic_diagnosis_phrase",
+            RuleGroup.ANCHOR_PHRASE,
+            Portability.CLINICAL_EPILEPSY,
+        ),
+    )
+
+
+_HEADING_QUALIFIER_CONCEPTS: dict[str, str] = {
+    "focal": "focal epilepsy",
+    "generalised": "generalised epilepsy",
+    "generalized": "generalised epilepsy",
+    "temporal": "temporal lobe epilepsy",
+    "frontal": "frontal lobe epilepsy",
+    "occipital": "occipital lobe epilepsy",
+    "parietal": "parietal lobe epilepsy",
+}
+_HEADING_QUALIFIER_RE = re.compile(
+    r"\bepilepsy\s*(?:[–\-,]|\()\s*(?:probable\s+|possibly\s+|likely\s+)?"
+    r"(focal|generalised|generalized|temporal|frontal|occipital|parietal)"
+    r"(?:\s+(?:lobe|onset))?\s*\)?",
+    re.IGNORECASE,
+)
+# Wider qualifier grammar: allows intervening tokens ("epilepsy –
+# unclassified, possibly generalised") and adverb forms ("probably").
+_HEADING_QUALIFIER_LOOSE_RE = re.compile(
+    r"\bepilepsy\b[^.\n]{0,40}?\b(?:probable|probably|possibly|likely)\s+"
+    r"(focal|generalised|generalized|temporal|frontal|occipital|parietal)\b",
+    re.IGNORECASE,
+)
+
+
+def heading_decomposition_diagnosis_candidates(
+    note_text: str,
+) -> tuple[RecogniseCandidate, ...]:
+    """Recall-first: decompose qualified epilepsy headings into both concepts.
+
+    ``epilepsy – probable focal`` names both ``epilepsy`` and
+    ``focal epilepsy``; ``focal epilepsy (occipital)`` also names
+    ``occipital lobe epilepsy``. The direct path emits one mention per
+    span, so the second concept is otherwise unreachable.
+    """
+
+    from ..recognise_ledger import DIAGNOSIS_HEADING_DECOMPOSITION, RecogniseCandidate
+
+    candidates: list[RecogniseCandidate] = []
+    seen: set[str] = set()
+    heading_matches = (
+        *_HEADING_QUALIFIER_RE.finditer(note_text),
+        *_HEADING_QUALIFIER_LOOSE_RE.finditer(note_text),
+    )
+    for match in heading_matches:
+        qualifier = match.group(1).lower()
+        evidence = _sentence_window(note_text, match.start(), match.end())
+        for concept_text in (_HEADING_QUALIFIER_CONCEPTS[qualifier], "epilepsy"):
+            concept_key = canonicalize_diagnosis_concept(concept_text)
+            if concept_key in seen:
+                continue
+            seen.add(concept_key)
+            concept = diagnosis_concept(concept_text)
+            attrs = {
+                "DiagCategory": concept.canonical if concept else concept_key,
+                "Certainty": "5",
+                "Negation": "Affirmed",
+            }
+            if concept is not None:
+                attrs = attach_benchmark_concept(attrs, concept)
+            candidates.append(
+                RecogniseCandidate(
+                    mention=PredictedMention(
+                        entity=DIAGNOSIS.name,
+                        text=concept_text,
+                        attributes=attrs,
+                        evidence=evidence,
+                        evidence_span=match_span(match),
+                        component_owner=_owner(
+                            "deterministic_diagnosis_heading_decomposition",
+                            RuleGroup.ANCHOR_PHRASE,
+                            Portability.CLINICAL_EPILEPSY,
+                        ),
+                    ),
+                    candidate_class=DIAGNOSIS_HEADING_DECOMPOSITION,
+                    rule_id="recognise.diagnosis_heading_decomposition",
+                )
+            )
+    return tuple(candidates)
+
+
+def _recall_surface_pattern(name: str) -> str:
+    """Like ``_surface_pattern`` but crossing line breaks (recall-first only)."""
+
+    return r"[\s-]+".join(re.escape(part) for part in name.split())
+
+
+def _expanded_surface_matches(text: str) -> tuple[re.Match[str], ...]:
+    matches: list[re.Match[str]] = []
+    for name in _EXPANDED_RECOGNISE_SURFACES:
+        pattern = re.compile(rf"\b({_recall_surface_pattern(name)})\b", re.IGNORECASE)
+        matches.extend(pattern.finditer(text))
+    return tuple(matches)
+
+
+def _expansion_only_surface_matches(text: str) -> tuple[re.Match[str], ...]:
+    matches: list[re.Match[str]] = []
+    for name in _RECALL_EXPANSION_SURFACES:
+        pattern = re.compile(rf"\b({_recall_surface_pattern(name)})\b", re.IGNORECASE)
+        matches.extend(pattern.finditer(text))
+    return tuple(matches)
+
+
+# Alias decompositions: a matched span asserts concepts whose canonical
+# surface differs from the span (annotators normalize these forms).
+# Templates may use backreferences into the pattern.
+_ALIAS_DECOMPOSITIONS: tuple[tuple[re.Pattern[str], tuple[str, ...]], ...] = (
+    (re.compile(r"\bfocal\s+onset\b", re.IGNORECASE), ("focal seizures",)),
+    (
+        re.compile(r"\b(temporal|frontal|occipital|parietal)\s+lobe\s+onset\b", re.IGNORECASE),
+        (r"\1 lobe onset seizure",),
+    ),
+    (
+        re.compile(r"\bfocal\s+to\s+bilateral\s+seizures?\b", re.IGNORECASE),
+        ("focal to bilateral convulsive seizures",),
+    ),
+    (
+        re.compile(r"\bsecondarily\s+generalised\s+seizures?\b", re.IGNORECASE),
+        ("secondary generalised seizures",),
+    ),
+    (
+        re.compile(r"\bnocturnal\s+(?:[a-z]+\s+){0,3}seizures?\b", re.IGNORECASE),
+        ("nocturnal seizures",),
+    ),
+    (
+        re.compile(
+            r"\bcomplex\s+partial\s+and\b[^.\n]{0,60}?\bseizures?\b", re.IGNORECASE
+        ),
+        ("complex partial seizures",),
+    ),
+    (
+        re.compile(r"\bepileptic\s+and\s+(?:[a-z]+\s+){0,2}attacks?\b", re.IGNORECASE),
+        ("epileptic attack",),
+    ),
+    (
+        re.compile(
+            r"\bepilepsy\s*\??\s*(?:left|right)?\s*"
+            r"(temporal|frontal|occipital|parietal)\s+lobe\b",
+            re.IGNORECASE,
+        ),
+        (r"\1 lobe epilepsy",),
+    ),
+    (
+        re.compile(
+            r"\b(drug\s+(?:resistant|refractory)|refractory)\s+"
+            r"(?:focal|generalised|generalized)\s+(epilepsy|epilepsies)\b",
+            re.IGNORECASE,
+        ),
+        (r"\1 \2", "focal epilepsy"),
+    ),
+)
+
+# Seizure-type -> syndrome inference: annotators fold seizure semiology
+# into the syndrome concept (e.g. "symptomatic structural epilepsy" with
+# focal motor seizures is annotated symptomatic structural *focal*
+# epilepsy, whose inventory split includes "focal epilepsy").
+_FOCAL_TYPE_EVIDENCE_RE = re.compile(
+    r"\bfocal(?:\s+[a-z]+){0,3}\s+seizures?\b|\bcomplex\s+partial\s+seizures?\b|"
+    r"\b(?:temporal|frontal|occipital|parietal)\s+lobe\b",
+    re.IGNORECASE,
+)
+_GENERALISED_TYPE_EVIDENCE_RE = re.compile(
+    r"\bgeneralised?\s+tonic[\s-]+clonic\s+seizures?\b|"
+    r"\b(?:myoclonic|absence)\s+seizures?\b",
+    re.IGNORECASE,
+)
+_EPILEPSY_EVIDENCE_RE = re.compile(r"\bepilep", re.IGNORECASE)
+
+
+def _distinct_concept_emitter(
+    note_text: str, candidate_class: str
+) -> tuple[list[RecogniseCandidate], Callable[[PredictedMention, str], None]]:
+    """Shared dedupe-by-concept emitter seeded with the direct-path concepts."""
+
+    from ..recognise_ledger import RecogniseCandidate
+
+    seen: set[str] = {
+        canonicalize_diagnosis_concept(mention.text)
+        for mention in _extract_diagnoses(note_text)
+    }
+    candidates: list[RecogniseCandidate] = []
+
+    def _emit(mention: PredictedMention, rule_id: str) -> None:
+        concept_key = canonicalize_diagnosis_concept(mention.text)
+        if not concept_key or concept_key in seen:
+            return
+        seen.add(concept_key)
+        candidates.append(
+            RecogniseCandidate(
+                mention=mention,
+                candidate_class=candidate_class,
+                rule_id=rule_id,
+            )
+        )
+
+    return candidates, _emit
+
+
+def expansion_surface_diagnosis_candidates(
+    note_text: str,
+) -> tuple[RecogniseCandidate, ...]:
+    """Recall-first: expansion-lexicon surfaces and alias decompositions.
+
+    Covers direct-path misses that are purely lexical: surfaces absent
+    from the benchmark lexicon and spans whose canonical concept differs
+    from the matched surface. Split from the unrestricted class because
+    these emissions are precision-safe enough to keep at Select.
+    """
+
+    from ..recognise_ledger import DIAGNOSIS_EXPANSION_SURFACE
+
+    candidates, _emit = _distinct_concept_emitter(
+        note_text, DIAGNOSIS_EXPANSION_SURFACE
+    )
+
+    for match in _expansion_only_surface_matches(note_text):
+        _emit(
+            _predicted_diagnosis_from_match(note_text, match)
+            or _conceptless_diagnosis_from_match(note_text, match),
+            "recognise.diagnosis_expansion_surface",
+        )
+
+    for pattern, templates in _ALIAS_DECOMPOSITIONS:
+        for match in pattern.finditer(note_text):
+            for template in templates:
+                _emit(
+                    _aliased_diagnosis_mention(
+                        note_text, match, match.expand(template)
+                    ),
+                    "recognise.diagnosis_alias_decomposition",
+                )
+
+    return tuple(candidates)
+
+
+def unrestricted_surface_diagnosis_candidates(
+    note_text: str,
+) -> tuple[RecogniseCandidate, ...]:
+    """Recall-first: benchmark surfaces with no context gates, plus inference.
+
+    Covers direct-path misses from context exclusions (negation, onset,
+    service, narrative) and seizure-type -> syndrome inference. One
+    candidate per distinct concept key not already produced by the direct
+    path. FP-heavy by design; recall lives at the recognise stop.
+    """
+
+    from ..recognise_ledger import DIAGNOSIS_UNRESTRICTED_SURFACE
+
+    candidates, _emit = _distinct_concept_emitter(
+        note_text, DIAGNOSIS_UNRESTRICTED_SURFACE
+    )
+
+    for match in _expanded_surface_matches(note_text):
+        _emit(
+            _predicted_diagnosis_from_match(note_text, match)
+            or _conceptless_diagnosis_from_match(note_text, match),
+            "recognise.diagnosis_unrestricted_surface",
+        )
+
+    if _EPILEPSY_EVIDENCE_RE.search(note_text):
+        for evidence_re, syndrome in (
+            (_FOCAL_TYPE_EVIDENCE_RE, "focal epilepsy"),
+            (_GENERALISED_TYPE_EVIDENCE_RE, "generalised epilepsy"),
+        ):
+            evidence_match = evidence_re.search(note_text)
+            if evidence_match is not None:
+                _emit(
+                    _aliased_diagnosis_mention(note_text, evidence_match, syndrome),
+                    "recognise.diagnosis_syndrome_inference",
+                )
+
+    return tuple(candidates)
+
+
+def _aliased_diagnosis_mention(
+    text: str, match: re.Match[str], concept_text: str
+) -> PredictedMention:
+    """Mention asserting *concept_text* on the evidence of *match*."""
+
+    concept = _diagnosis_concept_from_phrase(concept_text)
+    attrs = {
+        "DiagCategory": (
+            concept.canonical
+            if concept
+            else canonicalize_diagnosis_concept(concept_text)
+        ),
+        "Certainty": "5",
+        "Negation": "Affirmed",
+    }
+    if concept is not None:
+        attrs = attach_benchmark_concept(attrs, concept)
+    return PredictedMention(
+        entity=DIAGNOSIS.name,
+        text=concept_text,
+        attributes=attrs,
+        evidence=_sentence_window(text, match.start(), match.end()),
+        evidence_span=match_span(match),
+        component_owner=_owner(
+            "deterministic_diagnosis_alias",
+            RuleGroup.ANCHOR_PHRASE,
+            Portability.CLINICAL_EPILEPSY,
+        ),
+    )
+
+
+def hierarchy_ancestor_diagnosis_candidates(
+    note_text: str,
+) -> tuple[RecogniseCandidate, ...]:
+    """Recall-first: hierarchy ancestors of directly recognized concepts.
+
+    A frontal lobe epilepsy mention also asserts focal epilepsy (and
+    epilepsy); annotators score those parents as separate inventory units.
+    No surface for the ancestor is required.
+    """
+
+    from ..recognise_ledger import DIAGNOSIS_HIERARCHY_ANCESTOR, RecogniseCandidate
+
+    direct_mentions = _extract_diagnoses(note_text)
+    direct_concepts = {
+        canonicalize_diagnosis_concept(mention.text) for mention in direct_mentions
+    }
+    seen: set[str] = set(direct_concepts)
+    candidates: list[RecogniseCandidate] = []
+    for mention in direct_mentions:
+        ancestor = DIAGNOSIS_PARENT.get(canonicalize_diagnosis_concept(mention.text))
+        while ancestor is not None:
+            if ancestor in seen:
+                ancestor = DIAGNOSIS_PARENT.get(ancestor)
+                continue
+            seen.add(ancestor)
+            concept = diagnosis_concept(ancestor)
+            attrs = {
+                "DiagCategory": concept.canonical if concept else ancestor,
+                "Certainty": "5",
+                "Negation": "Affirmed",
+            }
+            if concept is not None:
+                attrs = attach_benchmark_concept(attrs, concept)
+            candidates.append(
+                RecogniseCandidate(
+                    mention=PredictedMention(
+                        entity=DIAGNOSIS.name,
+                        text=ancestor,
+                        attributes=attrs,
+                        evidence=mention.evidence,
+                        evidence_span=mention.evidence_span,
+                        component_owner=_owner(
+                            "deterministic_diagnosis_hierarchy_ancestor",
+                            RuleGroup.ANCHOR_PHRASE,
+                            Portability.CLINICAL_EPILEPSY,
+                        ),
+                    ),
+                    candidate_class=DIAGNOSIS_HIERARCHY_ANCESTOR,
+                    rule_id="recognise.diagnosis_hierarchy_ancestor",
+                )
+            )
+            ancestor = DIAGNOSIS_PARENT.get(ancestor)
+    return tuple(candidates)
+
+
+def component_token_diagnosis_candidates(
+    note_text: str,
+) -> tuple[RecogniseCandidate, ...]:
+    """Recall-first: standalone adjectival tokens inside matched surfaces.
+
+    Annotators sometimes split a compound heading into standalone units
+    (``generalised``, ``Focal``, ``Occipital``). Tokens are emitted only
+    when they occur inside an expanded-lexicon surface match, one
+    candidate per distinct token.
+    """
+
+    from ..recognise_ledger import DIAGNOSIS_COMPONENT_TOKEN, RecogniseCandidate
+
+    direct_concepts = {
+        canonicalize_diagnosis_concept(mention.text)
+        for mention in _extract_diagnoses(note_text)
+    }
+    seen: set[str] = set(direct_concepts)
+    candidates: list[RecogniseCandidate] = []
+    for match in _expanded_surface_matches(note_text):
+        for token_match in re.finditer(r"[A-Za-z]+", match.group(1)):
+            token = token_match.group(0)
+            if token.lower() not in _COMPONENT_TOKENS:
+                continue
+            concept_key = canonicalize_diagnosis_concept(token)
+            if not concept_key or concept_key in seen:
+                continue
+            seen.add(concept_key)
+            start = match.start(1) + token_match.start()
+            end = match.start(1) + token_match.end()
+            token_span_match = re.compile(
+                rf"({re.escape(token)})", re.IGNORECASE
+            ).match(note_text, start, end)
+            if token_span_match is None:
+                continue
+            candidates.append(
+                RecogniseCandidate(
+                    mention=_conceptless_diagnosis_from_match(
+                        note_text, token_span_match
+                    ),
+                    candidate_class=DIAGNOSIS_COMPONENT_TOKEN,
+                    rule_id="recognise.diagnosis_component_token",
+                )
+            )
     return tuple(candidates)
 
 

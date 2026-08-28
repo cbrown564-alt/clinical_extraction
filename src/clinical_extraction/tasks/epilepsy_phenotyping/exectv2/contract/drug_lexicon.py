@@ -61,6 +61,51 @@ DRUG_SURFACE_ALIASES: dict[str, str] = {
 }
 
 
+#: External antiseizure-medication dictionary (2026-08-27 restructure,
+#: Phase B). Generic names absent from the benchmark surface list, used by
+#: the recall-first prescription recogniser. Curated from the standard UK
+#: ASM formulary, not from any benchmark letter.
+EXTERNAL_ASM_GENERICS: tuple[str, ...] = (
+    "acetazolamide",
+    "cannabidiol",
+    "cenobamate",
+    "clonazepam",
+    "diazepam",
+    "ethosuximide",
+    "felbamate",
+    "fenfluramine",
+    "lorazepam",
+    "paraldehyde",
+    "primidone",
+    "rufinamide",
+    "stiripentol",
+    "sulthiame",
+    "tiagabine",
+    "vigabatrin",
+)
+
+#: UK brand names mapping to their generic (normalized-phrase keys, like
+#: ``DRUG_SURFACE_ALIASES``).
+EXTERNAL_ASM_BRAND_ALIASES: dict[str, str] = {
+    "diacomit": "stiripentol",
+    "diamox": "acetazolamide",
+    "emeside": "ethosuximide",
+    "epanutin": "phenytoin",
+    "epidyolex": "cannabidiol",
+    "fintepla": "fenfluramine",
+    "fycompa": "perampanel",
+    "inovelon": "rufinamide",
+    "mysoline": "primidone",
+    "ontozry": "cenobamate",
+    "ospolot": "sulthiame",
+    "rivotril": "clonazepam",
+    "sabril": "vigabatrin",
+    "zarontin": "ethosuximide",
+    "zebinix": "eslicarbazepine",
+    "zonegran": "zonisamide",
+}
+
+
 def resolve_drug_surface(surface: str) -> str:
     """Return the canonical generic surface for a drug mention, if aliased."""
 
