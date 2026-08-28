@@ -24,8 +24,9 @@ Sol hybrid, Luna llm-only, and the old "Micro-F1 across cells" hybrid/`gan_llm_o
 
 Living gold is `gold_monthly_frequency` from the current label parser
 (Purist UNK support 76/450). Cell 1 is a no-call living rules replay.
-Cells 2–5 Purist counts below match the curated sidecar except cell 1,
-where that sidecar still lists 329 from the 2026-08-10 gold ε.
+The curated sidecar
+`paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json`
+uses the same gold.
 
 | Recognise | Encode | Select | Purist micro-F1 |
 | --- | --- | --- | ---: |

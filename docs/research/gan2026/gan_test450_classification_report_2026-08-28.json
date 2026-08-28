@@ -33,11 +33,11 @@
           "select": "rules",
           "purist_correct": 321,
           "purist_micro_f1": 0.7133,
-          "cited": null,
+          "cited": 0.71,
           "pragmatic_correct": 341,
           "pragmatic_micro_f1": 0.7578,
           "pragmatic_source": "living gan_rules replay / this class report",
-          "note": "Living gold. Curated five-cell comparison.json still lists 329 from the 2026-08-10 gold epsilon."
+          "note": "Living gold. Curated five-cell comparison.json select is 321."
         },
         {
           "recognise": "both",

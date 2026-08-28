@@ -21,14 +21,14 @@ stops are prior-stage ablations. `gan_llm_only` is not a results column.
 On locked `test450`, LLM recognise plus codebook rule encode plus rule
 select is the strongest row (**0.83**). Rule select without that
 encode is **0.82**, matching both-then-rules. LLM select is **0.79**.
-Standalone rules are **0.73**. The historical selected-evidence
+Standalone rules are **0.71** (321/450; living gold). The historical selected-evidence
 encoder on the same extract is an ablation (encode 0.77, select 0.80).
 
 ## Locked `test450` headline (select stop, aggregate only)
 
 | Recognise | Encode | Select | Purist micro-F1 |
 | --- | --- | --- | ---: |
-| rules | rules | rules | 0.73 |
+| rules | rules | rules | 0.71 |
 | both | rules | rules | 0.82 |
 | LLM | rules | rules | **0.83** |
 | LLM | LLM | rules | 0.82 |
@@ -44,7 +44,7 @@ wrote the codebook form (no rule encode). LLM select is
 
 | Recognise | Encode | Select | Recognise stop | Encode stop |
 | --- | --- | --- | ---: | ---: |
-| rules | rules | rules | 0.73 | 0.73 |
+| rules | rules | rules | 0.71 | 0.71 |
 | both | rules | rules | 0.82 | 0.80 |
 | LLM | rules | rules | 0.79 | 0.80 |
 | LLM | LLM | rules | 0.79 | 0.79 |

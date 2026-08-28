@@ -1,6 +1,7 @@
 # Dataset description
 
 Date: 2026-08-26
+Revised: 2026-08-27 (split-stratum percentages)
 Status: development inventory; holdout aggregates only
 Owners: [dataset gold support](dataset_gold_support_2026-08-22.md),
 [what the two golds already decided](what_the_two_golds_already_decided_2026-08-17.md),
@@ -21,6 +22,7 @@ evaluation forms?
 | Letter length | Whitespace-split word counts on official cleaned `note_text` |
 | ExECT gold | Cited 4-family inventory units (`clinical_inventory_unit_keys`) |
 | Gan gold | One Purist-mapped current-frequency label per letter |
+| Splits | Frozen manifests. ExECT `exectv2_split_v2` stratified on `has_seizure_frequency_mention`. Gan `gan2026_split_v1` stratified on `gold_label_kind` × `row_ok` |
 | Inspection | Development rows permitted. `test60` and `test450` aggregate-only |
 | Predictions | None |
 
@@ -45,6 +47,10 @@ corpora:
 - **Sentinel mix on Gan.** About 38% of paper labels are not a single
   numeric rate (seizure-free, unknown, no-reference, or unresolved
   multiple). `row_ok=False` letters stay in the cited n (32 / 20).
+- **Split mix.** Both paper splits are stratified. ExECT keeps the
+  seizure-frequency-present / absent cut near 71% / 29%. Gan keeps
+  each label kind and the `row_ok=False` share aligned across
+  `dev750` and `test450`.
 
 Leave family occupancy, Compact collapse, and Purist band counts in
 [dataset gold support](dataset_gold_support_2026-08-22.md). Do not put
@@ -69,6 +75,50 @@ Public corpora: ExECT **200** letters (mean **216.4** words); Gan
 outside both paper splits. Gan notes are about 1.8× longer. Split
 means sit close to the corpus means.
 
+## Split composition
+
+ExECT `exectv2_split_v2` (seed 20260610) stratifies on whether the
+letter has any SeizureFrequency gold mention. That count uses gold
+JSON only. Gan `gan2026_split_v1` (seed 20260531) stratifies on
+`gold_label_kind` × `row_ok`. Kind counts below reuse the locked
+manifest `strata_counts`. Locked letters were not listed or read.
+
+**ExECT** — `has_seizure_frequency_mention`
+
+| Split | n | Has SF | No SF |
+| --- | ---: | ---: | ---: |
+| Public 200 | 200 | 142 (71.0%) | 58 (29.0%) |
+| `dev140` | 140 | 99 (70.7%) | 41 (29.3%) |
+| `test60` (59) | 59 | 43 (72.9%) | 16 (27.1%) |
+| Paper 199 | 199 | 142 (71.4%) | 57 (28.6%) |
+
+The public letter outside both paper splits is EA0159 (no SF gold).
+That is why public “no SF” is 58 and the paper union is 57. The
+59-letter holdout sits 1.9 points above the public SF-present share.
+
+**Gan** — `gold_label_kind`
+
+| Kind | `dev750` | `test450` | Paper 1,200 | Public 1,500 |
+| --- | ---: | ---: | ---: | ---: |
+| frequency | 468 (62.4%) | 281 (62.4%) | 749 (62.4%) | 937 (62.5%) |
+| seizure_free | 112 (14.9%) | 67 (14.9%) | 179 (14.9%) | 223 (14.9%) |
+| unknown | 100 (13.3%) | 60 (13.3%) | 160 (13.3%) | 200 (13.3%) |
+| unresolved_multiple | 43 (5.7%) | 26 (5.8%) | 69 (5.8%) | 86 (5.7%) |
+| no_reference | 27 (3.6%) | 16 (3.6%) | 43 (3.6%) | 54 (3.6%) |
+
+**Gan** — `row_ok`
+
+| Split | `row_ok=true` | `row_ok=false` |
+| --- | ---: | ---: |
+| `dev750` | 718 (95.7%) | 32 (4.3%) |
+| `test450` | 430 (95.6%) | 20 (4.4%) |
+| Paper 1,200 | 1,148 (95.7%) | 52 (4.3%) |
+
+Almost all `row_ok=false` mass is `no_reference`, plus a few
+frequency and seizure-free rows. `unknown` and `unresolved_multiple`
+are all `row_ok=true` in this split. `train300` is on disk and is
+omitted here.
+
 ## Gold units
 
 | Statistic | ExECT `dev140` | ExECT `test60` | ExECT total | Gan `dev750` | Gan `test450` | Gan total |
@@ -91,13 +141,17 @@ denominator.
 
 ## Claim boundary
 
-**Development inventory** of letter length and gold density, plus
-**aggregate-only** holdout totals. Not predicted performance, not
-holdout generalization, and not a claim that gold is the task.
+**Development inventory** of letter length, gold density, and
+split-stratum mix, plus **aggregate-only** holdout totals. Not
+predicted performance, not holdout generalization, and not a claim
+that gold is the task.
 
 ## Attribution
 
 Lengths use official ExECT and Gan loaders on cleaned `note_text`.
 Inventory totals reuse `clinical_inventory_unit_keys` (836 / 349).
 Compact/headline totals and Gan kind / `row_ok` counts match
-[dataset gold support](dataset_gold_support_2026-08-22.md).
+[dataset gold support](dataset_gold_support_2026-08-22.md). ExECT SF
+presence is a JSON-entity count (`entity == SeizureFrequency`). Gan
+kind × `row_ok` cells are the `gan2026_split_v1` manifest
+`strata_counts`.
