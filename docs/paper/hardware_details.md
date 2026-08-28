@@ -1,14 +1,13 @@
 # Local hardware for paper results
 
 Date: 2026-08-27
-Status: writing source (not yet in the manuscript)
+Status: dated local-device snapshot; paper-facing merge is
+[`experiment_environment.md`](experiment_environment.md)
 Owner: this file
 Roster: [`paper_experiments/roster.json`](../../paper_experiments/roster.json)
 
-Use this note when filling Results → Development Environment (or
-Methods, if that is where compute is stated). It describes the
-workstation that served the **local** roster models. Hosted API
-hardware is undisclosed and is not reconstructed here.
+Use this note for the workstation that served the **local** roster
+models. Hosted API hardware is undisclosed and is not reconstructed here.
 
 This page does not support a matched token, dollar, energy, or
 latency comparison between hosted and local routes.
