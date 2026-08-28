@@ -11,6 +11,7 @@
 \usepackage{array}
 \usepackage{subcaption}
 \usepackage{booktabs}
+\usepackage{multirow}
 
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 
@@ -44,25 +45,7 @@
 \maketitle
 
 \begin{abstract}
-Clinical information extraction (IE) converts clinical 
-narratives into structured facts. Large language models can 
-do this with significantly less preprocessing than rules-based 
-methods, but they introduce new classes of problems: 
-hallucination, schema drift and overconfidence. We propose 
-a hybrid system where the model recognises entities, interprets 
-relations and provides evidence, and the rules normalise 
-entities, verify evidence and apply policies to resolve conflicts. 
-This modular system preserves the rich uncertainty captured 
-in clinical narratives while producing auditable structured 
-outputs that confirm to explicit rules. We use 2 public datasets 
-of epilepsy letters to evaluate this system on two distinct tasks: 
-(1) selecting the most important clinical fact among many and 
-(2) building a broad inventory of clinical facts. We show that 
-the combined system improved F1 by +0.05 vs. rules-only or 
-LLM-only systems, while creating a rich evidence trail with an 
-exact evidence score of >0.99. This transparent, 
-evidence-grounded system is a step towards making more 
-trustworthy systems for clinical use.
+x
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -71,20 +54,6 @@ natural language processing
 \end{IEEEkeywords}
 
 \section{Introduction}
-
-Clinical notes in electronic health records (EHRs) are 
-among the most valuable sources of medical information 
-available, recording diagnoses, medications, medical 
-investigations and more in rich narrative form. This form is 
-both a strength and a weakness. Patient demographics are 
-routinely collected in structured forms for administrative 
-purposes, and this structured form makes them easy to 
-use in clinical research. Information about the patient's 
-diagnoses and treatment outcomes often exist solely in 
-narrative form in hospital discharge summaries or letters 
-from clinicians. This makes them useful to deeply 
-understand an individual patient, but very difficult to use 
-to build a broad understanding of a patient population.
 
 Epilepsy is one of the most common neurological 
 diseases, affecting over [x]m people globally. Clinicians use 
@@ -153,11 +122,8 @@ it.
 
 This paper evaluates the ideal combination of LLMs and 
 rules across those three stages: recognition, encoding and 
-selection. It was evaluated on two sets of annotated 
-epilepsy clinic letters that reflect two common clinical IE 
-tasks: producing a single label to determine a patient's 
-current status, and producing a broad inventory of clinical 
-facts, past and present. The paper demonstrates that a 
+selection. It was evaluated on a set of 1,200 annotated 
+epilepsy clinic letters. The paper demonstrates that a 
 modular system combining LLMs and rules can extract 
 information with comparable accuracy to past methods 
 while preserving a richer evidence chain. The system 
@@ -166,22 +132,6 @@ Figure 1 displays the web app illustrating some of that
 chain from evidence to final answer.
 
 \section{Literature Review}
-
-Epilepsy clinic letters contain facts about medication, 
-diagnoses, investigations and seizure frequency, often
-covering multiple time periods and with many hedged\cite{b1}
-observations. Fonferko-Shadrach \emph{et al.} treat the 
-letter as an inventory of supported facts across prescriptions, 
-diagnosie, investigations and frequency\cite{b1,b2}. 
-Xie \emph{et al.}~\cite{b3}, Holgate \emph{et al.}~\cite{b4}, and 
-Gan \emph{et al.}~\cite{b3} treat it as one current 
-seizure-frequency state. The decisions about which facts
-to recognise, how to represent them and which facts to keep
-in the final representation are often bundled into one 
-single task definition. This paper demonstrates that 
-breaking them up into discrete stages with explicit 
-subjective choices can the make the system more 
-transparent and flexible.
 
 Wang \emph{et al.} define clinical IE as the automatic 
 extraction and encoding of clinical information from 
@@ -221,6 +171,9 @@ methods achieving F1 scores of 0.8 and above.
 
 INSERT A REVIEW OF EVALUATION PERFORMANCE
 
+We have 8 different papers in the last 4 years with seizure frequency
+performance results, but there is significant variance. 
+
 Chiticariu \emph{et al.} show that academic papers tend to focus 
 exclusively on benchmark accuracy, while practitioners tend 
 to value transparency, configurability and efficiency at the 
@@ -238,143 +191,73 @@ training signal. This paper presents a transparent evidence
 chain from exact text to final answer as part of the core 
 output to improve interpretability for downstream users.
 
-
-
-Most papers present results of a system trained or tuned on 
-one local corpus. Decker \emph{et al.} show that a highly 
-tuned system on one set of epilepsy letters can perform 
-significantly worse on a set from another epilepsy centre, 
-with seizure-frequency $F_1$ dropping from 0.82 in-house 
-to 0.40 at a second centre~\cite{b12}. This is further 
-compounded by the fact that because medical data is highly
-sensitive, most papers report results on private datasets 
-that cannot be reproduced or evaluated on other systems. 
-Fonferko-Shadrach \emph{et al.} and Gan \emph{et al.} 
-are the two exceptions in this domain. This paper is the
-first to assess a method on two distinct tasks using two
-public datasets. 
-
 \section{Methods}
 \subsection{Data}
 
-Two datasets were used in this paper. Both datasets
-are collections of epilepsy clinic letters which record 
+The dataset is a collection of epilepsy clinic letters which record 
 a UK patient's consultation with an epilepsy specialist, 
 often a neurologist or specialist nurse. \cite{b2,b3} 
 The NHS requires that clinic letters are sent to the 
 patient's GP after all outpatient visits such as these. \cite{b13} 
 They are often the only record of a patient's diagnoses,
 treatments and outcomes in neurological disorders, 
-and they are written in narrative form. Both datasets 
-are synthetic letters modelled on real clinic letters, 
-and they were annotated by trained researchers and 
-clinicians. An example clinic letter is shown in Figure 1.
-
-The primary difference in the two datasets is breadth
-and depth of annotation. Fonferko-Shadrach \emph{et al.}
-annotated a rich inventory of clinical facts, including the
-current anti-seizure medications used, the types of epilepsy 
-and seizures the patient was diagnosed with, the 
-investigations used for diagnosis and the frequency of 
-seizures. Multiple medications, diagnoses, investigations
-and seizure frequency events can be recorded in a letter,
-and each clinical fact has multiple attributes describing it. 
-Figure 1 illustrates an example of multiple seizure frequency
-events with multiple attributes linked to each. The task is 
-to determine which clinical facts are relevant. This is referred 
-to as the inventory dataset in this paper. Gan \emph{et al.} 
-annotates a single label per letter with the patient's current
-seizure frequency burden. The task is to determine which
-fact to choose among many. If Gan \emph{et al.}'s annotation
-was applied to the letter in Figure 1, the label would be '1 
-per month'. This is referred to as the current frequency 
-dataset.
-
-The datasets also differ in how the letters were generated
-and labelled. Fonferko-Shadrach \emph{et al.} produced
-199 hand-authored letters by epilepsy specialists for the 
-inventory dataset. Gan \emph{et al.} produced a much 
-larger dataset of 15,099 letters using a combination of 10 
-templates and 500 short descriptions of seizure frequency 
-produced by GPT-5 for the current frequency dataset. A 
-sample of 1,200 letters from Gan \emph{et al.} were used 
-from current frequency, and all 199 letters from inventory. 
-Table 1 summarises those details plus some statistics on
-the length of the letters and the number of labels per letter.
-
-\begin{table}[!t]
-\caption{Dataset summary}
-\label{tab:dataset}
-\centering
-\begin{tabularx}{\linewidth}{|Y|Y|Y|}
-\hline
-\textbf{} &
-\textbf{Dataset 1} &
-\textbf{Dataset 2} \\
-\hline
-
-Annotated clinical categories &
-Medication, diagnosis, investigations and seizure frequency$^*$ &
-Seizure frequency \\
-\hline
-
-Letter generation and annotation method  &
-Human-written letters and labels &
-AI-generated letters, human-written labels  \\
-\hline
-
-Number of letters (dev/test) &
-199 (140/59) &
-1,200 (750/450) \\
-\hline
-
-Median words per letter (range)  &
-217 (49-693)&
-400 (115-756) \\
-\hline
-
-Median number of annotated labels (range) &
-6 (0-14)&
-1 (1-1) \\
-\hline
-\end{tabularx}
-{\raggedright\footnotesize $^*$The dataset includes 5 additional categories. This paper uses only these 4.}
-\end{table}
+and they are written in narrative form. An example clinic letter 
+is shown in Figure 1.
 
 \begin{figure*}[t]
     \centering
 
     \includegraphics[width=\linewidth]{fig1.png}
-    \caption{The left pane shows a clinic letter from Fonferko-Shadrach \emph{et al.} annotated for medications, diagnoses, 
-    investigations and seizure frequencies. The right pane illustrates how multiple seizure events are represented in the schema.}
+    \caption{An example clinic letter with three distinct seizure frequency references highlighted as potential candidates.}
     \label{fig1}
 \end{figure*}
 
-Minimal preprocessing was applied to the raw data.
-Dataset 1 stored the letters in raw .txt and annotations 
-in .json files, while Dataset 2 stored both in a single 
-.json file. Letters in both datasets are read in UTF-8 
-format and minimally cleaned to correctly parse 
-quotes, new lines, tabs, the $\leq$ sign and nulls. 
-The raw letters were ingested in the pipeline in full; 
-no tokenisation, section-splitting or truncation was
-applied. 
+Gan \emph{et al.} produced this dataset of synthetic 
+letters modelled on real clinic letters from King's College 
+London hospital. The real letters were used to create 10 
+template letters and they were combined with 500 short 
+descriptions of seizure frequency statements produced 
+by GPT-5 to create the full set of 15,099 letters. A sample 
+of 1,200 letters was used in this paper. Each seizure 
+frequency statement was annotated by trained experts 
+to create the gold-standard labels. Each letter has a 
+single label representing the patient's current seizure 
+frequency burden.
 
-Datasets were split up into stratified samples for 
-separate development and test sets. Inventory 
-was divided into 140 development/59 test sets. They 
-were stratified by the existence of a seizure frequency 
-mention, so c. 72\% of letters in both splits contain a 
-seizure frequency fact. Current frequency was divided 
+\begin{table}[!t]
+\caption{Dataset summary}
+\label{tab:dataset}
+\centering
+\begin{tabularx}{\linewidth}{lYcc}
+\toprule
+ & & \textbf{Development} & \textbf{Test} \\
+\midrule
+\multicolumn{2}{l}{Number of letters} & 750 & 450 \\
+\midrule
+\multirow{4}{*}{\% of letters with} & a frequency (count, rate) & 62\% & 62\% \\
+ & seizure free period & 15\% & 15\% \\
+ & unknown seizure frequency & 13\% & 13\% \\
+ & no seizure frequency & 10\% & 10\% \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Minimal preprocessing was applied to the raw data.
+Letters and annotations were stored both in a single 
+.json file. Letters are minimally cleaned to correctly 
+parse quotes, new lines, tabs, the $\leq$ sign and 
+nulls. The raw letters were ingested in the pipeline 
+in full; no tokenisation, section-splitting or truncation 
+was applied. 
+
+The dataset was split up into stratified samples for 
+separate development and test sets. It was divided 
 into 750 development letters and 450 test letters. They
-were stratified by the kind of
-seizure frequency fact so both sets consist of 
-62\% with a frequency, 15\% seizure free, 13\% 
-unknown and 10\% with no seizure frequency reference.
-Seizure frequency was used to determine the
-stratification because it is the most important 
-clinical outcome for epilepsy patients and the 
-only shared label between both datasets. 
+were stratified by the kind of seizure frequency fact 
+so both sets consist of 62\% with a frequency, 
+15\% seizure free, 13\% unknown and 10\% with no 
+seizure frequency reference. Table 1 summarises 
+those details.
 
 \subsection{Architecture}
 
@@ -409,6 +292,19 @@ which component performs best at which stage. Table 2
 summarises the 3 main configurations of the pipeline 
 evaluated in this paper. 
 
+Determining which one fact among many is correct is the 
+challenge. Sometimes that requires grouping together 
+multiple related facts into a single answer, e.g. '1 in
+June, 0 in July, 2 in August' becomes '3 in 3 months'. 
+Sometimes it requires determining which fact takes 
+precedence when there are multiple competing facts with 
+varying degrees of specificity and certainty e.g. 'She may 
+remain seizure-free for up to 4 month, but then will 
+experience clusters of 5 seizures in a single day'. Different 
+annotation guidelines would record ambiguous facts like 
+these differently. Distinct stages in the pipeline make 
+those choices configurable and explicit.
+
 \begin{figure*}[t]
     \centering
 
@@ -421,37 +317,112 @@ evaluated in this paper.
 \caption{Pipeline configurations}
 \label{tab:pipeline}
 \centering
-\begin{tabularx}{\linewidth}{|Y|Y|Y|Y|}
-\hline
-\textbf{Configuration} &
-\textbf{Recognise} &
-\textbf{Encode} &
-\textbf{Select} 
- \\
-\hline
-
-Rules only & 
-Rules & 
-Rules & 
-Rules \\
-\hline
-
-LLM + Rules & 
-LLM & 
-LLM + Rules & 
-Rules \\
-\hline
-
-LLM only & 
-LLM & 
-LLM & 
-LLM \\
-\hline
-
+\begin{tabularx}{\linewidth}{Yccc}
+\toprule
+\textbf{Configuration} & \textbf{Recognise} & \textbf{Encode} & \textbf{Select} \\
+\midrule
+Rules only & Rules & Rules & Rules \\
+LLM + Rules & LLM & LLM + Rules & Rules \\
+LLM only & LLM & LLM & LLM \\
+\bottomrule
 \end{tabularx}
 \end{table}
 
-\subsection{Study Design}
+The development set was used to optimise the two key 
+elements of the pipeline: the LLM prompt instructions and 
+the rules. The focus of the optimisation process was to 
+improve accuracy while . Qualitative error analysis was 
+conducted to diagnose the cause of poor performance 
+in particular areas and identify common error modes. 
+Hypotheses were developed and tested to tune the 
+prompt and rules iteratively. 
+
+Through iterative error analysis on both the LLM and 
+the rules, it became apparent that the complexity of the 
+task was often a function of competing rules and 
+guidelines. Often, improving a rule or a prompt 
+instruction to address one class of error would harm 
+another area because annotation policies are complex.
+This complexity is a challenge for human annotators 
+also; Fonferko-Shadrach \emph{et al.} described seizure
+frequency as the most difficult category to annotate
+and their inter-annotator agreement of 0.47 shows 
+annotators often disagreed about how to represent
+seizure frequency statements.
+
+Decomposing the task into three stages allowed for 
+cleaner separation of the policies on which types of 
+facts to extract and which criteria to apply to exclude
+specific variants of them. Decomposing the task into
+three stages also made it possible to evaluate the 
+performance at each individual stage and identify the 
+bottlenecks in the system. It is this combination of 
+a cleaner task decomposition for the pipeline and a
+clearer view into the pipeline that enabled steady,
+incremental gains to materialise from the optimisation
+process.
+
+\subsection{Evaluation}
+
+To enable a direct comparison with the results in Gan \emph{et. al},
+the pipeline is evaluated using the same micro-F1 score. They 
+calculate the F1 on two categories; a fine-grained 'purist' score
+and a coarser 'pragmatic' score. The more precise purist F1 is 
+the primary metric in this paper, but the pragmatic F1 score is 
+used for frequency bands with very small sample sizes (\textless20). A 
+full specification of the categories is in Table 3. The rationale for 
+categorising labels is so that semantically identical phrases 
+are matched when exact labels differ, so that daily, once per day 
+and every day would be considered correct matches to the gold
+label '1 per day'. This evaluates the model on how effectively
+it can identify the correct frequency rather than replicate 
+precise phrasing. Further explanation on the categories can be
+found in the original paper from Holgate \emph{et. al}.
+
+The pipeline is evaluated on a held-out test set of 450 letters.
+These letters were never used to tune prompts, rules or any 
+other aspect of the pipeline. The test set is therefore used to 
+evaluate how effectively the model generalises to unseen 
+data. These results are compared against the evaluation set 
+labelled Synthetic (1,166) in Gan \emph{et. al} which was 
+also a held-out sample from the synthetic dataset, distinct 
+from the training set used to fine-tune the models. It is 
+important to note that Gan\emph{et. al} also tested their results 
+a distinct set of real clinic letters to demonstrate generalisation 
+to real data; our results and comparisons are limited purely to 
+the synthetic data.
+
+\begin{table}[!t]
+\caption{Seizure frequency categories: Purist and Pragmatic}
+\label{tab:categories}
+\centering
+\begin{tabularx}{\linewidth}{Ycc}
+\toprule
+\textbf{Purist} &
+\textbf{Monthly rate} &
+\textbf{Pragmatic} \\
+\midrule
+Daily & $\geq$30 & \multirow{4}{*}{Frequent} \\
+More than weekly, less than daily & 16.6 & \\
+Once a week & 4.0 & \\
+More than monthly, less than weekly & 2.5 & \\
+\midrule
+Once a month & 1.05 & \multirow{4}{*}{Infrequent} \\
+More than 6 months, less than monthly & 0.59 & \\
+Once every 6 months & 0.17 & \\
+Less than once every 6 months & 0.08 & \\
+\midrule
+Unknown & 1000 & Unknown \\
+No seizure  frequency reference & 0 & No seizure \\
+\bottomrule
+\end{tabularx}
+
+\vspace*{8pt}
+\begin{minipage}{\linewidth}
+\raggedright\footnotesize
+Monthly rate is the midpoint of the purist category range normalised to the number of seizures per month. Originally defined in Holgate \emph{et. al}.
+\end{minipage}
+\end{table}
 
 The primary objective of this research is to identify which 
 component performs best at which stage. Table 2 shows 
@@ -469,193 +440,146 @@ best: rules, LLM, or a combination of both?
 encode and select stages?
 \end{enumerate}
 
-Evaluating the pipeline on both datasets provides insight
-into whether this method generalises to both single and 
-multi-label prediction tasks with distinctly different challenges. 
-Past research has shown that individual methods which perform 
-well on extracting a broad clinical inventory perform worst on
-extracting seizure frequency, and methods that extract seizure
-frequency effectively on one corpus generalise poorly to 
-another corpus with a different structure and writing style.
-
-For the inventory task, the challenging part is finding the 
-right balance between precision and recall. On average there are 
-6 labels per letter to extract, but some letters have 0 and some have 14. In this 
-scenario it would be easy to tune a pipeline that either 
-over-extracts when there  is an absence of real 
-evidence(false positives) or under-extracts when there is 
-an abundance of evidence (false negatives). The benefit of 
-breaking the task into three stages is that you can then tune 
-each stage accordingly. The candidate recognition phase can 
-be tuned to maximise recall at the cost of some precision, 
-recognising a high number of true positives with a reasonable 
-number of false positives. The selection phase can then be
-tuned for precision to filter out the false positives. We can
-then evaluate whether LLMs or rules perform best at each 
-task.
-
-For the current frequency dataset, the challenging part is 
-determining which one fact among many is the correct 
-answer. Sometimes that requires grouping together 
-multiple related facts into a single answer, e.g. '1 in
-June, 0 in July, 2 in August' becomes '3 in 3 months'. 
-Sometimes it requires determining which fact takes 
-precedence when there are multiple competing facts with 
-varying degrees of specificity and certainty e.g. 'She may 
-remain seizure-free for up to 4 month, but then will 
-experience clusters of 5 seizures in a single day'. Different 
-annotation guidelines would record ambiguous facts like 
-these differently. Distinct stages in the pipeline make 
-those choices configurable and explicit.
-
 The primary hypothesis is that a combination of an LLM
 plus rules will perform better than either on their own, 
 because they have complementary strengths and those 
 strengths are particularly well suited to distinct stages in
 the pipeline. The secondary hypothesis is that multiple 
 discrete stages will improve performance for the LLM,
-whether the subsequent stages are rules or additional
-LLM calls. This builds on the idea that task decomposition
-is an effective form of context engineering, and is 
-particularly useful in scenarios where the prompt is long
-and contains many layers of instructions. 
-
-Splitting the pipeline into stages is therefore designed to 
-make it easier to evaluate and easier to optimise, producing 
-better results overall.
-
-\subsection{Pipeline Optimisation}
-
-Over 50 evaluations were conducted on the development set 
-to optimise the two key elements of the pipeline: the LLM
-prompt instructions and the rules. The focus of the optimisation 
-process was to optimise accuracy, precision, recall or the F1 
-score, depending on the task and stage. In-depth qualitative 
-error analysis was conducted to diagnose the cause of poor
-performance in particular areas and identify common error 
-modes. Hypotheses were developed and tested to tune the 
-prompt and rules iteratively. 
-
-Multiple configurations of the overall architecture 
-were explored in the early stages, particularly for the 
-LLM component. Three distinct architectures were: 
-
-\begin{enumerate}
-\item Task specialisation: breaking up the inventory task into 
-individual prompts for each clinical family.
-\item Document splitting: splitting up the document into discrete
-sections and providing targeted instructions for each section.
-\item Generator-verifier: using the first LLM to provide the answers 
-and an LLM-as-a-judge to verify them.
-\end{enumerate}
-
-All configurations were based on the assumption that 
-the LLM could provide the best answer in a single prompt,
-as this was the common design in the literature. Through
-iterative error analysis on both the LLM and the rules,
-it became apparent that the complexity of the task was 
-more often a function of competing rules and guidelines
-on the same clinical family, rather than the breadth of rules
-across families. Often improving a rule or a prompt 
-instruction to address one class of error would harm 
-another area because annotation policies are complex 
-and can appear contradictory in some instances. This 
-complexity is a challenge for human annotators also, 
-as described above in the literature review.
-
-Decomposing the task into three stages allowed for 
-cleaner separation of the polices on which types of 
-facts to extract and which criteria to apply to exclude
-specific variants of them. Decomposing the task into
-three stages also made it possible to evaluate the 
-performance at each individual and clear identify the 
-bottlenecks in the system. It is this combination of 
-a cleaner task decomposition for the pipeline and a
-clearer view into the pipeline that enabled steady,
-incremental gains to materialise from the optimisation
-process.
-
-\subsection{Evaluation}
-
-The pipeline was evaluated using a single 
-headline metric for each dataset: the micro-F1 
-score for inventory and accuracy for current frequency. 
-The reason the two datasets use two different 
-headline metrics is because current frequency only 
-contains a single label for each letter, while inventory 
-contains an average of 6 labels per letter. Simple
-accuracy is sufficient for a single label, but
-multi-label predictions require a more sophisticated
-metric to evaluate performance.
-
-Accuracy measures how often the correct answer
-was selected out of all answers provided. In 
-the current frequency task, there is only one
-answer per letter so accuracy is a complete 
-measurement of how often the pipeline selected
-the correct answer. Before computing the 
-accuracy, Gan \emph{et. al} categorised the 
-monthly frequency rates into two groups: a 
-fine-grained category called 'purist' and a coarse
-category called 'pragmatic'. For example, the 
-label '1 per month' was assigned to the purist 
-group 'monthly, not weekly' and the pragmatic
-group 'frequent'. This paper uses purist accuracy 
-as the primary metric for current frequency 
-because distinguishing between daily and 
-monthly seizures is a clinically important detail.
-
-The micro-F1 score is used for inventory as it 
-measures how well the pipeline can accurately 
-extract facts from all four clinical categories.  
-The F1 score measures the harmonic mean of
-precision and recall. Recall measures how many
-of the correct answers can be predicted, while
-precision measures how often a prediction is
-correct. Micro-F1 takes the average F1 score 
-across each of the categories, in this case 
-medication, diagnosis, investigations and 
-seizure frequency. The macro-F1 score would 
-assign more weight to the diagnosis category
-because it contains more labels per letter. The 
-micro-F1 score ensures each category is given 
-equal importance.
-
-All metrics presented in the paper use the held-out
-test sets. This measures how well the pipeline
-generalises to examples it has not seen before. The 
-development sets were used explicitly to optimise the 
-rules and prompts through iterative error analysis 
-and performance can be inflated by over-fitting to 
-specific patterns in those letters. The held-out test
-set is used to reduce that risk and evaluate how 
-well the pipeline can identify meaningful patterns.
-Letters from the development set are used in this 
-paper to show how a prediction moves through each 
-of the stages in the pipeline and the evidence chain 
-it is connected to, or to illustrate a particular type of 
-error.
+regardless of whether the subsequent stages are rules or 
+additional LLM calls. This builds on the idea that task 
+decomposition is an effective form of context engineering, 
+and is particularly useful in scenarios where the prompt 
+is long and contains many layers of instructions. 
 
 \section{Results}
 \subsection{Development Environment}
-\subsection{Methods}
 
-For the inventory task the
-three-stage lens made it clear that the major limiting factor
-was low recall at the recognition phase. Precision was
-consistently high but the prompt instructions were causing
-too many valid candidates to be excluded in a single 
-extraction call. Using more permissive guidelines in
-the recognition phase significantly improved recall at
-the cost of some precision, but the select phase was 
-able to recover that precision. 
+Experiments using local language models took place on a 
+Dell XPS 16 9640 running Windows 11, with an Intel Core 
+Ultra 9 185H, 32 GB RAM, and an NVIDIA GeForce RTX 
+4070 Laptop GPU (8 GB VRAM). Ollama v0.32.15 was 
+used to serve the models. Two models were run on local 
+hardware (Qwen 3.8 27b, Gemma 4 26B). 
 
-\subsection{Models}
-\subsection{Structured Evidence}
-\subsection{Ablations}
+Experiments using hosted APIs were were run from a Mac 
+mini M1 with 16 GB unified memory on macOS 26.5.2. API
+calls were made directly to the provider (OpenAI, DeepSeek) 
+or through model routers (OpenRouter, AI Gateway) Four 
+hosted models were used (Gemini 3.7 Flash, GPT 5.6 Luna, 
+Grok 4.6, DeepSeek v4 Flash). 
+
+All models used a temperature of 0 except Luna, which only 
+accepts a temperature of 1. An ablation was run on Grok 
+using a temperature of 1. All models used a thinking or effort 
+level of 'low'. An ablation was run on Gemini using thinking
+levels of medium and high. 
+
+Python 3.14.4 was used to write the program. DSPy 3.2.1, 
+Pydantic 2.13.4 and LiteLLM 1.87.1 were utilised as core
+packages. DSPy was used to co-ordinate the model calls
+and require structured JSON output. Pydantic was used
+to validate the structured output conforms to the specified
+schema. LiteLLM was used to deliver API calls to Ollama 
+and the model routers.
+
+\subsection{Benchmark Performance}
+
+The combined LLM and rules pipeline achieved a purist 
+micro-F1 score of 0.83, significantly higher than both 
+rules only (0.71) and LLM only (0.79). It also exceeds the 
+prior benchmark performance of 0.81 in Gan \emph{et. al} 
+set by a model that was fine-tuned and evaluated using 
+this same dataset of synthetic letters. While that is the only
+paper to evaluate the same dataset with the same metric, 
+Table 5 includes a summary of all 7 papers that reported 
+a seizure frequency extraction score this decade. This 
+pipeline is competitive with the best methods to date.
+
+\begin{table}[!t]
+\caption{Comparisons to past seizure frequency papers}
+\label{tab:frequency}
+\centering
+\begin{tabularx}{\linewidth}{Yccc}
+\toprule
+\textbf{Author} & \textbf{Year} & \textbf{Method} & \textbf{F1 score} \\
+\midrule
+Xie et al. & 2022 & Fine-tuned LM & 0.83$^\ast$ \\
+Decker et al. & 2022 & Rules & 0.82$^\ast$$^\ast$ \\
+Fonferko-Shadrach et al. & 2024 & Rules & 0.66 \\
+Fernandes et al. & 2024 & Fine-tuned LM & 0.37 \\
+Holgate et al. & 2024 & Llama 2 & 0.73 \\
+Holgate et al. & 2025 & Fine-tuned LLM & 0.68 \\
+Gan et al. & 2026 & Fine-tuned LLM & 0.79 \\
+\midrule
+Brown \& Gan & 2026 & LLM + rules & 0.83 \\
+\bottomrule
+\end{tabularx}
+
+\vspace*{8pt}
+\begin{minipage}{\linewidth}
+\raggedright\footnotesize
+$^\ast$Drops to 0.73 on texts with a frequency statement.
+$^\ast$$^\ast$Drops to 0.4 on external test set. 
+\end{minipage}
+\end{table}
+
+This pipeline is particularly effective at identifying 
+high frequency seizure events. A common theme in 
+previous papers is that their method performed 
+best when the task was predicting  'unknown' or  
+'no seizures'. Xie et. al reported an F1 score of 0.92 on 
+texts that contained no seizure frequency statement and 
+0.73 when there was a seizure frequency reported. Gan 
+et al. and Holgate et. al both report unknown as their 
+highest scoring category at 0.89 and 0.87 respectively, 
+while daily frequency (0.7, 0.41) and more than weekly 
+(0.68, 0.55) are much lower. In this pipeline, daily (0.92) 
+and more than weekly (0.91) are the best performing 
+categories, significantly above unknown (0.74). 
+
+
+
+\subsection{Recognise, Encode and Select Performance}
+
+
+\subsection{Model Comparison}
+
+6 Models
+
+Thinking 
+
+Temperature
+
+The task is tightly defined with explicit schema and output 
+requirements which limits the variation in model outputs 
+linked to higher temperatures.
+
 \subsection{Error Analysis}
 
+The pipeline performed worst at predicting infrequent 
+seizure events, mirroring the pattern in Gan et. al. The F1 
+score for the infrequent (monthly or less) category was 
+0.72 in this pipeline. This represents an improvement vs. 
+0.67 in Gan et. al, but significantly worse performance 
+vs. the pipeline's score of 0.95 on the frequent category. 
+
+
 \section{Discussion}
+
+This sensitivity to higher frequencies make it a particularly 
+useful tool to identify patients with the greatest disease 
+burden. This could be used in a number of settings. It could
+be used in clinical care it could flag patients with a seizure 
+burden above a typical threshold for the clinician's attention. 
+It could be used in cohort selection to identify patients to be 
+enrolled in clinical trials for a new medication or to be 
+recommended for surgery. It could be used to build a 
+phenotypic profile of patients to be used in retrospective 
+analyses to understand how these patients differ from the 
+average. Finally, it could be used as an outcome variable in 
+predictive models to identify patients likely to experience 
+frequent seizures and recommend an early intervention. 
 
 \section{Conclusion}
 
