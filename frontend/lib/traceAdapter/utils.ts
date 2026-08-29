@@ -1,4 +1,5 @@
 import type { TraceItem, StageScore, StageRepair } from "../types";
+import { mapPragmatic, mapPurist } from "./ganCategories";
 
 /**
  * Canonical semantic kind mapping across all model and deterministic pipelines.
@@ -124,24 +125,62 @@ export function evidenceToTraceItem(
   };
 }
 
+export type GanComparisonFields = {
+  purist_correct?: boolean;
+  pragmatic_correct?: boolean;
+  predicted_purist_category?: string;
+  gold_purist_category?: string;
+  predicted_pragmatic_category?: string;
+  gold_pragmatic_category?: string;
+};
+
+function categoriesFromLabel(label: string): {
+  purist?: string;
+  pragmatic?: string;
+} {
+  const monthly = monthlyFrequencyFromLabel(label);
+  if (monthly === undefined) return {};
+  return {
+    purist: mapPurist(monthly),
+    pragmatic: mapPragmatic(monthly),
+  };
+}
+
 /**
- * Build a StageScore from a comparison object (used by direct extractor, DSPY adjudicator, etc.).
+ * Build a StageScore. Match is Purist category agreement, not exact gold label.
  */
 export function buildScoreFromComparison(
-  comparison: {
-    purist_correct?: boolean;
-    pragmatic_correct?: boolean;
-    predicted_purist_category?: string;
-    gold_purist_category?: string;
-  } | undefined,
+  comparison: GanComparisonFields | undefined,
   predictedLabel: string,
   goldLabel: string
 ): StageScore {
+  const predicted = categoriesFromLabel(predictedLabel);
+  const gold = categoriesFromLabel(goldLabel);
+  const predictedPurist = comparison?.predicted_purist_category ?? predicted.purist;
+  const goldPurist = comparison?.gold_purist_category ?? gold.purist;
+  const predictedPragmatic =
+    comparison?.predicted_pragmatic_category ?? predicted.pragmatic;
+  const goldPragmatic = comparison?.gold_pragmatic_category ?? gold.pragmatic;
+  const puristMatch =
+    comparison?.purist_correct ??
+    (predictedPurist != null && goldPurist != null && predictedPurist === goldPurist);
+  const pragmaticMatch =
+    comparison?.pragmatic_correct ??
+    (predictedPragmatic != null &&
+      goldPragmatic != null &&
+      predictedPragmatic === goldPragmatic);
+
   return {
     predictedLabel,
     goldLabel,
-    match: predictedLabel === goldLabel,
+    match: Boolean(puristMatch),
     evidenceValid: comparison?.purist_correct ?? false,
+    predictedPuristCategory: predictedPurist,
+    goldPuristCategory: goldPurist,
+    puristMatch: Boolean(puristMatch),
+    predictedPragmaticCategory: predictedPragmatic,
+    goldPragmaticCategory: goldPragmatic,
+    pragmaticMatch: Boolean(pragmaticMatch),
   };
 }
 

@@ -62,18 +62,19 @@ function stageSummary(stage: TraceStage, trace: Trace): React.ReactNode {
       return null;
     case "score": {
       const match = trace.score.match;
-      const predicted = trace.score.predictedLabel;
+      const predicted =
+        trace.score.predictedPuristCategory ?? trace.score.predictedLabel;
       return (
         <span className="flex items-center gap-1 truncate">
           {match ? (
             <>
               <CheckCircle className="h-3 w-3 opacity-80" />
-              <span>Match · {predicted}</span>
+              <span>Purist match · {predicted}</span>
             </>
           ) : (
             <>
               <XCircle className="h-3 w-3 opacity-80" />
-              <span>Mismatch · {predicted}</span>
+              <span>Purist mismatch · {predicted}</span>
             </>
           )}
         </span>
@@ -110,8 +111,11 @@ function stageSummaryText(stage: TraceStage, trace: Trace): string {
     case "repair":
       return "";
     case "score": {
-      const predicted = trace.score.predictedLabel ?? "";
-      return trace.score.match ? `Match · ${predicted}` : `Mismatch · ${predicted}`;
+      const predicted =
+        trace.score.predictedPuristCategory ?? trace.score.predictedLabel ?? "";
+      return trace.score.match
+        ? `Purist match · ${predicted}`
+        : `Purist mismatch · ${predicted}`;
     }
   }
 }

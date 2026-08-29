@@ -4,7 +4,7 @@ import type {
   FullRecordResponse,
   TraceItem,
 } from "../types";
-import { findEvidenceSpan, buildRepair } from "./utils";
+import { findEvidenceSpan, buildRepair, buildScoreFromComparison } from "./utils";
 
 export function adaptStateGraphTrace(
   row: StateGraphArtifactRow,
@@ -41,6 +41,11 @@ export function adaptStateGraphTrace(
     representativeNode?.rationale ??
     row.structured_record?.no_reference_vs_unknown_rationale ??
     "";
+  const score = buildScoreFromComparison(
+    undefined,
+    hasFinalLabel ? finalLabel : "unknown",
+    row.reference.gold_label
+  );
 
   return {
     pipelineFamily: family,
@@ -57,9 +62,8 @@ export function adaptStateGraphTrace(
     },
     repair: buildRepair(row.repair_changes),
     score: {
-      predictedLabel: hasFinalLabel ? finalLabel : "unknown",
-      goldLabel: row.reference.gold_label,
-      match: hasFinalLabel ? finalLabel === row.reference.gold_label : false,
+      ...score,
+      match: hasFinalLabel ? Boolean(score.puristMatch) : false,
       evidenceValid: (row.evidence_summary?.exact_evidence_valid ?? 0) > 0,
     },
   };

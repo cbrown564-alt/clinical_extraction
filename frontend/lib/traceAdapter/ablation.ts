@@ -3,6 +3,7 @@ import type {
   ReplacementAblationArtifactRow,
   FullRecordResponse,
 } from "../types";
+import { buildScoreFromComparison } from "./utils";
 
 export function adaptAblationTrace(
   row: ReplacementAblationArtifactRow,
@@ -35,9 +36,14 @@ export function adaptAblationTrace(
       afterLabel: finalLabel,
     },
     score: {
-      predictedLabel: finalLabel,
-      goldLabel,
-      match: finalLabel === goldLabel,
+      ...buildScoreFromComparison(
+        {
+          purist_correct: row.purist_correct,
+          pragmatic_correct: row.pragmatic_correct,
+        },
+        finalLabel,
+        goldLabel
+      ),
       evidenceValid: row.purist_correct ?? false,
     },
   };

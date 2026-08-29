@@ -5,7 +5,7 @@ import type {
   TraceItem,
   RunNoteResponse,
 } from "../types";
-import { canonicalSemanticKind, monthlyFrequencyFromLabel } from "./utils";
+import { buildScoreFromComparison, canonicalSemanticKind, monthlyFrequencyFromLabel } from "./utils";
 
 export function candidateToTraceItem(c: CandidateEvent): TraceItem {
   return {
@@ -82,9 +82,11 @@ export function adaptDeterministicTrace(
       selectedIds: d.final_selection.selected_event_ids,
     },
     score: {
-      predictedLabel: response.result.output.final_value,
-      goldLabel: response.gold_label,
-      match: response.result.output.final_value === response.gold_label,
+      ...buildScoreFromComparison(
+        undefined,
+        response.result.output.final_value,
+        response.gold_label
+      ),
       evidenceValid: d.evidence_valid,
     },
   };

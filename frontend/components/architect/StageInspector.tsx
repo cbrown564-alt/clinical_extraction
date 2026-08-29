@@ -38,7 +38,7 @@ const stageMeta: Record<
     label: "Score",
     icon: <Trophy className="h-3.5 w-3.5" />,
     color: "text-success",
-    desc: "Comparison of predicted label against gold reference.",
+    desc: "Comparison of predicted Purist and Pragmatic categories against gold.",
   },
 };
 
@@ -399,11 +399,15 @@ export default function StageInspector() {
                   trace.score.match ? "text-success" : "text-error"
                 }`}
               >
-                {trace.score.predictedLabel}
+                {trace.score.predictedPuristCategory ?? trace.score.predictedLabel}
               </span>
               {!trace.score.match && (
                 <span className="text-xs text-muted">
-                  (gold: <span className="font-mono text-foreground">{trace.score.goldLabel}</span>)
+                  (gold purist:{" "}
+                  <span className="font-mono text-foreground">
+                    {trace.score.goldPuristCategory ?? trace.score.goldLabel}
+                  </span>
+                  )
                 </span>
               )}
             </div>
@@ -416,21 +420,55 @@ export default function StageInspector() {
 
             <div className="rounded-md border border-border bg-surface-raised/40 p-2.5 font-mono text-[11.5px] leading-relaxed space-y-1">
               <div>
-                <span className="text-muted">predicted_label: </span>
+                <span className="text-muted">predicted_label:     </span>
                 <span className="text-foreground/90">&quot;{trace.score.predictedLabel}&quot;</span>
               </div>
               <div>
-                <span className="text-muted">gold_label:      </span>
+                <span className="text-muted">gold_label:          </span>
                 <span className="text-foreground/90">&quot;{trace.score.goldLabel}&quot;</span>
               </div>
               <div>
-                <span className="text-muted">label_match:     </span>
-                <span className={trace.score.match ? "text-success" : "text-error"}>
-                  {String(trace.score.match)}
+                <span className="text-muted">predicted_purist:    </span>
+                <span className="text-foreground/90">
+                  &quot;{trace.score.predictedPuristCategory ?? "—"}&quot;
                 </span>
               </div>
               <div>
-                <span className="text-muted">evidence_valid:  </span>
+                <span className="text-muted">gold_purist:         </span>
+                <span className="text-foreground/90">
+                  &quot;{trace.score.goldPuristCategory ?? "—"}&quot;
+                </span>
+              </div>
+              <div>
+                <span className="text-muted">purist_match:        </span>
+                <span className={trace.score.match ? "text-success" : "text-error"}>
+                  {String(trace.score.puristMatch ?? trace.score.match)}
+                </span>
+              </div>
+              <div>
+                <span className="text-muted">predicted_pragmatic: </span>
+                <span className="text-foreground/90">
+                  &quot;{trace.score.predictedPragmaticCategory ?? "—"}&quot;
+                </span>
+              </div>
+              <div>
+                <span className="text-muted">gold_pragmatic:      </span>
+                <span className="text-foreground/90">
+                  &quot;{trace.score.goldPragmaticCategory ?? "—"}&quot;
+                </span>
+              </div>
+              <div>
+                <span className="text-muted">pragmatic_match:     </span>
+                <span
+                  className={
+                    trace.score.pragmaticMatch ? "text-success" : "text-error"
+                  }
+                >
+                  {String(trace.score.pragmaticMatch ?? false)}
+                </span>
+              </div>
+              <div>
+                <span className="text-muted">evidence_valid:      </span>
                 <span className={trace.score.evidenceValid ? "text-success" : "text-error"}>
                   {String(trace.score.evidenceValid)}
                 </span>
