@@ -207,17 +207,32 @@ def thinking_work_segment(spec: ModelSpec) -> str | None:
     return None
 
 
+def _temperature_work_segment(spec: ModelSpec) -> str | None:
+    living = MODELS.get(spec.slug)
+    if living is None or spec.temperature == living.temperature:
+        return None
+    if spec.temperature == int(spec.temperature):
+        return f"temperature_{int(spec.temperature)}"
+    return f"temperature_{str(spec.temperature).replace('.', '_')}"
+
+
 def paper_work_suffix(spec: ModelSpec) -> str | None:
     """Return the work-directory segment for thinking-off or non-living effort."""
 
+    parts: list[str] = []
     thinking = thinking_work_segment(spec)
     if thinking:
-        return thinking
+        parts.append(thinking)
     living = MODELS.get(spec.slug)
     living_effort = living.reasoning_effort if living is not None else None
     if spec.reasoning_effort and spec.reasoning_effort != living_effort:
-        return f"reasoning_{spec.reasoning_effort}"
-    return None
+        parts.append(f"reasoning_{spec.reasoning_effort}")
+    temperature = _temperature_work_segment(spec)
+    if temperature:
+        parts.append(temperature)
+    if not parts:
+        return None
+    return "_".join(parts)
 
 
 CELL3_THINKING_TOKEN_MULTIPLIER = {"medium": 2, "high": 2}

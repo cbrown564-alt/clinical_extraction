@@ -78,6 +78,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--thinking", choices=("enabled", "disabled"))
     parser.add_argument("--row-limit", type=int)
     parser.add_argument("--slice")
+    parser.add_argument("--temperature", type=float)
     args = parser.parse_args(argv)
     if args.action == "score-inventory":
         if canonical_exect_method(args.method) != "exect_llm_extract":
@@ -237,6 +238,7 @@ def main(argv: Sequence[str] | None = None) -> None:
                 thinking=args.thinking,
                 row_limit=args.row_limit,
                 slice_name=args.slice,
+                temperature=args.temperature,
             ),
             indent=2,
             sort_keys=True,
@@ -291,6 +293,7 @@ def run(
     thinking: str | None = None,
     row_limit: int | None = None,
     slice_name: str | None = None,
+    temperature: float | None = None,
 ) -> dict[str, Any]:
     """Run one allowed paper cell."""
 
@@ -299,6 +302,8 @@ def run(
     if row_limit is not None or slice_name is not None:
         raise SystemExit("--row-limit and --slice were removed with gan_llm_pre_post")
     if spec["task"] == "exectv2":
+        if temperature is not None:
+            raise SystemExit("--temperature is only wired for Gan live cells")
         if method in {"exect_llm_encode", "exect_llm_select"}:
             return run_exect_later_stage(
                 cast(ExectLaterStageMethod, method),
@@ -357,4 +362,5 @@ def run(
         progress_every=progress_every,
         thinking=thinking,
         reasoning_effort=reasoning_effort,
+        temperature=temperature,
     )

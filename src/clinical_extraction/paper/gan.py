@@ -278,6 +278,7 @@ def run_gan(
     progress_every: int = 1,
     thinking: str | None = None,
     reasoning_effort: str | None = None,
+    temperature: float | None = None,
 ) -> dict[str, Any]:
     """Run one allowed Gan paper cell."""
 
@@ -290,6 +291,8 @@ def run_gan(
         "gan_llm_select",
         "gan_llm_select_from_extract",
     }:
+        if temperature is not None:
+            raise RuntimeError("temperature override is not wired for later-stage Gan")
         return run_later_stage(
             cast(LaterStageMethod, method),
             slug,
@@ -303,6 +306,8 @@ def run_gan(
     if slug not in MODELS:
         raise RuntimeError(f"{slug} is not a living paper model")
     spec = apply_reasoning_effort(MODELS[slug], reasoning_effort)
+    if temperature is not None:
+        spec = replace(spec, temperature=temperature)
     if thinking is not None:
         if slug != "deepseek_v4_flash":
             raise RuntimeError("thinking toggle is DeepSeek only")

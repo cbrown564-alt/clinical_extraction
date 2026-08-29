@@ -107,6 +107,17 @@ def test_living_roster_is_the_six_paper_models() -> None:
         paper_work_suffix(replace(MODELS["gpt56luna"], reasoning_effort="high"))
         == "reasoning_high"
     )
+    assert paper_work_suffix(MODELS["qwen38_27b"]) is None
+    assert (
+        paper_work_suffix(replace(MODELS["qwen38_27b"], temperature=1.0))
+        == "temperature_1"
+    )
+    assert (
+        paper_work_suffix(
+            replace(MODELS["gpt56luna"], reasoning_effort="high", temperature=0.0)
+        )
+        == "reasoning_high_temperature_0"
+    )
 
 
 def test_sol_paper_lm_uses_vercel_ai_gateway(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -273,6 +284,7 @@ def test_cli_dispatches_gan_live(monkeypatch: pytest.MonkeyPatch) -> None:
         reasoning_effort: str | None = None,
         row_limit: int | None = None,
         slice_name: str | None = None,
+        temperature: float | None = None,
     ) -> dict[str, object]:
         captured.update(
             method=method,
@@ -442,6 +454,7 @@ def test_cli_dispatches_non_living_effort_to_live_runners(
         reasoning_effort: str | None = None,
         row_limit: int | None = None,
         slice_name: str | None = None,
+        temperature: float | None = None,
     ) -> dict[str, object]:
         gan.update(
             method=method,
