@@ -16,7 +16,7 @@ The dense pointer log is [decision history](history/decisions.md).
 | Cited Gemini five-cell grids | [Gan grid](research/gan2026/gan_five_cell_grid_2026-08-22.md), [ExECT inventory grid](research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md) (4-family micro F1; [`paper_experiments/exect/five_cell_grid/`](../paper_experiments/exect/five_cell_grid/)), [ExECT cell 4](research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md) |
 | Gan test450 class report | [Purist/Pragmatic class report](research/gan2026/gan_test450_classification_report_2026-08-28.md) |
 | Gemini vs Qwen COT synthetic | [synthetic-to-synthetic compare](research/gan2026/gan_gemini_vs_qwen25_14b_cot_synthetic_2026-08-28.md) |
-| Six-model cell-3 roster | [roster decision](paper/decisions/six-model-roster.md), [codebook rung replay](research/gan2026/gan_cell3_codebook_roster_replay_2026-08-28.md), [`paper_experiments/roster.json`](../paper_experiments/roster.json) |
+| Six-model cell-3 roster | [roster decision](paper/decisions/six-model-roster.md), [codebook rung replay](research/gan2026/gan_cell3_codebook_roster_replay_2026-08-28.md), [find vs selected-evidence volume](research/gan2026/gan_cell3_candidate_volume_dev750_2026-08-29.md), [`paper_experiments/roster.json`](../paper_experiments/roster.json) |
 | Live runner mapped onto a cell | [cells and runners](paper/cells_and_runners.md) |
 | Stage story | [architecture](paper/architecture.md) |
 | Replayable cells | [paper experiments](../paper_experiments/README.md) |
