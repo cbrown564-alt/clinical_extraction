@@ -1,7 +1,7 @@
 # Paper results
 
 Date: 2026-08-24
-Revised: 2026-08-29 (later-stage LLM encode-then-select ablation)
+Revised: 2026-08-29 (paired Purist tests; Gemini temperature on both splits)
 Status: structured first draft; ExECT columns removed from the dissertation
 Owner: this file
 Scope: [Gan is the dissertation paper](../decisions/gan-is-the-dissertation-paper.md)
@@ -39,7 +39,7 @@ the end-to-end model configuration (Table 1).
 
 | Find | Encode | Select | Purist | Pragmatic |
 | --- | --- | --- | ---: | ---: |
-| Rules | Rules | Rules | 0.71 (321) | 0.76 (341) |
+| Rules | Rules | Rules | 0.72 (325) | 0.77 (345) |
 | Model and rules | Rules | Rules | 0.82 (368) | 0.84 (380) |
 | Model | Model + Rules | Rules | **0.83** (373) | **0.85** (382) |
 | Model | Model | Rules | 0.82 (368) | 0.84 (377) |
@@ -59,10 +59,19 @@ no-call replay of the same cell-3 extract scores 374/450 Purist and
 not retune from the one-count gap.
 
 Replacing rule-based find with Gemini raised Purist
-micro-F1 from 0.71 to 0.83 when the model already wrote the codebook
+micro-F1 from 0.72 to 0.83 when the model already wrote the codebook
 form and rules then encoded and selected. Dropping the second rule
 encode (cell 4) or assigning selection to the model (cell 5) reduced
-the final score.
+the final score. Rules Purist 325/450 and Pragmatic 345/450 are the
+promoted three-stage select stops.
+
+Paired exact McNemar tests use the living codebook cell-3 vector
+(**374**/450), not the curated Table 1 total 373. On those letters
+cell 3 beats standalone rules (325; 92 vs 43 discordant;
+Δ+0.109, 95% CI 0.059 to 0.159; *p* = 3.0×10⁻⁵) and beats cell 5
+(357; 27 vs 10; Δ+0.038, 95% CI 0.012 to 0.064; *p* = 0.0076).
+The two nearby hybrids that also score 0.82 were not tested. Owner:
+[paired `test450` tests](../../research/gan2026/gan_paired_significance_test450_2026-08-29.md).
 
 ## C. The most difficult errors involve interpretation, not detection
 
@@ -89,9 +98,11 @@ reduced safely to a rate. These examples illustrate mechanisms in
 saved development traces. They do not estimate held-out prevalence,
 clinical safety, or causal necessity.
 
-**Table 2a.** Cell 1 — rules / rules / rules. Living `gan_rules`;
-n=450; dropped=0. Classes follow the draft Purist labels, most
-frequent to least frequent. Unknown support 76/450.
+**Table 2a.** Cell 1 — rules / rules / rules. Pre-promotion living
+`gan_rules` class reading at **321/450**; the cited select stop is now
+**325/450** and has no new class report. n=450; dropped=0. Classes
+follow the draft Purist labels, most frequent to least frequent.
+Unknown support 76/450.
 
 | Class | P | R | F1 | Support |
 | --- | ---: | ---: | ---: | ---: |
@@ -216,51 +227,52 @@ This is not the five-cell historical selected-evidence encoder
 question: it helps source-near wording and still does not beat the
 bundled codebook find.
 
-## E. More reasoning effort did not materially improve the preferred pipeline
+## E. Extra thinking budget did not beat the living Gemini setting
 
-Across the tested effort levels, increasing Gemini's reasoning budget
-produced little or no improvement in the model-find, rule-encode,
-rule-select pipeline. On Gan, low effort achieved the best final
-Purist result (0.831), compared with 0.813 at medium effort and 0.818
-at high effort.
+The inferential thinking contrast is living **low versus high** at
+the cell-3 select stop, the same cited outcome as Table 1. High is
+the predeclared extra-budget setting (the same 2× output cap as
+medium). Medium stays a point estimate. Thinking changes only the
+find call; encode and select stay recorded rules. The test is
+whether extra reasoning beat the living select score, not whether
+find moved.
 
-Higher-effort settings increased computational cost and latency
-without a corresponding improvement in the primary task metric. Once
-the model's role is fixed to find, the study does not
+On Gan `test450`, low remains the best select stop: 0.831 (374),
+against 0.818 (368) at high and 0.813 (366) at medium. Paired
+McNemar on low versus high is 20 vs 14 discordant letters
+(Δ+0.013, 95% CI −0.012 to 0.039; *p* = 0.39). Extra budget did
+not beat the living setting. The interval is also compatible with a
+small loss or a small gain, so this is not a formal equivalence
+claim.
+
+Higher-effort settings increased computational cost and latency.
+Once the model's role is fixed to find, the study does not
 support spending additional reasoning budget on this pipeline.
 
-## E2. Temperature 0 versus 1 is mixed and smaller than stage ownership
+## E2. Gemini temperature 0 versus 1 is smaller than stage ownership
 
-Gemini and Grok were compared at temperature 0 and 1 on the same
-cell-3 find, then codebook rule encode and rule select. Gemini
-living is 0; temperature 1 is an unpromoted ablation. Grok living is
-now 0; temperature 1 is the earlier cited Grok cell. Luna remains at
-1 because that provider rejects 0.
+Gemini living cell 3 uses temperature 0. Temperature 1 is an
+unpromoted ablation on the same find, then codebook rule encode and
+rule select.
 
-| Model | Split | Stop | Temp. 0 | Temp. 1 | Letters (1 − 0) |
-| --- | --- | --- | ---: | ---: | ---: |
-| Gemini 3.7 Flash | `test450` | Select | 0.831 (374) | 0.824 (371) | −3 |
-| Gemini 3.7 Flash | `dev750` | Select | 0.865 (649) | 0.867 (650) | +1 |
-| Grok 4.6 | `test450` | Select | 0.838 (377) | 0.842 (379) | +2 |
+| Split | Stop | Temp. 0 | Temp. 1 | Letters (1 − 0) |
+| --- | --- | ---: | ---: | ---: |
+| `test450` | Select | 0.831 (374) | 0.824 (371) | −3 |
+| `dev750` | Select | 0.865 (649) | 0.867 (650) | +1 |
 
-**Table 3.** Gan Purist temperature ablation on the living cell-3
-stack (`gan_llm_extract`, then `gan_rules_encode`, then
-`llm_select_after_codebook`). Gemini temperature 0 select is the
-living codebook replay (374/450). Table 1 still cites 373/450.
-Grok `dev750` temperature 1 is omitted: those codebook extract raws
-were overwritten. Sources:
-[Grok temperature 0](../../research/gan2026/gan_grok46_temperature_0_2026-08-28.md),
+**Table 3.** Gemini 3.7 Flash Purist temperature ablation on the
+living cell-3 stack. Temperature 0 select is the living codebook
+replay (374/450). Table 1 still cites 373/450. Source:
 [Gemini temperature 1](../../research/gan2026/gan_gemini37flash_temperature_1_2026-08-28.md).
 
-The signs reverse by model. Holdout select prefers Gemini at 0 and
-Grok at 1 by two or three letters. Development is flat for Gemini.
-The holdout band is smaller than thinking’s 8. The five-cell stage
-allocation on the same Gemini holdout is 0.71 rules versus 0.83
-cell 3 (54 letters). Temperature is relatively inconsequential
-beside that three-stage pipeline. Temperature 0 is the appropriate
-living default for every model that accepts it. Luna was not
-measured at 0; the mixed Gemini and Grok results do not predict
-that Luna would rise or fall if the same setting were allowed.
+Holdout select was 0.831 at temperature 0 against 0.824 at
+temperature 1 (Δ+0.007, 95% CI −0.017 to 0.030; *p* = 0.71).
+Development select was 0.865 against 0.867 (Δ−0.001, 95% CI −0.014
+to 0.012; *p* = 1.00). Neither split distinguishes the two
+temperatures. The five-cell stage allocation on the same holdout is
+0.72 rules versus 0.83 cell 3. Temperature is relatively
+inconsequential beside that pipeline. Temperature 0 remains the
+living default.
 
 ## F. Rules reduced, but did not remove, differences between models
 
@@ -356,9 +368,11 @@ correspondence.
 
 The main Results section contains Table 1 (Gan five-cell), Tables
 2a–2c (Purist class reports for cells 1, 3, and 5), Table 3
-(temperature ablation), Table 3a (optional later-stage LLM
+(Gemini temperature ablation), Table 3a (optional later-stage LLM
 encode-then-select), Table 4 (six-model cell-3 roster), Table 5
-(descriptive inventory), and Figure 1 (before-and-after-rules). Full
+(descriptive inventory), and Figure 1 (before-and-after-rules).
+The paired tests sit in supporting material with a one-line
+reading after Tables 1 and 3. Full
 four-decimal class tables, residual taxonomy, representative
 development traces, source-form ablation detail, later-stage LLM
 encode mechanism, hardware
@@ -369,7 +383,9 @@ dissertation tables.
 
 ## Claim boundary
 
-Held-out Gan results are aggregate-only. Development examples explain
+Held-out Gan results are aggregate-only. The paired tests
+report discordant counts only. Gemini temperature also uses
+`dev750` select flags. Development examples explain
 mechanisms and limitations but do not establish prevalence or
 clinical safety. The later-stage LLM encode-then-select stack is an
 optional ablation, not a Table 1 row. The classification study evaluates agreement with

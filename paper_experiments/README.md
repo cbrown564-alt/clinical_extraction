@@ -21,6 +21,7 @@ Roster: [`roster.json`](roster.json). Inventory: [`inventory.json`](inventory.js
 | Path | Role |
 | --- | --- |
 | `gan/five_cell_grid/` | Gemini Gan five-cell holdout grid |
+| `gan/paired_significance/` | Predeclared Gemini McNemar contrasts; temperature on both splits |
 | `exect/five_cell_grid/` | Gemini ExECT five-cell holdout grid (4-family micro F1; cell 3 peak). Owner: [both-find on inventory](../docs/research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md) |
 | `gan/gan_llm_extract/` | Gan cell-3 codebook find raw; all six models, both splits |
 | `exect/exect_llm_extract/` | ExECT cell-3 inventory find raw; cells 3–5 replay this raw |

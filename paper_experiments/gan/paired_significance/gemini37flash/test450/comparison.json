@@ -1,0 +1,111 @@
+{
+  "claim_boundary": "Paired Purist tests. Holdout contrasts are aggregate-only discordant counts; do not inspect test450 rows. The Gemini temperature contrast is reported on both test450 and dev750.",
+  "contrasts": {
+    "cell3_vs_cell5": {
+      "a": "cell3_living_codebook_select",
+      "a_right_b_wrong": 27,
+      "a_wrong_b_right": 10,
+      "accuracy_a": 0.8311,
+      "accuracy_b": 0.7933,
+      "accuracy_delta": 0.0378,
+      "b": "cell5_llm_select_from_extract",
+      "claim": "Table 1: model-led find then rules versus end-to-end model",
+      "correct_a": 374,
+      "correct_b": 357,
+      "delta_ci95": [
+        0.0115,
+        0.064
+      ],
+      "mcnemar_exact_p": 0.007632078602910042,
+      "n": 450,
+      "split": "test450"
+    },
+    "cell3_vs_rules": {
+      "a": "cell3_living_codebook_select",
+      "a_right_b_wrong": 92,
+      "a_wrong_b_right": 43,
+      "accuracy_a": 0.8311,
+      "accuracy_b": 0.7222,
+      "accuracy_delta": 0.1089,
+      "b": "rules_three_stage_select",
+      "claim": "Table 1: model-led find then rules versus standalone rules",
+      "correct_a": 374,
+      "correct_b": 325,
+      "delta_ci95": [
+        0.0593,
+        0.1585
+      ],
+      "mcnemar_exact_p": 2.9909603590126025e-05,
+      "n": 450,
+      "split": "test450"
+    },
+    "gemini_temperature_0_vs_1_dev750": {
+      "a": "cell3_temperature_0",
+      "a_right_b_wrong": 12,
+      "a_wrong_b_right": 13,
+      "accuracy_a": 0.8653,
+      "accuracy_b": 0.8667,
+      "accuracy_delta": -0.0013,
+      "b": "cell3_temperature_1",
+      "claim": "Gemini temperature 0 versus 1 on the living cell-3 stack",
+      "correct_a": 649,
+      "correct_b": 650,
+      "delta_ci95": [
+        -0.0144,
+        0.0117
+      ],
+      "mcnemar_exact_p": 1.0,
+      "n": 750,
+      "split": "dev750"
+    },
+    "gemini_temperature_0_vs_1_test450": {
+      "a": "cell3_temperature_0",
+      "a_right_b_wrong": 16,
+      "a_wrong_b_right": 13,
+      "accuracy_a": 0.8311,
+      "accuracy_b": 0.8244,
+      "accuracy_delta": 0.0067,
+      "b": "cell3_temperature_1",
+      "claim": "Gemini temperature 0 versus 1 on the living cell-3 stack",
+      "correct_a": 374,
+      "correct_b": 371,
+      "delta_ci95": [
+        -0.0168,
+        0.0301
+      ],
+      "mcnemar_exact_p": 0.711071103811264,
+      "n": 450,
+      "split": "test450"
+    },
+    "gemini_thinking_low_vs_high": {
+      "a": "cell3_thinking_low",
+      "a_right_b_wrong": 20,
+      "a_wrong_b_right": 14,
+      "accuracy_a": 0.8311,
+      "accuracy_b": 0.8178,
+      "accuracy_delta": 0.0133,
+      "b": "cell3_thinking_high",
+      "claim": "Gemini living thinking (low) versus high effort at the cell-3 select stop",
+      "correct_a": 374,
+      "correct_b": 368,
+      "delta_ci95": [
+        -0.012,
+        0.0387
+      ],
+      "mcnemar_exact_p": 0.39152830513194203,
+      "n": 450,
+      "split": "test450"
+    }
+  },
+  "generated_on": "2026-08-29",
+  "model_slug": "gemini37flash",
+  "n_dev750": 750,
+  "n_test450": 450,
+  "row_policy": "aggregate_only_on_test450",
+  "scorer": "purist",
+  "split": "test450",
+  "temperature_framing": "One temperature question, two splits: Gemini living 0 versus 1 on the cell-3 stack, on test450 and on dev750.",
+  "test": "exact_mcnemar_plus_wald_accuracy_delta_ci95",
+  "thinking_framing": "One thinking contrast: living low versus high at the cell-3 select stop on test450. High is the predeclared extra-budget setting (same 2x token cap as medium). Medium stays a point estimate. Thinking changes only find; the tested outcome is select.",
+  "vector_note": "Cell 3 on test450 is the living codebook replay (374/450). Table 1 still cites the curated five-cell total 373/450. Rules are phase_c_candidate_config() (325/450). Cell 5 uses stored gan_llm_select_from_extract comparison flags (357/450). dev750 temperature uses saved rung scored.jsonl select flags (649 vs 650)."
+}
