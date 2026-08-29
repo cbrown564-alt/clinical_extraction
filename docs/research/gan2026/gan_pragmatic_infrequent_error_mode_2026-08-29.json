@@ -1,0 +1,196 @@
+{
+  "date": "2026-08-29",
+  "protocol": "docs/research/gan2026/gan_pragmatic_infrequent_error_mode_protocol_2026-08-29.md",
+  "candidate": "gemini37flash living cell 3 select (gan_llm_extract → gan_rules_encode → llm_select_after_codebook)",
+  "scorer": "map_pragmatic / map_purist on gold_monthly_frequency and parsed predicted_label",
+  "replay": "no-call",
+  "claim_boundary": "test450 aggregate-only; qualitative types are a development answer on dev750",
+  "category_note": "Pragmatic No seizure is currently_no_seizure (monthly_frequency 0; seizure-free labels). Gold-kind no_reference scores as Unknown (monthly_frequency 1000), not as No seizure.",
+  "test450": {
+    "source": "paper/draft/confusion_matrix_pragmatic.pdf living Gemini cell-3 select; gold-and-predicted epsilon only",
+    "row_policy": "aggregate_only",
+    "n": 450,
+    "pragmatic_correct": 383,
+    "cited_pragmatic_correct": 382,
+    "matrix_order": ["frequent", "infrequent", "unknown", "no_seizure"],
+    "matrix": [
+      [210, 3, 13, 1],
+      [2, 49, 16, 13],
+      [4, 3, 67, 2],
+      [1, 1, 8, 57]
+    ],
+    "gold_support": {"frequent": 227, "infrequent": 80, "unknown": 76, "no_seizure": 67},
+    "infrequent_recall": 0.6125,
+    "infrequent_to_unknown": 16,
+    "infrequent_to_no_seizure": 13,
+    "infrequent_to_sentinel": 29,
+    "frequent_to_unknown": 13,
+    "frequent_to_no_seizure": 1,
+    "rate_to_unknown": 29,
+    "rate_to_unknown_share_of_errors": 0.4328,
+    "all_pragmatic_errors": 67,
+    "sentinel_share_of_errors": 0.4328,
+    "sentinel_share_of_gold_infrequent": 0.3625,
+    "largest_off_diagonal": {"gold": "infrequent", "pred": "unknown", "n": 16},
+    "second_largest_off_diagonals": [
+      {"gold": "frequent", "pred": "unknown", "n": 13},
+      {"gold": "infrequent", "pred": "no_seizure", "n": 13}
+    ]
+  },
+  "dev750": {
+    "source": "paper_experiments/gan/rungs/gemini37flash/dev750/scored.jsonl plus gan2026_split_v1 validation gold",
+    "row_policy": "development_review_permitted",
+    "data_text_policy": "synthetic_development_raw_text_diagnostic",
+    "n": 750,
+    "select": {
+      "pragmatic_correct": 665,
+      "matrix_order": ["frequent", "infrequent", "unknown", "no_seizure"],
+      "matrix": [
+        [363, 2, 19, 3],
+        [5, 88, 21, 10],
+        [6, 6, 109, 6],
+        [1, 0, 6, 105]
+      ],
+      "gold_support": {"frequent": 387, "infrequent": 124, "unknown": 127, "no_seizure": 112},
+      "infrequent_recall": 0.7097,
+      "infrequent_to_unknown": 21,
+      "infrequent_to_no_seizure": 10,
+      "infrequent_to_sentinel": 31,
+      "frequent_to_unknown": 19,
+      "frequent_to_no_seizure": 3,
+      "frequent_errors": 24,
+      "rate_to_unknown": 40,
+      "rate_to_unknown_share_of_errors": 0.4706,
+      "all_pragmatic_errors": 85,
+      "sentinel_share_of_errors": 0.3647,
+      "sentinel_share_of_gold_infrequent": 0.25,
+      "largest_off_diagonal": {"gold": "infrequent", "pred": "unknown", "n": 21},
+      "second_largest_off_diagonal": {"gold": "frequent", "pred": "unknown", "n": 19}
+    },
+    "encode": {
+      "pragmatic_correct": 632,
+      "infrequent_to_unknown": 31,
+      "infrequent_to_no_seizure": 15,
+      "infrequent_to_sentinel": 46,
+      "frequent_to_unknown": 21,
+      "largest_off_diagonal": {"gold": "infrequent", "pred": "unknown", "n": 31}
+    },
+    "extract": {
+      "pragmatic_correct": 613,
+      "infrequent_to_unknown": 33,
+      "infrequent_to_no_seizure": 15,
+      "infrequent_to_sentinel": 48,
+      "frequent_to_unknown": 36,
+      "largest_off_diagonal": {"gold": "frequent", "pred": "unknown", "n": 36}
+    },
+    "rules_only": {
+      "pragmatic_correct": 701,
+      "infrequent_to_unknown": 1,
+      "infrequent_to_no_seizure": 4,
+      "infrequent_to_sentinel": 5,
+      "frequent_to_unknown": 15,
+      "frequent_unknown_overlap_with_select": {
+        "both": 2,
+        "select_only": 17,
+        "rules_only": 13
+      },
+      "largest_off_diagonal": {"gold": "unknown", "pred": "no_seizure", "n": 16}
+    },
+    "focal_select_infrequent_to_sentinel": {
+      "n": 31,
+      "already_wrong_at_extract": 31,
+      "encode_same_as_extract": 31,
+      "select_same_as_encode": 31,
+      "rules_pragmatic_infrequent": 27,
+      "gold_purist": {
+        "seizure_freq_more1per6mon_less1mon": 20,
+        "seizure_freq_1_per_mon": 7,
+        "seizure_freq_1_per_6mon": 3,
+        "seizure_freq_1_per_yr": 1
+      },
+      "buckets": {
+        "last_event_then_seizure_free_interval": {
+          "n": 12,
+          "to_no_seizure": 10,
+          "to_unknown": 2,
+          "source_row_indices": [14454, 14765, 14810, 14821, 14872, 14806, 14943, 15004, 15012, 15029, 14973, 14965]
+        },
+        "remission_then_dated_breakthrough": {
+          "n": 8,
+          "to_unknown": 8,
+          "source_row_indices": [13178, 13114, 13051, 13058, 13122, 13190, 13267, 13290]
+        },
+        "residual_events_after_last_convulsion": {
+          "n": 8,
+          "to_unknown": 8,
+          "unresolved_multiple": 2,
+          "source_row_indices": [15306, 15317, 15267, 15094, 15127, 15129, 15168, 15193]
+        },
+        "two_calendar_dated_events": {
+          "n": 1,
+          "to_unknown": 1,
+          "source_row_indices": [14524]
+        },
+        "abbreviated_monthly_phrase": {
+          "n": 1,
+          "to_unknown": 1,
+          "source_row_indices": [3999]
+        },
+        "yearly_count_under_remission_rhetoric": {
+          "n": 1,
+          "to_unknown": 1,
+          "source_row_indices": [9002]
+        }
+      }
+    },
+    "focal_select_frequent_to_unknown": {
+      "n": 19,
+      "already_wrong_at_extract": 19,
+      "encode_same_as_extract_on_focal": 19,
+      "select_subset_of_encode": true,
+      "encode_only_rescued_by_select": 2,
+      "rules_pragmatic_frequent": 17,
+      "gold_kind": {"frequency": 10, "unresolved_multiple": 9},
+      "gold_purist": {
+        "seizure_freq_more1week_less1day": 12,
+        "seizure_freq_1ormore_daily": 6,
+        "seizure_freq_more1mon_less1week": 1
+      },
+      "predicted_labels": {
+        "unknown": 16,
+        "unknown, 2 to 3 per cluster": 1,
+        "unknown, 3 per cluster": 1,
+        "unknown, 4 per cluster": 1
+      },
+      "buckets": {
+        "cluster_two_quantity": {
+          "n": 9,
+          "source_row_indices": [10237, 10245, 15529, 15519, 5837, 10434, 10673, 15242, 15262],
+          "subtypes": {
+            "this_month_unclear_last_month_count": [10237, 10245],
+            "gap_then_batch": [15529, 15519],
+            "morning_or_daytime_clustering": [5837, 10434, 10673],
+            "residual_myoclonic_clusters_after_last_convulsion": [15242, 15262]
+          }
+        },
+        "electrographic_hourly_eeg": {
+          "n": 4,
+          "source_row_indices": [4690, 4700, 4709, 9815]
+        },
+        "vague_several_or_couple_last_month": {
+          "n": 3,
+          "source_row_indices": [1695, 2080, 14282]
+        },
+        "single_word_gold_reference": {
+          "n": 2,
+          "rules_also_wrong": true,
+          "source_row_indices": [743, 869]
+        },
+        "year_window_count_still_frequent": {
+          "n": 1,
+          "source_row_indices": [12901]
+        }
+      }
+    }
+  }
+}
