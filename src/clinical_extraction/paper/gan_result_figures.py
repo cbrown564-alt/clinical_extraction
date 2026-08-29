@@ -20,6 +20,7 @@ ROOT = discover_repo_root(start=Path(__file__))
 FIVE_CELL_TEST450 = (
     ROOT / "paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json"
 )
+GAN_RULES_OWNER = ROOT / "paper_experiments/gan/gan_rules.json"
 GEMINI_DEV750_RUNGS = ROOT / "paper_experiments/gan/rungs/gemini37flash/dev750/comparison.json"
 CELL5_DEV750 = (
     ROOT
@@ -53,6 +54,15 @@ MODEL_LABELS = {
     "deepseek_v4_flash": "DeepSeek V4 Flash",
     "qwen38_27b": "Qwen 3.8 27B",
     "gemma4_26b": "Gemma 4 26B",
+}
+
+AA_HEALTHCARE_INDEX = {
+    "grok46": 45.0,
+    "gemini37flash": 39.0,
+    "deepseek_v4_flash": 38.0,
+    "gpt56luna": 35.0,
+    "qwen38_27b": 35.0,
+    "gemma4_26b": 15.0,
 }
 
 PURIST_CATEGORY_ORDER = (
@@ -127,6 +137,16 @@ class ConfusionMatrixData:
     matrix: list[list[int]]
     n: int
     title: str = "Purist Classification Confusion Matrix"
+
+
+@dataclass(frozen=True)
+class ScatterPlotData:
+    """Scatter plot data for external capability vs task performance."""
+
+    points: list[tuple[str, float, float]]
+    xlabel: str = "Artificial Analysis Healthcare & Medical Index"
+    ylabel: str = "Purist micro-F1"
+    title: str = ""
 
 
 def gemini_cells_1_3_5(payload: Mapping[str, Any]) -> GroupedColumns:
@@ -231,6 +251,7 @@ def load_living_gemini_dev_vs_test() -> BarbellPairs:
 
     test = json.loads(FIVE_CELL_TEST450.read_text(encoding="utf-8"))
     rungs = json.loads(GEMINI_DEV750_RUNGS.read_text(encoding="utf-8"))
+    rules = json.loads(GAN_RULES_OWNER.read_text(encoding="utf-8"))
     _require_codebook_cell3(rungs, "gemini37flash")
     cell5 = json.loads(CELL5_DEV750.read_text(encoding="utf-8"))
     if cell5.get("method") != "gan_llm_select_from_extract":
@@ -238,9 +259,9 @@ def load_living_gemini_dev_vs_test() -> BarbellPairs:
     cells = test["cells"]
     return gemini_cells_1_3_5_barbell(
         development={
-            "n": int(rungs["row_count"]),
+            "n": int(rules["dev750"]["row_count"]),
             "select": {
-                "rules": int(rungs["rungs"]["rules_only"]["purist_correct"]),
+                "rules": int(rules["dev750"]["select_purist_correct"]),
                 "hybrid": int(rungs["rungs"]["llm_select"]["purist_correct"]),
                 "llm": int(cell5["summary"]["purist_correct"]),
             },
@@ -888,21 +909,155 @@ def render_pragmatic_confusion_matrix(
     return pdf
 
 
+def load_living_aa_healthcare_vs_purist() -> ScatterPlotData:
+    """Load living six models' AA Healthcare Index and test450 Purist micro-F1."""
+
+    points: list[tuple[str, float, float]] = []
+    for model in living_models():
+        slug = str(model["slug"])
+        label = MODEL_LABELS.get(slug, str(model.get("label", slug)))
+        aa_score = AA_HEALTHCARE_INDEX.get(slug)
+        if aa_score is None:
+            raise KeyError(f"Missing AA Healthcare Index score for model: {slug}")
+        path = RUNGS_ROOT / slug / "test450" / "comparison.json"
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        _require_codebook_cell3(payload, slug)
+        n = int(payload["row_count"])
+        select_correct = int(payload["rungs"]["llm_select"]["purist_correct"])
+        purist_f1 = select_correct / n
+        points.append((label, aa_score, purist_f1))
+    return ScatterPlotData(
+        points=points,
+        xlabel="Artificial Analysis Healthcare & Medical Index",
+        ylabel="Purist micro-F1",
+        title="",
+    )
+
+
+def render_healthcare_vs_purist_scatter(
+    data: ScatterPlotData,
+    path: Path,
+    *,
+    title: str = "",
+    xlim: tuple[float, float] = (10.0, 56.0),
+    ylim: tuple[float, float] = (0.68, 0.88),
+) -> Path:
+    """Render a publication-ready scatter plot of Purist F1 vs AA Healthcare Index."""
+
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    _prepare_figure_fonts()
+    fig, axis = plt.subplots(figsize=(5.4, 4.0), dpi=300)
+
+    axis.grid(True, linestyle="--", linewidth=0.5, color=GRID_GREY, zorder=0)
+
+    xs = [p[1] for p in data.points]
+    ys = [p[2] for p in data.points]
+
+    x_arr = np.array(xs)
+    y_arr = np.array(ys)
+    m, b = np.polyfit(x_arr, y_arr, 1)
+    x_line = np.linspace(xlim[0] + 2, xlim[1] - 2, 100)
+    corr = np.corrcoef(x_arr, y_arr)[0, 1]
+    axis.plot(
+        x_line,
+        m * x_line + b,
+        linestyle="--",
+        color="#8C9BAE",
+        linewidth=0.8,
+        zorder=2,
+        label=f"Linear trend ($r = {corr:.2f}$)",
+    )
+
+    axis.scatter(
+        xs,
+        ys,
+        s=55,
+        color="#15324F",
+        linewidth=0,
+        zorder=4,
+    )
+
+    offsets: dict[str, tuple[float, float, str, str]] = {
+        "Grok 4.6": (0.8, -0.006, "left", "top"),
+        "Gemini 3.7 Flash": (-0.8, 0.006, "right", "bottom"),
+        "DeepSeek V4 Flash": (0.8, 0.006, "left", "bottom"),
+        "GPT-5.6 Luna": (-0.8, 0.006, "right", "bottom"),
+        "Qwen 3.8 27B": (0.8, -0.006, "left", "top"),
+        "Gemma 4 26B": (0.8, -0.006, "left", "top"),
+    }
+
+    for label, x, y in data.points:
+        dx, dy, ha, va = offsets.get(label, (0.8, 0.006, "left", "bottom"))
+        axis.annotate(
+            label,
+            xy=(x, y),
+            xytext=(x + dx, y + dy),
+            fontsize=8.5,
+            color=LABEL_BLACK,
+            ha=ha,
+            va=va,
+            zorder=5,
+        )
+
+    if title:
+        axis.set_title(title, pad=12, fontsize=11, color=LABEL_BLACK)
+
+    from matplotlib.ticker import FormatStrFormatter
+
+    axis.set_xlabel(data.xlabel, fontsize=10, color=LABEL_BLACK, labelpad=6)
+    axis.set_ylabel(data.ylabel, fontsize=10, color=LABEL_BLACK, labelpad=6)
+    axis.set_xlim(*xlim)
+    axis.set_ylim(*ylim)
+    axis.set_yticks([0.70, 0.75, 0.80, 0.85])
+    axis.yaxis.set_major_formatter(FormatStrFormatter("%.2f"))
+
+    for spine in axis.spines.values():
+        spine.set_color(AXIS_GREY)
+        spine.set_linewidth(0.6)
+    axis.spines["top"].set_visible(False)
+    axis.spines["right"].set_visible(False)
+    axis.tick_params(
+        color=AXIS_GREY,
+        labelcolor=LABEL_BLACK,
+        width=0.5,
+        length=3,
+        labelsize=9.5,
+    )
+
+    axis.legend(
+        frameon=False,
+        loc="upper left",
+        prop={"family": LATIN_MODERN_NAME, "size": 9},
+        labelcolor=LABEL_BLACK,
+    )
+
+    fig.tight_layout(pad=0.6)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pdf = path.with_suffix(".pdf")
+    png = path.with_suffix(".png")
+    fig.savefig(pdf, bbox_inches="tight", pad_inches=0.04)
+    fig.savefig(png, bbox_inches="tight", pad_inches=0.04, dpi=300)
+    plt.close(fig)
+    return pdf
+
+
 def render_living_figures(out_dir: Path | None = None) -> dict[str, str]:
     """Render the living Gan results figures next to the draft."""
 
     dest = out_dir or FIGURE_DIR
     models = render_grouped_columns(
         load_living_six_model_cell3(),
-        dest / "fig3",
+        dest / "six_model_stage_performance",
     )
     barbell = render_barbell(
         load_living_gemini_dev_vs_test(),
-        dest / "fig4",
+        dest / "development_vs_test_generalization",
     )
     matrix = render_purist_confusion_matrix(
         load_living_purist_confusion_matrix("gemini37flash", "test450"),
-        dest / "fig5",
+        dest / "confusion_matrix_purist",
     )
     render_purist_confusion_matrix(
         load_living_purist_confusion_matrix("gemini37flash", "test450"),
@@ -910,16 +1065,18 @@ def render_living_figures(out_dir: Path | None = None) -> dict[str, str]:
     )
     pragmatic = render_pragmatic_confusion_matrix(
         load_living_pragmatic_confusion_matrix("gemini37flash", "test450"),
-        dest / "fig5-alt",
-    )
-    render_pragmatic_confusion_matrix(
-        load_living_pragmatic_confusion_matrix("gemini37flash", "test450"),
         dest / "confusion_matrix_pragmatic",
+    )
+    scatter = render_healthcare_vs_purist_scatter(
+        load_living_aa_healthcare_vs_purist(),
+        dest / "healthcare_index_vs_purist_f1",
     )
     return {
         "six_model": models.as_posix(),
         "dev_vs_test": barbell.as_posix(),
+        "confusion_matrix_purist": matrix.as_posix(),
         "confusion_matrix": matrix.as_posix(),
         "confusion_matrix_pragmatic": pragmatic.as_posix(),
+        "aa_healthcare_vs_purist": scatter.as_posix(),
     }
 

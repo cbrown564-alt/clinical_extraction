@@ -114,7 +114,8 @@ def test_living_figure_sources_match_sealed_aggregates() -> None:
     cells = load_living_gemini_cells()
     models = load_living_six_model_cell3()
     assert cells.categories == ["Rules", "Both", "LLM"]
-    assert cells.series["Select"] == [321 / 450, 373 / 450, 357 / 450]
+    assert cells.series["Select"] == [325 / 450, 373 / 450, 357 / 450]
+    assert cells.series["Find"] == [292 / 450, 354 / 450, 354 / 450]
     assert models.categories[0] == "Grok 4.6"
     assert models.series["Select"][0] == 377 / 450
 
@@ -132,8 +133,8 @@ def test_gemini_barbell_uses_select_stops_on_both_splits() -> None:
 
 def test_living_barbell_matches_sealed_cell_selects() -> None:
     chart = load_living_gemini_dev_vs_test()
-    assert chart.development == [669 / 750, 649 / 750, 590 / 750]
-    assert chart.holdout == [321 / 450, 373 / 450, 357 / 450]
+    assert chart.development == [691 / 750, 649 / 750, 590 / 750]
+    assert chart.holdout == [325 / 450, 373 / 450, 357 / 450]
 
 
 def test_living_purist_confusion_matrix_totals() -> None:
