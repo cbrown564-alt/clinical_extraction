@@ -125,9 +125,15 @@ QUALITATIVE_IMPROVEMENT_UNKNOWN_RULE = RuleSpec(
 )
 
 
-def _extract_candidates(
+def extract_wide_candidates(
     note_text: str, ablation_config: AblationConfig | None = None
 ) -> list[_RawCandidate]:
+    """Pre-dedupe, pre-prune candidate ledger for the three-stage find stop.
+
+    Emits every rule-family candidate in emission order. Duplicate,
+    contained-fragment, and historical drops are relocated select
+    decisions and belong to the caller (`tag_ledger_drops`), not here.
+    """
     ablation_config = ablation_config or AblationConfig()
     normalized = _normalize_note_text(note_text)
     candidates: list[_RawCandidate] = []
@@ -135,6 +141,15 @@ def _extract_candidates(
     candidates.extend(_extract_seizure_free_candidates(normalized, ablation_config))
     candidates.extend(extract_rate_candidates(normalized, ablation_config))
     candidates.extend(_extract_unknown_candidates(normalized, ablation_config))
+    return candidates
+
+
+def _extract_candidates(
+    note_text: str, ablation_config: AblationConfig | None = None
+) -> list[_RawCandidate]:
+    ablation_config = ablation_config or AblationConfig()
+    normalized = _normalize_note_text(note_text)
+    candidates = extract_wide_candidates(note_text, ablation_config)
     return _prune_contained_frequency_fragments(_dedupe_candidates(candidates), normalized)
 
 
