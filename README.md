@@ -6,9 +6,9 @@ This repository is research code and a working demonstration. The proposed
 method translates clinic letters into structured clinical facts in a designed
 form, with quoted source text. A model collects the facts and evidence;
 recorded rules shape them into the required form. Headline tables are Gemini
-five-cell grids: each of recognise, encode, and select is rules, LLM, or both.
-The cited score is the select stop; recognise and encode stops are stage
-ablations. The six-model comparison uses cell 3 only (LLM recognise, rules
+five-cell grids: each of find, encode, and select is rules, LLM, or both.
+The cited score is the select stop; find and encode stops are stage
+ablations. The six-model comparison uses cell 3 only (LLM find, rules
 encode, rules select) on both Gan and ExECT. On the inventory task,
 ExECT cell 3 is both the roster row and the Gemini peak. Cell 4
 (LLM encode then rules select) stays Gemini-only. Neither table is
@@ -27,14 +27,14 @@ local research checkout and are not cloned.
 ## Results
 
 Held-out test scores for Gemini 3.7 Flash (2 d.p.), the cited model.
-Recognise and encode columns are stage ablations; select is the headline.
+Find and encode columns are stage ablations; select is the headline.
 The six-model roster compares cell 3 only on both tasks. GPT-5.6 Sol
 cells stay historical. Rules are deterministic and do not use a model.
 
 **Gan 2026** (Purist micro-F1, locked `test450`). Headline is the submitted
 (select) score:
 
-| Recognise | Encode | Select | Purist micro-F1 |
+| Find | Encode | Select | Purist micro-F1 |
 | --- | --- | --- | ---: |
 | rules | rules | rules | 0.71 |
 | both | rules | rules | 0.82 |
@@ -45,7 +45,7 @@ cells stay historical. Rules are deterministic and do not use a model.
 **ExECTv2** (4-family micro F1, locked `test60`). Headline is the
 submitted (select) score. All five rows use the same scorer.
 
-| Recognise | Encode | Select | F1 |
+| Find | Encode | Select | F1 |
 | --- | --- | --- | ---: |
 | rules | rules | rules | 0.80 |
 | both | rules | rules | 0.86 |
@@ -53,19 +53,19 @@ submitted (select) score. All five rows use the same scorer.
 | LLM | LLM | rules | 0.86 |
 | LLM | LLM | LLM | 0.85 |
 
-Gan **LLM** recognise is the codebook recognise
-(`gan_llm_extract`). **both** recognise is
-`gan_llm_and_rules_extract`. LLM encode means that recognise already
+Gan **LLM** find is the codebook find
+(`gan_llm_extract`). **both** find is
+`gan_llm_and_rules_extract`. LLM encode means that find already
 wrote the form. The LLM-then-rules encode is `gan_rules_encode`.
-LLM select is `gan_llm_select_from_extract`. Recognise and encode stops
+LLM select is `gan_llm_select_from_extract`. Find and encode stops
 are prior-stage ablations in
 [the five-cell grid](docs/research/gan2026/gan_five_cell_grid_2026-08-22.md).
 The source-near `gan_llm_extract_raw` ablation keeps source wording closer
-to the letter; form alignment is weaker at recognise and rules recover
-most at encode and select. ExECT **LLM** recognise is `exect_llm_extract`. The Compact recognise
+to the letter; form alignment is weaker at find and rules recover
+most at encode and select. ExECT **LLM** find is `exect_llm_extract`. The Compact find
 `exect_llm_extract_and_select` is a Gemini ablation.
-**both** recognise is
-`exect_llm_pre_post` (living recognise plus suggested candidates). LLM encode is later-stage `exect_llm_encode`
+**both** find is
+`exect_llm_pre_post` (living find plus suggested candidates). LLM encode is later-stage `exect_llm_encode`
 (a second call). LLM / LLM / rules is accepted Select on that encode
 ledger. LLM select is later-stage `exect_llm_select`. Extract and
 encode stops are prior-stage ablations. Gan hybrid select is
@@ -81,10 +81,10 @@ ledger-only. `gan_llm_only` is not a results column.
   (0.8636).
 
 **Gan cell-3 roster** (Purist, locked `test450`, aggregate-only).
-LLM recognise (`gan_llm_extract`) then codebook rules. Select is the
+LLM find (`gan_llm_extract`) then codebook rules. Select is the
 roster stop. Gemini five-cell select remains **0.83**.
 
-| Model | Recognise | Select |
+| Model | Find | Select |
 | --- | ---: | ---: |
 | Gemini 3.7 Flash | 0.79 | 0.80 |
 | Grok 4.6 | 0.79 | **0.82** |
@@ -98,10 +98,10 @@ Exact totals:
 `paper_experiments/gan/rungs/`.
 
 **ExECT cell-3 roster** (4-family micro F1, locked `test60`,
-aggregate-only). LLM recognise (`exect_llm_extract`) then rules.
+aggregate-only). LLM find (`exect_llm_extract`) then rules.
 Select is the cited stop:
 
-| Model | Recognise | Select |
+| Model | Find | Select |
 | --- | ---: | ---: |
 | Gemini 3.7 Flash | 0.85 | **0.87** |
 | Grok 4.6 | 0.79 | 0.81 |
@@ -116,7 +116,7 @@ Exact totals and sources:
 
 **Ablations (not headline columns):** Gemini thinking low / medium /
 high on cell 3 only; Gan source-near `gan_llm_extract_raw` (source
-wording vs form alignment); recognise and encode stage stops above.
+wording vs form alignment); find and encode stage stops above.
 `gan_llm_only`, ExECT producer raw F1, Sol, and Full ledger are on
 disk but not cited as headline results.
 
@@ -131,15 +131,15 @@ Scores are not interchangeable across tasks.
 | Locked test split | `test450` (aggregate scores only) | `test60` (aggregate scores only) |
 | Primary score | Purist micro-F1 | Clinical fact F1 |
 
-Both tasks name who runs recognise, encode, and select (rules, LLM, or
+Both tasks name who runs find, encode, and select (rules, LLM, or
 both).
 
 - **rules / rules / rules** — standalone `gan_rules` / `exect_rules`.
 - **both / rules / rules** — `gan_llm_and_rules_extract` /
   `exect_llm_pre_post`, then rule encode and select.
-- **LLM / rules / rules** — codebook recognise / `exect_llm_extract`,
+- **LLM / rules / rules** — codebook find / `exect_llm_extract`,
   then rule encode and select.
-- **LLM / LLM / rules** — Gan: codebook recognise, then select only.
+- **LLM / LLM / rules** — Gan: codebook find, then select only.
   ExECT: later-stage encode, then accepted Select rules.
 - **LLM / LLM / LLM** — Gan `gan_llm_select_from_extract`. ExECT
   later-stage `exect_llm_select`.
@@ -157,7 +157,7 @@ flowchart LR
     D --> E["5. Score"]
 ```
 
-1. **Recognise** — rules or a model find candidate events, findings, or a
+1. **Find** — rules or a model find candidate events, findings, or a
    proposed answer.
 2. **Normalize** — structure and bounded format repairs make the result usable
    without silently changing the task.
@@ -246,7 +246,7 @@ clinical-extract probe \
 ```
 
 The input is JSONL with one `id` and `text` object per line. Run the cited
-Gan codebook recognise (`gan_llm_extract`) with:
+Gan codebook find (`gan_llm_extract`) with:
 
 ```sh
 clinical-extract gan \

@@ -45,7 +45,7 @@ def result_variant_investigation_candidates(
     stated). Runs on the direct prediction; Select owns the drop.
     """
 
-    from ..recognise_ledger import INV_RESULT_VARIANT, RecogniseCandidate
+    from ..find_ledger import INV_RESULT_VARIANT, FindCandidate
 
     investigation_mentions = [
         mention for mention in mentions if mention.entity == INVESTIGATIONS.name
@@ -56,7 +56,7 @@ def result_variant_investigation_candidates(
             if key.endswith("_Results") and value:
                 bound_results.setdefault(key[: -len("_Results")], value)
 
-    candidates: list[RecogniseCandidate] = []
+    candidates: list[FindCandidate] = []
     for mention in investigation_mentions:
         attrs = dict(mention.attributes)
         modalities = [
@@ -74,7 +74,7 @@ def result_variant_investigation_candidates(
             f"{modality}_Results": bound_results.get(modality, "Unknown"),
         }
         candidates.append(
-            RecogniseCandidate(
+            FindCandidate(
                 mention=mention.model_copy(update={"attributes": variant_attrs}),
                 candidate_class=INV_RESULT_VARIANT,
                 rule_id="recognise.inv_result_variant",

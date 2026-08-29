@@ -50,7 +50,7 @@ SEALED_ROOT = (
 )
 LETTER_ID_RE = re.compile(r"\bEA\d{4}\b")
 TEST_ROW_COUNT = 59
-STOPS = ("recognise", "encode", "select")
+STOPS = ("find", "encode", "select")
 
 
 def main() -> None:
@@ -64,8 +64,8 @@ def main() -> None:
     candidate_stops = {stop: [] for stop in STOPS}
     for letter in letters:
         stops = three_stage_stop_mentions(letter, RECALL_FIRST_THREE_STAGE_CONFIG)
-        candidate_stops["recognise"].append(
-            _to_exect(letter.letter_id, stops.recognise)
+        candidate_stops["find"].append(
+            _to_exect(letter.letter_id, stops.find)
         )
         candidate_stops["encode"].append(_to_exect(letter.letter_id, stops.encode))
         candidate_stops["select"].append(_to_exect(letter.letter_id, stops.select))

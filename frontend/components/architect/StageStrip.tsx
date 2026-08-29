@@ -8,7 +8,7 @@ import type { DatasetTone } from "@/lib/datasets";
 import type { TraceStage } from "@/lib/types";
 
 const stages: { id: TraceStage; label: string; tone: DatasetTone; icon: React.ReactNode }[] = [
-  { id: "extract", label: "Recognise", tone: "deterministic", icon: <Highlighter className="h-3 w-3" /> },
+  { id: "extract", label: "Find", tone: "deterministic", icon: <Highlighter className="h-3 w-3" /> },
   { id: "normalise", label: "Encode", tone: "deterministic-alt", icon: <Scale className="h-3 w-3" /> },
   { id: "select", label: "Select", tone: "hybrid", icon: <Target className="h-3 w-3" /> },
   { id: "score", label: "Score", tone: "success", icon: <Trophy className="h-3 w-3" /> },
@@ -47,7 +47,7 @@ function stageSummary(stage: TraceStage, trace: Trace): React.ReactNode {
     }
     case "select": {
       if (trace.select.isDistinctStage === false) {
-        return <span className="opacity-70">Combined with Recognise</span>;
+        return <span className="opacity-70">Combined with Find</span>;
       }
       const label = trace.select.finalLabel;
       const count = trace.select.selectedIds?.length ?? 0;
@@ -102,7 +102,7 @@ function stageSummaryText(stage: TraceStage, trace: Trace): string {
       return firstLabel ? `${count} event${count !== 1 ? "s" : ""} · ${firstLabel}` : `${count} event${count !== 1 ? "s" : ""}`;
     }
     case "select": {
-      if (trace.select.isDistinctStage === false) return "Combined with Recognise";
+      if (trace.select.isDistinctStage === false) return "Combined with Find";
       const label = trace.select.finalLabel ?? "";
       const count = trace.select.selectedIds?.length ?? 0;
       return count > 0 ? `${label} · ${count} selected` : label;

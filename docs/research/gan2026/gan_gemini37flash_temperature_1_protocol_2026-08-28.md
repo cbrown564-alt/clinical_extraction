@@ -25,7 +25,7 @@ Living Gemini, Grok, DeepSeek, Qwen, and Gemma request temperature
 Grok at `0` left holdout select **12** letters lower than its cited
 temperature-1 cell. A Gemini temperature-1 pair on the same cell
 shows whether that shift is Grok-specific or a temperature effect
-on codebook recognise plus rule select.
+on codebook find plus rule select.
 
 ## Data and row policy
 
@@ -34,7 +34,7 @@ on codebook recognise plus rule select.
 | Dataset | Gan 2026 |
 | Splits | `dev750` then `test450` (`gan2026_split_v1`) |
 | Rows | 750 development; 450 holdout |
-| Method | `gan_llm_extract` (cell 3 recognise) |
+| Method | `gan_llm_extract` (cell 3 find) |
 | Model | `gemini37flash` / `gemini/gemini-3.7-flash` |
 | Candidate | temperature `1.0`; other living Gemini fields unchanged |
 | Comparator | living Gemini temperature `0.0` (not overwritten) |
@@ -66,7 +66,7 @@ Do not retune from holdout rows.
 ## Stop rule
 
 - **Answer:** both extracts complete with 750 and 450 scored rows
-  and aggregate Purist/Pragmatic recognise and select stops.
+  and aggregate Purist/Pragmatic find and select stops.
 - **Negative:** route rejects `1` or either run fails before a
   complete aggregate.
 - **Not a promotion:** even a higher score stays a temperature

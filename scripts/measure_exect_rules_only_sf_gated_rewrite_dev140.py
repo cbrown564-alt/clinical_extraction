@@ -22,7 +22,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
     load_letters_for_split,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.recognise_ledger import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.find_ledger import (
     SF_NAMED_TYPE,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.rules import (
@@ -143,7 +143,7 @@ def main() -> None:
         "comparator_accepted_three_stage": ACCEPTED_THREE_STAGE_CONFIG,
         "candidate_sf_named_type_ledger": ThreeStageConfig(
             deferred_classes=frozenset({SF_NAMED_TYPE}),
-            recognise=ACCEPTED_THREE_STAGE_CONFIG.recognise,
+            find=ACCEPTED_THREE_STAGE_CONFIG.find,
             select_rule_ids=ACCEPTED_THREE_STAGE_CONFIG.select_rule_ids,
         ),
     }

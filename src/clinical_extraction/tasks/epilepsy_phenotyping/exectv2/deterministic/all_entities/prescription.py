@@ -429,14 +429,14 @@ def recall_first_rx_candidates(note_text: str):
     context gates; Select owns precision.
     """
 
-    from ..recognise_ledger import RX_RECALL_EXPANSION, RecogniseCandidate
+    from ..find_ledger import RX_RECALL_EXPANSION, FindCandidate
 
     covered = {
         mention.attributes.get("DrugName")
         for mention in _extract_prescriptions(note_text)
     }
     seen: set[str] = {name for name in covered if name}
-    candidates: list[RecogniseCandidate] = []
+    candidates: list[FindCandidate] = []
 
     drug_matches: list[tuple[re.Match[str], str]] = [
         (match, match.group(1))
@@ -482,7 +482,7 @@ def recall_first_rx_candidates(note_text: str):
             continue
         seen.add(drug)
         candidates.append(
-            RecogniseCandidate(
+            FindCandidate(
                 mention=PredictedMention(
                     entity=PRESCRIPTION.name,
                     text=line.strip(),

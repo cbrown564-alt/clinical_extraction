@@ -37,8 +37,8 @@ neuro-symbolic `paper/draft/` tex, or the 9–10 Aug HTML pack.
 6. [Rule catalogue](paper/rule_catalogue.md) — named rules by authority, then stage
 7. [Rules and models across stages (Gan, Gemini)](research/paper/gan_rules_and_llms_across_stages_2026-08-21.md)
 8. [Three variables: stages, model, thinking](research/paper/three_variables_rules_model_thinking_2026-08-23.md) — draft results; temperature 0/1 ablation
-9. [Source-near recognise vs bundled encode](research/paper/gan_source_near_vs_bundled_encode_2026-08-23.md) — Gan ablation
-10. [Recognise then Select vs recognise-and-select](research/paper/exect_extract_vs_extract_and_select_2026-08-25.md) — ExECT ablation
+9. [Source-near find vs bundled encode](research/paper/gan_source_near_vs_bundled_encode_2026-08-23.md) — Gan ablation
+10. [Find then Select vs find-and-select](research/paper/exect_extract_vs_extract_and_select_2026-08-25.md) — ExECT ablation
 11. [How the two tasks are scored](research/paper/score_definitions_2026-08-17.md)
 12. [ExECT paper scoring is not our comparison](research/paper/exect_published_metric_is_not_the_comparison_2026-08-24.md)
 13. [Dataset description](research/paper/dataset_description_2026-08-26.md) — letter n, words, gold density
@@ -46,6 +46,7 @@ neuro-symbolic `paper/draft/` tex, or the 9–10 Aug HTML pack.
 15. [Failures and limits](research/paper/failures_and_limits_2026-08-10.md)
 16. [Two reviewable cases](research/paper/reviewable_case_pair_2026-08-09.md) — development letters only
 17. [Flagship 3-letter suite](research/paper/flagship_3_letter_suite_2026-08-11.md) — development letters, not holdout
+18. [Gemini cell 3 encode→select on Gan `dev750`](research/paper/gan_gemini_cell3_encode_to_select_dev750_2026-08-29.md) — changed-row select increment
 
 The source library explains the evidence. It does not replace
 [claims](paper/claims.md) or `paper_experiments/`.

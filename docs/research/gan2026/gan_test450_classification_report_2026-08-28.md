@@ -28,7 +28,7 @@ The curated sidecar
 `paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json`
 uses the same gold.
 
-| Recognise | Encode | Select | Purist micro-F1 |
+| Find | Encode | Select | Purist micro-F1 |
 | --- | --- | --- | ---: |
 | rules | rules | rules | 321/450 = 0.7133 |
 | both | rules | rules | 368/450 = 0.8178 cited 0.82 |
@@ -42,7 +42,7 @@ Same living gold. Cell 2 is the select stop on saved
 `gan_llm_and_rules_extract` (also in that cell's `comparison.json` /
 `rule_stops.json`). Cell 5 is the table below.
 
-| Recognise | Encode | Select | Pragmatic micro-F1 |
+| Find | Encode | Select | Pragmatic micro-F1 |
 | --- | --- | --- | ---: |
 | rules | rules | rules | 341/450 = 0.7578 |
 | both | rules | rules | 380/450 = 0.8444 |

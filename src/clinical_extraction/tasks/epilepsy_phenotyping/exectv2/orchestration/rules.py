@@ -20,7 +20,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.recognise_ledger import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.find_ledger import (
     DIAGNOSIS_COMPONENT_TOKEN,
     DIAGNOSIS_EXPANSION_SURFACE,
     DIAGNOSIS_HEADING_DECOMPOSITION,
@@ -36,10 +36,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.recogn
     SF_NAMED_TYPE,
     SF_SEIZURE_FREE,
     SF_STATE_VARIANT,
-    RecogniseCandidate,
-    RecogniseConfig,
-    RecogniseLedger,
-    build_recognise_ledger,
+    FindCandidate,
+    FindConfig,
+    FindLedger,
+    build_find_ledger,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select_rules import (
     INVENTORY_WEAK_EPISODE_DROP,
@@ -80,7 +80,7 @@ class ThreeStageConfig:
     deferred_classes: frozenset[str] = frozenset()
     encode_families: frozenset[str] = frozenset({DIAGNOSIS.name})
     select_rule_ids: tuple[str, ...] = RULES_ONLY_SELECT_RULE_IDS
-    recognise: RecogniseConfig | None = None
+    find: FindConfig | None = None
     # Recall-first: classed producer candidates emitted as tagged direct
     # mentions. The Select gate (selection.recall_first_unsupported_drop)
     # owns their keep/drop decision.
@@ -110,7 +110,7 @@ class ThreeStageConfig:
 # predeclared aggregate-only protocol; do not change this configuration
 # without a new development candidate.
 ACCEPTED_THREE_STAGE_CONFIG = ThreeStageConfig(
-    recognise=RecogniseConfig(
+    find=FindConfig(
         diagnosis_service_context_exclusion=True,
         diagnosis_secondary_to_retention=True,
         diagnosis_focal_onset_alias=True,
@@ -123,8 +123,8 @@ ACCEPTED_THREE_STAGE_CONFIG = ThreeStageConfig(
 )
 
 # Frozen 2026-08-27 recall-first restructure candidate (Phase C accepted).
-# Recognise emits every recall-first candidate class as tagged direct
-# mentions (dev140 recognise recall: Diagnosis 0.9666, SF 0.9212,
+# Find stage emits every recall-first candidate class as tagged direct
+# mentions (dev140 find recall: Diagnosis 0.9666, SF 0.9212,
 # Prescription 0.9854, Investigations 1.0). Select keeps only the four
 # gated classes (heading decomposition, SF state variant, Rx recall
 # expansion, Inv result variant; the last three conditional) and drops
@@ -133,7 +133,7 @@ ACCEPTED_THREE_STAGE_CONFIG = ThreeStageConfig(
 # leave-one-out-negative. Do not change without a new development
 # candidate under the recall-first restructure protocol.
 RECALL_FIRST_THREE_STAGE_CONFIG = ThreeStageConfig(
-    recognise=RecogniseConfig(
+    find=FindConfig(
         diagnosis_service_context_exclusion=True,
         diagnosis_secondary_to_retention=True,
         diagnosis_focal_onset_alias=True,
@@ -177,7 +177,7 @@ RECALL_FIRST_THREE_STAGE_CONFIG = ThreeStageConfig(
 # decomposition or Investigations result variants. Frozen Phase C
 # config above is unchanged. Not promoted; run_letter stays accepted.
 TRANSFERRED_RECALL_FIRST_THREE_STAGE_CONFIG = ThreeStageConfig(
-    recognise=RecogniseConfig(
+    find=FindConfig(
         diagnosis_service_context_exclusion=True,
         diagnosis_secondary_to_retention=True,
         diagnosis_focal_onset_alias=True,
@@ -220,10 +220,10 @@ def _mention_from_row(row: Mapping[str, Any]) -> PredictedMention:
     )
 
 
-def _candidate_to_source_row(candidate: RecogniseCandidate) -> dict[str, Any]:
+def _candidate_to_source_row(candidate: FindCandidate) -> dict[str, Any]:
     row = dict(mention_to_dict(candidate.mention))
     row["candidate_class"] = candidate.candidate_class
-    row["recognise_rule_id"] = candidate.rule_id
+    row["find_rule_id"] = candidate.rule_id
     return row
 
 
@@ -281,7 +281,7 @@ def _encode_four_family_direct_mentions(
     return (*unchanged, *encoded_parts)
 
 
-def _four_family_source_rows(ledger: RecogniseLedger) -> list[dict[str, Any]]:
+def _four_family_source_rows(ledger: FindLedger) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for candidate in ledger.candidates:
         if (
@@ -397,9 +397,9 @@ def run_letter(
 class ThreeStagePass:
     """One three-stage run with the four-family mentions at each stop."""
 
-    ledger: RecogniseLedger
+    ledger: FindLedger
     all9_prediction: PredictedLetter
-    recognise_mentions: tuple[PredictedMention, ...]
+    find_mentions: tuple[PredictedMention, ...]
     encode_mentions: tuple[PredictedMention, ...]
     select_mentions: tuple[PredictedMention, ...]
     select_action_count: int
@@ -407,9 +407,9 @@ class ThreeStagePass:
 
 @dataclass(frozen=True)
 class ThreeStageStops:
-    """Four-family mentions at the recognise, encode, and select stops."""
+    """Four-family mentions at the find, encode, and select stops."""
 
-    recognise: tuple[PredictedMention, ...]
+    find: tuple[PredictedMention, ...]
     encode: tuple[PredictedMention, ...]
     select: tuple[PredictedMention, ...]
 
@@ -418,10 +418,10 @@ def _run_three_stage_pass(
     letter: ExectLetter,
     config: ThreeStageConfig,
 ) -> ThreeStagePass:
-    ledger, all9_prediction = build_recognise_ledger(
+    ledger, all9_prediction = build_find_ledger(
         letter,
         enabled_deferred_classes=config.deferred_classes,
-        recognise=config.recognise,
+        find=config.find,
         direct_classes=config.direct_classes,
     )
     direct_four_family = tuple(
@@ -449,7 +449,7 @@ def _run_three_stage_pass(
     return ThreeStagePass(
         ledger=ledger,
         all9_prediction=all9_prediction,
-        recognise_mentions=direct_four_family,
+        find_mentions=direct_four_family,
         encode_mentions=encoded_four_family,
         select_mentions=tuple(_mention_from_row(row) for row in selected),
         select_action_count=len(actions),
@@ -464,7 +464,7 @@ def three_stage_stop_mentions(
 
     stage_pass = _run_three_stage_pass(letter, config or ThreeStageConfig())
     return ThreeStageStops(
-        recognise=stage_pass.recognise_mentions,
+        find=stage_pass.find_mentions,
         encode=stage_pass.encode_mentions,
         select=stage_pass.select_mentions,
     )
@@ -474,7 +474,7 @@ def run_letter_three_stage(
     letter: ExectLetter,
     config: ThreeStageConfig | None = None,
 ) -> RulesRecordResult:
-    """Run recognise, encode, and select stages for rules-only reconstruction."""
+    """Run find, encode, and select stages for rules-only reconstruction."""
 
     resolved_config = config or ThreeStageConfig()
     stage_pass = _run_three_stage_pass(letter, resolved_config)

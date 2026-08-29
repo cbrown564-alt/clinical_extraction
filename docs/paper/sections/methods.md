@@ -8,31 +8,28 @@ Owner: this file
 ## Research questions
 
 This study treats the route from a clinic letter to a submitted
-task answer as three distinct stages: **candidate recognition**,
-**task encoding**, and **final selection**. This is a study-specific
-decomposition, not a replacement taxonomy for clinical NLP. It makes
-explicit three decisions that are often folded together in an
-end-to-end system: what evidence and candidate facts to collect, how
-to write an already chosen fact in the task's required form, and what
-the final answer should contain.
+task answer as three distinct stages: **find**, **encode**, and
+**select**. This is a study-specific decomposition, not a replacement
+taxonomy for clinical NLP. It makes explicit three decisions that are
+often folded together in an end-to-end system: what evidence and
+candidate facts to collect, how to write an already chosen fact in the
+task's required form, and what the final answer should contain.
 
-**Primary question.** When candidate recognition, task encoding, and
-final selection are treated as distinct stages in clinical information
-extraction, how should language models and recorded deterministic
-rules be combined across those stages to produce structured epilepsy
-information?
+**Primary question.** When find, encode, and select are treated as
+distinct stages in clinical information extraction, how should
+language models and recorded deterministic rules be combined across
+those stages to produce structured epilepsy information?
 
 **Supporting questions.**
 
 1. How do final results change when models and rules take different
-   responsibilities for candidate recognition, task encoding, and
-   final selection?
+   responsibilities for find, encode, and select?
 2. Does the preferred division of responsibility differ between one
    current seizure-frequency answer (Gan 2026) and a multi-fact
    clinical inventory (ExECTv2)?
 3. When the later rule-based stages are held constant, how much do the
-   final results depend on the model used for candidate recognition and
-   on the reasoning budget given to that model?
+   final results depend on the model used for find and on the
+   reasoning budget given to that model?
 
 The five role rows answer the first two questions. The six-model
 cell-3 comparison, Gemini low/medium/high thinking, and the Gemini
@@ -46,10 +43,9 @@ This study examines how a clinical information-extraction system
 should divide work between language models and recorded deterministic
 rules. Rather than treating extraction as one indivisible operation,
 it distinguishes three stages in the route from a clinic letter to a
-submitted structured answer: candidate recognition, task encoding, and
-final selection. Candidate recognition identifies evidence-linked
-clinical facts; task encoding expresses an already chosen fact in the
-representation required by the task; and final selection determines
+submitted structured answer: find, encode, and select. Find identifies
+evidence-linked clinical facts; encode expresses an already chosen
+fact in the representation required by the task; and select determines
 which candidate facts, if any, form the submitted answer. The study
 compares alternative allocations of these stages between models and
 rules.
@@ -127,38 +123,35 @@ used to develop and inspect mechanisms, while the held-out splits were
 kept locked for final aggregate evaluation. All five model--rule
 configurations received the same parsed source text and the same split
 assignments; there was no substantive corpus transformation before the
-evaluated candidate-recognition, task-encoding, and final-selection
-stages.
+evaluated find, encode, and select stages.
 
-## C. Candidate recognition, task encoding, and final selection
+## C. Find, encode, and select
 
-Candidate recognition produces a candidate record of plausible clinical
-facts from a clinic letter, each linked to supporting source text. For
-Gan 2026, candidates may describe seizure events, seizure-free
-intervals, uncertainty, or competing possible current states. For
-ExECTv2, they may describe diagnoses, seizure-frequency facts,
-prescriptions, and investigations. Candidate recognition is intentionally
-broader than the final task answer: a letter can contain several
-relevant facts even where Gan requires only one submitted label. Models,
-rules, or their combination may perform this stage, but all
-configurations preserve the candidate record and its evidence before
-later processing.
+Find produces a candidate record of plausible clinical facts from a
+clinic letter, each linked to supporting source text. For Gan 2026,
+candidates may describe seizure events, seizure-free intervals,
+uncertainty, or competing possible current states. For ExECTv2, they
+may describe diagnoses, seizure-frequency facts, prescriptions, and
+investigations. Find is intentionally broader than the final task
+answer: a letter can contain several relevant facts even where Gan
+requires only one submitted label. Models, rules, or their combination
+may perform this stage, but all configurations preserve the candidate
+record and its evidence before later processing.
 
-Task encoding expresses an already retained candidate in the
-representation required by the relevant reference standard. It may
-standardise a count, period, medicine name, diagnosis form, codebook
-label, or other task-specific field, while retaining the underlying
-clinical fact and its evidence link. For example, it may convert a
-frequency phrase into Gan's required label form or map an ExECTv2
-medicine mention to its structured field representation. Encoding is
-therefore distinct from candidate recognition: it does not search the
-letter for an additional fact, and it is distinct from final selection:
-it does not choose a different clinical state simply because its form
-is easier to score.
+Encode expresses an already retained candidate in the representation
+required by the relevant reference standard. It may standardise a
+count, period, medicine name, diagnosis form, codebook label, or other
+task-specific field, while retaining the underlying clinical fact and
+its evidence link. For example, it may convert a frequency phrase into
+Gan's required label form or map an ExECTv2 medicine mention to its
+structured field representation. Encode is therefore distinct from
+find: it does not search the letter for an additional fact, and it is
+distinct from select: it does not choose a different clinical state
+simply because its form is easier to score.
 
-Final selection determines which encoded candidates form the submitted
-answer. For Gan 2026, this means choosing the one answer that represents
-the required current seizure-frequency state when the letter contains
+Select determines which encoded candidates form the submitted answer.
+For Gan 2026, this means choosing the one answer that represents the
+required current seizure-frequency state when the letter contains
 multiple temporally or clinically distinct statements. For ExECTv2, it
 means retaining the supported, deduplicated facts that form the
 four-family inventory. Recorded selection policies may gate, drop,
@@ -170,50 +163,49 @@ to be scored separately.
 
 ```mermaid
 flowchart LR
-    letter[Clinic letter] --> recognise[Candidate recognition<br/>creates a candidate record]
-    recognise --> encode[Task encoding]
-    encode --> select[Final selection]
+    letter[Clinic letter] --> find[Find<br/>creates a candidate record]
+    find --> encode[Encode]
+    encode --> select[Select]
     select --> output[Structured task output]
 
     classDef stage fill:#dbeafe,stroke:#2563eb,color:#173b65,stroke-width:1.5px;
-    class recognise,encode,select stage;
+    class find,encode,select stage;
 ```
 
 **Figure 1.** General staged pipeline for clinical information
-extraction. Candidate recognition creates a record of plausible,
-evidence-linked facts from a clinic letter. Task encoding expresses
-those facts in the form required by the task, and final selection
-determines the submitted structured output. The highlighted stages are
-performed by a language model, recorded rules, or both, depending on
-the configuration.
+extraction. Find creates a record of plausible, evidence-linked facts
+from a clinic letter. Encode expresses those facts in the form
+required by the task, and select determines the submitted structured
+output. The highlighted stages are performed by a language model,
+recorded rules, or both, depending on the configuration.
 
 ## D. Stage-ownership configurations
 
-| Configuration | Candidate recognition | Task encoding | Final selection |
+| Configuration | Find | Encode | Select |
 | --- | --- | --- | --- |
 | 1. Rules throughout | Recorded rules | Recorded rules | Recorded rules |
-| 2. Combined candidate recognition | Language model and recorded rules | Recorded rules | Recorded rules |
-| 3. Model candidate recognition | Language model | Recorded rules | Recorded rules |
-| 4. Model recognition and encoding | Language model | Language model | Recorded rules |
+| 2. Combined find | Language model and recorded rules | Recorded rules | Recorded rules |
+| 3. Model find | Language model | Recorded rules | Recorded rules |
+| 4. Model find and encode | Language model | Language model | Recorded rules |
 | 5. Model throughout | Language model | Language model | Language model |
 
 The study evaluates the same five ways of dividing the work between a
 language model and recorded rules on Gan 2026 and ExECTv2. In the
 rules-throughout condition, recorded deterministic procedures construct,
-encode, and select the submitted answer. The combined-recognition
+encode, and select the submitted answer. The combined-find
 condition permits both a model and rules to contribute candidate facts,
-after which encoding and selection remain rule based. The remaining
-conditions place candidate recognition, then task encoding, then final
-selection with the model. The table therefore shows which role each
+after which encode and select remain rule based. The remaining
+conditions place find, then encode, then select with the model. The
+table therefore shows which role each
 component plays in each configuration. A language-model stage is its
 saved output; a recorded-rule stage is a deterministic transformation or
 decision policy specified before held-out evaluation.
 
 Gemini 3.7 Flash is the primary model for the five-configuration
 comparison. The secondary model-configuration analyses hold the third
-configuration fixed: model candidate recognition followed by rule-based
-encoding and final selection, while varying either the model or the
-reasoning budget used for candidate recognition.
+configuration fixed: model find followed by rule-based encode and
+select, while varying either the model or the reasoning budget used
+for find.
 
 The five configurations are comparisons of which component performs
 each stage, rather than five depths of a single hybrid setting. Moving
@@ -221,7 +213,7 @@ from one row to another changes who may carry out a defined part of the
 work; it does not simply add more rule assistance to a model answer.
 Each configuration is evaluated against the task's own reference
 standard, and final results are taken from the submitted answer after
-final selection. The shared table therefore tests whether the preferred
+select. The shared table therefore tests whether the preferred
 way of dividing the work is stable across a single-label current-state
 task and a multi-fact inventory task, while retaining task-specific
 scores and gold forms.
@@ -231,7 +223,7 @@ scores and gold forms.
 All prompts, output schemas, recorded rules, and configuration choices
 were developed using the designated development split for each task.
 Development material was used to identify failure modes, refine the
-candidate record, and specify task-encoding and final-selection
+candidate record, and specify encode and select
 policies. The locked Gan 2026 and ExECTv2 test splits were reserved for
 final evaluation: individual test letters and their outputs were not
 inspected for development, and results are reported only as aggregate
@@ -304,7 +296,7 @@ This is an internal research measure, not a replication of the published
 strict ExECT benchmark (Fonferko-Shadrach et al., 2024). The five
 configurations are compared within each
 task; model and reasoning-budget analyses use the fixed
-model-candidate-recognition, rules-encoding, rules-selection condition,
+model-find, rules-encode, rules-select condition,
 and locked-test results are reported only as aggregates.
 
 ## Supporting implementation material

@@ -1,4 +1,4 @@
-# Cell 2 uses the living recognise plus suggested candidates
+# Cell 2 uses the living find plus suggested candidates
 
 Date: 2026-08-23
 Status: answered
@@ -6,15 +6,15 @@ Owner: this file
 
 ## Primary question
 
-If both-recognise (`exect_llm_pre_post`) starts from the living
+If both-find (`exect_llm_pre_post`) starts from the living
 `exect_llm_extract` prompt and only adds the rules-suggested
 candidates, what is the Gemini select stop on 4-family micro F1?
 
 ## Why it matters
 
-Cell 2 was the Compact filtered recognise with suggested candidates.
-Cells 3–5 already use the living recognise. Both-recognise should be
-that same recognise plus the candidate list.
+Cell 2 was the Compact filtered find with suggested candidates.
+Cells 3–5 already use the living find. Both-find should be
+that same find plus the candidate list.
 
 ## Data and inspection
 
@@ -36,15 +36,15 @@ before submit.
 
 ## Answer
 
-Gemini both-recognise select is **0.8884** on `dev140` and
-**0.8592** on `test60`. Stage stops: recognise **0.8321 / 0.8319**,
+Gemini both-find select is **0.8884** on `dev140` and
+**0.8592** on `test60`. Stage stops: find **0.8321 / 0.8319**,
 encode **0.8754 / 0.8511**. Cell 3 remains the holdout peak
 (**0.8674**). All five cited rows now use 4-family micro F1.
 
 ## Claim boundary
 
 Aggregate-only `test60`. Do not inspect holdout rows. Other-model
-`exect_llm_pre_post` cells remain historical Compact both-recognise.
+`exect_llm_pre_post` cells remain historical Compact both-find.
 Not a six-model cell-2 roster.
 
 ## Next action

@@ -5,9 +5,17 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from clinical_extraction.paper.five_cell import write_five_cell_grid
+from clinical_extraction.paper.five_cell import (
+    _exect_rules_stage,
+    write_five_cell_grid,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_exect_rules_find_stop_reads_frozen_recognise_key() -> None:
+    assert _exect_rules_stage("dev140", "find") == 0.9012
+    assert _exect_rules_stage("dev140", "encode") == 0.915
 
 
 def test_write_five_cell_keeps_curated_exect_grid() -> None:

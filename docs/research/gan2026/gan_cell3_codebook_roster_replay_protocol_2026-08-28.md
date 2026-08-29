@@ -10,7 +10,7 @@ Result: [cell-3 codebook roster replay](gan_cell3_codebook_roster_replay_2026-08
 When every living roster model is replayed on the same cell-3 stack
 as the Gemini five-cell headline — `gan_llm_extract`, then
 `gan_rules_encode`, then `llm_select_after_codebook` — what are the
-locked `test450` recognise / encode / select Purist aggregates?
+locked `test450` find / encode / select Purist aggregates?
 
 ## Why it matters
 
@@ -39,7 +39,7 @@ Do not retune prompts, rules, or temperature from holdout aggregates.
 
 Living Gan rungs:
 
-- recognise: `raw_model`
+- find: `raw_model`
 - encode: `gan_rules_encode`
 - select: `llm_select_after_codebook`
 

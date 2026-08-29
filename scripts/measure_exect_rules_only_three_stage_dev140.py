@@ -22,10 +22,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
     load_letters_for_split,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.recognise_ledger import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.find_ledger import (
     DEFERRED_CANDIDATE_CLASSES,
-    RecogniseConfig,
-    build_recognise_ledger,
+    FindConfig,
+    build_find_ledger,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select_rules import (
     INVENTORY_WEAK_EPISODE_DROP,
@@ -66,7 +66,7 @@ ISOLATED_COMPONENTS: tuple[str, ...] = (D1, D2, D3, S1, S2, W1)
 
 def config_for(components: Iterable[str]) -> ThreeStageConfig:
     active = frozenset(components)
-    recognise = RecogniseConfig(
+    find_cfg = FindConfig(
         diagnosis_service_context_exclusion=D1 in active,
         diagnosis_secondary_to_retention=D2 in active,
         diagnosis_focal_onset_alias=D3 in active,
@@ -78,7 +78,7 @@ def config_for(components: Iterable[str]) -> ThreeStageConfig:
         select_ids.append(SF_SEIZURE_FREE_POSITIVE_COUNT_DROP)
     if W1 in active:
         select_ids.append(INVENTORY_WEAK_EPISODE_DROP)
-    return ThreeStageConfig(recognise=recognise, select_rule_ids=tuple(select_ids))
+    return ThreeStageConfig(find=find_cfg, select_rule_ids=tuple(select_ids))
 
 
 def build_arms() -> dict[str, ThreeStageConfig | None]:
@@ -177,7 +177,7 @@ def ledger_coverage(letters: list[ExectLetter]) -> dict[str, dict[str, float]]:
     direct_hits = {family: 0 for family in FAMILIES}
     full_hits = {family: 0 for family in FAMILIES}
     for letter in letters:
-        ledger, _ = build_recognise_ledger(
+        ledger, _ = build_find_ledger(
             letter,
             enabled_deferred_classes=frozenset(DEFERRED_CANDIDATE_CLASSES),
         )

@@ -30,7 +30,7 @@ from ..rule_metadata import Portability, RuleGroup
 from .common import _overlaps, _owner, _sentence_window
 
 if TYPE_CHECKING:
-    from ..recognise_ledger import RecogniseCandidate
+    from ..find_ledger import FindCandidate
 
 
 def _surface_pattern(name: str) -> str:
@@ -455,10 +455,10 @@ def _predicted_diagnosis_from_match(text: str, match: re.Match[str]) -> Predicte
 
 def nondiagnostic_context_diagnosis_candidates(
     note_text: str,
-) -> tuple[RecogniseCandidate, ...]:
-    from ..recognise_ledger import DIAGNOSIS_NONDIAGNOSTIC_CONTEXT, RecogniseCandidate
+) -> tuple[FindCandidate, ...]:
+    from ..find_ledger import DIAGNOSIS_NONDIAGNOSTIC_CONTEXT, FindCandidate
 
-    candidates: list[RecogniseCandidate] = []
+    candidates: list[FindCandidate] = []
     seen_spans: set[tuple[int, int]] = set()
     for match in _baseline_diagnosis_matches(note_text):
         if not _is_nondiagnostic_service_context(note_text, match):
@@ -471,7 +471,7 @@ def nondiagnostic_context_diagnosis_candidates(
             continue
         seen_spans.add(span)
         candidates.append(
-            RecogniseCandidate(
+            FindCandidate(
                 mention=mention,
                 candidate_class=DIAGNOSIS_NONDIAGNOSTIC_CONTEXT,
                 rule_id="recognise.diagnosis_nondiagnostic_context",
@@ -486,8 +486,8 @@ def _nested_diagnosis_candidates(
     require_hierarchy: bool,
     candidate_class: str,
     rule_id: str,
-) -> tuple[RecogniseCandidate, ...]:
-    from ..recognise_ledger import RecogniseCandidate
+) -> tuple[FindCandidate, ...]:
+    from ..find_ledger import FindCandidate
 
     direct_mentions = _extract_diagnoses(note_text)
     direct_concepts = {
@@ -502,7 +502,7 @@ def _nested_diagnosis_candidates(
         accepted_spans.append((span, concept))
 
     seen_concepts: set[str] = set()
-    candidates: list[RecogniseCandidate] = []
+    candidates: list[FindCandidate] = []
     for match in _baseline_diagnosis_matches(note_text):
         span = match.span()
         if not any(_overlaps(span, accepted_span) for accepted_span, _ in accepted_spans):
@@ -530,7 +530,7 @@ def _nested_diagnosis_candidates(
             continue
         seen_concepts.add(candidate_concept)
         candidates.append(
-            RecogniseCandidate(
+            FindCandidate(
                 mention=candidate_mention,
                 candidate_class=candidate_class,
                 rule_id=rule_id,
@@ -541,8 +541,8 @@ def _nested_diagnosis_candidates(
 
 def nested_ancestor_diagnosis_candidates(
     note_text: str,
-) -> tuple[RecogniseCandidate, ...]:
-    from ..recognise_ledger import DIAGNOSIS_NESTED_ANCESTOR
+) -> tuple[FindCandidate, ...]:
+    from ..find_ledger import DIAGNOSIS_NESTED_ANCESTOR
 
     return _nested_diagnosis_candidates(
         note_text,
@@ -554,11 +554,11 @@ def nested_ancestor_diagnosis_candidates(
 
 def nested_surface_diagnosis_candidates(
     note_text: str,
-) -> tuple[RecogniseCandidate, ...]:
+) -> tuple[FindCandidate, ...]:
     """Recall-first: every distinct shorter surface overlapping an accepted
     span, with no hierarchy requirement. Select owns dedupe/specificity."""
 
-    from ..recognise_ledger import DIAGNOSIS_NESTED_SURFACE
+    from ..find_ledger import DIAGNOSIS_NESTED_SURFACE
 
     return _nested_diagnosis_candidates(
         note_text,
@@ -623,7 +623,7 @@ _HEADING_QUALIFIER_LOOSE_RE = re.compile(
 
 def heading_decomposition_diagnosis_candidates(
     note_text: str,
-) -> tuple[RecogniseCandidate, ...]:
+) -> tuple[FindCandidate, ...]:
     """Recall-first: decompose qualified epilepsy headings into both concepts.
 
     ``epilepsy – probable focal`` names both ``epilepsy`` and
@@ -632,9 +632,9 @@ def heading_decomposition_diagnosis_candidates(
     span, so the second concept is otherwise unreachable.
     """
 
-    from ..recognise_ledger import DIAGNOSIS_HEADING_DECOMPOSITION, RecogniseCandidate
+    from ..find_ledger import DIAGNOSIS_HEADING_DECOMPOSITION, FindCandidate
 
-    candidates: list[RecogniseCandidate] = []
+    candidates: list[FindCandidate] = []
     seen: set[str] = set()
     heading_matches = (
         *_HEADING_QUALIFIER_RE.finditer(note_text),
@@ -657,7 +657,7 @@ def heading_decomposition_diagnosis_candidates(
             if concept is not None:
                 attrs = attach_benchmark_concept(attrs, concept)
             candidates.append(
-                RecogniseCandidate(
+                FindCandidate(
                     mention=PredictedMention(
                         entity=DIAGNOSIS.name,
                         text=concept_text,
@@ -767,16 +767,16 @@ _EPILEPSY_EVIDENCE_RE = re.compile(r"\bepilep", re.IGNORECASE)
 
 def _distinct_concept_emitter(
     note_text: str, candidate_class: str
-) -> tuple[list[RecogniseCandidate], Callable[[PredictedMention, str], None]]:
+) -> tuple[list[FindCandidate], Callable[[PredictedMention, str], None]]:
     """Shared dedupe-by-concept emitter seeded with the direct-path concepts."""
 
-    from ..recognise_ledger import RecogniseCandidate
+    from ..find_ledger import FindCandidate
 
     seen: set[str] = {
         canonicalize_diagnosis_concept(mention.text)
         for mention in _extract_diagnoses(note_text)
     }
-    candidates: list[RecogniseCandidate] = []
+    candidates: list[FindCandidate] = []
 
     def _emit(mention: PredictedMention, rule_id: str) -> None:
         concept_key = canonicalize_diagnosis_concept(mention.text)
@@ -784,7 +784,7 @@ def _distinct_concept_emitter(
             return
         seen.add(concept_key)
         candidates.append(
-            RecogniseCandidate(
+            FindCandidate(
                 mention=mention,
                 candidate_class=candidate_class,
                 rule_id=rule_id,
@@ -796,7 +796,7 @@ def _distinct_concept_emitter(
 
 def expansion_surface_diagnosis_candidates(
     note_text: str,
-) -> tuple[RecogniseCandidate, ...]:
+) -> tuple[FindCandidate, ...]:
     """Recall-first: expansion-lexicon surfaces and alias decompositions.
 
     Covers direct-path misses that are purely lexical: surfaces absent
@@ -805,7 +805,7 @@ def expansion_surface_diagnosis_candidates(
     these emissions are precision-safe enough to keep at Select.
     """
 
-    from ..recognise_ledger import DIAGNOSIS_EXPANSION_SURFACE
+    from ..find_ledger import DIAGNOSIS_EXPANSION_SURFACE
 
     candidates, _emit = _distinct_concept_emitter(
         note_text, DIAGNOSIS_EXPANSION_SURFACE
@@ -833,16 +833,16 @@ def expansion_surface_diagnosis_candidates(
 
 def unrestricted_surface_diagnosis_candidates(
     note_text: str,
-) -> tuple[RecogniseCandidate, ...]:
+) -> tuple[FindCandidate, ...]:
     """Recall-first: benchmark surfaces with no context gates, plus inference.
 
     Covers direct-path misses from context exclusions (negation, onset,
     service, narrative) and seizure-type -> syndrome inference. One
     candidate per distinct concept key not already produced by the direct
-    path. FP-heavy by design; recall lives at the recognise stop.
+    path. FP-heavy by design; recall lives at the find stop.
     """
 
-    from ..recognise_ledger import DIAGNOSIS_UNRESTRICTED_SURFACE
+    from ..find_ledger import DIAGNOSIS_UNRESTRICTED_SURFACE
 
     candidates, _emit = _distinct_concept_emitter(
         note_text, DIAGNOSIS_UNRESTRICTED_SURFACE
@@ -903,7 +903,7 @@ def _aliased_diagnosis_mention(
 
 def hierarchy_ancestor_diagnosis_candidates(
     note_text: str,
-) -> tuple[RecogniseCandidate, ...]:
+) -> tuple[FindCandidate, ...]:
     """Recall-first: hierarchy ancestors of directly recognized concepts.
 
     A frontal lobe epilepsy mention also asserts focal epilepsy (and
@@ -911,14 +911,14 @@ def hierarchy_ancestor_diagnosis_candidates(
     No surface for the ancestor is required.
     """
 
-    from ..recognise_ledger import DIAGNOSIS_HIERARCHY_ANCESTOR, RecogniseCandidate
+    from ..find_ledger import DIAGNOSIS_HIERARCHY_ANCESTOR, FindCandidate
 
     direct_mentions = _extract_diagnoses(note_text)
     direct_concepts = {
         canonicalize_diagnosis_concept(mention.text) for mention in direct_mentions
     }
     seen: set[str] = set(direct_concepts)
-    candidates: list[RecogniseCandidate] = []
+    candidates: list[FindCandidate] = []
     for mention in direct_mentions:
         ancestor = DIAGNOSIS_PARENT.get(canonicalize_diagnosis_concept(mention.text))
         while ancestor is not None:
@@ -935,7 +935,7 @@ def hierarchy_ancestor_diagnosis_candidates(
             if concept is not None:
                 attrs = attach_benchmark_concept(attrs, concept)
             candidates.append(
-                RecogniseCandidate(
+                FindCandidate(
                     mention=PredictedMention(
                         entity=DIAGNOSIS.name,
                         text=ancestor,
@@ -958,7 +958,7 @@ def hierarchy_ancestor_diagnosis_candidates(
 
 def component_token_diagnosis_candidates(
     note_text: str,
-) -> tuple[RecogniseCandidate, ...]:
+) -> tuple[FindCandidate, ...]:
     """Recall-first: standalone adjectival tokens inside matched surfaces.
 
     Annotators sometimes split a compound heading into standalone units
@@ -967,14 +967,14 @@ def component_token_diagnosis_candidates(
     candidate per distinct token.
     """
 
-    from ..recognise_ledger import DIAGNOSIS_COMPONENT_TOKEN, RecogniseCandidate
+    from ..find_ledger import DIAGNOSIS_COMPONENT_TOKEN, FindCandidate
 
     direct_concepts = {
         canonicalize_diagnosis_concept(mention.text)
         for mention in _extract_diagnoses(note_text)
     }
     seen: set[str] = set(direct_concepts)
-    candidates: list[RecogniseCandidate] = []
+    candidates: list[FindCandidate] = []
     for match in _expanded_surface_matches(note_text):
         for token_match in re.finditer(r"[A-Za-z]+", match.group(1)):
             token = token_match.group(0)
@@ -992,7 +992,7 @@ def component_token_diagnosis_candidates(
             if token_span_match is None:
                 continue
             candidates.append(
-                RecogniseCandidate(
+                FindCandidate(
                     mention=_conceptless_diagnosis_from_match(
                         note_text, token_span_match
                     ),

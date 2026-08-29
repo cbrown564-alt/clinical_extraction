@@ -18,7 +18,7 @@ must not make a stronger claim than either source supports.
 | ID | Statement | Current evidence | State |
 | --- | --- | --- | --- |
 | S1 | One modular package is evaluated on Gan and ExECT | Six selected runs replay from retained code and outputs | Partial |
-| S2 | Rules, LLM, and mixed role rows have attributable results on both tasks | The selected comparison is the Gemini 3.7 Flash five-cell grid (rules, LLM, or both at recognise / encode / select); the cited score is the select stop. Sol-matched 2×3 and decision 0050 hybrid fills are historical | Bounded development answer |
+| S2 | Rules, LLM, and mixed role rows have attributable results on both tasks | The selected comparison is the Gemini 3.7 Flash five-cell grid (rules, LLM, or both at find / encode / select); the cited score is the select stop. Sol-matched 2×3 and decision 0050 hybrid fills are historical | Bounded development answer |
 | S3 | The Gan multi-model method adds modest quality with three model passes rather than one | Saved test quality, run metadata, and aggregate input availability | Bounded |
 | S4 | Six exact models run on one fixed ExECT pipeline | All six completed matched dev140 and aggregate-only test60 conditions; the retained panel gives local Qwen and Gemma the same claim status as the four hosted models | Confirmed |
 | S5 | Unknown-versus-rate overconfidence appears across models and tasks | Gan evidence exists; the predeclared six-model ExECT dev140 analogue has zero unknown-only gold letters, so transfer is not measurable from current gold | Unsupported |

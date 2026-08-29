@@ -1,4 +1,4 @@
-"""Typed recall-first recognise ledger for rules-only reconstruction."""
+"""Typed recall-first find ledger for rules-only reconstruction."""
 
 from __future__ import annotations
 
@@ -69,6 +69,7 @@ DEFERRED_CANDIDATE_CLASSES: tuple[str, ...] = (
 # Component-owner tag marking a mention emitted as a recall-first direct
 # candidate from a classed producer. Select reads the tag to decide
 # keep/drop; the class name follows the tag.
+# Persisted replay fingerprints keep the historical recognise.* rule_id prefix.
 RECALL_FIRST_CLASS_TAG = "+recognise_class:"
 
 
@@ -95,7 +96,7 @@ PRIMARY_COMPARISON_ENTITIES: frozenset[str] = frozenset(
 
 
 @dataclass(frozen=True)
-class RecogniseConfig:
+class FindConfig:
     diagnosis_service_context_exclusion: bool = False
     diagnosis_secondary_to_retention: bool = False
     diagnosis_focal_onset_alias: bool = False
@@ -106,16 +107,16 @@ class RecogniseConfig:
 
 
 @dataclass(frozen=True)
-class RecogniseCandidate:
+class FindCandidate:
     mention: PredictedMention
     candidate_class: str
     rule_id: str
 
 
 @dataclass(frozen=True)
-class RecogniseLedger:
+class FindLedger:
     letter_id: str
-    candidates: tuple[RecogniseCandidate, ...]
+    candidates: tuple[FindCandidate, ...]
     diagnostics: Mapping[str, Any]
 
     def direct_mentions(self) -> tuple[PredictedMention, ...]:
@@ -125,7 +126,7 @@ class RecogniseLedger:
             if candidate.candidate_class == DIRECT
         )
 
-    def deferred_candidates(self) -> tuple[RecogniseCandidate, ...]:
+    def deferred_candidates(self) -> tuple[FindCandidate, ...]:
         return tuple(
             candidate
             for candidate in self.candidates
@@ -133,7 +134,7 @@ class RecogniseLedger:
         )
 
 
-def _tag_direct(candidate: RecogniseCandidate) -> RecogniseCandidate:
+def _tag_direct(candidate: FindCandidate) -> FindCandidate:
     tagged_mention = candidate.mention.model_copy(
         update={
             "component_owner": (
@@ -142,31 +143,31 @@ def _tag_direct(candidate: RecogniseCandidate) -> RecogniseCandidate:
             )
         }
     )
-    return RecogniseCandidate(
+    return FindCandidate(
         mention=tagged_mention,
         candidate_class=candidate.candidate_class,
         rule_id=candidate.rule_id,
     )
 
 
-def build_recognise_ledger(
+def build_find_ledger(
     letter: ExectLetter,
     *,
     enabled_deferred_classes: frozenset[str] = frozenset(),
-    recognise: RecogniseConfig | None = None,
+    find: FindConfig | None = None,
     direct_classes: frozenset[str] = frozenset(),
-) -> tuple[RecogniseLedger, PredictedLetter]:
-    resolved_recognise = recognise or RecogniseConfig()
+) -> tuple[FindLedger, PredictedLetter]:
+    resolved_find = find or FindConfig()
     prediction = extract_deterministic_all9(
         letter,
-        diagnosis_service_context_exclusion=resolved_recognise.diagnosis_service_context_exclusion,
-        diagnosis_secondary_to_retention=resolved_recognise.diagnosis_secondary_to_retention,
-        diagnosis_focal_onset_alias=resolved_recognise.diagnosis_focal_onset_alias,
-        keep_unassociated_sf_anchors=resolved_recognise.sf_keep_unassociated_anchors,
-        investigations_emit_resultless=resolved_recognise.investigations_emit_resultless,
+        diagnosis_service_context_exclusion=resolved_find.diagnosis_service_context_exclusion,
+        diagnosis_secondary_to_retention=resolved_find.diagnosis_secondary_to_retention,
+        diagnosis_focal_onset_alias=resolved_find.diagnosis_focal_onset_alias,
+        keep_unassociated_sf_anchors=resolved_find.sf_keep_unassociated_anchors,
+        investigations_emit_resultless=resolved_find.investigations_emit_resultless,
     )
-    candidates: list[RecogniseCandidate] = [
-        RecogniseCandidate(
+    candidates: list[FindCandidate] = [
+        FindCandidate(
             mention=mention,
             candidate_class=DIRECT,
             rule_id="recognise.deterministic_all9",
@@ -176,7 +177,7 @@ def build_recognise_ledger(
     per_class_counts: dict[str, int] = {DIRECT: len(candidates)}
     producer_classes = enabled_deferred_classes | direct_classes
 
-    def _add(produced: tuple[RecogniseCandidate, ...], candidate_class: str) -> None:
+    def _add(produced: tuple[FindCandidate, ...], candidate_class: str) -> None:
         emitted = tuple(
             _tag_direct(candidate) if candidate_class in direct_classes else candidate
             for candidate in produced
@@ -257,7 +258,7 @@ def build_recognise_ledger(
                 sf_class,
             )
 
-    ledger = RecogniseLedger(
+    ledger = FindLedger(
         letter_id=letter.letter_id,
         candidates=tuple(candidates),
         diagnostics={"candidate_counts_by_class": dict(per_class_counts)},

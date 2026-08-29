@@ -21,13 +21,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_en
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities import (
     investigations as inv,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
-    canonicalize_diagnosis_concept,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.pipeline import (
-    extract_seizure_frequency,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.recognise_ledger import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.find_ledger import (
     DIAGNOSIS_HEADING_DECOMPOSITION,
     DIAGNOSIS_NESTED_ANCESTOR,
     DIAGNOSIS_NONDIAGNOSTIC_CONTEXT,
@@ -37,7 +31,13 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.recogn
     SF_NAMED_TYPE,
     SF_SEIZURE_FREE,
     SF_STATE_VARIANT,
-    build_recognise_ledger,
+    build_find_ledger,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
+    canonicalize_diagnosis_concept,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.pipeline import (
+    extract_seizure_frequency,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select_rules import (
     CANDIDATE_SELECT_RULE_IDS,
@@ -120,7 +120,7 @@ def test_investigation_same_result_dedupe_is_select_and_clinical_epilepsy() -> N
     assert actions[0]["portability"] == "clinical_epilepsy"
 
 
-def test_diagnosis_recognise_keeps_focal_onset_heading() -> None:
+def test_diagnosis_find_keeps_focal_onset_heading() -> None:
     prediction = extract_deterministic_all9(
         ExectLetter("DX-FOCAL-ONSET", "Diagnosis: focal onset epilepsy (occipital).")
     )
@@ -210,14 +210,14 @@ def _has_frequency_attrs(attributes: dict[str, str]) -> bool:
     return bool(semantic)
 
 
-def test_dx_context_direct_class_widens_recognise_and_preserves_select() -> None:
+def test_dx_context_direct_class_widens_find_and_preserves_select() -> None:
     letter = ExectLetter(
         "DX-CONTEXT-RELOCATE",
         "Diagnosis: focal epilepsy. She was seen by the epilepsy nurse. "
         "There is a family history of epilepsy.",
     )
     relocated = ThreeStageConfig(
-        recognise=ACCEPTED_THREE_STAGE_CONFIG.recognise,
+        find=ACCEPTED_THREE_STAGE_CONFIG.find,
         select_rule_ids=(
             RECALL_FIRST_UNSUPPORTED_DROP,
             *ACCEPTED_THREE_STAGE_CONFIG.select_rule_ids,
@@ -227,7 +227,7 @@ def test_dx_context_direct_class_widens_recognise_and_preserves_select() -> None
     stops = three_stage_stop_mentions(letter, relocated)
     excluded_context_mentions = [
         mention
-        for mention in stops.recognise
+        for mention in stops.find
         if RECALL_FIRST_CLASS_TAG in mention.component_owner
     ]
     assert excluded_context_mentions, "expected excluded-context mentions as direct"
@@ -256,10 +256,10 @@ def test_investigation_resultless_emission_and_paired_drop() -> None:
         "An MRI was performed in 2016. The report is filed elsewhere. "
         "Her EEG showed generalised spike and wave discharges.",
     )
-    accepted_recognise = ACCEPTED_THREE_STAGE_CONFIG.recognise
-    assert accepted_recognise is not None
+    accepted_find = ACCEPTED_THREE_STAGE_CONFIG.find
+    assert accepted_find is not None
     relocated = ThreeStageConfig(
-        recognise=replace(accepted_recognise, investigations_emit_resultless=True),
+        find=replace(accepted_find, investigations_emit_resultless=True),
         select_rule_ids=(
             *ACCEPTED_THREE_STAGE_CONFIG.select_rule_ids,
             INVESTIGATION_RESULTLESS_DROP,
@@ -270,20 +270,20 @@ def test_investigation_resultless_emission_and_paired_drop() -> None:
         mention.entity == INVESTIGATIONS.name
         and mention.attributes.get("MRI_Performed") == "Yes"
         and "MRI_Results" not in mention.attributes
-        for mention in stops.recognise
+        for mention in stops.find
     )
     assert stops.select == run_letter(letter).comparison_projection.mentions
 
 
-def test_sf_rateless_relocation_widens_recognise_and_preserves_select() -> None:
+def test_sf_rateless_relocation_widens_find_and_preserves_select() -> None:
     letter = ExectLetter(
         "SF-RATELESS-RELOCATE",
         "She has focal seizures. No rate is given. Diagnosis: focal epilepsy.",
     )
-    accepted_recognise = ACCEPTED_THREE_STAGE_CONFIG.recognise
-    assert accepted_recognise is not None
+    accepted_find = ACCEPTED_THREE_STAGE_CONFIG.find
+    assert accepted_find is not None
     relocated = ThreeStageConfig(
-        recognise=replace(accepted_recognise, sf_keep_unassociated_anchors=True),
+        find=replace(accepted_find, sf_keep_unassociated_anchors=True),
         select_rule_ids=(
             *ACCEPTED_THREE_STAGE_CONFIG.select_rule_ids,
             SF_RATELESS_ANCHOR_DROP,
@@ -294,7 +294,7 @@ def test_sf_rateless_relocation_widens_recognise_and_preserves_select() -> None:
         mention.entity == SEIZURE_FREQUENCY.name
         and mention.text.lower() == "focal seizures"
         and not _has_frequency_attrs(dict(mention.attributes))
-        for mention in stops.recognise
+        for mention in stops.find
     )
     assert stops.select == run_letter(letter).comparison_projection.mentions
 
@@ -358,7 +358,7 @@ def test_nested_ancestor_skips_when_parent_already_direct() -> None:
 
     nested = diagnosis_mod.nested_ancestor_diagnosis_candidates(letter.note_text)
     assert nested == ()
-    ledger, _ = build_recognise_ledger(
+    ledger, _ = build_find_ledger(
         letter,
         enabled_deferred_classes=frozenset({DIAGNOSIS_NESTED_ANCESTOR}),
     )
@@ -545,7 +545,7 @@ def test_diagnosis_focal_onset_alias_emits_focal_epilepsy_concept() -> None:
 
 def test_nondiagnostic_context_deferred_class_records_excluded_occurrence() -> None:
     letter = ExectLetter("DX-NONDX-DEFER", "She was seen by the epilepsy nurse.")
-    ledger, _ = build_recognise_ledger(
+    ledger, _ = build_find_ledger(
         letter,
         enabled_deferred_classes=frozenset({DIAGNOSIS_NONDIAGNOSTIC_CONTEXT}),
     )
@@ -685,7 +685,7 @@ def test_family_configured_three_stage_matches_accepted_config() -> None:
         "for six months. A normal MRI in 2016.",
     )
     family_config = ThreeStageConfig(
-        recognise=ACCEPTED_THREE_STAGE_CONFIG.recognise,
+        find=ACCEPTED_THREE_STAGE_CONFIG.find,
         family_select=(
             (DIAGNOSIS.name, RULES_ONLY_SELECT_RULE_IDS),
             (SEIZURE_FREQUENCY.name, (SF_SEIZURE_FREE_POSITIVE_COUNT_DROP,)),
@@ -707,17 +707,17 @@ def test_three_stage_stop_reader_select_stop_equals_run_letter() -> None:
     )
     stops = three_stage_stop_mentions(letter, ACCEPTED_THREE_STAGE_CONFIG)
     assert stops.select == run_letter(letter).comparison_projection.mentions
-    assert any(mention.entity == DIAGNOSIS.name for mention in stops.recognise)
-    non_diagnosis_recognise = tuple(
-        mention for mention in stops.recognise if mention.entity != DIAGNOSIS.name
+    assert any(mention.entity == DIAGNOSIS.name for mention in stops.find)
+    non_diagnosis_find = tuple(
+        mention for mention in stops.find if mention.entity != DIAGNOSIS.name
     )
     non_diagnosis_encode = tuple(
         mention for mention in stops.encode if mention.entity != DIAGNOSIS.name
     )
-    assert non_diagnosis_recognise == non_diagnosis_encode
+    assert non_diagnosis_find == non_diagnosis_encode
 
 
-def test_run_letter_three_stage_default_recognise_config_matches_comparator() -> None:
+def test_run_letter_three_stage_default_find_config_matches_comparator() -> None:
     letter = ExectLetter(
         "DX-DEFAULT-PARITY",
         "Diagnosis: epilepsy – probable focal. She was seen by the epilepsy nurse.",

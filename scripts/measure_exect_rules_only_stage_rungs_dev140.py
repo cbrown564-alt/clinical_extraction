@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Measure recognise/encode/select stops of the promoted rules program on dev140.
+"""Measure find/encode/select stops of the promoted rules program on dev140.
 
 Protocol: docs/research/exectv2/exect_rules_only_stage_rungs_protocol_2026-08-27.md
 Pure instrumentation of the frozen ACCEPTED_THREE_STAGE_CONFIG; the test
@@ -39,7 +39,7 @@ OUT = (
     / "experiments/exect_rules_only_stage_rungs_20260827/dev140_summary.json"
 )
 FAMILIES = CLINICAL_HEADLINE_FAMILIES
-STOPS = ("recognise", "encode", "select")
+STOPS = ("find", "encode", "select")
 EXPECTED_SELECT_F1 = 0.9167
 
 
@@ -83,17 +83,17 @@ def main() -> None:
             raise RuntimeError(
                 f"select stop diverges from run_letter on {letter.letter_id}"
             )
-        recognise_non_diagnosis = tuple(
-            m for m in stops.recognise if m.entity != DIAGNOSIS.name
+        find_non_diagnosis = tuple(
+            m for m in stops.find if m.entity != DIAGNOSIS.name
         )
         encode_non_diagnosis = tuple(
             m for m in stops.encode if m.entity != DIAGNOSIS.name
         )
-        if recognise_non_diagnosis != encode_non_diagnosis:
+        if find_non_diagnosis != encode_non_diagnosis:
             raise RuntimeError(
                 f"encode stop changed a non-Diagnosis family on {letter.letter_id}"
             )
-        stop_preds["recognise"].append(_to_exect(letter.letter_id, stops.recognise))
+        stop_preds["find"].append(_to_exect(letter.letter_id, stops.find))
         stop_preds["encode"].append(_to_exect(letter.letter_id, stops.encode))
         stop_preds["select"].append(_to_exect(letter.letter_id, stops.select))
 
@@ -124,7 +124,7 @@ def main() -> None:
         "program": "run_letter_three_stage(ACCEPTED_THREE_STAGE_CONFIG)",
         "gates": {
             "select_stop_mention_identical_to_run_letter": True,
-            "encode_stop_non_diagnosis_identical_to_recognise": True,
+            "encode_stop_non_diagnosis_identical_to_find": True,
             "select_stop_reproduces_promoted_f1": EXPECTED_SELECT_F1,
         },
         "stage_rungs": stage_rungs,

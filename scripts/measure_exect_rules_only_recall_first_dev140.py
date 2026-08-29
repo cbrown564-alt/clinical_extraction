@@ -4,7 +4,7 @@
 Protocol:
 docs/research/exectv2/exect_rules_only_recall_first_restructure_protocol_2026-08-27.md
 
-For each requested arm this script reports the recognise/encode/select
+For each requested arm this script reports the find/encode/select
 stage rungs on dev140 (overall and per family) plus the Gate A2 /
 Gate B select-stop identity check against the frozen comparator
 ``run_letter``. The test split is never loaded.
@@ -29,7 +29,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
     load_letters_for_split,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.recognise_ledger import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.find_ledger import (
     DIAGNOSIS_COMPONENT_TOKEN,
     DIAGNOSIS_EXPANSION_SURFACE,
     DIAGNOSIS_HEADING_DECOMPOSITION,
@@ -44,7 +44,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.recogn
     SF_NAMED_TYPE,
     SF_SEIZURE_FREE,
     SF_STATE_VARIANT,
-    RecogniseConfig,
+    FindConfig,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select_rules import (
     INVESTIGATION_RESULTLESS_DROP,
@@ -82,9 +82,9 @@ TRANSFERRED_PROTOCOL = (
     "exect_rules_only_recall_first_transferred_protocol_2026-08-27.md"
 )
 FAMILIES = CLINICAL_HEADLINE_FAMILIES
-STOPS = ("recognise", "encode", "select")
+STOPS = ("find", "encode", "select")
 
-_ACCEPTED_RECOGNISE = ACCEPTED_THREE_STAGE_CONFIG.recognise or RecogniseConfig()
+_ACCEPTED_FIND = ACCEPTED_THREE_STAGE_CONFIG.find or FindConfig()
 
 # Arm registry. Every arm is a full ThreeStageConfig; add arms as the
 # restructure progresses. "accepted" is the frozen comparator re-run
@@ -94,7 +94,7 @@ ARMS: dict[str, ThreeStageConfig] = {
     # Gate A2 relocation arm: SF rate-gate moves from extraction into
     # Select (emit rate-less anchors, drop them with the paired rule).
     "sf_rateless_relocation": ThreeStageConfig(
-        recognise=replace(_ACCEPTED_RECOGNISE, sf_keep_unassociated_anchors=True),
+        find=replace(_ACCEPTED_FIND, sf_keep_unassociated_anchors=True),
         select_rule_ids=(
             *ACCEPTED_THREE_STAGE_CONFIG.select_rule_ids,
             SF_RATELESS_ANCHOR_DROP,
@@ -102,7 +102,7 @@ ARMS: dict[str, ThreeStageConfig] = {
     ),
     # Gate A2: excluded-context Diagnosis occurrences as tagged direct.
     "dx_context_relocation": ThreeStageConfig(
-        recognise=_ACCEPTED_RECOGNISE,
+        find=_ACCEPTED_FIND,
         select_rule_ids=(
             RECALL_FIRST_UNSUPPORTED_DROP,
             *ACCEPTED_THREE_STAGE_CONFIG.select_rule_ids,
@@ -111,7 +111,7 @@ ARMS: dict[str, ThreeStageConfig] = {
     ),
     # Gate A2: nested ancestor Diagnosis concepts as tagged direct.
     "dx_ancestor_relocation": ThreeStageConfig(
-        recognise=_ACCEPTED_RECOGNISE,
+        find=_ACCEPTED_FIND,
         select_rule_ids=(
             RECALL_FIRST_UNSUPPORTED_DROP,
             *ACCEPTED_THREE_STAGE_CONFIG.select_rule_ids,
@@ -120,7 +120,7 @@ ARMS: dict[str, ThreeStageConfig] = {
     ),
     # Gate A2: deferred SF classes as tagged direct.
     "sf_deferred_relocation": ThreeStageConfig(
-        recognise=_ACCEPTED_RECOGNISE,
+        find=_ACCEPTED_FIND,
         select_rule_ids=(
             RECALL_FIRST_UNSUPPORTED_DROP,
             *ACCEPTED_THREE_STAGE_CONFIG.select_rule_ids,
@@ -129,16 +129,16 @@ ARMS: dict[str, ThreeStageConfig] = {
     ),
     # Gate A2: completed investigations without a bound result as direct.
     "inv_resultless_relocation": ThreeStageConfig(
-        recognise=replace(_ACCEPTED_RECOGNISE, investigations_emit_resultless=True),
+        find=replace(_ACCEPTED_FIND, investigations_emit_resultless=True),
         select_rule_ids=(
             *ACCEPTED_THREE_STAGE_CONFIG.select_rule_ids,
             INVESTIGATION_RESULTLESS_DROP,
         ),
     ),
-    # All Gate A2 relocations combined: the recall-first recognise stop.
+    # All Gate A2 relocations combined: the recall-first find stop.
     "recall_first_all_relocations": ThreeStageConfig(
-        recognise=replace(
-            _ACCEPTED_RECOGNISE,
+        find=replace(
+            _ACCEPTED_FIND,
             sf_keep_unassociated_anchors=True,
             investigations_emit_resultless=True,
         ),
@@ -161,8 +161,8 @@ ARMS: dict[str, ThreeStageConfig] = {
     # Phase B: Diagnosis recall levers (nested surfaces without hierarchy,
     # heading decomposition) on top of all relocations.
     "phase_b_dx_recall": ThreeStageConfig(
-        recognise=replace(
-            _ACCEPTED_RECOGNISE,
+        find=replace(
+            _ACCEPTED_FIND,
             sf_keep_unassociated_anchors=True,
             investigations_emit_resultless=True,
         ),
@@ -215,8 +215,8 @@ ARMS["phase_c_all_keeps"] = replace(
 )
 
 # Phase C candidate: the accepted keep set. Isolated-positive classes only;
-# FP-dominated classes stay recognise-only (their recall lives at the
-# recognise stop, Select owns precision).
+# FP-dominated classes stay find-only (their recall lives at the
+# find stop, Select owns precision).
 _PHASE_C_KEPT_CLASSES: tuple[str, ...] = (
     DIAGNOSIS_HEADING_DECOMPOSITION,
     SF_STATE_VARIANT,
@@ -360,7 +360,7 @@ def measure_arm(
         stops = three_stage_stop_mentions(letter, config)
         if stops.select != comparator_select[letter.letter_id]:
             select_mismatch_ids.append(letter.letter_id)
-        stop_preds["recognise"].append(_to_exect(letter.letter_id, stops.recognise))
+        stop_preds["find"].append(_to_exect(letter.letter_id, stops.find))
         stop_preds["encode"].append(_to_exect(letter.letter_id, stops.encode))
         stop_preds["select"].append(_to_exect(letter.letter_id, stops.select))
         arm_errors = _pair_errors(letter, stops.select)

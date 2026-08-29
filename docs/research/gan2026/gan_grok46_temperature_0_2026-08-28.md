@@ -16,7 +16,7 @@ rejects `0`. The earlier cited Grok cell-3 row was temperature 1.
 
 ## Stack
 
-Cell 3 is LLM recognise (`gan_llm_extract`), then `gan_rules_encode`,
+Cell 3 is LLM find (`gan_llm_extract`), then `gan_rules_encode`,
 then `llm_select_after_codebook`. The first write of this report
 scored both temperatures with historical `llm_select` (367 vs 379 on
 `test450`; 663 vs 650 on `dev750`). That is not cell 3.
@@ -34,12 +34,12 @@ extract, so that split has no matched cell-3 temperature-1 select.
 
 | Split | Stop | Temp. 1.0 | Temp. 0.0 (living) | Δ (0 − 1) |
 | --- | --- | ---: | ---: | ---: |
-| `test450` | Recognise | 0.784 (353/450) | 0.789 (355/450) | **+2** |
+| `test450` | Find | 0.784 (353/450) | 0.789 (355/450) | **+2** |
 | `test450` | Encode | 0.804 (362/450) | 0.811 (365/450) | **+3** |
 | `test450` | Select | 0.842 (379/450) | 0.838 (377/450) | **−2** |
 
 Holdout select is **2** letters lower at temperature 0, not 12.
-Recognise is essentially unchanged. The historical `llm_select`
+Find is essentially unchanged. The historical `llm_select`
 reading (367 vs 379) is an old-stack ablation.
 
 ## Joint reading with Gemini temperature 1

@@ -118,7 +118,7 @@ def _exect_grid(slug: str, split: str) -> dict[str, Any]:
                 "extract_source": "exect_rules",
                 "select": rules,
                 "ablation": {
-                    "extract": _exect_rules_stage(split, "recognise") or rules,
+                    "extract": _exect_rules_stage(split, "find") or rules,
                     "encode": _exect_rules_stage(split, "encode") or rules,
                 },
             },
@@ -302,7 +302,7 @@ def _exect_rules_score(split: str) -> float | None:
 
 
 def _exect_rules_stage(split: str, stop: str) -> float | None:
-    """Measured recognise/encode stop for the standalone-rules row."""
+    """Measured find/encode stop for the standalone-rules row."""
 
     block = _exect_rules_block(split)
     if block is None:
@@ -311,6 +311,9 @@ def _exect_rules_stage(split: str, stop: str) -> float | None:
     if not isinstance(rungs, Mapping):
         return None
     entry = rungs.get(stop)
+    # Frozen ExECT stage_rungs still record the first stop as "recognise".
+    if not isinstance(entry, Mapping) and stop == "find":
+        entry = rungs.get("recognise")
     if not isinstance(entry, Mapping) or entry.get("f1") is None:
         return None
     return float(entry["f1"])

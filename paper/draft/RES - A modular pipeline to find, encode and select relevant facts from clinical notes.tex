@@ -22,7 +22,7 @@
 \begin{titlepage}
     \centering
 
-    {\Huge\bfseries RES: A modular pipeline to recognise, encode and select relevant facts from clinical notes\par}
+    {\Huge\bfseries RES: A modular pipeline to find, encode and select relevant facts from clinical notes\par}
     \vspace{2cm}
 
     {\large
@@ -38,7 +38,7 @@
 \end{titlepage}
 
 
-\title{RES: A modular pipeline to recognise, encode and select relevant facts from clinical notes\\}
+\title{RES: A modular pipeline to find, encode and select relevant facts from clinical notes\\}
 
 
 
@@ -108,7 +108,7 @@ with the transparency of a rules-based system could
 provide the most accurate, trustworthy results.
 
 Effective IE can be broken down into three key stages: 
-recognising relevant candidate facts, encoding those facts 
+finding relevant candidate facts, encoding those facts 
 into a particular form, and selecting which facts to keep 
 and which to filter out. A clinic letter can contain multiple 
 descriptions of seizures, some are historical events while 
@@ -121,8 +121,8 @@ just the final answer, but which steps were taken to achieve
 it.
 
 This paper evaluates the ideal combination of LLMs and 
-rules across those three stages: recognition, encoding and 
-selection. It was evaluated on a set of 1,200 annotated 
+rules across those three stages: find, encode and 
+select. It was evaluated on a set of 1,200 annotated 
 epilepsy clinic letters. The paper demonstrates that a 
 modular system combining LLMs and rules can extract 
 information with comparable accuracy to past methods 
@@ -132,6 +132,8 @@ Figure 1 displays the web app illustrating some of that
 chain from evidence to final answer.
 
 \section{Literature Review}
+
+NEED A BETTER SECTION ON TASK DECOMPOSITION
 
 Wang \emph{et al.} define clinical IE as the automatic 
 extraction and encoding of clinical information from 
@@ -145,7 +147,7 @@ extracting e.g. '4 per month' from a raw statement 'about once
 a week'. When rules are used to format the answers, they are 
 often described as simple post-processing steps for scoring 
 instead of distinct stages in the pipeline. Those paper shows 
-that separating recognition and encoding as separate stages 
+that separating find and encode as separate stages 
 preserves more of the evidence while still being able to 
 encode it into the required form for downstream use.
 
@@ -173,6 +175,9 @@ INSERT A REVIEW OF EVALUATION PERFORMANCE
 
 We have 8 different papers in the last 4 years with seizure frequency
 performance results, but there is significant variance. 
+
+
+FINE-TUNING VS. IN-CONTEXT LEARNING / PROMPTING
 
 Chiticariu \emph{et al.} show that academic papers tend to focus 
 exclusively on benchmark accuracy, while practitioners tend 
@@ -256,14 +261,14 @@ into 750 development letters and 450 test letters. They
 were stratified by the kind of seizure frequency fact 
 so both sets consist of 62\% with a frequency, 
 15\% seizure free, 13\% unknown and 10\% with no 
-seizure frequency reference. Table 1 summarises 
+seizure frequency reference. Table~\ref{tab:dataset} summarises 
 those details.
 
 \subsection{Architecture}
 
 To trace the journey from raw evidence to final answer, 
-the task was divided into three key stages: recognition,
-encoding, selection. First, the pipeline identifies 
+the task was divided into three key stages: find,
+encode, select. First, the pipeline identifies 
 potential candidates that fit the description in the raw
 text. Next, the pipeline takes the raw text from those
 candidates and encodes them into the required form.
@@ -288,9 +293,8 @@ combination of rules and LLMs to produce the final
 answer, none have empirically assessed the ideal 
 combination of the two. This three-stage pipeline enables 
 evaluation of the best combination overall, and specifically 
-which component performs best at which stage. Table 2 
-summarises the 3 main configurations of the pipeline 
-evaluated in this paper. 
+which component performs best at which stage. Table~\ref{tab:pipeline} 
+summarises the 3 main methods evaluated in this paper. 
 
 Determining which one fact among many is correct is the 
 challenge. Sometimes that requires grouping together 
@@ -305,21 +309,23 @@ annotation guidelines would record ambiguous facts like
 these differently. Distinct stages in the pipeline make 
 those choices configurable and explicit.
 
+NEEDS A COMPLETE PORTRAYAL OF EACH STAGE?
+
 \begin{figure*}[t]
     \centering
 
     \includegraphics[width=\linewidth]{fig2.png}
-    \caption{A clinic letter passes through three stages in the pipeline - recognise, encode and select - to generate structured labels with the exact text used from the letter to produce the label. Each of the three stages can be configured to use an LLM, rules or both. The example shown is the task of extracting a single label representing the patient's current seizure frequency burden.}
+    \caption{A clinic letter passes through three stages in the pipeline - find, encode and select - to generate structured labels with the exact text used from the letter to produce the label. Each of the three stages can be configured to use an LLM, rules or both. The example shown is the task of extracting a single label representing the patient's current seizure frequency burden.}
     \label{fig2}
 \end{figure*}
 
 \begin{table}[!t]
-\caption{Pipeline configurations}
+\caption{Pipeline method}
 \label{tab:pipeline}
 \centering
 \begin{tabularx}{\linewidth}{Yccc}
 \toprule
-\textbf{Configuration} & \textbf{Recognise} & \textbf{Encode} & \textbf{Select} \\
+\textbf{Method} & \textbf{Find} & \textbf{Encode} & \textbf{Select} \\
 \midrule
 Rules only & Rules & Rules & Rules \\
 LLM + Rules & LLM & LLM + Rules & Rules \\
@@ -370,7 +376,7 @@ calculate the F1 on two categories; a fine-grained 'purist' score
 and a coarser 'pragmatic' score. The more precise purist F1 is 
 the primary metric in this paper, but the pragmatic F1 score is 
 used for frequency bands with very small sample sizes (\textless20). A 
-full specification of the categories is in Table 3. The rationale for 
+full specification of the categories is in Table~\ref{tab:categories}. The rationale for 
 categorising labels is so that semantically identical phrases 
 are matched when exact labels differ, so that daily, once per day 
 and every day would be considered correct matches to the gold
@@ -396,45 +402,39 @@ the synthetic data.
 \caption{Seizure frequency categories: Purist and Pragmatic}
 \label{tab:categories}
 \centering
-\begin{tabularx}{\linewidth}{Ycc}
+\begin{tabularx}{\linewidth}{Yc}
 \toprule
 \textbf{Purist} &
-\textbf{Monthly rate} &
 \textbf{Pragmatic} \\
 \midrule
-Daily & $\geq$30 & \multirow{4}{*}{Frequent} \\
-More than weekly, less than daily & 16.6 & \\
-Once a week & 4.0 & \\
-More than monthly, less than weekly & 2.5 & \\
+Daily & \multirow{4}{*}{Frequent} \\
+More than weekly, less than daily & \\
+Once a week & \\
+More than monthly, less than weekly & \\
 \midrule
-Once a month & 1.05 & \multirow{4}{*}{Infrequent} \\
-More than 6 months, less than monthly & 0.59 & \\
-Once every 6 months & 0.17 & \\
-Less than once every 6 months & 0.08 & \\
+Once a month & \multirow{4}{*}{Infrequent} \\
+More than every 6 months, less than monthly & \\
+Once every 6 months & \\
+Less than once every 6 months & \\
 \midrule
-Unknown & 1000 & Unknown \\
-No seizure  frequency reference & 0 & No seizure \\
+Unknown & Unknown \\
+\midrule
+No seizure  frequency reference & No seizure \\
 \bottomrule
 \end{tabularx}
-
-\vspace*{8pt}
-\begin{minipage}{\linewidth}
-\raggedright\footnotesize
-Monthly rate is the midpoint of the purist category range normalised to the number of seizures per month. Originally defined in Holgate \emph{et. al}.
-\end{minipage}
 \end{table}
 
 The primary objective of this research is to identify which 
-component performs best at which stage. Table 2 shows 
-the 3 pipeline configurations used in the evaluation: rules
+component performs best at which stage. Table~\ref{tab:pipeline} 
+shows the 3 methods used in the evaluation: rules
 at every stage, the LLM at every stage or a combination
-of LLM and rules. For each configuration we evaluated 
-the pipeline at each stage: recognise, encode and select.
+of LLM and rules. For each method we evaluated 
+the pipeline at each stage: find, encode and select.
 This will produce a 3x3 matrix of results that answer two
 key questions: 
 
 \begin{enumerate}
-\item Among the three pipeline configurations, which performs
+\item Among the three methods, which performs
 best: rules, LLM, or a combination of both?
 \item How much incremental value is there from the additional
 encode and select stages?
@@ -485,22 +485,21 @@ and the model routers.
 
 \subsection{Benchmark Performance}
 
-The combined LLM and rules pipeline achieved a purist 
-micro-F1 score of 0.83, significantly higher than both 
-rules only (0.71) and LLM only (0.79). It also exceeds the 
+The LLM and rules pipeline achieves state-of-the-art results
+(SOTA) for extracting seizure frequency from epilepsy letters.
+It achieved a purist  micro-F1 score of 0.83, exceeding the 
 prior benchmark performance of 0.81 in Gan \emph{et. al} 
 set by a model that was fine-tuned and evaluated using 
 this same dataset of synthetic letters. While that is the only
 paper to evaluate the same dataset with the same metric, 
-Table 5 includes a summary of all 7 papers that reported 
-a seizure frequency extraction score this decade. This 
-pipeline is competitive with the best methods to date.
+Table~\ref{tab:historical} includes a summary of all 7 papers that reported 
+a seizure frequency extraction score this decade.  
 
 \begin{table}[!t]
 \caption{Comparisons to past seizure frequency papers}
-\label{tab:frequency}
+\label{tab:historical}
 \centering
-\begin{tabularx}{\linewidth}{Yccc}
+\begin{tabularx}{\linewidth}{Yccl}
 \toprule
 \textbf{Author} & \textbf{Year} & \textbf{Method} & \textbf{F1 score} \\
 \midrule
@@ -508,9 +507,9 @@ Xie et al. & 2022 & Fine-tuned LM & 0.83$^\ast$ \\
 Decker et al. & 2022 & Rules & 0.82$^\ast$$^\ast$ \\
 Fonferko-Shadrach et al. & 2024 & Rules & 0.66 \\
 Fernandes et al. & 2024 & Fine-tuned LM & 0.37 \\
-Holgate et al. & 2024 & Llama 2 & 0.73 \\
+Holgate et al. & 2024 & Prompted LLM & 0.73 \\
 Holgate et al. & 2025 & Fine-tuned LLM & 0.68 \\
-Gan et al. & 2026 & Fine-tuned LLM & 0.79 \\
+Gan et al. & 2026 & Fine-tuned LLM & 0.81 \\
 \midrule
 Brown \& Gan & 2026 & LLM + rules & 0.83 \\
 \bottomrule
@@ -520,7 +519,11 @@ Brown \& Gan & 2026 & LLM + rules & 0.83 \\
 \begin{minipage}{\linewidth}
 \raggedright\footnotesize
 $^\ast$Drops to 0.73 on texts with a frequency statement.
-$^\ast$$^\ast$Drops to 0.4 on external test set. 
+\end{minipage}
+
+\begin{minipage}{\linewidth}
+\raggedright\footnotesize
+$^\ast$$^\ast$Drops to 0.4 on the external test set. 
 \end{minipage}
 \end{table}
 
@@ -536,16 +539,95 @@ highest scoring category at 0.89 and 0.87 respectively,
 while daily frequency (0.7, 0.41) and more than weekly 
 (0.68, 0.55) are much lower. In this pipeline, daily (0.92) 
 and more than weekly (0.91) are the best performing 
-categories, significantly above unknown (0.74). 
+categories, significantly above unknown (0.74). The full
+performance breakdown across purist and pragmatic 
+categories can be seen in Table~\ref{tab:performance}.
 
+\begin{table}[!t]
+\caption{LLM + Rules: Purist and Pragmatic micro-F1}
+\label{tab:performance}
+\centering
+\begin{tabularx}{\linewidth}{Yccc}
+\toprule
+\textbf{Purist} &
+\textbf{n} &
+\textbf{Purist F1} &
+\textbf{Pragmatic F1} \\
+\midrule
+Daily & 41 & 0.92 & \multirow{4}{*}{Frequent: 0.95} \\
+More than weekly, less than daily & 123 & 0.91 & \\
+Once a week & 5 & 0.75 & \\
+More than monthly, less than weekly & 58 & 0.9 & \\
+\midrule
+Once a month & 18 & 0.73 & \multirow{4}{*}{Infrequent: 0.72} \\
+More than every 6 months, less than monthly & 55 & 0.74 & \\
+Once every 6 months & 1 & 0.00 & \\
+Less than once every 6 months & 6 & 0.6 & \\
+\midrule
+Unknown & 76 & 0.74 & Unknown: 0.74 \\
+\midrule
+No seizure  frequency reference & 67 & 0.81 & No seizure: 0.81 \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
+\subsection{Method Performance by Stage}
 
-\subsection{Recognise, Encode and Select Performance}
+The LLM + rules method performs better than the LLM or 
+rules alone at every stage: find, encode, select  (Table~\ref{tab:stages}).
+The LLM is significantly better at at the initial find
+stage vs. rules alone (0.79 vs 0.71). The LLM + rules 
+combination then adds incremental gains at the encode 
+(+0.01) and select (+0.03) stages, while the subsequent
+LLM stages make a very marginal difference (+0.006). 
+This illustrates that the LLM and rules have complementary 
+strengths that are particularly effective at discrete stages.
 
+The LLM is particularly strong at the find stage: 
+identifying high quality candidates in the text and 
+providing an initial proposed answer in the required form. 
+This initial stage is equivalent to the entire extraction 
+pipeline in most prior papers: find, encode and 
+select all at once. The LLM at this stage performs at
+a level comparable to the best prior methods, achieving
+performance in a single prompt that previously required 
+fine-tuning. 
+
+Rules are particularly effective at the select stage: 
+reviewing all of the candidates proposed by the model
+and determining which should be the final answer. 
+This can mean either choosing a different candidate, 
+such as choosing a frequency candidate when the model 
+has chosen 'unknown', or performing a mathematical 
+calculation on the selected evidence to update the answer,
+such as counting the total events over a monthly seizure 
+diary. This is a direct consequent of the pipeline design. 
+The find phase outputs multiple candidate events with 
+evidence quoted directly from the text, rather than just a 
+single flat answer. Rules leverage that richer evidence to 
+deliver significant incremental gains.
+
+\begin{table}[!t]
+\caption{Purist micro-F1 at find, encode, and select}
+\label{tab:stages}
+\centering
+\begin{tabularx}{\linewidth}{Yccc}
+\toprule
+\textbf{Configuration} &
+\textbf{Find} &
+\textbf{Encode} &
+\textbf{Select} \\
+\midrule
+Rules & 0.71 & 0.71 & 0.71 \\
+LLM + rules & 0.79 & 0.80 & 0.83 \\
+LLM & 0.79 & 0.79 & 0.79 \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \subsection{Model Comparison}
 
-6 Models
+\subsection{Model Configuration}
 
 Thinking 
 
@@ -554,6 +636,20 @@ Temperature
 The task is tightly defined with explicit schema and output 
 requirements which limits the variation in model outputs 
 linked to higher temperatures.
+
+\subsection{Development vs. Test Results}
+
+A consistent finding in the literature is that rules are brittle
+and tend to overfit the training data, generalising poorly
+to unseen data. Our rules only 
+
+\begin{figure}[t]
+    \centering
+
+    \includegraphics[width=\linewidth]{fig4.pdf}
+     \caption{Rules perform best on the development set but overfit. The LLM generalises best with consistent performance on dev and test. LLM and rules combined produce the best results overall, even with a small generalisation gap of 0.87→0.83.}
+    \label{fig4}
+\end{figure}
 
 \subsection{Error Analysis}
 
@@ -564,6 +660,21 @@ score for the infrequent (monthly or less) category was
 0.67 in Gan et. al, but significantly worse performance 
 vs. the pipeline's score of 0.95 on the frequent category. 
 
+\begin{figure}[t]
+    \centering
+
+    \includegraphics[width=\linewidth]{fig5-alt.pdf}
+     \caption{The key error pattern is in conflating }
+    \label{fig4}
+\end{figure}
+
+\begin{figure*}[t]
+    \centering
+
+    \includegraphics[width=\linewidth]{fig3.pdf}
+    \caption{LLM + rules. Every model sees consistent performance gains in the encode and select stages. The LLM does the bulk of the extraction work at the find phase, but the rules add incremental gains in the next two stages. The pattern generalises across models, but rules help the smallest models most. Luna saw the biggest performance gain from 0.69 to 0.78.}
+    \label{fig3}
+\end{figure*}
 
 \section{Discussion}
 

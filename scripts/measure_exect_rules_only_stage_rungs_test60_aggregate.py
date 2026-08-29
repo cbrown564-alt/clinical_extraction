@@ -48,7 +48,7 @@ OUT_JSON = (
 SEALED_ROOT = REPO_ROOT / "scratch/holdout/exect_rules_only_stage_rungs_test60_20260827"
 LETTER_ID_RE = re.compile(r"\bEA\d{4}\b")
 TEST_ROW_COUNT = 59
-STOPS = ("recognise", "encode", "select")
+STOPS = ("find", "encode", "select")
 EXPECTED_SELECT_F1 = 0.8018
 
 
@@ -63,15 +63,15 @@ def main() -> None:
         stops = three_stage_stop_mentions(letter, ACCEPTED_THREE_STAGE_CONFIG)
         if stops.select != run_letter(letter).comparison_projection.mentions:
             raise RuntimeError("select stop diverges from run_letter on a test letter")
-        recognise_non_diagnosis = tuple(
-            m for m in stops.recognise if m.entity != DIAGNOSIS.name
+        find_non_diagnosis = tuple(
+            m for m in stops.find if m.entity != DIAGNOSIS.name
         )
         encode_non_diagnosis = tuple(
             m for m in stops.encode if m.entity != DIAGNOSIS.name
         )
-        if recognise_non_diagnosis != encode_non_diagnosis:
+        if find_non_diagnosis != encode_non_diagnosis:
             raise RuntimeError("encode stop changed a non-Diagnosis family on a test letter")
-        stop_preds["recognise"].append(_to_exect(letter.letter_id, stops.recognise))
+        stop_preds["find"].append(_to_exect(letter.letter_id, stops.find))
         stop_preds["encode"].append(_to_exect(letter.letter_id, stops.encode))
         stop_preds["select"].append(_to_exect(letter.letter_id, stops.select))
 
@@ -103,13 +103,13 @@ def main() -> None:
         "program": "run_letter_three_stage(ACCEPTED_THREE_STAGE_CONFIG)",
         "gates": {
             "select_stop_mention_identical_to_run_letter": True,
-            "encode_stop_non_diagnosis_identical_to_recognise": True,
+            "encode_stop_non_diagnosis_identical_to_find": True,
             "select_stop_reproduces_promoted_f1": EXPECTED_SELECT_F1,
         },
         "stage_rungs": stage_rungs,
         "claim_boundary": (
             "Aggregate-only stage-stop instrumentation of the frozen promoted "
-            "rules program on test60. Recognise/encode rungs are ablation "
+            "rules program on test60. Find/encode rungs are ablation "
             "views of the cited select stop, not new methods. No letter "
             "identifiers in public files. Not clinical validation."
         ),
@@ -166,16 +166,16 @@ def _write_sealed(stop_preds: dict[str, list[ExectLetter]]) -> Path:
     SEALED_ROOT.mkdir(parents=True, exist_ok=True)
     path = SEALED_ROOT / "stage_stop_predictions.jsonl"
     with path.open("w", encoding="utf-8") as handle:
-        for recognise, encode, select in zip(
-            stop_preds["recognise"],
+        for find_stop, encode, select in zip(
+            stop_preds["find"],
             stop_preds["encode"],
             stop_preds["select"],
             strict=True,
         ):
             row = {
-                "letter_id": recognise.letter_id,
+                "letter_id": find_stop.letter_id,
                 "stops": {
-                    "recognise": _annotations_view(recognise),
+                    "find": _annotations_view(find_stop),
                     "encode": _annotations_view(encode),
                     "select": _annotations_view(select),
                 },

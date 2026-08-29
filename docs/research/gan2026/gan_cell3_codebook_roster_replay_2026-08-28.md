@@ -10,7 +10,7 @@ Artifact: `paper_experiments/gan/rungs/{slug}/{split}/comparison.json`
 
 When every living roster model is replayed on the same cell-3 stack
 as the Gemini five-cell headline, what are the locked `test450`
-recognise / encode / select Purist aggregates?
+find / encode / select Purist aggregates?
 
 ## Protocol
 
@@ -29,7 +29,7 @@ headline. Grok still leads on locked select. Gemini’s living select
 is 374/450, the same no-call codebook replay already recorded beside
 Table 1’s curated 373/450.
 
-| Model | Recognise | Encode | Select |
+| Model | Find | Encode | Select |
 | --- | ---: | ---: | ---: |
 | Gemini 3.7 Flash | 355 (0.789) | 360 (0.800) | 374 (0.831) |
 | Grok 4.6 | 355 (0.789) | 365 (0.811) | **377 (0.838)** |
@@ -38,7 +38,7 @@ Table 1’s curated 373/450.
 | Qwen 3.8 27B | 315 (0.700) | 329 (0.731) | 339 (0.753) |
 | Gemma 4 26B | 299 (0.664) | 307 (0.682) | 323 (0.718) |
 
-Rules still raise every model over recognise. Luna still gains the
+Rules still raise every model over find. Luna still gains the
 most letters (+38). Local models remain last. Historical
 selected-evidence encode (Gemini 346 / 362) is the five-cell
 ablation, not this roster.

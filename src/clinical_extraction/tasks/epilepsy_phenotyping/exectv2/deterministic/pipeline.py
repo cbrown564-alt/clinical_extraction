@@ -528,14 +528,14 @@ def _deferred_sf_named_type_candidates(
     text: str,
     ablation: AblationConfig,
 ) -> tuple:
-    from .recognise_ledger import SF_NAMED_TYPE, RecogniseCandidate
+    from .find_ledger import SF_NAMED_TYPE, FindCandidate
 
     anchors = _collect_anchors(text, ablation)
     attributes = _collect_attributes(text, ablation)
     anchors = [anchor for anchor in anchors if anchor.evidence and anchor.evidence in text]
     pairs = associate_attributes_to_anchors(anchors, attributes, text)
     paired_spans = {anchor.span for anchor, _attrs in pairs}
-    candidates: list[RecogniseCandidate] = []
+    candidates: list[FindCandidate] = []
     for anchor in anchors:
         if anchor.span in paired_spans:
             continue
@@ -543,7 +543,7 @@ def _deferred_sf_named_type_candidates(
             continue
         mention = _mention_from_pair(anchor, {})
         candidates.append(
-            RecogniseCandidate(
+            FindCandidate(
                 mention=mention,
                 candidate_class=SF_NAMED_TYPE,
                 rule_id="recognise.sf_named_type",
@@ -556,17 +556,17 @@ def _deferred_sf_heading_state_candidates(
     text: str,
     ablation: AblationConfig,
 ) -> tuple:
-    from .recognise_ledger import SF_HEADING_STATE, RecogniseCandidate
+    from .find_ledger import SF_HEADING_STATE, FindCandidate
 
     default_keys = _default_sf_mention_keys(text, ablation)
-    candidates: list[RecogniseCandidate] = []
+    candidates: list[FindCandidate] = []
     for mention in frequency_section_mentions(text):
         if not _has_heading_frequency_state(mention):
             continue
         if _mention_key(mention) in default_keys:
             continue
         candidates.append(
-            RecogniseCandidate(
+            FindCandidate(
                 mention=mention,
                 candidate_class=SF_HEADING_STATE,
                 rule_id="recognise.sf_heading_state",
@@ -579,7 +579,7 @@ def _deferred_sf_seizure_free_candidates(
     text: str,
     ablation: AblationConfig,
 ) -> tuple:
-    from .recognise_ledger import SF_SEIZURE_FREE, RecogniseCandidate
+    from .find_ledger import SF_SEIZURE_FREE, FindCandidate
 
     anchors = _collect_anchors(text, ablation)
     attributes = _collect_attributes(text, ablation)
@@ -587,7 +587,7 @@ def _deferred_sf_seizure_free_candidates(
     attributes = [attr for attr in attributes if attr.evidence and attr.evidence in text]
     orphans = _unassociated_attributes(anchors, attributes, text)
     default_keys = _default_sf_mention_keys(text, ablation)
-    candidates: list[RecogniseCandidate] = []
+    candidates: list[FindCandidate] = []
     for attr in orphans:
         if attr.kind != AttributeKind.SEIZURE_FREE:
             continue
@@ -597,7 +597,7 @@ def _deferred_sf_seizure_free_candidates(
         if _mention_key(mention) in default_keys:
             continue
         candidates.append(
-            RecogniseCandidate(
+            FindCandidate(
                 mention=mention,
                 candidate_class=SF_SEIZURE_FREE,
                 rule_id="recognise.sf_seizure_free",
@@ -647,9 +647,9 @@ _SF_STATE_VARIANT_PATTERNS: tuple[tuple[re.Pattern[str], str, str, dict[str, str
 
 
 def _deferred_sf_state_variant_candidates(text: str) -> tuple:
-    from .recognise_ledger import SF_STATE_VARIANT, RecogniseCandidate
+    from .find_ledger import SF_STATE_VARIANT, FindCandidate
 
-    candidates: list[RecogniseCandidate] = []
+    candidates: list[FindCandidate] = []
     seen: set[tuple[str, str]] = set()
     for pattern, mention_text, cui_phrase, extra_attrs in _SF_STATE_VARIANT_PATTERNS:
         for match in pattern.finditer(text):
@@ -661,7 +661,7 @@ def _deferred_sf_state_variant_candidates(text: str) -> tuple:
             line_end = text.find("\n", match.end())
             evidence = text[line_start : line_end if line_end != -1 else len(text)].strip()
             candidates.append(
-                RecogniseCandidate(
+                FindCandidate(
                     mention=PredictedMention(
                         entity=SEIZURE_FREQUENCY.name,
                         text=mention_text,
@@ -680,9 +680,9 @@ def deferred_sf_candidates(
     letter: ExectLetter,
     enabled_classes: frozenset[str],
 ) -> tuple:
-    """Deferred SeizureFrequency recognise candidates for reconstruction move M3."""
+    """Deferred SeizureFrequency find candidates for reconstruction move M3."""
 
-    from .recognise_ledger import (
+    from .find_ledger import (
         SF_HEADING_STATE,
         SF_NAMED_TYPE,
         SF_SEIZURE_FREE,

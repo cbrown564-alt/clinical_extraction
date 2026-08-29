@@ -35,7 +35,7 @@ probe.
 | Dataset | Gan 2026 |
 | Split | `test450` (`gan2026_split_v1` test) |
 | Rows | 450 |
-| Method | `gan_llm_extract` (cell 3 recognise) |
+| Method | `gan_llm_extract` (cell 3 find) |
 | Model | `grok46` / `xai/grok-4.6` |
 | Candidate | temperature `0.0`; other living Grok fields unchanged |
 | Comparator | living Grok temperature `1.0` (not overwritten) |

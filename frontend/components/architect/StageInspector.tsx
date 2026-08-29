@@ -11,10 +11,10 @@ const stageMeta: Record<
   { label: string; icon: React.ReactNode; color: string; desc: string }
 > = {
   extract: {
-    label: "Recognise",
+    label: "Find",
     icon: <Highlighter className="h-3.5 w-3.5" />,
     color: "text-deterministic",
-    desc: "Raw candidate events found in the note by recognition rules or LLM claims.",
+    desc: "Raw candidate events found in the note by find-stage rules or LLM claims.",
   },
   normalise: {
     label: "Encode",
@@ -293,7 +293,7 @@ export default function StageInspector() {
           <>
             {trace.extract.items.length === 0 ? (
               <div className="rounded-lg border border-border bg-surface-raised/30 p-4 text-center text-muted text-sm">
-                No candidate events recognised.
+                No candidate events found.
               </div>
             ) : (
               trace.extract.items.map((item) => (

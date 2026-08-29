@@ -37,7 +37,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.projec
     NAMED_ABSENCE_SURFACES,
     SF_TYPE_PARENT_CUI,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.recognise_ledger import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.find_ledger import (
     DIAGNOSIS_COMPONENT_TOKEN,
     DIAGNOSIS_EXPANSION_SURFACE,
     DIAGNOSIS_HEADING_DECOMPOSITION,
@@ -81,7 +81,7 @@ RECALL_FIRST_UNSUPPORTED_DROP = "selection.recall_first_unsupported_drop"
 INVESTIGATION_RESULTLESS_DROP = "selection.investigation_resultless_drop"
 
 # Phase C keep rules (2026-08-27 restructure): each retains one recall-first
-# recognise class at Select. They carry no handler of their own; the
+# find class at Select. They carry no handler of their own; the
 # RECALL_FIRST_UNSUPPORTED_DROP gate consults them (with the per-class
 # condition in RECALL_FIRST_KEEP_CONDITIONS, when one is registered).
 KEEP_DX_NONDIAGNOSTIC_CONTEXT = "selection.keep_dx_nondiagnostic_context"

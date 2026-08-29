@@ -28,7 +28,7 @@ provider, rather than the Mac mini, performed model inference.
 | Core packages currently installed | DSPy 3.2.1; LiteLLM 1.87.1; Pydantic 2.13.4 |
 | Dependency record | `uv.lock` |
 
-The six-model comparison is cell 3 only on both tasks (LLM recognise,
+The six-model comparison is cell 3 only on both tasks (LLM find,
 rules encode, rules select). Living request settings come from
 `ModelSpec` in [`exect.py`](../../src/clinical_extraction/paper/exect.py)
 (`_spec_for`). Promoted ExECT cells record the same fields in
