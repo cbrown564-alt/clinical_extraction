@@ -38,7 +38,7 @@ def test_gemini_cells_use_five_cell_ablations_and_cited_select() -> None:
 
     assert chart.n == 450
     assert chart.categories == ["Rules", "Both", "LLM"]
-    assert chart.series["Recognise"] == [321 / 450, 354 / 450, 354 / 450]
+    assert chart.series["Find"] == [321 / 450, 354 / 450, 354 / 450]
     assert chart.series["Encode"] == [321 / 450, 359 / 450, 354 / 450]
     assert chart.series["Select"] == [321 / 450, 373 / 450, 357 / 450]
 
@@ -87,7 +87,7 @@ def test_six_model_cell3_uses_codebook_rungs_ordered_by_select() -> None:
 
     assert chart.categories == ["Grok 4.6", "Gemini 3.7 Flash", "GPT-5.6 Luna"]
     assert chart.series["Select"] == [377 / 450, 374 / 450, 350 / 450]
-    assert chart.series["Recognise"] == [355 / 450, 355 / 450, 312 / 450]
+    assert chart.series["Find"] == [355 / 450, 355 / 450, 312 / 450]
 
 
 def test_six_model_cell3_rejects_historical_encode() -> None:
@@ -134,3 +134,32 @@ def test_living_barbell_matches_sealed_cell_selects() -> None:
     chart = load_living_gemini_dev_vs_test()
     assert chart.development == [669 / 750, 649 / 750, 590 / 750]
     assert chart.holdout == [321 / 450, 373 / 450, 357 / 450]
+
+
+def test_living_purist_confusion_matrix_totals() -> None:
+    from clinical_extraction.paper.gan_result_figures import (
+        load_living_purist_confusion_matrix,
+    )
+
+    cm = load_living_purist_confusion_matrix("gemini37flash", "test450")
+    assert cm.n == 450
+    assert len(cm.labels) == 10
+    total = sum(sum(row) for row in cm.matrix)
+    assert total == 450
+    correct = sum(cm.matrix[i][i] for i in range(10))
+    assert correct == 374
+
+
+def test_living_pragmatic_confusion_matrix_totals() -> None:
+    from clinical_extraction.paper.gan_result_figures import (
+        load_living_pragmatic_confusion_matrix,
+    )
+
+    cm = load_living_pragmatic_confusion_matrix("gemini37flash", "test450")
+    assert cm.n == 450
+    assert len(cm.labels) == 4
+    total = sum(sum(row) for row in cm.matrix)
+    assert total == 450
+    correct = sum(cm.matrix[i][i] for i in range(4))
+    assert correct == 383
+

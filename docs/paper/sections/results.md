@@ -1,7 +1,7 @@
 # Paper results
 
 Date: 2026-08-24
-Revised: 2026-08-28 (Gan-only dissertation scope; living class tables; roster counts)
+Revised: 2026-08-29 (later-stage LLM encode-then-select ablation)
 Status: structured first draft; ExECT columns removed from the dissertation
 Owner: this file
 Scope: [Gan is the dissertation paper](../decisions/gan-is-the-dissertation-paper.md)
@@ -30,14 +30,14 @@ investigations, and seizure-frequency statements from the same
 synthetic letters. That study reports output volume and structure
 only. It has no inventory reference labels and is not scored.
 
-## B. Model-led recognition with rule-based later stages gave the strongest result
+## B. Model-led find with rule-based later stages gave the strongest result
 
 On locked `test450`, the five-cell comparison found that Gemini
-codebook recognition, then a second rule encode, then rule selection
+codebook find, then a second rule encode, then rule selection
 was the strongest allocation, outperforming both standalone rules and
 the end-to-end model configuration (Table 1).
 
-| Candidate recognition | Task encoding | Final selection | Purist | Pragmatic |
+| Find | Encode | Select | Purist | Pragmatic |
 | --- | --- | --- | ---: | ---: |
 | Rules | Rules | Rules | 0.71 (321) | 0.76 (341) |
 | Model and rules | Rules | Rules | 0.82 (368) | 0.84 (380) |
@@ -50,15 +50,15 @@ Gemini 3.7 Flash. The cited score is the select stop. Source:
 `paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json`
 and
 [the `test450` class report](../../research/gan2026/gan_test450_classification_report_2026-08-28.md).
-Cell 3 recognise is `gan_llm_extract`, which already writes the
+Cell 3 find is `gan_llm_extract`, which already writes the
 codebook form. Encode then runs `gan_rules_encode` on that ledger, so
 both the model and the rules encode. That is not cell 2 (both at
-recognise) and not cell 4 (same extract, no rule encode). A later
+find) and not cell 4 (same extract, no rule encode). A later
 no-call replay of the same cell-3 extract scores 374/450 Purist and
 383/450 Pragmatic. The cited five-cell totals remain 373 and 382. Do
 not retune from the one-count gap.
 
-Replacing rule-based candidate recognition with Gemini raised Purist
+Replacing rule-based find with Gemini raised Purist
 micro-F1 from 0.71 to 0.83 when the model already wrote the codebook
 form and rules then encoded and selected. Dropping the second rule
 encode (cell 4) or assigning selection to the model (cell 5) reduced
@@ -69,7 +69,7 @@ the final score.
 The preferred cell submitted 373/450 cited Purist-correct labels.
 Residual errors were not spread evenly across frequency bands. Tables
 2a–2c are the living per-class reading for cells 1 (rules throughout),
-3 (model codebook recognise, model-then-rule encode, rule select),
+3 (model codebook find, model-then-rule encode, rule select),
 and 5 (model throughout).
 Gold and predicted ε only; no letter text and no row ids. Source:
 [the `test450` class report](../../research/gan2026/gan_test450_classification_report_2026-08-28.md).
@@ -110,7 +110,7 @@ frequent to least frequent. Unknown support 76/450.
 Pragmatic companion: Frequent 0.86, Infrequent 0.75, Unknown 0.62, No
 seizure 0.62; micro-F1 0.76.
 
-**Table 2b.** Cell 3 — Gemini codebook recognise (`gan_llm_extract`
+**Table 2b.** Cell 3 — Gemini codebook find (`gan_llm_extract`
 already encodes), then `gan_rules_encode` and rule select. Replay
 374/450 Purist (cited five-cell 373/450). Same class order as Table
 2a.
@@ -132,7 +132,7 @@ already encodes), then `gan_rules_encode` and rule select. Replay
 Pragmatic companion: Frequent 0.95, Infrequent 0.72, Unknown 0.74, No
 seizure 0.81; micro-F1 0.85.
 
-**Table 2c.** Cell 5 — Gemini recognise, encode, and select. Purist
+**Table 2c.** Cell 5 — Gemini find, encode, and select. Purist
 357/450; two later-stage rows with no scorable select label count as
 incorrect. Same class order as Table 2a.
 
@@ -157,14 +157,14 @@ seizure 0.76; micro-F1 0.82.
 taxonomy, and representative development cases. The main paper needs
 the hard-bin finding and the three-cell class tables.
 
-## D. Source-faithful recognition incurred a small performance cost *(optional)*
+## D. Source-faithful find incurred a small performance cost *(optional)*
 
 The Gan source-form ablation held the multi-candidate output schema
 constant and changed only the form written by the model: the headline
 request emitted gold-aligned encoded candidates, whereas the
 source-near request retained the wording and uncertainty of the
 letter. Later rule encoding and selection recovered much of the
-source-near deficit, but the bundled recognise-and-encode request
+source-near deficit, but the bundled find-and-encode request
 retained the better final score.
 
 This is a choice between task performance and source fidelity, rather
@@ -176,23 +176,63 @@ retained, add the compact four-row Gan ablation table from
 `gan_source_near_vs_bundled_encode_2026-08-23.md`; otherwise move this
 subsection to supporting material.]**
 
+## D2. A second LLM encode call on the codebook extract made the score worse *(optional)*
+
+Cell 5 is not three Gemini calls. Find already writes the
+codebook form. Cited select is `gan_llm_select_from_extract` on that
+ledger. A separate later-stage stack was run anyway: the same
+`gan_llm_extract` raw, then `gan_llm_encode`, then `gan_llm_select`.
+That encode does not re-read the letter and does not see extract
+`final_label`. It rewrites each event from `raw_value` and a quote.
+The stack is an ablation. It is not cell 5 and not Table 1.
+
+| Split | Extract | LLM encode | LLM select after encode |
+| --- | ---: | ---: | ---: |
+| Locked `test450` | 0.79 (354) | **0.65** (291) | 0.71 (320) |
+| `dev750` | 0.78 (585) | **0.67** (506) | 0.76 (568) |
+
+**Table 3a.** Gemini 3.7 Flash Purist micro-F1 for the later-stage
+LLM encode-then-select ablation. Sources:
+`paper_experiments/gan/gan_llm_extract/gemini37flash/{split}/comparison.json`,
+`paper_experiments/gan/gan_llm_encode/gemini37flash/{split}/`,
+`paper_experiments/gan/gan_llm_select/gemini37flash/{split}/`.
+Holdout is aggregate-only. Cited cell 5 on `test450` remains
+**0.79** (357). Do not retune Table 1 from these cells.
+
+Encode is the drop. Select recovers some of the lost letters but
+stays below the extract stop on both sealed cells, and below cited
+cell 5 on holdout. The development mechanism study on the same
+codebook ledger scored encode **0.78 → 0.69** (89 harm, 21 rescue;
+748 parsed letters) and both select paths at **0.79** (select after
+encode 592; select from extract 590). That study is why the LLM row
+skips the extra encode call. Owners:
+[later-stage encode/select decision](../decisions/gan-later-stage-encode-select-prompts.md),
+[encode on codebook extract](../../research/gan2026/gan_encode_on_codebook_extract_2026-08-22.md),
+[select-from-extract](../../research/gan2026/gan_select_from_extract_2026-08-22.md).
+
+This is not the five-cell historical selected-evidence encoder
+(Gemini encode 346 / select 362). That remains a different ablation.
+`gan_llm_encode` on `gan_llm_extract_raw` is also a different
+question: it helps source-near wording and still does not beat the
+bundled codebook find.
+
 ## E. More reasoning effort did not materially improve the preferred pipeline
 
 Across the tested effort levels, increasing Gemini's reasoning budget
-produced little or no improvement in the model-recognise, rule-encode,
+produced little or no improvement in the model-find, rule-encode,
 rule-select pipeline. On Gan, low effort achieved the best final
 Purist result (0.831), compared with 0.813 at medium effort and 0.818
 at high effort.
 
 Higher-effort settings increased computational cost and latency
 without a corresponding improvement in the primary task metric. Once
-the model's role is fixed to candidate recognition, the study does not
+the model's role is fixed to find, the study does not
 support spending additional reasoning budget on this pipeline.
 
 ## E2. Temperature 0 versus 1 is mixed and smaller than stage ownership
 
 Gemini and Grok were compared at temperature 0 and 1 on the same
-cell-3 recognise, then codebook rule encode and rule select. Gemini
+cell-3 find, then codebook rule encode and rule select. Gemini
 living is 0; temperature 1 is an unpromoted ablation. Grok living is
 now 0; temperature 1 is the earlier cited Grok cell. Luna remains at
 1 because that provider rejects 0.
@@ -225,11 +265,11 @@ that Luna would rise or fall if the same setting were allowed.
 ## F. Rules reduced, but did not remove, differences between models
 
 The six-model comparison holds the same cell-3 stack and changes only
-the candidate-recognition model: `gan_llm_extract` (model already
+the find-stage model: `gan_llm_extract` (model already
 encodes), then `gan_rules_encode` and `llm_select_after_codebook`.
 The promoted roster on locked `test450` is:
 
-| Model | Recognise | Encode | Select |
+| Model | Find | Encode | Select |
 | --- | ---: | ---: | ---: |
 | Gemini 3.7 Flash | 0.789 (355) | 0.800 (360) | 0.831 (374) |
 | Grok 4.6 | 0.789 (355) | 0.811 (365) | **0.838** (377) |
@@ -247,11 +287,11 @@ the curated five-cell total **0.83** (373/450); do not retune from
 the one-count gap. Historical selected-evidence encode (346 / 362
 on Gemini) remains the five-cell encode ablation, not this table.
 
-Later rules raised every model over its recognise stop and helped
+Later rules raised every model over its find stop and helped
 Luna most, but did not bring Luna or the local models level with Grok.
 Rules can correct task-form and selection errors in an existing
 candidate record. They cannot reconstruct a clinically relevant
-distinction omitted at recognition.
+distinction omitted at find.
 
 **Figure 1.** Hosted cell-3 comparison before and after later
 rule-based processing on Gan `test450`. The caption should state the
@@ -316,10 +356,12 @@ correspondence.
 
 The main Results section contains Table 1 (Gan five-cell), Tables
 2a–2c (Purist class reports for cells 1, 3, and 5), Table 3
-(temperature ablation), Table 4 (six-model cell-3 roster), Table 5
+(temperature ablation), Table 3a (optional later-stage LLM
+encode-then-select), Table 4 (six-model cell-3 roster), Table 5
 (descriptive inventory), and Figure 1 (before-and-after-rules). Full
 four-decimal class tables, residual taxonomy, representative
-development traces, source-form ablation detail, hardware
+development traces, source-form ablation detail, later-stage LLM
+encode mechanism, hardware
 specifications, prompts, API settings, and replay artifacts belong in
 supporting material unless the final page budget permits more of
 them. ExECT locked totals are later-paper evidence. They are not
@@ -329,7 +371,8 @@ dissertation tables.
 
 Held-out Gan results are aggregate-only. Development examples explain
 mechanisms and limitations but do not establish prevalence or
-clinical safety. The classification study evaluates agreement with
+clinical safety. The later-stage LLM encode-then-select stack is an
+optional ablation, not a Table 1 row. The classification study evaluates agreement with
 the Gan seizure-frequency reference standard. The inventory panel is
 descriptive output on `dev750` only. This draft does not claim
 clinical validation, deployment readiness, a universal architecture,

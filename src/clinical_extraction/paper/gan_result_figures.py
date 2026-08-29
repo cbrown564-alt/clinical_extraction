@@ -29,18 +29,19 @@ CELL5_DEV750 = (
 RUNGS_ROOT = ROOT / "paper_experiments/gan/rungs"
 CELL_BARBELL_LABELS = ("Rules only", "LLM + rules", "LLM only")
 SPLIT_COLORS = {
-    "Development": "#9AA3AB",
+    "Development": "#7C8B9E",
     "Test": "#15324F",
 }
 FIGURE_DIR = ROOT / "paper/draft"
-STAGE_ORDER = ("Recognise", "Encode", "Select")
+STAGE_ORDER = ("Find", "Encode", "Select")
 STAGE_COLORS = {
-    "Recognise": "#C5CDD4",
+    "Find": "#8C9BAE",
     "Encode": "#12968F",
     "Select": "#15324F",
 }
-AXIS_GREY = "#D2D5DA"
-LABEL_BLACK = "#000000"
+AXIS_GREY = "#CBD5E1"
+GRID_GREY = "#E2E8F0"
+LABEL_BLACK = "#1E293B"
 LATIN_MODERN_NAME = "Latin Modern Roman"
 LATIN_MODERN_CANDIDATES = (
     Path("/Library/TeX/Root/texmf-dist/fonts/opentype/public/lm/lmroman10-regular.otf"),
@@ -52,6 +53,46 @@ MODEL_LABELS = {
     "deepseek_v4_flash": "DeepSeek V4 Flash",
     "qwen38_27b": "Qwen 3.8 27B",
     "gemma4_26b": "Gemma 4 26B",
+}
+
+PURIST_CATEGORY_ORDER = (
+    "seizure_freq_1ormore_daily",
+    "seizure_freq_more1week_less1day",
+    "seizure_freq_1_per_week",
+    "seizure_freq_more1mon_less1week",
+    "seizure_freq_1_per_mon",
+    "seizure_freq_more1per6mon_less1mon",
+    "seizure_freq_1_per_6mon",
+    "seizure_freq_1_per_yr",
+    "seizure_freq_unknown",
+    "currently_no_seizure",
+)
+
+PURIST_DISPLAY_LABELS = {
+    "seizure_freq_1ormore_daily": "Daily",
+    "seizure_freq_more1week_less1day": "More than weekly, less than daily",
+    "seizure_freq_1_per_week": "Once a week",
+    "seizure_freq_more1mon_less1week": "More than monthly, less than weekly",
+    "seizure_freq_1_per_mon": "Once a month",
+    "seizure_freq_more1per6mon_less1mon": "More than 6 months, less than monthly",
+    "seizure_freq_1_per_6mon": "Once every 6 months",
+    "seizure_freq_1_per_yr": "Less than once every 6 months",
+    "seizure_freq_unknown": "Unknown",
+    "currently_no_seizure": "No seizure frequency reference",
+}
+
+PRAGMATIC_CATEGORY_ORDER = (
+    "seizure_frequent",
+    "seizure_infrequent",
+    "seizure_freq_unknown",
+    "currently_no_seizure",
+)
+
+PRAGMATIC_DISPLAY_LABELS = {
+    "seizure_frequent": "Frequent",
+    "seizure_infrequent": "Infrequent",
+    "seizure_freq_unknown": "Unknown",
+    "currently_no_seizure": "No seizure",
 }
 
 
@@ -77,8 +118,19 @@ class BarbellPairs:
     ylabel: str = "Purist micro-F1"
 
 
+@dataclass(frozen=True)
+class ConfusionMatrixData:
+    """Confusion matrix data for multi-class classification."""
+
+    categories: list[str]
+    labels: list[str]
+    matrix: list[list[int]]
+    n: int
+    title: str = "Purist Classification Confusion Matrix"
+
+
 def gemini_cells_1_3_5(payload: Mapping[str, Any]) -> GroupedColumns:
-    """Return Gemini cells 1 / 3 / 5 at recognise, encode, and select."""
+    """Return Gemini cells 1 / 3 / 5 at find, encode, and select."""
 
     n = int(payload["n"])
     cells = payload["cells"]
@@ -87,20 +139,20 @@ def gemini_cells_1_3_5(payload: Mapping[str, Any]) -> GroupedColumns:
         ("Both", cells["llm_extract_then_rules"]),
         ("LLM", cells["llm"]),
     )
-    recognise: list[float] = []
+    find_vals: list[float] = []
     encode: list[float] = []
     select: list[float] = []
     categories: list[str] = []
     for name, cell in rows:
         ablation = cell["ablation"]
         categories.append(name)
-        recognise.append(int(ablation["extract"]) / n)
+        find_vals.append(int(ablation["extract"]) / n)
         encode.append(int(ablation["encode"]) / n)
         select.append(int(cell["select"]) / n)
     return GroupedColumns(
         categories=categories,
         series={
-            "Recognise": recognise,
+            "Find": find_vals,
             "Encode": encode,
             "Select": select,
         },
@@ -160,7 +212,7 @@ def six_model_cell3(rungs_by_slug: Mapping[str, Mapping[str, Any]]) -> GroupedCo
     return GroupedColumns(
         categories=categories,
         series={
-            "Recognise": [extract / n for _, _, extract, _, _, n in rows],
+            "Find": [extract / n for _, _, extract, _, _, n in rows],
             "Encode": [encode / n for _, _, _, encode, _, n in rows],
             "Select": [select / n for _, _, _, _, select, n in rows],
         },
@@ -215,6 +267,139 @@ def load_living_six_model_cell3() -> GroupedColumns:
     return six_model_cell3(payloads)
 
 
+def load_living_purist_confusion_matrix(
+    slug: str = "gemini37flash",
+    split: str = "test450",
+) -> ConfusionMatrixData:
+    """Load gold and predicted purist categories for the specified model and split."""
+
+    from clinical_extraction.paper.gan_cell_replay import gan_living_extract_rows_path
+    from clinical_extraction.paper.methods import gan_machine_split
+    from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+        label_to_frequency_record,
+    )
+    from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
+        load_records_for_split,
+    )
+    from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_purist
+    from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
+        StructuredRepairConfig,
+        parse_structured_json_with_trace,
+    )
+
+    machine_split = gan_machine_split(split)
+    records = {r.source_row_index: r for r in load_records_for_split(machine_split)}
+    rows_path = gan_living_extract_rows_path(slug, split)
+    rows = [
+        json.loads(line)
+        for line in rows_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+
+    config = StructuredRepairConfig.for_mode("llm_select_after_codebook")
+    cat_to_idx = {cat: i for i, cat in enumerate(PURIST_CATEGORY_ORDER)}
+    n_cats = len(PURIST_CATEGORY_ORDER)
+    mat = [[0] * n_cats for _ in range(n_cats)]
+
+    for row in rows:
+        idx = row["source_row_index"]
+        rec = records[idx]
+        gold_cat = str(map_purist(rec.gold_monthly_frequency))
+        extraction, _, _, _ = parse_structured_json_with_trace(
+            row["raw_output"],
+            note_text=rec.note_text,
+            repair_config=config,
+        )
+        label = None if extraction is None else extraction.selection.final_label
+        parsed = label_to_frequency_record(label) if label else None
+        pred_cat = (
+            str(map_purist(parsed.monthly_frequency))
+            if parsed
+            else "seizure_freq_unknown"
+        )
+
+        g_idx = cat_to_idx.get(gold_cat, cat_to_idx["seizure_freq_unknown"])
+        p_idx = cat_to_idx.get(pred_cat, cat_to_idx["seizure_freq_unknown"])
+        mat[g_idx][p_idx] += 1
+
+    display_labels = [PURIST_DISPLAY_LABELS[c] for c in PURIST_CATEGORY_ORDER]
+    return ConfusionMatrixData(
+        categories=list(PURIST_CATEGORY_ORDER),
+        labels=display_labels,
+        matrix=mat,
+        n=len(rows),
+        title=f"Purist Categorisation Confusion Matrix ({MODEL_LABELS.get(slug, slug)}, {split})",
+    )
+
+
+def load_living_pragmatic_confusion_matrix(
+    slug: str = "gemini37flash",
+    split: str = "test450",
+) -> ConfusionMatrixData:
+    """Load gold and predicted pragmatic categories for the specified model and split."""
+
+    from clinical_extraction.paper.gan_cell_replay import gan_living_extract_rows_path
+    from clinical_extraction.paper.methods import gan_machine_split
+    from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+        label_to_frequency_record,
+    )
+    from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
+        load_records_for_split,
+    )
+    from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic
+    from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
+        StructuredRepairConfig,
+        parse_structured_json_with_trace,
+    )
+
+    machine_split = gan_machine_split(split)
+    records = {r.source_row_index: r for r in load_records_for_split(machine_split)}
+    rows_path = gan_living_extract_rows_path(slug, split)
+    rows = [
+        json.loads(line)
+        for line in rows_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+
+    config = StructuredRepairConfig.for_mode("llm_select_after_codebook")
+    cat_to_idx = {cat: i for i, cat in enumerate(PRAGMATIC_CATEGORY_ORDER)}
+    n_cats = len(PRAGMATIC_CATEGORY_ORDER)
+    mat = [[0] * n_cats for _ in range(n_cats)]
+
+    for row in rows:
+        idx = row["source_row_index"]
+        rec = records[idx]
+        gold_cat = str(map_pragmatic(rec.gold_monthly_frequency))
+        extraction, _, _, _ = parse_structured_json_with_trace(
+            row["raw_output"],
+            note_text=rec.note_text,
+            repair_config=config,
+        )
+        label = None if extraction is None else extraction.selection.final_label
+        parsed = label_to_frequency_record(label) if label else None
+        pred_cat = (
+            str(map_pragmatic(parsed.monthly_frequency))
+            if parsed
+            else "seizure_freq_unknown"
+        )
+
+        g_idx = cat_to_idx.get(gold_cat, cat_to_idx["seizure_freq_unknown"])
+        p_idx = cat_to_idx.get(pred_cat, cat_to_idx["seizure_freq_unknown"])
+        mat[g_idx][p_idx] += 1
+
+    display_labels = [PRAGMATIC_DISPLAY_LABELS[c] for c in PRAGMATIC_CATEGORY_ORDER]
+    return ConfusionMatrixData(
+        categories=list(PRAGMATIC_CATEGORY_ORDER),
+        labels=display_labels,
+        matrix=mat,
+        n=len(rows),
+        title=(
+            f"Pragmatic Categorisation Confusion Matrix "
+            f"({MODEL_LABELS.get(slug, slug)}, {split})"
+        ),
+    )
+
+
 def latin_modern_regular() -> Path:
     """Return the installed Latin Modern Roman 10 Regular face."""
 
@@ -252,89 +437,90 @@ def _prepare_figure_fonts() -> None:
     rcParams["pdf.fonttype"] = 42
 
 
-def _style_axis(
-    axis: Any,
-    *,
-    title: str,
-    xlim: tuple[float, float] = (0.65, 0.95),
-    xticks: tuple[float, ...] = (0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95),
-) -> None:
-    axis.set_title(title, pad=10, fontsize=12, color=LABEL_BLACK)
-    axis.set_xlabel("")
-    axis.set_xlim(*xlim)
-    axis.set_xticks(list(xticks))
-    for spine in axis.spines.values():
-        spine.set_color(AXIS_GREY)
-        spine.set_linewidth(0.6)
-    axis.spines["top"].set_visible(False)
-    axis.spines["right"].set_visible(False)
-    axis.tick_params(
-        color=AXIS_GREY,
-        labelcolor=LABEL_BLACK,
-        width=0.5,
-        length=3,
-        labelsize=10,
-    )
-    axis.xaxis.label.set_color(LABEL_BLACK)
-    axis.yaxis.label.set_color(LABEL_BLACK)
-
-
 def render_grouped_columns(
     chart: GroupedColumns,
     path: Path,
     *,
-    title: str,
+    title: str = "",
+    ylim: tuple[float, float] = (0.0, 1.0),
+    yticks: tuple[float, ...] = (0.0, 0.2, 0.4, 0.6, 0.8, 1.0),
 ) -> Path:
-    """Write one grouped-column chart as PDF and PNG."""
+    """Write one grouped-column chart as PDF and PNG with refined styling."""
 
     import matplotlib.pyplot as plt
 
     _prepare_figure_fonts()
     n_groups = len(chart.categories)
     n_series = len(STAGE_ORDER)
-    width = 0.2
+    width = 0.22
     xs = list(range(n_groups))
     wrap_width = 10 if n_groups >= 5 else 16
-    fig_height = 3.9 if n_groups >= 5 else 3.4
-    fig, axis = plt.subplots(figsize=(7.16, fig_height), dpi=200)
+    fig_height = 3.5 if n_groups >= 5 else 3.2
+    fig, axis = plt.subplots(figsize=(7.16, fig_height), dpi=300)
+
+    axis.grid(axis="y", linestyle="--", linewidth=0.5, color=GRID_GREY, zorder=0)
+
     for index, stage in enumerate(STAGE_ORDER):
         offset = (index - (n_series - 1) / 2) * (width + 0.02)
         values = chart.series[stage]
-        bars = axis.bar(
+        axis.bar(
             [x + offset for x in xs],
             values,
             width=width,
             label=stage,
             color=STAGE_COLORS[stage],
             linewidth=0,
+            zorder=3,
         )
-        axis.bar_label(
-            bars,
-            labels=[f"{value:.2f}" for value in values],
-            padding=2,
-            fontsize=8,
-            color=LABEL_BLACK,
+
+    if "GPT-5.6 Luna" in chart.categories:
+        luna_idx = chart.categories.index("GPT-5.6 Luna")
+        x_rec = luna_idx - (width + 0.02)
+        y_rec = chart.series["Find"][luna_idx] + 0.025
+        x_sel = luna_idx + (width + 0.02)
+        y_sel = chart.series["Select"][luna_idx] + 0.025
+        rec_val = round(chart.series["Find"][luna_idx], 2)
+        sel_val = round(chart.series["Select"][luna_idx], 2)
+        delta = sel_val - rec_val
+
+        axis.annotate(
+            "",
+            xy=(x_sel, y_sel),
+            xytext=(x_rec, y_rec),
+            arrowprops={
+                "arrowstyle": "->,head_width=0.25,head_length=0.35",
+                "color": "#1E293B",
+                "lw": 1.1,
+                "connectionstyle": "arc3,rad=-0.38",
+            },
+            zorder=5,
         )
-    axis.set_title(title, pad=10, fontsize=12, color=LABEL_BLACK)
-    axis.set_xticks(xs)
-    axis.set_xticklabels([])
-    axis.set_xlabel("")
-    for x, name in zip(xs, chart.categories, strict=True):
         axis.text(
-            x,
-            -0.03,
-            wrap_category_label(name, width=wrap_width),
-            transform=axis.get_xaxis_transform(),
+            luna_idx - 0.07,
+            max(y_rec, y_sel) + 0.008,
+            f"$\\Delta$ +{delta:.2f}",
             ha="center",
-            va="top",
-            fontsize=10,
+            va="bottom",
+            fontsize=8.5,
             color=LABEL_BLACK,
-            linespacing=1.1,
-            clip_on=False,
+            zorder=5,
         )
-    axis.set_ylabel(chart.ylabel)
-    axis.set_ylim(0.0, 1.0)
-    axis.set_yticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
+
+    if title:
+        axis.set_title(title, pad=12, fontsize=11, color=LABEL_BLACK)
+
+    axis.set_xticks(xs)
+    axis.set_xticklabels(
+        [wrap_category_label(name, width=wrap_width) for name in chart.categories],
+        fontsize=9.5,
+        color=LABEL_BLACK,
+        linespacing=1.05,
+    )
+    axis.set_xlabel("")
+    axis.set_ylabel(chart.ylabel, fontsize=10, color=LABEL_BLACK)
+    axis.set_ylim(*ylim)
+    axis.set_yticks(list(yticks))
+
     for spine in axis.spines.values():
         spine.set_color(AXIS_GREY)
         spine.set_linewidth(0.6)
@@ -345,27 +531,26 @@ def render_grouped_columns(
         labelcolor=LABEL_BLACK,
         width=0.5,
         length=3,
-        labelsize=10,
+        labelsize=9.5,
     )
-    axis.tick_params(axis="x", pad=3.5)
-    axis.yaxis.label.set_color(LABEL_BLACK)
-    axis.yaxis.label.set_fontsize(10)
     axis.legend(
         frameon=False,
         ncol=3,
-        loc="upper right",
-        prop={"family": LATIN_MODERN_NAME, "size": 10},
+        loc="upper center",
+        bbox_to_anchor=(0.5, 1.14),
+        prop={"family": LATIN_MODERN_NAME, "size": 9.5},
         labelcolor=LABEL_BLACK,
+        handlelength=1.2,
+        handletextpad=0.4,
+        columnspacing=1.5,
     )
-    if n_groups >= 5:
-        fig.subplots_adjust(left=0.10, right=0.99, top=0.84, bottom=0.14)
-    else:
-        fig.tight_layout(pad=0.8)
+
+    fig.subplots_adjust(left=0.08, right=0.98, top=0.86, bottom=0.18)
     path.parent.mkdir(parents=True, exist_ok=True)
     pdf = path.with_suffix(".pdf")
     png = path.with_suffix(".png")
-    fig.savefig(pdf, bbox_inches="tight", pad_inches=0.06)
-    fig.savefig(png, bbox_inches="tight", pad_inches=0.06, dpi=300)
+    fig.savefig(pdf, bbox_inches="tight", pad_inches=0.04)
+    fig.savefig(png, bbox_inches="tight", pad_inches=0.04, dpi=300)
     plt.close(fig)
     return pdf
 
@@ -374,82 +559,331 @@ def render_barbell(
     chart: BarbellPairs,
     path: Path,
     *,
-    title: str,
+    title: str = "",
+    xlim: tuple[float, float] = (0.65, 0.95),
+    xticks: tuple[float, ...] = (0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95),
 ) -> Path:
-    """Write one horizontal barbell chart as PDF and PNG."""
+    """Write one horizontal barbell chart as PDF and PNG with collision handling."""
 
     import matplotlib.pyplot as plt
 
     _prepare_figure_fonts()
     ys = list(range(len(chart.categories) - 1, -1, -1))
-    fig, axis = plt.subplots(figsize=(7.16, 3.15), dpi=200)
+    fig, axis = plt.subplots(figsize=(7.16, 2.3), dpi=300)
+
+    axis.grid(axis="x", linestyle="--", linewidth=0.5, color=GRID_GREY, zorder=0)
+
     for y, left, right in zip(ys, chart.development, chart.holdout, strict=True):
-        axis.plot(
-            [left, right],
-            [y, y],
-            color=AXIS_GREY,
-            linewidth=1.6,
-            solid_capstyle="round",
-            zorder=1,
-        )
-    axis.scatter(
-        chart.development,
-        ys,
-        s=56,
-        color=SPLIT_COLORS["Development"],
-        zorder=2,
-        label="Development",
-    )
-    axis.scatter(
-        chart.holdout,
-        ys,
-        s=56,
-        color=SPLIT_COLORS["Test"],
-        zorder=2,
-        label="Test",
-    )
+        delta = right - left
+        if abs(delta) >= 0.012:
+            axis.plot(
+                [left, right],
+                [y, y],
+                color=AXIS_GREY,
+                linewidth=2.2,
+                solid_capstyle="round",
+                zorder=2,
+            )
+            mid_x = (left + right) / 2
+            sign = "+" if delta > 0 else "−"
+            axis.text(
+                mid_x,
+                y + 0.16,
+                f"$\\Delta$ {sign}{abs(delta):.2f}",
+                ha="center",
+                va="bottom",
+                fontsize=8,
+                color="#475569",
+                zorder=3,
+            )
+
     for y, left, right in zip(ys, chart.development, chart.holdout, strict=True):
-        axis.text(
-            left,
-            y + 0.16,
-            f"{left:.2f}",
-            ha="center",
-            va="bottom",
-            fontsize=8,
-            color=LABEL_BLACK,
-        )
-        axis.text(
-            right,
-            y - 0.16,
-            f"{right:.2f}",
-            ha="center",
-            va="top",
-            fontsize=8,
-            color=LABEL_BLACK,
-        )
+        if abs(left - right) < 0.012:
+            axis.scatter(
+                [left],
+                [y],
+                s=100,
+                color=SPLIT_COLORS["Development"],
+                edgecolors=SPLIT_COLORS["Test"],
+                linewidth=2.5,
+                zorder=4,
+            )
+            axis.text(
+                left,
+                y + 0.20,
+                f"{left:.2f} (Dev & Test)",
+                ha="center",
+                va="bottom",
+                fontsize=8,
+                color=LABEL_BLACK,
+            )
+        else:
+            axis.scatter(
+                [left],
+                [y],
+                s=64,
+                color=SPLIT_COLORS["Development"],
+                zorder=4,
+            )
+            axis.scatter(
+                [right],
+                [y],
+                s=64,
+                color=SPLIT_COLORS["Test"],
+                zorder=4,
+            )
+            axis.text(
+                left,
+                y + 0.18,
+                f"{left:.2f}",
+                ha="center",
+                va="bottom",
+                fontsize=8,
+                color=LABEL_BLACK,
+            )
+            axis.text(
+                right,
+                y - 0.20,
+                f"{right:.2f}",
+                ha="center",
+                va="top",
+                fontsize=8,
+                color=LABEL_BLACK,
+            )
+
+    axis.scatter([], [], s=50, color=SPLIT_COLORS["Development"], label="Development")
+    axis.scatter([], [], s=50, color=SPLIT_COLORS["Test"], label="Test")
+
     axis.set_yticks(ys)
-    axis.set_yticklabels(chart.categories)
+    axis.set_yticklabels(chart.categories, fontsize=9.5, color=LABEL_BLACK)
     axis.set_ylabel("")
-    _style_axis(axis, title=title)
-    axis.set_xlabel(chart.ylabel)
-    axis.xaxis.label.set_fontsize(10)
-    axis.set_ylim(-0.55, len(chart.categories) - 0.45)
+    axis.set_xlabel(chart.ylabel, fontsize=10, color=LABEL_BLACK)
+    axis.set_xlim(*xlim)
+    axis.set_xticks(list(xticks))
+    axis.set_ylim(-0.5, len(chart.categories) - 0.4)
+
+    if title:
+        axis.set_title(title, pad=10, fontsize=11, color=LABEL_BLACK)
+
+    for spine in axis.spines.values():
+        spine.set_color(AXIS_GREY)
+        spine.set_linewidth(0.6)
+    axis.spines["top"].set_visible(False)
+    axis.spines["right"].set_visible(False)
+    axis.tick_params(
+        color=AXIS_GREY,
+        labelcolor=LABEL_BLACK,
+        width=0.5,
+        length=3,
+        labelsize=9.5,
+    )
     axis.legend(
         frameon=False,
         loc="lower right",
-        prop={"family": LATIN_MODERN_NAME, "size": 10},
+        prop={"family": LATIN_MODERN_NAME, "size": 9},
         labelcolor=LABEL_BLACK,
-        handlelength=0.8,
-        handletextpad=0.35,
-        borderaxespad=0.2,
-        labelspacing=0.35,
+        handlelength=1.0,
+        handletextpad=0.4,
+        borderaxespad=0.4,
+        labelspacing=0.3,
     )
+
+    fig.tight_layout(pad=0.5)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pdf = path.with_suffix(".pdf")
+    png = path.with_suffix(".png")
+    fig.savefig(pdf, bbox_inches="tight", pad_inches=0.04)
+    fig.savefig(png, bbox_inches="tight", pad_inches=0.04, dpi=300)
+    plt.close(fig)
+    return pdf
+
+
+def render_purist_confusion_matrix(
+    data: ConfusionMatrixData,
+    path: Path,
+    *,
+    title: str = "",
+) -> Path:
+    """Render a publication-ready confusion matrix for the Purist evaluation."""
+
+    import matplotlib.colors as mcolors
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    _prepare_figure_fonts()
+
+    mat = np.array(data.matrix, dtype=int)
+    n_classes = len(data.labels)
+
+    fig, axis = plt.subplots(figsize=(7.6, 5.4), dpi=300)
+
+    cmap = mcolors.LinearSegmentedColormap.from_list(
+        "PuristHeatmap",
+        ["#FFFFFF", "#E0F2F1", "#4DB6AC", "#12968F", "#15324F"],
+        N=256,
+    )
+
+    row_sums = mat.sum(axis=1, keepdims=True)
+    norm_mat = np.divide(mat, row_sums, out=np.zeros_like(mat, dtype=float), where=row_sums != 0)
+
+    im = axis.imshow(norm_mat, cmap=cmap, vmin=0.0, vmax=1.0, aspect="auto")
+
+    axis.set_xticks(range(n_classes))
+    axis.set_yticks(range(n_classes))
+    axis.set_xticklabels(data.labels, rotation=45, ha="right", fontsize=8, color=LABEL_BLACK)
+    axis.set_yticklabels(data.labels, fontsize=8, color=LABEL_BLACK)
+
+    axis.set_xlabel(
+        "Predicted Purist Frequency Category",
+        fontsize=10,
+        labelpad=8,
+        color=LABEL_BLACK,
+    )
+    axis.set_ylabel(
+        "True Purist Frequency Category",
+        fontsize=10,
+        labelpad=8,
+        color=LABEL_BLACK,
+    )
+
+    if title:
+        axis.set_title(title, pad=12, fontsize=11, color=LABEL_BLACK)
+
+    threshold = 0.55
+    for i in range(n_classes):
+        for j in range(n_classes):
+            val = mat[i, j]
+            prop = norm_mat[i, j]
+            if val > 0:
+                text_color = "white" if prop > threshold else LABEL_BLACK
+                if val >= 10:
+                    label = f"{val}\n({prop:.0%})"
+                else:
+                    label = f"{val}"
+                axis.text(
+                    j,
+                    i,
+                    label,
+                    ha="center",
+                    va="center",
+                    fontsize=7.2,
+                    color=text_color,
+                    linespacing=1.35,
+                )
+
+    for spine in axis.spines.values():
+        spine.set_color(AXIS_GREY)
+        spine.set_linewidth(0.6)
+
+    axis.tick_params(color=AXIS_GREY, width=0.5, length=2.5)
+
+    cbar = fig.colorbar(im, ax=axis, fraction=0.046, pad=0.04)
+    cbar.outline.set_linewidth(0.6)
+    cbar.outline.set_color(AXIS_GREY)
+    cbar.ax.tick_params(labelsize=8, color=AXIS_GREY, labelcolor=LABEL_BLACK)
+    cbar.set_label("Row Recall", fontsize=9, color=LABEL_BLACK)
+
     fig.tight_layout(pad=0.6)
     path.parent.mkdir(parents=True, exist_ok=True)
     pdf = path.with_suffix(".pdf")
     png = path.with_suffix(".png")
-    fig.savefig(pdf, bbox_inches="tight", pad_inches=0.06)
-    fig.savefig(png, bbox_inches="tight", pad_inches=0.06, dpi=300)
+    fig.savefig(pdf, bbox_inches="tight", pad_inches=0.04)
+    fig.savefig(png, bbox_inches="tight", pad_inches=0.04, dpi=300)
+    plt.close(fig)
+    return pdf
+
+
+def render_pragmatic_confusion_matrix(
+    data: ConfusionMatrixData,
+    path: Path,
+    *,
+    title: str = "",
+) -> Path:
+    """Render a publication-ready confusion matrix for the Pragmatic evaluation."""
+
+    import matplotlib.colors as mcolors
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    _prepare_figure_fonts()
+
+    mat = np.array(data.matrix, dtype=int)
+    n_classes = len(data.labels)
+
+    fig, axis = plt.subplots(figsize=(5.4, 4.3), dpi=300)
+
+    cmap = mcolors.LinearSegmentedColormap.from_list(
+        "PragmaticHeatmap",
+        ["#FFFFFF", "#E0F2F1", "#4DB6AC", "#12968F", "#15324F"],
+        N=256,
+    )
+
+    row_sums = mat.sum(axis=1, keepdims=True)
+    norm_mat = np.divide(mat, row_sums, out=np.zeros_like(mat, dtype=float), where=row_sums != 0)
+
+    im = axis.imshow(norm_mat, cmap=cmap, vmin=0.0, vmax=1.0, aspect="auto")
+
+    axis.set_xticks(range(n_classes))
+    axis.set_yticks(range(n_classes))
+    axis.set_xticklabels(data.labels, rotation=25, ha="right", fontsize=9, color=LABEL_BLACK)
+    axis.set_yticklabels(data.labels, fontsize=9, color=LABEL_BLACK)
+
+    axis.set_xlabel(
+        "Predicted Pragmatic Frequency Category",
+        fontsize=9.5,
+        labelpad=8,
+        color=LABEL_BLACK,
+    )
+    axis.set_ylabel(
+        "True Pragmatic Frequency Category",
+        fontsize=9.5,
+        labelpad=8,
+        color=LABEL_BLACK,
+    )
+
+    if title:
+        axis.set_title(title, pad=12, fontsize=11, color=LABEL_BLACK)
+
+    threshold = 0.55
+    for i in range(n_classes):
+        for j in range(n_classes):
+            val = mat[i, j]
+            prop = norm_mat[i, j]
+            if val > 0:
+                text_color = "white" if prop > threshold else LABEL_BLACK
+                if val >= 5:
+                    label = f"{val}\n({prop:.0%})"
+                else:
+                    label = f"{val}"
+                axis.text(
+                    j,
+                    i,
+                    label,
+                    ha="center",
+                    va="center",
+                    fontsize=8.5,
+                    color=text_color,
+                    linespacing=1.35,
+                )
+
+    for spine in axis.spines.values():
+        spine.set_color(AXIS_GREY)
+        spine.set_linewidth(0.6)
+
+    axis.tick_params(color=AXIS_GREY, width=0.5, length=2.5)
+
+    cbar = fig.colorbar(im, ax=axis, fraction=0.046, pad=0.04)
+    cbar.outline.set_linewidth(0.6)
+    cbar.outline.set_color(AXIS_GREY)
+    cbar.ax.tick_params(labelsize=8, color=AXIS_GREY, labelcolor=LABEL_BLACK)
+    cbar.set_label("Row Recall", fontsize=9, color=LABEL_BLACK)
+
+    fig.tight_layout(pad=0.6)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pdf = path.with_suffix(".pdf")
+    png = path.with_suffix(".png")
+    fig.savefig(pdf, bbox_inches="tight", pad_inches=0.04)
+    fig.savefig(png, bbox_inches="tight", pad_inches=0.04, dpi=300)
     plt.close(fig)
     return pdf
 
@@ -461,20 +895,31 @@ def render_living_figures(out_dir: Path | None = None) -> dict[str, str]:
     models = render_grouped_columns(
         load_living_six_model_cell3(),
         dest / "fig3",
-        title=(
-            "Every model benefits from the encode and select stage,\n"
-            "but it helps weaker models the most"
-        ),
     )
     barbell = render_barbell(
         load_living_gemini_dev_vs_test(),
         dest / "fig4",
-        title=(
-            "Rules perform best on development,\n"
-            "but generalise very poorly to test"
-        ),
+    )
+    matrix = render_purist_confusion_matrix(
+        load_living_purist_confusion_matrix("gemini37flash", "test450"),
+        dest / "fig5",
+    )
+    render_purist_confusion_matrix(
+        load_living_purist_confusion_matrix("gemini37flash", "test450"),
+        dest / "confusion_matrix",
+    )
+    pragmatic = render_pragmatic_confusion_matrix(
+        load_living_pragmatic_confusion_matrix("gemini37flash", "test450"),
+        dest / "fig5-alt",
+    )
+    render_pragmatic_confusion_matrix(
+        load_living_pragmatic_confusion_matrix("gemini37flash", "test450"),
+        dest / "confusion_matrix_pragmatic",
     )
     return {
         "six_model": models.as_posix(),
         "dev_vs_test": barbell.as_posix(),
+        "confusion_matrix": matrix.as_posix(),
+        "confusion_matrix_pragmatic": pragmatic.as_posix(),
     }
+

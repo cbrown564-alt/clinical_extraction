@@ -22,7 +22,7 @@
 \begin{titlepage}
     \centering
 
-    {\Huge\bfseries RES: A modular pipeline to find, encode and select relevant facts from clinical notes\par}
+    {\Huge\bfseries FES: A modular pipeline to find, encode and select relevant facts from clinical notes\par}
     \vspace{2cm}
 
     {\large
@@ -38,7 +38,7 @@
 \end{titlepage}
 
 
-\title{RES: A modular pipeline to find, encode and select relevant facts from clinical notes\\}
+\title{FES: A modular pipeline to find, encode and select relevant facts from clinical notes\\}
 
 
 
@@ -128,7 +128,7 @@ modular system combining LLMs and rules can extract
 information with comparable accuracy to past methods 
 while preserving a richer evidence chain. The system 
 is available as an open source package at INSERT LINK.
-Figure 1 displays the web app illustrating some of that 
+Figure~\ref{letter} displays the web app illustrating some of that 
 chain from evidence to final answer.
 
 \section{Literature Review}
@@ -207,14 +207,14 @@ patient's GP after all outpatient visits such as these. \cite{b13}
 They are often the only record of a patient's diagnoses,
 treatments and outcomes in neurological disorders, 
 and they are written in narrative form. An example clinic letter 
-is shown in Figure 1.
+is shown in Figure~\ref{letter}.
 
 \begin{figure*}[t]
     \centering
 
     \includegraphics[width=\linewidth]{fig1.png}
     \caption{An example clinic letter with three distinct seizure frequency references highlighted as potential candidates.}
-    \label{fig1}
+    \label{letter}
 \end{figure*}
 
 Gan \emph{et al.} produced this dataset of synthetic 
@@ -280,7 +280,7 @@ extract from the text, what schema to encode them
 into, and how many labels to output at the final stage.
 The same modular architecture effectively describes
 multi-label tasks such as inventory and single label 
-tasks such as current frequency. Figure 2 illustrates the 
+tasks such as current frequency. Figure~\ref{pipeline} illustrates the 
 general architecture of the pipeline. 
 
 There are two key benefits of breaking the task into 
@@ -293,7 +293,7 @@ combination of rules and LLMs to produce the final
 answer, none have empirically assessed the ideal 
 combination of the two. This three-stage pipeline enables 
 evaluation of the best combination overall, and specifically 
-which component performs best at which stage. Table~\ref{tab:pipeline} 
+which component performs best at which stage. Table~\ref{tab:method} 
 summarises the 3 main methods evaluated in this paper. 
 
 Determining which one fact among many is correct is the 
@@ -316,12 +316,12 @@ NEEDS A COMPLETE PORTRAYAL OF EACH STAGE?
 
     \includegraphics[width=\linewidth]{fig2.png}
     \caption{A clinic letter passes through three stages in the pipeline - find, encode and select - to generate structured labels with the exact text used from the letter to produce the label. Each of the three stages can be configured to use an LLM, rules or both. The example shown is the task of extracting a single label representing the patient's current seizure frequency burden.}
-    \label{fig2}
+    \label{pipeline}
 \end{figure*}
 
 \begin{table}[!t]
 \caption{Pipeline method}
-\label{tab:pipeline}
+\label{tab:method}
 \centering
 \begin{tabularx}{\linewidth}{Yccc}
 \toprule
@@ -425,13 +425,12 @@ No seizure  frequency reference & No seizure \\
 \end{table}
 
 The primary objective of this research is to identify which 
-component performs best at which stage. Table~\ref{tab:pipeline} 
+component performs best at which stage. Table~\ref{tab:method} 
 shows the 3 methods used in the evaluation: rules
 at every stage, the LLM at every stage or a combination
-of LLM and rules. For each method we evaluated 
-the pipeline at each stage: find, encode and select.
-This will produce a 3x3 matrix of results that answer two
-key questions: 
+of LLM and rules. Each method was evaluated at each 
+stage: find, encode and select. This produces a 3x3 matrix of results 
+that answer two key questions: 
 
 \begin{enumerate}
 \item Among the three methods, which performs
@@ -470,9 +469,9 @@ hosted models were used (Gemini 3.7 Flash, GPT 5.6 Luna,
 Grok 4.6, DeepSeek v4 Flash). 
 
 All models used a temperature of 0 except Luna, which only 
-accepts a temperature of 1. An ablation was run on Grok 
+accepts a temperature of 1. An ablation was run on Gemini 
 using a temperature of 1. All models used a thinking or effort 
-level of 'low'. An ablation was run on Gemini using thinking
+level of 'low'. Ablations were run on Gemini using thinking
 levels of medium and high. 
 
 Python 3.14.4 was used to write the program. DSPy 3.2.1, 
@@ -485,7 +484,7 @@ and the model routers.
 
 \subsection{Benchmark Performance}
 
-The LLM and rules pipeline achieves state-of-the-art results
+The LLM and rules method achieves state-of-the-art results
 (SOTA) for extracting seizure frequency from epilepsy letters.
 It achieved a purist  micro-F1 score of 0.83, exceeding the 
 prior benchmark performance of 0.81 in Gan \emph{et. al} 
@@ -511,7 +510,7 @@ Holgate et al. & 2024 & Prompted LLM & 0.73 \\
 Holgate et al. & 2025 & Fine-tuned LLM & 0.68 \\
 Gan et al. & 2026 & Fine-tuned LLM & 0.81 \\
 \midrule
-Brown \& Gan & 2026 & LLM + rules & 0.83 \\
+Brown \& Gan & 2026 & LLM and rules & 0.83 \\
 \bottomrule
 \end{tabularx}
 
@@ -527,7 +526,7 @@ $^\ast$$^\ast$Drops to 0.4 on the external test set.
 \end{minipage}
 \end{table}
 
-This pipeline is particularly effective at identifying 
+This method is particularly effective at identifying 
 high frequency seizure events. A common theme in 
 previous papers is that their method performed 
 best when the task was predicting  'unknown' or  
@@ -537,14 +536,14 @@ texts that contained no seizure frequency statement and
 et al. and Holgate et. al both report unknown as their 
 highest scoring category at 0.89 and 0.87 respectively, 
 while daily frequency (0.7, 0.41) and more than weekly 
-(0.68, 0.55) are much lower. In this pipeline, daily (0.92) 
+(0.68, 0.55) are much lower. In this method, daily (0.92) 
 and more than weekly (0.91) are the best performing 
 categories, significantly above unknown (0.74). The full
 performance breakdown across purist and pragmatic 
 categories can be seen in Table~\ref{tab:performance}.
 
 \begin{table}[!t]
-\caption{LLM + Rules: Purist and Pragmatic micro-F1}
+\caption{LLM and Rules: Purist and Pragmatic micro-F1}
 \label{tab:performance}
 \centering
 \begin{tabularx}{\linewidth}{Yccc}
@@ -573,10 +572,10 @@ No seizure  frequency reference & 67 & 0.81 & No seizure: 0.81 \\
 
 \subsection{Method Performance by Stage}
 
-The LLM + rules method performs better than the LLM or 
+The LLM and rules method performs better than the LLM or 
 rules alone at every stage: find, encode, select  (Table~\ref{tab:stages}).
 The LLM is significantly better at at the initial find
-stage vs. rules alone (0.79 vs 0.71). The LLM + rules 
+stage vs. rules alone (0.79 vs 0.71). The LLM and rules 
 combination then adds incremental gains at the encode 
 (+0.01) and select (+0.03) stages, while the subsequent
 LLM stages make a very marginal difference (+0.006). 
@@ -613,7 +612,7 @@ deliver significant incremental gains.
 \centering
 \begin{tabularx}{\linewidth}{Yccc}
 \toprule
-\textbf{Configuration} &
+\textbf{Method} &
 \textbf{Find} &
 \textbf{Encode} &
 \textbf{Select} \\
@@ -627,6 +626,18 @@ LLM & 0.79 & 0.79 & 0.79 \\
 
 \subsection{Model Comparison}
 
+The LLM and rules method shows consistent, 
+incremental performance gains on each of the six
+models evaluated (Figure~\ref{models}). 
+
+\begin{figure*}[t]
+    \centering
+
+    \includegraphics[width=\linewidth]{fig3.pdf}
+    \caption{LLM + rules. Every model sees consistent performance gains in the encode and select stages. The LLM does the bulk of the extraction work at the find phase, but the rules add incremental gains in the next two stages. The pattern generalises across models, but rules help the smallest models most. Luna saw the biggest performance gain from 0.69 to 0.78.}
+    \label{models}
+\end{figure*}
+
 \subsection{Model Configuration}
 
 Thinking 
@@ -639,42 +650,47 @@ linked to higher temperatures.
 
 \subsection{Development vs. Test Results}
 
-A consistent finding in the literature is that rules are brittle
-and tend to overfit the training data, generalising poorly
-to unseen data. Our rules only 
+Rules perform better on the development set but 
+significantly worse on the test set, repeating the pattern of 
+overfitting commonly found in the literature (Figure~\ref{devtest}). 
+Rules are brittle and tend to overfit specific patterns in the 
+training data, generalising poorly to unseen data. The rules
+only method achieves an F1 score of 0.89 on the 
+development set, but performance declines significantly 
+(-0.18). LLM only achieves a consistent score of 0.79 
+across both splits which shows the method generalises 
+well. The LLM and rules combines the best parts of each:
+it performs much better on the development set than LLM
+only (+0.08), but the generalisation gap is much smaller
+than rules only (-0.04). The LLM does the heavy lifting 
+of matching patterns across the entire text, allowing the
+rules to focus on generalisable patterns in the refined 
+evidence set.
 
 \begin{figure}[t]
     \centering
 
     \includegraphics[width=\linewidth]{fig4.pdf}
-     \caption{Rules perform best on the development set but overfit. The LLM generalises best with consistent performance on dev and test. LLM and rules combined produce the best results overall, even with a small generalisation gap of 0.87→0.83.}
-    \label{fig4}
+     \caption{Rules only perform best on the development set but overfit. LLM only generalises best with consistent performance. LLM and rules combined produce the best results overall, even with a generalisation gap of -0.04 (0.87→0.83).}
+    \label{devtest}
 \end{figure}
 
 \subsection{Error Analysis}
 
-The pipeline performed worst at predicting infrequent 
+The method performed worst at predicting infrequent 
 seizure events, mirroring the pattern in Gan et. al. The F1 
 score for the infrequent (monthly or less) category was 
-0.72 in this pipeline. This represents an improvement vs. 
-0.67 in Gan et. al, but significantly worse performance 
-vs. the pipeline's score of 0.95 on the frequent category. 
+0.72 in this method. The main error pattern is in assigning
+unknown or no seizure frequency reference to letters with
+infrequent labels in the gold-standard annotations (Figure~\ref{confusion}).  A few examples include:
 
 \begin{figure}[t]
     \centering
 
     \includegraphics[width=\linewidth]{fig5-alt.pdf}
-     \caption{The key error pattern is in conflating }
-    \label{fig4}
+     \caption{The key error pattern is in conflating infrequent events with unknown or no seizure frequency references.}
+    \label{confusion}
 \end{figure}
-
-\begin{figure*}[t]
-    \centering
-
-    \includegraphics[width=\linewidth]{fig3.pdf}
-    \caption{LLM + rules. Every model sees consistent performance gains in the encode and select stages. The LLM does the bulk of the extraction work at the find phase, but the rules add incremental gains in the next two stages. The pattern generalises across models, but rules help the smallest models most. Luna saw the biggest performance gain from 0.69 to 0.78.}
-    \label{fig3}
-\end{figure*}
 
 \section{Discussion}
 
