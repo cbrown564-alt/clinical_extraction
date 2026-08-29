@@ -397,7 +397,7 @@ other aspect of the pipeline. The test set is therefore used to
 evaluate how effectively the model generalises to unseen 
 data. These results are compared against the evaluation set 
 labelled Synthetic (1,166) in Gan \emph{et. al} which was 
-also a held-out sample from the synthetic dataset, distinct 
+also a held-out sample from the synthetic dataset, distinct
 from the training set used to fine-tune the models. It is 
 important to note that Gan\emph{et. al} also tested their results 
 a distinct set of real clinic letters to demonstrate generalisation 
@@ -425,7 +425,7 @@ Less than once every 6 months & \\
 \midrule
 Unknown & Unknown \\
 \midrule
-No seizure frequency reference & No seizure \\
+Seizure free & Seizure free \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -492,7 +492,7 @@ and the model routers.
 
 The LLM and rules method achieves state-of-the-art results
 (SOTA) for extracting seizure frequency from epilepsy letters.
-It achieved a purist  micro-F1 score of 0.83, exceeding the 
+It achieved a purist  micro-F1 score of 0.86, exceeding the 
 prior benchmark performance of 0.81 in Gan \emph{et. al} 
 set by a model that was fine-tuned and evaluated using 
 this same dataset of synthetic letters. While that is the only
@@ -516,7 +516,7 @@ Holgate et al. & 2024 & Prompted LLM & 0.73 \\
 Holgate et al. & 2025 & Fine-tuned LLM & 0.68 \\
 Gan et al. & 2026 & Fine-tuned LLM & 0.81 \\
 \midrule
-Brown \& Gan & 2026 & LLM and rules & 0.83 \\
+Brown \& Gan & 2026 & LLM and rules & 0.86 \\
 \bottomrule
 \end{tabularx}
 
@@ -533,7 +533,7 @@ $^\ast$$^\ast$Drops to 0.4 on the external test set.
 \end{table}
 
 This method is particularly effective at identifying 
-high frequency seizure events. A common theme in 
+countable rates, including high-frequency events. A common theme in 
 previous papers is that their method performed 
 best when the task was predicting  'unknown' or  
 'no seizures'. Xie et. al reported an F1 score of 0.92 on 
@@ -542,8 +542,8 @@ texts that contained no seizure frequency statement and
 et al. and Holgate et. al both report unknown as their 
 highest scoring category at 0.89 and 0.87 respectively, 
 while daily frequency (0.7, 0.41) and more than weekly 
-(0.68, 0.55) are much lower. In this method, daily (0.92) 
-and more than weekly (0.91) are the best performing 
+(0.68, 0.55) are much lower. In this method, once a month (0.94), 
+daily (0.92) and more than weekly (0.91) are the best performing 
 categories, significantly above unknown (0.74). The full
 performance breakdown across purist and pragmatic 
 categories can be seen in Table~\ref{tab:performance}.
@@ -561,17 +561,17 @@ categories can be seen in Table~\ref{tab:performance}.
 \midrule
 Daily & 41 & 0.92 & \multirow{4}{*}{Frequent: 0.95} \\
 More than weekly, less than daily & 123 & 0.91 & \\
-Once a week & 5 & 0.75 & \\
-More than monthly, less than weekly & 58 & 0.9 & \\
+Once a week & 5 & 0.89 & \\
+More than monthly, less than weekly & 58 & 0.90 & \\
 \midrule
-Once a month & 18 & 0.73 & \multirow{4}{*}{Infrequent: 0.72} \\
-More than every 6 months, less than monthly & 55 & 0.74 & \\
+Once a month & 18 & 0.94 & \multirow{4}{*}{Infrequent: 0.82} \\
+More than every 6 months, less than monthly & 55 & 0.81 & \\
 Once every 6 months & 1 & 0.00 & \\
-Less than once every 6 months & 6 & 0.6 & \\
+Less than once every 6 months & 6 & 0.60 & \\
 \midrule
 Unknown & 76 & 0.74 & Unknown: 0.74 \\
 \midrule
-No seizure frequency reference & 67 & 0.81 & No seizure: 0.81 \\
+Seizure free & 67 & 0.90 & Seizure free: 0.90 \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -583,7 +583,7 @@ rules alone at every stage: find, encode, select  (Table~\ref{tab:stages}).
 The LLM is significantly better at at the initial find
 stage vs. rules alone (0.79 vs 0.65). The LLM and rules 
 combination then adds incremental gains at the encode 
-(+0.01) and select (+0.03) stages, while the subsequent
+(+0.01) and select (+0.06) stages, while the subsequent
 LLM stages make a very marginal difference (+0.006). 
 This illustrates that the LLM and rules have complementary 
 strengths that are particularly effective at discrete stages.
@@ -624,7 +624,7 @@ deliver significant incremental gains.
 \textbf{Select} \\
 \midrule
 Rules only & 0.65 & 0.65 & 0.72 \\
-LLM + rules & 0.79 & 0.80 & 0.83 \\
+LLM + rules & 0.79 & 0.80 & 0.86 \\
 LLM only & \multicolumn{2}{c}{0.79$^\ast$} & 0.79 \\
 \bottomrule
 \end{tabularx}
@@ -641,20 +641,20 @@ $^\ast$A single LLM prompt is used for the find and encode stages.
 The LLM and rules method shows consistent, 
 incremental performance gains on each of the six
 models evaluated (Figure~\ref{models}). The 
-average performance gain was +0.06 from find
+average performance gain was +0.07 from find
 to select, with Luna showing the largest gain of 
-+0.09. Model performance on purist F1 closely 
++0.10. Model performance on purist F1 closely 
 correlates to overall medical intelligence as 
 measured by Artificial Analysis' Healthcare and 
 Medical Index. They cluster into three groups:
-strong (Grok 0.84, Gemini 0.83), medium (DeepSeek
-0.8, Luna 0.78), weak (Qwen 0.75, Gemma 0.71)
+strong (Gemini 0.86, Grok 0.85), medium (DeepSeek
+0.82, Luna 0.79), weak (Qwen 0.76, Gemma 0.72)
 which largely reflect the model size and cost.
 
 Local models that fit on consumer-grade hardware
 now deliver superior performance to models that
 required eight Nvidia V100 GPUs two years ago 
-(Holgate, 2024). Qwen's performance of 0.75 was 
+(Holgate, 2024). Qwen's performance of 0.76 was 
 achieved running locally on a laptop with a single
 GPU, surpassing Llama 2's performance of 0.73. 
 That is a critical development as it means hospitals 
@@ -668,7 +668,7 @@ on 1,797 synthetic letters.
     \centering
 
     \includegraphics[width=\linewidth]{six_model_stage_performance.pdf}
-    \caption{LLM and rules. Every model sees consistent performance gains in the encode and select stages. Luna saw the biggest performance gain (0.69→0.78).}
+    \caption{LLM and rules. Every model sees consistent performance gains in the encode and select stages. Luna saw the biggest performance gain (0.69→0.79).}
     \label{models}
 \end{figure}
 
@@ -683,15 +683,15 @@ on 1,797 synthetic letters.
 \subsection{Model Configuration}
 
 Raising the reasoning effort level did not improve 
-performance. Gemini's purist-F1 score was 0.83 at low and 
-0.82 at high; a paired difference of +0.01, 95\% CI -0.01 to 
-0.04; p = 0.39. Extra reasoning adds cost and latency without 
+performance. Gemini's purist-F1 score was 0.86 at low and 
+0.84 at high; a paired difference of +0.02, 95\% CI -0.01 to 
+0.04; p = 0.31. Extra reasoning adds cost and latency without 
 improving extraction.
 
 The temperature setting also had no significant effect on the
-results. The F1 score was 0.83 on a temperature of 0 versus 
-0.82 at a temperature of 1 (paired difference +0.01, 95\% CI 
--0.02 to 0.03; p = 0.71).  A temperature of 0 was an appropriate
+results. The F1 score was 0.86 on a temperature of 0 versus 
+0.84 at a temperature of 1 (paired difference +0.02, 95\% CI 
+-0.01 to 0.04; p = 0.20).  A temperature of 0 was an appropriate
 default across models and Luna at a temperature of 1 is a 
 valid comparison.
 
@@ -714,7 +714,7 @@ across both splits which shows the method generalises
 well. The LLM and rules method combines the best parts of each:
 it performs significantly better on the development set than LLM
 only (+0.08) and it has a significantly smaller generalisation gap
-than rules only (-0.04). The LLM does the heavy lifting 
+than rules only (-0.01). The LLM does the heavy lifting 
 of matching patterns across the entire text, allowing the
 rules to focus on generalisable patterns in the refined 
 evidence set.
@@ -723,36 +723,56 @@ evidence set.
     \centering
 
     \includegraphics[width=\linewidth]{development_vs_test_generalization.pdf}
-     \caption{Rules only performs best on the development set but overfit. LLM only generalises best with consistent performance. LLM and rules combined produce the best results overall, even with a generalisation gap of -0.04 (0.87→0.83).}
+     \caption{Rules only performs best on the development set but overfit. LLM only generalises best with consistent performance. LLM and rules combined produce the best results overall, even with a generalisation gap of -0.01 (0.87→0.86).}
     \label{devtest}
 \end{figure}
 
 \subsection{Error Analysis}
 
-The method performed worst at extracting infrequent 
-seizure events, mirroring the pattern in Gan et. al. The F1 
-score for the infrequent (monthly or less) category was 
-0.72. The main error pattern is in assigning
-unknown or no seizure frequency reference to letters with
-infrequent labels in the gold-standard annotations (Figure~\ref{confusion}).  
-
-A few examples are shown in figure
-
-\begin{figure}[t]
-    \centering
-
-    \includegraphics[width=\linewidth]{example_clinic_letter.png}
-    \caption{An example clinic letter with two distinct seizure frequency statements highlighted as potential candidates.}
-    \label{letter}
-\end{figure}
+Performance was worst on infrequent events (0.82) and the
+three main types of errors were infrequent → unknown (n=16), 
+frequent → unknown (n=13), and infrequent → seizure free (n=1) 
+as shown in the confusion matrix (Figure~\ref{confusion}).  
 
 \begin{figure}[t]
     \centering
 
     \includegraphics[width=\linewidth]{confusion_matrix_pragmatic.pdf}
-     \caption{The key error pattern is in conflating infrequent events with unknown or no seizure frequency references.}
+     \caption{Infrequent was the most error-prone category with 21\% misclassified as unknown or seizure free.}
     \label{confusion}
 \end{figure}
+
+A few examples are shown in Figure~\ref{error}
+
+\begin{figure*}[t]
+    \centering
+    \begin{subfigure}[t]{\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{infrequent_unknown1.png}
+        \caption{Infrequent → unknown error example. Gold-standard label: 3 per 14 month. Model selected unknown. }
+        \label{fig:infrequent_unknown1}
+    \end{subfigure}
+    \vspace*{4pt}
+    \begin{subfigure}[t]{\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{infrequent_unknown2.png}
+        \caption{Infrequent → unknown error example. Gold-standard label: multiple per 15 month. Model selected unknown.}
+        \label{fig:infrequent_unknown2}
+    \end{subfigure}
+    \vspace*{4pt}
+    \begin{subfigure}[t]{\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{frequent_unknown1}
+        \caption{Frequent → unknown error example. Gold-standard label: multiple per week. Model selected unknown.}
+        \label{fig:frequent_unknown1}
+    \end{subfigure}
+    \caption{These examples illustrate the model choosing unknown when the gold-standard label was in the infrequent (a, b) and frequent (c) categories. The rationale illustrates how the model interprets the ambiguous evidence and why it chooses unknown.}
+    \label{fig:error}
+\end{figure*}
+
+
+
+
 
 \section{Discussion}
 

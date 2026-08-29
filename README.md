@@ -38,8 +38,8 @@ cells stay historical. Rules are deterministic and do not use a model.
 | --- | --- | --- | ---: |
 | rules | rules | rules | 0.72 |
 | both | rules | rules | 0.82 |
-| LLM | rules | rules | 0.83 |
-| LLM | LLM | rules | 0.82 |
+| LLM | rules | rules | 0.86 |
+| LLM | LLM | rules | 0.85 |
 | LLM | LLM | LLM | 0.79 |
 
 **ExECTv2** (4-family micro F1, locked `test60`). Headline is the
@@ -82,16 +82,16 @@ ledger-only. `gan_llm_only` is not a results column.
 
 **Gan cell-3 roster** (Purist, locked `test450`, aggregate-only).
 LLM find (`gan_llm_extract`) then codebook rules. Select is the
-roster stop. Gemini five-cell select remains **0.83**.
+roster stop. Gemini five-cell select is **0.86**.
 
 | Model | Find | Select |
 | --- | ---: | ---: |
-| Gemini 3.7 Flash | 0.79 | 0.80 |
-| Grok 4.6 | 0.79 | **0.82** |
-| GPT-5.6 Luna | 0.69 | 0.78 |
-| DeepSeek V4 Flash | 0.74 | 0.79 |
+| Gemini 3.7 Flash | 0.79 | **0.86** |
+| Grok 4.6 | 0.79 | 0.85 |
+| GPT-5.6 Luna | 0.69 | 0.79 |
+| DeepSeek V4 Flash | 0.74 | 0.82 |
 | Qwen 3.8 27B | 0.70 | 0.76 |
-| Gemma 4 26B | 0.66 | 0.73 |
+| Gemma 4 26B | 0.66 | 0.72 |
 
 Exact totals:
 [three variables](docs/research/paper/three_variables_rules_model_thinking_2026-08-23.md),

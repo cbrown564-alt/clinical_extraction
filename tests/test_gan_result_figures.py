@@ -5,6 +5,10 @@ from __future__ import annotations
 import pytest
 
 from clinical_extraction.paper.gan_result_figures import (
+    BARBELL_CONNECTOR_MIN_ABS_DELTA,
+    BARBELL_DELTA_LABEL_MIN_ABS_DELTA,
+    PRAGMATIC_DISPLAY_LABELS,
+    PURIST_DISPLAY_LABELS,
     gemini_cells_1_3_5,
     gemini_cells_1_3_5_barbell,
     load_living_gemini_cells,
@@ -13,6 +17,13 @@ from clinical_extraction.paper.gan_result_figures import (
     six_model_cell3,
     wrap_category_label,
 )
+
+
+def test_display_labels_use_seizure_free_not_no_seizure() -> None:
+    assert PURIST_DISPLAY_LABELS["currently_no_seizure"] == "Seizure free"
+    assert PRAGMATIC_DISPLAY_LABELS["currently_no_seizure"] == "Seizure free"
+    assert PURIST_DISPLAY_LABELS["seizure_freq_unknown"] == "Unknown"
+    assert PRAGMATIC_DISPLAY_LABELS["seizure_freq_unknown"] == "Unknown"
 
 
 def test_wrap_category_label_keeps_tokens_intact() -> None:
@@ -114,10 +125,10 @@ def test_living_figure_sources_match_sealed_aggregates() -> None:
     cells = load_living_gemini_cells()
     models = load_living_six_model_cell3()
     assert cells.categories == ["Rules", "Both", "LLM"]
-    assert cells.series["Select"] == [325 / 450, 373 / 450, 357 / 450]
+    assert cells.series["Select"] == [325 / 450, 387 / 450, 357 / 450]
     assert cells.series["Find"] == [292 / 450, 354 / 450, 354 / 450]
-    assert models.categories[0] == "Grok 4.6"
-    assert models.series["Select"][0] == 377 / 450
+    assert models.categories[0] == "Gemini 3.7 Flash"
+    assert models.series["Select"][0] == 387 / 450
 
 
 def test_gemini_barbell_uses_select_stops_on_both_splits() -> None:
@@ -133,8 +144,10 @@ def test_gemini_barbell_uses_select_stops_on_both_splits() -> None:
 
 def test_living_barbell_matches_sealed_cell_selects() -> None:
     chart = load_living_gemini_dev_vs_test()
-    assert chart.development == [691 / 750, 649 / 750, 590 / 750]
-    assert chart.holdout == [325 / 450, 373 / 450, 357 / 450]
+    assert chart.development == [691 / 750, 656 / 750, 590 / 750]
+    assert chart.holdout == [325 / 450, 387 / 450, 357 / 450]
+    hybrid_delta = abs(chart.holdout[1] - chart.development[1])
+    assert BARBELL_CONNECTOR_MIN_ABS_DELTA <= hybrid_delta < BARBELL_DELTA_LABEL_MIN_ABS_DELTA
 
 
 def test_living_purist_confusion_matrix_totals() -> None:
@@ -148,7 +161,8 @@ def test_living_purist_confusion_matrix_totals() -> None:
     total = sum(sum(row) for row in cm.matrix)
     assert total == 450
     correct = sum(cm.matrix[i][i] for i in range(10))
-    assert correct == 374
+    assert correct == 387
+    assert cm.labels[-1] == "Seizure free"
 
 
 def test_living_pragmatic_confusion_matrix_totals() -> None:
@@ -162,5 +176,6 @@ def test_living_pragmatic_confusion_matrix_totals() -> None:
     total = sum(sum(row) for row in cm.matrix)
     assert total == 450
     correct = sum(cm.matrix[i][i] for i in range(4))
-    assert correct == 383
+    assert correct == 396
+    assert cm.labels == ["Frequent", "Infrequent", "Unknown", "Seizure free"]
 

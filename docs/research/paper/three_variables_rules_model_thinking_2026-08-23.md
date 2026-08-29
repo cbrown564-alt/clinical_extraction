@@ -42,7 +42,7 @@ moves the score more than those request settings, but only coarsely:
 on ExECT inventory holdout Gemini leads, then Grok / DeepSeek / Luna,
 then Qwen / Gemma. The best mix is a model find
 plus recorded post-processing. On holdout both peaks are LLM / rules /
-rules (Gan 0.83; ExECT 0.87 / 0.8674). ExECT cell 4 (later-stage
+rules (Gan 0.86; ExECT 0.87 / 0.8674). ExECT cell 4 (later-stage
 encode) is 0.86 and does not raise the stop. Both beat all-rules and
 all-model on holdout. Rules do the same
 post-processing job at a better balance of score, cost, and
@@ -158,8 +158,8 @@ promoted `gan_llm_extract`. Grok temperature is 0.
 | Qwen 3.8 27B | 0.700 (315) | 0.731 (329) | 0.753 (339) |
 | Gemma 4 26B | 0.664 (299) | 0.682 (307) | 0.718 (323) |
 
-Gemini’s cited five-cell select remains 0.83 (373/450). The living
-codebook roster replay is 374/450 on the same stack.
+Gemini’s cited five-cell select is 0.86 (387/450), the living
+codebook roster replay on the same stack.
 
 **ExECT `test60` (4-family inventory micro F1).** Cited cell-3 roster:
 `exect_llm_extract` then rule encode / select. Find is the raw
@@ -184,19 +184,19 @@ secondary surface where an older draft still needs it.
 
 | Model | Find | Encode | Select |
 | --- | ---: | ---: | ---: |
-| Gemini 3.7 Flash | 0.781 (586) | 0.811 (608) | 0.865 (649) |
-| Grok 4.6 | 0.780 (585) | **0.815** (611) | **0.876** (657) |
-| GPT-5.6 Luna | 0.717 (538) | 0.765 (574) | 0.819 (614) |
-| DeepSeek V4 Flash | 0.727 (545) | 0.773 (580) | 0.824 (618) |
-| Qwen 3.8 27B | 0.673 (505) | 0.708 (531) | 0.765 (574) |
-| Gemma 4 26B | 0.668 (501) | 0.699 (524) | 0.752 (564) |
+| Gemini 3.7 Flash | 0.781 (586) | 0.811 (608) | 0.875 (656) |
+| Grok 4.6 | 0.780 (585) | **0.815** (611) | **0.888** (666) |
+| GPT-5.6 Luna | 0.717 (538) | 0.765 (574) | 0.825 (619) |
+| DeepSeek V4 Flash | 0.727 (545) | 0.773 (580) | 0.831 (623) |
+| Qwen 3.8 27B | 0.673 (505) | 0.708 (531) | 0.769 (577) |
+| Gemma 4 26B | 0.668 (501) | 0.699 (524) | 0.756 (567) |
 
 Luna is the coarse miss on Gan holdout find. After select on
-`test450`, Grok leads (**0.838**), then Gemini **0.831**, DeepSeek
-**0.796**, Luna **0.778**, Qwen **0.753**, and Gemma **0.718**. Rules
+`test450`, Gemini leads (**0.860**), then Grok **0.853**, DeepSeek
+**0.820**, Luna **0.789**, Qwen **0.762**, and Gemma **0.724**. Rules
 raise every model over its find stop and help Luna most
-(+38 letters) without bringing Luna or the local models level
-with Grok. On the cited ExECT inventory roster, Gemini leads after
+(+43 letters) without bringing Luna or the local models level
+with Gemini or Grok. On the cited ExECT inventory roster, Gemini leads after
 select (**0.8674**); Grok **0.8146**, DeepSeek **0.8099**, and Luna
 **0.7983** form the next band; Qwen and Gemma trail (**0.7644** /
 **0.7573**).

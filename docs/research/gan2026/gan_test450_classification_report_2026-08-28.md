@@ -13,6 +13,9 @@ Not KCH Real(300). Same kind of number as Gan et al. 2026 Tables 4–5: per-clas
 **Purist micro-F1** is the living primary. **Pragmatic micro-F1** is the companion.
 Micro-F1 equals accuracy here (one gold bin, one predicted bin). Accuracy is not printed.
 Gold and predicted ε only; no letter text, no row ids.
+The printed class `NS` is Seizure free (`currently_no_seizure`; monthly
+frequency 0). It is not gold-kind `no seizure frequency reference`,
+which scores as `UNK`.
 
 ## Living
 
@@ -34,8 +37,8 @@ uses the same gold.
 | --- | --- | --- | ---: |
 | rules | rules | rules | 325/450 = 0.7222 cited 0.72 |
 | both | rules | rules | 368/450 = 0.8178 cited 0.82 |
-| LLM | rules | rules (cell 3) | 373/450 = 0.8289 cited 0.83 |
-| LLM | LLM | rules | 368/450 = 0.8178 cited 0.82 |
+| LLM | rules | rules (cell 3) | 387/450 = 0.8600 cited 0.86 |
+| LLM | LLM | rules | 382/450 = 0.8489 cited 0.85 |
 | LLM | LLM | LLM | 357/450 = 0.7933 cited 0.79 |
 
 ### Pragmatic micro-F1 for those cells
@@ -48,8 +51,8 @@ Same living gold. Cell 2 is the select stop on saved
 | --- | --- | --- | ---: |
 | rules | rules | rules | 345/450 = 0.7667 cited 0.77 |
 | both | rules | rules | 380/450 = 0.8444 |
-| LLM | rules | rules (cell 3) | 382/450 = 0.8489 cited 0.85 |
-| LLM | LLM | rules | 377/450 = 0.8378 cited 0.84 |
+| LLM | rules | rules (cell 3) | 396/450 = 0.8800 cited 0.88 |
+| LLM | LLM | rules | 391/450 = 0.8689 cited 0.87 |
 | LLM | LLM | LLM | 369/450 = 0.8200 |
 
 ### Cell 1 — rules / rules / rules
@@ -97,10 +100,10 @@ weighted avg       0.7894    0.7578    0.7657       450
 
 _Gemini 3.7 Flash; `gan_llm_extract` then `llm_select_after_codebook`; n=450; dropped=0._
 Gold ε is living `gold_monthly_frequency` (Purist UNK support 76/450).
-No-call replay of the saved extract. This replay scores **374/450**
-Purist and **383/450** Pragmatic. The cited five-cell / codebook-encode
-holdout remains **373/450** and **382/450**. Do not retune from the
-one-count gap. Do not inspect holdout rows.
+No-call replay of the saved extract through living
+`llm_select_after_codebook`, including `last_event_well_since`.
+This replay scores **387/450** Purist and **396/450** Pragmatic.
+Table 1 cites those totals. Do not inspect holdout rows.
 
 #### Purist
 
@@ -108,30 +111,30 @@ one-count gap. Do not inspect holdout rows.
 Class            Precision    Recall    F1-score   Support
 <1/6M              0.7500    0.5000    0.6000         6
 =1/6M              0.0000    0.0000    0.0000         1
-(1/6M,1/M)         0.8750    0.6364    0.7368        55
-=1/M               0.9167    0.6111    0.7333        18
+(1/6M,1/M)         0.8913    0.7455    0.8119        55
+=1/M               0.9444    0.9444    0.9444        18
 (1/M,1/W)          0.8833    0.9138    0.8983        58
-=1/W               1.0000    0.6000    0.7500         5
+=1/W               1.0000    0.8000    0.8889         5
 (1/W,1/D)          0.9554    0.8699    0.9106       123
 ≥1/D               0.9048    0.9268    0.9157        41
 UNK                0.6442    0.8816    0.7444        76
-NS                 0.7808    0.8507    0.8143        67
-micro-F1           0.8311    0.8311    0.8311       450
-macro avg          0.7710    0.6790    0.7104       450
-weighted avg       0.8472    0.8311    0.8308       450
+NS                 0.9500    0.8507    0.8976        67
+micro-F1           0.8600    0.8600    0.8600       450
+macro avg          0.7923    0.7433    0.7612       450
+weighted avg       0.8755    0.8600    0.8624       450
 ```
 
 #### Pragmatic
 
 ```
 Class            Precision    Recall    F1-score   Support
-infrequent         0.8750    0.6125    0.7206        80
-frequent           0.9677    0.9251    0.9459       227
+infrequent         0.8971    0.7625    0.8243        80
+frequent           0.9679    0.9295    0.9483       227
 UNK                0.6442    0.8816    0.7444        76
-NS                 0.7808    0.8507    0.8143        67
-micro-F1           0.8511    0.8511    0.8511       450
-macro avg          0.8169    0.8175    0.8063       450
-weighted avg       0.8688    0.8511    0.8522       450
+NS                 0.9500    0.8507    0.8976        67
+micro-F1           0.8800    0.8800    0.8800       450
+macro avg          0.8648    0.8561    0.8537       450
+weighted avg       0.8980    0.8800    0.8843       450
 ```
 
 ### Cell 5 — LLM / LLM / LLM

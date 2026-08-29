@@ -1,7 +1,8 @@
 # Paper results
 
 Date: 2026-08-24
-Revised: 2026-08-29 (paired Purist tests; Gemini temperature on both splits)
+Revised: 2026-08-29 (`last_event_well_since` promoted on living cell-3
+select; six-model rungs and Table 1 refreshed)
 Status: structured first draft; ExECT columns removed from the dissertation
 Owner: this file
 Scope: [Gan is the dissertation paper](../decisions/gan-is-the-dissertation-paper.md)
@@ -41,8 +42,8 @@ the end-to-end model configuration (Table 1).
 | --- | --- | --- | ---: | ---: |
 | Rules | Rules | Rules | 0.72 (325) | 0.77 (345) |
 | Model and rules | Rules | Rules | 0.82 (368) | 0.84 (380) |
-| Model | Model + Rules | Rules | **0.83** (373) | **0.85** (382) |
-| Model | Model | Rules | 0.82 (368) | 0.84 (377) |
+| Model | Model + Rules | Rules | **0.86** (387) | **0.88** (396) |
+| Model | Model | Rules | 0.85 (382) | 0.87 (391) |
 | Model | Model | Model | 0.79 (357) | 0.82 (369) |
 
 **Table 1.** Locked aggregate-only Gan five-cell comparison using
@@ -53,44 +54,45 @@ and
 Cell 3 find is `gan_llm_extract`, which already writes the
 codebook form. Encode then runs `gan_rules_encode` on that ledger, so
 both the model and the rules encode. That is not cell 2 (both at
-find) and not cell 4 (same extract, no rule encode). A later
-no-call replay of the same cell-3 extract scores 374/450 Purist and
-383/450 Pragmatic. The cited five-cell totals remain 373 and 382. Do
-not retune from the one-count gap.
+find) and not cell 4 (same extract, no rule encode). Table 1 cell 3
+is the living no-call replay of that extract through
+`llm_select_after_codebook`, including `last_event_well_since`
+(387/450 Purist, 396/450 Pragmatic). Cell 4 is the same extract
+through `llm_select_only` (382/450 Purist).
 
 Replacing rule-based find with Gemini raised Purist
-micro-F1 from 0.72 to 0.83 when the model already wrote the codebook
+micro-F1 from 0.72 to 0.86 when the model already wrote the codebook
 form and rules then encoded and selected. Dropping the second rule
 encode (cell 4) or assigning selection to the model (cell 5) reduced
 the final score. Rules Purist 325/450 and Pragmatic 345/450 are the
 promoted three-stage select stops.
 
-Paired exact McNemar tests use the living codebook cell-3 vector
-(**374**/450), not the curated Table 1 total 373. On those letters
-cell 3 beats standalone rules (325; 92 vs 43 discordant;
-Δ+0.109, 95% CI 0.059 to 0.159; *p* = 3.0×10⁻⁵) and beats cell 5
-(357; 27 vs 10; Δ+0.038, 95% CI 0.012 to 0.064; *p* = 0.0076).
-The two nearby hybrids that also score 0.82 were not tested. Owner:
+Paired exact McNemar tests use that same cell-3 vector
+(**387**/450). On those letters cell 3 beats standalone rules
+(325; 99 vs 37 discordant; Δ+0.138, 95% CI 0.089 to 0.187;
+*p* = 1.0×10⁻⁷) and beats cell 5 (357; 40 vs 10; Δ+0.067,
+95% CI 0.037 to 0.097; *p* = 2.4×10⁻⁵). Owner:
 [paired `test450` tests](../../research/gan2026/gan_paired_significance_test450_2026-08-29.md).
 
 ## C. The most difficult errors involve interpretation, not detection
 
-The preferred cell submitted 373/450 cited Purist-correct labels.
+The preferred cell submitted 387/450 cited Purist-correct labels.
 Residual errors were not spread evenly across frequency bands. Tables
 2a–2c are the living per-class reading for cells 1 (rules throughout),
 3 (model codebook find, model-then-rule encode, rule select),
 and 5 (model throughout).
 Gold and predicted ε only; no letter text and no row ids. Source:
 [the `test450` class report](../../research/gan2026/gan_test450_classification_report_2026-08-28.md).
-Cell 3 class scores use the later 374/450 replay. Cite Table 1’s
-373/450 for the five-cell total.
+Cell 3 class scores use the same 387/450 living replay as Table 1.
 
-The harder bins are Unknown, No seizure frequency reference, and
+The harder bins are Unknown, Seizure free, and
 sparse rare rates (less than once every 6 months, once every 6
 months, and to a lesser extent once a month). Mid-to-high countable
 rates are stronger. Cell 3 raises Daily and Unknown F1 relative to
 standalone rules, and keeps more-than-weekly F1 high. The all-model
-cell keeps Daily F1 but loses mid-band recall.
+cell keeps Daily F1 but loses mid-band recall. Seizure free is the
+`currently_no_seizure` band (monthly frequency 0). It is not gold-kind
+`no seizure frequency reference`, which scores as Unknown.
 
 Development case review explains the hard categories: competing
 temporal readings, cluster structure, and uncertainty that cannot be
@@ -115,33 +117,32 @@ Unknown support 76/450.
 | Once every 6 months | 0.50 | 1.00 | 0.67 | 1 |
 | Less than once every 6 months | 1.00 | 0.67 | 0.80 | 6 |
 | Unknown | 0.50 | 0.79 | 0.62 | 76 |
-| No seizure frequency reference | 0.69 | 0.57 | 0.62 | 67 |
+| Seizure free | 0.69 | 0.57 | 0.62 | 67 |
 | micro-F1 | 0.71 | 0.71 | 0.71 | 450 |
 
-Pragmatic companion: Frequent 0.86, Infrequent 0.75, Unknown 0.62, No
-seizure 0.62; micro-F1 0.76.
+Pragmatic companion: Frequent 0.86, Infrequent 0.75, Unknown 0.62,
+Seizure free 0.62; micro-F1 0.76.
 
 **Table 2b.** Cell 3 — Gemini codebook find (`gan_llm_extract`
 already encodes), then `gan_rules_encode` and rule select. Replay
-374/450 Purist (cited five-cell 373/450). Same class order as Table
-2a.
+387/450 Purist. Same class order as Table 2a.
 
 | Class | P | R | F1 | Support |
 | --- | ---: | ---: | ---: | ---: |
 | Daily | 0.90 | 0.93 | 0.92 | 41 |
 | More than weekly, less than daily | 0.96 | 0.87 | 0.91 | 123 |
-| Once a week | 1.00 | 0.60 | 0.75 | 5 |
+| Once a week | 1.00 | 0.80 | 0.89 | 5 |
 | More than monthly, less than weekly | 0.88 | 0.91 | 0.90 | 58 |
-| Once a month | 0.92 | 0.61 | 0.73 | 18 |
-| More than 6 months, less than monthly | 0.88 | 0.64 | 0.74 | 55 |
+| Once a month | 0.94 | 0.94 | 0.94 | 18 |
+| More than 6 months, less than monthly | 0.89 | 0.75 | 0.81 | 55 |
 | Once every 6 months | 0.00 | 0.00 | 0.00 | 1 |
 | Less than once every 6 months | 0.75 | 0.50 | 0.60 | 6 |
 | Unknown | 0.64 | 0.88 | 0.74 | 76 |
-| No seizure frequency reference | 0.78 | 0.85 | 0.81 | 67 |
-| micro-F1 | 0.83 | 0.83 | 0.83 | 450 |
+| Seizure free | 0.95 | 0.85 | 0.90 | 67 |
+| micro-F1 | 0.86 | 0.86 | 0.86 | 450 |
 
-Pragmatic companion: Frequent 0.95, Infrequent 0.72, Unknown 0.74, No
-seizure 0.81; micro-F1 0.85.
+Pragmatic companion: Frequent 0.95, Infrequent 0.82, Unknown 0.74,
+Seizure free 0.90; micro-F1 0.88.
 
 **Table 2c.** Cell 5 — Gemini find, encode, and select. Purist
 357/450; two later-stage rows with no scorable select label count as
@@ -158,11 +159,11 @@ incorrect. Same class order as Table 2a.
 | Once every 6 months | 0.00 | 0.00 | 0.00 | 1 |
 | Less than once every 6 months | 1.00 | 0.67 | 0.80 | 6 |
 | Unknown | 0.61 | 0.91 | 0.73 | 76 |
-| No seizure frequency reference | 0.69 | 0.84 | 0.76 | 67 |
+| Seizure free | 0.69 | 0.84 | 0.76 | 67 |
 | micro-F1 | 0.79 | 0.79 | 0.79 | 450 |
 
-Pragmatic companion: Frequent 0.92, Infrequent 0.71, Unknown 0.73, No
-seizure 0.76; micro-F1 0.82.
+Pragmatic companion: Frequent 0.92, Infrequent 0.71, Unknown 0.73,
+Seizure free 0.76; micro-F1 0.82.
 
 **Supporting material.** Keep the four-decimal class report, residual
 taxonomy, and representative development cases. The main paper needs
@@ -237,13 +238,13 @@ find call; encode and select stay recorded rules. The test is
 whether extra reasoning beat the living select score, not whether
 find moved.
 
-On Gan `test450`, low remains the best select stop: 0.831 (374),
-against 0.818 (368) at high and 0.813 (366) at medium. Paired
-McNemar on low versus high is 20 vs 14 discordant letters
-(Δ+0.013, 95% CI −0.012 to 0.039; *p* = 0.39). Extra budget did
+On Gan `test450`, low remains the best select stop: 0.860 (387),
+against 0.844 (380) at high. Paired
+McNemar on low versus high is 21 vs 14 discordant letters
+(Δ+0.016, 95% CI −0.010 to 0.041; *p* = 0.31). Extra budget did
 not beat the living setting. The interval is also compatible with a
 small loss or a small gain, so this is not a formal equivalence
-claim.
+claim. Medium thinking stays a point estimate on the prior stack.
 
 Higher-effort settings increased computational cost and latency.
 Once the model's role is fixed to find, the study does not
@@ -257,20 +258,21 @@ rule select.
 
 | Split | Stop | Temp. 0 | Temp. 1 | Letters (1 − 0) |
 | --- | --- | ---: | ---: | ---: |
-| `test450` | Select | 0.831 (374) | 0.824 (371) | −3 |
-| `dev750` | Select | 0.865 (649) | 0.867 (650) | +1 |
+| `test450` | Select | 0.860 (387) | 0.842 (379) | −8 |
+| `dev750` | Select | 0.875 (656) | 0.875 (656) | 0 |
 
 **Table 3.** Gemini 3.7 Flash Purist temperature ablation on the
 living cell-3 stack. Temperature 0 select is the living codebook
-replay (374/450). Table 1 still cites 373/450. Source:
-[Gemini temperature 1](../../research/gan2026/gan_gemini37flash_temperature_1_2026-08-28.md).
+replay (387/450), the same total as Table 1. Source:
+[Gemini temperature 1](../../research/gan2026/gan_gemini37flash_temperature_1_2026-08-28.md)
+and the living paired-test replay.
 
-Holdout select was 0.831 at temperature 0 against 0.824 at
-temperature 1 (Δ+0.007, 95% CI −0.017 to 0.030; *p* = 0.71).
-Development select was 0.865 against 0.867 (Δ−0.001, 95% CI −0.014
-to 0.012; *p* = 1.00). Neither split distinguishes the two
+Holdout select was 0.860 at temperature 0 against 0.842 at
+temperature 1 (Δ+0.018, 95% CI −0.006 to 0.042; *p* = 0.20).
+Development select was 0.875 against 0.875 (Δ0.000, 95% CI −0.013
+to 0.013; *p* = 1.00). Neither split distinguishes the two
 temperatures. The five-cell stage allocation on the same holdout is
-0.72 rules versus 0.83 cell 3. Temperature is relatively
+0.72 rules versus 0.86 cell 3. Temperature is relatively
 inconsequential beside that pipeline. Temperature 0 remains the
 living default.
 
@@ -283,24 +285,24 @@ The promoted roster on locked `test450` is:
 
 | Model | Find | Encode | Select |
 | --- | ---: | ---: | ---: |
-| Gemini 3.7 Flash | 0.789 (355) | 0.800 (360) | 0.831 (374) |
-| Grok 4.6 | 0.789 (355) | 0.811 (365) | **0.838** (377) |
-| GPT-5.6 Luna | 0.693 (312) | 0.738 (332) | 0.778 (350) |
-| DeepSeek V4 Flash | 0.742 (334) | 0.758 (341) | 0.796 (358) |
-| Qwen 3.8 27B | 0.700 (315) | 0.731 (329) | 0.753 (339) |
-| Gemma 4 26B | 0.664 (299) | 0.682 (307) | 0.718 (323) |
+| Gemini 3.7 Flash | 0.789 (355) | 0.800 (360) | **0.860** (387) |
+| Grok 4.6 | 0.789 (355) | 0.811 (365) | 0.853 (384) |
+| GPT-5.6 Luna | 0.693 (312) | 0.738 (332) | 0.789 (355) |
+| DeepSeek V4 Flash | 0.742 (334) | 0.758 (341) | 0.820 (369) |
+| Qwen 3.8 27B | 0.700 (315) | 0.731 (329) | 0.762 (343) |
+| Gemma 4 26B | 0.664 (299) | 0.682 (307) | 0.724 (326) |
 
 **Table 4.** Locked aggregate-only Gan cell-3 roster from
 `paper_experiments/gan/rungs/{slug}/test450/` on promoted
 `gan_llm_extract`. Encode is `gan_rules_encode`; select is
 `llm_select_after_codebook`. Grok living temperature is 0. Gemini
-select here is the living codebook replay (374/450). Table 1 cites
-the curated five-cell total **0.83** (373/450); do not retune from
-the one-count gap. Historical selected-evidence encode (346 / 362
+select here is the living codebook replay (387/450), the same
+total as Table 1. Historical selected-evidence encode (346 / 362
 on Gemini) remains the five-cell encode ablation, not this table.
 
 Later rules raised every model over its find stop and helped
-Luna most, but did not bring Luna or the local models level with Grok.
+Luna most (+43 letters), but did not bring Luna or the local
+models level with Gemini or Grok.
 Rules can correct task-form and selection errors in an existing
 candidate record. They cannot reconstruct a clinically relevant
 distinction omitted at find.

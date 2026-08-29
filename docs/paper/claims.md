@@ -114,7 +114,7 @@ are not holdout component estimates.
 ### What the locked totals show
 
 On 450 held-out letters, written rules scored 0.72. Gemini LLM
-find (`gan_llm_extract`) plus `gan_rules_encode` plus rule select scored 0.83. The paper
+find (`gan_llm_extract`) plus `gan_rules_encode` plus rule select scored 0.86. The paper
 may say those locked totals and the Gemini grid below.
 It may not treat `gan_llm_only` as a results column.
 That request is a different prompt (one finished label). Its Grok
@@ -128,15 +128,15 @@ Class report: [gan_test450_classification_report_2026-08-28.md](../research/gan2
 | --- | --- | --- | ---: |
 | rules | rules | rules | 0.72 |
 | both | rules | rules | 0.82 |
-| LLM | rules | rules | 0.83 |
-| LLM | LLM | rules | 0.82 |
+| LLM | rules | rules | 0.86 |
+| LLM | LLM | rules | 0.85 |
 | LLM | LLM | LLM | 0.79 |
 
 Hybrid select is ledger-only (`elapsed_anchor` and `residual_jerk`
 off). The paper may say that, with Gemini as the cited model, the
 strongest row is LLM find plus codebook rule encode plus rule
-select (0.83). It may say rule select without encode, and both-then-
-rules, are 0.82. It may say LLM select is 0.79. It may say find
+select (0.86). It may say rule select without encode, and both-then-
+rules, are 0.85 and 0.82. It may say LLM select is 0.79. It may say find
 and encode stops are prior-stage ablations, not a second headline
 table. It may not say which letters moved. The historical
 selected-evidence encoder on the codebook find (encode 0.77,
@@ -357,9 +357,9 @@ The files support this account of the proposed method, cited on Grok:
    switch: removing breakthrough helps some unknowns and harms the
    wider ledger.
 4. On locked frequency letters, Gemini LLM find plus codebook
-   encode plus rule select raises the locked score by 0.10 against
-   standalone rules (0.83 vs 0.72). Rule select without encode, and
-   both-then-rules, are 0.82. LLM select is 0.79. Grok living
+   encode plus rule select raises the locked score by 0.14 against
+   standalone rules (0.86 vs 0.72). Rule select without encode is
+   0.85. Both-then-rules is 0.82. LLM select is 0.79. Grok living
    hybrid 0.83 is a different stack on the source-near request.
    `gan_llm_only` is not in that comparison.
    On the locked inventory, Gemini LLM find plus rule select is

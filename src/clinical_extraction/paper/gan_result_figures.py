@@ -29,6 +29,8 @@ CELL5_DEV750 = (
 )
 RUNGS_ROOT = ROOT / "paper_experiments/gan/rungs"
 CELL_BARBELL_LABELS = ("Rules only", "LLM + rules", "LLM only")
+BARBELL_CONNECTOR_MIN_ABS_DELTA = 0.012
+BARBELL_DELTA_LABEL_MIN_ABS_DELTA = 0.05
 SPLIT_COLORS = {
     "Development": "#7C8B9E",
     "Test": "#15324F",
@@ -88,7 +90,7 @@ PURIST_DISPLAY_LABELS = {
     "seizure_freq_1_per_6mon": "Once every 6 months",
     "seizure_freq_1_per_yr": "Less than once every 6 months",
     "seizure_freq_unknown": "Unknown",
-    "currently_no_seizure": "No seizure frequency reference",
+    "currently_no_seizure": "Seizure free",
 }
 
 PRAGMATIC_CATEGORY_ORDER = (
@@ -102,7 +104,7 @@ PRAGMATIC_DISPLAY_LABELS = {
     "seizure_frequent": "Frequent",
     "seizure_infrequent": "Infrequent",
     "seizure_freq_unknown": "Unknown",
-    "currently_no_seizure": "No seizure",
+    "currently_no_seizure": "Seizure free",
 }
 
 
@@ -596,7 +598,7 @@ def render_barbell(
 
     for y, left, right in zip(ys, chart.development, chart.holdout, strict=True):
         delta = right - left
-        if abs(delta) >= 0.012:
+        if abs(delta) >= BARBELL_CONNECTOR_MIN_ABS_DELTA:
             axis.plot(
                 [left, right],
                 [y, y],
@@ -605,21 +607,22 @@ def render_barbell(
                 solid_capstyle="round",
                 zorder=2,
             )
-            mid_x = (left + right) / 2
-            sign = "+" if delta > 0 else "−"
-            axis.text(
-                mid_x,
-                y + 0.16,
-                f"$\\Delta$ {sign}{abs(delta):.2f}",
-                ha="center",
-                va="bottom",
-                fontsize=8,
-                color="#475569",
-                zorder=3,
-            )
+            if abs(delta) >= BARBELL_DELTA_LABEL_MIN_ABS_DELTA:
+                mid_x = (left + right) / 2
+                sign = "+" if delta > 0 else "−"
+                axis.text(
+                    mid_x,
+                    y + 0.16,
+                    f"$\\Delta$ {sign}{abs(delta):.2f}",
+                    ha="center",
+                    va="bottom",
+                    fontsize=8,
+                    color="#475569",
+                    zorder=3,
+                )
 
     for y, left, right in zip(ys, chart.development, chart.holdout, strict=True):
-        if abs(left - right) < 0.012:
+        if abs(left - right) < BARBELL_CONNECTOR_MIN_ABS_DELTA:
             axis.scatter(
                 [left],
                 [y],
