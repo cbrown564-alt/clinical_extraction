@@ -54,6 +54,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repa
     elapsed_since_anchor_label_from_events as _elapsed_since_anchor_label_from_events,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families import (
+    last_event_well_since_label_from_events as _last_event_well_since_label_from_events,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families import (
     non_epileptic_label_from_events as _non_epileptic_label_from_events,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families import (
@@ -290,6 +293,7 @@ DEFAULT_SEMANTIC_FAMILY_ORDER: tuple[str, ...] = (
     "non_epileptic",
     "residual_jerk",
     "post_change_burst",
+    "last_event_well_since",
     "dated_sequence",
     "elapsed_anchor",
     "monthly_diary",
@@ -302,6 +306,7 @@ _SEMANTIC_FAMILY_FLAG: dict[str, str] = {
     "non_epileptic": "non_epileptic_repair",
     "residual_jerk": "residual_jerk_repair",
     "post_change_burst": "post_change_burst_repair",
+    "last_event_well_since": "last_event_well_since_repair",
     "dated_sequence": "dated_sequence_repair",
     "elapsed_anchor": "elapsed_anchor_repair",
     "monthly_diary": "monthly_diary_repair",
@@ -337,6 +342,7 @@ class StructuredRepairConfig:
     non_epileptic_repair: bool = True
     residual_jerk_repair: bool = False
     post_change_burst_repair: bool = True
+    last_event_well_since_repair: bool = True
     dated_sequence_repair: bool = True
     elapsed_anchor_repair: bool = False
     semantic_family_order: tuple[str, ...] = DEFAULT_SEMANTIC_FAMILY_ORDER
@@ -363,6 +369,7 @@ class StructuredRepairConfig:
                 non_epileptic_repair=False,
                 residual_jerk_repair=False,
                 post_change_burst_repair=False,
+                last_event_well_since_repair=False,
                 dated_sequence_repair=False,
                 elapsed_anchor_repair=False,
             )
@@ -379,6 +386,7 @@ class StructuredRepairConfig:
                 non_epileptic_repair=False,
                 residual_jerk_repair=False,
                 post_change_burst_repair=False,
+                last_event_well_since_repair=False,
                 dated_sequence_repair=False,
                 elapsed_anchor_repair=False,
             )
@@ -394,6 +402,7 @@ class StructuredRepairConfig:
                 non_epileptic_repair=False,
                 residual_jerk_repair=False,
                 post_change_burst_repair=False,
+                last_event_well_since_repair=False,
                 dated_sequence_repair=False,
                 elapsed_anchor_repair=False,
             )
@@ -409,6 +418,7 @@ class StructuredRepairConfig:
                 non_epileptic_repair=False,
                 residual_jerk_repair=False,
                 post_change_burst_repair=False,
+                last_event_well_since_repair=False,
                 dated_sequence_repair=False,
                 elapsed_anchor_repair=False,
             )
@@ -425,6 +435,7 @@ class StructuredRepairConfig:
                 non_epileptic_repair=False,
                 residual_jerk_repair=False,
                 post_change_burst_repair=False,
+                last_event_well_since_repair=False,
                 dated_sequence_repair=False,
                 elapsed_anchor_repair=False,
             )
@@ -497,6 +508,7 @@ class StructuredRepairConfig:
             "non_epileptic_repair": self.non_epileptic_repair,
             "residual_jerk_repair": self.residual_jerk_repair,
             "post_change_burst_repair": self.post_change_burst_repair,
+            "last_event_well_since_repair": self.last_event_well_since_repair,
             "dated_sequence_repair": self.dated_sequence_repair,
             "elapsed_anchor_repair": self.elapsed_anchor_repair,
         }
@@ -859,6 +871,12 @@ def _semantic_family_proposal(
         ), None
     if family_id == "post_change_burst":
         return _post_change_burst_label_from_events(
+            extraction,
+            repaired_label,
+            note_text=note_text,
+        ), None
+    if family_id == "last_event_well_since":
+        return _last_event_well_since_label_from_events(
             extraction,
             repaired_label,
             note_text=note_text,

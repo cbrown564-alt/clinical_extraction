@@ -107,6 +107,7 @@ Applied in `DEFAULT_SEMANTIC_FAMILY_ORDER` when the matching flag is on.
 | `non_epileptic` | live | rewrite | If current events are non-epileptic, submit `no seizure frequency reference` |
 | `residual_jerk` | live | reselect | Retarget some unknown / multiple / per-day labels using dated residual jerks near clinic |
 | `post_change_burst` | live | reselect | Override a seizure-free or high-rate label after a treatment-change burst |
+| `last_event_well_since` | live | reselect | Rewrite a short numeric seizure-free span after a day-dated last event or an explicit burst count |
 | `dated_sequence` | live | reselect | Build a rate from a near-clinic dated seizure sequence |
 | `elapsed_anchor` | live | reselect | Rate or seizure-free duration from time since a dated last event |
 | Sustained seizure-free veto on `elapsed_anchor` | live | gate | Keep a sustained selected seizure-free label; record the elapsed proposal as vetoed |

@@ -1271,6 +1271,14 @@ def _gan_repair_walk(
         else None,
     )
     step(
+        "last_event_well_since",
+        families.last_event_well_since_label_from_events(
+            model_extraction, label, note_text=note_text
+        )
+        if repair_config.last_event_well_since_repair
+        else None,
+    )
+    step(
         "dated_sequence",
         families.dated_sequence_label_from_events(
             model_extraction, label, note_text=note_text

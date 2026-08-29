@@ -247,6 +247,14 @@ RULE_RECORDS: tuple[RuleRecord, ...] = (
         'seizure_frequency',
     ),
     RuleRecord(
+        'last_event_well_since',
+        'gan2026',
+        'llm_select',
+        'reselect',
+        'live',
+        'seizure_frequency',
+    ),
+    RuleRecord(
         'dated_sequence',
         'gan2026',
         'llm_select',
