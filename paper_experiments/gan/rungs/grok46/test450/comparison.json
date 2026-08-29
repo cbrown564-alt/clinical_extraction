@@ -50,20 +50,20 @@
       "scorable": 450
     },
     "llm_select": {
-      "micro_f1": 0.8378,
-      "pragmatic_accuracy": 0.8733,
-      "pragmatic_correct": 393,
-      "pragmatic_micro_f1": 0.8733,
+      "micro_f1": 0.8533,
+      "pragmatic_accuracy": 0.8889,
+      "pragmatic_correct": 400,
+      "pragmatic_micro_f1": 0.8889,
       "predicted_candidate_count": 1063,
       "predicted_kinds": {
-        "frequency": 262,
+        "frequency": 269,
         "no_reference": 16,
-        "seizure_free": 79,
+        "seizure_free": 72,
         "unknown": 72,
         "unresolved_multiple": 21
       },
-      "purist_accuracy": 0.8378,
-      "purist_correct": 377,
+      "purist_accuracy": 0.8533,
+      "purist_correct": 384,
       "scorable": 450
     },
     "rules_only": {

@@ -52,21 +52,21 @@
       "scorable": 445
     },
     "llm_select": {
-      "micro_f1": 0.7956,
-      "pragmatic_accuracy": 0.8244,
-      "pragmatic_correct": 371,
-      "pragmatic_micro_f1": 0.8244,
+      "micro_f1": 0.82,
+      "pragmatic_accuracy": 0.8489,
+      "pragmatic_correct": 382,
+      "pragmatic_micro_f1": 0.8489,
       "predicted_candidate_count": 1267,
       "predicted_kinds": {
-        "frequency": 246,
+        "frequency": 257,
         "no_reference": 17,
-        "seizure_free": 77,
+        "seizure_free": 66,
         "unknown": 70,
         "unresolved_multiple": 39,
         "unscorable": 1
       },
-      "purist_accuracy": 0.7956,
-      "purist_correct": 358,
+      "purist_accuracy": 0.82,
+      "purist_correct": 369,
       "scorable": 449
     },
     "rules_only": {

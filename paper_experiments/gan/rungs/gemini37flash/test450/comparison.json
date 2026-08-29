@@ -51,20 +51,20 @@
       "scorable": 449
     },
     "llm_select": {
-      "micro_f1": 0.8311,
-      "pragmatic_accuracy": 0.8511,
-      "pragmatic_correct": 383,
-      "pragmatic_micro_f1": 0.8511,
+      "micro_f1": 0.86,
+      "pragmatic_accuracy": 0.88,
+      "pragmatic_correct": 396,
+      "pragmatic_micro_f1": 0.88,
       "predicted_candidate_count": 985,
       "predicted_kinds": {
-        "frequency": 257,
+        "frequency": 270,
         "no_reference": 15,
-        "seizure_free": 73,
+        "seizure_free": 60,
         "unknown": 89,
         "unresolved_multiple": 16
       },
-      "purist_accuracy": 0.8311,
-      "purist_correct": 374,
+      "purist_accuracy": 0.86,
+      "purist_correct": 387,
       "scorable": 450
     },
     "rules_only": {

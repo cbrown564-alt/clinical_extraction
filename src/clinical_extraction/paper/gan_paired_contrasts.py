@@ -206,16 +206,17 @@ def run_predeclared_contrasts(
         gan_extract_segment_rows_path("reasoning_high", split=SPLIT, slug=slug),
         loaded,
     )
-    living_dev = rung_select_correct(
-        ROOT / "paper_experiments/gan/rungs" / slug / DEV_SPLIT / "scored.jsonl"
+    loaded_dev = {
+        record.source_row_index: record
+        for record in load_records_for_split(gan_machine_split(DEV_SPLIT))
+    }
+    living_dev = codebook_select_correct(
+        gan_living_extract_rows_path(slug, DEV_SPLIT),
+        loaded_dev,
     )
-    temp1_dev = rung_select_correct(
-        ROOT
-        / "experiments/paper/gan/rungs"
-        / slug
-        / "temperature_1"
-        / DEV_SPLIT
-        / "scored.jsonl"
+    temp1_dev = codebook_select_correct(
+        gan_extract_segment_rows_path("temperature_1", split=DEV_SPLIT, slug=slug),
+        loaded_dev,
     )
     contrasts = {
         "cell3_vs_rules": _payload(
@@ -284,12 +285,13 @@ def run_predeclared_contrasts(
             "1 on the cell-3 stack, on test450 and on dev750."
         ),
         "vector_note": (
-            "Cell 3 on test450 is the living codebook replay (374/450). "
-            "Table 1 still cites the curated five-cell total 373/450. "
-            "Rules are phase_c_candidate_config() (325/450). Cell 5 uses "
-            "stored gan_llm_select_from_extract comparison flags (357/450). "
-            "dev750 temperature uses saved rung scored.jsonl select flags "
-            "(649 vs 650)."
+            "Cell 3 on both splits is the living codebook replay "
+            "(llm_select_after_codebook, including last_event_well_since). "
+            "Table 1 cites that same test450 total. Rules are "
+            "phase_c_candidate_config() (325/450). Cell 5 uses stored "
+            "gan_llm_select_from_extract comparison flags (357/450). "
+            "dev750 temperature replays saved extracts through the same "
+            "living select stack."
         ),
     }
 

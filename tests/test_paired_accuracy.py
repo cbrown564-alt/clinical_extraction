@@ -75,11 +75,11 @@ def test_paired_significance_artifact_keeps_predeclared_contrasts() -> None:
         "gemini_thinking_low_vs_high",
     }
     rules = payload["contrasts"]["cell3_vs_rules"]
-    assert rules["correct_a"] == 374
+    assert rules["correct_a"] == 387
     assert rules["correct_b"] == 325
-    assert rules["a_right_b_wrong"] + rules["a_wrong_b_right"] == 135
+    assert rules["a_right_b_wrong"] + rules["a_wrong_b_right"] == 136
     temp_dev = payload["contrasts"]["gemini_temperature_0_vs_1_dev750"]
     assert temp_dev["split"] == "dev750"
     assert temp_dev["n"] == 750
-    assert temp_dev["correct_a"] == 649
-    assert temp_dev["correct_b"] == 650
+    assert temp_dev["correct_a"] == 656
+    assert temp_dev["correct_b"] == 656
