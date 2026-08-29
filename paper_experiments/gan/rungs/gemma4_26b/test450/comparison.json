@@ -10,7 +10,7 @@
     "selected_event_id_changes": 0,
     "used_as_rung_3": true
   },
-  "generated_on": "2026-08-28",
+  "generated_on": "2026-08-29",
   "model_slug": "gemma4_26b",
   "row_count": 450,
   "row_policy": "aggregate_only",
@@ -70,19 +70,20 @@
       "scorable": 422
     },
     "rules_only": {
-      "micro_f1": 0.7133,
-      "pragmatic_accuracy": 0.7578,
-      "pragmatic_correct": 341,
-      "pragmatic_micro_f1": 0.7578,
-      "predicted_candidate_count": 724,
+      "micro_f1": 0.7222,
+      "pragmatic_accuracy": 0.7667,
+      "pragmatic_correct": 345,
+      "pragmatic_micro_f1": 0.7667,
+      "predicted_candidate_count": 740,
       "predicted_kinds": {
-        "frequency": 258,
-        "no_reference": 119,
+        "frequency": 259,
+        "no_reference": 112,
         "seizure_free": 55,
-        "unresolved_multiple": 18
+        "unknown": 4,
+        "unresolved_multiple": 20
       },
-      "purist_accuracy": 0.7133,
-      "purist_correct": 321,
+      "purist_accuracy": 0.7222,
+      "purist_correct": 325,
       "scorable": 450
     }
   },

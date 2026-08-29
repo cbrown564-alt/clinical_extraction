@@ -1,7 +1,8 @@
 # Protocol: Gan rules-only three-stage Phase D (`test450` aggregate)
 
 Date: 2026-08-29
-Status: predeclared before holdout load
+Status: complete; Gate A and Gate B executed 2026-08-29; verdict `promotion_accepted`
+Report: [Phase D result](gan_rules_only_three_stage_phase_d_2026-08-29.md)
 Owner: this file
 Parent: [Phases A–C protocol](gan_rules_only_three_stage_protocol_2026-08-29.md)
 Frozen candidate: [Phase C result](gan_rules_only_three_stage_phase_c_2026-08-29.md)

@@ -124,7 +124,6 @@ development inspection. Narrative results doc follows the artifact.
 
 ## Claim boundary
 
-Development instrumentation evidence on `dev750` only. The cited rows
-(`test450` 0.71, `dev750` 0.89) do not move. Any Phase A stage
-gradient is a "development result" for the rules program's internal
-structure, not a five-cell change and not holdout evidence.
+Phases A–C are development instrumentation on `dev750` only. Phase D
+owns the holdout aggregate and, after `promotion_accepted`, the cited
+rules row (325/450) and measured stage stops.

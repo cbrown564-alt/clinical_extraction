@@ -1,0 +1,73 @@
+{
+  "cells": {
+    "both_extract_then_rules": {
+      "ablation": {
+        "encode": null,
+        "extract": null
+      },
+      "encode_role": "rules",
+      "extract_role": "both",
+      "extract_source": "gan_llm_and_rules_extract",
+      "select": null,
+      "select_role": "rules"
+    },
+    "llm": {
+      "ablation": {
+        "encode": 354,
+        "extract": 354
+      },
+      "encode_role": "LLM",
+      "extract_role": "LLM",
+      "extract_source": "gan_llm_extract",
+      "select": 320,
+      "select_method": "gan_llm_select_from_extract",
+      "select_role": "LLM"
+    },
+    "llm_extract_encode_then_select_rules": {
+      "ablation": {
+        "encode": 291,
+        "extract": 354
+      },
+      "encode_role": "LLM",
+      "extract_role": "LLM",
+      "extract_source": "gan_llm_extract",
+      "select": 291,
+      "select_role": "rules"
+    },
+    "llm_extract_then_rules": {
+      "ablation": {
+        "encode": 354,
+        "extract": 354
+      },
+      "encode_role": "rules",
+      "extract_role": "LLM",
+      "extract_source": "gan_llm_extract",
+      "select": 354,
+      "select_role": "rules"
+    },
+    "rules": {
+      "ablation": {
+        "encode": 292,
+        "extract": 292
+      },
+      "encode_role": "rules",
+      "extract_role": "rules",
+      "extract_source": "gan_rules",
+      "select": 325,
+      "select_role": "rules"
+    }
+  },
+  "claim_boundary": "Gan aggregate-only test450 five-cell grid. Headline is the select stop. Extract and encode counts are prior-stage ablations. Do not inspect holdout rows.",
+  "generated_from": "living_cells",
+  "headline": "select",
+  "model": "gemini/gemini-3.7-flash",
+  "n": 450,
+  "role_values": [
+    "rules",
+    "LLM",
+    "both"
+  ],
+  "row_policy": "aggregate_only",
+  "scorer": "purist",
+  "split": "test450"
+}

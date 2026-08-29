@@ -58,7 +58,7 @@ Grok `dev750` temperature 1 is omitted: the codebook extract raws
 are not on disk. Effects are mixed and small. Temperature 0 remains
 the living default for every model that accepts it. Luna was not run
 at 0. Stage ownership on the Gemini holdout still moves the select
-stop far more (0.71 rules versus 0.83 cell 3).
+stop far more (0.72 rules versus 0.83 cell 3).
 
 Living temperature-0 cells:
 `paper_experiments/gan/gan_llm_extract/grok46/` and

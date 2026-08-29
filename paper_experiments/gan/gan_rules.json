@@ -1,0 +1,37 @@
+{
+  "schema_version": "gan.rules_only.three_stage.promoted.v1",
+  "date": "2026-08-29",
+  "program": "run_record_three_stage(phase_c_candidate_config())",
+  "protocol": "docs/research/gan2026/gan_rules_only_three_stage_phase_d_protocol_2026-08-29.md",
+  "scorer": "purist",
+  "dev750": {
+    "row_count": 750,
+    "row_policy": "development_review_permitted",
+    "select_purist_correct": 691,
+    "select_purist_accuracy": 0.9213,
+    "select_pragmatic_correct": 701,
+    "select_pragmatic_accuracy": 0.9347,
+    "stage_rungs": {
+      "find": {"purist_correct": 622, "accuracy": 0.8293},
+      "encode": {"purist_correct": 622, "accuracy": 0.8293},
+      "select": {"purist_correct": 691, "accuracy": 0.9213}
+    },
+    "source": "docs/research/gan2026/gan_rules_only_three_stage_phase_c_2026-08-29.md"
+  },
+  "test450": {
+    "row_count": 450,
+    "row_policy": "aggregate_only",
+    "select_purist_correct": 325,
+    "select_purist_accuracy": 0.7222,
+    "select_pragmatic_correct": 345,
+    "select_pragmatic_accuracy": 0.7667,
+    "stage_rungs": {
+      "find": {"purist_correct": 292, "accuracy": 0.6489},
+      "encode": {"purist_correct": 292, "accuracy": 0.6489},
+      "select": {"purist_correct": 325, "accuracy": 0.7222}
+    },
+    "source": "experiments/gan_rules_only_three_stage_phase_d_test450_aggregate_20260829.json",
+    "supersedes_select_purist_correct": 321
+  },
+  "claim_boundary": "Promoted rules-only three-stage Purist counts. Holdout is aggregate-only. No per-class holdout report. Not clinical validation."
+}

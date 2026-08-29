@@ -7,10 +7,18 @@ from pathlib import Path
 
 from clinical_extraction.paper.five_cell import (
     _exect_rules_stage,
+    _gan_rules_stage,
     write_five_cell_grid,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_gan_rules_stage_stops_read_promoted_owner() -> None:
+    assert _gan_rules_stage("test450", "find") == 292
+    assert _gan_rules_stage("test450", "encode") == 292
+    assert _gan_rules_stage("test450", "select") == 325
+    assert _gan_rules_stage("dev750", "select") == 691
 
 
 def test_exect_rules_find_stop_reads_frozen_recognise_key() -> None:

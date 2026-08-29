@@ -275,12 +275,12 @@ SINGLE_DATED_EVENT_OVERRIDE = "select.override.single_dated_event_unknown"
 
 
 def phase_c_candidate_config() -> GanThreeStageConfig:
-    """Frozen Phase C candidate (2026-08-29): all seven keeps accepted.
+    """Promoted Phase C candidate (2026-08-29).
 
-    dev750 select 691/750 under the keep-arms protocol (isolated-positive,
-    LOO-negative, zero comparator-correct regressions). Awaiting the
-    Phase D aggregate-only test450 replay; not promoted to the five-cell
-    grid. See docs/research/gan2026/gan_rules_only_three_stage_phase_c_2026-08-29.md.
+    Phase D aggregate-only test450 select 325/450 versus cited 321/450.
+    Living five-cell rules row and ``gan_cell_replay`` rules_only use this
+    config. See
+    docs/research/gan2026/gan_rules_only_three_stage_phase_d_2026-08-29.md.
     """
 
     return GanThreeStageConfig(

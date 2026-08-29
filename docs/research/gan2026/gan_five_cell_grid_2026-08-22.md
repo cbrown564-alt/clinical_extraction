@@ -1,7 +1,7 @@
 # Gan five-cell prefix grid
 
 Date: 2026-08-22
-Revised: 2026-08-28 (living primary is Purist micro-F1; class report + Qwen COT compare)
+Revised: 2026-08-29 (rules row promoted to three-stage 325/450; measured find/encode 292)
 Status: cited
 Owner: [protocol](gan_five_cell_grid_protocol_2026-08-22.md)
 Paper artifact: `paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json`
@@ -21,14 +21,14 @@ stops are prior-stage ablations. `gan_llm_only` is not a results column.
 On locked `test450`, LLM find plus codebook rule encode plus rule
 select is the strongest row (**0.83**). Rule select without that
 encode is **0.82**, matching both-then-rules. LLM select is **0.79**.
-Standalone rules are **0.71** (321/450; living gold). The historical selected-evidence
+Standalone rules are **0.72** (325/450; promoted three-stage program). The historical selected-evidence
 encoder on the same extract is an ablation (encode 0.77, select 0.80).
 
 ## Locked `test450` headline (select stop, aggregate only)
 
 | Find | Encode | Select | Purist micro-F1 |
 | --- | --- | --- | ---: |
-| rules | rules | rules | 0.71 |
+| rules | rules | rules | 0.72 |
 | both | rules | rules | 0.82 |
 | LLM | rules | rules | **0.83** |
 | LLM | LLM | rules | 0.82 |
@@ -44,7 +44,7 @@ wrote the codebook form (no rule encode). LLM select is
 
 | Find | Encode | Select | Find stop | Encode stop |
 | --- | --- | --- | ---: | ---: |
-| rules | rules | rules | 0.71 | 0.71 |
+| rules | rules | rules | 0.65 | 0.65 |
 | both | rules | rules | 0.82 | 0.80 |
 | LLM | rules | rules | 0.79 | 0.80 |
 | LLM | LLM | rules | 0.79 | 0.79 |
@@ -54,7 +54,7 @@ wrote the codebook form (no rule encode). LLM select is
 
 | Find | Encode | Select | Purist micro-F1 |
 | --- | --- | --- | ---: |
-| rules | rules | rules | 0.89 |
+| rules | rules | rules | 0.92 |
 | both | rules | rules | 0.89 |
 | LLM | rules | rules | 0.86 |
 | LLM | LLM | rules | 0.85 |

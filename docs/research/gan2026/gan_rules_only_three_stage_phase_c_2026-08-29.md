@@ -86,14 +86,12 @@ inspected and no per-class holdout deltas are read.
 
 ## Claim boundary
 
-Development evidence on `dev750` only. The cited five-cell rows
-(`test450` 0.71, `dev750` 0.892) are unchanged; the candidate is frozen
-but not promoted. Promotion and any holdout claim wait for the Phase D
-aggregate-only replay under its own protocol.
+Development evidence on `dev750` only until Phase D. Phase D later
+promoted the frozen candidate on aggregate-only `test450`
+(**325/450**). This document does not own the holdout number.
 
 ## Next (Phase D)
 
-Predeclare and run the aggregate-only `test450` replay of
-`phase_c_candidate_config()`; report one aggregate number against the
-cited 321/450 = 0.71 with no row-level holdout inspection. Wire stage
-stops into the five-cell grid only if promotion is accepted.
+Done: [Phase D result](gan_rules_only_three_stage_phase_d_2026-08-29.md).
+Aggregate-only `test450` select **325/450**; verdict
+`promotion_accepted`.

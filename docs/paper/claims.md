@@ -113,7 +113,7 @@ are not holdout component estimates.
 
 ### What the locked totals show
 
-On 450 held-out letters, written rules scored 0.71. Gemini LLM
+On 450 held-out letters, written rules scored 0.72. Gemini LLM
 find (`gan_llm_extract`) plus `gan_rules_encode` plus rule select scored 0.83. The paper
 may say those locked totals and the Gemini grid below.
 It may not treat `gan_llm_only` as a results column.
@@ -126,7 +126,7 @@ Class report: [gan_test450_classification_report_2026-08-28.md](../research/gan2
 
 | Find | Encode | Select | Purist micro-F1 |
 | --- | --- | --- | ---: |
-| rules | rules | rules | 0.71 |
+| rules | rules | rules | 0.72 |
 | both | rules | rules | 0.82 |
 | LLM | rules | rules | 0.83 |
 | LLM | LLM | rules | 0.82 |
@@ -358,7 +358,7 @@ The files support this account of the proposed method, cited on Grok:
    wider ledger.
 4. On locked frequency letters, Gemini LLM find plus codebook
    encode plus rule select raises the locked score by 0.10 against
-   standalone rules (0.83 vs 0.71). Rule select without encode, and
+   standalone rules (0.83 vs 0.72). Rule select without encode, and
    both-then-rules, are 0.82. LLM select is 0.79. Grok living
    hybrid 0.83 is a different stack on the source-near request.
    `gan_llm_only` is not in that comparison.

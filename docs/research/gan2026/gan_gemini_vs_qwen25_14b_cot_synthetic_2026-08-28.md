@@ -57,14 +57,15 @@ Living headline: cell 3 LLM extract / rules encode / rules select.
 
 | Recognise | Encode | Select | Purist micro-F1 | Pragmatic micro-F1 |
 | --- | --- | --- | ---: | ---: |
-| rules | rules | rules | 321/450 = 0.7133 | 341/450 = 0.7578 |
+| rules | rules | rules | 325/450 = 0.7222 cited 0.72 | 345/450 = 0.7667 cited 0.77 |
 | both | rules | rules | 368/450 = 0.82 | 380/450 = 0.8444 |
 | LLM | rules | rules (cell 3) | **373/450 = 0.8289 cited 0.83** | 382/450 = 0.8489 cited 0.85 |
 | LLM | LLM | rules | 368/450 = 0.82 | 377/450 = 0.8378 cited 0.84 |
 | LLM | LLM | LLM | 357/450 = 0.79 | 369/450 = 0.8200 |
 
 Purist select stops: `paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json`.
-Rules Pragmatic: [class report](gan_test450_classification_report_2026-08-28.md).
+Rules Purist/Pragmatic aggregates: `paper_experiments/gan/rungs/gemini37flash/test450/comparison.json` `rules_only`.
+Rules per-class tables in the [class report](gan_test450_classification_report_2026-08-28.md) are the pre-promotion 321-program reading.
 Cell 3 / cell 4 Pragmatic: [codebook-encode holdout](gan_codebook_encode_holdout_2026-08-22.md).
 Cell 5 Pragmatic: [class report](gan_test450_classification_report_2026-08-28.md).
 Cell 2 Pragmatic: [class report](gan_test450_classification_report_2026-08-28.md) / `gan_llm_and_rules_extract` comparison.

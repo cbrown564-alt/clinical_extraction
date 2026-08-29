@@ -1,7 +1,7 @@
 # Three variables: stage ownership, model, and thinking
 
 Date: 2026-08-23
-Revised: 2026-08-28 (Gan cell-3 codebook roster replay)
+Revised: 2026-08-29 (Gan rules row 0.72 after three-stage Phase D)
 Status: working results draft; not a cited table owner
 Owners: [methods](../../paper/methods.md),
 [claims](../../paper/claims.md),
@@ -58,7 +58,7 @@ is 4-family micro F1 (`clinical_inventory_unit_keys`).
 
 | Find | Encode | Select | Gan `test450` | ExECT `test60` |
 | --- | --- | --- | ---: | ---: |
-| rules | rules | rules | 0.71 | 0.77 |
+| rules | rules | rules | 0.72 | 0.77 |
 | both | rules | rules | 0.82 | 0.86 |
 | LLM | rules | rules | **0.83** | **0.87** |
 | LLM | LLM | rules | 0.82 | 0.86 |
@@ -73,14 +73,16 @@ rows, because Gan encode on a codebook find is not the same hop
 as ExECT's later-stage letter-out encode.
 
 Development reverses the all-rules comparison on the previous
-Compact/headline scorer (Gan rules 0.89 vs Gemini cell 3 0.86;
+Compact/headline scorer (Gan rules 0.92 vs Gemini cell 3 0.86;
 ExECT rules 0.90 vs Gemini cell 3 0.88). The holdout is the claim.
 
 ## 2. Thinking effort (Gemini only)
 
 Same cell-3 find, then rule encode and rule select. Medium and
 high used a 2× output budget. Thinking was not run on later-stage
-encode or select.
+encode or select. The inferential contrast is living low versus
+high at the cell-3 select stop; medium is a point estimate. Owner:
+[paired `test450` tests](../gan2026/gan_paired_significance_test450_2026-08-29.md).
 
 **Gan `test450` (Purist)**
 
@@ -129,8 +131,8 @@ is omitted: those codebook extract raws were overwritten.
 
 The signs flip by model. Holdout select prefers Gemini at 0 and Grok
 at 1 by two or three letters. Development select is flat for Gemini.
-The holdout select band is smaller than thinking’s 8. Stage ownership on the same Gemini holdout is 0.71
-rules versus 0.83 cell 3 (54 letters). Temperature is mixed and
+The holdout select band is smaller than thinking’s 8. Stage ownership on the same Gemini holdout is 0.72
+rules versus 0.83 cell 3 (48 letters). Temperature is mixed and
 small beside that three-stage allocation. Living temperature 0 for
 every model that accepts it is the right default. Luna was not run
 at 0; the mixed Gemini/Grok pattern does not predict that Luna

@@ -1,7 +1,9 @@
 # Gan test450 classification report
 
 Date: 2026-08-28
-Status: living Gemini five-cell per-class tables for cells 1, 3, and 5
+Status: living Gemini five-cell per-class tables for cells 3 and 5;
+cell 1 class tables are the pre-promotion 321-program reading
+Revised: 2026-08-29 (cell 1 select headline 325/450; no new class report)
 Owner: [five-cell grid](gan_five_cell_grid_2026-08-22.md)
 Companion: [Gemini vs Qwen-2.5-14B COT synthetic](gan_gemini_vs_qwen25_14b_cot_synthetic_2026-08-28.md)
 Artifact: [gan_test450_classification_report_2026-08-28.json](gan_test450_classification_report_2026-08-28.json)
@@ -30,7 +32,7 @@ uses the same gold.
 
 | Find | Encode | Select | Purist micro-F1 |
 | --- | --- | --- | ---: |
-| rules | rules | rules | 321/450 = 0.7133 |
+| rules | rules | rules | 325/450 = 0.7222 cited 0.72 |
 | both | rules | rules | 368/450 = 0.8178 cited 0.82 |
 | LLM | rules | rules (cell 3) | 373/450 = 0.8289 cited 0.83 |
 | LLM | LLM | rules | 368/450 = 0.8178 cited 0.82 |
@@ -44,7 +46,7 @@ Same living gold. Cell 2 is the select stop on saved
 
 | Find | Encode | Select | Pragmatic micro-F1 |
 | --- | --- | --- | ---: |
-| rules | rules | rules | 341/450 = 0.7578 |
+| rules | rules | rules | 345/450 = 0.7667 cited 0.77 |
 | both | rules | rules | 380/450 = 0.8444 |
 | LLM | rules | rules (cell 3) | 382/450 = 0.8489 cited 0.85 |
 | LLM | LLM | rules | 377/450 = 0.8378 cited 0.84 |
@@ -52,7 +54,9 @@ Same living gold. Cell 2 is the select stop on saved
 
 ### Cell 1 — rules / rules / rules
 
-_Living `gan_rules.run_record`; n=450; dropped=0._
+_Pre-promotion `gan_rules.run_record` class reading at 321/450.
+Cited cell-1 select is now 325/450 Purist / 345/450 Pragmatic from the
+Phase D rung replay; no new per-class holdout report. n=450; dropped=0._
 Gold ε is living `gold_monthly_frequency` (Purist UNK support 76/450),
 the same bins as cells 3 and 5. See
 [dataset gold support](../paper/dataset_gold_support_2026-08-22.md).

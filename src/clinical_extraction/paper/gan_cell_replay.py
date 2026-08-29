@@ -37,11 +37,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_e
     StructuredRepairConfig,
     parse_structured_json_with_trace,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration import (
-    rules as gan_rules,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.runners.config import (
-    PipelineConfiguration,
+from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.three_stage import (
+    phase_c_candidate_config,
+    run_record_three_stage,
 )
 
 ROOT = discover_repo_root(start=Path(__file__))
@@ -250,7 +248,7 @@ def replay_gan_rungs(
         raise RuntimeError(
             f"expected {expected_n} hybrid raw rows for {split}, found {len(raw_rows)}"
         )
-    rules_config = PipelineConfiguration(architecture="rules")
+    rules_config = phase_c_candidate_config()
     scored: list[dict[str, Any]] = []
     hops_rows: list[dict[str, Any]] = []
     event_id_changes = 0
@@ -259,15 +257,16 @@ def replay_gan_rungs(
     format_harms = 0
     for source_row_index, raw_output in sorted(raw_rows.items()):
         record = records[source_row_index]
-        rules_result = gan_rules.run_record(record, rules_config)
-        rules_scored = score_label(record, rules_result.output.final_value)
-        rules_scored["predicted_candidate_count"] = len(
-            rules_result.diagnostics.get("normalized_events") or []
-        )
+        rules_result = run_record_three_stage(record, rules_config)
+        rules_scored = score_label(record, rules_result.stops.select_label)
+        competing = [
+            entry for entry in rules_result.ledger if entry.drop_reason is None
+        ]
+        rules_scored["predicted_candidate_count"] = len(competing)
         rules_scored["predicted_candidate_count_by_stage"] = {
-            "extract": len(rules_result.diagnostics.get("candidate_events") or []),
-            "encode": len(rules_result.diagnostics.get("normalized_events") or []),
-            "select": len(rules_result.diagnostics.get("normalized_events") or []),
+            "extract": len(rules_result.ledger),
+            "encode": len(competing),
+            "select": len(competing),
         }
         by_rung: dict[str, dict[str, Any]] = {
             "rules_only": rules_scored

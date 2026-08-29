@@ -36,7 +36,7 @@ cells stay historical. Rules are deterministic and do not use a model.
 
 | Find | Encode | Select | Purist micro-F1 |
 | --- | --- | --- | ---: |
-| rules | rules | rules | 0.71 |
+| rules | rules | rules | 0.72 |
 | both | rules | rules | 0.82 |
 | LLM | rules | rules | 0.83 |
 | LLM | LLM | rules | 0.82 |

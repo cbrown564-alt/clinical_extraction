@@ -172,7 +172,7 @@ def _gan_grid(slug: str, split: str) -> dict[str, Any]:
     llm_select = _load_comparison("gan", "gan_llm_select_from_extract", slug, split)
     if llm_select is None:
         llm_select = _load_comparison("gan", "gan_llm_select", slug, split)
-    rules = _gan_rules_count(split)
+    rules = _gan_rules_stage(split, "select") or _gan_rules_count(split)
     return {
         "claim_boundary": (
             "Gan aggregate-only test450 five-cell grid. Headline is the "
@@ -200,7 +200,10 @@ def _gan_grid(slug: str, split: str) -> dict[str, Any]:
                 "select_role": "rules",
                 "extract_source": "gan_rules",
                 "select": rules,
-                "ablation": {"extract": rules, "encode": rules},
+                "ablation": {
+                    "extract": _gan_rules_stage(split, "find") or rules,
+                    "encode": _gan_rules_stage(split, "encode") or rules,
+                },
             },
             "both_extract_then_rules": {
                 "extract_role": "both",
@@ -343,6 +346,32 @@ def _gan_count(payload: Mapping[str, Any] | None, stage: str) -> int | None:
         return None
     correct = block.get("purist_correct")
     return None if correct is None else int(correct)
+
+
+def _gan_rules_block() -> Mapping[str, Any] | None:
+    path = ROOT / "paper_experiments/gan/gan_rules.json"
+    if not path.is_file():
+        return None
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return payload if isinstance(payload, Mapping) else None
+
+
+def _gan_rules_stage(split: str, stop: str) -> int | None:
+    """Measured find/encode/select Purist count for standalone rules."""
+
+    block = _gan_rules_block()
+    if block is None:
+        return None
+    split_block = block.get(split)
+    if not isinstance(split_block, Mapping):
+        return None
+    rungs = split_block.get("stage_rungs")
+    if not isinstance(rungs, Mapping):
+        return None
+    entry = rungs.get(stop)
+    if not isinstance(entry, Mapping) or entry.get("purist_correct") is None:
+        return None
+    return int(entry["purist_correct"])
 
 
 def _gan_rules_count(split: str) -> int | None:
