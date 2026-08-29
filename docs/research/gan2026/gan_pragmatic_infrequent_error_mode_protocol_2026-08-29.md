@@ -9,13 +9,13 @@ Report: [error-mode report](gan_pragmatic_infrequent_error_mode_2026-08-29.md)
 ## Primary question
 
 On living Gemini cell 3 (select stop), is the largest pragmatic error
-the gold-infrequent row predicted as unknown or no seizure frequency
-reference, as the published `test450` pragmatic confusion matrix
+the gold-infrequent row predicted as unknown or seizure free,
+as the published `test450` pragmatic confusion matrix
 shows? Is that also the largest pragmatic error on `dev750`? Within
 that cell on `dev750`, what letter-level types produce it?
 
 The same study then types the second-largest off-diagonal: gold
-frequent predicted as unknown. Frequent → no seizure is counted but
+frequent predicted as unknown. Frequent → seizure free is counted but
 is not a qualitative target (3 rows on `dev750`, 1 on `test450`).
 
 ## Why this study
@@ -23,7 +23,7 @@ is not a qualitative target (3 rows on `dev750`, 1 on `test450`).
 The paper figure `paper/draft/confusion_matrix_pragmatic.pdf` is the
 Gemini cell-3 `test450` pragmatic matrix. Infrequent recall is the
 weakest diagonal (49/80 = 0.61). The two largest off-diagonals in that
-row are unknown (16) and no seizure (13). The study asks whether that
+row are unknown (16) and seizure free (13). The study asks whether that
 is a holdout-only pattern and what mechanisms sit inside it on the
 permitted development split.
 

@@ -5,7 +5,7 @@
   "scorer": "map_pragmatic / map_purist on gold_monthly_frequency and parsed predicted_label",
   "replay": "no-call",
   "claim_boundary": "test450 aggregate-only; qualitative types are a development answer on dev750",
-  "category_note": "Pragmatic No seizure is currently_no_seizure (monthly_frequency 0; seizure-free labels). Gold-kind no_reference scores as Unknown (monthly_frequency 1000), not as No seizure.",
+  "category_note": "Pragmatic Seizure free is currently_no_seizure (monthly_frequency 0; seizure-free labels). Gold-kind no_reference scores as Unknown (monthly_frequency 1000), not as Seizure free.",
   "test450": {
     "source": "paper/draft/confusion_matrix_pragmatic.pdf living Gemini cell-3 select; gold-and-predicted epsilon only",
     "row_policy": "aggregate_only",

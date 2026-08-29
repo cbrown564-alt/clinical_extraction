@@ -303,7 +303,7 @@
         },
         {
           "gold_purist_category": "currently_no_seizure",
-          "display": "No seizure frequency reference",
+          "display": "Seizure free",
           "support": 112,
           "find": {
             "n": 112,
@@ -470,7 +470,7 @@
         },
         {
           "gold_pragmatic_category": "currently_no_seizure",
-          "display": "No seizure",
+          "display": "Seizure free",
           "support": 112,
           "find": {
             "n": 112,

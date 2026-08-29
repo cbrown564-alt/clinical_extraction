@@ -16,7 +16,7 @@ row ids or letter text.
 
 ## Answer
 
-Yes. Infrequent → {unknown, no seizure} is the largest pragmatic error
+Yes. Infrequent → {unknown, seizure free} is the largest pragmatic error
 on both splits. Frequent → unknown is the second-largest cell on both
 splits and almost as large.
 
@@ -42,9 +42,10 @@ frequent → unknown of their own (only 2 overlap with the LLM cell).
 - Replay: saved labels; zero model calls.
 
 Name note: gold-kind `no_reference` maps to pragmatic **Unknown**
-(`monthly_frequency` 1000). Pragmatic **No seizure** is seizure-free
-(`monthly_frequency` 0). The figure’s two sentinel columns are Unknown
-and No seizure, not gold-kind no-reference.
+(`monthly_frequency` 1000). Pragmatic **Seizure free** is
+`currently_no_seizure` (`monthly_frequency` 0). The figure’s two
+sentinel columns are Unknown and Seizure free, not gold-kind
+no-reference.
 
 ## 1. Quantitative
 
@@ -54,23 +55,23 @@ Source: published pragmatic confusion matrix. Diagonal sums to **383**
 (class-report replay). Cited five-cell pragmatic is **382**; do not
 retune from the one-count gap.
 
-| True \\ Pred | Frequent | Infrequent | Unknown | No seizure | Support | Recall |
+| True \\ Pred | Frequent | Infrequent | Unknown | Seizure free | Support | Recall |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Frequent | 210 | 3 | 13 | 1 | 227 | 0.93 |
 | Infrequent | 2 | 49 | **16** | **13** | 80 | **0.61** |
 | Unknown | 4 | 3 | 67 | 2 | 76 | 0.88 |
-| No seizure | 1 | 1 | 8 | 57 | 67 | 0.85 |
+| Seizure free | 1 | 1 | 8 | 57 | 67 | 0.85 |
 
 - All pragmatic errors: **67**.
-- Infrequent → {Unknown, No seizure}: **29 / 67 = 0.43** of all errors;
+- Infrequent → {Unknown, Seizure free}: **29 / 67 = 0.43** of all errors;
   **29 / 80 = 0.36** of gold infrequent; **29 / 31 = 0.94** of infrequent
   errors (the other 2 are infrequent → frequent).
 - Frequent → unknown: **13 / 67 = 0.19** of all errors; **13 / 227 =
   0.057** of gold frequent; **13 / 17 = 0.76** of frequent errors (the
-  others are 3 infrequent and 1 no seizure).
+  others are 3 infrequent and 1 seizure free).
 - Rate → unknown: **29 / 67 = 0.43**.
 - Ranked off-diagonals: 16 infrequent→unknown, then 13 frequent→unknown
-  and 13 infrequent→no seizure.
+  and 13 infrequent→seizure free.
 
 Infrequent is the weakest recall class. Frequent recall is high (0.93)
 because the class is large; the unknown leak is still the second-biggest
@@ -80,23 +81,23 @@ cell. Frequent↔infrequent confusion is almost absent (5 rows).
 
 Same gold mapping. Select pragmatic **665 / 750 = 0.8867**.
 
-| True \\ Pred | Frequent | Infrequent | Unknown | No seizure | Support | Recall |
+| True \\ Pred | Frequent | Infrequent | Unknown | Seizure free | Support | Recall |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Frequent | 363 | 2 | 19 | 3 | 387 | 0.938 |
 | Infrequent | 5 | 88 | **21** | **10** | 124 | **0.710** |
 | Unknown | 6 | 6 | 109 | 6 | 127 | 0.858 |
-| No seizure | 1 | 0 | 6 | 105 | 112 | 0.938 |
+| Seizure free | 1 | 0 | 6 | 105 | 112 | 0.938 |
 
 - All pragmatic errors: **85**.
-- Infrequent → {Unknown, No seizure}: **31 / 85 = 0.36** of all errors;
+- Infrequent → {Unknown, Seizure free}: **31 / 85 = 0.36** of all errors;
   **31 / 124 = 0.25** of gold infrequent; **31 / 36 = 0.86** of infrequent
   errors.
 - Frequent → unknown: **19 / 85 = 0.22** of all errors; **19 / 387 =
   0.049** of gold frequent; **19 / 24 = 0.79** of frequent errors (the
-  others are 2 infrequent and 3 no seizure).
+  others are 2 infrequent and 3 seizure free).
 - Rate → unknown: **40 / 85 = 0.47**.
 - Ranked off-diagonals: 21 infrequent→unknown, 19 frequent→unknown, 10
-  infrequent→no seizure.
+  infrequent→seizure free.
 
 Same ranking as holdout. Infrequent miss rate is higher on `test450`
 (0.36 of the class vs 0.25). Frequent → unknown is a similar fraction
@@ -109,7 +110,7 @@ of that class on both splits (about 5%).
 | Extract | 613 | 33 | 15 | 48 | **36** | frequent → unknown (36) |
 | Encode | 632 | 31 | 15 | 46 | 21 | infrequent → unknown (31) |
 | Select | 665 | 21 | 10 | **31** | **19** | infrequent → unknown (21) |
-| Rules-only | 701 | 1 | 4 | **5** | **15** | unknown → no seizure (16) |
+| Rules-only | 701 | 1 | 4 | **5** | **15** | unknown → seizure free (16) |
 
 Select shrinks both leaks (infrequent sentinel 48 → 31; frequent →
 unknown 36 → 19) and does not create either. At extract, frequent →
@@ -138,7 +139,7 @@ unknown cell.
 Not holdout types. Infrequent-sentinel and frequent-unknown share
 extract-first collapse to `unknown`. They do not share letter pattern.
 
-### Infrequent → unknown / no seizure (31)
+### Infrequent → unknown / seizure free (31)
 
 Six letter types cover the 31 rows.
 
@@ -152,8 +153,8 @@ converts that last-event-plus-interval into a rare rate (`1 per month`,
 interval as the answer.
 
 - 10 / 12 become seizure-free labels (`seizure free for 2 week` …
-  `seizure free for multiple month`). That is **all** infrequent → no
-  seizure errors on this split.
+  `seizure free for multiple month`). That is **all** infrequent →
+  seizure free errors on this split.
 - 2 / 12 become `unknown` on the same template (14965, 14973).
 
 Rules recover the gold rate on 10 / 12. The two rules misses predict
@@ -205,7 +206,7 @@ of durable remission / postoperative freedom. Gold `7 per year`. Select
 
 ### Frequent → unknown (19)
 
-Five letter types cover the 19 rows. Frequent → no seizure (3) is
+Five letter types cover the 19 rows. Frequent → seizure free (3) is
 counted above and not typed here.
 
 #### Cluster two-quantity (9)
@@ -337,10 +338,25 @@ evidence → unknown.
   frequent-unknown types, and extract-first attribution.
 - Not a new cited score. Not a warrant to retune from holdout.
 
+## Candidate: `last_event_well_since`
+
+Gated select rewrite, default on for living `llm_select` /
+`llm_select_after_codebook`. Off on encode-only modes. Protocol:
+[last-event well-since](gan_last_event_well_since_protocol_2026-08-29.md).
+
+On `dev750` Gemini extract replay, select moves **649 / 665 → 656 /
+673** Purist / Pragmatic. Seven of the ten infrequent → no-seizure
+numeric short-SF rows become a rate. The three `multiple month`
+letters stay. The twelve already-correct short numeric SF rows stay
+pragmatic-correct.
+
+`test450` after promotion (same extract replay; no row inspection):
+**387 / 396** cited. Infrequent → no-seizure **13 → 1**; infrequent
+correct **49 → 61**. Infrequent → unknown stays 16.
+
 ## Next
 
-Do not inspect `test450` rows. A later find study on `dev750` has two
-separate surfaces: last-event-plus-interval / remission-plus-breakthrough
-for infrequent, and cluster two-quantity / electrographic EEG for
-frequent. Rules-only is the same-row converter for most of both LLM
-cells, but not for the 15 rules-only frequent → unknown rows.
+Do not inspect `test450` rows. Frequent collapse (cluster two-quantity
+/ electrographic EEG) is still a find problem. The leftover infrequent
+misses after this family are the three `multiple month` well-since
+letters plus unknown-at-extract rows.

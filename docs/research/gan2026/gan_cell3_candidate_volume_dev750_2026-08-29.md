@@ -94,7 +94,7 @@ Support is gold Purist occupancy on `dev750`. Display names match
 | Once every 6 months | 6 | **1.83** | 2 | 1–3 | **1.00** | 1 | 1–1 | 0.55 |
 | Less than once every 6 months | 5 | **2.40** | 2 | 2–3 | **1.40** | 1 | 1–2 | 0.58 |
 | Unknown | 127 | **1.77** | 2 | 1–5 | **1.24** | 1 | 0–3 | 0.70 |
-| No seizure frequency reference | 112 | **1.82** | 2 | 1–4 | **1.26** | 1 | 1–3 | 0.69 |
+| Seizure free | 112 | **1.82** | 2 | 1–4 | **1.26** | 1 | 1–3 | 0.69 |
 | **All rows** | **750** | **2.16** | **2** | **1–6** | **1.20** | **1** | **0–4** | **0.56** |
 
 The two n<15 bands (`Once every 6 months`, `Less than once every 6
@@ -105,7 +105,7 @@ The pattern that is large enough to read:
 - Counted high-rate gold (Daily) produces the most competing find
   events (median **3**, up to **6**) and then almost always keeps one
   (selected max **3**).
-- Sentinel gold (Unknown, no-reference) produces fewer find events
+- Sentinel gold (Unknown, Seizure free) produces fewer find events
   (median **2**, max **5** / **4**) and keeps a larger share of them.
   The selected set is still about one event, not a wide committee
   (selected max **3**).
@@ -124,7 +124,7 @@ Infrequent is the four monthly-or-sparser counted bands.
 | Frequent | 387 | **2.30** | 2 | 1–6 | **1.15** | 1 | 0–4 | 0.50 |
 | Infrequent | 124 | **2.40** | 2 | 1–5 | **1.27** | 1 | 1–3 | 0.53 |
 | Unknown | 127 | **1.77** | 2 | 1–5 | **1.24** | 1 | 0–3 | 0.70 |
-| No seizure | 112 | **1.82** | 2 | 1–4 | **1.26** | 1 | 1–3 | 0.69 |
+| Seizure free | 112 | **1.82** | 2 | 1–4 | **1.26** | 1 | 1–3 | 0.69 |
 | **All rows** | **750** | **2.16** | **2** | **1–6** | **1.20** | **1** | **0–4** | **0.56** |
 
 Pragmatic does not hide a second selected-set size. Frequent and
