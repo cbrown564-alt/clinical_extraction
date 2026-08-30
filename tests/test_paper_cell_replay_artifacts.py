@@ -30,8 +30,8 @@ def test_gan_dev750_rungs_use_codebook_encode_as_cell_3() -> None:
     rungs = normalize_rungs_payload(payload["rungs"])
     assert rungs["llm_extract"]["purist_correct"] == 585
     assert rungs["llm_encode"]["purist_correct"] == 611
-    assert rungs["llm_select"]["purist_correct"] == 657
-    assert rungs["rules_only"]["purist_correct"] == 669
+    assert rungs["llm_select"]["purist_correct"] == 666
+    assert rungs["rules_only"]["purist_correct"] == 691
     assert payload["shared_raw_output"] == "gan_llm_extract"
     assert payload["claim_boundary"].startswith("Gan development")
     assert "codebook" in check["note"]

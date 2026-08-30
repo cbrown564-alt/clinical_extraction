@@ -23,20 +23,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     standard_dictionary as sd,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
-    canonicalize_diagnosis_concept,
-    diagnosis_category_for_concept,
-    is_diagnosis_descendant,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.projection_tables import (
-    ABSENCE_FAMILY_CUIS,
-    DIRECT_SF_DIAGNOSIS_TEXT_BY_CUI,
-    EMBEDDED_DIAGNOSIS_ALIASES_BY_CUI,
-    HEADING_ONLY_SF_DIAGNOSIS_TEXT_BY_CUI,
-    HEADING_PHENOTYPE_NAMES,
-    NAMED_ABSENCE_SURFACES,
-    SF_TYPE_PARENT_CUI,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.find_ledger import (
     DIAGNOSIS_COMPONENT_TOKEN,
     DIAGNOSIS_EXPANSION_SURFACE,
@@ -53,6 +39,20 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.find_l
     SF_SEIZURE_FREE,
     SF_STATE_VARIANT,
     recall_first_class_of,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
+    canonicalize_diagnosis_concept,
+    diagnosis_category_for_concept,
+    is_diagnosis_descendant,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.projection_tables import (
+    ABSENCE_FAMILY_CUIS,
+    DIRECT_SF_DIAGNOSIS_TEXT_BY_CUI,
+    EMBEDDED_DIAGNOSIS_ALIASES_BY_CUI,
+    HEADING_ONLY_SF_DIAGNOSIS_TEXT_BY_CUI,
+    HEADING_PHENOTYPE_NAMES,
+    NAMED_ABSENCE_SURFACES,
+    SF_TYPE_PARENT_CUI,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
     annotation_from_mapping,

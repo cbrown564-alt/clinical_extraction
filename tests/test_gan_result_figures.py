@@ -30,6 +30,7 @@ def test_wrap_category_label_keeps_tokens_intact() -> None:
     assert wrap_category_label("Gemini 3.7 Flash", width=10) == "Gemini 3.7\nFlash"
     assert wrap_category_label("DeepSeek V4 Flash", width=10) == "DeepSeek\nV4 Flash"
     assert wrap_category_label("Grok 4.6", width=10) == "Grok 4.6"
+    assert wrap_category_label("LLM and rules", width=10) == "LLM and\nrules"
 
 
 def test_gemini_cells_use_five_cell_ablations_and_cited_select() -> None:
@@ -137,11 +138,12 @@ def test_gemini_barbell_uses_select_stops_on_both_splits() -> None:
         holdout={"n": 450, "select": {"rules": 321, "hybrid": 373, "llm": 357}},
     )
 
-    assert chart.categories == ["Rules only", "LLM + rules", "LLM only"]
+    assert chart.categories == ["Rules only", "LLM and rules", "LLM only"]
     assert chart.development == [669 / 750, 649 / 750, 590 / 750]
     assert chart.holdout == [321 / 450, 373 / 450, 357 / 450]
 
 
+@pytest.mark.local_corpus
 def test_living_barbell_matches_sealed_cell_selects() -> None:
     chart = load_living_gemini_dev_vs_test()
     assert chart.development == [691 / 750, 656 / 750, 590 / 750]
@@ -150,6 +152,7 @@ def test_living_barbell_matches_sealed_cell_selects() -> None:
     assert BARBELL_CONNECTOR_MIN_ABS_DELTA <= hybrid_delta < BARBELL_DELTA_LABEL_MIN_ABS_DELTA
 
 
+@pytest.mark.local_corpus
 def test_living_purist_confusion_matrix_totals() -> None:
     from clinical_extraction.paper.gan_result_figures import (
         load_living_purist_confusion_matrix,
@@ -165,6 +168,7 @@ def test_living_purist_confusion_matrix_totals() -> None:
     assert cm.labels[-1] == "Seizure free"
 
 
+@pytest.mark.local_corpus
 def test_living_pragmatic_confusion_matrix_totals() -> None:
     from clinical_extraction.paper.gan_result_figures import (
         load_living_pragmatic_confusion_matrix,
