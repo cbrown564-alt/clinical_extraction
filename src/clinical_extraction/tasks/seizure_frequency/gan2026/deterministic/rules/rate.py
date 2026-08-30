@@ -7,6 +7,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidate
     CandidateKind,
     RawCandidate,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.find_encode import (
+    FindFact,
+    encode_find_fact,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
     AblationConfig,
     ExtractionContext,
@@ -19,11 +23,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_meta
 from ..deterministic_frequency_tokens import (
     ADJECTIVE_PERIOD_TOKEN,
     NUMBER_TOKEN,
-    NUMBER_WORDS,
     UNIT_TOKEN,
-)
-from ..deterministic_frequency_tokens import (
-    quarter_month_denominator as _quarter_month_denominator,
 )
 from ..deterministic_rate_distractors import (
     is_medication_or_dose_rate_distractor as _is_medication_or_dose_rate_distractor_impl,
@@ -62,14 +62,21 @@ def _build_rate_candidate(
     denominator: str | None = None,
     evidence_group: str | int = "evidence",
 ) -> RawCandidate:
+    fact = FindFact(
+        kind=CandidateKind.FREQUENCY_RATE,
+        count=count,
+        unit=unit,
+        denominator=denominator,
+    )
     return RawCandidate(
         kind=CandidateKind.FREQUENCY_RATE,
-        label=_rate_label(count, unit, denominator),
+        label=encode_find_fact(fact),
         evidence=_clean_evidence(match.group(evidence_group)),
         rule_id=rule_id,
         rule_group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
         portability=Portability.SEIZURE_FREQUENCY,
         match_groups=match.groupdict(),
+        find_fact=fact,
     )
 
 
@@ -1191,23 +1198,6 @@ PORTABLE_RATE_RULES = (
 )
 
 
-def _rate_label(count: str, unit: str, denominator: str | None = None) -> str:
-    count_value = _number_token(count)
-    unit_value = _singular_unit(unit)
-    denominator_value = _number_token(denominator) if denominator else None
-    if unit_value == "fortnight":
-        unit_value = "week"
-        denominator_value = "2"
-    if unit_value == "quarter":
-        unit_value = "month"
-        denominator_value = _quarter_month_denominator(denominator_value)
-    if denominator_value in {None, "1"}:
-        return f"{count_value} per {unit_value}"
-    return f"{count_value} per {denominator_value} {unit_value}"
-
-
-
-
 def _adverbial_period_unit(value: str) -> str:
     return {
         "daily": "day",
@@ -1222,23 +1212,6 @@ def _adverbial_period_denominator(value: str) -> str | None:
     if value.lower() == "bimonthly":
         return "2"
     return None
-
-
-def _number_token(value: str | None) -> str:
-    if value is None:
-        return "1"
-    normalized = re.sub(r"\s*[-–—]\s*", " to ", value.lower())
-    normalized = " ".join(normalized.split())
-    if " to " in normalized:
-        return " to ".join(_number_token(part) for part in normalized.split(" to "))
-    if " or " in normalized:
-        return " to ".join(_number_token(part) for part in normalized.split(" or "))
-    return NUMBER_WORDS.get(normalized, normalized)
-
-
-def _singular_unit(value: str) -> str:
-    normalized = value.lower().strip()
-    return normalized[:-1] if normalized.endswith("s") else normalized
 
 
 def _clean_evidence(evidence: str) -> str:

@@ -9,9 +9,12 @@ exactly as ``extract_stage`` builds it. The select stop must therefore be
 label- and evidence-identical to the comparator (gate A1); the dev750
 measurement script verifies that on every record before reading stops.
 
-Stage stops follow the predeclared stop policy: the find stop is the
-raw builder label of the first wide-ledger candidate in document order,
-the encode stop is the normalized label of that same pick, and the select
+Stage stops follow the Phase E policy: the find stop is the pre-codebook
+``find_tag`` of the first wide-ledger candidate in document order
+(including Select-dropped rows). ``find_extract_label`` and
+``find_extract_raw_label`` re-render that same pick in the
+``gan_llm_extract`` and ``gan_llm_extract_raw`` dialects. The encode
+stop is the normalized codebook label of that pick, and the select
 stop is the submitted final label.
 """
 
@@ -27,6 +30,7 @@ from pydantic import BaseModel, ConfigDict
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidates import (
     CandidateKind,
+    DeferredDrop,
     RawCandidate,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.deterministic_candidate_pruning import (  # noqa: E501
@@ -42,6 +46,15 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.determini
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.deterministic_text import (
     normalize_note_text,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.find_dialects import (
+    FIND_DIALECT_GAN_LLM_EXTRACT,
+    FIND_DIALECT_GAN_LLM_EXTRACT_RAW,
+    render_find_fact,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.find_encode import (
+    FindFact,
+    find_tag,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.recall_first import (
     ALL_PROVISIONAL_CLASSES,
@@ -95,6 +108,9 @@ class LedgerDropReason(StrEnum):
     # here until Phase C accepts a keep, so enabling a provisional class
     # cannot change the select stop.
     PROVISIONAL_UNSUPPORTED = "select.provisional_unsupported_drop"
+    RULE_EXCLUDE = DeferredDrop.RULE_EXCLUDE
+    MEDICATION_DOSE_DISTRACTOR = DeferredDrop.MEDICATION_DOSE_DISTRACTOR
+    HISTORICAL_LEAD_IN = DeferredDrop.HISTORICAL_LEAD_IN
 
 
 class ExclusionRecord(BaseModel):
@@ -114,6 +130,9 @@ class LedgerEntry(BaseModel):
     ledger_index: int
     kind: CandidateKind
     raw_label: str | None
+    find_tag: str
+    find_extract_label: str
+    find_extract_raw_label: str
     normalized_label: str
     evidence: str
     start_char: int | None
@@ -128,6 +147,8 @@ class GanStageStops(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     find_label: str | None
+    find_extract_label: str
+    find_extract_raw_label: str
     encode_label: str
     select_label: str
     find_pick_ledger_index: int | None
@@ -175,6 +196,9 @@ def tag_ledger_drops(
     seen_keys: set[tuple[CandidateKind, str | None, str]] = set()
     deduped_wide_index: dict[int, int] = {}
     for index, candidate in enumerate(candidates):
+        if candidate.deferred_drop:
+            reasons[index] = LedgerDropReason(candidate.deferred_drop)
+            continue
         key = (candidate.kind, candidate.label, candidate.evidence)
         if key in seen_keys:
             reasons[index] = LedgerDropReason.DUPLICATE
@@ -255,10 +279,27 @@ def _ledger_entry(
 ) -> LedgerEntry:
     event = _candidate_event(index=index + 1, candidate=candidate, note_text=note_text)
     normalized = _normalize_candidate(event, candidate, ablation_config)
+    fact = candidate.find_fact
+    if fact is None and candidate.label is not None:
+        fact = FindFact(kind=candidate.kind, custom_label=candidate.label)
+    tag = find_tag(fact) if fact is not None else (candidate.label or NO_REFERENCE_LABEL)
+    extract_label = (
+        render_find_fact(fact, FIND_DIALECT_GAN_LLM_EXTRACT)
+        if fact is not None
+        else (candidate.label or NO_REFERENCE_LABEL)
+    )
+    extract_raw_label = (
+        render_find_fact(fact, FIND_DIALECT_GAN_LLM_EXTRACT_RAW)
+        if fact is not None
+        else (candidate.label or NO_REFERENCE_LABEL)
+    )
     return LedgerEntry(
         ledger_index=index,
         kind=candidate.kind,
         raw_label=candidate.label,
+        find_tag=tag,
+        find_extract_label=extract_label,
+        find_extract_raw_label=extract_raw_label,
         normalized_label=normalized.normalized_label,
         evidence=event.evidence,
         start_char=event.start_char,
@@ -449,7 +490,13 @@ def run_record_three_stage(
 
     pick = _document_order_pick(ledger)
     stops = GanStageStops(
-        find_label=pick.raw_label if pick is not None else NO_REFERENCE_LABEL,
+        find_label=pick.find_tag if pick is not None else NO_REFERENCE_LABEL,
+        find_extract_label=(
+            pick.find_extract_label if pick is not None else NO_REFERENCE_LABEL
+        ),
+        find_extract_raw_label=(
+            pick.find_extract_raw_label if pick is not None else NO_REFERENCE_LABEL
+        ),
         encode_label=(
             pick.normalized_label if pick is not None else NO_REFERENCE_LABEL
         ),

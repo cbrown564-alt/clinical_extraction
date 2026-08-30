@@ -400,6 +400,79 @@ def test_phase_c_candidate_config_is_frozen() -> None:
     )
 
 
+def test_find_tag_is_pre_codebook_for_word_number_rate() -> None:
+    record = _record("He still has focal seizures four times per day.")
+    result = run_record_three_stage(record)
+    assert result.stops.find_label == "four/day"
+    assert result.stops.find_extract_label == "4 per day"
+    assert result.stops.find_extract_raw_label == "four per day"
+    assert result.stops.encode_label == "4 per day"
+    assert result.stops.select_label == "4 per day"
+
+
+def test_cluster_find_tag_is_pre_codebook() -> None:
+    record = _record(
+        "Weekly morning clusters reported; number per cluster not documented."
+    )
+    result = run_record_three_stage(record)
+    assert result.stops.find_label == "cluster:1/Weekly:multiple"
+    assert result.stops.encode_label == "1 cluster per week, multiple per cluster"
+
+
+def test_seizure_free_find_tag_is_state_only() -> None:
+    record = _record(
+        "She remains free of seizures for two years on the current regimen."
+    )
+    result = run_record_three_stage(record)
+    assert result.stops.find_label == "seizure_free"
+    assert result.stops.encode_label.startswith("seizure free")
+    assert result.stops.select_label == result.stops.encode_label
+
+
+def test_excluded_and_distractor_spans_enter_ledger_and_leave_select() -> None:
+    medication = (
+        "Her current medication is levetiracetam 500 mg, taken two times "
+        "per day with breakfast and dinner."
+    )
+    record = _record(medication)
+    comparator = gan_rules.run_record(
+        record, PipelineConfiguration(architecture="rules")
+    )
+    result = run_record_three_stage(record)
+    assert result.stops.select_label == comparator.output.final_value
+    assert result.final_selection.evidence == comparator.output.evidence
+    dropped = [
+        entry
+        for entry in result.ledger
+        if entry.drop_reason
+        in {
+            LedgerDropReason.RULE_EXCLUDE,
+            LedgerDropReason.MEDICATION_DOSE_DISTRACTOR,
+        }
+    ]
+    assert dropped
+    competing = [
+        candidate
+        for candidate in extract_wide_candidates(medication)
+        if candidate.deferred_drop
+    ]
+    assert competing
+    assert all(not candidate.deferred_drop for candidate in _extract_candidates(medication))
+
+
+def test_wide_ledger_producers_are_named() -> None:
+    notes = IDENTITY_NOTES + (
+        "Her current medication is levetiracetam 500 mg, taken two times "
+        "per day with breakfast and dinner.",
+        "Every 3 weeks on average she has a cluster.",
+    )
+    for note_text in notes:
+        wide = extract_wide_candidates(note_text)
+        assert all(
+            candidate.rule_id != "unknown" for candidate in wide
+        ), note_text
+
+
 def test_registry_exclusion_scan_covers_declared_exclude_rules() -> None:
     # The real registry scan must at least see the medication-distractor
     # guarded direct-rate rule; a medication context suppresses the match.

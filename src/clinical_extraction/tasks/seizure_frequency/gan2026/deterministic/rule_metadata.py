@@ -9,7 +9,7 @@ Same vocabulary, different program.
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, is_dataclass, replace
 from enum import StrEnum
 from re import Match, Pattern
 from typing import TYPE_CHECKING, TypeAlias
@@ -107,6 +107,15 @@ class RuleSpec:
         return apply_rule(self, context, ablation_config)
 
 
+def _exclude_drop_reason(predicate: ExclusionPredicate) -> str:
+    name = predicate.__name__
+    if "medication" in name or "dose" in name:
+        return "select.medication_dose_distractor_drop"
+    if "historical" in name:
+        return "select.historical_lead_in_drop"
+    return "select.rule_exclude_drop"
+
+
 def apply_rule(
     spec: RuleSpec,
     context: ExtractionContext,
@@ -120,11 +129,21 @@ def apply_rule(
         return []
     built: list[RuleBuildResult] = []
     for match in spec.pattern.finditer(context.text):
-        if any(exclude(match, context) for exclude in spec.exclude):
-            continue
+        drop_reason: str | None = None
+        for exclude in spec.exclude:
+            if exclude(match, context):
+                drop_reason = _exclude_drop_reason(exclude)
+                break
         candidate = spec.build(match, context)
-        if candidate is not None:
-            built.append(candidate)
+        if candidate is None:
+            continue
+        if (
+            drop_reason is not None
+            and is_dataclass(candidate)
+            and hasattr(candidate, "deferred_drop")
+        ):
+            candidate = replace(candidate, deferred_drop=drop_reason)
+        built.append(candidate)
     return built
 
 

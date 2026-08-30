@@ -21,6 +21,10 @@ from .deterministic_text import (
 from .deterministic_text import (
     normalize_note_text as _normalize_note_text,
 )
+from .find_encode import (
+    FindFact,
+    encode_find_fact,
+)
 from .rule_metadata import (
     AblationConfig,
     ExtractionContext,
@@ -90,17 +94,32 @@ from .temporal import (
 _RawCandidate = RawCandidate
 
 
+def _unknown_candidate(*, rule_id: str, evidence: str) -> _RawCandidate:
+    fact = FindFact(kind=CandidateKind.UNKNOWN_FREQUENCY, sentinel="unknown")
+    return _RawCandidate(
+        kind=CandidateKind.UNKNOWN_FREQUENCY,
+        label=encode_find_fact(fact),
+        evidence=evidence,
+        rule_id=rule_id,
+        rule_group=RuleGroup.SEIZURE_FREE_NO_EVENT_ASSERTIONS,
+        portability=Portability.SEIZURE_FREQUENCY,
+        find_fact=fact,
+    )
+
+
 def _build_qualitative_improvement_unknown(
     match: re.Match[str], _context: ExtractionContext
 ) -> _RawCandidate:
+    fact = FindFact(kind=CandidateKind.UNKNOWN_FREQUENCY, sentinel="unknown")
     return _RawCandidate(
         kind=CandidateKind.UNKNOWN_FREQUENCY,
-        label="unknown",
+        label=encode_find_fact(fact),
         evidence=_clean_evidence(match.group(0)),
         rule_id="unknown.qualitative_improvement",
         rule_group=RuleGroup.SEIZURE_FREE_NO_EVENT_ASSERTIONS,
         portability=Portability.SEIZURE_FREQUENCY,
         match_groups=match.groupdict(),
+        find_fact=fact,
     )
 
 
@@ -149,7 +168,11 @@ def _extract_candidates(
 ) -> list[_RawCandidate]:
     ablation_config = ablation_config or AblationConfig()
     normalized = _normalize_note_text(note_text)
-    candidates = extract_wide_candidates(note_text, ablation_config)
+    candidates = [
+        candidate
+        for candidate in extract_wide_candidates(note_text, ablation_config)
+        if not candidate.deferred_drop
+    ]
     return _prune_contained_frequency_fragments(_dedupe_candidates(candidates), normalized)
 
 
@@ -269,9 +292,8 @@ def _extract_unknown_candidates(text: str, ablation_config: AblationConfig) -> l
         ),
     ]
     candidates = [
-        _RawCandidate(
-            kind=CandidateKind.UNKNOWN_FREQUENCY,
-            label="unknown",
+        _unknown_candidate(
+            rule_id="unknown.trigger_conditioned",
             evidence=_clean_evidence(match.group(0)),
         )
         for pattern in trigger_conditioned
@@ -288,9 +310,8 @@ def _extract_unknown_candidates(text: str, ablation_config: AblationConfig) -> l
         re.IGNORECASE,
     )
     candidates.extend(
-        _RawCandidate(
-            kind=CandidateKind.UNKNOWN_FREQUENCY,
-            label="unknown",
+        _unknown_candidate(
+            rule_id="unknown.frequency_unclear",
             evidence=_clean_evidence(match.group(0)),
         )
         for match in unknown.finditer(text)
@@ -352,14 +373,9 @@ def _extract_vague_quantified_unknown_candidates(text: str) -> list[_RawCandidat
     candidates: list[_RawCandidate] = []
     for pattern in patterns:
         candidates.extend(
-            _RawCandidate(
-                kind=CandidateKind.UNKNOWN_FREQUENCY,
-                label="unknown",
-                evidence=_clean_evidence(match.group(0)),
+            _unknown_candidate(
                 rule_id="unknown.vague_quantified_frequency",
-                rule_group=RuleGroup.SEIZURE_FREE_NO_EVENT_ASSERTIONS,
-                portability=Portability.SEIZURE_FREQUENCY,
-                match_groups=match.groupdict(),
+                evidence=_clean_evidence(match.group(0)),
             )
             for match in pattern.finditer(text)
         )
