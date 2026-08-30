@@ -8,6 +8,7 @@ import {
   ganPipelineOptionLabel,
   groupGanPipelineOptions,
   isGanAggregateRunId,
+  isGanRulesRunId,
   paperGanFamilies,
   resolveGanMethodModel,
   resolveGanPipelineOption,
@@ -107,6 +108,24 @@ describe("Gan architecture options", () => {
     ];
 
     expect(resolveGanPipelineOption(options, "rules")?.run_id).toBe("rules");
+  });
+
+  it("treats paper rules share URLs as the live rules family", () => {
+    const options = [
+      option("llm_with_rules", MODELS[0], 0),
+      { ...option("rules", "(model-independent)", 0), run_id: "rules" },
+    ];
+
+    expect(isGanRulesRunId("gan2026_validation750_gemini37flash_rules")).toBe(true);
+    expect(isGanRulesRunId("gan2026_validation750_gemini37flash_llm_with_rules")).toBe(
+      false
+    );
+    expect(
+      resolveGanPipelineOption(
+        options,
+        "gan2026_validation750_gemini37flash_rules"
+      )?.run_id
+    ).toBe("rules");
   });
 
   it("builds living catalog rows from the Gan dev750 panel, Gemini first", () => {

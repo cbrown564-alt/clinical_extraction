@@ -24,6 +24,7 @@ import {
   ganPickerMethodId,
   ganPipelineOptionLabel,
   isGanAggregateRunId,
+  isGanRulesRunId,
   paperGanFamilies,
   resolveGanMethodModel,
   resolveGanPipelineOption,
@@ -38,7 +39,7 @@ import {
 } from "@/components/surface";
 
 function isDeterministicFamily(family: string): boolean {
-  return family === "rules" || family === "rules_only" || family.includes("deterministic");
+  return isGanRulesRunId(family) || family.includes("deterministic");
 }
 
 function isLiveFamily(family: string): boolean {
@@ -97,7 +98,8 @@ export default function TraceControls() {
   const isAggregateOnly =
     selectedOption?.availability === "aggregate_only" ||
     isGanAggregateRunId(selectedRunId);
-  const isLive = isLiveFamily(pipelineFamily);
+  const isLive =
+    isLiveFamily(pipelineFamily) || isGanRulesRunId(selectedRunId);
   const isReplay = !isLive && !isAggregateOnly;
   const overallScore = useMemo(
     () => ganOverallScore(selectedOption),
@@ -114,8 +116,9 @@ export default function TraceControls() {
   // Restore an exact run from the URL once the Gan comparison catalog arrives.
   useEffect(() => {
     if (pipelineOptions.length === 0) return;
-    const requestedOption = pipelineOptions.find(
-      (option) => option.run_id === requestedRunId
+    const requestedOption = resolveGanPipelineOption(
+      pipelineOptions,
+      requestedRunId ?? ""
     );
     if (!requestedOption || !isPaperCellId(ganPickerMethodId(requestedOption))) {
       return;
@@ -134,7 +137,7 @@ export default function TraceControls() {
     if (pipelineOptions.length === 0) return;
     if (
       requestedRunId &&
-      pipelineOptions.some((option) => option.run_id === requestedRunId)
+      resolveGanPipelineOption(pipelineOptions, requestedRunId)
     ) {
       return;
     }
@@ -204,14 +207,15 @@ export default function TraceControls() {
 
   const handleRun = useCallback(() => {
     if (!noteText.trim()) return;
-    if (!isLiveFamily(pipelineFamily)) return;
+    const liveRules = isLiveFamily(pipelineFamily) || isGanRulesRunId(selectedRunId);
+    if (!liveRules) return;
 
     setIsLoading(true);
     setError(null);
     runNote.mutate(
       {
         note_text: noteText,
-        pipeline: pipelineFamily,
+        pipeline: isGanRulesRunId(selectedRunId) ? "rules" : pipelineFamily,
         source_row_index: sourceRowIndex ?? 0,
         gold_label: recordQuery.data?.gold_label,
         ablation_config: ablationConfig,
@@ -236,6 +240,7 @@ export default function TraceControls() {
   }, [
     noteText,
     pipelineFamily,
+    selectedRunId,
     sourceRowIndex,
     split,
     ablationConfig,

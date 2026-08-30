@@ -23,6 +23,7 @@ import {
   isBareFamilyName,
   resolveFamilyDefaultRun,
 } from "./registryResolver";
+import { isGanRulesRunId } from "./ganPipelineOptions";
 
 export function useHealth() {
   return useQuery({
@@ -100,13 +101,17 @@ export function useArchitectUrlSync() {
     const stageParam = searchParams.get("stage") as TraceStage | null;
 
     if (rawParam) {
-      const runs = registryData?.runs ?? [];
-      const resolved =
-        isBareFamilyName(rawParam) && runs.length > 0
-          ? resolveFamilyDefaultRun(runs, rawParam) ?? rawParam
-          : rawParam;
-      const family = isBareFamilyName(rawParam) ? rawParam : resolved;
-      setSelectedRunId(resolved, family);
+      if (isGanRulesRunId(rawParam)) {
+        setSelectedRunId("rules", "rules");
+      } else {
+        const runs = registryData?.runs ?? [];
+        const resolved =
+          isBareFamilyName(rawParam) && runs.length > 0
+            ? resolveFamilyDefaultRun(runs, rawParam) ?? rawParam
+            : rawParam;
+        const family = isBareFamilyName(rawParam) ? rawParam : resolved;
+        setSelectedRunId(resolved, family);
+      }
     }
     if (rowParam) setSourceRowIndex(parseInt(rowParam, 10));
     if (stageParam && stageParam !== "repair") setActiveStage(stageParam);

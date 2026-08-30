@@ -89,17 +89,42 @@ export function ganRegistry() {
   return { ...registry, runs: [...registry.runs, ...synthetic] };
 }
 
+function artifactKindForRunId(runId: string, familyKind?: string): keyof typeof GAN_ARTIFACTS | undefined {
+  if (
+    runId === "rules" ||
+    runId === "rules_only" ||
+    runId === "gan2026_rules_only_v1_baseline_2026-05-31" ||
+    (runId.startsWith("gan2026_validation750_") &&
+      runId.endsWith("_rules") &&
+      !runId.endsWith("_llm_with_rules"))
+  ) {
+    return "rules";
+  }
+  if (runId.endsWith("_llm_only") || familyKind === "llm") return "llm";
+  if (
+    runId.endsWith("_llm_extract") ||
+    runId.endsWith("_llm_encode") ||
+    runId.endsWith("_llm_select") ||
+    runId.endsWith("_llm_with_rules") ||
+    familyKind === "llm_with_rules" ||
+    familyKind === "rules"
+  ) {
+    return familyKind === "rules" ? "rules" : "llm_with_rules";
+  }
+  if (familyKind && familyKind in GAN_ARTIFACTS) {
+    return familyKind as keyof typeof GAN_ARTIFACTS;
+  }
+  return undefined;
+}
+
 export function ganArtifact(runId: string, letterId?: string) {
   const familyCatalog = readMockJson<{ families: GanFamily[] }>(
     "pipeline-families.json"
   );
   const family = familyCatalog.families.find((item) => item.run_id === runId);
-  const file =
-    GAN_ARTIFACTS[family?.kind as keyof typeof GAN_ARTIFACTS] ??
-    (runId === "gan2026_rules_only_v1_baseline_2026-05-31"
-      ? GAN_ARTIFACTS.rules
-      : undefined);
-  if (!file) return null;
+  const kind = artifactKindForRunId(runId, family?.kind);
+  if (!kind) return null;
+  const file = GAN_ARTIFACTS[kind];
   const payload = readMockJson<{ content: Array<Record<string, unknown>> }>(
     file.replace("frontend/public/mock-data/", "")
   );
