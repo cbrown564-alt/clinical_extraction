@@ -1,0 +1,41 @@
+{
+  "cell3": {
+    "encode": "gan_rules_encode",
+    "select": "llm_select_after_codebook"
+  },
+  "comparator": {
+    "encode_purist_correct": 360,
+    "find_purist_correct": 355,
+    "method": "gan_llm_extract",
+    "select_purist_correct": 387
+  },
+  "date": "2026-08-30",
+  "model_slug": "gemini37flash",
+  "row_policy": "aggregate_only",
+  "scorer": "purist",
+  "split": "test450",
+  "variants": {
+    "gan_llm_extract_examples_only": {
+      "encode": {"purist_correct": 349, "purist_accuracy": 0.7756},
+      "find": {"purist_correct": 347, "purist_accuracy": 0.7711, "pragmatic_correct": 362},
+      "replay": "scratch/holdout/paper/gan_llm_extract_examples_only/gemini37flash/test450/cell3_replay/comparison.json",
+      "select": {"purist_correct": 364, "purist_accuracy": 0.8089, "pragmatic_correct": 378}
+    },
+    "gan_llm_extract_holgate_label": {
+      "find_dialect": {
+        "purist_correct": 198,
+        "purist_accuracy": 0.44,
+        "scorable": 243
+      },
+      "find_living": {"purist_correct": 139, "purist_accuracy": 0.3089},
+      "note": "Scored selection.answer after the shared DSPy schema still elicited events. Find only.",
+      "replay": "scratch/holdout/paper/gan_llm_extract_holgate_label/gemini37flash/test450/comparison.json"
+    },
+    "gan_llm_extract_no_evidence": {
+      "encode": {"purist_correct": 347, "purist_accuracy": 0.7711},
+      "find": {"purist_correct": 345, "purist_accuracy": 0.7667, "pragmatic_correct": 359},
+      "replay": "scratch/holdout/paper/gan_llm_extract_no_evidence/gemini37flash/test450/cell3_replay/comparison.json",
+      "select": {"purist_correct": 370, "purist_accuracy": 0.8222, "pragmatic_correct": 383}
+    }
+  }
+}

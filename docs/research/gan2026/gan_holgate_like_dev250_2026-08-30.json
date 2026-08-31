@@ -1,0 +1,62 @@
+{
+  "dev250": {
+    "dialect_encode": {
+      "pragmatic": 175,
+      "purist": 166,
+      "scorable": 204
+    },
+    "dialect_find": {
+      "pragmatic": 167,
+      "purist": 159,
+      "scorable": 193
+    },
+    "dialect_select": {
+      "pragmatic": 182,
+      "purist": 175,
+      "scorable": 208
+    },
+    "format_rescues": 124,
+    "living_find": {
+      "pragmatic": 69,
+      "purist": 66,
+      "scorable": 69
+    },
+    "n": 250,
+    "rescue_families": {
+      "empty+no_reference": 3,
+      "empty+unknown": 20,
+      "i_do_not_know": 19,
+      "n_seizures_per": 25,
+      "other": 1,
+      "seizure_free_hyphen": 41,
+      "slash_rate": 13,
+      "zero_seizures": 2
+    }
+  },
+  "projection": "holgate_dialect_v1",
+  "test450": {
+    "dialect_encode": {
+      "pragmatic": 296,
+      "purist": 288,
+      "scorable": 348
+    },
+    "dialect_find": {
+      "pragmatic": 285,
+      "purist": 277,
+      "scorable": 333
+    },
+    "dialect_select": {
+      "pragmatic": 302,
+      "purist": 292,
+      "scorable": 351
+    },
+    "format_rescues": 161,
+    "living_find": {
+      "pragmatic": 156,
+      "purist": 150,
+      "scorable": 172
+    },
+    "n": 450,
+    "row_policy": "aggregate_only"
+  }
+}

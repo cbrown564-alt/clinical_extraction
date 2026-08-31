@@ -244,7 +244,14 @@ and checked against the recorded policies.
 The supporting material provides the full prompts, output schemas,
 recorded-rule definitions, model settings, and replay artefacts. These
 details are retained to allow implementation review without obscuring
-the controlled comparisons in the main Methods section.
+the controlled comparisons in the main Methods section. The main
+Methods section reports the codebook find policy: six event kinds,
+the instructions that change clinical meaning, and the allowed label
+form families. The frozen `gan_llm_extract` template, without
+`note_text`, is
+[`paper/supporting materials/gan_llm_extract_prompt_template.json`](../../../paper/supporting%20materials/gan_llm_extract_prompt_template.json).
+That file is the cited find request. It is not
+`gan_llm_extract_raw` and it is not the later select prompt.
 
 ## F. Evaluation protocol
 

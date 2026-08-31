@@ -169,24 +169,16 @@ Seizure free 0.76; micro-F1 0.82.
 taxonomy, and representative development cases. The main paper needs
 the hard-bin finding and the three-cell class tables.
 
-## D. Source-faithful find incurred a small performance cost *(optional)*
+## D. Source-faithful find incurred a small select-stop cost *(optional)*
 
-The Gan source-form ablation held the multi-candidate output schema
-constant and changed only the form written by the model: the headline
-request emitted gold-aligned encoded candidates, whereas the
-source-near request retained the wording and uncertainty of the
-letter. Later rule encoding and selection recovered much of the
-source-near deficit, but the bundled find-and-encode request
-retained the better final score.
-
-This is a choice between task performance and source fidelity, rather
-than a comparison of rich versus flattened schemas. For example, a
-source-near candidate can retain a bound such as “up to four per day”;
-later rules may map it to the permitted `4 per day` label, but not
-every source-form distinction is recovered without loss. **[If
-retained, add the compact four-row Gan ablation table from
-`gan_source_near_vs_bundled_encode_2026-08-23.md`; otherwise move this
-subsection to supporting material.]**
+The source-form request (`gan_llm_extract_raw`) keeps the same event
+schema and the same clinical policy as the cited codebook find. It
+drops the closed allowed-label list and asks for letter wording or a
+near-source phrase. Source-near encode is the selected-evidence renderer, not living
+`gan_rules_encode`. That later stack recovers most of the form
+(find 246 → encode 335 → select 357). Living codebook encode does
+not rewrite letter wording and is not this row. The scores sit in
+Table 3b. Do not retune Table 1.
 
 ## D2. A second LLM encode call on the codebook extract made the score worse *(optional)*
 
@@ -227,6 +219,74 @@ This is not the five-cell historical selected-evidence encoder
 `gan_llm_encode` on `gan_llm_extract_raw` is also a different
 question: it helps source-near wording and still does not beat the
 bundled codebook find.
+
+## D3. Examples helped a little; written form and the codebook package did most of the work *(optional)*
+
+Table 3b holds Gemini 3.7 Flash and temperature 0. It changes the
+find request. Codebook variants stay living cell 3
+(`gan_rules_encode`, then `llm_select_after_codebook`). Source-near
+later stages are the selected-evidence encode then full rule select
+that that request was built for. The Holgate one-label row is find
+only. These rows are one ablation family, not Table 1 columns.
+
+| Find request | Schema | Instructions | Labels | Examples | Evidence | Scorer |
+| --- | --- | --- | --- | --- | --- | --- |
+| Cited codebook | Events + selection | Full policy | Yes | Yes | Yes | Living parser |
+| No examples | Same | Same | Yes | No | Yes | Living parser |
+| Examples only | Same | Same | No | Yes | Yes | Living parser |
+| No evidence | Same, no `evidence` keys | Same, no quote rule | Yes | Yes | No | Living parser |
+| Source-near | Same | Same + informal form hint | No | No | Yes | Living parser |
+| Holgate-like | Same | Holgate three-step | No | No | Yes | `holgate_dialect_v1` |
+| Holgate one-label | No | Holgate three-step | No | No | No | `holgate_dialect_v1` |
+
+What those rows isolate:
+
+- **examples**, holding forms fixed (codebook vs no examples);
+- **forms**, holding examples fixed (codebook vs examples only);
+- **the quote obligation**, holding the rest of the codebook fixed
+  (codebook vs no evidence);
+- **written form** (codebook vs source-near);
+- **schema plus evidence**, holding the Holgate ask fixed
+  (Holgate-like vs Holgate one-label).
+
+They do not isolate the instruction rewrite alone. That missing cell
+would be the Holgate three-step ask plus the living `label_forms`
+list. Source-near still leaks a few informal labels such as
+`1 per day`.
+
+Removing examples cost 10 letters at find and 17 at select. Dropping
+the closed form list, while keeping the example strings, cost 8 at
+find and 23 at select (387 → 364). Dropping the quote obligation
+cost 10 at find and 17 at select (387 → 370), the same select total
+as no-examples. Source-near find is 246; selected-evidence encode
+raises that to 335, and rule select to 357. A Holgate-style
+three-step ask with the event schema scores 277 / 288 / 292 on
+`holgate_dialect_v1`. The same ask with one answer field, and no
+schema or quote rule, scores 198 at find on that dialect map.
+There is no ledger to encode or select. Owner:
+[prompt-component ablation](../../research/gan2026/gan_extract_prompt_component_ablation_2026-08-30.md),
+[round 2](../../research/gan2026/gan_extract_prompt_component_ablation_round2_2026-08-30.md),
+[Holgate dialect](../../research/gan2026/gan_holgate_like_dev250_2026-08-30.md),
+[source-near vs bundled encode](../../research/paper/gan_source_near_vs_bundled_encode_2026-08-23.md).
+
+| Find request | Find | Encode | Select |
+| --- | ---: | ---: | ---: |
+| Cited codebook (`gan_llm_extract`) | 0.789 (355) | 0.800 (360) | **0.860** (387) |
+| Allowed forms, no examples | 0.767 (345) | 0.776 (349) | 0.822 (370) |
+| Examples only, no forms | 0.771 (347) | 0.776 (349) | 0.809 (364) |
+| Codebook, no evidence keys | 0.767 (345) | 0.771 (347) | 0.822 (370) |
+| Source-near (`gan_llm_extract_raw`) | 0.547 (246) | 0.744 (335) | 0.793 (357) |
+| Holgate-like three-step ask | 0.616 (277) | 0.640 (288) | 0.649 (292) |
+| Holgate one-label | 0.440 (198) | — | — |
+
+**Table 3b.** Locked aggregate-only Gemini 3.7 Flash Purist
+micro-F1. n=450. Codebook, no-examples, examples-only, and
+no-evidence encode/select are the living cell-3 replay.
+Source-near encode/select are the promoted `gan_llm_extract_raw`
+stages (selected-evidence encode, then `llm_select`). Holgate rows
+use `holgate_dialect_v1`; the one-label row is find only. Those
+scorers are not the same metric. Do not retune Table 1 from these
+cells.
 
 ## E. Extra thinking budget did not beat the living Gemini setting
 
@@ -371,16 +431,20 @@ correspondence.
 The main Results section contains Table 1 (Gan five-cell), Tables
 2a–2c (Purist class reports for cells 1, 3, and 5), Table 3
 (Gemini temperature ablation), Table 3a (optional later-stage LLM
-encode-then-select), Table 4 (six-model cell-3 roster), Table 5
+encode-then-select), Table 3b (find prompt-component ablation, including
+source-form), Table 4 (six-model cell-3 roster), Table 5
 (descriptive inventory), and Figure 1 (before-and-after-rules).
 The paired tests sit in supporting material with a one-line
 reading after Tables 1 and 3. Full
 four-decimal class tables, residual taxonomy, representative
-development traces, source-form ablation detail, later-stage LLM
+development traces, later-stage LLM
 encode mechanism, hardware
 specifications, prompts, API settings, and replay artifacts belong in
 supporting material unless the final page budget permits more of
-them. ExECT locked totals are later-paper evidence. They are not
+them. The cited codebook find request is
+[`gan_llm_extract_prompt_template.json`](../../../paper/supporting%20materials/gan_llm_extract_prompt_template.json);
+the main Methods section keeps only the event kinds, meaning-changing
+instructions, and label-form families. ExECT locked totals are later-paper evidence. They are not
 dissertation tables.
 
 ## Claim boundary

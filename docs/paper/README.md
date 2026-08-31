@@ -68,4 +68,5 @@ comparator when cited—not a headline method.
 | [paper experiments](../../paper_experiments/README.md) | Replayable cells |
 | [cells and runners](cells_and_runners.md) | Live runner names mapped onto the five cells |
 | [architecture](architecture.md) | Find / encode / select and rule authority |
+| [Gan find prompt template](../../paper/supporting%20materials/gan_llm_extract_prompt_template.json) | Frozen `gan_llm_extract` request without `note_text` |
 | [decision history](../history/decisions.md) | Closed numbered series |

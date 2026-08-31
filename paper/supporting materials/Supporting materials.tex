@@ -11,14 +11,71 @@
 \usepackage{array}
 \usepackage{subcaption}
 \usepackage{booktabs}
+\usepackage{listings}
 
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\lstset{
+  basicstyle=\ttfamily\scriptsize,
+  breaklines=true,
+  breakatwhitespace=false,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false
+}
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
 \title{Supporting Materials\\}
+
+A number of methods have shown performance at 
+or above human level. Fonferko-Shadrach \emph{et al.} 
+reported the annotators found annotation difficult 
+and seizure frequency was the most difficult. This was 
+reflected in the inter annotator agreement (IAA) score
+of 0.47 (moderate agreement) even after multiple phases 
+of development of the guidelines to meet the annotators' 
+needs.  Xie \emph{et al.} reported an overall pairwise F1
+score of 0.44 on a task focused extracting seizure 
+freedom, frequency and most recent seizure
+statements and recommend double or triple annotation. 
+This is a long-standing challenge in the field, as Grisham 
+and Sundheim noted in 1996 ' it proved remarkably difficult
+to formulate guidelines which were reasonably complete 
+and consistent'. Despite levels of IAA of 0.5, the literature 
+commonly reports that rules-based and LLM-based 
+methods achieving F1 scores of 0.8 and above. 
+
+For this seizure frequency task, determining which one fact 
+among many is correct is the challenge. Sometimes that 
+requires grouping together multiple related facts into a 
+single answer, e.g. '1 in June, 0 in July, 2 in August' 
+becomes '3 in 3 months'. Sometimes it requires 
+determining which fact takes precedence when there are 
+multiple competing facts with varying degrees of specificity 
+and certainty e.g. 'She may remain seizure-free for up to 
+4 month, but then will experience clusters of 5 seizures in 
+a single day'. Different annotation guidelines would record 
+ambiguous facts like these differently. Distinct stages in the
+pipeline make those choices configurable and explicit.
+
+\section{Gan codebook find prompt}
+
+The cited language-model find request is the codebook 
+extract prompt (\texttt{gan\_llm\_extract}). The object below is 
+the frozen template sent to the model: task, instructions, 
+allowed label forms, event schema, and selection schema. 
+The letter is attached at run time as \texttt{note\_text} and is 
+omitted here. Research metadata such as 
+\texttt{prompt\_version} is not part of the model-facing 
+payload.
+
+This template is not the source-near find ablation 
+(\texttt{gan\_llm\_extract\_raw}), which has no closed 
+\texttt{label\_forms} block. It is not the later select prompt.
+
+\lstinputlisting{gan_llm_extract_prompt_template.json}
 
 The only preprocessing applied to the answer labels 
 was to use the CUIPhrase as the main answer key
