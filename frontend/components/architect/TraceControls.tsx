@@ -17,6 +17,13 @@ import { fetchRegistry, fetchArtifact, fetchLetter } from "@/lib/api";
 import { firstReplayableArtifactPath } from "@/lib/registryArtifacts";
 import { adaptDeterministicTrace, adaptTrace, isReplaySupported } from "@/lib/traceAdapter";
 import {
+  DEMO_GAN_RUN_ID,
+  DEMO_MODEL_LABEL,
+  demoMethodLabel,
+  isDemoSurface,
+  lockDemoGanFamilies,
+} from "@/lib/demoSurface";
+import {
   ganMethodChoices,
   ganMethodRequiresModel,
   ganModelsForMethod,
@@ -34,6 +41,7 @@ import {
   ControlBar,
   ControlField,
   ControlCombobox,
+  ControlFixedValue,
   LetterPicker,
   MetricChips,
 } from "@/components/surface";
@@ -76,10 +84,11 @@ export default function TraceControls() {
   );
   const familiesQuery = usePipelineFamilies();
 
-  const pipelineOptions = useMemo(
-    () => paperGanFamilies(familiesQuery.data?.families ?? []),
-    [familiesQuery.data?.families]
-  );
+  const demoLocked = isDemoSurface();
+  const pipelineOptions = useMemo(() => {
+    const families = paperGanFamilies(familiesQuery.data?.families ?? []);
+    return demoLocked ? lockDemoGanFamilies(families) : families;
+  }, [demoLocked, familiesQuery.data?.families]);
   const methodChoices = useMemo(
     () => ganMethodChoices(pipelineOptions),
     [pipelineOptions]
@@ -116,6 +125,19 @@ export default function TraceControls() {
   // Restore an exact run from the URL once the Gan comparison catalog arrives.
   useEffect(() => {
     if (pipelineOptions.length === 0) return;
+    if (demoLocked) {
+      const locked =
+        resolveGanPipelineOption(pipelineOptions, DEMO_GAN_RUN_ID) ??
+        pipelineOptions[0];
+      if (
+        locked &&
+        (locked.run_id !== selectedRunId ||
+          locked.pipeline_family !== pipelineFamily)
+      ) {
+        setSelectedRunId(locked.run_id, locked.pipeline_family);
+      }
+      return;
+    }
     const requestedOption = resolveGanPipelineOption(
       pipelineOptions,
       requestedRunId ?? ""
@@ -130,11 +152,19 @@ export default function TraceControls() {
     ) {
       setSelectedRunId(requestedOption.run_id, requestedOption.pipeline_family);
     }
-  }, [pipelineOptions, requestedRunId, setSelectedRunId]);
+  }, [
+    demoLocked,
+    pipelineFamily,
+    pipelineOptions,
+    requestedRunId,
+    selectedRunId,
+    setSelectedRunId,
+  ]);
 
   // Keep adapter family aligned, or fall back from a legacy registry run id.
   useEffect(() => {
     if (pipelineOptions.length === 0) return;
+    if (demoLocked) return;
     if (
       requestedRunId &&
       resolveGanPipelineOption(pipelineOptions, requestedRunId)
@@ -154,7 +184,14 @@ export default function TraceControls() {
     ) {
       setSelectedRunId(next.run_id, next.pipeline_family);
     }
-  }, [pipelineOptions, pipelineFamily, requestedRunId, selectedRunId, setSelectedRunId]);
+  }, [
+    demoLocked,
+    pipelineOptions,
+    pipelineFamily,
+    requestedRunId,
+    selectedRunId,
+    setSelectedRunId,
+  ]);
 
   const loadReplayLetter = useCallback(
     async (letterIndex: number) => {
@@ -322,46 +359,57 @@ export default function TraceControls() {
     <ControlBar
       left={
         <>
-          {/* Method selection on the far left */}
-          <ControlField label="Method" htmlFor="architect-method-select">
-            <ControlCombobox
-              id="architect-method-select"
-              noun="method"
-              className="min-w-0 flex-1 sm:min-w-[220px] sm:flex-none"
-              items={methodItems}
-              value={selectedMethodId}
-              onChange={(methodId) => {
-                const option = resolveGanMethodModel(
-                  pipelineOptions,
-                  methodId,
-                  selectedOption?.model
-                );
-                if (option) {
-                  setSelectedRunId(option.run_id, option.pipeline_family);
-                }
-              }}
-            />
-          </ControlField>
-
-          {ganMethodRequiresModel(selectedMethodId) && (
-            <ControlField label="Model" htmlFor="architect-model-select">
+          <ControlField label="Method">
+            {demoLocked ? (
+              <ControlFixedValue className="min-w-0 flex-1 sm:min-w-[220px] sm:flex-none">
+                {demoMethodLabel()}
+              </ControlFixedValue>
+            ) : (
               <ControlCombobox
-                id="architect-model-select"
-                noun="model"
-                className="min-w-0 flex-1 sm:min-w-[200px] sm:flex-none"
-                items={modelItems}
-                value={selectedOption?.model ?? ""}
-                onChange={(model) => {
+                id="architect-method-select"
+                noun="method"
+                className="min-w-0 flex-1 sm:min-w-[220px] sm:flex-none"
+                items={methodItems}
+                value={selectedMethodId}
+                onChange={(methodId) => {
                   const option = resolveGanMethodModel(
                     pipelineOptions,
-                    selectedMethodId,
-                    model
+                    methodId,
+                    selectedOption?.model
                   );
                   if (option) {
                     setSelectedRunId(option.run_id, option.pipeline_family);
                   }
                 }}
               />
+            )}
+          </ControlField>
+
+          {ganMethodRequiresModel(selectedMethodId) && (
+            <ControlField label="Model">
+              {demoLocked ? (
+                <ControlFixedValue className="min-w-0 flex-1 sm:min-w-[200px] sm:flex-none">
+                  {DEMO_MODEL_LABEL}
+                </ControlFixedValue>
+              ) : (
+                <ControlCombobox
+                  id="architect-model-select"
+                  noun="model"
+                  className="min-w-0 flex-1 sm:min-w-[200px] sm:flex-none"
+                  items={modelItems}
+                  value={selectedOption?.model ?? ""}
+                  onChange={(model) => {
+                    const option = resolveGanMethodModel(
+                      pipelineOptions,
+                      selectedMethodId,
+                      model
+                    );
+                    if (option) {
+                      setSelectedRunId(option.run_id, option.pipeline_family);
+                    }
+                  }}
+                />
+              )}
             </ControlField>
           )}
 

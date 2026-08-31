@@ -19,6 +19,7 @@ import {
   ControlBar,
   ControlField,
   ControlCombobox,
+  ControlFixedValue,
   LetterPicker,
   ExplorerBody,
   LensStrip,
@@ -36,6 +37,7 @@ import {
   defaultExectWorkbenchRun,
   resolveExectMethodModel,
 } from "@/lib/exectv2RunOptions";
+import { DEMO_MODEL_LABEL, demoMethodLabel, isDemoSurface } from "@/lib/demoSurface";
 import {
   attributeRank,
   workbenchAttributeKeys,
@@ -806,42 +808,54 @@ export default function Exectv2ExampleExplorer() {
       <ControlBar
         left={
           <>
-            <ControlField label="Method" htmlFor="exect-method-select">
-              <ControlCombobox
-                id="exect-method-select"
-                noun="method"
-                items={methodItems}
-                value={selectedMethodId}
-                title={selectedRun.claim_boundary}
-                onChange={(methodId) => {
-                  const next = resolveExectMethodModel(
-                    runs,
-                    methodId,
-                    selectedRun.model
-                  );
-                  if (next) set({ run: next.run_id });
-                }}
-                className="min-w-0 flex-1 sm:min-w-[220px] sm:flex-none"
-              />
-            </ControlField>
-
-            {exectMethodRequiresModel(selectedMethodId) && (
-              <ControlField label="Model" htmlFor="exect-model-select">
+            <ControlField label="Method">
+              {isDemoSurface() ? (
+                <ControlFixedValue className="min-w-0 flex-1 sm:min-w-[220px] sm:flex-none">
+                  {demoMethodLabel()}
+                </ControlFixedValue>
+              ) : (
                 <ControlCombobox
-                  id="exect-model-select"
-                  noun="model"
-                  items={modelItems}
-                  value={selectedRun.model}
-                  onChange={(model) => {
+                  id="exect-method-select"
+                  noun="method"
+                  items={methodItems}
+                  value={selectedMethodId}
+                  title={selectedRun.claim_boundary}
+                  onChange={(methodId) => {
                     const next = resolveExectMethodModel(
                       runs,
-                      selectedMethodId,
-                      model
+                      methodId,
+                      selectedRun.model
                     );
                     if (next) set({ run: next.run_id });
                   }}
-                  className="min-w-0 flex-1 sm:min-w-[200px] sm:flex-none"
+                  className="min-w-0 flex-1 sm:min-w-[220px] sm:flex-none"
                 />
+              )}
+            </ControlField>
+
+            {exectMethodRequiresModel(selectedMethodId) && (
+              <ControlField label="Model">
+                {isDemoSurface() ? (
+                  <ControlFixedValue className="min-w-0 flex-1 sm:min-w-[200px] sm:flex-none">
+                    {DEMO_MODEL_LABEL}
+                  </ControlFixedValue>
+                ) : (
+                  <ControlCombobox
+                    id="exect-model-select"
+                    noun="model"
+                    items={modelItems}
+                    value={selectedRun.model}
+                    onChange={(model) => {
+                      const next = resolveExectMethodModel(
+                        runs,
+                        selectedMethodId,
+                        model
+                      );
+                      if (next) set({ run: next.run_id });
+                    }}
+                    className="min-w-0 flex-1 sm:min-w-[200px] sm:flex-none"
+                  />
+                )}
               </ControlField>
             )}
 

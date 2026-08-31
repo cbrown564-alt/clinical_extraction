@@ -5,6 +5,7 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { fetchRun, fetchRuns } from "@/lib/api";
 import { DATASET_PARAM } from "@/lib/datasets";
+import { isDemoSurface, lockDemoExectRuns } from "@/lib/demoSurface";
 import { exectv2RunActiveMethod, resolveExectv2RunId, sortExectv2Runs } from "@/lib/exectv2RunOptions";
 import type { Exectv2RunSummary } from "@/lib/types";
 
@@ -17,7 +18,8 @@ export function useExectv2Runs() {
 
   const runs = useMemo(() => {
     const list = query.data?.runs ?? [];
-    return sortExectv2Runs(list);
+    const sorted = sortExectv2Runs(list);
+    return isDemoSurface() ? lockDemoExectRuns(sorted) : sorted;
   }, [query.data?.runs]);
 
   return { ...query, runs, sourceIndex: query.data?.source_index };

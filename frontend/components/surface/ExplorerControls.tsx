@@ -74,6 +74,23 @@ export function ControlField({
   );
 }
 
+/** Fixed method or model label when the demo surface has only one living cell. */
+export function ControlFixedValue({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <span
+      className={`inline-flex min-h-8 min-w-0 max-w-full items-center rounded-md border border-border bg-surface px-2 py-1 text-xs text-foreground ${className}`}
+    >
+      <span className="min-w-0 truncate">{children}</span>
+    </span>
+  );
+}
+
 /** Native `<select>` styling, kept for short ungrouped pickers. */
 export function ControlSelect({
   className = "",

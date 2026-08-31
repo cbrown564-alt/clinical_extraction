@@ -24,6 +24,7 @@ export {
   ControlField,
   ControlSelect,
   ControlCombobox,
+  ControlFixedValue,
   LetterPicker,
 } from "./ExplorerControls";
 export {

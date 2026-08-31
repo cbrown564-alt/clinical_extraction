@@ -23,6 +23,7 @@ import {
   isBareFamilyName,
   resolveFamilyDefaultRun,
 } from "./registryResolver";
+import { DEMO_GAN_RUN_ID, isDemoSurface } from "./demoSurface";
 import { isGanRulesRunId } from "./ganPipelineOptions";
 
 export function useHealth() {
@@ -100,7 +101,9 @@ export function useArchitectUrlSync() {
     const rowParam = searchParams.get("row");
     const stageParam = searchParams.get("stage") as TraceStage | null;
 
-    if (rawParam) {
+    if (isDemoSurface()) {
+      setSelectedRunId(DEMO_GAN_RUN_ID, "llm_with_rules");
+    } else if (rawParam) {
       if (isGanRulesRunId(rawParam)) {
         setSelectedRunId("rules", "rules");
       } else {
@@ -140,7 +143,11 @@ export function useArchitectUrlSync() {
     }
     const params = new URLSearchParams();
     preserveWorkbenchDataset(params, searchParams);
-    if (selectedRunId && selectedRunId !== "rules") params.set("run", selectedRunId);
+    if (isDemoSurface()) {
+      params.set("run", DEMO_GAN_RUN_ID);
+    } else if (selectedRunId && selectedRunId !== "rules") {
+      params.set("run", selectedRunId);
+    }
     if (sourceRowIndex !== null) params.set("row", String(sourceRowIndex));
     if (activeStage && activeStage !== "select") params.set("stage", activeStage);
 

@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { DEMO_GAN_RUN_ID } from "@/lib/demoSurface";
 
 export const MOCK_ROOT = join(process.cwd(), "public", "mock-data");
 
@@ -117,7 +118,62 @@ function artifactKindForRunId(runId: string, familyKind?: string): keyof typeof 
   return undefined;
 }
 
+function livingDemoExtractRow(
+  sourceRowIndex: string,
+  record: Record<string, unknown>
+): Record<string, unknown> {
+  const goldLabel = String(record.gold_label ?? "unknown");
+  const evidence = String(record.gold_reference ?? goldLabel);
+  const eventId = `demo-${sourceRowIndex}`;
+  return {
+    source_row_index: Number(sourceRowIndex),
+    split: String(record.split ?? "validation"),
+    gold_label: goldLabel,
+    structured_record: {
+      events: [
+        {
+          event_id: eventId,
+          kind: "frequency_rate",
+          raw_value: evidence,
+          evidence,
+          assertion_status: "asserted",
+          temporality: "current",
+        },
+      ],
+      selection: {
+        final_label: goldLabel,
+        final_kind: "frequency_rate",
+        evidence,
+        selected_event_ids: [eventId],
+        rationale:
+          "Static demonstration fixture; LLM extract then rules encode and select replayed from the bundled record.",
+      },
+    },
+    normalized_events: [
+      {
+        event_id: eventId,
+        normalized_label: goldLabel,
+        semantic_kind: "frequency_rate",
+        monthly_frequency: 0,
+        validation_errors: [],
+      },
+    ],
+    comparison: { purist_correct: true, pragmatic_correct: true },
+  };
+}
+
 export function ganArtifact(runId: string, letterId?: string) {
+  if (runId === DEMO_GAN_RUN_ID && letterId) {
+    const record = ganRecord(letterId);
+    if (record) {
+      return {
+        run_id: runId,
+        artifact_path: "frontend/public/mock-data/records/validation",
+        artifact_type: "json",
+        content: [livingDemoExtractRow(letterId, record)],
+      };
+    }
+  }
   const familyCatalog = readMockJson<{ families: GanFamily[] }>(
     "pipeline-families.json"
   );
