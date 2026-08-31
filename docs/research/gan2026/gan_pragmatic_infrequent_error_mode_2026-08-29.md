@@ -356,7 +356,9 @@ correct **49 → 61**. Infrequent → unknown stays 16.
 
 ## Next
 
+Unknown-column types, including seizure-free → unknown, are in
+[gold → unknown](gan_pragmatic_unknown_error_mode_2026-08-29.md).
 Do not inspect `test450` rows. Frequent collapse (cluster two-quantity
 / electrographic EEG) is still a find problem. The leftover infrequent
-misses after this family are the three `multiple month` well-since
-letters plus unknown-at-extract rows.
+misses after well-since are the three `multiple month` letters plus
+unknown-at-extract rows.

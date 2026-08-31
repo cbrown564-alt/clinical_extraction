@@ -1,0 +1,114 @@
+{
+  "date": "2026-08-29",
+  "protocol": "docs/research/gan2026/gan_pragmatic_unknown_error_mode_protocol_2026-08-29.md",
+  "candidate": "gemini37flash living cell 3 select (gan_llm_extract → gan_rules_encode → llm_select_after_codebook, last_event_well_since on)",
+  "scorer": "map_pragmatic / map_purist on gold_monthly_frequency and parsed predicted_label",
+  "replay": "no-call",
+  "git": {"head": "442bff49", "dirty_tree": true},
+  "prior_types_owner": "docs/research/gan2026/gan_pragmatic_infrequent_error_mode_2026-08-29.md",
+  "claim_boundary": "test450 aggregate-only; qualitative seizure-free → unknown types are a development answer on dest750",
+  "category_note": "Pragmatic Unknown is monthly_frequency 1000 (unknown or no_reference). Pragmatic Seizure free is currently_no_seizure (monthly_frequency 0).",
+  "test450": {
+    "source": "living Gemini cell-3 select replay of saved gan_llm_extract raws; gold-and-predicted epsilon only",
+    "row_policy": "aggregate_only",
+    "n": 450,
+    "pragmatic_correct": 396,
+    "purist_correct": 387,
+    "matrix_order": ["frequent", "infrequent", "unknown", "no_seizure"],
+    "matrix": [
+      [211, 3, 13, 0],
+      [2, 61, 16, 1],
+      [4, 3, 67, 2],
+      [1, 1, 8, 57]
+    ],
+    "gold_support": {"frequent": 227, "infrequent": 80, "unknown": 76, "no_seizure": 67},
+    "all_pragmatic_errors": 54,
+    "frequent_to_unknown": 13,
+    "infrequent_to_unknown": 16,
+    "no_seizure_to_unknown": 8,
+    "gold_to_unknown": 37,
+    "gold_to_unknown_share_of_errors": 0.6852,
+    "infrequent_to_no_seizure": 1,
+    "largest_off_diagonal": {"gold": "infrequent", "pred": "unknown", "n": 16}
+  },
+  "dev750": {
+    "source": "paper_experiments/gan/rungs/gemini37flash/dev750 plus gan2026_split_v1 validation gold; living select replay",
+    "row_policy": "development_review_permitted",
+    "data_text_policy": "synthetic_development_raw_text_diagnostic",
+    "n": 750,
+    "select": {
+      "pragmatic_correct": 673,
+      "purist_correct": 656,
+      "matrix_order": ["frequent", "infrequent", "unknown", "no_seizure"],
+      "matrix": [
+        [364, 2, 19, 2],
+        [5, 95, 21, 3],
+        [6, 8, 109, 4],
+        [1, 0, 6, 105]
+      ],
+      "gold_support": {"frequent": 387, "infrequent": 124, "unknown": 127, "no_seizure": 112},
+      "all_pragmatic_errors": 77,
+      "frequent_to_unknown": 19,
+      "infrequent_to_unknown": 21,
+      "no_seizure_to_unknown": 6,
+      "gold_to_unknown": 46,
+      "gold_to_unknown_share_of_errors": 0.5974,
+      "infrequent_to_unknown_ids_unchanged_from_prior": true,
+      "frequent_to_unknown_ids_unchanged_from_prior": true,
+      "largest_off_diagonal": {"gold": "infrequent", "pred": "unknown", "n": 21}
+    },
+    "encode": {
+      "pragmatic_correct": 632,
+      "frequent_to_unknown": 21,
+      "infrequent_to_unknown": 31,
+      "no_seizure_to_unknown": 7
+    },
+    "extract": {
+      "pragmatic_correct": 613,
+      "frequent_to_unknown": 36,
+      "infrequent_to_unknown": 33,
+      "no_seizure_to_unknown": 7,
+      "no_seizure_unknown_rescued_by_select": {
+        "n": 1,
+        "source_row_indices": [13889]
+      }
+    },
+    "rules_only": {
+      "pragmatic_correct": 701,
+      "frequent_to_unknown": 15,
+      "infrequent_to_unknown": 1,
+      "no_seizure_to_unknown": 0
+    },
+    "focal_select_no_seizure_to_unknown": {
+      "n": 6,
+      "already_wrong_at_extract": 6,
+      "encode_same_as_extract": 6,
+      "select_same_as_encode": 6,
+      "rules_pragmatic_no_seizure": 6,
+      "gold_label": "seizure free for multiple month",
+      "gold_purist": {"currently_no_seizure": 6},
+      "predicted_labels": {
+        "unknown": 4,
+        "no seizure frequency reference": 2
+      },
+      "codebook_encodes_unused_or_selected_sf_event_to_no_reference": {
+        "n": 4,
+        "source_row_indices": [5092, 8144, 8400, 9250]
+      },
+      "buckets": {
+        "controlled_plus_occasional_aura_or_warning": {
+          "n": 3,
+          "source_row_indices": [8144, 8400, 9250]
+        },
+        "current_spells_judged_non_epileptic": {
+          "n": 2,
+          "source_row_indices": [13843, 13858]
+        },
+        "no_epilepsy_no_clinical_seizures": {
+          "n": 1,
+          "source_row_indices": [5092]
+        }
+      }
+    }
+  }
+}
