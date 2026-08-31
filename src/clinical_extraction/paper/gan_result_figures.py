@@ -28,7 +28,8 @@ CELL5_DEV750 = (
     / "gan_llm_extract/dev750/comparison.json"
 )
 RUNGS_ROOT = ROOT / "paper_experiments/gan/rungs"
-CELL_BARBELL_LABELS = ("Rules only", "LLM + rules", "LLM only")
+CELL_BARBELL_LABELS = ("Rules only", "LLM and rules", "LLM only")
+BARBELL_Y_LABEL_WRAP = 10
 BARBELL_CONNECTOR_MIN_ABS_DELTA = 0.012
 BARBELL_DELTA_LABEL_MIN_ABS_DELTA = 0.05
 SPLIT_COLORS = {
@@ -592,7 +593,7 @@ def render_barbell(
 
     _prepare_figure_fonts()
     ys = list(range(len(chart.categories) - 1, -1, -1))
-    fig, axis = plt.subplots(figsize=(7.16, 2.3), dpi=300)
+    fig, axis = plt.subplots(figsize=(7.16, 2.4), dpi=300)
 
     axis.grid(axis="x", linestyle="--", linewidth=0.5, color=GRID_GREY, zorder=0)
 
@@ -612,13 +613,27 @@ def render_barbell(
                 sign = "+" if delta > 0 else "−"
                 axis.text(
                     mid_x,
-                    y + 0.16,
-                    f"$\\Delta$ {sign}{abs(delta):.2f}",
+                    y + 0.26,
+                    f"$\\Delta$ {sign}{abs(delta):.2f} generalisation gap",
                     ha="center",
                     va="bottom",
                     fontsize=8,
                     color="#475569",
-                    zorder=3,
+                    zorder=5,
+                )
+                axis.annotate(
+                    "",
+                    xy=(mid_x, y + 0.06),
+                    xytext=(mid_x, y + 0.24),
+                    arrowprops={
+                        "arrowstyle": "->,head_width=0.12,head_length=0.16",
+                        "color": "#1E293B",
+                        "lw": 0.7,
+                        "connectionstyle": "arc3,rad=0.22",
+                        "shrinkA": 0,
+                        "shrinkB": 0,
+                    },
+                    zorder=5,
                 )
 
     for y, left, right in zip(ys, chart.development, chart.holdout, strict=True):
@@ -679,12 +694,17 @@ def render_barbell(
     axis.scatter([], [], s=50, color=SPLIT_COLORS["Test"], label="Test")
 
     axis.set_yticks(ys)
-    axis.set_yticklabels(chart.categories, fontsize=9.5, color=LABEL_BLACK)
+    axis.set_yticklabels(
+        [wrap_category_label(name, width=BARBELL_Y_LABEL_WRAP) for name in chart.categories],
+        fontsize=9.5,
+        color=LABEL_BLACK,
+        linespacing=1.05,
+    )
     axis.set_ylabel("")
     axis.set_xlabel(chart.ylabel, fontsize=10, color=LABEL_BLACK)
     axis.set_xlim(*xlim)
     axis.set_xticks(list(xticks))
-    axis.set_ylim(-0.5, len(chart.categories) - 0.4)
+    axis.set_ylim(-0.5, len(chart.categories) - 0.25)
 
     if title:
         axis.set_title(title, pad=10, fontsize=11, color=LABEL_BLACK)
@@ -758,13 +778,13 @@ def render_purist_confusion_matrix(
     axis.set_yticklabels(data.labels, fontsize=8, color=LABEL_BLACK)
 
     axis.set_xlabel(
-        "Predicted Purist Frequency Category",
+        "Predicted",
         fontsize=10,
         labelpad=8,
         color=LABEL_BLACK,
     )
     axis.set_ylabel(
-        "True Purist Frequency Category",
+        "True",
         fontsize=10,
         labelpad=8,
         color=LABEL_BLACK,
@@ -853,13 +873,13 @@ def render_pragmatic_confusion_matrix(
     axis.set_yticklabels(data.labels, fontsize=9, color=LABEL_BLACK)
 
     axis.set_xlabel(
-        "Predicted Pragmatic Frequency Category",
+        "Predicted",
         fontsize=9.5,
         labelpad=8,
         color=LABEL_BLACK,
     )
     axis.set_ylabel(
-        "True Pragmatic Frequency Category",
+        "True",
         fontsize=9.5,
         labelpad=8,
         color=LABEL_BLACK,
