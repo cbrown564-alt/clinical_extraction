@@ -1,0 +1,12 @@
+{
+  "task": "Read the following clinical note then work through these 3 steps.",
+  "instructions": [
+    "Determine whether the note has any information about the frequency of the epilepsy patient's seizures.",
+    "If the note does not have any information about the frequency of the epilepsy patient's seizures, then you answer: 'I do not know.'",
+    "If the note does have information about the frequency of the epilepsy patient's seizures, then you estimate the frequency of the epilepsy seizures and express the frequency in terms of per year, per month, per week, or per day, whichever is most relevant.",
+    "Return exactly one JSON object with an answer field and no markdown."
+  ],
+  "answer_schema": {
+    "answer": "the frequency, or I do not know"
+  }
+}

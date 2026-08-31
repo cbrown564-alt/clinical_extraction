@@ -154,3 +154,34 @@ def label_forms_payload() -> dict[str, Any]:
         "rules": list(LABEL_FORM_RULES),
         "forms": [dict(row) for row in LABEL_FORMS],
     }
+
+
+LABEL_FORM_RULES_WITHOUT_EXAMPLES = [
+    "Write the label using only the forms below. Change the numbers if needed.",
+    *LABEL_FORM_RULES[1:],
+]
+
+
+def label_forms_without_examples_payload() -> dict[str, Any]:
+    """Allowed forms and writing rules, without example strings."""
+
+    return {
+        "rules": list(LABEL_FORM_RULES_WITHOUT_EXAMPLES),
+        "forms": [
+            {"form": row["form"], "description": row["description"]} for row in LABEL_FORMS
+        ],
+    }
+
+
+def label_form_example_strings() -> list[str]:
+    """Example labels only, in form-list order, first occurrence kept."""
+
+    examples: list[str] = []
+    seen: set[str] = set()
+    for row in LABEL_FORMS:
+        for example in row["examples"]:
+            if example in seen:
+                continue
+            seen.add(example)
+            examples.append(example)
+    return examples

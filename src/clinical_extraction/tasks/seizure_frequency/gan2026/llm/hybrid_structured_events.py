@@ -41,6 +41,21 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     llm_structured_temporal,
     prompt_llm_extract_raw,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    prompt_llm_extract_examples_only as extract_examples_only,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    prompt_llm_extract_holgate_label as extract_holgate_label,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    prompt_llm_extract_holgate_like as extract_holgate,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    prompt_llm_extract_no_evidence as extract_no_evidence,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    prompt_llm_extract_no_examples as extract_no_examples,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_monthly_diary import (
     monthly_diary_label_from_events as _monthly_diary_label_from_events,
 )
@@ -122,6 +137,11 @@ _nearest_event_date = llm_structured_temporal.nearest_event_date
 _nearest_event_month_year = llm_structured_temporal.nearest_event_month_year
 _small_number_words_to_digits = llm_structured_temporal.small_number_words_to_digits
 
+GAN_LLM_EXTRACT_NO_EXAMPLES = extract_no_examples.GAN_LLM_EXTRACT_NO_EXAMPLES
+GAN_LLM_EXTRACT_HOLGATE_LIKE = extract_holgate.GAN_LLM_EXTRACT_HOLGATE_LIKE
+GAN_LLM_EXTRACT_HOLGATE_LABEL = extract_holgate_label.GAN_LLM_EXTRACT_HOLGATE_LABEL
+GAN_LLM_EXTRACT_NO_EVIDENCE = extract_no_evidence.GAN_LLM_EXTRACT_NO_EVIDENCE
+GAN_LLM_EXTRACT_EXAMPLES_ONLY = extract_examples_only.GAN_LLM_EXTRACT_EXAMPLES_ONLY
 GAN_LLM_EXTRACT_RAW = "gan_llm_extract_raw"
 GAN_LLM_WITH_RULES = GAN_LLM_EXTRACT_RAW
 LLM_EXTRACT_RAW_AUTHORED_KEYS = prompt_llm_extract_raw.LLM_EXTRACT_RAW_AUTHORED_KEYS
@@ -138,6 +158,11 @@ _SUPPORTED_PROMPT_VERSIONS = frozenset(
         GAN_LLM_EXTRACT_RAW,
         GAN_LLM_AND_RULES_EXTRACT,
         GAN_LLM_EXTRACT,
+        GAN_LLM_EXTRACT_NO_EXAMPLES,
+        GAN_LLM_EXTRACT_HOLGATE_LIKE,
+        GAN_LLM_EXTRACT_HOLGATE_LABEL,
+        GAN_LLM_EXTRACT_NO_EVIDENCE,
+        GAN_LLM_EXTRACT_EXAMPLES_ONLY,
         *PROMPT_VERSION_ALIASES,
     }
 )
@@ -207,6 +232,7 @@ StructuredRepairMode = Literal[
     "llm_select",
     "llm_select_after_codebook",
     "llm_select_only",
+    "raw_model_single_answer",
     "custom",
 ]
 # Sealed artifacts and older CLI flags may still emit these strings.
@@ -240,7 +266,7 @@ class StructuredEventRecord(BaseModel):
     time_window: str | None = None
     temporality: Literal["current", "recent", "historical", "future", "unclear"]
     assertion_status: Literal["asserted", "negated", "historical", "hypothetical", "unknown"]
-    evidence: str
+    evidence: str = ""
     notes: str | None = None
 
 
@@ -258,7 +284,7 @@ class StructuredSelectionRecord(BaseModel):
         "unresolved_multiple",
     ]
     final_label: str | None = None
-    evidence: str
+    evidence: str = ""
     confidence: Literal["low", "medium", "high"]
     rationale: str
 
@@ -345,6 +371,7 @@ class StructuredRepairConfig:
     last_event_well_since_repair: bool = True
     dated_sequence_repair: bool = True
     elapsed_anchor_repair: bool = False
+    single_answer_fallback: bool = False
     semantic_family_order: tuple[str, ...] = DEFAULT_SEMANTIC_FAMILY_ORDER
 
     @classmethod
@@ -405,6 +432,23 @@ class StructuredRepairConfig:
                 last_event_well_since_repair=False,
                 dated_sequence_repair=False,
                 elapsed_anchor_repair=False,
+            )
+        if mode == "raw_model_single_answer":
+            return cls(
+                repair_mode=mode,
+                basic_label_repair=False,
+                selected_evidence_repair=False,
+                monthly_diary_repair=False,
+                usual_interval_repair=False,
+                typical_over_ytd_repair=False,
+                breakthrough_repair=False,
+                non_epileptic_repair=False,
+                residual_jerk_repair=False,
+                post_change_burst_repair=False,
+                last_event_well_since_repair=False,
+                dated_sequence_repair=False,
+                elapsed_anchor_repair=False,
+                single_answer_fallback=True,
             )
         if mode == "llm_encode":
             return cls(
@@ -470,6 +514,7 @@ class StructuredRepairConfig:
             "llm_select",
             "llm_select_after_codebook",
             "llm_select_only",
+            "raw_model_single_answer",
         ):
             named = StructuredRepairConfig.for_mode(mode)
             if (
@@ -511,6 +556,7 @@ class StructuredRepairConfig:
             "last_event_well_since_repair": self.last_event_well_since_repair,
             "dated_sequence_repair": self.dated_sequence_repair,
             "elapsed_anchor_repair": self.elapsed_anchor_repair,
+            "single_answer_fallback": self.single_answer_fallback,
         }
 
 
@@ -551,6 +597,37 @@ class DspyStructuredExtractor(dspy.Module):
         )
 
 
+class Gan2026HolgateLabelSignature(dspy.Signature):
+    """Return one seizure-frequency answer for the Holgate one-label ablation."""
+
+    prompt_input_json: str = dspy.InputField(
+        desc="JSON containing one clinical note and the three-step ask."
+    )
+    structured_json: str = dspy.OutputField(
+        desc="One strict JSON object with a single answer field."
+    )
+
+
+class DspyHolgateLabelExtractor(dspy.Module):
+    """DSPy extractor for the Holgate one-label ablation."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.predict = dspy.Predict(Gan2026HolgateLabelSignature)
+
+    def forward(self, prompt_input_json: str) -> dspy.Prediction:
+        return self.predict(prompt_input_json=prompt_input_json)
+
+    def render_messages(self, *, prompt_input_json: str) -> list[dict[str, object]]:
+        """Render the one-label request without making a model call."""
+
+        return ChatAdapter().format(
+            Gan2026HolgateLabelSignature,
+            demos=[],
+            inputs={"prompt_input_json": prompt_input_json},
+        )
+
+
 def normalize_prompt_version(prompt_version: str) -> str:
     """Map a sealed or live prompt identity onto the current name."""
 
@@ -577,7 +654,59 @@ def build_prompt_input(
         return build_llm_and_rules_extract_prompt_input(record)
     if selected_prompt_version == GAN_LLM_EXTRACT:
         return build_llm_extract_prompt_input(record)
+    if selected_prompt_version == GAN_LLM_EXTRACT_NO_EXAMPLES:
+        return extract_no_examples.build_llm_extract_no_examples_prompt_input(record)
+    if selected_prompt_version == GAN_LLM_EXTRACT_HOLGATE_LIKE:
+        return extract_holgate.build_llm_extract_holgate_like_prompt_input(record)
+    if selected_prompt_version == GAN_LLM_EXTRACT_HOLGATE_LABEL:
+        return extract_holgate_label.build_llm_extract_holgate_label_prompt_input(record)
+    if selected_prompt_version == GAN_LLM_EXTRACT_NO_EVIDENCE:
+        return extract_no_evidence.build_llm_extract_no_evidence_prompt_input(record)
+    if selected_prompt_version == GAN_LLM_EXTRACT_EXAMPLES_ONLY:
+        return extract_examples_only.build_llm_extract_examples_only_prompt_input(record)
     return build_llm_extract_raw_prompt_input(record)
+
+
+def _single_answer_extraction(answer: str) -> dict[str, Any]:
+    return {
+        "events": [],
+        "selection": {
+            "selected_event_ids": [],
+            "final_kind": "unknown",
+            "final_label": answer,
+            "evidence": "",
+            "confidence": "low",
+            "rationale": "",
+        },
+    }
+
+
+def _lift_single_answer_payload(raw_output: str) -> dict[str, Any] | None:
+    stripped = raw_output.strip()
+    if not stripped:
+        return None
+    try:
+        payload = json.loads(_extract_json_object(stripped))
+    except (json.JSONDecodeError, TypeError, ValueError):
+        if "{" in stripped or "[" in stripped or len(stripped) > 200:
+            return None
+        return _single_answer_extraction(stripped.strip().strip('"'))
+    if not isinstance(payload, dict):
+        return None
+    answer = payload.get("answer")
+    selection = payload.get("selection")
+    if not isinstance(answer, str) and isinstance(selection, dict):
+        nested = selection.get("answer")
+        if isinstance(nested, str):
+            answer = nested
+        elif isinstance(selection.get("final_label"), str):
+            answer = selection["final_label"]
+    if not isinstance(answer, str) and len(payload) == 1:
+        only = next(iter(payload.values()))
+        answer = only if isinstance(only, str) else None
+    if not isinstance(answer, str):
+        return None
+    return _single_answer_extraction(answer)
 
 
 def parse_structured_json(
@@ -608,6 +737,10 @@ def parse_structured_json_with_trace(
     """Parse structured output and retain the model boundary and repair stages."""
 
     repair_config = repair_config or StructuredRepairConfig()
+    if repair_config.single_answer_fallback:
+        lifted = _lift_single_answer_payload(raw_output)
+        if lifted is not None:
+            raw_output = json.dumps(lifted, ensure_ascii=False)
     try:
         raw_payload, errors = parse_json_payload_with_schema_repair(
             _extract_json_object(raw_output),

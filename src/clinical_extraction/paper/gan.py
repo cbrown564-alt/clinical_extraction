@@ -77,6 +77,21 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     prompt_llm_and_rules_extract as and_rules_extract,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    prompt_llm_extract_examples_only as extract_examples_only,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    prompt_llm_extract_holgate_label as extract_holgate_label,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    prompt_llm_extract_holgate_like as extract_holgate,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    prompt_llm_extract_no_evidence as extract_no_evidence,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    prompt_llm_extract_no_examples as extract_no_examples,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
     normalize_prompt_version,
 )
@@ -106,6 +121,11 @@ MAX_TOKENS = {
     "gan_llm_only": 1200,
     "gan_llm_extract_raw": 5000,
     "gan_llm_extract": 5000,
+    "gan_llm_extract_no_examples": 5000,
+    "gan_llm_extract_holgate_like": 5000,
+    "gan_llm_extract_holgate_label": 1200,
+    "gan_llm_extract_no_evidence": 5000,
+    "gan_llm_extract_examples_only": 5000,
     "gan_llm_and_rules_extract": 5000,
     "gan_llm_encode": LATER_STAGE_MAX_TOKENS,
     "gan_llm_select": LATER_STAGE_MAX_TOKENS,
@@ -174,6 +194,146 @@ def verify_gan(
             raise RuntimeError("gan_llm_extract request dropped label_forms")
         if hybrid_structured_events.PROMPT_VERSION != before:
             raise RuntimeError("extract payload check changed the live default")
+        if hybrid_structured_events.PROMPT_VERSION != hybrid_structured_events.GAN_LLM_EXTRACT_RAW:
+            raise RuntimeError("gan_llm_extract_raw live default drifted")
+    elif method == "gan_llm_extract_no_examples":
+        before = hybrid_structured_events.PROMPT_VERSION
+        payload = json.loads(
+            hybrid_structured_events.build_prompt_input(
+                _placeholder_record(),
+                prompt_version=extract_no_examples.GAN_LLM_EXTRACT_NO_EXAMPLES,
+            )
+        )
+        authored = list(extract_no_examples.LLM_EXTRACT_NO_EXAMPLES_AUTHORED_KEYS)
+        blob = json.dumps(payload)
+        if set(payload) != set(authored):
+            raise RuntimeError(
+                "gan_llm_extract_no_examples prompt drifted from authored keys"
+            )
+        if "prompt_version" in payload or "source_row_index" in payload:
+            raise RuntimeError(
+                "gan_llm_extract_no_examples request still emits the research envelope"
+            )
+        if "Gan 2026" in blob:
+            raise RuntimeError("gan_llm_extract_no_examples request still names the dataset")
+        if "label_forms" not in payload:
+            raise RuntimeError("gan_llm_extract_no_examples request dropped label_forms")
+        if "examples" in json.dumps(payload["label_forms"]):
+            raise RuntimeError("gan_llm_extract_no_examples still lists examples")
+        if hybrid_structured_events.PROMPT_VERSION != before:
+            raise RuntimeError("no-examples payload check changed the live default")
+        if hybrid_structured_events.PROMPT_VERSION != hybrid_structured_events.GAN_LLM_EXTRACT_RAW:
+            raise RuntimeError("gan_llm_extract_raw live default drifted")
+    elif method == "gan_llm_extract_holgate_like":
+        before = hybrid_structured_events.PROMPT_VERSION
+        payload = json.loads(
+            hybrid_structured_events.build_prompt_input(
+                _placeholder_record(),
+                prompt_version=extract_holgate.GAN_LLM_EXTRACT_HOLGATE_LIKE,
+            )
+        )
+        authored = list(extract_holgate.LLM_EXTRACT_HOLGATE_LIKE_AUTHORED_KEYS)
+        blob = json.dumps(payload)
+        if set(payload) != set(authored):
+            raise RuntimeError(
+                "gan_llm_extract_holgate_like prompt drifted from authored keys"
+            )
+        if "prompt_version" in payload or "source_row_index" in payload:
+            raise RuntimeError(
+                "gan_llm_extract_holgate_like request still emits the research envelope"
+            )
+        if "Gan 2026" in blob:
+            raise RuntimeError("gan_llm_extract_holgate_like request still names the dataset")
+        if "label_forms" in payload:
+            raise RuntimeError("gan_llm_extract_holgate_like request still has label_forms")
+        if "I do not know" not in blob:
+            raise RuntimeError("gan_llm_extract_holgate_like dropped the Holgate abstention")
+        if hybrid_structured_events.PROMPT_VERSION != before:
+            raise RuntimeError("Holgate-like payload check changed the live default")
+        if hybrid_structured_events.PROMPT_VERSION != hybrid_structured_events.GAN_LLM_EXTRACT_RAW:
+            raise RuntimeError("gan_llm_extract_raw live default drifted")
+    elif method == "gan_llm_extract_holgate_label":
+        before = hybrid_structured_events.PROMPT_VERSION
+        payload = json.loads(
+            hybrid_structured_events.build_prompt_input(
+                _placeholder_record(),
+                prompt_version=extract_holgate_label.GAN_LLM_EXTRACT_HOLGATE_LABEL,
+            )
+        )
+        authored = list(extract_holgate_label.LLM_EXTRACT_HOLGATE_LABEL_AUTHORED_KEYS)
+        blob = json.dumps(payload)
+        if set(payload) != set(authored):
+            raise RuntimeError(
+                "gan_llm_extract_holgate_label prompt drifted from authored keys"
+            )
+        if "prompt_version" in payload or "source_row_index" in payload:
+            raise RuntimeError(
+                "gan_llm_extract_holgate_label request still emits the research envelope"
+            )
+        if "Gan 2026" in blob:
+            raise RuntimeError("gan_llm_extract_holgate_label request still names the dataset")
+        if "event_schema" in payload or "label_forms" in payload:
+            raise RuntimeError("gan_llm_extract_holgate_label still has a codebook schema")
+        if "I do not know" not in blob:
+            raise RuntimeError("gan_llm_extract_holgate_label dropped the Holgate abstention")
+        if hybrid_structured_events.PROMPT_VERSION != before:
+            raise RuntimeError("Holgate-label payload check changed the live default")
+        if hybrid_structured_events.PROMPT_VERSION != hybrid_structured_events.GAN_LLM_EXTRACT_RAW:
+            raise RuntimeError("gan_llm_extract_raw live default drifted")
+    elif method == "gan_llm_extract_no_evidence":
+        before = hybrid_structured_events.PROMPT_VERSION
+        payload = json.loads(
+            hybrid_structured_events.build_prompt_input(
+                _placeholder_record(),
+                prompt_version=extract_no_evidence.GAN_LLM_EXTRACT_NO_EVIDENCE,
+            )
+        )
+        authored = list(extract_no_evidence.LLM_EXTRACT_NO_EVIDENCE_AUTHORED_KEYS)
+        blob = json.dumps(payload)
+        if set(payload) != set(authored):
+            raise RuntimeError(
+                "gan_llm_extract_no_evidence prompt drifted from authored keys"
+            )
+        if "prompt_version" in payload or "source_row_index" in payload:
+            raise RuntimeError(
+                "gan_llm_extract_no_evidence request still emits the research envelope"
+            )
+        if "Gan 2026" in blob:
+            raise RuntimeError("gan_llm_extract_no_evidence request still names the dataset")
+        if "evidence" in payload["event_schema"] or "evidence" in payload["selection_schema"]:
+            raise RuntimeError("gan_llm_extract_no_evidence still asks for evidence")
+        if "label_forms" not in payload:
+            raise RuntimeError("gan_llm_extract_no_evidence dropped label_forms")
+        if hybrid_structured_events.PROMPT_VERSION != before:
+            raise RuntimeError("no-evidence payload check changed the live default")
+        if hybrid_structured_events.PROMPT_VERSION != hybrid_structured_events.GAN_LLM_EXTRACT_RAW:
+            raise RuntimeError("gan_llm_extract_raw live default drifted")
+    elif method == "gan_llm_extract_examples_only":
+        before = hybrid_structured_events.PROMPT_VERSION
+        payload = json.loads(
+            hybrid_structured_events.build_prompt_input(
+                _placeholder_record(),
+                prompt_version=extract_examples_only.GAN_LLM_EXTRACT_EXAMPLES_ONLY,
+            )
+        )
+        authored = list(extract_examples_only.LLM_EXTRACT_EXAMPLES_ONLY_AUTHORED_KEYS)
+        blob = json.dumps(payload)
+        if set(payload) != set(authored):
+            raise RuntimeError(
+                "gan_llm_extract_examples_only prompt drifted from authored keys"
+            )
+        if "prompt_version" in payload or "source_row_index" in payload:
+            raise RuntimeError(
+                "gan_llm_extract_examples_only request still emits the research envelope"
+            )
+        if "Gan 2026" in blob:
+            raise RuntimeError("gan_llm_extract_examples_only request still names the dataset")
+        if "label_forms" in payload:
+            raise RuntimeError("gan_llm_extract_examples_only still has label_forms")
+        if "examples" not in payload:
+            raise RuntimeError("gan_llm_extract_examples_only dropped examples")
+        if hybrid_structured_events.PROMPT_VERSION != before:
+            raise RuntimeError("examples-only payload check changed the live default")
         if hybrid_structured_events.PROMPT_VERSION != hybrid_structured_events.GAN_LLM_EXTRACT_RAW:
             raise RuntimeError("gan_llm_extract_raw live default drifted")
     elif method == "gan_llm_and_rules_extract":
@@ -280,6 +440,8 @@ def run_gan(
     thinking: str | None = None,
     reasoning_effort: str | None = None,
     temperature: float | None = None,
+    source_row_indices: Sequence[int] | None = None,
+    work_leaf: str | None = None,
 ) -> dict[str, Any]:
     """Run one allowed Gan paper cell."""
 
@@ -323,11 +485,22 @@ def run_gan(
     records = load_records_for_split(machine)
     if len(records) != expected:
         raise RuntimeError(f"expected {expected} {split} records, found {len(records)}")
+    if source_row_indices is not None:
+        if holdout:
+            raise RuntimeError("development samples are not allowed on holdout")
+        wanted = {int(index) for index in source_row_indices}
+        records = [
+            record for record in records if record.source_row_index in wanted
+        ]
+        found = {record.source_row_index for record in records}
+        if found != wanted:
+            missing = sorted(wanted - found)
+            raise RuntimeError(f"sample is missing {len(missing)} {split} records")
     work_root = (HOLDOUT_SCRATCH if holdout else WORK_ROOT) / method / spec.slug
     segment = paper_work_suffix(spec)
     if segment:
         work_root = work_root / segment
-    work_root = work_root / split
+    work_root = work_root / (work_leaf or split)
     work_root.mkdir(parents=True, exist_ok=True)
     rows_path = work_root / "rows.jsonl"
     started = datetime.now(UTC).isoformat()
@@ -403,7 +576,9 @@ def run_gan(
         if progress_every and index % progress_every == 0:
             print(f"{spec.slug} {method} {split}: {len(rows)}/{len(records)}", flush=True)
     if len(by_index) != len(records):
-        raise RuntimeError(f"{method} {split} has {len(by_index)} rows, expected {len(records)}")
+        raise RuntimeError(
+            f"{method} {split} has {len(by_index)} rows, expected {len(records)}"
+        )
     rows = [by_index[record.source_row_index] for record in records]
     write_jsonl_rows(rows, rows_path)
     summary = _summarize(method, rows)
@@ -476,6 +651,16 @@ def _prompt_version(method: str) -> str:
         return hybrid_structured_events.GAN_LLM_EXTRACT_RAW
     if method == "gan_llm_extract":
         return GAN_LLM_EXTRACT
+    if method == "gan_llm_extract_no_examples":
+        return extract_no_examples.GAN_LLM_EXTRACT_NO_EXAMPLES
+    if method == "gan_llm_extract_holgate_like":
+        return extract_holgate.GAN_LLM_EXTRACT_HOLGATE_LIKE
+    if method == "gan_llm_extract_holgate_label":
+        return extract_holgate_label.GAN_LLM_EXTRACT_HOLGATE_LABEL
+    if method == "gan_llm_extract_no_evidence":
+        return extract_no_evidence.GAN_LLM_EXTRACT_NO_EVIDENCE
+    if method == "gan_llm_extract_examples_only":
+        return extract_examples_only.GAN_LLM_EXTRACT_EXAMPLES_ONLY
     if method == "gan_llm_and_rules_extract":
         return and_rules_extract.GAN_LLM_AND_RULES_EXTRACT
     if method in {
@@ -491,8 +676,16 @@ def _repair_mode(method: str) -> str | None:
     method = METHOD_ALIASES.get(method, method)
     if method == "gan_llm_only":
         return None
-    if method == "gan_llm_extract":
+    if method in {
+        "gan_llm_extract",
+        "gan_llm_extract_no_examples",
+        "gan_llm_extract_holgate_like",
+        "gan_llm_extract_no_evidence",
+        "gan_llm_extract_examples_only",
+    }:
         return "raw_model"
+    if method == "gan_llm_extract_holgate_label":
+        return "raw_model_single_answer"
     return "llm_select"
 
 
@@ -562,6 +755,8 @@ def _gan_batch_items(
 def _programs(method: str) -> tuple[Any, Any]:
     if method == "gan_llm_only":
         return gan_llm_only.DspyCanonicalLlmExtractor(), None
+    if method == "gan_llm_extract_holgate_label":
+        return hybrid_structured_events.DspyHolgateLabelExtractor(), FormatOnlyJsonRetry()
     return hybrid_structured_events.DspyStructuredExtractor(), FormatOnlyJsonRetry()
 
 

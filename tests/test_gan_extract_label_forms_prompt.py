@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 from clinical_extraction.paper.gan import verify_gan
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
@@ -18,12 +19,21 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_label_forms 
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_extract import (
     GAN_LLM_EXTRACT,
     LLM_EXTRACT_AUTHORED_KEYS,
+    LLM_EXTRACT_TEMPLATE_KEYS,
     build_llm_extract_prompt_input,
+    llm_extract_prompt_template,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_extract_raw import (
     EVENT_SCHEMA,
     SELECTION_SCHEMA,
     build_llm_extract_raw_prompt_input,
+)
+
+SUPPORTING_EXTRACT_TEMPLATE = (
+    Path(__file__).resolve().parents[1]
+    / "paper"
+    / "supporting materials"
+    / "gan_llm_extract_prompt_template.json"
 )
 
 
@@ -42,6 +52,21 @@ def _record() -> GanFrequencyRecord:
         gold_yearly_bounds=(24.0, 24.0),
         gold_monthly_frequency=2.0,
     )
+
+
+def test_extract_template_omits_letter_and_research_metadata() -> None:
+    template = llm_extract_prompt_template()
+    payload = json.loads(build_llm_extract_prompt_input(_record()))
+    assert tuple(template) == LLM_EXTRACT_TEMPLATE_KEYS
+    assert "note_text" not in template
+    assert "prompt_version" not in template
+    assert template["label_forms"] == label_forms_payload()
+    assert {**template, "note_text": _record().note_text} == payload
+
+
+def test_supporting_extract_template_matches_living_prompt() -> None:
+    on_disk = json.loads(SUPPORTING_EXTRACT_TEMPLATE.read_text(encoding="utf-8"))
+    assert on_disk == llm_extract_prompt_template()
 
 
 def test_extract_payload_keeps_events_source_near() -> None:
