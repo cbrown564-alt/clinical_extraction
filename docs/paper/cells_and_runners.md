@@ -16,7 +16,11 @@ select is rules, LLM, or both. Live runner names are not the table.
 | 5 | LLM | LLM | LLM | `gan_llm_select_from_extract` | Later-stage `exect_llm_select` |
 
 `gan_llm_only` is a live runner. It is not a results column.
-`gan_llm_extract_raw` is the source-near wording ablation, not cell 3.
+`gan_llm_extract` already writes the codebook form: it is bundled
+find-and-encode. That is why cell 3 is LLM find plus a second rule
+encode. `gan_llm_extract_raw` is find only (source-near). Living
+rules find uses that same source-near dialect. The source-near LLM
+request is a wording ablation, not cell 3.
 `exect_llm_extract_filtered` is the Compact find ablation, Gemini
 only.
 On Gan, LLM encode in the table means the find already wrote the

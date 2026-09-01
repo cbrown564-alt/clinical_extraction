@@ -1,0 +1,79 @@
+{
+  "call_transport": "sync",
+  "cell": 5,
+  "claim_boundary": "Cited Gan aggregate-only test450 cell 5. gan_llm_select_from_extract with the living policy-example select prompt. Do not inspect holdout rows.",
+  "extract_ledger": "gan_llm_extract",
+  "finished_utc": "2026-08-31T21:05:09.741138+00:00",
+  "generated_on": "2026-08-21",
+  "headline": "select",
+  "live": true,
+  "living_schema_version": "paper.living_cell.v1",
+  "method": "gan_llm_select_from_extract",
+  "model": "gemini/gemini-3.7-flash",
+  "model_calls": 51,
+  "model_slug": "gemini37flash",
+  "prompt_version": "gan_llm_select_policy_examples",
+  "replay_mode": "live",
+  "row_count": 450,
+  "row_policy": "aggregate_only",
+  "schema_version": "paper.gan_llm_select_from_extract.v1",
+  "score": {
+    "micro_f1": 0.8511,
+    "n": 450,
+    "purist_accuracy": 0.8511,
+    "purist_correct": 383
+  },
+  "scorer": "purist",
+  "split": "test450",
+  "split_machine": "test",
+  "split_manifest": "gan2026_split_v1",
+  "stages": {
+    "encode": {
+      "micro_f1": 0.8511,
+      "n": 450,
+      "pragmatic_accuracy": 0.8689,
+      "pragmatic_correct": 391,
+      "pragmatic_micro_f1": 0.8689,
+      "purist_accuracy": 0.8511,
+      "purist_correct": 383
+    },
+    "extract": {
+      "micro_f1": 0.8511,
+      "n": 450,
+      "pragmatic_accuracy": 0.8689,
+      "pragmatic_correct": 391,
+      "pragmatic_micro_f1": 0.8689,
+      "purist_accuracy": 0.8511,
+      "purist_correct": 383
+    },
+    "select": {
+      "micro_f1": 0.8511,
+      "n": 450,
+      "pragmatic_accuracy": 0.8689,
+      "pragmatic_correct": 391,
+      "pragmatic_micro_f1": 0.8689,
+      "purist_accuracy": 0.8511,
+      "purist_correct": 383
+    }
+  },
+  "started_utc": "2026-08-31T21:00:18.772496+00:00",
+  "summary": {
+    "call_failures": 0,
+    "evidence_valid": 0,
+    "examples": 450,
+    "format_retries_applied": 0,
+    "format_retries_rejected": 0,
+    "initial_parse_or_validation_failures": 0,
+    "json_dialect_repairs": 0,
+    "parse_or_validation_failures": 0,
+    "pragmatic_accuracy": 0.8689,
+    "pragmatic_correct": 391,
+    "predicted_candidate_count": 985,
+    "purist_accuracy": 0.8511,
+    "purist_correct": 383,
+    "repair_notes": 0,
+    "reused_raw_outputs": 0,
+    "structured_records": 450
+  },
+  "task": "gan2026"
+}

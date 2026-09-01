@@ -51,9 +51,10 @@ Grok has no Full ledger cell.
 
 ## Gan codebook find and source-near ablation
 
-The cited Gan row is one codebook find call
+The cited Gan row is one codebook extract call
 (`gan_llm_extract`), then `gan_rules_encode` and rule
-select. Find already writes the designed form.
+select. That extract already writes the designed form, so it is
+bundled find-and-encode. Living rules find is source-near.
 
 The source-near ablation is one structured-events call on the
 cleaned request (`gan_llm_extract_raw`), then the same frozen

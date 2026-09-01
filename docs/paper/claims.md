@@ -84,10 +84,12 @@ research measure. It is not the published 2019 ExECT benchmark.
 
 The Gan headline comparison is five role combinations (rules, LLM,
 or both at find / encode / select). The cited score is the select
-stop. On Gan, LLM find is the codebook find
-(`gan_llm_extract`). **both** find is
-`gan_llm_and_rules_extract`. LLM encode means that find already
-wrote the form. LLM-then-rules encode is `gan_rules_encode`. LLM
+stop. On Gan, the cited LLM extract is the codebook request
+(`gan_llm_extract`). That request already writes the form, so it is
+bundled find-and-encode. Living rules find is source-near
+(`gan_llm_extract_raw` dialect). **both** find is
+`gan_llm_and_rules_extract`. LLM encode in the headline table means
+that extract already wrote the form. LLM-then-rules encode is `gan_rules_encode`. LLM
 select is `gan_llm_select_from_extract`. ExECT uses the same five
 role rows. LLM find is `exect_llm_extract`. One-call find-and-select
 (`exect_llm_extract_and_select`; read-only aliases
@@ -130,13 +132,13 @@ Class report: [gan_test450_classification_report_2026-08-28.md](../research/gan2
 | both | rules | rules | 0.82 |
 | LLM | rules | rules | 0.86 |
 | LLM | LLM | rules | 0.85 |
-| LLM | LLM | LLM | 0.79 |
+| LLM | LLM | LLM | 0.85 |
 
 Hybrid select is ledger-only (`elapsed_anchor` and `residual_jerk`
 off). The paper may say that, with Gemini as the cited model, the
 strongest row is LLM find plus codebook rule encode plus rule
 select (0.86). It may say rule select without encode, and both-then-
-rules, are 0.85 and 0.82. It may say LLM select is 0.79. It may say find
+rules, are 0.85 and 0.82. It may say LLM select is 0.85. It may say find
 and encode stops are prior-stage ablations, not a second headline
 table. It may not say which letters moved. The historical
 selected-evidence encoder on the codebook find (encode 0.77,
@@ -173,7 +175,7 @@ Named Gemini `dev750` select stops on the same codebook find.
 | both | rules | rules | 0.89 |
 | LLM | rules | rules | 0.86 |
 | LLM | LLM | rules | 0.85 |
-| LLM | LLM | LLM | 0.79 |
+| LLM | LLM | LLM | 0.85 |
 
 The source-near `gan_llm_extract_raw` development grid (find 0.59,
 later-stage encode 0.67 / select 0.76, hybrid select 0.88) stays an
@@ -359,7 +361,7 @@ The files support this account of the proposed method, cited on Grok:
 4. On locked frequency letters, Gemini LLM find plus codebook
    encode plus rule select raises the locked score by 0.14 against
    standalone rules (0.86 vs 0.72). Rule select without encode is
-   0.85. Both-then-rules is 0.82. LLM select is 0.79. Grok living
+   0.85. Both-then-rules is 0.82. LLM select is 0.85. Grok living
    hybrid 0.83 is a different stack on the source-near request.
    `gan_llm_only` is not in that comparison.
    On the locked inventory, Gemini LLM find plus rule select is

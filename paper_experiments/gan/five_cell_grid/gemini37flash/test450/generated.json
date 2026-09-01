@@ -19,7 +19,7 @@
       "encode_role": "LLM",
       "extract_role": "LLM",
       "extract_source": "gan_llm_extract",
-      "select": 320,
+      "select": 383,
       "select_method": "gan_llm_select_from_extract",
       "select_role": "LLM"
     },
@@ -47,8 +47,8 @@
     },
     "rules": {
       "ablation": {
-        "encode": 292,
-        "extract": 292
+        "encode": 284,
+        "extract": 190
       },
       "encode_role": "rules",
       "extract_role": "rules",

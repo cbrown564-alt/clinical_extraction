@@ -126,8 +126,9 @@ def test_living_figure_sources_match_sealed_aggregates() -> None:
     cells = load_living_gemini_cells()
     models = load_living_six_model_cell3()
     assert cells.categories == ["Rules", "Both", "LLM"]
-    assert cells.series["Select"] == [325 / 450, 387 / 450, 357 / 450]
-    assert cells.series["Find"] == [292 / 450, 354 / 450, 354 / 450]
+    assert cells.series["Select"] == [325 / 450, 387 / 450, 383 / 450]
+    assert cells.series["Find"] == [190 / 450, 354 / 450, 354 / 450]
+    assert cells.series["Encode"] == [284 / 450, 359 / 450, 354 / 450]
     assert models.categories[0] == "Gemini 3.7 Flash"
     assert models.series["Select"][0] == 387 / 450
 
@@ -146,8 +147,8 @@ def test_gemini_barbell_uses_select_stops_on_both_splits() -> None:
 @pytest.mark.local_corpus
 def test_living_barbell_matches_sealed_cell_selects() -> None:
     chart = load_living_gemini_dev_vs_test()
-    assert chart.development == [691 / 750, 656 / 750, 590 / 750]
-    assert chart.holdout == [325 / 450, 387 / 450, 357 / 450]
+    assert chart.development == [691 / 750, 656 / 750, 640 / 750]
+    assert chart.holdout == [325 / 450, 387 / 450, 383 / 450]
     hybrid_delta = abs(chart.holdout[1] - chart.development[1])
     assert BARBELL_CONNECTOR_MIN_ABS_DELTA <= hybrid_delta < BARBELL_DELTA_LABEL_MIN_ABS_DELTA
 

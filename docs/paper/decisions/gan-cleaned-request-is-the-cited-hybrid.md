@@ -15,8 +15,9 @@ name, version string, or row index in the model-facing JSON. The
 repair stack is unchanged.
 
 This is not the cited paper Gan method. The cited row is cell 3:
-`gan_llm_extract` find, then rule encode and rule
-select. See [six-model roster](six-model-roster.md).
+`gan_llm_extract` (bundled find-and-encode), then rule encode and
+rule select. Living rules find uses the source-near dialect of this
+ablation request. See [six-model roster](six-model-roster.md).
 
 The enveloped request is not this ablation either. Do not relabel those
 cells. Do not cite Sol 381/450, or the rest of that panel, as the

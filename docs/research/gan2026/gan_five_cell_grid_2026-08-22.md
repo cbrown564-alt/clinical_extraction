@@ -1,7 +1,7 @@
 # Gan five-cell prefix grid
 
 Date: 2026-08-22
-Revised: 2026-08-29 (rules row promoted to three-stage 325/450; measured find/encode 292)
+Revised: 2026-08-31 (cited LLM select 383/450; living source-near rules find 190/450; encode 284; select 325)
 Status: cited
 Owner: [protocol](gan_five_cell_grid_protocol_2026-08-22.md)
 Paper artifact: `paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json`
@@ -20,8 +20,12 @@ stops are prior-stage ablations. `gan_llm_only` is not a results column.
 
 On locked `test450`, LLM find plus codebook rule encode plus rule
 select is the strongest row (**0.86**). Rule select without that
-encode is **0.85**. Both-then-rules is **0.82**. LLM select is **0.79**.
-Standalone rules are **0.72** (325/450; promoted three-stage program). The historical selected-evidence
+encode is **0.85**. Both-then-rules is **0.82**. LLM select is **0.85**.
+Standalone rules are **0.72** (325/450; promoted three-stage
+program). Living rules find is source-near **190/450**; encode of
+that pick is **284/450**. Phase D **292 / 292** is fused codebook
+instrumentation.
+The historical selected-evidence
 encoder on the same extract is an ablation (encode 0.77, select 0.80).
 
 ## Locked `test450` headline (select stop, aggregate only)
@@ -32,19 +36,24 @@ encoder on the same extract is an ablation (encode 0.77, select 0.80).
 | both | rules | rules | 0.82 |
 | LLM | rules | rules | **0.86** |
 | LLM | LLM | rules | 0.85 |
-| LLM | LLM | LLM | 0.79 |
+| LLM | LLM | LLM | 0.85 |
 
-`both` find is `gan_llm_and_rules_extract`. LLM find is
-`gan_llm_extract`. LLM encode means the find already
-wrote the codebook form (no rule encode). LLM select is
-`gan_llm_select_from_extract`. The LLM-then-rules encode is
+`both` find is `gan_llm_and_rules_extract`. Cited LLM extract is
+`gan_llm_extract` (bundled find-and-encode). Living rules find is
+source-near. LLM encode in the table means that extract already
+wrote the codebook form (no second rule encode). LLM select is
+`gan_llm_select_from_extract` with the living policy-example
+prompt. The LLM-then-rules encode is
 `gan_rules_encode`.
 
 ## Prior-stage ablation (same rows)
 
+Rules find is living source-near (**190/450 = 0.42**). Encode is
+**284/450 = 0.63**. Phase D 0.65 / 0.65 was fused codebook.
+
 | Find | Encode | Select | Find stop | Encode stop |
 | --- | --- | --- | ---: | ---: |
-| rules | rules | rules | 0.65 | 0.65 |
+| rules | rules | rules | 0.42 | 0.63 |
 | both | rules | rules | 0.82 | 0.80 |
 | LLM | rules | rules | 0.79 | 0.80 |
 | LLM | LLM | rules | 0.79 | 0.79 |
@@ -58,7 +67,7 @@ wrote the codebook form (no rule encode). LLM select is
 | both | rules | rules | 0.89 |
 | LLM | rules | rules | 0.87 |
 | LLM | LLM | rules | 0.85 |
-| LLM | LLM | LLM | 0.79 |
+| LLM | LLM | LLM | 0.85 |
 
 Holdout rows were not inspected. The old `gan_llm_extract_raw` grid
 is the source-near ablation.

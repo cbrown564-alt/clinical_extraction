@@ -9,8 +9,9 @@ Cited-model decision: [Gemini is the cited model](gemini-is-the-cited-model.md)
 
 ## Decision
 
-The six-model comparison is **cell 3 only** on both tasks: LLM
-find, rules encode, rules select.
+The six-model comparison is **cell 3 only** on both tasks: cited
+LLM extract (`gan_llm_extract`, bundled find-and-encode), rules
+encode, rules select.
 
 1. Gemini 3.7 Flash (cited model)
 2. Grok 4.6

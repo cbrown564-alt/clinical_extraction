@@ -1,7 +1,7 @@
 # Gan later-stage encode and select prompts
 
 Date: 2026-08-21
-Revised: 2026-08-22 (codebook find absorbs encode)
+Revised: 2026-08-31 (select may use event quotes under named policies)
 Status: current
 Owner: [paper methods](../methods.md)
 Related: [Gemini is the cited model](gemini-is-the-cited-model.md)
@@ -11,16 +11,26 @@ Related: [Gemini is the cited model](gemini-is-the-cited-model.md)
 On the codebook find (`gan_llm_extract`), the Gemini
 **LLM** row has no separate encode call. Find already writes the
 designed form. Encode is that same cell. Select is
-`gan_llm_select_from_extract`: it reads find events and the
-find pick, not a later-stage encode ledger.
+`gan_llm_select_from_extract`: it reads find events, their quotes,
+and the find pick, not a later-stage encode ledger and not the letter.
 
 `gan_llm_encode` and encode-then-`gan_llm_select` remain runnable
 ablations. They are not the LLM row. They do not re-read the letter.
 
 Select from find uses the same select prompt as encode-then-select.
 It may write a new label only when no single event is the answer.
-It cannot do the note-derived hybrid families. After the call, only
-join and projection run.
+The living prompt may use event quotes under the same current-state
+policies as living rule select: usual spacing, usual rate versus a
+year total, recent count after a quiet spell, not epileptic (write
+`seizure free for multiple year`), month list with the diary
+keep-guards, dated sequence without a day or week overwrite, burst
+after a change, and a short quiet spell after a last event (under
+6 months; 5 weeks or less becomes per month). It still has no
+letter, so it cannot apply the dated-sequence clinic-date gate.
+After the call, only join and projection run.
+Cited cell 5 is this living prompt
+(`gan_llm_select_policy_examples`) on both splits: `test450`
+383/450 and `dev750` 640/750.
 
 ## Why
 

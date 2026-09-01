@@ -73,9 +73,11 @@ not list every revise subtype):
 - **Encode** — codebook / designed form / Gan selected-evidence renderer.
 - **Select** — gate, drop, rewrite, reselect, invent.
 
-On Gan the cited find is `gan_llm_extract`, not
-`gan_llm_extract_raw`. LLM encode in the headline table is that
-find, not a later-stage encode call. Tables cite Gemini 3.7 Flash.
+On Gan the cited LLM extract is `gan_llm_extract`, not
+`gan_llm_extract_raw`. That request already writes codebook form, so
+it is bundled find-and-encode. Living rules find is source-near.
+LLM encode in the headline table is that bundled extract, not a
+later-stage encode call. Tables cite Gemini 3.7 Flash.
 
 On ExECT, cells 3–5 replay one `exect_llm_extract` raw. **both / rules /
 rules** is a different request (`exect_llm_pre_post`). `exect_llm_with_rules`
@@ -103,7 +105,7 @@ stays in the quoted span. It is not in the submitted label.
 
 | Role row | Find | Encode | Select |
 | --- | --- | --- | --- |
-| **rules / rules / rules** | `4 per day` (correct) | same | same |
+| **rules / rules / rules** | `four per day` (source-near find) | `4 per day` | `4 per day` |
 | **Wording ablation** (`gan_llm_extract_raw`) | `≤ 4 per day` (incorrect) | `4 per day` (correct) | `4 per day` (correct) |
 | **both / rules / rules** | `4 per day` (correct) | — | `4 per day` (correct) |
 

@@ -1,8 +1,8 @@
 # Paper results
 
 Date: 2026-08-24
-Revised: 2026-08-29 (`last_event_well_since` promoted on living cell-3
-select; six-model rungs and Table 1 refreshed)
+Revised: 2026-08-31 (cited cell 5 is the policy-example LLM select,
+383/450 on `test450` and 640/750 on `dev750`)
 Status: structured first draft; ExECT columns removed from the dissertation
 Owner: this file
 Scope: [Gan is the dissertation paper](../decisions/gan-is-the-dissertation-paper.md)
@@ -44,34 +44,43 @@ the end-to-end model configuration (Table 1).
 | Model and rules | Rules | Rules | 0.82 (368) | 0.84 (380) |
 | Model | Model + Rules | Rules | **0.86** (387) | **0.88** (396) |
 | Model | Model | Rules | 0.85 (382) | 0.87 (391) |
-| Model | Model | Model | 0.79 (357) | 0.82 (369) |
+| Model | Model | Model | 0.85 (383) | 0.87 (391) |
 
 **Table 1.** Locked aggregate-only Gan five-cell comparison using
 Gemini 3.7 Flash. The cited score is the select stop. Source:
 `paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json`
 and
 [the `test450` class report](../../research/gan2026/gan_test450_classification_report_2026-08-28.md).
-Cell 3 find is `gan_llm_extract`, which already writes the
-codebook form. Encode then runs `gan_rules_encode` on that ledger, so
-both the model and the rules encode. That is not cell 2 (both at
-find) and not cell 4 (same extract, no rule encode). Table 1 cell 3
+Cell 3 extract is `gan_llm_extract`, which already writes the
+codebook form: bundled find-and-encode. Encode then runs
+`gan_rules_encode` on that ledger, so both the model and the rules
+encode. Living rules find (cell 1) is source-near, not that codebook
+string. That is not cell 2 (both at find) and not cell 4 (same
+extract, no rule encode). Table 1 cell 3
 is the living no-call replay of that extract through
 `llm_select_after_codebook`, including `last_event_well_since`
 (387/450 Purist, 396/450 Pragmatic). Cell 4 is the same extract
 through `llm_select_only` (382/450 Purist).
+Cell 5 is `gan_llm_select_from_extract` with the living
+policy-example select prompt (383/450 Purist, 391/450 Pragmatic).
 
 Replacing rule-based find with Gemini raised Purist
 micro-F1 from 0.72 to 0.86 when the model already wrote the codebook
-form and rules then encoded and selected. Dropping the second rule
-encode (cell 4) or assigning selection to the model (cell 5) reduced
-the final score. Rules Purist 325/450 and Pragmatic 345/450 are the
+form and rules then encoded and selected. The 0.72 is the rules
+select stop. Living rules find is source-near **190/450**; encode
+of that pick is **284/450**. Phase D **292 / 292** is fused codebook
+instrumentation. Dropping the second rule encode (cell 4) is a
+small drop (387 → 382). Assigning selection to the model (cell 5)
+is 383/450, one letter above cell 4 and four below cell 3.
+Rules Purist 325/450 and Pragmatic 345/450 are the
 promoted three-stage select stops.
 
 Paired exact McNemar tests use that same cell-3 vector
 (**387**/450). On those letters cell 3 beats standalone rules
 (325; 99 vs 37 discordant; Δ+0.138, 95% CI 0.089 to 0.187;
-*p* = 1.0×10⁻⁷) and beats cell 5 (357; 40 vs 10; Δ+0.067,
-95% CI 0.037 to 0.097; *p* = 2.4×10⁻⁵). Owner:
+*p* = 1.0×10⁻⁷). Cell 3 versus cell 5 (383; 16 vs 12; Δ+0.009,
+95% CI −0.014 to 0.032; *p* = 0.57) is compatible with no
+difference. Owner:
 [paired `test450` tests](../../research/gan2026/gan_paired_significance_test450_2026-08-29.md).
 
 ## C. The most difficult errors involve interpretation, not detection
@@ -90,7 +99,9 @@ sparse rare rates (less than once every 6 months, once every 6
 months, and to a lesser extent once a month). Mid-to-high countable
 rates are stronger. Cell 3 raises Daily and Unknown F1 relative to
 standalone rules, and keeps more-than-weekly F1 high. The all-model
-cell keeps Daily F1 but loses mid-band recall. Seizure free is the
+cell now tracks those mid-band rates more closely; Seizure free
+and the sparse six-month bins remain weaker than cell 3.
+Seizure free is the
 `currently_no_seizure` band (monthly frequency 0). It is not gold-kind
 `no seizure frequency reference`, which scores as Unknown.
 
@@ -144,26 +155,27 @@ already encodes), then `gan_rules_encode` and rule select. Replay
 Pragmatic companion: Frequent 0.95, Infrequent 0.82, Unknown 0.74,
 Seizure free 0.90; micro-F1 0.88.
 
-**Table 2c.** Cell 5 — Gemini find, encode, and select. Purist
-357/450; two later-stage rows with no scorable select label count as
+**Table 2c.** Cell 5 — Gemini find, encode, and select with the
+living policy-example select prompt. Purist
+383/450; two later-stage rows with no scorable select label count as
 incorrect. Same class order as Table 2a.
 
 | Class | P | R | F1 | Support |
 | --- | ---: | ---: | ---: | ---: |
-| Daily | 0.90 | 0.93 | 0.92 | 41 |
-| More than weekly, less than daily | 0.94 | 0.85 | 0.89 | 123 |
-| Once a week | 1.00 | 0.60 | 0.75 | 5 |
-| More than monthly, less than weekly | 0.89 | 0.69 | 0.78 | 58 |
-| Once a month | 0.64 | 0.50 | 0.56 | 18 |
-| More than 6 months, less than monthly | 0.94 | 0.62 | 0.75 | 55 |
+| Daily | 0.93 | 0.93 | 0.93 | 41 |
+| More than weekly, less than daily | 0.96 | 0.87 | 0.91 | 123 |
+| Once a week | 1.00 | 1.00 | 1.00 | 5 |
+| More than monthly, less than weekly | 0.91 | 0.88 | 0.89 | 58 |
+| Once a month | 0.94 | 0.83 | 0.88 | 18 |
+| More than 6 months, less than monthly | 0.93 | 0.71 | 0.80 | 55 |
 | Once every 6 months | 0.00 | 0.00 | 0.00 | 1 |
 | Less than once every 6 months | 1.00 | 0.67 | 0.80 | 6 |
-| Unknown | 0.61 | 0.91 | 0.73 | 76 |
-| Seizure free | 0.69 | 0.84 | 0.76 | 67 |
-| micro-F1 | 0.79 | 0.79 | 0.79 | 450 |
+| Unknown | 0.64 | 0.87 | 0.74 | 76 |
+| Seizure free | 0.84 | 0.87 | 0.85 | 67 |
+| micro-F1 | 0.85 | 0.85 | 0.85 | 450 |
 
-Pragmatic companion: Frequent 0.92, Infrequent 0.71, Unknown 0.73,
-Seizure free 0.76; micro-F1 0.82.
+Pragmatic companion: Frequent 0.94, Infrequent 0.83, Unknown 0.74,
+Seizure free 0.85; micro-F1 0.87.
 
 **Supporting material.** Keep the four-decimal class report, residual
 taxonomy, and representative development cases. The main paper needs
@@ -200,8 +212,8 @@ LLM encode-then-select ablation. Sources:
 `paper_experiments/gan/gan_llm_extract/gemini37flash/{split}/comparison.json`,
 `paper_experiments/gan/gan_llm_encode/gemini37flash/{split}/`,
 `paper_experiments/gan/gan_llm_select/gemini37flash/{split}/`.
-Holdout is aggregate-only. Cited cell 5 on `test450` remains
-**0.79** (357). Do not retune Table 1 from these cells.
+Holdout is aggregate-only. Cited cell 5 on `test450` is
+**0.85** (383). Do not retune Table 1 from these cells.
 
 Encode is the drop. Select recovers some of the lost letters but
 stays below the extract stop on both sealed cells, and below cited

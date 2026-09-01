@@ -79,12 +79,13 @@
           "recognise": "LLM",
           "encode": "LLM",
           "select": "LLM",
-          "purist_correct": 357,
-          "purist_micro_f1": 0.7933,
-          "cited": 0.79,
-          "pragmatic_correct": 369,
-          "pragmatic_micro_f1": 0.82,
-          "pragmatic_source": "this class report cell 5"
+          "purist_correct": 383,
+          "purist_micro_f1": 0.8511,
+          "cited": 0.85,
+          "pragmatic_correct": 391,
+          "pragmatic_micro_f1": 0.8689,
+          "pragmatic_source": "this class report cell 5 (policy-example select prompt)",
+          "cited_pragmatic": 0.87
         }
       ]
     }
@@ -184,7 +185,7 @@
             "fn": 34
           },
           {
-            "label": "\u22651/D",
+            "label": "≥1/D",
             "precision": 0.6341463414634146,
             "recall": 0.6341463414634146,
             "f1": 0.6341463414634146,
@@ -368,7 +369,7 @@
             "fn": 13
           },
           {
-            "label": "\u22651/D",
+            "label": "≥1/D",
             "precision": 0.875,
             "recall": 0.9722222222222222,
             "f1": 0.9210526315789473,
@@ -556,7 +557,7 @@
             "fn": 10
           },
           {
-            "label": "\u22651/D",
+            "label": "≥1/D",
             "precision": 0.8717948717948718,
             "recall": 0.9444444444444444,
             "f1": 0.9066666666666667,
@@ -744,7 +745,7 @@
             "fn": 10
           },
           {
-            "label": "\u22651/D",
+            "label": "≥1/D",
             "precision": 0.9166666666666666,
             "recall": 0.9166666666666666,
             "f1": 0.9166666666666666,
@@ -932,7 +933,7 @@
             "fn": 16
           },
           {
-            "label": "\u22651/D",
+            "label": "≥1/D",
             "precision": 0.8095238095238095,
             "recall": 0.9444444444444444,
             "f1": 0.8717948717948718,
@@ -1120,7 +1121,7 @@
             "fn": 22
           },
           {
-            "label": "\u22651/D",
+            "label": "≥1/D",
             "precision": 0.8157894736842105,
             "recall": 0.8611111111111112,
             "f1": 0.8378378378378377,
@@ -1308,7 +1309,7 @@
             "fn": 11
           },
           {
-            "label": "\u22651/D",
+            "label": "≥1/D",
             "precision": 0.8888888888888888,
             "recall": 0.9142857142857143,
             "f1": 0.9014084507042254,
@@ -1496,7 +1497,7 @@
             "fn": 13
           },
           {
-            "label": "\u22651/D",
+            "label": "≥1/D",
             "precision": 0.8421052631578947,
             "recall": 0.8888888888888888,
             "f1": 0.8648648648648649,
@@ -1684,7 +1685,7 @@
             "fn": 11
           },
           {
-            "label": "\u22651/D",
+            "label": "≥1/D",
             "precision": 0.868421052631579,
             "recall": 0.9166666666666666,
             "f1": 0.8918918918918918,
@@ -1874,7 +1875,7 @@
             "fn": 16
           },
           {
-            "label": "\u22651/D",
+            "label": "≥1/D",
             "precision": 0.9047619047619048,
             "recall": 0.926829268292683,
             "f1": 0.9156626506024096,
@@ -1965,18 +1966,28 @@
       "status": "living paper cell; replay is +1 vs cited five-cell"
     },
     "gemini_cell_5": {
-      "identity": "gemini37flash / LLM / LLM / LLM / gan_llm_select_from_extract",
+      "identity": "gemini37flash / LLM / LLM / LLM / gan_llm_select_from_extract / gan_llm_select_policy_examples",
       "cell": 5,
       "gold_epsilon": "living gold_monthly_frequency",
       "n": 450,
       "dropped": 0,
-      "purist_correct": 357,
-      "pragmatic_correct": 369,
+      "purist_correct": 383,
+      "pragmatic_correct": 391,
       "unscorable_rows_counted_incorrect": 2,
       "purist": {
         "n": 450,
-        "micro_f1": 0.7933333333333333,
-        "correct": 357,
+        "micro_f1": 0.8511111111111112,
+        "correct": 383,
+        "macro": {
+          "precision": 0.8140328534609594,
+          "recall": 0.7619241915820794,
+          "f1": 0.7809052404855317
+        },
+        "weighted": {
+          "precision": 0.8717659009337988,
+          "recall": 0.8511111111111112,
+          "f1": 0.8555647913472233
+        },
         "per_class": [
           {
             "label": "<1/6M",
@@ -1992,142 +2003,152 @@
             "label": "=1/6M",
             "precision": 0.0,
             "recall": 0.0,
-            "f1": 0,
+            "f1": 0.0,
             "support": 1,
             "tp": 0,
-            "fp": 1,
+            "fp": 0,
             "fn": 1
           },
           {
             "label": "(1/6M,1/M)",
-            "precision": 0.9444444444444444,
-            "recall": 0.6181818181818182,
-            "f1": 0.7472527472527473,
+            "precision": 0.9285714285714286,
+            "recall": 0.7090909090909091,
+            "f1": 0.8041237113402062,
             "support": 55,
-            "tp": 34,
-            "fp": 2,
-            "fn": 21
+            "tp": 39,
+            "fp": 3,
+            "fn": 16
           },
           {
             "label": "=1/M",
-            "precision": 0.6428571428571429,
-            "recall": 0.5,
-            "f1": 0.5625000000000001,
+            "precision": 0.9375,
+            "recall": 0.8333333333333334,
+            "f1": 0.8823529411764706,
             "support": 18,
-            "tp": 9,
-            "fp": 5,
-            "fn": 9
+            "tp": 15,
+            "fp": 1,
+            "fn": 3
           },
           {
             "label": "(1/M,1/W)",
-            "precision": 0.8888888888888888,
-            "recall": 0.6896551724137931,
-            "f1": 0.7766990291262136,
+            "precision": 0.9107142857142857,
+            "recall": 0.8793103448275862,
+            "f1": 0.8947368421052632,
             "support": 58,
-            "tp": 40,
+            "tp": 51,
             "fp": 5,
-            "fn": 18
+            "fn": 7
           },
           {
             "label": "=1/W",
             "precision": 1.0,
-            "recall": 0.6,
-            "f1": 0.7499999999999999,
+            "recall": 1.0,
+            "f1": 1.0,
             "support": 5,
-            "tp": 3,
+            "tp": 5,
             "fp": 0,
-            "fn": 2
+            "fn": 0
           },
           {
             "label": "(1/W,1/D)",
-            "precision": 0.9369369369369369,
-            "recall": 0.8455284552845529,
-            "f1": 0.888888888888889,
+            "precision": 0.9553571428571429,
+            "recall": 0.8699186991869918,
+            "f1": 0.9106382978723403,
             "support": 123,
-            "tp": 104,
-            "fp": 7,
-            "fn": 19
+            "tp": 107,
+            "fp": 5,
+            "fn": 16
           },
           {
-            "label": "\u22651/D",
-            "precision": 0.9047619047619048,
+            "label": "≥1/D",
+            "precision": 0.926829268292683,
             "recall": 0.926829268292683,
-            "f1": 0.9156626506024096,
+            "f1": 0.926829268292683,
             "support": 41,
             "tp": 38,
-            "fp": 4,
+            "fp": 3,
             "fn": 3
           },
           {
             "label": "UNK",
-            "precision": 0.6106194690265486,
-            "recall": 0.9078947368421053,
-            "f1": 0.7301587301587302,
+            "precision": 0.6407766990291263,
+            "recall": 0.868421052631579,
+            "f1": 0.7374301675977656,
             "support": 76,
-            "tp": 69,
-            "fp": 44,
-            "fn": 7
+            "tp": 66,
+            "fp": 37,
+            "fn": 10
           },
           {
             "label": "NS",
-            "precision": 0.691358024691358,
-            "recall": 0.835820895522388,
-            "f1": 0.7567567567567567,
+            "precision": 0.8405797101449275,
+            "recall": 0.8656716417910447,
+            "f1": 0.8529411764705882,
             "support": 67,
-            "tp": 56,
-            "fp": 25,
-            "fn": 11
+            "tp": 58,
+            "fp": 11,
+            "fn": 9
           }
         ]
       },
       "pragmatic": {
         "n": 450,
-        "micro_f1": 0.82,
-        "correct": 369,
+        "micro_f1": 0.8688888888888889,
+        "correct": 391,
+        "macro": {
+          "precision": 0.8512329823055725,
+          "recall": 0.8469730634734973,
+          "f1": 0.8411669792894209
+        },
+        "weighted": {
+          "precision": 0.892849813294844,
+          "recall": 0.8688888888888889,
+          "f1": 0.8751158757217169
+        },
         "per_class": [
           {
             "label": "infrequent",
-            "precision": 0.8727272727272727,
-            "recall": 0.6,
-            "f1": 0.711111111111111,
+            "precision": 0.9516129032258065,
+            "recall": 0.7375,
+            "f1": 0.8309859154929577,
             "support": 80,
-            "tp": 48,
-            "fp": 7,
-            "fn": 32
+            "tp": 59,
+            "fp": 3,
+            "fn": 21
           },
           {
             "label": "frequent",
-            "precision": 0.9751243781094527,
-            "recall": 0.8634361233480177,
-            "f1": 0.9158878504672897,
+            "precision": 0.9719626168224299,
+            "recall": 0.9162995594713657,
+            "f1": 0.9433106575963719,
             "support": 227,
-            "tp": 196,
-            "fp": 5,
-            "fn": 31
+            "tp": 208,
+            "fp": 6,
+            "fn": 19
           },
           {
             "label": "UNK",
-            "precision": 0.6106194690265486,
-            "recall": 0.9078947368421053,
-            "f1": 0.7301587301587302,
+            "precision": 0.6407766990291263,
+            "recall": 0.868421052631579,
+            "f1": 0.7374301675977656,
             "support": 76,
-            "tp": 69,
-            "fp": 44,
-            "fn": 7
+            "tp": 66,
+            "fp": 37,
+            "fn": 10
           },
           {
             "label": "NS",
-            "precision": 0.691358024691358,
-            "recall": 0.835820895522388,
-            "f1": 0.7567567567567567,
+            "precision": 0.8405797101449275,
+            "recall": 0.8656716417910447,
+            "f1": 0.8529411764705882,
             "support": 67,
-            "tp": 56,
-            "fp": 25,
-            "fn": 11
+            "tp": 58,
+            "fp": 11,
+            "fn": 9
           }
         ]
       },
-      "status": "living paper cell; Purist matches cited five-cell 357/450"
+      "status": "living paper cell; Purist matches cited five-cell 383/450"
     },
     "gemini_cell_2": {
       "identity": "gemini37flash / both / rules / rules / gan_llm_and_rules_extract",
@@ -2223,7 +2244,7 @@
             "fn": 14
           },
           {
-            "label": "\u22651/D",
+            "label": "≥1/D",
             "precision": 0.8863636363636364,
             "recall": 0.9512195121951219,
             "f1": 0.9176470588235294,

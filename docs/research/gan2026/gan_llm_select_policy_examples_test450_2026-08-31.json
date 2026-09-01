@@ -1,0 +1,34 @@
+{
+  "call_transport": "sync",
+  "claim_boundary": "Promoted cited cell 5 on aggregate-only test450. Table 1 LLM/LLM/LLM is 383/450. dev750 cell 5 was not rerun.",
+  "comparators": {
+    "cited_cell3_purist": 387,
+    "cited_cell4_purist": 382,
+    "cited_cell5_purist": 357
+  },
+  "dataset": "gan2026",
+  "delta_vs_cited_cell5": 26,
+  "extract_ledger": "gan_llm_extract",
+  "generated_on": "2026-08-31",
+  "model": "gemini/gemini-3.7-flash",
+  "model_calls": 51,
+  "model_slug": "gemini37flash",
+  "n": 450,
+  "prompt_version": "gan_llm_select_policy_examples",
+  "protocol": "docs/research/gan2026/gan_llm_select_policy_examples_test450_protocol_2026-08-31.md",
+  "row_policy": "aggregate_only",
+  "schema_version": "gan_llm_select_policy_examples_test450.v1",
+  "scorer": "purist",
+  "select": {
+    "pragmatic": 0.8689,
+    "pragmatic_correct": 391,
+    "purist": 0.8511,
+    "purist_correct": 383,
+    "scorable": 450
+  },
+  "select_method": "gan_llm_select_from_extract",
+  "split": "test450",
+  "split_manifest": "gan2026_split_v1",
+  "work_cell": "scratch/holdout/paper/gan_llm_select_policy_examples/gemini37flash/gan_llm_extract/test450/comparison.json",
+  "work_leaf": "gan_llm_select_policy_examples"
+}

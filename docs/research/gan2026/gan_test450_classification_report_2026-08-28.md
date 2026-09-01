@@ -3,7 +3,7 @@
 Date: 2026-08-28
 Status: living Gemini five-cell per-class tables for cells 3 and 5;
 cell 1 class tables are the pre-promotion 321-program reading
-Revised: 2026-08-29 (cell 1 select headline 325/450; no new class report)
+Revised: 2026-08-31 (cell 5 policy-example select 383/450)
 Owner: [five-cell grid](gan_five_cell_grid_2026-08-22.md)
 Companion: [Gemini vs Qwen-2.5-14B COT synthetic](gan_gemini_vs_qwen25_14b_cot_synthetic_2026-08-28.md)
 Artifact: [gan_test450_classification_report_2026-08-28.json](gan_test450_classification_report_2026-08-28.json)
@@ -39,7 +39,7 @@ uses the same gold.
 | both | rules | rules | 368/450 = 0.8178 cited 0.82 |
 | LLM | rules | rules (cell 3) | 387/450 = 0.8600 cited 0.86 |
 | LLM | LLM | rules | 382/450 = 0.8489 cited 0.85 |
-| LLM | LLM | LLM | 357/450 = 0.7933 cited 0.79 |
+| LLM | LLM | LLM | 383/450 = 0.8511 cited 0.85 |
 
 ### Pragmatic micro-F1 for those cells
 
@@ -53,7 +53,7 @@ Same living gold. Cell 2 is the select stop on saved
 | both | rules | rules | 380/450 = 0.8444 |
 | LLM | rules | rules (cell 3) | 396/450 = 0.8800 cited 0.88 |
 | LLM | LLM | rules | 391/450 = 0.8689 cited 0.87 |
-| LLM | LLM | LLM | 369/450 = 0.8200 |
+| LLM | LLM | LLM | 391/450 = 0.8689 cited 0.87 |
 
 ### Cell 1 — rules / rules / rules
 
@@ -139,10 +139,11 @@ weighted avg       0.8980    0.8800    0.8843       450
 
 ### Cell 5 — LLM / LLM / LLM
 
-_Gemini 3.7 Flash; `gan_llm_select_from_extract` on the codebook extract; n=450; dropped=0._
+_Gemini 3.7 Flash; `gan_llm_select_from_extract` with the living
+policy-example select prompt on the codebook extract; n=450; dropped=0._
 Gold ε is living `gold_monthly_frequency` (Purist UNK support 76/450).
-Select-stop labels from the sealed later-stage rows. Purist **357/450**
-matches the cited five-cell cell. Pragmatic **369/450**.
+Select-stop labels from the sealed later-stage rows. Purist **383/450**
+matches the cited five-cell cell. Pragmatic **391/450**.
 
 #### Purist
 
@@ -150,34 +151,34 @@ matches the cited five-cell cell. Pragmatic **369/450**.
 Class            Precision    Recall    F1-score   Support
 <1/6M              1.0000    0.6667    0.8000         6
 =1/6M              0.0000    0.0000    0.0000         1
-(1/6M,1/M)         0.9444    0.6182    0.7473        55
-=1/M               0.6429    0.5000    0.5625        18
-(1/M,1/W)          0.8889    0.6897    0.7767        58
-=1/W               1.0000    0.6000    0.7500         5
-(1/W,1/D)          0.9369    0.8455    0.8889       123
-≥1/D               0.9048    0.9268    0.9157        41
-UNK                0.6106    0.9079    0.7302        76
-NS                 0.6914    0.8358    0.7568        67
-micro-F1           0.7933    0.7933    0.7933       450
-macro avg          0.7620    0.6591    0.6928       450
-weighted avg       0.8248    0.7933    0.7953       450
+(1/6M,1/M)         0.9286    0.7091    0.8041        55
+=1/M               0.9375    0.8333    0.8824        18
+(1/M,1/W)          0.9107    0.8793    0.8947        58
+=1/W               1.0000    1.0000    1.0000         5
+(1/W,1/D)          0.9554    0.8699    0.9106       123
+≥1/D               0.9268    0.9268    0.9268        41
+UNK                0.6408    0.8684    0.7374        76
+NS                 0.8406    0.8657    0.8529        67
+micro-F1           0.8511    0.8511    0.8511       450
+macro avg          0.8140    0.7619    0.7809       450
+weighted avg       0.8718    0.8511    0.8556       450
 ```
 
 #### Pragmatic
 
 ```
 Class            Precision    Recall    F1-score   Support
-infrequent         0.8727    0.6000    0.7111        80
-frequent           0.9751    0.8634    0.9159       227
-UNK                0.6106    0.9079    0.7302        76
-NS                 0.6914    0.8358    0.7568        67
-micro-F1           0.8200    0.8200    0.8200       450
-macro avg          0.7875    0.8018    0.7785       450
-weighted avg       0.8531    0.8200    0.8244       450
+infrequent         0.9516    0.7375    0.8310        80
+frequent           0.9720    0.9163    0.9433       227
+UNK                0.6408    0.8684    0.7374        76
+NS                 0.8406    0.8657    0.8529        67
+micro-F1           0.8689    0.8689    0.8689       450
+macro avg          0.8512    0.8470    0.8412       450
+weighted avg       0.8928    0.8689    0.8751       450
 ```
 
 Two later-stage rows had no scorable select label. They are counted as
-incorrect (not as UNK). That keeps Purist micro-F1 at 357/450.
+incorrect (not as UNK). That keeps Purist micro-F1 at 383/450.
 
 Gan et al. 2026 abstract (Real(300), 15k synthetic train): Purist 0.788 / Pragmatic 0.847 (Qwen-2.5-14B); MedGemma-4B 0.787 / 0.858.
 Those numbers are a different test set. Do not quote them as the same experiment.

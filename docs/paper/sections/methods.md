@@ -191,8 +191,9 @@ recorded rules, or both, depending on the configuration.
 
 The study evaluates the same five ways of dividing the work between a
 language model and recorded rules on Gan 2026 and ExECTv2. In the
-rules-throughout condition, recorded deterministic procedures construct,
-encode, and select the submitted answer. The combined-find
+rules-throughout condition, recorded deterministic procedures find
+source-near facts, encode them into codebook form, and select the
+submitted answer. The combined-find
 condition permits both a model and rules to contribute candidate facts,
 after which encode and select remain rule based. The remaining
 conditions place find, then encode, then select with the model. The
@@ -245,13 +246,15 @@ The supporting material provides the full prompts, output schemas,
 recorded-rule definitions, model settings, and replay artefacts. These
 details are retained to allow implementation review without obscuring
 the controlled comparisons in the main Methods section. The main
-Methods section reports the codebook find policy: six event kinds,
-the instructions that change clinical meaning, and the allowed label
-form families. The frozen `gan_llm_extract` template, without
+Methods section reports the cited codebook extract policy: six event
+kinds, the instructions that change clinical meaning, and the allowed
+label form families. The frozen `gan_llm_extract` template, without
 `note_text`, is
 [`paper/supporting materials/gan_llm_extract_prompt_template.json`](../../../paper/supporting%20materials/gan_llm_extract_prompt_template.json).
-That file is the cited find request. It is not
-`gan_llm_extract_raw` and it is not the later select prompt.
+That file is the cited extract request. It already writes codebook
+form, so it is bundled find-and-encode. It is not
+`gan_llm_extract_raw` (find only; living rules find uses that
+dialect) and it is not the later select prompt.
 
 ## F. Evaluation protocol
 

@@ -3,20 +3,20 @@
   "contrasts": {
     "cell3_vs_cell5": {
       "a": "cell3_living_codebook_select",
-      "a_right_b_wrong": 40,
-      "a_wrong_b_right": 10,
+      "a_right_b_wrong": 16,
+      "a_wrong_b_right": 12,
       "accuracy_a": 0.86,
-      "accuracy_b": 0.7933,
-      "accuracy_delta": 0.0667,
+      "accuracy_b": 0.8511,
+      "accuracy_delta": 0.0089,
       "b": "cell5_llm_select_from_extract",
       "claim": "Table 1: model-led find then rules versus end-to-end model",
       "correct_a": 387,
-      "correct_b": 357,
+      "correct_b": 383,
       "delta_ci95": [
-        0.0365,
-        0.0968
+        -0.0141,
+        0.0319
       ],
-      "mcnemar_exact_p": 2.3861331676755526e-05,
+      "mcnemar_exact_p": 0.5715881884098053,
       "n": 450,
       "split": "test450"
     },
@@ -97,7 +97,7 @@
       "split": "test450"
     }
   },
-  "generated_on": "2026-08-29",
+  "generated_on": "2026-08-31",
   "model_slug": "gemini37flash",
   "n_dev750": 750,
   "n_test450": 450,
@@ -107,5 +107,5 @@
   "temperature_framing": "One temperature question, two splits: Gemini living 0 versus 1 on the cell-3 stack, on test450 and on dev750.",
   "test": "exact_mcnemar_plus_wald_accuracy_delta_ci95",
   "thinking_framing": "One thinking contrast: living low versus high at the cell-3 select stop on test450. High is the predeclared extra-budget setting (same 2x token cap as medium). Medium stays a point estimate. Thinking changes only find; the tested outcome is select.",
-  "vector_note": "Cell 3 on both splits is the living codebook replay (llm_select_after_codebook, including last_event_well_since). Table 1 cites that same test450 total. Rules are phase_c_candidate_config() (325/450). Cell 5 uses stored gan_llm_select_from_extract comparison flags (357/450). dev750 temperature replays saved extracts through the same living select stack."
+  "vector_note": "Cell 3 on both splits is the living codebook replay (llm_select_after_codebook, including last_event_well_since). Table 1 cites that same test450 total. Rules are phase_c_candidate_config() (325/450). Cell 5 uses stored gan_llm_select_from_extract comparison flags (383/450). dev750 temperature replays saved extracts through the same living select stack."
 }

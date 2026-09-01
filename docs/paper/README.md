@@ -29,8 +29,10 @@ encode / select). The cited score is the select stop. The six-model
 row is cell 3 (LLM find, rules encode, rules select) on both
 tasks. On ExECT, cell 3 is the Gemini peak and the roster row; all
 five rows use 4-family micro F1 (`clinical_inventory_unit_keys`).
-Gemini thinking and the source-near Gan find are ablations. Gan
-LLM find is `gan_llm_extract`; ExECT LLM find is
+Gemini thinking and the source-near Gan *LLM* request
+(`gan_llm_extract_raw`) are ablations. Cited Gan LLM extract is
+`gan_llm_extract`, which already writes codebook form (bundled
+find-and-encode). Living rules find is source-near. ExECT LLM find is
 `exect_llm_extract`. ExECT LLM encode is a second later-stage call.
 See
 [methods](sections/methods.md),

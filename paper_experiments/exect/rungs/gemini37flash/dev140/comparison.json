@@ -6,7 +6,7 @@
     "same_as_schema": false,
     "surface": "format_render"
   },
-  "generated_on": "2026-08-27",
+  "generated_on": "2026-08-29",
   "model_slug": "gemini37flash",
   "row_count": 140,
   "row_policy": "development_review_permitted",
