@@ -3,8 +3,11 @@
 This walkthrough runs the cited Gan codebook find
 (`gan_llm_extract`) against your own data. The model writes frequency
 labels in the allowed forms; recorded rules then encode and select.
-This is `clinical-extract gan`, not the source-near ablation
-(`gan_llm_extract_raw`).
+That is cell 3. This is `clinical-extract gan`, not the source-near
+ablation (`gan_llm_extract_raw`) and not `gan_llm_only`.
+
+To use cell 5 instead (same find, then LLM select), add
+`--method llm_select`. See [Cell 5](#cell-5-llm-select).
 
 It also includes a worked example for three synthetic clinic letters. The letters are
 fixed in `[examples/vllm_gan_three_letters.jsonl](examples/vllm_gan_three_letters.jsonl)`,
@@ -208,3 +211,31 @@ On a working run you should see three rows with the same ids as the input.
 seizure freedom. `vllm-gan-03` has no frequency statement, so the label is
 often `unknown` or a no-reference sentinel. Those strings are not scored here
 and are not a claim about holdout performance.
+
+## Multi-Agent Pipeline
+
+The multi-agent pipeline uses the same probe, JSONL input, and codebook find as above. The
+difference is a second model call: select reads the extracted events and
+their quotes, not the letter, and rules do not encode or select. This is
+not `gan_llm_only` (one call that writes a label from the letter).
+
+```sh
+clinical-extract gan \
+  --method llm_select \
+  --input examples/vllm_gan_three_letters.jsonl \
+  --output scratch/vllm_gan_three_letters.cell5.predictions.jsonl \
+  --base-url http://127.0.0.1:8000/v1 \
+  --model vllm/deepseek-v4-flash
+```
+
+A successful row keeps the same `id` and prediction shape. The method
+fields change:
+
+| Field | Cell 3 (default) | Cell 5 (`--method llm_select`) |
+| --- | --- | --- |
+| `pipeline` | `gan_llm_extract` | `gan_llm_select_from_extract` |
+| `prompt_version` | `gan_llm_extract` | `gan_llm_select_policy_examples` |
+| Model calls | one (find) | two (find, then select) |
+
+The paper cites this later-stage select on Gemini. A local vLLM model
+can run the same commands; that is not a paper score.

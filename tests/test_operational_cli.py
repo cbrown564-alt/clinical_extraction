@@ -132,6 +132,98 @@ def test_score_projection_maps_unknown_without_gold_comparison() -> None:
     assert "gold_purist_category" not in projection
 
 
+def test_run_gan_notes_llm_select_applies_second_call_not_rules(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict[str, object] = {}
+    extract_raw = json.dumps(
+        {
+            "events": [
+                {
+                    "event_id": "e1",
+                    "kind": "frequency_rate",
+                    "raw_value": "two focal seizures a month",
+                    "applies_to": "focal seizures",
+                    "time_window": "typical pattern",
+                    "temporality": "current",
+                    "assertion_status": "asserted",
+                    "evidence": "two focal seizures a month",
+                    "notes": None,
+                },
+                {
+                    "event_id": "e2",
+                    "kind": "frequency_rate",
+                    "raw_value": "five seizures so far this year",
+                    "applies_to": "seizures",
+                    "time_window": "this year",
+                    "temporality": "recent",
+                    "assertion_status": "asserted",
+                    "evidence": "five seizures so far this year",
+                    "notes": None,
+                },
+            ],
+            "selection": {
+                "selected_event_ids": ["e1"],
+                "final_kind": "frequency",
+                "final_label": "2 per month",
+                "evidence": "two focal seizures a month",
+                "confidence": "high",
+                "rationale": "The stated typical rate is the current frequency.",
+            },
+        }
+    )
+    fake_result = SimpleNamespace(
+        output=SimpleNamespace(
+            final_value="2 per month",
+            evidence="two focal seizures a month",
+            rationale="The stated typical rate is the current frequency.",
+        ),
+        diagnostics={
+            "parse_errors": [],
+            "raw_output": extract_raw,
+            "structured_record": json.loads(extract_raw),
+        },
+    )
+
+    def fake_run(record, config, **kwargs):
+        captured["extract_prompt"] = config.prompt_version
+        captured["repair_mode"] = config.repair_mode
+        return fake_result
+
+    def fake_complete(prompt_input_json: str) -> str:
+        captured["select_prompt"] = json.loads(prompt_input_json)
+        return '{"selected_event_ids": ["e2"]}'
+
+    monkeypatch.setattr(
+        "clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.llm_with_rules.run_record",
+        fake_run,
+    )
+    monkeypatch.setattr(
+        "clinical_extraction.operational.gan.complete_structured_prompt",
+        fake_complete,
+    )
+
+    rows = run_gan_notes(
+        [InputNote("n1", "Two focal seizures a month. Five so far this year.")],
+        RuntimeConfig(
+            base_url="http://127.0.0.1:8000/v1",
+            api_key="EMPTY",
+            model="vllm/deepseek-v4-flash",
+        ),
+        method="llm_select",
+    )
+
+    assert captured["extract_prompt"] == "gan_llm_extract"
+    assert captured["repair_mode"] == "raw_model"
+    select_prompt = captured["select_prompt"]
+    assert isinstance(select_prompt, dict)
+    assert select_prompt["first_choice"]["label"] == "2 per month"
+    assert rows[0]["pipeline"] == "gan_llm_select_from_extract"
+    assert rows[0]["prompt_version"] == "gan_llm_select_policy_examples"
+    assert rows[0]["prediction"]["seizure_frequency"] == "five seizures so far this year"
+    assert rows[0]["structured_record"]["selection"]["selected_event_ids"] == ["e2"]
+
+
 def test_run_gan_notes_uses_codebook_extract(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -156,6 +248,7 @@ def test_run_gan_notes_uses_codebook_extract(
 
     def fake_run(record, config, **kwargs):
         captured["prompt_version"] = config.prompt_version
+        captured["repair_mode"] = config.repair_mode
         return fake_result
 
     monkeypatch.setattr(
@@ -173,6 +266,7 @@ def test_run_gan_notes_uses_codebook_extract(
     )
 
     assert captured["prompt_version"] == "gan_llm_extract"
+    assert captured["repair_mode"] is None
     assert rows[0]["pipeline"] == "gan_llm_extract"
     assert rows[0]["prompt_version"] == "gan_llm_extract"
     assert "normalized_events" not in rows[0]
@@ -189,17 +283,20 @@ def test_cli_writes_one_result_per_input_note(
     target = tmp_path / "predictions.jsonl"
     source.write_text('{"id":"n1","text":"Two seizures per month."}\n', encoding="utf-8")
 
-    monkeypatch.setattr(
-        "clinical_extraction.operational.cli.run_gan_notes",
-        lambda notes, runtime: [
+    seen: dict[str, object] = {}
+
+    def fake_run(notes, runtime, *, method="llm_extract"):
+        seen["method"] = method
+        return [
             {
                 "id": notes[0].note_id,
                 "task": "gan",
                 "status": "ok",
                 "prediction": {"seizure_frequency": "2 per month"},
             }
-        ],
-    )
+        ]
+
+    monkeypatch.setattr("clinical_extraction.operational.cli.run_gan_notes", fake_run)
 
     exit_code = main(
         [
@@ -216,9 +313,52 @@ def test_cli_writes_one_result_per_input_note(
     )
 
     assert exit_code == 0
+    assert seen["method"] == "llm_extract"
     row = json.loads(target.read_text(encoding="utf-8"))
     assert row["id"] == "n1"
     assert row["prediction"]["seizure_frequency"] == "2 per month"
+
+
+def test_cli_gan_llm_select_passes_method(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source = tmp_path / "notes.jsonl"
+    target = tmp_path / "predictions.jsonl"
+    source.write_text('{"id":"n1","text":"Two seizures per month."}\n', encoding="utf-8")
+    seen: dict[str, object] = {}
+
+    def fake_run(notes, runtime, *, method="llm_extract"):
+        seen["method"] = method
+        return [
+            {
+                "id": notes[0].note_id,
+                "task": "gan",
+                "status": "ok",
+                "prediction": {"seizure_frequency": "1 per month"},
+            }
+        ]
+
+    monkeypatch.setattr("clinical_extraction.operational.cli.run_gan_notes", fake_run)
+
+    exit_code = main(
+        [
+            "gan",
+            "--method",
+            "llm_select",
+            "--input",
+            str(source),
+            "--output",
+            str(target),
+            "--base-url",
+            "http://localhost:8000/v1",
+            "--model",
+            "vllm/deepseek-v4-flash",
+        ]
+    )
+
+    assert exit_code == 0
+    assert seen["method"] == "llm_select"
 
 
 def test_exect_operational_import_does_not_load_research_assembly() -> None:

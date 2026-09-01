@@ -40,7 +40,7 @@ cells stay historical. Rules are deterministic and do not use a model.
 | both | rules | rules | 0.82 |
 | LLM | rules | rules | 0.86 |
 | LLM | LLM | rules | 0.85 |
-| LLM | LLM | LLM | 0.79 |
+| LLM | LLM | LLM | 0.85 |
 
 **ExECTv2** (4-family micro F1, locked `test60`). Headline is the
 submitted (select) score. All five rows use the same scorer.
@@ -246,7 +246,7 @@ clinical-extract probe \
 ```
 
 The input is JSONL with one `id` and `text` object per line. Run the cited
-Gan codebook find (`gan_llm_extract`) with:
+Gan codebook find (`gan_llm_extract`, cell 3) with:
 
 ```sh
 clinical-extract gan \
@@ -255,6 +255,9 @@ clinical-extract gan \
   --base-url http://127.0.0.1:8000/v1 \
   --model vllm/deepseek-v4-flash
 ```
+
+Pass `--method llm_select` for cell 5 (same find, then LLM select). That is
+not `gan_llm_only`.
 
 For ExECT extraction, replace `gan` with `exect`; its default method is
 `llm_with_rules`. Pass `--api-key` only when the server is configured to require
