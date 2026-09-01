@@ -29,6 +29,97 @@
 
 \title{Supporting Materials\\}
 
+\begin{figure*}[t]
+        \centering
+        \includegraphics[width=\linewidth]{frequent_unknown1}
+        \caption{Frequent → unknown error example. Gold-standard label: multiple per week. Model selected unknown.}
+        \label{fig:frequent_unknown1}
+    \vspace*{4pt}
+
+\end{figure*}
+
+\begin{table}[!t]
+\caption{Seizure frequency label forms}
+\label{tab:label-forms}
+\centering
+\begin{tabularx}{\linewidth}{lY}
+\toprule
+\textbf{Family} & \textbf{Written forms} \\
+\midrule
+Rate &
+$N$ per unit;
+$N$ per $N$ unit;
+$N$ per $N$ to $N$ unit;
+$N$ to $N$ per unit;
+$N$ to $N$ per $N$ unit;
+multiple per unit;
+multiple per $N$ unit;
+$N$ per multiple unit \\
+Cluster &
+cluster per unit, $N$ per cluster;
+cluster per unit, range per cluster;
+cluster per unit, multiple per cluster \\
+Seizure free &
+seizure free for a duration \\
+Unknown &
+unknown;
+no seizure frequency reference \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[!t]
+\caption{Later-stage select examples}
+\label{tab:select-policy}
+\centering
+\begin{tabularx}{\linewidth}{YYY}
+\toprule
+\textbf{Events} & \textbf{First pick} & \textbf{After select} \\
+\midrule
+3 in March; 6 in May &
+\texttt{6 per month} &
+\texttt{9 per 3 month} \\
+Last seizure on 12th March; well 3 weeks &
+\texttt{seizure free for 3 week} &
+\texttt{1 per month} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+    \vspace*{4pt}
+    \begin{subfigure}[t]{\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{seizure_free_unknown}
+        \caption{Seizure free → unknown error example. Gold-standard label: seizure free for multiple month. Model selected no seizure frequency reference (unknown).}
+        \label{fig:frequent_unknown1}
+    \end{subfigure}
+    \caption{These examples illustrate the model choosing unknown when the gold-standard label was in the infrequent (a), frequent (b) and seizure free (c) categories. The rationale illustrates how the model interprets the ambiguous evidence and why it chooses unknown.}
+    \label{fig:errors}
+
+\begin{table}[!t]
+\caption{Comparisons to past seizure frequency papers}
+\label{tab:historical}
+\centering
+\begin{tabularx}{\linewidth}{Ycll}
+\toprule
+\textbf{Author} & \textbf{Year} & \textbf{Method} & \textbf{F1 score} \\
+\midrule
+Xie et al. & 2022 & Fine-tuned BERT & 0.83$^\ast$ \\
+Decker et al. & 2022 & Rules & 0.82$^\ast$$^\ast$ \\
+Fonferko-Shadrach et al. & 2024 & Rules & 0.66 \\
+Fernandes et al. & 2024 & Fine-tuned BERT & 0.37 \\
+Holgate et al. & 2024 & Prompted LLM & 0.73 \\
+Holgate et al. & 2025 & Fine-tuned LLM & 0.68 \\
+Gan et al. & 2026 & Fine-tuned LLM & 0.81 \\
+\midrule
+Brown \& Gan & 2026 & LLM and rules & 0.86 \\
+\bottomrule
+\end{tabularx}
+
+The method is available as an open source package \href{https://github.com/cbrown564-alt/clinical_extraction}{here} 
+along with a web app demonstrating key features of
+the pipeline \href{https://clinical-extraction.vercel.app/workbench}{here} .
+
 A number of methods have shown performance at 
 or above human level. Fonferko-Shadrach \emph{et al.} 
 reported the annotators found annotation difficult 
