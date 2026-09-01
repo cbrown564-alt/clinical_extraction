@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Score atomic, codebook, and source-near rules find on the same pick.
+"""Score atomic, codebook, and living source-near rules find on the same pick.
+
+Living ``find_label`` is the source-near dialect. Atomic tags are
+read from the ledger. Codebook projection is bundled find-and-encode.
 
 Protocol: docs/research/gan2026/gan_rules_find_llm_dialects_protocol_2026-08-31.md
 Development split only; test450 is never loaded; zero model calls.
@@ -67,18 +70,28 @@ def main() -> None:
         if default.stops.find_extract_label != default.stops.encode_label:
             codebook_encode_disagree += 1
         for stop, label in (
-            ("atomic", default.stops.find_label),
+            (
+                "atomic",
+                default.ledger[default.stops.find_pick_ledger_index].find_tag
+                if default.stops.find_pick_ledger_index is not None
+                else default.stops.find_label,
+            ),
             ("gan_llm_extract", default.stops.find_extract_label),
-            ("gan_llm_extract_raw", default.stops.find_extract_raw_label),
+            ("gan_llm_extract_raw", default.stops.find_label),
             ("encode", default.stops.encode_label),
             ("select", default.stops.select_label),
         ):
             if score_label(record, label)["purist_correct"]:
                 default_counts[stop] += 1
         for stop, label in (
-            ("atomic", candidate.stops.find_label),
+            (
+                "atomic",
+                candidate.ledger[candidate.stops.find_pick_ledger_index].find_tag
+                if candidate.stops.find_pick_ledger_index is not None
+                else candidate.stops.find_label,
+            ),
             ("gan_llm_extract", candidate.stops.find_extract_label),
-            ("gan_llm_extract_raw", candidate.stops.find_extract_raw_label),
+            ("gan_llm_extract_raw", candidate.stops.find_label),
             ("encode", candidate.stops.encode_label),
             ("select", candidate.stops.select_label),
         ):
@@ -121,8 +134,9 @@ def main() -> None:
         },
         "claim_boundary": (
             "Development instrumentation. Cited five-cell stops stay "
-            "292/292/325. Codebook find is the Purist-commensurate "
-            "comparison to gan_llm_extract."
+            "292/292/325. Living rules find is source-near "
+            "(gan_llm_extract_raw). gan_llm_extract is bundled "
+            "find-and-encode."
         ),
     }
     (OUT_DIR / "dev750_summary.json").write_text(

@@ -20,15 +20,20 @@ Scorer: Purist via `score_label`.
   is pre-codebook (`cluster:…`, `{count}/{unit}`) and encode is the
   codebook form.
 
-Cited five-cell stops stay **292 / 292 / 325**. `_gan_grid` was not
-rewired.
+Cited five-cell select stays **325**. Living find/encode on `test450`
+are **190 / 284**
+([source-near remasure](gan_rules_source_near_find_test450_2026-08-31.md)).
+Phase D **292 / 292** is fused codebook.
 
 ## Stage stops
 
 Find is still the pre-codebook `find_tag` of the document-order-first
 wide-ledger candidate, including Select-dropped rows. Encode is
 unchanged as codebook render + `repair_prediction_label` of that pick.
-These Purist numbers are **not** commensurate with LLM find columns.
+These Phase E2 find numbers scored the atomic `find_tag`. Living
+rules find is now the source-near dialect (**386** / **408** on the
+same pick; [dialects](gan_rules_find_llm_dialects_2026-08-31.md)).
+`gan_llm_extract` is bundled find-and-encode, not a find column.
 
 | Arm | Find | Encode | Select |
 | --- | ---: | ---: | ---: |

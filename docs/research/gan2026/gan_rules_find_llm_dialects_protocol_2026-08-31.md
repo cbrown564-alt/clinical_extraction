@@ -1,7 +1,7 @@
 # Protocol: Rules find dialects for LLM extract comparison
 
 Date: 2026-08-31
-Status: complete
+Status: complete; living find promoted to source-near 2026-08-31
 Owner: this file
 Report: [dialect result](gan_rules_find_llm_dialects_2026-08-31.md)
 Parent: [Phase E2](gan_rules_only_three_stage_phase_e2_protocol_2026-08-30.md)
@@ -13,24 +13,19 @@ Split: `dev750` only; `test450` sealed. Zero model calls.
 Given atomic `FindFact` slots, which string dialect should rules find
 use for Purist comparison to LLM find?
 
-## Decision to test
+## Decision
 
-LLM find is scored on `selection.final_label` after a `raw_model`
-parse (`living_gan_stages`). Gold is codebook. Therefore:
+`gan_llm_extract` is bundled find-and-encode: the model writes
+codebook `final_label`. `gan_llm_extract_raw` is find: source-near
+form, no codebook writer. Cell 3 therefore shares encode between the
+model and `gan_rules_encode`.
 
-- **`gan_llm_extract`:** project slots through the codebook writer
-  (`encode_find_fact`). That is the same family the cited extract
-  prompt requires and the only dialect `score_label` accepts without
-  format repair.
-- **`gan_llm_extract_raw`:** project slots to a source-near phrase
-  that keeps found tokens (word numbers, compact units, adjectives).
-  That maps to extract_raw `raw_value` / letter-adjacent
-  `final_label`. Purist on that string measures the same dialect tax
-  as source-near LLM find.
+Living rules find is the source-near projection. The codebook
+projection is the encode-comparable column, not find.
 
-Atomic `find_tag` stays diagnostic. It is not a comparison dialect.
-Select and encode stops stay unchanged. Cited five-cell stops stay
-**292 / 292 / 325**.
+Atomic `find_tag` stays diagnostic. Select and encode stops stay
+unchanged. Cited five-cell select stays **325/450**. Phase D
+**292 / 292** remains the fused codebook instrumentation.
 
 ## Gates
 

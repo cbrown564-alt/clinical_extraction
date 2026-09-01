@@ -3,9 +3,9 @@
 Protocol:
 docs/research/gan2026/gan_rules_find_llm_dialects_protocol_2026-08-31.md
 
-``gan_llm_extract`` is the codebook writer. That is the Purist-commensurate
-find dialect. ``gan_llm_extract_raw`` keeps found tokens as a source-near
-phrase. Atomic ``find_tag`` is diagnostic only.
+Living rules find is the ``gan_llm_extract_raw`` source-near phrase.
+``gan_llm_extract`` already writes codebook form, so its projection is
+bundled find-and-encode, not find. Atomic ``find_tag`` is diagnostic.
 """
 
 from __future__ import annotations
@@ -23,6 +23,7 @@ from .find_encode import (
 FIND_DIALECT_ATOMIC = "atomic"
 FIND_DIALECT_GAN_LLM_EXTRACT = "gan_llm_extract"
 FIND_DIALECT_GAN_LLM_EXTRACT_RAW = "gan_llm_extract_raw"
+RULES_FIND_DIALECT = FIND_DIALECT_GAN_LLM_EXTRACT_RAW
 FindDialect = Literal[
     "atomic",
     "gan_llm_extract",

@@ -19,6 +19,12 @@ letter
   -> score     Purist micro-F1 (Gan) or 4-family micro F1 (ExECT)
 ```
 
+On Gan, living rules find is source-near (`gan_llm_extract_raw`
+dialect): found tokens, not codebook spelling. `gan_llm_extract`
+already writes codebook form, so it is bundled find-and-encode.
+Cell 3 shares encode between that request and `gan_rules_encode`.
+Owner: [rules find dialects](../research/gan2026/gan_rules_find_llm_dialects_2026-08-31.md).
+
 Encode does not reselect. A quoted span is not proof the right statement
 was chosen. Select is the leftover that may change the fact.
 

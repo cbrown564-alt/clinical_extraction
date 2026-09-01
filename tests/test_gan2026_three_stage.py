@@ -400,23 +400,28 @@ def test_phase_c_candidate_config_is_frozen() -> None:
     )
 
 
-def test_find_tag_is_pre_codebook_for_word_number_rate() -> None:
+def test_living_find_is_source_near_for_word_number_rate() -> None:
     record = _record("He still has focal seizures four times per day.")
     result = run_record_three_stage(record)
-    assert result.stops.find_label == "four/day"
+    assert result.stops.find_label == "four per day"
     assert result.stops.find_extract_label == "4 per day"
     assert result.stops.find_extract_raw_label == "four per day"
     assert result.stops.encode_label == "4 per day"
     assert result.stops.select_label == "4 per day"
+    pick = result.ledger[result.stops.find_pick_ledger_index]
+    assert pick.find_tag == "four/day"
 
 
-def test_cluster_find_tag_is_pre_codebook() -> None:
+def test_living_cluster_find_is_source_near() -> None:
     record = _record(
         "Weekly morning clusters reported; number per cluster not documented."
     )
     result = run_record_three_stage(record)
-    assert result.stops.find_label == "cluster:1/Weekly:multiple"
+    assert result.stops.find_label == "1 cluster per Weekly, multiple per cluster"
+    assert result.stops.find_extract_raw_label == result.stops.find_label
     assert result.stops.encode_label == "1 cluster per week, multiple per cluster"
+    pick = result.ledger[result.stops.find_pick_ledger_index]
+    assert pick.find_tag == "cluster:1/Weekly:multiple"
 
 
 def test_seizure_free_find_tag_is_state_only() -> None:
@@ -424,9 +429,12 @@ def test_seizure_free_find_tag_is_state_only() -> None:
         "She remains free of seizures for two years on the current regimen."
     )
     result = run_record_three_stage(record)
-    assert result.stops.find_label == "seizure_free"
+    assert result.stops.find_label.startswith("seizure free")
+    assert result.stops.find_label == result.stops.find_extract_raw_label
     assert result.stops.encode_label.startswith("seizure free")
     assert result.stops.select_label == result.stops.encode_label
+    pick = result.ledger[result.stops.find_pick_ledger_index]
+    assert pick.find_tag == "seizure_free"
 
 
 def test_excluded_and_distractor_spans_enter_ledger_and_leave_select() -> None:

@@ -1,8 +1,8 @@
 {
   "schema_version": "gan.rules_only.three_stage.promoted.v1",
-  "date": "2026-08-29",
+  "date": "2026-08-31",
   "program": "run_record_three_stage(phase_c_candidate_config())",
-  "protocol": "docs/research/gan2026/gan_rules_only_three_stage_phase_d_protocol_2026-08-29.md",
+  "protocol": "docs/research/gan2026/gan_rules_source_near_find_test450_protocol_2026-08-31.md",
   "scorer": "purist",
   "dev750": {
     "row_count": 750,
@@ -12,11 +12,12 @@
     "select_pragmatic_correct": 701,
     "select_pragmatic_accuracy": 0.9347,
     "stage_rungs": {
-      "find": {"purist_correct": 622, "accuracy": 0.8293},
-      "encode": {"purist_correct": 622, "accuracy": 0.8293},
+      "find": {"purist_correct": 408, "accuracy": 0.5440},
+      "encode": {"purist_correct": 599, "accuracy": 0.7987},
       "select": {"purist_correct": 691, "accuracy": 0.9213}
     },
-    "source": "docs/research/gan2026/gan_rules_only_three_stage_phase_c_2026-08-29.md"
+    "find_dialect": "gan_llm_extract_raw",
+    "source": "docs/research/gan2026/gan_rules_find_llm_dialects_2026-08-31.md"
   },
   "test450": {
     "row_count": 450,
@@ -26,11 +27,13 @@
     "select_pragmatic_correct": 345,
     "select_pragmatic_accuracy": 0.7667,
     "stage_rungs": {
-      "find": {"purist_correct": 292, "accuracy": 0.6489},
-      "encode": {"purist_correct": 292, "accuracy": 0.6489},
+      "find": {"purist_correct": 190, "accuracy": 0.4222},
+      "encode": {"purist_correct": 284, "accuracy": 0.6311},
       "select": {"purist_correct": 325, "accuracy": 0.7222}
     },
-    "source": "experiments/gan_rules_only_three_stage_phase_d_test450_aggregate_20260829.json",
+    "find_dialect": "gan_llm_extract_raw",
+    "source": "docs/research/gan2026/gan_rules_source_near_find_test450_2026-08-31.json",
+    "supersedes_fused_find_encode_purist_correct": 292,
     "supersedes_select_purist_correct": 321
   },
   "claim_boundary": "Promoted rules-only three-stage Purist counts. Holdout is aggregate-only. No per-class holdout report. Not clinical validation."

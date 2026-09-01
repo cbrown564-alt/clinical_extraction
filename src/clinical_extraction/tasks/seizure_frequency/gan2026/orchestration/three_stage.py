@@ -9,13 +9,14 @@ exactly as ``extract_stage`` builds it. The select stop must therefore be
 label- and evidence-identical to the comparator (gate A1); the dev750
 measurement script verifies that on every record before reading stops.
 
-Stage stops follow the Phase E policy: the find stop is the pre-codebook
-``find_tag`` of the first wide-ledger candidate in document order
-(including Select-dropped rows). ``find_extract_label`` and
-``find_extract_raw_label`` re-render that same pick in the
-``gan_llm_extract`` and ``gan_llm_extract_raw`` dialects. The encode
-stop is the normalized codebook label of that pick, and the select
-stop is the submitted final label.
+The living find stop is the source-near phrase of the first
+wide-ledger candidate in document order (including Select-dropped
+rows). That is the ``gan_llm_extract_raw`` dialect: find without
+codebook writing. ``gan_llm_extract`` already writes codebook form, so
+``find_extract_label`` is bundled find-and-encode, not find.
+``find_tag`` stays on the ledger as the atomic diagnostic. Encode is
+the normalized codebook label of the same pick. Select is the
+submitted final label.
 """
 
 from __future__ import annotations
@@ -49,7 +50,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.determini
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.find_dialects import (
     FIND_DIALECT_GAN_LLM_EXTRACT,
-    FIND_DIALECT_GAN_LLM_EXTRACT_RAW,
+    RULES_FIND_DIALECT,
     render_find_fact,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.find_encode import (
@@ -289,7 +290,7 @@ def _ledger_entry(
         else (candidate.label or NO_REFERENCE_LABEL)
     )
     extract_raw_label = (
-        render_find_fact(fact, FIND_DIALECT_GAN_LLM_EXTRACT_RAW)
+        render_find_fact(fact, RULES_FIND_DIALECT)
         if fact is not None
         else (candidate.label or NO_REFERENCE_LABEL)
     )
@@ -490,7 +491,9 @@ def run_record_three_stage(
 
     pick = _document_order_pick(ledger)
     stops = GanStageStops(
-        find_label=pick.find_tag if pick is not None else NO_REFERENCE_LABEL,
+        find_label=(
+            pick.find_extract_raw_label if pick is not None else NO_REFERENCE_LABEL
+        ),
         find_extract_label=(
             pick.find_extract_label if pick is not None else NO_REFERENCE_LABEL
         ),

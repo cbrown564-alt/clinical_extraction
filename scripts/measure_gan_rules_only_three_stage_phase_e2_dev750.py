@@ -3,6 +3,8 @@
 
 Protocol: docs/research/gan2026/gan_rules_only_three_stage_phase_e2_protocol_2026-08-30.md
 Development split only; test450 is never loaded; zero model calls.
+Historical Phase E2 find scored atomic ``find_tag``. Living find is
+now source-near; do not treat a re-run find count as the Phase E2 cut.
 """
 
 from __future__ import annotations

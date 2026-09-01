@@ -12,6 +12,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidate
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.find_dialects import (
     FIND_DIALECT_GAN_LLM_EXTRACT,
     FIND_DIALECT_GAN_LLM_EXTRACT_RAW,
+    RULES_FIND_DIALECT,
     project_find_event,
     render_find_fact,
 )
@@ -134,6 +135,10 @@ def test_cluster_examples_use_slot_encode() -> None:
         if spec.rule_id == "cluster.last_convulsive_persistence":
             continue
         _assert_example_slots(spec)
+
+
+def test_living_rules_find_dialect_is_source_near() -> None:
+    assert RULES_FIND_DIALECT == FIND_DIALECT_GAN_LLM_EXTRACT_RAW
 
 
 def test_codebook_dialect_matches_encode_find_fact() -> None:
