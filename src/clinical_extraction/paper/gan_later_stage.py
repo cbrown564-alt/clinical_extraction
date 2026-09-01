@@ -37,14 +37,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
     DspyStructuredExtractor,
-    StructuredExtractionRecord,
-    StructuredRepairConfig,
     _compare_to_gold,
-    parse_structured_json,
     summarize_records,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm.parse_diagnostics import (
-    extract_json_object,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_encode import (
     GAN_LLM_ENCODE,
@@ -53,8 +47,17 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_encode i
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_select import (
     GAN_LLM_SELECT,
+    GAN_LLM_SELECT_POLICY_EXAMPLES,
     LLM_SELECT_AUTHORED_KEYS,
     build_llm_select_prompt_input,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.select_from_extract import (
+    GAN_LLM_SELECT_FROM_EXTRACT,
+    apply_llm_select,
+    extract_events_as_select_ledger,
+    later_stage_json_payload,
+    parse_extract_ledger,
+    project_encode_label,
 )
 
 LaterStageMethod = Literal[
@@ -64,7 +67,6 @@ LaterStageMethod = Literal[
 ]
 CITED_SLUG = "gemini37flash"
 EXTRACT_METHOD = "gan_llm_extract"
-GAN_LLM_SELECT_FROM_EXTRACT = "gan_llm_select_from_extract"
 LLM_ENCODE_IS_EXTRACT = True
 LLM_SELECT_METHOD = GAN_LLM_SELECT_FROM_EXTRACT
 MAX_TOKENS = 8000
@@ -78,23 +80,8 @@ def prompt_version(method: LaterStageMethod) -> str:
     if method == "gan_llm_encode":
         return GAN_LLM_ENCODE
     if method == "gan_llm_select_from_extract":
-        return GAN_LLM_SELECT_FROM_EXTRACT
+        return GAN_LLM_SELECT_POLICY_EXAMPLES
     return GAN_LLM_SELECT
-
-
-def parse_extract_ledger(
-    raw_output: str,
-    *,
-    note_text: str | None,
-) -> StructuredExtractionRecord:
-    extraction, _, errors = parse_structured_json(
-        raw_output,
-        note_text=note_text,
-        repair_config=StructuredRepairConfig.for_mode("raw_model"),
-    )
-    if extraction is None:
-        raise ValueError(f"extract raw did not parse: {errors}")
-    return extraction
 
 
 def extract_rows_path(split: str, slug: str = CITED_SLUG) -> Path:
@@ -129,34 +116,19 @@ def later_stage_work_root(
     method: LaterStageMethod,
     slug: str = CITED_SLUG,
     split: str = "dev750",
+    *,
+    work_leaf: str | None = None,
 ) -> Path:
     root = HOLDOUT_SCRATCH if holdout_is_aggregate_only(split) else WORK_ROOT
-    return root / method / slug / EXTRACT_METHOD / split
+    return root / (work_leaf or method) / slug / EXTRACT_METHOD / split
 
 
 def encode_work_rows_path(split: str, slug: str = CITED_SLUG) -> Path:
     return later_stage_work_root("gan_llm_encode", slug, split) / "rows.jsonl"
 
 
-def extract_events_as_select_ledger(
-    extract: StructuredExtractionRecord,
-) -> list[dict[str, Any]]:
-    """Label extract events for select without an encode call."""
-
-    selected = set(extract.selection.selected_event_ids)
-    events: list[dict[str, Any]] = []
-    for event in extract.events:
-        row = event.model_dump()
-        if event.event_id in selected and extract.selection.final_label:
-            row["label"] = extract.selection.final_label
-        else:
-            row["label"] = event.raw_value or ""
-        events.append(row)
-    return events
-
-
 def parse_encode_labels(raw_output: str) -> list[dict[str, str]]:
-    payload = _payload(raw_output)
+    payload = later_stage_json_payload(raw_output)
     rows = payload.get("labels")
     if rows is None:
         rows = payload.get("events")
@@ -172,51 +144,6 @@ def parse_encode_labels(raw_output: str) -> list[dict[str, str]]:
             raise ValueError("encode label row is missing event_id or label")
         labels.append({"event_id": str(event_id), "label": str(label)})
     return labels
-
-
-def parse_select_answer(raw_output: str) -> dict[str, Any]:
-    payload = _payload(raw_output)
-    block: Mapping[str, Any] = payload
-    nested = payload.get("selection")
-    if not isinstance(payload.get("selected_event_ids"), list) and isinstance(
-        nested, Mapping
-    ):
-        block = nested
-    ids = block.get("selected_event_ids")
-    if not isinstance(ids, list):
-        raise ValueError("select output has no selected_event_ids")
-    answer: dict[str, Any] = {
-        "selected_event_ids": [str(item) for item in ids],
-    }
-    label = block.get("label")
-    if label in (None, ""):
-        label = block.get("final_label")
-    if label not in (None, ""):
-        answer["label"] = str(label)
-    return answer
-
-
-def project_encode_label(
-    labels_by_id: Mapping[str, str],
-    selected_event_ids: Sequence[str],
-) -> str | None:
-    for event_id in selected_event_ids:
-        label = labels_by_id.get(event_id)
-        if label:
-            return label
-    if selected_event_ids:
-        return "unknown"
-    return "no seizure frequency reference"
-
-
-def project_select_label(
-    labels_by_id: Mapping[str, str],
-    selected_event_ids: Sequence[str],
-    written_label: str | None,
-) -> str | None:
-    if written_label:
-        return written_label
-    return project_encode_label(labels_by_id, selected_event_ids)
 
 
 def verify_later_stage_prompt(method: LaterStageMethod) -> None:
@@ -258,6 +185,9 @@ def run_later_stage(
     timeout: int | None = None,
     progress_every: int = 1,
     reasoning_effort: str | None = None,
+    work_leaf: str | None = None,
+    recorded_prompt_version: str | None = None,
+    live_sync: bool = False,
 ) -> dict[str, Any]:
     if slug != CITED_SLUG:
         raise RuntimeError("later-stage Gan encode and select run on Gemini only")
@@ -276,11 +206,13 @@ def run_later_stage(
         if not encode_path.exists():
             raise RuntimeError("gan_llm_select needs a finished gan_llm_encode work cell")
         encode_by_index = _load_jsonl_by_index(encode_path)
-    work_root = later_stage_work_root(method, spec.slug, split)
+    work_root = later_stage_work_root(
+        method, spec.slug, split, work_leaf=work_leaf
+    )
     work_root.mkdir(parents=True, exist_ok=True)
     rows_path = work_root / "rows.jsonl"
     started = datetime.now(UTC).isoformat()
-    prompt = prompt_version(method)
+    prompt = recorded_prompt_version or prompt_version(method)
     existing = [] if overwrite else _existing_complete_rows(rows_path, prompt)
     done = {int(row["source_row_index"]) for row in existing}
     todo = [record for record in records if record.source_row_index not in done]
@@ -293,16 +225,26 @@ def run_later_stage(
             timeout=timeout or spec.timeout,
             max_tokens=MAX_TOKENS,
         )
-    batch_raws = complete_chat_batch(
-        spec,
-        _batch_items(method, todo, extract_by_index, encode_by_index, program),
-        work_dir=work_root,
-        max_tokens=MAX_TOKENS,
-        overwrite=overwrite,
-    ) if todo else {}
+    batch_raws: dict[str, str] = {}
+    if todo and not live_sync:
+        batch_raws = complete_chat_batch(
+            spec,
+            _batch_items(method, todo, extract_by_index, encode_by_index, program),
+            work_dir=work_root,
+            max_tokens=MAX_TOKENS,
+            overwrite=overwrite,
+        )
     by_index = {int(row["source_row_index"]): row for row in existing}
     for index, record in enumerate(todo, start=1):
         raw_output = batch_raws.get(str(record.source_row_index), "")
+        if live_sync:
+            raw_output = _live_sync_raw_output(
+                method,
+                record,
+                extract_by_index=extract_by_index,
+                encode_by_index=encode_by_index,
+                program=program,
+            )
         row = score_later_stage_row(
             method,
             record,
@@ -311,6 +253,7 @@ def run_later_stage(
             encode_row=encode_by_index.get(record.source_row_index),
             split=split,
             machine=machine,
+            recorded_prompt_version=prompt,
         )
         if row.get("call_error"):
             raise RuntimeError(
@@ -350,7 +293,7 @@ def run_later_stage(
         "started_utc": started,
         "finished_utc": datetime.now(UTC).isoformat(),
         "live": True,
-        "call_transport": "openrouter_batch",
+        "call_transport": "sync" if live_sync else "openrouter_batch",
         "model_calls": len(todo),
         "summary": _public_summary(summary, holdout=holdout),
         "claim_boundary": (
@@ -404,7 +347,9 @@ def score_later_stage_row(
     encode_row: Mapping[str, Any] | None,
     split: str,
     machine: str,
+    recorded_prompt_version: str | None = None,
 ) -> dict[str, Any]:
+    prompt = recorded_prompt_version or prompt_version(method)
     try:
         extract = parse_extract_ledger(
             str(extract_row["raw_output"]),
@@ -422,7 +367,7 @@ def score_later_stage_row(
             "split": machine,
             "paper_split": split,
             "split_manifest": SPLIT_MANIFEST,
-            "prompt_version": prompt_version(method),
+            "prompt_version": prompt,
             "prompt_input_json": "",
             "raw_output": "",
             "call_error": None,
@@ -478,22 +423,7 @@ def score_later_stage_row(
                 extract_selected_event_ids=extract.selection.selected_event_ids,
                 extract_label=extract.selection.final_label,
             )
-            answer = parse_select_answer(raw_output)
-            selected_ids = answer["selected_event_ids"]
-            submitted = extract.model_copy(
-                update={
-                    "selection": extract.selection.model_copy(
-                        update={
-                            "selected_event_ids": selected_ids,
-                            "final_label": project_select_label(
-                                labels_by_id,
-                                selected_ids,
-                                answer.get("label"),
-                            ),
-                        }
-                    )
-                }
-            )
+            submitted = apply_llm_select(extract, raw_output, encoded_events)
     except (ValueError, RuntimeError, json.JSONDecodeError) as exc:
         parse_errors.append(str(exc))
         submitted = extract
@@ -516,7 +446,7 @@ def score_later_stage_row(
         "split": machine,
         "paper_split": split,
         "split_manifest": SPLIT_MANIFEST,
-        "prompt_version": prompt_version(method),
+        "prompt_version": prompt,
         "prompt_input_json": prompt_input,
         "raw_output": raw_output,
         "call_error": call_error,
@@ -531,14 +461,6 @@ def score_later_stage_row(
         },
         "comparison": comparison,
     }
-
-
-def _payload(raw_output: str) -> dict[str, Any]:
-    blob = extract_json_object(raw_output) or raw_output
-    payload = json.loads(blob)
-    if not isinstance(payload, dict):
-        raise ValueError("later-stage output is not a JSON object")
-    return payload
 
 
 def _load_jsonl_by_index(path: Path) -> dict[int, dict[str, Any]]:
@@ -616,6 +538,54 @@ def _prepare_live_runtime(
     )
 
 
+def _later_stage_prompt_input(
+    method: LaterStageMethod,
+    record: GanFrequencyRecord,
+    extract_by_index: Mapping[int, Mapping[str, Any]],
+    encode_by_index: Mapping[int, Mapping[str, Any]],
+) -> str | None:
+    try:
+        extract = parse_extract_ledger(
+            str(extract_by_index[record.source_row_index]["raw_output"]),
+            note_text=record.note_text,
+        )
+    except ValueError:
+        return None
+    if method == "gan_llm_encode":
+        return build_llm_encode_prompt_input(
+            [event.model_dump() for event in extract.events]
+        )
+    if method == "gan_llm_select_from_extract":
+        return build_llm_select_prompt_input(
+            extract_events_as_select_ledger(extract),
+            extract_selected_event_ids=extract.selection.selected_event_ids,
+            extract_label=extract.selection.final_label,
+        )
+    encoded_events = list(encode_by_index[record.source_row_index]["encoded_events"])
+    return build_llm_select_prompt_input(
+        encoded_events,
+        extract_selected_event_ids=extract.selection.selected_event_ids,
+        extract_label=extract.selection.final_label,
+    )
+
+
+def _live_sync_raw_output(
+    method: LaterStageMethod,
+    record: GanFrequencyRecord,
+    *,
+    extract_by_index: Mapping[int, Mapping[str, Any]],
+    encode_by_index: Mapping[int, Mapping[str, Any]],
+    program: DspyStructuredExtractor,
+) -> str:
+    prompt_input = _later_stage_prompt_input(
+        method, record, extract_by_index, encode_by_index
+    )
+    if prompt_input is None:
+        return ""
+    prediction = program(prompt_input_json=prompt_input)
+    return str(prediction.structured_json)
+
+
 def _batch_items(
     method: LaterStageMethod,
     records: Sequence[GanFrequencyRecord],
@@ -625,32 +595,11 @@ def _batch_items(
 ) -> list[BatchChatItem]:
     items: list[BatchChatItem] = []
     for record in records:
-        try:
-            extract = parse_extract_ledger(
-                str(extract_by_index[record.source_row_index]["raw_output"]),
-                note_text=record.note_text,
-            )
-        except ValueError:
+        prompt_input = _later_stage_prompt_input(
+            method, record, extract_by_index, encode_by_index
+        )
+        if prompt_input is None:
             continue
-        if method == "gan_llm_encode":
-            prompt_input = build_llm_encode_prompt_input(
-                [event.model_dump() for event in extract.events]
-            )
-        elif method == "gan_llm_select_from_extract":
-            prompt_input = build_llm_select_prompt_input(
-                extract_events_as_select_ledger(extract),
-                extract_selected_event_ids=extract.selection.selected_event_ids,
-                extract_label=extract.selection.final_label,
-            )
-        else:
-            encoded_events = list(
-                encode_by_index[record.source_row_index]["encoded_events"]
-            )
-            prompt_input = build_llm_select_prompt_input(
-                encoded_events,
-                extract_selected_event_ids=extract.selection.selected_event_ids,
-                extract_label=extract.selection.final_label,
-            )
         items.append(
             BatchChatItem(
                 custom_id=str(record.source_row_index),

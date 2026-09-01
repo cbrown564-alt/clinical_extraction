@@ -48,7 +48,7 @@ CELL5_ROWS = (
     ROOT
     / "scratch/holdout/paper/gan_llm_select_from_extract"
     / CITED_SLUG
-    / "gan_llm_extract_label_forms"
+    / "gan_llm_extract"
     / SPLIT
     / "rows.jsonl"
 )
@@ -289,7 +289,7 @@ def run_predeclared_contrasts(
             "(llm_select_after_codebook, including last_event_well_since). "
             "Table 1 cites that same test450 total. Rules are "
             "phase_c_candidate_config() (325/450). Cell 5 uses stored "
-            "gan_llm_select_from_extract comparison flags (357/450). "
+            "gan_llm_select_from_extract comparison flags (383/450). "
             "dev750 temperature replays saved extracts through the same "
             "living select stack."
         ),

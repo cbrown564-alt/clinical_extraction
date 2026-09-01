@@ -13,20 +13,22 @@ from clinical_extraction.paper.gan_later_stage import (
     LLM_SELECT_METHOD,
     MAX_TOKENS,
     encode_work_rows_path,
-    extract_events_as_select_ledger,
     extract_rows_path,
     later_stage_work_root,
     parse_encode_labels,
-    parse_extract_ledger,
-    parse_select_answer,
-    project_encode_label,
-    project_select_label,
     score_later_stage_row,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     FrequencyLabelKind,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.select_from_extract import (
+    extract_events_as_select_ledger,
+    parse_extract_ledger,
+    parse_select_answer,
+    project_encode_label,
+    project_select_label,
+)
 
 
 def test_encode_projects_the_extract_pick_label() -> None:
@@ -188,6 +190,17 @@ def test_select_from_extract_has_its_own_work_cell() -> None:
     path = later_stage_work_root("gan_llm_select_from_extract")
     assert "gan_llm_select_from_extract" in path.as_posix()
     assert "gan_llm_select/" not in path.as_posix()
+
+
+def test_later_stage_work_leaf_does_not_reuse_cited_select_cell() -> None:
+    path = later_stage_work_root(
+        "gan_llm_select_from_extract",
+        split="test450",
+        work_leaf="gan_llm_select_policy_examples",
+    )
+    posix = path.as_posix()
+    assert "gan_llm_select_policy_examples" in posix
+    assert "gan_llm_select_from_extract" not in posix
 
 
 def test_select_from_extract_verify_is_gemini_only() -> None:
