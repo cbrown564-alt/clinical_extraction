@@ -5,6 +5,7 @@ Status: current
 Owner: [paper keep-set](../README.md)
 Related: [holdout is aggregate-only](holdout-is-aggregate-only.md),
 [living comparison contract](living-comparison-contract.md),
+[paper-story simplification](paper-story-simplification.md),
 [claims](../claims.md)
 Feasibility: [Gan inventory feasibility](../../research/gan2026/gan_inventory_feasibility_dev750_n100_2026-08-28.md)
 

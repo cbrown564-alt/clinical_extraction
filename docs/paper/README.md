@@ -64,6 +64,7 @@ comparator when cited—not a headline method.
 | [lineage](lineage.md) | How the living requests were reached and what kind of method change each revision made |
 | [decisions](decisions/) | Current decisions |
 | [Gan is the dissertation paper](decisions/gan-is-the-dissertation-paper.md) | Dissertation cites Gan only; ExECT is a later paper; inventory feasibility is descriptive |
+| [Paper-story simplification](decisions/paper-story-simplification.md) | Two decision executors on a shared extract; Rules-only leaves the paper; mechanism and claim bounds |
 | [Gan inventory feasibility](../research/gan2026/gan_inventory_feasibility_dev750_n100_2026-08-28.md) | Descriptive 100-letter `dev750` inventory panel; not an accuracy table |
 | [living comparison contract](decisions/living-comparison-contract.md) | Envelope, stage stops, forbidden living names |
 | [source library](../research/paper/) | Writing sources |

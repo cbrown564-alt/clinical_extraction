@@ -3,6 +3,7 @@
 Self-describing names. No numbered series.
 
 - [Gan is the dissertation paper](gan-is-the-dissertation-paper.md)
+- [Paper-story simplification](paper-story-simplification.md)
 - [Gemini is the cited model](gemini-is-the-cited-model.md)
 - [Gan later-stage encode and select prompts](gan-later-stage-encode-select-prompts.md)
 - [ExECT later-stage encode and select prompts](exect-later-stage-encode-select-prompts.md)
