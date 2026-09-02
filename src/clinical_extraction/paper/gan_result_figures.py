@@ -29,6 +29,12 @@ CELL5_DEV750 = (
 )
 RUNGS_ROOT = ROOT / "paper_experiments/gan/rungs"
 CELL_BARBELL_LABELS = ("Rules only", "LLM and rules", "LLM only")
+# The dissertation compares two decision executors on one shared extract.
+# Rules-only stays a repository row, not a paper row.
+PAPER_EXECUTOR_BARBELL_LABELS = {
+    "LLM and rules": "Hybrid (rules decide)",
+    "LLM only": "LLM-only (second call decides)",
+}
 BARBELL_Y_LABEL_WRAP = 10
 BARBELL_CONNECTOR_MIN_ABS_DELTA = 0.012
 BARBELL_DELTA_LABEL_MIN_ABS_DELTA = 0.05
@@ -209,6 +215,26 @@ def gemini_cells_1_3_5_barbell(
         holdout=[int(holdout_select[key]) / n_holdout for key in keys],
         n_development=n_dev,
         n_holdout=n_holdout,
+    )
+
+
+def paper_executor_barbell(pairs: BarbellPairs) -> BarbellPairs:
+    """Keep only the two decision-executor rows and use the paper's names."""
+
+    keep = [
+        index
+        for index, category in enumerate(pairs.categories)
+        if category in PAPER_EXECUTOR_BARBELL_LABELS
+    ]
+    if len(keep) != len(PAPER_EXECUTOR_BARBELL_LABELS):
+        raise ValueError("barbell rows do not include both decision executors")
+    return BarbellPairs(
+        categories=[PAPER_EXECUTOR_BARBELL_LABELS[pairs.categories[i]] for i in keep],
+        development=[pairs.development[i] for i in keep],
+        holdout=[pairs.holdout[i] for i in keep],
+        n_development=pairs.n_development,
+        n_holdout=pairs.n_holdout,
+        ylabel=pairs.ylabel,
     )
 
 
@@ -1087,7 +1113,7 @@ def render_living_figures(out_dir: Path | None = None) -> dict[str, str]:
         stages=PAPER_STAGES,
     )
     barbell = render_barbell(
-        load_living_gemini_dev_vs_test(),
+        paper_executor_barbell(load_living_gemini_dev_vs_test()),
         dest / "development_vs_test_generalization",
     )
     matrix = render_purist_confusion_matrix(

@@ -14,9 +14,24 @@ from clinical_extraction.paper.gan_result_figures import (
     load_living_gemini_cells,
     load_living_gemini_dev_vs_test,
     load_living_six_model_cell3,
+    paper_executor_barbell,
     six_model_cell3,
     wrap_category_label,
 )
+
+
+def test_paper_executor_barbell_drops_rules_only_and_keeps_executor_order() -> None:
+    chart = gemini_cells_1_3_5_barbell(
+        development={"n": 750, "select": {"rules": 691, "hybrid": 656, "llm": 640}},
+        holdout={"n": 450, "select": {"rules": 325, "hybrid": 387, "llm": 383}},
+    )
+
+    paper = paper_executor_barbell(chart)
+
+    assert paper.categories == ["Hybrid (rules decide)", "LLM-only (second call decides)"]
+    assert paper.development == [656 / 750, 640 / 750]
+    assert paper.holdout == [387 / 450, 383 / 450]
+    assert (paper.n_development, paper.n_holdout) == (750, 450)
 
 
 def test_display_labels_use_seizure_free_not_no_seizure() -> None:
