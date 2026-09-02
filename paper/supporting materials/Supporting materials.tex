@@ -84,9 +84,10 @@ time frame, and choose the single normalised label
 that best represents the current pattern. Earlier 
 one-label studies use the same formulation~\cite{b6,b7,b8}. 
 The single label extraction implies that it is all one 
-task, but this paper proposes separate stages for 
-finding candidate evidence, encoding it, and selecting 
-the final answer.
+task, but this paper proposes two separate stages: 
+extracting every candidate with its evidence in a 
+canonical form, then deciding the final answer from 
+those candidates.
 
 Two common cases show why that split matters. 
 Diary-style counts may need to be combined: \emph{1 in June, 
@@ -145,16 +146,16 @@ the task in structured prompting including numbered
 reasoning steps and summarise-then-extract 
 designs~\cite{b7,b15}. 
 
-This study decomposes the task into three stages:
-finding candidate evidence, encoding it into a 
-structured form, and selecting the final answer. 
-Each stage is part of a modular pipeline and
-each module can use rules, an LLM call, or a 
-hybrid of both. Past research on seizure frequency
-uses either LLMs or rules at one stage. This 
-paper empirically evaluates each of them plus a
-hybrid combination of the two across all three
-stages.
+This study decomposes the task into two stages: 
+extracting candidate evidence into a structured 
+record, and deciding the final answer from that 
+record. One LLM call performs the extraction. The 
+decision stage is performed in two ways on the same 
+saved record, by recorded rules and by a second LLM 
+call, so the two executors can be compared with the 
+extraction held fixed. Past research on seizure 
+frequency gives rules only a repair role after an 
+LLM; this paper gives them the decision role.
 
 \section{Planning}
 
@@ -363,7 +364,7 @@ reliably and consistently\cite{b3}. This suggests the task
 is at least somewhat complex and a multi-agent
 system is justified on that basis.
 
-However, it is important that the each agent is given
+However, it is important that each LLM call is given
 a sufficiently complex task to justify the added system
 complexity. A key goal of the research is to design 
 a reliable system. A reliable system is one that 
@@ -415,47 +416,45 @@ Comprehensive error analysis showed that the LLM
 was consistently finding valid seizure frequency
 patterns, providing exact evidence from the text
 and often choosing defensible answers based 
-on the instructions. It did not another agent to
-check its evidence or structure it into JSON, it 
+on the instructions. It did not need another LLM call to
+check its evidence or structure it into JSON; it 
 needed cleaner task separation. 
 
 The task of extracting the correct seizure frequency
 label is composed of three sub-tasks: finding 
 relevant mentions of seizure frequency in the 
 text, encoding that information into the form 
-the gold-standard labels expect, and applying the
-a policy to choose which of those labels aligns 
-matches the gold-standard selected label. The
+the gold-standard labels expect, and applying a
+policy to choose which of those labels matches the 
+gold-standard selected label. The
 labelling conventions and policy choices in the 
 gold-standard evidence are valid, but they are not
 the only valid choice. Therefore a key pipeline 
 requirement is producing results that conform to 
 an explicit set of subjective choices. 
 
-The original multi-agent pipeline separated
-mechanical tasks across multiple LLMs; one
-agent splits the evidence, another checks
-the evidence, another aggregates it together.
-With simplicity and efficiency in mind, 
-it would be preferable if a single LLM could
-do all of those tasks at once. This would require
-the LLM to generate a much richer intermediate
-schema. Rather than extracting a single 
+The original brief separated mechanical tasks 
+across multiple LLM calls; one call splits the 
+evidence, another checks the evidence, another 
+aggregates it together. With simplicity and 
+efficiency in mind, it would be preferable if a 
+single LLM call could do all of those tasks at once. 
+This would require the LLM to generate a much richer 
+intermediate schema. Rather than extracting a single 
 seizure frequency label, the LLM would extract
 every relevant seizure frequency pattern as 
 a distinct entity in a nested JSON, with exact
 evidence for every entity, and make an initial 
 proposal. 
 
-Using this richer schema, a subsequent LLM 
+Using this richer schema, a second LLM call 
 could then review the evidence and apply the correct 
-policy in hard cases. This would reframe the
-multi-agent pipeline into separate agents for
-separate clinical tasks instead of mechanical
-tasks. This richer schema and three stage 
-pipeline also makes it possible for deterministic
-rules to apply policies to the evidence generated
-by the LLM to select the final answer.
+policy in hard cases. This reframes the decomposition 
+around clinical tasks (extract the candidates, then 
+decide between them) instead of mechanical tasks. The 
+richer record also makes it possible for deterministic 
+rules to apply the same policy to the evidence the LLM 
+extracted.
 
 Past research shows that deterministic code
 can reliably normalise seizure frequency values,
@@ -465,22 +464,41 @@ struggled with seizure frequency extraction more
 than medications, but they still performed better
 than human experts. Deterministic code already
 performed schema validation and evidence 
-verification more reliably than LLMs, so maybe
-there was a role for more deterministic code in 
-the pipeline.
+verification more reliably than LLMs, so there was 
+a case for more deterministic code in the pipeline.
 
 \subsection{Final Pipeline Design}
 
-The final outcome of this design review was 
-a modular pipeline that could use either LLMs
-or rules at each of the three stages 
-\texttt{find}, \texttt{encode} and \texttt{select}. 
-These are the implementation names; the paper reports 
-\texttt{find} and \texttt{encode} together as \texttt{extract} 
-and calls \texttt{select} \texttt{decide}. 
-Three methods would be implemented:
-a multi-agent pipeline, a purely rules-based system 
-and a hybrid LLM and rules system. 
+The final outcome of this design review was a 
+pipeline with two paper-facing stages, 
+\texttt{extract} and \texttt{decide}. The 
+implementation names three stages, \texttt{find}, 
+\texttt{encode} and \texttt{select}: the cited 
+extraction prompt already writes labels in the 
+gold standard's form, so \texttt{find} and 
+\texttt{encode} are bundled into one call and 
+reported as \texttt{extract}; \texttt{select} is 
+reported as \texttt{decide}. Those implementation 
+names are kept here only where they identify an 
+existing artifact.
+
+The paper's core comparison holds the extraction call 
+fixed and changes only who performs \texttt{decide}: 
+recorded rules (\texttt{Hybrid}) or a second LLM call 
+(\texttt{LLM-only}). Because the decision stage reads 
+the saved record, both executors replay the same model 
+output without a new call, and every difference between 
+them is attributable to the decision stage. 
+
+During development, rules were also implemented for 
+the extraction role, and an end-to-end rules-only 
+baseline was built and scored. That baseline is not 
+part of the dissertation comparison. It remains in the 
+repository as development history with its own recorded 
+protocol; it is not reinterpreted here. The other 
+decompositions of the LLM work that were tried are 
+summarised in the Evaluation section as secondary 
+experiments with their evidence retained.
 
 The original project brief required a pipeline that
 could ingest epilepsy letters, output validated 
@@ -488,13 +506,21 @@ structured fields, contain verified evidence citations
 and produce this in an aggregated JSON. It required
 an evaluation harness and a dissertation focused 
 on engineering and an empirical study of reliability.
-This design meets all of these requirements. 
+Each requirement maps onto a mechanism and its 
+evidence: validated structured fields to the 
+schema-validated record (Table~\ref{tab:adherence-supp}); 
+verified evidence citations to the exact-quote obligation 
+and the exact-evidence rate; aggregated JSON to the 
+final record; and the empirical study of reliability to 
+the two-executor comparison, the prompt ablations, the 
+six-model comparison and the sampling ablations reported 
+in the paper.
 
-The 3-method comparison strengthens the 
-empirical core and deepens the focus on reliability 
-by using the evaluation harness to determine
-whether a multi-agent pipeline is the most reliable 
-pipeline.
+The two-executor comparison keeps the empirical core 
+on the brief's question. It asks whether a second LLM 
+call is needed to apply the policy reliably, or whether 
+recorded code does the same work from the same record, 
+and it answers with a paired test on held-out letters.
 
 \section{Implementation}
 
@@ -509,7 +535,7 @@ evaluation section.
 
 \subsection{Structured Record}
 
-Each method receives a synthetic clinical letter 
+Each configuration receives a synthetic clinical letter 
 and produces a structured seizure frequency record. The 
 final record contains the submitted frequency label, direct 
 supporting evidence, and the metadata needed to identify 
@@ -530,36 +556,43 @@ qualitative descriptions. Preserving the alternatives avoids
 losing information before the annotation policy has been 
 applied.
 
-\subsection{Find, Encode and Select}
+\subsection{Extract and Decide}
 
 The record distinguishes the source wording from its 
 encoded representation and from the final selected 
-answer. A later selection stage can revise the proposed 
+answer. The decision stage can revise the provisional 
 answer while retaining the evidence on which 
 the original proposal was based. The final output is 
 validated against the expected schema, while source 
 data and raw model output are retained separately 
 from format repair and clinical policy decisions.
 
-The implemented pipeline divides seizure frequency 
-extraction into three stages. \texttt{Find} collects candidate 
-events and their evidence from the letter. \texttt{Encode} 
-represents an already identified candidate in the required 
-structured form, including the benchmark's label 
-conventions. \texttt{Select} applies the policy for determining 
-which candidate best represents the patient's current 
-seizure frequency pattern. This division makes explicit 
-that locating a relevant statement, writing it in the desired 
-form, and choosing the correct final statement are 
-different tasks.
+The interface between the two stages is fixed. 
+\texttt{Extract} receives the full letter and returns the 
+candidate record: every seizure frequency event with its 
+quoted span, category and canonical label, plus a 
+provisional answer. \texttt{Decide} receives that record 
+and the decision policy, never the letter, and returns the 
+final label with the event(s) that support it. In the 
+implementation, \texttt{extract} is the \texttt{find} stage 
+whose prompt already writes the gold standard's label 
+forms (so the \texttt{encode} step is bundled into the same 
+call), and \texttt{decide} is the \texttt{select} stage. A 
+small deterministic \texttt{encode} step still runs 
+between them in \texttt{Hybrid} to rewrite any label the 
+model left in a non-canonical form; on the held-out set it 
+changes at most 0.01 (355 to 360 correct letters before 
+rules decide).
 
 Each stage produces an inspectable output. This is 
-particularly useful when the selected answer changes: the change can 
-be attributed to the evidence found, its encoding, or the 
-final policy decision. It also permits later stages to work from 
-the same saved candidate record, rather than requiring 
-every alternative implementation to make a new model call.
-This significantly sped up the optimisation process.
+particularly useful when the final answer differs from 
+the provisional one: the change can be attributed to the 
+evidence extracted or to the policy decision. It also 
+permits the decision stage to work from the same saved 
+candidate record, rather than requiring every alternative 
+implementation to make a new model call. This 
+significantly sped up the optimisation process and is 
+what makes the two-executor comparison a paired one.
 
 \subsection{Rules and Deterministic Components}
 
@@ -572,32 +605,40 @@ implementation keeps format-only repair, benchmark
 representation, and clinically meaningful policy rules distinct 
 so that a change to one does not silently alter another.
 
-Rules also provide an implemented option at each 
-substantive stage. They can identify seizure-frequency 
-statements, encode candidate events, and apply the 
-final selection policy. Their authority is recorded by rule 
-type: for example, whether a rule merely standardises a 
-representation, blocks an unsupported candidate, rewrites 
-a submitted concept, or reselects between already found 
-events. This makes deterministic processing an explicit 
-part of the method rather than unreported post-processing.
+In \texttt{Hybrid}, recorded rules perform the decision 
+role. Their authority is recorded by rule type: whether a 
+rule merely standardises a representation (dialect or 
+encode), blocks an unsupported provisional answer (gate), 
+rewrites the submitted label from the extracted evidence 
+(rewrite, e.g. totalling a seizure diary), or reselects a 
+different already-extracted event (reselect). No decision 
+rule scans the letter for a new candidate. This makes 
+deterministic processing an explicit part of the method 
+rather than unreported post-processing. Rules for the 
+extraction role were also implemented during development; 
+they are repository history, not part of the reported 
+comparison.
 
 \subsection{LLM Components}
 
 The LLM implementation uses structured prompts that 
 ask the model to return a record containing candidate 
 seizure-frequency events, evidence, and a proposed 
-answer. LLMs can be assigned to \texttt{find}, \texttt{encode}, \texttt{select}. 
-At \texttt{find}, an LLM identifies candidate 
-events and evidence. At \texttt{encode}, it maps an already 
-represented candidate to the required label form. At \texttt{select}, 
-it adjudicates between competing candidates under the 
-same policy that deterministic rules may apply. 
+answer. The extraction call reads the letter and returns 
+that record. In \texttt{LLM-only}, a second call receives 
+the record and adjudicates between competing candidates 
+under the same policy that the rules apply, written as 
+instructions with worked examples. Neither call uses 
+tools, chooses the next step or invokes another model; 
+each is a prompt with a fixed input and a schema-validated 
+JSON output, which is why the system is described as a 
+fixed pipeline of LLM calls rather than as agents.
 
-This stage-assignment approach provides a controlled way to 
-compare rules and LLMs on the substantive clinical extraction 
-decisions, while deterministic validation and output assembly
-remain common infrastructure.
+Holding the extraction call fixed and changing only the 
+decision executor provides a controlled way to compare 
+rules and LLMs on the substantive clinical decision, while 
+deterministic validation and output assembly remain common 
+infrastructure.
 
 \section{Testing}
 
@@ -654,60 +695,255 @@ frequency burden from a clinical letter reliably, with a
 structured evidence record and a reproducible comparison 
 between rules and LLMs. 
 
-\subsection{Finding Multiple Candidates with Exact Evidence}
+All held-out (\texttt{test450}) figures in this section are 
+aggregate totals; no held-out letter or output was inspected. 
+Development (\texttt{dev750}) figures may be accompanied by 
+row-level mechanism examples. Unless stated otherwise the 
+model is Gemini 3.7 Flash at temperature 0 with low thinking 
+effort, and the metric is Purist micro-F1 with correct letters 
+in parentheses.
 
-A key feature of the pipeline was the rich schema. 
-Models were asked to extract multiple seizure frequency
-patterns in the text, extract evidence spans for each 
-pattern identified, and choose which of those patterns
-best represents the patient's current seizure frequency
-status. That rich schema is what enabled a subsequent
-LLM in the multi-agent method and rules in the hybrid
-method to re-use the evidence and deliver performance
-gains of +0.07. However that comes at the cost of higher
-schema complexity and task specificity and this is where 
-local models remain slightly worse. 
+\subsection{Extracting Multiple Candidates with Exact Evidence}
 
-Gemini, Grok, Luna and DeepSeek all had exact evidence 
-rates of 99\%+. Qwen (97\%) and Gemma (93\%) occasionally 
-paraphrased the text. Gemini, Grok and Luna produced valid
-schema 100\% of the time. DeepSeek and Qwen produced
-valid schema 99\% of the time. Gemma was only at 97\%, 
-occasionally using things like double \{\{ or "" and breaking
-the nested json structure. 
+A key feature of the pipeline is the rich extraction record. 
+The model is asked to extract every seizure frequency pattern 
+in the text, quote an exact evidence span for each, write each 
+in a canonical form, and propose which best represents the 
+patient's current status. That record is what allows the 
+second LLM call in \texttt{LLM-only} and the rules in 
+\texttt{Hybrid} to re-use the evidence and improve on the 
+provisional answer by +0.06 to +0.07. The cost is a more 
+complex schema, and this is where the local models fall 
+slightly behind.
 
-\subsection{Multi-Agent Pipeline Variants}
+The gold standard records one label and one quote per letter. 
+The extraction record holds more: on \texttt{test450}, Gemini 
+extracted 985 events over 450 letters (2.19 per letter) and 
+the six models ranged from 2.19 to 2.82 events per letter. On 
+\texttt{dev750} the Gemini mean is 2.16 events (median 2, 
+range 1--6), while the set of events supporting the final 
+answer has a median of 1. The record therefore preserves 
+alternatives that a one-label output would discard.
 
-\subsection{LLM Prompt Variants}
+Table~\ref{tab:adherence-supp} gives each model's adherence 
+to the extraction contract on \texttt{test450}. Every model 
+returned a parseable record for at least 442 of 450 letters 
+and no call failed. The four hosted models quoted an exact 
+substring of the letter for the selected event in 99\% or more 
+of letters; Qwen (97\%) and Gemma (93\%) occasionally 
+paraphrased. Gemma also needed the most non-semantic format 
+repair (15 letters), typically doubled braces or quotation 
+marks that broke the nested JSON, and left 8 letters 
+unparsed after repair; those letters are scored as incorrect. 
+Format repair is recorded separately from every semantic 
+rule and never changes a label.
+
+\begin{table*}[!t]
+\caption{Six models as the extraction call on \texttt{test450}: scores and contract adherence (Hybrid)}
+\label{tab:adherence-supp}
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{Yrrrrrrr}
+\toprule
+\textbf{Model} & \textbf{Purist} & \textbf{Prag.} & \textbf{Exact ev.} & \textbf{Repairs} & \textbf{Unparsed} & \textbf{Retry rej.} & \textbf{Events} \\
+\midrule
+Gemini 3.7 Flash & 0.860 (387) & 0.880 (396) & 99.8\% (449) & 0 & 1 & 0 & 985 \\
+Grok 4.6 & 0.853 (384) & 0.889 (400) & 100\% (450) & 0 & 0 & 0 & 1063 \\
+DeepSeek V4 Flash & 0.820 (369) & 0.849 (382) & 99.6\% (448) & 2 & 0 & 0 & 1267 \\
+GPT-5.6 Luna & 0.789 (355) & 0.820 (369) & 98.9\% (445) & 0 & 1 & 0 & 1102 \\
+Qwen 3.8 27B & 0.762 (343) & 0.807 (363) & 96.7\% (435) & 3 & 2 & 0 & 1004 \\
+Gemma 4 26B & 0.724 (326) & 0.773 (348) & 92.9\% (418) & 15 & 8 & 7 & 1068 \\
+\bottomrule
+\end{tabularx}
+
+\vspace*{2pt}
+\begin{minipage}{\textwidth}
+\raggedright\footnotesize
+Exact ev.: the quoted span for the selected event is an exact substring of the letter. Repairs: letters needing a non-semantic JSON dialect repair. Unparsed: no valid record after repair. Retry rej.: format-only retries whose output was rejected. Events: extracted events over 450 letters. Source: \texttt{paper\_experiments/gan/rungs/\{model\}/test450/comparison.json}.
+\end{minipage}
+\end{table*}
+
+\subsection{Extraction Prompt Variants}
+
+The paper's Table VII compares the full extraction prompt 
+with exactly three focused variants, each removing one 
+ingredient while the others remain: the worked examples, the 
+closed list of allowed label forms, and the evidence 
+obligation (the evidence fields and the exact-quote 
+instruction, removed together as one package). 
+Table~\ref{tab:prompt-variants} repeats those rows with the 
+intermediate encode stop exposed, so the reader can see that 
+the deterministic label rewrite between \texttt{extract} and 
+\texttt{decide} moves at most five letters in any row. The 
+encode column is the shared replay, not a fourth ablation. 
+The decrements are not additive.
+
+\begin{table}[!t]
+\caption{Extraction prompt ablations on \texttt{test450} (Hybrid replay)}
+\label{tab:prompt-variants}
+\centering
+\footnotesize
+\begin{tabularx}{\linewidth}{Yrrr}
+\toprule
+\textbf{Extraction prompt} & \textbf{Provisional} & \textbf{After encode} & \textbf{Final} \\
+\midrule
+Full codebook prompt & 0.789 (355) & 0.800 (360) & \textbf{0.860} (387) \\
+Without examples & 0.767 (345) & 0.776 (349) & 0.822 (370) \\
+Without closed allowed-label forms & 0.771 (347) & 0.776 (349) & 0.809 (364) \\
+Without evidence obligation & 0.767 (345) & 0.771 (347) & 0.822 (370) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Two further prompt families were run and are kept as 
+secondary evidence because they change more than one thing at 
+once or use a different scorer, so they are not comparable 
+with Table~\ref{tab:prompt-variants}.
+
+\emph{Source-near wording.} A variant of the extraction 
+prompt (\texttt{gan\_llm\_extract\_raw}) keeps the same event 
+schema and policy but drops the closed label list and asks 
+for letter wording or a near-source phrase. Its provisional 
+answer is 0.547 (246); a selected-evidence encoder that 
+rewrites the chosen span into the gold form raises this to 
+0.744 (335), and rule decide to 0.793 (357). It exists to 
+test whether the model should write the gold form itself or 
+leave that to code. The bundled codebook prompt is better at 
+every stop, so the cited prompt asks for the canonical form 
+directly.
+
+\emph{Holgate-style ask.} Two variants reproduce the 
+three-step instruction of Holgate \emph{et al.}~\cite{b7} and 
+are scored with a dialect map (\texttt{holgate\_dialect\_v1}) 
+that accepts their label conventions. Wrapped in this paper's 
+event-and-selection schema with the quote obligation, the ask 
+scores 0.616 (277) provisional, 0.640 (288) after encode and 
+0.649 (292) after decide. Asked for one label with no schema 
+or quote requirement, it scores 0.440 (198) and produces no 
+record to decide from. Comparing the two Holgate rows isolates 
+the structured record plus evidence obligation with the 
+clinical ask held fixed; they do not isolate the instruction 
+rewrite alone, and their scorer differs from the main table.
+
+\subsection{Secondary Decompositions of the LLM Work}
+
+The brief asked whether more LLM calls make extraction more 
+reliable. The following decompositions were built and 
+measured. None replaces the two-stage design and they are 
+reported here, with their scope, so that the negative and 
+null results are on record.
+
+\emph{A separate label-rewriting call.} Inserting a second 
+LLM call that rewrites each extracted event into the gold 
+form, before a third call decides, made the score worse. On 
+\texttt{test450} the codebook extraction stop of 0.79 (354) 
+fell to 0.65 (291) after the rewriting call and recovered 
+only to 0.71 (320) after the deciding call, with the 
+development split showing the same shape (0.78, 0.67, 0.76). 
+The development mechanism study found 89 harmed and 21 
+rescued letters at the rewriting call. A later replay with 
+the living decision prompt confirmed the drop (0.68, 304) and 
+showed the living decide call recovering to 0.86 (386), one 
+letter below \texttt{Hybrid}. The rewriting call does not 
+re-read the letter and overwrote answers that were already 
+correct. This is why \texttt{LLM-only} is two calls, not 
+three.
+
+\emph{One call for everything.} After the main comparison 
+was fixed, a single prompt that states the decision policy 
+and its worked examples inside the extraction call was run 
+as an ablation. Scored at its own provisional answer, it 
+reaches 0.87 (392) on \texttt{test450} and 0.88 (657) on 
+\texttt{dev750}, one letter above \texttt{Hybrid} on 
+development and five above on holdout, with no parse or 
+call failures. It is reported as an ablation, not as a 
+headline row: it was not part of the predeclared comparison 
+and has not been promoted. It shows that the policy can also 
+be applied inside the extraction call. The case for the 
+separate decision stage is not a score margin; it is that 
+the decision is inspectable, replayable without a model call, 
+and changeable without re-prompting.
+
+\emph{Verification then correction.} A development-only 
+variant asked a second call to verify the provisional label 
+against its quoted evidence and correct it. It removed true 
+positives, because the gold label is a labelling convention 
+rather than a paraphrase of the quote (\emph{multiple per 
+week} against \emph{many events in the last week}). A related 
+generate-then-verify program optimised with DSPy did not beat 
+the development ceiling of the time (0.731). No clean 
+held-out artifact exists for this variant.
+
+\emph{Section or timeline splitting.} A development-only 
+variant split the letter into sections before extraction. It 
+was a net negative: the correct seizure frequency reference 
+was not always in the seizure-frequency section, and 
+splitting encouraged the model to select wrong answers more 
+often. No held-out artifact exists.
+
+\emph{Sampling and orchestration on an older stack.} A 
+predeclared July study on a 50-letter development panel with 
+gpt-4.1-mini compared greedy decoding with self-consistency 
+(temperature 0.7, majority vote), a tool-using single call, 
+and two multi-call orchestrations. Majority voting scored 
+15/50 against greedy 19/50. The multi-call variants scored 
+29--32/50 but with 4--8 losses against greedy and failed the 
+predeclared gate (wins $\geq$ 5 and losses $\leq$ 1). The 
+study used an older model, 50 rows and a gate designed for a 
+different sample size. The permitted reading is narrow: on 
+this task the greedy answer is already the modal answer, so 
+sampling adds noise; and dynamic orchestration was not tested 
+at scale. It does not support the sentence ``multi-call 
+pipelines do not help''.
 
 \subsection{Hybrid Pipeline Variants}
 
-Rules and LLM finds, 
+The \texttt{Hybrid} row in the paper is one extraction call 
+followed by a deterministic label rewrite and the decision 
+rules. Two variants of that stack were measured on 
+\texttt{test450}. Skipping the label rewrite so that the 
+decision rules act directly on the model's own label forms 
+scores 0.85 (382), five letters below the cited row. Adding 
+rule-extracted candidates to the model's record before the 
+rules decide scores 0.82 (368), below the model's record 
+alone, so the cited row uses the model's record without 
+rule-extracted additions.
+
+The decision rules are nine named families applied in a 
+fixed order. On \texttt{dev750} they change the answer on 67 
+of 750 letters: 45 rescues, 4 harms, net +41 (608 to 649 
+before the final family was added). The largest families are 
+diary totals (+25), dated sequences (+10) and post-treatment 
+bursts (+7). The last family added, a last-event rule that 
+rewrites a short numeric seizure-free span after a day-dated 
+last event, was accepted on development evidence and 
+replayed once on the held-out set as part of the final 
+configuration (656/750 development, 387/450 held-out). Each 
+family, its authority and its portability scope are listed 
+in the repository rule catalogue.
 
 \section{Development vs. Test Results}
 
-\texttt{Rules only} perform better on the development set but 
-significantly worse on the test set (Figure~\ref{devtest}), which 
-repeats the pattern of overfitting commonly found in the literature. 
-Rules are brittle and tend to overfit specific patterns in the 
-training data, generalising poorly to unseen data. The \texttt{Rules
-only} method achieves an F1 score of 0.92 on the 
-development set, but performance declines significantly 
-(-0.20) on the test set. \texttt{LLM only} is 0.85 on both
-splits which shows it generalises particularly well.
-The \texttt{LLM and Rules} method combines the best parts of each:
-it performs better on the development set than LLM
-only (+0.02) and it has a significantly smaller generalisation gap
-than rules only (-0.01). The LLM does the heavy lifting 
-of matching patterns across the entire text, allowing the
-rules to focus on generalisable patterns in the refined 
-evidence set.
+Figure~\ref{devtest} shows the two decision executors on 
+both splits. \texttt{Hybrid} scores 0.87 (656/750) on 
+development and 0.86 (387/450) on the held-out set, a 
+generalisation gap of $-$0.01. \texttt{LLM-only} scores 0.85 
+on both (640/750 and 383/450). Neither executor was tuned on 
+held-out letters; prompts and rules were fixed on the 
+development split and replayed once. The small gaps are 
+consistent with the extraction call doing the pattern 
+matching across the whole letter and the decision stage 
+acting only on the refined record. The development-only 
+rules-extraction baseline mentioned in the Development 
+section showed the larger development-to-test drop typical of 
+rules tuned on one corpus; it is not part of this comparison 
+and is recorded in the repository.
 
 \begin{figure}[t]
     \centering
 
     \includegraphics[width=\linewidth]{development_vs_test_generalization.pdf}
-     \caption{Rules only performs best on the development set but overfits. LLM only is 0.85 on both splits under the living select prompt. LLM and rules remain the strongest holdout row, with a generalisation gap of -0.01 (0.87→0.86).}
+     \caption{The two decision executors on the development and held-out splits, Purist micro-F1. Both share the same extraction call. \texttt{Hybrid} moves from 0.87 to 0.86; \texttt{LLM-only} is 0.85 on both.}
     \label{devtest}
 \end{figure}
 
@@ -727,17 +963,38 @@ then it combined tonic-clonic seizures and generalised
 seizures over overlapping periods, while the gold-standard
 choose the highest count among the two seizure types.
 Separating these complex, somewhat contradictory 
-instructions into a separate LLM prompt or rules at the select
-phase produced significant improvements (+0.06). 
+instructions into a separate decision stage, whether a 
+second LLM call or rules, produced the +0.06 to +0.07 
+improvement reported in the paper.
 
-\section{Tools Descriptions}
+\section{Evidence Quality Beyond Exact Spans}
 
-\section{Critical Appraisal}
+The paper measures evidence quality only as exact-substring 
+adherence (Table~\ref{tab:adherence-supp}). An exact span is 
+not proof that the span semantically supports the label. The 
+gold standard's single reference quote is a loose comparator 
+for that question: it may be exact, paraphrased, abbreviated, 
+ellipsized or missing, so it is not ground truth for 
+span correctness.
 
-\subsection{Successes}
-
-\subsection{Challenges}
-
+A development-first directional study is specified and 
+drafted but not yet run. It measures two properties of the 
+existing annotation reference on \texttt{dev750}: whether it 
+can be located as an exact source substring, and whether it 
+conveys enough meaning to support the target label. It 
+measures two matching properties of the pipeline record: 
+whether the collected spans occur in the letter, and whether 
+all raw grouped spans, considered together, support the 
+target label under the decision policy. The adjudicator for 
+the pipeline arm receives only the target label, the raw 
+grouped spans and the policy; it does not see the letter, the 
+normalised labels, the predicted answer or the annotation 
+reference. It returns \emph{supported}, \emph{unsupported} 
+or \emph{insufficient}, a short reason, and controlled policy 
+tags. A development pilot and an explicit acceptance decision 
+must precede any aggregate-only replay on the held-out set. 
+The study is a directional measurement and protocol check; it 
+is not clinical validation.
 
 
 
@@ -807,12 +1064,30 @@ no seizure frequency reference \\
 \end{table}
 
 \begin{table}[!t]
-\caption{Later-stage select examples}
+\caption{Seizure frequency event categories in the extraction record}
+\label{tab:event-categories}
+\centering
+\begin{tabularx}{\linewidth}{lY}
+\toprule
+\textbf{Category} & \textbf{Use} \\
+\midrule
+\texttt{frequency\_rate} & A countable or range rate \\
+\texttt{cluster\_frequency} & How often clusters occur \\
+\texttt{seizure\_free} & A seizure-free statement \\
+\texttt{last\_event\_only} & A dated last event without a rate \\
+\texttt{unknown\_frequency} & Seizures discussed, no usable rate \\
+\texttt{no\_reference} & No usable frequency evidence \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[!t]
+\caption{Decision stage examples}
 \label{tab:select-policy}
 \centering
 \begin{tabularx}{\linewidth}{YYY}
 \toprule
-\textbf{Events} & \textbf{First pick} & \textbf{After select} \\
+\textbf{Events} & \textbf{Provisional answer} & \textbf{After decide} \\
 \midrule
 3 in March; 6 in May &
 \texttt{6 per month} &
@@ -853,42 +1128,106 @@ the pipeline \href{https://clinical-extraction.vercel.app/workbench}{here} .
 
 
 
-\section{Gan codebook find prompt}
+\section{The Extraction Prompt}
 
-The cited language-model find request is the codebook 
-extract prompt (\texttt{gan\_llm\_extract}). The object below is 
-the frozen template sent to the model: task, instructions, 
-allowed label forms, event schema, and selection schema. 
-The letter is attached at run time as \texttt{note\_text} and is 
-omitted here. Research metadata such as 
-\texttt{prompt\_version} is not part of the model-facing 
-payload.
+The cited extraction request is the codebook prompt 
+(implementation name \texttt{gan\_llm\_extract}). The object 
+at the end of this document is the frozen template sent to the 
+model: task, instructions, allowed label forms, event schema 
+and selection schema. The four ingredients ablated in the 
+paper map onto it as follows: the \emph{instructions} are the 
+task and instruction blocks; the \emph{examples} are the 
+worked examples inside the instructions; the \emph{allowed 
+labels} are the closed \texttt{label\_forms} block; and the 
+\emph{evidence obligation} is the evidence fields of the event 
+schema together with the exact-quote instruction. The letter 
+is attached at run time as \texttt{note\_text} and is omitted 
+here. Research metadata such as \texttt{prompt\_version} is 
+not part of the model-facing payload.
 
-This template is not the source-near find ablation 
+This template is not the source-near variant 
 (\texttt{gan\_llm\_extract\_raw}), which has no closed 
-\texttt{label\_forms} block. It is not the later select prompt.
+\texttt{label\_forms} block, and it is not the second-call 
+decision prompt used in \texttt{LLM-only}. Event categories 
+are listed in Table~\ref{tab:event-categories} and label 
+forms in Table~\ref{tab:label-forms}.
 
+\section{Experimental Environment}
 
-The only preprocessing applied to the answer labels 
-was to use the CUIPhrase as the main answer key
-for diagnosis and seizure frequency instead of the 
-raw text value. Often they were the same label, 
-but the CUIPhrase sometimes included cleaner labels
-for matching answers e.g. the normalised CUIPhrase 
-'temporal-lobe-epilepsy' was used over the text
-'epilepsy-Probable-temporal' for the same span.
+Experiments using local language models took place on a 
+Dell XPS 16 9640 running Windows 11, with an Intel Core 
+Ultra 9 185H, 32 GB RAM, and an NVIDIA GeForce RTX 
+4070 Laptop GPU (8 GB VRAM). Ollama v0.32.15 was 
+used to serve the two local models (Qwen 3.8 27B, Gemma 4 
+26B). 
 
-\section{Results}
-\subsection{Development Environment}
-\subsection{Methods}
-\subsection{Models}
-\subsection{Structured Evidence}
-\subsection{Ablations}
-\subsection{Error Analysis}
+Experiments using hosted APIs were run from a Mac 
+mini M1 with 16 GB unified memory on macOS 26.5.2. API
+calls were made directly to the provider (OpenAI, DeepSeek) 
+or through model routers (OpenRouter, AI Gateway). Four 
+hosted models were used (Gemini 3.7 Flash, GPT-5.6 Luna, 
+Grok 4.6, DeepSeek V4 Flash). Hosted accelerators are not 
+disclosed by the providers.
 
-\section{Discussion}
+All models used a temperature of 0 except Luna, which only 
+accepts a temperature of 1. An ablation was run on Gemini 
+using a temperature of 1. All models used a thinking or effort 
+level of low. Ablations were run on Gemini using thinking 
+levels of medium and high. 
 
-\section{Conclusion}
+Python 3.14.4 was used to write the program. DSPy 3.2.1, 
+Pydantic 2.13.4 and LiteLLM 1.87.1 were the core packages. 
+DSPy co-ordinated the model calls and required structured 
+JSON output. Pydantic validated that the structured output 
+conformed to the schema. LiteLLM delivered API calls to Ollama 
+and the model routers. Every reported cell is replayable from 
+saved model output in the repository's 
+\texttt{paper\_experiments/} directory without a new model 
+call.
+
+\section{Descriptive Clinical-Inventory Feasibility}
+
+The Gan gold standard is one current seizure-frequency label 
+per letter. The same synthetic letters also mention 
+diagnoses, medicines, investigations and several seizure 
+frequency statements. To show the broader structured content 
+available, a frozen four-family inventory schema and 
+extraction program, built for the separate ExECTv2 
+task~\cite{b3}, was applied to a prespecified sample of 100 
+\texttt{dev750} letters. The program was not tuned after the 
+sample was drawn. No inventory gold exists on these letters, 
+so Table~\ref{tab:inventory} reports only what the schema 
+emitted. The counts are not precision, recall, accuracy or 
+clinical validity; they are a descriptive feasibility panel 
+that motivates later expert annotation on real 
+correspondence. ExECTv2 benchmark results will be reported in 
+a separate paper.
+
+\begin{table*}[!t]
+\caption{Descriptive inventory output on 100 \texttt{dev750} synthetic letters}
+\label{tab:inventory}
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{lrrlY}
+\toprule
+\textbf{Family} & \textbf{Letters $\geq$1} & \textbf{Facts} & \textbf{Median (range)} & \textbf{Common subtypes} \\
+\midrule
+Diagnosis & 76 & 130 & 1 (0--4) & Epilepsy \\
+Prescription & 81 & 204 & 2 (0--9) & levetiracetam, lamotrigine, sodium valproate, clobazam, topiramate \\
+Investigations & 40 & 68 & 0 (0--3) & MRI normal, EEG abnormal, EEG normal, MRI abnormal \\
+Seizure frequency & 50 & 81 & 0.5 (0--4) & seizures, seizure, increased, infrequent, frequent \\
+Any family & 97 & 483 & 5 (0--11) & --- \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\section{Tools Descriptions}
+
+\section{Critical Appraisal}
+
+\subsection{Successes}
+
+\subsection{Challenges}
 
 \section*{References}
 
