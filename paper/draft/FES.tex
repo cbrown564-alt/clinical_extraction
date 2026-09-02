@@ -97,23 +97,34 @@ Date of submission: 4th September 2026
 \maketitle
 
 \begin{abstract}
-Seizure frequency is written in clinic letters, and extracting 
-it for research still relies on slow, error-prone manual chart 
-review. Large language models (LLMs) can read these letters, but 
-the best reported result required fine-tuning on over a thousand 
-labelled letters. This paper splits the task in two: an LLM 
-\texttt{extract}s every candidate frequency with its evidence, 
-then a fixed policy \texttt{decide}s the answer. The policy was 
-applied by rules (\texttt{Hybrid}) and by a second LLM call 
-(\texttt{LLM-only}). Both were evaluated on 1,200 synthetic 
-epilepsy letters against the benchmark reported for the 
-fine-tuned LLM on a different held-out sample of the same corpus. 
-\texttt{Hybrid} (F1 0.86) and \texttt{LLM-only} (0.85) exceeded 
-the reported benchmark (0.81) and improved on the extraction 
-stage's answer alone (0.79); removing the extraction prompt's 
-examples, closed label forms or evidence obligation lowered the 
-result. On this synthetic benchmark, a prompted model with a 
-separate decision step matched a fine-tuned one.
+Seizure frequency patterns are recorded in clinical notes 
+stored in electronic health records (EHRs). Manual chart 
+review is required to extract this information for research, 
+but this is expensive and error-prone. Rules-based 
+systems struggle with the lexical variety of seizure frequency 
+descriptions. Large language models (LLMs) are substantially 
+better at seizure frequency extraction, but fine-tuning a model 
+for this task requires substantial data and computation. This 
+paper proposes a pipeline in which one 
+LLM call \texttt{extract}s every candidate seizure frequency 
+event in the letter into a structured record, each with its 
+exact evidence span, a category and a canonical label, plus a 
+provisional answer. A second stage then \texttt{decide}s the 
+final answer from that record by applying a fixed policy. The 
+decision was performed in two ways on the same extraction 
+record: by rules (\texttt{Hybrid}) and by a second LLM 
+call (\texttt{LLM-only}). Evaluation used 1,200 synthetic 
+epilepsy letters and was compared with the benchmark previously 
+reported for a fine-tuned LLM on a different held-out sample of 
+the same corpus. Both \texttt{Hybrid} (Purist F1: 0.86) and 
+\texttt{LLM-only} (0.85) exceeded the reported benchmark (0.81) 
+and both improved on the 
+provisional answer (0.79). Ablations of 
+the extraction prompt show that its examples, closed label 
+forms and evidence obligation each contribute to that result. 
+On this synthetic benchmark, prompted extraction followed by a 
+decision policy matched the previously reported fine-tuned 
+result.
 
 \end{abstract}
 
@@ -123,92 +134,162 @@ information extraction, hybrid pipeline, large language models, seizure frequenc
 
 \section{Introduction}
 
-Epilepsy affects approximately 1\% of the UK population \cite{b1} 
-and is characterised by recurrent, unprovoked seizures \cite{b2}. Seizure frequency 
-is the primary indicator of disease burden, serving as the central metric guiding 
-clinical treatment and the primary endpoint in clinical trials. 
-Despite its clinical importance, seizure frequency is rarely recorded in structured 
-electronic health record fields; instead, it remains embedded within unstructured 
-clinic letters. These narrative documents summarise outpatient consultations, combining 
-past medical history, interval symptom changes, and future management plans. Extracting 
-this information at scale for retrospective research or cohort identification 
-traditionally requires manual chart review, which is labour-intensive, costly, 
-and difficult to standardise across institutions.
+Epilepsy affects c. 1\% of the UK population \cite{b1} and is 
+characterised by recurrent, unprovoked seizures \cite{b2}. 
+Seizure frequency is a key indicator of the patient's disease
+burden and is commonly used in clinical care to determine 
+the appropriate treatment and as a primary outcome in 
+clinical trials. Despite the critical role of this information, the 
+only place it is routinely recorded is in clinic letters. Clinic 
+letters are unstructured narrative reports of a patient's
+recent visit to the epilepsy clinic, and they often 
+combine descriptions of past diagnoses, current symptoms 
+and future treatment. This information can be used to 
+conduct retrospective studies or to identify patient cohorts 
+for clinical trials, but extracting it into that structured form 
+requires experts to conduct costly, error-prone manual 
+chart review. 
 
-Natural language processing (NLP) offers an automated alternative, yet clinical 
-narrative presents distinct challenges. Traditional rule-based systems provide 
-deterministic, auditable logic valued by clinicians, but they struggle with the 
-lexical variety and syntactic complexity of clinical frequency descriptions, which 
-range from explicit rates (\emph{2 to 3 seizures a week}) to relative interval counts 
-(\emph{4 since her last visit}) and qualitative impressions (\emph{frequent bouts}) \cite{b3}. 
-Conversely, large language models (LLMs) demonstrate remarkable semantic flexibility 
-in zero- and few-shot clinical information extraction \cite{b11, b12}. However, unconstrained 
-LLMs introduce substantial clinical risks: they operate as black boxes, remain prone to 
-hallucinations or ungrounded assertions \cite{b5}, and existing state-of-the-art results 
-have relied on fine-tuning on large collections of expert-annotated letters \cite{b3}.
+Natural language processing (NLP) has been used to 
+automatically extract key information from clinic letters. 
+Rules-based methods successfully extracted structured 
+facts about medications and diagnoses, but struggled
+with the imprecise language and diverse forms of seizure 
+frequency descriptions \cite{b3}. \emph{2 to 3 seizures a week}, 
+\emph{frequent bouts of seizures} and \emph{4 since her last visit} are 
+all valid descriptions of the same fact, but designing 
+rules to accommodate these completely and consistently
+is challenging and time-consuming. Rules-based 
+systems are highly valued by clinicians because they
+produce interpretable results and can flexibly 
+incorporate local domain expertise, but a different
+kind of tool is needed for these semantically complex 
+tasks.
 
-There is often more than one valid description of a patient's seizure frequency pattern. Clinic letters frequently 
-document multiple temporal intervals or distinct seizure types, such as historical baseline 
-rates alongside recent breakthrough seizures following an anti-seizure medication titration. 
-Selecting which mention reflects the patient's current seizure frequency is a matter 
-of clinical policy. When an LLM is asked to produce a single answer to a complex question,
-much of the nuance is lost. This prevents clinicians from inspecting the evidence chain 
-or reconfiguring the selection criteria for different clinical studies.
+Large language models (LLMs) perform substantially better on semantically
+complex tasks from instructions and a few examples alone\cite{b11, b12}, 
+including seizure frequency extraction\cite{b4}. 
+However, unlike rules-based methods, the outputs of 
+LLMs are not constrained to the exact text they were
+given. This presents new challenges for the task of 
+information extraction (IE). Past work has shown that 
+LLMs can invent evidence even when given the specific
+task of estimating a patient's seizure frequency from 
+the letter. In one case an LLM provided diagnostic 
+advice on prescriptions instead of citing the seizure frequency\cite{b5}. This phenomenon of 'hallucination' has been
+documented as a common error mode for LLMs and
+is a significant risk when applied to clinical 
+information at scale. Fine-tuning an LLM on the task 
+minimises this error but requires substantial training data
+and computation. 
 
-To address these limitations, this paper investigates a modular, two-stage architecture that 
-decouples evidence extraction from clinical decision-making:
-\begin{enumerate}
-    \item \texttt{Extract}: An LLM identifies all candidate seizure frequency mentions within the letter, extracting canonical forms alongside verbatim textual evidence.
-    \item \texttt{Decide}: An explicit clinical selection policy evaluates the candidate records to determine the primary current frequency pattern.
-\end{enumerate}
-The decision stage operates over structured extraction records rather than raw text, so it can 
-be executed either deterministically via recorded expert rules (\texttt{Hybrid}) or probabilistically 
-via a second LLM call (\texttt{LLM-only}).
+Prior work has utilised rules as a light post-processing
+layer to repair malformed outputs from LLMs \cite{b5}, but 
+none examine a hybrid method of LLM and rules as an 
+alternative to fine-tuning LLMs. Rules are very effective at 
+processing information with transparent, configurable logic. 
+LLMs are very effective at extracting rich information from
+semantically dense sources. Leveraging both capabilities
+at distinct stages can combat the concerns about LLMs
+being a black box that produces hallucinations, while providing
+greater semantic depth with far less time spent
+developing rules. A hybrid method can produce a more
+transparent, flexible system.
 
-\subsection{Research Aim, Hypotheses, and Contributions}
+Extracting a single label is not a single step. A clinic 
+letter can describe several seizure events with varying 
+precision and on different occasions, so the system must first 
+\texttt{extract} every candidate fact with its evidence, then 
+\texttt{decide} which candidate, or which combination of them, 
+answers the question. Which to keep is a clinical policy that 
+varies between users. Keeping the two stages apart captures 
+more evidence than a single answer would, lets one extraction 
+serve several policies, and makes the final answer explainable: 
+a reader sees the candidates, the policy and the label it 
+produced. 
 
-The primary aim of this paper is to determine whether a modular pipeline separating 
-evidence extraction from clinical policy decisions can match the performance of
-fine-tuned models without requiring expensive labelled training data. We investigate three core 
-hypotheses:
-\begin{itemize}
-    \item \textbf{H1 (Decoupling Lift):} Explicitly decoupling candidate mention extraction from policy-based decision improves extraction accuracy over an end-to-end, single-pass LLM prompt.
-    \item \textbf{H2 (Executor Equivalence):} A deterministic rule-based decision step applied to structured LLM extraction records performs competitively with a second LLM reasoning step, while offering full auditability.
-    \item \textbf{H3 (Training-Free Parity):} In-context few-shot extraction paired with structured evidence obligations can reach parity with published fine-tuned benchmarks on the same corpus.
-\end{itemize}
+The primary objective of this paper is to evaluate whether a 
+prompted LLM and rules can 
+extract seizure frequency patterns from epilepsy letters as 
+accurately as the fine-tuned LLM previously reported on the 
+same corpus. The secondary objective is to test whether 
+applying a decision to the extraction record improves on the 
+provisional answer, whether it matters if rules or a 
+second LLM call apply the policy, and which ingredients of the 
+extraction prompt the result depends on. If both objectives are 
+met, the paper contributes a new method for seizure frequency 
+extraction and shows where each component helps, to support 
+future research on a more general form of the method.
 
-The main contributions of this work are: (1) a transparent, modular information extraction architecture 
-separating extraction and decision; (2) an empirical comparison between deterministic rule-based and 
-LLM-based decision executors; (3) an ablation study identifying the critical components of the extraction 
-prompt (examples, closed label forms, and evidence obligations); and (4) an evaluation across six LLMs 
-assessing performance on consumer-grade hardware.
-
-\subsection{Scope and Paper Organisation}
-
-The study is focused on the extraction of current seizure frequency patterns from the 
-1,200 synthetic epilepsy clinic letters released by Gan \emph{et al.} \cite{b3}. The use of synthetic 
-data provides a controlled, reproducible benchmark with expert gold annotations while avoiding patient 
-privacy constraints; however, validation on real-world, multi-centre electronic health records remains 
-a defined limitation and subject for future work.
-
-The remainder of this paper is organised as follows. Section~\ref{sec:literature} reviews previous 
-approaches to seizure frequency extraction and conceptual framings of clinical IE. Section~\ref{sec:methods} 
-details the dataset, pipeline architecture, and evaluation framework. Section~\ref{sec:results} presents 
-the empirical results, including benchmark comparisons, ablation studies, and model portability checks. 
-Section~\ref{sec:discussion} interprets the findings, discusses clinical implications, and addresses ethical 
-considerations and limitations. Finally, Section~\ref{sec:conclusion} concludes and outlines directions for 
-future research.
+To answer these questions, the pipeline was scored after each 
+stage on 1,200 synthetic epilepsy clinic letters from Gan 
+\emph{et al.}\cite{b3}, each with a single expert-annotated 
+label for the patient's current seizure frequency pattern 
+(Section~\ref{sec:data}). Results are compared with the 
+benchmark Gan \emph{et al.} report for their fine-tuned LLM. 
+The two papers use different held-out samples from the same 
+synthetic corpus; Section~\ref{sec:benchmark} reports the 
+uncertainty this introduces.
 
 \section{Literature Review}
-\label{sec:literature}
 
-Extracting clinical outcomes from outpatient epilepsy narratives has progressed across three paradigms: expert-crafted rule-based systems, fine-tuned transformer representations, and large language models (LLMs). Early pipelines relied on pattern matching and regular expressions \cite{b4, b6, b15, b16}. While rules provide deterministic auditability, they struggle with the lexical diversity of frequency descriptions (\emph{2 to 3 a week}, \emph{frequent bouts}, \emph{4 since her last visit}) and frequently fail to generalise across healthcare institutions \cite{b6, b10}. Subsequent approaches applied clinical BERT models to improve semantic coverage \cite{b7, b9, b10}, using downstream rules solely to normalise dates and counts into standardised units. However, these discriminative models remained bounded by token-classification spans and required extensive task-specific annotated training data.
+The best approach to extract seizure frequency 
+information from epilepsy clinic letters is an active area 
+of research, with experiments using rules-based methods \cite{b4, b6}, 
+transformers-based methods \cite{b3, b5, b7, b8} and a 
+combination of both \cite{b9, b10} all published this decade. 
+Rules-based methods struggled with the 
+lexical variety of seizure frequency patterns. A key 
+challenge with both rules-based methods and BERT-based 
+methods was their failure to generalise to letters from a 
+different hospital. \cite{b6, b10}. LLMs were the first method
+to demonstrate strong generalisation to a new dataset\cite{b3},
+but this was achieved by fine-tuning a model on over 1,000
+synthetic letters. This paper explores whether similar
+performance can be achieved with a prompted model and rules.
 
-The emergence of autoregressive LLMs significantly advanced clinical information extraction (IE) \cite{b11, b12}. Zero-shot models can interpret varied clinical phrasing \cite{b8}, but risk generating ungrounded hallucinations or irrelevant advice \cite{b5}. To achieve benchmark reliability, recent studies have relied on supervised fine-tuning; notably, Gan \emph{et al.} \cite{b3} established a state-of-the-art benchmark (micro-F1 0.81) by fine-tuning an LLM on over 1,000 expert-annotated letters. However, fine-tuning imposes heavy operational costs: curating thousands of clinical annotations is expensive, model updates require significant compute, and black-box weights obscure the model's decision logic \cite{b14, b18}.
+Rules were used to normalise frequencies and dates as a 
+separate layer in two BERT-based pipelines \cite{b9, b10}, and 
+as minimal repair of malformed LLM output \cite{b5}, but no 
+study has given rules a decision role after a modern LLM. This 
+paper explores whether LLM instructions and examples combined 
+with decision rules can match a fine-tuned model.
 
-A fundamental limitation in existing LLM extractors is the conflation of extraction and clinical policy. Clinical IE is conventionally framed as mention detection followed by concept normalisation \cite{b13, b14, b21}. In outpatient narratives, however, a clinic letter frequently documents multiple conflicting mentions, such as historical baselines, distinct seizure types, or post-medication interval changes. Selecting which mention represents the patient's current operational status is a matter of clinical policy. Standard pipelines task an LLM with predicting a single final label in one pass, burying candidate selection inside an uninterpretable inference step. In contrast, concept normalisation in wider biomedical informatics routinely separates candidate generation from candidate ranking \cite{b21}.
+Clinical IE has been defined as the automatic extraction 
+and encoding of clinical information from text \cite{b13}: 
+recognising a mention and normalising it into a standard 
+form \cite{b14}. Modern LLMs do both in one step when asked 
+for a normalised label such as \emph{4 per month} from a raw 
+statement such as \emph{about once a week}. A further step 
+exists in many clinical extraction pipelines but goes 
+unmentioned: deciding between candidates. In a clinic letter 
+with several seizure frequency statements, producing a single 
+label for the patient's current status requires the system 
+both to extract the relevant statements and to decide which 
+one best answers the question. Prior rules-based systems made 
+this a distinct stage\cite{b15}, and clinical concept 
+normalisation routinely separates a high-recall candidate 
+generation stage from a precise ranking stage that chooses 
+among the candidates\cite{b21}. LLM pipelines instead make the 
+decision inside the extraction prompt. This paper explores 
+whether separating \texttt{extract} from \texttt{decide} in a 
+modular pipeline can deliver comparable performance while 
+preserving more of the evidence for downstream use.
 
-This paper addresses the gap between brittle rule-based systems and opaque, fine-tuned LLMs. While prior work restricted rules to lexical parsing or post-processing format repair \cite{b5}, we investigate whether an in-context prompted LLM can generate rich, evidence-grounded candidate records that are then resolved by an explicit decision policy. By evaluating both a deterministic rule-based executor (\texttt{Hybrid}) and a second LLM reasoning step (\texttt{LLM-only}), we test whether a modular, training-free architecture can match the fine-tuned benchmark while preserving an auditable evidence chain from source text to final label.
+Academic papers tend to focus exclusively on benchmark 
+accuracy while practitioners tend to value transparency, 
+configurability and efficiency at the cost of some accuracy\cite{b15, b16}. 
+Model interpretability is also a critical factor clinical settings\cite{b14}. 
+Clinicians are trained to use deductive logic to draw 
+conclusions and they expect systems to expose transparent, 
+interpretable evidence that they can reliably use to make 
+decisions that demand high accountability. Past work 
+utilises evidence spans as a training input\cite{b3} for 
+fine-tuning or as data exhaust as part of using a rule-based 
+method\cite{b4}. This paper explores whether preserving a 
+transparent evidence chain from exact text to final answer 
+can make the output both more interpretable and more 
+accurate.
 
 \section{Methods}
 \subsection{Data}
@@ -426,49 +507,104 @@ evidence and the rule that decided it. Rules do not scan the
 letter for new candidates; every rule acts on the events the 
 model extracted.
 
-\subsection{Tuning Procedure and Pipeline Optimisation}
-\label{sec:tuning}
+\subsection{Pipeline Optimisation}
 
-The training and development procedure for this training-free architecture centers on iterative, error-driven refinement of prompt instructions, few-shot exemplars, and deterministic rule logic strictly using the development partition ($N=750$). Rather than updating model weights via gradient descent, system tuning iteratively optimizes the task decomposition and schema boundaries.
+The development set was used to optimise the two key 
+elements of the pipeline: the LLM prompt instructions and 
+the rules. The focus of the optimisation process was to 
+improve accuracy while keeping the instructions and rules 
+simple and generalisable. Qualitative error analysis was 
+conducted to diagnose the cause of poor performance and 
+identify common error modes. Hypotheses were developed 
+and tested to tune the prompt and rules iteratively. 
+Improving a rule or instruction for one class of error 
+often harmed another, because the annotation policies 
+interact. Separating \texttt{extract} from \texttt{decide} 
+kept the policy on which facts to extract apart from the 
+policy on which to choose, and made it possible to score the 
+pipeline after each stage and locate bottlenecks. The 
+supporting materials give a fuller account of this process.
 
-The optimization process followed a structured error-analysis protocol. First, model predictions on \texttt{dev750} were classified into specific error modes: (1) false-positive extraction of historical or family seizure rates; (2) arithmetic distortion during date/interval aggregation; (3) failure to isolate seizure-free declarations from concurrent descriptions; and (4) non-canonical label phrasing. For each error cluster, competing hypotheses were formulated to determine whether the defect should be resolved by refining in-context prompt instructions or by implementing a dedicated downstream decision rule. Tuning was constrained to maintain simple, domain-grounded heuristics: rules were added only when they resolved systematic policy conflicts across the corpus without overfitting to idiosyncratic phrasing.
+\subsection{Evaluation}
 
-\subsection{Hyperparameter Configuration and Safeguards}
-\label{sec:hyperparameters}
+Every paper reporting seizure frequency extraction this 
+decade used F1 as its primary metric, but they differ in 
+what counts as a correct frequency label. It is not obvious 
+whether \emph{2 per month}, \emph{3 per month} and 
+\emph{once a week} should all be accepted when the 
+gold-standard label is \emph{multiple per month}. To allow 
+comparison with Gan \emph{et al.}\cite{b3}, this paper adopts 
+their two evaluation settings: a fine-grained \texttt{purist} 
+setting and a coarser \texttt{pragmatic} setting. If the gold 
+label is \emph{twice a week} and the prediction is \emph{once 
+a week}, that is a correct \texttt{pragmatic} answer, since 
+both fall in the \texttt{frequent} category, but an incorrect 
+\texttt{purist} answer. Table~\ref{tab:performance} lists the 
+categories in each setting.
 
-To ensure full deterministic reproducibility and prevent test-set leakage, rigorous experimental controls were enforced across software, hardware, and runtime parameters:
-\begin{itemize}
-    \item \textbf{Sampling Parameters:} All LLM extraction and decision runs were conducted at greedy decoding ($\text{temperature} = 0.0$, top-$p = 1.0$) to minimize sampling stochasticity. For reasoning-enabled models, thinking effort was set to low to balance latent chain-of-thought verification with computational latency.
-    \item \textbf{Software Environment:} Pipelines were executed in Python 3.11 with schema validation enforced via Pydantic. Extraction records were persisted as immutable JSON artifacts, allowing the rule-based and LLM-based decision executors to be evaluated on identical intermediate representations without repeated model calls.
-    \item \textbf{Hardware and Inference:} Gemini 3.7 Flash API calls were executed via the official Google GenAI SDK. Local open-weight models (Qwen 2.5 14B, DeepSeek-R1 Distill 14B, Gemma 2 9B, and Luna 8B) were served locally via Ollama on an Apple Silicon M-series workstation (unified memory), demonstrating consumer-hardware feasibility.
-    \item \textbf{Research Validity Firewall:} In accordance with pre-registered research safeguards, the test split ($N=450$) remained strictly locked. No qualitative failure inspection, error mode diagnosis, or threshold adjustments were permitted on test letters; held-out evaluation was executed once, and results were aggregated directly.
-\end{itemize}
+Micro-F1 is reported for both settings, because the 
+categories are badly imbalanced (some have over 100 letters, 
+some fewer than 10; Table~\ref{tab:performance}) and micro-F1 
+gives each letter equal weight. Each letter has exactly one 
+gold label and one prediction, so micro-F1 here equals the 
+share of letters answered correctly. The more precise 
+\texttt{purist} F1 is the primary metric.
 
-\subsection{Evaluation Metrics and Benchmark Comparison}
-\label{sec:evaluation}
+The pipeline is evaluated on a held-out test set of 450 
+letters that were never used to tune prompts, rules or any 
+other aspect of the pipeline. Results are compared against 
+the evaluation set labelled Synthetic (1,166) in Gan 
+\emph{et al.}\cite{b3}, a different held-out sample from the 
+same synthetic corpus, distinct from their fine-tuning data.
 
-Evaluating clinical frequency extraction requires clear criteria for what constitutes an acceptable match. Following Gan \emph{et al.} \cite{b3}, this study implements two distinct evaluation granularities:
-\begin{itemize}
-    \item \textbf{Purist Evaluation (Primary):} Requires an exact match against the gold-standard canonical label (e.g., \emph{2 to 3 per week} and \emph{once a week} are non-matching, distinct entities).
-    \item \textbf{Pragmatic Evaluation:} Evaluates clinical equivalence by grouping labels into four broader functional categories: \texttt{frequent}, \texttt{infrequent}, \texttt{unknown}, and \texttt{seizure free}. Predictions matching the gold category are scored as true positives (e.g., \emph{twice a week} and \emph{once a week} both belong to \texttt{frequent}).
-\end{itemize}
-
-Micro-averaged F1 is reported across all evaluations to account for substantial class imbalance (Table~\ref{tab:performance}). Because each letter receives exactly one gold label and one model prediction, micro-F1 is mathematically equivalent to overall letter accuracy. 
-
-Held-out performance is benchmarked against the Synthetic (1,166) test results reported by Gan \emph{et al.} \cite{b3}. While both studies sample from the same underlying synthetic distribution, the two test sets represent distinct non-overlapping samples; hence, comparisons assess benchmark comparability rather than a paired statistical test. Six diverse LLMs were evaluated in the extraction stage of \texttt{Hybrid} to test cross-model robustness (Section~\ref{sec:models}).
+The primary model is Gemini 3.7 Flash. It is the only model 
+used for the second decision call (\texttt{LLM-only}), for the 
+prompt ablations and for the temperature and thinking-level 
+ablations. Six models were evaluated as the extraction call in 
+\texttt{Hybrid} (Section~\ref{sec:models}). Elsewhere, 
+\texttt{Hybrid} results are from Gemini at temperature 0 with 
+low thinking effort. The held-out results are reported as 
+aggregate totals only; individual test letters and their 
+outputs were not inspected.
 
 \section{Results}
 
-\subsection{Benchmark Performance and Hypothesis Validation}
+\subsection{Benchmark Performance}
 \label{sec:benchmark}
 
-The primary objective of this study is to evaluate whether a modular, training-free pipeline separating extraction from decision can match a task-specific fine-tuned LLM at extracting seizure frequency patterns from epilepsy clinic letters. Results are benchmarked against the Synthetic (1,166) evaluation reported by Gan \emph{et al.} \cite{b3} under identical metric criteria. The two evaluations draw from the same underlying synthetic corpus, but utilise separate held-out partitions; the comparison therefore tests benchmark comparability rather than a paired statistical evaluation.
+The primary objective of this paper is to evaluate whether 
+a prompted LLM and rules can match 
+a fine-tuned LLM at extracting seizure frequency patterns from 
+epilepsy letters. Results are compared with the Synthetic 
+(1,166) evaluation reported by Gan \emph{et al.}\cite{b3}. The 
+two evaluations use identical metric definitions and letters 
+drawn from the same synthetic corpus, but different held-out 
+samples. The comparison is therefore with a previously reported 
+benchmark, not a paired evaluation on the same letters, and it 
+does not establish a state-of-the-art result.
 
-Evaluating \textbf{H3 (Training-Free Parity)}, \texttt{Hybrid} achieves a primary \texttt{purist} micro-F1 of 0.86 (387/450), exceeding the published benchmark of 0.81 for the fine-tuned LLM. \texttt{LLM-only} similarly exceeds it at 0.85 (383/450). An approximate two-proportion test yields an estimated gain over the benchmark of +0.05 for \texttt{Hybrid} (95\% CI +0.01 to +0.09, $p = 0.01$) and +0.04 for \texttt{LLM-only} (95\% CI 0.00 to +0.08, $p = 0.04$). Even the initial LLM extraction call alone, scored on its provisional choice, achieves an F1 of 0.79, nearing the fine-tuned benchmark. These findings support H3: in-context schema-guided extraction eliminates the necessity for task-specific parameter fine-tuning on this benchmark.
+\texttt{Hybrid} achieves a \texttt{purist} F1 of 0.86 
+(387/450), above the reported benchmark of 0.81 for the 
+fine-tuned LLM. \texttt{LLM-only} also exceeds it (0.85; 
+383/450). Because micro-F1 equals per-letter accuracy here, 
+an approximate two-proportion comparison gives a difference 
+of +0.05 for \texttt{Hybrid} (95\% CI +0.01 to +0.09, 
+$p = 0.01$) and +0.04 for \texttt{LLM-only} (95\% CI 0.00 to 
++0.08, $p = 0.04$). These intervals assume independent samples 
+from the same distribution and are indicative rather than a 
+controlled comparison. The first LLM call alone, scored on its 
+provisional answer, reaches 0.79, close to the benchmark. 
+Rules applied to its candidates add +0.07 in \texttt{Hybrid}; 
+the second LLM call adds +0.06 in \texttt{LLM-only}.
 
-Evaluating \textbf{H1 (Decoupling Lift)} and \textbf{H2 (Executor Equivalence)}, downstream policy execution provides a substantial lift over the provisional extraction answer: deterministic rules add +0.07 in \texttt{Hybrid} (0.79 to 0.86), while the secondary LLM call adds +0.06 in \texttt{LLM-only} (0.79 to 0.85), strongly supporting H1. Between the two decision executors, \texttt{Hybrid} and \texttt{LLM-only} differ on only 28 of 450 letters (rules correct on 16, LLM correct on 12). A paired McNemar test reveals no statistically significant difference (+0.01 difference, 95\% CI $-$0.01 to +0.03, $p = 0.57$), validating H2: deterministic rules execute clinical selection policies as effectively as a generative LLM while offering full auditability.
-
-An unexpected and notable outcome is the distribution of performance across frequency strata. Gan \emph{et al.} report \texttt{unknown} as their highest-performing class (F1 0.89), whereas their performance on high-frequency seizure categories is substantially lower (\texttt{daily} 0.70; \texttt{more than weekly} 0.68). In contrast, our pipeline achieves its highest accuracy on the clinically critical high-frequency classes (\texttt{daily} 0.92; \texttt{more than weekly} 0.91), while scoring lower on \texttt{unknown} (0.74). The granular performance breakdown across purist and pragmatic categories is detailed in Table~\ref{tab:performance}.
+The pipeline is particularly effective at extracting 
+high-frequency events. Gan \emph{et al.} report \texttt{unknown} 
+as their highest scoring category (0.89), with \texttt{daily} (0.70) 
+and \texttt{more than weekly} (0.68) much lower. In this pipeline, 
+\texttt{daily} (0.92) and \texttt{more than weekly} (0.91) are among the 
+best performing categories, well above \texttt{unknown} (0.74). 
+The full breakdown across \texttt{purist} and \texttt{pragmatic} 
+categories is in Table~\ref{tab:performance}.
 
 \begin{table}[!t]
 \caption{Comparison with previously reported results}
@@ -530,9 +666,36 @@ Rows with $n{<}10$ shown in grey.
 \subsection{Provisional and Final Answers}
 \label{sec:stages}
 
-Table~\ref{tab:stages} isolates performance at two distinct evaluation checkpoints: the provisional answer produced after \texttt{extract}, and the final answer produced after \texttt{decide}. Each checkpoint scores the exact prediction the pipeline would emit if halted at that point. 
+Table~\ref{tab:stages} reports \texttt{purist} F1 at two 
+stops: the provisional answer after \texttt{extract}, and the 
+final answer after \texttt{decide}, for each decision executor. 
+Each stop scores the answer the pipeline would submit if it 
+stopped there. The provisional answer is the extraction call's 
+own proposal, so its score measures the quality of that 
+proposal, not candidate identification alone. The difference 
+between the columns is what \texttt{decide} adds to the answer 
+already proposed.
 
-The provisional score (0.79) represents the performance of standard single-prompt LLM architectures that attempt end-to-end extraction and classification. Both downstream decision executors achieve substantial lift (+0.07 rules, +0.06 LLM), successfully resolving complex temporal priorities and aggregating fragmented event counts (such as cumulative seizure calendars). Applying an explicit policy to structured candidate records represents the primary architectural driver of performance.
+The provisional answer from the single extraction call is 0.79. 
+This call is equivalent to the entire pipeline in most prior 
+LLM studies, which ask the model to extract and decide in one 
+prompt. Both executors then improve on that shared provisional 
+answer at \texttt{decide}: rules add +0.07 and the second LLM 
+call adds +0.06. This can mean choosing a different candidate, 
+such as a frequency candidate when the model chose 
+\texttt{unknown}, or calculating a new label from the chosen 
+evidence, such as totalling the events in a monthly seizure 
+diary. The two executors differ on 28 of 450 letters (rules 
+correct on 16, the second call on 12); a paired McNemar test 
+gives a difference of +0.01 (95\% CI $-$0.01 to +0.03, 
+$p = 0.57$), compatible with no difference. Applying the 
+decision policy to the candidates already extracted is where 
+the pipeline adds value over a single prompt, and on this task 
+it can be performed as well by rules as by a second 
+LLM call. Other decompositions of the LLM work, including a 
+separate label-rewriting call before \texttt{decide}, did not 
+improve on this design and are reported in the 
+supporting materials.
 
 \begin{table}[!t]
 \caption{Purist F1 after each stage, by decision executor}
@@ -558,7 +721,21 @@ Correct letters of 450 in parentheses. Both rows share the same extraction call 
 \subsection{Extraction Prompt Ablations}
 \label{sec:ablations}
 
-Table~\ref{tab:ablations} evaluates the contribution of the key extraction prompt components by removing them individually. Removing few-shot exemplars, the closed set of allowed label forms, or the evidence-obligation constraint decreases provisional accuracy by 8 to 10 letters and final accuracy by 17 to 23 letters. The evidence-obligation ablation confirms that requiring exact quoted spans enforces grounded feature representation: without this constraint, extraction quality deteriorates. Rules mitigate some downstream error but cannot compensate for missing or corrupted candidate evidence, demonstrating that downstream decision fidelity is intrinsically bound to extraction quality.
+Table~\ref{tab:ablations} removes one ingredient of the 
+extraction prompt at a time and scores the \texttt{Hybrid} 
+pipeline at both stops, so the effect of each ingredient can be 
+seen on the provisional answer and after rules have applied the 
+policy. Removing the worked examples, the closed list of allowed 
+label forms, or the evidence obligation each lowers the 
+provisional answer by 8 to 10 letters and the final answer by 
+17 to 23 letters. The evidence-obligation ablation removes the 
+evidence fields and the exact-quote instruction together as one 
+package; it does not test the quote instruction alone. The 
+decrements are not additive and should not be summed: each row 
+removes one ingredient from the full prompt while the others 
+remain. Rules recover some of each loss but never the whole of 
+it, which shows that the decision stage depends on the quality 
+of the record the extraction call produces.
 
 \begin{table}[!t]
 \caption{Extraction prompt ablations (Hybrid, Gemini, test set)}
@@ -583,12 +760,41 @@ Without evidence obligation & 0.77 (345) & 0.82 (370) \\
 Purist F1 with correct letters of 450 in parentheses. Each row changes only the extraction prompt; the same rules apply the policy at \texttt{decide}. Effects are not additive.\end{minipage}
 \end{table}
 
-\subsection{Model Comparison and Local Execution}
+\subsection{Model Comparison}
 \label{sec:models}
 
-Evaluating \texttt{Hybrid} across six distinct language models confirms consistent cross-architecture gains (Figure~\ref{models}). Every model achieves positive lift from extraction to decision, averaging +0.07 micro-F1 (peaking at +0.10 for GPT-5.6 Luna). Performance corresponds closely to general medical reasoning benchmarks, clustering into frontier hosted models (Gemini 0.86, Grok 0.85), mid-tier models (DeepSeek 0.82, Luna 0.79), and lightweight open-weight models (Qwen 0.76, Gemma 0.72).
+\texttt{Hybrid} shows consistent, incremental gains on each 
+of the six models evaluated as the extraction call 
+(Figure~\ref{models}). The average gain from the provisional 
+answer to the final answer was +0.07, with Luna showing the 
+largest gain of +0.10. \texttt{Purist} F1 closely tracks 
+general medical capability as measured by Artificial Analysis' 
+Healthcare and Medical Index. The models cluster into three 
+groups: strong (Gemini 0.86, Grok 0.85), medium (DeepSeek 
+0.82, Luna 0.79) and weak (Qwen 0.76, Gemma 0.72), which 
+largely reflect model size and cost.
 
-Table~\ref{tab:adherence} evaluates structured schema adherence. Hosted models adhered to the exact-substring evidence constraint in over 99\% of cases. Crucially, open-weight models running on consumer-grade workstation hardware achieved strong compliance (Qwen 96.7\% exact evidence; 0.81 pragmatic F1), surpassing earlier hospital-grade multi-GPU benchmarks (Holgate \emph{et al.} 0.73 pragmatic F1 on 8$\times$ V100 GPUs) under equivalent synthetic conditions.
+Table~\ref{tab:adherence} reports how well each model kept to 
+the extraction contract. Every model produced a parseable 
+record for at least 442 of 450 letters, and no call failed. 
+The four hosted models quoted an exact substring of the letter 
+as evidence for the selected event in 99\% or more of letters; 
+the two local models paraphrased more often (Qwen 97\%, Gemma 
+93\%) and needed more non-semantic format repair. An exact span 
+is not proof that the right statement was chosen, but it means 
+that a reviewer can locate the evidence for almost every answer 
+verbatim in the source.
+
+Table~\ref{tab:historical} also lists the two earlier papers 
+that used the same \texttt{pragmatic} metric on different 
+data. Holgate \emph{et al.}\cite{b8} ran Llama 2 on local 
+hospital servers with eight Nvidia V100 GPUs and reached a 
+\texttt{pragmatic} F1 of 0.73 without fine-tuning. In 
+\texttt{Hybrid}, Qwen reached a \texttt{pragmatic} F1 of 0.80 
+running locally on a laptop with a single GPU. This shows that 
+the design can execute on local 
+hardware under the same synthetic task conditions, not that it 
+performs on real letters or is fit for deployment.
 
 \begin{figure}[t]
     \centering
@@ -622,16 +828,44 @@ Gemma 4 26B (local) & 0.72 & 0.77 & 92.9\% & 15 & 8 \\
 Exact ev.: the quoted span for the selected event is an exact substring of the letter. Repairs: letters needing a non-semantic JSON dialect repair. Unparsed: letters with no valid record after repair, scored as incorrect. No call failed for any model.\end{minipage}
 \end{table}
 
-\subsection{Hyperparameter and Reasoning Sensitivity}
+\subsection{Model Configuration}
 
-Ablating reasoning effort in Gemini 3.7 Flash revealed no performance gain: purist F1 was 0.86 with low thinking and 0.84 with high thinking (paired difference +0.02, 95\% CI $-$0.01 to +0.04, $p = 0.31$). Extended chain-of-thought introduces unnecessary computational latency and financial cost without enhancing factual information extraction. Similarly, varying temperature showed negligible difference (0.86 at temperature 0 vs 0.84 at temperature 1; $p = 0.20$), confirming that greedy decoding provides a reliable and deterministic baseline.
+Raising the reasoning effort level did not improve 
+performance. Gemini's \texttt{purist}-F1 score was 0.86 at low and 
+0.84 at high; a paired difference of +0.02, 95\% CI -0.01 to 
+0.04; p = 0.31. Extra reasoning adds cost and latency without 
+improving extraction.
 
-\subsection{Error Analysis and Unexpected Outcomes}
+The temperature setting also had no significant effect: 0.86 
+at temperature 0 versus 0.84 at temperature 1 (paired 
+difference +0.02, 95\% CI -0.01 to 0.04; p = 0.20). Temperature 
+0 is therefore an appropriate default, and Luna's fixed 
+temperature of 1 does not invalidate its comparison. The task 
+is tightly defined by an explicit schema, which limits the 
+expected variability by design and partly explains why neither 
+setting mattered.
+
+\subsection{Error Analysis}
 \label{sec:errors}
 
-Detailed error analysis reveals that performance bottlenecks stem predominantly from ambiguous documentation. The lowest scoring category was \texttt{unknown} (F1 0.74), accounting for 69\% of all classification errors (37 of 54 false predictions; Figure~\ref{confusion}). 
+The worst performing category was \texttt{unknown} with 
+an F1 score of 0.74. 69\% of the errors (37/54) are incorrect
+answers of \texttt{unknown}. The full error distribution 
+is shown in the confusion matrix (Figure~\ref{confusion}). 
 
-The dominant error trajectories were \texttt{infrequent $\rightarrow$ unknown} ($n=16$), \texttt{frequent $\rightarrow$ unknown} ($n=13$), and \texttt{seizure free $\rightarrow$ unknown} ($n=8$). Qualitative inspection of development cases reveals that these errors reflect conservative clinical hedging. For instance, when encountering narrative phrases such as \emph{these episodes crop up most shifts}, the model correctly extracts the candidate but conservatively predicts \texttt{unknown} rather than extrapolating an unverified work schedule (where the gold label assumed \emph{multiple per week}). This cautious behavior is clinically justifiable: in high-stakes healthcare, defaulting to an auditable \texttt{unknown} is far safer than fabricating clinical parameters.
+The three most common errors are \texttt{infrequent → 
+unknown} (16), \texttt{frequent → unknown} (13), and 
+\texttt{seizure free → unknown} (8). The errors reflect a 
+cautious approach when the evidence is ambiguous,
+for example the model recognised the phrase 'these 
+episodes crop up most shifts' as the primary seizure 
+frequency description but refused to make an 
+assumption about how many shifts the person works. The 
+gold-standard label was \texttt{multiple per week} but the 
+model chose \texttt{unknown}. This cautious assessment 
+is justifiable, and because the exact evidence is preserved, 
+downstream users can see the proposed answer and draw their 
+own conclusion from the quoted span.
 
 \begin{figure}[t]
     \centering
@@ -641,9 +875,14 @@ The dominant error trajectories were \texttt{infrequent $\rightarrow$ unknown} (
     \label{confusion}
 \end{figure}
 
-\subsection{Experimental Environment and Tooling}
+\subsection{Experimental Environment}
 
-Table~\ref{tab:environment} details the experimental tooling. DSPy orchestrated model invocations and structured JSON output contracts, Pydantic enforced strict schema validation, and LiteLLM routed calls across local Ollama instances and hosted API gateways.
+Table~\ref{tab:environment} summarises the hardware, software 
+and model settings used. DSPy co-ordinated the model calls and 
+required structured JSON output, Pydantic validated each record 
+against the schema, and LiteLLM delivered API calls to Ollama 
+and the model routers. Full specifications, API settings and 
+replay artefacts are in the supporting materials.
 
 \begin{table}[!t]
 \caption{Experimental environment}
@@ -663,40 +902,132 @@ Software & Python 3.14.4, DSPy 3.2.1, Pydantic 2.13.4, LiteLLM 1.87.1 \\
 
 \section{Discussion}
 
-This study demonstrates that a training-free, modular architecture decoupling mention extraction from policy-based decision matches the accuracy of dedicated fine-tuned models on synthetic epilepsy clinic letters. Validating our hypotheses, prompt-based candidate extraction combined with deterministic rules achieved a purist F1 of 0.86, outperforming the published fine-tuned benchmark of 0.81 on the Gan \emph{et al.} corpus \cite{b3}. 
+This paper shows that, on the Gan synthetic benchmark, one 
+prompted LLM call and a 
+decision policy extract an epilepsy patient's current seizure 
+frequency pattern at least as accurately as the fine-tuned LLM 
+previously reported on a different held-out sample of the same 
+corpus\cite{b3}. A single prompt designed to extract every 
+candidate with exact evidence, followed by rules or a second 
+call that decide from that evidence, matched that benchmark. 
+The same 
+design also executed on a laptop-class GPU with open-weight 
+models, at a lower but still competitive score. Later 
+researchers or healthcare 
+organisations can evaluate it on their own data and hardware; it 
+is not ready for local deployment.
 
-The empirical findings offer two major insights into clinical NLP design:
-\begin{enumerate}
-    \item \textbf{Task Decomposition Enables Clinical Reliability:} Conventional clinical extractors treat label generation as an end-to-end classification problem \cite{b3, b5}. However, outpatient narratives frequently document competing temporal intervals and clinical nuances that clinicians rely on to convey clinical uncertainty \cite{b18}. Decoupling extraction from decision allows the LLM to function as a rich semantic transducer, preserving all candidate statements alongside verbatim textual provenance.
-    \item \textbf{Rule Executors Guarantee Auditability Without Accuracy Penalty:} As demonstrated by the paired McNemar comparison ($p = 0.57$), deterministic rules execute clinical selection policies as effectively as a generative LLM. In medical deployment, deterministic rules offer a decisive advantage: they eliminate non-deterministic hallucinations at the decision boundary, provide complete auditability, and allow clinical institutions to reconfigure study criteria without retraining models.
-\end{enumerate}
+The method is particularly effective at identifying the 
+categories that mark the greatest disease burden. F1 scores of 
+0.92 for daily and 0.91 for more than weekly are around 0.2 
+higher than the category scores previously reported\cite{b3}, 
+although on a different sample. Structured seizure frequency 
+of this kind is intended for later research uses: cohort 
+identification for trials, retrospective and longitudinal 
+analyses of treatment response, and outcome variables for 
+predictive models\cite{b13}, which together can widen the 
+scope of real-world evidence\cite{b17}. Those are intended 
+uses, not capabilities demonstrated here; each requires 
+validation on real records first. 
 
-Furthermore, cross-model evaluation confirms that local, open-weight models executed on consumer-grade workstations can achieve viable extraction performance (Qwen pragmatic F1 0.81). This provides a technically feasible path for clinical institutions seeking to maintain patient data sovereignty on hospital infrastructure.
+Past work has typically tasked the LLM with producing a single 
+answer in a fully normalised form\cite{b3}. That discards the 
+semantic depth of the narrative, which clinicians value because 
+it conveys reasoning, uncertainty and vague impressions, and 
+those nuanced observations are more accurate and 
+reliable\cite{b18}. Current LLMs can populate a richer record 
+that preserves them: every candidate with its quoted span, the 
+policy applied, and the label it produced. The ablations show 
+that this record is also what the accuracy depends on. A more 
+explainable system is often a more useful system in a clinical 
+setting\cite{b14}, and here it is not a less accurate one.
 
-\subsection{Limitations}
-
-Several limitations must be acknowledged. First, all evaluations were conducted on synthetic letters. While Gan \emph{et al.} \cite{b3} established that fine-tuned performance on this synthetic corpus transferred to real clinical records, our training-free pipeline remains unvalidated on authentic patient text; no claims regarding direct clinical efficacy or workflow integration are made. Second, benchmark comparisons are conducted across distinct held-out samples from the same underlying distribution rather than identical letter splits. Third, evidence compliance was evaluated via exact substring matching, which guarantees lexical provenance but does not formally verify semantic entailment.
+There are several limitations. Synthetic data was used for 
+all evaluations, and while past research has shown models 
+fine-tuned on this dataset generalise effectively to real 
+patient data\cite{b3}, the methods tested here remain untested 
+on real letters; no claim is made about clinical validity, 
+workflow fit or privacy compliance. The held-out samples 
+differ. Past research has shown that rules tuned on one corpus 
+can generalise poorly to others, so the gains from rules may 
+not transfer to other datasets\cite{b6}. The stage scores are 
+cumulative stops rather than isolated stage metrics. Evidence 
+quality was measured only as exact-substring adherence, which 
+does not show that a span semantically supports the label; the 
+gold standard's single reference quote is a loose comparator 
+for that purpose, since it may be paraphrased or abbreviated. A 
+development-set study of semantic evidence sufficiency, 
+adjudicated from the extracted spans and the policy alone, is 
+specified as the next step before any further held-out 
+evaluation. Finally, the method was applied to one narrow task. 
+The same method has been configured for a multi-fact 
+epilepsy inventory task\cite{b4}, to be reported separately, 
+and future work should evaluate whether the design generalises 
+to other clinical IE tasks and whether a more general 
+framework, in which an LLM chooses how to represent facts and 
+which policy to apply, adds value as reported in 
+oncology\cite{b19} and cardiology\cite{b20}.
 
 \section{AI Ethical Considerations}
 
-Deploying generative AI in healthcare introduces critical ethical challenges regarding algorithmic bias, hallucination, patient privacy, and clinical accountability:
-\begin{itemize}
-    \item \textbf{Privacy and Local Governance:} Clinical text contains highly sensitive protected health information. By verifying that open-weight models running on local consumer-grade hardware achieve viable extraction fidelity, this work supports data-sovereign deployment within hospital firewalls, mitigating privacy risks associated with commercial cloud APIs \cite{b5}.
-    \item \textbf{Transparency-by-Design and Hallucination Mitigation:} Black-box clinical systems present severe risks when models hallucinate clinical facts \cite{b5, b14}. Our pipeline enforces transparency-by-design: the extraction prompt mandates verbatim quote obligations for every candidate fact, and all subsequent decision logic is executed via named, deterministic rules or auditable prompts. Clinicians can inspect the exact evidence span supporting every derived frequency label.
-    \item \textbf{Fairness and Synthetic Bias:} The synthetic corpus lacks explicit demographic attributes (such as race, gender, or socioeconomic status), precluding direct subgroup disparity audits. However, synthetic text generators can inherit latent demographic biases from their underlying training data. Furthermore, our error analysis revealed a systematic bias toward predicting \texttt{unknown} when descriptions are linguistically ambiguous. In clinical practice, this could disproportionately under-ascertain disease burden in patients whose symptoms are documented using colloquial or non-standard phrasing. Comprehensive fairness testing across multi-centre clinical text is imperative before any operational use.
-\end{itemize}
+This evaluation used only the synthetic clinic letters released
+by Gan \emph{et al.}\cite{b3}. Those letters are modelled on real
+UK epilepsy letters but do not contain identifiable patient records. 
+Hospitals prefer processing patient data on their own servers as
+it is highly sensitive\cite{b5}. Two of the six models were 
+run entirely on local hardware to test whether the design can 
+execute in such a setting on synthetic data, not as a 
+privacy-compliance assessment.
 
-\section{Conclusion and Future Work}
-\label{sec:conclusion}
+LLMs can invent evidence, so careful consideration was given
+to the prompt instructions and schema design. The model is
+required to quote exact evidence spans from the letter, and 
+every later change to the answer is made by a named rule or 
+a second call applied to that quoted evidence. A 
+reviewer can therefore trace any final label back to the 
+text that supports it and to the policy that decided 
+it\cite{b14}. This transparency matters more than headline 
+accuracy in a clinical setting, where an unexplained answer 
+cannot be safely acted on.
 
-This paper presents a modular clinical information extraction pipeline that decouples evidence extraction from clinical decision policy. Across 1,200 synthetic epilepsy letters, both \texttt{Hybrid} (Purist F1 0.86) and \texttt{LLM-only} (0.85) exceeded the published fine-tuned benchmark (0.81), demonstrating that training-free in-context extraction can achieve parity with fine-tuned models while preserving verifiable evidence trails. The decision stage contributed a consistent +0.06 to +0.07 performance lift over single-pass extraction across six distinct LLMs, including models run entirely on consumer hardware.
+The letters contain no demographic attributes, so unequal
+performance across patient groups cannot be tested, and the 
+synthetic corpus may not reflect the language of every 
+clinic. Bias can enter through the models, the prompts and 
+the decision rules; for example, the cautious default to 
+\texttt{unknown} (Section~\ref{sec:errors}) would 
+systematically under-count patients whose seizures are 
+described vaguely. Rules make the decision policy 
+inspectable and changeable by local clinicians, but they do 
+not remove the need for local clinical review and fairness 
+testing on real records before any operational use.
 
-Two fundamental questions remain unresolved:
-\begin{enumerate}
-    \item \textbf{Real-World Domain Generalisation:} Does the performance lift observed on synthetic clinic letters transfer to the uncurated syntactic diversity, noisy formatting, and abbreviations of multi-centre NHS electronic health records?
-    \item \textbf{Cross-Domain Architectural Portability:} Can this two-stage decomposition be generalised beyond epilepsy seizure frequencies to complex multi-fact clinical extraction tasks in oncology \cite{b19} and cardiology \cite{b20}?
-\end{enumerate}
-Future research should evaluate this architecture on real clinical cohorts and investigate automated policy discovery across diverse medical domains.
+\section{Conclusion}
+
+Seizure frequency is a core outcome measure in epilepsy, 
+recorded almost exclusively in narrative clinic letters. This 
+paper proposes a pipeline in which 
+one LLM call extracts every candidate fact with its quoted 
+evidence in a canonical form, then a decision applies a 
+fixed policy to those candidates. 
+
+Both \texttt{Hybrid} (Purist F1: 0.86) and \texttt{LLM-only} 
+(0.85) exceeded the benchmark previously reported for a 
+fine-tuned LLM (0.81) on a different held-out sample of the 
+same synthetic corpus. The provisional 
+answer reaches 0.79; applying the decision policy to the 
+evidence it found adds a further +0.06 to +0.07, whether that 
+policy is applied by rules or by a second LLM call. 
+The result depends on the extraction prompt's examples, closed 
+label forms and evidence obligation, and it held across six 
+models, including two run on a single laptop GPU.
+
+Automatically extracting seizure frequency patterns from EHRs 
+could make this outcome measure available for large-scale 
+clinical research: cohort identification, retrospective 
+studies and predictive modelling. Future research should evaluate it on real 
+patient data and on a broader set of clinical information 
+extraction tasks before any of those uses.
 
 \begin{thebibliography}{00}
 
