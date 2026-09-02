@@ -117,7 +117,10 @@ def _exect_grid(slug: str, split: str) -> dict[str, Any]:
                 "select_role": "rules",
                 "extract_source": "exect_rules",
                 "select": rules,
-                "ablation": {"extract": rules, "encode": rules},
+                "ablation": {
+                    "extract": _exect_rules_stage(split, "find") or rules,
+                    "encode": _exect_rules_stage(split, "encode") or rules,
+                },
             },
             "both_extract_then_rules": {
                 "extract_role": "both",
@@ -169,7 +172,7 @@ def _gan_grid(slug: str, split: str) -> dict[str, Any]:
     llm_select = _load_comparison("gan", "gan_llm_select_from_extract", slug, split)
     if llm_select is None:
         llm_select = _load_comparison("gan", "gan_llm_select", slug, split)
-    rules = _gan_rules_count(split)
+    rules = _gan_rules_stage(split, "select") or _gan_rules_count(split)
     return {
         "claim_boundary": (
             "Gan aggregate-only test450 five-cell grid. Headline is the "
@@ -197,7 +200,10 @@ def _gan_grid(slug: str, split: str) -> dict[str, Any]:
                 "select_role": "rules",
                 "extract_source": "gan_rules",
                 "select": rules,
-                "ablation": {"extract": rules, "encode": rules},
+                "ablation": {
+                    "extract": _gan_rules_stage(split, "find") or rules,
+                    "encode": _gan_rules_stage(split, "encode") or rules,
+                },
             },
             "both_extract_then_rules": {
                 "extract_role": "both",
@@ -291,15 +297,38 @@ def _nested_f1(payload: Mapping[str, Any] | None, key: str) -> float | None:
 
 
 def _exect_rules_score(split: str) -> float | None:
+    block = _exect_rules_block(split)
+    if block is None:
+        return None
+    value = block.get("four_family_micro_f1")
+    return None if value is None else float(value)
+
+
+def _exect_rules_stage(split: str, stop: str) -> float | None:
+    """Measured find/encode stop for the standalone-rules row."""
+
+    block = _exect_rules_block(split)
+    if block is None:
+        return None
+    rungs = block.get("stage_rungs")
+    if not isinstance(rungs, Mapping):
+        return None
+    entry = rungs.get(stop)
+    # Frozen ExECT stage_rungs still record the first stop as "recognise".
+    if not isinstance(entry, Mapping) and stop == "find":
+        entry = rungs.get("recognise")
+    if not isinstance(entry, Mapping) or entry.get("f1") is None:
+        return None
+    return float(entry["f1"])
+
+
+def _exect_rules_block(split: str) -> Mapping[str, Any] | None:
     path = ROOT / "paper_experiments/exect/exect_rules/dev140.json"
     if not path.is_file():
         return None
     payload = json.loads(path.read_text(encoding="utf-8"))
     block = payload.get(split)
-    if not isinstance(block, Mapping):
-        return None
-    value = block.get("four_family_micro_f1")
-    return None if value is None else float(value)
+    return block if isinstance(block, Mapping) else None
 
 
 def _gan_count(payload: Mapping[str, Any] | None, stage: str) -> int | None:
@@ -319,9 +348,49 @@ def _gan_count(payload: Mapping[str, Any] | None, stage: str) -> int | None:
     return None if correct is None else int(correct)
 
 
+def _gan_rules_block() -> Mapping[str, Any] | None:
+    path = ROOT / "paper_experiments/gan/gan_rules.json"
+    if not path.is_file():
+        return None
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return payload if isinstance(payload, Mapping) else None
+
+
+def _gan_rules_stage(split: str, stop: str) -> int | None:
+    """Measured find/encode/select Purist count for standalone rules."""
+
+    block = _gan_rules_block()
+    if block is None:
+        return None
+    split_block = block.get(split)
+    if not isinstance(split_block, Mapping):
+        return None
+    rungs = split_block.get("stage_rungs")
+    if not isinstance(rungs, Mapping):
+        return None
+    entry = rungs.get(stop)
+    if not isinstance(entry, Mapping) or entry.get("purist_correct") is None:
+        return None
+    return int(entry["purist_correct"])
+
+
 def _gan_rules_count(split: str) -> int | None:
-    del split
-    return None
+    path = (
+        ROOT
+        / "paper_experiments/gan/five_cell_grid/gemini37flash"
+        / split
+        / "comparison.json"
+    )
+    if not path.is_file():
+        return None
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    cells = payload.get("cells")
+    if not isinstance(cells, Mapping):
+        return None
+    rules = cells.get("rules")
+    if not isinstance(rules, Mapping) or rules.get("select") is None:
+        return None
+    return int(rules["select"])
 
 
 def _selects_match(

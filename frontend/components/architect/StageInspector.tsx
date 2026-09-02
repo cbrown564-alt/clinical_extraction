@@ -3,6 +3,7 @@
 import { useArchitectStore } from "@/lib/stores";
 import JsonTree from "./JsonTree";
 import type { TraceStage, TraceItem } from "@/lib/types";
+import { formatMonthlyFrequency, monthlyFrequencyFromLabel } from "@/lib/traceAdapter/utils";
 import { Highlighter, Scale, Target, Wrench, Trophy, AlertCircle, CheckCircle, Quote } from "lucide-react";
 
 const stageMeta: Record<
@@ -10,22 +11,22 @@ const stageMeta: Record<
   { label: string; icon: React.ReactNode; color: string; desc: string }
 > = {
   extract: {
-    label: "Extract",
+    label: "Find",
     icon: <Highlighter className="h-3.5 w-3.5" />,
     color: "text-deterministic",
-    desc: "Raw candidate events found in the note by extraction rules or LLM claims.",
+    desc: "Raw candidate events found in the note by find-stage rules or LLM claims.",
   },
   normalise: {
-    label: "Normalise",
+    label: "Encode",
     icon: <Scale className="h-3.5 w-3.5" />,
     color: "text-deterministic-alt",
-    desc: "Candidates converted to normalised labels with semantic kinds and monthly frequencies.",
+    desc: "Candidates converted to codebook labels with semantic kinds and monthly frequencies.",
   },
   select: {
     label: "Select",
     icon: <Target className="h-3.5 w-3.5" />,
     color: "text-hybrid",
-    desc: "The pipeline chooses a single final label from the normalised candidates.",
+    desc: "The pipeline chooses a single final label from the encoded candidates.",
   },
   repair: {
     label: "Repair",
@@ -37,7 +38,7 @@ const stageMeta: Record<
     label: "Score",
     icon: <Trophy className="h-3.5 w-3.5" />,
     color: "text-success",
-    desc: "Comparison of predicted label against gold reference.",
+    desc: "Comparison of predicted Purist and Pragmatic categories against gold.",
   },
 };
 
@@ -133,7 +134,8 @@ function ItemCard({ item, stage }: { item: TraceItem; stage?: TraceStage }) {
   const metadata = { ...item.metadata };
   const rawMonthly = metadata.monthly_frequency;
   const monthlyFreq =
-    typeof rawMonthly === "number" ? Math.round(rawMonthly) : undefined;
+    monthlyFrequencyFromLabel(item.normalizedValue ?? "") ??
+    (typeof rawMonthly === "number" ? rawMonthly : undefined);
   const validationErrors = Array.isArray(metadata.validation_errors)
     ? metadata.validation_errors.filter((e) => Boolean(e))
     : [];
@@ -175,7 +177,7 @@ function ItemCard({ item, stage }: { item: TraceItem; stage?: TraceStage }) {
             {monthlyFreq !== undefined && (
               <div>
                 <span className="text-muted">monthly_frequency:  </span>
-                <span className="text-foreground/90">{monthlyFreq}</span>
+                <span className="text-foreground/90">{formatMonthlyFrequency(monthlyFreq)}</span>
               </div>
             )}
             {ruleInfo && (
@@ -291,7 +293,7 @@ export default function StageInspector() {
           <>
             {trace.extract.items.length === 0 ? (
               <div className="rounded-lg border border-border bg-surface-raised/30 p-4 text-center text-muted text-sm">
-                No candidate events extracted.
+                No candidate events found.
               </div>
             ) : (
               trace.extract.items.map((item) => (
@@ -305,7 +307,7 @@ export default function StageInspector() {
           <>
             {trace.normalise.items.length === 0 ? (
               <div className="rounded-lg border border-border bg-surface-raised/30 p-4 text-center text-muted text-sm">
-                No normalised events.
+                No encoded events.
               </div>
             ) : (
               trace.normalise.items.map((item) => (
@@ -342,7 +344,12 @@ export default function StageInspector() {
               {trace.select.monthlyFrequency !== undefined && (
                 <div>
                   <span className="text-muted">monthly_frequency: </span>
-                  <span className="text-foreground/90">{Math.round(trace.select.monthlyFrequency)}</span>
+                  <span className="text-foreground/90">
+                    {formatMonthlyFrequency(
+                      monthlyFrequencyFromLabel(trace.select.finalLabel) ??
+                        trace.select.monthlyFrequency
+                    )}
+                  </span>
                 </div>
               )}
               {trace.select.selectedIds && trace.select.selectedIds.length > 0 && (
@@ -365,52 +372,6 @@ export default function StageInspector() {
               )}
             </div>
           </div>
-        )}
-
-        {activeStage === "repair" && (
-          <>
-            {trace.repair && trace.repair.changes.length > 0 ? (
-              <div className="space-y-3">
-                {trace.repair.repairType && (
-                  <div className="rounded-lg border border-llm/20 bg-llm/5 p-3">
-                    <div className="text-xs font-semibold uppercase tracking-wide text-llm">Repair type</div>
-                    <div className="mt-1 text-sm font-medium text-foreground">{trace.repair.repairType}</div>
-                  </div>
-                )}
-                {trace.repair.beforeValue !== undefined && trace.repair.afterValue !== undefined && (
-                  <div className="grid gap-3 xl:grid-cols-2">
-                    <div className="min-w-0 rounded-lg border border-border bg-surface p-3">
-                      <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">Before</div>
-                      <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-words text-xs leading-relaxed text-foreground">{trace.repair.beforeValue}</pre>
-                    </div>
-                    <div className="min-w-0 rounded-lg border border-border bg-surface p-3">
-                      <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">After</div>
-                      <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-words text-xs leading-relaxed text-foreground">{trace.repair.afterValue}</pre>
-                    </div>
-                  </div>
-                )}
-                {!trace.repair.repairType && trace.repair.changes.map((change, idx) => (
-                  <div key={idx} className="rounded-lg border border-llm/20 bg-llm/5 p-3">
-                    <div className="text-sm text-foreground">{change}</div>
-                  </div>
-                ))}
-                {trace.repair.beforeLabel && trace.repair.afterLabel && (
-                  <div className="rounded-lg border border-border bg-surface p-3 space-y-1">
-                    <div className="text-xs font-semibold uppercase tracking-wide text-muted">Before → After</div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="text-muted line-through">{trace.repair.beforeLabel}</span>
-                      <span className="text-llm">→</span>
-                      <span className="text-foreground font-medium">{trace.repair.afterLabel}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="rounded-lg border border-border bg-surface-raised/30 p-4 text-center text-muted text-sm">
-                No repair changes applied.
-              </div>
-            )}
-          </>
         )}
 
         {activeStage === "score" && (
@@ -438,11 +399,15 @@ export default function StageInspector() {
                   trace.score.match ? "text-success" : "text-error"
                 }`}
               >
-                {trace.score.predictedLabel}
+                {trace.score.predictedPuristCategory ?? trace.score.predictedLabel}
               </span>
               {!trace.score.match && (
                 <span className="text-xs text-muted">
-                  (gold: <span className="font-mono text-foreground">{trace.score.goldLabel}</span>)
+                  (gold purist:{" "}
+                  <span className="font-mono text-foreground">
+                    {trace.score.goldPuristCategory ?? trace.score.goldLabel}
+                  </span>
+                  )
                 </span>
               )}
             </div>
@@ -455,21 +420,55 @@ export default function StageInspector() {
 
             <div className="rounded-md border border-border bg-surface-raised/40 p-2.5 font-mono text-[11.5px] leading-relaxed space-y-1">
               <div>
-                <span className="text-muted">predicted_label: </span>
+                <span className="text-muted">predicted_label:     </span>
                 <span className="text-foreground/90">&quot;{trace.score.predictedLabel}&quot;</span>
               </div>
               <div>
-                <span className="text-muted">gold_label:      </span>
+                <span className="text-muted">gold_label:          </span>
                 <span className="text-foreground/90">&quot;{trace.score.goldLabel}&quot;</span>
               </div>
               <div>
-                <span className="text-muted">label_match:     </span>
-                <span className={trace.score.match ? "text-success" : "text-error"}>
-                  {String(trace.score.match)}
+                <span className="text-muted">predicted_purist:    </span>
+                <span className="text-foreground/90">
+                  &quot;{trace.score.predictedPuristCategory ?? "—"}&quot;
                 </span>
               </div>
               <div>
-                <span className="text-muted">evidence_valid:  </span>
+                <span className="text-muted">gold_purist:         </span>
+                <span className="text-foreground/90">
+                  &quot;{trace.score.goldPuristCategory ?? "—"}&quot;
+                </span>
+              </div>
+              <div>
+                <span className="text-muted">purist_match:        </span>
+                <span className={trace.score.match ? "text-success" : "text-error"}>
+                  {String(trace.score.puristMatch ?? trace.score.match)}
+                </span>
+              </div>
+              <div>
+                <span className="text-muted">predicted_pragmatic: </span>
+                <span className="text-foreground/90">
+                  &quot;{trace.score.predictedPragmaticCategory ?? "—"}&quot;
+                </span>
+              </div>
+              <div>
+                <span className="text-muted">gold_pragmatic:      </span>
+                <span className="text-foreground/90">
+                  &quot;{trace.score.goldPragmaticCategory ?? "—"}&quot;
+                </span>
+              </div>
+              <div>
+                <span className="text-muted">pragmatic_match:     </span>
+                <span
+                  className={
+                    trace.score.pragmaticMatch ? "text-success" : "text-error"
+                  }
+                >
+                  {String(trace.score.pragmaticMatch ?? false)}
+                </span>
+              </div>
+              <div>
+                <span className="text-muted">evidence_valid:      </span>
                 <span className={trace.score.evidenceValid ? "text-success" : "text-error"}>
                   {String(trace.score.evidenceValid)}
                 </span>

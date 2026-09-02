@@ -18,7 +18,7 @@ clinical truth, clinical safety, or holdout performance.
 ## Gan 2026: a bounded rate becomes one current label
 
 **Case:** validation source row `10`, Grok 4.6, **wording ablation**
-`gan_llm_extract_raw` (not the cited codebook extract), Purist scoring.
+`gan_llm_extract_raw` (not the cited codebook recognise), Purist scoring.
 Cell:
 `paper_experiments/gan/gan_llm_extract_raw/grok46/dev750/`.
 
@@ -50,7 +50,7 @@ repair off.
 **Limit:** this is a Gan gold convention, not lost evidence. Turning
 selected-evidence repair off disables the whole renderer, not only
 bound-flattening. This gold still scores `4 per day`. Do not treat this
-wording-ablation path as the cited extract or as preserving clinical
+wording-ablation path as the cited recognise or as preserving clinical
 reasoning.
 
 ## ExECTv2: a quoted hedge becomes a diagnosis concept

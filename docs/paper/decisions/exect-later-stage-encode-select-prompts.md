@@ -18,7 +18,7 @@ Encode sees `mention_id`, family, clinical name, supporting
 sentence, details, and the closed name list for every family
 (diagnosis phrases, 16 seizure-type heads, generic medicines,
 MRI/CT/EEG) plus closed detail values. It writes one
-`standard_name` and details per extract mention. It does not add,
+`standard_name` and details per find mention. It does not add,
 drop, or split rows, and it does not write CUIs. After the call,
 code joins by `mention_id` and maps plain keys to gold keys. It may
 attach CUI from `standard_name` as decoration. Hybrid format and
@@ -45,22 +45,22 @@ longest-span anchor; it does not assign by subset of the word
 `seizures`.
 
 Hybrid select follows the same invent ban. Letter-scan Diagnosis /
-SF / Rx / Inv tables are rules extract and pre-post high-priority
+SF / Rx / Inv tables are rules find and pre-post high-priority
 suggested evidence. The model keep/rejects them. Rules do not union
 them in after a hybrid call.
 
 ## Why
 
 The LLM row must be attributable to the model at encode and at
-select. A letter-in call is a second extract. Running hybrid invent
+select. A letter-in call is a second find. Running hybrid invent
 after the call would score hybrid select as the LLM cell. CUI is a
 one-to-one tag, not a model job. Standard name is the designed-form
-name; clinical name stays extract wording.
+name; clinical name stays find wording.
 
 ## Claim boundary
 
 A prompt and ownership contract. These calls are Gemini-only
-ablations on a saved `exect_llm_extract` extract. They are not the
+ablations on a saved `exect_llm_extract` find raw. They are not the
 six-model row and are not authorised on Grok, Luna, DeepSeek, Qwen,
 or Gemma. Clinical-fact SF type now keys the folded seizure-type
 phrase. CUI stay on the mention as secondary attributes and still

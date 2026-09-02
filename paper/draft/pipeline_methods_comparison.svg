@@ -1,0 +1,261 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 490" width="100%" height="100%" style="background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="2.5" flood-color="#0f172a" flood-opacity="0.06" />
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#94a3b8" />
+    </marker>
+  </defs>
+
+  <!-- Stage Column Headers -->
+  <g transform="translate(0, 16)">
+    <text x="85" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#64748b" letter-spacing="0.5">METHOD</text>
+    <text x="325" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#0369a1" letter-spacing="0.5">1. FIND</text>
+    <text x="630" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#0369a1" letter-spacing="0.5">2. ENCODE</text>
+    <text x="935" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#0369a1" letter-spacing="0.5">3. SELECT</text>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- ROW 1: RULES ONLY                                                         -->
+  <!-- ========================================================================= -->
+  <g transform="translate(0, 42)">
+    <!-- 1.1 Method Label Card -->
+    <g transform="translate(15, 0)" filter="url(#shadow)">
+      <rect x="0" y="0" width="140" height="132" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" />
+      <text x="70" y="38" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">Rules Only</text>
+      <line x1="35" y1="48" x2="105" y2="48" stroke="#e2e8f0" stroke-width="1" stroke-linecap="round" />
+      <text x="70" y="70" text-anchor="middle" font-size="8.5" fill="#64748b">Deterministic regex</text>
+      <text x="70" y="85" text-anchor="middle" font-size="8.5" fill="#64748b">&amp; if-then logic</text>
+      <text x="70" y="100" text-anchor="middle" font-size="8.5" fill="#64748b">across all stages</text>
+    </g>
+
+    <!-- Connector -->
+    <path d="M 155 66 L 180 66" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" fill="none" />
+
+    <!-- 1.2 Find Card -->
+    <g transform="translate(185, 0)" filter="url(#shadow)">
+      <rect x="0" y="0" width="280" height="132" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
+      <path d="M 0 6 Q 0 0 6 0 L 274 0 Q 280 0 280 6 L 280 24 L 0 24 Z" fill="#f0fdf4" />
+      <text x="12" y="16" text-anchor="start" font-size="10" font-weight="700" fill="#166534">Regex Pattern Matcher</text>
+      <rect x="226" y="4" width="44" height="16" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1" />
+      <text x="248" y="15" text-anchor="middle" font-size="7.5" font-weight="700" fill="#166534">Rules</text>
+      
+      <g transform="translate(8, 30)">
+        <rect x="0" y="0" width="264" height="48" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+        <text x="8" y="13" font-size="7.2" font-weight="600" fill="#334155">Surface &amp; Proximity Regex:</text>
+        <text x="8" y="26" font-size="7.2" font-family="monospace" fill="#0f172a">r"(\d+|several)\s*(?:per|\/)\s*week"</text>
+        <text x="8" y="38" font-size="7.2" font-family="monospace" fill="#0f172a">r"seizure[- ]free\s+for\s+(\d+)"</text>
+      </g>
+      <text x="140" y="92" text-anchor="middle" font-size="8.2" font-weight="600" fill="#334155">Identifies Surface Mentions</text>
+      <text x="140" y="104" text-anchor="middle" font-size="7.8" fill="#64748b">Scans text for countable rates, clusters,</text>
+      <text x="140" y="116" text-anchor="middle" font-size="7.8" fill="#64748b">and seizure-free period keywords.</text>
+    </g>
+
+    <!-- Connector -->
+    <path d="M 465 66 L 485 66" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" fill="none" />
+
+    <!-- 1.3 Encode Card -->
+    <g transform="translate(490, 0)" filter="url(#shadow)">
+      <rect x="0" y="0" width="280" height="132" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
+      <path d="M 0 6 Q 0 0 6 0 L 274 0 Q 280 0 280 6 L 280 24 L 0 24 Z" fill="#f0fdf4" />
+      <text x="12" y="16" text-anchor="start" font-size="10" font-weight="700" fill="#166534">Deterministic Normaliser</text>
+      <rect x="226" y="4" width="44" height="16" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1" />
+      <text x="248" y="15" text-anchor="middle" font-size="7.5" font-weight="700" fill="#166534">Rules</text>
+
+      <g transform="translate(8, 30)">
+        <rect x="0" y="0" width="264" height="48" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+        <text x="8" y="13" font-size="7.2" font-weight="600" fill="#334155">Canonical Form Mapping:</text>
+        <text x="8" y="26" font-size="7.2" font-family="monospace" fill="#475569">"&lt;= 4 per day" &#x2192; <tspan font-weight="700" fill="#0f172a">"4 per day"</tspan></text>
+        <text x="8" y="38" font-size="7.2" font-family="monospace" fill="#475569">"times a week"  &#x2192; <tspan font-weight="700" fill="#0f172a">"multiple per week"</tspan></text>
+      </g>
+      <text x="140" y="92" text-anchor="middle" font-size="8.2" font-weight="600" fill="#334155">Standardises Format</text>
+      <text x="140" y="104" text-anchor="middle" font-size="7.8" fill="#64748b">Parses word digits, regularises units,</text>
+      <text x="140" y="116" text-anchor="middle" font-size="7.8" fill="#64748b">and removes non-standard bounds.</text>
+    </g>
+
+    <!-- Connector -->
+    <path d="M 770 66 L 790 66" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" fill="none" />
+
+    <!-- 1.4 Select Card -->
+    <g transform="translate(795, 0)" filter="url(#shadow)">
+      <rect x="0" y="0" width="280" height="132" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
+      <path d="M 0 6 Q 0 0 6 0 L 274 0 Q 280 0 280 6 L 280 24 L 0 24 Z" fill="#f0fdf4" />
+      <text x="12" y="16" text-anchor="start" font-size="10" font-weight="700" fill="#166534">Rule Priority Gate</text>
+      <rect x="226" y="4" width="44" height="16" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1" />
+      <text x="248" y="15" text-anchor="middle" font-size="7.5" font-weight="700" fill="#166534">Rules</text>
+
+      <g transform="translate(8, 30)">
+        <rect x="0" y="0" width="264" height="48" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+        <text x="8" y="13" font-size="7.2" font-weight="600" fill="#334155">Priority Hierarchy:</text>
+        <text x="8" y="24" font-size="7" fill="#0f172a">&#x2022; Highest current frequency rate over historical</text>
+        <text x="8" y="34" font-size="7" fill="#0f172a">&#x2022; Reject seizure-free if active events exist</text>
+        <text x="8" y="44" font-size="7" fill="#0f172a">&#x2022; Fallback to unknown or unreferenced</text>
+      </g>
+      <text x="140" y="92" text-anchor="middle" font-size="8.2" font-weight="600" fill="#334155">Applies Selection Hierarchy</text>
+      <text x="140" y="104" text-anchor="middle" font-size="7.8" fill="#64748b">Resolves conflicting candidate mentions</text>
+      <text x="140" y="116" text-anchor="middle" font-size="7.8" fill="#64748b">using a deterministic priority hierarchy.</text>
+    </g>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- ROW 2: LLM AND RULES (HYBRID)                                             -->
+  <!-- ========================================================================= -->
+  <g transform="translate(0, 192)">
+    <!-- 2.1 Method Label Card -->
+    <g transform="translate(15, 0)" filter="url(#shadow)">
+      <rect x="0" y="0" width="140" height="132" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" />
+      <text x="70" y="38" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">LLM &amp; Rules</text>
+      <line x1="35" y1="48" x2="105" y2="48" stroke="#e2e8f0" stroke-width="1" stroke-linecap="round" />
+      <text x="70" y="70" text-anchor="middle" font-size="8.5" fill="#64748b">LLM finds &amp; quotes,</text>
+      <text x="70" y="85" text-anchor="middle" font-size="8.5" fill="#64748b">rules re-encode &amp;</text>
+      <text x="70" y="100" text-anchor="middle" font-size="8.5" fill="#64748b">select final fact</text>
+    </g>
+
+    <!-- Connector -->
+    <path d="M 155 66 L 180 66" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" fill="none" />
+
+    <!-- 2.2 Find Card (LLM Prompt 1: Same prompt as in LLM Only!) -->
+    <g transform="translate(185, 0)" filter="url(#shadow)">
+      <rect x="0" y="0" width="280" height="132" rx="6" fill="#ffffff" stroke="#93c5fd" stroke-width="1.2" />
+      <path d="M 0 6 Q 0 0 6 0 L 274 0 Q 280 0 280 6 L 280 24 L 0 24 Z" fill="#eff6ff" />
+      <text x="12" y="16" text-anchor="start" font-size="10" font-weight="700" fill="#1e40af">LLM Prompt 1: Find &amp; Encode</text>
+      <rect x="226" y="4" width="44" height="16" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1" />
+      <text x="248" y="15" text-anchor="middle" font-size="7.5" font-weight="700" fill="#1e40af">LLM</text>
+
+      <g transform="translate(8, 30)">
+        <rect x="0" y="0" width="264" height="48" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+        <text x="8" y="13" font-size="7.2" font-weight="600" fill="#334155">Same Prompt 1 Components:</text>
+        <text x="8" y="24" font-size="6.8" fill="#475569">&#x2022; Instructions &amp; canonical few-shot examples</text>
+        <text x="8" y="34" font-size="6.8" fill="#475569">&#x2022; JSON schema with verbatim quoted spans</text>
+        <text x="8" y="44" font-size="6.8" fill="#475569">&#x2022; Extracts all candidate frequency events</text>
+      </g>
+      <text x="140" y="92" text-anchor="middle" font-size="8.2" font-weight="600" fill="#334155">High Lexical Recall &amp; Formatting</text>
+      <text x="140" y="104" text-anchor="middle" font-size="7.8" fill="#64748b">Identifies complex candidate mentions &amp; quotes</text>
+      <text x="140" y="116" text-anchor="middle" font-size="7.8" fill="#64748b">for downstream rule processing.</text>
+    </g>
+
+    <!-- Connector: Highlights baton pass from LLM to Rules -->
+    <path d="M 465 66 L 485 66" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" fill="none" />
+
+    <!-- 2.3 Encode Card (Subsequent Rules Layer!) -->
+    <g transform="translate(490, 0)" filter="url(#shadow)">
+      <rect x="0" y="0" width="280" height="132" rx="6" fill="#ffffff" stroke="#86efac" stroke-width="1.2" />
+      <path d="M 0 6 Q 0 0 6 0 L 274 0 Q 280 0 280 6 L 280 24 L 0 24 Z" fill="#f0fdf4" />
+      <text x="12" y="16" text-anchor="start" font-size="10" font-weight="700" fill="#166534">Rule Encode Refinement</text>
+      <rect x="226" y="4" width="44" height="16" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1" />
+      <text x="248" y="15" text-anchor="middle" font-size="7.5" font-weight="700" fill="#166534">Rules</text>
+
+      <g transform="translate(8, 30)">
+        <rect x="0" y="0" width="264" height="48" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+        <text x="8" y="13" font-size="7.2" font-weight="600" fill="#334155">Deterministic Calculations:</text>
+        <text x="8" y="25" font-size="7" font-family="monospace" fill="#0f172a">&#x2022; Diary sum: "May x0...Oct x2" &#x2192; 4/6m</text>
+        <text x="8" y="37" font-size="7" font-family="monospace" fill="#0f172a">&#x2022; Strips invalid rate bounds &amp; modifiers</text>
+      </g>
+      <text x="140" y="92" text-anchor="middle" font-size="8.2" font-weight="600" fill="#334155">Layered Encode on LLM Candidates</text>
+      <text x="140" y="104" text-anchor="middle" font-size="7.8" fill="#64748b">Applies arithmetic &amp; date normalization logic</text>
+      <text x="140" y="116" text-anchor="middle" font-size="7.8" fill="#64748b">to re-encode candidate outputs.</text>
+    </g>
+
+    <!-- Connector -->
+    <path d="M 770 66 L 790 66" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" fill="none" />
+
+    <!-- 2.4 Select Card (Rules) -->
+    <g transform="translate(795, 0)" filter="url(#shadow)">
+      <rect x="0" y="0" width="280" height="132" rx="6" fill="#ffffff" stroke="#86efac" stroke-width="1.2" />
+      <path d="M 0 6 Q 0 0 6 0 L 274 0 Q 280 0 280 6 L 280 24 L 0 24 Z" fill="#f0fdf4" />
+      <text x="12" y="16" text-anchor="start" font-size="10" font-weight="700" fill="#166534">Rule Policy Select</text>
+      <rect x="226" y="4" width="44" height="16" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1" />
+      <text x="248" y="15" text-anchor="middle" font-size="7.5" font-weight="700" fill="#166534">Rules</text>
+
+      <g transform="translate(8, 30)">
+        <rect x="0" y="0" width="264" height="48" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+        <text x="8" y="12" font-size="7.2" font-weight="600" fill="#334155">Deterministic Clinical Policies:</text>
+        <text x="8" y="23" font-size="6.8" fill="#0f172a">&#x2022; Prefers usual rate over isolated bursts</text>
+        <text x="8" y="33" font-size="6.8" fill="#0f172a">&#x2022; Overrides seizure-free if recent events exist</text>
+        <text x="8" y="43" font-size="6.8" fill="#0f172a">&#x2022; Combines event counts with time intervals</text>
+      </g>
+      <text x="140" y="92" text-anchor="middle" font-size="8.2" font-weight="600" fill="#334155">Rule-Based Policy Execution</text>
+      <text x="140" y="104" text-anchor="middle" font-size="7.8" fill="#64748b">Evaluates proposed candidates against explicit</text>
+      <text x="140" y="116" text-anchor="middle" font-size="7.8" fill="#64748b">clinical decision cases via deterministic rules.</text>
+    </g>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- ROW 3: LLM ONLY (MULTI-AGENT)                                             -->
+  <!-- ========================================================================= -->
+  <g transform="translate(0, 342)">
+    <!-- 3.1 Method Label Card -->
+    <g transform="translate(15, 0)" filter="url(#shadow)">
+      <rect x="0" y="0" width="140" height="132" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" />
+      <text x="70" y="38" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">LLM Only</text>
+      <line x1="35" y1="48" x2="105" y2="48" stroke="#e2e8f0" stroke-width="1" stroke-linecap="round" />
+      <text x="70" y="70" text-anchor="middle" font-size="8.5" fill="#64748b">Chained prompts:</text>
+      <text x="70" y="85" text-anchor="middle" font-size="8.5" fill="#64748b">Prompt 1 (Find+Encode)</text>
+      <text x="70" y="100" text-anchor="middle" font-size="8.5" fill="#64748b">&#x2192; Prompt 2 (Select)</text>
+    </g>
+
+    <!-- Connector -->
+    <path d="M 155 66 L 180 66" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" fill="none" />
+
+    <!-- 3.2 Combined Find & Encode Card (Single Prompt spanning columns 1 & 2!) -->
+    <g transform="translate(185, 0)" filter="url(#shadow)">
+      <rect x="0" y="0" width="585" height="132" rx="6" fill="#ffffff" stroke="#93c5fd" stroke-width="1.2" />
+      <path d="M 0 6 Q 0 0 6 0 L 579 0 Q 585 0 585 6 L 585 24 L 0 24 Z" fill="#eff6ff" />
+      <text x="14" y="16" text-anchor="start" font-size="10" font-weight="700" fill="#1e40af">LLM Prompt 1: Find &amp; Encode (Single Call)</text>
+      <rect x="515" y="4" width="56" height="16" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1" />
+      <text x="543" y="15" text-anchor="middle" font-size="7.5" font-weight="700" fill="#1e40af">Agent 1</text>
+
+      <!-- 3 Prompt Components Sub-grid -->
+      <g transform="translate(10, 28)">
+        <!-- Box A: Instructions -->
+        <rect x="0" y="0" width="182" height="60" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+        <text x="8" y="13" font-size="7.2" font-weight="600" fill="#334155">1. Instructions</text>
+        <text x="8" y="26" font-size="7" fill="#475569">&#x2022; Extract frequency events</text>
+        <text x="8" y="38" font-size="7" fill="#475569">&#x2022; Quote exact text spans</text>
+        <text x="8" y="50" font-size="7" fill="#475569">&#x2022; 6 clinical categories</text>
+
+        <!-- Box B: Few-Shot Examples -->
+        <rect x="191" y="0" width="182" height="60" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+        <text x="8" y="13" font-size="7.2" font-weight="600" fill="#334155" transform="translate(191,0)">2. Canonical Examples</text>
+        <text x="8" y="26" font-size="7" fill="#475569" transform="translate(191,0)">&#x2022; Rate: "N per unit"</text>
+        <text x="8" y="38" font-size="7" fill="#475569" transform="translate(191,0)">&#x2022; Cluster: "N per cluster"</text>
+        <text x="8" y="50" font-size="7" fill="#475569" transform="translate(191,0)">&#x2022; Seizure-free duration</text>
+
+        <!-- Box C: Structured Output Schema -->
+        <rect x="382" y="0" width="183" height="60" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+        <text x="8" y="13" font-size="7.2" font-weight="600" fill="#334155" transform="translate(382,0)">3. JSON Schema</text>
+        <text x="8" y="25" font-size="7" font-family="monospace" fill="#0f172a" transform="translate(382,0)">{"events": [{</text>
+        <text x="16" y="36" font-size="7" font-family="monospace" fill="#0f172a" transform="translate(382,0)">"label": "multiple/wk",</text>
+        <text x="16" y="47" font-size="7" font-family="monospace" fill="#0f172a" transform="translate(382,0)">"evidence": "..."}]}</text>
+      </g>
+
+      <text x="292" y="103" text-anchor="middle" font-size="8.5" font-weight="600" fill="#334155">High Lexical Recall &amp; Candidate Formatting</text>
+      <text x="292" y="116" text-anchor="middle" font-size="8" fill="#64748b">Identifies complex lexical patterns, extracts grounded quotes, and formats initial structured candidates in one prompt.</text>
+    </g>
+
+    <!-- Connector -->
+    <path d="M 770 66 L 790 66" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" fill="none" />
+
+    <!-- 3.3 Select Card (Prompt 2) -->
+    <g transform="translate(795, 0)" filter="url(#shadow)">
+      <rect x="0" y="0" width="280" height="132" rx="6" fill="#ffffff" stroke="#93c5fd" stroke-width="1.2" />
+      <path d="M 0 6 Q 0 0 6 0 L 274 0 Q 280 0 280 6 L 280 24 L 0 24 Z" fill="#eff6ff" />
+      <text x="12" y="16" text-anchor="start" font-size="10" font-weight="700" fill="#1e40af">LLM Prompt 2: Select</text>
+      <rect x="216" y="4" width="56" height="16" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1" />
+      <text x="244" y="15" text-anchor="middle" font-size="7.5" font-weight="700" fill="#1e40af">Agent 2</text>
+
+      <g transform="translate(8, 30)">
+        <rect x="0" y="0" width="264" height="48" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+        <text x="8" y="12" font-size="7.2" font-weight="600" fill="#334155">Prompt-Based Clinical Policies:</text>
+        <text x="8" y="23" font-size="6.8" fill="#0f172a">&#x2022; Prefers usual rate over isolated bursts</text>
+        <text x="8" y="33" font-size="6.8" fill="#0f172a">&#x2022; Overrides seizure-free if recent events exist</text>
+        <text x="8" y="43" font-size="6.8" fill="#0f172a">&#x2022; Combines event counts with time intervals</text>
+      </g>
+      <text x="140" y="92" text-anchor="middle" font-size="8.2" font-weight="600" fill="#334155">Model-Based Policy Reasoning</text>
+      <text x="140" y="104" text-anchor="middle" font-size="7.8" fill="#64748b">Second LLM call reasons over proposed candidates</text>
+      <text x="140" y="116" text-anchor="middle" font-size="7.8" fill="#64748b">and quoted evidence against clinical policy cases.</text>
+    </g>
+  </g>
+
+</svg>

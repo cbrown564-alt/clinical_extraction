@@ -38,6 +38,7 @@ interface ArchitectState {
   replayRunId: string | null;
   replayArtifactRows: unknown[] | null;
   replayRowIndex: number | null;
+  workbenchView: "frequency" | "inventory";
   setNoteText: (t: string) => void;
   setSplit: (s: string | null) => void;
   setSourceRowIndex: (i: number | null) => void;
@@ -51,6 +52,7 @@ interface ArchitectState {
   setReplayRunId: (id: string | null) => void;
   setReplayArtifactRows: (rows: unknown[] | null) => void;
   setReplayRowIndex: (idx: number | null) => void;
+  setWorkbenchView: (view: "frequency" | "inventory") => void;
   toggleRuleGroup: (group: string) => void;
   toggleRuleId: (ruleId: string) => void;
   reset: () => void;
@@ -98,6 +100,7 @@ export const useArchitectStore = create<ArchitectState>((set) => ({
   replayRunId: null,
   replayArtifactRows: null,
   replayRowIndex: null,
+  workbenchView: "frequency",
   setNoteText: (noteText) => set({ noteText }),
   setSplit: (split) => set({ split, sourceRowIndex: null }),
   setSourceRowIndex: (sourceRowIndex) => set({ sourceRowIndex }),
@@ -118,6 +121,7 @@ export const useArchitectStore = create<ArchitectState>((set) => ({
   setReplayRunId: (replayRunId) => set({ replayRunId }),
   setReplayArtifactRows: (replayArtifactRows) => set({ replayArtifactRows }),
   setReplayRowIndex: (replayRowIndex) => set({ replayRowIndex }),
+  setWorkbenchView: (workbenchView) => set({ workbenchView }),
   toggleRuleGroup: (group) =>
     set((s) => {
       const current = new Set(s.ablationConfig.enabled_groups ?? []);
@@ -147,5 +151,6 @@ export const useArchitectStore = create<ArchitectState>((set) => ({
       replayRunId: null,
       replayArtifactRows: null,
       replayRowIndex: null,
+      workbenchView: "frequency",
     }),
 }));

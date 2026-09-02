@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useCallback, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   FileText,
   AlertCircle,
@@ -16,6 +16,15 @@ import {
 import { fetchRegistry, fetchArtifact, fetchLetter } from "@/lib/api";
 import { firstReplayableArtifactPath } from "@/lib/registryArtifacts";
 import { adaptDeterministicTrace, adaptTrace, isReplaySupported } from "@/lib/traceAdapter";
+import { preserveWorkbenchDataset } from "@/lib/architectUrl";
+import { GAN_INVENTORY_VIEW } from "@/lib/ganInventory";
+import {
+  DEMO_GAN_RUN_ID,
+  DEMO_MODEL_LABEL,
+  demoMethodLabel,
+  isDemoSurface,
+  lockDemoGanFamilies,
+} from "@/lib/demoSurface";
 import {
   ganMethodChoices,
   ganMethodRequiresModel,
@@ -24,6 +33,7 @@ import {
   ganPickerMethodId,
   ganPipelineOptionLabel,
   isGanAggregateRunId,
+  isGanRulesRunId,
   paperGanFamilies,
   resolveGanMethodModel,
   resolveGanPipelineOption,
@@ -33,12 +43,13 @@ import {
   ControlBar,
   ControlField,
   ControlCombobox,
+  ControlFixedValue,
   LetterPicker,
   MetricChips,
 } from "@/components/surface";
 
 function isDeterministicFamily(family: string): boolean {
-  return family === "rules" || family === "rules_only" || family.includes("deterministic");
+  return isGanRulesRunId(family) || family.includes("deterministic");
 }
 
 function isLiveFamily(family: string): boolean {
@@ -47,6 +58,8 @@ function isLiveFamily(family: string): boolean {
 
 export default function TraceControls() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const requestedRunId = searchParams.get("run");
   const {
     noteText,
@@ -65,6 +78,7 @@ export default function TraceControls() {
     setReplayRunId,
     setReplayArtifactRows,
     setReplayRowIndex,
+    setWorkbenchView,
   } = useArchitectStore();
 
   const runNote = useRunNote();
@@ -75,10 +89,11 @@ export default function TraceControls() {
   );
   const familiesQuery = usePipelineFamilies();
 
-  const pipelineOptions = useMemo(
-    () => paperGanFamilies(familiesQuery.data?.families ?? []),
-    [familiesQuery.data?.families]
-  );
+  const demoLocked = isDemoSurface();
+  const pipelineOptions = useMemo(() => {
+    const families = paperGanFamilies(familiesQuery.data?.families ?? []);
+    return demoLocked ? lockDemoGanFamilies(families) : families;
+  }, [demoLocked, familiesQuery.data?.families]);
   const methodChoices = useMemo(
     () => ganMethodChoices(pipelineOptions),
     [pipelineOptions]
@@ -97,7 +112,8 @@ export default function TraceControls() {
   const isAggregateOnly =
     selectedOption?.availability === "aggregate_only" ||
     isGanAggregateRunId(selectedRunId);
-  const isLive = isLiveFamily(pipelineFamily);
+  const isLive =
+    isLiveFamily(pipelineFamily) || isGanRulesRunId(selectedRunId);
   const isReplay = !isLive && !isAggregateOnly;
   const overallScore = useMemo(
     () => ganOverallScore(selectedOption),
@@ -114,8 +130,22 @@ export default function TraceControls() {
   // Restore an exact run from the URL once the Gan comparison catalog arrives.
   useEffect(() => {
     if (pipelineOptions.length === 0) return;
-    const requestedOption = pipelineOptions.find(
-      (option) => option.run_id === requestedRunId
+    if (demoLocked) {
+      const locked =
+        resolveGanPipelineOption(pipelineOptions, DEMO_GAN_RUN_ID) ??
+        pipelineOptions[0];
+      if (
+        locked &&
+        (locked.run_id !== selectedRunId ||
+          locked.pipeline_family !== pipelineFamily)
+      ) {
+        setSelectedRunId(locked.run_id, locked.pipeline_family);
+      }
+      return;
+    }
+    const requestedOption = resolveGanPipelineOption(
+      pipelineOptions,
+      requestedRunId ?? ""
     );
     if (!requestedOption || !isPaperCellId(ganPickerMethodId(requestedOption))) {
       return;
@@ -127,14 +157,22 @@ export default function TraceControls() {
     ) {
       setSelectedRunId(requestedOption.run_id, requestedOption.pipeline_family);
     }
-  }, [pipelineOptions, requestedRunId, setSelectedRunId]);
+  }, [
+    demoLocked,
+    pipelineFamily,
+    pipelineOptions,
+    requestedRunId,
+    selectedRunId,
+    setSelectedRunId,
+  ]);
 
   // Keep adapter family aligned, or fall back from a legacy registry run id.
   useEffect(() => {
     if (pipelineOptions.length === 0) return;
+    if (demoLocked) return;
     if (
       requestedRunId &&
-      pipelineOptions.some((option) => option.run_id === requestedRunId)
+      resolveGanPipelineOption(pipelineOptions, requestedRunId)
     ) {
       return;
     }
@@ -151,7 +189,14 @@ export default function TraceControls() {
     ) {
       setSelectedRunId(next.run_id, next.pipeline_family);
     }
-  }, [pipelineOptions, pipelineFamily, requestedRunId, selectedRunId, setSelectedRunId]);
+  }, [
+    demoLocked,
+    pipelineOptions,
+    pipelineFamily,
+    requestedRunId,
+    selectedRunId,
+    setSelectedRunId,
+  ]);
 
   const loadReplayLetter = useCallback(
     async (letterIndex: number) => {
@@ -204,14 +249,15 @@ export default function TraceControls() {
 
   const handleRun = useCallback(() => {
     if (!noteText.trim()) return;
-    if (!isLiveFamily(pipelineFamily)) return;
+    const liveRules = isLiveFamily(pipelineFamily) || isGanRulesRunId(selectedRunId);
+    if (!liveRules) return;
 
     setIsLoading(true);
     setError(null);
     runNote.mutate(
       {
         note_text: noteText,
-        pipeline: pipelineFamily,
+        pipeline: isGanRulesRunId(selectedRunId) ? "rules" : pipelineFamily,
         source_row_index: sourceRowIndex ?? 0,
         gold_label: recordQuery.data?.gold_label,
         ablation_config: ablationConfig,
@@ -236,6 +282,7 @@ export default function TraceControls() {
   }, [
     noteText,
     pipelineFamily,
+    selectedRunId,
     sourceRowIndex,
     split,
     ablationConfig,
@@ -317,46 +364,57 @@ export default function TraceControls() {
     <ControlBar
       left={
         <>
-          {/* Method selection on the far left */}
-          <ControlField label="Method" htmlFor="architect-method-select">
-            <ControlCombobox
-              id="architect-method-select"
-              noun="method"
-              className="min-w-0 flex-1 sm:min-w-[220px] sm:flex-none"
-              items={methodItems}
-              value={selectedMethodId}
-              onChange={(methodId) => {
-                const option = resolveGanMethodModel(
-                  pipelineOptions,
-                  methodId,
-                  selectedOption?.model
-                );
-                if (option) {
-                  setSelectedRunId(option.run_id, option.pipeline_family);
-                }
-              }}
-            />
-          </ControlField>
-
-          {ganMethodRequiresModel(selectedMethodId) && (
-            <ControlField label="Model" htmlFor="architect-model-select">
+          <ControlField label="Method">
+            {demoLocked ? (
+              <ControlFixedValue className="min-w-0 flex-1 sm:min-w-[220px] sm:flex-none">
+                {demoMethodLabel()}
+              </ControlFixedValue>
+            ) : (
               <ControlCombobox
-                id="architect-model-select"
-                noun="model"
-                className="min-w-0 flex-1 sm:min-w-[200px] sm:flex-none"
-                items={modelItems}
-                value={selectedOption?.model ?? ""}
-                onChange={(model) => {
+                id="architect-method-select"
+                noun="method"
+                className="min-w-0 flex-1 sm:min-w-[220px] sm:flex-none"
+                items={methodItems}
+                value={selectedMethodId}
+                onChange={(methodId) => {
                   const option = resolveGanMethodModel(
                     pipelineOptions,
-                    selectedMethodId,
-                    model
+                    methodId,
+                    selectedOption?.model
                   );
                   if (option) {
                     setSelectedRunId(option.run_id, option.pipeline_family);
                   }
                 }}
               />
+            )}
+          </ControlField>
+
+          {ganMethodRequiresModel(selectedMethodId) && (
+            <ControlField label="Model">
+              {demoLocked ? (
+                <ControlFixedValue className="min-w-0 flex-1 sm:min-w-[200px] sm:flex-none">
+                  {DEMO_MODEL_LABEL}
+                </ControlFixedValue>
+              ) : (
+                <ControlCombobox
+                  id="architect-model-select"
+                  noun="model"
+                  className="min-w-0 flex-1 sm:min-w-[200px] sm:flex-none"
+                  items={modelItems}
+                  value={selectedOption?.model ?? ""}
+                  onChange={(model) => {
+                    const option = resolveGanMethodModel(
+                      pipelineOptions,
+                      selectedMethodId,
+                      model
+                    );
+                    if (option) {
+                      setSelectedRunId(option.run_id, option.pipeline_family);
+                    }
+                  }}
+                />
+              )}
             </ControlField>
           )}
 
@@ -398,6 +456,22 @@ export default function TraceControls() {
                 },
               ]}
             />
+          )}
+          {!demoLocked && (
+            <button
+              type="button"
+              onClick={() => {
+                setWorkbenchView("inventory");
+                const params = new URLSearchParams();
+                preserveWorkbenchDataset(params, searchParams);
+                params.set("view", GAN_INVENTORY_VIEW);
+                if (sourceRowIndex !== null) params.set("row", String(sourceRowIndex));
+                router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+              }}
+              className="inline-flex min-h-8 items-center rounded-md border border-border bg-surface px-2.5 text-xs font-medium text-foreground hover:bg-surface-raised"
+            >
+              Inventory · 100 letters
+            </button>
           )}
         </div>
       }

@@ -1,0 +1,186 @@
+# Gan test450 classification report
+
+Date: 2026-08-28
+Status: living Gemini five-cell per-class tables for cells 3 and 5;
+cell 1 class tables are the pre-promotion 321-program reading
+Revised: 2026-08-31 (cell 5 policy-example select 383/450)
+Owner: [five-cell grid](gan_five_cell_grid_2026-08-22.md)
+Companion: [Gemini vs Qwen-2.5-14B COT synthetic](gan_gemini_vs_qwen25_14b_cot_synthetic_2026-08-28.md)
+Artifact: [gan_test450_classification_report_2026-08-28.json](gan_test450_classification_report_2026-08-28.json)
+
+Split: locked `test` of public `synthetic_data_subset_1500` (`gan2026_split_v1`, n=450).
+Not KCH Real(300). Same kind of number as Gan et al. 2026 Tables 4–5: per-class P/R/F1 plus micro-F1.
+**Purist micro-F1** is the living primary. **Pragmatic micro-F1** is the companion.
+Micro-F1 equals accuracy here (one gold bin, one predicted bin). Accuracy is not printed.
+Gold and predicted ε only; no letter text, no row ids.
+The printed class `NS` is Seizure free (`currently_no_seizure`; monthly
+frequency 0). It is not gold-kind `no seizure frequency reference`,
+which scores as `UNK`.
+
+## Living
+
+Living selected Gan results are **Gemini 3.7 Flash five-cell (select stop)**, prompt v0.5.
+The paper per-class tables are cells **1** (rules / rules / rules), **3** (LLM / rules / rules), and **5** (LLM / LLM / LLM).
+
+Decision 0050 / Sol 380/450 / 381/450 are **historical**.
+Sol hybrid, Luna llm-only, and the old "Micro-F1 across cells" hybrid/`gan_llm_only` table are **historical** (current-stack / `gan_llm_only`), not the paper comparison.
+
+### Gemini five-cell select stop (Purist micro-F1, n=450)
+
+Living gold is `gold_monthly_frequency` from the current label parser
+(Purist UNK support 76/450). Cell 1 is a no-call living rules replay.
+The curated sidecar
+`paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json`
+uses the same gold.
+
+| Find | Encode | Select | Purist micro-F1 |
+| --- | --- | --- | ---: |
+| rules | rules | rules | 325/450 = 0.7222 cited 0.72 |
+| both | rules | rules | 368/450 = 0.8178 cited 0.82 |
+| LLM | rules | rules (cell 3) | 387/450 = 0.8600 cited 0.86 |
+| LLM | LLM | rules | 382/450 = 0.8489 cited 0.85 |
+| LLM | LLM | LLM | 383/450 = 0.8511 cited 0.85 |
+
+### Pragmatic micro-F1 for those cells
+
+Same living gold. Cell 2 is the select stop on saved
+`gan_llm_and_rules_extract` (also in that cell's `comparison.json` /
+`rule_stops.json`). Cell 5 is the table below.
+
+| Find | Encode | Select | Pragmatic micro-F1 |
+| --- | --- | --- | ---: |
+| rules | rules | rules | 345/450 = 0.7667 cited 0.77 |
+| both | rules | rules | 380/450 = 0.8444 |
+| LLM | rules | rules (cell 3) | 396/450 = 0.8800 cited 0.88 |
+| LLM | LLM | rules | 391/450 = 0.8689 cited 0.87 |
+| LLM | LLM | LLM | 391/450 = 0.8689 cited 0.87 |
+
+### Cell 1 — rules / rules / rules
+
+_Pre-promotion `gan_rules.run_record` class reading at 321/450.
+Cited cell-1 select is now 325/450 Purist / 345/450 Pragmatic from the
+Phase D rung replay; no new per-class holdout report. n=450; dropped=0._
+Gold ε is living `gold_monthly_frequency` (Purist UNK support 76/450),
+the same bins as cells 3 and 5. See
+[dataset gold support](../paper/dataset_gold_support_2026-08-22.md).
+
+#### Purist
+
+```
+Class            Precision    Recall    F1-score   Support
+<1/6M              1.0000    0.6667    0.8000         6
+=1/6M              0.5000    1.0000    0.6667         1
+(1/6M,1/M)         0.8000    0.8000    0.8000        55
+=1/M               0.5385    0.3889    0.4516        18
+(1/M,1/W)          0.7966    0.8103    0.8034        58
+=1/W               0.8333    1.0000    0.9091         5
+(1/W,1/D)          0.9271    0.7236    0.8128       123
+≥1/D               0.6341    0.6341    0.6341        41
+UNK                0.5042    0.7895    0.6154        76
+NS                 0.6909    0.5672    0.6230        67
+micro-F1           0.7133    0.7133    0.7133       450
+macro avg          0.7225    0.7380    0.7116       450
+weighted avg       0.7449    0.7133    0.7183       450
+```
+
+#### Pragmatic
+
+```
+Class            Precision    Recall    F1-score   Support
+infrequent         0.7838    0.7250    0.7532        80
+frequent           0.9158    0.8150    0.8625       227
+UNK                0.5042    0.7895    0.6154        76
+NS                 0.6909    0.5672    0.6230        67
+micro-F1           0.7578    0.7578    0.7578       450
+macro avg          0.7237    0.7242    0.7135       450
+weighted avg       0.7894    0.7578    0.7657       450
+```
+
+### Cell 3 — LLM / rules / rules
+
+_Gemini 3.7 Flash; `gan_llm_extract` then `llm_select_after_codebook`; n=450; dropped=0._
+Gold ε is living `gold_monthly_frequency` (Purist UNK support 76/450).
+No-call replay of the saved extract through living
+`llm_select_after_codebook`, including `last_event_well_since`.
+This replay scores **387/450** Purist and **396/450** Pragmatic.
+Table 1 cites those totals. Do not inspect holdout rows.
+
+#### Purist
+
+```
+Class            Precision    Recall    F1-score   Support
+<1/6M              0.7500    0.5000    0.6000         6
+=1/6M              0.0000    0.0000    0.0000         1
+(1/6M,1/M)         0.8913    0.7455    0.8119        55
+=1/M               0.9444    0.9444    0.9444        18
+(1/M,1/W)          0.8833    0.9138    0.8983        58
+=1/W               1.0000    0.8000    0.8889         5
+(1/W,1/D)          0.9554    0.8699    0.9106       123
+≥1/D               0.9048    0.9268    0.9157        41
+UNK                0.6442    0.8816    0.7444        76
+NS                 0.9500    0.8507    0.8976        67
+micro-F1           0.8600    0.8600    0.8600       450
+macro avg          0.7923    0.7433    0.7612       450
+weighted avg       0.8755    0.8600    0.8624       450
+```
+
+#### Pragmatic
+
+```
+Class            Precision    Recall    F1-score   Support
+infrequent         0.8971    0.7625    0.8243        80
+frequent           0.9679    0.9295    0.9483       227
+UNK                0.6442    0.8816    0.7444        76
+NS                 0.9500    0.8507    0.8976        67
+micro-F1           0.8800    0.8800    0.8800       450
+macro avg          0.8648    0.8561    0.8537       450
+weighted avg       0.8980    0.8800    0.8843       450
+```
+
+### Cell 5 — LLM / LLM / LLM
+
+_Gemini 3.7 Flash; `gan_llm_select_from_extract` with the living
+policy-example select prompt on the codebook extract; n=450; dropped=0._
+Gold ε is living `gold_monthly_frequency` (Purist UNK support 76/450).
+Select-stop labels from the sealed later-stage rows. Purist **383/450**
+matches the cited five-cell cell. Pragmatic **391/450**.
+
+#### Purist
+
+```
+Class            Precision    Recall    F1-score   Support
+<1/6M              1.0000    0.6667    0.8000         6
+=1/6M              0.0000    0.0000    0.0000         1
+(1/6M,1/M)         0.9286    0.7091    0.8041        55
+=1/M               0.9375    0.8333    0.8824        18
+(1/M,1/W)          0.9107    0.8793    0.8947        58
+=1/W               1.0000    1.0000    1.0000         5
+(1/W,1/D)          0.9554    0.8699    0.9106       123
+≥1/D               0.9268    0.9268    0.9268        41
+UNK                0.6408    0.8684    0.7374        76
+NS                 0.8406    0.8657    0.8529        67
+micro-F1           0.8511    0.8511    0.8511       450
+macro avg          0.8140    0.7619    0.7809       450
+weighted avg       0.8718    0.8511    0.8556       450
+```
+
+#### Pragmatic
+
+```
+Class            Precision    Recall    F1-score   Support
+infrequent         0.9516    0.7375    0.8310        80
+frequent           0.9720    0.9163    0.9433       227
+UNK                0.6408    0.8684    0.7374        76
+NS                 0.8406    0.8657    0.8529        67
+micro-F1           0.8689    0.8689    0.8689       450
+macro avg          0.8512    0.8470    0.8412       450
+weighted avg       0.8928    0.8689    0.8751       450
+```
+
+Two later-stage rows had no scorable select label. They are counted as
+incorrect (not as UNK). That keeps Purist micro-F1 at 383/450.
+
+Gan et al. 2026 abstract (Real(300), 15k synthetic train): Purist 0.788 / Pragmatic 0.847 (Qwen-2.5-14B); MedGemma-4B 0.787 / 0.858.
+Those numbers are a different test set. Do not quote them as the same experiment.
+The equivalent synthetic-to-synthetic row is in
+[Gemini vs Qwen-2.5-14B COT synthetic](gan_gemini_vs_qwen25_14b_cot_synthetic_2026-08-28.md).

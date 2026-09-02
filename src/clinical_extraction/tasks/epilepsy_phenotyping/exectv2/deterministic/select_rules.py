@@ -23,6 +23,23 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     standard_dictionary as sd,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.find_ledger import (
+    DIAGNOSIS_COMPONENT_TOKEN,
+    DIAGNOSIS_EXPANSION_SURFACE,
+    DIAGNOSIS_HEADING_DECOMPOSITION,
+    DIAGNOSIS_HIERARCHY_ANCESTOR,
+    DIAGNOSIS_NESTED_ANCESTOR,
+    DIAGNOSIS_NESTED_SURFACE,
+    DIAGNOSIS_NONDIAGNOSTIC_CONTEXT,
+    DIAGNOSIS_UNRESTRICTED_SURFACE,
+    INV_RESULT_VARIANT,
+    RX_RECALL_EXPANSION,
+    SF_HEADING_STATE,
+    SF_NAMED_TYPE,
+    SF_SEIZURE_FREE,
+    SF_STATE_VARIANT,
+    recall_first_class_of,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
     canonicalize_diagnosis_concept,
     diagnosis_category_for_concept,
@@ -37,6 +54,13 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.projec
     NAMED_ABSENCE_SURFACES,
     SF_TYPE_PARENT_CUI,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_headline import (
+    annotation_from_mapping,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.seizure_frequency import (
+    _frequency_state,
+    _frequency_state_keys,
+)
 
 DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY = "selection.diagnosis_source_local_specificity"
 DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE = "selection.diagnosis_explicit_heading_phenotype"
@@ -46,10 +70,55 @@ PRESCRIPTION_EXACT_REGIMEN_DEDUPE = "selection.prescription_exact_regimen_dedupe
 SF_NAMED_TYPE_IDENTITY = "selection.sf_named_type_identity"
 SF_RECENT_EVENT_OVER_HISTORICAL_FREE = "selection.sf_recent_event_over_historical_free"
 SF_TO_DIAGNOSIS_EXPLICIT_TYPE = "selection.sf_to_diagnosis_explicit_type"
+SF_SUPPORTED_STATE_PROMOTION = "selection.sf_supported_state_promotion"
 INVENTORY_KEEP_SOURCE_DIAGNOSIS = "selection.inventory_keep_source_diagnosis"
 INVENTORY_WEAK_EPISODE_DROP = "selection.inventory_weak_episode_drop"
+INVESTIGATION_SAME_RESULT_DEDUPE = "selection.investigation_same_result_dedupe"
+SF_RATELESS_ANCHOR_DROP = "selection.sf_rateless_anchor_drop"
+SF_GENERIC_DUPLICATE_DROP = "selection.sf_generic_duplicate_of_named_type_drop"
+SF_SEIZURE_FREE_POSITIVE_COUNT_DROP = "selection.sf_seizure_free_positive_count_drop"
+RECALL_FIRST_UNSUPPORTED_DROP = "selection.recall_first_unsupported_drop"
+INVESTIGATION_RESULTLESS_DROP = "selection.investigation_resultless_drop"
+
+# Phase C keep rules (2026-08-27 restructure): each retains one recall-first
+# find class at Select. They carry no handler of their own; the
+# RECALL_FIRST_UNSUPPORTED_DROP gate consults them (with the per-class
+# condition in RECALL_FIRST_KEEP_CONDITIONS, when one is registered).
+KEEP_DX_NONDIAGNOSTIC_CONTEXT = "selection.keep_dx_nondiagnostic_context"
+KEEP_DX_NESTED_ANCESTOR = "selection.keep_dx_nested_ancestor"
+KEEP_DX_NESTED_SURFACE = "selection.keep_dx_nested_surface"
+KEEP_DX_HEADING_DECOMPOSITION = "selection.keep_dx_heading_decomposition"
+KEEP_DX_UNRESTRICTED_SURFACE = "selection.keep_dx_unrestricted_surface"
+KEEP_DX_EXPANSION_SURFACE = "selection.keep_dx_expansion_surface"
+KEEP_DX_HIERARCHY_ANCESTOR = "selection.keep_dx_hierarchy_ancestor"
+KEEP_DX_COMPONENT_TOKEN = "selection.keep_dx_component_token"
+KEEP_SF_NAMED_TYPE = "selection.keep_sf_named_type"
+KEEP_SF_HEADING_STATE = "selection.keep_sf_heading_state"
+KEEP_SF_SEIZURE_FREE = "selection.keep_sf_seizure_free"
+KEEP_SF_STATE_VARIANT = "selection.keep_sf_state_variant"
+KEEP_RX_RECALL_EXPANSION = "selection.keep_rx_recall_expansion"
+KEEP_INV_RESULT_VARIANT = "selection.keep_inv_result_variant"
+
+_KEEP_RULE_IDS: tuple[str, ...] = (
+    KEEP_DX_NONDIAGNOSTIC_CONTEXT,
+    KEEP_DX_NESTED_ANCESTOR,
+    KEEP_DX_NESTED_SURFACE,
+    KEEP_DX_HEADING_DECOMPOSITION,
+    KEEP_DX_UNRESTRICTED_SURFACE,
+    KEEP_DX_EXPANSION_SURFACE,
+    KEEP_DX_HIERARCHY_ANCESTOR,
+    KEEP_DX_COMPONENT_TOKEN,
+    KEEP_SF_NAMED_TYPE,
+    KEEP_SF_HEADING_STATE,
+    KEEP_SF_SEIZURE_FREE,
+    KEEP_SF_STATE_VARIANT,
+    KEEP_RX_RECALL_EXPANSION,
+    KEEP_INV_RESULT_VARIANT,
+)
 
 CANDIDATE_SELECT_RULE_IDS: tuple[str, ...] = (
+    RECALL_FIRST_UNSUPPORTED_DROP,
+    *_KEEP_RULE_IDS,
     DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY,
     DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE,
     PRESCRIPTION_LOCAL_REGIMEN_SCOPE,
@@ -58,8 +127,14 @@ CANDIDATE_SELECT_RULE_IDS: tuple[str, ...] = (
     SF_NAMED_TYPE_IDENTITY,
     SF_RECENT_EVENT_OVER_HISTORICAL_FREE,
     SF_TO_DIAGNOSIS_EXPLICIT_TYPE,
+    SF_SUPPORTED_STATE_PROMOTION,
     INVENTORY_KEEP_SOURCE_DIAGNOSIS,
     INVENTORY_WEAK_EPISODE_DROP,
+    INVESTIGATION_SAME_RESULT_DEDUPE,
+    SF_RATELESS_ANCHOR_DROP,
+    SF_GENERIC_DUPLICATE_DROP,
+    SF_SEIZURE_FREE_POSITIVE_COUNT_DROP,
+    INVESTIGATION_RESULTLESS_DROP,
 )
 ACCEPTED_SELECT_RULE_IDS: tuple[str, ...] = (
     DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY,
@@ -79,7 +154,83 @@ INVENTORY_SELECT_RULE_IDS: tuple[str, ...] = (
     INVENTORY_KEEP_SOURCE_DIAGNOSIS,
     INVENTORY_WEAK_EPISODE_DROP,
 )
+RULES_ONLY_SELECT_RULE_IDS: tuple[str, ...] = (
+    DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY,
+    DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE,
+    INVENTORY_KEEP_SOURCE_DIAGNOSIS,
+)
+CROSS_FAMILY = "cross_family"
+# Family that owns each Select rule. A rule reading or writing more than
+# one family is CROSS_FAMILY. Used by flatten_family_select_plan to
+# validate per-family Select sequences in ThreeStageConfig.
+RULE_FAMILY_BY_ID: dict[str, str] = {
+    KEEP_DX_NONDIAGNOSTIC_CONTEXT: "Diagnosis",
+    KEEP_DX_NESTED_ANCESTOR: "Diagnosis",
+    KEEP_DX_NESTED_SURFACE: "Diagnosis",
+    KEEP_DX_HEADING_DECOMPOSITION: "Diagnosis",
+    KEEP_DX_UNRESTRICTED_SURFACE: "Diagnosis",
+    KEEP_DX_EXPANSION_SURFACE: "Diagnosis",
+    KEEP_DX_HIERARCHY_ANCESTOR: "Diagnosis",
+    KEEP_DX_COMPONENT_TOKEN: "Diagnosis",
+    KEEP_SF_NAMED_TYPE: "SeizureFrequency",
+    KEEP_SF_HEADING_STATE: "SeizureFrequency",
+    KEEP_SF_SEIZURE_FREE: "SeizureFrequency",
+    KEEP_SF_STATE_VARIANT: "SeizureFrequency",
+    KEEP_RX_RECALL_EXPANSION: "Prescription",
+    KEEP_INV_RESULT_VARIANT: "Investigations",
+    DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY: "Diagnosis",
+    DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE: "Diagnosis",
+    PRESCRIPTION_LOCAL_REGIMEN_SCOPE: "Prescription",
+    PRESCRIPTION_ACTIVE_TITRATION: "Prescription",
+    PRESCRIPTION_EXACT_REGIMEN_DEDUPE: "Prescription",
+    SF_NAMED_TYPE_IDENTITY: "SeizureFrequency",
+    SF_RECENT_EVENT_OVER_HISTORICAL_FREE: "SeizureFrequency",
+    SF_TO_DIAGNOSIS_EXPLICIT_TYPE: CROSS_FAMILY,
+    SF_SUPPORTED_STATE_PROMOTION: "SeizureFrequency",
+    INVENTORY_KEEP_SOURCE_DIAGNOSIS: "Diagnosis",
+    INVENTORY_WEAK_EPISODE_DROP: CROSS_FAMILY,
+    INVESTIGATION_SAME_RESULT_DEDUPE: "Investigations",
+    SF_RATELESS_ANCHOR_DROP: "SeizureFrequency",
+    SF_GENERIC_DUPLICATE_DROP: "SeizureFrequency",
+    SF_SEIZURE_FREE_POSITIVE_COUNT_DROP: "SeizureFrequency",
+    RECALL_FIRST_UNSUPPORTED_DROP: CROSS_FAMILY,
+    INVESTIGATION_RESULTLESS_DROP: "Investigations",
+}
+_SELECT_PLAN_FAMILIES = frozenset(
+    {"Diagnosis", "SeizureFrequency", "Prescription", "Investigations", CROSS_FAMILY}
+)
+
+
+def flatten_family_select_plan(
+    plan: Mapping[str, Sequence[str]],
+) -> tuple[str, ...]:
+    """Validate a per-family Select plan and flatten it to execution order.
+
+    Every rule must be listed under the family that owns it. The flattened
+    sequence follows the canonical registry order used by
+    ``apply_select_rules`` so a family plan is exactly equivalent to
+    enabling the same rule set.
+    """
+
+    requested: set[str] = set()
+    for family, rule_ids in plan.items():
+        if family not in _SELECT_PLAN_FAMILIES:
+            raise ValueError(f"unknown Select plan family: {family!r}")
+        for rule_id in rule_ids:
+            owner = RULE_FAMILY_BY_ID.get(rule_id)
+            if owner is None:
+                raise ValueError(f"unknown deterministic Select rule id: {rule_id!r}")
+            if owner != family:
+                raise ValueError(
+                    f"Select rule {rule_id!r} belongs to family {owner!r}, "
+                    f"not {family!r}"
+                )
+            requested.add(rule_id)
+    return tuple(rule_id for rule_id in CANDIDATE_SELECT_RULE_IDS if rule_id in requested)
+
+
 _RULE_PORTABILITY_BY_ID = {
+    **{rule_id: "clinical_epilepsy" for rule_id in _KEEP_RULE_IDS},
     DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY: "clinical_epilepsy",
     DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE: "benchmark_format",
     PRESCRIPTION_LOCAL_REGIMEN_SCOPE: "clinical_epilepsy",
@@ -88,11 +239,20 @@ _RULE_PORTABILITY_BY_ID = {
     SF_NAMED_TYPE_IDENTITY: "seizure_frequency",
     SF_RECENT_EVENT_OVER_HISTORICAL_FREE: "seizure_frequency",
     SF_TO_DIAGNOSIS_EXPLICIT_TYPE: "benchmark_format",
+    SF_SUPPORTED_STATE_PROMOTION: "seizure_frequency",
     INVENTORY_KEEP_SOURCE_DIAGNOSIS: "clinical_epilepsy",
     INVENTORY_WEAK_EPISODE_DROP: "clinical_epilepsy",
+    INVESTIGATION_SAME_RESULT_DEDUPE: "clinical_epilepsy",
+    SF_RATELESS_ANCHOR_DROP: "seizure_frequency",
+    SF_GENERIC_DUPLICATE_DROP: "seizure_frequency",
+    SF_SEIZURE_FREE_POSITIVE_COUNT_DROP: "seizure_frequency",
+    RECALL_FIRST_UNSUPPORTED_DROP: "clinical_epilepsy",
+    INVESTIGATION_RESULTLESS_DROP: "clinical_epilepsy",
 }
 
 EMITTED_ACTIONS_BY_RULE_ID: dict[str, frozenset[str]] = {
+    # Keep rules never emit actions; the recall-first gate records drops.
+    **{rule_id: frozenset() for rule_id in _KEEP_RULE_IDS},
     DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY: frozenset({"rewrite"}),
     DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE: frozenset({"add"}),
     PRESCRIPTION_LOCAL_REGIMEN_SCOPE: frozenset({"rewrite"}),
@@ -101,8 +261,35 @@ EMITTED_ACTIONS_BY_RULE_ID: dict[str, frozenset[str]] = {
     SF_NAMED_TYPE_IDENTITY: frozenset({"rewrite"}),
     SF_RECENT_EVENT_OVER_HISTORICAL_FREE: frozenset({"add", "drop"}),
     SF_TO_DIAGNOSIS_EXPLICIT_TYPE: frozenset({"add"}),
+    SF_SUPPORTED_STATE_PROMOTION: frozenset({"add"}),
     INVENTORY_KEEP_SOURCE_DIAGNOSIS: frozenset({"add"}),
     INVENTORY_WEAK_EPISODE_DROP: frozenset({"drop"}),
+    INVESTIGATION_SAME_RESULT_DEDUPE: frozenset({"drop"}),
+    SF_RATELESS_ANCHOR_DROP: frozenset({"drop"}),
+    SF_GENERIC_DUPLICATE_DROP: frozenset({"drop"}),
+    SF_SEIZURE_FREE_POSITIVE_COUNT_DROP: frozenset({"drop"}),
+    RECALL_FIRST_UNSUPPORTED_DROP: frozenset({"drop"}),
+    INVESTIGATION_RESULTLESS_DROP: frozenset({"drop"}),
+}
+
+# Keep rules that retain a recall-first direct candidate class at Select.
+# A class survives the gate only when its keep rule is enabled; a class
+# with a condition in RECALL_FIRST_KEEP_CONDITIONS must also satisfy it.
+RECALL_FIRST_KEEP_RULE_BY_CLASS: dict[str, str] = {
+    DIAGNOSIS_NONDIAGNOSTIC_CONTEXT: KEEP_DX_NONDIAGNOSTIC_CONTEXT,
+    DIAGNOSIS_NESTED_ANCESTOR: KEEP_DX_NESTED_ANCESTOR,
+    DIAGNOSIS_NESTED_SURFACE: KEEP_DX_NESTED_SURFACE,
+    DIAGNOSIS_HEADING_DECOMPOSITION: KEEP_DX_HEADING_DECOMPOSITION,
+    DIAGNOSIS_UNRESTRICTED_SURFACE: KEEP_DX_UNRESTRICTED_SURFACE,
+    DIAGNOSIS_EXPANSION_SURFACE: KEEP_DX_EXPANSION_SURFACE,
+    DIAGNOSIS_HIERARCHY_ANCESTOR: KEEP_DX_HIERARCHY_ANCESTOR,
+    DIAGNOSIS_COMPONENT_TOKEN: KEEP_DX_COMPONENT_TOKEN,
+    SF_NAMED_TYPE: KEEP_SF_NAMED_TYPE,
+    SF_HEADING_STATE: KEEP_SF_HEADING_STATE,
+    SF_SEIZURE_FREE: KEEP_SF_SEIZURE_FREE,
+    SF_STATE_VARIANT: KEEP_SF_STATE_VARIANT,
+    RX_RECALL_EXPANSION: KEEP_RX_RECALL_EXPANSION,
+    INV_RESULT_VARIANT: KEEP_INV_RESULT_VARIANT,
 }
 
 _DIAGNOSIS_HEADING_RE = re.compile(
@@ -138,11 +325,24 @@ _HISTORICAL_FREE_BEFORE_EVENT_RE = re.compile(
     r"\bbefore\s+(?:this|the|that)\s+seizure\b.*\bseizure[- ]free\b",
     re.IGNORECASE,
 )
+_EXPLICIT_SEIZURE_FREE_EVIDENCE_RE = re.compile(
+    r"\bseizure\s*[-]?\s*free\b|"
+    r"\bno\s+(?:further|more)\s+seizures\b|\bremains?\s+seizure\s*[-]?\s*free\b",
+    re.IGNORECASE,
+)
+
+
+def _has_explicit_seizure_free_evidence(evidence: str) -> bool:
+    return bool(_EXPLICIT_SEIZURE_FREE_EVIDENCE_RE.search(evidence))
+
 
 _GENERIC_SF_CUIS = frozenset({"", "C0036572"})
 _TYPE_HEADING_RE = re.compile(
     r"^\s*(?:diagnosis|seizure\s+type(?:\s+and\s+frequency)?)\s*:",
     re.IGNORECASE,
+)
+_SF_DEFERRED_PROMOTION_CLASSES = frozenset(
+    {SF_NAMED_TYPE, SF_HEADING_STATE, SF_SEIZURE_FREE}
 )
 _INVENTORY_WEAK_EPISODE_PHRASES = frozenset(
     {
@@ -174,11 +374,16 @@ def apply_select_rules(
     unknown_rule_ids = set(enabled_rule_ids) - set(CANDIDATE_SELECT_RULE_IDS)
     if unknown_rule_ids:
         raise ValueError(f"unknown deterministic Select rule id(s): {sorted(unknown_rule_ids)}")
-    del note_text  # Exact evidence validation remains the assembly owner's job.
+    verbatim_note_text = note_text
     working = [_copy_mention(row) for row in selected_mentions]
     source = [_copy_mention(row) for row in source_mentions]
     actions: list[dict[str, Any]] = []
 
+    if RECALL_FIRST_UNSUPPORTED_DROP in enabled_rule_ids:
+        working, source, records = _drop_unsupported_recall_first(
+            working, source, enabled_rule_ids, note_text=verbatim_note_text
+        )
+        actions.extend(records)
     if DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY in enabled_rule_ids:
         working, records = _restore_source_local_diagnoses(working, source)
         actions.extend(records)
@@ -203,14 +408,173 @@ def apply_select_rules(
     if SF_TO_DIAGNOSIS_EXPLICIT_TYPE in enabled_rule_ids:
         working, records = _project_named_sf_to_diagnosis(working)
         actions.extend(records)
+    if SF_SUPPORTED_STATE_PROMOTION in enabled_rule_ids:
+        working, records = _promote_supported_sf_deferred(working, source, verbatim_note_text)
+        actions.extend(records)
     if INVENTORY_KEEP_SOURCE_DIAGNOSIS in enabled_rule_ids:
         working, records = _keep_source_ancestor_diagnoses(working, source)
         actions.extend(records)
     if INVENTORY_WEAK_EPISODE_DROP in enabled_rule_ids:
         working, records = _drop_weak_episode_mentions(working)
         actions.extend(records)
+    if INVESTIGATION_SAME_RESULT_DEDUPE in enabled_rule_ids:
+        working, records = _dedupe_same_investigation_results(working)
+        actions.extend(records)
+    if SF_RATELESS_ANCHOR_DROP in enabled_rule_ids:
+        working, records = _drop_rateless_sf_anchors(working)
+        actions.extend(records)
+    if SF_GENERIC_DUPLICATE_DROP in enabled_rule_ids:
+        working, records = _drop_generic_sf_duplicates_of_named_type(working)
+        actions.extend(records)
+    if SF_SEIZURE_FREE_POSITIVE_COUNT_DROP in enabled_rule_ids:
+        working, records = _drop_seizure_free_positive_count_sf(working)
+        actions.extend(records)
+    if INVESTIGATION_RESULTLESS_DROP in enabled_rule_ids:
+        working, records = _drop_resultless_investigations(working)
+        actions.extend(records)
 
     return working, actions
+
+
+def _mention_recall_first_class(mention: Mapping[str, Any]) -> str | None:
+    return recall_first_class_of(str(mention.get("component_owner") or ""))
+
+
+# A result variant is kept only when its evidence asserts the test event
+# itself ("had a CT head", "underwent an MRI", "recent EEG results") and
+# names the modality exactly once. Planned tests and anaphoric references
+# to an already-reported result ("the EEG changes", "requesting an MRI")
+# stay dropped, as does a sentence that names the modality again with its
+# result ("had an EEG ... no EEG changes"): there the result-less token
+# belongs to the same test event, not a separate reportable mention.
+_INV_TEST_EVENT_RE = re.compile(
+    r"\b(?:had|underwent)\s+an?\b(?P<window>[^.\n]{0,30})"
+    r"|\brecent\s+(?P<recent>\w+)\s+results?\b",
+    re.IGNORECASE,
+)
+
+
+def _inv_result_variant_condition(
+    mention: Mapping[str, Any], note_text: str
+) -> bool:
+    modalities = {
+        key[: -len("_Performed")].lower()
+        for key in _attrs(mention)
+        if key.endswith("_Performed")
+    }
+    evidence = str(mention.get("evidence") or "")
+    evidence_words = [word.lower() for word in re.findall(r"\w+", evidence)]
+    if any(evidence_words.count(modality) != 1 for modality in modalities):
+        return False
+    for match in _INV_TEST_EVENT_RE.finditer(evidence):
+        window = match.group("window") or match.group("recent") or ""
+        if any(word.lower() in modalities for word in re.findall(r"\w+", window)):
+            return True
+    return False
+
+
+# An Rx recall candidate is kept only when its evidence describes the
+# current regimen. Conditional requests ("if you could prescribe"),
+# queries and refusals ("asked about whether", "wouldn't recommend"),
+# and transitional doses inside an upward titration ("400mg od,
+# increasing to 800mg od") are proposals, not prescriptions.
+_RX_NONCURRENT_RE = re.compile(
+    r"\bif\s+you\s+could\s+prescribe\b"
+    r"|\basked\s+about\s+whether\b"
+    r"|\b(?:would\s+not|wouldn[\u2019']t|not)\s+recommend\b"
+    r"|\bincreasing\s+to\b",
+    re.IGNORECASE,
+)
+
+
+def _rx_recall_expansion_condition(
+    mention: Mapping[str, Any], note_text: str
+) -> bool:
+    return not _RX_NONCURRENT_RE.search(str(mention.get("evidence") or ""))
+
+
+# SF state variants: the cluster surface counts as an active event only
+# when the letter reports it happened ("had a cluster of seizures");
+# hypothetical or descriptive references stay dropped. The plural
+# "seizures free" surface only fills a gap when the well-formed singular
+# surface is absent from the letter (otherwise the direct path already
+# owns that state and the variant would double-count it).
+_SF_CLUSTER_EVENT_RE = re.compile(
+    r"\bhad\s+a\s+cluster\s+of\s+seizures\b", re.IGNORECASE
+)
+_SF_SINGULAR_FREE_RE = re.compile(r"\bseizure\s+free\b", re.IGNORECASE)
+
+
+def _sf_state_variant_condition(mention: Mapping[str, Any], note_text: str) -> bool:
+    phrase = str(_attrs(mention).get("CUIPhrase") or "")
+    if phrase == "cluster-of-seizures":
+        return bool(
+            _SF_CLUSTER_EVENT_RE.search(str(mention.get("evidence") or ""))
+        )
+    if phrase == "seizure-free":
+        return not _SF_SINGULAR_FREE_RE.search(note_text)
+    return True
+
+
+# Per-class keep conditions. A class without an entry is kept
+# unconditionally when its keep rule is enabled.
+RECALL_FIRST_KEEP_CONDITIONS: dict[str, Any] = {
+    INV_RESULT_VARIANT: _inv_result_variant_condition,
+    RX_RECALL_EXPANSION: _rx_recall_expansion_condition,
+    SF_STATE_VARIANT: _sf_state_variant_condition,
+}
+
+
+def _drop_unsupported_recall_first(
+    working: list[dict[str, Any]],
+    source: list[dict[str, Any]],
+    enabled_rule_ids: Set[str],
+    *,
+    note_text: str = "",
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
+    """Gate recall-first direct candidates before any other Select rule runs.
+
+    A tagged candidate survives only when its class has a registered keep
+    rule that is enabled (Phase C) and passes that class's keep condition,
+    if one is registered; otherwise it is removed from both the working
+    set and the source view so downstream rules observe exactly the
+    pre-restructure ledger.
+    """
+
+    def _keep(mention: Mapping[str, Any]) -> bool:
+        candidate_class = _mention_recall_first_class(mention)
+        if candidate_class is None:
+            return True
+        keep_rule = RECALL_FIRST_KEEP_RULE_BY_CLASS.get(candidate_class)
+        if keep_rule is None or keep_rule not in enabled_rule_ids:
+            return False
+        condition = RECALL_FIRST_KEEP_CONDITIONS.get(candidate_class)
+        return condition is None or condition(mention, note_text)
+
+    kept_working: list[dict[str, Any]] = []
+    actions: list[dict[str, Any]] = []
+    for mention in working:
+        if _keep(mention):
+            kept_working.append(mention)
+            continue
+        actions.append(_action(RECALL_FIRST_UNSUPPORTED_DROP, "drop", before=mention))
+    kept_source = [mention for mention in source if _keep(mention)]
+    return kept_working, kept_source, actions
+
+
+def _drop_resultless_investigations(
+    selected: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    out: list[dict[str, Any]] = []
+    actions: list[dict[str, Any]] = []
+    for mention in selected:
+        if _entity(mention) == "Investigations" and not any(
+            key.endswith("_Results") for key in _attrs(mention)
+        ):
+            actions.append(_action(INVESTIGATION_RESULTLESS_DROP, "drop", before=mention))
+            continue
+        out.append(mention)
+    return out, actions
 
 
 def _keep_source_ancestor_diagnoses(
@@ -275,6 +639,247 @@ def _drop_weak_episode_mentions(
             )
             continue
         out.append(mention)
+    return out, actions
+
+
+def _investigation_result_key(mention: Mapping[str, Any]) -> tuple[str, str] | None:
+    if _entity(mention) != "Investigations":
+        return None
+    attrs = _attrs(mention)
+    modality = next(
+        (
+            name
+            for name in ("EEG", "MRI", "CT")
+            if attrs.get(f"{name}_Performed") == "Yes"
+        ),
+        str(mention.get("text") or ""),
+    )
+    result = str(attrs.get(f"{modality}_Results") or "")
+    if not modality:
+        return None
+    return (modality, result)
+
+
+def _dedupe_same_investigation_results(
+    selected: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    out: list[dict[str, Any]] = []
+    actions: list[dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
+    for mention in selected:
+        key = _investigation_result_key(mention)
+        if key is None:
+            out.append(mention)
+            continue
+        if key in seen:
+            actions.append(_action(INVESTIGATION_SAME_RESULT_DEDUPE, "drop", before=mention))
+            continue
+        seen.add(key)
+        out.append(mention)
+    return out, actions
+
+
+def _has_frequency_attributes(mention: Mapping[str, Any]) -> bool:
+    return bool(set(_attrs(mention)) - {"CUI", "CUIPhrase"})
+
+
+def _drop_rateless_sf_anchors(
+    selected: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    out: list[dict[str, Any]] = []
+    actions: list[dict[str, Any]] = []
+    for mention in selected:
+        if _entity(mention) == "SeizureFrequency" and not _has_frequency_attributes(mention):
+            actions.append(_action(SF_RATELESS_ANCHOR_DROP, "drop", before=mention))
+            continue
+        out.append(mention)
+    return out, actions
+
+
+_SF_FREQUENCY_STATE_RATE_KEYS: tuple[str, ...] = (
+    "NumberOfSeizures",
+    "LowerNumberOfSeizures",
+    "UpperNumberOfSeizures",
+    "TimePeriod",
+    "NumberOfTimePeriods",
+)
+_SEIZURE_FREE_CUI = "C1299590"
+
+
+def _sf_frequency_state_unit_key(mention: Mapping[str, Any]) -> tuple[Any, ...]:
+    attrs = _attrs(mention)
+    state = _frequency_state(attrs)
+    rate = tuple(
+        sorted(
+            (key, str(attrs[key]))
+            for key in _SF_FREQUENCY_STATE_RATE_KEYS
+            if attrs.get(key)
+        )
+    )
+    return (state, rate)
+
+
+def _is_generic_sf_mention(mention: Mapping[str, Any]) -> bool:
+    return _entity(mention) == "SeizureFrequency" and _sf_cui(mention) in _GENERIC_SF_CUIS
+
+
+def _is_named_sf_mention(mention: Mapping[str, Any]) -> bool:
+    return _entity(mention) == "SeizureFrequency" and _sf_cui(mention) not in _GENERIC_SF_CUIS
+
+
+def _drop_generic_sf_duplicates_of_named_type(
+    selected: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    named_units = {
+        _sf_frequency_state_unit_key(mention)
+        for mention in selected
+        if _is_named_sf_mention(mention)
+    }
+    out: list[dict[str, Any]] = []
+    actions: list[dict[str, Any]] = []
+    for mention in selected:
+        if (
+            _is_generic_sf_mention(mention)
+            and _sf_frequency_state_unit_key(mention) in named_units
+        ):
+            actions.append(_action(SF_GENERIC_DUPLICATE_DROP, "drop", before=mention))
+            continue
+        out.append(mention)
+    return out, actions
+
+
+def _is_seizure_free_surface(mention: Mapping[str, Any]) -> bool:
+    if _entity(mention) != "SeizureFrequency":
+        return False
+    attrs = _attrs(mention)
+    if attrs.get("CUI") == _SEIZURE_FREE_CUI:
+        return True
+    phrase = normalize_phrase(str(mention.get("text") or ""))
+    cuiphrase = normalize_phrase(str(attrs.get("CUIPhrase") or ""))
+    return phrase == "seizure free" or cuiphrase == "seizure free"
+
+
+def _has_positive_sf_count(mention: Mapping[str, Any]) -> bool:
+    attrs = _attrs(mention)
+    for key in ("NumberOfSeizures", "LowerNumberOfSeizures", "UpperNumberOfSeizures"):
+        value = str(attrs.get(key) or "")
+        if not value or value == "0":
+            continue
+        try:
+            if float(value) > 0:
+                return True
+        except ValueError:
+            return True
+    return False
+
+
+def _drop_seizure_free_positive_count_sf(
+    selected: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    out: list[dict[str, Any]] = []
+    actions: list[dict[str, Any]] = []
+    for mention in selected:
+        if _is_seizure_free_surface(mention) and _has_positive_sf_count(mention):
+            actions.append(
+                _action(SF_SEIZURE_FREE_POSITIVE_COUNT_DROP, "drop", before=mention)
+            )
+            continue
+        out.append(mention)
+    return out, actions
+
+
+def _sf_inventory_unit_keys(mention: Mapping[str, Any]) -> tuple[Any, ...]:
+    annotation = annotation_from_mapping(dict(mention))
+    return tuple(_frequency_state_keys([annotation], "clinical_headline"))
+
+
+def _selected_sf_inventory_unit_keys(selected: Sequence[Mapping[str, Any]]) -> set[Any]:
+    keys: set[Any] = set()
+    for mention in selected:
+        if _entity(mention) == "SeizureFrequency":
+            keys.update(_sf_inventory_unit_keys(mention))
+    return keys
+
+
+def _evidence_on_frequency_section_line(evidence: str, note_text: str) -> bool:
+    for line in note_text.splitlines():
+        if evidence not in line:
+            continue
+        if "seizure type and frequency" in line.lower():
+            return True
+    return False
+
+
+def _sf_deferred_candidate_supported(
+    mention: Mapping[str, Any],
+    *,
+    note_text: str,
+) -> bool:
+    candidate_class = str(mention.get("candidate_class") or "")
+    evidence = str(mention.get("evidence") or "")
+    if candidate_class == SF_NAMED_TYPE:
+        return _evidence_on_frequency_section_line(evidence, note_text)
+    if candidate_class == SF_SEIZURE_FREE:
+        return _has_explicit_seizure_free_evidence(evidence)
+    if candidate_class == SF_HEADING_STATE:
+        return _frequency_state(_attrs(mention)) != "unknown"
+    return False
+
+
+def _should_promote_sf_deferred_candidate(
+    mention: Mapping[str, Any],
+    *,
+    selected_units: set[Any],
+) -> bool:
+    candidate_class = str(mention.get("candidate_class") or "")
+    unit_keys = _sf_inventory_unit_keys(mention)
+    if not unit_keys:
+        return False
+    if any(unit in selected_units for unit in unit_keys):
+        return False
+    if candidate_class == SF_NAMED_TYPE:
+        return True
+    state = _frequency_state(_attrs(mention))
+    return state != "unknown"
+
+
+def _promote_supported_sf_deferred(
+    selected: list[dict[str, Any]],
+    source: list[dict[str, Any]],
+    note_text: str,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    selected_units = _selected_sf_inventory_unit_keys(selected)
+    out = list(selected)
+    actions: list[dict[str, Any]] = []
+    for mention in source:
+        if str(mention.get("candidate_class") or "") not in _SF_DEFERRED_PROMOTION_CLASSES:
+            continue
+        if _entity(mention) != "SeizureFrequency":
+            continue
+        evidence = str(mention.get("evidence") or "")
+        if not evidence or evidence not in note_text:
+            continue
+        if not _sf_deferred_candidate_supported(mention, note_text=note_text):
+            continue
+        if not _should_promote_sf_deferred_candidate(
+            mention,
+            selected_units=selected_units,
+        ):
+            continue
+        addition = _with_action_provenance(
+            _copy_mention(mention),
+            rule_id=SF_SUPPORTED_STATE_PROMOTION,
+            action="add",
+        )
+        out.append(addition)
+        selected_units.update(_sf_inventory_unit_keys(addition))
+        actions.append(
+            _action(
+                SF_SUPPORTED_STATE_PROMOTION,
+                "add",
+                after=addition,
+            )
+        )
     return out, actions
 
 
@@ -945,17 +1550,26 @@ def _action(
 __all__ = [
     "ACCEPTED_SELECT_RULE_IDS",
     "CANDIDATE_SELECT_RULE_IDS",
+    "CROSS_FAMILY",
+    "RULE_FAMILY_BY_ID",
+    "flatten_family_select_plan",
     "DIAGNOSIS_EXPLICIT_HEADING_PHENOTYPE",
     "DIAGNOSIS_SOURCE_LOCAL_SPECIFICITY",
     "EMITTED_ACTIONS_BY_RULE_ID",
     "INVENTORY_KEEP_SOURCE_DIAGNOSIS",
     "INVENTORY_SELECT_RULE_IDS",
     "INVENTORY_WEAK_EPISODE_DROP",
+    "INVESTIGATION_SAME_RESULT_DEDUPE",
+    "RULES_ONLY_SELECT_RULE_IDS",
+    "SF_RATELESS_ANCHOR_DROP",
+    "SF_GENERIC_DUPLICATE_DROP",
+    "SF_SEIZURE_FREE_POSITIVE_COUNT_DROP",
     "PRESCRIPTION_ACTIVE_TITRATION",
     "PRESCRIPTION_EXACT_REGIMEN_DEDUPE",
     "PRESCRIPTION_LOCAL_REGIMEN_SCOPE",
     "SF_NAMED_TYPE_IDENTITY",
     "SF_RECENT_EVENT_OVER_HISTORICAL_FREE",
+    "SF_SUPPORTED_STATE_PROMOTION",
     "SF_TO_DIAGNOSIS_EXPLICIT_TYPE",
     "apply_select_rules",
 ]

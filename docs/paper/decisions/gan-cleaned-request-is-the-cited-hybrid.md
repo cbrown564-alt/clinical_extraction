@@ -1,7 +1,7 @@
 # Gan cleaned request is the source-near ablation
 
 Date: 2026-08-17
-Revised: 2026-08-22 (codebook extract is the cited Gan row)
+Revised: 2026-08-22 (codebook find is the cited Gan row)
 Status: current
 Owner: [paper methods](../methods.md)
 Related: [six-model roster](six-model-roster.md)
@@ -15,8 +15,9 @@ name, version string, or row index in the model-facing JSON. The
 repair stack is unchanged.
 
 This is not the cited paper Gan method. The cited row is cell 3:
-`gan_llm_extract` extract, then rule encode and rule
-select. See [six-model roster](six-model-roster.md).
+`gan_llm_extract` (bundled find-and-encode), then rule encode and
+rule select. Living rules find uses the source-near dialect of this
+ablation request. See [six-model roster](six-model-roster.md).
 
 The enveloped request is not this ablation either. Do not relabel those
 cells. Do not cite Sol 381/450, or the rest of that panel, as the
@@ -34,8 +35,8 @@ The three dropped fields do not instruct extraction. A paper method
 should not carry lab identity in the request. A rename of the
 enveloped cells would describe the wrong call.
 
-The codebook extract (`gan_llm_extract`) is the cited
-Gan row because extract already writes the designed form. The
+The codebook find (`gan_llm_extract`) is the cited
+Gan row because find already writes the designed form. The
 cleaned hybrid request keeps letter wording and scores lower; rule
 encode and rule select recover most of the score. That trade is the
 ablation story, not the headline method.

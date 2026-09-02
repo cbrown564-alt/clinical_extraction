@@ -37,11 +37,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_e
     StructuredRepairConfig,
     parse_structured_json_with_trace,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration import (
-    rules as gan_rules,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.runners.config import (
-    PipelineConfiguration,
+from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.three_stage import (
+    phase_c_candidate_config,
+    run_record_three_stage,
 )
 
 ROOT = discover_repo_root(start=Path(__file__))
@@ -218,6 +216,8 @@ def replay_gan_rungs(
     *,
     slug: str = "grok46",
     source: str = "living",
+    rows_path: Path | None = None,
+    out_dir: Path | None = None,
 ) -> dict[str, Any]:
     """Replay saved extract raw_output through rungs 1-4. No new model calls."""
 
@@ -227,7 +227,7 @@ def replay_gan_rungs(
         raise ValueError("Gan replay source must be living or ablation")
     holdout = holdout_is_aggregate_only(split)
     expected_n = gan_row_count(split)
-    raw_path = (
+    raw_path = rows_path or (
         gan_source_near_rows_path(slug, split)
         if source == "ablation"
         else gan_living_extract_rows_path(slug, split)
@@ -248,7 +248,7 @@ def replay_gan_rungs(
         raise RuntimeError(
             f"expected {expected_n} hybrid raw rows for {split}, found {len(raw_rows)}"
         )
-    rules_config = PipelineConfiguration(architecture="rules")
+    rules_config = phase_c_candidate_config()
     scored: list[dict[str, Any]] = []
     hops_rows: list[dict[str, Any]] = []
     event_id_changes = 0
@@ -257,15 +257,16 @@ def replay_gan_rungs(
     format_harms = 0
     for source_row_index, raw_output in sorted(raw_rows.items()):
         record = records[source_row_index]
-        rules_result = gan_rules.run_record(record, rules_config)
-        rules_scored = score_label(record, rules_result.output.final_value)
-        rules_scored["predicted_candidate_count"] = len(
-            rules_result.diagnostics.get("normalized_events") or []
-        )
+        rules_result = run_record_three_stage(record, rules_config)
+        rules_scored = score_label(record, rules_result.stops.select_label)
+        competing = [
+            entry for entry in rules_result.ledger if entry.drop_reason is None
+        ]
+        rules_scored["predicted_candidate_count"] = len(competing)
         rules_scored["predicted_candidate_count_by_stage"] = {
-            "extract": len(rules_result.diagnostics.get("candidate_events") or []),
-            "encode": len(rules_result.diagnostics.get("normalized_events") or []),
-            "select": len(rules_result.diagnostics.get("normalized_events") or []),
+            "extract": len(rules_result.ledger),
+            "encode": len(competing),
+            "select": len(competing),
         }
         by_rung: dict[str, dict[str, Any]] = {
             "rules_only": rules_scored
@@ -343,7 +344,7 @@ def replay_gan_rungs(
         ),
     )
     write_gan_rung_artifacts(
-        gan_rung_out_dir(slug, split),
+        out_dir or gan_rung_out_dir(slug, split),
         summary,
         scored=scored,
         hops=hops_rows,
@@ -378,14 +379,18 @@ def _comparison_summary(
         ),
         "format_only_check": {
             "repair_mode": GAN_REPAIR_MODE_FOR_RUNG["llm_encode"],
+            "select_repair_mode": GAN_REPAIR_MODE_FOR_RUNG["llm_select"],
             "selected_event_id_changes": event_id_changes,
             "predicted_kind_changes": kind_changes,
             "purist_rescues": format_rescues,
             "purist_harms": format_harms,
             "used_as_rung_3": event_id_changes == 0,
             "note": (
-                "Cell 3 is encode (selected-evidence derivation). It stays encode-only "
-                "only when selected_event_ids never change."
+                "Living cell 3 is codebook encode then rule select "
+                "(gan_rules_encode, llm_select_after_codebook). "
+                "selected_event_id_changes still records whether encode "
+                "kept the extract pick. Historical llm_encode is the "
+                "five-cell encode ablation, not this roster."
             ),
         },
         "generated_on": datetime.now(UTC).date().isoformat(),
@@ -408,11 +413,15 @@ def _rung_summary(rows: Sequence[Mapping[str, Any]], rung: str) -> dict[str, Any
     kinds = Counter(
         str(row["rungs"][rung].get("predicted_kind") or "unscorable") for row in rows
     )
+    purist_rate = round(purist / n, 4) if n else 0.0
+    pragmatic_rate = round(pragmatic / n, 4) if n else 0.0
     return {
         "purist_correct": purist,
-        "purist_accuracy": round(purist / n, 4) if n else 0.0,
+        "micro_f1": purist_rate,
+        "purist_accuracy": purist_rate,
         "pragmatic_correct": pragmatic,
-        "pragmatic_accuracy": round(pragmatic / n, 4) if n else 0.0,
+        "pragmatic_micro_f1": pragmatic_rate,
+        "pragmatic_accuracy": pragmatic_rate,
         "scorable": scorable,
         "predicted_kinds": dict(kinds),
         "predicted_candidate_count": sum(

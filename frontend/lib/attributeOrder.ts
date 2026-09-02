@@ -130,3 +130,19 @@ export function workbenchAttributeKeys(
     (key) => !isQualifierAttributeKey(key)
   );
 }
+
+/** Filled workbench attributes for an unscored inventory card.
+
+  Diagnosis keeps CUI, CUIPhrase, and DiagCategory. Seizure frequency keeps
+  the filled count and time fields. Prescription and Investigations keep every
+  filled workbench field.
+  */
+export function inventoryCardAttributeKeys(
+  attributes: Record<string, string>,
+  family?: string
+): string[] {
+  const filled = Object.entries(attributes).flatMap(([key, value]) =>
+    value ? [key] : []
+  );
+  return workbenchAttributeKeys(filled, family);
+}

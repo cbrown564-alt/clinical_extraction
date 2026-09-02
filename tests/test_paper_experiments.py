@@ -33,8 +33,14 @@ def test_paper_hybrid_fills_are_present() -> None:
             encoding="utf-8"
         )
     )
-    assert e5["dev140"]["four_family_headline_f1"] == 0.9042
-    assert e5["test60"]["four_family_headline_f1"] == 0.7937
+    assert e5["dev140"]["four_family_micro_f1"] == 0.9167
+    assert e5["test60"]["four_family_micro_f1"] == 0.8018
+    assert e5["dev140"]["stage_rungs"]["recognise"]["f1"] == 0.9012
+    assert e5["dev140"]["stage_rungs"]["encode"]["f1"] == 0.915
+    assert e5["dev140"]["stage_rungs"]["select"]["f1"] == 0.9167
+    assert e5["test60"]["stage_rungs"]["recognise"]["f1"] == 0.7934
+    assert e5["test60"]["stage_rungs"]["encode"]["f1"] == 0.7994
+    assert e5["test60"]["stage_rungs"]["select"]["f1"] == 0.8018
     test60 = json.loads(
         (ROOT / "paper_experiments/exect/exect_rules/test60.json").read_text(
             encoding="utf-8"
@@ -42,6 +48,7 @@ def test_paper_hybrid_fills_are_present() -> None:
     )
     assert test60["split"] == "test60"
     assert test60["row_policy"] == "aggregate_only"
+    assert test60["clinical_inventory"]["f1"] == 0.8018
 
 
 def test_roster_locks_the_living_six() -> None:
@@ -61,61 +68,88 @@ def test_inventory_covers_present_and_missing_cells() -> None:
     )
     assert inventory["schema_version"] == "paper_experiments.inventory.v1"
     present = {(row["model_slug"], row["method"], row["split"]) for row in inventory["present"]}
-    missing_methods = {row["method"] for row in inventory["missing"]}
     assert present == {
-        ("grok46", "exect_llm_pre_post", "dev140"),
-        ("grok46", "exect_llm_pre_post", "test60"),
-        ("gpt56luna", "exect_llm_pre_post", "dev140"),
-        ("gpt56luna", "exect_llm_pre_post", "test60"),
-        ("gemini37flash", "exect_llm_pre_post", "dev140"),
-        ("gemini37flash", "exect_llm_pre_post", "test60"),
-        ("gemini37flash", "exect_llm_extract", "dev140"),
-        ("gemini37flash", "exect_llm_extract", "test60"),
+        ("deepseek_v4_flash", "exect_llm_extract", "dev140"),
+        ("deepseek_v4_flash", "exect_llm_extract", "test60"),
         ("deepseek_v4_flash", "exect_llm_pre_post", "dev140"),
         ("deepseek_v4_flash", "exect_llm_pre_post", "test60"),
-        ("gemma4_26b", "exect_llm_pre_post", "dev140"),
-        ("gemma4_26b", "exect_llm_pre_post", "test60"),
-        ("gemma4_26b", "gan_llm_only", "dev750"),
-        ("gemma4_26b", "gan_llm_only", "test450"),
-        ("grok46", "gan_llm_only", "dev750"),
-        ("grok46", "gan_llm_only", "test450"),
-        ("grok46", "gan_llm_extract_raw", "dev750"),
-        ("grok46", "gan_llm_extract_raw", "test450"),
-        ("gpt56luna", "gan_llm_only", "dev750"),
-        ("gpt56luna", "gan_llm_extract_raw", "dev750"),
-        ("gpt56luna", "gan_llm_extract_raw", "test450"),
-        ("gemini37flash", "gan_llm_only", "dev750"),
-        ("gemini37flash", "gan_llm_only", "test450"),
-        ("gemini37flash", "gan_llm_extract_raw", "dev750"),
-        ("gemini37flash", "gan_llm_extract_raw", "test450"),
-        ("gemini37flash", "gan_llm_encode", "dev750"),
-        ("gemini37flash", "gan_llm_encode", "test450"),
-        ("gemini37flash", "gan_llm_select", "dev750"),
-        ("gemini37flash", "gan_llm_select", "test450"),
+        ("deepseek_v4_flash", "gan_llm_extract", "dev750"),
+        ("deepseek_v4_flash", "gan_llm_extract", "test450"),
         ("gemini37flash", "exect_llm_encode", "dev140"),
         ("gemini37flash", "exect_llm_encode", "test60"),
+        ("gemini37flash", "exect_llm_extract", "dev140"),
+        ("gemini37flash", "exect_llm_extract", "test60"),
+        ("gemini37flash", "exect_llm_pre_post", "dev140"),
+        ("gemini37flash", "exect_llm_pre_post", "test60"),
         ("gemini37flash", "exect_llm_select", "dev140"),
         ("gemini37flash", "exect_llm_select", "test60"),
-        ("deepseek_v4_flash", "gan_llm_extract", "test450"),
+        ("gemini37flash", "gan_llm_extract", "dev750"),
+        ("gemini37flash", "gan_llm_extract", "test450"),
+        ("gemini37flash", "gan_llm_encode", "dev750"),
+        ("gemini37flash", "gan_llm_encode", "test450"),
+        ("gemini37flash", "gan_llm_extract_raw", "dev750"),
+        ("gemini37flash", "gan_llm_extract_raw", "test450"),
+        ("gemini37flash", "gan_llm_only", "dev750"),
+        ("gemini37flash", "gan_llm_only", "test450"),
+        ("gemini37flash", "gan_llm_select", "dev750"),
+        ("gemini37flash", "gan_llm_select", "test450"),
+        ("gemini37flash", "gan_llm_select_from_extract", "dev750"),
+        ("gemini37flash", "gan_llm_select_from_extract", "test450"),
+        ("gemma4_26b", "exect_llm_extract", "dev140"),
+        ("gemma4_26b", "exect_llm_extract", "test60"),
+        ("gemma4_26b", "exect_llm_pre_post", "dev140"),
+        ("gemma4_26b", "exect_llm_pre_post", "test60"),
+        ("gemma4_26b", "gan_llm_extract", "dev750"),
+        ("gemma4_26b", "gan_llm_extract", "test450"),
+        ("gemma4_26b", "gan_llm_only", "dev750"),
+        ("gemma4_26b", "gan_llm_only", "test450"),
+        ("gpt56luna", "exect_llm_extract", "dev140"),
+        ("gpt56luna", "exect_llm_extract", "test60"),
+        ("gpt56luna", "exect_llm_pre_post", "dev140"),
+        ("gpt56luna", "exect_llm_pre_post", "test60"),
+        ("gpt56luna", "gan_llm_extract", "dev750"),
+        ("gpt56luna", "gan_llm_extract", "test450"),
+        ("gpt56luna", "gan_llm_extract_raw", "dev750"),
+        ("gpt56luna", "gan_llm_extract_raw", "test450"),
+        ("gpt56luna", "gan_llm_only", "dev750"),
+        ("grok46", "exect_llm_extract", "dev140"),
+        ("grok46", "exect_llm_extract", "test60"),
+        ("grok46", "exect_llm_pre_post", "dev140"),
+        ("grok46", "exect_llm_pre_post", "test60"),
+        ("grok46", "gan_llm_extract", "dev750"),
+        ("grok46", "gan_llm_extract", "test450"),
+        ("grok46", "gan_llm_extract_raw", "dev750"),
+        ("grok46", "gan_llm_extract_raw", "test450"),
+        ("grok46", "gan_llm_only", "dev750"),
+        ("grok46", "gan_llm_only", "test450"),
+        ("qwen38_27b", "exect_llm_extract", "dev140"),
+        ("qwen38_27b", "exect_llm_extract", "test60"),
+        ("qwen38_27b", "gan_llm_extract", "dev750"),
+        ("qwen38_27b", "gan_llm_extract", "test450"),
     }
-    assert "gan_llm_extract_raw" in missing_methods
     missing_cells = {
         (row.get("model_slug"), row["method"], row.get("split")) for row in inventory["missing"]
     }
+    leftover_deferred = next(
+        item
+        for item in inventory["deferred"]
+        if item.get("action") == "will_not_run_leftover_gan_extract"
+    )
+    assert leftover_deferred["do_not_start_now"] is True
     assert ("qwen38_27b", "exect_llm_pre_post", "dev140") in missing_cells
-    assert ("grok46", "exect_llm_extract", "dev140") in missing_cells
     assert ("gemini37flash", "exect_llm_extract", "dev140") not in missing_cells
-    assert ("gpt56luna", "exect_llm_extract", "dev140") in missing_cells
+    assert ("grok46", "exect_llm_extract", "dev140") not in missing_cells
+    assert ("gpt56luna", "exect_llm_extract", "dev140") not in missing_cells
     assert ("gemini37flash", "exect_llm_extract_and_select", "dev140") not in present
     assert ("grok46", "exect_llm_pre_post", "dev140") not in missing_cells
     assert ("grok46", "exect_llm_pre_post", "test60") not in missing_cells
     assert ("grok46", "gan_llm_only", "test450") not in missing_cells
     assert ("grok46", "gan_llm_extract_raw", "test450") not in missing_cells
-    assert ("deepseek_v4_flash", "gan_llm_only", "dev750") in missing_cells
-    assert ("deepseek_v4_flash", "gan_llm_extract_raw", "dev750") in missing_cells
-    assert ("qwen38_27b", "gan_llm_only", "dev750") in missing_cells
-    assert ("qwen38_27b", "gan_llm_extract_raw", "dev750") in missing_cells
-    assert ("gemma4_26b", "gan_llm_extract_raw", "dev750") in missing_cells
+    assert ("deepseek_v4_flash", "gan_llm_only", "dev750") not in missing_cells
+    assert ("deepseek_v4_flash", "gan_llm_extract_raw", "dev750") not in missing_cells
+    assert ("qwen38_27b", "gan_llm_only", "dev750") not in missing_cells
+    assert ("qwen38_27b", "gan_llm_extract_raw", "dev750") not in missing_cells
+    assert ("gemma4_26b", "gan_llm_extract_raw", "dev750") not in missing_cells
     assert ("grok46", "gan_llm_extract_raw", "dev750") not in missing_cells
     gan_fields = set(inventory["strip"]["gan"])
     exect_fields = set(inventory["strip"]["exect"])
@@ -166,14 +200,10 @@ def test_gan_dev750_panel_is_rectangular() -> None:
     }
     assert present == {
         (slug, method)
-        for slug in ("grok46", "gpt56luna", "gemini37flash")
+        for slug in LIVING_SLUGS
         for method in ("rules_only", "llm_extract", "llm_encode", "llm_select")
     }
-    assert pending == {
-        (slug, method)
-        for slug in ("deepseek_v4_flash", "qwen38_27b", "gemma4_26b")
-        for method in ("rules_only", "llm_extract", "llm_encode", "llm_select")
-    }
+    assert pending == set()
     for cell in panel["cells"]:
         if cell["status"] != "present":
             continue
@@ -186,7 +216,8 @@ def test_gan_dev750_panel_is_rectangular() -> None:
         assert len(rows) == 750
         first = rows[0]
         assert first["source_row_index"] is not None
-        assert cell["method"] in first["rungs"]
+        if "rungs" in first:
+            assert cell["method"] in first["rungs"]
 
 
 def test_exect_dev140_panel_is_rectangular() -> None:

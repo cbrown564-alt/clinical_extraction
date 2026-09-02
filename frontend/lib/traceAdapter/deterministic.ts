@@ -5,7 +5,7 @@ import type {
   TraceItem,
   RunNoteResponse,
 } from "../types";
-import { canonicalSemanticKind } from "./utils";
+import { buildScoreFromComparison, canonicalSemanticKind, monthlyFrequencyFromLabel } from "./utils";
 
 export function candidateToTraceItem(c: CandidateEvent): TraceItem {
   return {
@@ -41,7 +41,8 @@ export function normalisedToTraceItem(
     portability: candidate?.portability,
     metadata: {
       original_label: originalLabel,
-      monthly_frequency: Math.round(n.monthly_frequency),
+      monthly_frequency:
+        monthlyFrequencyFromLabel(n.normalized_label) ?? n.monthly_frequency,
       ...(n.validation_errors && n.validation_errors.length > 0
         ? { validation_errors: n.validation_errors }
         : {}),
@@ -81,9 +82,11 @@ export function adaptDeterministicTrace(
       selectedIds: d.final_selection.selected_event_ids,
     },
     score: {
-      predictedLabel: response.result.output.final_value,
-      goldLabel: response.gold_label,
-      match: response.result.output.final_value === response.gold_label,
+      ...buildScoreFromComparison(
+        undefined,
+        response.result.output.final_value,
+        response.gold_label
+      ),
       evidenceValid: d.evidence_valid,
     },
   };

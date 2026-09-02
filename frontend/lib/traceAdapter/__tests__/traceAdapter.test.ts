@@ -2,8 +2,14 @@
  * Unit tests for active trace adapters.
  */
 
-import { adaptTrace, isReplaySupported } from "../index";
-import type { FullRecordResponse, PipelineTrace } from "../../types";
+import { adaptDeterministicTrace, adaptTrace, isReplaySupported } from "../index";
+import { mapPragmatic, mapPurist } from "../ganCategories";
+import {
+  buildScoreFromComparison,
+  formatMonthlyFrequency,
+  monthlyFrequencyFromLabel,
+} from "../utils";
+import type { FullRecordResponse, PipelineTrace, RunNoteResponse } from "../../types";
 
 const mockRecord: FullRecordResponse = {
   split: "validation",
@@ -299,5 +305,130 @@ describe("adaptTrace", () => {
       beforeValue: "{'final_label': 'up to 4 per day'}",
     });
     expect(trace.repair?.afterValue).toContain('"final_label": "up to 4 per day"');
+  });
+});
+
+describe("Gan category mapping", () => {
+  it("matches the Python purist boundaries", () => {
+    expect(mapPurist(0)).toBe("currently_no_seizure");
+    expect(mapPurist(1000)).toBe("seizure_freq_unknown");
+    expect(mapPurist(0.16)).toBe("seizure_freq_1_per_yr");
+    expect(mapPurist(1.0)).toBe("seizure_freq_1_per_mon");
+    expect(mapPurist(4.0)).toBe("seizure_freq_1_per_week");
+    expect(mapPurist(30.0)).toBe("seizure_freq_1ormore_daily");
+  });
+
+  it("matches the Python pragmatic boundaries", () => {
+    expect(mapPragmatic(0)).toBe("currently_no_seizure");
+    expect(mapPragmatic(1000)).toBe("seizure_freq_unknown");
+    expect(mapPragmatic(1.0)).toBe("seizure_infrequent");
+    expect(mapPragmatic(2.0)).toBe("seizure_frequent");
+  });
+});
+
+describe("buildScoreFromComparison", () => {
+  it("matches on purist category, not exact gold label", () => {
+    const score = buildScoreFromComparison(
+      undefined,
+      "4 per week",
+      "multiple per week"
+    );
+
+    expect(score.predictedLabel).toBe("4 per week");
+    expect(score.goldLabel).toBe("multiple per week");
+    expect(score.predictedPuristCategory).toBe("seizure_freq_more1week_less1day");
+    expect(score.goldPuristCategory).toBe("seizure_freq_more1week_less1day");
+    expect(score.puristMatch).toBe(true);
+    expect(score.match).toBe(true);
+    expect(score.predictedPragmaticCategory).toBe("seizure_frequent");
+    expect(score.goldPragmaticCategory).toBe("seizure_frequent");
+    expect(score.pragmaticMatch).toBe(true);
+  });
+
+  it("keeps pragmatic separate when purist disagrees", () => {
+    const score = buildScoreFromComparison(
+      undefined,
+      "3 per 6 week",
+      "multiple per week"
+    );
+
+    expect(score.predictedPuristCategory).toBe("seizure_freq_more1mon_less1week");
+    expect(score.goldPuristCategory).toBe("seizure_freq_more1week_less1day");
+    expect(score.puristMatch).toBe(false);
+    expect(score.match).toBe(false);
+    expect(score.predictedPragmaticCategory).toBe("seizure_frequent");
+    expect(score.goldPragmaticCategory).toBe("seizure_frequent");
+    expect(score.pragmaticMatch).toBe(true);
+  });
+
+  it("prefers backend comparison flags and category names when present", () => {
+    const score = buildScoreFromComparison(
+      {
+        purist_correct: false,
+        pragmatic_correct: true,
+        predicted_purist_category: "seizure_freq_1_per_mon",
+        gold_purist_category: "seizure_freq_1_per_week",
+        predicted_pragmatic_category: "seizure_infrequent",
+        gold_pragmatic_category: "seizure_frequent",
+      },
+      "1 per month",
+      "1 per week"
+    );
+
+    expect(score.match).toBe(false);
+    expect(score.puristMatch).toBe(false);
+    expect(score.pragmaticMatch).toBe(true);
+    expect(score.predictedPuristCategory).toBe("seizure_freq_1_per_mon");
+    expect(score.goldPuristCategory).toBe("seizure_freq_1_per_week");
+    expect(score.predictedPragmaticCategory).toBe("seizure_infrequent");
+    expect(score.goldPragmaticCategory).toBe("seizure_frequent");
+  });
+});
+
+describe("adaptDeterministicTrace score", () => {
+  it("scores a live workbench run on purist, not gold label string", () => {
+    const response: RunNoteResponse = {
+      pipeline: "hybrid_structured_events",
+      source_row_index: 0,
+      gold_label: "multiple per week",
+      result: {
+        output: {
+          final_value: "3 per 6 week",
+          rationale: "dated count",
+          evidence: "three generalised tonic-clonic seizures in the last six weeks",
+        },
+        diagnostics: {
+          candidate_events: [],
+          normalized_events: [],
+          final_selection: {
+            final_label: "3 per 6 week",
+            rationale: "dated count",
+            evidence: "three generalised tonic-clonic seizures in the last six weeks",
+            monthly_frequency: 2.17,
+          },
+          evidence_valid: false,
+        },
+      },
+    };
+
+    const trace = adaptDeterministicTrace(response, mockRecord.note_text, 0, "validation");
+    expect(trace.score.match).toBe(false);
+    expect(trace.score.puristMatch).toBe(false);
+    expect(trace.score.pragmaticMatch).toBe(true);
+    expect(trace.score.predictedPuristCategory).toBe("seizure_freq_more1mon_less1week");
+    expect(trace.score.goldPuristCategory).toBe("seizure_freq_more1week_less1day");
+    expect(trace.score.evidenceValid).toBe(false);
+  });
+});
+
+describe("monthlyFrequencyFromLabel", () => {
+  it("keeps a 6-month window instead of collapsing it to 1 per month", () => {
+    expect(monthlyFrequencyFromLabel("3 per 6 month")).toBeCloseTo(0.5069, 3);
+    expect(formatMonthlyFrequency(monthlyFrequencyFromLabel("3 per 6 month")!)).toBe("0.5");
+  });
+
+  it("uses the Gan yearly-midpoint conversion for week labels", () => {
+    expect(monthlyFrequencyFromLabel("multiple per week")).toBeCloseTo(8.6905, 3);
+    expect(monthlyFrequencyFromLabel("1 per 2 to 3 week")).toBeCloseTo(1.8105, 3);
   });
 });

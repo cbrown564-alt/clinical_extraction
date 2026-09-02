@@ -53,8 +53,16 @@ def main() -> None:
             "split": "dev140 for ExECT; dev750 for Gan",
             "method_cell": "Gemini LLM candidate extraction / rules encoding / rules selection",
             "metric": "ExECT 4-family micro F1; Gan Purist accuracy",
-            "sample_count": "not computable without a current-cell scored artifact keyed to the predefined categories",
-            "reason": "Historical category-cut and case artifacts are available, but no current-Gemini preferred-cell category-keyed development score is available. Existing historical six-model cuts and other Gemini cells are not substituted.",
+            "sample_count": (
+                "not computable without a current-cell scored artifact "
+                "keyed to the predefined categories"
+            ),
+            "reason": (
+                "Historical category-cut and case artifacts are available, "
+                "but no current-Gemini preferred-cell category-keyed "
+                "development score is available. Existing historical "
+                "six-model cuts and other Gemini cells are not substituted."
+            ),
         },
         "source_audit": requested,
         "holdout_policy": "Aggregate-only; no held-out individual rows inspected or published.",

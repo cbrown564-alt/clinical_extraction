@@ -4,6 +4,7 @@ import re
 
 from .candidates import (
     CandidateKind,
+    DeferredDrop,
     RawCandidate,
 )
 from .deterministic_candidate_pruning import (
@@ -20,9 +21,6 @@ from .deterministic_frequency_tokens import (
 from .deterministic_frequency_tokens import (
     integer_number_token as _integer_number_token,
 )
-from .deterministic_frequency_tokens import (
-    rate_label as _rate_label,
-)
 from .deterministic_rate_distractors import (
     is_medication_or_dose_rate_distractor as _is_medication_or_dose_rate_distractor,
 )
@@ -37,8 +35,14 @@ from .deterministic_rate_terms import (
 from .deterministic_text import (
     clean_evidence as _clean_evidence,
 )
+from .find_encode import (
+    FindFact,
+    encode_find_fact,
+)
 from .rule_metadata import (
     AblationConfig,
+    Portability,
+    RuleGroup,
 )
 from .rules.diary import (
     DIARY_DATE_LIST_RULE,
@@ -119,6 +123,35 @@ from .temporal import (
 _RawCandidate = RawCandidate
 
 
+def _inline_rate(
+    *,
+    rule_id: str,
+    evidence: str,
+    count: str | None = None,
+    unit: str | None = None,
+    denominator: str | None = None,
+    custom_label: str | None = None,
+    deferred_drop: str | None = None,
+) -> _RawCandidate:
+    fact = FindFact(
+        kind=CandidateKind.FREQUENCY_RATE,
+        count=count,
+        unit=unit,
+        denominator=denominator,
+        custom_label=custom_label,
+    )
+    return _RawCandidate(
+        kind=CandidateKind.FREQUENCY_RATE,
+        label=encode_find_fact(fact),
+        evidence=evidence,
+        rule_id=rule_id,
+        rule_group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
+        portability=Portability.SEIZURE_FREQUENCY,
+        find_fact=fact,
+        deferred_drop=deferred_drop,
+    )
+
+
 def _extract_distributed_count_candidates(text: str) -> list[_RawCandidate]:
     candidates: list[_RawCandidate] = []
     event_description = r"[a-z][a-z-]*(?:\s+[a-z][a-z-]*){0,4}"
@@ -135,13 +168,11 @@ def _extract_distributed_count_candidates(text: str) -> list[_RawCandidate]:
         if count_a is None or count_b is None:
             continue
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(
-                    str(count_a + count_b),
-                    match.group("unit"),
-                    match.groupdict().get("denominator"),
-                ),
+            _inline_rate(
+                rule_id="rate.inline.distributed_count",
+                count=str(count_a + count_b),
+                unit=match.group("unit"),
+                denominator=match.groupdict().get("denominator"),
                 evidence=_clean_evidence(match.group(0)),
             )
         )
@@ -166,9 +197,11 @@ def extract_rate_candidates(
         evidence = _clean_evidence(match.group(0))
         count = "2" if "preceded by a cluster of absences" in evidence.lower() else "1"
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(count, match.group("unit"), match.group("denominator")),
+            _inline_rate(
+                rule_id="rate.inline.remission_then_breakthrough",
+                count=count,
+                unit=match.group("unit"),
+                denominator=match.group("denominator"),
                 evidence=evidence,
             )
         )
@@ -182,9 +215,10 @@ def extract_rate_candidates(
     )
     for match in no_seizures_then_count.finditer(text):
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(match.group("count"), match.group("unit")),
+            _inline_rate(
+                rule_id="rate.inline.no_seizures_then_count",
+                count=match.group("count"),
+                unit=match.group("unit"),
                 evidence=_clean_evidence(match.group(0)),
             )
         )
@@ -197,9 +231,10 @@ def extract_rate_candidates(
     )
     for match in no_seizures_then_single_breakthrough.finditer(text):
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label("1", match.group("unit")),
+            _inline_rate(
+                rule_id="rate.inline.no_seizures_then_single_breakthrough",
+                count="1",
+                unit=match.group("unit"),
                 evidence=_clean_evidence(match.group("evidence")),
             )
         )
@@ -217,13 +252,11 @@ def extract_rate_candidates(
         if precursor_count is None:
             continue
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(
-                    str(precursor_count * 2),
-                    match.group("unit"),
-                    match.group("denominator"),
-                ),
+            _inline_rate(
+                rule_id="rate.inline.no_seizures_then_precursor_count",
+                count=str(precursor_count * 2),
+                unit=match.group("unit"),
+                denominator=match.group("denominator"),
                 evidence=_clean_evidence(match.group("evidence")),
             )
         )
@@ -247,9 +280,11 @@ def extract_rate_candidates(
         if denominator is None:
             continue
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(match.group("count"), "month", str(denominator)),
+            _inline_rate(
+                rule_id="rate.inline.medication_withdrawal_burst",
+                count=match.group("count"),
+                unit="month",
+                denominator=str(denominator),
                 evidence=_clean_evidence(match.group("evidence")),
             )
         )
@@ -270,9 +305,11 @@ def extract_rate_candidates(
         if denominator is None:
             continue
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label("2", "month", str(denominator)),
+            _inline_rate(
+                rule_id="rate.inline.initial_second_event",
+                count="2",
+                unit="month",
+                denominator=str(denominator),
                 evidence=_clean_evidence(match.group("evidence")),
             )
         )
@@ -291,9 +328,11 @@ def extract_rate_candidates(
         if denominator is None:
             continue
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label("3", "month", str(denominator)),
+            _inline_rate(
+                rule_id="rate.inline.first_second_third_event",
+                count="3",
+                unit="month",
+                denominator=str(denominator),
                 evidence=_clean_evidence(match.group("evidence")),
             )
         )
@@ -329,9 +368,11 @@ def extract_rate_candidates(
         if additional_events is None:
             continue
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(str(1 + additional_events), "month", str(denominator)),
+            _inline_rate(
+                rule_id="rate.inline.first_next_event_narrative",
+                count=str(1 + additional_events),
+                unit="month",
+                denominator=str(denominator),
                 evidence=_clean_evidence(match.group("evidence")),
             )
         )
@@ -349,9 +390,11 @@ def extract_rate_candidates(
         if denominator is None:
             continue
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(match.group("count"), "month", str(denominator)),
+            _inline_rate(
+                rule_id="rate.inline.residual_jerks_since_date",
+                count=match.group("count"),
+                unit="month",
+                denominator=str(denominator),
                 evidence=_clean_evidence(match.group("evidence")),
             )
         )
@@ -369,9 +412,11 @@ def extract_rate_candidates(
         if denominator is None or total_count is None:
             continue
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(total_count, "month", str(denominator)),
+            _inline_rate(
+                rule_id="rate.inline.last_tonic_clonic_with_jerks",
+                count=total_count,
+                unit="month",
+                denominator=str(denominator),
                 evidence=_clean_evidence(match.group("evidence")),
             )
         )
@@ -389,9 +434,11 @@ def extract_rate_candidates(
         if denominator is None:
             continue
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(match.group("count"), "month", str(denominator)),
+            _inline_rate(
+                rule_id="rate.inline.clearly_witnessed_tonic_clonic_with_jerks",
+                count=match.group("count"),
+                unit="month",
+                denominator=str(denominator),
                 evidence=_clean_evidence(match.group("evidence")),
             )
         )
@@ -412,9 +459,11 @@ def extract_rate_candidates(
     )
     for match in cluster_spacing_interval.finditer(text):
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label("1", match.group("unit"), match.group("denominator")),
+            _inline_rate(
+                rule_id="rate.inline.cluster_spacing_interval",
+                count="1",
+                unit=match.group("unit"),
+                denominator=match.group("denominator"),
                 evidence=_clean_evidence(match.group("evidence")),
             )
         )
@@ -432,9 +481,11 @@ def extract_rate_candidates(
         if clinic_date is None:
             continue
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(match.group("count"), "month", str(clinic_date.month)),
+            _inline_rate(
+                rule_id="rate.inline.year_to_date_count",
+                count=match.group("count"),
+                unit="month",
+                denominator=str(clinic_date.month),
                 evidence=_clean_evidence(match.group("evidence")),
             )
         )
@@ -447,9 +498,11 @@ def extract_rate_candidates(
     )
     for match in remission_then_drop_and_jerks.finditer(text):
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label("2", "month", match.group("denominator")),
+            _inline_rate(
+                rule_id="rate.inline.remission_then_drop_and_jerks",
+                count="2",
+                unit="month",
+                denominator=match.group("denominator"),
                 evidence=_clean_evidence(match.group("evidence")),
             )
         )
@@ -470,9 +523,11 @@ def extract_rate_candidates(
         if evidence.lower().startswith("the last such episode"):
             evidence = evidence.removeprefix("The ")
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label("1", "month", str(denominator)),
+            _inline_rate(
+                rule_id="rate.inline.last_episode_since_date",
+                count="1",
+                unit="month",
+                denominator=str(denominator),
                 evidence=evidence,
             )
         )
@@ -523,13 +578,11 @@ def extract_rate_candidates(
     )
     for match in over_period.finditer(text):
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(
-                    match.group("count"),
-                    match.group("unit"),
-                    match.group("denominator"),
-                ),
+            _inline_rate(
+                rule_id="rate.inline.over_period",
+                count=match.group("count"),
+                unit=match.group("unit"),
+                denominator=match.group("denominator"),
                 evidence=_clean_evidence(match.group(0)),
             )
         )
@@ -554,9 +607,11 @@ def extract_rate_candidates(
     )
     for match in fortnight_interval.finditer(text):
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label("1", "week", "2"),
+            _inline_rate(
+                rule_id="rate.inline.fortnight_interval",
+                count="1",
+                unit="week",
+                denominator="2",
                 evidence=_clean_evidence(match.group(0)),
             )
         )
@@ -568,9 +623,11 @@ def extract_rate_candidates(
     )
     for match in second_period_interval.finditer(text):
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label("1", match.group("unit"), "2"),
+            _inline_rate(
+                rule_id="rate.inline.second_period_interval",
+                count="1",
+                unit=match.group("unit"),
+                denominator="2",
                 evidence=_clean_evidence(match.group(0)),
             )
         )
@@ -582,9 +639,11 @@ def extract_rate_candidates(
     )
     for match in median_interval.finditer(text):
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label("1", match.group("unit"), match.group("denominator")),
+            _inline_rate(
+                rule_id="rate.inline.median_interval",
+                count="1",
+                unit=match.group("unit"),
+                denominator=match.group("denominator"),
                 evidence=_clean_evidence(match.group(0)),
             )
         )
@@ -597,9 +656,11 @@ def extract_rate_candidates(
     )
     for match in ranging_interval.finditer(text):
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label("1", match.group("unit"), match.group("denominator")),
+            _inline_rate(
+                rule_id="rate.inline.ranging_interval",
+                count="1",
+                unit=match.group("unit"),
+                denominator=match.group("denominator"),
                 evidence=_clean_evidence(match.group(0)),
             )
         )
@@ -610,13 +671,19 @@ def extract_rate_candidates(
         re.IGNORECASE,
     )
     for match in standalone_every_interval.finditer(text):
-        if _has_historical_lead_in(text, match.start()):
-            continue
+        deferred_drop = (
+            DeferredDrop.HISTORICAL_LEAD_IN
+            if _has_historical_lead_in(text, match.start())
+            else None
+        )
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label("1", match.group("unit"), match.group("denominator")),
+            _inline_rate(
+                rule_id="rate.inline.standalone_every_interval",
+                count="1",
+                unit=match.group("unit"),
+                denominator=match.group("denominator"),
                 evidence=_clean_evidence(match.group(0)),
+                deferred_drop=deferred_drop,
             )
         )
 
@@ -627,9 +694,10 @@ def extract_rate_candidates(
     )
     for match in typical_month_single.finditer(text):
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(match.group("count"), "month"),
+            _inline_rate(
+                rule_id="rate.inline.typical_month_single",
+                count=match.group("count"),
+                unit="month",
                 evidence=_clean_evidence(match.group(0)),
             )
         )
@@ -641,9 +709,10 @@ def extract_rate_candidates(
     )
     for match in implicit_a_period.finditer(text):
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(match.group("count"), match.group("unit")),
+            _inline_rate(
+                rule_id="rate.inline.implicit_a_period",
+                count=match.group("count"),
+                unit=match.group("unit"),
                 evidence=_clean_evidence(match.group(0)),
             )
         )
@@ -654,13 +723,18 @@ def extract_rate_candidates(
         re.IGNORECASE,
     )
     for match in frequency_a_period.finditer(text):
-        if _is_medication_or_dose_rate_distractor(match, text):
-            continue
+        deferred_drop = (
+            DeferredDrop.MEDICATION_DOSE_DISTRACTOR
+            if _is_medication_or_dose_rate_distractor(match, text)
+            else None
+        )
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(match.group("count"), match.group("unit")),
+            _inline_rate(
+                rule_id="rate.inline.frequency_a_period",
+                count=match.group("count"),
+                unit=match.group("unit"),
                 evidence=_clean_evidence(match.group(0)),
+                deferred_drop=deferred_drop,
             )
         )
 
@@ -684,9 +758,9 @@ def extract_rate_candidates(
     )
     for match in qualitative_recent_multiple.finditer(text):
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label="multiple per week",
+            _inline_rate(
+                rule_id="rate.inline.qualitative_recent_multiple",
+                custom_label="multiple per week",
                 evidence=_clean_evidence(match.group("evidence")),
             )
         )
@@ -697,9 +771,9 @@ def extract_rate_candidates(
     )
     for match in most_nights_rate.finditer(text):
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label="multiple per week",
+            _inline_rate(
+                rule_id="rate.inline.most_nights_rate",
+                custom_label="multiple per week",
                 evidence=_clean_evidence(match.group("evidence")),
             )
         )
@@ -712,9 +786,9 @@ def extract_rate_candidates(
     )
     for match in near_daily_dozens_rate.finditer(text):
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label="multiple per day",
+            _inline_rate(
+                rule_id="rate.inline.near_daily_dozens_rate",
+                custom_label="multiple per day",
                 evidence=_clean_evidence(match.group("evidence")),
             )
         )
@@ -729,9 +803,9 @@ def extract_rate_candidates(
     )
     for match in most_weekdays_rate.finditer(text):
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label="multiple per week",
+            _inline_rate(
+                rule_id="rate.inline.most_weekdays_rate",
+                custom_label="multiple per week",
                 evidence=_clean_evidence(match.group("evidence")),
             )
         )
@@ -774,13 +848,11 @@ def extract_rate_candidates(
         if count_a is None or count_b is None:
             continue
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(
-                    str(count_a + count_b),
-                    match.group("unit"),
-                    match.group("denominator"),
-                ),
+            _inline_rate(
+                rule_id="rate.inline.period_first_distributed_count",
+                count=str(count_a + count_b),
+                unit=match.group("unit"),
+                denominator=match.group("denominator"),
                 evidence=_clean_evidence(match.group(0)),
             )
         )
@@ -801,9 +873,10 @@ def extract_rate_candidates(
         )
         for match in pattern.finditer(text):
             candidates.append(
-                _RawCandidate(
-                    kind=CandidateKind.FREQUENCY_RATE,
-                    label=_rate_label(match.group("count"), unit),
+                _inline_rate(
+                    rule_id="rate.inline.adjective_count_rate",
+                    count=match.group("count"),
+                    unit=unit,
                     evidence=_clean_evidence(match.group(0)),
                 )
             )
@@ -844,9 +917,9 @@ def extract_rate_candidates(
     )
     for match in last_prior_event_interval.finditer(text):
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label="1 per 1 to 2 month",
+            _inline_rate(
+                rule_id="rate.inline.last_prior_event_interval",
+                custom_label="1 per 1 to 2 month",
                 evidence=_clean_evidence(match.group(0)),
             )
         )
@@ -857,9 +930,10 @@ def extract_rate_candidates(
     )
     for match in bad_week_ceiling.finditer(text):
         candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(match.group("count"), "week"),
+            _inline_rate(
+                rule_id="rate.inline.bad_week_ceiling",
+                count=match.group("count"),
+                unit="week",
                 evidence=_clean_evidence(match.group(0)),
             )
         )

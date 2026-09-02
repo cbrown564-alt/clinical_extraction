@@ -11,9 +11,9 @@ Roster: [six-model roster](six-model-roster.md)
 Gemini 3.7 Flash is the cited paper model. Tables and “the paper may
 say” sentences use Gemini so the story stays on the method.
 
-The six-model comparison is cell 3 (LLM extract, rules encode, rules
+The six-model comparison is cell 3 (LLM find, rules encode, rules
 select). Companion rows exist only for that row. Existing Grok and
-other leftover extracts stay on disk as ablations or history. They
+other leftover find raws stay on disk as ablations or history. They
 are not the cited row. Do not start new Sol live calls.
 
 Later-stage model calls that replace rule encode or rule select —
@@ -21,16 +21,16 @@ Later-stage model calls that replace rule encode or rule select —
 calls — run on Gemini only, on both tasks. Do not start those calls
 on Grok, Luna, DeepSeek, Qwen, or Gemma.
 
-Rule replay of a saved extract raw (`llm_extract` / `llm_encode` /
+Rule replay of a saved find raw (`llm_extract` / `llm_encode` /
 `llm_select` stops) may still use any living model that already has
 that raw. That is not a new later-stage call.
 
 ## Why
 
-Gemini’s living extract / encode / select replay is in the same
+Gemini’s living find / encode / select replay is in the same
 band as Grok on the cells that exist, and it is the model that will
 pay for the missing half of the equation: LLM encode and LLM select
-on the same frozen extract. One cited model keeps the story on the
+on the same frozen find raw. One cited model keeps the story on the
 method. Restricting those new calls to Gemini keeps cost and
 attribution on the cited row.
 

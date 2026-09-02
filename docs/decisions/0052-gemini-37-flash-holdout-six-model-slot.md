@@ -19,10 +19,10 @@ aggregate-only:
 | ExECT `test60` | clinical fact F1 **0.8472** |
 | Gan `test450` | Purist **373/450 (0.8289)** |
 
-Sol remains the paper method-identity row. Selected Sol fills are
-ExECT `test60` **0.8302** and Gan `test450` **380/450**
-([decision 0050](0050-current-stack-hybrid-primary-fills.md) as of
-2026-08-14). The 13 Aug Gemini ExECT cells were 0.8952 / 0.8375.
+Sol and decision 0050 fills are historical. The living comparison is
+the Gemini 3.7 Flash five-cell (Gan `test450` cell 3 **373/450** is
+the codebook-then-rules select stop, not a Sol hybrid fill). The
+13 Aug Gemini ExECT cells were 0.8952 / 0.8375.
 
 GPT-4.1-mini remains historical Decision 0039 evidence (`selected: false`
 in `SOURCES.json`).
@@ -41,5 +41,5 @@ inspection. Not the published ExECT benchmark. Not clinical validation.
 
 - Protocol:
   [holdout protocol](../research/shared/six_model_gemini37flash_holdout_protocol_2026-08-13.md)
-- Living fills: `experiments/current_stack/latest/fills.json`
+- Historical current-stack fills: `experiments/current_stack/latest/fills.json`
 - Sidecars: `experiments/current_stack/sidecars/{gan_test450,exect_test60}/gemini37flash.jsonl`

@@ -141,7 +141,7 @@ function ganSlotMap(data: Record<string, unknown>): Record<string, string> {
   const out: Record<string, string> = {};
   for (const key of GAN_SLOT_KEYS) {
     const item = data[key];
-    if (item == null || item === "" || key === "evidence" || key === "raw_value") continue;
+    if (item == null || item === "" || key === "raw_value") continue;
     if (Array.isArray(item)) {
       const joined = item.map((entry) => String(entry)).filter(Boolean).join(", ");
       if (joined) out[key] = joined;

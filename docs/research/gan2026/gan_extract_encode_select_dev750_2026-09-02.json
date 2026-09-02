@@ -1,0 +1,45 @@
+{
+  "schema_version": "gan_extract_encode_select_dev750.v1",
+  "generated_on": "2026-09-02",
+  "dataset": "gan2026",
+  "split": "dev750",
+  "split_manifest": "gan2026_split_v1",
+  "n": 750,
+  "row_policy": "development_review_permitted",
+  "scorer": "purist",
+  "model": "gemini/gemini-3.7-flash",
+  "model_slug": "gemini37flash",
+  "method": "gan_llm_extract_encode_select",
+  "prompt_version": "gan_llm_extract_encode_select",
+  "protocol": "docs/research/gan2026/gan_extract_encode_select_dev750_protocol_2026-09-02.md",
+  "call_transport": "openrouter_batch",
+  "model_calls": 750,
+  "work_cell": "experiments/paper/gan_llm_extract_encode_select/gemini37flash/dev750/comparison.json",
+  "claim_boundary": "Development measurement of the frozen one-call prompt. Ablation, not Table 1. Not a holdout claim. Not cell 5.",
+  "comparators": {
+    "codebook_extract_purist": 585,
+    "living_cell5_purist": 640,
+    "cited_cell3_purist": 656,
+    "same_prompt_test450_purist": 392
+  },
+  "extract": {
+    "pragmatic": 0.9013,
+    "pragmatic_correct": 676,
+    "purist": 0.876,
+    "purist_correct": 657,
+    "call_failures": 0,
+    "parse_or_validation_failures": 0
+  },
+  "changed_rows_vs_codebook_extract": {
+    "harms": 18,
+    "rescues": 90,
+    "net": 72,
+    "paired_n": 750
+  },
+  "changed_rows_vs_living_cell5": {
+    "harms": 19,
+    "rescues": 36,
+    "net": 17,
+    "paired_n": 750
+  }
+}

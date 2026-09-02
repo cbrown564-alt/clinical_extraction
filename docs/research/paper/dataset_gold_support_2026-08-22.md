@@ -5,6 +5,8 @@ Status: development inventory; holdout aggregates only
 Owners: [methods](../../paper/methods.md),
 [score definitions](score_definitions_2026-08-17.md),
 [what the two golds already decided](what_the_two_golds_already_decided_2026-08-17.md)
+Letter-length and gold-density table:
+[dataset description](dataset_description_2026-08-26.md)
 Artifact: [dataset_gold_support_2026-08-22.json](dataset_gold_support_2026-08-22.json)
 Pin: `gold_headline_support()`;
 `tests/test_exectv2_scoring_headlines.py::test_four_family_gold_support_matches_headline_f1_denominator`
@@ -37,7 +39,7 @@ cited inventory recall denominator is **836** units on `dev140` and
 
 Predicted volume is now recorded separately from those golds: ExECT
 `predicted_mention_count` and Gan `predicted_candidate_count` at
-extract, encode, and select. That is a pipeline inventory, not a
+recognise, encode, and select. That is a pipeline inventory, not a
 second gold.
 
 ## ExECT gold (4-family micro F1 denominator)
@@ -100,7 +102,7 @@ numeric remainder into frequent (387 / 227) versus infrequent
 
 Paper summaries now carry:
 
-- ExECT: `predicted_mention_count` at extract / encode / select
+- ExECT: `predicted_mention_count` at recognise / encode / select
 - Gan: `predicted_candidate_count` at those same stops
 
 Rung replay also writes `gold_count` and `pred_count` next to F1.
@@ -194,7 +196,7 @@ supplement if space allows.
 11. **Stage volume as a reported secondary.** Once five-cell
     replays write `predicted_mention_count` /
     `predicted_candidate_count`, a Methods sentence can say that
-    extract / encode / select ledger size is recorded so a score
+    recognise / encode / select ledger size is recorded so a score
     change can be read as grow, shrink, or rewrite.
 
 ### Keep out of Methods, or keep diagnostic-only
@@ -217,7 +219,7 @@ The gold counts come from `gold_headline_support()` (Compact/headline
 
 ## Next
 
-1. On the next no-call five-cell or rung replay, persist extract /
+1. On the next no-call five-cell or rung replay, persist recognise /
    encode / select volume on the comparison artifacts.
 2. When drafting Methods, add the denominator table and the Gan
    kind / sentinel sentence. Do not wait for predicted volumes.

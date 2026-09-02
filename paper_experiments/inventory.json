@@ -7,18 +7,15 @@
       "models": [
         "grok46",
         "gpt56luna",
-        "gemini37flash",
-        "deepseek_v4_flash",
-        "qwen38_27b",
-        "gemma4_26b"
+        "gemini37flash"
       ],
-      "note": "Omitted event kind schema fill. Replay saved raw_output only. Living scores predate this repair. Holdout remains aggregate-only. Source-near ablation replay only; not six-model cell 3. Do not start now.",
+      "note": "Omitted event kind schema fill. Replayed saved raw_output only on existing Gemini / Grok / Luna cells. Holdout remains aggregate-only. Source-near ablation only; not six-model cell 3.",
       "reason": "schema_repair.omitted_event_kind",
       "splits": [
         "dev750",
         "test450"
       ],
-      "status": "later"
+      "status": "done"
     },
     {
       "action": "holdout_rung_replay",
@@ -26,9 +23,28 @@
       "command": "python -m clinical_extraction.paper replay-rungs --method gan_llm_extract_raw --model grok46 --split test450",
       "do_not_start_now": true,
       "method": "gan_llm_extract_raw",
-      "note": "Aggregate rungs 1-4 from saved hybrid raw. Writes comparison.json only. No scored.jsonl or hops.jsonl. Rung 5 is a new request and is not this replay. Do not start until the omitted-kind reparse.",
+      "note": "Aggregate rungs 1-4 from saved hybrid raw on existing Gemini / Grok / Luna cells. Holdout writes comparison.json only. Rung 5 is a new request and is not this replay.",
       "split": "test450",
-      "status": "later"
+      "status": "done"
+    },
+    {
+      "action": "will_not_run_leftover_gan_extract",
+      "do_not_start_now": true,
+      "methods": [
+        "gan_llm_extract_raw",
+        "gan_llm_only"
+      ],
+      "models": [
+        "deepseek_v4_flash",
+        "qwen38_27b",
+        "gemma4_26b"
+      ],
+      "note": "Do not start leftover source-near or llm-only Gan extracts. Existing Gemini / Grok / Luna gan_llm_extract_raw cells are the ablation set. Not six-model cell 3.",
+      "splits": [
+        "dev750",
+        "test450"
+      ],
+      "status": "deferred"
     }
   ],
   "missing": [
@@ -39,124 +55,6 @@
       "n": 59,
       "note": "Aggregate-only after dev140 completes. Pre-post ablation; not six-model cell 3.",
       "primary": false,
-      "split": "test60",
-      "status": "missing"
-    },
-    {
-      "method": "gan_llm_only",
-      "model": "ollama_chat/qwen3.8:27b",
-      "model_slug": "qwen38_27b",
-      "n": 450,
-      "note": "Different prompt ablation. Not six-model cell 3. Aggregate-only.",
-      "primary": false,
-      "split": "test450",
-      "status": "missing"
-    },
-    {
-      "method": "gan_llm_only",
-      "model": "deepseek/deepseek-v4-flash",
-      "model_slug": "deepseek_v4_flash",
-      "n": 750,
-      "note": "Source-near or leftover Gan extract. Not a panel column. Promote when the run finishes.",
-      "split": "dev750",
-      "status": "missing"
-    },
-    {
-      "method": "gan_llm_extract_raw",
-      "model": "deepseek/deepseek-v4-flash",
-      "model_slug": "deepseek_v4_flash",
-      "n": 750,
-      "note": "Source-near or leftover Gan extract. Not a panel column. Promote when the run finishes.",
-      "split": "dev750",
-      "status": "missing"
-    },
-    {
-      "method": "gan_llm_only",
-      "model": "ollama_chat/qwen3.8:27b",
-      "model_slug": "qwen38_27b",
-      "n": 750,
-      "note": "Source-near or leftover Gan extract. Not a panel column. Promote when the run finishes.",
-      "split": "dev750",
-      "status": "missing"
-    },
-    {
-      "method": "gan_llm_extract_raw",
-      "model": "ollama_chat/qwen3.8:27b",
-      "model_slug": "qwen38_27b",
-      "n": 750,
-      "note": "Source-near or leftover Gan extract. Not a panel column. Promote when the run finishes.",
-      "split": "dev750",
-      "status": "missing"
-    },
-    {
-      "method": "gan_llm_extract_raw",
-      "model": "ollama_chat/gemma4:26b",
-      "model_slug": "gemma4_26b",
-      "n": 750,
-      "note": "Source-near or leftover Gan extract. Not a panel column. Promote when the run finishes.",
-      "split": "dev750",
-      "status": "missing"
-    },
-    {
-      "method": "exect_llm_extract",
-      "model": "xai/grok-4.6",
-      "model_slug": "grok46",
-      "n": 140,
-      "note": "Six-model cell-3 extract (ExECT). Inventory prompt and inventory F1.",
-      "primary": true,
-      "split": "dev140",
-      "status": "missing"
-    },
-    {
-      "method": "exect_llm_extract",
-      "model": "xai/grok-4.6",
-      "model_slug": "grok46",
-      "n": 59,
-      "note": "Six-model cell-3 extract (ExECT). Inventory prompt and inventory F1.",
-      "primary": true,
-      "row_policy": "aggregate_only",
-      "split": "test60",
-      "status": "missing"
-    },
-    {
-      "method": "exect_llm_extract",
-      "model": "openai/gpt-5.6-luna",
-      "model_slug": "gpt56luna",
-      "n": 140,
-      "note": "Six-model cell-3 extract (ExECT). Inventory prompt and inventory F1.",
-      "primary": true,
-      "split": "dev140",
-      "status": "missing"
-    },
-    {
-      "method": "exect_llm_extract",
-      "model": "openai/gpt-5.6-luna",
-      "model_slug": "gpt56luna",
-      "n": 59,
-      "note": "Six-model cell-3 extract (ExECT). Inventory prompt and inventory F1.",
-      "primary": true,
-      "row_policy": "aggregate_only",
-      "split": "test60",
-      "status": "missing"
-    },
-    {
-      "method": "exect_llm_extract",
-      "model": "deepseek/deepseek-v4-flash",
-      "model_slug": "deepseek_v4_flash",
-      "n": 140,
-      "note": "Six-model cell-3 extract (ExECT). Inventory prompt and inventory F1.",
-      "primary": true,
-      "split": "dev140",
-      "status": "missing"
-    },
-    {
-      "method": "exect_llm_extract",
-      "model": "deepseek/deepseek-v4-flash",
-      "model_slug": "deepseek_v4_flash",
-      "n": 59,
-      "note": "Six-model cell-3 extract (ExECT). Inventory prompt and inventory F1.",
-      "primary": true,
-      "row_policy": "aggregate_only",
       "split": "test60",
       "status": "missing"
     },
@@ -337,90 +235,6 @@
       "replay_alias": "gan_llm_select",
       "row_policy": "aggregate_only",
       "split": "test450",
-      "status": "present"
-    },
-    {
-      "empty_raw_count": 0,
-      "method": "gan_llm_only",
-      "model": "gemini/gemini-3.7-flash",
-      "model_slug": "gemini37flash",
-      "n": 750,
-      "path": "paper_experiments/gan/gan_llm_only/gemini37flash/dev750/rows.jsonl",
-      "replay_alias": "gan_llm_only",
-      "row_policy": "development_review_permitted",
-      "split": "dev750",
-      "status": "present"
-    },
-    {
-      "empty_raw_count": 0,
-      "method": "gan_llm_extract_raw",
-      "model": "gemini/gemini-3.7-flash",
-      "model_slug": "gemini37flash",
-      "n": 750,
-      "path": "paper_experiments/gan/gan_llm_extract_raw/gemini37flash/dev750/rows.jsonl",
-      "replay_alias": "gan_llm_with_rules",
-      "row_policy": "development_review_permitted",
-      "split": "dev750",
-      "status": "present"
-    },
-    {
-      "empty_raw_count": 0,
-      "method": "gan_llm_only",
-      "model": "xai/grok-4.6",
-      "model_slug": "grok46",
-      "n": 750,
-      "path": "paper_experiments/gan/gan_llm_only/grok46/dev750/rows.jsonl",
-      "replay_alias": "gan_llm_only",
-      "row_policy": "development_review_permitted",
-      "split": "dev750",
-      "status": "present"
-    },
-    {
-      "empty_raw_count": 0,
-      "method": "gan_llm_extract_raw",
-      "model": "xai/grok-4.6",
-      "model_slug": "grok46",
-      "n": 750,
-      "path": "paper_experiments/gan/gan_llm_extract_raw/grok46/dev750/rows.jsonl",
-      "replay_alias": "gan_llm_with_rules",
-      "row_policy": "development_review_permitted",
-      "split": "dev750",
-      "status": "present"
-    },
-    {
-      "empty_raw_count": 0,
-      "method": "gan_llm_only",
-      "model": "openai/gpt-5.6-luna",
-      "model_slug": "gpt56luna",
-      "n": 750,
-      "path": "paper_experiments/gan/gan_llm_only/gpt56luna/dev750/rows.jsonl",
-      "replay_alias": "gan_llm_only",
-      "row_policy": "development_review_permitted",
-      "split": "dev750",
-      "status": "present"
-    },
-    {
-      "empty_raw_count": 0,
-      "method": "gan_llm_extract_raw",
-      "model": "openai/gpt-5.6-luna",
-      "model_slug": "gpt56luna",
-      "n": 750,
-      "path": "paper_experiments/gan/gan_llm_extract_raw/gpt56luna/dev750/rows.jsonl",
-      "replay_alias": "gan_llm_with_rules",
-      "row_policy": "development_review_permitted",
-      "split": "dev750",
-      "status": "present"
-    },
-    {
-      "empty_raw_count": 8,
-      "method": "gan_llm_only",
-      "model": "ollama_chat/gemma4:26b",
-      "model_slug": "gemma4_26b",
-      "n": 750,
-      "path": "paper_experiments/gan/gan_llm_only/gemma4_26b/dev750/rows.jsonl",
-      "replay_alias": "gan_llm_only",
-      "row_policy": "development_review_permitted",
-      "split": "dev750",
       "status": "present"
     },
     {
@@ -673,6 +487,270 @@
       "replay_alias": "gan_llm_extract",
       "row_policy": "aggregate_only",
       "split": "test450",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "exect_llm_extract",
+      "model": "xai/grok-4.6",
+      "model_slug": "grok46",
+      "n": 140,
+      "path": "paper_experiments/exect/exect_llm_extract/grok46/dev140/structured.jsonl",
+      "replay_alias": "exect_llm_extract",
+      "row_policy": "development_review_permitted",
+      "split": "dev140",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "exect_llm_extract",
+      "model": "xai/grok-4.6",
+      "model_slug": "grok46",
+      "n": 59,
+      "path": "paper_experiments/exect/exect_llm_extract/grok46/test60/structured.jsonl",
+      "replay_alias": "exect_llm_extract",
+      "row_policy": "aggregate_only",
+      "split": "test60",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "exect_llm_extract",
+      "model": "openai/gpt-5.6-luna",
+      "model_slug": "gpt56luna",
+      "n": 140,
+      "path": "paper_experiments/exect/exect_llm_extract/gpt56luna/dev140/structured.jsonl",
+      "replay_alias": "exect_llm_extract",
+      "row_policy": "development_review_permitted",
+      "split": "dev140",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "exect_llm_extract",
+      "model": "openai/gpt-5.6-luna",
+      "model_slug": "gpt56luna",
+      "n": 59,
+      "path": "paper_experiments/exect/exect_llm_extract/gpt56luna/test60/structured.jsonl",
+      "replay_alias": "exect_llm_extract",
+      "row_policy": "aggregate_only",
+      "split": "test60",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "exect_llm_extract",
+      "model": "deepseek/deepseek-v4-flash",
+      "model_slug": "deepseek_v4_flash",
+      "n": 140,
+      "path": "paper_experiments/exect/exect_llm_extract/deepseek_v4_flash/dev140/structured.jsonl",
+      "replay_alias": "exect_llm_extract",
+      "row_policy": "development_review_permitted",
+      "split": "dev140",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "exect_llm_extract",
+      "model": "deepseek/deepseek-v4-flash",
+      "model_slug": "deepseek_v4_flash",
+      "n": 59,
+      "path": "paper_experiments/exect/exect_llm_extract/deepseek_v4_flash/test60/structured.jsonl",
+      "replay_alias": "exect_llm_extract",
+      "row_policy": "aggregate_only",
+      "split": "test60",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "gan_llm_extract",
+      "model": "gemini/gemini-3.7-flash",
+      "model_slug": "gemini37flash",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_extract/gemini37flash/dev750/rows.jsonl",
+      "replay_alias": "gan_llm_extract_label_forms",
+      "row_policy": "development_review_permitted",
+      "split": "dev750",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "gan_llm_extract",
+      "model": "gemini/gemini-3.7-flash",
+      "model_slug": "gemini37flash",
+      "n": 450,
+      "path": "paper_experiments/gan/gan_llm_extract/gemini37flash/test450/rows.jsonl",
+      "replay_alias": "gan_llm_extract_label_forms",
+      "row_policy": "aggregate_only",
+      "split": "test450",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "gan_llm_extract",
+      "model": "xai/grok-4.6",
+      "model_slug": "grok46",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_extract/grok46/dev750/rows.jsonl",
+      "replay_alias": "gan_llm_extract",
+      "row_policy": "development_review_permitted",
+      "split": "dev750",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "gan_llm_extract",
+      "model": "xai/grok-4.6",
+      "model_slug": "grok46",
+      "n": 450,
+      "path": "paper_experiments/gan/gan_llm_extract/grok46/test450/rows.jsonl",
+      "replay_alias": "gan_llm_extract",
+      "row_policy": "aggregate_only",
+      "split": "test450",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "gan_llm_extract",
+      "model": "openai/gpt-5.6-luna",
+      "model_slug": "gpt56luna",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_extract/gpt56luna/dev750/rows.jsonl",
+      "replay_alias": "gan_llm_extract_label_forms",
+      "row_policy": "development_review_permitted",
+      "split": "dev750",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "gan_llm_extract",
+      "model": "openai/gpt-5.6-luna",
+      "model_slug": "gpt56luna",
+      "n": 450,
+      "path": "paper_experiments/gan/gan_llm_extract/gpt56luna/test450/rows.jsonl",
+      "replay_alias": "gan_llm_extract_label_forms",
+      "row_policy": "aggregate_only",
+      "split": "test450",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "gan_llm_extract",
+      "model": "deepseek/deepseek-v4-flash",
+      "model_slug": "deepseek_v4_flash",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_extract/deepseek_v4_flash/dev750/rows.jsonl",
+      "replay_alias": "gan_llm_extract",
+      "row_policy": "development_review_permitted",
+      "split": "dev750",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "gan_llm_only",
+      "model": "gemini/gemini-3.7-flash",
+      "model_slug": "gemini37flash",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_only/gemini37flash/dev750/rows.jsonl",
+      "replay_alias": "gan_llm_only",
+      "row_policy": "development_review_permitted",
+      "split": "dev750",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "gan_llm_extract_raw",
+      "model": "gemini/gemini-3.7-flash",
+      "model_slug": "gemini37flash",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_extract_raw/gemini37flash/dev750/rows.jsonl",
+      "replay_alias": "gan_llm_with_rules",
+      "row_policy": "development_review_permitted",
+      "split": "dev750",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "gan_llm_only",
+      "model": "xai/grok-4.6",
+      "model_slug": "grok46",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_only/grok46/dev750/rows.jsonl",
+      "replay_alias": "gan_llm_only",
+      "row_policy": "development_review_permitted",
+      "split": "dev750",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "gan_llm_extract_raw",
+      "model": "xai/grok-4.6",
+      "model_slug": "grok46",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_extract_raw/grok46/dev750/rows.jsonl",
+      "replay_alias": "gan_llm_with_rules",
+      "row_policy": "development_review_permitted",
+      "split": "dev750",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "gan_llm_only",
+      "model": "openai/gpt-5.6-luna",
+      "model_slug": "gpt56luna",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_only/gpt56luna/dev750/rows.jsonl",
+      "replay_alias": "gan_llm_only",
+      "row_policy": "development_review_permitted",
+      "split": "dev750",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "gan_llm_extract_raw",
+      "model": "openai/gpt-5.6-luna",
+      "model_slug": "gpt56luna",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_extract_raw/gpt56luna/dev750/rows.jsonl",
+      "replay_alias": "gan_llm_with_rules",
+      "row_policy": "development_review_permitted",
+      "split": "dev750",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 8,
+      "method": "gan_llm_only",
+      "model": "ollama_chat/gemma4:26b",
+      "model_slug": "gemma4_26b",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_only/gemma4_26b/dev750/rows.jsonl",
+      "replay_alias": "gan_llm_only",
+      "row_policy": "development_review_permitted",
+      "split": "dev750",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "gan_llm_select_from_extract",
+      "model": "gemini/gemini-3.7-flash",
+      "model_slug": "gemini37flash",
+      "n": 450,
+      "path": "paper_experiments/gan/gan_llm_select_from_extract/gemini37flash/test450/rows.jsonl",
+      "replay_alias": "gan_llm_select_policy_examples",
+      "row_policy": "aggregate_only",
+      "split": "test450",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 0,
+      "method": "gan_llm_select_from_extract",
+      "model": "gemini/gemini-3.7-flash",
+      "model_slug": "gemini37flash",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_select_from_extract/gemini37flash/dev750/rows.jsonl",
+      "replay_alias": "gan_llm_select_policy_examples",
+      "row_policy": "development_review_permitted",
+      "split": "dev750",
       "status": "present"
     }
   ],

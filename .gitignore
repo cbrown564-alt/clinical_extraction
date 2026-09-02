@@ -38,7 +38,6 @@ node_modules/
 # Scratch run scripts/outputs under scripts/ (underscore-prefixed by
 # convention) and captured run logs/streams.
 scripts/_*
-scripts/*.log
 scripts/*.stderr
 scripts/*.stdout
 scripts/*_stderr.txt
@@ -54,15 +53,14 @@ mlflow.db-*
 scratch/*
 output/
 
-# Run-log captures not matched by experiments/*.log (e.g. *.stderr.log suffix).
+# Generated logs (LaTeX, scripts, supporting-material builds).
+*.log
 *.stderr.log
 *.stdout.log
 *.err.log
 *.out.log
-/*.log
 
 # LaTeX build artifacts (checked-in .tex and intentional .pdf sources remain tracked).
-paper/draft/*.log
 *.aux
 *.fdb_latexmk
 *.fls

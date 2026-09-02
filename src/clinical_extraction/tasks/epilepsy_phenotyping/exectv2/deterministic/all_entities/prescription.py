@@ -13,6 +13,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.drug_lexicon import (
     DRUG_SURFACE_ALIASES,
+    EXTERNAL_ASM_BRAND_ALIASES,
+    EXTERNAL_ASM_GENERICS,
     resolve_drug_surface,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import PRESCRIPTION
@@ -342,6 +344,162 @@ def _future_plan_before_medication(evidence: str) -> bool:
     if first_med is None:
         return False
     return _PRESCRIPTION_FUTURE_LEFT_CONTEXT.search(evidence[: first_med.start()]) is not None
+
+
+# --- Recall-first prescription recogniser (2026-08-27 restructure) ---
+
+_EXTERNAL_ASM_PATTERN = re.compile(
+    r"\b("
+    + "|".join(
+        re.escape(name)
+        for name in sorted(
+            [*EXTERNAL_ASM_GENERICS, *EXTERNAL_ASM_BRAND_ALIASES],
+            key=len,
+            reverse=True,
+        )
+    )
+    + r")\b",
+    re.IGNORECASE,
+)
+_RESCUE_CONTEXT = re.compile(r"\bbuccal\b|\brescue\b", re.IGNORECASE)
+_BULLET_LINE = re.compile(r"^\s*(?:[•\-*\u2022]|\d+\.)\s*")
+_KNOWN_DRUG_VOCABULARY: tuple[str, ...] = tuple(
+    sorted(
+        {
+            *(name.lower() for name in PRESCRIPTION_SURFACE_FORMS if " " not in name),
+            *EXTERNAL_ASM_GENERICS,
+        }
+    )
+)
+_TYPO_TOKEN = re.compile(r"\b[a-z]{7,}\b", re.IGNORECASE)
+
+
+def _within_edit_distance_one(word: str, target: str) -> bool:
+    if word == target:
+        return True
+    len_diff = len(word) - len(target)
+    if abs(len_diff) > 1:
+        return False
+    if len_diff == 0:
+        return sum(a != b for a, b in zip(word, target, strict=True)) == 1
+    shorter, longer = (word, target) if len_diff < 0 else (target, word)
+    for index in range(len(longer)):
+        if shorter == longer[:index] + longer[index + 1 :]:
+            return True
+    return False
+
+
+def _typo_drug_matches(text: str) -> tuple[tuple[re.Match[str], str], ...]:
+    """Word tokens one edit away from a known ASM generic (recall-first)."""
+
+    matched: list[tuple[re.Match[str], str]] = []
+    for token_match in _TYPO_TOKEN.finditer(text):
+        word = token_match.group(0).lower()
+        if word in _KNOWN_DRUG_VOCABULARY:
+            continue
+        for target in _KNOWN_DRUG_VOCABULARY:
+            if _within_edit_distance_one(word, target):
+                matched.append((token_match, target))
+                break
+    return tuple(matched)
+
+
+def _line_bounds(text: str, position: int) -> tuple[int, int]:
+    start = text.rfind("\n", 0, position) + 1
+    end = text.find("\n", position)
+    return start, end if end != -1 else len(text)
+
+
+def _recall_first_rx_attrs(surface: str) -> dict[str, str]:
+    key = resolve_drug_surface(surface)
+    key = EXTERNAL_ASM_BRAND_ALIASES.get(key, key)
+    entry = _MEDICATION_LEXICON.get(key)
+    if entry is not None:
+        return attach_benchmark_concept({}, entry, canonical_key="DrugName")
+    return {"DrugName": key.replace(" ", "-")}
+
+
+def recall_first_rx_candidates(note_text: str):
+    """Recall-first prescriptions the gated direct path misses.
+
+    Relaxed line-scoped parse for every known, external, or typo-matched
+    drug surface without a direct mention: dose plus frequency anywhere on
+    the line, a list-item default frequency of once daily, and a rescue
+    ``As_Required`` for dose-less buccal/rescue mentions. No plan/negation
+    context gates; Select owns precision.
+    """
+
+    from ..find_ledger import RX_RECALL_EXPANSION, FindCandidate
+
+    covered = {
+        mention.attributes.get("DrugName")
+        for mention in _extract_prescriptions(note_text)
+    }
+    seen: set[str] = {name for name in covered if name}
+    candidates: list[FindCandidate] = []
+
+    drug_matches: list[tuple[re.Match[str], str]] = [
+        (match, match.group(1))
+        for match in (*_MEDICATION_PATTERN.finditer(note_text),
+                      *_EXTERNAL_ASM_PATTERN.finditer(note_text))
+        if not _is_parenthetical_alias(note_text, match)
+    ]
+    drug_matches.extend(_typo_drug_matches(note_text))
+    drug_starts = sorted(match.start() for match, _surface in drug_matches)
+
+    for match, surface in drug_matches:
+        base_attrs = _recall_first_rx_attrs(surface)
+        drug = base_attrs["DrugName"]
+        if drug in seen:
+            continue
+        line_start, line_end = _line_bounds(note_text, match.start())
+        line = note_text[line_start:line_end]
+        region_end = min(
+            (start for start in drug_starts if start > match.end() and start < line_end),
+            default=line_end,
+        )
+        region = note_text[match.end() : region_end]
+        dose = _DOSE_PATTERN.search(region)
+        frequency = _frequency_from_text(region)
+        attrs: dict[str, str] | None = None
+        if dose is not None and frequency:
+            attrs = {
+                **base_attrs,
+                "DrugDose": dose.group(1),
+                "DoseUnit": _canonical_dose_unit(dose.group(2)),
+                "Frequency": frequency,
+            }
+        elif dose is not None and _BULLET_LINE.match(line):
+            attrs = {
+                **base_attrs,
+                "DrugDose": dose.group(1),
+                "DoseUnit": _canonical_dose_unit(dose.group(2)),
+                "Frequency": "1",
+            }
+        elif dose is None and _RESCUE_CONTEXT.search(line):
+            attrs = {**base_attrs, "Frequency": "As_Required"}
+        if attrs is None:
+            continue
+        seen.add(drug)
+        candidates.append(
+            FindCandidate(
+                mention=PredictedMention(
+                    entity=PRESCRIPTION.name,
+                    text=line.strip(),
+                    attributes=attrs,
+                    evidence=line.strip(),
+                    evidence_span=match_span(match),
+                    component_owner=_owner(
+                        "prescription_recall_expansion",
+                        RuleGroup.ANCHOR_PHRASE,
+                        Portability.CLINICAL_EPILEPSY,
+                    ),
+                ),
+                candidate_class=RX_RECALL_EXPANSION,
+                rule_id="recognise.rx_recall_expansion",
+            )
+        )
+    return tuple(candidates)
 
 
 def _legacy_extract_prescriptions(text: str) -> tuple[PredictedMention, ...]:

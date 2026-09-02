@@ -1,6 +1,8 @@
 "use client";
 
+import { useLayoutEffect } from "react";
 import { BarChart3, LockKeyhole, Tag } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import TraceControls from "@/components/architect/TraceControls";
 import { useArchitectStore } from "@/lib/stores";
 import { useArchitectUrlSync } from "@/lib/hooks";
@@ -9,6 +11,8 @@ import StageInspector from "@/components/architect/StageInspector";
 import ArchitectNoteRenderer from "@/components/architect/ArchitectNoteRenderer";
 import { SurfaceLayout, ExplorerBody } from "@/components/surface";
 import { isGanAggregateRunId } from "@/lib/ganPipelineOptions";
+import { isGanInventoryView } from "@/lib/ganInventory";
+import { GanInventoryExplorer } from "./GanInventoryExplorer";
 
 function PatientNoteMeta({ aggregateOnly }: { aggregateOnly: boolean }) {
   const trace = useArchitectStore((s) => s.trace);
@@ -76,6 +80,22 @@ function AggregateInspector() {
 }
 
 export function GanExampleExplorer() {
+  const searchParams = useSearchParams();
+  const urlView = searchParams.get("view");
+  const workbenchView = useArchitectStore((state) => state.workbenchView);
+  const setWorkbenchView = useArchitectStore((state) => state.setWorkbenchView);
+
+  useLayoutEffect(() => {
+    setWorkbenchView(isGanInventoryView(urlView) ? "inventory" : "frequency");
+  }, [setWorkbenchView, urlView]);
+
+  if (workbenchView === "inventory") {
+    return <GanInventoryExplorer />;
+  }
+  return <GanFrequencyExplorer />;
+}
+
+function GanFrequencyExplorer() {
   useArchitectUrlSync();
   const selectedRunId = useArchitectStore((state) => state.selectedRunId);
   const aggregateOnly = isGanAggregateRunId(selectedRunId);

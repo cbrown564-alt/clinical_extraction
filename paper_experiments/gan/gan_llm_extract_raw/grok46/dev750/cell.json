@@ -9,8 +9,8 @@
   "model_slug": "grok46",
   "n": 750,
   "program": "gan_llm_extract_raw",
-  "purist_accuracy": 0.9,
-  "purist_correct": 675,
+  "purist_accuracy": 0.8653,
+  "purist_correct": 649,
   "replay_fields": [
     "source_row_index",
     "prompt_version",

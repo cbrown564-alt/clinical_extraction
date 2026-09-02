@@ -1,7 +1,7 @@
-# 0050: Current-stack no-call hybrid fills are the selected primary scores
+# 0050: Current-stack no-call hybrid fills (historical)
 
 Date: 2026-08-13  
-Status: accepted  
+Status: superseded 2026-08-28  
 Amends: numeric hybrid fills implied by
 [decision 0046](0046-exect-primary-method-comparison-boundary.md),
 [canon scoring](../canon/04_scoring.md), and
@@ -13,20 +13,30 @@ identity, or rules-only / LLM-only fills (those cells were not replayed).
 Six-model slot amendment: [decision 0052](0052-gemini-37-flash-holdout-six-model-slot.md)
 replaces GPT-4.1-mini with Gemini 3.7 Flash in the living panel.
 
-## Decision
+## 2026-08-28 amendment — not a living cite
 
-The selected primary **LLM-with-rules** scores are the latest current-stack
-no-call replay of the saved raws named in
+Do not cite this decision, Sol, or `llm_with_rules` current-stack
+fills as living paper scores. The selected comparison is the Gemini
+3.7 Flash five-cell grid (select stop). Gan owner:
+[five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md)
+and [`paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json`](../../paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json).
+ExECT owner: [claims](../paper/claims.md) and the Gemini inventory
+five-cell. Sol 380/450, Sol 381/450, and ExECT Sol 0.8302 stay in
+this file as the 13–15 Aug current-stack snapshot only.
+
+## Decision (13 Aug 2026; historical)
+
+This decision recorded the current-stack no-call replay of the saved
+raws named in
 [`paper_experiments/current_stack/SOURCES.json`](../../paper_experiments/current_stack/SOURCES.json).
-Living numbers live in
-[`paper_experiments/current_stack/latest/fills.json`](../../paper_experiments/current_stack/latest/fills.json).
-Repeat the readout with
+Those numbers are a snapshot. They are not living paper scores.
+Replay the snapshot with
 [the current-stack runbook](../runbooks/current_stack_six_model_replay.md).
 
 The 14 Aug Sol snapshot (method-identity fill set after SF projection
 v0.14 and Diagnosis convention/noise refinements) is:
 
-| Cell | Selected primary hybrid fill |
+| Cell | Historical 14 Aug current-stack snapshot |
 | --- | ---: |
 | ExECT Sol `dev140` | clinical fact F1 **0.9119** |
 | ExECT Sol `test60` | clinical fact F1 **0.8302** |
@@ -71,7 +81,7 @@ method-identity change.
 - After each remasure, run `assemble` then the promote checklist. Do not
   silently edit canon or README from the machine stage.
 - Keep `experiments/six_model_final_panel_20260803/` as the historical 3 Aug
-  panel. Living machine cites use `paper_experiments/current_stack/latest/`.
+  panel. Do not cite this snapshot. Living Gan cite is `paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json`.
 - Do not rewrite retained-evidence `result_summary` for the original live-run
   packages; those hashes still describe the saved raw artifacts.
 - Do not change LLM-only primary fills from this hybrid remasure.
@@ -83,7 +93,7 @@ method-identity change.
 ## Evidence
 
 - [Runbook](../runbooks/current_stack_six_model_replay.md)
-- [Living fills](../../paper_experiments/current_stack/latest/fills.json)
-- [Living panel](../../paper_experiments/current_stack/latest/panel_aggregate.json)
+- [Historical current-stack fills](../../paper_experiments/current_stack/latest/fills.json)
+- [Historical current-stack panel](../../paper_experiments/current_stack/latest/panel_aggregate.json)
 - [13 Aug remaining-cell report](../research/shared/six_model_current_stack_remaining_cells_replay_2026-08-13.md)
 - [0731 matched comparison](../research/shared/deepseek_v4_flash_0731_matched_comparison_report_2026-08-03.md)

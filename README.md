@@ -6,10 +6,10 @@ This repository is research code and a working demonstration. The proposed
 method translates clinic letters into structured clinical facts in a designed
 form, with quoted source text. A model collects the facts and evidence;
 recorded rules shape them into the required form. Headline tables are Gemini
-five-cell grids: each of extract, encode, and select is rules, LLM, or both.
-The cited score is the select stop; extract and encode stops are stage
-ablations. The six-model comparison uses cell 3 only (LLM extract, rules
-encode, rules select) on both Gan and ExECT. On the inventory extract,
+five-cell grids: each of find, encode, and select is rules, LLM, or both.
+The cited score is the select stop; find and encode stops are stage
+ablations. The six-model comparison uses cell 3 only (LLM find, rules
+encode, rules select) on both Gan and ExECT. On the inventory task,
 ExECT cell 3 is both the roster row and the Gemini peak. Cell 4
 (LLM encode then rules select) stays Gemini-only. Neither table is
 an on/off hybrid switch. The public golds
@@ -27,53 +27,52 @@ local research checkout and are not cloned.
 ## Results
 
 Held-out test scores for Gemini 3.7 Flash (2 d.p.), the cited model.
-Extract and encode columns are stage ablations; select is the headline.
-The six-model roster compares cell 3 only. Companion Grok cells stay on
-disk. GPT-5.6 Sol cells stay historical. Rules are deterministic and do
-not use a model.
+Find and encode columns are stage ablations; select is the headline.
+The six-model roster compares cell 3 only on both tasks. GPT-5.6 Sol
+cells stay historical. Rules are deterministic and do not use a model.
 
-**Gan 2026** (Purist, locked `test450`). Headline is the submitted
+**Gan 2026** (Purist micro-F1, locked `test450`). Headline is the submitted
 (select) score:
 
-| Extract | Encode | Select | Purist |
+| Find | Encode | Select | Purist micro-F1 |
 | --- | --- | --- | ---: |
-| rules | rules | rules | 0.73 |
+| rules | rules | rules | 0.72 |
 | both | rules | rules | 0.82 |
-| LLM | rules | rules | 0.83 |
-| LLM | LLM | rules | 0.82 |
-| LLM | LLM | LLM | 0.79 |
+| LLM | rules | rules | 0.86 |
+| LLM | LLM | rules | 0.85 |
+| LLM | LLM | LLM | 0.85 |
 
 **ExECTv2** (4-family micro F1, locked `test60`). Headline is the
 submitted (select) score. All five rows use the same scorer.
 
-| Extract | Encode | Select | F1 |
+| Find | Encode | Select | F1 |
 | --- | --- | --- | ---: |
-| rules | rules | rules | 0.77 |
+| rules | rules | rules | 0.80 |
 | both | rules | rules | 0.86 |
 | LLM | rules | rules | 0.87 |
 | LLM | LLM | rules | 0.86 |
 | LLM | LLM | LLM | 0.85 |
 
-Gan **LLM** extract is the codebook extract
-(`gan_llm_extract`). **both** extract is
-`gan_llm_and_rules_extract`. LLM encode means that extract already
+Gan **LLM** find is the codebook find
+(`gan_llm_extract`). **both** find is
+`gan_llm_and_rules_extract`. LLM encode means that find already
 wrote the form. The LLM-then-rules encode is `gan_rules_encode`.
-LLM select is `gan_llm_select_from_extract`. Extract and encode stops
+LLM select is `gan_llm_select_from_extract`. Find and encode stops
 are prior-stage ablations in
 [the five-cell grid](docs/research/gan2026/gan_five_cell_grid_2026-08-22.md).
 The source-near `gan_llm_extract_raw` ablation keeps source wording closer
-to the letter; form alignment is weaker at extract and rules recover
-most at encode and select. ExECT **LLM** extract is `exect_llm_extract`. The Compact extract
+to the letter; form alignment is weaker at find and rules recover
+most at encode and select. ExECT **LLM** find is `exect_llm_extract`. The Compact find
 `exect_llm_extract_and_select` is a Gemini ablation.
-**both** extract is
-`exect_llm_pre_post` (living extract plus suggested candidates). LLM encode is later-stage `exect_llm_encode`
+**both** find is
+`exect_llm_pre_post` (living find plus suggested candidates). LLM encode is later-stage `exect_llm_encode`
 (a second call). LLM / LLM / rules is accepted Select on that encode
 ledger. LLM select is later-stage `exect_llm_select`. Extract and
 encode stops are prior-stage ablations. Gan hybrid select is
 ledger-only. `gan_llm_only` is not a results column.
 
-- **Gan 2026:** Purist accuracy on the locked `test450` split (one current
-  seizure-frequency label per letter).
+- **Gan 2026:** Purist micro-F1 on the locked `test450` split (one current
+  seizure-frequency label per letter). Micro-F1 equals accuracy here.
 - **ExECTv2:** 4-family micro F1 on the locked `test60` split
   (diagnosis, seizure frequency, prescriptions, and investigations).
   Cell 3 (LLM / rules / rules) is the roster row and the Gemini
@@ -81,9 +80,43 @@ ledger-only. `gan_llm_only` is not a results column.
   rules) is Gemini-only later-stage encode then rule select
   (0.8636).
 
+**Gan cell-3 roster** (Purist, locked `test450`, aggregate-only).
+LLM find (`gan_llm_extract`) then codebook rules. Select is the
+roster stop. Gemini five-cell select is **0.86**.
+
+| Model | Find | Select |
+| --- | ---: | ---: |
+| Gemini 3.7 Flash | 0.79 | **0.86** |
+| Grok 4.6 | 0.79 | 0.85 |
+| GPT-5.6 Luna | 0.69 | 0.79 |
+| DeepSeek V4 Flash | 0.74 | 0.82 |
+| Qwen 3.8 27B | 0.70 | 0.76 |
+| Gemma 4 26B | 0.66 | 0.72 |
+
+Exact totals:
+[three variables](docs/research/paper/three_variables_rules_model_thinking_2026-08-23.md),
+`paper_experiments/gan/rungs/`.
+
+**ExECT cell-3 roster** (4-family micro F1, locked `test60`,
+aggregate-only). LLM find (`exect_llm_extract`) then rules.
+Select is the cited stop:
+
+| Model | Find | Select |
+| --- | ---: | ---: |
+| Gemini 3.7 Flash | 0.85 | **0.87** |
+| Grok 4.6 | 0.79 | 0.81 |
+| DeepSeek V4 Flash | 0.78 | 0.81 |
+| GPT-5.6 Luna | 0.77 | 0.80 |
+| Qwen 3.8 27B | 0.73 | 0.76 |
+| Gemma 4 26B | 0.72 | 0.76 |
+
+Exact totals and sources:
+[three variables](docs/research/paper/three_variables_rules_model_thinking_2026-08-23.md),
+`paper_experiments/exect/exect_llm_extract/`.
+
 **Ablations (not headline columns):** Gemini thinking low / medium /
 high on cell 3 only; Gan source-near `gan_llm_extract_raw` (source
-wording vs form alignment); extract and encode stage stops above.
+wording vs form alignment); find and encode stage stops above.
 `gan_llm_only`, ExECT producer raw F1, Sol, and Full ledger are on
 disk but not cited as headline results.
 
@@ -96,17 +129,17 @@ Scores are not interchangeable across tasks.
 | Question | What is the patient's current seizure frequency? | What diagnosis, frequency, prescriptions, and investigations does the letter support? |
 | Development split | `dev750` | `dev140` |
 | Locked test split | `test450` (aggregate scores only) | `test60` (aggregate scores only) |
-| Primary score | Purist accuracy | Clinical fact F1 |
+| Primary score | Purist micro-F1 | Clinical fact F1 |
 
-Both tasks name who runs extract, encode, and select (rules, LLM, or
+Both tasks name who runs find, encode, and select (rules, LLM, or
 both).
 
 - **rules / rules / rules** — standalone `gan_rules` / `exect_rules`.
 - **both / rules / rules** — `gan_llm_and_rules_extract` /
   `exect_llm_pre_post`, then rule encode and select.
-- **LLM / rules / rules** — codebook extract / `exect_llm_extract`,
+- **LLM / rules / rules** — codebook find / `exect_llm_extract`,
   then rule encode and select.
-- **LLM / LLM / rules** — Gan: codebook extract, then select only.
+- **LLM / LLM / rules** — Gan: codebook find, then select only.
   ExECT: later-stage encode, then accepted Select rules.
 - **LLM / LLM / LLM** — Gan `gan_llm_select_from_extract`. ExECT
   later-stage `exect_llm_select`.
@@ -124,7 +157,7 @@ flowchart LR
     D --> E["5. Score"]
 ```
 
-1. **Extract** — rules or a model find candidate events, findings, or a
+1. **Find** — rules or a model find candidate events, findings, or a
    proposed answer.
 2. **Normalize** — structure and bounded format repairs make the result usable
    without silently changing the task.
@@ -201,27 +234,29 @@ route and API base in the run metadata.
 
 ### Run against a local vLLM server
 
-Install the package, then probe an OpenAI-compatible server before processing
-notes. A `vllm/<served-model>` identifier defaults to the keyless placeholder
-`EMPTY`, so `--api-key` is not required for an unauthenticated local server:
+On HPC or any machine where `pip install .` is awkward, install only the
+runtime client and run the root script:
 
 ```sh
-python -m pip install .
-clinical-extract probe \
+python -m pip install -r requirements.txt
+python run.py --probe \
   --base-url http://127.0.0.1:8000/v1 \
   --model vllm/deepseek-v4-flash
-```
-
-The input is JSONL with one `id` and `text` object per line. Run the cited
-Gan codebook extract (`gan_llm_extract`) with:
-
-```sh
-clinical-extract gan \
+python run.py \
   --input notes.jsonl \
   --output predictions.jsonl \
   --base-url http://127.0.0.1:8000/v1 \
   --model vllm/deepseek-v4-flash
 ```
+
+A `vllm/<served-model>` identifier defaults to the keyless placeholder
+`EMPTY`, so `--api-key` is not required for an unauthenticated local server.
+The input is JSONL with one `id` and `text` object per line. That command is
+the cited Gan codebook find (`gan_llm_extract`, cell 3). If the package is
+installed, `clinical-extract gan` is the same path.
+
+Pass `--method llm_select` for cell 5 (same find, then LLM select). That is
+not `gan_llm_only`.
 
 For ExECT extraction, replace `gan` with `exect`; its default method is
 `llm_with_rules`. Pass `--api-key` only when the server is configured to require
@@ -233,6 +268,8 @@ A full Gan walkthrough on three synthetic letters is in [VLLM.md](VLLM.md).
 ## Repository layout
 
 ```text
+run.py                     HPC / no-install Gan walkthrough (`python run.py --flags`)
+requirements.txt           Runtime client packages for that walkthrough
 src/clinical_extraction/   Package: loaders, pipelines, scoring, API
 frontend/                  Interactive workbench and bundled Demo UI fixtures
 examples/                  Pinned walkthrough inputs, including the vLLM Gan letters

@@ -1,0 +1,188 @@
+{
+  "split": "dev750",
+  "model": "gemini37flash",
+  "cell": 3,
+  "encode_rung": "gan_rules_encode",
+  "select_rung": "llm_select_after_codebook",
+  "n": 750,
+  "encode_purist": 608,
+  "select_purist": 649,
+  "encode_pragmatic": 632,
+  "select_pragmatic": 665,
+  "net_purist": 41,
+  "net_pragmatic": 33,
+  "changed": 67,
+  "unchanged": 683,
+  "changed_label_precision_purist": 0.6716417910447762,
+  "purist_direction": {
+    "correct_to_wrong": 4,
+    "correct_stay": 13,
+    "wrong_to_correct": 45,
+    "wrong_stay": 5
+  },
+  "pragmatic_direction": {
+    "correct_to_wrong": 4,
+    "correct_stay": 25,
+    "wrong_to_correct": 37,
+    "wrong_stay": 1
+  },
+  "exact_direction": {
+    "correct_to_wrong": 9,
+    "wrong_to_correct": 41,
+    "wrong_stay": 17
+  },
+  "first_family": {
+    "gan.select.breakthrough": 2,
+    "gan.select.monthly_diary": 47,
+    "gan.select.non_epileptic": 1,
+    "gan.select.post_change_burst": 7,
+    "gan.select.dated_sequence": 10
+  },
+  "shape": {
+    "sentinel_to_rate": 15,
+    "rate_or_form": 52
+  },
+  "kind_transition": {
+    "unknown->frequency": 14,
+    "frequency->frequency": 40,
+    "unknown->seizure_free": 1,
+    "seizure_free->frequency": 12
+  },
+  "family_x_purist": {
+    "gan.select.breakthrough": {
+      "correct_to_wrong": 2
+    },
+    "gan.select.monthly_diary": {
+      "correct_stay": 13,
+      "wrong_to_correct": 27,
+      "correct_to_wrong": 2,
+      "wrong_stay": 5
+    },
+    "gan.select.non_epileptic": {
+      "wrong_to_correct": 1
+    },
+    "gan.select.post_change_burst": {
+      "wrong_to_correct": 7
+    },
+    "gan.select.dated_sequence": {
+      "wrong_to_correct": 10
+    }
+  },
+  "shape_x_purist": {
+    "sentinel_to_rate": {
+      "correct_to_wrong": 2,
+      "wrong_to_correct": 11,
+      "wrong_stay": 2
+    },
+    "rate_or_form": {
+      "correct_stay": 13,
+      "wrong_to_correct": 34,
+      "correct_to_wrong": 2,
+      "wrong_stay": 3
+    }
+  },
+  "kind_x_purist": {
+    "unknown->frequency": {
+      "correct_to_wrong": 2,
+      "wrong_to_correct": 10,
+      "wrong_stay": 2
+    },
+    "frequency->frequency": {
+      "correct_stay": 13,
+      "wrong_to_correct": 22,
+      "correct_to_wrong": 2,
+      "wrong_stay": 3
+    },
+    "unknown->seizure_free": {
+      "wrong_to_correct": 1
+    },
+    "seizure_free->frequency": {
+      "wrong_to_correct": 12
+    }
+  },
+  "gold_kind_x_purist": {
+    "unknown": {
+      "correct_to_wrong": 2
+    },
+    "frequency": {
+      "correct_stay": 13,
+      "wrong_to_correct": 44,
+      "correct_to_wrong": 2,
+      "wrong_stay": 5
+    },
+    "seizure_free": {
+      "wrong_to_correct": 1
+    }
+  },
+  "hop_start_encode_mismatch": 0,
+  "selected_event_id_changes": 0,
+  "source_row_indices": [
+    2166,
+    4345,
+    4410,
+    5995,
+    6251,
+    9449,
+    12963,
+    12979,
+    13627,
+    13732,
+    13889,
+    14187,
+    14250,
+    14284,
+    14317,
+    14332,
+    14335,
+    14383,
+    14530,
+    14540,
+    14562,
+    14567,
+    14581,
+    14592,
+    14611,
+    14635,
+    14645,
+    14662,
+    14672,
+    15964,
+    15966,
+    15982,
+    15986,
+    15992,
+    15997,
+    16021,
+    16041,
+    16084,
+    16091,
+    16097,
+    16133,
+    16161,
+    16162,
+    16181,
+    16195,
+    16203,
+    16220,
+    16324,
+    16645,
+    16674,
+    16685,
+    16697,
+    16704,
+    16714,
+    16717,
+    16728,
+    16750,
+    16757,
+    16758,
+    16772,
+    16774,
+    16780,
+    16824,
+    16833,
+    16839,
+    16867,
+    16907
+  ]
+}

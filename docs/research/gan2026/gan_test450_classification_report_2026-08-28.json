@@ -1,0 +1,2409 @@
+{
+  "title": "Gan test450 classification report",
+  "date": "2026-08-28",
+  "split": "test450 (gan2026_split_v1, n=450 public synthetics, not KCH Real(300))",
+  "row_policy": "aggregate_only",
+  "not_kch_real300": true,
+  "gold_and_pred_epsilon_only": true,
+  "metric": {
+    "living_primary": "Purist micro-F1",
+    "companion": "Pragmatic micro-F1",
+    "micro_f1_equals_accuracy": true,
+    "note": "Exclusive multi-class: one gold bin, one predicted bin. Do not print a separate accuracy column."
+  },
+  "living": {
+    "selected_results": "Gemini 3.7 Flash five-cell (select stop). Prompt v0.5.",
+    "rules_per_class": "five-cell cell 1 (rules / rules / rules)",
+    "gemini_five_cell_per_class": "Cells 1, 3, and 5 use living gold_monthly_frequency (UNK support 76/450).",
+    "historical_not_living": [
+      "Decision 0050 / Sol 380/450 / 381/450",
+      "Sol current-stack hybrid fills",
+      "Luna llm-only / gan_llm_only",
+      "old Micro-F1 across cells hybrid/llm-only table"
+    ],
+    "five_cell_select_stop": {
+      "source": "paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json",
+      "n": 450,
+      "model": "gemini/gemini-3.7-flash",
+      "headline": "select",
+      "cells": [
+        {
+          "recognise": "rules",
+          "encode": "rules",
+          "select": "rules",
+          "purist_correct": 321,
+          "purist_micro_f1": 0.7133,
+          "cited": 0.71,
+          "pragmatic_correct": 341,
+          "pragmatic_micro_f1": 0.7578,
+          "pragmatic_source": "living gan_rules replay / this class report",
+          "note": "Living gold. Curated five-cell comparison.json select is 321."
+        },
+        {
+          "recognise": "both",
+          "encode": "rules",
+          "select": "rules",
+          "purist_correct": 368,
+          "purist_micro_f1": 0.8178,
+          "cited": 0.82,
+          "pragmatic_correct": 380,
+          "pragmatic_micro_f1": 0.8444,
+          "pragmatic_source": "gan_llm_and_rules_extract test450 comparison.json / rule_stops.json"
+        },
+        {
+          "recognise": "LLM",
+          "encode": "rules",
+          "select": "rules",
+          "cell": 3,
+          "purist_correct": 387,
+          "purist_micro_f1": 0.86,
+          "cited": 0.86,
+          "pragmatic_correct": 396,
+          "pragmatic_micro_f1": 0.88,
+          "cited_pragmatic": 0.88,
+          "pragmatic_source": "docs/research/gan2026/gan_codebook_encode_holdout_2026-08-22.md codebook then select"
+        },
+        {
+          "recognise": "LLM",
+          "encode": "LLM",
+          "select": "rules",
+          "purist_correct": 382,
+          "purist_micro_f1": 0.8489,
+          "cited": 0.85,
+          "pragmatic_correct": 391,
+          "pragmatic_micro_f1": 0.8689,
+          "cited_pragmatic": 0.87,
+          "pragmatic_source": "living llm_select_only replay after last_event_well_since"
+        },
+        {
+          "recognise": "LLM",
+          "encode": "LLM",
+          "select": "LLM",
+          "purist_correct": 383,
+          "purist_micro_f1": 0.8511,
+          "cited": 0.85,
+          "pragmatic_correct": 391,
+          "pragmatic_micro_f1": 0.8689,
+          "pragmatic_source": "this class report cell 5 (policy-example select prompt)",
+          "cited_pragmatic": 0.87
+        }
+      ]
+    }
+  },
+  "cells": {
+    "rules": {
+      "identity": "living gan_rules.run_record",
+      "cell": 1,
+      "gold_epsilon": "living gold_monthly_frequency",
+      "n": 450,
+      "dropped": 0,
+      "purist_correct": 321,
+      "pragmatic_correct": 341,
+      "purist": {
+        "n": 450,
+        "micro_f1": 0.7133333333333334,
+        "correct": 321,
+        "macro": {
+          "precision": 0.7224745487664505,
+          "recall": 0.7380261823692539,
+          "f1": 0.7116056447050201
+        },
+        "weighted": {
+          "precision": 0.7448974466921874,
+          "recall": 0.7133333333333334,
+          "f1": 0.7182644055454799
+        },
+        "per_class": [
+          {
+            "label": "<1/6M",
+            "precision": 1.0,
+            "recall": 0.6666666666666666,
+            "f1": 0.8,
+            "support": 6,
+            "tp": 4,
+            "fp": 0,
+            "fn": 2
+          },
+          {
+            "label": "=1/6M",
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666,
+            "support": 1,
+            "tp": 1,
+            "fp": 1,
+            "fn": 0
+          },
+          {
+            "label": "(1/6M,1/M)",
+            "precision": 0.8,
+            "recall": 0.8,
+            "f1": 0.8000000000000002,
+            "support": 55,
+            "tp": 44,
+            "fp": 11,
+            "fn": 11
+          },
+          {
+            "label": "=1/M",
+            "precision": 0.5384615384615384,
+            "recall": 0.3888888888888889,
+            "f1": 0.45161290322580644,
+            "support": 18,
+            "tp": 7,
+            "fp": 6,
+            "fn": 11
+          },
+          {
+            "label": "(1/M,1/W)",
+            "precision": 0.7966101694915254,
+            "recall": 0.8103448275862069,
+            "f1": 0.8034188034188032,
+            "support": 58,
+            "tp": 47,
+            "fp": 12,
+            "fn": 11
+          },
+          {
+            "label": "=1/W",
+            "precision": 0.8333333333333334,
+            "recall": 1.0,
+            "f1": 0.9090909090909091,
+            "support": 5,
+            "tp": 5,
+            "fp": 1,
+            "fn": 0
+          },
+          {
+            "label": "(1/W,1/D)",
+            "precision": 0.9270833333333334,
+            "recall": 0.7235772357723578,
+            "f1": 0.8127853881278538,
+            "support": 123,
+            "tp": 89,
+            "fp": 7,
+            "fn": 34
+          },
+          {
+            "label": "≥1/D",
+            "precision": 0.6341463414634146,
+            "recall": 0.6341463414634146,
+            "f1": 0.6341463414634146,
+            "support": 41,
+            "tp": 26,
+            "fp": 15,
+            "fn": 15
+          },
+          {
+            "label": "UNK",
+            "precision": 0.5042016806722689,
+            "recall": 0.7894736842105263,
+            "f1": 0.6153846153846154,
+            "support": 76,
+            "tp": 60,
+            "fp": 59,
+            "fn": 16
+          },
+          {
+            "label": "NS",
+            "precision": 0.6909090909090909,
+            "recall": 0.5671641791044776,
+            "f1": 0.6229508196721312,
+            "support": 67,
+            "tp": 38,
+            "fp": 17,
+            "fn": 29
+          }
+        ]
+      },
+      "pragmatic": {
+        "n": 450,
+        "micro_f1": 0.7577777777777778,
+        "correct": 341,
+        "macro": {
+          "precision": 0.7236840348808898,
+          "recall": 0.7241539592208215,
+          "f1": 0.7135132626935906
+        },
+        "weighted": {
+          "precision": 0.7893532869525881,
+          "recall": 0.7577777777777778,
+          "f1": 0.7656612482841991
+        },
+        "per_class": [
+          {
+            "label": "infrequent",
+            "precision": 0.7837837837837838,
+            "recall": 0.725,
+            "f1": 0.7532467532467533,
+            "support": 80,
+            "tp": 58,
+            "fp": 16,
+            "fn": 22
+          },
+          {
+            "label": "frequent",
+            "precision": 0.9158415841584159,
+            "recall": 0.8149779735682819,
+            "f1": 0.8624708624708625,
+            "support": 227,
+            "tp": 185,
+            "fp": 17,
+            "fn": 42
+          },
+          {
+            "label": "UNK",
+            "precision": 0.5042016806722689,
+            "recall": 0.7894736842105263,
+            "f1": 0.6153846153846154,
+            "support": 76,
+            "tp": 60,
+            "fp": 59,
+            "fn": 16
+          },
+          {
+            "label": "NS",
+            "precision": 0.6909090909090909,
+            "recall": 0.5671641791044776,
+            "f1": 0.6229508196721312,
+            "support": 67,
+            "tp": 38,
+            "fp": 17,
+            "fn": 29
+          }
+        ]
+      },
+      "status": "living paper cell; aligned gold with cells 3 and 5"
+    },
+    "Luna hybrid": {
+      "identity": "llm_with_rules / gpt56luna / current-stack",
+      "path": "scratch/validation/current_stack/latest/gan_test450/gpt56luna/test450.rows.jsonl",
+      "n": 448,
+      "dropped": 2,
+      "purist": {
+        "n": 448,
+        "micro_f1": 0.8169642857142857,
+        "micro_precision": 0.8169642857142857,
+        "micro_recall": 0.8169642857142857,
+        "accuracy": 0.8169642857142857,
+        "micro_equals_accuracy": true,
+        "macro": {
+          "precision": 0.7373172871777257,
+          "recall": 0.7292784799990107,
+          "f1": 0.7274347305550336
+        },
+        "weighted": {
+          "precision": 0.8279422414291667,
+          "recall": 0.8169642857142857,
+          "f1": 0.8163804456058205
+        },
+        "per_class": [
+          {
+            "label": "<1/6M",
+            "precision": 0.8333333333333334,
+            "recall": 0.8333333333333334,
+            "f1": 0.8333333333333334,
+            "support": 6,
+            "tp": 5,
+            "fp": 1,
+            "fn": 1
+          },
+          {
+            "label": "=1/6M",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1,
+            "tp": 0,
+            "fp": 3,
+            "fn": 1
+          },
+          {
+            "label": "(1/6M,1/M)",
+            "precision": 0.8,
+            "recall": 0.5384615384615384,
+            "f1": 0.6436781609195402,
+            "support": 52,
+            "tp": 28,
+            "fp": 7,
+            "fn": 24
+          },
+          {
+            "label": "=1/M",
+            "precision": 0.7307692307692307,
+            "recall": 0.95,
+            "f1": 0.8260869565217392,
+            "support": 20,
+            "tp": 19,
+            "fp": 7,
+            "fn": 1
+          },
+          {
+            "label": "(1/M,1/W)",
+            "precision": 0.7894736842105263,
+            "recall": 0.7377049180327869,
+            "f1": 0.7627118644067797,
+            "support": 61,
+            "tp": 45,
+            "fp": 12,
+            "fn": 16
+          },
+          {
+            "label": "=1/W",
+            "precision": 0.8,
+            "recall": 0.6666666666666666,
+            "f1": 0.7272727272727272,
+            "support": 6,
+            "tp": 4,
+            "fp": 1,
+            "fn": 2
+          },
+          {
+            "label": "(1/W,1/D)",
+            "precision": 0.9767441860465116,
+            "recall": 0.865979381443299,
+            "f1": 0.9180327868852459,
+            "support": 97,
+            "tp": 84,
+            "fp": 2,
+            "fn": 13
+          },
+          {
+            "label": "≥1/D",
+            "precision": 0.875,
+            "recall": 0.9722222222222222,
+            "f1": 0.9210526315789473,
+            "support": 36,
+            "tp": 35,
+            "fp": 5,
+            "fn": 1
+          },
+          {
+            "label": "UNK",
+            "precision": 0.7272727272727273,
+            "recall": 0.8627450980392157,
+            "f1": 0.789237668161435,
+            "support": 102,
+            "tp": 88,
+            "fp": 33,
+            "fn": 14
+          },
+          {
+            "label": "NS",
+            "precision": 0.8405797101449275,
+            "recall": 0.8656716417910447,
+            "f1": 0.8529411764705882,
+            "support": 67,
+            "tp": 58,
+            "fp": 11,
+            "fn": 9
+          }
+        ]
+      },
+      "pragmatic": {
+        "n": 448,
+        "micro_f1": 0.84375,
+        "micro_precision": 0.84375,
+        "micro_recall": 0.84375,
+        "accuracy": 0.84375,
+        "micro_equals_accuracy": true,
+        "macro": {
+          "precision": 0.8237640212085171,
+          "recall": 0.8274048178689575,
+          "f1": 0.8232012530524222
+        },
+        "weighted": {
+          "precision": 0.8501561599852288,
+          "recall": 0.84375,
+          "f1": 0.8447448112301925
+        },
+        "per_class": [
+          {
+            "label": "infrequent",
+            "precision": 0.7857142857142857,
+            "recall": 0.6962025316455697,
+            "f1": 0.738255033557047,
+            "support": 79,
+            "tp": 55,
+            "fp": 15,
+            "fn": 24
+          },
+          {
+            "label": "frequent",
+            "precision": 0.9414893617021277,
+            "recall": 0.885,
+            "f1": 0.9123711340206185,
+            "support": 200,
+            "tp": 177,
+            "fp": 11,
+            "fn": 23
+          },
+          {
+            "label": "UNK",
+            "precision": 0.7272727272727273,
+            "recall": 0.8627450980392157,
+            "f1": 0.789237668161435,
+            "support": 102,
+            "tp": 88,
+            "fp": 33,
+            "fn": 14
+          },
+          {
+            "label": "NS",
+            "precision": 0.8405797101449275,
+            "recall": 0.8656716417910447,
+            "f1": 0.8529411764705882,
+            "support": 67,
+            "tp": 58,
+            "fp": 11,
+            "fn": 9
+          }
+        ]
+      },
+      "living": false,
+      "status": "historical current-stack; not a living paper column"
+    },
+    "Gemini hybrid": {
+      "identity": "llm_with_rules / gemini37flash / current-stack",
+      "path": "scratch/validation/current_stack/latest/gan_test450/gemini37flash/test450.rows.jsonl",
+      "n": 450,
+      "dropped": 0,
+      "purist": {
+        "n": 450,
+        "micro_f1": 0.8311111111111111,
+        "micro_precision": 0.8311111111111111,
+        "micro_recall": 0.8311111111111111,
+        "accuracy": 0.8311111111111111,
+        "micro_equals_accuracy": true,
+        "macro": {
+          "precision": 0.7297531783394071,
+          "recall": 0.7405338987810474,
+          "f1": 0.7336543585898261
+        },
+        "weighted": {
+          "precision": 0.8339332016577038,
+          "recall": 0.8311111111111111,
+          "f1": 0.8312180116959065
+        },
+        "per_class": [
+          {
+            "label": "<1/6M",
+            "precision": 0.6666666666666666,
+            "recall": 0.6666666666666666,
+            "f1": 0.6666666666666666,
+            "support": 6,
+            "tp": 4,
+            "fp": 2,
+            "fn": 2
+          },
+          {
+            "label": "=1/6M",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1,
+            "tp": 0,
+            "fp": 2,
+            "fn": 1
+          },
+          {
+            "label": "(1/6M,1/M)",
+            "precision": 0.75,
+            "recall": 0.6346153846153846,
+            "f1": 0.6875,
+            "support": 52,
+            "tp": 33,
+            "fp": 11,
+            "fn": 19
+          },
+          {
+            "label": "=1/M",
+            "precision": 0.7916666666666666,
+            "recall": 0.95,
+            "f1": 0.8636363636363635,
+            "support": 20,
+            "tp": 19,
+            "fp": 5,
+            "fn": 1
+          },
+          {
+            "label": "(1/M,1/W)",
+            "precision": 0.7619047619047619,
+            "recall": 0.7741935483870968,
+            "f1": 0.768,
+            "support": 62,
+            "tp": 48,
+            "fp": 15,
+            "fn": 14
+          },
+          {
+            "label": "=1/W",
+            "precision": 0.8333333333333334,
+            "recall": 0.8333333333333334,
+            "f1": 0.8333333333333334,
+            "support": 6,
+            "tp": 5,
+            "fp": 1,
+            "fn": 1
+          },
+          {
+            "label": "(1/W,1/D)",
+            "precision": 0.9565217391304348,
+            "recall": 0.8979591836734694,
+            "f1": 0.9263157894736843,
+            "support": 98,
+            "tp": 88,
+            "fp": 4,
+            "fn": 10
+          },
+          {
+            "label": "≥1/D",
+            "precision": 0.8717948717948718,
+            "recall": 0.9444444444444444,
+            "f1": 0.9066666666666667,
+            "support": 36,
+            "tp": 34,
+            "fp": 5,
+            "fn": 2
+          },
+          {
+            "label": "UNK",
+            "precision": 0.7850467289719626,
+            "recall": 0.8235294117647058,
+            "f1": 0.8038277511961723,
+            "support": 102,
+            "tp": 84,
+            "fp": 23,
+            "fn": 18
+          },
+          {
+            "label": "NS",
+            "precision": 0.8805970149253731,
+            "recall": 0.8805970149253731,
+            "f1": 0.8805970149253731,
+            "support": 67,
+            "tp": 59,
+            "fp": 8,
+            "fn": 8
+          }
+        ]
+      },
+      "pragmatic": {
+        "n": 450,
+        "micro_f1": 0.8577777777777779,
+        "micro_precision": 0.8577777777777778,
+        "micro_recall": 0.8577777777777778,
+        "accuracy": 0.8577777777777778,
+        "micro_equals_accuracy": true,
+        "macro": {
+          "precision": 0.840489883342755,
+          "recall": 0.8404632397092411,
+          "f1": 0.8402844935685825
+        },
+        "weighted": {
+          "precision": 0.8583193638301361,
+          "recall": 0.8577777777777778,
+          "f1": 0.8578839755365616
+        },
+        "per_class": [
+          {
+            "label": "infrequent",
+            "precision": 0.7763157894736842,
+            "recall": 0.7468354430379747,
+            "f1": 0.7612903225806452,
+            "support": 79,
+            "tp": 59,
+            "fp": 17,
+            "fn": 20
+          },
+          {
+            "label": "frequent",
+            "precision": 0.92,
+            "recall": 0.9108910891089109,
+            "f1": 0.9154228855721394,
+            "support": 202,
+            "tp": 184,
+            "fp": 16,
+            "fn": 18
+          },
+          {
+            "label": "UNK",
+            "precision": 0.7850467289719626,
+            "recall": 0.8235294117647058,
+            "f1": 0.8038277511961723,
+            "support": 102,
+            "tp": 84,
+            "fp": 23,
+            "fn": 18
+          },
+          {
+            "label": "NS",
+            "precision": 0.8805970149253731,
+            "recall": 0.8805970149253731,
+            "f1": 0.8805970149253731,
+            "support": 67,
+            "tp": 59,
+            "fp": 8,
+            "fn": 8
+          }
+        ]
+      },
+      "living": false,
+      "status": "historical current-stack; not the living Gemini five-cell"
+    },
+    "DeepSeek hybrid": {
+      "identity": "llm_with_rules / deepseek_v4_flash / current-stack",
+      "path": "scratch/validation/current_stack/latest/gan_test450/deepseek_v4_flash/test450.rows.jsonl",
+      "n": 450,
+      "dropped": 0,
+      "purist": {
+        "n": 450,
+        "micro_f1": 0.8133333333333334,
+        "micro_precision": 0.8133333333333334,
+        "micro_recall": 0.8133333333333334,
+        "accuracy": 0.8133333333333334,
+        "micro_equals_accuracy": true,
+        "macro": {
+          "precision": 0.7377144448850067,
+          "recall": 0.7035093756031355,
+          "f1": 0.7185281702831675
+        },
+        "weighted": {
+          "precision": 0.8170338030599282,
+          "recall": 0.8133333333333334,
+          "f1": 0.8137539450992597
+        },
+        "per_class": [
+          {
+            "label": "<1/6M",
+            "precision": 0.8,
+            "recall": 0.6666666666666666,
+            "f1": 0.7272727272727272,
+            "support": 6,
+            "tp": 4,
+            "fp": 1,
+            "fn": 2
+          },
+          {
+            "label": "=1/6M",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1,
+            "tp": 0,
+            "fp": 2,
+            "fn": 1
+          },
+          {
+            "label": "(1/6M,1/M)",
+            "precision": 0.7674418604651163,
+            "recall": 0.6346153846153846,
+            "f1": 0.6947368421052632,
+            "support": 52,
+            "tp": 33,
+            "fp": 10,
+            "fn": 19
+          },
+          {
+            "label": "=1/M",
+            "precision": 0.8,
+            "recall": 0.8,
+            "f1": 0.8000000000000002,
+            "support": 20,
+            "tp": 16,
+            "fp": 4,
+            "fn": 4
+          },
+          {
+            "label": "(1/M,1/W)",
+            "precision": 0.8360655737704918,
+            "recall": 0.8225806451612904,
+            "f1": 0.829268292682927,
+            "support": 62,
+            "tp": 51,
+            "fp": 10,
+            "fn": 11
+          },
+          {
+            "label": "=1/W",
+            "precision": 0.8,
+            "recall": 0.6666666666666666,
+            "f1": 0.7272727272727272,
+            "support": 6,
+            "tp": 4,
+            "fp": 1,
+            "fn": 2
+          },
+          {
+            "label": "(1/W,1/D)",
+            "precision": 0.8979591836734694,
+            "recall": 0.8979591836734694,
+            "f1": 0.8979591836734694,
+            "support": 98,
+            "tp": 88,
+            "fp": 10,
+            "fn": 10
+          },
+          {
+            "label": "≥1/D",
+            "precision": 0.9166666666666666,
+            "recall": 0.9166666666666666,
+            "f1": 0.9166666666666666,
+            "support": 36,
+            "tp": 33,
+            "fp": 3,
+            "fn": 3
+          },
+          {
+            "label": "UNK",
+            "precision": 0.7105263157894737,
+            "recall": 0.7941176470588235,
+            "f1": 0.7499999999999999,
+            "support": 102,
+            "tp": 81,
+            "fp": 33,
+            "fn": 21
+          },
+          {
+            "label": "NS",
+            "precision": 0.8484848484848485,
+            "recall": 0.835820895522388,
+            "f1": 0.8421052631578948,
+            "support": 67,
+            "tp": 56,
+            "fp": 10,
+            "fn": 11
+          }
+        ]
+      },
+      "pragmatic": {
+        "n": 450,
+        "micro_f1": 0.8333333333333334,
+        "micro_precision": 0.8333333333333334,
+        "micro_recall": 0.8333333333333334,
+        "accuracy": 0.8333333333333334,
+        "micro_equals_accuracy": true,
+        "macro": {
+          "precision": 0.8172527910685805,
+          "recall": 0.8099473502711958,
+          "f1": 0.8123139380807021
+        },
+        "weighted": {
+          "precision": 0.836315931242247,
+          "recall": 0.8333333333333334,
+          "f1": 0.8337979457865896
+        },
+        "per_class": [
+          {
+            "label": "infrequent",
+            "precision": 0.8,
+            "recall": 0.7088607594936709,
+            "f1": 0.7516778523489933,
+            "support": 79,
+            "tp": 56,
+            "fp": 14,
+            "fn": 23
+          },
+          {
+            "label": "frequent",
+            "precision": 0.91,
+            "recall": 0.900990099009901,
+            "f1": 0.9054726368159204,
+            "support": 202,
+            "tp": 182,
+            "fp": 18,
+            "fn": 20
+          },
+          {
+            "label": "UNK",
+            "precision": 0.7105263157894737,
+            "recall": 0.7941176470588235,
+            "f1": 0.7499999999999999,
+            "support": 102,
+            "tp": 81,
+            "fp": 33,
+            "fn": 21
+          },
+          {
+            "label": "NS",
+            "precision": 0.8484848484848485,
+            "recall": 0.835820895522388,
+            "f1": 0.8421052631578948,
+            "support": 67,
+            "tp": 56,
+            "fp": 10,
+            "fn": 11
+          }
+        ]
+      },
+      "living": false,
+      "status": "historical current-stack; not a living paper column"
+    },
+    "Gemma hybrid": {
+      "identity": "llm_with_rules / gemma4_26b / current-stack",
+      "path": "scratch/validation/current_stack/latest/gan_test450/gemma4_26b/test450.rows.jsonl",
+      "n": 449,
+      "dropped": 1,
+      "purist": {
+        "n": 449,
+        "micro_f1": 0.8017817371937639,
+        "micro_precision": 0.8017817371937639,
+        "micro_recall": 0.8017817371937639,
+        "accuracy": 0.8017817371937639,
+        "micro_equals_accuracy": true,
+        "macro": {
+          "precision": 0.6989544695431065,
+          "recall": 0.7012647010860148,
+          "f1": 0.6951157570207507
+        },
+        "weighted": {
+          "precision": 0.8089231818886365,
+          "recall": 0.8017817371937639,
+          "f1": 0.8004964172969696
+        },
+        "per_class": [
+          {
+            "label": "<1/6M",
+            "precision": 0.8,
+            "recall": 0.6666666666666666,
+            "f1": 0.7272727272727272,
+            "support": 6,
+            "tp": 4,
+            "fp": 1,
+            "fn": 2
+          },
+          {
+            "label": "=1/6M",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1,
+            "tp": 0,
+            "fp": 2,
+            "fn": 1
+          },
+          {
+            "label": "(1/6M,1/M)",
+            "precision": 0.7837837837837838,
+            "recall": 0.5576923076923077,
+            "f1": 0.651685393258427,
+            "support": 52,
+            "tp": 29,
+            "fp": 8,
+            "fn": 23
+          },
+          {
+            "label": "=1/M",
+            "precision": 0.68,
+            "recall": 0.85,
+            "f1": 0.7555555555555556,
+            "support": 20,
+            "tp": 17,
+            "fp": 8,
+            "fn": 3
+          },
+          {
+            "label": "(1/M,1/W)",
+            "precision": 0.7014925373134329,
+            "recall": 0.7580645161290323,
+            "f1": 0.7286821705426356,
+            "support": 62,
+            "tp": 47,
+            "fp": 20,
+            "fn": 15
+          },
+          {
+            "label": "=1/W",
+            "precision": 0.6666666666666666,
+            "recall": 0.6666666666666666,
+            "f1": 0.6666666666666666,
+            "support": 6,
+            "tp": 4,
+            "fp": 2,
+            "fn": 2
+          },
+          {
+            "label": "(1/W,1/D)",
+            "precision": 0.9425287356321839,
+            "recall": 0.8367346938775511,
+            "f1": 0.8864864864864864,
+            "support": 98,
+            "tp": 82,
+            "fp": 5,
+            "fn": 16
+          },
+          {
+            "label": "≥1/D",
+            "precision": 0.8095238095238095,
+            "recall": 0.9444444444444444,
+            "f1": 0.8717948717948718,
+            "support": 36,
+            "tp": 34,
+            "fp": 8,
+            "fn": 2
+          },
+          {
+            "label": "UNK",
+            "precision": 0.8080808080808081,
+            "recall": 0.7920792079207921,
+            "f1": 0.7999999999999999,
+            "support": 101,
+            "tp": 80,
+            "fp": 19,
+            "fn": 21
+          },
+          {
+            "label": "NS",
+            "precision": 0.7974683544303798,
+            "recall": 0.9402985074626866,
+            "f1": 0.8630136986301371,
+            "support": 67,
+            "tp": 63,
+            "fp": 16,
+            "fn": 4
+          }
+        ]
+      },
+      "pragmatic": {
+        "n": 449,
+        "micro_f1": 0.8396436525612472,
+        "micro_precision": 0.8396436525612472,
+        "micro_recall": 0.8396436525612472,
+        "accuracy": 0.8396436525612472,
+        "micro_equals_accuracy": true,
+        "macro": {
+          "precision": 0.8198117417685632,
+          "recall": 0.8267527820229595,
+          "f1": 0.8209581343176895
+        },
+        "weighted": {
+          "precision": 0.8393599739855653,
+          "recall": 0.8396436525612472,
+          "f1": 0.8380190789685252
+        },
+        "per_class": [
+          {
+            "label": "infrequent",
+            "precision": 0.782608695652174,
+            "recall": 0.6835443037974683,
+            "f1": 0.7297297297297297,
+            "support": 79,
+            "tp": 54,
+            "fp": 15,
+            "fn": 25
+          },
+          {
+            "label": "frequent",
+            "precision": 0.8910891089108911,
+            "recall": 0.8910891089108911,
+            "f1": 0.8910891089108911,
+            "support": 202,
+            "tp": 180,
+            "fp": 22,
+            "fn": 22
+          },
+          {
+            "label": "UNK",
+            "precision": 0.8080808080808081,
+            "recall": 0.7920792079207921,
+            "f1": 0.7999999999999999,
+            "support": 101,
+            "tp": 80,
+            "fp": 19,
+            "fn": 21
+          },
+          {
+            "label": "NS",
+            "precision": 0.7974683544303798,
+            "recall": 0.9402985074626866,
+            "f1": 0.8630136986301371,
+            "support": 67,
+            "tp": 63,
+            "fp": 16,
+            "fn": 4
+          }
+        ]
+      },
+      "living": false,
+      "status": "historical current-stack; not a living paper column"
+    },
+    "Qwen hybrid": {
+      "identity": "llm_with_rules / qwen36_35b / current-stack",
+      "path": "scratch/validation/current_stack/latest/gan_test450/qwen36_35b/test450.rows.jsonl",
+      "n": 449,
+      "dropped": 1,
+      "purist": {
+        "n": 449,
+        "micro_f1": 0.8040089086859689,
+        "micro_precision": 0.8040089086859689,
+        "micro_recall": 0.8040089086859689,
+        "accuracy": 0.8040089086859689,
+        "micro_equals_accuracy": true,
+        "macro": {
+          "precision": 0.7238617117405131,
+          "recall": 0.7254904979787491,
+          "f1": 0.7185733861924659
+        },
+        "weighted": {
+          "precision": 0.8108595843411007,
+          "recall": 0.8040089086859689,
+          "f1": 0.8011775799922843
+        },
+        "per_class": [
+          {
+            "label": "<1/6M",
+            "precision": 0.8,
+            "recall": 0.6666666666666666,
+            "f1": 0.7272727272727272,
+            "support": 6,
+            "tp": 4,
+            "fp": 1,
+            "fn": 2
+          },
+          {
+            "label": "=1/6M",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1,
+            "tp": 0,
+            "fp": 2,
+            "fn": 1
+          },
+          {
+            "label": "(1/6M,1/M)",
+            "precision": 0.7894736842105263,
+            "recall": 0.5769230769230769,
+            "f1": 0.6666666666666666,
+            "support": 52,
+            "tp": 30,
+            "fp": 8,
+            "fn": 22
+          },
+          {
+            "label": "=1/M",
+            "precision": 0.7407407407407407,
+            "recall": 1.0,
+            "f1": 0.851063829787234,
+            "support": 20,
+            "tp": 20,
+            "fp": 7,
+            "fn": 0
+          },
+          {
+            "label": "(1/M,1/W)",
+            "precision": 0.7586206896551724,
+            "recall": 0.7096774193548387,
+            "f1": 0.7333333333333333,
+            "support": 62,
+            "tp": 44,
+            "fp": 14,
+            "fn": 18
+          },
+          {
+            "label": "=1/W",
+            "precision": 0.8333333333333334,
+            "recall": 0.8333333333333334,
+            "f1": 0.8333333333333334,
+            "support": 6,
+            "tp": 5,
+            "fp": 1,
+            "fn": 1
+          },
+          {
+            "label": "(1/W,1/D)",
+            "precision": 0.926829268292683,
+            "recall": 0.7755102040816326,
+            "f1": 0.8444444444444446,
+            "support": 98,
+            "tp": 76,
+            "fp": 6,
+            "fn": 22
+          },
+          {
+            "label": "≥1/D",
+            "precision": 0.8157894736842105,
+            "recall": 0.8611111111111112,
+            "f1": 0.8378378378378377,
+            "support": 36,
+            "tp": 31,
+            "fp": 7,
+            "fn": 5
+          },
+          {
+            "label": "UNK",
+            "precision": 0.7567567567567568,
+            "recall": 0.8316831683168316,
+            "f1": 0.7924528301886792,
+            "support": 101,
+            "tp": 84,
+            "fp": 27,
+            "fn": 17
+          },
+          {
+            "label": "NS",
+            "precision": 0.8170731707317073,
+            "recall": 1.0,
+            "f1": 0.8993288590604027,
+            "support": 67,
+            "tp": 67,
+            "fp": 15,
+            "fn": 0
+          }
+        ]
+      },
+      "pragmatic": {
+        "n": 449,
+        "micro_f1": 0.8463251670378619,
+        "micro_precision": 0.8463251670378619,
+        "micro_recall": 0.8463251670378619,
+        "accuracy": 0.8463251670378619,
+        "micro_equals_accuracy": true,
+        "macro": {
+          "precision": 0.8314103804228407,
+          "recall": 0.856952625642311,
+          "f1": 0.8405328360994577
+        },
+        "weighted": {
+          "precision": 0.8519872536758182,
+          "recall": 0.8463251670378619,
+          "f1": 0.8462250676509799
+        },
+        "per_class": [
+          {
+            "label": "infrequent",
+            "precision": 0.8333333333333334,
+            "recall": 0.759493670886076,
+            "f1": 0.7947019867549668,
+            "support": 79,
+            "tp": 60,
+            "fp": 12,
+            "fn": 19
+          },
+          {
+            "label": "frequent",
+            "precision": 0.9184782608695652,
+            "recall": 0.8366336633663366,
+            "f1": 0.8756476683937824,
+            "support": 202,
+            "tp": 169,
+            "fp": 15,
+            "fn": 33
+          },
+          {
+            "label": "UNK",
+            "precision": 0.7567567567567568,
+            "recall": 0.8316831683168316,
+            "f1": 0.7924528301886792,
+            "support": 101,
+            "tp": 84,
+            "fp": 27,
+            "fn": 17
+          },
+          {
+            "label": "NS",
+            "precision": 0.8170731707317073,
+            "recall": 1.0,
+            "f1": 0.8993288590604027,
+            "support": 67,
+            "tp": 67,
+            "fp": 15,
+            "fn": 0
+          }
+        ]
+      },
+      "living": false,
+      "status": "historical current-stack; not a living paper column"
+    },
+    "Gemini llm-only": {
+      "identity": "llm / gemini37flash",
+      "path": "scratch/holdout/paper/gan_llm_only/gemini37flash/test450/rows.jsonl",
+      "n": 440,
+      "dropped": 10,
+      "purist": {
+        "n": 440,
+        "micro_f1": 0.715909090909091,
+        "micro_precision": 0.7159090909090909,
+        "micro_recall": 0.7159090909090909,
+        "accuracy": 0.7159090909090909,
+        "micro_equals_accuracy": true,
+        "macro": {
+          "precision": 0.6814467321828654,
+          "recall": 0.554912066446016,
+          "f1": 0.5880129209996847
+        },
+        "weighted": {
+          "precision": 0.7446839589761916,
+          "recall": 0.7159090909090909,
+          "f1": 0.7100235697886302
+        },
+        "per_class": [
+          {
+            "label": "<1/6M",
+            "precision": 1.0,
+            "recall": 0.3333333333333333,
+            "f1": 0.5,
+            "support": 6,
+            "tp": 2,
+            "fp": 0,
+            "fn": 4
+          },
+          {
+            "label": "=1/6M",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1,
+            "tp": 0,
+            "fp": 3,
+            "fn": 1
+          },
+          {
+            "label": "(1/6M,1/M)",
+            "precision": 0.6756756756756757,
+            "recall": 0.4807692307692308,
+            "f1": 0.5617977528089887,
+            "support": 52,
+            "tp": 25,
+            "fp": 12,
+            "fn": 27
+          },
+          {
+            "label": "=1/M",
+            "precision": 0.6153846153846154,
+            "recall": 0.4,
+            "f1": 0.4848484848484849,
+            "support": 20,
+            "tp": 8,
+            "fp": 5,
+            "fn": 12
+          },
+          {
+            "label": "(1/M,1/W)",
+            "precision": 0.8387096774193549,
+            "recall": 0.4482758620689655,
+            "f1": 0.5842696629213483,
+            "support": 58,
+            "tp": 26,
+            "fp": 5,
+            "fn": 32
+          },
+          {
+            "label": "=1/W",
+            "precision": 0.6,
+            "recall": 0.5,
+            "f1": 0.5454545454545454,
+            "support": 6,
+            "tp": 3,
+            "fp": 2,
+            "fn": 3
+          },
+          {
+            "label": "(1/W,1/D)",
+            "precision": 0.8865979381443299,
+            "recall": 0.8865979381443299,
+            "f1": 0.8865979381443299,
+            "support": 97,
+            "tp": 86,
+            "fp": 11,
+            "fn": 11
+          },
+          {
+            "label": "≥1/D",
+            "precision": 0.8888888888888888,
+            "recall": 0.9142857142857143,
+            "f1": 0.9014084507042254,
+            "support": 35,
+            "tp": 32,
+            "fp": 4,
+            "fn": 3
+          },
+          {
+            "label": "UNK",
+            "precision": 0.5592105263157895,
+            "recall": 0.8585858585858586,
+            "f1": 0.6772908366533865,
+            "support": 99,
+            "tp": 85,
+            "fp": 67,
+            "fn": 14
+          },
+          {
+            "label": "NS",
+            "precision": 0.75,
+            "recall": 0.7272727272727273,
+            "f1": 0.7384615384615384,
+            "support": 66,
+            "tp": 48,
+            "fp": 16,
+            "fn": 18
+          }
+        ]
+      },
+      "pragmatic": {
+        "n": 440,
+        "micro_f1": 0.7545454545454545,
+        "micro_precision": 0.7545454545454545,
+        "micro_recall": 0.7545454545454545,
+        "accuracy": 0.7545454545454545,
+        "micro_equals_accuracy": true,
+        "macro": {
+          "precision": 0.7381955847795929,
+          "recall": 0.7220749538787513,
+          "f1": 0.7162770837603301
+        },
+        "weighted": {
+          "precision": 0.7867398949504673,
+          "recall": 0.7545454545454545,
+          "f1": 0.7579677580852191
+        },
+        "per_class": [
+          {
+            "label": "infrequent",
+            "precision": 0.6909090909090909,
+            "recall": 0.4810126582278481,
+            "f1": 0.5671641791044777,
+            "support": 79,
+            "tp": 38,
+            "fp": 17,
+            "fn": 41
+          },
+          {
+            "label": "frequent",
+            "precision": 0.9526627218934911,
+            "recall": 0.8214285714285714,
+            "f1": 0.8821917808219177,
+            "support": 196,
+            "tp": 161,
+            "fp": 8,
+            "fn": 35
+          },
+          {
+            "label": "UNK",
+            "precision": 0.5592105263157895,
+            "recall": 0.8585858585858586,
+            "f1": 0.6772908366533865,
+            "support": 99,
+            "tp": 85,
+            "fp": 67,
+            "fn": 14
+          },
+          {
+            "label": "NS",
+            "precision": 0.75,
+            "recall": 0.7272727272727273,
+            "f1": 0.7384615384615384,
+            "support": 66,
+            "tp": 48,
+            "fp": 16,
+            "fn": 18
+          }
+        ]
+      },
+      "living": false,
+      "status": "historical gan_llm_only; not a living paper column"
+    },
+    "Grok llm-only": {
+      "identity": "llm / grok46",
+      "path": "scratch/holdout/paper/gan_llm_only/grok46/test450/rows.jsonl",
+      "n": 450,
+      "dropped": 0,
+      "purist": {
+        "n": 450,
+        "micro_f1": 0.7266666666666666,
+        "micro_precision": 0.7266666666666667,
+        "micro_recall": 0.7266666666666667,
+        "accuracy": 0.7266666666666667,
+        "micro_equals_accuracy": true,
+        "macro": {
+          "precision": 0.6971653321457707,
+          "recall": 0.5799110020413978,
+          "f1": 0.6088719483864884
+        },
+        "weighted": {
+          "precision": 0.7573153717176747,
+          "recall": 0.7266666666666667,
+          "f1": 0.7219948437496158
+        },
+        "per_class": [
+          {
+            "label": "<1/6M",
+            "precision": 1.0,
+            "recall": 0.3333333333333333,
+            "f1": 0.5,
+            "support": 6,
+            "tp": 2,
+            "fp": 0,
+            "fn": 4
+          },
+          {
+            "label": "=1/6M",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1,
+            "tp": 0,
+            "fp": 4,
+            "fn": 1
+          },
+          {
+            "label": "(1/6M,1/M)",
+            "precision": 0.6857142857142857,
+            "recall": 0.46153846153846156,
+            "f1": 0.5517241379310346,
+            "support": 52,
+            "tp": 24,
+            "fp": 11,
+            "fn": 28
+          },
+          {
+            "label": "=1/M",
+            "precision": 0.6923076923076923,
+            "recall": 0.45,
+            "f1": 0.5454545454545455,
+            "support": 20,
+            "tp": 9,
+            "fp": 4,
+            "fn": 11
+          },
+          {
+            "label": "(1/M,1/W)",
+            "precision": 0.8285714285714286,
+            "recall": 0.46774193548387094,
+            "f1": 0.5979381443298969,
+            "support": 62,
+            "tp": 29,
+            "fp": 6,
+            "fn": 33
+          },
+          {
+            "label": "=1/W",
+            "precision": 0.6666666666666666,
+            "recall": 0.6666666666666666,
+            "f1": 0.6666666666666666,
+            "support": 6,
+            "tp": 4,
+            "fp": 2,
+            "fn": 2
+          },
+          {
+            "label": "(1/W,1/D)",
+            "precision": 0.9139784946236559,
+            "recall": 0.8673469387755102,
+            "f1": 0.8900523560209423,
+            "support": 98,
+            "tp": 85,
+            "fp": 8,
+            "fn": 13
+          },
+          {
+            "label": "≥1/D",
+            "precision": 0.8421052631578947,
+            "recall": 0.8888888888888888,
+            "f1": 0.8648648648648649,
+            "support": 36,
+            "tp": 32,
+            "fp": 6,
+            "fn": 4
+          },
+          {
+            "label": "UNK",
+            "precision": 0.5741935483870968,
+            "recall": 0.8725490196078431,
+            "f1": 0.6926070038910507,
+            "support": 102,
+            "tp": 89,
+            "fp": 66,
+            "fn": 13
+          },
+          {
+            "label": "NS",
+            "precision": 0.7681159420289855,
+            "recall": 0.7910447761194029,
+            "f1": 0.7794117647058824,
+            "support": 67,
+            "tp": 53,
+            "fp": 16,
+            "fn": 14
+          }
+        ]
+      },
+      "pragmatic": {
+        "n": 450,
+        "micro_f1": 0.76,
+        "micro_precision": 0.76,
+        "micro_recall": 0.76,
+        "accuracy": 0.76,
+        "micro_equals_accuracy": true,
+        "macro": {
+          "precision": 0.7469684148090163,
+          "recall": 0.736646662993724,
+          "f1": 0.727439375113328
+        },
+        "weighted": {
+          "precision": 0.7908442591055708,
+          "recall": 0.76,
+          "f1": 0.7622311381810123
+        },
+        "per_class": [
+          {
+            "label": "infrequent",
+            "precision": 0.7037037037037037,
+            "recall": 0.4810126582278481,
+            "f1": 0.5714285714285715,
+            "support": 79,
+            "tp": 38,
+            "fp": 16,
+            "fn": 41
+          },
+          {
+            "label": "frequent",
+            "precision": 0.9418604651162791,
+            "recall": 0.801980198019802,
+            "f1": 0.8663101604278075,
+            "support": 202,
+            "tp": 162,
+            "fp": 10,
+            "fn": 40
+          },
+          {
+            "label": "UNK",
+            "precision": 0.5741935483870968,
+            "recall": 0.8725490196078431,
+            "f1": 0.6926070038910507,
+            "support": 102,
+            "tp": 89,
+            "fp": 66,
+            "fn": 13
+          },
+          {
+            "label": "NS",
+            "precision": 0.7681159420289855,
+            "recall": 0.7910447761194029,
+            "f1": 0.7794117647058824,
+            "support": 67,
+            "tp": 53,
+            "fp": 16,
+            "fn": 14
+          }
+        ]
+      },
+      "living": false,
+      "status": "historical gan_llm_only; not a living paper column"
+    },
+    "DeepSeek llm-only": {
+      "identity": "llm / deepseek_v4_flash",
+      "path": "scratch/holdout/paper/gan_llm_only/deepseek_v4_flash/test450/rows.jsonl",
+      "n": 450,
+      "dropped": 0,
+      "purist": {
+        "n": 450,
+        "micro_f1": 0.7488888888888889,
+        "micro_precision": 0.7488888888888889,
+        "micro_recall": 0.7488888888888889,
+        "accuracy": 0.7488888888888889,
+        "micro_equals_accuracy": true,
+        "macro": {
+          "precision": 0.7060578368999422,
+          "recall": 0.5913250127279532,
+          "f1": 0.6131207724844512
+        },
+        "weighted": {
+          "precision": 0.7800522160101108,
+          "recall": 0.7488888888888889,
+          "f1": 0.7372895090049878
+        },
+        "per_class": [
+          {
+            "label": "<1/6M",
+            "precision": 1.0,
+            "recall": 0.3333333333333333,
+            "f1": 0.5,
+            "support": 6,
+            "tp": 2,
+            "fp": 0,
+            "fn": 4
+          },
+          {
+            "label": "=1/6M",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1,
+            "tp": 0,
+            "fp": 3,
+            "fn": 1
+          },
+          {
+            "label": "(1/6M,1/M)",
+            "precision": 0.7,
+            "recall": 0.40384615384615385,
+            "f1": 0.5121951219512195,
+            "support": 52,
+            "tp": 21,
+            "fp": 9,
+            "fn": 31
+          },
+          {
+            "label": "=1/M",
+            "precision": 0.6923076923076923,
+            "recall": 0.45,
+            "f1": 0.5454545454545455,
+            "support": 20,
+            "tp": 9,
+            "fp": 4,
+            "fn": 11
+          },
+          {
+            "label": "(1/M,1/W)",
+            "precision": 0.9666666666666667,
+            "recall": 0.46774193548387094,
+            "f1": 0.6304347826086957,
+            "support": 62,
+            "tp": 29,
+            "fp": 1,
+            "fn": 33
+          },
+          {
+            "label": "=1/W",
+            "precision": 0.5714285714285714,
+            "recall": 0.6666666666666666,
+            "f1": 0.6153846153846153,
+            "support": 6,
+            "tp": 4,
+            "fp": 3,
+            "fn": 2
+          },
+          {
+            "label": "(1/W,1/D)",
+            "precision": 0.87,
+            "recall": 0.8877551020408163,
+            "f1": 0.8787878787878789,
+            "support": 98,
+            "tp": 87,
+            "fp": 13,
+            "fn": 11
+          },
+          {
+            "label": "≥1/D",
+            "precision": 0.868421052631579,
+            "recall": 0.9166666666666666,
+            "f1": 0.8918918918918918,
+            "support": 36,
+            "tp": 33,
+            "fp": 5,
+            "fn": 3
+          },
+          {
+            "label": "UNK",
+            "precision": 0.618421052631579,
+            "recall": 0.9215686274509803,
+            "f1": 0.7401574803149605,
+            "support": 102,
+            "tp": 94,
+            "fp": 58,
+            "fn": 8
+          },
+          {
+            "label": "NS",
+            "precision": 0.7733333333333333,
+            "recall": 0.8656716417910447,
+            "f1": 0.8169014084507041,
+            "support": 67,
+            "tp": 58,
+            "fp": 17,
+            "fn": 9
+          }
+        ]
+      },
+      "pragmatic": {
+        "n": 450,
+        "micro_f1": 0.7888888888888889,
+        "micro_precision": 0.7888888888888889,
+        "micro_recall": 0.7888888888888889,
+        "accuracy": 0.7888888888888889,
+        "micro_equals_accuracy": true,
+        "macro": {
+          "precision": 0.7740100250626567,
+          "recall": 0.7674172862602493,
+          "f1": 0.7524824167965667
+        },
+        "weighted": {
+          "precision": 0.8153510999721526,
+          "recall": 0.7888888888888889,
+          "f1": 0.786613491410484
+        },
+        "per_class": [
+          {
+            "label": "infrequent",
+            "precision": 0.75,
+            "recall": 0.45569620253164556,
+            "f1": 0.5669291338582677,
+            "support": 79,
+            "tp": 36,
+            "fp": 12,
+            "fn": 43
+          },
+          {
+            "label": "frequent",
+            "precision": 0.9542857142857143,
+            "recall": 0.8267326732673267,
+            "f1": 0.8859416445623342,
+            "support": 202,
+            "tp": 167,
+            "fp": 8,
+            "fn": 35
+          },
+          {
+            "label": "UNK",
+            "precision": 0.618421052631579,
+            "recall": 0.9215686274509803,
+            "f1": 0.7401574803149605,
+            "support": 102,
+            "tp": 94,
+            "fp": 58,
+            "fn": 8
+          },
+          {
+            "label": "NS",
+            "precision": 0.7733333333333333,
+            "recall": 0.8656716417910447,
+            "f1": 0.8169014084507041,
+            "support": 67,
+            "tp": 58,
+            "fp": 17,
+            "fn": 9
+          }
+        ]
+      },
+      "living": false,
+      "status": "historical gan_llm_only; not a living paper column"
+    },
+    "gemini_cell_3": {
+      "identity": "gemini37flash / LLM / rules / rules / llm_select_after_codebook",
+      "cell": 3,
+      "gold_epsilon": "living gold_monthly_frequency",
+      "n": 450,
+      "dropped": 0,
+      "cited_five_cell_purist_correct": 373,
+      "replay_purist_correct": 374,
+      "cited_five_cell_pragmatic_correct": 382,
+      "replay_pragmatic_correct": 383,
+      "purist": {
+        "n": 450,
+        "micro_f1": 0.8311111111111111,
+        "correct": 374,
+        "macro": {
+          "precision": 0.7710171734658037,
+          "recall": 0.6790341034427836,
+          "f1": 0.7103511630547162
+        },
+        "weighted": {
+          "precision": 0.8471980154548648,
+          "recall": 0.8311111111111111,
+          "f1": 0.8308080236725449
+        },
+        "per_class": [
+          {
+            "label": "<1/6M",
+            "precision": 0.75,
+            "recall": 0.5,
+            "f1": 0.6,
+            "support": 6,
+            "tp": 3,
+            "fp": 1,
+            "fn": 3
+          },
+          {
+            "label": "=1/6M",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1,
+            "tp": 0,
+            "fp": 0,
+            "fn": 1
+          },
+          {
+            "label": "(1/6M,1/M)",
+            "precision": 0.875,
+            "recall": 0.6363636363636364,
+            "f1": 0.7368421052631579,
+            "support": 55,
+            "tp": 35,
+            "fp": 5,
+            "fn": 20
+          },
+          {
+            "label": "=1/M",
+            "precision": 0.9166666666666666,
+            "recall": 0.6111111111111112,
+            "f1": 0.7333333333333334,
+            "support": 18,
+            "tp": 11,
+            "fp": 1,
+            "fn": 7
+          },
+          {
+            "label": "(1/M,1/W)",
+            "precision": 0.8833333333333333,
+            "recall": 0.9137931034482759,
+            "f1": 0.8983050847457628,
+            "support": 58,
+            "tp": 53,
+            "fp": 7,
+            "fn": 5
+          },
+          {
+            "label": "=1/W",
+            "precision": 1.0,
+            "recall": 0.6,
+            "f1": 0.7499999999999999,
+            "support": 5,
+            "tp": 3,
+            "fp": 0,
+            "fn": 2
+          },
+          {
+            "label": "(1/W,1/D)",
+            "precision": 0.9553571428571429,
+            "recall": 0.8699186991869918,
+            "f1": 0.9106382978723403,
+            "support": 123,
+            "tp": 107,
+            "fp": 5,
+            "fn": 16
+          },
+          {
+            "label": "≥1/D",
+            "precision": 0.9047619047619048,
+            "recall": 0.926829268292683,
+            "f1": 0.9156626506024096,
+            "support": 41,
+            "tp": 38,
+            "fp": 4,
+            "fn": 3
+          },
+          {
+            "label": "UNK",
+            "precision": 0.6442307692307693,
+            "recall": 0.881578947368421,
+            "f1": 0.7444444444444444,
+            "support": 76,
+            "tp": 67,
+            "fp": 37,
+            "fn": 9
+          },
+          {
+            "label": "NS",
+            "precision": 0.7808219178082192,
+            "recall": 0.8507462686567164,
+            "f1": 0.8142857142857143,
+            "support": 67,
+            "tp": 57,
+            "fp": 16,
+            "fn": 10
+          }
+        ]
+      },
+      "pragmatic": {
+        "n": 450,
+        "micro_f1": 0.8511111111111112,
+        "correct": 383,
+        "macro": {
+          "precision": 0.8169486556307148,
+          "recall": 0.817483837045932,
+          "f1": 0.8063160849925556
+        },
+        "weighted": {
+          "precision": 0.8687867251322842,
+          "recall": 0.8511111111111112,
+          "f1": 0.8522482426403994
+        },
+        "per_class": [
+          {
+            "label": "infrequent",
+            "precision": 0.875,
+            "recall": 0.6125,
+            "f1": 0.7205882352941178,
+            "support": 80,
+            "tp": 49,
+            "fp": 7,
+            "fn": 31
+          },
+          {
+            "label": "frequent",
+            "precision": 0.967741935483871,
+            "recall": 0.9251101321585903,
+            "f1": 0.9459459459459458,
+            "support": 227,
+            "tp": 210,
+            "fp": 7,
+            "fn": 17
+          },
+          {
+            "label": "UNK",
+            "precision": 0.6442307692307693,
+            "recall": 0.881578947368421,
+            "f1": 0.7444444444444444,
+            "support": 76,
+            "tp": 67,
+            "fp": 37,
+            "fn": 9
+          },
+          {
+            "label": "NS",
+            "precision": 0.7808219178082192,
+            "recall": 0.8507462686567164,
+            "f1": 0.8142857142857143,
+            "support": 67,
+            "tp": 57,
+            "fp": 16,
+            "fn": 10
+          }
+        ]
+      },
+      "status": "living paper cell; replay is +1 vs cited five-cell"
+    },
+    "gemini_cell_5": {
+      "identity": "gemini37flash / LLM / LLM / LLM / gan_llm_select_from_extract / gan_llm_select_policy_examples",
+      "cell": 5,
+      "gold_epsilon": "living gold_monthly_frequency",
+      "n": 450,
+      "dropped": 0,
+      "purist_correct": 383,
+      "pragmatic_correct": 391,
+      "unscorable_rows_counted_incorrect": 2,
+      "purist": {
+        "n": 450,
+        "micro_f1": 0.8511111111111112,
+        "correct": 383,
+        "macro": {
+          "precision": 0.8140328534609594,
+          "recall": 0.7619241915820794,
+          "f1": 0.7809052404855317
+        },
+        "weighted": {
+          "precision": 0.8717659009337988,
+          "recall": 0.8511111111111112,
+          "f1": 0.8555647913472233
+        },
+        "per_class": [
+          {
+            "label": "<1/6M",
+            "precision": 1.0,
+            "recall": 0.6666666666666666,
+            "f1": 0.8,
+            "support": 6,
+            "tp": 4,
+            "fp": 0,
+            "fn": 2
+          },
+          {
+            "label": "=1/6M",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1,
+            "tp": 0,
+            "fp": 0,
+            "fn": 1
+          },
+          {
+            "label": "(1/6M,1/M)",
+            "precision": 0.9285714285714286,
+            "recall": 0.7090909090909091,
+            "f1": 0.8041237113402062,
+            "support": 55,
+            "tp": 39,
+            "fp": 3,
+            "fn": 16
+          },
+          {
+            "label": "=1/M",
+            "precision": 0.9375,
+            "recall": 0.8333333333333334,
+            "f1": 0.8823529411764706,
+            "support": 18,
+            "tp": 15,
+            "fp": 1,
+            "fn": 3
+          },
+          {
+            "label": "(1/M,1/W)",
+            "precision": 0.9107142857142857,
+            "recall": 0.8793103448275862,
+            "f1": 0.8947368421052632,
+            "support": 58,
+            "tp": 51,
+            "fp": 5,
+            "fn": 7
+          },
+          {
+            "label": "=1/W",
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 5,
+            "tp": 5,
+            "fp": 0,
+            "fn": 0
+          },
+          {
+            "label": "(1/W,1/D)",
+            "precision": 0.9553571428571429,
+            "recall": 0.8699186991869918,
+            "f1": 0.9106382978723403,
+            "support": 123,
+            "tp": 107,
+            "fp": 5,
+            "fn": 16
+          },
+          {
+            "label": "≥1/D",
+            "precision": 0.926829268292683,
+            "recall": 0.926829268292683,
+            "f1": 0.926829268292683,
+            "support": 41,
+            "tp": 38,
+            "fp": 3,
+            "fn": 3
+          },
+          {
+            "label": "UNK",
+            "precision": 0.6407766990291263,
+            "recall": 0.868421052631579,
+            "f1": 0.7374301675977656,
+            "support": 76,
+            "tp": 66,
+            "fp": 37,
+            "fn": 10
+          },
+          {
+            "label": "NS",
+            "precision": 0.8405797101449275,
+            "recall": 0.8656716417910447,
+            "f1": 0.8529411764705882,
+            "support": 67,
+            "tp": 58,
+            "fp": 11,
+            "fn": 9
+          }
+        ]
+      },
+      "pragmatic": {
+        "n": 450,
+        "micro_f1": 0.8688888888888889,
+        "correct": 391,
+        "macro": {
+          "precision": 0.8512329823055725,
+          "recall": 0.8469730634734973,
+          "f1": 0.8411669792894209
+        },
+        "weighted": {
+          "precision": 0.892849813294844,
+          "recall": 0.8688888888888889,
+          "f1": 0.8751158757217169
+        },
+        "per_class": [
+          {
+            "label": "infrequent",
+            "precision": 0.9516129032258065,
+            "recall": 0.7375,
+            "f1": 0.8309859154929577,
+            "support": 80,
+            "tp": 59,
+            "fp": 3,
+            "fn": 21
+          },
+          {
+            "label": "frequent",
+            "precision": 0.9719626168224299,
+            "recall": 0.9162995594713657,
+            "f1": 0.9433106575963719,
+            "support": 227,
+            "tp": 208,
+            "fp": 6,
+            "fn": 19
+          },
+          {
+            "label": "UNK",
+            "precision": 0.6407766990291263,
+            "recall": 0.868421052631579,
+            "f1": 0.7374301675977656,
+            "support": 76,
+            "tp": 66,
+            "fp": 37,
+            "fn": 10
+          },
+          {
+            "label": "NS",
+            "precision": 0.8405797101449275,
+            "recall": 0.8656716417910447,
+            "f1": 0.8529411764705882,
+            "support": 67,
+            "tp": 58,
+            "fp": 11,
+            "fn": 9
+          }
+        ]
+      },
+      "status": "living paper cell; Purist matches cited five-cell 383/450"
+    },
+    "gemini_cell_2": {
+      "identity": "gemini37flash / both / rules / rules / gan_llm_and_rules_extract",
+      "cell": 2,
+      "gold_epsilon": "living gold_monthly_frequency",
+      "n": 450,
+      "dropped": 0,
+      "purist_correct": 368,
+      "pragmatic_correct": 380,
+      "purist": {
+        "n": 450,
+        "micro_f1": 0.8177777777777778,
+        "correct": 368,
+        "macro": {
+          "precision": 0.7136266410540457,
+          "recall": 0.7036979238292236,
+          "f1": 0.7064474224837249
+        },
+        "weighted": {
+          "precision": 0.8252847365714879,
+          "recall": 0.8177777777777778,
+          "f1": 0.818872110036203
+        },
+        "per_class": [
+          {
+            "label": "<1/6M",
+            "precision": 0.6666666666666666,
+            "recall": 0.6666666666666666,
+            "f1": 0.6666666666666666,
+            "support": 6,
+            "tp": 4,
+            "fp": 2,
+            "fn": 2
+          },
+          {
+            "label": "=1/6M",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1,
+            "tp": 0,
+            "fp": 2,
+            "fn": 1
+          },
+          {
+            "label": "(1/6M,1/M)",
+            "precision": 0.8,
+            "recall": 0.6545454545454545,
+            "f1": 0.7200000000000001,
+            "support": 55,
+            "tp": 36,
+            "fp": 9,
+            "fn": 19
+          },
+          {
+            "label": "=1/M",
+            "precision": 0.7333333333333333,
+            "recall": 0.6111111111111112,
+            "f1": 0.6666666666666666,
+            "support": 18,
+            "tp": 11,
+            "fp": 4,
+            "fn": 7
+          },
+          {
+            "label": "(1/M,1/W)",
+            "precision": 0.8392857142857143,
+            "recall": 0.8103448275862069,
+            "f1": 0.8245614035087718,
+            "support": 58,
+            "tp": 47,
+            "fp": 9,
+            "fn": 11
+          },
+          {
+            "label": "=1/W",
+            "precision": 0.8,
+            "recall": 0.8,
+            "f1": 0.8000000000000002,
+            "support": 5,
+            "tp": 4,
+            "fp": 1,
+            "fn": 1
+          },
+          {
+            "label": "(1/W,1/D)",
+            "precision": 0.956140350877193,
+            "recall": 0.8861788617886179,
+            "f1": 0.919831223628692,
+            "support": 123,
+            "tp": 109,
+            "fp": 5,
+            "fn": 14
+          },
+          {
+            "label": "≥1/D",
+            "precision": 0.8863636363636364,
+            "recall": 0.9512195121951219,
+            "f1": 0.9176470588235294,
+            "support": 41,
+            "tp": 39,
+            "fp": 5,
+            "fn": 2
+          },
+          {
+            "label": "UNK",
+            "precision": 0.6781609195402298,
+            "recall": 0.7763157894736842,
+            "f1": 0.7239263803680982,
+            "support": 76,
+            "tp": 59,
+            "fp": 28,
+            "fn": 17
+          },
+          {
+            "label": "NS",
+            "precision": 0.7763157894736842,
+            "recall": 0.8805970149253731,
+            "f1": 0.8251748251748251,
+            "support": 67,
+            "tp": 59,
+            "fp": 17,
+            "fn": 8
+          }
+        ]
+      },
+      "pragmatic": {
+        "n": 450,
+        "micro_f1": 0.8444444444444444,
+        "correct": 380,
+        "macro": {
+          "precision": 0.7995915113926135,
+          "recall": 0.8120530909676058,
+          "f1": 0.8028915903204054
+        },
+        "weighted": {
+          "precision": 0.8504021623566265,
+          "recall": 0.8444444444444444,
+          "f1": 0.8453654183935622
+        },
+        "per_class": [
+          {
+            "label": "infrequent",
+            "precision": 0.7941176470588235,
+            "recall": 0.675,
+            "f1": 0.7297297297297296,
+            "support": 80,
+            "tp": 54,
+            "fp": 14,
+            "fn": 26
+          },
+          {
+            "label": "frequent",
+            "precision": 0.9497716894977168,
+            "recall": 0.9162995594713657,
+            "f1": 0.9327354260089686,
+            "support": 227,
+            "tp": 208,
+            "fp": 11,
+            "fn": 19
+          },
+          {
+            "label": "UNK",
+            "precision": 0.6781609195402298,
+            "recall": 0.7763157894736842,
+            "f1": 0.7239263803680982,
+            "support": 76,
+            "tp": 59,
+            "fp": 28,
+            "fn": 17
+          },
+          {
+            "label": "NS",
+            "precision": 0.7763157894736842,
+            "recall": 0.8805970149253731,
+            "f1": 0.8251748251748251,
+            "support": 67,
+            "tp": 59,
+            "fp": 17,
+            "fn": 8
+          }
+        ]
+      },
+      "status": "living select-stop aggregates; per-class not a paper table"
+    }
+  },
+  "historical_micro_f1_across_cells": {
+    "status": "historical current-stack / gan_llm_only; not the paper comparison",
+    "rows": [
+      {
+        "cell": "rules",
+        "n": 450,
+        "purist_micro_f1": 0.7311,
+        "pragmatic_micro_f1": 0.7578
+      },
+      {
+        "cell": "Sol hybrid",
+        "n": 450,
+        "purist_micro_f1": 0.8467,
+        "pragmatic_micro_f1": 0.8711
+      },
+      {
+        "cell": "Luna hybrid",
+        "n": 448,
+        "purist_micro_f1": 0.817,
+        "pragmatic_micro_f1": 0.8438
+      },
+      {
+        "cell": "Gemini hybrid",
+        "n": 450,
+        "purist_micro_f1": 0.8311,
+        "pragmatic_micro_f1": 0.8578
+      },
+      {
+        "cell": "DeepSeek hybrid",
+        "n": 450,
+        "purist_micro_f1": 0.8133,
+        "pragmatic_micro_f1": 0.8333
+      },
+      {
+        "cell": "Gemma hybrid",
+        "n": 449,
+        "purist_micro_f1": 0.8018,
+        "pragmatic_micro_f1": 0.8396
+      },
+      {
+        "cell": "Qwen hybrid",
+        "n": 449,
+        "purist_micro_f1": 0.804,
+        "pragmatic_micro_f1": 0.8463
+      },
+      {
+        "cell": "Luna llm-only",
+        "n": 450,
+        "purist_micro_f1": 0.7267,
+        "pragmatic_micro_f1": 0.7689
+      },
+      {
+        "cell": "Gemini llm-only",
+        "n": 440,
+        "purist_micro_f1": 0.7159,
+        "pragmatic_micro_f1": 0.7545
+      },
+      {
+        "cell": "Grok llm-only",
+        "n": 450,
+        "purist_micro_f1": 0.7267,
+        "pragmatic_micro_f1": 0.76
+      },
+      {
+        "cell": "DeepSeek llm-only",
+        "n": 450,
+        "purist_micro_f1": 0.7489,
+        "pragmatic_micro_f1": 0.7889
+      }
+    ]
+  }
+}

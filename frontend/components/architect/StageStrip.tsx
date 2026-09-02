@@ -1,16 +1,16 @@
 "use client";
 
-import { Highlighter, Scale, Target, Wrench, Trophy, CheckCircle, XCircle } from "lucide-react";
+import { useEffect } from "react";
+import { Highlighter, Scale, Target, Trophy, CheckCircle, XCircle } from "lucide-react";
 import { useArchitectStore } from "@/lib/stores";
 import { LensStrip, type LensItem } from "@/components/surface";
 import type { DatasetTone } from "@/lib/datasets";
 import type { TraceStage } from "@/lib/types";
 
 const stages: { id: TraceStage; label: string; tone: DatasetTone; icon: React.ReactNode }[] = [
-  { id: "extract", label: "Extract", tone: "deterministic", icon: <Highlighter className="h-3 w-3" /> },
-  { id: "normalise", label: "Normalise", tone: "deterministic-alt", icon: <Scale className="h-3 w-3" /> },
+  { id: "extract", label: "Find", tone: "deterministic", icon: <Highlighter className="h-3 w-3" /> },
+  { id: "normalise", label: "Encode", tone: "deterministic-alt", icon: <Scale className="h-3 w-3" /> },
   { id: "select", label: "Select", tone: "hybrid", icon: <Target className="h-3 w-3" /> },
-  { id: "repair", label: "Repair", tone: "llm", icon: <Wrench className="h-3 w-3" /> },
   { id: "score", label: "Score", tone: "success", icon: <Trophy className="h-3 w-3" /> },
 ];
 
@@ -47,7 +47,7 @@ function stageSummary(stage: TraceStage, trace: Trace): React.ReactNode {
     }
     case "select": {
       if (trace.select.isDistinctStage === false) {
-        return <span className="opacity-70">Combined with Extract</span>;
+        return <span className="opacity-70">Combined with Find</span>;
       }
       const label = trace.select.finalLabel;
       const count = trace.select.selectedIds?.length ?? 0;
@@ -58,35 +58,23 @@ function stageSummary(stage: TraceStage, trace: Trace): React.ReactNode {
         </span>
       );
     }
-    case "repair": {
-      const changes = trace.repair?.changes.length ?? 0;
-      if (changes === 0) return <span className="opacity-70">No changes</span>;
-      if (trace.repair?.repairType) {
-        return <span className="truncate">{trace.repair.repairType}</span>;
-      }
-      const before = trace.repair?.beforeLabel;
-      const after = trace.repair?.afterLabel;
-      return (
-        <span className="truncate">
-          {changes} change{changes !== 1 ? "s" : ""}
-          {before && after && <span className="opacity-70"> · {before} → {after}</span>}
-        </span>
-      );
-    }
+    case "repair":
+      return null;
     case "score": {
       const match = trace.score.match;
-      const predicted = trace.score.predictedLabel;
+      const predicted =
+        trace.score.predictedPuristCategory ?? trace.score.predictedLabel;
       return (
         <span className="flex items-center gap-1 truncate">
           {match ? (
             <>
               <CheckCircle className="h-3 w-3 opacity-80" />
-              <span>Match · {predicted}</span>
+              <span>Purist match · {predicted}</span>
             </>
           ) : (
             <>
               <XCircle className="h-3 w-3 opacity-80" />
-              <span>Mismatch · {predicted}</span>
+              <span>Purist mismatch · {predicted}</span>
             </>
           )}
         </span>
@@ -115,24 +103,19 @@ function stageSummaryText(stage: TraceStage, trace: Trace): string {
       return firstLabel ? `${count} event${count !== 1 ? "s" : ""} · ${firstLabel}` : `${count} event${count !== 1 ? "s" : ""}`;
     }
     case "select": {
-      if (trace.select.isDistinctStage === false) return "Combined with Extract";
+      if (trace.select.isDistinctStage === false) return "Combined with Find";
       const label = trace.select.finalLabel ?? "";
       const count = trace.select.selectedIds?.length ?? 0;
       return count > 0 ? `${label} · ${count} selected` : label;
     }
-    case "repair": {
-      const changes = trace.repair?.changes.length ?? 0;
-      if (changes === 0) return "No changes";
-      if (trace.repair?.repairType) return trace.repair.repairType;
-      const before = trace.repair?.beforeLabel;
-      const after = trace.repair?.afterLabel;
-      return before && after
-        ? `${changes} change${changes !== 1 ? "s" : ""} · ${before} → ${after}`
-        : `${changes} change${changes !== 1 ? "s" : ""}`;
-    }
+    case "repair":
+      return "";
     case "score": {
-      const predicted = trace.score.predictedLabel ?? "";
-      return trace.score.match ? `Match · ${predicted}` : `Mismatch · ${predicted}`;
+      const predicted =
+        trace.score.predictedPuristCategory ?? trace.score.predictedLabel ?? "";
+      return trace.score.match
+        ? `Purist match · ${predicted}`
+        : `Purist mismatch · ${predicted}`;
     }
   }
 }
@@ -156,6 +139,12 @@ export default function StageStrip() {
   const activeStage = useArchitectStore((s) => s.activeStage);
   const trace = useArchitectStore((s) => s.trace);
   const setActiveStage = useArchitectStore((s) => s.setActiveStage);
+
+  useEffect(() => {
+    if (activeStage === "repair") {
+      setActiveStage("select");
+    }
+  }, [activeStage, setActiveStage]);
 
   const items: LensItem[] = stages.map((stage) => ({
     id: stage.id,

@@ -219,6 +219,12 @@ export interface StageScore {
   goldLabel: string;
   match: boolean;
   evidenceValid: boolean;
+  predictedPuristCategory?: string;
+  goldPuristCategory?: string;
+  puristMatch?: boolean;
+  predictedPragmaticCategory?: string;
+  goldPragmaticCategory?: string;
+  pragmaticMatch?: boolean;
 }
 
 export interface PipelineTrace {
@@ -380,6 +386,8 @@ export interface DecisionRecordArtifactRow {
     pragmatic_correct?: boolean;
     predicted_purist_category?: string;
     gold_purist_category?: string;
+    predicted_pragmatic_category?: string;
+    gold_pragmatic_category?: string;
     predicted_monthly_frequency?: number;
     gold_monthly_frequency?: number;
   } | null;
@@ -454,6 +462,10 @@ export interface EventsArtifactRow {
   comparison?: {
     purist_correct?: boolean;
     pragmatic_correct?: boolean;
+    predicted_purist_category?: string;
+    gold_purist_category?: string;
+    predicted_pragmatic_category?: string;
+    gold_pragmatic_category?: string;
   };
   repair_changes?: unknown[];
   evidence_summary?: {

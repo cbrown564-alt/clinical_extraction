@@ -32,6 +32,14 @@ REPAIR_MODE_METADATA: Mapping[str, Mapping[str, Any]] = {
         "deterministic_semantic_repair": False,
         "scorer_facing": False,
     },
+    "raw_model_single_answer": {
+        "repair_mode": "raw_model_single_answer",
+        "attribution_source": "raw_llm_output_plus_single_answer_wrap",
+        "repair_family": "python_literal_json_dialect_repair",
+        "semantic_selection_owner": "llm",
+        "deterministic_semantic_repair": False,
+        "scorer_facing": False,
+    },
     "llm_encode": {
         "repair_mode": "llm_encode",
         "attribution_source": "llm_selected_evidence_plus_deterministic_derivation",

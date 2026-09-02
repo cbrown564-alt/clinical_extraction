@@ -1,4 +1,4 @@
-# Method × stage: extract / encode / select
+# Method × stage: find / encode / select
 
 Date: 2026-08-20
 Revised: 2026-08-22 (wording ablation labeled; five role rows)
@@ -6,7 +6,7 @@ Status: paper source; development illustrations only
 Owners: [methods](../../paper/methods.md), [claims](../../paper/claims.md),
 this file for the worked reading
 
-The cited Gan table is five role rows. Each of **extract**,
+The cited Gan table is five role rows. Each of **find**,
 **encode**, and **select** is **rules**, **LLM**, or **both**. The
 cited score is the select stop. ExECT uses the same five role rows.
 Locked Gan totals:
@@ -55,13 +55,13 @@ judged. Do not recode the stack; this is a refile of the claim.
 
 ## The Gan grid
 
-| Extract | Encode | Select | What runs |
+| Find | Encode | Select | What runs |
 | --- | --- | --- | --- |
 | rules | rules | rules | `gan_rules` |
 | both | rules | rules | `gan_llm_and_rules_extract`, then rule encode and select |
 | LLM | rules | rules | `gan_llm_extract`, then `gan_rules_encode` and rule select |
-| LLM | LLM | rules | Same extract; select families only |
-| LLM | LLM | LLM | Same extract; `gan_llm_select_from_extract` |
+| LLM | LLM | rules | Same find; select families only |
+| LLM | LLM | LLM | Same find; `gan_llm_select_from_extract` |
 
 ExECT LLM encode is a second letter-out call. LLM / LLM / rules is
 accepted Select on that encode ledger.
@@ -73,13 +73,15 @@ not list every revise subtype):
 - **Encode** — codebook / designed form / Gan selected-evidence renderer.
 - **Select** — gate, drop, rewrite, reselect, invent.
 
-On Gan the cited extract is `gan_llm_extract`, not
-`gan_llm_extract_raw`. LLM encode in the headline table is that
-extract, not a later-stage encode call. Tables cite Gemini 3.7 Flash.
+On Gan the cited LLM extract is `gan_llm_extract`, not
+`gan_llm_extract_raw`. That request already writes codebook form, so
+it is bundled find-and-encode. Living rules find is source-near.
+LLM encode in the headline table is that bundled extract, not a
+later-stage encode call. Tables cite Gemini 3.7 Flash.
 
 On ExECT, cells 3–5 replay one `exect_llm_extract` raw. **both / rules /
 rules** is a different request (`exect_llm_pre_post`). `exect_llm_with_rules`
-is the live alias of that request, not the cited extract.
+is the live alias of that request, not the cited find.
 
 The paper records every submitted-answer version as a hop log. A
 **score projection** converts the submitted answer to the unit the
@@ -90,7 +92,7 @@ object.
 
 **Letter:** Gan development source row `10`. **Model:** Grok 4.6.
 **Wording ablation raw:** `gan_llm_extract_raw` (not the cited
-codebook extract). **Score:** Purist.
+codebook find). **Score:** Purist.
 **Artifacts:** `paper_experiments/gan/rungs/grok46/dev750/` and
 `paper_experiments/gan/gan_llm_extract_raw/grok46/dev750/`.
 
@@ -101,15 +103,15 @@ The letter states a current rate as an upper bound:
 Gold is `4 per day`. That is a Gan gold-dialect convention. The bound
 stays in the quoted span. It is not in the submitted label.
 
-| Role row | Extract | Encode | Select |
+| Role row | Find | Encode | Select |
 | --- | --- | --- | --- |
-| **rules / rules / rules** | `4 per day` (correct) | same | same |
+| **rules / rules / rules** | `four per day` (source-near find) | `4 per day` | `4 per day` |
 | **Wording ablation** (`gan_llm_extract_raw`) | `≤ 4 per day` (incorrect) | `4 per day` (correct) | `4 per day` (correct) |
 | **both / rules / rules** | `4 per day` (correct) | — | `4 per day` (correct) |
 
-The wording-ablation extract and rule encode / select share one Grok
+The wording-ablation find and rule encode / select share one Grok
 `gan_llm_extract_raw` output. The model already selected the
-accommodation-log event. Source-near extract keeps the inequality, so
+accommodation-log event. Source-near find keeps the inequality, so
 Purist misses. Rule encode **encodes** that already chosen event into the
 evaluation form and does not change `selected_event_ids`. Rule
 select does not switch the event on this letter.
@@ -124,7 +126,7 @@ wording-ablation raw.
 
 **Contrast, still development:** source row `15431`. Gold is the
 two-part cluster label `1 cluster per 4 month, 5 per cluster`. Rules
-submit that label and are Purist-correct. Wording-ablation extract
+submit that label and are Purist-correct. Wording-ablation find
 writes a long cluster-after-quiet phrase and misses. Rule encode and
 rule select on that raw both submit `seizure free for multiple month`
 and miss. Select
@@ -147,7 +149,7 @@ and
 
 > Seizure type and frequency: seizures every 3 to 4 weeks, possibly focal onset
 
-Grok put that hedge on the collected evidence. LLM extract keeps Diagnosis
+Grok put that hedge on the collected evidence. LLM find keeps Diagnosis
 as the written `epilepsy` mention. Cell 3 (encode-replay) may attach a
 CUI or respell closed-vocab fields; that is **encode**, not a concept
 rewrite. ExECT encode-replay includes CUI attach, so the encode cell is
@@ -161,7 +163,7 @@ unknown suppression, and family lenses are clinical revise and
 land on cell 4.
 **both / rules / rules** on the same letter has select F1 1.0 and
 four-family letter-exact true. The unrepaired `exect_llm_pre_post` body
-on that request is the extract stop (cell 2), not the select stop.
+on that request is the find stop (cell 2), not the select stop.
 Cell 3 (`exect_llm_extract` plus rule encode and select) is the
 six-model row and a separate saved call.
 
@@ -198,7 +200,7 @@ not a promise that the last cell always wins.
 6. **Pre-suggestion is a different request.** Candidates in the prompt
    change what the model is asked to collect. That is why ExECT cell 2
    is `exect_llm_pre_post`, and why an unrepaired pre-post body is not
-   LLM extract.
+   LLM find.
 
 The files do not support a claim that every deterministic step is
 safe, that a visible hop is clinically correct, that development hop
@@ -212,7 +214,7 @@ second use case.
 | Gan Gemini reading of this grid | [rules and models across stages](gan_rules_and_llms_across_stages_2026-08-21.md) |
 | Locked wording | [claims](../../paper/claims.md) |
 | Identities, splits, scorers | [methods](../../paper/methods.md) |
-| Named extract / encode / select rules | [rule catalogue](rule_catalogue.md) |
+| Named find / encode / select rules | [rule catalogue](rule_catalogue.md) |
 | Why a model plus recorded rules | [hybrid architecture](why_hybrid_architecture_2026-08-09.md) |
 | The two golds | [what the two golds already decided](what_the_two_golds_already_decided_2026-08-17.md) |
 | Earlier pair of reviewable traces | [reviewable case pair](reviewable_case_pair_2026-08-09.md) |

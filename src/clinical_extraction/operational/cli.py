@@ -50,7 +50,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     except ValueError as exc:
         parser.error(str(exc))
     rows = (
-        run_gan_notes(notes, runtime)
+        run_gan_notes(notes, runtime, method=args.method)
         if args.command == "gan"
         else run_exect_notes(notes, runtime, method=args.method)
     )
@@ -70,7 +70,17 @@ def _parser() -> argparse.ArgumentParser:
         child.add_argument("--overwrite", action="store_true")
         child.add_argument("--temperature", type=float, default=0.0)
         child.add_argument("--max-tokens", type=int, default=16000)
-        if command == "exect":
+        if command == "gan":
+            child.add_argument(
+                "--method",
+                choices=("llm_extract", "llm_select"),
+                default="llm_extract",
+                help=(
+                    "llm_extract is cell 3 (codebook find, then rules). "
+                    "llm_select is cell 5 (same find, then LLM select)."
+                ),
+            )
+        else:
             child.add_argument(
                 "--method",
                 choices=("rules", "llm", "llm_with_rules"),

@@ -1,20 +1,28 @@
 {
-  "claim_boundary": "Gan aggregate-only test450 five-cell grid. Headline is the select stop. Extract and encode counts are prior-stage ablations. Do not inspect holdout rows.",
+  "claim_boundary": "Gan aggregate-only test450 five-cell grid. Headline is the select stop. Extract and encode counts are prior-stage ablations. Rules counts are the promoted three-stage program (325/450 select; living source-near find 190; encode 284). Cell 3 select is the living codebook replay (387/450). Do not inspect holdout rows.",
   "split": "test450",
   "row_policy": "aggregate_only",
+  "gold_epsilon": "living gold_monthly_frequency",
   "model": "gemini/gemini-3.7-flash",
   "scorer": "purist",
   "n": 450,
   "headline": "select",
-  "role_values": ["rules", "LLM", "both"],
+  "role_values": [
+    "rules",
+    "LLM",
+    "both"
+  ],
   "cells": {
     "rules": {
       "extract_role": "rules",
       "encode_role": "rules",
       "select_role": "rules",
       "extract_source": "gan_rules",
-      "select": 329,
-      "ablation": {"extract": 329, "encode": 329}
+      "select": 325,
+      "ablation": {
+        "extract": 190,
+        "encode": 284
+      }
     },
     "both_extract_then_rules": {
       "extract_role": "both",
@@ -22,7 +30,10 @@
       "select_role": "rules",
       "extract_source": "gan_llm_and_rules_extract",
       "select": 368,
-      "ablation": {"extract": 371, "encode": 361}
+      "ablation": {
+        "extract": 371,
+        "encode": 361
+      }
     },
     "llm_extract_then_rules": {
       "extract_role": "LLM",
@@ -31,13 +42,17 @@
       "extract_source": "gan_llm_extract",
       "encode_mode": "gan_rules_encode",
       "select_mode": "llm_select_after_codebook",
-      "select": 373,
-      "ablation": {"extract": 354, "encode": 359},
+      "select": 387,
+      "ablation": {
+        "extract": 354,
+        "encode": 359
+      },
       "historical_encode_ablation": {
         "encode_mode": "llm_encode",
         "encode": 346,
         "select": 362
-      }
+      },
+      "select_source": "living gan_llm_extract replay through llm_select_after_codebook including last_event_well_since"
     },
     "llm_extract_encode_then_select_rules": {
       "extract_role": "LLM",
@@ -45,8 +60,11 @@
       "select_role": "rules",
       "extract_source": "gan_llm_extract",
       "repair_mode": "llm_select_only",
-      "select": 368,
-      "ablation": {"extract": 354, "encode": 354}
+      "select": 382,
+      "ablation": {
+        "extract": 354,
+        "encode": 354
+      }
     },
     "llm": {
       "extract_role": "LLM",
@@ -54,13 +72,28 @@
       "select_role": "LLM",
       "extract_source": "gan_llm_extract",
       "select_method": "gan_llm_select_from_extract",
-      "select": 357,
-      "ablation": {"extract": 354, "encode": 354}
+      "select": 383,
+      "ablation": {
+        "extract": 354,
+        "encode": 354
+      }
     }
   },
   "source_near_ablation_gan_llm_extract_raw": {
-    "llm": {"extract": 246, "encode": 291, "select": 320},
-    "llm_then_rules": {"extract": 246, "encode": 335, "select": 357},
-    "rules_then_llm_living_pre_post": {"extract": 265, "encode": 345, "select": 358}
+    "llm": {
+      "extract": 246,
+      "encode": 291,
+      "select": 320
+    },
+    "llm_then_rules": {
+      "extract": 246,
+      "encode": 335,
+      "select": 357
+    },
+    "rules_then_llm_living_pre_post": {
+      "extract": 265,
+      "encode": 345,
+      "select": 358
+    }
   }
 }

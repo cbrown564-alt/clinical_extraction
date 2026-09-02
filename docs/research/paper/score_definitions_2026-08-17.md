@@ -20,9 +20,11 @@ in the source span.
 
 Gan scores one rendered seizure-frequency label per letter.
 
-- **Purist** is the primary measure: fine category bands after the label is
-  projected to a monthly frequency.
-- **Pragmatic** is the coarser companion projection.
+- **Purist** is the fine category-band map after the label is projected to a
+  monthly frequency. The living primary name is **Purist micro-F1**
+  (equals accuracy here: one gold bin, one predicted bin).
+- **Pragmatic** is the coarser companion projection. The companion score is
+  **Pragmatic micro-F1**.
 
 The band definitions and the `unknown` / no-seizure sentinels belong to the
 Gan dataset paper and to
@@ -30,7 +32,7 @@ Gan dataset paper and to
 does not redefine them. What counts as one correct answer on each gold is
 [what the two golds already decided](what_the_two_golds_already_decided_2026-08-17.md).
 
-Purist accuracy cannot show which evidence was selected, whether a competing
+Purist micro-F1 cannot show which evidence was selected, whether a competing
 statement was also defensible, or which bound or temporal detail was lost when
 the label was mapped to a monthly band.
 

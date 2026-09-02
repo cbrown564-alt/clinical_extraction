@@ -1,77 +1,89 @@
 {
   "claim_boundary": "Gan development replay. Not holdout.",
   "format_only_check": {
-    "note": "Cell 3 is encode (selected-evidence derivation). It stays encode-only only when selected_event_ids never change.",
-    "predicted_kind_changes": 305,
+    "note": "Living cell 3 is codebook encode then rule select (gan_rules_encode, llm_select_after_codebook). selected_event_id_changes still records whether encode kept the extract pick. Historical llm_encode is the five-cell encode ablation, not this roster.",
+    "predicted_kind_changes": 14,
     "purist_harms": 1,
-    "purist_rescues": 233,
-    "repair_mode": "llm_encode",
+    "purist_rescues": 27,
+    "repair_mode": "gan_rules_encode",
+    "select_repair_mode": "llm_select_after_codebook",
     "selected_event_id_changes": 0,
     "used_as_rung_3": true
   },
-  "generated_on": "2026-08-21",
+  "generated_on": "2026-08-29",
   "model_slug": "grok46",
   "row_count": 750,
   "row_policy": "development_review_permitted",
   "rungs": {
     "llm_encode": {
-      "pragmatic_accuracy": 0.84,
-      "pragmatic_correct": 630,
+      "micro_f1": 0.8147,
+      "pragmatic_accuracy": 0.86,
+      "pragmatic_correct": 645,
+      "pragmatic_micro_f1": 0.86,
+      "predicted_candidate_count": 1813,
       "predicted_kinds": {
-        "frequency": 391,
-        "no_reference": 60,
-        "seizure_free": 149,
-        "unknown": 106,
-        "unresolved_multiple": 44
+        "frequency": 409,
+        "no_reference": 23,
+        "seizure_free": 144,
+        "unknown": 131,
+        "unresolved_multiple": 43
       },
-      "purist_accuracy": 0.804,
-      "purist_correct": 603,
+      "purist_accuracy": 0.8147,
+      "purist_correct": 611,
       "scorable": 750
     },
     "llm_extract": {
-      "pragmatic_accuracy": 0.5213,
-      "pragmatic_correct": 391,
+      "micro_f1": 0.78,
+      "pragmatic_accuracy": 0.8333,
+      "pragmatic_correct": 625,
+      "pragmatic_micro_f1": 0.8333,
+      "predicted_candidate_count": 1813,
       "predicted_kinds": {
-        "frequency": 195,
-        "no_reference": 25,
-        "seizure_free": 147,
-        "unknown": 69,
-        "unresolved_multiple": 12,
-        "unscorable": 302
+        "frequency": 400,
+        "no_reference": 23,
+        "seizure_free": 144,
+        "unknown": 145,
+        "unresolved_multiple": 38
       },
-      "purist_accuracy": 0.4947,
-      "purist_correct": 371,
-      "scorable": 448
+      "purist_accuracy": 0.78,
+      "purist_correct": 585,
+      "scorable": 750
     },
     "llm_select": {
-      "pragmatic_accuracy": 0.916,
-      "pragmatic_correct": 687,
+      "micro_f1": 0.888,
+      "pragmatic_accuracy": 0.9107,
+      "pragmatic_correct": 683,
+      "pragmatic_micro_f1": 0.9107,
+      "predicted_candidate_count": 1813,
       "predicted_kinds": {
-        "frequency": 450,
-        "no_reference": 46,
-        "seizure_free": 117,
-        "unknown": 92,
-        "unresolved_multiple": 45
+        "frequency": 447,
+        "no_reference": 22,
+        "seizure_free": 123,
+        "unknown": 114,
+        "unresolved_multiple": 44
       },
-      "purist_accuracy": 0.8947,
-      "purist_correct": 671,
+      "purist_accuracy": 0.888,
+      "purist_correct": 666,
       "scorable": 750
     },
     "rules_only": {
-      "pragmatic_accuracy": 0.9053,
-      "pragmatic_correct": 679,
+      "micro_f1": 0.9213,
+      "pragmatic_accuracy": 0.9347,
+      "pragmatic_correct": 701,
+      "pragmatic_micro_f1": 0.9347,
+      "predicted_candidate_count": 1245,
       "predicted_kinds": {
-        "frequency": 458,
-        "no_reference": 117,
+        "frequency": 457,
+        "no_reference": 108,
         "seizure_free": 133,
-        "unknown": 12,
-        "unresolved_multiple": 30
+        "unknown": 15,
+        "unresolved_multiple": 37
       },
-      "purist_accuracy": 0.892,
-      "purist_correct": 669,
+      "purist_accuracy": 0.9213,
+      "purist_correct": 691,
       "scorable": 750
     }
   },
-  "shared_raw_output": "gan_llm_extract_raw",
+  "shared_raw_output": "gan_llm_extract",
   "split": "dev750"
 }

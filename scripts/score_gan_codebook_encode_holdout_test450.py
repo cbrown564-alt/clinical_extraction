@@ -12,8 +12,8 @@ from pathlib import Path
 from typing import Any
 
 from clinical_extraction.core.paths import discover_repo_root
-from clinical_extraction.paper.gan_later_stage import extract_rows_path
 from clinical_extraction.paper.gan_cell_replay import score_label
+from clinical_extraction.paper.gan_later_stage import extract_rows_path
 from clinical_extraction.paper.methods import gan_machine_split, gan_row_count
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     GanFrequencyRecord,
@@ -43,7 +43,7 @@ LOCKED_CELL3 = {
     "llm_select_only": 368,
 }
 LOCKED_GRID = {
-    "rules": {"extract": 329, "encode": 329, "select": 329},
+    "rules": {"extract": 321, "encode": 321, "select": 321},
     "rules_then_llm": {"extract": 371, "encode": 361, "select": 368},
     "llm": {"extract": 354, "encode": 354, "select": 357},
 }

@@ -34,7 +34,7 @@ export async function POST(request: Request) {
         candidate_events: [
           {
             event_id: eventId,
-            kind: "frequency",
+            kind: "frequency_rate",
             raw_value: goldLabel,
             evidence,
             start_char: null,
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
           {
             event_id: eventId,
             normalized_label: goldLabel,
-            semantic_kind: "frequency",
+            semantic_kind: "frequency_rate",
             monthly_frequency: 0,
             validation_errors: [],
           },

@@ -14,6 +14,7 @@ from clinical_extraction.paper.exect import (
     HOSTED_SLUGS,
     LOCAL_SLUGS,
     MODELS,
+    apply_temperature,
     cell3_thinking_max_tokens,
     paper_work_suffix,
     run_compact,
@@ -71,7 +72,7 @@ def test_living_roster_is_the_six_paper_models() -> None:
     assert MODELS["grok46"].credential_env == ("AI_GATEWAY_API_KEY",)
     assert MODELS["grok46"].reasoning_effort == "low"
     assert MODELS["grok46"].timeout == 600
-    assert MODELS["grok46"].temperature == 1.0
+    assert MODELS["grok46"].temperature == 0.0
     assert MODELS["gpt56luna"].credential_env == ("OPENAI_API_KEY",)
     assert MODELS["gpt56luna"].reasoning_effort == "low"
     assert MODELS["gpt56luna"].model == "openai/gpt-5.6-luna"
@@ -118,6 +119,14 @@ def test_living_roster_is_the_six_paper_models() -> None:
         )
         == "reasoning_high_temperature_0"
     )
+    assert paper_work_suffix(MODELS["grok46"]) is None
+    assert (
+        paper_work_suffix(replace(MODELS["grok46"], temperature=1.0)) == "temperature_1"
+    )
+    assert apply_temperature(MODELS["grok46"], None) is MODELS["grok46"]
+    assert apply_temperature(MODELS["grok46"], 1.0).temperature == 1.0
+    with pytest.raises(RuntimeError, match="living paper setting"):
+        apply_temperature(MODELS["grok46"], 0.0)
 
 
 def test_sol_paper_lm_uses_vercel_ai_gateway(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -150,6 +159,12 @@ def test_live_methods_are_the_paper_llm_cells() -> None:
         "gan_llm_select",
         "gan_llm_select_from_extract",
         "gan_llm_extract",
+        "gan_llm_extract_no_examples",
+        "gan_llm_extract_holgate_like",
+        "gan_llm_extract_holgate_label",
+        "gan_llm_extract_no_evidence",
+        "gan_llm_extract_examples_only",
+        "gan_llm_extract_encode_select",
         "gan_llm_and_rules_extract",
         "exect_llm_pre_post",
         "exect_llm_with_rules",
@@ -284,7 +299,7 @@ def test_cli_dispatches_gan_live(monkeypatch: pytest.MonkeyPatch) -> None:
         reasoning_effort: str | None = None,
         row_limit: int | None = None,
         slice_name: str | None = None,
-        temperature: float | None = None,
+        **_kwargs: object,
     ) -> dict[str, object]:
         captured.update(
             method=method,
@@ -454,7 +469,7 @@ def test_cli_dispatches_non_living_effort_to_live_runners(
         reasoning_effort: str | None = None,
         row_limit: int | None = None,
         slice_name: str | None = None,
-        temperature: float | None = None,
+        **_kwargs: object,
     ) -> dict[str, object]:
         gan.update(
             method=method,

@@ -1,79 +1,92 @@
 {
   "claim_boundary": "Gan development replay. Not holdout.",
   "format_only_check": {
-    "note": "Cell 3 is encode (selected-evidence derivation). It stays encode-only only when selected_event_ids never change.",
-    "predicted_kind_changes": 236,
-    "purist_harms": 1,
-    "purist_rescues": 174,
-    "repair_mode": "llm_encode",
+    "note": "Living cell 3 is codebook encode then rule select (gan_rules_encode, llm_select_after_codebook). selected_event_id_changes still records whether encode kept the extract pick. Historical llm_encode is the five-cell encode ablation, not this roster.",
+    "predicted_kind_changes": 46,
+    "purist_harms": 0,
+    "purist_rescues": 36,
+    "repair_mode": "gan_rules_encode",
+    "select_repair_mode": "llm_select_after_codebook",
     "selected_event_id_changes": 0,
     "used_as_rung_3": true
   },
-  "generated_on": "2026-08-21",
+  "generated_on": "2026-08-29",
   "model_slug": "gpt56luna",
   "row_count": 750,
   "row_policy": "development_review_permitted",
   "rungs": {
     "llm_encode": {
-      "pragmatic_accuracy": 0.8373,
-      "pragmatic_correct": 628,
+      "micro_f1": 0.7653,
+      "pragmatic_accuracy": 0.832,
+      "pragmatic_correct": 624,
+      "pragmatic_micro_f1": 0.832,
+      "predicted_candidate_count": 1842,
       "predicted_kinds": {
-        "frequency": 371,
-        "no_reference": 67,
-        "seizure_free": 145,
-        "unknown": 111,
-        "unresolved_multiple": 54,
+        "frequency": 393,
+        "no_reference": 37,
+        "seizure_free": 129,
+        "unknown": 152,
+        "unresolved_multiple": 37,
         "unscorable": 2
       },
-      "purist_accuracy": 0.7947,
-      "purist_correct": 596,
+      "purist_accuracy": 0.7653,
+      "purist_correct": 574,
       "scorable": 748
     },
     "llm_extract": {
-      "pragmatic_accuracy": 0.6147,
-      "pragmatic_correct": 461,
+      "micro_f1": 0.7173,
+      "pragmatic_accuracy": 0.784,
+      "pragmatic_correct": 588,
+      "pragmatic_micro_f1": 0.784,
+      "predicted_candidate_count": 1842,
       "predicted_kinds": {
-        "frequency": 216,
-        "no_reference": 23,
-        "seizure_free": 143,
-        "unknown": 99,
-        "unresolved_multiple": 54,
-        "unscorable": 215
+        "frequency": 370,
+        "no_reference": 24,
+        "seizure_free": 126,
+        "unknown": 161,
+        "unresolved_multiple": 34,
+        "unscorable": 35
       },
-      "purist_accuracy": 0.564,
-      "purist_correct": 423,
-      "scorable": 535
+      "purist_accuracy": 0.7173,
+      "purist_correct": 538,
+      "scorable": 715
     },
     "llm_select": {
-      "pragmatic_accuracy": 0.9227,
-      "pragmatic_correct": 692,
+      "micro_f1": 0.8253,
+      "pragmatic_accuracy": 0.8653,
+      "pragmatic_correct": 649,
+      "pragmatic_micro_f1": 0.8653,
+      "predicted_candidate_count": 1842,
       "predicted_kinds": {
-        "frequency": 430,
-        "no_reference": 42,
-        "seizure_free": 121,
-        "unknown": 100,
-        "unresolved_multiple": 55,
+        "frequency": 417,
+        "no_reference": 35,
+        "seizure_free": 122,
+        "unknown": 136,
+        "unresolved_multiple": 38,
         "unscorable": 2
       },
-      "purist_accuracy": 0.8987,
-      "purist_correct": 674,
+      "purist_accuracy": 0.8253,
+      "purist_correct": 619,
       "scorable": 748
     },
     "rules_only": {
-      "pragmatic_accuracy": 0.9053,
-      "pragmatic_correct": 679,
+      "micro_f1": 0.9213,
+      "pragmatic_accuracy": 0.9347,
+      "pragmatic_correct": 701,
+      "pragmatic_micro_f1": 0.9347,
+      "predicted_candidate_count": 1245,
       "predicted_kinds": {
-        "frequency": 458,
-        "no_reference": 117,
+        "frequency": 457,
+        "no_reference": 108,
         "seizure_free": 133,
-        "unknown": 12,
-        "unresolved_multiple": 30
+        "unknown": 15,
+        "unresolved_multiple": 37
       },
-      "purist_accuracy": 0.892,
-      "purist_correct": 669,
+      "purist_accuracy": 0.9213,
+      "purist_correct": 691,
       "scorable": 750
     }
   },
-  "shared_raw_output": "gan_llm_extract_raw",
+  "shared_raw_output": "gan_llm_extract",
   "split": "dev750"
 }

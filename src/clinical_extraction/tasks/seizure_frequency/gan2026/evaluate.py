@@ -34,7 +34,7 @@ def evaluate_predictions(
     y_true: Sequence[float],
     y_pred: Sequence[float],
     method: str = "purist",
-) -> dict[str, dict[str, float]]:
+) -> dict[str, Any]:
     y_true_cat = convert_to_categories(y_true, method=method)
     y_pred_cat = convert_to_categories(y_pred, method=method)
 
@@ -65,8 +65,11 @@ def evaluate_predictions(
     weighted_recall = sum(metrics["recall"] * support[metrics["label"]] for metrics in per_label)
     weighted_f1 = sum(metrics["f1"] * support[metrics["label"]] for metrics in per_label)
 
-    results: dict[str, dict[str, float]] = {
-        "micro": _rounded_metrics(micro_precision, micro_recall, micro_f1, accuracy),
+    micro = _rounded_metrics(micro_precision, micro_recall, micro_f1, accuracy)
+    micro["micro_f1"] = micro["f1"]
+    results: dict[str, Any] = {
+        "micro_f1": micro["micro_f1"],
+        "micro": micro,
         "macro": _rounded_metrics(macro_precision, macro_recall, macro_f1, accuracy),
         "weighted": _rounded_metrics(
             _safe_div(weighted_precision, total_support),
@@ -83,7 +86,7 @@ def evaluate_frequency_records(
     prediction_key: str,
     method: str = "purist",
     gold_key: str = "gold_monthly_frequency",
-) -> dict[str, dict[str, float]]:
+) -> dict[str, Any]:
     y_true = [float(record[gold_key]) for record in records]
     y_pred = [float(record[prediction_key]) for record in records]
     return evaluate_predictions(y_true, y_pred, method=method)

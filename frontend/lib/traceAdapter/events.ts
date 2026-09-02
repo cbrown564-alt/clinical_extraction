@@ -4,7 +4,13 @@ import type {
   FullRecordResponse,
   TraceItem,
 } from "../types";
-import { findEvidenceSpan, buildScoreFromComparison, buildSchemaRepair, canonicalSemanticKind } from "./utils";
+import {
+  buildSchemaRepair,
+  buildScoreFromComparison,
+  canonicalSemanticKind,
+  findEvidenceSpan,
+  monthlyFrequencyFromLabel,
+} from "./utils";
 
 export function adaptEventsTrace(
   row: EventsArtifactRow,
@@ -60,7 +66,8 @@ export function adaptEventsTrace(
             ruleGroup: matchingEvt?.kind,
             metadata: {
               original_label: rawStr,
-              monthly_frequency: Math.round(n.monthly_frequency),
+              monthly_frequency:
+                monthlyFrequencyFromLabel(n.normalized_label) ?? n.monthly_frequency,
               ...(n.validation_errors && n.validation_errors.length > 0
                 ? { validation_errors: n.validation_errors }
                 : {}),

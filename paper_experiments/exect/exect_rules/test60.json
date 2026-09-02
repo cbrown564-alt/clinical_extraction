@@ -1,42 +1,28 @@
 {
-  "schema_version": "exectv2.rules_only_four_family_clinical_headline.test60.v1",
-  "protocol": "docs/experiments/exectv2/reliability/exectv2_primary_method_comparison_surface_protocol_2026-08-01.md",
-  "decision": "docs/decisions/0046-exect-primary-method-comparison-boundary.md",
-  "generated_on": "2026-08-15",
+  "schema_version": "exectv2.rules_only_three_stage_inventory.test60.v1",
+  "protocol": "docs/research/exectv2/exect_rules_only_three_stage_test60_aggregate_protocol_2026-08-27.md",
+  "generated_on": "2026-08-27",
   "split": "test60",
   "split_loader": "test",
   "row_count": 59,
   "row_policy": "aggregate_only",
-  "method": {
-    "pipeline": "deterministic_all9",
-    "scoring": "assembly_headline_target",
-    "production_rule": "restrict_and_rescore",
-    "include_diagnosis_resolution_candidate": false,
-    "include_diagnosis_benchmark_residuals": false,
-    "scored_families": [
-      "Diagnosis",
-      "SeizureFrequency",
-      "Prescription",
-      "Investigations"
-    ],
-    "non_key_entities_excluded_from_peer_score_only": true,
-    "investigations_extractor": "result_binding_2026-08-15"
+  "program": "run_letter_three_stage(ACCEPTED_THREE_STAGE_CONFIG)",
+  "scorer": "clinical_inventory_unit_keys",
+  "clinical_inventory": {
+    "f1": 0.8018,
+    "precision": 0.8494,
+    "recall": 0.7593
   },
-  "clinical_headline": {
-    "f1": 0.7918,
-    "precision": 0.8385,
-    "recall": 0.75
-  },
-  "clinical_headline_by_family": {
+  "clinical_inventory_by_family": {
     "Diagnosis": {
-      "f1": 0.855,
-      "precision": 0.8839,
-      "recall": 0.8279
+      "f1": 0.8478,
+      "precision": 0.8797,
+      "recall": 0.8182
     },
     "SeizureFrequency": {
-      "f1": 0.5797,
-      "precision": 0.625,
-      "recall": 0.5405
+      "f1": 0.6131,
+      "precision": 0.6667,
+      "recall": 0.5676
     },
     "Prescription": {
       "f1": 0.8395,
@@ -44,22 +30,23 @@
       "recall": 0.8
     },
     "Investigations": {
-      "f1": 0.8706,
-      "precision": 0.9737,
-      "recall": 0.7872
+      "f1": 0.8837,
+      "precision": 0.9744,
+      "recall": 0.8085
     }
   },
-  "mention_accounting": {
-    "all9_mentions": 394,
-    "four_family_mentions": 310,
-    "dropped_non_key_mentions": 84
+  "stage_rungs": {
+    "recognise": {"f1": 0.7934, "precision": 0.8376, "recall": 0.7536},
+    "encode": {"f1": 0.7994, "precision": 0.8439, "recall": 0.7593},
+    "select": {"f1": 0.8018, "precision": 0.8494, "recall": 0.7593},
+    "protocol": "docs/research/exectv2/exect_rules_only_stage_rungs_protocol_2026-08-27.md",
+    "artifact": "experiments/exect_rules_only_stage_rungs_test60_aggregate_20260827.json"
   },
-  "supersedes": "experiments/exectv2_rules_only_four_family_clinical_headline_test60_20260801.json",
-  "claim_boundary": "Aggregate-only rules-only four-family clinical_headline on ExECT test60 after the 2026-08-15 Investigations result-binding rewrite. Sol-matched assembly headline_target. No letter identifiers, notes, predictions, or failure cases are included in this public artifact. Not the published ExECT benchmark or clinical validation.",
-  "sealed_predictions": {
-    "local_path": "scratch/holdout/exectv2_rules_only_four_family_test60_20260815/four_family_predictions.jsonl",
-    "sha256": "ff720637ebc53deb5e6b4eb0202b23dcf08aa5e734acde6f956a469ed141a52b",
-    "bytes": 109591,
-    "note": "Sealed under scratch/holdout; not for row inspection or public copy."
-  }
+  "supersedes": {
+    "schema_version": "exectv2.rules_only_four_family_clinical_headline.test60.v1",
+    "four_family_micro_f1": 0.7725,
+    "clinical_headline_f1": 0.7918
+  },
+  "aggregate_artifact": "experiments/exect_rules_only_three_stage_test60_aggregate_20260827.json",
+  "claim_boundary": "Aggregate-only promoted rules-only three-stage inventory on ExECT test60. No letter identifiers in public files. Not clinical validation."
 }

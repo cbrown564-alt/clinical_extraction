@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { isDemoSurface, lockDemoGanFamilies } from "@/lib/demoSurface";
 import { ganFamiliesFromDev750Panel } from "@/lib/ganPipelineOptions";
 import { readMockJson } from "../_mock";
 import { proxyPython } from "../_upstream";
@@ -33,13 +34,22 @@ export async function GET() {
         purist_accuracy?: number | null;
       }>;
     };
+    const families = ganFamiliesFromDev750Panel(panel);
     return Response.json({
       generated_on: "2026-08-19",
       source_artifact: "paper_experiments/gan/dev750_panel.json",
       claim_boundary: panel.claim_boundary,
-      families: ganFamiliesFromDev750Panel(panel),
+      families: isDemoSurface() ? lockDemoGanFamilies(families) : families,
     });
   } catch {
-    return Response.json(readMockJson("pipeline-families.json"));
+    const fallback = readMockJson<{ families: ReturnType<typeof ganFamiliesFromDev750Panel> }>(
+      "pipeline-families.json"
+    );
+    return Response.json({
+      ...fallback,
+      families: isDemoSurface()
+        ? lockDemoGanFamilies(fallback.families)
+        : fallback.families,
+    });
   }
 }

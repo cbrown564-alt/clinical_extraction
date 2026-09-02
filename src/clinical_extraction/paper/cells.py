@@ -89,8 +89,8 @@ EXECT_METHOD_FOR_RUNG: dict[RungId, str] = {
 }
 GAN_REPAIR_MODE_FOR_RUNG: dict[str, str] = {
     "llm_extract": "raw_model",
-    "llm_encode": "llm_encode",
-    "llm_select": "llm_select",
+    "llm_encode": "gan_rules_encode",
+    "llm_select": "llm_select_after_codebook",
     "llm_pre_post": "llm_select",
 }
 GAN_RUNG_SOURCE: dict[RungId, str] = {

@@ -1,28 +1,28 @@
-# ExECT LLM with rules is the both-extract alias
+# ExECT LLM with rules is the both-find alias
 
 Date: 2026-08-17
-Revised: 2026-08-23 (cited extract is `exect_llm_extract`; cited score is 4-family micro F1)
+Revised: 2026-08-23 (cited find is `exect_llm_extract`; cited score is 4-family micro F1)
 Status: current
 Owner: [paper methods](../methods.md)
 Related: [six-model roster](six-model-roster.md)
 
 ## Decision
 
-The both-extract ExECT call is `exect_llm_pre_post` (cell 2): living
+The both-find ExECT call is `exect_llm_pre_post` (cell 2): living
 `exect_llm_extract` plus suggested candidates in the prompt, then the
 same rule encode and rule select stack as cell 3. The live alias is
 `exect_llm_with_rules`.
 
 This is not the cited paper ExECT method. The cited row is cell 3:
-`exect_llm_extract` extract, then rule encode and rule select. The
+`exect_llm_extract` find, then rule encode and rule select. The
 cited score is **4-family micro F1** (`clinical_inventory_unit_keys`).
 See [six-model roster](six-model-roster.md).
 
 Compact and E5 are lineage labels for this alias and for the old
-hybrid extract path. The Compact extract ablation runner is
+hybrid find path. The Compact find ablation runner is
 `exect_llm_extract_filtered`. Do not cite Compact, E5, Compact/
 headline F1, `clinical_headline_unit_keys`, or hybrid F1 as the
-current cited extract or score. The retired Compact cell 2–5 select
+current cited find or score. The retired Compact cell 2–5 select
 stops (0.8031 / 0.8161 / 0.8173 / 0.7954) are lineage only. Do not
 relabel those cells as the paper method.
 
@@ -32,17 +32,17 @@ Full-ledger scores as peer columns. Grok has no Full ledger cell.
 
 ## Why
 
-The both-extract call keeps letter wording and scores lower than
-LLM extract alone; rule encode and rule select recover most of the
+The both-find call keeps letter wording and scores lower than
+LLM find alone; rule encode and rule select recover most of the
 score. That trade is the ablation story, not the headline method.
 
-Compact was the earlier cited hybrid extract path. The living cited
-extract is inventory `exect_llm_extract` and the cited score is
+Compact was the earlier cited hybrid find path. The living cited
+find is inventory `exect_llm_extract` and the cited score is
 4-family micro F1. Compact/headline F1 remains historical lineage,
 not the current headline metric.
 
 The paper should cite the method we run for headline tables: LLM
-extract (`exect_llm_extract`), then fixed rules, scored on 4-family
+find (`exect_llm_extract`), then fixed rules, scored on 4-family
 micro F1. Gemini five-cell grids carry the headline totals (peak
 cell 3 = 0.8674 on `test60`; five select stops 0.77 / 0.86 / 0.87 /
 0.86 / 0.85 at two decimals).
@@ -56,11 +56,11 @@ cell 3 = 0.8674 on `test60`; five select stops 0.77 / 0.86 / 0.87 /
   shared a denominator.
 - Full ledger numbers stay as the named control when cited.
 - Do not inspect `test60` rows.
-- Do not invent Qwen numbers for either extract identity.
+- Do not invent Qwen numbers for either find identity.
 - Tracked replay files live under `paper_experiments/`.
 
 ## Claim boundary
 
-A both-extract alias identity. Not the cited ExECT method. Not
+A both-find alias identity. Not the cited ExECT method. Not
 clinical validation and not the published ExECT benchmark. Holdout
 cells are aggregate-only.

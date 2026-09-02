@@ -1,0 +1,35 @@
+{
+  "candidate_config": "phase_c_candidate_config",
+  "claim_boundary": "Aggregate-only remasure of living source-near rules find. Select stays 325/450. Do not inspect holdout rows.",
+  "date": "2026-08-31",
+  "find_dialect": "gan_llm_extract_raw",
+  "gates": {
+    "encode_reproduces_292": false,
+    "select_reproduces_325": true
+  },
+  "holdout_loaded": true,
+  "model_calls": 0,
+  "protocol": "docs/research/gan2026/gan_rules_source_near_find_test450_protocol_2026-08-31.md",
+  "row_count": 450,
+  "row_policy": "aggregate_only",
+  "scorer": "purist",
+  "split": "test450",
+  "stops": {
+    "encode": {
+      "accuracy": 0.6311,
+      "n": 450,
+      "purist_correct": 284
+    },
+    "find": {
+      "accuracy": 0.4222,
+      "n": 450,
+      "purist_correct": 190
+    },
+    "select": {
+      "accuracy": 0.7222,
+      "n": 450,
+      "purist_correct": 325
+    }
+  },
+  "supersedes_fused_find_purist_correct": 292
+}

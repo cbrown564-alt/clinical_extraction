@@ -50,17 +50,31 @@ def extract_deterministic_all9(
     *,
     include_diagnosis_resolution_candidate: bool = False,
     include_diagnosis_benchmark_residuals: bool = False,
+    keep_unassociated_sf_anchors: bool = False,
+    diagnosis_service_context_exclusion: bool = False,
+    diagnosis_secondary_to_retention: bool = False,
+    diagnosis_focal_onset_alias: bool = False,
+    investigations_emit_resultless: bool = False,
 ) -> PredictedLetter:
     """Extract the active deterministic baseline entities from one letter."""
 
-    sf_prediction = extract_seizure_frequency(letter)
+    sf_prediction = extract_seizure_frequency(
+        letter,
+        keep_unassociated_anchors=keep_unassociated_sf_anchors,
+    )
     mentions = (
         *_extract_diagnoses(
             letter.note_text,
             include_resolution_candidate=include_diagnosis_resolution_candidate,
             include_benchmark_residuals=include_diagnosis_benchmark_residuals,
+            service_context_exclusion=diagnosis_service_context_exclusion,
+            secondary_to_retention=diagnosis_secondary_to_retention,
+            focal_onset_alias=diagnosis_focal_onset_alias,
         ),
-        *_extract_investigations(letter.note_text),
+        *_extract_investigations(
+            letter.note_text,
+            emit_resultless=investigations_emit_resultless,
+        ),
         *_extract_onsets(letter.note_text),
         *_extract_when_diagnosed(letter.note_text),
         *_extract_birth_history(letter.note_text),

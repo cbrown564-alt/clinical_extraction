@@ -126,12 +126,26 @@ export function groupGanPipelineOptions(options: PipelineFamilyItem[]) {
   })).filter((group) => group.options.length > 0);
 }
 
+export function isGanRulesRunId(runId: string | null | undefined): boolean {
+  if (!runId) return false;
+  if (runId === "rules" || runId === "rules_only") return true;
+  return (
+    runId.startsWith("gan2026_validation750_") &&
+    runId.endsWith("_rules") &&
+    !runId.endsWith("_llm_with_rules")
+  );
+}
+
 export function resolveGanPipelineOption(
   options: PipelineFamilyItem[],
   selectedRunId: string
 ): PipelineFamilyItem | undefined {
+  const exact = options.find((option) => option.run_id === selectedRunId);
+  if (exact) return exact;
+  if (!isGanRulesRunId(selectedRunId)) return undefined;
   return (
-    options.find((option) => option.run_id === selectedRunId)
+    options.find((option) => option.run_id === "rules") ??
+    options.find((option) => ganPickerMethodId(option) === "rules_only")
   );
 }
 

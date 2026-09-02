@@ -1,0 +1,750 @@
+{"letter_id": "10", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 per day", "purist_correct": true, "source_row_index": 10}
+{"letter_id": "40", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 per week", "purist_correct": true, "source_row_index": 40}
+{"letter_id": "79", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "6 to 7 per year", "purist_correct": true, "source_row_index": 79}
+{"letter_id": "103", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 to 4 per year", "purist_correct": true, "source_row_index": 103}
+{"letter_id": "128", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "17 per month", "purist_correct": true, "source_row_index": 128}
+{"letter_id": "156", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 6 day", "purist_correct": true, "source_row_index": 156}
+{"letter_id": "180", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 7 day", "purist_correct": true, "source_row_index": 180}
+{"letter_id": "182", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 day", "purist_correct": true, "source_row_index": 182}
+{"letter_id": "187", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 7 to 9 day", "purist_correct": true, "source_row_index": 187}
+{"letter_id": "190", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "1 cluster per 4 week, multiple per cluster", "purist_correct": false, "source_row_index": 190}
+{"letter_id": "198", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 4 week", "purist_correct": true, "source_row_index": 198}
+{"letter_id": "212", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 3 to 4 week", "purist_correct": true, "source_row_index": 212}
+{"letter_id": "218", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 3 week", "purist_correct": true, "source_row_index": 218}
+{"letter_id": "243", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 4 month", "purist_correct": true, "source_row_index": 243}
+{"letter_id": "278", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per week", "purist_correct": true, "source_row_index": 278}
+{"letter_id": "280", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per day", "purist_correct": true, "source_row_index": 280}
+{"letter_id": "338", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per month", "purist_correct": true, "source_row_index": 338}
+{"letter_id": "409", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per month", "purist_correct": true, "source_row_index": 409}
+{"letter_id": "419", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per year", "purist_correct": true, "source_row_index": 419}
+{"letter_id": "446", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per week", "purist_correct": true, "source_row_index": 446}
+{"letter_id": "466", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "21 to 28 per month", "purist_correct": true, "source_row_index": 466}
+{"letter_id": "467", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "9 per month", "purist_correct": true, "source_row_index": 467}
+{"letter_id": "531", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "12 to 30 per 3 month", "purist_correct": true, "source_row_index": 531}
+{"letter_id": "598", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 8 month", "purist_correct": true, "source_row_index": 598}
+{"letter_id": "659", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per 4 day", "purist_correct": true, "source_row_index": 659}
+{"letter_id": "665", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per 2 week", "purist_correct": true, "source_row_index": 665}
+{"letter_id": "678", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per 4 month", "purist_correct": true, "source_row_index": 678}
+{"letter_id": "694", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per week", "purist_correct": true, "source_row_index": 694}
+{"letter_id": "704", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per month", "purist_correct": true, "source_row_index": 704}
+{"letter_id": "725", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 725}
+{"letter_id": "731", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 731}
+{"letter_id": "743", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 743}
+{"letter_id": "744", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 744}
+{"letter_id": "763", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per week", "purist_correct": true, "source_row_index": 763}
+{"letter_id": "790", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 7 to 10 day", "purist_correct": true, "source_row_index": 790}
+{"letter_id": "816", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per month", "purist_correct": true, "source_row_index": 816}
+{"letter_id": "849", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "0 to 1 per year", "purist_correct": true, "source_row_index": 849}
+{"letter_id": "854", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per year", "purist_correct": true, "source_row_index": 854}
+{"letter_id": "869", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 869}
+{"letter_id": "891", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 day", "purist_correct": true, "source_row_index": 891}
+{"letter_id": "899", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 week", "purist_correct": true, "source_row_index": 899}
+{"letter_id": "959", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 month", "purist_correct": true, "source_row_index": 959}
+{"letter_id": "960", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 month", "purist_correct": true, "source_row_index": 960}
+{"letter_id": "978", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 month", "purist_correct": true, "source_row_index": 978}
+{"letter_id": "987", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 month", "purist_correct": true, "source_row_index": 987}
+{"letter_id": "1030", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 to 3 per month", "purist_correct": true, "source_row_index": 1030}
+{"letter_id": "1046", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 to 5 per month", "purist_correct": true, "source_row_index": 1046}
+{"letter_id": "1070", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 to 4 per week", "purist_correct": true, "source_row_index": 1070}
+{"letter_id": "1094", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 to 5 per week", "purist_correct": true, "source_row_index": 1094}
+{"letter_id": "1165", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "seizure free for 6 week", "purist_correct": false, "source_row_index": 1165}
+{"letter_id": "1171", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "7 to 9 per 3 week", "purist_correct": true, "source_row_index": 1171}
+{"letter_id": "1207", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "21 to 28 per 3 month", "purist_correct": true, "source_row_index": 1207}
+{"letter_id": "1223", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 to 4 per week", "purist_correct": true, "source_row_index": 1223}
+{"letter_id": "1249", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 to 4 per week", "purist_correct": true, "source_row_index": 1249}
+{"letter_id": "1281", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 to 7 per year", "purist_correct": true, "source_row_index": 1281}
+{"letter_id": "1317", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown, multiple per cluster", "purist_correct": true, "source_row_index": 1317}
+{"letter_id": "1357", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 1357}
+{"letter_id": "1363", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 to 2 per week", "purist_correct": false, "source_row_index": 1363}
+{"letter_id": "1413", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "9 per month", "purist_correct": true, "source_row_index": 1413}
+{"letter_id": "1454", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "7 per week", "purist_correct": true, "source_row_index": 1454}
+{"letter_id": "1486", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per month", "purist_correct": true, "source_row_index": 1486}
+{"letter_id": "1573", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "11 per week", "purist_correct": true, "source_row_index": 1573}
+{"letter_id": "1591", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "11 per month", "purist_correct": true, "source_row_index": 1591}
+{"letter_id": "1596", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "12 per week", "purist_correct": true, "source_row_index": 1596}
+{"letter_id": "1597", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "12 per month", "purist_correct": true, "source_row_index": 1597}
+{"letter_id": "1636", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 per month", "purist_correct": true, "source_row_index": 1636}
+{"letter_id": "1640", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 per week", "purist_correct": true, "source_row_index": 1640}
+{"letter_id": "1687", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per week", "purist_correct": true, "source_row_index": 1687}
+{"letter_id": "1694", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per 2 week", "purist_correct": true, "source_row_index": 1694}
+{"letter_id": "1695", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 1695}
+{"letter_id": "1706", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown, multiple per cluster", "purist_correct": false, "source_row_index": 1706}
+{"letter_id": "1707", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 1707}
+{"letter_id": "1772", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "11 per 6 month", "purist_correct": true, "source_row_index": 1772}
+{"letter_id": "1773", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 to 2 per week", "purist_correct": false, "source_row_index": 1773}
+{"letter_id": "1790", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "8 per 4 month", "purist_correct": true, "source_row_index": 1790}
+{"letter_id": "1794", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "8 per 2 month", "purist_correct": true, "source_row_index": 1794}
+{"letter_id": "1866", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "8 per 2 month", "purist_correct": true, "source_row_index": 1866}
+{"letter_id": "1880", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per week", "purist_correct": false, "source_row_index": 1880}
+{"letter_id": "1887", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 per 3 month", "purist_correct": true, "source_row_index": 1887}
+{"letter_id": "1914", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "7 per 3 month", "purist_correct": true, "source_row_index": 1914}
+{"letter_id": "1922", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "7 per 3 month", "purist_correct": true, "source_row_index": 1922}
+{"letter_id": "1923", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "7 per 6 month", "purist_correct": true, "source_row_index": 1923}
+{"letter_id": "1979", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "6 per 2 month", "purist_correct": true, "source_row_index": 1979}
+{"letter_id": "1980", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "6 per 3 month", "purist_correct": true, "source_row_index": 1980}
+{"letter_id": "2023", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 per month", "purist_correct": true, "source_row_index": 2023}
+{"letter_id": "2080", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 2080}
+{"letter_id": "2094", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per month", "purist_correct": true, "source_row_index": 2094}
+{"letter_id": "2114", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per month", "purist_correct": true, "source_row_index": 2114}
+{"letter_id": "2149", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 2149}
+{"letter_id": "2166", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 2166}
+{"letter_id": "2228", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 to 5 per 2 week", "purist_correct": true, "source_row_index": 2228}
+{"letter_id": "2233", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "6 to 7 per 2 month", "purist_correct": true, "source_row_index": 2233}
+{"letter_id": "2245", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "7 to 8 per 3 week", "purist_correct": true, "source_row_index": 2245}
+{"letter_id": "2259", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "6 to 8 per 3 month", "purist_correct": true, "source_row_index": 2259}
+{"letter_id": "2354", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "6 to 7 per week", "purist_correct": true, "source_row_index": 2354}
+{"letter_id": "2366", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 to 4 per year", "purist_correct": true, "source_row_index": 2366}
+{"letter_id": "2369", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 to 4 per month", "purist_correct": true, "source_row_index": 2369}
+{"letter_id": "2374", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "7 to 9 per month", "purist_correct": true, "source_row_index": 2374}
+{"letter_id": "2425", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "6 to 8 per month", "purist_correct": true, "source_row_index": 2425}
+{"letter_id": "2427", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 to 5 per month", "purist_correct": true, "source_row_index": 2427}
+{"letter_id": "2435", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 to 7 per 2 week", "purist_correct": true, "source_row_index": 2435}
+{"letter_id": "2437", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 to 3 per 2 month", "purist_correct": true, "source_row_index": 2437}
+{"letter_id": "2440", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 to 7 per 2 month", "purist_correct": true, "source_row_index": 2440}
+{"letter_id": "2456", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "6 to 7 per 2 week", "purist_correct": true, "source_row_index": 2456}
+{"letter_id": "2459", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "7 to 9 per 2 week", "purist_correct": true, "source_row_index": 2459}
+{"letter_id": "2487", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 to 3 per 3 month", "purist_correct": true, "source_row_index": 2487}
+{"letter_id": "2513", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 to 3 per 2 week", "purist_correct": true, "source_row_index": 2513}
+{"letter_id": "2541", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "8 to 9 per 2 week", "purist_correct": true, "source_row_index": 2541}
+{"letter_id": "2548", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 to 6 per 2 month", "purist_correct": true, "source_row_index": 2548}
+{"letter_id": "2554", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 to 10 per 2 month", "purist_correct": true, "source_row_index": 2554}
+{"letter_id": "2558", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 to 4 per 2 month", "purist_correct": true, "source_row_index": 2558}
+{"letter_id": "2609", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 2609}
+{"letter_id": "2622", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 2622}
+{"letter_id": "2628", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 2628}
+{"letter_id": "2678", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 2678}
+{"letter_id": "2681", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 2681}
+{"letter_id": "2698", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 day", "purist_correct": true, "source_row_index": 2698}
+{"letter_id": "2731", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 week", "purist_correct": true, "source_row_index": 2731}
+{"letter_id": "2740", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per month", "purist_correct": true, "source_row_index": 2740}
+{"letter_id": "2748", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per month", "purist_correct": true, "source_row_index": 2748}
+{"letter_id": "2759", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per month", "purist_correct": true, "source_row_index": 2759}
+{"letter_id": "2762", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per month", "purist_correct": true, "source_row_index": 2762}
+{"letter_id": "2765", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per month", "purist_correct": true, "source_row_index": 2765}
+{"letter_id": "2776", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per week", "purist_correct": true, "source_row_index": 2776}
+{"letter_id": "2789", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per week", "purist_correct": true, "source_row_index": 2789}
+{"letter_id": "2812", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 2812}
+{"letter_id": "2822", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 2822}
+{"letter_id": "2824", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 2824}
+{"letter_id": "2877", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per year", "purist_correct": true, "source_row_index": 2877}
+{"letter_id": "2887", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per week", "purist_correct": true, "source_row_index": 2887}
+{"letter_id": "2907", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 6 month", "purist_correct": true, "source_row_index": 2907}
+{"letter_id": "2932", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 9 month", "purist_correct": true, "source_row_index": 2932}
+{"letter_id": "2938", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 8 month", "purist_correct": true, "source_row_index": 2938}
+{"letter_id": "2965", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 1 year", "purist_correct": true, "source_row_index": 2965}
+{"letter_id": "2992", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 7 month", "purist_correct": true, "source_row_index": 2992}
+{"letter_id": "3015", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 1 year", "purist_correct": true, "source_row_index": 3015}
+{"letter_id": "3048", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 16 month", "purist_correct": true, "source_row_index": 3048}
+{"letter_id": "3058", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 12 month", "purist_correct": true, "source_row_index": 3058}
+{"letter_id": "3082", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 10 month", "purist_correct": true, "source_row_index": 3082}
+{"letter_id": "3095", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 12 month", "purist_correct": true, "source_row_index": 3095}
+{"letter_id": "3113", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 14 month", "purist_correct": true, "source_row_index": 3113}
+{"letter_id": "3118", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple month", "purist_correct": true, "source_row_index": 3118}
+{"letter_id": "3137", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for a vague duration", "purist_correct": true, "source_row_index": 3137}
+{"letter_id": "3224", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per month, 6 to 7 per cluster", "purist_correct": true, "source_row_index": 3224}
+{"letter_id": "3242", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 cluster per month, 5 per cluster", "purist_correct": true, "source_row_index": 3242}
+{"letter_id": "3261", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 cluster per month, 4 per cluster", "purist_correct": true, "source_row_index": 3261}
+{"letter_id": "3262", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 cluster per month, 5 per cluster", "purist_correct": true, "source_row_index": 3262}
+{"letter_id": "3281", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "8 per month", "purist_correct": true, "source_row_index": 3281}
+{"letter_id": "3297", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "6 per month", "purist_correct": true, "source_row_index": 3297}
+{"letter_id": "3325", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per week", "purist_correct": true, "source_row_index": 3325}
+{"letter_id": "3356", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 3356}
+{"letter_id": "3371", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 3371}
+{"letter_id": "3436", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 3436}
+{"letter_id": "3468", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 3468}
+{"letter_id": "3469", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 3469}
+{"letter_id": "3482", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 3482}
+{"letter_id": "3493", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 3493}
+{"letter_id": "3507", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 3507}
+{"letter_id": "3512", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 3512}
+{"letter_id": "3528", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 3528}
+{"letter_id": "3532", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 3532}
+{"letter_id": "3534", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 3534}
+{"letter_id": "3600", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 3600}
+{"letter_id": "3623", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "7 per week", "purist_correct": true, "source_row_index": 3623}
+{"letter_id": "3643", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "7 per week", "purist_correct": true, "source_row_index": 3643}
+{"letter_id": "3681", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "9 per month", "purist_correct": true, "source_row_index": 3681}
+{"letter_id": "3682", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "6 per month", "purist_correct": true, "source_row_index": 3682}
+{"letter_id": "3710", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 per week", "purist_correct": true, "source_row_index": 3710}
+{"letter_id": "3753", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 3753}
+{"letter_id": "3766", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "8 per year", "purist_correct": true, "source_row_index": 3766}
+{"letter_id": "3774", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "9 per year", "purist_correct": true, "source_row_index": 3774}
+{"letter_id": "3791", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "10 per year", "purist_correct": true, "source_row_index": 3791}
+{"letter_id": "3801", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "9 per month", "purist_correct": true, "source_row_index": 3801}
+{"letter_id": "3806", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "6 per month", "purist_correct": true, "source_row_index": 3806}
+{"letter_id": "3827", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "7 per month", "purist_correct": true, "source_row_index": 3827}
+{"letter_id": "3846", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per day", "purist_correct": true, "source_row_index": 3846}
+{"letter_id": "3849", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per day", "purist_correct": true, "source_row_index": 3849}
+{"letter_id": "3889", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "8 per year", "purist_correct": true, "source_row_index": 3889}
+{"letter_id": "3892", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per year", "purist_correct": true, "source_row_index": 3892}
+{"letter_id": "3940", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 per week", "purist_correct": true, "source_row_index": 3940}
+{"letter_id": "3949", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 per week", "purist_correct": true, "source_row_index": 3949}
+{"letter_id": "3988", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per week", "purist_correct": true, "source_row_index": 3988}
+{"letter_id": "3995", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per month", "purist_correct": true, "source_row_index": 3995}
+{"letter_id": "3999", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 3999}
+{"letter_id": "4022", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "8 per month", "purist_correct": true, "source_row_index": 4022}
+{"letter_id": "4026", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per month", "purist_correct": true, "source_row_index": 4026}
+{"letter_id": "4092", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 to 3 week", "purist_correct": true, "source_row_index": 4092}
+{"letter_id": "4100", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 to 3 week", "purist_correct": true, "source_row_index": 4100}
+{"letter_id": "4110", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 1 to 2 day", "purist_correct": true, "source_row_index": 4110}
+{"letter_id": "4116", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 1 to 2 day", "purist_correct": true, "source_row_index": 4116}
+{"letter_id": "4173", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 week", "purist_correct": true, "source_row_index": 4173}
+{"letter_id": "4243", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 to 3 week", "purist_correct": true, "source_row_index": 4243}
+{"letter_id": "4258", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 per week", "purist_correct": true, "source_row_index": 4258}
+{"letter_id": "4337", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per 4 month", "purist_correct": false, "source_row_index": 4337}
+{"letter_id": "4345", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 per month", "purist_correct": true, "source_row_index": 4345}
+{"letter_id": "4368", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 per 3 month", "purist_correct": true, "source_row_index": 4368}
+{"letter_id": "4402", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "7 per 7 month", "purist_correct": true, "source_row_index": 4402}
+{"letter_id": "4410", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 to 3 month", "purist_correct": true, "source_row_index": 4410}
+{"letter_id": "4478", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "19 per week", "purist_correct": true, "source_row_index": 4478}
+{"letter_id": "4480", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 to 5 per week", "purist_correct": true, "source_row_index": 4480}
+{"letter_id": "4496", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "7 to 8 per 3 month", "purist_correct": true, "source_row_index": 4496}
+{"letter_id": "4562", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 6 week", "purist_correct": true, "source_row_index": 4562}
+{"letter_id": "4563", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 4 month", "purist_correct": true, "source_row_index": 4563}
+{"letter_id": "4574", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 4 week", "purist_correct": true, "source_row_index": 4574}
+{"letter_id": "4592", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 month", "purist_correct": true, "source_row_index": 4592}
+{"letter_id": "4597", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 3 week", "purist_correct": true, "source_row_index": 4597}
+{"letter_id": "4624", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 3 to 4 day", "purist_correct": true, "source_row_index": 4624}
+{"letter_id": "4631", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 14 to 21 day", "purist_correct": true, "source_row_index": 4631}
+{"letter_id": "4690", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 4690}
+{"letter_id": "4694", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 4694}
+{"letter_id": "4700", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 4700}
+{"letter_id": "4709", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 4709}
+{"letter_id": "4731", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 4731}
+{"letter_id": "4732", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 4732}
+{"letter_id": "4771", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "2 per 6 week", "purist_correct": false, "source_row_index": 4771}
+{"letter_id": "4839", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 4 month", "purist_correct": true, "source_row_index": 4839}
+{"letter_id": "4842", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for a vague duration", "purist_correct": true, "source_row_index": 4842}
+{"letter_id": "4910", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 2 year", "purist_correct": true, "source_row_index": 4910}
+{"letter_id": "4919", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 2 year", "purist_correct": true, "source_row_index": 4919}
+{"letter_id": "4926", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 1 year", "purist_correct": true, "source_row_index": 4926}
+{"letter_id": "4951", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple month", "purist_correct": true, "source_row_index": 4951}
+{"letter_id": "4956", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 7 month", "purist_correct": true, "source_row_index": 4956}
+{"letter_id": "4992", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 11 month", "purist_correct": true, "source_row_index": 4992}
+{"letter_id": "4994", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 6 month", "purist_correct": true, "source_row_index": 4994}
+{"letter_id": "5040", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 6 month", "purist_correct": true, "source_row_index": 5040}
+{"letter_id": "5082", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 6 month", "purist_correct": true, "source_row_index": 5082}
+{"letter_id": "5092", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "no seizure frequency reference", "purist_correct": false, "source_row_index": 5092}
+{"letter_id": "5110", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 3 month", "purist_correct": true, "source_row_index": 5110}
+{"letter_id": "5121", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple month", "purist_correct": true, "source_row_index": 5121}
+{"letter_id": "5136", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 3 month", "purist_correct": true, "source_row_index": 5136}
+{"letter_id": "5141", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 2 month", "purist_correct": true, "source_row_index": 5141}
+{"letter_id": "5197", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for a vague duration", "purist_correct": true, "source_row_index": 5197}
+{"letter_id": "5210", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple month", "purist_correct": true, "source_row_index": 5210}
+{"letter_id": "5221", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple year", "purist_correct": true, "source_row_index": 5221}
+{"letter_id": "5248", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 2 year", "purist_correct": true, "source_row_index": 5248}
+{"letter_id": "5331", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 12 month", "purist_correct": true, "source_row_index": 5331}
+{"letter_id": "5345", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple month", "purist_correct": true, "source_row_index": 5345}
+{"letter_id": "5351", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 18 month", "purist_correct": true, "source_row_index": 5351}
+{"letter_id": "5379", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 6 month", "purist_correct": true, "source_row_index": 5379}
+{"letter_id": "5406", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 2 month", "purist_correct": true, "source_row_index": 5406}
+{"letter_id": "5476", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 5476}
+{"letter_id": "5490", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 5490}
+{"letter_id": "5491", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "2 per 6 week", "purist_correct": false, "source_row_index": 5491}
+{"letter_id": "5504", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 5504}
+{"letter_id": "5507", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "3 per 4 month", "purist_correct": false, "source_row_index": 5507}
+{"letter_id": "5528", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per month", "purist_correct": true, "source_row_index": 5528}
+{"letter_id": "5534", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per multiple month", "purist_correct": true, "source_row_index": 5534}
+{"letter_id": "5551", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per day", "purist_correct": true, "source_row_index": 5551}
+{"letter_id": "5567", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per week", "purist_correct": true, "source_row_index": 5567}
+{"letter_id": "5584", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per week", "purist_correct": true, "source_row_index": 5584}
+{"letter_id": "5624", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 10 day", "purist_correct": true, "source_row_index": 5624}
+{"letter_id": "5652", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 8 day", "purist_correct": true, "source_row_index": 5652}
+{"letter_id": "5682", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 to 4 per month", "purist_correct": true, "source_row_index": 5682}
+{"letter_id": "5696", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per 4 month", "purist_correct": true, "source_row_index": 5696}
+{"letter_id": "5763", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "6 per 3 month", "purist_correct": true, "source_row_index": 5763}
+{"letter_id": "5767", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 1 to 2 week", "purist_correct": true, "source_row_index": 5767}
+{"letter_id": "5791", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per 3 month", "purist_correct": true, "source_row_index": 5791}
+{"letter_id": "5827", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": false, "source_row_index": 5827}
+{"letter_id": "5837", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 5837}
+{"letter_id": "5866", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 per 6 week", "purist_correct": true, "source_row_index": 5866}
+{"letter_id": "5873", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per 6 week", "purist_correct": false, "source_row_index": 5873}
+{"letter_id": "5921", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 6 to 8 week", "purist_correct": true, "source_row_index": 5921}
+{"letter_id": "5954", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per week", "purist_correct": true, "source_row_index": 5954}
+{"letter_id": "5961", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 to 3 week", "purist_correct": true, "source_row_index": 5961}
+{"letter_id": "5974", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 5974}
+{"letter_id": "5977", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 5977}
+{"letter_id": "5995", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per 9 month", "purist_correct": true, "source_row_index": 5995}
+{"letter_id": "5996", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 5996}
+{"letter_id": "6026", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per 2 month", "purist_correct": true, "source_row_index": 6026}
+{"letter_id": "6029", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 6029}
+{"letter_id": "6034", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 6034}
+{"letter_id": "6065", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "12 per 3 month", "purist_correct": false, "source_row_index": 6065}
+{"letter_id": "6077", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "1 per 8 month", "purist_correct": false, "source_row_index": 6077}
+{"letter_id": "6087", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 6087}
+{"letter_id": "6094", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 per 6 to 8 week", "purist_correct": true, "source_row_index": 6094}
+{"letter_id": "6112", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 to 5 per month", "purist_correct": true, "source_row_index": 6112}
+{"letter_id": "6131", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 6131}
+{"letter_id": "6137", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 to 3 week", "purist_correct": true, "source_row_index": 6137}
+{"letter_id": "6153", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "9 per 4 week", "purist_correct": true, "source_row_index": 6153}
+{"letter_id": "6180", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per week", "purist_correct": true, "source_row_index": 6180}
+{"letter_id": "6192", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 6192}
+{"letter_id": "6204", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per month", "purist_correct": true, "source_row_index": 6204}
+{"letter_id": "6209", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 6209}
+{"letter_id": "6244", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 6244}
+{"letter_id": "6251", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 6251}
+{"letter_id": "6273", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 6273}
+{"letter_id": "6319", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per week", "purist_correct": true, "source_row_index": 6319}
+{"letter_id": "6321", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "2 per 3 month", "purist_correct": false, "source_row_index": 6321}
+{"letter_id": "6331", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per 6 week", "purist_correct": true, "source_row_index": 6331}
+{"letter_id": "6358", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for a duration", "purist_correct": true, "source_row_index": 6358}
+{"letter_id": "6368", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "1 per 1 to 2 week", "purist_correct": false, "source_row_index": 6368}
+{"letter_id": "6395", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 to 2 per month", "purist_correct": true, "source_row_index": 6395}
+{"letter_id": "6501", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 6501}
+{"letter_id": "6509", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per 2 week", "purist_correct": true, "source_row_index": 6509}
+{"letter_id": "6571", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "seizure free for 3 to 4 month", "purist_correct": false, "source_row_index": 6571}
+{"letter_id": "6607", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 6607}
+{"letter_id": "6684", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per 4 month", "purist_correct": true, "source_row_index": 6684}
+{"letter_id": "6701", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 per 3 week", "purist_correct": true, "source_row_index": 6701}
+{"letter_id": "6738", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 6 to 8 week", "purist_correct": true, "source_row_index": 6738}
+{"letter_id": "6852", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 to 6 per month", "purist_correct": true, "source_row_index": 6852}
+{"letter_id": "6889", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per week", "purist_correct": true, "source_row_index": 6889}
+{"letter_id": "6952", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per week", "purist_correct": true, "source_row_index": 6952}
+{"letter_id": "6967", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 6967}
+{"letter_id": "6987", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 6987}
+{"letter_id": "7093", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 7093}
+{"letter_id": "7126", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 7126}
+{"letter_id": "7141", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "2 per 2 month", "purist_correct": false, "source_row_index": 7141}
+{"letter_id": "7167", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 cluster per 6 week, 2 to 4 per cluster", "purist_correct": true, "source_row_index": 7167}
+{"letter_id": "7168", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "2 per year", "purist_correct": false, "source_row_index": 7168}
+{"letter_id": "7192", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per week", "purist_correct": true, "source_row_index": 7192}
+{"letter_id": "7195", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "1 per month", "purist_correct": false, "source_row_index": 7195}
+{"letter_id": "7196", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "6 per 6 week", "purist_correct": true, "source_row_index": 7196}
+{"letter_id": "7198", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "3 per 2 month", "purist_correct": false, "source_row_index": 7198}
+{"letter_id": "7275", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per 3 month", "purist_correct": true, "source_row_index": 7275}
+{"letter_id": "7290", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 7290}
+{"letter_id": "7316", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 to 2 per month", "purist_correct": true, "source_row_index": 7316}
+{"letter_id": "7389", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 7389}
+{"letter_id": "7392", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 to 4 per week", "purist_correct": true, "source_row_index": 7392}
+{"letter_id": "7401", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 cluster per 6 week, 1 to 2 per cluster", "purist_correct": true, "source_row_index": 7401}
+{"letter_id": "7409", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "1 per week", "purist_correct": false, "source_row_index": 7409}
+{"letter_id": "7455", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 7455}
+{"letter_id": "7475", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per 6 month", "purist_correct": true, "source_row_index": 7475}
+{"letter_id": "7491", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 7491}
+{"letter_id": "7506", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 7506}
+{"letter_id": "7573", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 week", "purist_correct": true, "source_row_index": 7573}
+{"letter_id": "7581", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 to 3 per week", "purist_correct": true, "source_row_index": 7581}
+{"letter_id": "7615", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per month, 3 to 6 per cluster", "purist_correct": true, "source_row_index": 7615}
+{"letter_id": "7650", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 7650}
+{"letter_id": "7738", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 6 month", "purist_correct": true, "source_row_index": 7738}
+{"letter_id": "7785", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 12 month", "purist_correct": true, "source_row_index": 7785}
+{"letter_id": "7818", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 2 year", "purist_correct": true, "source_row_index": 7818}
+{"letter_id": "7834", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple month", "purist_correct": true, "source_row_index": 7834}
+{"letter_id": "7859", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "seizure free for multiple week", "purist_correct": false, "source_row_index": 7859}
+{"letter_id": "7872", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for a vague duration", "purist_correct": true, "source_row_index": 7872}
+{"letter_id": "7911", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for a vague duration", "purist_correct": true, "source_row_index": 7911}
+{"letter_id": "7961", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 2 year", "purist_correct": true, "source_row_index": 7961}
+{"letter_id": "8002", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 6 to 8 week", "purist_correct": true, "source_row_index": 8002}
+{"letter_id": "8006", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 6 month", "purist_correct": true, "source_row_index": 8006}
+{"letter_id": "8079", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 18 month", "purist_correct": true, "source_row_index": 8079}
+{"letter_id": "8089", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple month", "purist_correct": true, "source_row_index": 8089}
+{"letter_id": "8124", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 13 month", "purist_correct": true, "source_row_index": 8124}
+{"letter_id": "8144", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 8144}
+{"letter_id": "8145", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 6 month", "purist_correct": true, "source_row_index": 8145}
+{"letter_id": "8160", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "1 per multiple week", "purist_correct": false, "source_row_index": 8160}
+{"letter_id": "8180", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 6 month", "purist_correct": true, "source_row_index": 8180}
+{"letter_id": "8188", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple month", "purist_correct": true, "source_row_index": 8188}
+{"letter_id": "8203", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for a vague duration", "purist_correct": true, "source_row_index": 8203}
+{"letter_id": "8224", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 3 month", "purist_correct": true, "source_row_index": 8224}
+{"letter_id": "8235", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for a vague duration", "purist_correct": true, "source_row_index": 8235}
+{"letter_id": "8264", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 4 month", "purist_correct": true, "source_row_index": 8264}
+{"letter_id": "8265", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 6 month", "purist_correct": true, "source_row_index": 8265}
+{"letter_id": "8354", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 3 month", "purist_correct": true, "source_row_index": 8354}
+{"letter_id": "8355", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 1 year", "purist_correct": true, "source_row_index": 8355}
+{"letter_id": "8400", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 8400}
+{"letter_id": "8419", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 to 2 per week", "purist_correct": true, "source_row_index": 8419}
+{"letter_id": "8474", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for a vague duration", "purist_correct": true, "source_row_index": 8474}
+{"letter_id": "8512", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 3 month", "purist_correct": true, "source_row_index": 8512}
+{"letter_id": "8564", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 6 month", "purist_correct": true, "source_row_index": 8564}
+{"letter_id": "8577", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 18 month", "purist_correct": true, "source_row_index": 8577}
+{"letter_id": "8581", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 4 month", "purist_correct": true, "source_row_index": 8581}
+{"letter_id": "8593", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 14 month", "purist_correct": true, "source_row_index": 8593}
+{"letter_id": "8596", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 11 month", "purist_correct": true, "source_row_index": 8596}
+{"letter_id": "8674", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple month", "purist_correct": true, "source_row_index": 8674}
+{"letter_id": "8724", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 3 month", "purist_correct": true, "source_row_index": 8724}
+{"letter_id": "8730", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 6 month", "purist_correct": true, "source_row_index": 8730}
+{"letter_id": "8794", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 6 month", "purist_correct": true, "source_row_index": 8794}
+{"letter_id": "8802", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 12 month", "purist_correct": true, "source_row_index": 8802}
+{"letter_id": "8805", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 6 month", "purist_correct": true, "source_row_index": 8805}
+{"letter_id": "8808", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 10 month", "purist_correct": true, "source_row_index": 8808}
+{"letter_id": "8820", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 7 month", "purist_correct": true, "source_row_index": 8820}
+{"letter_id": "8835", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 10 month", "purist_correct": true, "source_row_index": 8835}
+{"letter_id": "8854", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 8 month", "purist_correct": true, "source_row_index": 8854}
+{"letter_id": "8893", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 4 month", "purist_correct": true, "source_row_index": 8893}
+{"letter_id": "8922", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple month", "purist_correct": true, "source_row_index": 8922}
+{"letter_id": "8924", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 5 month", "purist_correct": true, "source_row_index": 8924}
+{"letter_id": "8938", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 10 month", "purist_correct": true, "source_row_index": 8938}
+{"letter_id": "8949", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 6 month", "purist_correct": true, "source_row_index": 8949}
+{"letter_id": "8969", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for a vague duration", "purist_correct": true, "source_row_index": 8969}
+{"letter_id": "9002", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 9002}
+{"letter_id": "9063", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 8 month", "purist_correct": true, "source_row_index": 9063}
+{"letter_id": "9103", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 9103}
+{"letter_id": "9163", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple month", "purist_correct": true, "source_row_index": 9163}
+{"letter_id": "9190", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 6 month", "purist_correct": true, "source_row_index": 9190}
+{"letter_id": "9215", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple month", "purist_correct": true, "source_row_index": 9215}
+{"letter_id": "9238", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple month", "purist_correct": true, "source_row_index": 9238}
+{"letter_id": "9250", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 9250}
+{"letter_id": "9259", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 1 year", "purist_correct": true, "source_row_index": 9259}
+{"letter_id": "9287", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 to 5 per week", "purist_correct": true, "source_row_index": 9287}
+{"letter_id": "9299", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 per week", "purist_correct": true, "source_row_index": 9299}
+{"letter_id": "9300", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 to 4 per week", "purist_correct": true, "source_row_index": 9300}
+{"letter_id": "9344", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per day", "purist_correct": true, "source_row_index": 9344}
+{"letter_id": "9365", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 day", "purist_correct": true, "source_row_index": 9365}
+{"letter_id": "9368", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 day", "purist_correct": true, "source_row_index": 9368}
+{"letter_id": "9391", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per month", "purist_correct": true, "source_row_index": 9391}
+{"letter_id": "9397", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per month", "purist_correct": true, "source_row_index": 9397}
+{"letter_id": "9449", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 per 6 month", "purist_correct": true, "source_row_index": 9449}
+{"letter_id": "9462", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "7 per 11 month", "purist_correct": true, "source_row_index": 9462}
+{"letter_id": "9496", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "6 per 12 month", "purist_correct": true, "source_row_index": 9496}
+{"letter_id": "9547", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 9547}
+{"letter_id": "9588", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 8 month", "purist_correct": true, "source_row_index": 9588}
+{"letter_id": "9704", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 9704}
+{"letter_id": "9815", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 9815}
+{"letter_id": "9877", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 9877}
+{"letter_id": "9879", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown cluster count", "purist_correct": true, "source_row_index": 9879}
+{"letter_id": "9888", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 9888}
+{"letter_id": "9912", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 9912}
+{"letter_id": "9937", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per multiple week, multiple per cluster", "purist_correct": true, "source_row_index": 9937}
+{"letter_id": "9943", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per 4 to 5 week, multiple per cluster", "purist_correct": true, "source_row_index": 9943}
+{"letter_id": "9955", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per month, multiple per cluster", "purist_correct": true, "source_row_index": 9955}
+{"letter_id": "10003", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per week, multiple per cluster", "purist_correct": true, "source_row_index": 10003}
+{"letter_id": "10047", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 cluster per 3 month, multiple per cluster", "purist_correct": true, "source_row_index": 10047}
+{"letter_id": "10063", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 cluster per 3 month, multiple per cluster", "purist_correct": true, "source_row_index": 10063}
+{"letter_id": "10097", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 cluster per month, multiple per cluster", "purist_correct": true, "source_row_index": 10097}
+{"letter_id": "10147", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 10147}
+{"letter_id": "10183", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "2 per 6 week", "purist_correct": false, "source_row_index": 10183}
+{"letter_id": "10189", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown, 3 to 4 per cluster", "purist_correct": true, "source_row_index": 10189}
+{"letter_id": "10200", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown, 2 to 4 per cluster", "purist_correct": true, "source_row_index": 10200}
+{"letter_id": "10237", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 10237}
+{"letter_id": "10245", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 10245}
+{"letter_id": "10260", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 10260}
+{"letter_id": "10264", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 10264}
+{"letter_id": "10266", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 10266}
+{"letter_id": "10268", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 10268}
+{"letter_id": "10371", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 2 year", "purist_correct": true, "source_row_index": 10371}
+{"letter_id": "10383", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per week, 5 per cluster", "purist_correct": true, "source_row_index": 10383}
+{"letter_id": "10386", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per week, 2 to 3 per cluster", "purist_correct": true, "source_row_index": 10386}
+{"letter_id": "10434", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown, 2 to 3 per cluster", "purist_correct": false, "source_row_index": 10434}
+{"letter_id": "10481", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 cluster per month, 2 to 3 per cluster", "purist_correct": false, "source_row_index": 10481}
+{"letter_id": "10487", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown cluster count", "purist_correct": false, "source_row_index": 10487}
+{"letter_id": "10509", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 10509}
+{"letter_id": "10517", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 to 4 cluster per week, multiple per cluster", "purist_correct": true, "source_row_index": 10517}
+{"letter_id": "10542", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown, 2 to 4 per cluster", "purist_correct": true, "source_row_index": 10542}
+{"letter_id": "10578", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown, 3 to 4 per cluster", "purist_correct": true, "source_row_index": 10578}
+{"letter_id": "10583", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown, 2 to 3 per cluster", "purist_correct": true, "source_row_index": 10583}
+{"letter_id": "10594", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown, 2 per cluster", "purist_correct": true, "source_row_index": 10594}
+{"letter_id": "10618", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown, 4 to 6 per cluster", "purist_correct": true, "source_row_index": 10618}
+{"letter_id": "10629", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 10629}
+{"letter_id": "10630", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown, 5 per cluster", "purist_correct": false, "source_row_index": 10630}
+{"letter_id": "10673", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 10673}
+{"letter_id": "10677", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per month, multiple per cluster", "purist_correct": true, "source_row_index": 10677}
+{"letter_id": "10753", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 10753}
+{"letter_id": "10807", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 cluster per month, multiple per cluster", "purist_correct": true, "source_row_index": 10807}
+{"letter_id": "10829", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 10829}
+{"letter_id": "10862", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per week, multiple per cluster", "purist_correct": true, "source_row_index": 10862}
+{"letter_id": "10865", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per week, multiple per cluster", "purist_correct": true, "source_row_index": 10865}
+{"letter_id": "10873", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per week, 6 per cluster", "purist_correct": true, "source_row_index": 10873}
+{"letter_id": "10894", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per week, 4 per cluster", "purist_correct": true, "source_row_index": 10894}
+{"letter_id": "10896", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per week, 3 to 4 per cluster", "purist_correct": true, "source_row_index": 10896}
+{"letter_id": "10902", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per week, 4 per cluster", "purist_correct": true, "source_row_index": 10902}
+{"letter_id": "10933", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 to 3 cluster per month, 5 per cluster", "purist_correct": true, "source_row_index": 10933}
+{"letter_id": "10942", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 cluster per month, 5 per cluster", "purist_correct": true, "source_row_index": 10942}
+{"letter_id": "10965", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 cluster per month, 4 to 5 per cluster", "purist_correct": true, "source_row_index": 10965}
+{"letter_id": "10967", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 cluster per month, 4 to 5 per cluster", "purist_correct": true, "source_row_index": 10967}
+{"letter_id": "10984", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 cluster per month, 3 to 4 per cluster", "purist_correct": true, "source_row_index": 10984}
+{"letter_id": "10996", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 to 2 cluster per month, 4 per cluster", "purist_correct": true, "source_row_index": 10996}
+{"letter_id": "11002", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 to 4 cluster per month, 5 per cluster", "purist_correct": true, "source_row_index": 11002}
+{"letter_id": "11035", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per 3 month, 1 per cluster", "purist_correct": true, "source_row_index": 11035}
+{"letter_id": "11109", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 cluster per month, 5 per cluster", "purist_correct": true, "source_row_index": 11109}
+{"letter_id": "11118", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 cluster per month, 6 per cluster", "purist_correct": true, "source_row_index": 11118}
+{"letter_id": "11131", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 cluster per month, 3 to 4 per cluster", "purist_correct": true, "source_row_index": 11131}
+{"letter_id": "11197", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per month, 4 to 6 per cluster", "purist_correct": true, "source_row_index": 11197}
+{"letter_id": "11216", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "seizure free for 4 month", "purist_correct": false, "source_row_index": 11216}
+{"letter_id": "11254", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "1 per 3 month", "purist_correct": false, "source_row_index": 11254}
+{"letter_id": "11259", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 11259}
+{"letter_id": "11262", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 11262}
+{"letter_id": "11272", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "1 per 3 month", "purist_correct": false, "source_row_index": 11272}
+{"letter_id": "11282", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "1 per 3 month", "purist_correct": false, "source_row_index": 11282}
+{"letter_id": "11337", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": null, "predicted_label": "one breakthrough event: the patient reported having a seizure on 06-Nov", "purist_correct": null, "source_row_index": 11337}
+{"letter_id": "11350", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "multiple per week", "purist_correct": false, "source_row_index": 11350}
+{"letter_id": "11380", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 11380}
+{"letter_id": "11389", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 11389}
+{"letter_id": "11400", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 11400}
+{"letter_id": "11405", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 11405}
+{"letter_id": "11408", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "no seizure frequency reference", "purist_correct": true, "source_row_index": 11408}
+{"letter_id": "11409", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 11409}
+{"letter_id": "11411", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 11411}
+{"letter_id": "11434", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 11434}
+{"letter_id": "11463", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "no seizure frequency reference", "purist_correct": true, "source_row_index": 11463}
+{"letter_id": "11562", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "no seizure frequency reference", "purist_correct": true, "source_row_index": 11562}
+{"letter_id": "11585", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "no seizure frequency reference", "purist_correct": true, "source_row_index": 11585}
+{"letter_id": "11606", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "no seizure frequency reference", "purist_correct": true, "source_row_index": 11606}
+{"letter_id": "11614", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "no seizure frequency reference", "purist_correct": true, "source_row_index": 11614}
+{"letter_id": "11632", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "no seizure frequency reference", "purist_correct": true, "source_row_index": 11632}
+{"letter_id": "11640", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 11640}
+{"letter_id": "11658", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "no seizure frequency reference", "purist_correct": true, "source_row_index": 11658}
+{"letter_id": "11681", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "no seizure frequency reference", "purist_correct": true, "source_row_index": 11681}
+{"letter_id": "11706", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "no seizure frequency reference", "purist_correct": true, "source_row_index": 11706}
+{"letter_id": "11711", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "no seizure frequency reference", "purist_correct": true, "source_row_index": 11711}
+{"letter_id": "11728", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "no seizure frequency reference", "purist_correct": true, "source_row_index": 11728}
+{"letter_id": "11734", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "no seizure frequency reference", "purist_correct": true, "source_row_index": 11734}
+{"letter_id": "11737", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 11737}
+{"letter_id": "11752", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "no seizure frequency reference", "purist_correct": true, "source_row_index": 11752}
+{"letter_id": "11756", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "no seizure frequency reference", "purist_correct": true, "source_row_index": 11756}
+{"letter_id": "11763", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "no seizure frequency reference", "purist_correct": true, "source_row_index": 11763}
+{"letter_id": "11804", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "no seizure frequency reference", "purist_correct": true, "source_row_index": 11804}
+{"letter_id": "11824", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "no seizure frequency reference", "purist_correct": true, "source_row_index": 11824}
+{"letter_id": "11841", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "no seizure frequency reference", "purist_correct": true, "source_row_index": 11841}
+{"letter_id": "11852", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 11852}
+{"letter_id": "12036", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per day", "purist_correct": true, "source_row_index": 12036}
+{"letter_id": "12041", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per day", "purist_correct": true, "source_row_index": 12041}
+{"letter_id": "12046", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per day", "purist_correct": true, "source_row_index": 12046}
+{"letter_id": "12051", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per day", "purist_correct": true, "source_row_index": 12051}
+{"letter_id": "12111", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per week", "purist_correct": true, "source_row_index": 12111}
+{"letter_id": "12127", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per week", "purist_correct": true, "source_row_index": 12127}
+{"letter_id": "12130", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per week", "purist_correct": true, "source_row_index": 12130}
+{"letter_id": "12139", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per week", "purist_correct": true, "source_row_index": 12139}
+{"letter_id": "12145", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per week", "purist_correct": true, "source_row_index": 12145}
+{"letter_id": "12192", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 12192}
+{"letter_id": "12218", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 12218}
+{"letter_id": "12236", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 12236}
+{"letter_id": "12246", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 to 2 per day", "purist_correct": true, "source_row_index": 12246}
+{"letter_id": "12314", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per week", "purist_correct": true, "source_row_index": 12314}
+{"letter_id": "12366", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 per day", "purist_correct": true, "source_row_index": 12366}
+{"letter_id": "12378", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 per day", "purist_correct": true, "source_row_index": 12378}
+{"letter_id": "12383", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 per day", "purist_correct": true, "source_row_index": 12383}
+{"letter_id": "12403", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 to 3 per day", "purist_correct": true, "source_row_index": 12403}
+{"letter_id": "12412", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per day", "purist_correct": true, "source_row_index": 12412}
+{"letter_id": "12422", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 12422}
+{"letter_id": "12438", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 12438}
+{"letter_id": "12456", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 12456}
+{"letter_id": "12460", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 12460}
+{"letter_id": "12468", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 12468}
+{"letter_id": "12484", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 to 4 per day", "purist_correct": true, "source_row_index": 12484}
+{"letter_id": "12502", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 per day", "purist_correct": true, "source_row_index": 12502}
+{"letter_id": "12506", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 per day", "purist_correct": true, "source_row_index": 12506}
+{"letter_id": "12537", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 12537}
+{"letter_id": "12548", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 12548}
+{"letter_id": "12551", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 12551}
+{"letter_id": "12556", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 12556}
+{"letter_id": "12562", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 12562}
+{"letter_id": "12573", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 12573}
+{"letter_id": "12584", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per week", "purist_correct": true, "source_row_index": 12584}
+{"letter_id": "12641", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 12641}
+{"letter_id": "12665", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 12665}
+{"letter_id": "12667", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 12667}
+{"letter_id": "12676", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 12676}
+{"letter_id": "12679", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 12679}
+{"letter_id": "12749", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 to 4 per day", "purist_correct": true, "source_row_index": 12749}
+{"letter_id": "12751", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "seizure free for a vague duration", "purist_correct": false, "source_row_index": 12751}
+{"letter_id": "12788", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "6 per 4 month", "purist_correct": true, "source_row_index": 12788}
+{"letter_id": "12810", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 per 2 month", "purist_correct": true, "source_row_index": 12810}
+{"letter_id": "12823", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 3 to 4 week", "purist_correct": false, "source_row_index": 12823}
+{"letter_id": "12827", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 per year", "purist_correct": false, "source_row_index": 12827}
+{"letter_id": "12835", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 per month", "purist_correct": true, "source_row_index": 12835}
+{"letter_id": "12877", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "10 per 4 month", "purist_correct": true, "source_row_index": 12877}
+{"letter_id": "12882", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 to 2 per month", "purist_correct": true, "source_row_index": 12882}
+{"letter_id": "12901", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "8 per year", "purist_correct": false, "source_row_index": 12901}
+{"letter_id": "12949", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "9 per 6 month", "purist_correct": true, "source_row_index": 12949}
+{"letter_id": "12950", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 to 3 week", "purist_correct": true, "source_row_index": 12950}
+{"letter_id": "12963", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 12963}
+{"letter_id": "12979", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per 4 month", "purist_correct": true, "source_row_index": 12979}
+{"letter_id": "13008", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 13008}
+{"letter_id": "13011", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per 4 month", "purist_correct": true, "source_row_index": 13011}
+{"letter_id": "13051", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 13051}
+{"letter_id": "13058", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown, multiple per cluster", "purist_correct": false, "source_row_index": 13058}
+{"letter_id": "13114", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 13114}
+{"letter_id": "13122", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 13122}
+{"letter_id": "13149", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "3 per 2 week", "purist_correct": false, "source_row_index": 13149}
+{"letter_id": "13178", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 6 month", "purist_correct": true, "source_row_index": 13178}
+{"letter_id": "13190", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 5 month", "purist_correct": true, "source_row_index": 13190}
+{"letter_id": "13209", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "1 cluster per 4 to 5 week, multiple per cluster", "purist_correct": false, "source_row_index": 13209}
+{"letter_id": "13267", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 13267}
+{"letter_id": "13290", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per 6 month", "purist_correct": true, "source_row_index": 13290}
+{"letter_id": "13327", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple year", "purist_correct": true, "source_row_index": 13327}
+{"letter_id": "13336", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 1.5 year", "purist_correct": true, "source_row_index": 13336}
+{"letter_id": "13349", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple year", "purist_correct": true, "source_row_index": 13349}
+{"letter_id": "13385", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 1.5 year", "purist_correct": true, "source_row_index": 13385}
+{"letter_id": "13450", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 1 year", "purist_correct": true, "source_row_index": 13450}
+{"letter_id": "13471", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 5 year", "purist_correct": true, "source_row_index": 13471}
+{"letter_id": "13478", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 1 year", "purist_correct": true, "source_row_index": 13478}
+{"letter_id": "13485", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple year", "purist_correct": true, "source_row_index": 13485}
+{"letter_id": "13487", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple year", "purist_correct": true, "source_row_index": 13487}
+{"letter_id": "13513", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for 1.5 year", "purist_correct": true, "source_row_index": 13513}
+{"letter_id": "13574", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple year", "purist_correct": true, "source_row_index": 13574}
+{"letter_id": "13595", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple year", "purist_correct": true, "source_row_index": 13595}
+{"letter_id": "13598", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple year", "purist_correct": true, "source_row_index": 13598}
+{"letter_id": "13608", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple year", "purist_correct": true, "source_row_index": 13608}
+{"letter_id": "13627", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "64 per 12 month", "purist_correct": true, "source_row_index": 13627}
+{"letter_id": "13635", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "22 per 3 month", "purist_correct": true, "source_row_index": 13635}
+{"letter_id": "13711", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "22 per 2 month", "purist_correct": true, "source_row_index": 13711}
+{"letter_id": "13721", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "20 per 2 month", "purist_correct": true, "source_row_index": 13721}
+{"letter_id": "13732", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "52 per 8 month", "purist_correct": true, "source_row_index": 13732}
+{"letter_id": "13843", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "no seizure frequency reference", "purist_correct": false, "source_row_index": 13843}
+{"letter_id": "13858", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 13858}
+{"letter_id": "13889", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "seizure free for multiple year", "purist_correct": true, "source_row_index": 13889}
+{"letter_id": "13893", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per year", "purist_correct": true, "source_row_index": 13893}
+{"letter_id": "13922", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 13922}
+{"letter_id": "14002", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 14002}
+{"letter_id": "14025", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "2 per 6 week", "purist_correct": false, "source_row_index": 14025}
+{"letter_id": "14029", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 14029}
+{"letter_id": "14040", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 14040}
+{"letter_id": "14076", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 14076}
+{"letter_id": "14092", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 14092}
+{"letter_id": "14096", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 14096}
+{"letter_id": "14137", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "3 to 4 per 3 month", "purist_correct": false, "source_row_index": 14137}
+{"letter_id": "14146", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "unknown", "purist_correct": true, "source_row_index": 14146}
+{"letter_id": "14187", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "seizure free for a duration", "purist_correct": false, "source_row_index": 14187}
+{"letter_id": "14214", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "seizure free for a vague duration", "purist_correct": false, "source_row_index": 14214}
+{"letter_id": "14250", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "seizure free for multiple week", "purist_correct": false, "source_row_index": 14250}
+{"letter_id": "14282", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": null, "predicted_label": "several recent events", "purist_correct": null, "source_row_index": 14282}
+{"letter_id": "14284", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 to 3 per month", "purist_correct": true, "source_row_index": 14284}
+{"letter_id": "14317", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 per 2 month", "purist_correct": true, "source_row_index": 14317}
+{"letter_id": "14332", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 per 2 month", "purist_correct": true, "source_row_index": 14332}
+{"letter_id": "14335", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 to 4 per 8 week", "purist_correct": true, "source_row_index": 14335}
+{"letter_id": "14383", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 to 4 per 3 month", "purist_correct": true, "source_row_index": 14383}
+{"letter_id": "14454", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per 2 month", "purist_correct": true, "source_row_index": 14454}
+{"letter_id": "14524", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 14524}
+{"letter_id": "14530", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per 2 month", "purist_correct": true, "source_row_index": 14530}
+{"letter_id": "14540", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "seizure free for a vague duration", "purist_correct": false, "source_row_index": 14540}
+{"letter_id": "14562", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "seizure free for 1 month", "purist_correct": false, "source_row_index": 14562}
+{"letter_id": "14567", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per 3 month", "purist_correct": true, "source_row_index": 14567}
+{"letter_id": "14581", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "seizure free for multiple month", "purist_correct": false, "source_row_index": 14581}
+{"letter_id": "14587", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per 3 month", "purist_correct": true, "source_row_index": 14587}
+{"letter_id": "14592", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per 6 month", "purist_correct": true, "source_row_index": 14592}
+{"letter_id": "14611", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 14611}
+{"letter_id": "14628", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per 2 month", "purist_correct": true, "source_row_index": 14628}
+{"letter_id": "14635", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 14635}
+{"letter_id": "14645", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 14645}
+{"letter_id": "14662", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "2 per month", "purist_correct": false, "source_row_index": 14662}
+{"letter_id": "14672", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "seizure free for a vague duration", "purist_correct": false, "source_row_index": 14672}
+{"letter_id": "14706", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per 5 month", "purist_correct": true, "source_row_index": 14706}
+{"letter_id": "14765", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per month", "purist_correct": true, "source_row_index": 14765}
+{"letter_id": "14806", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per month", "purist_correct": false, "source_row_index": 14806}
+{"letter_id": "14810", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per month", "purist_correct": true, "source_row_index": 14810}
+{"letter_id": "14821", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per month", "purist_correct": true, "source_row_index": 14821}
+{"letter_id": "14872", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per month", "purist_correct": true, "source_row_index": 14872}
+{"letter_id": "14943", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 3 month", "purist_correct": true, "source_row_index": 14943}
+{"letter_id": "14949", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per month", "purist_correct": true, "source_row_index": 14949}
+{"letter_id": "14965", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 14965}
+{"letter_id": "14973", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 14973}
+{"letter_id": "15004", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "seizure free for multiple month", "purist_correct": false, "source_row_index": 15004}
+{"letter_id": "15012", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "seizure free for multiple month", "purist_correct": false, "source_row_index": 15012}
+{"letter_id": "15021", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 3 month", "purist_correct": true, "source_row_index": 15021}
+{"letter_id": "15029", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "seizure free for multiple month", "purist_correct": false, "source_row_index": 15029}
+{"letter_id": "15094", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 15094}
+{"letter_id": "15108", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 to 3 per 15 month", "purist_correct": false, "source_row_index": 15108}
+{"letter_id": "15127", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 15127}
+{"letter_id": "15129", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 15129}
+{"letter_id": "15141", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 to 4 per 15 month", "purist_correct": true, "source_row_index": 15141}
+{"letter_id": "15168", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 15168}
+{"letter_id": "15193", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 15193}
+{"letter_id": "15242", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 15242}
+{"letter_id": "15262", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 15262}
+{"letter_id": "15267", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 15267}
+{"letter_id": "15306", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 15306}
+{"letter_id": "15317", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown", "purist_correct": false, "source_row_index": 15317}
+{"letter_id": "15376", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per 2 week, 4 to 6 per cluster", "purist_correct": true, "source_row_index": 15376}
+{"letter_id": "15404", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per 4 month, 3 to 4 per cluster", "purist_correct": true, "source_row_index": 15404}
+{"letter_id": "15429", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per 2 month, 4 per cluster", "purist_correct": true, "source_row_index": 15429}
+{"letter_id": "15431", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per 4 month, 5 per cluster", "purist_correct": true, "source_row_index": 15431}
+{"letter_id": "15442", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per 5 day, 2 per cluster", "purist_correct": true, "source_row_index": 15442}
+{"letter_id": "15470", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per day", "purist_correct": false, "source_row_index": 15470}
+{"letter_id": "15479", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per 4 to 5 day, 2 per cluster", "purist_correct": true, "source_row_index": 15479}
+{"letter_id": "15497", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per 4 to 5 day, 5 per cluster", "purist_correct": true, "source_row_index": 15497}
+{"letter_id": "15503", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per week, 3 to 4 per cluster", "purist_correct": true, "source_row_index": 15503}
+{"letter_id": "15513", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per 4 to 5 day, 2 to 3 per cluster", "purist_correct": true, "source_row_index": 15513}
+{"letter_id": "15519", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 cluster per month, 3 per cluster", "purist_correct": true, "source_row_index": 15519}
+{"letter_id": "15529", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown, 4 per cluster", "purist_correct": false, "source_row_index": 15529}
+{"letter_id": "15593", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown, 2 to 4 per cluster", "purist_correct": false, "source_row_index": 15593}
+{"letter_id": "15614", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per week", "purist_correct": true, "source_row_index": 15614}
+{"letter_id": "15628", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "multiple per week", "purist_correct": true, "source_row_index": 15628}
+{"letter_id": "15639", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per week", "purist_correct": true, "source_row_index": 15639}
+{"letter_id": "15642", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 to 4 per week", "purist_correct": true, "source_row_index": 15642}
+{"letter_id": "15650", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 to 4 per day", "purist_correct": true, "source_row_index": 15650}
+{"letter_id": "15672", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per day, multiple per cluster", "purist_correct": true, "source_row_index": 15672}
+{"letter_id": "15697", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per day, multiple per cluster", "purist_correct": true, "source_row_index": 15697}
+{"letter_id": "15715", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": false, "predicted_label": "unknown, 1 per day", "purist_correct": false, "source_row_index": 15715}
+{"letter_id": "15745", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 to 3 per week", "purist_correct": true, "source_row_index": 15745}
+{"letter_id": "15766", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 per week", "purist_correct": true, "source_row_index": 15766}
+{"letter_id": "15768", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 to 3 per week", "purist_correct": true, "source_row_index": 15768}
+{"letter_id": "15771", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per week", "purist_correct": true, "source_row_index": 15771}
+{"letter_id": "15772", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per week", "purist_correct": true, "source_row_index": 15772}
+{"letter_id": "15774", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per week", "purist_correct": true, "source_row_index": 15774}
+{"letter_id": "15783", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 to 3 per week", "purist_correct": true, "source_row_index": 15783}
+{"letter_id": "15802", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "7 per week", "purist_correct": true, "source_row_index": 15802}
+{"letter_id": "15831", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 to 4 per day", "purist_correct": true, "source_row_index": 15831}
+{"letter_id": "15834", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 per week", "purist_correct": true, "source_row_index": 15834}
+{"letter_id": "15964", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "11 per 3 month", "purist_correct": true, "source_row_index": 15964}
+{"letter_id": "15965", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "13 per 2 month", "purist_correct": true, "source_row_index": 15965}
+{"letter_id": "15966", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 per 3 month", "purist_correct": true, "source_row_index": 15966}
+{"letter_id": "15982", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "9 per 2 month", "purist_correct": true, "source_row_index": 15982}
+{"letter_id": "15986", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "11 per 3 month", "purist_correct": true, "source_row_index": 15986}
+{"letter_id": "15992", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "7 per 2 month", "purist_correct": true, "source_row_index": 15992}
+{"letter_id": "15997", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "10 per 3 month", "purist_correct": true, "source_row_index": 15997}
+{"letter_id": "16021", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "9 per 3 month", "purist_correct": true, "source_row_index": 16021}
+{"letter_id": "16041", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "9 per 3 month", "purist_correct": true, "source_row_index": 16041}
+{"letter_id": "16084", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "8 per 3 month", "purist_correct": true, "source_row_index": 16084}
+{"letter_id": "16091", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per 3 month", "purist_correct": true, "source_row_index": 16091}
+{"letter_id": "16097", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "17 per 4 month", "purist_correct": true, "source_row_index": 16097}
+{"letter_id": "16107", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "8 per 3 month", "purist_correct": true, "source_row_index": 16107}
+{"letter_id": "16108", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "12 per 4 month", "purist_correct": true, "source_row_index": 16108}
+{"letter_id": "16132", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "15 per 3 month", "purist_correct": true, "source_row_index": 16132}
+{"letter_id": "16133", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "18 per 4 month", "purist_correct": true, "source_row_index": 16133}
+{"letter_id": "16161", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "11 per 2 month", "purist_correct": true, "source_row_index": 16161}
+{"letter_id": "16162", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "11 per 3 month", "purist_correct": true, "source_row_index": 16162}
+{"letter_id": "16181", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "15 per 4 month", "purist_correct": true, "source_row_index": 16181}
+{"letter_id": "16195", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "16 per 4 month", "purist_correct": true, "source_row_index": 16195}
+{"letter_id": "16203", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "9 per 3 month", "purist_correct": true, "source_row_index": 16203}
+{"letter_id": "16204", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 per 3 month", "purist_correct": true, "source_row_index": 16204}
+{"letter_id": "16220", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "11 per 3 month", "purist_correct": true, "source_row_index": 16220}
+{"letter_id": "16324", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "10 per 3 month", "purist_correct": true, "source_row_index": 16324}
+{"letter_id": "16335", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "7 per 3 month", "purist_correct": true, "source_row_index": 16335}
+{"letter_id": "16356", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per 4 day, multiple per cluster", "purist_correct": true, "source_row_index": 16356}
+{"letter_id": "16394", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per 2 to 4 day, multiple per cluster", "purist_correct": true, "source_row_index": 16394}
+{"letter_id": "16408", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 3 day", "purist_correct": true, "source_row_index": 16408}
+{"letter_id": "16429", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 to 3 day", "purist_correct": true, "source_row_index": 16429}
+{"letter_id": "16432", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 day", "purist_correct": true, "source_row_index": 16432}
+{"letter_id": "16450", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per multiple day", "purist_correct": true, "source_row_index": 16450}
+{"letter_id": "16529", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per 5 day, multiple per cluster", "purist_correct": true, "source_row_index": 16529}
+{"letter_id": "16557", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per 2 to 3 day, multiple per cluster", "purist_correct": true, "source_row_index": 16557}
+{"letter_id": "16574", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per 4 day, multiple per cluster", "purist_correct": true, "source_row_index": 16574}
+{"letter_id": "16590", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 cluster per 4 to 5 day, multiple per cluster", "purist_correct": true, "source_row_index": 16590}
+{"letter_id": "16618", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 5 day", "purist_correct": true, "source_row_index": 16618}
+{"letter_id": "16645", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 per 7 month", "purist_correct": true, "source_row_index": 16645}
+{"letter_id": "16674", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "7 per 6 month", "purist_correct": true, "source_row_index": 16674}
+{"letter_id": "16685", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "10 per 3 month", "purist_correct": true, "source_row_index": 16685}
+{"letter_id": "16697", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per 6 month", "purist_correct": true, "source_row_index": 16697}
+{"letter_id": "16704", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "7 per month", "purist_correct": false, "source_row_index": 16704}
+{"letter_id": "16714", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 per 6 month", "purist_correct": true, "source_row_index": 16714}
+{"letter_id": "16717", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 per 6 month", "purist_correct": true, "source_row_index": 16717}
+{"letter_id": "16719", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per week", "purist_correct": false, "source_row_index": 16719}
+{"letter_id": "16728", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 per 6 month", "purist_correct": true, "source_row_index": 16728}
+{"letter_id": "16750", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "6 per 7 month", "purist_correct": true, "source_row_index": 16750}
+{"letter_id": "16757", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "13 per 6 month", "purist_correct": true, "source_row_index": 16757}
+{"letter_id": "16758", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "9 per 5 month", "purist_correct": true, "source_row_index": 16758}
+{"letter_id": "16772", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "9 per 5 month", "purist_correct": true, "source_row_index": 16772}
+{"letter_id": "16774", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per month", "purist_correct": true, "source_row_index": 16774}
+{"letter_id": "16780", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 per 7 month", "purist_correct": true, "source_row_index": 16780}
+{"letter_id": "16824", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "11 per 5 month", "purist_correct": true, "source_row_index": 16824}
+{"letter_id": "16833", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "7 per 3 month", "purist_correct": true, "source_row_index": 16833}
+{"letter_id": "16839", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "9 per 4 month", "purist_correct": true, "source_row_index": 16839}
+{"letter_id": "16867", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "6 per 7 month", "purist_correct": true, "source_row_index": 16867}
+{"letter_id": "16907", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "9 per 6 month", "purist_correct": true, "source_row_index": 16907}
+{"letter_id": "16938", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per week", "purist_correct": true, "source_row_index": 16938}
+{"letter_id": "16947", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per week", "purist_correct": true, "source_row_index": 16947}
+{"letter_id": "16961", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 per week", "purist_correct": true, "source_row_index": 16961}
+{"letter_id": "16983", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "2 to 3 per week", "purist_correct": true, "source_row_index": 16983}
+{"letter_id": "16990", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 to 5 per week", "purist_correct": true, "source_row_index": 16990}
+{"letter_id": "17001", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 per week", "purist_correct": true, "source_row_index": 17001}
+{"letter_id": "17003", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "3 to 4 per month", "purist_correct": true, "source_row_index": 17003}
+{"letter_id": "17110", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 to 5 cluster per week, multiple per cluster", "purist_correct": true, "source_row_index": 17110}
+{"letter_id": "17135", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "5 cluster per month, multiple per cluster", "purist_correct": true, "source_row_index": 17135}
+{"letter_id": "17146", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per day", "purist_correct": true, "source_row_index": 17146}
+{"letter_id": "17167", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per week", "purist_correct": true, "source_row_index": 17167}
+{"letter_id": "17189", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per month", "purist_correct": true, "source_row_index": 17189}
+{"letter_id": "17200", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per month", "purist_correct": true, "source_row_index": 17200}
+{"letter_id": "17201", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "4 per month", "purist_correct": true, "source_row_index": 17201}
+{"letter_id": "17273", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 2 day", "purist_correct": true, "source_row_index": 17273}
+{"letter_id": "17279", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 4 to 5 week", "purist_correct": true, "source_row_index": 17279}
+{"letter_id": "17287", "method": "gan_llm_select_from_extract", "parse_ok": true, "pragmatic_correct": true, "predicted_label": "1 per 1 to 2 day", "purist_correct": true, "source_row_index": 17287}

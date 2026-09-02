@@ -1,5 +1,6 @@
 import {
   attributeRank,
+  inventoryCardAttributeKeys,
   sortedAttributeKeys,
   workbenchAttributeKeys,
 } from "../attributeOrder";
@@ -80,5 +81,83 @@ describe("workbenchAttributeKeys", () => {
         "Diagnosis"
       )
     ).toEqual(["CUI", "CUIPhrase", "DiagCategory"]);
+  });
+});
+
+describe("inventoryCardAttributeKeys", () => {
+  it("keeps Diagnosis CUI, CUIPhrase, and DiagCategory", () => {
+    expect(
+      inventoryCardAttributeKeys(
+        {
+          CUI: "C0751495",
+          CUIPhrase: "focal-seizures",
+          DiagCategory: "MultipleSeizures",
+          Certainty: "5",
+          Negation: "Affirmed",
+        },
+        "Diagnosis"
+      )
+    ).toEqual(["CUI", "CUIPhrase", "DiagCategory"]);
+  });
+
+  it("keeps every filled Prescription workbench field", () => {
+    expect(
+      inventoryCardAttributeKeys(
+        {
+          CUI: "C0064636",
+          CUIPhrase: "lamotrigine",
+          DrugName: "lamotrigine",
+          DrugDose: "150",
+          DoseUnit: "mg",
+          Frequency: "2",
+        },
+        "Prescription"
+      )
+    ).toEqual(["CUI", "CUIPhrase", "DrugName", "DrugDose", "DoseUnit", "Frequency"]);
+  });
+
+  it("keeps every filled Investigations workbench field", () => {
+    expect(
+      inventoryCardAttributeKeys(
+        {
+          CUI: "C0436481",
+          CUIPhrase: "mri normal",
+          MRI_Performed: "Yes",
+          MRI_Results: "Normal",
+          EEG_Performed: "Yes",
+          EEG_Results: "Abnormal",
+        },
+        "Investigations"
+      )
+    ).toEqual([
+      "CUI",
+      "CUIPhrase",
+      "EEG_Performed",
+      "EEG_Results",
+      "MRI_Performed",
+      "MRI_Results",
+    ]);
+  });
+
+  it("keeps filled SeizureFrequency count and time fields", () => {
+    expect(
+      inventoryCardAttributeKeys(
+        {
+          CUI: "C0036572",
+          CUIPhrase: "seizures",
+          NumberOfSeizures: "4",
+          TimeSince_or_TimeOfEvent: "since last clinic",
+          PointInTime: "March",
+          FrequencyChange: "",
+        },
+        "SeizureFrequency"
+      )
+    ).toEqual([
+      "CUI",
+      "CUIPhrase",
+      "NumberOfSeizures",
+      "TimeSince_or_TimeOfEvent",
+      "PointInTime",
+    ]);
   });
 });

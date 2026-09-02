@@ -23,6 +23,8 @@ import {
   isBareFamilyName,
   resolveFamilyDefaultRun,
 } from "./registryResolver";
+import { DEMO_GAN_RUN_ID, isDemoSurface } from "./demoSurface";
+import { isGanRulesRunId } from "./ganPipelineOptions";
 
 export function useHealth() {
   return useQuery({
@@ -84,6 +86,7 @@ export function useArchitectUrlSync() {
     selectedRunId,
     pipelineFamily,
     activeStage,
+    workbenchView,
     setSourceRowIndex,
     setSelectedRunId,
     setActiveStage,
@@ -99,17 +102,23 @@ export function useArchitectUrlSync() {
     const rowParam = searchParams.get("row");
     const stageParam = searchParams.get("stage") as TraceStage | null;
 
-    if (rawParam) {
-      const runs = registryData?.runs ?? [];
-      const resolved =
-        isBareFamilyName(rawParam) && runs.length > 0
-          ? resolveFamilyDefaultRun(runs, rawParam) ?? rawParam
-          : rawParam;
-      const family = isBareFamilyName(rawParam) ? rawParam : resolved;
-      setSelectedRunId(resolved, family);
+    if (isDemoSurface()) {
+      setSelectedRunId(DEMO_GAN_RUN_ID, "llm_with_rules");
+    } else if (rawParam) {
+      if (isGanRulesRunId(rawParam)) {
+        setSelectedRunId("rules", "rules");
+      } else {
+        const runs = registryData?.runs ?? [];
+        const resolved =
+          isBareFamilyName(rawParam) && runs.length > 0
+            ? resolveFamilyDefaultRun(runs, rawParam) ?? rawParam
+            : rawParam;
+        const family = isBareFamilyName(rawParam) ? rawParam : resolved;
+        setSelectedRunId(resolved, family);
+      }
     }
     if (rowParam) setSourceRowIndex(parseInt(rowParam, 10));
-    if (stageParam) setActiveStage(stageParam);
+    if (stageParam && stageParam !== "repair") setActiveStage(stageParam);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -133,14 +142,19 @@ export function useArchitectUrlSync() {
       skipInitialUrlSync.current = false;
       return;
     }
+    if (workbenchView === "inventory") return;
     const params = new URLSearchParams();
     preserveWorkbenchDataset(params, searchParams);
-    if (selectedRunId && selectedRunId !== "rules") params.set("run", selectedRunId);
+    if (isDemoSurface()) {
+      params.set("run", DEMO_GAN_RUN_ID);
+    } else if (selectedRunId && selectedRunId !== "rules") {
+      params.set("run", selectedRunId);
+    }
     if (sourceRowIndex !== null) params.set("row", String(sourceRowIndex));
     if (activeStage && activeStage !== "select") params.set("stage", activeStage);
 
     const newUrl = `${pathname}?${params.toString()}`;
     router.replace(newUrl, { scroll: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedRunId, sourceRowIndex, activeStage]);
+  }, [selectedRunId, sourceRowIndex, activeStage, workbenchView]);
 }

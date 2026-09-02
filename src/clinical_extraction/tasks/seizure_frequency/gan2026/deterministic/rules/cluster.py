@@ -8,6 +8,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidate
     CandidateKind,
     RawCandidate,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.find_encode import (
+    FindFact,
+    encode_find_fact,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
     AblationConfig,
     ExtractionContext,
@@ -56,28 +60,39 @@ def _build_cluster_candidate(
     match: re.Match[str],
     *,
     rule_id: str,
-    label: str,
+    cluster_count: str,
+    unit: str,
+    cluster_size: str = "multiple",
+    denominator: str | None = None,
     evidence_group: str | int = 0,
 ) -> RawCandidate:
+    fact = FindFact(
+        kind=CandidateKind.CLUSTER_FREQUENCY,
+        cluster_count=cluster_count,
+        unit=unit,
+        denominator=denominator,
+        cluster_size=cluster_size,
+    )
     return RawCandidate(
         kind=CandidateKind.CLUSTER_FREQUENCY,
-        label=label,
+        label=encode_find_fact(fact),
         evidence=_clean_evidence(match.group(evidence_group)),
         rule_id=rule_id,
         rule_group=RuleGroup.CLUSTER_ARITHMETIC,
         portability=Portability.SEIZURE_FREQUENCY,
         match_groups=match.groupdict(),
+        find_fact=fact,
     )
 
 
 def _build_adjective_cluster_rate(
     match: re.Match[str], _context: ExtractionContext
 ) -> RawCandidate:
-    period = _adjective_cluster_period(match.group("period"))
     return _build_cluster_candidate(
         match,
         rule_id="cluster.adjective_rate",
-        label=f"1 cluster per {period}, multiple per cluster",
+        cluster_count="1",
+        unit=match.group("period"),
     )
 
 
@@ -85,17 +100,21 @@ def _build_shorthand_cluster_rate(
     match: re.Match[str], _context: ExtractionContext
 ) -> RawCandidate:
     evidence = re.sub(r"^ongoing\s+", "", match.group(0), flags=re.IGNORECASE)
+    fact = FindFact(
+        kind=CandidateKind.CLUSTER_FREQUENCY,
+        cluster_count=match.group("count"),
+        unit=match.group("unit"),
+        cluster_size="multiple",
+    )
     return RawCandidate(
         kind=CandidateKind.CLUSTER_FREQUENCY,
-        label=(
-            f"{_number_token(match.group('count'))} cluster per "
-            f"{_expanded_compact_unit(match.group('unit'))}, multiple per cluster"
-        ),
+        label=encode_find_fact(fact),
         evidence=_clean_evidence(evidence),
         rule_id="cluster.compact_count_per_period",
         rule_group=RuleGroup.CLUSTER_ARITHMETIC,
         portability=Portability.SEIZURE_FREQUENCY,
         match_groups=match.groupdict(),
+        find_fact=fact,
     )
 
 
@@ -105,10 +124,8 @@ def _build_this_period_cluster_count(
     return _build_cluster_candidate(
         match,
         rule_id="cluster.count_this_period",
-        label=(
-            f"{_number_token(match.group('count'))} cluster per "
-            f"{_cluster_period_label(match.group('period'))}, multiple per cluster"
-        ),
+        cluster_count=match.group("count"),
+        unit=match.group("period"),
     )
 
 
@@ -118,10 +135,8 @@ def _build_this_period_vague_size(
     return _build_cluster_candidate(
         match,
         rule_id="cluster.count_this_period_vague_size",
-        label=(
-            f"{_number_token(match.group('count'))} cluster per "
-            f"{_cluster_period_label(match.group('period'))}, multiple per cluster"
-        ),
+        cluster_count=match.group("count"),
+        unit=match.group("period"),
     )
 
 
@@ -131,20 +146,20 @@ def _build_last_month_cluster_count(
     return _build_cluster_candidate(
         match,
         rule_id="cluster.last_month_count",
-        label=(f"{_number_token(match.group('count'))} cluster per month, multiple per cluster"),
+        cluster_count=match.group("count"),
+        unit="month",
     )
 
 
 def _build_cluster_rate_with_size(
     match: re.Match[str], _context: ExtractionContext
 ) -> RawCandidate:
-    count = _number_token(match.group("count"))
-    period = _singular_unit(match.group("period"))
-    per_cluster = _number_token(match.group("per_cluster"))
     return _build_cluster_candidate(
         match,
         rule_id="cluster.rate_with_size",
-        label=f"{count} cluster per {period}, {per_cluster} per cluster",
+        cluster_count=match.group("count"),
+        unit=match.group("period"),
+        cluster_size=match.group("per_cluster"),
     )
 
 
@@ -154,20 +169,27 @@ def _build_monthly_cluster_rate_with_size(
     return _build_cluster_candidate(
         match,
         rule_id="cluster.monthly_rate_with_size",
-        label=(f"1 cluster per month, {_number_token(match.group('per_cluster'))} per cluster"),
+        cluster_count="1",
+        unit="month",
+        cluster_size=match.group("per_cluster"),
     )
 
 
 def _build_unknown_cluster_size(match: re.Match[str], _context: ExtractionContext) -> RawCandidate:
-    per_cluster = _number_token(match.group("per_cluster"))
+    fact = FindFact(
+        kind=CandidateKind.UNKNOWN_FREQUENCY,
+        sentinel="unknown",
+        cluster_size=match.group("per_cluster"),
+    )
     return RawCandidate(
         kind=CandidateKind.UNKNOWN_FREQUENCY,
-        label=f"unknown, {per_cluster} per cluster",
+        label=encode_find_fact(fact),
         evidence=_clean_evidence(match.group(0)),
         rule_id="cluster.unknown_frequency_with_size",
         rule_group=RuleGroup.CLUSTER_ARITHMETIC,
         portability=Portability.SEIZURE_FREQUENCY,
         match_groups=match.groupdict(),
+        find_fact=fact,
     )
 
 
@@ -177,11 +199,9 @@ def _build_this_period_cluster_with_size(
     return _build_cluster_candidate(
         match,
         rule_id="cluster.count_this_period_with_size",
-        label=(
-            f"{_number_token(match.group('count'))} cluster per "
-            f"{_singular_unit(match.group('period'))}, "
-            f"{_number_token(match.group('per_cluster'))} per cluster"
-        ),
+        cluster_count=match.group("count"),
+        unit=match.group("period"),
+        cluster_size=match.group("per_cluster"),
     )
 
 
@@ -194,10 +214,10 @@ def _build_clusters_each_comprising(
     return _build_cluster_candidate(
         match,
         rule_id="cluster.each_comprising",
-        label=(
-            f"{_number_token(count)} cluster per {_period_label(unit, denominator)}, "
-            f"{_number_token(match.group('per_cluster'))} per cluster"
-        ),
+        cluster_count=count or "1",
+        unit=unit or "month",
+        denominator=denominator,
+        cluster_size=match.group("per_cluster"),
     )
 
 
@@ -205,11 +225,9 @@ def _build_cluster_over_period(match: re.Match[str], _context: ExtractionContext
     return _build_cluster_candidate(
         match,
         rule_id="cluster.count_over_period",
-        label=(
-            f"{_number_token(match.group('count'))} cluster per "
-            f"{_period_label(match.group('unit'), match.group('denominator'))}, "
-            "multiple per cluster"
-        ),
+        cluster_count=match.group("count"),
+        unit=match.group("unit"),
+        denominator=match.group("denominator"),
     )
 
 
@@ -219,11 +237,10 @@ def _build_seizure_free_cycle_cluster(
     return _build_cluster_candidate(
         match,
         rule_id="cluster.seizure_free_cycle",
-        label=(
-            f"1 cluster per "
-            f"{_period_label(match.group('unit'), match.group('denominator'))}, "
-            f"{_cluster_size_token(match.group('raw_per_cluster'))} per cluster"
-        ),
+        cluster_count="1",
+        unit=match.group("unit"),
+        denominator=match.group("denominator"),
+        cluster_size=match.group("raw_per_cluster"),
     )
 
 
@@ -246,7 +263,9 @@ def _build_last_convulsive_cluster_persistence(
     return _build_cluster_candidate(
         match,
         rule_id="cluster.last_convulsive_persistence",
-        label=f"multiple cluster per {denominator} month, multiple per cluster",
+        cluster_count="multiple",
+        unit="month",
+        denominator=str(denominator),
         evidence_group="evidence",
     )
 
@@ -257,12 +276,10 @@ def _build_nearly_interval_cluster(
     return _build_cluster_candidate(
         match,
         rule_id="cluster.nearly_interval",
-        label=(
-            f"1 cluster per "
-            f"{_period_label(match.group('unit'), match.group('denominator'))}, "
-            f"{_number_token(match.group('low'))} to "
-            f"{_number_token(match.group('high'))} per cluster"
-        ),
+        cluster_count="1",
+        unit=match.group("unit"),
+        denominator=match.group("denominator"),
+        cluster_size=f"{match.group('low')} to {match.group('high')}",
         evidence_group="evidence",
     )
 
@@ -271,11 +288,10 @@ def _build_interval_day_cluster(match: re.Match[str], _context: ExtractionContex
     return _build_cluster_candidate(
         match,
         rule_id="cluster.seizure_free_interval_day",
-        label=(
-            f"1 cluster per "
-            f"{_period_label(match.group('unit'), match.group('denominator'))}, "
-            f"{_cluster_size_token(match.group('count'))} per cluster"
-        ),
+        cluster_count="1",
+        unit=match.group("unit"),
+        denominator=match.group("denominator"),
+        cluster_size=match.group("count"),
         evidence_group="evidence",
     )
 
@@ -284,11 +300,10 @@ def _build_batch_within_24h(match: re.Match[str], _context: ExtractionContext) -
     return _build_cluster_candidate(
         match,
         rule_id="cluster.batch_within_24h",
-        label=(
-            f"1 cluster per "
-            f"{_period_label(match.group('unit'), match.group('denominator'))}, "
-            f"{_cluster_size_token(match.group('count'))} per cluster"
-        ),
+        cluster_count="1",
+        unit=match.group("unit"),
+        denominator=match.group("denominator"),
+        cluster_size=match.group("count"),
         evidence_group="evidence",
     )
 
@@ -299,10 +314,9 @@ def _build_run_with_separate_days(
     return _build_cluster_candidate(
         match,
         rule_id="cluster.run_with_separate_days",
-        label=(
-            f"1 cluster per {_period_unit_label(match.group('period'))}, "
-            f"{_number_token(match.group('per_cluster'))} per cluster"
-        ),
+        cluster_count="1",
+        unit=match.group("period"),
+        cluster_size=match.group("per_cluster"),
     )
 
 
@@ -312,10 +326,8 @@ def _build_vague_days_over_period(
     return _build_cluster_candidate(
         match,
         rule_id="cluster.vague_days_over_period",
-        label=(
-            f"{_number_token(match.group('days'))} cluster per "
-            f"{_period_unit_label(match.group('period'))}, multiple per cluster"
-        ),
+        cluster_count=match.group("days"),
+        unit=match.group("period"),
     )
 
 
@@ -325,11 +337,9 @@ def _build_broad_this_period_cluster_with_size(
     return _build_cluster_candidate(
         match,
         rule_id="cluster.broad_count_this_period_with_size",
-        label=(
-            f"{_number_token(match.group('count'))} cluster per "
-            f"{_cluster_period_label(match.group('period'))}, "
-            f"{_cluster_size_token(match.group('raw_per_cluster'))} per cluster"
-        ),
+        cluster_count=match.group("count"),
+        unit=match.group("period"),
+        cluster_size=match.group("raw_per_cluster"),
     )
 
 
@@ -339,10 +349,9 @@ def _build_period_with_per_cluster(
     return _build_cluster_candidate(
         match,
         rule_id="cluster.period_with_per_cluster",
-        label=(
-            f"1 cluster per {_cluster_period_label(match.group('period'))}, "
-            f"{_cluster_size_token(match.group('raw_per_cluster'))} per cluster"
-        ),
+        cluster_count="1",
+        unit=match.group("period"),
+        cluster_size=match.group("raw_per_cluster"),
     )
 
 
@@ -352,10 +361,9 @@ def _build_descriptor_cluster_size(
     return _build_cluster_candidate(
         match,
         rule_id="cluster.descriptor_size",
-        label=(
-            f"1 cluster per {_cluster_period_label(match.group('period'))}, "
-            f"{_cluster_size_token(match.group('raw_per_cluster'))} per cluster"
-        ),
+        cluster_count="1",
+        unit=match.group("period"),
+        cluster_size=match.group("raw_per_cluster"),
     )
 
 
@@ -364,11 +372,9 @@ def _build_cluster_timing(match: re.Match[str], context: ExtractionContext) -> R
     return _build_cluster_candidate(
         match,
         rule_id="cluster.timing_days",
-        label=(
-            f"{_number_token(match.group('count'))} cluster per "
-            f"{_cluster_period_label(match.group('period'))}, "
-            f"{_infer_cluster_size(surrounding)} per cluster"
-        ),
+        cluster_count=match.group("count"),
+        unit=match.group("period"),
+        cluster_size=_infer_cluster_size(surrounding),
     )
 
 
@@ -376,10 +382,8 @@ def _build_cluster_days_simple(match: re.Match[str], _context: ExtractionContext
     return _build_cluster_candidate(
         match,
         rule_id="cluster.days_this_period",
-        label=(
-            f"{_number_token(match.group('count'))} cluster per "
-            f"{_singular_unit(match.group('period'))}, multiple per cluster"
-        ),
+        cluster_count=match.group("count"),
+        unit=match.group("period"),
     )
 
 
@@ -389,10 +393,8 @@ def _build_cluster_seizure_days_per_period(
     return _build_cluster_candidate(
         match,
         rule_id="cluster.seizure_days_per_period",
-        label=(
-            f"{_number_token(match.group('count'))} cluster per "
-            f"{_singular_unit(match.group('period'))}, multiple per cluster"
-        ),
+        cluster_count=match.group("count"),
+        unit=match.group("period"),
         evidence_group="evidence",
     )
 
@@ -401,7 +403,8 @@ def _build_short_burst_cluster(match: re.Match[str], _context: ExtractionContext
     return _build_cluster_candidate(
         match,
         rule_id="cluster.short_burst_monthly",
-        label="1 cluster per month, multiple per cluster",
+        cluster_count="1",
+        unit="month",
     )
 
 
@@ -419,11 +422,9 @@ def _build_cluster_count_with_implied_size(
     return _build_cluster_candidate(
         match,
         rule_id="cluster.count_with_implied_size",
-        label=(
-            f"{_number_token(match.group('count'))} cluster per "
-            f"{_cluster_period_label(match.group('period'))}, "
-            f"{_cluster_size_token(per_cluster_match.group('raw_per_cluster'))} per cluster"
-        ),
+        cluster_count=match.group("count"),
+        unit=match.group("period"),
+        cluster_size=per_cluster_match.group("raw_per_cluster"),
     )
 
 
@@ -431,10 +432,9 @@ def _build_size_without_count(match: re.Match[str], _context: ExtractionContext)
     return _build_cluster_candidate(
         match,
         rule_id="cluster.size_without_count",
-        label=(
-            f"1 cluster per {_cluster_period_label(match.group('period'))}, "
-            f"{_cluster_size_token(match.group('raw_per_cluster'))} per cluster"
-        ),
+        cluster_count="1",
+        unit=match.group("period"),
+        cluster_size=match.group("raw_per_cluster"),
     )
 
 
@@ -1102,7 +1102,7 @@ CLUSTER_SIZE_WITHOUT_COUNT_RULE = RuleSpec(
     examples=(
         RuleExample(
             text="Current pattern is fortnightly, about five per event cluster.",
-            expected_label="1 cluster per 2 week, 5 per cluster",
+            expected_label="1 cluster per fortnight, 5 per cluster",
             expected_evidence="fortnightly, about five per event cluster",
         ),
     ),
@@ -1236,7 +1236,7 @@ def _infer_cluster_size(text: str) -> str:
     for pattern in patterns:
         match = pattern.search(text)
         if match is not None:
-            return _cluster_size_token(match.group("count"))
+            return match.group("count")
     return "multiple"
 
 

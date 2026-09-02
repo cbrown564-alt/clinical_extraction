@@ -6,10 +6,10 @@ Revised: 2026-08-23 (all five Gemini rows use 4-family micro F1)
 Status: paper source; selected results and development mechanism evidence
 
 > **Current boundary (2026-08-23):** ExECT uses the same five role rows as
-> Gan. Each of extract, encode, and select is rules, LLM, or both. The cited
-> score is the select stop. LLM extract is `exect_llm_extract`. **both** extract
+> Gan. Each of find, encode, and select is rules, LLM, or both. The cited
+> score is the select stop. LLM find is `exect_llm_extract`. **both** find
 > is `exect_llm_pre_post` (`exect_llm_with_rules` is the live alias). The
-> six-model row is cell 3 — LLM extract, rules encode, rules select. Cells
+> six-model row is cell 3 — LLM find, rules encode, rules select. Cells
 > five Gemini rows cite 4-family micro F1. See `docs/paper/*`.
 
 ## The result
@@ -20,7 +20,7 @@ split, the headline table is five role rows. Named Gemini 3.7 Flash
 `test60` select stops under 4-family micro F1
 (`clinical_inventory_unit_keys`):
 
-| Extract | Encode | Select | `test60` F1 |
+| Find | Encode | Select | `test60` F1 |
 | --- | --- | --- | ---: |
 | rules | rules | rules | 0.77 |
 | both | rules | rules | 0.86 |
@@ -31,7 +31,7 @@ split, the headline table is five role rows. Named Gemini 3.7 Flash
 Development select stops live in
 [rule-select-after-LLM-encode](../exectv2/exect_rule_select_after_llm_encode_2026-08-22.md).
 
-The headline row is **LLM / rules / rules** (inventory extract,
+The headline row is **LLM / rules / rules** (inventory find,
 `exect_llm_extract`, then inventory Select) at 0.8674. **LLM / LLM / rules** (later-stage
 encode, then the same Select) is 0.8636. Those read 0.87 and 0.86
 at two decimals. Holdout is aggregate-only. 4-family micro F1 is the cited internal
@@ -81,7 +81,7 @@ different jobs:
    `dev140`. Removing two dev-fitted rules produced v10, confirmed on
    aggregate-only `test59`.
 4. **Investigations** remains a no-op on the selected hybrid configuration.
-   The standalone rules-only extractor now binds List 9 findings itself.
+   The standalone rules-only recogniseor now binds List 9 findings itself.
    That rewrite is why rules-only Investigations is no longer the method
    floor.
 
@@ -165,7 +165,7 @@ improves F1.
 ## Evidence owners
 
 - [Decision 0046](../../decisions/0046-exect-primary-method-comparison-boundary.md)
-- [Inventory both-extract protocol](../exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md)
+- [Inventory both-find protocol](../exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md)
 - [Decision 0058](../../decisions/0058-compact-ledger-is-the-paper-cited-exect-hybrid.md) (Compact/headline ablation; not cited score)
 - [Paper Compact cells](../../../paper_experiments/exectv2_compact_ledger/README.md) (historical ablation artifacts)
 - [Paper claim status C10, C17, C18, and C19](../../canon/10_paper_provenance.md)

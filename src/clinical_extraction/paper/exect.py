@@ -261,6 +261,18 @@ def apply_reasoning_effort(spec: ModelSpec, effort: str | None) -> ModelSpec:
     return replace(spec, reasoning_effort=effort)
 
 
+def apply_temperature(spec: ModelSpec, temperature: float | None) -> ModelSpec:
+    """Pin a non-living temperature on a paper model."""
+
+    if temperature is None:
+        return spec
+    if temperature == spec.temperature:
+        raise RuntimeError(
+            f"{temperature} is the living paper setting for {spec.slug}; omit --temperature"
+        )
+    return replace(spec, temperature=temperature)
+
+
 def _spec_for(item: Mapping[str, Any]) -> ModelSpec:
     slug = str(item["slug"])
     hosted = item["route"] == "hosted"
@@ -275,7 +287,7 @@ def _spec_for(item: Mapping[str, Any]) -> ModelSpec:
         slug=slug,
         model=str(item["model"]),
         label=str(item["label"]),
-        temperature=1.0 if slug in {"grok46", "gpt56luna"} else 0.0,
+        temperature=1.0 if slug == "gpt56luna" else 0.0,
         max_tokens=64000 if slug == "deepseek_v4_flash" else 16000,
         route=str(item["route"]),
         credential_env=credentials.get(slug, ()),

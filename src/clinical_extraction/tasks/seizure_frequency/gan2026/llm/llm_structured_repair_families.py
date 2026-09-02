@@ -593,6 +593,105 @@ def _post_change_burst_count(events: Sequence[StructuredRepairEventLike]) -> str
     return None
 
 
+_SHORT_SEIZURE_FREE = re.compile(
+    r"^seizure free for (?P<count>\d+) (?P<unit>week|month)$"
+)
+_WELL_SINCE = re.compile(
+    r"\b(?:since then|no further|no seizures since|has had no seizures|"
+    r"remained well|has remained well|seizure-free since|free of seizures|"
+    r"no recurrence|been stable since|stable for over)\b",
+    re.IGNORECASE,
+)
+_DAY_MONTH = re.compile(
+    r"\b\d{1,2}(?:st|nd|rd|th)?\s*(?:/|-)?\s*"
+    r"(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\b",
+    re.IGNORECASE,
+)
+_BURST_COUNT = re.compile(
+    r"\b(?:\d+\s+or\s+)?(?P<count>\d+)\s+"
+    r"(?:(?:focal|onset|brief|further|more|witnessed|convulsive|"
+    r"tonic|clonic|absence|myoclonic|aware|impaired)\s+){0,4}"
+    r"(?:seizures|events|episodes|attacks|seizure(?!\s*-?\s*free))\b",
+    re.IGNORECASE,
+)
+_MAX_SHORT_SEIZURE_FREE_MONTHS = 6
+_WEEK_TO_MONTH_MAX = 5
+
+
+def last_event_well_since_label_from_events(
+    extraction: StructuredRepairExtractionLike,
+    repaired_label: str,
+    *,
+    note_text: str | None = None,
+) -> str | None:
+    """Rewrite a short seizure-free span after a named last event to a rate."""
+
+    del note_text
+    parsed = _SHORT_SEIZURE_FREE.fullmatch((repaired_label or "").strip())
+    if parsed is None:
+        return None
+    interval_count = int(parsed.group("count"))
+    unit = parsed.group("unit")
+    duration_months = (
+        float(interval_count) if unit == "month" else interval_count * 7 / 30
+    )
+    if duration_months >= _MAX_SHORT_SEIZURE_FREE_MONTHS:
+        return None
+    marker_text = _last_event_well_since_text(extraction)
+    if not _WELL_SINCE.search(marker_text):
+        return None
+    burst_count = _last_event_or_burst_count(extraction.events)
+    if not _has_day_dated_last_event(extraction.events) and burst_count is None:
+        return None
+    count = burst_count or "1"
+    if unit == "week" and interval_count <= _WEEK_TO_MONTH_MAX:
+        return f"{count} per month" if count != "1" else "1 per month"
+    if unit == "month" and interval_count == 1:
+        return f"{count} per month" if count != "1" else "1 per month"
+    return f"{count} per {interval_count} {unit}"
+
+
+def _last_event_well_since_text(extraction: StructuredRepairExtractionLike) -> str:
+    parts = [
+        extraction.selection.final_label,
+        extraction.selection.evidence,
+        extraction.selection.rationale,
+    ]
+    for event in extraction.events:
+        if event.kind in {"seizure_free", "last_event_only", "frequency_rate"}:
+            parts.extend((event.evidence, event.raw_value, event.time_window, event.notes))
+    return " ".join(part for part in parts if part)
+
+
+def _has_day_dated_last_event(events: Sequence[StructuredRepairEventLike]) -> bool:
+    for event in events:
+        if event.kind != "last_event_only":
+            continue
+        text = " ".join(
+            part for part in (event.evidence, event.raw_value, event.time_window) if part
+        )
+        if _DAY_MONTH.search(text):
+            return True
+    return False
+
+
+def _last_event_or_burst_count(events: Sequence[StructuredRepairEventLike]) -> str | None:
+    for event in events:
+        if event.kind not in {"last_event_only", "frequency_rate"}:
+            continue
+        text = small_number_words_to_digits(
+            " ".join(
+                part
+                for part in (event.evidence, event.raw_value, event.time_window)
+                if part
+            )
+        )
+        match = _BURST_COUNT.search(text)
+        if match:
+            return match.group("count")
+    return None
+
+
 def _has_benchmark_last_event_context(
     events: Sequence[StructuredRepairEventLike],
     *,

@@ -31,6 +31,12 @@ CELL_FOR_METHOD: dict[str, PaperCell] = {
     "exect_llm_select": 5,
     "gan_llm_only": "ablation",
     "gan_llm_extract_raw": "ablation",
+    "gan_llm_extract_no_examples": "ablation",
+    "gan_llm_extract_holgate_like": "ablation",
+    "gan_llm_extract_holgate_label": "ablation",
+    "gan_llm_extract_no_evidence": "ablation",
+    "gan_llm_extract_examples_only": "ablation",
+    "gan_llm_extract_encode_select": "ablation",
     "exect_llm_extract_and_select": "ablation",
     "exect_llm_extract_filtered": "ablation",
 }
@@ -44,6 +50,12 @@ TASK_FOR_METHOD: dict[str, str] = {
     "gan_llm_select_from_extract": "gan2026",
     "gan_llm_only": "gan2026",
     "gan_llm_extract_raw": "gan2026",
+    "gan_llm_extract_no_examples": "gan2026",
+    "gan_llm_extract_holgate_like": "gan2026",
+    "gan_llm_extract_holgate_label": "gan2026",
+    "gan_llm_extract_no_evidence": "gan2026",
+    "gan_llm_extract_examples_only": "gan2026",
+    "gan_llm_extract_encode_select": "gan2026",
     "exect_rules": "exectv2",
     "exect_llm_pre_post": "exectv2",
     "exect_llm_extract": "exectv2",
@@ -91,11 +103,14 @@ def gan_stage(
     payload: dict[str, Any] = {
         "purist_correct": purist_correct,
         "n": n,
+        "micro_f1": accuracy,
         "purist_accuracy": accuracy,
     }
     if pragmatic_correct is not None:
+        pragmatic_rate = round(pragmatic_correct / n, 4) if n else 0.0
         payload["pragmatic_correct"] = pragmatic_correct
-        payload["pragmatic_accuracy"] = round(pragmatic_correct / n, 4) if n else 0.0
+        payload["pragmatic_micro_f1"] = pragmatic_rate
+        payload["pragmatic_accuracy"] = pragmatic_rate
     return payload
 
 
@@ -176,6 +191,7 @@ def attach_living_envelope(
     if task == "gan2026":
         payload["score"] = {
             "purist_correct": select["purist_correct"],
+            "micro_f1": select.get("micro_f1", select["purist_accuracy"]),
             "purist_accuracy": select["purist_accuracy"],
             "n": select["n"],
         }
@@ -327,6 +343,8 @@ def stage_metric(payload: Mapping[str, Any], stage: str) -> float | None:
         return None
     if "four_family_micro_f1" in block:
         return float(block["four_family_micro_f1"])
+    if "micro_f1" in block:
+        return float(block["micro_f1"])
     if "purist_accuracy" in block:
         return float(block["purist_accuracy"])
     return None

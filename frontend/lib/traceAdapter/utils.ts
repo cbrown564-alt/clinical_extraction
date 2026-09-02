@@ -1,4 +1,5 @@
 import type { TraceItem, StageScore, StageRepair } from "../types";
+import { mapPragmatic, mapPurist } from "./ganCategories";
 
 /**
  * Canonical semantic kind mapping across all model and deterministic pipelines.
@@ -29,6 +30,60 @@ export function canonicalSemanticKind(kind: string | null | undefined, label?: s
  * Find the character span of an evidence string within a note text.
  * Returns exact match first, then case-insensitive fallback.
  */
+const DAYS_PER: Record<string, number> = {
+  day: 1,
+  week: 7,
+  month: 30,
+  year: 365,
+};
+const DAY_IN_YEAR = 365;
+
+export function monthlyFrequencyFromLabel(label: string): number | undefined {
+  const normalized = label.trim().toLowerCase().replace(/\s+/g, " ");
+  if (normalized === "unknown" || normalized === "no seizure frequency reference") {
+    return 1000;
+  }
+  if (normalized.includes("seizure free")) {
+    return 0;
+  }
+
+  let scoring = normalized;
+  scoring = scoring.replace(" per multiple week", " per 2 week");
+  scoring = scoring.replace(" per multiple month", " per 2 month");
+  scoring = scoring.replace(" per multiple year", " per 2 year");
+  scoring = scoring.replace(" per multiple day", " per 2 day");
+  if (/\bweeks?\b/.test(scoring)) {
+    scoring = scoring.replace("multiple per ", "2 per ");
+  } else if (/\bmonths?\b/.test(scoring)) {
+    scoring = scoring.replace("multiple per ", "8 per ");
+  } else if (/\byears?\b/.test(scoring)) {
+    scoring = scoring.replace("multiple per ", "18 per ");
+  } else if (/\bdays?\b/.test(scoring)) {
+    scoring = scoring.replace("multiple per ", "2 per ");
+  }
+
+  const match = scoring.match(
+    /^(\d+(?:\.\d+)?)(?:\s+to\s+(\d+(?:\.\d+)?))?\s+per\s+(?:(\d+(?:\.\d+)?)(?:\s+to\s+(\d+(?:\.\d+)?))?\s+)?(day|week|month|year)s?$/
+  );
+  if (!match) {
+    return undefined;
+  }
+  const nMin = Math.min(Number(match[1]), match[2] ? Number(match[2]) : Number(match[1]));
+  const nMax = Math.max(Number(match[1]), match[2] ? Number(match[2]) : Number(match[1]));
+  const periodLow = match[3] ? Number(match[3]) : 1;
+  const periodHigh = match[4] ? Number(match[4]) : periodLow;
+  const dMin = Math.min(periodLow, periodHigh);
+  const dMax = Math.max(periodLow, periodHigh);
+  const days = DAYS_PER[match[5]];
+  const minPerYear = nMin * DAY_IN_YEAR / (dMax * days);
+  const maxPerYear = nMax * DAY_IN_YEAR / (dMin * days);
+  return (minPerYear + maxPerYear) / 2 / 12;
+}
+
+export function formatMonthlyFrequency(value: number): string {
+  return value.toFixed(1);
+}
+
 export function findEvidenceSpan(
   noteText: string,
   evidence: string
@@ -70,24 +125,62 @@ export function evidenceToTraceItem(
   };
 }
 
+export type GanComparisonFields = {
+  purist_correct?: boolean;
+  pragmatic_correct?: boolean;
+  predicted_purist_category?: string;
+  gold_purist_category?: string;
+  predicted_pragmatic_category?: string;
+  gold_pragmatic_category?: string;
+};
+
+function categoriesFromLabel(label: string): {
+  purist?: string;
+  pragmatic?: string;
+} {
+  const monthly = monthlyFrequencyFromLabel(label);
+  if (monthly === undefined) return {};
+  return {
+    purist: mapPurist(monthly),
+    pragmatic: mapPragmatic(monthly),
+  };
+}
+
 /**
- * Build a StageScore from a comparison object (used by direct extractor, DSPY adjudicator, etc.).
+ * Build a StageScore. Match is Purist category agreement, not exact gold label.
  */
 export function buildScoreFromComparison(
-  comparison: {
-    purist_correct?: boolean;
-    pragmatic_correct?: boolean;
-    predicted_purist_category?: string;
-    gold_purist_category?: string;
-  } | undefined,
+  comparison: GanComparisonFields | undefined,
   predictedLabel: string,
   goldLabel: string
 ): StageScore {
+  const predicted = categoriesFromLabel(predictedLabel);
+  const gold = categoriesFromLabel(goldLabel);
+  const predictedPurist = comparison?.predicted_purist_category ?? predicted.purist;
+  const goldPurist = comparison?.gold_purist_category ?? gold.purist;
+  const predictedPragmatic =
+    comparison?.predicted_pragmatic_category ?? predicted.pragmatic;
+  const goldPragmatic = comparison?.gold_pragmatic_category ?? gold.pragmatic;
+  const puristMatch =
+    comparison?.purist_correct ??
+    (predictedPurist != null && goldPurist != null && predictedPurist === goldPurist);
+  const pragmaticMatch =
+    comparison?.pragmatic_correct ??
+    (predictedPragmatic != null &&
+      goldPragmatic != null &&
+      predictedPragmatic === goldPragmatic);
+
   return {
     predictedLabel,
     goldLabel,
-    match: predictedLabel === goldLabel,
+    match: Boolean(puristMatch),
     evidenceValid: comparison?.purist_correct ?? false,
+    predictedPuristCategory: predictedPurist,
+    goldPuristCategory: goldPurist,
+    puristMatch: Boolean(puristMatch),
+    predictedPragmaticCategory: predictedPragmatic,
+    goldPragmaticCategory: goldPragmatic,
+    pragmaticMatch: Boolean(pragmaticMatch),
   };
 }
 

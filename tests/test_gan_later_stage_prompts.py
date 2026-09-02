@@ -126,12 +126,78 @@ def test_select_payload_is_choose_ready_with_extract_hint() -> None:
         "label": "≤ 4 per day",
     }
     assert "raw_value" not in blob
-    assert "keep that first choice" in blob.lower()
+    assert "keep it unless one of the cases below" in blob.lower()
+    assert "supporting quote" in blob.lower()
+    assert "already in the events or their quotes" in blob.lower()
+    cases = payload["cases"]
+    assert len(cases) == 10
+    titles = [row["title"] for row in cases]
+    assert titles == [
+        "Usual gap",
+        "Usual rate, not a year total",
+        "Recent seizures after a quiet spell",
+        "Not epileptic seizures",
+        "Month counts",
+        "Dated seizures",
+        "Burst after a change",
+        "Short quiet spell after a last event",
+        "Overall count",
+        "Do not choose seizure-free while events continue",
+    ]
+    for row in cases:
+        assert set(row) == {"title", "instruction", "example"}
+        assert row["instruction"].strip()
+        example = row["example"]
+        assert set(example) == {"first_choice", "events", "answer"}
+        assert example["first_choice"]["selected_event_ids"]
+        assert "label" in example["first_choice"]
+        assert len(example["events"]) >= 2
+        for event in example["events"]:
+            assert set(event) == {
+                "event_id",
+                "label",
+                "kind",
+                "temporality",
+                "assertion_status",
+                "applies_to",
+                "time_window",
+                "evidence",
+            }
+            assert event["event_id"]
+            assert event["evidence"]
+        assert example["answer"]["selected_event_ids"]
+        chosen = set(example["first_choice"]["selected_event_ids"])
+        event_ids = {event["event_id"] for event in example["events"]}
+        assert chosen <= event_ids
+        assert set(example["answer"]["selected_event_ids"]) <= event_ids
     assert "usual gap between seizures" in blob.lower()
     assert "so far this year" in blob.lower()
     assert "recent count" in blob.lower()
     assert "not epileptic seizures" in blob.lower()
+    assert "seizure free for multiple year" in blob
+    assert "named months" in blob.lower()
+    assert "add those counts" in blob.lower()
+    assert "4 months or longer" in blob.lower()
+    assert "rate per day or per week" in blob.lower()
+    assert "different dates or months" in blob.lower()
+    assert "more than 1 month" in blob.lower()
+    assert "before an improvement" in blob.lower()
+    assert "current or recent" in blob.lower()
+    assert "last seizure on a calendar day" in blob.lower()
+    assert "fewer than 6 months" in blob.lower()
+    assert "5 weeks or less" in blob.lower()
+    assert "typically 1 per month" in blob.lower()
+    assert "3 in march and 6 in may" in blob.lower()
+    assert "12 march" in blob.lower()
+    assert "four cases" not in blob.lower()
     assert "year-to-date" not in blob.lower()
+    assert "current-state" not in blob.lower()
+    assert "burden" not in blob.lower()
+    assert "write no seizure frequency reference" not in blob.lower()
+    assert "monthly_diary" not in blob.lower()
+    assert "dated_sequence" not in blob.lower()
+    assert "post_change_burst" not in blob.lower()
+    assert "last_event_well_since" not in blob.lower()
     _assert_no_internal_prompt_language(blob)
 
 

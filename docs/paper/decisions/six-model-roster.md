@@ -1,7 +1,7 @@
 # Six-model roster
 
 Date: 2026-08-17
-Revised: 2026-08-23 (ExECT cited score is 4-family micro F1)
+Revised: 2026-08-28 (Gan and ExECT cell-3 rosters complete for all six models)
 Status: current
 Owner: [paper methods](../methods.md)
 Roster: [`paper_experiments/roster.json`](../../../paper_experiments/roster.json)
@@ -9,8 +9,9 @@ Cited-model decision: [Gemini is the cited model](gemini-is-the-cited-model.md)
 
 ## Decision
 
-The six-model comparison is **cell 3 only** on both tasks: LLM
-extract, rules encode, rules select.
+The six-model comparison is **cell 3 only** on both tasks: cited
+LLM extract (`gan_llm_extract`, bundled find-and-encode), rules
+encode, rules select.
 
 1. Gemini 3.7 Flash (cited model)
 2. Grok 4.6
@@ -19,16 +20,16 @@ extract, rules encode, rules select.
 5. Qwen 3.8 27B
 6. Gemma 4 26B
 
-Gan extract is `gan_llm_extract`. ExECT extract is
+Gan find is `gan_llm_extract`. ExECT find is
 `exect_llm_extract` (inventory prompt, 4-family micro F1). Encode and
 select are the recorded rule stacks replayed on that raw.
-`exect_llm_extract_filtered` is the Compact extract ablation, Gemini
+`exect_llm_extract_filtered` is the Compact find ablation, Gemini
 only.
 
 Headline five-cell tables stay Gemini. On ExECT they score 4-family
 micro F1 (`clinical_inventory_unit_keys`); Compact/headline F1 is
 not the cited metric. Later-stage LLM encode and LLM select stay
-Gemini only. Gemini thinking low / medium / high is a cell-3 extract
+Gemini only. Gemini thinking low / medium / high is a cell-3 find
 ablation, not a roster table.
 
 `gan_llm_extract_raw` and `gan_llm_only` are ablations or historical
@@ -39,18 +40,33 @@ pre-0731, Qwen 3.6:35B, Compact dump. Sol is not a paper cell.
 
 ## Why
 
-Cell 3 is the same method on both tasks: one extract call, then
+Cell 3 is the same method on both tasks: one find call, then
 fixed rules. That is the only row that can carry six models without
 paying for later-stage encode or select on the roster. ExECT cell 4
 stays Gemini-only. On 4-family micro F1, cell 3 is the Gemini peak
-(0.8674 on `test60`).
+(0.8674 on `test60`). All six ExECT `exect_llm_extract` roster cells
+are promoted on `dev140` and aggregate-only `test60`; cite those
+inventory select stops in the six-model table, not Compact/headline
+`exect_llm_only` replays. All six Gan `gan_llm_extract` roster cells
+are promoted on `dev750` and aggregate-only `test450`; cite those
+codebook rungs (`paper_experiments/gan/rungs/{slug}/`), not
+`gan_llm_extract_raw`. Grok living temperature is `0`.
 
 ## Consequences
 
-- New roster runs are cell-3 extracts plus rule replay. Do not start
+- New roster runs are cell-3 find plus rule replay. Do not start
   six-model later-stage encode or select. Do not start new Sol calls.
 - Do not treat `gan_llm_only` or source-near `gan_llm_extract_raw`
   as the six-model table.
+- Cite ExECT roster totals from promoted
+  `paper_experiments/exect/exect_llm_extract/{slug}/test60/`
+  (4-family micro F1). Do not substitute Compact/headline
+  `exect_llm_only` for that table.
+- Cite Gan roster totals from promoted
+  `paper_experiments/gan/rungs/{slug}/test450/` replayed on
+  `gan_llm_extract` with living cell-3 modes `gan_rules_encode` then
+  `llm_select_after_codebook`. Do not substitute
+  `gan_llm_extract_raw` or historical `llm_encode` / `llm_select`.
 - Living DeepSeek is thinking enabled at `reasoning_effort=low`,
   the same living effort as Gemini, Grok, and Luna. Thinking-off
   is a DeepSeek-only toggle, not the Gemini medium/high ablation.

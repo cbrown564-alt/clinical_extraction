@@ -9,6 +9,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidate
     CandidateKind,
     RawCandidate,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.find_encode import (
+    FindFact,
+    encode_find_fact,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
     AblationConfig,
     ExtractionContext,
@@ -52,14 +56,19 @@ def _build_seizure_free_candidate(
     label: str = "seizure free for multiple year",
     evidence_group: str | int = 0,
 ) -> RawCandidate:
+    fact = FindFact(
+        kind=CandidateKind.SEIZURE_FREE,
+        custom_label=label,
+    )
     return RawCandidate(
         kind=CandidateKind.SEIZURE_FREE,
-        label=label,
+        label=encode_find_fact(fact),
         evidence=_clean_evidence(match.group(evidence_group)),
         rule_id=rule_id,
         rule_group=RuleGroup.SEIZURE_FREE_NO_EVENT_ASSERTIONS,
         portability=Portability.SEIZURE_FREQUENCY,
         match_groups=match.groupdict(),
+        find_fact=fact,
     )
 
 

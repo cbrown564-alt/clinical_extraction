@@ -293,8 +293,9 @@ held-out rows, so it is not an independent holdout.
     hosted/local route and local no-call-reparse differences remain caveats.
 20. **Six-model comparison report completed.** The retained ExECT and Gan
     panels are synthesized with task-specific scores, component attribution,
-    operational caveats, and no pooled capability ranking. Sol leads both
-    selected test panels, and their cross-task rank correlation is `0.61`.
+    operational caveats, and no pooled capability ranking. Sol led the
+    historical current-stack panels. Living cite is the Gemini five-cell.
+    Cross-task rank correlation on the historical panels is `0.61`.
     Matched six-model Gan v0.5 dev750 coverage is complete; the complete v0.7
     development panel is quarantined as a historical diagnostic.
 21. **ExECT SF over-inference analogue closed as diagnostic.** A predeclared
@@ -352,8 +353,8 @@ framework did not authorize model calls or locked-row inspection.
 
 Gemini 3.7 Flash hybrid is on the living six-model panel. LLM-only
 cells are complete: Gan live `dev750` / aggregate-only `test450`;
-ExECT one-call raw lane `dev140` / `test60`. Sol remains the paper
-LLM-only row. Owners:
+ExECT one-call raw lane `dev140` / `test60`. `gan_llm_only` is not a
+results column. Sol LLM-only rows are historical. Owners:
 [Gan cells](../research/gan2026/gemini37flash_llm_only_dev750_test450_2026-08-13.md),
 [ExECT confirmation](../research/exectv2/gemini37flash_llm_only_raw_lane_2026-08-14.md).
 

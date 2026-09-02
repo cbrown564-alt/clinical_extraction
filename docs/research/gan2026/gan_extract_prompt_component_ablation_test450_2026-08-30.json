@@ -1,0 +1,101 @@
+{
+  "cell3": {
+    "encode": "gan_rules_encode",
+    "select": "llm_select_after_codebook"
+  },
+  "comparator": {
+    "encode_purist_correct": 360,
+    "find_purist_correct": 355,
+    "method": "gan_llm_extract",
+    "select_purist_correct": 387,
+    "source": "paper_experiments/gan/rungs/gemini37flash/test450/comparison.json"
+  },
+  "date": "2026-08-30",
+  "model_slug": "gemini37flash",
+  "row_policy": "aggregate_only",
+  "scorer": "purist",
+  "split": "test450",
+  "variants": {
+    "gan_llm_extract_holgate_like": {
+      "encode": {
+        "pragmatic_correct": 194,
+        "purist_accuracy": 0.4156,
+        "purist_correct": 187,
+        "scorable": 220
+      },
+      "find": {
+        "pragmatic_correct": 156,
+        "purist_accuracy": 0.3333,
+        "purist_correct": 150,
+        "scorable": 172
+      },
+      "replay": "scratch/holdout/paper/gan_llm_extract_holgate_like/gemini37flash/test450/cell3_replay/comparison.json",
+      "select": {
+        "pragmatic_correct": 202,
+        "purist_accuracy": 0.4289,
+        "purist_correct": 193,
+        "scorable": 228
+      },
+      "holgate_dialect_v1": {
+        "encode": {
+          "pragmatic_correct": 296,
+          "purist_correct": 288,
+          "scorable": 348
+        },
+        "find": {
+          "pragmatic_correct": 285,
+          "purist_correct": 277,
+          "scorable": 333
+        },
+        "note": "Paper Table 3b Holgate row. Not the living parser.",
+        "select": {
+          "pragmatic_correct": 302,
+          "purist_correct": 292,
+          "scorable": 351
+        },
+        "source": "docs/research/gan2026/gan_holgate_like_dev250_2026-08-30.json"
+      }
+    },
+    "gan_llm_extract_raw": {
+      "encode": {
+        "pragmatic_correct": 350,
+        "purist_accuracy": 0.7444,
+        "purist_correct": 335
+      },
+      "find": {
+        "pragmatic_correct": 253,
+        "purist_accuracy": 0.5467,
+        "purist_correct": 246,
+        "scorable": 297
+      },
+      "note": "Promoted gan_llm_extract_raw stages. Encode is selected-evidence, not living gan_rules_encode.",
+      "replay": "paper_experiments/gan/gan_llm_extract_raw/gemini37flash/test450/comparison.json",
+      "select": {
+        "pragmatic_correct": 369,
+        "purist_accuracy": 0.7933,
+        "purist_correct": 357
+      }
+    },
+    "gan_llm_extract_no_examples": {
+      "encode": {
+        "pragmatic_correct": 364,
+        "purist_accuracy": 0.7756,
+        "purist_correct": 349,
+        "scorable": 444
+      },
+      "find": {
+        "pragmatic_correct": 360,
+        "purist_accuracy": 0.7667,
+        "purist_correct": 345,
+        "scorable": 444
+      },
+      "replay": "scratch/holdout/paper/gan_llm_extract_no_examples/gemini37flash/test450/cell3_replay/comparison.json",
+      "select": {
+        "pragmatic_correct": 381,
+        "purist_accuracy": 0.8222,
+        "purist_correct": 370,
+        "scorable": 444
+      }
+    }
+  }
+}

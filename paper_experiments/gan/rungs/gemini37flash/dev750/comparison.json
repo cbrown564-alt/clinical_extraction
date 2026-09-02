@@ -1,77 +1,89 @@
 {
   "claim_boundary": "Gan development replay. Not holdout.",
   "format_only_check": {
-    "note": "Cell 3 is encode (selected-evidence derivation). It stays encode-only only when selected_event_ids never change.",
-    "predicted_kind_changes": 219,
-    "purist_harms": 3,
-    "purist_rescues": 167,
-    "repair_mode": "llm_encode",
+    "note": "Living cell 3 is codebook encode then rule select (gan_rules_encode, llm_select_after_codebook). selected_event_id_changes still records whether encode kept the extract pick. Historical llm_encode is the five-cell encode ablation, not this roster.",
+    "predicted_kind_changes": 18,
+    "purist_harms": 0,
+    "purist_rescues": 22,
+    "repair_mode": "gan_rules_encode",
+    "select_repair_mode": "llm_select_after_codebook",
     "selected_event_id_changes": 0,
     "used_as_rung_3": true
   },
-  "generated_on": "2026-08-21",
+  "generated_on": "2026-08-29",
   "model_slug": "gemini37flash",
   "row_count": 750,
   "row_policy": "development_review_permitted",
   "rungs": {
     "llm_encode": {
-      "pragmatic_accuracy": 0.8493,
-      "pragmatic_correct": 637,
+      "micro_f1": 0.8107,
+      "pragmatic_accuracy": 0.8427,
+      "pragmatic_correct": 632,
+      "pragmatic_micro_f1": 0.8427,
+      "predicted_candidate_count": 1619,
       "predicted_kinds": {
-        "frequency": 407,
-        "no_reference": 59,
-        "seizure_free": 144,
-        "unknown": 95,
-        "unresolved_multiple": 45
+        "frequency": 411,
+        "no_reference": 21,
+        "seizure_free": 135,
+        "unknown": 149,
+        "unresolved_multiple": 34
       },
       "purist_accuracy": 0.8107,
       "purist_correct": 608,
       "scorable": 750
     },
     "llm_extract": {
-      "pragmatic_accuracy": 0.62,
-      "pragmatic_correct": 465,
+      "micro_f1": 0.7813,
+      "pragmatic_accuracy": 0.8173,
+      "pragmatic_correct": 613,
+      "pragmatic_micro_f1": 0.8173,
+      "predicted_candidate_count": 1619,
       "predicted_kinds": {
-        "frequency": 276,
+        "frequency": 396,
         "no_reference": 21,
-        "seizure_free": 143,
-        "unknown": 79,
-        "unresolved_multiple": 13,
-        "unscorable": 218
+        "seizure_free": 136,
+        "unknown": 165,
+        "unresolved_multiple": 32
       },
-      "purist_accuracy": 0.592,
-      "purist_correct": 444,
-      "scorable": 532
+      "purist_accuracy": 0.7813,
+      "purist_correct": 586,
+      "scorable": 750
     },
     "llm_select": {
-      "pragmatic_accuracy": 0.9027,
-      "pragmatic_correct": 677,
+      "micro_f1": 0.8747,
+      "pragmatic_accuracy": 0.8973,
+      "pragmatic_correct": 673,
+      "pragmatic_micro_f1": 0.8973,
+      "predicted_candidate_count": 1619,
       "predicted_kinds": {
-        "frequency": 443,
-        "no_reference": 44,
-        "seizure_free": 127,
-        "unknown": 90,
-        "unresolved_multiple": 46
+        "frequency": 447,
+        "no_reference": 21,
+        "seizure_free": 114,
+        "unknown": 134,
+        "unresolved_multiple": 34
       },
-      "purist_accuracy": 0.88,
-      "purist_correct": 660,
+      "purist_accuracy": 0.8747,
+      "purist_correct": 656,
       "scorable": 750
     },
     "rules_only": {
-      "pragmatic_accuracy": 0.9053,
-      "pragmatic_correct": 679,
+      "micro_f1": 0.9213,
+      "pragmatic_accuracy": 0.9347,
+      "pragmatic_correct": 701,
+      "pragmatic_micro_f1": 0.9347,
+      "predicted_candidate_count": 1245,
       "predicted_kinds": {
-        "frequency": 458,
-        "no_reference": 117,
+        "frequency": 457,
+        "no_reference": 108,
         "seizure_free": 133,
-        "unknown": 12,
-        "unresolved_multiple": 30
+        "unknown": 15,
+        "unresolved_multiple": 37
       },
-      "purist_accuracy": 0.892,
-      "purist_correct": 669,
+      "purist_accuracy": 0.9213,
+      "purist_correct": 691,
       "scorable": 750
     }
   },
-  "shared_raw_output": "gan_llm_extract_raw",
+  "shared_raw_output": "gan_llm_extract",
   "split": "dev750"
 }

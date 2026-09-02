@@ -7,6 +7,7 @@ block is the closed output dialect. Events still keep the note wording.
 from __future__ import annotations
 
 import json
+from typing import Any
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_label_forms import (
@@ -19,14 +20,14 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_extract_
 )
 
 GAN_LLM_EXTRACT = "gan_llm_extract"
-LLM_EXTRACT_AUTHORED_KEYS = (
+LLM_EXTRACT_TEMPLATE_KEYS = (
     "task",
     "instructions",
     "label_forms",
     "event_schema",
     "selection_schema",
-    "note_text",
 )
+LLM_EXTRACT_AUTHORED_KEYS = (*LLM_EXTRACT_TEMPLATE_KEYS, "note_text")
 
 INSTRUCTIONS = [
     "Read the full clinical note and extract source-near seizure-frequency facts.",
@@ -81,15 +82,20 @@ INSTRUCTIONS = [
 ]
 
 
-def build_llm_extract_prompt_input(record: GanFrequencyRecord) -> str:
-    """Build the Gan extract payload that includes the label-form list."""
+def llm_extract_prompt_template() -> dict[str, Any]:
+    """Fixed find request without the letter body."""
 
-    payload = {
+    return {
         "task": TASK,
         "instructions": list(INSTRUCTIONS),
         "label_forms": label_forms_payload(),
         "event_schema": dict(EVENT_SCHEMA),
         "selection_schema": dict(SELECTION_SCHEMA),
-        "note_text": record.note_text,
     }
+
+
+def build_llm_extract_prompt_input(record: GanFrequencyRecord) -> str:
+    """Build the Gan extract payload that includes the label-form list."""
+
+    payload = {**llm_extract_prompt_template(), "note_text": record.note_text}
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)

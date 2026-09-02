@@ -23,7 +23,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
 )
 
 COMPONENT_OWNER = "deterministic_sf_attribute_encoding"
-ENCODING_VERSION = "exectv2_hybrid_sf_attribute_encoding_v0.3"
+ENCODING_VERSION = "exectv2_hybrid_sf_attribute_encoding_v0.4"
 
 _RANGE_IN_FIELD_RE = re.compile(
     r"^\s*(?P<low>\d+)\s*(?:-|–|to|or)\s*(?P<high>\d+)\s*$",
@@ -62,6 +62,20 @@ _EXPLICIT_FURTHER_SEIZURES_RE = re.compile(
     r"\b(?:has|have|had)\s+had\s+further\b[^.;\n]{0,120}\bseizures?\b",
     re.IGNORECASE,
 )
+_FROM_TO_WINDOW_RE = re.compile(
+    r"\bfrom\s+(?:the\s+)?(?:\d{1,2}\s+)?"
+    r"(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|"
+    r"jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|"
+    r"dec(?:ember)?|\d{4})\b.{0,40}\bto\s+",
+    re.IGNORECASE,
+)
+_CLOSED_POINT_IN_TIME = frozenset({"Last_Week", "Last_Month", "Last_Year"})
+_DATE_WINDOW_ATTRS = ("DayDate", "MonthDate", "YearDate")
+_PERIOD_COUNT_ATTRS = (
+    "NumberOfTimePeriods",
+    "LowerNumberOfTimePeriods",
+    "UpperNumberOfTimePeriods",
+)
 
 
 def apply_sf_attribute_encoding(
@@ -83,6 +97,8 @@ def apply_sf_attribute_encoding(
             ("encoding.last_event_zero", _complete_last_event_zero),
             ("encoding.last_clinic_frame", _complete_last_clinic),
             ("encoding.dated_heading_count", _complete_dated_heading),
+            ("encoding.period_count_default", _complete_period_count_default),
+            ("encoding.during_window", _complete_during_window),
             ("encoding.mention_text_cleanup", _cleanup_mention_text),
         ):
             rewritten = apply(working)
@@ -330,6 +346,58 @@ def _complete_dated_heading(mention: Mapping[str, Any]) -> dict[str, Any] | Mapp
     repaired = _copy_mention(mention)
     attrs["NumberOfSeizures"] = "1"
     attrs["YearDate"] = str(year)
+    attrs["TimeSince_or_TimeOfEvent"] = "During"
+    repaired["attributes"] = attrs
+    repaired["component_owner"] = COMPONENT_OWNER
+    return repaired
+
+
+def _complete_period_count_default(
+    mention: Mapping[str, Any],
+) -> dict[str, Any] | Mapping[str, Any]:
+    """Write NumberOfTimePeriods=1 for a bare per-unit rate."""
+
+    attrs = dict(mention.get("attributes") or {})
+    if not attrs.get("TimePeriod"):
+        return mention
+    if any(attrs.get(key) for key in _PERIOD_COUNT_ATTRS):
+        return mention
+    repaired = _copy_mention(mention)
+    attrs["NumberOfTimePeriods"] = "1"
+    repaired["attributes"] = attrs
+    repaired["component_owner"] = COMPONENT_OWNER
+    return repaired
+
+
+def _complete_during_window(
+    mention: Mapping[str, Any],
+) -> dict[str, Any] | Mapping[str, Any]:
+    """Write During when events sit inside an already-present closed window.
+
+    Does not frame standing rates. Last-event and last-clinic mentions keep
+    Since from the earlier encode rules.
+    """
+
+    attrs = dict(mention.get("attributes") or {})
+    if attrs.get("TimeSince_or_TimeOfEvent"):
+        return mention
+    if attrs.get("NumberOfSeizures") == "0":
+        return mention
+    if attrs.get("PointInTime") == "LastClinic":
+        return mention
+    haystack = " ".join(
+        part
+        for part in (str(mention.get("text") or ""), str(mention.get("evidence") or ""))
+        if part
+    )
+    if _LAST_EVENT_CUE_RE.search(haystack):
+        return mention
+    closed_point = attrs.get("PointInTime") in _CLOSED_POINT_IN_TIME
+    has_date = any(attrs.get(key) for key in _DATE_WINDOW_ATTRS)
+    from_to = bool(_FROM_TO_WINDOW_RE.search(haystack))
+    if not closed_point and not has_date and not from_to:
+        return mention
+    repaired = _copy_mention(mention)
     attrs["TimeSince_or_TimeOfEvent"] = "During"
     repaired["attributes"] = attrs
     repaired["component_owner"] = COMPONENT_OWNER

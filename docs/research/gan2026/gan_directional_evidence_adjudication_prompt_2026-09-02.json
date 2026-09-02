@@ -1,0 +1,41 @@
+{
+  "prompt_id": "gan_directional_evidence_adjudication_v1",
+  "task": "Decide whether the supplied evidence supports the target current seizure-frequency answer.",
+  "instructions": [
+    "Use only the supplied evidence, its event grouping, the target answer, and the decision policy.",
+    "Judge the evidence as a whole for this record. Do not add facts that are not stated in the supplied evidence.",
+    "Return supported when the supplied evidence is enough to justify the target answer under the policy.",
+    "Return unsupported when the supplied evidence points to a different answer or conflicts with the target.",
+    "Return insufficient when the supplied evidence does not contain enough information to decide.",
+    "Choose one or more policy-operation tags that explain the judgment. Use none only when no named operation is needed.",
+    "Return exactly one JSON object and no markdown."
+  ],
+  "decision_policy": [
+    "The target is the patient's current seizure-frequency state.",
+    "Prefer current or recent statements over historical statements when the policy identifies the current state.",
+    "When an overall current count and a subtype breakdown both appear, use the overall count for the target rather than only a subtype count.",
+    "Represent a stated rate or range, including a cluster rate, when the supplied evidence states it clearly.",
+    "Use seizure-free when the supplied evidence states the current seizure-free state.",
+    "Keep frequency unknown when seizures are discussed but the frequency cannot be determined.",
+    "Use no reference only when there is no usable seizure-frequency evidence.",
+    "When multiple current statements cannot be reconciled under these rules, treat the target as unresolved rather than inventing a resolution."
+  ],
+  "input": {
+    "target_answer": "<target answer>",
+    "evidence_arm": "<reference_text or pipeline_spans>",
+    "reference_text": "<shown only in the reference_text arm>",
+    "pipeline_events": [
+      {
+        "event_group": "<group id>",
+        "raw_evidence_spans": ["<exact source span as collected>"]
+      }
+    ]
+  },
+  "output_schema": {
+    "judgment": "supported | unsupported | insufficient",
+    "reason": "one concise source-based sentence",
+    "policy_operations": [
+      "target_current_state | choose_current_over_historical | choose_overall_over_subtype | interpret_rate_or_range | interpret_cluster_rate | interpret_seizure_free | retain_unknown_when_frequency_unclear | distinguish_no_reference | resolve_multiple_current_statements | none"
+    ]
+  }
+}

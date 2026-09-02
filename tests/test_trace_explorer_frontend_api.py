@@ -358,6 +358,22 @@ def test_frontend_api_serves_the_living_gan_dev750_panel(client: TestClient) -> 
     assert pending.status_code == 404
 
 
+def test_frontend_api_serves_the_gan_inventory_panel(client: TestClient) -> None:
+    response = client.get("/paper/gan/inventory")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["split"] == "dev750"
+    assert body["sample_size"] == 100
+    assert body["scorer"] is None
+    assert "accuracy" not in body
+    assert len(body["letters"]) == 100
+    assert "note_text" not in body["letters"][0]
+    catalog = client.get("/datasets/gan2026/letters").json()["letters"]
+    letter_ids = {letter["id"] for letter in catalog}
+    inventory_ids = {str(letter["source_row_index"]) for letter in body["letters"]}
+    assert inventory_ids <= letter_ids
+
+
 def test_exect_workbench_run_uses_living_paper_raws(client: TestClient) -> None:
     run_id = "exectv2_dev140_gpt56luna_llm_plus_rules"
     response = client.get(f"/exectv2/runs/{run_id}")

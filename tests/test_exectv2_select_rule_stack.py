@@ -21,8 +21,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select
     PRESCRIPTION_ACTIVE_TITRATION,
     PRESCRIPTION_EXACT_REGIMEN_DEDUPE,
     PRESCRIPTION_LOCAL_REGIMEN_SCOPE,
+    RULES_ONLY_SELECT_RULE_IDS,
+    SF_GENERIC_DUPLICATE_DROP,
     SF_NAMED_TYPE_IDENTITY,
     SF_RECENT_EVENT_OVER_HISTORICAL_FREE,
+    SF_SEIZURE_FREE_POSITIVE_COUNT_DROP,
     SF_TO_DIAGNOSIS_EXPLICIT_TYPE,
     apply_select_rules,
 )
@@ -902,9 +905,25 @@ def test_select_rule_stack_rejects_unknown_rule_ids() -> None:
         )
 
 
+def test_sf_candidate_drop_rules_are_catalogued_but_not_accepted() -> None:
+    for rule_id in (SF_GENERIC_DUPLICATE_DROP, SF_SEIZURE_FREE_POSITIVE_COUNT_DROP):
+        assert rule_id in CANDIDATE_SELECT_RULE_IDS
+        assert rule_id not in RULES_ONLY_SELECT_RULE_IDS
+        assert rule_id not in ACCEPTED_SELECT_RULE_IDS
+        assert rule_id not in INVENTORY_SELECT_RULE_IDS
+        assert EMITTED_ACTIONS_BY_RULE_ID[rule_id] == frozenset({"drop"})
+
+
 def test_emitted_actions_by_rule_id_covers_candidate_rules() -> None:
     assert frozenset(EMITTED_ACTIONS_BY_RULE_ID) == frozenset(CANDIDATE_SELECT_RULE_IDS)
     for rule_id, actions in EMITTED_ACTIONS_BY_RULE_ID.items():
+        if rule_id.startswith("selection.keep_"):
+            # Keep rules are gates consulted by the recall-first drop;
+            # they never emit actions of their own.
+            assert actions == frozenset(), (
+                f"keep rule {rule_id} must not declare emitted actions"
+            )
+            continue
         assert actions, f"{rule_id} must declare at least one action kind"
         assert actions <= frozenset({"rewrite", "add", "drop"}), (
             f"{rule_id} declares invalid action kinds: {sorted(actions)}"

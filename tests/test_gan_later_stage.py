@@ -13,20 +13,23 @@ from clinical_extraction.paper.gan_later_stage import (
     LLM_SELECT_METHOD,
     MAX_TOKENS,
     encode_work_rows_path,
-    extract_events_as_select_ledger,
     extract_rows_path,
+    hydrate_encode_row,
     later_stage_work_root,
     parse_encode_labels,
-    parse_extract_ledger,
-    parse_select_answer,
-    project_encode_label,
-    project_select_label,
     score_later_stage_row,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     FrequencyLabelKind,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.select_from_extract import (
+    extract_events_as_select_ledger,
+    parse_extract_ledger,
+    parse_select_answer,
+    project_encode_label,
+    project_select_label,
+)
 
 
 def test_encode_projects_the_extract_pick_label() -> None:
@@ -188,6 +191,75 @@ def test_select_from_extract_has_its_own_work_cell() -> None:
     path = later_stage_work_root("gan_llm_select_from_extract")
     assert "gan_llm_select_from_extract" in path.as_posix()
     assert "gan_llm_select/" not in path.as_posix()
+
+
+def test_later_stage_work_leaf_does_not_reuse_cited_select_cell() -> None:
+    path = later_stage_work_root(
+        "gan_llm_select_from_extract",
+        split="test450",
+        work_leaf="gan_llm_select_policy_examples",
+    )
+    posix = path.as_posix()
+    assert "gan_llm_select_policy_examples" in posix
+    assert "gan_llm_select_from_extract" not in posix
+
+
+def test_later_stage_can_pin_source_near_extract_ledger() -> None:
+    path = extract_rows_path("test450", extract_method="gan_llm_extract_raw")
+    posix = path.as_posix()
+    assert "gan_llm_extract_raw" in posix
+    assert "gan_llm_extract/" not in posix
+    work = later_stage_work_root(
+        "gan_llm_select",
+        split="test450",
+        work_leaf="gan_llm_select_after_source_near_encode",
+        extract_method="gan_llm_extract_raw",
+    )
+    assert "gan_llm_extract_raw" in work.as_posix()
+    assert "gan_llm_encode_on_codebook" not in work.as_posix()
+
+
+def test_encode_work_path_can_use_an_isolated_codebook_leaf() -> None:
+    path = encode_work_rows_path(
+        "test450",
+        work_leaf="gan_llm_encode_on_codebook",
+        extract_method="gan_llm_extract",
+    )
+    posix = path.as_posix()
+    assert "gan_llm_encode_on_codebook" in posix
+    assert "scratch/holdout/paper" in posix
+    assert posix.endswith("gan_llm_extract/test450/rows.jsonl")
+
+
+def test_hydrate_encode_row_rebuilds_events_from_raw() -> None:
+    record = GanFrequencyRecord(
+        source_row_index=10,
+        note_text="Present seizure frequency: up to 4 per day.",
+        gold_label="4 per day",
+        gold_reference="up to 4 per day",
+        labels_match_all_categories=True,
+        quotes_ok_all_categories=True,
+        row_ok=True,
+        raw={},
+        gold_normalized_label="4 per day",
+        gold_label_kind=FrequencyLabelKind.FREQUENCY,
+        gold_yearly_bounds=(1460.0, 1460.0),
+        gold_monthly_frequency=120.0,
+    )
+    hydrated = hydrate_encode_row(
+        {
+            "source_row_index": 10,
+            "prompt_version": "gan_llm_encode",
+            "raw_output": '{"labels": [{"event_id": "e1", "label": "4 per day"}]}',
+        },
+        record=record,
+        extract_row={"raw_output": _codebook_extract_raw()},
+        split="dev750",
+        machine="validation",
+    )
+    assert hydrated["encoded_events"][0]["event_id"] == "e1"
+    assert hydrated["encoded_events"][0]["label"] == "4 per day"
+    assert hydrated["comparison"]["purist_correct"] is True
 
 
 def test_select_from_extract_verify_is_gemini_only() -> None:

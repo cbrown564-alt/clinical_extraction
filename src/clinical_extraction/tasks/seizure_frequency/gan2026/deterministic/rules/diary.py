@@ -8,6 +8,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidate
     CandidateKind,
     RawCandidate,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.find_encode import (
+    FindFact,
+    encode_find_fact,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
     AblationConfig,
     ExtractionContext,
@@ -51,17 +55,27 @@ def _build_diary_candidate(
     match: re.Match[str],
     *,
     rule_id: str,
-    label: str,
+    count: str,
+    unit: str,
+    denominator: str | None = None,
     evidence_group: str | int = 0,
+    evidence: str | None = None,
 ) -> RawCandidate:
+    fact = FindFact(
+        kind=CandidateKind.FREQUENCY_RATE,
+        count=count,
+        unit=unit,
+        denominator=denominator,
+    )
     return RawCandidate(
         kind=CandidateKind.FREQUENCY_RATE,
-        label=label,
-        evidence=_clean_evidence(match.group(evidence_group)),
+        label=encode_find_fact(fact),
+        evidence=evidence if evidence is not None else _clean_evidence(match.group(evidence_group)),
         rule_id=rule_id,
         rule_group=RuleGroup.DIARY_LOG_AGGREGATION,
         portability=Portability.SEIZURE_FREQUENCY,
         match_groups=match.groupdict(),
+        find_fact=fact,
     )
 
 
@@ -71,7 +85,8 @@ def _build_seizure_days_per_period(
     return _build_diary_candidate(
         match,
         rule_id="diary.seizure_days_per_period",
-        label=_rate_label(match.group("count"), match.group("unit")),
+        count=match.group("count"),
+        unit=match.group("unit"),
     )
 
 
@@ -79,7 +94,8 @@ def _build_seizure_days_fraction(match: re.Match[str], _context: ExtractionConte
     return _build_diary_candidate(
         match,
         rule_id="diary.seizure_days_fraction",
-        label=_rate_label(match.group("count"), "month"),
+        count=match.group("count"),
+        unit="month",
     )
 
 
@@ -90,7 +106,9 @@ def _build_date_list(match: re.Match[str], _context: ExtractionContext) -> RawCa
     return _build_diary_candidate(
         match,
         rule_id="diary.date_list",
-        label=_rate_label(str(len(dates)), "month", str(denominator)),
+        count=str(len(dates)),
+        unit="month",
+        denominator=str(denominator),
     )
 
 
@@ -107,7 +125,9 @@ def _build_seizure_day_log(
     return _build_diary_candidate(
         match,
         rule_id="diary.seizure_day_log",
-        label=_rate_label(str(sum(int(count) for count in entries)), "month", str(len(entries))),
+        count=str(sum(int(count) for count in entries)),
+        unit="month",
+        denominator=str(len(entries)),
     )
 
 
@@ -126,7 +146,9 @@ def _build_monthly_count_log(
     return _build_diary_candidate(
         match,
         rule_id="diary.monthly_count_log",
-        label=_rate_label(str(total), "month", str(denominator)),
+        count=str(total),
+        unit="month",
+        denominator=str(denominator),
     )
 
 
@@ -146,7 +168,9 @@ def _build_sparse_full_month_log(
     return _build_diary_candidate(
         match,
         rule_id="diary.sparse_full_month_log",
-        label=_rate_label(str(total), "month", str(len(months))),
+        count=str(total),
+        unit="month",
+        denominator=str(len(months)),
     )
 
 
@@ -168,7 +192,9 @@ def _build_recorded_month_log(
     return _build_diary_candidate(
         match,
         rule_id="diary.recorded_month_log",
-        label=_rate_label(str(total), "month", str(len(months))),
+        count=str(total),
+        unit="month",
+        denominator=str(len(months)),
     )
 
 
@@ -196,14 +222,12 @@ def _build_increasing_monthly_count(
         match.group("entry"),
         flags=re.IGNORECASE,
     )
-    return RawCandidate(
-        kind=CandidateKind.FREQUENCY_RATE,
-        label=_rate_label(match.group("count"), "month"),
-        evidence=_clean_evidence(evidence),
+    return _build_diary_candidate(
+        match,
         rule_id="diary.increasing_monthly_count",
-        rule_group=RuleGroup.DIARY_LOG_AGGREGATION,
-        portability=Portability.SEIZURE_FREQUENCY,
-        match_groups=match.groupdict(),
+        count=match.group("count"),
+        unit="month",
+        evidence=_clean_evidence(evidence),
     )
 
 
@@ -239,7 +263,9 @@ def _build_sleep_awake_month_summary(
     return _build_diary_candidate(
         match,
         rule_id="diary.sleep_awake_month_summary",
-        label=_rate_label(str(sum(integer_counts)), "month", str(denominator + 1)),
+        count=str(sum(integer_counts)),
+        unit="month",
+        denominator=str(denominator + 1),
         evidence_group="evidence",
     )
 
@@ -258,14 +284,13 @@ def _build_monthly_diary_summary(
     total, denominator = parsed
     if total <= 0 or denominator <= 0:
         return None
-    return RawCandidate(
-        kind=CandidateKind.FREQUENCY_RATE,
-        label=_rate_label(str(total), "month", str(denominator)),
-        evidence=evidence,
+    return _build_diary_candidate(
+        match,
         rule_id=rule_id,
-        rule_group=RuleGroup.DIARY_LOG_AGGREGATION,
-        portability=Portability.SEIZURE_FREQUENCY,
-        match_groups=match.groupdict(),
+        count=str(total),
+        unit="month",
+        denominator=str(denominator),
+        evidence=evidence,
     )
 
 
@@ -964,18 +989,6 @@ DIARY_RULES = (
 )
 
 
-def _rate_label(count: str, unit: str, denominator: str | None = None) -> str:
-    count_value = _number_token(count)
-    denominator_value = _number_token(denominator) if denominator else None
-    unit_value = _singular_unit(unit)
-    if unit_value == "quarter":
-        unit_value = "month"
-        denominator_value = "3"
-    if denominator_value in {None, "1"}:
-        return f"{count_value} per {unit_value}"
-    return f"{count_value} per {denominator_value} {unit_value}"
-
-
 def _number_token(value: str | None) -> str:
     if value is None:
         return "1"
@@ -1190,11 +1203,6 @@ class _MonthDate:
     def __init__(self, *, year: int, month: int) -> None:
         self.year = year
         self.month = month
-
-
-def _singular_unit(value: str) -> str:
-    normalized = value.lower().strip()
-    return normalized[:-1] if normalized.endswith("s") else normalized
 
 
 def _clean_evidence(evidence: str) -> str:

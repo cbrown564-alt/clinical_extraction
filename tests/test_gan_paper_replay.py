@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 
-from clinical_extraction.paper.gan import hydrate_saved_raw_row
+from clinical_extraction.paper.gan import hydrate_saved_raw_row, reparse_gan_llm_extract_raw
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     FrequencyLabelKind,
 )
@@ -106,3 +106,61 @@ def test_hydrate_saved_llm_only_row_rebuilds_decision_trace() -> None:
     assert row["row_trace"]["schema_version"] == ROW_TRACE_SCHEMA_VERSION
     assert row["row_trace"]["method"] == "llm_only"
     assert "structured_record" not in row
+
+
+def test_reparse_gan_llm_extract_raw_uses_saved_raw_and_no_call(
+    tmp_path, monkeypatch
+) -> None:
+    dest = tmp_path / "paper_experiments/gan/gan_llm_extract_raw/grok46/dev750"
+    dest.mkdir(parents=True)
+    raw = _hybrid_raw()
+    (dest / "rows.jsonl").write_text(
+        json.dumps(
+            {
+                "source_row_index": 10,
+                "prompt_version": "gan_llm_extract_raw",
+                "raw_output": raw,
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    (dest / "comparison.json").write_text(
+        json.dumps(
+            {
+                "method": "gan_llm_extract_raw",
+                "model_slug": "grok46",
+                "model": "x-ai/grok-4.6",
+                "split": "dev750",
+                "prompt_version": "gan_llm_extract_raw",
+                "row_count": 1,
+                "row_policy": "development_review_permitted",
+                "live": True,
+                "model_calls": 1,
+                "summary": {"purist_correct": 0, "purist_accuracy": 0.0},
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("clinical_extraction.paper.gan.ROOT", tmp_path)
+    monkeypatch.setattr(
+        "clinical_extraction.paper.gan.load_records_for_split",
+        lambda _machine: [_record()],
+    )
+    monkeypatch.setattr("clinical_extraction.paper.gan.gan_row_count", lambda _split: 1)
+
+    payload = reparse_gan_llm_extract_raw("grok46", "dev750")
+
+    assert payload["replay_mode"] == "no_call"
+    assert payload["model_calls"] == 0
+    assert payload["reused_raw_outputs"] == 1
+    comparison = json.loads((dest / "comparison.json").read_text(encoding="utf-8"))
+    assert comparison["replay_mode"] == "no_call"
+    assert comparison["live"] is False
+    assert comparison["model_calls"] == 0
+    assert comparison["summary"]["reused_raw_outputs"] == 1
+    assert comparison["summary"]["purist_correct"] == 1
+    replay = json.loads((dest / "rows.jsonl").read_text(encoding="utf-8").splitlines()[0])
+    assert replay["raw_output"] == raw
+    scored = json.loads((dest / "scored.jsonl").read_text(encoding="utf-8").splitlines()[0])
+    assert scored["purist_correct"] is True

@@ -1,22 +1,55 @@
 {
   "cache": false,
+  "cell": "ablation",
   "claim_boundary": "Gan aggregate-only test450. Do not inspect holdout rows.",
-  "finished_utc": "2026-08-18T08:47:56.330759+00:00",
+  "finished_utc": "2026-08-27T17:56:55.673280+00:00",
   "generated_on": "2026-08-17",
-  "live": true,
+  "headline": "select",
+  "live": false,
+  "living_schema_version": "paper.living_cell.v1",
   "max_tokens": 5000,
   "method": "gan_llm_extract_raw",
   "model": "xai/grok-4.6",
-  "model_calls": 450,
+  "model_calls": 0,
   "model_label": "Grok 4.6",
   "model_slug": "grok46",
   "prompt_version": "gan_llm_extract_raw",
+  "replay_mode": "no_call",
   "row_count": 450,
   "row_policy": "aggregate_only",
   "schema_version": "paper.gan_llm_extract_raw.v1",
+  "score": {
+    "n": 450,
+    "purist_accuracy": 0.7844,
+    "purist_correct": 353
+  },
+  "scorer": "purist",
   "split": "test450",
   "split_machine": "test",
   "split_manifest": "gan2026_split_v1",
+  "stages": {
+    "encode": {
+      "n": 450,
+      "pragmatic_accuracy": 0.7867,
+      "pragmatic_correct": 354,
+      "purist_accuracy": 0.7511,
+      "purist_correct": 338
+    },
+    "extract": {
+      "n": 450,
+      "pragmatic_accuracy": 0.4578,
+      "pragmatic_correct": 206,
+      "purist_accuracy": 0.4378,
+      "purist_correct": 197
+    },
+    "select": {
+      "n": 450,
+      "pragmatic_accuracy": 0.8111,
+      "pragmatic_correct": 365,
+      "purist_accuracy": 0.7844,
+      "purist_correct": 353
+    }
+  },
   "started_utc": "2026-08-18T07:21:23.839216+00:00",
   "summary": {
     "call_failures": 0,
@@ -27,14 +60,16 @@
     "initial_parse_or_validation_failures": 0,
     "json_dialect_repairs": 0,
     "parse_or_validation_failures": 0,
-    "pragmatic_accuracy": 0.8556,
-    "pragmatic_correct": 385,
-    "purist_accuracy": 0.8333,
-    "purist_correct": 375,
+    "pragmatic_accuracy": 0.8111,
+    "pragmatic_correct": 365,
+    "predicted_candidate_count": 1282,
+    "purist_accuracy": 0.7844,
+    "purist_correct": 353,
     "repair_notes": 311,
-    "reused_raw_outputs": 0,
+    "reused_raw_outputs": 450,
     "structured_records": 450
   },
+  "task": "gan2026",
   "temperature": 1.0,
   "thinking_type": null
 }

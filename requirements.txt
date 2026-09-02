@@ -1,0 +1,6 @@
+# Runtime packages for VLLM.md / python run.py (not the vLLM server).
+# Keep in lockstep with [project].dependencies in pyproject.toml.
+dspy>=2.5.0
+pydantic>=2.7.0
+PyYAML>=6.0
+openai>=1.0.0

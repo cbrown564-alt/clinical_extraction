@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 from collections.abc import Sequence
+from pathlib import Path
 from typing import Any, cast
 
 from clinical_extraction.paper.exect import (
@@ -38,7 +39,7 @@ from clinical_extraction.paper.exect_panel import (
     promote_exect_llm_only,
 )
 from clinical_extraction.paper.five_cell import write_five_cell_grid
-from clinical_extraction.paper.gan import run_gan, verify_gan
+from clinical_extraction.paper.gan import reparse_gan_llm_extract_raw, run_gan, verify_gan
 from clinical_extraction.paper.gan_cell_replay import replay_gan_rungs
 from clinical_extraction.paper.gan_panel import promote_gan
 from clinical_extraction.paper.methods import (
@@ -61,6 +62,7 @@ def main(argv: Sequence[str] | None = None) -> None:
             "promote-gan",
             "promote-exect",
             "replay-rungs",
+            "reparse-gan",
             "write-five-cell",
             "score-inventory",
             "score-inventory-residual",
@@ -76,9 +78,18 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--progress-every", type=int, default=1)
     parser.add_argument("--reasoning-effort", choices=("low", "medium", "high"))
     parser.add_argument("--thinking", choices=("enabled", "disabled"))
+    parser.add_argument("--temperature", type=float)
     parser.add_argument("--row-limit", type=int)
     parser.add_argument("--slice")
-    parser.add_argument("--temperature", type=float)
+    parser.add_argument("--work-leaf")
+    parser.add_argument("--recorded-prompt-version")
+    parser.add_argument("--live-sync", action="store_true")
+    parser.add_argument(
+        "--extract-method",
+        choices=("gan_llm_extract", "gan_llm_extract_raw"),
+    )
+    parser.add_argument("--encode-work-leaf")
+    parser.add_argument("--encode-rows-path")
     args = parser.parse_args(argv)
     if args.action == "score-inventory":
         if canonical_exect_method(args.method) != "exect_llm_extract":
@@ -159,6 +170,21 @@ def main(argv: Sequence[str] | None = None) -> None:
         raise SystemExit(
             "replay-rungs accepts --split dev750, test450, dev140, or test60"
         )
+    if args.action == "reparse-gan":
+        if args.method != "gan_llm_extract_raw":
+            raise SystemExit("reparse-gan only accepts --method gan_llm_extract_raw")
+        if args.model is None:
+            raise SystemExit("reparse-gan requires --model")
+        if args.split not in {"dev750", "test450"}:
+            raise SystemExit("reparse-gan only accepts --split dev750 or test450")
+        print(
+            json.dumps(
+                reparse_gan_llm_extract_raw(args.model, args.split),
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return
     split_for(args.method, args.split)
     if args.action == "promote-gan":
         if args.model is None:
@@ -236,9 +262,15 @@ def main(argv: Sequence[str] | None = None) -> None:
                 progress_every=args.progress_every,
                 reasoning_effort=args.reasoning_effort,
                 thinking=args.thinking,
+                temperature=args.temperature,
                 row_limit=args.row_limit,
                 slice_name=args.slice,
-                temperature=args.temperature,
+                work_leaf=args.work_leaf,
+                recorded_prompt_version=args.recorded_prompt_version,
+                live_sync=args.live_sync,
+                extract_method=args.extract_method,
+                encode_work_leaf=args.encode_work_leaf,
+                encode_rows_path=args.encode_rows_path,
             ),
             indent=2,
             sort_keys=True,
@@ -291,9 +323,15 @@ def run(
     progress_every: int = 1,
     reasoning_effort: str | None = None,
     thinking: str | None = None,
+    temperature: float | None = None,
     row_limit: int | None = None,
     slice_name: str | None = None,
-    temperature: float | None = None,
+    work_leaf: str | None = None,
+    recorded_prompt_version: str | None = None,
+    live_sync: bool = False,
+    extract_method: str | None = None,
+    encode_work_leaf: str | None = None,
+    encode_rows_path: str | None = None,
 ) -> dict[str, Any]:
     """Run one allowed paper cell."""
 
@@ -303,7 +341,7 @@ def run(
         raise SystemExit("--row-limit and --slice were removed with gan_llm_pre_post")
     if spec["task"] == "exectv2":
         if temperature is not None:
-            raise SystemExit("--temperature is only wired for Gan live cells")
+            raise SystemExit("--temperature is Gan-only")
         if method in {"exect_llm_encode", "exect_llm_select"}:
             return run_exect_later_stage(
                 cast(ExectLaterStageMethod, method),
@@ -363,4 +401,10 @@ def run(
         thinking=thinking,
         reasoning_effort=reasoning_effort,
         temperature=temperature,
+        work_leaf=work_leaf,
+        recorded_prompt_version=recorded_prompt_version,
+        live_sync=live_sync,
+        extract_method=extract_method,
+        encode_work_leaf=encode_work_leaf,
+        encode_rows_path=Path(encode_rows_path) if encode_rows_path else None,
     )

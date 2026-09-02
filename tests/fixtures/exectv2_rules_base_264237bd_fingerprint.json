@@ -1,6 +1,6 @@
 {
   "schema_version": "exectv2_rules_base_fingerprint_v1",
-  "source_commit": "e903c9e3",
+  "source_commit": "98ba67e8",
   "source_verification": "Current repository checkout independently replayed",
   "split": "dev",
   "row_policy": "140 permitted development letters; no test60/full200/all rows",
@@ -9,11 +9,31 @@
   "canonicalization": "one compact sorted-key UTF-8 JSON object per letter joined by LF; SHA-256",
   "extraction_scope": "letter_id plus complete all-nine prediction model dump, including mention order, text, attributes, evidence, diagnostics, and provenance fields",
   "prediction_projection_trace_scope": "letter_id plus complete prediction, Decision 0046 primary comparison projection, and every stage event including owners, actions, inputs, outputs, rule categories, and changed flags",
-  "extraction_sha256": "937634a75c73448822b1029391c97927269373e208e30d2c47dd1e41ac9eb480",
-  "prediction_projection_trace_sha256": "af795f0aa6f7acd674b11fcb330a063952951c6324cb4921457eb28a8702d7d7",
+  "extraction_sha256": "cb70d805ed95802363e13fcdd1e7ad762c1d618339b453634d765c268ba288f8",
+  "prediction_projection_trace_sha256": "56e969daba806ffb951d5b033c014a07c6241825df5704385708e653aa05219c",
   "sol_reported_extraction_anchor": "0bba18...96ebf",
   "sol_reported_prediction_projection_trace_anchor": "6af972...aa420",
   "superseded_oracles": [
+    {
+      "extraction_sha256": "fce932faedd958e818ee161c72c27c459dc9e312e69b92883c1e147eea417cc2",
+      "prediction_projection_trace_sha256": "5e27322ca223b6f85bf5f21decc103e64a1253d41f4784bd2dd75b62cd9c9da5",
+      "held_until": "2026-08-27",
+      "superseded_by": "rules-only three-stage reconstruction",
+      "change": "run_letter now runs run_letter_three_stage(ACCEPTED_THREE_STAGE_CONFIG): typed recognise ledger (D1 service-context exclusion, D2 secondary-to retention, D3 focal-onset alias), Diagnosis encode, ordered Select adding sf_seizure_free_positive_count_drop and inventory_weak_episode_drop. The retune stack remains callable as run_letter_retune_stack.",
+      "why": "Measured on dev140 inventory F1 0.8949 -> 0.9167 (Diagnosis 0.8257 -> 0.8765, SeizureFrequency 0.8563 -> 0.8640), zero comparator-exact regressions. Aggregate-only test60 replay 0.7892 -> 0.8018; cited rules row promoted to 0.8018.",
+      "evidence": "docs/research/exectv2/exect_rules_only_three_stage_reconstruction_2026-08-27.md",
+      "scope_note": "Rules-only three-stage program. Cell 3 inventory Select set is unchanged."
+    },
+    {
+      "extraction_sha256": "937634a75c73448822b1029391c97927269373e208e30d2c47dd1e41ac9eb480",
+      "prediction_projection_trace_sha256": "af795f0aa6f7acd674b11fcb330a063952951c6324cb4921457eb28a8702d7d7",
+      "held_until": "2026-08-27",
+      "superseded_by": "rules-only inventory retune",
+      "change": "Investigations keep repeated same-result mentions; Diagnosis recognise adds heading aliases; run_letter applies Diagnosis encode plus inventory keep-source/local-specificity/heading Select.",
+      "why": "Measured on dev140 inventory F1 0.8824 -> 0.8949 (Diagnosis 0.803 -> 0.826, Investigations 0.962 -> 0.985). Rate-less SF anchors rejected. Cited test60 0.7725 unchanged.",
+      "evidence": "docs/research/exectv2/exect_rules_only_inventory_retune_2026-08-27.md",
+      "scope_note": "Rules-only later stages. Cell 3 inventory Select set is unchanged."
+    },
     {
       "extraction_sha256": "a6c45acdd750d8e5f29e9e913543953ce66e27341b3a1d8600f16b245f574ef2",
       "prediction_projection_trace_sha256": "002a38ace9933a9b5e22f02959957440169e03f904220a6080dbe48f973c99ba",

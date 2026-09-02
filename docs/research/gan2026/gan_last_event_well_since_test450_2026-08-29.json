@@ -1,0 +1,59 @@
+{
+  "claim_boundary": "Gan aggregate-only test450 replay. Do not inspect holdout rows. Not a cited score.",
+  "date": "2026-08-29",
+  "dataset": "gan2026_split_v1",
+  "split": "test450",
+  "n": 450,
+  "row_policy": "aggregate_only",
+  "model_slug": "gemini37flash",
+  "extract": "gan_llm_extract saved raws",
+  "select_mode": "llm_select_after_codebook",
+  "family": "last_event_well_since",
+  "scorer": "living map_purist / map_pragmatic",
+  "replay": "no_new_model_calls",
+  "stored_rung_select": {
+    "purist_correct": 374,
+    "pragmatic_correct": 383
+  },
+  "family_off": {
+    "purist_correct": 374,
+    "pragmatic_correct": 383
+  },
+  "family_on": {
+    "purist_correct": 387,
+    "pragmatic_correct": 396
+  },
+  "delta": {
+    "purist": 13,
+    "pragmatic": 13,
+    "label_changes": 13,
+    "purist_gain": 13,
+    "purist_loss": 0,
+    "pragmatic_gain": 13,
+    "pragmatic_loss": 0
+  },
+  "pragmatic_matrix_off": {
+    "order": ["Frequent", "Infrequent", "Unknown", "Seizure free"],
+    "matrix": [
+      [210, 3, 13, 1],
+      [2, 49, 16, 13],
+      [4, 3, 67, 2],
+      [1, 1, 8, 57]
+    ]
+  },
+  "pragmatic_matrix_on": {
+    "order": ["Frequent", "Infrequent", "Unknown", "Seizure free"],
+    "matrix": [
+      [211, 3, 13, 0],
+      [2, 61, 16, 1],
+      [4, 3, 67, 2],
+      [1, 1, 8, 57]
+    ]
+  },
+  "pragmatic_cells": {
+    "infrequent_to_unknown_off_on": [16, 16],
+    "infrequent_to_no_seizure_off_on": [13, 1],
+    "frequent_to_unknown_off_on": [13, 13],
+    "infrequent_correct_off_on": [49, 61]
+  }
+}

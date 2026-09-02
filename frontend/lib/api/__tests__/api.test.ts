@@ -4,6 +4,7 @@ import {
   fetchExectDev140Scored,
   fetchGanDev750Panel,
   fetchGanDev750Scored,
+  fetchGanInventory,
   fetchHealth,
   fetchLetter,
   fetchLetters,
@@ -96,6 +97,19 @@ describe("api/client", () => {
     expect(global.fetch).toHaveBeenNthCalledWith(
       2,
       "/api/paper/gan/dev750/gan_llm_extract_raw/grok46/scored",
+      expect.objectContaining({ headers: { "Content-Type": "application/json" } })
+    );
+  });
+
+  it("requests the frozen Gan inventory panel", async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({}),
+    }) as unknown as typeof fetch;
+
+    await fetchGanInventory();
+    expect(global.fetch).toHaveBeenCalledWith(
+      "/api/paper/gan/inventory",
       expect.objectContaining({ headers: { "Content-Type": "application/json" } })
     );
   });
