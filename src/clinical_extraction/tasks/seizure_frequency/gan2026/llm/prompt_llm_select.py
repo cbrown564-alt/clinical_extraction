@@ -442,6 +442,19 @@ def _select_event_view(event: Mapping[str, Any]) -> dict[str, Any]:
     return {key: row[key] for key in _SELECT_EVENT_KEYS}
 
 
+def select_cases_payload() -> list[dict[str, Any]]:
+    """Living select cases: title, instruction, and ledger-shaped example."""
+
+    return [
+        {
+            "title": row["title"],
+            "instruction": row["instruction"],
+            "example": {key: row["example"][key] for key in EXAMPLE_KEYS},
+        }
+        for row in CASES
+    ]
+
+
 def build_llm_select_prompt_input(
     events: Sequence[Mapping[str, Any]],
     *,
@@ -453,14 +466,7 @@ def build_llm_select_prompt_input(
     payload = {
         "task": TASK,
         "instructions": list(INSTRUCTIONS),
-        "cases": [
-            {
-                "title": row["title"],
-                "instruction": row["instruction"],
-                "example": {key: row["example"][key] for key in EXAMPLE_KEYS},
-            }
-            for row in CASES
-        ],
+        "cases": select_cases_payload(),
         "label_forms": label_forms_payload(),
         "selection_schema": dict(SELECTION_SCHEMA),
         "first_choice": {

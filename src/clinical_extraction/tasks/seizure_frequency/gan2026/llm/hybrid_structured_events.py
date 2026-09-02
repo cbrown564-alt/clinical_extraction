@@ -42,6 +42,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     prompt_llm_extract_raw,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    prompt_llm_extract_encode_select as extract_encode_select,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     prompt_llm_extract_examples_only as extract_examples_only,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
@@ -142,6 +145,7 @@ GAN_LLM_EXTRACT_HOLGATE_LIKE = extract_holgate.GAN_LLM_EXTRACT_HOLGATE_LIKE
 GAN_LLM_EXTRACT_HOLGATE_LABEL = extract_holgate_label.GAN_LLM_EXTRACT_HOLGATE_LABEL
 GAN_LLM_EXTRACT_NO_EVIDENCE = extract_no_evidence.GAN_LLM_EXTRACT_NO_EVIDENCE
 GAN_LLM_EXTRACT_EXAMPLES_ONLY = extract_examples_only.GAN_LLM_EXTRACT_EXAMPLES_ONLY
+GAN_LLM_EXTRACT_ENCODE_SELECT = extract_encode_select.GAN_LLM_EXTRACT_ENCODE_SELECT
 GAN_LLM_EXTRACT_RAW = "gan_llm_extract_raw"
 GAN_LLM_WITH_RULES = GAN_LLM_EXTRACT_RAW
 LLM_EXTRACT_RAW_AUTHORED_KEYS = prompt_llm_extract_raw.LLM_EXTRACT_RAW_AUTHORED_KEYS
@@ -163,6 +167,7 @@ _SUPPORTED_PROMPT_VERSIONS = frozenset(
         GAN_LLM_EXTRACT_HOLGATE_LABEL,
         GAN_LLM_EXTRACT_NO_EVIDENCE,
         GAN_LLM_EXTRACT_EXAMPLES_ONLY,
+        GAN_LLM_EXTRACT_ENCODE_SELECT,
         *PROMPT_VERSION_ALIASES,
     }
 )
@@ -664,6 +669,8 @@ def build_prompt_input(
         return extract_no_evidence.build_llm_extract_no_evidence_prompt_input(record)
     if selected_prompt_version == GAN_LLM_EXTRACT_EXAMPLES_ONLY:
         return extract_examples_only.build_llm_extract_examples_only_prompt_input(record)
+    if selected_prompt_version == GAN_LLM_EXTRACT_ENCODE_SELECT:
+        return extract_encode_select.build_llm_extract_encode_select_prompt_input(record)
     return build_llm_extract_raw_prompt_input(record)
 
 
