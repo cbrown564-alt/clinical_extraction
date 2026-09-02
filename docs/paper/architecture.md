@@ -6,6 +6,13 @@ Owner: this file
 
 Two public golds. Three named stages. Five cells. Rules have authority.
 
+These are **implementation** names. The dissertation paper reports two
+stages, **extract** (find plus the bundled codebook encode in one LLM
+call) and **decide** (select), and compares two decision executors on
+one shared extract
+([paper-story simplification](decisions/paper-story-simplification.md)).
+Use the implementation names below only to identify artifacts.
+
 The first stage is **find**, not extract. The overall job is
 information extraction; this stage is the named-entity-recognition
 step that collects candidates. Live runner names and envelope keys

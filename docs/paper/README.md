@@ -5,49 +5,61 @@ decisions are not current.
 
 ## Central argument
 
-The proposed method translates clinic letters into structured clinical
-facts in a designed form, with quoted source text. A model collects the
-facts and evidence. Recorded rules then shape those facts into the
-required form. Those mappings can be replayed on the same model output
-without a new call.
+The dissertation cites Gan 2026 only
+([Gan is the dissertation paper](decisions/gan-is-the-dissertation-paper.md)).
+The paper story is fixed by
+[paper-story simplification](decisions/paper-story-simplification.md):
+one Gan manuscript, one shared LLM extraction record, two ways to
+decide, a small mechanism table, and tight claim language.
 
-The two public golds are the forms used for evaluation. They are not
-the task. Gan's evaluation form is one current seizure-frequency state.
-ExECT's is a complete four-family fact inventory. Written rules and a
-model alone are baselines. Tables cite one model, Gemini 3.7 Flash, so
-the story stays on the method. Grok, Luna, DeepSeek, Qwen, and Gemma
-are companion rows. Later-stage LLM encode and LLM select calls are
-Gemini only.
+The pipeline has two paper-facing stages. **Extract** is one LLM call
+that returns every candidate seizure-frequency event with its exact
+quoted span, category, and canonical label, plus a provisional answer.
+**Decide** applies a fixed policy to that record, never the letter, and
+is performed in two ways on the same saved record: recorded rules
+(**Hybrid**) or a second LLM call (**LLM-only**). Because decide is
+replayed from the saved record, the two executors form a paired
+comparison. Implementation names (`find`, `encode`, `select`) are
+historical and appear only where they identify an artifact. LLM calls
+are LLM calls, not agents; the system is a fixed sequence, not agentic.
+
+Primary claim: a bounded comparison with the previously reported
+fine-tuned benchmark on a different held-out sample of the same
+synthetic corpus (Hybrid 0.86, LLM-only 0.85, benchmark 0.81 Purist).
+Not paired, not state of the art, not deployment. Secondary
+contribution: extract-then-decide, with the provisional answer (0.79)
+as the one-prompt baseline and three extraction-prompt ablations
+(examples, closed allowed-label forms, evidence obligation) as the
+mechanism table. Rules-only, the five-cell grid, source-near, Holgate,
+extra LLM encode/select, and the one-call prompt stay repository
+evidence and supporting-material secondary rows, not paper rows.
 
 The paper claims visibility for the recorded object: the source span,
 the later rule changes, and the submitted answer. It does not claim
 access to a model's internal reasoning, or that a visible step is
-clinically correct.
+clinically correct. Local models show technical feasibility on
+synthetic data only.
 
-Headline tables: five role rows (rules, LLM, or both at find /
-encode / select). The cited score is the select stop. The six-model
-row is cell 3 (LLM find, rules encode, rules select) on both
-tasks. On ExECT, cell 3 is the Gemini peak and the roster row; all
-five rows use 4-family micro F1 (`clinical_inventory_unit_keys`).
-Gemini thinking and the source-near Gan *LLM* request
-(`gan_llm_extract_raw`) are ablations. Cited Gan LLM extract is
-`gan_llm_extract`, which already writes codebook form (bundled
-find-and-encode). Living rules find is source-near. ExECT LLM find is
-`exect_llm_extract`. ExECT LLM encode is a second later-stage call.
-See
-[methods](sections/methods.md),
-[Gan five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md),
-[ExECT inventory grid](../research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md),
-[six-model roster](../research/paper/three_variables_rules_model_thinking_2026-08-23.md)
-(Gan `gan_llm_extract` rungs and ExECT inventory extract),
-and
-[ExECT cell 4](../research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md).
-`gan_llm_only` is not a results column. Full ledger is the only
-comparator when cited—not a headline method.
+Tables cite one model, Gemini 3.7 Flash, so the story stays on the
+method. Grok, Luna, DeepSeek, Qwen, and Gemma are the six-model
+extraction-call comparison with compact contract adherence. The
+second-call decide, prompt ablations, thinking, and temperature are
+Gemini only. Cited Gan extraction is `gan_llm_extract`, which already
+writes codebook form. See
+[methods](sections/methods.md), [results](sections/results.md),
+[Gan five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md)
+(secondary), and
+[six-model roster](../research/paper/three_variables_rules_model_thinking_2026-08-23.md).
+`gan_llm_only` is not a results column. ExECT owners below are
+later-paper evidence.
 
 | File | Job |
 | --- | --- |
-| [methods](sections/methods.md) | Proposed method, baselines, roster, splits, scorers |
+| [methods](sections/methods.md) | Gan-only method: two stages, interface contract, two decision executors, prompt ingredients, splits, scorers |
+| [introduction](sections/introduction.md) | Gan-only introduction draft matching FES Section I |
+| [literature review](sections/literature_review.md) | Gan-only review draft matching FES Section II |
+| [manuscript](../../paper/draft/FES.tex) | The dissertation draft; [supporting materials](../../paper/supporting%20materials/Supporting%20materials.tex) hold moved detail |
+| [directional evidence protocol](../research/gan2026/gan_directional_evidence_adjudication_dev750_protocol_2026-09-02.md) | `dev750` reference-exactness and semantic-sufficiency study; drafted, adjudication not started |
 | [experiment environment](experiment_environment.md) | Mac mini orchestration + Dell XPS 16 local serving; hosted accelerators undisclosed |
 | [hardware](hardware_details.md) | Dated local-device snapshot for Qwen/Gemma |
 | [method × stage](method_x_stage.md) | Plain-language method × stage grid, with one Gan and one ExECT development example |
@@ -60,7 +72,7 @@ comparator when cited—not a headline method.
 | [ExECT cell 4](../research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md) | Cited Gemini inventory LLM / LLM / rules stop |
 | [rule catalogue](rule_catalogue.md) | Named find / encode / select rules on both tasks |
 | [claims](claims.md) | Repository evidence reading; stale as a dissertation claim list |
-| [results](sections/results.md) | Gan-only dissertation results draft, including the inventory feasibility panel |
+| [results](sections/results.md) | Gan-only dissertation results draft: two executors, class table, three prompt ablations, six-model roster; inventory panel is supporting material |
 | [lineage](lineage.md) | How the living requests were reached and what kind of method change each revision made |
 | [decisions](decisions/) | Current decisions |
 | [Gan is the dissertation paper](decisions/gan-is-the-dissertation-paper.md) | Dissertation cites Gan only; ExECT is a later paper; inventory feasibility is descriptive |
@@ -70,6 +82,6 @@ comparator when cited—not a headline method.
 | [source library](../research/paper/) | Writing sources |
 | [paper experiments](../../paper_experiments/README.md) | Replayable cells |
 | [cells and runners](cells_and_runners.md) | Live runner names mapped onto the five cells |
-| [architecture](architecture.md) | Find / encode / select and rule authority |
+| [architecture](architecture.md) | Implementation stages (find / encode / select) and rule authority; paper names are extract / decide |
 | [Gan find prompt template](../../paper/supporting%20materials/gan_llm_extract_prompt_template.json) | Frozen `gan_llm_extract` request without `note_text` |
 | [decision history](../history/decisions.md) | Closed numbered series |

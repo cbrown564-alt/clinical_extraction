@@ -9,7 +9,13 @@ Dissertation writing: [Gan is the dissertation paper](decisions/gan-is-the-disse
 
 The dissertation cites Gan 2026 only. ExECT locked totals on this
 page are later-paper evidence. Do not copy “both tasks” sentences
-into the manuscript.
+into the manuscript. The manuscript's claim boundary is now
+[paper-story simplification](decisions/paper-story-simplification.md):
+two decision executors on one shared extract, Rules-only and the
+five-cell grid as repository evidence only, bounded (not paired)
+benchmark comparison, and technical-feasibility-only claims for local
+models. Five-cell sentences below remain valid for the repository, not
+for the manuscript.
 
 This page is the paper's reading of the living comparison. Method names
 and splits are on [methods](methods.md). The Gan headline table is five role rows. Each of find, encode,

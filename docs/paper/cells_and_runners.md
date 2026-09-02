@@ -4,8 +4,13 @@ Date: 2026-08-23
 Status: current
 Owner: this file
 
-The headline table is five role rows. Each of find, encode, and
+The repository grid is five role rows. Each of find, encode, and
 select is rules, LLM, or both. Live runner names are not the table.
+The dissertation paper cites only cells 3 (Hybrid: LLM extract, rules
+decide) and 5 (LLM-only: same extract, second LLM call decides) as a
+two-executor comparison; cells 1, 2, and 4 are repository evidence and
+supporting-material secondary rows
+([paper-story simplification](decisions/paper-story-simplification.md)).
 
 | Cell | Find | Encode | Select | Gan runner / identity | ExECT runner / identity |
 | --- | --- | --- | --- | --- | --- |

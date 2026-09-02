@@ -9,6 +9,13 @@ Related: [Gan is the dissertation paper](gan-is-the-dissertation-paper.md),
 Results outline: [results](../sections/results.md)
 Evidence protocol:
 [directional adjudication on `dev750`](../../research/gan2026/gan_directional_evidence_adjudication_dev750_protocol_2026-09-02.md)
+Implemented 2026-09-02 in `paper/draft/FES.tex`,
+`paper/supporting materials/Supporting materials.tex`,
+[results](../sections/results.md), [methods](../sections/methods.md),
+[introduction](../sections/introduction.md),
+[literature review](../sections/literature_review.md), and the
+[paper keep-set](../README.md). Adjudication under Decision 2 has not
+started.
 
 This is a paper-scope and writing decision. Existing reports and
 machine-readable artifacts remain the owners of exact results. Gan 2026
