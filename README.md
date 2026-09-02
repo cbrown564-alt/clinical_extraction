@@ -234,27 +234,26 @@ route and API base in the run metadata.
 
 ### Run against a local vLLM server
 
-Install the package, then probe an OpenAI-compatible server before processing
-notes. A `vllm/<served-model>` identifier defaults to the keyless placeholder
-`EMPTY`, so `--api-key` is not required for an unauthenticated local server:
+On HPC or any machine where `pip install .` is awkward, install only the
+runtime client and run the root script:
 
 ```sh
-python -m pip install .
-clinical-extract probe \
+python -m pip install -r requirements.txt
+python run.py --probe \
   --base-url http://127.0.0.1:8000/v1 \
   --model vllm/deepseek-v4-flash
-```
-
-The input is JSONL with one `id` and `text` object per line. Run the cited
-Gan codebook find (`gan_llm_extract`, cell 3) with:
-
-```sh
-clinical-extract gan \
+python run.py \
   --input notes.jsonl \
   --output predictions.jsonl \
   --base-url http://127.0.0.1:8000/v1 \
   --model vllm/deepseek-v4-flash
 ```
+
+A `vllm/<served-model>` identifier defaults to the keyless placeholder
+`EMPTY`, so `--api-key` is not required for an unauthenticated local server.
+The input is JSONL with one `id` and `text` object per line. That command is
+the cited Gan codebook find (`gan_llm_extract`, cell 3). If the package is
+installed, `clinical-extract gan` is the same path.
 
 Pass `--method llm_select` for cell 5 (same find, then LLM select). That is
 not `gan_llm_only`.
@@ -269,6 +268,8 @@ A full Gan walkthrough on three synthetic letters is in [VLLM.md](VLLM.md).
 ## Repository layout
 
 ```text
+run.py                     HPC / no-install Gan walkthrough (`python run.py --flags`)
+requirements.txt           Runtime client packages for that walkthrough
 src/clinical_extraction/   Package: loaders, pipelines, scoring, API
 frontend/                  Interactive workbench and bundled Demo UI fixtures
 examples/                  Pinned walkthrough inputs, including the vLLM Gan letters

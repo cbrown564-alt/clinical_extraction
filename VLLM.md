@@ -15,8 +15,8 @@ so anyone can repeat the same input.
 
 ## What you need
 
-1. The package installed in the repository virtual environment (see the
-  [Setup](#setup)).
+1. Python 3.11+ and the runtime packages in `requirements.txt` (see
+  [Setup](#setup)). You do not need `pip install .`.
 2. An OpenAI-compatible vLLM server. The value after `vllm/` must match the
   model name returned by the server's `/v1/models` endpoint.
 
@@ -33,25 +33,29 @@ Windows PowerShell:
 ```powershell
 py -3.11 -m venv .venv
 .\.venv\Scripts\Activate.ps1
-python -m pip install .
+python -m pip install -r requirements.txt
 ```
 
-macOS or Linux:
+macOS, Linux, or HPC:
 
 ```sh
 python3.11 -m venv .venv
 source .venv/bin/activate
-python -m pip install .
+python -m pip install -r requirements.txt
 ```
+
+`requirements.txt` is the runtime client only (DSPy, Pydantic, PyYAML, OpenAI).
+It is not the vLLM server stack. Run commands from the repository root.
 
 ## Run against a local vLLM server
 
-Install the package, then probe an OpenAI-compatible server before processing
-notes. A `vllm/<served-model>` identifier defaults to the keyless placeholder
-`EMPTY`, so `--api-key` is not required for an unauthenticated local server:
+Install the runtime packages, then probe an OpenAI-compatible server before
+processing notes. A `vllm/<served-model>` identifier defaults to the keyless
+placeholder `EMPTY`, so `--api-key` is not required for an unauthenticated
+local server:
 
 ```sh
-clinical-extract probe \
+python run.py --probe \
   --base-url http://127.0.0.1:8000/v1 \
   --model vllm/deepseek-v4-flash
 ```
@@ -77,7 +81,7 @@ The input is JSONL with one `id` and `text` object per line. Run the cited
 Gan codebook find with:
 
 ```sh
-clinical-extract gan \
+python run.py \
   --input notes.jsonl \
   --output predictions.jsonl \
   --base-url http://127.0.0.1:8000/v1 \
@@ -99,7 +103,7 @@ Each line of the JSONL is one object with `id` and `text`.
 ## Run Gan on the three letters
 
 ```sh
-clinical-extract gan \
+python run.py \
   --input examples/vllm_gan_three_letters.jsonl \
   --output scratch/vllm_gan_three_letters.predictions.jsonl \
   --base-url http://127.0.0.1:8000/v1 \
@@ -220,7 +224,7 @@ their quotes, not the letter, and rules do not encode or select. This is
 not `gan_llm_only` (one call that writes a label from the letter).
 
 ```sh
-clinical-extract gan \
+python run.py \
   --method llm_select \
   --input examples/vllm_gan_three_letters.jsonl \
   --output scratch/vllm_gan_three_letters.cell5.predictions.jsonl \
