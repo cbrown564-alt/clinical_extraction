@@ -39,12 +39,12 @@ SPLIT_COLORS = {
 FIGURE_DIR = ROOT / "paper/draft"
 STAGE_ORDER = ("Find", "Encode", "Select")
 # Each stop scores the answer submitted so far, not the stage in isolation.
-# The paper reports two stops (extract, select); the encode stop stays
+# The paper reports two stops (extract, decide); the encode stop stays
 # available for repository figures.
 STAGE_LEGEND_LABELS = {
-    "Find": "Initial answer (after extract)",
+    "Find": "Provisional answer (after extract)",
     "Encode": "After encode",
-    "Select": "Final answer (after select)",
+    "Select": "Final answer (after decide)",
 }
 PAPER_STAGES = ("Find", "Select")
 STAGE_COLORS = {

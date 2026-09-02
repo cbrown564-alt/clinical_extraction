@@ -473,8 +473,11 @@ the pipeline.
 
 The final outcome of this design review was 
 a modular pipeline that could use either LLMs
-or rules at each of the three three stages 
+or rules at each of the three stages 
 \texttt{find}, \texttt{encode} and \texttt{select}. 
+These are the implementation names; the paper reports 
+\texttt{find} and \texttt{encode} together as \texttt{extract} 
+and calls \texttt{select} \texttt{decide}. 
 Three methods would be implemented:
 a multi-agent pipeline, a purely rules-based system 
 and a hybrid LLM and rules system. 

@@ -49,16 +49,13 @@
     <line x1="0" y1="30" x2="215" y2="30" stroke="#e2e8f0" stroke-width="1" />
     <text x="107" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0f172a">1. Extract</text>
 
-    <!-- Engine pills: LLM (highlighted), Both, Rules -->
-    <g transform="translate(18, 38)">
-      <rect x="0" y="0" width="54" height="18" rx="9" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.2" />
-      <text x="27" y="12" text-anchor="middle" font-size="8.5" font-weight="700" fill="#0f172a">LLM</text>
+    <!-- Engine pills: LLM (highlighted), Rules -->
+    <g transform="translate(31, 38)">
+      <rect x="0" y="0" width="70" height="18" rx="9" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.2" />
+      <text x="35" y="12" text-anchor="middle" font-size="8.5" font-weight="700" fill="#0f172a">LLM</text>
 
-      <rect x="62" y="0" width="56" height="18" rx="9" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
-      <text x="90" y="12" text-anchor="middle" font-size="8.5" font-weight="500" fill="#64748b">Both</text>
-
-      <rect x="124" y="0" width="56" height="18" rx="9" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
-      <text x="152" y="12" text-anchor="middle" font-size="8.5" font-weight="500" fill="#64748b">Rules</text>
+      <rect x="82" y="0" width="70" height="18" rx="9" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+      <text x="117" y="12" text-anchor="middle" font-size="8.5" font-weight="500" fill="#64748b">Rules</text>
     </g>
 
     <!-- Quoted spans, each with its canonical label -->
@@ -78,7 +75,7 @@
       <text x="10" y="101" font-size="8" font-weight="700" font-family="monospace" fill="#0f172a">↳ "3 per 6 months"</text>
     </g>
 
-    <text x="107" y="202" text-anchor="middle" font-size="9.5" font-weight="600" fill="#334155">Finds Candidate Facts</text>
+    <text x="107" y="202" text-anchor="middle" font-size="9.5" font-weight="600" fill="#334155">Extracts Candidate Facts</text>
     <text x="107" y="218" text-anchor="middle" font-size="8.5" fill="#64748b">Quotes each evidence span and</text>
     <text x="107" y="230" text-anchor="middle" font-size="8.5" fill="#64748b">writes it in canonical form.</text>
   </g>
@@ -86,23 +83,20 @@
   <!-- Connector 2 -->
   <path d="M 475 145 L 495 145" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" fill="none" />
 
-  <!-- ================= 3. SELECT ================= -->
+  <!-- ================= 3. DECIDE ================= -->
   <g transform="translate(499, 15)" filter="url(#shadow)">
     <rect x="0" y="0" width="215" height="265" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
     <path d="M 0 6 Q 0 0 6 0 L 209 0 Q 215 0 215 6 L 215 30 L 0 30 Z" fill="#f8fafc" />
     <line x1="0" y1="30" x2="215" y2="30" stroke="#e2e8f0" stroke-width="1" />
-    <text x="107" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0f172a">2. Select</text>
+    <text x="107" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0f172a">2. Decide</text>
 
-    <!-- Engine pills: LLM, Both, Rules (highlighted) -->
-    <g transform="translate(18, 38)">
-      <rect x="0" y="0" width="54" height="18" rx="9" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
-      <text x="27" y="12" text-anchor="middle" font-size="8.5" font-weight="500" fill="#64748b">LLM</text>
+    <!-- Engine pills: LLM, Rules (highlighted) -->
+    <g transform="translate(31, 38)">
+      <rect x="0" y="0" width="70" height="18" rx="9" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+      <text x="35" y="12" text-anchor="middle" font-size="8.5" font-weight="500" fill="#64748b">LLM</text>
 
-      <rect x="62" y="0" width="56" height="18" rx="9" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
-      <text x="90" y="12" text-anchor="middle" font-size="8.5" font-weight="500" fill="#64748b">Both</text>
-
-      <rect x="124" y="0" width="56" height="18" rx="9" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.2" />
-      <text x="152" y="12" text-anchor="middle" font-size="8.5" font-weight="700" fill="#0f172a">Rules</text>
+      <rect x="82" y="0" width="70" height="18" rx="9" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.2" />
+      <text x="117" y="12" text-anchor="middle" font-size="8.5" font-weight="700" fill="#0f172a">Rules</text>
     </g>
 
     <g transform="translate(12, 64)">
@@ -121,7 +115,7 @@
       <text x="10" y="101" font-size="8" font-family="monospace" fill="#94a3b8">✗ "3 per 6 months"</text>
     </g>
 
-    <text x="107" y="202" text-anchor="middle" font-size="9.5" font-weight="600" fill="#334155">Applies Selection Policy</text>
+    <text x="107" y="202" text-anchor="middle" font-size="9.5" font-weight="600" fill="#334155">Applies Decision Policy</text>
     <text x="107" y="218" text-anchor="middle" font-size="8.5" fill="#64748b">Chooses or combines candidates</text>
     <text x="107" y="230" text-anchor="middle" font-size="8.5" fill="#64748b">to give the final answer.</text>
   </g>
@@ -143,7 +137,7 @@
       <rect x="0" y="0" width="191" height="120" rx="4" fill="#fafafa" stroke="#e2e8f0" stroke-width="1" />
 
       <rect x="8" y="12" width="175" height="42" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
-      <text x="14" y="28" font-size="8" font-weight="600" fill="#64748b">Selected Label:</text>
+      <text x="14" y="28" font-size="8" font-weight="600" fill="#64748b">Final Label:</text>
       <text x="14" y="44" font-size="10" font-weight="800" font-family="monospace" fill="#0f172a">"multiple per week"</text>
 
       <rect x="8" y="60" width="175" height="48" rx="4" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" />

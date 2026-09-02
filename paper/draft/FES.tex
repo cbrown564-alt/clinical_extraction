@@ -15,6 +15,7 @@
 \usepackage{hyperref}
 
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
@@ -23,7 +24,7 @@
 \begin{titlepage}
     \centering
 
-    {\Huge\bfseries Extract, then select: a modular pipeline of LLMs and rules to identify seizure frequency in epilepsy clinic letters \par}
+    {\Huge\bfseries Extract, then decide: a modular pipeline of LLMs and rules to identify seizure frequency in epilepsy clinic letters \par}
     \vspace{5cm}
 
     {\large
@@ -91,7 +92,7 @@ Date of submission: 4th September 2026
 \clearpage
 \twocolumn
 
-\title{Extract, then select: a modular pipeline of LLMs and rules to identify seizure frequency in epilepsy clinic letters\\}
+\title{Extract, then decide: a modular pipeline of LLMs and rules to identify seizure frequency in epilepsy clinic letters\\}
 
 \maketitle
 
@@ -187,16 +188,17 @@ greater semantic depth with far less time spent
 developing rules. A hybrid method can produce a more
 transparent, flexible system.
 
-This task can be broken into two stages: \texttt{extract} 
-every candidate fact, quoting its evidence and writing it in a 
-canonical form, then \texttt{select} which candidate answers 
-the question. A clinic letter can describe several seizure 
-events with varying precision and on different occasions, and 
-deciding which to keep is a clinical policy that varies between 
-users. A system that keeps the extracted evidence separate from 
-the selection policy can serve several such policies from one 
-extraction, and lets users see the final answer alongside the 
-evidence and the policy that produced it. 
+Extracting a single label is not a single step. A clinic 
+letter can describe several seizure events with varying 
+precision and on different occasions, so the system must first 
+\texttt{extract} every candidate fact with its evidence, then 
+\texttt{decide} which candidate, or which combination of them, 
+answers the question. Which to keep is a clinical policy that 
+varies between users. Keeping the two stages apart captures 
+more evidence than a single answer would, lets one extraction 
+serve several policies, and makes the final answer explainable: 
+a reader sees the candidates, the policy and the label it 
+produced. 
 
 The primary objective of this paper is to evaluate whether
 using LLM and rules as configurable components in a
@@ -204,7 +206,7 @@ modular pipeline is a viable alternative to a fine-tuned LLM
 to extract seizure frequency patterns from epilepsy letters. 
 The secondary objective is to identify whether LLMs and 
 rules add value at different stages of the pipeline: 
-\texttt{extract} and \texttt{select}. If both objectives are 
+\texttt{extract} and \texttt{decide}. If both objectives are 
 met, the paper will 
 contribute a new method for seizure frequency extraction and 
 show where each component helps, to support future research 
@@ -270,18 +272,21 @@ and encoding of clinical information from text \cite{b13}:
 recognising a mention and normalising it into a standard 
 form \cite{b14}. Modern LLMs do both in one step when asked 
 for a normalised label such as \emph{4 per month} from a raw 
-statement such as \emph{about once a week}. A further task 
+statement such as \emph{about once a week}. A further step 
 exists in many clinical extraction pipelines but goes 
-unmentioned: selection. This was a distinct stage in prior 
-rules-based systems\cite{b15}, but LLM pipelines bundle it 
-into the same prompt. In a clinic letter with several seizure 
-frequency statements, producing a single label for the 
-patient's current status requires the model both to extract 
-the relevant statements and to select the one that best 
-answers the question. This paper explores whether separating 
-\texttt{extract} from \texttt{select} in a modular pipeline 
-can deliver comparable performance while preserving more of 
-the evidence for downstream use.
+unmentioned: deciding between candidates. In a clinic letter 
+with several seizure frequency statements, producing a single 
+label for the patient's current status requires the system 
+both to extract the relevant statements and to decide which 
+one best answers the question. Prior rules-based systems made 
+this a distinct stage\cite{b15}, and clinical concept 
+normalisation routinely separates a high-recall candidate 
+generation stage from a precise ranking stage that chooses 
+among the candidates\cite{b21}. LLM pipelines instead make the 
+decision inside the extraction prompt. This paper explores 
+whether separating \texttt{extract} from \texttt{decide} in a 
+modular pipeline can deliver comparable performance while 
+preserving more of the evidence for downstream use.
 
 Academic papers tend to focus exclusively on benchmark 
 accuracy while practitioners tend to value transparency, 
@@ -367,30 +372,35 @@ seen in Table~\ref{tab:dataset}.
 \subsection{Architecture}
 
 The pipeline has two stages: \texttt{extract}, then 
-\texttt{select}. \texttt{Extract} finds every candidate 
+\texttt{decide}. \texttt{Extract} finds every candidate 
 seizure frequency event in the letter, quotes the exact 
 evidence span for each, assigns it a category and writes its 
 label in one of the canonical forms used by the gold standard. 
-\texttt{Select} then chooses the final answer from those 
-candidates, either picking one or combining several. 
-Figure~\ref{pipeline} illustrates the pipeline with a 
-development-set example. Either stage can be performed by 
-rules or by an LLM.
+\texttt{Decide} then produces the final answer from those 
+candidates, either picking one or combining several, by 
+applying a decision policy. Figure~\ref{pipeline} illustrates 
+the pipeline with a development-set example. Either stage can 
+be performed by rules or by an LLM.
 
 Three configurations are evaluated (Table~\ref{tab:method}). 
 \texttt{Rules-only} uses no LLM: \texttt{regex} and if-then 
-rules extract candidates from the whole letter and select 
+rules extract candidates from the whole letter and decide 
 the answer. \texttt{Hybrid} (LLM + rules) makes one LLM call, 
 which returns a structured record of candidate events, each 
-with a quoted evidence span, a category and a canonical label, 
-together with a first-choice answer; rules then apply the 
-selection policy to that record. \texttt{LLM-only} makes the 
-same first call, then a second LLM call receives the candidate 
-record and first choice (not the letter) and applies the same 
-selection policy, expressed as written instructions and worked 
-examples. The only difference between \texttt{Hybrid} and 
-\texttt{LLM-only} is therefore who performs \texttt{select}: 
-rules or a second LLM call.
+with a quoted evidence span, a category and a canonical label; 
+rules then apply the decision policy to that record. 
+\texttt{LLM-only} makes the same first call, then a second 
+LLM call receives the candidate record (not the letter) and 
+applies the same decision policy, expressed as written 
+instructions and worked examples. The only difference between 
+\texttt{Hybrid} and \texttt{LLM-only} is therefore who 
+performs \texttt{decide}: rules or a second LLM call.
+
+The extraction call is also asked to propose a provisional 
+answer from its own candidates. This is what a single-prompt 
+system would return, so scoring it gives a one-prompt baseline 
+for every configuration; the \texttt{decide} stage then 
+confirms or replaces it.
 
 The pipeline is a fixed sequence of calls and functions. No LLM 
 call uses tools, chooses the next step or invokes another model, 
@@ -404,7 +414,7 @@ design. The supporting materials describe further configurations.
     \centering
 
     \includegraphics[width=\linewidth]{pipeline_architecture.png}
-    \caption{A clinic letter passes through two stages (\texttt{extract}, then \texttt{select}) to produce a structured label with grounding evidence. Either stage can be performed by an LLM or by rules; the highlighted choices show the \texttt{Hybrid} configuration.}
+    \caption{A clinic letter passes through two stages (\texttt{extract}, then \texttt{decide}) to produce a structured label with grounding evidence. Either stage can be performed by an LLM or by rules; the highlighted choices show the \texttt{Hybrid} configuration.}
     \label{pipeline}
 \end{figure*}
 
@@ -414,7 +424,7 @@ design. The supporting materials describe further configurations.
 \centering
 \begin{tabularx}{\linewidth}{Ycll}
 \toprule
-\textbf{Configuration} & \textbf{LLM calls} & \textbf{Extract} & \textbf{Select} \\
+\textbf{Configuration} & \textbf{LLM calls} & \textbf{Extract} & \textbf{Decide} \\
 \midrule
 Rules-only & 0 & Rules & Rules \\
 Hybrid (LLM + rules) & 1 & LLM (call 1) & Rules \\
@@ -425,7 +435,7 @@ LLM-only & 2 & LLM (call 1) & LLM (call 2) \\
 \vspace*{2pt}
 \begin{minipage}{\linewidth}
 \raggedright\footnotesize
-\texttt{Hybrid} and \texttt{LLM-only} share the same first call, which extracts candidates with quoted evidence and canonical labels and proposes a first choice. Call 2 receives that record, not the letter.
+\texttt{Hybrid} and \texttt{LLM-only} share the same first call. Call 2 receives its candidate record, not the letter.
 \end{minipage}
 \end{table}
 
@@ -442,21 +452,19 @@ prompt used for the first call. It contains three key components:
 \end{enumerate}
 
 A key aspect of the schema design is representing multiple 
-seizure frequency patterns with exact evidence. A subsequent 
-LLM call or rules can then review that evidence and refine 
-the final answer. The model finds multiple candidate events 
-and selects the best candidate, but that answer can be 
-updated. Key instructions to choose the initial candidate are in
-Table~\ref{tab:policy}. An example of a later \texttt{select} policy 
-that may rewrite that first pick is if the model finds the evidence 
-\emph{3 seizures in March, 6 in May} and the model chooses
-the 6 seizures in May as the most recent total, rules or a 
-subsequent LLM call can overwrite that to include the total over
-the whole period i.e. \texttt{9 per 3 months}. It reuses the evidence the
-model found according to a specific policy.
+seizure frequency patterns with exact evidence, so that rules 
+or a second LLM call can work from the candidates rather than 
+from the letter. The same decision policy (Table~\ref{tab:policy}) 
+is applied twice: provisionally by the model inside the 
+extraction prompt, and finally at \texttt{decide}. For example, 
+if the model finds \emph{3 seizures in March, 6 in May} and 
+provisionally answers with the most recent count, the 
+\texttt{decide} stage can replace that with the total over the 
+whole period, \texttt{9 per 3 months}, using the evidence the 
+model already found.
 
 \begin{table}[!t]
-\caption{Extract and first-choice policy}
+\caption{Decision policy}
 \label{tab:policy}
 \centering
 \begin{tabularx}{\linewidth}{YY}
@@ -464,10 +472,10 @@ model found according to a specific policy.
 \textbf{When} & \textbf{Do} \\
 \midrule
 Several current seizure types are present &
-Select the highest current or recent frequency. \\
+Choose the highest current or recent frequency. \\
 The letter gives an overall current count and a
 breakdown by type &
-Select the overall count. \\
+Choose the overall count. \\
 A seizure-free statement sits with other current
 seizure-like events &
 Keep seizure-free separate from unknown or last-event
@@ -505,9 +513,9 @@ Rules use \texttt{regex} to match patterns in text and
 if-then logic to process that text in a specific sequence.
 Each rule receives a pattern as an input then takes an
 action: \texttt{extract} a candidate from the text in canonical 
-form, or \texttt{select} the final answer. \texttt{Rules-only} 
+form, or \texttt{decide} the final answer. \texttt{Rules-only} 
 runs both stages on the entire letter. In \texttt{Hybrid}, 
-only the \texttt{select} rules are applied, to the candidates 
+only the decision rules are applied, to the candidates 
 the model returned.
 
 The simplest \texttt{extract} rule is the countable rate: find
@@ -519,24 +527,24 @@ labelled \texttt{4 per day}, following the gold-standard
 convention that flat rates and ranges are valid but single 
 upper or lower bounds are not. In \texttt{Rules-only}, rules 
 extract rates, clusters, seizure-free durations and dated last 
-events across the letter, then choose between them using the 
-policies in Table~\ref{tab:policy}.
+events across the letter, then decide between them using the 
+policy in Table~\ref{tab:policy}.
 
 In \texttt{Hybrid} the model has already returned a record 
 of candidate events, each with quoted evidence and a canonical 
-label, and a first pick. Rules first rewrite any label the 
-model left in a non-canonical form (a step that changes the 
+label, and a provisional answer. Rules first rewrite any label 
+the model left in a non-canonical form (a step that changes the 
 score by at most 0.01 and is detailed in the supporting 
-materials), then apply the selection policies to that record. 
+materials), then apply the decision policy to that record. 
 If the model finds both \emph{seizure free for eight months} 
-and \emph{two seizures in the past fortnight} but chooses the 
-seizure-free duration, a \texttt{select} rule rejects 
-seizure-free while other current seizure-like events remain. 
-For seizure diaries, rules apply date and numeric logic to 
-total the events over the stated period, e.g. \emph{May x0, 
-Jun x0, Jul x1, Aug x0, Sep x1, Oct x2} becomes \texttt{4 per 
-6 months}. Rules therefore refine the evidence the LLM found 
-with transparent, configurable policies.
+and \emph{two seizures in the past fortnight} but provisionally 
+answers seizure-free, a decision rule rejects seizure-free 
+while other current seizure-like events remain. For seizure 
+diaries, rules apply date and numeric logic to total the 
+events over the stated period, e.g. \emph{May x0, Jun x0, 
+Jul x1, Aug x0, Sep x1, Oct x2} becomes \texttt{4 per 6 
+months}. Rules therefore decide from the evidence the LLM 
+found, with transparent, configurable policies.
 
 \subsection{Pipeline Optimisation}
 
@@ -550,7 +558,7 @@ identify common error modes. Hypotheses were developed
 and tested to tune the prompt and rules iteratively. 
 Improving a rule or instruction for one class of error 
 often harmed another, because the annotation policies 
-interact. Separating \texttt{extract} from \texttt{select} 
+interact. Separating \texttt{extract} from \texttt{decide} 
 kept the policy on which facts to extract apart from the 
 policy on which to choose, and made it possible to score the 
 pipeline after each stage and locate bottlenecks. The 
@@ -621,8 +629,8 @@ $p = 0.01$) and +0.04 for \texttt{LLM-only} (95\% CI 0.00 to
 +0.08, $p = 0.04$). These intervals assume independent samples 
 from the same distribution and are indicative rather than a 
 controlled comparison. The first LLM call alone, scored on its 
-first-choice answer, reaches 0.79, close to the benchmark. 
-Rules applied to that record add +0.07 in \texttt{Hybrid}; 
+provisional answer, reaches 0.79, close to the benchmark. 
+Rules applied to its candidates add +0.07 in \texttt{Hybrid}; 
 the second LLM call adds +0.06 in \texttt{LLM-only}.
 
 The pipeline is particularly effective at extracting 
@@ -695,52 +703,52 @@ Rows with $n{<}10$ shown in grey.
 \label{sec:stages}
 
 Table~\ref{tab:stages} reports \texttt{purist} F1 at two 
-stops in each configuration: the initial answer after 
-\texttt{extract}, and the final answer after \texttt{select}. 
+stops in each configuration: the provisional answer after 
+\texttt{extract}, and the final answer after \texttt{decide}. 
 Each stop scores the answer the pipeline would submit if it 
-stopped there. The initial answer is the extract stage's own 
-first choice, so its score measures the quality of that 
+stopped there. The provisional answer is the extract stage's 
+own proposal, so its score measures the quality of that 
 proposal, not candidate identification alone; an isolated 
 measure such as candidate recall is left to future work. The 
-difference between the columns is what \texttt{select} adds 
+difference between the columns is what \texttt{decide} adds 
 to the answer already proposed.
 
-The initial answer from a single LLM call (0.79) is already 
-above the complete \texttt{Rules-only} pipeline (0.72). This 
-single call is equivalent to the entire pipeline in most 
-prior LLM studies, which ask the model to extract and select 
+The provisional answer from a single LLM call (0.79) is 
+already above the complete \texttt{Rules-only} pipeline (0.72). 
+This single call is equivalent to the entire pipeline in most 
+prior LLM studies, which ask the model to extract and decide 
 in one prompt. Both \texttt{Hybrid} and \texttt{LLM-only} 
-then improve on that shared initial answer at \texttt{select} 
-(+0.07 and +0.06). This can mean choosing a different 
-candidate, such as a frequency candidate when the model chose 
-\texttt{unknown}, or calculating a new label from the selected 
-evidence, such as totalling the events in a monthly seizure 
-diary. Applying a selection policy to the evidence already 
-extracted is where the pipeline adds value over a single 
-prompt, and it can be performed equally well by rules or by 
-a second LLM call.
+then improve on that shared provisional answer at 
+\texttt{decide} (+0.07 and +0.06). This can mean choosing a 
+different candidate, such as a frequency candidate when the 
+model chose \texttt{unknown}, or calculating a new label from 
+the chosen evidence, such as totalling the events in a monthly 
+seizure diary. Applying the decision policy to the candidates 
+already extracted is where the pipeline adds value over a 
+single prompt, and it can be performed equally well by rules 
+or by a second LLM call.
 
 Table~\ref{tab:prompts} motivates the two-call design of 
-\texttt{LLM-only}. Asking one prompt to extract and select 
-together scores 0.79, the same as the initial answer. 
-Separating \texttt{select} into a second call raises this to 
+\texttt{LLM-only}. Asking one prompt to extract and decide 
+together scores 0.79, the same as the provisional answer. 
+Moving \texttt{decide} into a second call raises this to 
 0.85. Splitting the work across three calls, either by 
 dividing extraction into two prompts or by adding a call that 
-rewrites the extracted labels before selection, returns to 
+rewrites the extracted labels before deciding, returns to 
 0.79: the extra call overwrote answers that were already 
 correct. More calls are not always better; one call to 
-extract and one to select is the smallest decomposition that 
+extract and one to decide is the smallest decomposition that 
 helps.
 
 \begin{table}[!t]
 \caption{Purist F1 after each stage, by configuration}
 \label{tab:stages}
 \centering
-\begin{tabularx}{\linewidth}{Ycc}
+\begin{tabularx}{\linewidth}{lCC}
 \toprule
 \textbf{Configuration} &
-\textbf{Initial answer (after extract)} &
-\textbf{Final answer (after select)} \\
+\textbf{Provisional answer (after extract)} &
+\textbf{Final answer (after decide)} \\
 \midrule
 Rules-only & 0.63 & 0.72 \\
 Hybrid (LLM + rules) & 0.79 & 0.86 \\
@@ -754,29 +762,13 @@ LLM-only & 0.79 & 0.85 \\
 Each column scores the answer the pipeline would submit at that stop. \texttt{Hybrid} and \texttt{LLM-only} share the same first call.\end{minipage}
 \end{table}
 
-\begin{table}[!t]
-\caption{LLM-only decompositions by number of calls}
-\label{tab:prompts}
-\centering
-\begin{tabularx}{\linewidth}{Ycc}
-\toprule
-\textbf{Decomposition} & \textbf{Calls} & \textbf{Purist F1} \\
-\midrule
-Extract and select in one prompt & 1 & 0.79 \\
-Extract / select & 2 & 0.85 \\
-Extract in two prompts / select & 3 & 0.79 \\
-Extract / rewrite labels / select & 3 & 0.79 \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
 \subsection{Model Comparison}
 \label{sec:models}
 
 \texttt{Hybrid} shows consistent, incremental gains on each 
 of the six models evaluated (Figure~\ref{models}). The 
-average gain from the initial answer to the final answer was 
-+0.07, with Luna showing the largest gain of +0.10. 
+average gain from the provisional answer to the final answer 
+was +0.07, with Luna showing the largest gain of +0.10. 
 \texttt{Purist} F1 closely tracks general medical capability 
 as measured by Artificial Analysis' Healthcare and Medical 
 Index. The models cluster into three groups: strong (Gemini 
@@ -801,7 +793,7 @@ information reliably.
     \centering
 
     \includegraphics[width=\linewidth]{six_model_stage_performance.pdf}
-    \caption{\texttt{Hybrid} Purist F1 for six models: the LLM's initial answer after \texttt{extract} and the final answer after rule-based \texttt{select}. Every model gains at \texttt{select}; Luna gains most (0.69 to 0.79).}
+    \caption{\texttt{Hybrid} Purist F1 for six models: the LLM's provisional answer after \texttt{extract} and the final answer after rule-based \texttt{decide}. Every model gains at \texttt{decide}; Luna gains most (0.69 to 0.79).}
     \label{models}
 \end{figure}
 
@@ -830,7 +822,7 @@ on results and it indicates the robustness of the method.
 
 The worst performing category was \texttt{unknown} with 
 an F1 score of 0.74. 69\% of the errors (37/54) are incorrect
-selections of \texttt{unknown}. The full error distribution 
+answers of \texttt{unknown}. The full error distribution 
 is shown in the confusion matrix (Figure~\ref{confusion}). 
 
 The three most common errors are \texttt{infrequent → 
@@ -867,7 +859,7 @@ F1 of 0.84 for diagnosis, 0.93 for prescriptions and 0.93 for
 investigations, comparable to the rules-based system reported 
 on that dataset\cite{b4}. This is a preliminary result on a 
 separate dataset with its own scorer, reported only to show 
-that the same \texttt{extract} and \texttt{select} stages can 
+that the same \texttt{extract} and \texttt{decide} stages can 
 be reconfigured for a different task; it will be 
 described fully in a separate paper.
 
@@ -909,8 +901,8 @@ pattern as accurately as a fine-tuned LLM\cite{b3}. An LLM small
 enough to fit on a hospital's local servers can securely and 
 reliably extract this information with no additional training 
 or fine-tuning; a single LLM prompt designed to extract rich 
-evidence followed by some rules to refine that evidence is 
-just as accurate. This method requires far less 
+evidence followed by some rules to decide from that evidence 
+is just as accurate. This method requires far less 
 computing power, data and expertise than training or 
 fine-tuning an LLM, lowering barriers to adoption. Broader
 use of automated clinical extraction pipelines can help 
@@ -968,7 +960,7 @@ stops rather than isolated stage metrics; task-specific
 measures such as candidate recall at \texttt{extract} would 
 give a cleaner attribution of each stage's contribution.
 The fixed pipeline could also be reconfigured so that an 
-LLM decides how to represent and \texttt{select} facts 
+LLM chooses how to represent facts and which policy to apply 
 within a more general framework, which has shown promising 
 results on clinical notes in oncology\cite{b19} and 
 cardiology\cite{b20}.
@@ -989,7 +981,7 @@ required to quote exact evidence spans from the letter, and
 every later change to the answer is made by a named rule or 
 a recorded second call applied to that quoted evidence. A 
 reviewer can therefore trace any final label back to the 
-text that supports it and to the policy that selected 
+text that supports it and to the policy that decided 
 it\cite{b14}. This transparency matters more than headline 
 accuracy in a clinical setting, where an unexplained answer 
 cannot be safely acted on.
@@ -998,10 +990,10 @@ The letters contain no demographic attributes, so unequal
 performance across patient groups cannot be tested, and the 
 synthetic corpus may not reflect the language of every 
 clinic. Bias can enter through the models, the prompts and 
-the selection rules; for example, the cautious default to 
+the decision rules; for example, the cautious default to 
 \texttt{unknown} (Section~\ref{sec:errors}) would 
 systematically under-count patients whose seizures are 
-described vaguely. Rules make the selection policy 
+described vaguely. Rules make the decision policy 
 inspectable and changeable by local clinicians, but they do 
 not remove the need for local clinical review and fairness 
 testing on real records before any operational use.
@@ -1017,14 +1009,15 @@ but this is costly, error-prone and time consuming.
 This paper proposes a modular pipeline using LLMs and rules as 
 configurable components to extract this information. The pipeline 
 has two stages: extracting every candidate fact with its quoted 
-evidence in a canonical form, then selecting the final answer. 
+evidence in a canonical form, then deciding the final answer 
+from those candidates. 
 
 Both \texttt{Hybrid} (Purist F1: 0.86) and \texttt{LLM-only} 
 (0.85) exceeded the benchmark previously reported for a 
 fine-tuned LLM (0.81) on a different held-out sample of the 
-same corpus. A single LLM call produces an initial answer 
+same corpus. A single LLM call produces a provisional answer 
 (0.79) that already exceeds the complete \texttt{Rules-only} 
-pipeline (0.72). Applying a selection policy to the evidence 
+pipeline (0.72). Applying a decision policy to the evidence 
 the LLM found adds a further +0.06 to +0.07, whether that 
 policy is applied by rules or by a second LLM call. 
 
@@ -1061,6 +1054,7 @@ data and on a broader set of clinical information extraction tasks.
 \bibitem{b18} S.~T. Rosenbloom, J.~C. Denny, H. Xu, N. Lorenzi, W.~W. Stead, and K.~B. Johnson, ``Data from clinical notes: A perspective on the tension between structure and flexible documentation,'' \emph{J. Amer. Med. Informat. Assoc.}, vol.~18, no.~2, pp.~181--186, 2011.
 \bibitem{b19} Z. Yang \emph{et al.}, ``CLINES: Clinical LLM-based information extraction and structuring agent,'' medRxiv:10.64898/2025.12.01.25341355, 2025.
 \bibitem{b20} J. Wang \emph{et al.}, ``Scaling clinician-grade feature generation from clinical notes with multi-agent language models,'' arXiv:2508.01956, 2025.
+\bibitem{b21} D. Xu, M. Gopale, J. Zhang, K. Brown, E. Begoli, and S. Bethard, ``Unified Medical Language System resources improve sieve-based generation and Bidirectional Encoder Representations from Transformers (BERT)-based ranking for concept normalization,'' \emph{J. Amer. Med. Informat. Assoc.}, vol.~27, no.~10, pp.~1510--1519, 2020.
 
 \end{thebibliography}
 
