@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1220 295" width="100%" height="100%" style="background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 978 295" width="100%" height="100%" style="background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
   <defs>
     <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
       <feDropShadow dx="0" dy="1.5" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.06" />
@@ -15,19 +15,15 @@
     <line x1="0" y1="30" x2="215" y2="30" stroke="#e2e8f0" stroke-width="1" />
     <text x="107" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="#334155">Clinic Letter</text>
 
-    <!-- Subtitle pill placeholder for alignment -->
     <rect x="25" y="38" width="165" height="18" rx="9" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1" />
     <text x="107" y="50" text-anchor="middle" font-size="8.5" font-weight="600" fill="#64748b">Raw Unstructured Text</text>
 
-    <!-- Mini Letter Document -->
     <g transform="translate(12, 64)">
       <rect x="0" y="0" width="191" height="120" rx="4" fill="#fafafa" stroke="#e2e8f0" stroke-width="1" />
-      
-      <!-- Surrounding text dummy lines -->
+
       <line x1="12" y1="14" x2="179" y2="14" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" />
       <line x1="12" y1="24" x2="145" y2="24" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" />
-      
-      <!-- Actual clinical text sentence in plain grey -->
+
       <text x="10" y="40" font-size="8.2" fill="#475569" font-family="monospace">...brief morning myoclonic</text>
       <text x="10" y="52" font-size="8.2" fill="#475569" font-family="monospace">jerks several times per</text>
       <text x="10" y="64" font-size="8.2" fill="#475569" font-family="monospace">week, and three generalised</text>
@@ -38,7 +34,6 @@
       <line x1="12" y1="110" x2="115" y2="110" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" />
     </g>
 
-    <!-- Description -->
     <text x="107" y="202" text-anchor="middle" font-size="9.5" font-weight="600" fill="#334155">Unstructured Narrative</text>
     <text x="107" y="218" text-anchor="middle" font-size="8.5" fill="#64748b">Clinic letter containing</text>
     <text x="107" y="230" text-anchor="middle" font-size="8.5" fill="#64748b">multiple clinical mentions.</text>
@@ -47,14 +42,14 @@
   <!-- Connector 1 -->
   <path d="M 233 145 L 253 145" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" fill="none" />
 
-  <!-- ================= 2. FIND (BOTH TAGS IN BOTTOM LEFT) ================= -->
+  <!-- ================= 2. EXTRACT ================= -->
   <g transform="translate(257, 15)" filter="url(#shadow)">
     <rect x="0" y="0" width="215" height="265" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
     <path d="M 0 6 Q 0 0 6 0 L 209 0 Q 215 0 215 6 L 215 30 L 0 30 Z" fill="#f8fafc" />
     <line x1="0" y1="30" x2="215" y2="30" stroke="#e2e8f0" stroke-width="1" />
-    <text x="107" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0f172a">1. Find</text>
+    <text x="107" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0f172a">1. Extract</text>
 
-    <!-- Consistent Engine Pills: LLM (Highlighted), Both, Rules -->
+    <!-- Engine pills: LLM (highlighted), Both, Rules -->
     <g transform="translate(18, 38)">
       <rect x="0" y="0" width="54" height="18" rx="9" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.2" />
       <text x="27" y="12" text-anchor="middle" font-size="8.5" font-weight="700" fill="#0f172a">LLM</text>
@@ -66,92 +61,39 @@
       <text x="152" y="12" text-anchor="middle" font-size="8.5" font-weight="500" fill="#64748b">Rules</text>
     </g>
 
-    <!-- Visual Form: Split into two grey pills with matching bottom-left tags -->
+    <!-- Quoted spans, each with its canonical label -->
     <g transform="translate(12, 64)">
       <rect x="0" y="0" width="191" height="120" rx="4" fill="#fafafa" stroke="#e2e8f0" stroke-width="1" />
-      
-      <line x1="12" y1="8" x2="179" y2="8" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" />
 
-      <!-- Quoted Span 1 Pill -->
-      <rect x="6" y="14" width="179" height="42" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
-      <text x="10" y="27" font-size="7.6" fill="#1e293b" font-family="monospace">"brief morning myoclonic</text>
-      <text x="10" y="38" font-size="7.6" fill="#1e293b" font-family="monospace">jerks several times per week"</text>
-      <text x="10" y="50" font-size="6.8" font-weight="600" fill="#64748b">Evidence Span 1</text>
+      <rect x="6" y="8" width="179" height="23" rx="3" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+      <text x="10" y="22" font-size="7.5" font-family="monospace" fill="#475569">"...several times per week"</text>
 
-      <!-- Quoted Span 2 Pill (Bottom-left tag) -->
-      <rect x="6" y="60" width="179" height="48" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
-      <text x="10" y="73" font-size="7.6" fill="#1e293b" font-family="monospace">"three generalised tonic–</text>
-      <text x="10" y="84" font-size="7.6" fill="#1e293b" font-family="monospace">clonic seizures in the</text>
-      <text x="10" y="95" font-size="7.6" fill="#1e293b" font-family="monospace">past six months"</text>
-      <text x="10" y="104" font-size="6.8" font-weight="600" fill="#64748b">Evidence Span 2</text>
-      
-      <line x1="12" y1="114" x2="115" y2="114" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" />
+      <rect x="6" y="33" width="179" height="20" rx="3" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" />
+      <text x="10" y="46" font-size="8" font-weight="700" font-family="monospace" fill="#0f172a">↳ "multiple per week"</text>
+
+      <rect x="6" y="63" width="179" height="23" rx="3" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+      <text x="10" y="77" font-size="7.5" font-family="monospace" fill="#475569">"three... in past six months"</text>
+
+      <rect x="6" y="88" width="179" height="20" rx="3" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" />
+      <text x="10" y="101" font-size="8" font-weight="700" font-family="monospace" fill="#0f172a">↳ "3 per 6 months"</text>
     </g>
 
-    <!-- Description -->
-    <text x="107" y="202" text-anchor="middle" font-size="9.5" font-weight="600" fill="#334155">Identifies Candidate Facts</text>
-    <text x="107" y="218" text-anchor="middle" font-size="8.5" fill="#64748b">Extracts verbatim quoted</text>
-    <text x="107" y="230" text-anchor="middle" font-size="8.5" fill="#64748b">evidence spans from text.</text>
+    <text x="107" y="202" text-anchor="middle" font-size="9.5" font-weight="600" fill="#334155">Finds Candidate Facts</text>
+    <text x="107" y="218" text-anchor="middle" font-size="8.5" fill="#64748b">Quotes each evidence span and</text>
+    <text x="107" y="230" text-anchor="middle" font-size="8.5" fill="#64748b">writes it in canonical form.</text>
   </g>
 
   <!-- Connector 2 -->
   <path d="M 475 145 L 495 145" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" fill="none" />
 
-  <!-- ================= 3. ENCODE ================= -->
+  <!-- ================= 3. SELECT ================= -->
   <g transform="translate(499, 15)" filter="url(#shadow)">
     <rect x="0" y="0" width="215" height="265" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
     <path d="M 0 6 Q 0 0 6 0 L 209 0 Q 215 0 215 6 L 215 30 L 0 30 Z" fill="#f8fafc" />
     <line x1="0" y1="30" x2="215" y2="30" stroke="#e2e8f0" stroke-width="1" />
-    <text x="107" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0f172a">2. Encode</text>
+    <text x="107" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0f172a">2. Select</text>
 
-    <!-- Consistent Engine Pills: LLM, Both (Highlighted), Rules -->
-    <g transform="translate(18, 38)">
-      <rect x="0" y="0" width="54" height="18" rx="9" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
-      <text x="27" y="12" text-anchor="middle" font-size="8.5" font-weight="500" fill="#64748b">LLM</text>
-
-      <rect x="62" y="0" width="56" height="18" rx="9" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.2" />
-      <text x="90" y="12" text-anchor="middle" font-size="8.5" font-weight="700" fill="#0f172a">Both</text>
-
-      <rect x="124" y="0" width="56" height="18" rx="9" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
-      <text x="152" y="12" text-anchor="middle" font-size="8.5" font-weight="500" fill="#64748b">Rules</text>
-    </g>
-
-    <!-- Visual Form: Same spans with standardised pills below -->
-    <g transform="translate(12, 64)">
-      <rect x="0" y="0" width="191" height="120" rx="4" fill="#fafafa" stroke="#e2e8f0" stroke-width="1" />
-      
-      <!-- Candidate 1 pair -->
-      <rect x="6" y="8" width="179" height="23" rx="3" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
-      <text x="10" y="22" font-size="7.5" font-family="monospace" fill="#475569">"...several times per week"</text>
-      
-      <rect x="6" y="33" width="179" height="20" rx="3" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" />
-      <text x="10" y="46" font-size="8" font-weight="700" font-family="monospace" fill="#0f172a">↳ "multiple per week"</text>
-
-      <!-- Candidate 2 pair -->
-      <rect x="6" y="63" width="179" height="23" rx="3" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
-      <text x="10" y="77" font-size="7.5" font-family="monospace" fill="#475569">"three... in past six months"</text>
-      
-      <rect x="6" y="88" width="179" height="20" rx="3" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" />
-      <text x="10" y="101" font-size="8" font-weight="700" font-family="monospace" fill="#0f172a">↳ "3 per 6 months"</text>
-    </g>
-
-    <!-- Description -->
-    <text x="107" y="202" text-anchor="middle" font-size="9.5" font-weight="600" fill="#334155">Standardises Format</text>
-    <text x="107" y="218" text-anchor="middle" font-size="8.5" fill="#64748b">Encodes candidates into</text>
-    <text x="107" y="230" text-anchor="middle" font-size="8.5" fill="#64748b">consistent units and rates.</text>
-  </g>
-
-  <!-- Connector 3 -->
-  <path d="M 717 145 L 737 145" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" fill="none" />
-
-  <!-- ================= 4. SELECT ================= -->
-  <g transform="translate(741, 15)" filter="url(#shadow)">
-    <rect x="0" y="0" width="215" height="265" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
-    <path d="M 0 6 Q 0 0 6 0 L 209 0 Q 215 0 215 6 L 215 30 L 0 30 Z" fill="#f8fafc" />
-    <line x1="0" y1="30" x2="215" y2="30" stroke="#e2e8f0" stroke-width="1" />
-    <text x="107" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0f172a">3. Select</text>
-
-    <!-- Consistent Engine Pills: LLM, Both, Rules (Highlighted) -->
+    <!-- Engine pills: LLM, Both, Rules (highlighted) -->
     <g transform="translate(18, 38)">
       <rect x="0" y="0" width="54" height="18" rx="9" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
       <text x="27" y="12" text-anchor="middle" font-size="8.5" font-weight="500" fill="#64748b">LLM</text>
@@ -163,49 +105,43 @@
       <text x="152" y="12" text-anchor="middle" font-size="8.5" font-weight="700" fill="#0f172a">Rules</text>
     </g>
 
-    <!-- Visual Form: Selected Fact uses matching darker fill & outline -->
     <g transform="translate(12, 64)">
       <rect x="0" y="0" width="191" height="120" rx="4" fill="#fafafa" stroke="#e2e8f0" stroke-width="1" />
-      
-      <!-- Candidate 1 pair SELECTED -->
+
       <rect x="6" y="8" width="179" height="23" rx="3" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.2" />
       <text x="10" y="22" font-size="7.5" font-weight="700" font-family="monospace" fill="#0f172a">"...several times per week"</text>
-      
+
       <rect x="6" y="33" width="179" height="20" rx="3" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.2" />
       <text x="10" y="46" font-size="8" font-weight="800" font-family="monospace" fill="#0f172a">✓ "multiple per week"</text>
 
-      <!-- Candidate 2 pair UNSELECTED -->
       <rect x="6" y="63" width="179" height="23" rx="3" fill="#fafafa" stroke="#e2e8f0" stroke-width="1" />
       <text x="10" y="77" font-size="7.5" font-family="monospace" fill="#94a3b8">"three... in past six months"</text>
-      
+
       <rect x="6" y="88" width="179" height="20" rx="3" fill="#fafafa" stroke="#e2e8f0" stroke-width="1" />
       <text x="10" y="101" font-size="8" font-family="monospace" fill="#94a3b8">✗ "3 per 6 months"</text>
     </g>
 
-    <!-- Description -->
-    <text x="107" y="202" text-anchor="middle" font-size="9.5" font-weight="600" fill="#334155">Applies Selection Criteria</text>
-    <text x="107" y="218" text-anchor="middle" font-size="8.5" fill="#64748b">Selects relevant facts and</text>
-    <text x="107" y="230" text-anchor="middle" font-size="8.5" fill="#64748b">filters non-qualifying candidates.</text>
+    <text x="107" y="202" text-anchor="middle" font-size="9.5" font-weight="600" fill="#334155">Applies Selection Policy</text>
+    <text x="107" y="218" text-anchor="middle" font-size="8.5" fill="#64748b">Chooses or combines candidates</text>
+    <text x="107" y="230" text-anchor="middle" font-size="8.5" fill="#64748b">to give the final answer.</text>
   </g>
 
-  <!-- Connector 4 -->
-  <path d="M 959 145 L 979 145" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" fill="none" />
+  <!-- Connector 3 -->
+  <path d="M 717 145 L 737 145" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" fill="none" />
 
-  <!-- ================= 5. FINAL OUTPUT ================= -->
-  <g transform="translate(983, 15)" filter="url(#shadow)">
+  <!-- ================= 4. FINAL OUTPUT ================= -->
+  <g transform="translate(741, 15)" filter="url(#shadow)">
     <rect x="0" y="0" width="215" height="265" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
     <path d="M 0 6 Q 0 0 6 0 L 209 0 Q 215 0 215 6 L 215 30 L 0 30 Z" fill="#f8fafc" />
     <line x1="0" y1="30" x2="215" y2="30" stroke="#e2e8f0" stroke-width="1" />
     <text x="107" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="#334155">Final Output</text>
 
-    <!-- Subtitle pill placeholder -->
     <rect x="25" y="38" width="165" height="18" rx="9" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1" />
     <text x="107" y="50" text-anchor="middle" font-size="8.5" font-weight="600" fill="#64748b">Extracted Fact &amp; Evidence</text>
 
-    <!-- Visual Output Card -->
     <g transform="translate(12, 64)">
       <rect x="0" y="0" width="191" height="120" rx="4" fill="#fafafa" stroke="#e2e8f0" stroke-width="1" />
-      
+
       <rect x="8" y="12" width="175" height="42" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
       <text x="14" y="28" font-size="8" font-weight="600" fill="#64748b">Selected Label:</text>
       <text x="14" y="44" font-size="10" font-weight="800" font-family="monospace" fill="#0f172a">"multiple per week"</text>
@@ -216,9 +152,8 @@
       <text x="14" y="100" font-size="7.5" font-family="monospace" fill="#475569">several times per week"</text>
     </g>
 
-    <!-- Description -->
     <text x="107" y="202" text-anchor="middle" font-size="9.5" font-weight="600" fill="#334155">Auditable Structured Facts</text>
-    <text x="107" y="218" text-anchor="middle" font-size="8.5" fill="#64748b">Final label(s) preserved with</text>
+    <text x="107" y="218" text-anchor="middle" font-size="8.5" fill="#64748b">Final label preserved with</text>
     <text x="107" y="230" text-anchor="middle" font-size="8.5" fill="#64748b">direct source evidence link.</text>
   </g>
 

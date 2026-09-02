@@ -38,6 +38,15 @@ SPLIT_COLORS = {
 }
 FIGURE_DIR = ROOT / "paper/draft"
 STAGE_ORDER = ("Find", "Encode", "Select")
+# Each stop scores the answer submitted so far, not the stage in isolation.
+# The paper reports two stops (extract, select); the encode stop stays
+# available for repository figures.
+STAGE_LEGEND_LABELS = {
+    "Find": "Initial answer (after extract)",
+    "Encode": "After encode",
+    "Select": "Final answer (after select)",
+}
+PAPER_STAGES = ("Find", "Select")
 STAGE_COLORS = {
     "Find": "#8C9BAE",
     "Encode": "#12968F",
@@ -468,6 +477,7 @@ def render_grouped_columns(
     title: str = "",
     ylim: tuple[float, float] = (0.0, 1.0),
     yticks: tuple[float, ...] = (0.0, 0.2, 0.4, 0.6, 0.8, 1.0),
+    stages: tuple[str, ...] = STAGE_ORDER,
 ) -> Path:
     """Write one grouped-column chart as PDF and PNG with refined styling."""
 
@@ -475,8 +485,8 @@ def render_grouped_columns(
 
     _prepare_figure_fonts()
     n_groups = len(chart.categories)
-    n_series = len(STAGE_ORDER)
-    width = 0.22
+    n_series = len(stages)
+    width = 0.22 if n_series > 2 else 0.3
     xs = list(range(n_groups))
     wrap_width = 10 if n_groups >= 5 else 16
     fig_height = 3.5 if n_groups >= 5 else 3.2
@@ -484,14 +494,14 @@ def render_grouped_columns(
 
     axis.grid(axis="y", linestyle="--", linewidth=0.5, color=GRID_GREY, zorder=0)
 
-    for index, stage in enumerate(STAGE_ORDER):
+    for index, stage in enumerate(stages):
         offset = (index - (n_series - 1) / 2) * (width + 0.02)
         values = chart.series[stage]
         axis.bar(
             [x + offset for x in xs],
             values,
             width=width,
-            label=stage,
+            label=STAGE_LEGEND_LABELS[stage],
             color=STAGE_COLORS[stage],
             linewidth=0,
             zorder=3,
@@ -499,9 +509,10 @@ def render_grouped_columns(
 
     if "GPT-5.6 Luna" in chart.categories:
         luna_idx = chart.categories.index("GPT-5.6 Luna")
-        x_rec = luna_idx - (width + 0.02)
+        half_span = ((n_series - 1) / 2) * (width + 0.02)
+        x_rec = luna_idx - half_span
         y_rec = chart.series["Find"][luna_idx] + 0.025
-        x_sel = luna_idx + (width + 0.02)
+        x_sel = luna_idx + half_span
         y_sel = chart.series["Select"][luna_idx] + 0.025
         rec_val = round(chart.series["Find"][luna_idx], 2)
         sel_val = round(chart.series["Select"][luna_idx], 2)
@@ -559,7 +570,7 @@ def render_grouped_columns(
     )
     axis.legend(
         frameon=False,
-        ncol=3,
+        ncol=n_series,
         loc="upper center",
         bbox_to_anchor=(0.5, 1.14),
         prop={"family": LATIN_MODERN_NAME, "size": 9.5},
@@ -1073,6 +1084,7 @@ def render_living_figures(out_dir: Path | None = None) -> dict[str, str]:
     models = render_grouped_columns(
         load_living_six_model_cell3(),
         dest / "six_model_stage_performance",
+        stages=PAPER_STAGES,
     )
     barbell = render_barbell(
         load_living_gemini_dev_vs_test(),
