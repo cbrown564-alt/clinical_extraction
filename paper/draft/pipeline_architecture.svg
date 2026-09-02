@@ -49,13 +49,10 @@
     <line x1="0" y1="30" x2="215" y2="30" stroke="#e2e8f0" stroke-width="1" />
     <text x="107" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0f172a">1. Extract</text>
 
-    <!-- Engine pills: LLM (highlighted), Rules -->
-    <g transform="translate(31, 38)">
-      <rect x="0" y="0" width="70" height="18" rx="9" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.2" />
-      <text x="35" y="12" text-anchor="middle" font-size="8.5" font-weight="700" fill="#0f172a">LLM</text>
-
-      <rect x="82" y="0" width="70" height="18" rx="9" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
-      <text x="117" y="12" text-anchor="middle" font-size="8.5" font-weight="500" fill="#64748b">Rules</text>
+    <!-- Executor pill: one LLM call -->
+    <g transform="translate(62.5, 38)">
+      <rect x="0" y="0" width="90" height="18" rx="9" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.2" />
+      <text x="45" y="12" text-anchor="middle" font-size="8.5" font-weight="700" fill="#0f172a">LLM call 1</text>
     </g>
 
     <!-- Quoted spans, each with its canonical label -->
@@ -90,13 +87,15 @@
     <line x1="0" y1="30" x2="215" y2="30" stroke="#e2e8f0" stroke-width="1" />
     <text x="107" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0f172a">2. Decide</text>
 
-    <!-- Engine pills: LLM, Rules (highlighted) -->
-    <g transform="translate(31, 38)">
-      <rect x="0" y="0" width="70" height="18" rx="9" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
-      <text x="35" y="12" text-anchor="middle" font-size="8.5" font-weight="500" fill="#64748b">LLM</text>
+    <!-- Executor pills: Rules (Hybrid) or LLM call 2 (LLM-only) -->
+    <g transform="translate(19, 38)">
+      <rect x="0" y="0" width="78" height="18" rx="9" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.2" />
+      <text x="39" y="12" text-anchor="middle" font-size="8.5" font-weight="700" fill="#0f172a">Rules</text>
 
-      <rect x="82" y="0" width="70" height="18" rx="9" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.2" />
-      <text x="117" y="12" text-anchor="middle" font-size="8.5" font-weight="700" fill="#0f172a">Rules</text>
+      <text x="88.5" y="12.5" text-anchor="middle" font-size="8" font-weight="600" fill="#64748b">or</text>
+
+      <rect x="99" y="0" width="78" height="18" rx="9" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.2" />
+      <text x="138" y="12" text-anchor="middle" font-size="8.5" font-weight="700" fill="#0f172a">LLM call 2</text>
     </g>
 
     <g transform="translate(12, 64)">

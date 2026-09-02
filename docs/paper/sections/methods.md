@@ -1,318 +1,227 @@
 # Paper methods
 
 Date: 2026-08-17
-Revised: 2026-08-23 (cited five-cell table uses 4-family micro F1)
-Status: current
+Revised: 2026-09-02 (Gan only; two decision executors on one shared
+extract; paper stages are extract and decide)
+Status: current; matches `paper/draft/FES.tex` Section III
 Owner: this file
+Scope: [Gan is the dissertation paper](../decisions/gan-is-the-dissertation-paper.md),
+[paper-story simplification](../decisions/paper-story-simplification.md)
+
+Paper stage names are **extract** and **decide**. The implementation
+names three stages (`find`, `encode`, `select`). The cited extraction
+prompt already writes the gold label form, so `find` and `encode` are
+bundled into one call and reported as extract; `select` is reported as
+decide. Implementation names appear below only where they identify an
+existing artifact. LLM calls are called LLM calls, not agents.
 
 ## Research questions
 
-This study treats the route from a clinic letter to a submitted
-task answer as three distinct stages: **find**, **encode**, and
-**select**. This is a study-specific decomposition, not a replacement
-taxonomy for clinical NLP. It makes explicit three decisions that are
-often folded together in an end-to-end system: what evidence and
-candidate facts to collect, how to write an already chosen fact in the
-task's required form, and what the final answer should contain.
+**Primary question.** Can a prompted LLM
+call and a decision policy extract a patient's current
+seizure-frequency pattern from epilepsy clinic letters as accurately as
+the fine-tuned LLM previously reported on the same synthetic corpus
+(Gan et al., 2026)?
 
-**Primary question.** When find, encode, and select are treated as
-distinct stages in clinical information extraction, how should
-language models and recorded deterministic rules be combined across
-those stages to produce structured epilepsy information?
+**Secondary question.** Does extract then decide add value:
+does a decision applied to the extraction record improve on the
+provisional answer; does it matter whether
+rules or a second LLM call apply the policy; and which
+ingredients of the extraction prompt does the result depend on?
 
-**Supporting questions.**
+The two-executor comparison (section D) answers the first part of the
+secondary question. Three extraction-prompt ablations answer the last
+part. The six-model comparison, the Gemini low/high thinking contrast,
+and the Gemini temperature 0 versus 1 ablation show how far the result
+depends on the model and its sampling settings. Saved outputs, quoted
+evidence, and replayed decision stages are the experimental controls
+that make the comparisons paired; they are not a separate research
+question.
 
-1. How do final results change when models and rules take different
-   responsibilities for find, encode, and select?
-2. Does the preferred division of responsibility differ between one
-   current seizure-frequency answer (Gan 2026) and a multi-fact
-   clinical inventory (ExECTv2)?
-3. When the later rule-based stages are held constant, how much do the
-   final results depend on the model used for find and on the
-   reasoning budget given to that model?
+## A. Study design
 
-The five role rows answer the first two questions. The six-model
-cell-3 comparison, Gemini low/medium/high thinking, and the Gemini
-and Grok temperature 0 versus 1 ablation answer the third. Saved outputs, evidence spans, and replayed rule stages are
-the experimental controls that make the comparisons possible; they are
-not a separate research question.
+The study treats the route from a clinic letter to one submitted
+seizure-frequency label as two stages. **Extract** is one LLM call
+that reads the full letter and returns a structured record of every
+candidate seizure-frequency event, each with an exact quoted evidence
+span, a category, and a label in one of the gold standard's canonical
+forms, together with a provisional answer chosen from those
+candidates. **Decide** receives that record and a fixed decision
+policy, never the letter, and returns the final label with the event
+or events that support it.
 
-## A. Study design and task definitions
+The decision is performed in two ways on the same record.
+In **Hybrid**, rules apply the policy. In **LLM-only**, a
+second LLM call applies the same policy written as instructions with
+worked examples. The extraction call, its output, and the policy are
+shared, so a difference between the two executors is attributable to
+the decision stage alone. The provisional answer is what a one-prompt
+system would submit; scoring it gives the one-prompt baseline that
+both executors are measured against.
 
-This study examines how a clinical information-extraction system
-should divide work between language models and recorded deterministic
-rules. Rather than treating extraction as one indivisible operation,
-it distinguishes three stages in the route from a clinic letter to a
-submitted structured answer: find, encode, and select. Find identifies
-evidence-linked clinical facts; encode expresses an already chosen
-fact in the representation required by the task; and select determines
-which candidate facts, if any, form the submitted answer. The study
-compares alternative allocations of these stages between models and
-rules.
+The study evaluates agreement with the task's reference labels on
+synthetic letters. It does not evaluate clinical correctness,
+real-letter performance, workflow fit, privacy compliance, or
+deployment readiness. Locked test results are reported only as
+aggregate totals; development data are used to examine mechanisms and
+limitations.
 
-The comparison is conducted on two public epilepsy-letter tasks
-(Fonferko-Shadrach et al., 2024; Gan et al., 2026) that
-require different final answers. Gan 2026 requires one label describing
-the patient's current seizure frequency, despite a letter potentially
-containing several true statements about different periods or seizure
-types. ExECTv2 requires a structured inventory of supported diagnoses,
-seizure-frequency facts, prescriptions, and investigations. The tasks
-therefore test the same proposed division of work under different
-output requirements: selecting one current state and assembling a
-multi-fact clinical record. Their scores are reported separately
-because they measure different target forms.
+## B. Dataset, gold form, and split policy
 
-The study evaluates agreement with these task-specific reference
-standards, not clinical correctness or deployment readiness. Locked
-test results are reported only as aggregate totals, while development
-data are used to examine mechanisms and limitations. The study does
-not claim a universal extraction architecture, clinical validation, or
-performance transfer between tasks.
+| Characteristic | Gan 2026 |
+| --- | --- |
+| Source material | Public synthetic epilepsy clinic letters (Gan et al., 2026), modelled on King's College London letters |
+| Full resource | 15,099 letters; 1,200 used here |
+| Task output | One current seizure-frequency label per letter, with one supporting quote |
+| Development split (`dev750`) | 750 letters |
+| Locked test split (`test450`) | 450 letters, stratified by Pragmatic category |
+| Scoring unit | One label per letter; micro-F1 equals per-letter accuracy |
 
-## B. Datasets, gold forms, and split policy
+The letters are about 400 words each. Preprocessing was minimal:
+quotes, new lines, tabs, the ≤ sign and nulls were cleaned, and letters
+were ingested whole with no tokenisation, section-splitting, or
+truncation. The 1,200-letter sample was split 750 / 450 stratified by
+the four Pragmatic categories (frequent, infrequent, unknown, seizure
+free). The `dev750` distribution is 51% / 17% / 17% / 15%; `test450`
+is 50% / 18% / 17% / 15%.
 
-| Characteristic | Gan 2026 | ExECTv2 |
+The gold standard's quote is a loose comparator for evidence, not gold
+for spans: it may be exact, paraphrased, abbreviated, ellipsized, or
+missing. Evidence quality is therefore measured in the paper as
+exact-substring adherence of the selected event's quote, and a
+development-first directional study of semantic sufficiency is
+specified before any further held-out replay
+([protocol](../../research/gan2026/gan_directional_evidence_adjudication_dev750_protocol_2026-09-02.md)).
+
+## C. What each stage receives and returns
+
+| | Extract | Decide |
 | --- | --- | --- |
-| Source material | Public synthetic epilepsy follow-up letters | Public clinician-written synthetic epilepsy clinic letters |
-| Full resource | 1,500 letters | 200 letters |
-| Task output | One current seizure-frequency label per letter | Multi-fact clinical inventory |
-| Development split | 750 letters | 140 letters; 836 scored fact units |
-| Locked test split | 450 letters | 59 available letters; 349 scored fact units |
-| Main target content | Frequency, seizure-free, unknown, unresolved-multiple, or no-reference outcome | Diagnoses, seizure-frequency facts, prescriptions, and investigations |
-| Scoring unit | One task label per letter | Micro-averaged fact units within four clinical families |
+| Input | Full letter | Candidate record and decision policy; not the letter |
+| Output | Candidate record: events, each with quoted span, category, canonical label; provisional answer | Final label and its supporting event(s) |
+| Performed by | LLM call 1 | Hybrid: rules. LLM-only: LLM call 2 |
 
-We evaluated the proposed division of model and rule responsibilities
-on two publicly available synthetic epilepsy-letter resources. Gan 2026
-comprises 1,500 follow-up letters constructed around a seizure-frequency
-outcome. Its reference standard assigns each letter one label describing
-the required current-frequency answer. ExECTv2 comprises 200
-clinician-written synthetic clinic letters annotated as a structured
-clinical inventory. Its reference standard records supported facts in
-four families: diagnoses, seizure-frequency information, prescriptions,
-and investigations (Fonferko-Shadrach et al., 2024; Gan et al., 2026).
-The datasets therefore provide two deliberately
-different forms of clinical extraction: one requires a single answer
-from potentially competing statements in a letter, whereas the other
-requires a set of supported facts.
+The pipeline is a fixed sequence of calls and functions. No LLM call
+uses tools, chooses the next step, or invokes another model; each call
+is a prompt with a fixed input and a schema-validated JSON output. The
+letter is the only free-text input; every later step reads the record.
 
-The Gan development set contains 750 letters, with numeric frequency
-labels most common (468 letters), alongside seizure-free (112),
-unknown (100), unresolved-multiple (43), and no-reference (27)
-outcomes. These non-numeric classes matter because the task is not
-reducible to finding a rate expression: the system must distinguish an
-answerable current state from uncertainty, competing evidence, or the
-absence of a relevant reference. The ExECTv2 development set contains
-836 scored inventory units across 140 letters: 329 diagnoses, 165
-seizure-frequency facts, 206 prescriptions, and 136 investigations.
-The Compact/headline collapse of Diagnosis is 796 units (289
-diagnoses); that is a historical Compact denominator, not the
-cited 4-family micro F1. A
-single ExECTv2 letter may contain facts from several families, including
-no annotated fact in a particular family; absence from a family is
-therefore an annotation outcome, not evidence that the corresponding
-clinical feature is false.
+## D. Decision executors
 
-The two reference standards are retained in their original task-specific
-forms rather than being forced into a common label space. Gan is scored
-as one submitted label per letter, using the task's mapping of clinical
-wording to its expected outcome. ExECTv2 is scored at the level of
-inventory fact units (`clinical_inventory_unit_keys`), so its
-denominator is the number of gold fact units rather than the number of
-letters. De-duplication is a select step, not a scoring collapse. Development splits were
-used to develop and inspect mechanisms, while the held-out splits were
-kept locked for final aggregate evaluation. All five model--rule
-configurations received the same parsed source text and the same split
-assignments; there was no substantive corpus transformation before the
-evaluated find, encode, and select stages.
+| Executor | LLM calls | Extract | Decide | Cited `test450` Purist |
+| --- | ---: | --- | --- | ---: |
+| Hybrid | 1 | LLM call 1 (`gan_llm_extract`) | Recorded rules (`gan_rules_encode`, then `llm_select_after_codebook`) | 0.86 (387) |
+| LLM-only | 2 | Same call, same record | LLM call 2 (`gan_llm_select_from_extract`, policy-example prompt) | 0.85 (383) |
 
-## C. Find, encode, and select
+Because decide works from the saved record, both executors were
+replayed on the same extraction output without a new model call.
 
-Find produces a candidate record of plausible clinical facts from a
-clinic letter, each linked to supporting source text. For Gan 2026,
-candidates may describe seizure events, seizure-free intervals,
-uncertainty, or competing possible current states. For ExECTv2, they
-may describe diagnoses, seizure-frequency facts, prescriptions, and
-investigations. Find is intentionally broader than the final task
-answer: a letter can contain several relevant facts even where Gan
-requires only one submitted label. Models, rules, or their combination
-may perform this stage, but all configurations preserve the candidate
-record and its evidence before later processing.
+Other configurations were built and measured and remain repository
+evidence, not paper rows: rules throughout (0.72), rule-extracted
+candidates added to the model's record before rule decide (0.82), the
+same extract without the deterministic label rewrite (0.85), a
+separate LLM label-rewriting call before decide, and a one-call prompt
+that applies the policy inside the extraction call. They are
+summarised in the supporting materials with their scope
+([results](results.md) section B and D).
 
-Encode expresses an already retained candidate in the representation
-required by the relevant reference standard. It may standardise a
-count, period, medicine name, diagnosis form, codebook label, or other
-task-specific field, while retaining the underlying clinical fact and
-its evidence link. For example, it may convert a frequency phrase into
-Gan's required label form or map an ExECTv2 medicine mention to its
-structured field representation. Encode is therefore distinct from
-find: it does not search the letter for an additional fact, and it is
-distinct from select: it does not choose a different clinical state
-simply because its form is easier to score.
+## E. Extraction prompt
 
-Select determines which encoded candidates form the submitted answer.
-For Gan 2026, this means choosing the one answer that represents the
-required current seizure-frequency state when the letter contains
-multiple temporally or clinically distinct statements. For ExECTv2, it
-means retaining the supported, deduplicated facts that form the
-four-family inventory. Recorded selection policies may gate, drop,
-rewrite, or reselect a candidate where their conditions are met; they do
-not silently add leftover facts from a new scan of the source letter.
-The experimental stage boundaries are defined through replay on saved
-candidate outputs, allowing the effect of each role in the configuration
-to be scored separately.
+The extraction prompt has four ingredients, each removed in turn in
+the ablations:
 
-```mermaid
-flowchart LR
-    letter[Clinic letter] --> find[Find<br/>creates a candidate record]
-    find --> encode[Encode]
-    encode --> select[Select]
-    select --> output[Structured task output]
+1. **Instructions** to identify relevant seizure-frequency events and
+   to propose a provisional answer under the decision policy.
+2. **Examples** of how events should be represented.
+3. **Allowed labels**: a closed list of the canonical label forms used
+   by the gold standard.
+4. **Evidence obligation**: schema fields for the evidence span of
+   every event, with the instruction that each span must be an exact
+   quote from the letter. The ablation removes the fields and the
+   instruction together as one package; it does not test the quote
+   instruction alone.
 
-    classDef stage fill:#dbeafe,stroke:#2563eb,color:#173b65,stroke-width:1.5px;
-    class find,encode,select stage;
-```
+Each event is assigned one of six categories (frequency rate, cluster
+frequency, seizure free, last event only, unknown frequency, no
+reference). The decision policy is stated once and applied twice:
+provisionally by the model inside the extraction call, and finally at
+decide. The frozen template, without `note_text`, is
+[`gan_llm_extract_prompt_template.json`](../../../paper/supporting%20materials/gan_llm_extract_prompt_template.json).
+It is not the source-near variant (`gan_llm_extract_raw`) and not the
+second-call decide prompt.
 
-**Figure 1.** General staged pipeline for clinical information
-extraction. Find creates a record of plausible, evidence-linked facts
-from a clinic letter. Encode expresses those facts in the form
-required by the task, and select determines the submitted structured
-output. The highlighted stages are performed by a language model,
-recorded rules, or both, depending on the configuration.
+## F. Decision policy and rules
 
-## D. Stage-ownership configurations
+| When | Do |
+| --- | --- |
+| Several current seizure types are present | Choose the highest current or recent frequency |
+| The letter gives an overall current count and a breakdown by type | Choose the overall count |
+| A seizure-free statement sits with other current seizure-like events | Keep seizure-free separate from unknown or last-event statements |
 
-| Configuration | Find | Encode | Select |
-| --- | --- | --- | --- |
-| 1. Rules throughout | Recorded rules | Recorded rules | Recorded rules |
-| 2. Combined find | Language model and recorded rules | Recorded rules | Recorded rules |
-| 3. Model find | Language model | Recorded rules | Recorded rules |
-| 4. Model find and encode | Language model | Language model | Recorded rules |
-| 5. Model throughout | Language model | Language model | Language model |
+In Hybrid, rules first rewrite any label the model left in a
+non-canonical form (at most 0.01 on `test450`: 355 → 360 before the
+decision rules), then apply the policy. Each rule is a named function
+that reads the record, never the letter. Rule authority is recorded by
+type: **gate** (block a provisional answer the policy forbids),
+**reselect** (choose a different already-extracted event), and
+**rewrite** (derive a new label from the extracted events, such as a
+diary total). No decision rule scans the letter for a new candidate.
+The named families are in the [rule catalogue](../rule_catalogue.md).
+In LLM-only, the second call states the same policy as instructions
+with worked examples and receives only the record.
 
-The study evaluates the same five ways of dividing the work between a
-language model and recorded rules on Gan 2026 and ExECTv2. In the
-rules-throughout condition, recorded deterministic procedures find
-source-near facts, encode them into codebook form, and select the
-submitted answer. The combined-find
-condition permits both a model and rules to contribute candidate facts,
-after which encode and select remain rule based. The remaining
-conditions place find, then encode, then select with the model. The
-table therefore shows which role each
-component plays in each configuration. A language-model stage is its
-saved output; a recorded-rule stage is a deterministic transformation or
-decision policy specified before held-out evaluation.
+## G. Development controls and reproducibility
 
-Gemini 3.7 Flash is the primary model for the five-configuration
-comparison. The secondary model-configuration analyses hold the third
-configuration fixed: model find followed by rule-based encode and
-select, while varying either the model or the reasoning budget used
-for find.
+All prompts, schemas, rules, and configuration choices were developed
+on `dev750`. Development material was used to identify failure modes,
+refine the record, and specify the decision policy. `test450` was
+reserved for aggregate-only evaluation: individual test letters and
+their outputs were not inspected, and a held-out defect starts a new
+development candidate rather than a holdout repair.
 
-The five configurations are comparisons of which component performs
-each stage, rather than five depths of a single hybrid setting. Moving
-from one row to another changes who may carry out a defined part of the
-work; it does not simply add more rule assistance to a model answer.
-Each configuration is evaluated against the task's own reference
-standard, and final results are taken from the submitted answer after
-select. The shared table therefore tests whether the preferred
-way of dividing the work is stable across a single-label current-state
-task and a multi-fact inventory task, while retaining task-specific
-scores and gold forms.
+Each run retains the model's record, its evidence, the rule
+transformations, and the final answer. Where a comparison changes only
+the decision stage, that stage is replayed from the saved record
+rather than generated by a new call. Replayable cells live in
+`paper_experiments/`. The supporting materials hold the full prompts,
+schemas, rule definitions, model settings, and replay artefacts.
 
-## E. Development controls and reproducibility
+## H. Evaluation protocol
 
-All prompts, output schemas, recorded rules, and configuration choices
-were developed using the designated development split for each task.
-Development material was used to identify failure modes, refine the
-candidate record, and specify encode and select
-policies. The locked Gan 2026 and ExECTv2 test splits were reserved for
-final evaluation: individual test letters and their outputs were not
-inspected for development, and results are reported only as aggregate
-totals. This separation means that the reported held-out scores assess
-configurations fixed before test evaluation, rather than rules or
-prompts tailored to particular held-out cases.
+The primary metric is Purist micro-F1 on `test450`, following Gan et
+al. (2026): the submitted label is mapped to a monthly-frequency band
+while keeping the seizure-free and uncertainty outcomes. Pragmatic
+micro-F1 is the coarser companion (frequent, infrequent, unknown,
+seizure free). Each letter has one gold label and one prediction, so
+micro-F1 equals the share of letters answered correctly; accuracy is
+not printed as a second headline.
 
-Each evaluated run retains the model-produced candidate record, its
-evidence links, the subsequent rule transformations, and the final
-submitted answer. Where a comparison changes task encoding or final
-selection, the later stage is replayed from the same saved candidate
-record rather than generated through a new model call. Consequently, a
-difference between replayed conditions can be attributed to the changed
-stage rather than variation in candidate generation. These retained
-intermediate outputs also allow the submitted result to be reconstructed
-and checked against the recorded policies.
+Results are compared with the Synthetic (1,166) evaluation reported by
+Gan et al. (2026), a different held-out sample of the same corpus with
+identical metric definitions. That comparison is bounded: it is not a
+paired test and not a state-of-the-art claim. Paired exact McNemar
+tests are used only where both arms are scored on the same `test450`
+letters (Hybrid versus LLM-only; temperature; thinking) and report
+discordant counts only.
 
-The supporting material provides the full prompts, output schemas,
-recorded-rule definitions, model settings, and replay artefacts. These
-details are retained to allow implementation review without obscuring
-the controlled comparisons in the main Methods section. The main
-Methods section reports the cited codebook extract policy: six event
-kinds, the instructions that change clinical meaning, and the allowed
-label form families. The frozen `gan_llm_extract` template, without
-`note_text`, is
-[`paper/supporting materials/gan_llm_extract_prompt_template.json`](../../../paper/supporting%20materials/gan_llm_extract_prompt_template.json).
-That file is the cited extract request. It already writes codebook
-form, so it is bundled find-and-encode. It is not
-`gan_llm_extract_raw` (find only; living rules find uses that
-dialect) and it is not the later select prompt.
-
-## F. Evaluation protocol
-
-Evaluation was defined separately for the two task forms. The primary
-reported measures are Purist accuracy for Gan 2026 and 4-family
-micro F1 for ExECTv2. These are the measures used for the
-headline configuration comparisons because they match the submitted
-object required by each task. Additional task-specific measures are
-reported to make the headline scores interpretable: Pragmatic accuracy
-for Gan 2026, and precision and recall for ExECTv2. Scores are not
-pooled or directly compared between tasks.
-
-Gan 2026 requires one submitted seizure-frequency outcome for each
-letter. We therefore report both Purist and Pragmatic accuracy,
-following the two task-defined projections used in the prior Gan work.
-Purist is the primary, finer-grained evaluation: it maps the submitted
-label to a monthly-frequency band while retaining the task's
-seizure-free and uncertainty outcomes. Pragmatic is a coarser companion
-projection. Set-based precision, recall, and F1 are not reported for
-Gan because each letter contributes one target answer rather than a set
-of independently countable clinical facts (Gan et al., 2026).
-
-For ExECTv2, the primary measure is 4-family micro F1 across
-diagnoses, seizure-frequency facts, prescriptions, and investigations.
-The four families were selected as a focused evaluation scope: each
-represents clinically central information for epilepsy follow-up and
-has sufficient annotation support for comparative evaluation. Four
-other annotated families: birth history, epilepsy cause, onset, and
-when diagnosed each contain fewer than 50 gold annotations and are
-therefore too sparse to support a stable headline comparison. Patient
-history was also excluded from this headline scope. Although clinically
-useful, it combines heterogeneous comorbidities, generic seizure
-mentions, and epilepsy-related events; the original annotation work
-identified uncertainty at its boundaries with diagnosis and seizure
-frequency, and treated meaningful validation as subgroup-specific. This
-scope is not a claim that omitted information is clinically unimportant
-(Fonferko-Shadrach, 2023; Fonferko-Shadrach et al., 2024).
-
-ExECTv2 scoring treats the submitted output as a structured clinical-fact
-inventory rather than as a count of textual mentions. Diagnosis and
-seizure-frequency repeats are deduplicated within a letter, while
-prescription and investigation facts retain distinct occurrences after
-task-specific key filtering. F1 is the principal summary of this balance
-between recovered and unsupported facts. Precision and recall are
-additionally reported overall and by family where needed to show whether
-a configuration primarily introduces unsupported facts, misses supported
-facts, or changes that balance differently across clinical families.
-This is an internal research measure, not a replication of the published
-strict ExECT benchmark (Fonferko-Shadrach et al., 2024). The five
-configurations are compared within each
-task; model and reasoning-budget analyses use the fixed
-model-find, rules-encode, rules-select condition,
-and locked-test results are reported only as aggregates.
+The primary model is Gemini 3.7 Flash at temperature 0 with low
+thinking effort. It is the only model used for the second decision
+call, the prompt ablations, and the temperature and thinking
+ablations. Six models were evaluated as the extraction call in Hybrid
+(Gemini 3.7 Flash, Grok 4.6, DeepSeek V4 Flash, GPT-5.6 Luna, and two
+local models, Qwen 3.8 27B and Gemma 4 26B). For the six-model table
+the paper also reports contract adherence: exact-substring evidence
+for the selected event, non-semantic format repairs, and unparsed
+records. The two local models show that the design can run
+on a single laptop GPU under the same synthetic task; they do not show
+real-letter performance or deployment readiness.
 
 ## Supporting implementation material
 
-The task-specific implementation map is retained in
-[five cells of rule help](method_x_stage.md). The detailed recorded-rule
-catalogue, model roster, prompt decisions, and experiment scope remain
-available in the linked paper documentation. They support reproducibility
-and audit, but are not part of the main-paper Methods narrative.
+The implementation map from paper stages to live runners is in
+[cells and runners](../cells_and_runners.md) and
+[architecture](../architecture.md); both use implementation names.
+The rule catalogue, model roster, prompt decisions, and experiment
+scope remain in the linked paper documentation. They support
+reproducibility and audit, but are not part of the main Methods
+narrative.

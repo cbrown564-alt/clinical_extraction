@@ -1,13 +1,20 @@
 # Paper results
 
 Date: 2026-08-24
-Revised: 2026-09-02 (section D keeps three codebook prompt ablations
-and moves source-near, Holgate, and extra-encode rows to secondary)
-Status: structured first draft; ExECT columns removed from the dissertation
+Revised: 2026-09-02 (two decision executors on one shared extract;
+Rules-only and five-cell rows move to secondary; section D keeps three
+codebook prompt ablations; inventory panel moves to supporting material)
+Status: structured draft matching `paper/draft/FES.tex`
 Owner: this file
 Scope: [Gan is the dissertation paper](../decisions/gan-is-the-dissertation-paper.md),
 [paper-story simplification](../decisions/paper-story-simplification.md)
 Feasibility: [100-letter descriptive study](../../research/gan2026/gan_inventory_feasibility_dev750_n100_2026-08-28.md)
+
+Paper stage names are **extract** (one LLM call; implementation
+`find` with the codebook prompt, which already writes the gold form,
+so `encode` is bundled) and **decide** (implementation `select`). The
+extraction call's own pick is the **provisional answer**. Implementation
+names appear below only where they identify an existing artifact.
 
 ## A. Experimental environment and evaluation
 
@@ -32,79 +39,89 @@ investigations, and seizure-frequency statements from the same
 synthetic letters. That study reports output volume and structure
 only. It has no inventory reference labels and is not scored.
 
-## B. Model-led find with rule-based later stages gave the strongest result
+## B. Two decision executors on one shared extraction record
 
-On locked `test450`, the five-cell comparison found that Gemini
-codebook find, then a second rule encode, then rule selection
-was the strongest allocation, outperforming both standalone rules and
-the end-to-end model configuration (Table 1).
+The paper's core comparison holds the extraction call fixed and
+changes only who performs decide. Both executors replay the same
+saved Gemini 3.7 Flash extraction record on locked `test450`, so the
+difference between them is attributable to the decision stage alone
+(Table 1).
 
-| Find | Encode | Select | Purist | Pragmatic |
-| --- | --- | --- | ---: | ---: |
-| Rules | Rules | Rules | 0.72 (325) | 0.77 (345) |
-| Model and rules | Rules | Rules | 0.82 (368) | 0.84 (380) |
-| Model | Model + Rules | Rules | **0.86** (387) | **0.88** (396) |
-| Model | Model | Rules | 0.85 (382) | 0.87 (391) |
-| Model | Model | Model | 0.85 (383) | 0.87 (391) |
+| Decision executor | Provisional answer (after extract) | Final answer (after decide) | Pragmatic final |
+| --- | ---: | ---: | ---: |
+| Hybrid: rules | 0.79 (355) | **0.86** (387) | **0.88** (396) |
+| LLM-only: second LLM call | 0.79 (355) | 0.85 (383) | 0.87 (391) |
 
-**Table 1.** Locked aggregate-only Gan five-cell comparison using
-Gemini 3.7 Flash. The cited score is the select stop. Source:
-`paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json`
-and
-[the `test450` class report](../../research/gan2026/gan_test450_classification_report_2026-08-28.md).
-Cell 3 extract is `gan_llm_extract`, which already writes the
-codebook form: bundled find-and-encode. Encode then runs
-`gan_rules_encode` on that ledger, so both the model and the rules
-encode. Living rules find (cell 1) is source-near, not that codebook
-string. That is not cell 2 (both at find) and not cell 4 (same
-extract, no rule encode). Table 1 cell 3
-is the living no-call replay of that extract through
+**Table 1.** Locked aggregate-only Gan comparison, Purist micro-F1
+with correct letters of 450. The extraction call is `gan_llm_extract`
+(codebook prompt; already writes the gold form). Hybrid is the living
+no-call replay of that extract through `gan_rules_encode` and
 `llm_select_after_codebook`, including `last_event_well_since`
-(387/450 Purist, 396/450 Pragmatic). Cell 4 is the same extract
-through `llm_select_only` (382/450 Purist).
-Cell 5 is `gan_llm_select_from_extract` with the living
-policy-example select prompt (383/450 Purist, 391/450 Pragmatic).
+(387/450 Purist, 396/450 Pragmatic). LLM-only is
+`gan_llm_select_from_extract` with the living policy-example decide
+prompt on the same record (383/450 Purist, 391/450 Pragmatic).
+Sources:
+`paper_experiments/gan/rungs/gemini37flash/test450/comparison.json`,
+`paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json`,
+[the `test450` class report](../../research/gan2026/gan_test450_classification_report_2026-08-28.md).
 
-Replacing rule-based find with Gemini raised Purist
-micro-F1 from 0.72 to 0.86 when the model already wrote the codebook
-form and rules then encoded and selected. The 0.72 is the rules
-select stop. Living rules find is source-near **190/450**; encode
-of that pick is **284/450**. Phase D **292 / 292** is fused codebook
-instrumentation. Dropping the second rule encode (cell 4) is a
-small drop (387 → 382). Assigning selection to the model (cell 5)
-is 383/450, one letter above cell 4 and four below cell 3.
-Rules Purist 325/450 and Pragmatic 345/450 are the
-promoted three-stage select stops.
-
-Paired exact McNemar tests use that same cell-3 vector
-(**387**/450). On those letters cell 3 beats standalone rules
-(325; 99 vs 37 discordant; Δ+0.138, 95% CI 0.089 to 0.187;
-*p* = 1.0×10⁻⁷). Cell 3 versus cell 5 (383; 16 vs 12; Δ+0.009,
-95% CI −0.014 to 0.032; *p* = 0.57) is compatible with no
-difference. Owner:
+The provisional answer is the extraction call's own pick and is what
+a one-prompt system would submit. Rules add +0.07 (32 letters) and the
+second call adds +0.06 (28 letters) on the same record. The two
+executors differ on 28 letters (rules correct on 16, the second call
+on 12). Paired exact McNemar on that pair: Δ+0.009, 95% CI −0.014 to
+0.032, *p* = 0.57, compatible with no difference. Owner:
 [paired `test450` tests](../../research/gan2026/gan_paired_significance_test450_2026-08-29.md).
+
+The comparison with the previously reported fine-tuned benchmark
+(Gan et al. Synthetic 1,166: Purist 0.81, Pragmatic 0.85) is bounded:
+identical metric definitions and corpus, different held-out samples.
+It is not a paired comparison and not a state-of-the-art claim. An
+approximate two-proportion contrast is indicative only: Hybrid
++0.05 (95% CI +0.01 to +0.09, *p* = 0.01); LLM-only +0.04 (95% CI
+0.00 to +0.08, *p* = 0.04).
+
+**Secondary configuration rows (not paper rows).** The Gemini
+five-cell grid remains repository evidence. Rules throughout is
+0.72 (325) Purist / 0.77 (345) Pragmatic (promoted three-stage
+program; living rules find is source-near 190/450, encode 284/450;
+Phase D 292 / 292 is fused codebook instrumentation). Model-and-rules
+find with rule encode and select is 0.82 (368). The same extract
+without the second rule encode (`llm_select_only`) is 0.85 (382),
+five below Hybrid. Cell 3 versus rules throughout: 99 vs 37
+discordant, Δ+0.138, 95% CI 0.089 to 0.187, *p* = 1.0×10⁻⁷. Owner:
+[five-cell grid](../../research/gan2026/gan_five_cell_grid_2026-08-22.md).
+Per
+[paper-story simplification](../decisions/paper-story-simplification.md),
+Rules-only leaves the dissertation and supporting materials; the
+rows stay valid as research history.
 
 ## C. The most difficult errors involve interpretation, not detection
 
-The preferred cell submitted 387/450 cited Purist-correct labels.
-Residual errors were not spread evenly across frequency bands. Tables
-2a–2c are the living per-class reading for cells 1 (rules throughout),
-3 (model codebook find, model-then-rule encode, rule select),
-and 5 (model throughout).
+Hybrid submitted 387/450 cited Purist-correct labels. Residual errors
+were not spread evenly across frequency bands. Table 2 is the living
+per-class reading for Hybrid; the LLM-only companion is Table 2c.
 Gold and predicted ε only; no letter text and no row ids. Source:
 [the `test450` class report](../../research/gan2026/gan_test450_classification_report_2026-08-28.md).
-Cell 3 class scores use the same 387/450 living replay as Table 1.
+Hybrid class scores use the same 387/450 living replay as Table 1.
 
 The harder bins are Unknown, Seizure free, and
 sparse rare rates (less than once every 6 months, once every 6
 months, and to a lesser extent once a month). Mid-to-high countable
-rates are stronger. Cell 3 raises Daily and Unknown F1 relative to
-standalone rules, and keeps more-than-weekly F1 high. The all-model
-cell now tracks those mid-band rates more closely; Seizure free
-and the sparse six-month bins remain weaker than cell 3.
-Seizure free is the
+rates are stronger. Daily (0.92) and more-than-weekly (0.91) are
+among the best categories, well above Unknown (0.74). The LLM-only
+executor tracks the mid-band rates closely; Seizure free and the
+sparse six-month bins remain weaker than Hybrid. Seizure free is the
 `currently_no_seizure` band (monthly frequency 0). It is not gold-kind
 `no seizure frequency reference`, which scores as Unknown.
+
+On Hybrid, 37 of 54 errors are incorrect `unknown` answers
+(infrequent → unknown 16, frequent → unknown 13, seizure free →
+unknown 8). The paper keeps one confusion figure (Pragmatic) and this
+compact reading; the detailed residual taxonomy stays in supporting
+material. Owner:
+[gold → unknown](../../research/gan2026/gan_pragmatic_unknown_error_mode_2026-08-29.md),
+[rate → unknown](../../research/gan2026/gan_pragmatic_infrequent_error_mode_2026-08-29.md).
 
 Development case review explains the hard categories: competing
 temporal readings, cluster structure, and uncertainty that cannot be
@@ -112,11 +129,12 @@ reduced safely to a rate. These examples illustrate mechanisms in
 saved development traces. They do not estimate held-out prevalence,
 clinical safety, or causal necessity.
 
-**Table 2a.** Cell 1 — rules / rules / rules. Pre-promotion living
-`gan_rules` class reading at **321/450**; the cited select stop is now
-**325/450** and has no new class report. n=450; dropped=0. Classes
-follow the draft Purist labels, most frequent to least frequent.
-Unknown support 76/450.
+**Table 2a (secondary; not a paper table).** Rules throughout.
+Pre-promotion living `gan_rules` class reading at **321/450**; the
+cited select stop is now **325/450** and has no new class report.
+n=450; dropped=0. Classes follow the draft Purist labels, most
+frequent to least frequent. Unknown support 76/450. Retained as
+repository evidence only.
 
 | Class | P | R | F1 | Support |
 | --- | ---: | ---: | ---: | ---: |
@@ -135,8 +153,8 @@ Unknown support 76/450.
 Pragmatic companion: Frequent 0.86, Infrequent 0.75, Unknown 0.62,
 Seizure free 0.62; micro-F1 0.76.
 
-**Table 2b.** Cell 3 — Gemini codebook find (`gan_llm_extract`
-already encodes), then `gan_rules_encode` and rule select. Replay
+**Table 2b (paper Table 2).** Hybrid — Gemini codebook extract
+(`gan_llm_extract`), then `gan_rules_encode` and rule decide. Replay
 387/450 Purist. Same class order as Table 2a.
 
 | Class | P | R | F1 | Support |
@@ -156,10 +174,10 @@ already encodes), then `gan_rules_encode` and rule select. Replay
 Pragmatic companion: Frequent 0.95, Infrequent 0.82, Unknown 0.74,
 Seizure free 0.90; micro-F1 0.88.
 
-**Table 2c.** Cell 5 — Gemini find, encode, and select with the
-living policy-example select prompt. Purist
-383/450; two later-stage rows with no scorable select label count as
-incorrect. Same class order as Table 2a.
+**Table 2c (companion; supporting material).** LLM-only — the same
+Gemini extraction record with the living policy-example decide prompt
+as the second call. Purist 383/450; two later-stage rows with no
+scorable decide label count as incorrect. Same class order as Table 2a.
 
 | Class | P | R | F1 | Support |
 | --- | ---: | ---: | ---: | ---: |
@@ -180,7 +198,8 @@ Seizure free 0.85; micro-F1 0.87.
 
 **Supporting material.** Keep the four-decimal class report, residual
 taxonomy, and representative development cases. The main paper needs
-the hard-bin finding and the three-cell class tables.
+the hard-bin finding, the Hybrid class table, and one confusion
+figure. Rules-only class rows are repository history only.
 
 ## D. Secondary prompt and architecture experiments *(optional)*
 
@@ -376,14 +395,15 @@ living default.
 
 ## F. Rules reduced, but did not remove, differences between models
 
-The six-model comparison holds the same cell-3 stack and changes only
-the find-stage model: `gan_llm_extract` (model already
-encodes), then `gan_rules_encode` and `llm_select_after_codebook`.
-The promoted roster on locked `test450` is Table 4 (Purist
-stage stops) and Table 4b (the same select stop with the other
-recorded metrics):
+The six-model comparison holds the Hybrid stack fixed and changes
+only the model making the extraction call: `gan_llm_extract` (model
+already writes the gold form), then `gan_rules_encode` and
+`llm_select_after_codebook`. The promoted roster on locked `test450`
+is Table 4 (Purist stops; provisional answer, encode replay, final
+answer) and Table 4b (the same final stop with the contract-adherence
+metrics the paper reports as a compact table):
 
-| Model | Find | Encode | Select |
+| Model | Provisional (find) | Encode | Final (select) |
 | --- | ---: | ---: | ---: |
 | Gemini 3.7 Flash | 0.789 (355) | 0.800 (360) | **0.860** (387) |
 | Grok 4.6 | 0.789 (355) | 0.811 (365) | 0.853 (384) |
@@ -424,28 +444,39 @@ Sources: `paper_experiments/gan/rungs/{slug}/test450/comparison.json`
 and
 `paper_experiments/gan/gan_llm_extract/{slug}/test450/comparison.json`.
 
-Later rules raised every model over its find stop and helped
-Luna most (+43 Purist; +33 Pragmatic), but did not bring Luna or
-the local models level with Gemini or Grok. On Purist, Gemini
-select is highest (387). On Pragmatic, Grok is four letters above
+Rule decide raised every model over its provisional answer and
+helped Luna most (+43 Purist; +33 Pragmatic), but did not bring Luna
+or the local models level with Gemini or Grok. On Purist, Gemini
+final is highest (387). On Pragmatic, Grok is four letters above
 Gemini (400 vs 396). Exact evidence and parse form track the
 same split: Grok is exact on all 450 quotes; Gemma leaves the
 most unparsed letters and the weakest exact-evidence count
-(92.9%, 418). A valid span is not semantic support.
-Rules can correct task-form and selection errors in an existing
-candidate record. They cannot reconstruct a clinically relevant
-distinction omitted at find.
+(92.9%, 418). A valid span is not semantic support. Rules can
+correct task-form and selection errors in an existing candidate
+record. They cannot reconstruct a clinically relevant distinction
+omitted at extract.
 
-**Figure 1.** Hosted cell-3 comparison before and after later
-rule-based processing on Gan `test450`. The caption should state the
-split, Purist micro-F1, and configuration.
+Paper claim boundary for the two local models (Qwen, Gemma): the
+result shows that the design can execute
+on a single laptop GPU under the same synthetic task conditions, not
+real-letter performance, clinical
+validity, workflow fit, privacy compliance, or deployment readiness
+([paper-story simplification](../decisions/paper-story-simplification.md),
+Decision 6).
 
-## G. The same letters support a broader clinical inventory, descriptively
+**Figure 1.** Six-model Hybrid comparison, provisional answer and
+final answer, on Gan `test450`. The caption states the split, Purist
+micro-F1, and configuration.
 
-The Gan gold is one current seizure-frequency state. The same
-synthetic letters also mention diagnoses, medicines, investigations,
-and multiple seizure-frequency statements. A frozen ExECT-style
-four-family inventory program (`run_letter` /
+## G. The same letters support a broader clinical inventory, descriptively (supporting material)
+
+Per
+[paper-story simplification](../decisions/paper-story-simplification.md),
+this panel is descriptive only and sits in the supporting materials,
+not the main paper. The Gan gold is one current seizure-frequency
+state. The same synthetic letters also mention diagnoses, medicines,
+investigations, and multiple seizure-frequency statements. A frozen
+ExECT-style four-family inventory program (`run_letter` /
 `ACCEPTED_THREE_STAGE_CONFIG`) was applied to a prespecified sample of
 100 `dev750` letters. The pipeline was not tuned after the sample was
 drawn. No inventory gold exists on Gan, so the study reports only
@@ -497,27 +528,33 @@ correspondence.
 
 ## Visual and supporting-material plan
 
-The main Results section contains Table 1 (Gan five-cell), Tables
-2a–2c (Purist class reports for cells 1, 3, and 5), Table 3
-(Gemini temperature ablation), Table 3a (optional later-stage LLM
-encode-then-select), Table 3b (retained find prompt-component ablations),
-Table 3c (secondary source-near and Holgate prompt rows), Table 4
-(six-model cell-3 Purist roster), Table 4b
-(same select stop: Pragmatic, exact evidence, schema repair,
-unparsed, retry rejected, event count), Table 5
-(descriptive inventory), and Figure 1 (before-and-after-rules).
-The paired tests sit in supporting material with a one-line
-reading after Tables 1 and 3. Full
-four-decimal class tables, residual taxonomy, representative
-development traces, later-stage LLM
-encode mechanism, hardware
-specifications, prompts, API settings, and replay artifacts belong in
-supporting material unless the final page budget permits more of
-them. The cited codebook find request is
-[`gan_llm_extract_prompt_template.json`](../../../paper/supporting%20materials/gan_llm_extract_prompt_template.json);
-the main Methods section keeps only the event kinds, meaning-changing
-instructions, and label-form families. ExECT locked totals are later-paper evidence. They are not
-dissertation tables.
+The main Results section (`paper/draft/FES.tex`) contains: the
+bounded previous-benchmark comparison (Table IV in the draft), the
+Hybrid Purist and Pragmatic class table (Table V; this file's Table
+2b), the two-executor provisional/final table (Table VI; this file's
+Table 1), the three extraction-prompt ablations (Table VII; this
+file's Table 3b), the six-model figure plus the compact
+scores-and-adherence table (Table VIII; this file's Table 4b), the
+temperature and thinking result (section E / E2), a compact error
+analysis with one Pragmatic confusion figure, and a short
+experimental-environment table. The paired executor test is one
+sentence after Table VI.
+
+Supporting material holds: the interface contract and full prompts
+and schemas, the event categories and label forms, the secondary
+prompt rows (Table 3c), the secondary LLM decompositions (Table 3a,
+the one-call ablation, verification and section-splitting development
+findings, the July sampling study), the Hybrid stack variants (cells
+2 and 4), the six-model adherence table with retry and event counts
+(Table 4b), the development-vs-test figure for the two executors,
+the LLM-only class table (Table 2c), the descriptive inventory panel
+(section G), the residual taxonomy, hardware and API settings, and
+the directional evidence protocol summary. The cited extraction
+request is
+[`gan_llm_extract_prompt_template.json`](../../../paper/supporting%20materials/gan_llm_extract_prompt_template.json).
+Rules-only rows (Table 2a and the five-cell rules row) are
+repository history only. ExECT locked totals are later-paper
+evidence, not dissertation tables.
 
 ## Claim boundary
 
