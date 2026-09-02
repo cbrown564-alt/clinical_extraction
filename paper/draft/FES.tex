@@ -202,63 +202,13 @@ future research.
 \section{Literature Review}
 \label{sec:literature}
 
-The best approach to extract seizure frequency 
-information from epilepsy clinic letters is an active area 
-of research, with experiments using rules-based methods \cite{b4, b6}, 
-transformers-based methods \cite{b3, b5, b7, b8} and a 
-combination of both \cite{b9, b10} all published this decade. 
-Rules-based methods struggled with the 
-lexical variety of seizure frequency patterns. A key 
-challenge with both rules-based methods and BERT-based 
-methods was their failure to generalise to letters from a 
-different hospital. \cite{b6, b10}. LLMs were the first method
-to demonstrate strong generalisation to a new dataset\cite{b3},
-but this was achieved by fine-tuning a model on over 1,000
-synthetic letters. This paper explores whether similar
-performance can be achieved with a prompted model and rules.
+Extracting clinical outcomes from outpatient epilepsy narratives has progressed across three paradigms: expert-crafted rule-based systems, fine-tuned transformer representations, and large language models (LLMs). Early pipelines relied on pattern matching and regular expressions \cite{b4, b6, b15, b16}. While rules provide deterministic auditability, they struggle with the lexical diversity of frequency descriptions (\emph{2 to 3 a week}, \emph{frequent bouts}, \emph{4 since her last visit}) and frequently fail to generalise across healthcare institutions \cite{b6, b10}. Subsequent approaches applied clinical BERT models to improve semantic coverage \cite{b7, b9, b10}, using downstream rules solely to normalise dates and counts into standardised units. However, these discriminative models remained bounded by token-classification spans and required extensive task-specific annotated training data.
 
-Rules were used to normalise frequencies and dates as a 
-separate layer in two BERT-based pipelines \cite{b9, b10}, and 
-as minimal repair of malformed LLM output \cite{b5}, but no 
-study has given rules a decision role after a modern LLM. This 
-paper explores whether LLM instructions and examples combined 
-with decision rules can match a fine-tuned model.
+The emergence of autoregressive LLMs significantly advanced clinical information extraction (IE) \cite{b11, b12}. Zero-shot models can interpret varied clinical phrasing \cite{b8}, but risk generating ungrounded hallucinations or irrelevant advice \cite{b5}. To achieve benchmark reliability, recent studies have relied on supervised fine-tuning; notably, Gan \emph{et al.} \cite{b3} established a state-of-the-art benchmark (micro-F1 0.81) by fine-tuning an LLM on over 1,000 expert-annotated letters. However, fine-tuning imposes heavy operational costs: curating thousands of clinical annotations is expensive, model updates require significant compute, and black-box weights obscure the model's decision logic \cite{b14, b18}.
 
-Clinical IE has been defined as the automatic extraction 
-and encoding of clinical information from text \cite{b13}: 
-recognising a mention and normalising it into a standard 
-form \cite{b14}. Modern LLMs do both in one step when asked 
-for a normalised label such as \emph{4 per month} from a raw 
-statement such as \emph{about once a week}. A further step 
-exists in many clinical extraction pipelines but goes 
-unmentioned: deciding between candidates. In a clinic letter 
-with several seizure frequency statements, producing a single 
-label for the patient's current status requires the system 
-both to extract the relevant statements and to decide which 
-one best answers the question. Prior rules-based systems made 
-this a distinct stage\cite{b15}, and clinical concept 
-normalisation routinely separates a high-recall candidate 
-generation stage from a precise ranking stage that chooses 
-among the candidates\cite{b21}. LLM pipelines instead make the 
-decision inside the extraction prompt. This paper explores 
-whether separating \texttt{extract} from \texttt{decide} in a 
-modular pipeline can deliver comparable performance while 
-preserving more of the evidence for downstream use.
+A fundamental limitation in existing LLM extractors is the conflation of extraction and clinical policy. Clinical IE is conventionally framed as mention detection followed by concept normalisation \cite{b13, b14, b21}. In outpatient narratives, however, a clinic letter frequently documents multiple conflicting mentions, such as historical baselines, distinct seizure types, or post-medication interval changes. Selecting which mention represents the patient's current operational status is a matter of clinical policy. Standard pipelines task an LLM with predicting a single final label in one pass, burying candidate selection inside an uninterpretable inference step. In contrast, concept normalisation in wider biomedical informatics routinely separates candidate generation from candidate ranking \cite{b21}.
 
-Academic papers tend to focus exclusively on benchmark 
-accuracy while practitioners tend to value transparency, 
-configurability and efficiency at the cost of some accuracy\cite{b15, b16}. 
-Model interpretability is also a critical factor clinical settings\cite{b14}. 
-Clinicians are trained to use deductive logic to draw 
-conclusions and they expect systems to expose transparent, 
-interpretable evidence that they can reliably use to make 
-decisions that demand high accountability. Past work 
-utilises evidence spans as a training input\cite{b3} for 
-fine-tuning or as data exhaust as part of using a rule-based 
-method\cite{b4}. This paper explores whether preserving a 
-transparent evidence chain from exact text to final answer 
-can make the output both more interpretable and more 
-accurate.
+This paper addresses the gap between brittle rule-based systems and opaque, fine-tuned LLMs. While prior work restricted rules to lexical parsing or post-processing format repair \cite{b5}, we investigate whether an in-context prompted LLM can generate rich, evidence-grounded candidate records that are then resolved by an explicit decision policy. By evaluating both a deterministic rule-based executor (\texttt{Hybrid}) and a second LLM reasoning step (\texttt{LLM-only}), we test whether a modular, training-free architecture can match the fine-tuned benchmark while preserving an auditable evidence chain from source text to final label.
 
 \section{Methods}
 \subsection{Data}
