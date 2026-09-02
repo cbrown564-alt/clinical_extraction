@@ -36,6 +36,7 @@ CELL_FOR_METHOD: dict[str, PaperCell] = {
     "gan_llm_extract_holgate_label": "ablation",
     "gan_llm_extract_no_evidence": "ablation",
     "gan_llm_extract_examples_only": "ablation",
+    "gan_llm_extract_encode_select": "ablation",
     "exect_llm_extract_and_select": "ablation",
     "exect_llm_extract_filtered": "ablation",
 }
@@ -54,6 +55,7 @@ TASK_FOR_METHOD: dict[str, str] = {
     "gan_llm_extract_holgate_label": "gan2026",
     "gan_llm_extract_no_evidence": "gan2026",
     "gan_llm_extract_examples_only": "gan2026",
+    "gan_llm_extract_encode_select": "gan2026",
     "exect_rules": "exectv2",
     "exect_llm_pre_post": "exectv2",
     "exect_llm_extract": "exectv2",

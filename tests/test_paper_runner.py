@@ -153,6 +153,7 @@ def test_live_methods_are_the_paper_llm_cells() -> None:
         "gan_llm_extract_holgate_label",
         "gan_llm_extract_no_evidence",
         "gan_llm_extract_examples_only",
+        "gan_llm_extract_encode_select",
         "gan_llm_and_rules_extract",
         "exect_llm_pre_post",
         "exect_llm_with_rules",
@@ -287,6 +288,7 @@ def test_cli_dispatches_gan_live(monkeypatch: pytest.MonkeyPatch) -> None:
         reasoning_effort: str | None = None,
         row_limit: int | None = None,
         slice_name: str | None = None,
+        **_kwargs: object,
     ) -> dict[str, object]:
         captured.update(
             method=method,
@@ -456,6 +458,7 @@ def test_cli_dispatches_non_living_effort_to_live_runners(
         reasoning_effort: str | None = None,
         row_limit: int | None = None,
         slice_name: str | None = None,
+        **_kwargs: object,
     ) -> dict[str, object]:
         gan.update(
             method=method,

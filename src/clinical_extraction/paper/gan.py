@@ -78,6 +78,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     prompt_llm_and_rules_extract as and_rules_extract,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    prompt_llm_extract_encode_select as extract_encode_select,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     prompt_llm_extract_examples_only as extract_examples_only,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
@@ -126,6 +129,7 @@ MAX_TOKENS = {
     "gan_llm_extract_holgate_label": 1200,
     "gan_llm_extract_no_evidence": 5000,
     "gan_llm_extract_examples_only": 5000,
+    "gan_llm_extract_encode_select": 8000,
     "gan_llm_and_rules_extract": 5000,
     "gan_llm_encode": LATER_STAGE_MAX_TOKENS,
     "gan_llm_select": LATER_STAGE_MAX_TOKENS,
@@ -336,6 +340,34 @@ def verify_gan(
             raise RuntimeError("examples-only payload check changed the live default")
         if hybrid_structured_events.PROMPT_VERSION != hybrid_structured_events.GAN_LLM_EXTRACT_RAW:
             raise RuntimeError("gan_llm_extract_raw live default drifted")
+    elif method == "gan_llm_extract_encode_select":
+        before = hybrid_structured_events.PROMPT_VERSION
+        payload = json.loads(
+            hybrid_structured_events.build_prompt_input(
+                _placeholder_record(),
+                prompt_version=extract_encode_select.GAN_LLM_EXTRACT_ENCODE_SELECT,
+            )
+        )
+        authored = list(extract_encode_select.LLM_EXTRACT_ENCODE_SELECT_AUTHORED_KEYS)
+        blob = json.dumps(payload)
+        if set(payload) != set(authored):
+            raise RuntimeError(
+                "gan_llm_extract_encode_select prompt drifted from authored keys"
+            )
+        if "prompt_version" in payload or "source_row_index" in payload:
+            raise RuntimeError(
+                "gan_llm_extract_encode_select request still emits the research envelope"
+            )
+        if "Gan 2026" in blob:
+            raise RuntimeError(
+                "gan_llm_extract_encode_select request still names the dataset"
+            )
+        if "cases" not in payload or "label_forms" not in payload:
+            raise RuntimeError("gan_llm_extract_encode_select dropped a required block")
+        if hybrid_structured_events.PROMPT_VERSION != before:
+            raise RuntimeError("one-call payload check changed the live default")
+        if hybrid_structured_events.PROMPT_VERSION != hybrid_structured_events.GAN_LLM_EXTRACT_RAW:
+            raise RuntimeError("gan_llm_extract_raw live default drifted")
     elif method == "gan_llm_and_rules_extract":
         if slug is not None and slug != LATER_STAGE_SLUG:
             raise RuntimeError("gan_llm_and_rules_extract runs on Gemini only")
@@ -442,6 +474,11 @@ def run_gan(
     temperature: float | None = None,
     source_row_indices: Sequence[int] | None = None,
     work_leaf: str | None = None,
+    recorded_prompt_version: str | None = None,
+    live_sync: bool = False,
+    extract_method: str | None = None,
+    encode_work_leaf: str | None = None,
+    encode_rows_path: Path | None = None,
 ) -> dict[str, Any]:
     """Run one allowed Gan paper cell."""
 
@@ -465,6 +502,12 @@ def run_gan(
             timeout=timeout,
             progress_every=progress_every,
             reasoning_effort=reasoning_effort,
+            work_leaf=work_leaf,
+            recorded_prompt_version=recorded_prompt_version,
+            live_sync=live_sync,
+            extract_method=extract_method,
+            encode_work_leaf=encode_work_leaf,
+            encode_rows_path=encode_rows_path,
         )
     if slug not in MODELS:
         raise RuntimeError(f"{slug} is not a living paper model")
@@ -661,6 +704,8 @@ def _prompt_version(method: str) -> str:
         return extract_no_evidence.GAN_LLM_EXTRACT_NO_EVIDENCE
     if method == "gan_llm_extract_examples_only":
         return extract_examples_only.GAN_LLM_EXTRACT_EXAMPLES_ONLY
+    if method == "gan_llm_extract_encode_select":
+        return extract_encode_select.GAN_LLM_EXTRACT_ENCODE_SELECT
     if method == "gan_llm_and_rules_extract":
         return and_rules_extract.GAN_LLM_AND_RULES_EXTRACT
     if method in {
@@ -682,6 +727,7 @@ def _repair_mode(method: str) -> str | None:
         "gan_llm_extract_holgate_like",
         "gan_llm_extract_no_evidence",
         "gan_llm_extract_examples_only",
+        "gan_llm_extract_encode_select",
     }:
         return "raw_model"
     if method == "gan_llm_extract_holgate_label":

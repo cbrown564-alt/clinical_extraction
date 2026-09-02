@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 from collections.abc import Sequence
+from pathlib import Path
 from typing import Any, cast
 
 from clinical_extraction.paper.exect import (
@@ -80,6 +81,15 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--temperature", type=float)
     parser.add_argument("--row-limit", type=int)
     parser.add_argument("--slice")
+    parser.add_argument("--work-leaf")
+    parser.add_argument("--recorded-prompt-version")
+    parser.add_argument("--live-sync", action="store_true")
+    parser.add_argument(
+        "--extract-method",
+        choices=("gan_llm_extract", "gan_llm_extract_raw"),
+    )
+    parser.add_argument("--encode-work-leaf")
+    parser.add_argument("--encode-rows-path")
     args = parser.parse_args(argv)
     if args.action == "score-inventory":
         if canonical_exect_method(args.method) != "exect_llm_extract":
@@ -255,6 +265,12 @@ def main(argv: Sequence[str] | None = None) -> None:
                 temperature=args.temperature,
                 row_limit=args.row_limit,
                 slice_name=args.slice,
+                work_leaf=args.work_leaf,
+                recorded_prompt_version=args.recorded_prompt_version,
+                live_sync=args.live_sync,
+                extract_method=args.extract_method,
+                encode_work_leaf=args.encode_work_leaf,
+                encode_rows_path=args.encode_rows_path,
             ),
             indent=2,
             sort_keys=True,
@@ -310,6 +326,12 @@ def run(
     temperature: float | None = None,
     row_limit: int | None = None,
     slice_name: str | None = None,
+    work_leaf: str | None = None,
+    recorded_prompt_version: str | None = None,
+    live_sync: bool = False,
+    extract_method: str | None = None,
+    encode_work_leaf: str | None = None,
+    encode_rows_path: str | None = None,
 ) -> dict[str, Any]:
     """Run one allowed paper cell."""
 
@@ -379,4 +401,10 @@ def run(
         thinking=thinking,
         reasoning_effort=reasoning_effort,
         temperature=temperature,
+        work_leaf=work_leaf,
+        recorded_prompt_version=recorded_prompt_version,
+        live_sync=live_sync,
+        extract_method=extract_method,
+        encode_work_leaf=encode_work_leaf,
+        encode_rows_path=Path(encode_rows_path) if encode_rows_path else None,
     )

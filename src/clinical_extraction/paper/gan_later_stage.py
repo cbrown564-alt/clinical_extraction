@@ -67,6 +67,7 @@ LaterStageMethod = Literal[
 ]
 CITED_SLUG = "gemini37flash"
 EXTRACT_METHOD = "gan_llm_extract"
+ALLOWED_EXTRACT_METHODS = frozenset({"gan_llm_extract", "gan_llm_extract_raw"})
 LLM_ENCODE_IS_EXTRACT = True
 LLM_SELECT_METHOD = GAN_LLM_SELECT_FROM_EXTRACT
 MAX_TOKENS = 8000
@@ -74,6 +75,14 @@ ROOT = discover_repo_root(start=Path(__file__))
 SPLIT_MANIFEST = "gan2026_split_v1"
 WORK_ROOT = ROOT / "experiments/paper"
 HOLDOUT_SCRATCH = ROOT / "scratch/holdout/paper"
+
+
+def _resolved_extract_method(extract_method: str | None = None) -> str:
+    method = extract_method or EXTRACT_METHOD
+    if method not in ALLOWED_EXTRACT_METHODS:
+        allowed = ", ".join(sorted(ALLOWED_EXTRACT_METHODS))
+        raise ValueError(f"extract_method must be {allowed}")
+    return method
 
 
 def prompt_version(method: LaterStageMethod) -> str:
@@ -84,32 +93,32 @@ def prompt_version(method: LaterStageMethod) -> str:
     return GAN_LLM_SELECT
 
 
-def extract_rows_path(split: str, slug: str = CITED_SLUG) -> Path:
+def extract_rows_path(
+    split: str,
+    slug: str = CITED_SLUG,
+    *,
+    extract_method: str | None = None,
+) -> Path:
+    ledger = _resolved_extract_method(extract_method)
     holdout = holdout_is_aggregate_only(split)
     candidates = [
-        (HOLDOUT_SCRATCH if holdout else WORK_ROOT)
-        / EXTRACT_METHOD
-        / slug
-        / split
-        / "rows.jsonl",
-        (HOLDOUT_SCRATCH if holdout else WORK_ROOT)
-        / "gan_llm_extract_label_forms"
-        / slug
-        / split
-        / "rows.jsonl",
-        ROOT
-        / "paper_experiments/gan"
-        / EXTRACT_METHOD
-        / slug
-        / split
-        / "rows.jsonl",
+        (HOLDOUT_SCRATCH if holdout else WORK_ROOT) / ledger / slug / split / "rows.jsonl",
     ]
+    if ledger == "gan_llm_extract":
+        candidates.append(
+            (HOLDOUT_SCRATCH if holdout else WORK_ROOT)
+            / "gan_llm_extract_label_forms"
+            / slug
+            / split
+            / "rows.jsonl"
+        )
+    candidates.append(
+        ROOT / "paper_experiments/gan" / ledger / slug / split / "rows.jsonl"
+    )
     for path in candidates:
         if path.is_file():
             return path
-    raise FileNotFoundError(
-        f"missing {EXTRACT_METHOD} extract rows for {slug} {split}"
-    )
+    raise FileNotFoundError(f"missing {ledger} extract rows for {slug} {split}")
 
 
 def later_stage_work_root(
@@ -118,13 +127,52 @@ def later_stage_work_root(
     split: str = "dev750",
     *,
     work_leaf: str | None = None,
+    extract_method: str | None = None,
 ) -> Path:
     root = HOLDOUT_SCRATCH if holdout_is_aggregate_only(split) else WORK_ROOT
-    return root / (work_leaf or method) / slug / EXTRACT_METHOD / split
+    ledger = _resolved_extract_method(extract_method)
+    return root / (work_leaf or method) / slug / ledger / split
 
 
-def encode_work_rows_path(split: str, slug: str = CITED_SLUG) -> Path:
-    return later_stage_work_root("gan_llm_encode", slug, split) / "rows.jsonl"
+def encode_work_rows_path(
+    split: str,
+    slug: str = CITED_SLUG,
+    *,
+    work_leaf: str | None = None,
+    extract_method: str | None = None,
+) -> Path:
+    return (
+        later_stage_work_root(
+            "gan_llm_encode",
+            slug,
+            split,
+            work_leaf=work_leaf,
+            extract_method=extract_method,
+        )
+        / "rows.jsonl"
+    )
+
+
+def hydrate_encode_row(
+    encode_row: Mapping[str, Any],
+    *,
+    record: GanFrequencyRecord,
+    extract_row: Mapping[str, Any],
+    split: str,
+    machine: str,
+) -> dict[str, Any]:
+    if encode_row.get("encoded_events"):
+        return dict(encode_row)
+    return score_later_stage_row(
+        "gan_llm_encode",
+        record,
+        str(encode_row.get("raw_output") or ""),
+        extract_row=extract_row,
+        encode_row=None,
+        split=split,
+        machine=machine,
+        recorded_prompt_version=str(encode_row.get("prompt_version") or GAN_LLM_ENCODE),
+    )
 
 
 def parse_encode_labels(raw_output: str) -> list[dict[str, str]]:
@@ -188,6 +236,9 @@ def run_later_stage(
     work_leaf: str | None = None,
     recorded_prompt_version: str | None = None,
     live_sync: bool = False,
+    extract_method: str | None = None,
+    encode_work_leaf: str | None = None,
+    encode_rows_path: Path | None = None,
 ) -> dict[str, Any]:
     if slug != CITED_SLUG:
         raise RuntimeError("later-stage Gan encode and select run on Gemini only")
@@ -199,15 +250,38 @@ def run_later_stage(
     records = load_records_for_split(machine)
     if len(records) != expected:
         raise RuntimeError(f"expected {expected} {split} records, found {len(records)}")
-    extract_by_index = _load_jsonl_by_index(extract_rows_path(split, slug))
+    ledger = _resolved_extract_method(extract_method)
+    extract_by_index = _load_jsonl_by_index(
+        extract_rows_path(split, slug, extract_method=ledger)
+    )
     encode_by_index: dict[int, dict[str, Any]] = {}
     if method == "gan_llm_select":
-        encode_path = encode_work_rows_path(split, slug)
+        encode_path = encode_rows_path or encode_work_rows_path(
+            split,
+            slug,
+            work_leaf=encode_work_leaf,
+            extract_method=ledger,
+        )
         if not encode_path.exists():
             raise RuntimeError("gan_llm_select needs a finished gan_llm_encode work cell")
-        encode_by_index = _load_jsonl_by_index(encode_path)
+        raw_encode = _load_jsonl_by_index(encode_path)
+        records_by_index = {record.source_row_index: record for record in records}
+        encode_by_index = {
+            index: hydrate_encode_row(
+                row,
+                record=records_by_index[index],
+                extract_row=extract_by_index[index],
+                split=split,
+                machine=machine,
+            )
+            for index, row in raw_encode.items()
+        }
     work_root = later_stage_work_root(
-        method, spec.slug, split, work_leaf=work_leaf
+        method,
+        spec.slug,
+        split,
+        work_leaf=work_leaf,
+        extract_method=ledger,
     )
     work_root.mkdir(parents=True, exist_ok=True)
     rows_path = work_root / "rows.jsonl"
@@ -288,7 +362,7 @@ def run_later_stage(
         "row_policy": (
             "aggregate_only" if holdout else "development_review_permitted"
         ),
-        "extract_ledger": EXTRACT_METHOD,
+        "extract_ledger": ledger,
         "prompt_version": prompt,
         "started_utc": started,
         "finished_utc": datetime.now(UTC).isoformat(),
