@@ -93,6 +93,8 @@ def test_inventory_covers_present_and_missing_cells() -> None:
         ("gemini37flash", "gan_llm_only", "test450"),
         ("gemini37flash", "gan_llm_select", "dev750"),
         ("gemini37flash", "gan_llm_select", "test450"),
+        ("gemini37flash", "gan_llm_select_from_extract", "dev750"),
+        ("gemini37flash", "gan_llm_select_from_extract", "test450"),
         ("gemma4_26b", "exect_llm_extract", "dev140"),
         ("gemma4_26b", "exect_llm_extract", "test60"),
         ("gemma4_26b", "exect_llm_pre_post", "dev140"),

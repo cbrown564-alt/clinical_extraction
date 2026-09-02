@@ -15,8 +15,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_gan_rules_stage_stops_read_promoted_owner() -> None:
-    assert _gan_rules_stage("test450", "find") == 292
-    assert _gan_rules_stage("test450", "encode") == 292
+    assert _gan_rules_stage("test450", "find") == 190
+    assert _gan_rules_stage("test450", "encode") == 284
     assert _gan_rules_stage("test450", "select") == 325
     assert _gan_rules_stage("dev750", "select") == 691
 

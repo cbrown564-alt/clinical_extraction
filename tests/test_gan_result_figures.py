@@ -139,7 +139,7 @@ def test_gemini_barbell_uses_select_stops_on_both_splits() -> None:
         holdout={"n": 450, "select": {"rules": 321, "hybrid": 373, "llm": 357}},
     )
 
-    assert chart.categories == ["Rules only", "LLM + rules", "LLM only"]
+    assert chart.categories == ["Rules only", "LLM and rules", "LLM only"]
     assert chart.development == [669 / 750, 649 / 750, 590 / 750]
     assert chart.holdout == [321 / 450, 373 / 450, 357 / 450]
 

@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from clinical_extraction.paper.gan_holgate_dev250 import (
     SAMPLE_ID,
     SAMPLE_SIZE,
@@ -22,6 +24,7 @@ FROZEN = (
 )
 
 
+@pytest.mark.local_corpus
 def test_holgate_dev250_is_a_frozen_validation_subset() -> None:
     pool = validation_source_row_indices()
     drawn = draw_holgate_dev250_indices()

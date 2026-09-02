@@ -20,15 +20,15 @@ from .find_encode import (
     find_tag,
 )
 
-FIND_DIALECT_ATOMIC = "atomic"
-FIND_DIALECT_GAN_LLM_EXTRACT = "gan_llm_extract"
-FIND_DIALECT_GAN_LLM_EXTRACT_RAW = "gan_llm_extract_raw"
-RULES_FIND_DIALECT = FIND_DIALECT_GAN_LLM_EXTRACT_RAW
 FindDialect = Literal[
     "atomic",
     "gan_llm_extract",
     "gan_llm_extract_raw",
 ]
+FIND_DIALECT_ATOMIC: FindDialect = "atomic"
+FIND_DIALECT_GAN_LLM_EXTRACT: FindDialect = "gan_llm_extract"
+FIND_DIALECT_GAN_LLM_EXTRACT_RAW: FindDialect = "gan_llm_extract_raw"
+RULES_FIND_DIALECT: FindDialect = FIND_DIALECT_GAN_LLM_EXTRACT_RAW
 
 _ADJECTIVE_RATE_UNITS = frozenset(
     {"daily", "weekly", "monthly", "yearly", "bimonthly"}
