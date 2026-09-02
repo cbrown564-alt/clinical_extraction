@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useCallback, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   FileText,
   AlertCircle,
@@ -16,6 +16,8 @@ import {
 import { fetchRegistry, fetchArtifact, fetchLetter } from "@/lib/api";
 import { firstReplayableArtifactPath } from "@/lib/registryArtifacts";
 import { adaptDeterministicTrace, adaptTrace, isReplaySupported } from "@/lib/traceAdapter";
+import { preserveWorkbenchDataset } from "@/lib/architectUrl";
+import { GAN_INVENTORY_VIEW } from "@/lib/ganInventory";
 import {
   DEMO_GAN_RUN_ID,
   DEMO_MODEL_LABEL,
@@ -56,6 +58,8 @@ function isLiveFamily(family: string): boolean {
 
 export default function TraceControls() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const requestedRunId = searchParams.get("run");
   const {
     noteText,
@@ -74,6 +78,7 @@ export default function TraceControls() {
     setReplayRunId,
     setReplayArtifactRows,
     setReplayRowIndex,
+    setWorkbenchView,
   } = useArchitectStore();
 
   const runNote = useRunNote();
@@ -451,6 +456,22 @@ export default function TraceControls() {
                 },
               ]}
             />
+          )}
+          {!demoLocked && (
+            <button
+              type="button"
+              onClick={() => {
+                setWorkbenchView("inventory");
+                const params = new URLSearchParams();
+                preserveWorkbenchDataset(params, searchParams);
+                params.set("view", GAN_INVENTORY_VIEW);
+                if (sourceRowIndex !== null) params.set("row", String(sourceRowIndex));
+                router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+              }}
+              className="inline-flex min-h-8 items-center rounded-md border border-border bg-surface px-2.5 text-xs font-medium text-foreground hover:bg-surface-raised"
+            >
+              Inventory · 100 letters
+            </button>
           )}
         </div>
       }

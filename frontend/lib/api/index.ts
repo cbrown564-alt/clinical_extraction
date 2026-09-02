@@ -2,6 +2,7 @@ import { fetchJson } from "./client";
 import { filterBrowsableLetters } from "@/lib/datasets/splits";
 import { hydrateExectv2Run } from "@/lib/exectv2RunOptions";
 import type { DatasetId } from "@/lib/datasets/types";
+import type { GanInventoryPanel } from "@/lib/ganInventory";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return fetchJson<T>(path, init);
@@ -123,6 +124,10 @@ export type GanDev750ScoredRow = {
 
 export function fetchGanDev750Panel() {
   return request<GanDev750Panel>("/paper/gan/dev750");
+}
+
+export function fetchGanInventory() {
+  return request<GanInventoryPanel>("/paper/gan/inventory");
 }
 
 export function fetchGanDev750Scored(method: GanDev750Method, slug: string) {

@@ -13,6 +13,7 @@ from clinical_extraction.paper.exect_panel import (
 from clinical_extraction.paper.exect_panel import (
     load_scored_rows as load_exect_scored_rows,
 )
+from clinical_extraction.paper.gan_inventory_feasibility import load_inventory_panel
 from clinical_extraction.paper.gan_panel import load_dev750_panel, load_scored_rows
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
@@ -122,6 +123,18 @@ def paper_gan_dev750() -> dict[str, Any]:
     """Living six-model Gan development panel for the frontend."""
 
     return load_dev750_panel()
+
+
+@router.get("/paper/gan/inventory")
+def paper_gan_inventory() -> dict[str, Any]:
+    """Frozen 100-letter descriptive inventory on Gan dev750."""
+
+    try:
+        return load_inventory_panel()
+    except FileNotFoundError:
+        raise not_found() from None
+    except ValueError:
+        raise not_found() from None
 
 
 @router.get("/paper/gan/dev750/{method}/{slug}/scored")

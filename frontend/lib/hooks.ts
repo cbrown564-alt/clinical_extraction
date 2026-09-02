@@ -86,6 +86,7 @@ export function useArchitectUrlSync() {
     selectedRunId,
     pipelineFamily,
     activeStage,
+    workbenchView,
     setSourceRowIndex,
     setSelectedRunId,
     setActiveStage,
@@ -141,6 +142,7 @@ export function useArchitectUrlSync() {
       skipInitialUrlSync.current = false;
       return;
     }
+    if (workbenchView === "inventory") return;
     const params = new URLSearchParams();
     preserveWorkbenchDataset(params, searchParams);
     if (isDemoSurface()) {
@@ -154,5 +156,5 @@ export function useArchitectUrlSync() {
     const newUrl = `${pathname}?${params.toString()}`;
     router.replace(newUrl, { scroll: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedRunId, sourceRowIndex, activeStage]);
+  }, [selectedRunId, sourceRowIndex, activeStage, workbenchView]);
 }
