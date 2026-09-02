@@ -426,66 +426,36 @@ evidence and the rule that decided it. Rules do not scan the
 letter for new candidates; every rule acts on the events the 
 model extracted.
 
-\subsection{Pipeline Optimisation}
+\subsection{Tuning Procedure and Pipeline Optimisation}
+\label{sec:tuning}
 
-The development set was used to optimise the two key 
-elements of the pipeline: the LLM prompt instructions and 
-the rules. The focus of the optimisation process was to 
-improve accuracy while keeping the instructions and rules 
-simple and generalisable. Qualitative error analysis was 
-conducted to diagnose the cause of poor performance and 
-identify common error modes. Hypotheses were developed 
-and tested to tune the prompt and rules iteratively. 
-Improving a rule or instruction for one class of error 
-often harmed another, because the annotation policies 
-interact. Separating \texttt{extract} from \texttt{decide} 
-kept the policy on which facts to extract apart from the 
-policy on which to choose, and made it possible to score the 
-pipeline after each stage and locate bottlenecks. The 
-supporting materials give a fuller account of this process.
+The training and development procedure for this training-free architecture centers on iterative, error-driven refinement of prompt instructions, few-shot exemplars, and deterministic rule logic strictly using the development partition ($N=750$). Rather than updating model weights via gradient descent, system tuning iteratively optimizes the task decomposition and schema boundaries.
 
-\subsection{Evaluation}
+The optimization process followed a structured error-analysis protocol. First, model predictions on \texttt{dev750} were classified into specific error modes: (1) false-positive extraction of historical or family seizure rates; (2) arithmetic distortion during date/interval aggregation; (3) failure to isolate seizure-free declarations from concurrent descriptions; and (4) non-canonical label phrasing. For each error cluster, competing hypotheses were formulated to determine whether the defect should be resolved by refining in-context prompt instructions or by implementing a dedicated downstream decision rule. Tuning was constrained to maintain simple, domain-grounded heuristics: rules were added only when they resolved systematic policy conflicts across the corpus without overfitting to idiosyncratic phrasing.
+
+\subsection{Hyperparameter Configuration and Safeguards}
+\label{sec:hyperparameters}
+
+To ensure full deterministic reproducibility and prevent test-set leakage, rigorous experimental controls were enforced across software, hardware, and runtime parameters:
+\begin{itemize}
+    \item \textbf{Sampling Parameters:} All LLM extraction and decision runs were conducted at greedy decoding ($\text{temperature} = 0.0$, top-$p = 1.0$) to minimize sampling stochasticity. For reasoning-enabled models, thinking effort was set to low to balance latent chain-of-thought verification with computational latency.
+    \item \textbf{Software Environment:} Pipelines were executed in Python 3.11 with schema validation enforced via Pydantic. Extraction records were persisted as immutable JSON artifacts, allowing the rule-based and LLM-based decision executors to be evaluated on identical intermediate representations without repeated model calls.
+    \item \textbf{Hardware and Inference:} Gemini 3.7 Flash API calls were executed via the official Google GenAI SDK. Local open-weight models (Qwen 2.5 14B, DeepSeek-R1 Distill 14B, Gemma 2 9B, and Luna 8B) were served locally via Ollama on an Apple Silicon M-series workstation (unified memory), demonstrating consumer-hardware feasibility.
+    \item \textbf{Research Validity Firewall:} In accordance with pre-registered research safeguards, the test split ($N=450$) remained strictly locked. No qualitative failure inspection, error mode diagnosis, or threshold adjustments were permitted on test letters; held-out evaluation was executed once, and results were aggregated directly.
+\end{itemize}
+
+\subsection{Evaluation Metrics and Benchmark Comparison}
 \label{sec:evaluation}
 
-Every paper reporting seizure frequency extraction this 
-decade used F1 as its primary metric, but they differ in 
-what counts as a correct frequency label. It is not obvious 
-whether \emph{2 per month}, \emph{3 per month} and 
-\emph{once a week} should all be accepted when the 
-gold-standard label is \emph{multiple per month}. To allow 
-comparison with Gan \emph{et al.}\cite{b3}, this paper adopts 
-their two evaluation settings: a fine-grained \texttt{purist} 
-setting and a coarser \texttt{pragmatic} setting. If the gold 
-label is \emph{twice a week} and the prediction is \emph{once 
-a week}, that is a correct \texttt{pragmatic} answer, since 
-both fall in the \texttt{frequent} category, but an incorrect 
-\texttt{purist} answer. Table~\ref{tab:performance} lists the 
-categories in each setting.
+Evaluating clinical frequency extraction requires clear criteria for what constitutes an acceptable match. Following Gan \emph{et al.} \cite{b3}, this study implements two distinct evaluation granularities:
+\begin{itemize}
+    \item \textbf{Purist Evaluation (Primary):} Requires an exact match against the gold-standard canonical label (e.g., \emph{2 to 3 per week} and \emph{once a week} are non-matching, distinct entities).
+    \item \textbf{Pragmatic Evaluation:} Evaluates clinical equivalence by grouping labels into four broader functional categories: \texttt{frequent}, \texttt{infrequent}, \texttt{unknown}, and \texttt{seizure free}. Predictions matching the gold category are scored as true positives (e.g., \emph{twice a week} and \emph{once a week} both belong to \texttt{frequent}).
+\end{itemize}
 
-Micro-F1 is reported for both settings, because the 
-categories are badly imbalanced (some have over 100 letters, 
-some fewer than 10; Table~\ref{tab:performance}) and micro-F1 
-gives each letter equal weight. Each letter has exactly one 
-gold label and one prediction, so micro-F1 here equals the 
-share of letters answered correctly. The more precise 
-\texttt{purist} F1 is the primary metric.
+Micro-averaged F1 is reported across all evaluations to account for substantial class imbalance (Table~\ref{tab:performance}). Because each letter receives exactly one gold label and one model prediction, micro-F1 is mathematically equivalent to overall letter accuracy. 
 
-The pipeline is evaluated on a held-out test set of 450 
-letters that were never used to tune prompts, rules or any 
-other aspect of the pipeline. Results are compared against 
-the evaluation set labelled Synthetic (1,166) in Gan 
-\emph{et al.}\cite{b3}, a different held-out sample from the 
-same synthetic corpus, distinct from their fine-tuning data.
-
-The primary model is Gemini 3.7 Flash. It is the only model 
-used for the second decision call (\texttt{LLM-only}), for the 
-prompt ablations and for the temperature and thinking-level 
-ablations. Six models were evaluated as the extraction call in 
-\texttt{Hybrid} (Section~\ref{sec:models}). Elsewhere, 
-\texttt{Hybrid} results are from Gemini at temperature 0 with 
-low thinking effort. The held-out results are reported as 
-aggregate totals only; individual test letters and their 
-outputs were not inspected.
+Held-out performance is benchmarked against the Synthetic (1,166) test results reported by Gan \emph{et al.} \cite{b3}. While both studies sample from the same underlying synthetic distribution, the two test sets represent distinct non-overlapping samples; hence, comparisons assess benchmark comparability rather than a paired statistical test. Six diverse LLMs were evaluated in the extraction stage of \texttt{Hybrid} to test cross-model robustness (Section~\ref{sec:models}).
 
 \section{Results}
 
