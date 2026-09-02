@@ -97,34 +97,23 @@ Date of submission: 4th September 2026
 \maketitle
 
 \begin{abstract}
-Seizure frequency patterns are recorded in clinical notes 
-stored in electronic health records (EHRs). Manual chart 
-review is required to extract this information for research, 
-but this is expensive and error-prone. Rules-based 
-systems struggle with the lexical variety of seizure frequency 
-descriptions. Large language models (LLMs) are substantially 
-better at seizure frequency extraction, but fine-tuning a model 
-for this task requires substantial data and computation. This 
-paper proposes a pipeline in which one 
-LLM call \texttt{extract}s every candidate seizure frequency 
-event in the letter into a structured record, each with its 
-exact evidence span, a category and a canonical label, plus a 
-provisional answer. A second stage then \texttt{decide}s the 
-final answer from that record by applying a fixed policy. The 
-decision was performed in two ways on the same extraction 
-record: by rules (\texttt{Hybrid}) and by a second LLM 
-call (\texttt{LLM-only}). Evaluation used 1,200 synthetic 
-epilepsy letters and was compared with the benchmark previously 
-reported for a fine-tuned LLM on a different held-out sample of 
-the same corpus. Both \texttt{Hybrid} (Purist F1: 0.86) and 
-\texttt{LLM-only} (0.85) exceeded the reported benchmark (0.81) 
-and both improved on the 
-provisional answer (0.79). Ablations of 
-the extraction prompt show that its examples, closed label 
-forms and evidence obligation each contribute to that result. 
-On this synthetic benchmark, prompted extraction followed by a 
-decision policy matched the previously reported fine-tuned 
-result.
+Seizure frequency is written in clinic letters, and extracting 
+it for research still relies on slow, error-prone manual chart 
+review. Large language models (LLMs) can read these letters, but 
+the best reported result required fine-tuning on over a thousand 
+labelled letters. This paper splits the task in two: an LLM 
+\texttt{extract}s every candidate frequency with its evidence, 
+then a fixed policy \texttt{decide}s the answer. The policy was 
+applied by rules (\texttt{Hybrid}) and by a second LLM call 
+(\texttt{LLM-only}). Both were evaluated on 1,200 synthetic 
+epilepsy letters against the benchmark reported for the 
+fine-tuned LLM on a different held-out sample of the same corpus. 
+\texttt{Hybrid} (F1 0.86) and \texttt{LLM-only} (0.85) exceeded 
+the reported benchmark (0.81) and improved on the extraction 
+stage's answer alone (0.79); removing the extraction prompt's 
+examples, closed label forms or evidence obligation lowered the 
+result. On this synthetic benchmark, a prompted model with a 
+separate decision step matched a fine-tuned one.
 
 \end{abstract}
 
@@ -134,104 +123,84 @@ information extraction, hybrid pipeline, large language models, seizure frequenc
 
 \section{Introduction}
 
-Epilepsy affects c. 1\% of the UK population \cite{b1} and is 
-characterised by recurrent, unprovoked seizures \cite{b2}. 
-Seizure frequency is a key indicator of the patient's disease
-burden and is commonly used in clinical care to determine 
-the appropriate treatment and as a primary outcome in 
-clinical trials. Despite the critical role of this information, the 
-only place it is routinely recorded is in clinic letters. Clinic 
-letters are unstructured narrative reports of a patient's
-recent visit to the epilepsy clinic, and they often 
-combine descriptions of past diagnoses, current symptoms 
-and future treatment. This information can be used to 
-conduct retrospective studies or to identify patient cohorts 
-for clinical trials, but extracting it into that structured form 
-requires experts to conduct costly, error-prone manual 
-chart review. 
+Epilepsy affects approximately 1\% of the UK population \cite{b1} 
+and is characterised by recurrent, unprovoked seizures \cite{b2}. Seizure frequency 
+is the primary indicator of disease burden, serving as the central metric guiding 
+clinical treatment and the primary endpoint in clinical trials. 
+Despite its clinical importance, seizure frequency is rarely recorded in structured 
+electronic health record fields; instead, it remains embedded within unstructured 
+clinic letters. These narrative documents summarise outpatient consultations, combining 
+past medical history, interval symptom changes, and future management plans. Extracting 
+this information at scale for retrospective research or cohort identification 
+traditionally requires manual chart review, which is labour-intensive, costly, 
+and difficult to standardise across institutions.
 
-Natural language processing (NLP) has been used to 
-automatically extract key information from clinic letters. 
-Rules-based methods successfully extracted structured 
-facts about medications and diagnoses, but struggled
-with the imprecise language and diverse forms of seizure 
-frequency descriptions \cite{b3}. \emph{2 to 3 seizures a week}, 
-\emph{frequent bouts of seizures} and \emph{4 since her last visit} are 
-all valid descriptions of the same fact, but designing 
-rules to accommodate these completely and consistently
-is challenging and time-consuming. Rules-based 
-systems are highly valued by clinicians because they
-produce interpretable results and can flexibly 
-incorporate local domain expertise, but a different
-kind of tool is needed for these semantically complex 
-tasks.
+Natural language processing (NLP) offers an automated alternative, yet clinical 
+narrative presents distinct challenges. Traditional rule-based systems provide 
+deterministic, auditable logic valued by clinicians, but they struggle with the 
+lexical variety and syntactic complexity of clinical frequency descriptions, which 
+range from explicit rates (\emph{2 to 3 seizures a week}) to relative interval counts 
+(\emph{4 since her last visit}) and qualitative impressions (\emph{frequent bouts}) \cite{b3}. 
+Conversely, large language models (LLMs) demonstrate remarkable semantic flexibility 
+in zero- and few-shot clinical information extraction \cite{b11, b12}. However, unconstrained 
+LLMs introduce substantial clinical risks: they operate as black boxes, remain prone to 
+hallucinations or ungrounded assertions \cite{b5}, and existing state-of-the-art results 
+have relied on fine-tuning on large collections of expert-annotated letters \cite{b3}.
 
-Large language models (LLMs) perform substantially better on semantically
-complex tasks from instructions and a few examples alone\cite{b11, b12}, 
-including seizure frequency extraction\cite{b4}. 
-However, unlike rules-based methods, the outputs of 
-LLMs are not constrained to the exact text they were
-given. This presents new challenges for the task of 
-information extraction (IE). Past work has shown that 
-LLMs can invent evidence even when given the specific
-task of estimating a patient's seizure frequency from 
-the letter. In one case an LLM provided diagnostic 
-advice on prescriptions instead of citing the seizure frequency\cite{b5}. This phenomenon of 'hallucination' has been
-documented as a common error mode for LLMs and
-is a significant risk when applied to clinical 
-information at scale. Fine-tuning an LLM on the task 
-minimises this error but requires substantial training data
-and computation. 
+There is often more than one valid description of a patient's seizure frequency pattern. Clinic letters frequently 
+document multiple temporal intervals or distinct seizure types, such as historical baseline 
+rates alongside recent breakthrough seizures following an anti-seizure medication titration. 
+Selecting which mention reflects the patient's current seizure frequency is a matter 
+of clinical policy. When an LLM is asked to produce a single answer to a complex question,
+much of the nuance is lost. This prevents clinicians from inspecting the evidence chain 
+or reconfiguring the selection criteria for different clinical studies.
 
-Prior work has utilised rules as a light post-processing
-layer to repair malformed outputs from LLMs \cite{b5}, but 
-none examine a hybrid method of LLM and rules as an 
-alternative to fine-tuning LLMs. Rules are very effective at 
-processing information with transparent, configurable logic. 
-LLMs are very effective at extracting rich information from
-semantically dense sources. Leveraging both capabilities
-at distinct stages can combat the concerns about LLMs
-being a black box that produces hallucinations, while providing
-greater semantic depth with far less time spent
-developing rules. A hybrid method can produce a more
-transparent, flexible system.
+To address these limitations, this paper investigates a modular, two-stage architecture that 
+decouples evidence extraction from clinical decision-making:
+\begin{enumerate}
+    \item \texttt{Extract}: An LLM identifies all candidate seizure frequency mentions within the letter, extracting canonical forms alongside verbatim textual evidence.
+    \item \texttt{Decide}: An explicit clinical selection policy evaluates the candidate records to determine the primary current frequency pattern.
+\end{enumerate}
+The decision stage operates over structured extraction records rather than raw text, so it can 
+be executed either deterministically via recorded expert rules (\texttt{Hybrid}) or probabilistically 
+via a second LLM call (\texttt{LLM-only}).
 
-Extracting a single label is not a single step. A clinic 
-letter can describe several seizure events with varying 
-precision and on different occasions, so the system must first 
-\texttt{extract} every candidate fact with its evidence, then 
-\texttt{decide} which candidate, or which combination of them, 
-answers the question. Which to keep is a clinical policy that 
-varies between users. Keeping the two stages apart captures 
-more evidence than a single answer would, lets one extraction 
-serve several policies, and makes the final answer explainable: 
-a reader sees the candidates, the policy and the label it 
-produced. 
+\subsection{Research Aim, Hypotheses, and Contributions}
 
-The primary objective of this paper is to evaluate whether a 
-prompted LLM and rules can 
-extract seizure frequency patterns from epilepsy letters as 
-accurately as the fine-tuned LLM previously reported on the 
-same corpus. The secondary objective is to test whether 
-applying a decision to the extraction record improves on the 
-provisional answer, whether it matters if rules or a 
-second LLM call apply the policy, and which ingredients of the 
-extraction prompt the result depends on. If both objectives are 
-met, the paper contributes a new method for seizure frequency 
-extraction and shows where each component helps, to support 
-future research on a more general form of the method.
+The primary aim of this paper is to determine whether a modular pipeline separating 
+evidence extraction from clinical policy decisions can match the performance of
+fine-tuned models without requiring expensive labelled training data. We investigate three core 
+hypotheses:
+\begin{itemize}
+    \item \textbf{H1 (Decoupling Lift):} Explicitly decoupling candidate mention extraction from policy-based decision improves extraction accuracy over an end-to-end, single-pass LLM prompt.
+    \item \textbf{H2 (Executor Equivalence):} A deterministic rule-based decision step applied to structured LLM extraction records performs competitively with a second LLM reasoning step, while offering full auditability.
+    \item \textbf{H3 (Training-Free Parity):} In-context few-shot extraction paired with structured evidence obligations can reach parity with published fine-tuned benchmarks on the same corpus.
+\end{itemize}
 
-To answer these questions, the pipeline was scored after each 
-stage on 1,200 synthetic epilepsy clinic letters from Gan 
-\emph{et al.}\cite{b3}, each with a single expert-annotated 
-label for the patient's current seizure frequency pattern 
-(Section~\ref{sec:data}). Results are compared with the 
-benchmark Gan \emph{et al.} report for their fine-tuned LLM. 
-The two papers use different held-out samples from the same 
-synthetic corpus; Section~\ref{sec:benchmark} reports the 
-uncertainty this introduces.
+The main contributions of this work are: (1) a transparent, modular information extraction architecture 
+separating extraction and decision; (2) an empirical comparison between deterministic rule-based and 
+LLM-based decision executors; (3) an ablation study identifying the critical components of the extraction 
+prompt (examples, closed label forms, and evidence obligations); and (4) an evaluation across six LLMs 
+assessing performance on consumer-grade hardware.
+
+\subsection{Scope and Paper Organisation}
+
+The study is focused on the extraction of current seizure frequency patterns from the 
+1,200 synthetic epilepsy clinic letters released by Gan \emph{et al.} \cite{b3}. The use of synthetic 
+data provides a controlled, reproducible benchmark with expert gold annotations while avoiding patient 
+privacy constraints; however, validation on real-world, multi-centre electronic health records remains 
+a defined limitation and subject for future work.
+
+The remainder of this paper is organised as follows. Section~\ref{sec:literature} reviews previous 
+approaches to seizure frequency extraction and conceptual framings of clinical IE. Section~\ref{sec:methods} 
+details the dataset, pipeline architecture, and evaluation framework. Section~\ref{sec:results} presents 
+the empirical results, including benchmark comparisons, ablation studies, and model portability checks. 
+Section~\ref{sec:discussion} interprets the findings, discusses clinical implications, and addresses ethical 
+considerations and limitations. Finally, Section~\ref{sec:conclusion} concludes and outlines directions for 
+future research.
 
 \section{Literature Review}
+\label{sec:literature}
 
 The best approach to extract seizure frequency 
 information from epilepsy clinic letters is an active area 
@@ -526,6 +495,7 @@ pipeline after each stage and locate bottlenecks. The
 supporting materials give a fuller account of this process.
 
 \subsection{Evaluation}
+\label{sec:evaluation}
 
 Every paper reporting seizure frequency extraction this 
 decade used F1 as its primary metric, but they differ in 
@@ -1022,8 +992,8 @@ The result depends on the extraction prompt's examples, closed
 label forms and evidence obligation, and it held across six 
 models, including two run on a single laptop GPU.
 
-Automatically extracting seizure frequency patterns from EHRs 
-could make this outcome measure available for large-scale 
+Automatically extracting seizure frequency patterns from 
+electronic health records could make this outcome measure available for large-scale 
 clinical research: cohort identification, retrospective 
 studies and predictive modelling. Future research should evaluate it on real 
 patient data and on a broader set of clinical information 
