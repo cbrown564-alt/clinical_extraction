@@ -5,7 +5,7 @@
 
 # Architecture: how a record moves through each method
 
-This directory answers one question: what happens to a letter, stage by stage, in each of the six implemented task-method runners, and who owns each change. These runners explain mechanism only; they are not the paper's five-cell headline table. Map a runner onto a cell with [cells and runners](../paper/cells_and_runners.md). For cited methods, scores, and claims see [docs/paper/methods.md](../paper/methods.md).
+This directory answers one question: what happens to a letter, stage by stage, in each of the six implemented task-method runners, and who owns each change. These runners explain mechanism only; they are not the paper's five-cell headline table. For cited methods, scores, and claims see [docs/paper/methods.md](../paper/methods.md).
 
 Everything here is generated from the stage manifests in `src/clinical_extraction/architecture/manifests/` and from teaching cases that execute the real pipelines. Do not edit these files by hand - change the manifest or the code, then run `python scripts/build_architecture_docs.py`.
 
@@ -26,7 +26,7 @@ Everything here is generated from the stage manifests in `src/clinical_extractio
 | Gan 2026 | LLM with rules | The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer. This is the source-near wording ablation; the cited Gan extract is gan_llm_extract. | [card](method_cards/gan2026_llm_with_rules.md) |
 | ExECTv2 | Rules only | Nine independent deterministic extractors produce the all-nine prediction, while an explicit four-family projection defines the primary model comparison. | [card](method_cards/exectv2_rules_only.md) |
 | ExECTv2 | LLM only | ExECT LLM only: one model call on the note proposes four-family findings, and the raw-candidate view scores those findings without family repair. | [card](method_cards/exectv2_llm_only.md) |
-| ExECTv2 | LLM pre-post | ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms and named Select rules reconcile those findings into the scored representation. This is the both-extract row (`exect_llm_pre_post`); the paper's cited ExECT peak is cell 3 rule select after `exect_llm_extract`, scored on 4-family micro F1. See docs/paper/methods.md. | [card](method_cards/exectv2_llm_pre_post.md) |
+| ExECTv2 | LLM pre-post | ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms and named Select rules reconcile those findings into the scored representation (hybrid F1). This is the both-extract row; the paper's cited select stop uses later-stage encode/select per docs/paper/methods.md. | [card](method_cards/exectv2_llm_pre_post.md) |
 
 ## Teaching cases
 
@@ -34,7 +34,7 @@ Everything here is generated from the stage manifests in `src/clinical_extractio
 - [Gan 2026 letters](teaching_cases/gan2026.md) - quiet-interval versus cluster grammar, and qualitative frequent versus unknown.
 - [ExECTv2 letters](teaching_cases/exectv2.md) - four-family named windows, and epileptic versus dissociative rates.
 
-- [`GAN-15431`](teaching_cases/gan-15431.md) - Quiet interval and cluster grammar compete; this Grok replay does not assemble the two-part gold.
+- [`GAN-15431`](teaching_cases/gan-15431.md) - Quiet interval and cluster grammar compete; codebook extract does not assemble the two-part gold.
 - [`GAN-2166`](teaching_cases/gan-2166.md) - Qualitative 'frequent' has no countable rate; gold is unknown.
 - [`EA0186`](teaching_cases/ea0186.md) - All four families are present; seizure-frequency windows must stay named, not become a monthly rate.
 - [`EA0057`](teaching_cases/ea0057.md) - Epileptic and dissociative diagnoses share the letter; rates must stay attached to the right one.

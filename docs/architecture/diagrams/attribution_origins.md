@@ -42,28 +42,28 @@ First proposer: the model proposes and selects (gan.llm_with_rules.model_call); 
 ```mermaid
 flowchart LR
   origin_gan2026_llm_with_rules["answer changed"]
-  gan_llm_extract_raw_model_call["Model extracts events and selects the answer"]
-  origin_gan2026_llm_with_rules --> gan_llm_extract_raw_model_call
-  gan_llm_extract_raw_repair_selected_evidence["Repair 1 - evidence-based label repair"]
-  origin_gan2026_llm_with_rules --> gan_llm_extract_raw_repair_selected_evidence
-  gan_llm_extract_raw_repair_monthly_diary["Repair 2 - monthly diary"]
-  origin_gan2026_llm_with_rules --> gan_llm_extract_raw_repair_monthly_diary
-  gan_llm_extract_raw_repair_usual_interval["Repair 3 - usual interval"]
-  origin_gan2026_llm_with_rules --> gan_llm_extract_raw_repair_usual_interval
-  gan_llm_extract_raw_repair_typical_over_ytd["Repair 4 - typical rate over year-to-date"]
-  origin_gan2026_llm_with_rules --> gan_llm_extract_raw_repair_typical_over_ytd
-  gan_llm_extract_raw_repair_breakthrough["Repair 5 - breakthrough seizures"]
-  origin_gan2026_llm_with_rules --> gan_llm_extract_raw_repair_breakthrough
-  gan_llm_extract_raw_repair_non_epileptic["Repair 6 - non-epileptic events"]
-  origin_gan2026_llm_with_rules --> gan_llm_extract_raw_repair_non_epileptic
-  gan_llm_extract_raw_repair_residual_jerk["Repair 7 - residual jerks"]
-  origin_gan2026_llm_with_rules --> gan_llm_extract_raw_repair_residual_jerk
-  gan_llm_extract_raw_repair_post_change_burst["Repair 8 - post-change burst"]
-  origin_gan2026_llm_with_rules --> gan_llm_extract_raw_repair_post_change_burst
-  gan_llm_extract_raw_repair_dated_sequence["Repair 9 - dated sequence"]
-  origin_gan2026_llm_with_rules --> gan_llm_extract_raw_repair_dated_sequence
-  gan_llm_extract_raw_repair_elapsed_anchor["Repair 10 - elapsed since anchor"]
-  origin_gan2026_llm_with_rules --> gan_llm_extract_raw_repair_elapsed_anchor
+  gan_llm_with_rules_model_call["Model extracts events and selects the answer"]
+  origin_gan2026_llm_with_rules --> gan_llm_with_rules_model_call
+  gan_llm_with_rules_repair_selected_evidence["Repair 1 - evidence-based label repair"]
+  origin_gan2026_llm_with_rules --> gan_llm_with_rules_repair_selected_evidence
+  gan_llm_with_rules_repair_monthly_diary["Repair 2 - monthly diary"]
+  origin_gan2026_llm_with_rules --> gan_llm_with_rules_repair_monthly_diary
+  gan_llm_with_rules_repair_usual_interval["Repair 3 - usual interval"]
+  origin_gan2026_llm_with_rules --> gan_llm_with_rules_repair_usual_interval
+  gan_llm_with_rules_repair_typical_over_ytd["Repair 4 - typical rate over year-to-date"]
+  origin_gan2026_llm_with_rules --> gan_llm_with_rules_repair_typical_over_ytd
+  gan_llm_with_rules_repair_breakthrough["Repair 5 - breakthrough seizures"]
+  origin_gan2026_llm_with_rules --> gan_llm_with_rules_repair_breakthrough
+  gan_llm_with_rules_repair_non_epileptic["Repair 6 - non-epileptic events"]
+  origin_gan2026_llm_with_rules --> gan_llm_with_rules_repair_non_epileptic
+  gan_llm_with_rules_repair_residual_jerk["Repair 7 - residual jerks"]
+  origin_gan2026_llm_with_rules --> gan_llm_with_rules_repair_residual_jerk
+  gan_llm_with_rules_repair_post_change_burst["Repair 8 - post-change burst"]
+  origin_gan2026_llm_with_rules --> gan_llm_with_rules_repair_post_change_burst
+  gan_llm_with_rules_repair_dated_sequence["Repair 9 - dated sequence"]
+  origin_gan2026_llm_with_rules --> gan_llm_with_rules_repair_dated_sequence
+  gan_llm_with_rules_repair_elapsed_anchor["Repair 10 - elapsed since anchor"]
+  origin_gan2026_llm_with_rules --> gan_llm_with_rules_repair_elapsed_anchor
 ```
 
 ## ExECTv2 - Rules only

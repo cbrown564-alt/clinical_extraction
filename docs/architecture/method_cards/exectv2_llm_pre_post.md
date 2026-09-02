@@ -12,11 +12,11 @@ Stages that may change clinical meaning: 7
 
 ## One sentence
 
-> ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms and named Select rules reconcile those findings into the scored representation. This is the both-extract row (`exect_llm_pre_post`); the paper's cited ExECT peak is cell 3 rule select after `exect_llm_extract`, scored on 4-family micro F1. See docs/paper/methods.md.
+> ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms and named Select rules reconcile those findings into the scored representation (hybrid F1). This is the both-extract row; the paper's cited select stop uses later-stage encode/select per docs/paper/methods.md.
 
 ## Sixty seconds
 
-ExECT LLM pre-post (`exect_llm_pre_post`, alias `exect_llm_with_rules`) uses its own request (suggested-evidence scan included), separate from ExECT LLM only (`exect_llm_only`). One structured call per letter asks the named model for candidate findings across Diagnosis, Seizure Frequency, Prescription, and Investigations. No deterministic extractor proposes findings and none is unioned in - that is the family-ownership rule from decision 0040. After the call, code parses Compact events and may make one format-only retry, projects the model's seizure-frequency facts into the required state representation, and suppresses a narrowly defined class of unsupported unknown states. Raw and scored findings are both registered in a finding store, so every later change stays attributable. Then one family transform runs per entity, and the four behave differently: Diagnosis applies the active standard dictionary to model findings; Seizure Frequency is a thin assembly over the earlier projection; Prescription applies dictionary-driven regimen processing with bounded correction; Investigations is a behavior-preserving adapter while its residual providers remain prompt-side. A named, independently ablatable Select stack then corrects source-local specificity, regimen scope, duplicate or titration selection, seizure-type identity, and explicit cross-family seizure-type ownership. Every final finding must carry exact source evidence, and the scored views are then materialized. Hybrid-call raw is not LLM-only. An unrepaired pre-post body is an extract stop, not the paper's cited cell 3 select stop after `exect_llm_extract`.
+ExECT LLM pre-post (`exect_llm_pre_post`, alias `exect_llm_with_rules`) uses its own request (suggested-evidence scan included), separate from ExECT LLM only (`exect_llm_only`). One structured call per letter asks the named model for candidate findings across Diagnosis, Seizure Frequency, Prescription, and Investigations. No deterministic extractor proposes findings and none is unioned in - that is the family-ownership rule from decision 0040. After the call, code parses Compact events and may make one format-only retry, projects the model's seizure-frequency facts into the required state representation, and suppresses a narrowly defined class of unsupported unknown states. Raw and scored findings are both registered in a finding store, so every later change stays attributable. Then one family transform runs per entity, and the four behave differently: Diagnosis applies the active standard dictionary to model findings; Seizure Frequency is a thin assembly over the earlier projection; Prescription applies dictionary-driven regimen processing with bounded correction; Investigations is a behavior-preserving adapter while its residual providers remain prompt-side. A named, independently ablatable Select stack then corrects source-local specificity, regimen scope, duplicate or titration selection, seizure-type identity, and explicit cross-family seizure-type ownership. Every final finding must carry exact source evidence, and the scored views are then materialized. Hybrid-call raw is not LLM-only. An unrepaired pre-post body is an extract stop, not the paper's cited select stop.
 
 ## The five recall questions
 
@@ -25,7 +25,7 @@ ExECT LLM pre-post (`exect_llm_pre_post`, alias `exect_llm_with_rules`) uses its
 | What enters? | ExectLetter - see `exect.llm_pre_post.build_prompt` |
 | Who first proposes the clinical answer? | the named model proposes all four families (exect.llm_pre_post.model_call); four family transforms and the named Select-rule stack may change findings afterwards |
 | Which later stages may change clinical meaning? | `exect.llm_pre_post.project_and_gate`, `exect.llm_pre_post.sf_state_projection`, `exect.llm_pre_post.sf_unknown_suppression`, `exect.llm_pre_post.lens.diagnosis`, `exect.llm_pre_post.lens.prescription`, `exect.llm_pre_post.select_rules` |
-| What final representation is scored? | A PredictedLetter of four-family mentions materialized into named score views; paper primary is 4-family micro F1 (`clinical_inventory_unit_keys`); `clinical_headline` is the historical Compact/headline view id. |
+| What final representation is scored? | A PredictedLetter of four-family mentions materialized into named score views; the primary view is clinical fact recovery (`clinical_headline`, hybrid F1). |
 | What evidence shows whether each component helped or harmed? | `docs/paper/decisions/exect-compact-is-the-cited-hybrid.md`, `docs/paper/methods.md`, `docs/paper/claims.md` |
 
 ## Stages
@@ -289,14 +289,14 @@ Build the named prediction views - raw candidate, post-lens assembled findings, 
 |  | Type | Example |
 | --- | --- | --- |
 | In | assembled findings | four families of reconciled findings |
-| Out | named FindingViewResult views | views including `clinical_inventory_unit_keys` (paper primary) and `clinical_headline` (historical Compact/headline view id) |
+| Out | named FindingViewResult views | a clinical fact recovery (`clinical_headline`) view holding the unit keys |
 
 > One set of findings, several numbers. Naming the view is part of naming the result.
 
 - Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/views.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/views.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.views:build_scoring_views`)
 - Test: [`tests/test_exectv2_scoring_headlines.py`](../../../tests/test_exectv2_scoring_headlines.py)
 - Proven in a trace by: `prediction_surfaces`
-- Paper wording: Findings are materialized into named scoring views; the paper primary is 4-family micro F1 on `clinical_inventory_unit_keys`.
+- Paper wording: Findings are materialized into named scoring views; the primary view is clinical fact recovery (`clinical_headline`).
 
 ### 15. Score against gold
 
@@ -306,8 +306,8 @@ Match the materialized view's mentions to gold annotations and report per-entity
 
 |  | Type | Example |
 | --- | --- | --- |
-| In | materialized view plus gold annotations | 4-family micro F1 view (`clinical_inventory_unit_keys`) against the four-family gold |
-| Out | OverallScore plus per-entity EntityScore | a 4-family micro F1 overall score |
+| In | materialized view plus gold annotations | clinical fact recovery view against the four-family gold |
+| Out | OverallScore plus per-entity EntityScore | a clinical fact recovery overall F1 |
 
 - Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/match.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/match.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match:score_overall`)
 - Test: [`tests/test_exectv2_scoring_match_fidelity.py`](../../../tests/test_exectv2_scoring_match_fidelity.py)
@@ -343,7 +343,7 @@ These paths exist and are easy to mistake for this runner. They are named here s
 | Path | Role | Why it is not this runner |
 | --- | --- | --- |
 | `src/clinical_extraction/operational/exect.py` | operational wrapper | Adds endpoint handling and live assembly around the same stages. Not a separate method; it must not drift from this manifest. |
-| `docs/paper/decisions/exect-compact-is-the-cited-hybrid.md` | paper identity | This runner is the both-extract row (`exect_llm_pre_post` / `exect_llm_with_rules`). The cited paper peak is cell 3 rule select after `exect_llm_extract`; see docs/paper/methods.md. |
+| `docs/paper/decisions/exect-compact-is-the-cited-hybrid.md` | paper identity | This runner is the both-extract row (`exect_llm_pre_post` / `exect_llm_with_rules`). The paper's cited select stop uses later-stage encode/select; see docs/paper/methods.md. |
 | `docs/history/decisions.md` | historical pointer | 0040/0041/0045 family-ownership and no-joint locks. Recover the full files from git. |
 
 ## Executable trace

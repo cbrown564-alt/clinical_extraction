@@ -12,67 +12,67 @@ Node shape carries the ownership. Rounded nodes are model-owned. Rectangles are 
 ```mermaid
 flowchart TD
   letter([source letter])
-  gan_llm_extract_raw_build_prompt["Build the structured-events prompt"]
-  letter --> gan_llm_extract_raw_build_prompt
-  gan_llm_extract_raw_model_call("Model extracts events and selects the answer")
-  gan_llm_extract_raw_build_prompt --> gan_llm_extract_raw_model_call
-  gan_llm_extract_raw_json_schema_repair["Repair JSON dialect and payload shape"]
-  gan_llm_extract_raw_model_call --> gan_llm_extract_raw_json_schema_repair
-  gan_llm_extract_raw_format_only_retry["Format-only retry local models"]
-  gan_llm_extract_raw_json_schema_repair --> gan_llm_extract_raw_format_only_retry
-  gan_llm_extract_raw_schema_validation{{"Validate the extraction schema"}}
-  gan_llm_extract_raw_format_only_retry --> gan_llm_extract_raw_schema_validation
-  gan_llm_extract_raw_normalize_events["Normalize every event"]
-  gan_llm_extract_raw_schema_validation --> gan_llm_extract_raw_normalize_events
-  gan_llm_extract_raw_resolve_label["Resolve the label from the model's selection"]
-  gan_llm_extract_raw_normalize_events --> gan_llm_extract_raw_resolve_label
-  gan_llm_extract_raw_repair_selected_evidence["Repair 1 - evidence-based label repair"]
-  gan_llm_extract_raw_resolve_label --> gan_llm_extract_raw_repair_selected_evidence
-  gan_llm_extract_raw_repair_monthly_diary["Repair 2 - monthly diary"]
-  gan_llm_extract_raw_repair_selected_evidence --> gan_llm_extract_raw_repair_monthly_diary
-  gan_llm_extract_raw_repair_usual_interval["Repair 3 - usual interval"]
-  gan_llm_extract_raw_repair_monthly_diary --> gan_llm_extract_raw_repair_usual_interval
-  gan_llm_extract_raw_repair_typical_over_ytd["Repair 4 - typical rate over year-to-date"]
-  gan_llm_extract_raw_repair_usual_interval --> gan_llm_extract_raw_repair_typical_over_ytd
-  gan_llm_extract_raw_repair_breakthrough["Repair 5 - breakthrough seizures"]
-  gan_llm_extract_raw_repair_typical_over_ytd --> gan_llm_extract_raw_repair_breakthrough
-  gan_llm_extract_raw_repair_non_epileptic["Repair 6 - non-epileptic events"]
-  gan_llm_extract_raw_repair_breakthrough --> gan_llm_extract_raw_repair_non_epileptic
-  gan_llm_extract_raw_repair_residual_jerk["Repair 7 - residual jerks"]
-  gan_llm_extract_raw_repair_non_epileptic --> gan_llm_extract_raw_repair_residual_jerk
-  gan_llm_extract_raw_repair_post_change_burst["Repair 8 - post-change burst"]
-  gan_llm_extract_raw_repair_residual_jerk --> gan_llm_extract_raw_repair_post_change_burst
-  gan_llm_extract_raw_repair_dated_sequence["Repair 9 - dated sequence"]
-  gan_llm_extract_raw_repair_post_change_burst --> gan_llm_extract_raw_repair_dated_sequence
-  gan_llm_extract_raw_repair_elapsed_anchor["Repair 10 - elapsed since anchor"]
-  gan_llm_extract_raw_repair_dated_sequence --> gan_llm_extract_raw_repair_elapsed_anchor
-  gan_llm_extract_raw_scorable_label_check{{"Check the label is scorable"}}
-  gan_llm_extract_raw_repair_elapsed_anchor --> gan_llm_extract_raw_scorable_label_check
-  gan_llm_extract_raw_evidence_containment{{"Check evidence is an exact substring"}}
-  gan_llm_extract_raw_scorable_label_check --> gan_llm_extract_raw_evidence_containment
-  gan_llm_extract_raw_score["Project to Purist and Pragmatic scoring"]
-  gan_llm_extract_raw_evidence_containment --> gan_llm_extract_raw_score
+  gan_llm_with_rules_build_prompt["Build the structured-events prompt"]
+  letter --> gan_llm_with_rules_build_prompt
+  gan_llm_with_rules_model_call("Model extracts events and selects the answer")
+  gan_llm_with_rules_build_prompt --> gan_llm_with_rules_model_call
+  gan_llm_with_rules_json_schema_repair["Repair JSON dialect and payload shape"]
+  gan_llm_with_rules_model_call --> gan_llm_with_rules_json_schema_repair
+  gan_llm_with_rules_format_only_retry["Format-only retry local models"]
+  gan_llm_with_rules_json_schema_repair --> gan_llm_with_rules_format_only_retry
+  gan_llm_with_rules_schema_validation{{"Validate the extraction schema"}}
+  gan_llm_with_rules_format_only_retry --> gan_llm_with_rules_schema_validation
+  gan_llm_with_rules_normalize_events["Normalize every event"]
+  gan_llm_with_rules_schema_validation --> gan_llm_with_rules_normalize_events
+  gan_llm_with_rules_resolve_label["Resolve the label from the model's selection"]
+  gan_llm_with_rules_normalize_events --> gan_llm_with_rules_resolve_label
+  gan_llm_with_rules_repair_selected_evidence["Repair 1 - evidence-based label repair"]
+  gan_llm_with_rules_resolve_label --> gan_llm_with_rules_repair_selected_evidence
+  gan_llm_with_rules_repair_monthly_diary["Repair 2 - monthly diary"]
+  gan_llm_with_rules_repair_selected_evidence --> gan_llm_with_rules_repair_monthly_diary
+  gan_llm_with_rules_repair_usual_interval["Repair 3 - usual interval"]
+  gan_llm_with_rules_repair_monthly_diary --> gan_llm_with_rules_repair_usual_interval
+  gan_llm_with_rules_repair_typical_over_ytd["Repair 4 - typical rate over year-to-date"]
+  gan_llm_with_rules_repair_usual_interval --> gan_llm_with_rules_repair_typical_over_ytd
+  gan_llm_with_rules_repair_breakthrough["Repair 5 - breakthrough seizures"]
+  gan_llm_with_rules_repair_typical_over_ytd --> gan_llm_with_rules_repair_breakthrough
+  gan_llm_with_rules_repair_non_epileptic["Repair 6 - non-epileptic events"]
+  gan_llm_with_rules_repair_breakthrough --> gan_llm_with_rules_repair_non_epileptic
+  gan_llm_with_rules_repair_residual_jerk["Repair 7 - residual jerks"]
+  gan_llm_with_rules_repair_non_epileptic --> gan_llm_with_rules_repair_residual_jerk
+  gan_llm_with_rules_repair_post_change_burst["Repair 8 - post-change burst"]
+  gan_llm_with_rules_repair_residual_jerk --> gan_llm_with_rules_repair_post_change_burst
+  gan_llm_with_rules_repair_dated_sequence["Repair 9 - dated sequence"]
+  gan_llm_with_rules_repair_post_change_burst --> gan_llm_with_rules_repair_dated_sequence
+  gan_llm_with_rules_repair_elapsed_anchor["Repair 10 - elapsed since anchor"]
+  gan_llm_with_rules_repair_dated_sequence --> gan_llm_with_rules_repair_elapsed_anchor
+  gan_llm_with_rules_scorable_label_check{{"Check the label is scorable"}}
+  gan_llm_with_rules_repair_elapsed_anchor --> gan_llm_with_rules_scorable_label_check
+  gan_llm_with_rules_evidence_containment{{"Check evidence is an exact substring"}}
+  gan_llm_with_rules_scorable_label_check --> gan_llm_with_rules_evidence_containment
+  gan_llm_with_rules_score["Project to Purist and Pragmatic scoring"]
+  gan_llm_with_rules_evidence_containment --> gan_llm_with_rules_score
 
-  class gan_llm_extract_raw_build_prompt transport_or_schema;
-  class gan_llm_extract_raw_model_call clinical_meaning;
-  class gan_llm_extract_raw_json_schema_repair transport_or_schema;
-  class gan_llm_extract_raw_format_only_retry transport_or_schema;
-  class gan_llm_extract_raw_schema_validation validation_gate;
-  class gan_llm_extract_raw_normalize_events representation;
-  class gan_llm_extract_raw_resolve_label representation;
-  class gan_llm_extract_raw_repair_selected_evidence clinical_meaning;
-  class gan_llm_extract_raw_repair_monthly_diary clinical_meaning;
-  class gan_llm_extract_raw_repair_usual_interval clinical_meaning;
-  class gan_llm_extract_raw_repair_typical_over_ytd clinical_meaning;
-  class gan_llm_extract_raw_repair_breakthrough clinical_meaning;
-  class gan_llm_extract_raw_repair_non_epileptic clinical_meaning;
-  class gan_llm_extract_raw_repair_residual_jerk clinical_meaning;
-  class gan_llm_extract_raw_repair_post_change_burst clinical_meaning;
-  class gan_llm_extract_raw_repair_dated_sequence clinical_meaning;
-  class gan_llm_extract_raw_repair_elapsed_anchor clinical_meaning;
-  class gan_llm_extract_raw_scorable_label_check validation_gate;
-  class gan_llm_extract_raw_evidence_containment validation_gate;
-  class gan_llm_extract_raw_score benchmark_projection;
+  class gan_llm_with_rules_build_prompt transport_or_schema;
+  class gan_llm_with_rules_model_call clinical_meaning;
+  class gan_llm_with_rules_json_schema_repair transport_or_schema;
+  class gan_llm_with_rules_format_only_retry transport_or_schema;
+  class gan_llm_with_rules_schema_validation validation_gate;
+  class gan_llm_with_rules_normalize_events representation;
+  class gan_llm_with_rules_resolve_label representation;
+  class gan_llm_with_rules_repair_selected_evidence clinical_meaning;
+  class gan_llm_with_rules_repair_monthly_diary clinical_meaning;
+  class gan_llm_with_rules_repair_usual_interval clinical_meaning;
+  class gan_llm_with_rules_repair_typical_over_ytd clinical_meaning;
+  class gan_llm_with_rules_repair_breakthrough clinical_meaning;
+  class gan_llm_with_rules_repair_non_epileptic clinical_meaning;
+  class gan_llm_with_rules_repair_residual_jerk clinical_meaning;
+  class gan_llm_with_rules_repair_post_change_burst clinical_meaning;
+  class gan_llm_with_rules_repair_dated_sequence clinical_meaning;
+  class gan_llm_with_rules_repair_elapsed_anchor clinical_meaning;
+  class gan_llm_with_rules_scorable_label_check validation_gate;
+  class gan_llm_with_rules_evidence_containment validation_gate;
+  class gan_llm_with_rules_score benchmark_projection;
   classDef clinical_meaning fill:#fbe9e7,stroke:#c0392b,stroke-width:2px;
   classDef representation fill:#f4f6f8,stroke:#7f8c8d;
   classDef transport_or_schema fill:#fbfbfb,stroke:#bdc3c7;
