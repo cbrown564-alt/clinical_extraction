@@ -11,7 +11,10 @@
 \usepackage{array}
 \usepackage{subcaption}
 \usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{hyperref}
 \usepackage{listings}
+
 
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 \lstset{
@@ -20,14 +23,664 @@
   breakatwhitespace=false,
   columns=fullflexible,
   keepspaces=true,
-  showstringspaces=false
+  showstringspaces=false,
+  literate={≤}{{$\leq$}}1
 }
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+    
 \begin{document}
 
 \title{Supporting Materials\\}
+
+\section{Introduction}
+
+This is for...
+
+
+\section{Extended Literature Review}
+
+\subsection{Past Results Summary}
+
+\subsection{Rules, BERT and LLMs Results Comparison}
+
+A number of methods have shown performance at 
+or above human level. Fonferko-Shadrach \emph{et al.} 
+reported the annotators found annotation difficult 
+and seizure frequency was the most difficult. This was 
+reflected in the inter annotator agreement (IAA) score
+of 0.47 (moderate agreement) even after multiple phases 
+of development of the guidelines to meet the annotators' 
+needs.  Xie \emph{et al.} reported an overall pairwise F1
+score of 0.44 on a task focused extracting seizure 
+freedom, frequency and most recent seizure
+statements and recommend double or triple annotation. 
+This is a long-standing challenge in the field, as Grisham 
+and Sundheim noted in 1996 ' it proved remarkably difficult
+to formulate guidelines which were reasonably complete 
+and consistent'. Despite levels of IAA of 0.5, the literature 
+commonly reports that rules-based and LLM-based 
+methods achieving F1 scores of 0.8 and above. 
+
+
+
+\subsection{Difference between Bert and LLMs}
+
+Both BERT and LLMs are 
+based on the same underlying transformers architecture, but
+LLMs are distinguished primarily by the fact they are trained
+on massive datasets with massive parameter counts which 
+led to the emergent capability of in-context learning\cite{b11}.
+This capability has been shown to transfer to clinical information
+extraction among many other domains, and it has been shown
+that giving the LLM clear instructions and examples can replace
+the need for complex post-processing\cite{b12}. This paper 
+explores whether LLM instructions and examples can be 
+combined with complex post-processing to replace the need 
+for fine-tuning.
+
+\subsection{Modular Pipelines}
+
+For this seizure frequency task, determining which one fact 
+among many is correct is the challenge. Sometimes that 
+requires grouping together multiple related facts into a 
+single answer, e.g. '1 in June, 0 in July, 2 in August' 
+becomes '3 in 3 months'. Sometimes it requires 
+determining which fact takes precedence when there are 
+multiple competing facts with varying degrees of specificity 
+and certainty e.g. 'She may remain seizure-free for up to 
+4 month, but then will experience clusters of 5 seizures in 
+a single day'. Different annotation guidelines would record 
+ambiguous facts like these differently. Distinct stages in the
+pipeline make those choices configurable and explicit.
+
+This complexity is a challenge for human annotators 
+also; Fonferko-Shadrach \emph{et al.} described seizure
+frequency as the most difficult category to annotate
+and their inter-annotator agreement of 0.47 shows 
+annotators often disagreed about how to represent
+seizure frequency patterns\cite{b4}.
+
+\subsection{Multi-Agent Systems}
+
+\subsection{Complexity of Clinical Narratives}
+
+\subsection{Seizure Frequency vs. Inventory}
+
+\section{Project Lifecycle}
+
+The project lifecycle is divided up into five key stages:
+planning, development, implementation, testing and
+evaluation. The sections below describe the key 
+decisions made, the rationale behind them and the
+information sources they were based on. As much 
+as possible, the events written in chronological order.
+\subsection{Planning}
+
+There are two key documents in the planning 
+phase: 
+
+\begin{enumerate}
+\item The project brief, created by my supervisor.
+\item The problem specification and project plan, 
+created by me.
+\end{enumerate}
+
+The project brief outlines the initial scope of the
+project. The problem specification and project
+plan refines the scope, specifies the research 
+objectives and describes the methods used to
+achieve them. The project brief was:
+
+\begin{quote}
+Instead of training models, this project builds a 
+training-free (or minimal-training) multi-agent 
+extraction system that reads epilepsy letters and 
+outputs structured fields (e.g., ASM, seizure 
+type/frequency, investigations, epilepsy 
+syndrome/type). The student will design roles 
+such as: (a) Section/Timeline Agent (segments 
+text, builds timeline), (b) Field Extractor Agents 
+(one per field group), (c) Verification Agent 
+(checks evidence spans, contradictions, 
+missingness), and (d) Aggregator Agent 
+(produces final JSON + confidence + citations 
+to text spans). The key research goal is 
+reliability: compare single-prompt extraction 
+vs multi-agent extraction under the same 
+budget constraints, and test improvements 
+from self-consistency, evidence requirements 
+(“answer only if supported by quote”), and 
+structured output validation. Evaluation uses 
+field-level accuracy/F1,  and robustness tests. 
+Data can be synthetic or de-identified samples 
+if available. Deliverables: an end-to-end agentic 
+pipeline, evaluation harness, and a dissertation 
+focused on engineering + empirical study of 
+reliability.
+\end{quote}
+
+The deliverables are a narrow specification of
+what a successful project would look like:
+
+\begin{enumerate}
+\item An end-to-end agentic pipeline.
+\item An evaluation harness.
+\item A dissertation focused on engineering + empirical study of reliability.
+\end{enumerate}
+
+The type of data this would be applied to was
+narrowly defined as epilepsy letters, but it
+was undetermined whether the specific data 
+source was synthetic or de-identified samples. 
+This was one key decision to be agreed 
+in the project kick-off meeting.
+
+The research would compare a single-prompt
+extraction vs. multi-agent extraction, and the
+multi-agent system included a number of 
+initial suggestions such as verification agent
+and aggregator agent. The precise 
+implementation of the multi agent system would be
+defined as the research progresses, guided by best 
+practices in the literature and the results from 
+empirical experiments.
+
+In the initial project kick-off meeting it was 
+agreed that the specific data source used
+would be a set of 1,500 synthetic clinical 
+letters that the supervisor had access to. 
+As these were synthetic letters, there would
+be no need to get specific ethics approval 
+to use for research purposes. 
+
+The problem specification and project plan was 
+uploaded to the university Canvas site on the
+5$^{th}$ June 2026. This is a direct extract 
+from the methods section:
+
+\begin{quote}
+\vspace{0.2em}
+There are two primary data sources in this project:
+
+\vspace{0.2em}
+\begin{itemize}
+\item 1,500 synthetic clinical letters and structured labels from Gan \emph{et. al} \cite{b1}
+\item 200 synthetic clinical letters and structured labels from Fonferko-Shadrach \emph{et. al}\cite{b2}
+\end{itemize}
+
+\vspace{0.2em}
+The project will use LLMs as the core AI tool, using both open (e.g. Qwen 3.6) and closed
+(e.g. GPT 5.4) models. The research will involve building an agent harness around the
+model that enables it to ingest clinical letters and prompt instructions, produce a
+structured output, and have that output validated and evaluated.
+
+\vspace{0.2em}
+The research will be empirical in nature and focus primarily on assessing the quality,
+reliability and validity of the outputs. Cost, latency, data schema complexity and
+evidence specificity will be key experimental variables tested.
+
+\vspace{0.2em}
+Evaluation will take place in three key forms: comparing the accuracy (F1 score) of the
+outputs vs. the ground-truth labels from the two data sources, assessing the validity of
+the structured data schema created, and assessing the validity of the evidence cited. A
+series of ablations will be conducted to isolate the impact of different components of
+the agent harness.
+
+\vspace{0.2em}
+The F1 score evaluated on a set of ground-truth labels is the de-facto standard for
+evaluating AI models on how well they can complete a classification task. Evaluating
+the model on two different datasets optimised for two different tasks effectively tests
+the flexibility of the system. 
+
+\end{quote}
+
+The ExECTv2 dataset \cite{b2} was used extensively
+as per the original plan. The pipeline was built, 
+experiments were ran and results were analysed in 
+depth and benchmarked against the prior results. 
+However, when the time came to write the paper
+it became clear that writing about two datasets
+with different annotation policies, evaluation measures,
+error profiles and sample sizes required the reader
+to hold too much information in mind. 
+
+As a result, the empirical analysis in the paper and in these 
+materials focus exclusively on the seizure frequency
+extraction task. However, we used the pipeline 
+built for ExECTv2 to extract diagnoses, medications
+and investigations from the main dataset of 1,500
+synthetic letters as a feasibility study. Examples of that
+are shown in the appendices here, and some of the 
+design choices for the seizure frequency extraction
+pipeline are directly informed by designing a modular
+system that can be applied to both tasks. Results 
+benchmarked against the ExECTv2 dataset will
+be published in a separate paper.
+
+The following sections describe how the rest of this 
+plan was implemented.
+
+\subsection{Development}
+
+This section explains how the initial project proposal was 
+translated into a focused and testable research approach. 
+It records the evidence, design choices, and trade-offs 
+that led to the final method.
+
+\subsubsection{Original Design Requirements}
+
+The original brief contained a series of key design 
+requirements for the pipeline. It must:
+
+\begin{enumerate}
+\item Ingest epilepsy letters
+\item Output validated structured fields 
+\item Contain verified evidence citations
+\item Produce this in an aggregated JSON
+\end{enumerate}
+
+These design requirements were tightly coupled to a 
+multi-agent framework, e.g using a \emph{Verification Agent} 
+to check evidence spans and an \emph{Aggregator Agent}
+to produce the final JSON and citations. 
+
+The literature review showed that multi-agent systems
+are particularly useful for complex tasks \cite{b21} and
+they particularly on long-context tasks \cite{b22}. 
+However, research also shows that single-agent systems
+are as effective when they are given equal compute 
+and multi-agent systems create new failure modes 
+as errors propagate throughout the system\cite{b22}.
+
+For this task, the full epilepsy letter and instructions 
+fit comfortably in the LLM's context window so there
+is no need for convoluted multi-hop pipelines or 
+document splitting that multi-agent systems 
+performed particularly well on\cite{b19}. Thus, a 
+multi-agent system can not be justified on that basis.
+
+It is less clear whether this task is sufficiently complex
+to justify a multi-agent system. Past research has 
+shown that LLMs struggle with temporal logic and 
+numerical logic, and both occur in this task. It is
+also a task that human annotators struggle to do
+reliably and consistently. This suggests the task 
+is at least somewhat complex and a multi-agent
+system is justified on that basis.
+
+However, it is important that the each agent is given
+a sufficiently complex task to justify the added system
+complexity. A key goal of the research is to design 
+a reliable system. A reliable system is one that 
+contains the minimum amount of complexity 
+necessary to function. More components means 
+creates more failure modes, and in a sequential 
+process those errors propagate and multiply at 
+each step. 
+
+\subsubsection{Deterministic Code for Deterministic Tasks}
+
+A key design choice early on was to simplify. Any
+task that can be reliably completed by a deterministic
+system (code) instead of a probabilistic system (LLMs)
+should be done deterministically. 
+
+Evidence verification and schema validation are two 
+tasks that code can do reliably and efficiently. Initial 
+experiments showed that LLMs can not do this task 
+reliably; they introduce as many new schema errors 
+as they repair, and they occasionally miss invalid 
+evidence. However even if they could do the task
+reliably, code already does this at a much lower
+cost and latency. 
+
+Therefore a dedicated Aggregator Agent to produce
+the final JSON with text citations and a dedicated 
+Verification Agent to check evidence spans were 
+removed from the design after initial experiments.
+A Field Extractor agent was no longer relevant as 
+the task was limited to a single field, seizure 
+frequency. Initial experiments showed that a 
+Section/Timeline agent was a net-negative 
+contribution because correct seizure frequency 
+references were not always in the dedicated 
+seizure frequency section, and splitting up the 
+text encouraged the LLM to select wrong answers
+more frequently.
+
+\subsubsection{Pipeline Design Review}
+
+After initial experiments, all four of the original
+proposed LLM agents had been ruled out because
+they were now either invalid or empirically performed
+worse than a single LLM. This led to a major review
+of the pipeline design. 
+
+Comprehensive error analysis showed that the LLM
+was consistently finding valid seizure frequency
+patterns, providing exact evidence from the text
+and often choosing defensible answers based 
+on the instructions. It did not another agent to
+check its evidence or structure it into JSON, it 
+needed cleaner task separation. 
+
+The task of extracting a single seizure frequency
+label is composed of three sub-tasks: finding 
+relevant mentions of seizure frequency in the 
+text, encoding that information into the form 
+the gold-standard labels expect, and applying the
+correct policy to choose which of those encoded
+labels is the correct seizure frequency pattern.
+
+The original multi-agent pipeline separated
+mechanical tasks across multiple LLMs; one
+agent splits the evidence, another checks
+the evidence, another aggregates it together.
+It would be preferable if a single LLM could
+do all of those tasks at once. This would require
+the LLM to generate a much richer intermediate
+schema. Rather than extracting a single 
+seizure frequency label, the LLM would extract
+every relevant seizure frequency pattern as 
+a distinct entity in a nested JSON, with exact
+evidence for every entity, make an initial 
+proposal. 
+
+Using this richer schema, a subsequent LLM 
+could then review the evidence and apply the correct 
+policy in hard cases. This would reframe the
+multi-agent pipeline into separate agents for
+separate clinical tasks instead of mechanical
+tasks. This richer schema and three stage 
+pipeline also makes it possible for deterministic
+rules to apply policies to the evidence generated
+by the LLM to select the final answer.
+
+Past research shows that deterministic code
+can reliably normalise seizure frequency values,
+and hybrid LLM and rules systems can outperform
+LLMs alone. Rules-based systems 
+struggled with seizure frequency extraction more
+than medications, but they still performed better
+than human experts. Deterministic code already
+performed schema validation and evidence 
+verification more reliably than LLMs, so maybe
+there was a role for more deterministic code in 
+the pipeline.
+
+\subsubsection{Final Pipeline Design}
+
+The final outcome of this design review was 
+a modular pipeline that could use either LLMs
+or rules at each of the three three stages 
+\texttt{find}, \texttt{encode} and \texttt{select}. 
+Three methods would be implemented:
+a multi-agent pipeline, a purely rules-based system 
+and a hybrid LLM and rules system. 
+
+The original project brief required a pipeline that
+could ingest epilepsy letters, output validated 
+structured fields, contain verified evidence citations
+and produce this in an aggregated JSON. It required
+an evaluation harness and a dissertation focused 
+on engineering and an empirical study of reliability.
+This design meets all of these requirements. 
+
+The three method comparison strengthens the 
+empirical core and deepens the focus on reliability 
+by using the evaluation harness to determine
+whether a multi-agent pipeline is the most reliable 
+pipeline.
+
+\subsection{Implementation}
+
+This section describes the system that implemented 
+the development decisions introduced above. The 
+implementation was designed to produce a structured, 
+reproducible account of current seizure frequency from 
+a clinical letter, while retaining the evidence and 
+intermediate choices needed to inspect how an answer 
+was reached. It describes the reusable pipeline and the 
+controlled comparison design; performance results and 
+the findings of individual ablations are reported in the 
+evaluation section.
+
+Each implementation receives a synthetic clinical letter 
+and produces a structured seizure frequency record. The 
+final record contains the submitted frequency label, direct 
+supporting evidence, and the metadata needed to identify 
+the method, model configuration, data split, and scoring 
+policy used. This design makes the final answer usable for 
+benchmark evaluation without reducing the whole process 
+to an opaque single-label extraction.
+
+The same overall record structure is used across the 
+implemented approaches. Rules-only, LLM-only, and hybrid 
+methods differ in who performs particular clinical extraction 
+stages, rather than in the basic representation of a case or 
+the way outputs are stored and checked. This common 
+structure makes it possible to compare methods while 
+preserving the intermediate evidence required for replay 
+and inspection.
+
+The pipeline uses a richer intermediate record than the 
+final benchmark label. During extraction, it can retain 
+multiple candidate seizure frequency events, their source 
+spans, raw wording, time information, and an initial 
+proposed answer. This is important because a letter 
+may contain several plausible statements: historical 
+and current rates, periods without seizures, isolated 
+breakthrough events, clusters, and uncertain or 
+qualitative descriptions. Preserving the alternatives avoids 
+losing information before the annotation policy has been 
+applied.
+
+The record distinguishes the source wording from its 
+encoded representation and from the final selected 
+answer. A later selection stage can revise the proposed 
+answer while retaining the evidence on which 
+the original proposal was based. The final output is 
+validated against the expected schema, while source 
+data and raw model output are retained separately 
+from format repair and clinical policy decisions.
+
+The implemented pipeline divides seizure frequency 
+extraction into three stages. \texttt{Find} collects candidate 
+events and their evidence from the letter. \texttt{Encode} 
+represents an already identified candidate in the required 
+structured form, including the benchmark's label 
+conventions. \texttt{Select} applies the policy for determining 
+which candidate best represents the patient's current 
+seizure frequency pattern. This division makes explicit 
+that locating a relevant statement, writing it in the desired 
+form, and choosing the correct final statement are 
+different tasks.
+
+Each stage produces an inspectable output. This is 
+particularly useful when the selected answer changes: the change can 
+be attributed to the evidence found, its encoding, or the 
+final policy decision. It also permits later stages to work from 
+the same saved candidate record, rather than requiring 
+every alternative implementation to make a new model call.
+This significantly sped up the optimisation process.
+
+Deterministic components implement tasks for which explicit, 
+reproducible handling is appropriate. These include parsing 
+and schema repair, validation of required evidence fields, 
+aggregation of the final record, and rules for normalising 
+frequency expressions into the task's closed vocabulary. The 
+implementation keeps format-only repair, benchmark 
+representation, and clinically meaningful policy rules distinct 
+so that a change to one does not silently alter another.
+
+Rules also provide an implemented option at each 
+substantive stage. They can identify seizure-frequency 
+statements, encode candidate events, and apply the 
+final selection policy. Their authority is recorded by rule 
+type: for example, whether a rule merely standardises a 
+representation, blocks an unsupported candidate, rewrites 
+a submitted concept, or reselects between already found 
+events. This makes deterministic processing an explicit 
+part of the method rather than unreported post-processing.
+
+The LLM implementation uses structured prompts that 
+ask the model to return a record containing candidate 
+seizure-frequency events, evidence, and a proposed 
+answer. The prompt can preserve the original 
+wording or request an output already expressed in the 
+target vocabulary, depending on the implementation 
+being examined. Structured parsing and validation then 
+convert the response into the common intermediate 
+record.
+
+LLMs can be assigned to \texttt{find}, \texttt{encode}, \texttt{select}. 
+At \texttt{find}, an LLM identifies candidate 
+events and evidence. At \texttt{encode}, it maps an already 
+represented candidate to the required label form. At \texttt{select}, 
+it adjudicates between competing candidates under the 
+same policy that deterministic rules may apply. This 
+stage-assignment approach provides a controlled way to 
+compare rules and LLMs on the substantive clinical extraction 
+decisions, while deterministic validation and output assembly
+remain common infrastructure.
+
+\subsection{Testing}
+
+Testing verified that the implemented system and research 
+controls behaved as intended before its comparative results 
+were interpreted.
+
+Data-loading tests verify that source records, gold labels, 
+evidence references, quality flags, and label normalisation 
+are preserved. The test suite also checks that the fixed
+split manifest contains the intended disjoint training, 
+development, and held-out partitions, and that loaders 
+return records in the manifest-defined order. These checks 
+protect against accidental changes to the dataset surface, 
+label interpretation, or the membership of a reported split.
+
+The split policy was treated as a testable research safeguard 
+rather than a documentation convention. Development work 
+used the permitted development partition for prompt and rule 
+changes, while the held-out partition could be used only under 
+a fixed protocol and reported at aggregate level. Tests enforce 
+that held-out replay artifacts do not retain row identifiers, source 
+notes, labels, predictions, or error lists. 
+
+Focused regression tests capture failure modes identified during 
+development. These include aggregating diary entries across 
+months, avoiding double-counting when the same evidence is 
+repeated or split across candidates, handling zero-count months, 
+interpreting clusters, and distinguishing current seizure burden 
+from historical or less relevant statements. Each fixture represents 
+a named clinical or annotation-policy obligation, rather than a 
+generic collection of examples.These tests were used whenever 
+a prompt, rule, parser, or stage boundary changed. Their purpose 
+was to show that a local improvement did not silently regress 
+previously correct behaviour. 
+
+The implemented methods were tested as pipelines as well as 
+individual functions. Prompt-contract tests check that model 
+requests preserve the required structured fields and do not 
+inadvertently introduce irrelevant metadata. Pipeline and runner 
+tests check that the intended components run in the intended 
+order and that their outputs are written into the common record 
+structure.
+
+Together, these tests verify that the implementation produces 
+valid records, applies the intended data and split controls, and 
+preserves known clinical-policy behaviour. 
+
+\subsection{Evaluation}
+
+This section evaluates whether the verified pipeline met the 
+research objective: to extract a patient's current seizure 
+frequency burden from a clinical letter reliably, with a 
+structured evidence record and a reproducible comparison 
+between rules and LLMs. 
+
+The evaluation separates development evidence from 
+held-out evidence. Development records can be used to 
+inspect mechanisms, test a specific explanation, and trace 
+how an implementation change affected a result. The locked 
+hold-out is used only for aggregate comparisons after the 
+relevant method, prompt, scorer, split, and row policy have 
+been fixed. This distinction allows the section to report both 
+how the pipeline works and how the final configured methods 
+generalise.
+
+Targeted ablations explain why preserving separate find, 
+encode, and select stages is useful. A source-near LLM 
+request can retain wording closer to the letter, but it incurs a 
+lower immediate score because the benchmark expects a 
+constrained label form. Later encoding and selection stages 
+recover much of this gap. Conversely, asking an LLM to 
+rewrite already extracted candidates in a separate later 
+encoding call reduced performance in the reported ablation. 
+These findings show that the location and responsibility of an 
+encoding decision matter; adding another model call is 
+not automatically beneficial.
+
+A key feature of the pipeline was the rich schema. 
+Models were asked to extract multiple seizure frequency
+patterns in the text, extract evidence spans for each 
+pattern identified, and choose which of those patterns
+best represents the patient's current seizure frequency
+status. That rich schema is what enabled a subsequent
+LLM in the multi-agent method and rules in the hybrid
+method to re-use the evidence and deliver performance
+gains of +0.07. However that comes at the cost of higher
+schema complexity and task specificity and this is where 
+local models remain slightly worse. 
+
+Gemini, Grok, Luna and DeepSeek all had exact evidence 
+rates of 99\%+. Qwen (97\%) and Gemma (93\%) occasionally 
+paraphrased the text. Gemini, Grok and Luna produced valid
+schema 100\% of the time. DeepSeek and Qwen produced
+valid schema 99\% of the time. Gemma was only at 97\%, 
+occasionally using things like double \{\{ or "" and breaking
+the nested json structure. 
+
+Comprehensive error analysis showed that the LLM
+was consistently choosing valid answers based 
+on the instructions. For example, the LLM is told
+to choose the seizure frequency with the highest
+current or recent seizure pattern if multiple seizure 
+events are available. When it sees a pattern such
+as \emph{2 in Jan, 0 in Feb, 0 in March, 5 in April}
+the model chooses 5 because it is the largest 
+and most recent pattern. However the gold-standard
+label is 7 in 4 months. When the prompt instruction
+is changed to add up all seizure events in a period,
+then it combines tonic-clonic seizures and generalised
+seizures over overlapping periods, while the gold-standard
+choose the highest count among the two seizure types.
+Separating these complex, somewhat contradictory 
+instructions into a separate LLM prompt at the select
+phase produced significant improvements (+0.06). 
+
+\section{Tools Descriptions}
+
+\section{Critical Appraisal}
+
+\subsection{Successes}
+
+\subsection{Challenges}
+
+
+
+
+\begin{figure*}[t]
+        \centering
+        \includegraphics[width=\linewidth]{seizure_free_unknown}
+        \caption{Seizure free → unknown error example. Gold-standard label: seizure free for multiple month. Model selected no seizure frequency reference (unknown).}
+        \label{fig:seizurefree_unknown}
+    \vspace*{4pt}
+
+\end{figure*}
+
 
 \begin{figure*}[t]
         \centering
@@ -36,6 +689,22 @@
         \label{fig:frequent_unknown1}
     \vspace*{4pt}
 
+\end{figure*}
+
+\begin{figure}[t]
+    \centering
+
+    \includegraphics[width=\linewidth]{healthcare_index_vs_purist_f1.pdf}
+    \caption{The smartest models are the best frequency extractors.}
+    \label{healthindex}
+\end{figure}
+
+\begin{figure*}[t]
+    \centering
+
+    \includegraphics[width=\linewidth]{infrequent_unknown1.png}
+     \caption{Infrequent → unknown error example. Gold-standard label: 3 per 14 month. Model selected unknown.}
+    \label{error}
 \end{figure*}
 
 \begin{table}[!t]
@@ -86,15 +755,7 @@ Last seizure on 12th March; well 3 weeks &
 \end{tabularx}
 \end{table}
 
-    \vspace*{4pt}
-    \begin{subfigure}[t]{\linewidth}
-        \centering
-        \includegraphics[width=\linewidth]{seizure_free_unknown}
-        \caption{Seizure free → unknown error example. Gold-standard label: seizure free for multiple month. Model selected no seizure frequency reference (unknown).}
-        \label{fig:frequent_unknown1}
-    \end{subfigure}
-    \caption{These examples illustrate the model choosing unknown when the gold-standard label was in the infrequent (a), frequent (b) and seizure free (c) categories. The rationale illustrates how the model interprets the ambiguous evidence and why it chooses unknown.}
-    \label{fig:errors}
+
 
 \begin{table}[!t]
 \caption{Comparisons to past seizure frequency papers}
@@ -115,41 +776,13 @@ Gan et al. & 2026 & Fine-tuned LLM & 0.81 \\
 Brown \& Gan & 2026 & LLM and rules & 0.86 \\
 \bottomrule
 \end{tabularx}
+\end{table}
 
 The method is available as an open source package \href{https://github.com/cbrown564-alt/clinical_extraction}{here} 
 along with a web app demonstrating key features of
 the pipeline \href{https://clinical-extraction.vercel.app/workbench}{here} .
 
-A number of methods have shown performance at 
-or above human level. Fonferko-Shadrach \emph{et al.} 
-reported the annotators found annotation difficult 
-and seizure frequency was the most difficult. This was 
-reflected in the inter annotator agreement (IAA) score
-of 0.47 (moderate agreement) even after multiple phases 
-of development of the guidelines to meet the annotators' 
-needs.  Xie \emph{et al.} reported an overall pairwise F1
-score of 0.44 on a task focused extracting seizure 
-freedom, frequency and most recent seizure
-statements and recommend double or triple annotation. 
-This is a long-standing challenge in the field, as Grisham 
-and Sundheim noted in 1996 ' it proved remarkably difficult
-to formulate guidelines which were reasonably complete 
-and consistent'. Despite levels of IAA of 0.5, the literature 
-commonly reports that rules-based and LLM-based 
-methods achieving F1 scores of 0.8 and above. 
 
-For this seizure frequency task, determining which one fact 
-among many is correct is the challenge. Sometimes that 
-requires grouping together multiple related facts into a 
-single answer, e.g. '1 in June, 0 in July, 2 in August' 
-becomes '3 in 3 months'. Sometimes it requires 
-determining which fact takes precedence when there are 
-multiple competing facts with varying degrees of specificity 
-and certainty e.g. 'She may remain seizure-free for up to 
-4 month, but then will experience clusters of 5 seizures in 
-a single day'. Different annotation guidelines would record 
-ambiguous facts like these differently. Distinct stages in the
-pipeline make those choices configurable and explicit.
 
 \section{Gan codebook find prompt}
 
@@ -166,7 +799,6 @@ This template is not the source-near find ablation
 (\texttt{gan\_llm\_extract\_raw}), which has no closed 
 \texttt{label\_forms} block. It is not the later select prompt.
 
-\lstinputlisting{gan_llm_extract_prompt_template.json}
 
 The only preprocessing applied to the answer labels 
 was to use the CUIPhrase as the main answer key
@@ -191,27 +823,33 @@ for matching answers e.g. the normalised CUIPhrase
 
 \section*{References}
 
-Please number citations consecutively within brackets \cite{b1}. The 
-sentence punctuation follows the bracket \cite{b2}. 
+\lstinputlisting{gan_llm_extract_prompt_template.json}
 
 \begin{thebibliography}{00}
-\bibitem{b1} B. Fonferko-Shadrach \emph{et al.}, ``Using natural language processing to extract structured epilepsy data from unstructured clinic letters: development and validation of the ExECT (extraction of epilepsy clinical text) system,'' \emph{BMJ Open}, vol.~9, no.~4, 2019, Art.~no.~e023232.
-\bibitem{b2} B. Fonferko-Shadrach \emph{et al.}, ``Annotation of epilepsy clinic letters for natural language processing,'' \emph{J. Biomed. Semantics}, vol.~15, no.~17, 2024.
-\bibitem{b3} Y. Gan \emph{et al.}, ``Reproducible synthetic clinical letters for seizure frequency information extraction,'' arXiv:2603.11407, 2026.
-\bibitem{b4} K. Xie \emph{et al.}, ``Extracting seizure frequency from epilepsy clinic notes: a machine reading approach to natural language processing,'' \emph{J. Amer. Med. Informat. Assoc.}, vol.~29, no.~5, pp.~873--881, 2022.
-\bibitem{b5} B. Holgate, J. Davies, S. Fang, J.~S. Winston, J.~T. Teo, and M.~P. Richardson, ``Fine-tuning LLMs to extract epilepsy seizure frequency data from health records,'' in \emph{Proc. 24th Workshop on Biomedical Language Processing (BioNLP)}, 2025, pp.~44--55.
-\bibitem{b6} S. Fu \emph{et al.}, ``Clinical concept extraction: A methodology review,'' \emph{J. Biomed. Informat.}, vol.~109, 2020, Art.~no.~103526.
-\bibitem{b7} R. Grishman and B. Sundheim, ``Message Understanding Conference-6: A brief history,'' in \emph{Proc. 16th Int. Conf. Computational Linguistics (COLING)}, 1996, pp.~466--471.
-\bibitem{b8} Y. Wang \emph{et al.}, ``Clinical information extraction applications: A literature review,'' \emph{J. Biomed. Informat.}, vol.~77, pp.~34--49, 2018.
-\bibitem{b9} K. Xie, B. Litt, D. Roth, and C.~A. Ellis, ``Quantifying clinical outcome measures in patients with epilepsy using the electronic health record,'' in \emph{Proc. BioNLP Workshop}, 2022, pp.~369--375.
-\bibitem{b10} M. Agrawal, S. Hegselmann, H. Lang, Y. Kim, and D. Sontag, ``Large language models are few-shot clinical information extractors,'' in \emph{Proc. Conf. Empirical Methods in Natural Language Processing (EMNLP)}, 2022, pp.~1998--2022.
-\bibitem{b11} L. Chiticariu, Y. Li, and F. Reiss, ``Rule-based information extraction is dead! Long live rule-based information extraction systems!,'' in \emph{Proc. Conf. Empirical Methods in Natural Language Processing (EMNLP)}, 2013, pp.~827--832.
-\bibitem{b12} B.~M. Decker \emph{et al.}, ``Development of a natural language processing algorithm to extract seizure types and frequencies from the electronic health record,'' \emph{Seizure}, vol.~101, pp.~48--51, 2022.
-\bibitem{b13} interoperability-standard-contract
-\end{thebibliography}
 
-\vspace{12pt}
-\color{red}
-IEEE conference templates contain guidance text for composing and formatting conference papers. Please ensure that all template text is removed from your conference paper prior to submission to the conference. Failure to remove the template text from your paper may result in your paper not being published.
+\bibitem{b1} Y. Gan \emph{et al.}, ``Reproducible synthetic clinical letters for seizure frequency information extraction,'' arXiv:2603.11407, 2026.
+\bibitem{b2} B. Fonferko-Shadrach \emph{et al.}, ``Annotation of epilepsy clinic letters for natural language processing,'' \emph{J. Biomed. Semantics}, vol.~15, no.~17, 2024.
+\bibitem{b3} S. Wigglesworth, A. Neligan, J.~M. Dickson, A. Pullen, E. Yelland, T. Anjuman, and M. Reuber, ``The incidence and prevalence of epilepsy in the United Kingdom 2013--2018: A retrospective cohort study of UK primary care data,'' \emph{Seizure}, vol.~105, pp.~37--42, 2023.
+\bibitem{b4} R.~S. Fisher \emph{et al.}, ``ILAE official report: A practical clinical definition of epilepsy,'' \emph{Epilepsia}, vol.~55, no.~4, pp.~475--482, 2014.
+\bibitem{b5} B. Holgate, J. Davies, S. Fang, J.~S. Winston, J.~T. Teo, and M.~P. Richardson, ``Fine-tuning LLMs to extract epilepsy seizure frequency data from health records,'' in \emph{Proc. 24th Workshop on Biomedical Language Processing (BioNLP)}, 2025, pp.~44--55.
+\bibitem{b6} B.~M. Decker \emph{et al.}, ``Development of a natural language processing algorithm to extract seizure types and frequencies from the electronic health record,'' \emph{Seizure}, vol.~101, pp.~48--51, 2022.
+\bibitem{b7} K. Xie \emph{et al.}, ``Extracting seizure frequency from epilepsy clinic notes: a machine reading approach to natural language processing,'' \emph{J. Amer. Med. Informat. Assoc.}, vol.~29, no.~5, pp.~873--881, 2022.
+\bibitem{b8} B. Holgate, S. Fang, A. Shek, M. McWilliam, P. Viana, J.~S. Winston, J.~T. Teo, and M.~P. Richardson, ``Extracting epilepsy patient data with Llama 2,'' in \emph{Proc. 23rd Workshop on Biomedical Natural Language Processing (BioNLP)}, 2024, pp.~526--535.
+\bibitem{b9} K. Xie, B. Litt, D. Roth, and C.~A. Ellis, ``Quantifying clinical outcome measures in patients with epilepsy using the electronic health record,'' in \emph{Proc. BioNLP Workshop}, 2022, pp.~369--375.
+\bibitem{b10} M. Fernandes, A. Cardall, L.~M.~V.~R. Moura, C. McGraw, S.~F. Zafar, and M.~B. Westover, ``Extracting seizure control metrics from clinic notes of patients with epilepsy: A natural language processing approach,'' \emph{Epilepsy Res.}, vol.~207, 2024, Art.~no.~107451.
+\bibitem{b11} T. Brown \emph{et al.}, ``Language models are few-shot learners,'' in \emph{Adv. Neural Inf. Process. Syst. (NeurIPS)}, vol.~33, 2020, pp.~1877--1901.
+\bibitem{b12} M. Agrawal, S. Hegselmann, H. Lang, Y. Kim, and D. Sontag, ``Large language models are few-shot clinical information extractors,'' in \emph{Proc. Conf. Empirical Methods in Natural Language Processing (EMNLP)}, 2022, pp.~1998--2022.
+\bibitem{b13} L. Cui, S.~S. Sahoo, S.~D. Lhatoo, G. Garg, P. Rai, A. Bozorgi, and G.-Q. Zhang, ``Complex epilepsy phenotype extraction from narrative clinical discharge summaries,'' \emph{J. Biomed. Informat.}, vol.~51, pp.~272--279, 2014.
+\bibitem{b14} S. Fu \emph{et al.}, ``Clinical concept extraction: A methodology review,'' \emph{J. Biomed. Informat.}, vol.~109, 2020, Art.~no.~103526.
+\bibitem{b15} Y. Wang \emph{et al.}, ``Clinical information extraction applications: A literature review,'' \emph{J. Biomed. Informat.}, vol.~77, pp.~34--49, 2018.
+\bibitem{b16} L. Chiticariu, Y. Li, and F. Reiss, ``Rule-based information extraction is dead! Long live rule-based information extraction systems!,'' in \emph{Proc. Conf. Empirical Methods in Natural Language Processing (EMNLP)}, 2013, pp.~827--832.
+\bibitem{b17} R.~E. Sherman \emph{et al.}, ``Real-world evidence---what is it and what can it tell us?'' \emph{N. Engl. J. Med.}, vol.~375, no.~23, pp.~2293--2297, 2016.
+\bibitem{b18} S.~T. Rosenbloom, J.~C. Denny, H. Xu, N. Lorenzi, W.~W. Stead, and K.~B. Johnson, ``Data from clinical notes: A perspective on the tension between structure and flexible documentation,'' \emph{J. Amer. Med. Informat. Assoc.}, vol.~18, no.~2, pp.~181--186, 2011.
+\bibitem{b19} Z. Yang \emph{et al.}, ``CLINES: Clinical LLM-based information extraction and structuring agent,'' medRxiv:10.64898/2025.12.01.25341355, 2025.
+\bibitem{b20} J. Wang \emph{et al.}, ``Scaling clinician-grade feature generation from clinical notes with multi-agent language models,'' arXiv:2508.01956, 2025.
+\bibitem{b21} A. Gorenshtein et. al, AI Agents in Clinical Medicine: A Systematic Review
+\bibitem{b22} D. Tran, Single-Agent LLMs Outperform Multi-Agent Systems on Multi-Hop Reasoning Under Equal Thinking Token Budgets
+
+\end{thebibliography}
 
 \end{document}
