@@ -1,0 +1,77 @@
+{
+  "schema_version": "gan_encode_then_select_living_prompt_test450.v1",
+  "generated_on": "2026-09-02",
+  "dataset": "gan2026",
+  "split": "test450",
+  "split_manifest": "gan2026_split_v1",
+  "n": 450,
+  "row_policy": "aggregate_only",
+  "scorer": "purist",
+  "model": "gemini/gemini-3.7-flash",
+  "model_slug": "gemini37flash",
+  "protocol": "docs/research/gan2026/gan_encode_then_select_living_prompt_test450_protocol_2026-09-02.md",
+  "call_transport": "openrouter_batch",
+  "claim_boundary": "Holdout aggregate-only ablation of living-prompt encode-then-select and one-call find-encode-select. Not Table 1. Not promoted. Do not inspect holdout rows.",
+  "comparators": {
+    "codebook_find_purist": 354,
+    "source_near_find_purist": 246,
+    "aug21_source_near_encode_purist": 291,
+    "aug21_old_prompt_select_purist": 320,
+    "cited_cell5_purist": 383,
+    "cited_cell3_purist": 387
+  },
+  "cells": {
+    "codebook_encode": {
+      "method": "gan_llm_encode",
+      "prompt_version": "gan_llm_encode",
+      "extract_ledger": "gan_llm_extract",
+      "work_cell": "scratch/holdout/paper/gan_llm_encode_on_codebook/gemini37flash/gan_llm_extract/test450/comparison.json",
+      "model_calls": 230,
+      "purist_correct": 304,
+      "purist": 0.6756,
+      "pragmatic_correct": 327,
+      "pragmatic": 0.7267,
+      "call_failures": 0,
+      "parse_or_validation_failures": 0
+    },
+    "codebook_select": {
+      "method": "gan_llm_select",
+      "prompt_version": "gan_llm_select_policy_examples",
+      "extract_ledger": "gan_llm_extract",
+      "work_cell": "scratch/holdout/paper/gan_llm_select_after_codebook_encode/gemini37flash/gan_llm_extract/test450/comparison.json",
+      "model_calls": 13,
+      "purist_correct": 386,
+      "purist": 0.8578,
+      "pragmatic_correct": 394,
+      "pragmatic": 0.8756,
+      "call_failures": 0,
+      "parse_or_validation_failures": 0
+    },
+    "source_near_select": {
+      "method": "gan_llm_select",
+      "prompt_version": "gan_llm_select_policy_examples",
+      "extract_ledger": "gan_llm_extract_raw",
+      "encode_source": "paper_experiments/gan/gan_llm_encode/gemini37flash/test450/rows.jsonl",
+      "work_cell": "scratch/holdout/paper/gan_llm_select_after_source_near_encode/gemini37flash/gan_llm_extract_raw/test450/comparison.json",
+      "model_calls": 200,
+      "purist_correct": 354,
+      "purist": 0.7867,
+      "pragmatic_correct": 368,
+      "pragmatic": 0.8178,
+      "call_failures": 0,
+      "parse_or_validation_failures": 0
+    },
+    "one_call": {
+      "method": "gan_llm_extract_encode_select",
+      "prompt_version": "gan_llm_extract_encode_select",
+      "work_cell": "scratch/holdout/paper/gan_llm_extract_encode_select/gemini37flash/test450/comparison.json",
+      "model_calls": 1,
+      "purist_correct": 392,
+      "purist": 0.8711,
+      "pragmatic_correct": 404,
+      "pragmatic": 0.8978,
+      "call_failures": 0,
+      "parse_or_validation_failures": 0
+    }
+  }
+}
