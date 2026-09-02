@@ -1,7 +1,8 @@
 # Paper results
 
 Date: 2026-08-24
-Revised: 2026-08-31 (cited cell 5 is the policy-example LLM select,
+Revised: 2026-09-01 (section F adds the six-model Pragmatic companion
+table; cited cell 5 remains the policy-example LLM select,
 383/450 on `test450` and 640/750 on `dev750`)
 Status: structured first draft; ExECT columns removed from the dissertation
 Owner: this file
@@ -353,7 +354,9 @@ living default.
 The six-model comparison holds the same cell-3 stack and changes only
 the find-stage model: `gan_llm_extract` (model already
 encodes), then `gan_rules_encode` and `llm_select_after_codebook`.
-The promoted roster on locked `test450` is:
+The promoted roster on locked `test450` is Table 4 (Purist
+stage stops) and Table 4b (the same select stop with the other
+recorded metrics):
 
 | Model | Find | Encode | Select |
 | --- | ---: | ---: | ---: |
@@ -364,17 +367,46 @@ The promoted roster on locked `test450` is:
 | Qwen 3.8 27B | 0.700 (315) | 0.731 (329) | 0.762 (343) |
 | Gemma 4 26B | 0.664 (299) | 0.682 (307) | 0.724 (326) |
 
-**Table 4.** Locked aggregate-only Gan cell-3 roster from
-`paper_experiments/gan/rungs/{slug}/test450/` on promoted
-`gan_llm_extract`. Encode is `gan_rules_encode`; select is
+**Table 4.** Locked aggregate-only Gan cell-3 roster, Purist
+micro-F1, from `paper_experiments/gan/rungs/{slug}/test450/` on
+promoted `gan_llm_extract`. Encode is `gan_rules_encode`; select is
 `llm_select_after_codebook`. Grok living temperature is 0. Gemini
 select here is the living codebook replay (387/450), the same
 total as Table 1. Historical selected-evidence encode (346 / 362
 on Gemini) remains the five-cell encode ablation, not this table.
 
+| Model | Purist | Pragmatic | Exact evidence | Schema repair | Unparsed | Retry rejected | Events |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Gemini 3.7 Flash | **0.860** (387) | 0.880 (396) | 99.8% (449) | 0% (0) | 1 | 0 | 985 |
+| Grok 4.6 | 0.853 (384) | **0.889** (400) | 100% (450) | 0% (0) | 0 | 0 | 1063 |
+| GPT-5.6 Luna | 0.789 (355) | 0.820 (369) | 98.9% (445) | 0% (0) | 1 | 0 | 1102 |
+| DeepSeek V4 Flash | 0.820 (369) | 0.849 (382) | 99.6% (448) | 0.4% (2) | 0 | 0 | 1267 |
+| Qwen 3.8 27B | 0.762 (343) | 0.807 (363) | 96.7% (435) | 0.7% (3) | 2 | 0 | 1004 |
+| Gemma 4 26B | 0.724 (326) | 0.773 (348) | 92.9% (418) | 3.3% (15) | 8 | 7 | 1068 |
+
+**Table 4b.** Same locked cell-3 select stop as Table 4. Purist
+and Pragmatic are `llm_select` in the rung files. Exact evidence
+is `evidence_valid`: the saved find-stage selected quote is an
+exact letter substring (count and percent of 450). Schema repair is
+`json_dialect_repairs` (non-semantic JSON dialect; count and
+percent of 450). Unparsed is
+`parse_or_validation_failures` after that repair. Retry rejected
+is `format_retries_rejected`. Events is
+`predicted_candidate_count` on the select ledger. Call failures,
+applied format retries, and other `repair_notes` are 0 on all
+six. Gemini Purist 387 and Pragmatic 396 match Table 1 cell 3.
+Sources: `paper_experiments/gan/rungs/{slug}/test450/comparison.json`
+and
+`paper_experiments/gan/gan_llm_extract/{slug}/test450/comparison.json`.
+
 Later rules raised every model over its find stop and helped
-Luna most (+43 letters), but did not bring Luna or the local
-models level with Gemini or Grok.
+Luna most (+43 Purist; +33 Pragmatic), but did not bring Luna or
+the local models level with Gemini or Grok. On Purist, Gemini
+select is highest (387). On Pragmatic, Grok is four letters above
+Gemini (400 vs 396). Exact evidence and parse form track the
+same split: Grok is exact on all 450 quotes; Gemma leaves the
+most unparsed letters and the weakest exact-evidence count
+(92.9%, 418). A valid span is not semantic support.
 Rules can correct task-form and selection errors in an existing
 candidate record. They cannot reconstruct a clinically relevant
 distinction omitted at find.
@@ -444,7 +476,9 @@ The main Results section contains Table 1 (Gan five-cell), Tables
 2a–2c (Purist class reports for cells 1, 3, and 5), Table 3
 (Gemini temperature ablation), Table 3a (optional later-stage LLM
 encode-then-select), Table 3b (find prompt-component ablation, including
-source-form), Table 4 (six-model cell-3 roster), Table 5
+source-form), Table 4 (six-model cell-3 Purist roster), Table 4b
+(same select stop: Pragmatic, exact evidence, schema repair,
+unparsed, retry rejected, event count), Table 5
 (descriptive inventory), and Figure 1 (before-and-after-rules).
 The paired tests sit in supporting material with a one-line
 reading after Tables 1 and 3. Full
