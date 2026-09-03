@@ -65,6 +65,8 @@ def test_later_stage_verify_is_gemini_only() -> None:
     )
     with pytest.raises(RuntimeError, match="Gemini only"):
         verify_gan("gan_llm_encode", "dev750", "grok46")
+    with pytest.raises(RuntimeError, match="Gemini only"):
+        verify_gan("gan_llm_encode", "dev750", "qwen38_27b")
 
 
 def test_later_stage_holdout_cells_use_scratch() -> None:
@@ -270,6 +272,10 @@ def test_select_from_extract_verify_is_gemini_only() -> None:
     assert holdout["holdout_scratch"].endswith("gan_llm_select_from_extract")
     with pytest.raises(RuntimeError, match="Gemini only"):
         verify_gan("gan_llm_select_from_extract", "dev750", "grok46")
+    assert verify_gan("gan_llm_select_from_extract", "test450", "qwen38_27b")[
+        "row_policy"
+    ] == "aggregate_only"
+    assert verify_gan("gan_llm_select_from_extract", "test450", "gemma4_26b")["ok"] is True
 
 
 def test_llm_row_has_no_separate_encode_stage() -> None:

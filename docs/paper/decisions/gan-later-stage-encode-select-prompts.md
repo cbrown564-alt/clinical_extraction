@@ -1,7 +1,7 @@
 # Gan later-stage encode and select prompts
 
 Date: 2026-08-21
-Revised: 2026-08-31 (select may use event quotes under named policies)
+Revised: 2026-09-02 (local same-model select-from-extract is transfer-only)
 Status: current
 Owner: [paper methods](../methods.md)
 Related: [Gemini is the cited model](gemini-is-the-cited-model.md)
@@ -44,8 +44,11 @@ step if that ablation is cited. Rules after find still encode.
 
 ## Claim boundary
 
-A prompt and ownership contract. Later-stage LLM encode and LLM
-select are Gemini only on both tasks. Headline tables cite the
-codebook find row. The source-near `gan_llm_extract_raw` ledger
-may still cite form-writing encode for that ablation only. This
-select is not hybrid select.
+A prompt and ownership contract. Later-stage LLM encode and
+encode-then-select stay Gemini only. Same-model
+`gan_llm_select_from_extract` may run on living local slugs
+(`qwen38_27b`, `gemma4_26b`) as transfer evidence; that run is not
+cited cell 5. Headline tables cite the codebook find row and Gemini
+select. The source-near `gan_llm_extract_raw` ledger may still cite
+form-writing encode for that ablation only. This select is not
+hybrid select.

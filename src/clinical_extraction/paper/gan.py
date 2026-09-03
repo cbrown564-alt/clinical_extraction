@@ -41,6 +41,7 @@ from clinical_extraction.paper.gan_later_stage import (
 )
 from clinical_extraction.paper.gan_later_stage import (
     LaterStageMethod,
+    later_stage_slug_permitted,
     run_later_stage,
     verify_later_stage_prompt,
 )
@@ -401,8 +402,8 @@ def verify_gan(
         "gan_llm_select",
         "gan_llm_select_from_extract",
     }:
-        if slug is not None and slug != LATER_STAGE_SLUG:
-            raise RuntimeError("later-stage Gan encode and select run on Gemini only")
+        if slug is not None:
+            later_stage_slug_permitted(cast(LaterStageMethod, method), slug)
         verify_later_stage_prompt(cast(LaterStageMethod, method))
         authored = (
             list(LLM_ENCODE_AUTHORED_KEYS)
