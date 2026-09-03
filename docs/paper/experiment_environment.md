@@ -44,7 +44,7 @@ only.
 | Model | Identifier | Route / transport | Temp. | Max out (ExECT / Gan) | Reasoning | Thinking | Local context | Timeout (s) |
 | --- | --- | --- | ---: | ---: | --- | --- | ---: | ---: |
 | Gemini 3.7 Flash (cited) | `gemini/gemini-3.7-flash` | hosted; OpenRouter batch | 0.0 | 16,000 / 5,000 | `low` | — | — | 300 |
-| Grok 4.6 | `xai/grok-4.6` | hosted; Vercel AI Gateway, sync | 0.0 | 16,000 / 5,000 | `low` | — | — | 600 |
+| Grok 4.6 | `xai/grok-4.6` | hosted; OpenRouter, sync | 0.0 | 16,000 / 5,000 | `low` | — | — | 600 |
 | GPT-5.6 Luna | `openai/gpt-5.6-luna` | hosted; OpenAI batch | 1.0 | 16,000 / 5,000 | `low` | — | — | 300 |
 | DeepSeek V4 Flash 0731 | `deepseek/deepseek-v4-flash` | hosted; DeepSeek API, sync | 0.0 | 64,000 / 24,000 | `low` | enabled | — | 600 |
 | Qwen 3.8 27B | `ollama_chat/qwen3.8:27b` | local; native Ollama chat | 0.0 | 16,000 / 5,000 | — | `think=false` | 32,768 | 900 |

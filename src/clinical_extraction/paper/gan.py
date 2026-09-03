@@ -96,6 +96,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     prompt_llm_extract_no_examples as extract_no_examples,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    prompt_llm_extract_no_examples_no_evidence_no_forms as extract_combined,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
     normalize_prompt_version,
 )
@@ -130,6 +133,7 @@ MAX_TOKENS = {
     "gan_llm_extract_holgate_label": 1200,
     "gan_llm_extract_no_evidence": 5000,
     "gan_llm_extract_examples_only": 5000,
+    "gan_llm_extract_no_examples_no_evidence_no_forms": 5000,
     "gan_llm_extract_encode_select": 8000,
     "gan_llm_and_rules_extract": 5000,
     "gan_llm_encode": LATER_STAGE_MAX_TOKENS,
@@ -339,6 +343,28 @@ def verify_gan(
             raise RuntimeError("gan_llm_extract_examples_only dropped examples")
         if hybrid_structured_events.PROMPT_VERSION != before:
             raise RuntimeError("examples-only payload check changed the live default")
+        if hybrid_structured_events.PROMPT_VERSION != hybrid_structured_events.GAN_LLM_EXTRACT_RAW:
+            raise RuntimeError("gan_llm_extract_raw live default drifted")
+    elif method == "gan_llm_extract_no_examples_no_evidence_no_forms":
+        before = hybrid_structured_events.PROMPT_VERSION
+        payload = json.loads(hybrid_structured_events.build_prompt_input(
+            _placeholder_record(),
+            prompt_version=extract_combined.GAN_LLM_EXTRACT_NO_EXAMPLES_NO_EVIDENCE_NO_FORMS,
+        ))
+        authored = list(extract_combined.LLM_EXTRACT_COMBINED_AUTHORED_KEYS)
+        blob = json.dumps(payload)
+        if set(payload) != set(authored):
+            raise RuntimeError("combined ablation prompt drifted from authored keys")
+        if "prompt_version" in payload or "source_row_index" in payload:
+            raise RuntimeError("combined ablation emits the research envelope")
+        if "Gan 2026" in blob:
+            raise RuntimeError("combined ablation request names the dataset")
+        if "evidence" in payload["event_schema"] or "evidence" in payload["selection_schema"]:
+            raise RuntimeError("combined ablation still asks for evidence")
+        if "label_forms" in payload or "examples" in blob:
+            raise RuntimeError("combined ablation still emits closed forms or examples")
+        if hybrid_structured_events.PROMPT_VERSION != before:
+            raise RuntimeError("combined payload check changed the live default")
         if hybrid_structured_events.PROMPT_VERSION != hybrid_structured_events.GAN_LLM_EXTRACT_RAW:
             raise RuntimeError("gan_llm_extract_raw live default drifted")
     elif method == "gan_llm_extract_encode_select":
@@ -707,6 +733,8 @@ def _prompt_version(method: str) -> str:
         return extract_no_evidence.GAN_LLM_EXTRACT_NO_EVIDENCE
     if method == "gan_llm_extract_examples_only":
         return extract_examples_only.GAN_LLM_EXTRACT_EXAMPLES_ONLY
+    if method == "gan_llm_extract_no_examples_no_evidence_no_forms":
+        return extract_combined.GAN_LLM_EXTRACT_NO_EXAMPLES_NO_EVIDENCE_NO_FORMS
     if method == "gan_llm_extract_encode_select":
         return extract_encode_select.GAN_LLM_EXTRACT_ENCODE_SELECT
     if method == "gan_llm_and_rules_extract":
@@ -730,6 +758,7 @@ def _repair_mode(method: str) -> str | None:
         "gan_llm_extract_holgate_like",
         "gan_llm_extract_no_evidence",
         "gan_llm_extract_examples_only",
+        "gan_llm_extract_no_examples_no_evidence_no_forms",
         "gan_llm_extract_encode_select",
     }:
         return "raw_model"

@@ -109,6 +109,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_extract 
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_extract_raw import (
     build_llm_extract_raw_prompt_input,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import prompt_llm_extract_no_examples_no_evidence_no_forms as extract_combined
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label,
@@ -145,6 +146,7 @@ GAN_LLM_EXTRACT_HOLGATE_LIKE = extract_holgate.GAN_LLM_EXTRACT_HOLGATE_LIKE
 GAN_LLM_EXTRACT_HOLGATE_LABEL = extract_holgate_label.GAN_LLM_EXTRACT_HOLGATE_LABEL
 GAN_LLM_EXTRACT_NO_EVIDENCE = extract_no_evidence.GAN_LLM_EXTRACT_NO_EVIDENCE
 GAN_LLM_EXTRACT_EXAMPLES_ONLY = extract_examples_only.GAN_LLM_EXTRACT_EXAMPLES_ONLY
+GAN_LLM_EXTRACT_NO_EXAMPLES_NO_EVIDENCE_NO_FORMS = extract_combined.GAN_LLM_EXTRACT_NO_EXAMPLES_NO_EVIDENCE_NO_FORMS
 GAN_LLM_EXTRACT_ENCODE_SELECT = extract_encode_select.GAN_LLM_EXTRACT_ENCODE_SELECT
 GAN_LLM_EXTRACT_RAW = "gan_llm_extract_raw"
 GAN_LLM_WITH_RULES = GAN_LLM_EXTRACT_RAW
@@ -167,6 +169,7 @@ _SUPPORTED_PROMPT_VERSIONS = frozenset(
         GAN_LLM_EXTRACT_HOLGATE_LABEL,
         GAN_LLM_EXTRACT_NO_EVIDENCE,
         GAN_LLM_EXTRACT_EXAMPLES_ONLY,
+        GAN_LLM_EXTRACT_NO_EXAMPLES_NO_EVIDENCE_NO_FORMS,
         GAN_LLM_EXTRACT_ENCODE_SELECT,
         *PROMPT_VERSION_ALIASES,
     }
@@ -669,6 +672,8 @@ def build_prompt_input(
         return extract_no_evidence.build_llm_extract_no_evidence_prompt_input(record)
     if selected_prompt_version == GAN_LLM_EXTRACT_EXAMPLES_ONLY:
         return extract_examples_only.build_llm_extract_examples_only_prompt_input(record)
+    if selected_prompt_version == GAN_LLM_EXTRACT_NO_EXAMPLES_NO_EVIDENCE_NO_FORMS:
+        return extract_combined.build_llm_extract_combined_prompt_input(record)
     if selected_prompt_version == GAN_LLM_EXTRACT_ENCODE_SELECT:
         return extract_encode_select.build_llm_extract_encode_select_prompt_input(record)
     return build_llm_extract_raw_prompt_input(record)
@@ -1658,7 +1663,12 @@ def _normalize_event(
 def _event_raw_label(event: StructuredEventRecord) -> str | None:
     if event.kind == "no_reference":
         return "no seizure frequency reference"
-    if event.kind in {"unknown_frequency", "last_event_only"}:
+    if event.kind == "last_event_only":
+        return "unknown"
+    if event.kind == "unknown_frequency":
+        # Prefer the written surface; kind alone must not discard a parseable rate.
+        if event.raw_value and str(event.raw_value).strip():
+            return str(event.raw_value).strip()
         return "unknown"
     if event.kind == "seizure_free" and event.raw_value:
         return event.raw_value

@@ -415,7 +415,7 @@ of the pipeline design.
 Comprehensive error analysis showed that the LLM
 was consistently finding valid seizure frequency
 patterns, providing exact evidence from the text
-and often choosing defensible answers based 
+and often choosing defensible answers based 8
 on the instructions. It did not need another LLM call to
 check its evidence or structure it into JSON; it 
 needed cleaner task separation. 
@@ -1303,6 +1303,117 @@ is not disclosed, these records do not support a matched hardware, cost,
 speed, or energy comparison.
 
 \section{Critical Appraisal}
+
+# Critical Appraisal — Draft
+
+## Recommended shape
+
+Use **eight to ten short paragraphs** across four subsections. This is enough
+to meet the rubric's request for rationale, lessons learned, and hindsight
+evaluation without repeating the lifecycle or results sections.
+
+| Subsection | Paragraphs | Purpose |
+| --- | ---: | --- |
+| Successes | 2 | Explain what the project achieved and why the design was useful. |
+| Design decisions and scope | 2 | Appraise the consequential choices and their trade-offs. |
+| Limitations and challenges | 3 | Explain the remaining technical and evidence limits honestly. |
+| Lessons learned and future work | 2--3 | State what the project changed in the author's understanding and the next justified work. |
+
+## Successes
+
+The project produced a reproducible pipeline for extracting and selecting a
+single current seizure-frequency label from synthetic epilepsy clinic letters.
+Its main contribution was to separate the task into two inspectable stages:
+an LLM extracted candidate evidence into a structured record, and a decision
+stage selected the final label. Holding the extraction record fixed made it
+possible to compare a rules-based decision executor with a second LLM decision
+executor. This was more informative than treating the pipeline as one opaque
+prompt, because changes in the final answer could be attributed to the
+decision policy rather than to a different extraction.
+
+The implementation also made the experimental conditions easier to verify.
+Structured outputs, schema validation, saved run artefacts, explicit model
+routes, and a sealed aggregate-only holdout reduced the risk that a promising
+result was caused by an undocumented prompt, scorer, or route change. The
+reported comparison showed that the pipeline can produce competitive results
+under the defined synthetic-data evaluation, while the ablations identified
+which prompt ingredients and decision choices mattered. The appropriate claim
+is therefore about a controlled extraction-and-selection method on this task,
+not about clinical deployment or general performance on all clinical text.
+
+## Design decisions and scope
+
+The most important design decision was to narrow the dissertation to the Gan
+seizure-frequency task. The original project explored both Gan and ExECTv2,
+but the two datasets have different annotation policies, outcome definitions,
+scorers, and error profiles. Presenting both as equal dissertation results
+would have required the reader to compare unlike quantities in a limited paper
+space. Focusing on Gan enabled a clearer account of the shared extraction
+record, the two decision executors, and the task-specific failure modes.
+
+This scope reduction was a trade-off rather than a claim that the wider
+clinical-inventory problem had been solved. The ExECTv2 work remains useful
+repository evidence and a basis for later work, but its scores are not used as
+dissertation headline results. A small descriptive inventory exercise on Gan
+letters can show the range of information a broader schema can represent, but
+it is not an accuracy evaluation. This distinction protects the dissertation
+from overstating what its available labels can establish.
+
+## Limitations and challenges
+
+The central technical limitation is that seizure frequency is a clinical
+selection problem, not only an information-formatting problem. Letters can
+contain a usual rate, a diary count, an old event, a breakthrough episode, and
+a statement of seizure freedom. Cluster descriptions are particularly
+difficult because they combine how often clusters occur with how many seizures
+occur within them. A model or a later rule can flatten that structure into an
+incorrect smooth rate or an unknown label.
+
+The experiments also showed that deterministic correction is not automatically
+safe. Rules can repair malformed expressions and enforce a documented policy,
+but they can also overwrite justified uncertainty or favour an incorrect
+reading. This is why the project treated rules as recorded experimental
+components rather than as invisible post-processing. The lesson is not that
+rules should be discarded; it is that every rule which can change clinical
+meaning must have a stated purpose, be evaluated separately where possible,
+and remain traceable in the result record.
+
+The evidence base also limits the conclusions. The principal data are
+synthetic letters with task-specific gold labels, and the holdout was retained
+as aggregate-only evidence to avoid tuning from individual test examples. The
+study therefore does not establish clinical usefulness, reliability on real
+patient correspondence, or a safe production workflow. Hosted-provider
+hardware was not disclosed, so the results also do not support matched claims
+about latency, cost, or energy against locally served models. These are
+deliberate boundaries of the evaluation, not minor omissions.
+
+## Lessons learned and future work
+
+The main lesson from the development process is that a project benefits from
+making its policy choices explicit early. The separation between candidate
+extraction and final selection made disagreements visible and allowed the
+project to compare decision mechanisms fairly. In hindsight, the early design
+would have benefited from this narrower problem definition and claim boundary
+from the outset; it would have reduced the later work required to reconcile
+two datasets and several historical pipeline variants.
+
+The next justified step is not to add more components immediately, but to test
+the method against stronger evidence. This should include expert review of
+whether the cited evidence supports the selected label, evaluation on an
+appropriately governed real-data set, and prospective assessment of how
+clinicians would use or contest the outputs. Those studies would need their
+own data-access, ethics, and validation decisions. Until then, the system
+should be presented as a reproducible research prototype rather than a
+clinical decision tool.
+
+## Author reflection to add
+
+Add one or two sentences in your own voice before finalising the section. For
+example, identify one decision you would make earlier next time, one piece of
+evidence you wish had been available, and one aspect of the workflow you would
+retain. This is the part that turns the evidence-backed appraisal into a
+personal critical appraisal rather than a results summary.
+
 
 \subsection{Successes}
 

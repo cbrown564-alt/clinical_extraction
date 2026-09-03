@@ -234,6 +234,7 @@ def _vague_frequency_to_multiple(text: str) -> str:
         text,
     )
     text = re.sub(r"\bmost\s+days\b", "multiple per week", text)
+    text = re.sub(r"\bmost\s+shifts\b", "multiple per week", text)
     text = re.sub(r"\brare\b(?!\s+per\b)", "multiple per year", text)
     text = re.sub(r"\boccasional\b(?!\s+per\b)", "multiple per month", text)
     text = re.sub(r"\bfrequent\b(?!\s+per\b)", "multiple per day", text)

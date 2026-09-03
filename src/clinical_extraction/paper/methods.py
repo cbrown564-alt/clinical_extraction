@@ -70,6 +70,12 @@ LIVE_METHODS: dict[str, dict[str, object]] = {
         "prompt_attr": "GAN_LLM_EXTRACT_EXAMPLES_ONLY",
         "paper_cell": False,
     },
+    "gan_llm_extract_no_examples_no_evidence_no_forms": {
+        "task": "gan2026",
+        "splits": ("dev750", "test450"),
+        "prompt_attr": "GAN_LLM_EXTRACT_NO_EXAMPLES_NO_EVIDENCE_NO_FORMS",
+        "paper_cell": False,
+    },
     "gan_llm_extract_encode_select": {
         "task": "gan2026",
         "splits": ("dev750", "test450"),

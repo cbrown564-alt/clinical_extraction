@@ -1,0 +1,87 @@
+{
+  "cell5_source": "scratch/holdout/paper/gan_llm_select_from_extract/gemini37flash/gan_llm_extract/test450/rows.jsonl",
+  "claim_boundary": "Holdout aggregate-only stage-1 candidate-set recall for the shared Gemini extract record versus cited cells 3 and 5. Not a new Table 1 score. No holdout row inspection.",
+  "date": "2026-09-03",
+  "decide_stops_purist": {
+    "cell3_hybrid": {
+      "accuracy": 0.86,
+      "correct": 387
+    },
+    "cell5_llm_only": {
+      "accuracy": 0.8511,
+      "correct": 383
+    }
+  },
+  "extract_source": "paper_experiments/gan/gan_llm_extract/gemini37flash/test450/rows.jsonl",
+  "gates": {
+    "cell3_select_reproduces_cited": 387,
+    "cell5_select_reproduces_cited": 383,
+    "encode_parse_failures": 0,
+    "extract_parse_failures": 0
+  },
+  "holdout_loaded": true,
+  "model_calls": 0,
+  "model_slug": "gemini37flash",
+  "n": 450,
+  "pools_pragmatic": {
+    "encode_pool": {
+      "accuracy": 0.8711,
+      "correct": 392
+    },
+    "encode_provisional": {
+      "accuracy": 0.8267,
+      "correct": 372
+    },
+    "events_only": {
+      "accuracy": 0.6933,
+      "correct": 312
+    },
+    "extract_record": {
+      "accuracy": 0.8711,
+      "correct": 392
+    },
+    "provisional": {
+      "accuracy": 0.8156,
+      "correct": 367
+    }
+  },
+  "pools_purist": {
+    "encode_pool": {
+      "accuracy": 0.8444,
+      "correct": 380
+    },
+    "encode_provisional": {
+      "accuracy": 0.8,
+      "correct": 360
+    },
+    "events_only": {
+      "accuracy": 0.6489,
+      "correct": 292
+    },
+    "extract_record": {
+      "accuracy": 0.8467,
+      "correct": 381
+    },
+    "provisional": {
+      "accuracy": 0.7889,
+      "correct": 355
+    }
+  },
+  "protocol": "docs/research/gan2026/gan_candidate_set_recall_test450_protocol_2026-09-03.md",
+  "residuals_vs_encode_pool": {
+    "cell3_encode_headroom": 20,
+    "cell3_encode_recall_gap": 43
+  },
+  "residuals_vs_extract_record": {
+    "cell3_headroom": 21,
+    "cell3_recall_gap": 42,
+    "cell3_wrong": 63,
+    "cell5_headroom": 24,
+    "cell5_recall_gap": 43,
+    "cell5_wrong": 67
+  },
+  "row_policy": "aggregate_only",
+  "schema_version": "gan.candidate_set_recall.test450.v1",
+  "scorer": "purist (pragmatic secondary)",
+  "split": "test450"
+}

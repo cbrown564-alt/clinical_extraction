@@ -1,153 +1,268 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 978 295" width="100%" height="100%" style="background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1140 450" width="1140" height="450" role="img" aria-labelledby="fig-title fig-desc" style="background-color: #ffffff; font-family: Helvetica, Arial, sans-serif;">
+  <title id="fig-title">Two-stage seizure-frequency pipeline on a development-set letter</title>
+  <desc id="fig-desc">A clinic letter enters the extract stage (LLM call 1), which produces an evidence record of events with quotes and a provisional answer. The decide stage applies a fixed decision policy through either rules (Hybrid) or a second LLM call (LLM-only); both change the selected event from e2 to e1 and return the final label 2 to 3 per 1 month.</desc>
   <defs>
-    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
-      <feDropShadow dx="0" dy="1.5" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.06" />
-    </filter>
-    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#94a3b8" />
+    <!-- Single data-flow arrow head (all arrows are neutral grey) -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" />
     </marker>
+
+    <!-- LLM glyph: small brain (used for LLM call 1 and LLM call 2) -->
+    <symbol id="glyph-llm" viewBox="0 0 14 14">
+      <path d="M7 1.6 C4.6 1.6 3.2 3 3.2 4.8 C1.9 5.3 1.9 7.4 3.1 7.9 C3 9.9 4.6 11.6 7 11.6 C9.4 11.6 11 9.9 10.9 7.9 C12.1 7.4 12.1 5.3 10.8 4.8 C10.8 3 9.4 1.6 7 1.6 Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" />
+      <path d="M7 1.8 L7 11.4" stroke="currentColor" stroke-width="1.1" />
+      <path d="M4.2 5.2 C5.2 5.4 5.6 6.2 5.4 7.2 M9.8 5.2 C8.8 5.4 8.4 6.2 8.6 7.2 M4.3 8.6 C5 8.2 5.6 8.6 5.6 9.4 M9.7 8.6 C9 8.2 8.4 8.6 8.4 9.4" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" />
+    </symbol>
+
+    <!-- Rules glyph: small gear (used for the Hybrid rule executor) -->
+    <symbol id="glyph-rules" viewBox="0 0 14 14">
+      <!-- teeth: thick dashed ring; body: solid ring; hub: dot -->
+      <circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-dasharray="1.96 1.96" transform="rotate(-11 7 7)" />
+      <circle cx="7" cy="7" r="3.6" fill="none" stroke="currentColor" stroke-width="1.5" />
+      <circle cx="7" cy="7" r="1.2" fill="currentColor" />
+    </symbol>
   </defs>
 
-  <!-- ================= 1. INPUT ================= -->
-  <g transform="translate(15, 15)" filter="url(#shadow)">
-    <rect x="0" y="0" width="215" height="265" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
-    <path d="M 0 6 Q 0 0 6 0 L 209 0 Q 215 0 215 6 L 215 30 L 0 30 Z" fill="#f8fafc" />
-    <line x1="0" y1="30" x2="215" y2="30" stroke="#e2e8f0" stroke-width="1" />
-    <text x="107" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="#334155">Clinic Letter</text>
+  <!-- ================================================================== -->
+  <!-- 1. INPUT: CLINIC LETTER                                             -->
+  <!-- ================================================================== -->
+  <g transform="translate(18, 104)">
+    <rect x="0" y="0" width="186" height="220" rx="6" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.2" />
+    <text x="14" y="24" font-size="8" font-weight="700" fill="#64748b" letter-spacing="0.5">INPUT LETTER</text>
+    <text x="172" y="24" text-anchor="end" font-size="8.5" font-weight="600" fill="#64748b">10 August 2019</text>
+    <line x1="14" y1="31" x2="172" y2="31" stroke="#e2e8f0" stroke-width="1" />
 
-    <rect x="25" y="38" width="165" height="18" rx="9" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1" />
-    <text x="107" y="50" text-anchor="middle" font-size="8.5" font-weight="600" fill="#64748b">Raw Unstructured Text</text>
+    <g transform="translate(14, 44)">
+      <text x="0" y="10" font-size="8.5" fill="#94a3b8">. . .</text>
 
-    <g transform="translate(12, 64)">
-      <rect x="0" y="0" width="191" height="120" rx="4" fill="#fafafa" stroke="#e2e8f0" stroke-width="1" />
+      <text x="0" y="28" font-size="8.5" fill="#334155">She discontinued Valproate</text>
+      <text x="0" y="42" font-size="8.5" fill="#334155">on 10 Jul.</text>
 
-      <line x1="12" y1="14" x2="179" y2="14" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" />
-      <line x1="12" y1="24" x2="145" y2="24" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" />
+      <!-- e1 sentence highlight -->
+      <rect x="-3" y="53" width="150" height="42" rx="3" fill="#e2e8f0" />
+      <text x="0" y="64" font-size="8.5" fill="#1e293b">Shortly afterwards, she</text>
+      <text x="0" y="78" font-size="8.5" fill="#1e293b">experienced 2 to 3 seizures,</text>
+      <text x="0" y="92" font-size="8.5" fill="#1e293b">one triggered by missed meds.</text>
+      <text x="143" y="64" text-anchor="end" font-size="7.5" font-weight="800" fill="#475569">e1</text>
 
-      <text x="10" y="40" font-size="8.2" fill="#475569" font-family="monospace">...brief morning myoclonic</text>
-      <text x="10" y="52" font-size="8.2" fill="#475569" font-family="monospace">jerks several times per</text>
-      <text x="10" y="64" font-size="8.2" fill="#475569" font-family="monospace">week, and three generalised</text>
-      <text x="10" y="76" font-size="8.2" fill="#475569" font-family="monospace">tonic–clonic seizures in</text>
-      <text x="10" y="88" font-size="8.2" fill="#475569" font-family="monospace">the past six months...</text>
+      <!-- e2 sentence highlight -->
+      <rect x="-3" y="103" width="150" height="28" rx="3" fill="#e2e8f0" />
+      <text x="0" y="114" font-size="8.5" fill="#1e293b">She has remained seizure-free</text>
+      <text x="0" y="128" font-size="8.5" fill="#1e293b">since then.</text>
+      <text x="143" y="114" text-anchor="end" font-size="7.5" font-weight="800" fill="#475569">e2</text>
 
-      <line x1="12" y1="101" x2="165" y2="101" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" />
-      <line x1="12" y1="110" x2="115" y2="110" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" />
+      <text x="0" y="150" font-size="8.5" fill="#94a3b8">. . .</text>
     </g>
-
-    <text x="107" y="202" text-anchor="middle" font-size="9.5" font-weight="600" fill="#334155">Unstructured Narrative</text>
-    <text x="107" y="218" text-anchor="middle" font-size="8.5" fill="#64748b">Clinic letter containing</text>
-    <text x="107" y="230" text-anchor="middle" font-size="8.5" fill="#64748b">multiple clinical mentions.</text>
   </g>
 
-  <!-- Connector 1 -->
-  <path d="M 233 145 L 253 145" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" fill="none" />
+  <!-- Flow: Letter -> Extract -->
+  <path d="M 204 214 L 223 214" stroke="#64748b" stroke-width="1.6" marker-end="url(#arrow)" fill="none" />
 
-  <!-- ================= 2. EXTRACT ================= -->
-  <g transform="translate(257, 15)" filter="url(#shadow)">
-    <rect x="0" y="0" width="215" height="265" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
-    <path d="M 0 6 Q 0 0 6 0 L 209 0 Q 215 0 215 6 L 215 30 L 0 30 Z" fill="#f8fafc" />
-    <line x1="0" y1="30" x2="215" y2="30" stroke="#e2e8f0" stroke-width="1" />
-    <text x="107" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0f172a">1. Extract</text>
+  <!-- ================================================================== -->
+  <!-- 2. STAGE 1: EXTRACT (LLM call 1)                                    -->
+  <!-- ================================================================== -->
+  <g transform="translate(230, 18)">
+    <rect x="0" y="0" width="154" height="392" rx="8" fill="#ffffff" stroke="#93c5fd" stroke-width="1.3" />
 
-    <!-- Executor pill: one LLM call -->
-    <g transform="translate(62.5, 38)">
-      <rect x="0" y="0" width="90" height="18" rx="9" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.2" />
-      <text x="45" y="12" text-anchor="middle" font-size="8.5" font-weight="700" fill="#0f172a">LLM call 1</text>
+    <path d="M 0 8 Q 0 0 8 0 L 146 0 Q 154 0 154 8 L 154 34 L 0 34 Z" fill="#eff6ff" />
+    <line x1="0" y1="34" x2="154" y2="34" stroke="#bfdbfe" stroke-width="1" />
+    <circle cx="21" cy="17" r="7" fill="#2563eb" />
+    <text x="21" y="20.5" text-anchor="middle" font-size="9" font-weight="800" fill="#ffffff">1</text>
+    <text x="34" y="21" font-size="12" font-weight="700" fill="#1e40af">Extract</text>
+
+    <!-- Engine badge -->
+    <g transform="translate(12, 48)">
+      <rect x="0" y="0" width="130" height="24" rx="12" fill="#dbeafe" stroke="#93c5fd" stroke-width="1" />
+      <g color="#1e40af"><use xlink:href="#glyph-llm" x="34" y="5" width="14" height="14" /></g>
+      <text x="52" y="16" font-size="9.5" font-weight="700" fill="#1e40af">LLM call 1</text>
     </g>
 
-    <!-- Quoted spans, each with its canonical label -->
-    <g transform="translate(12, 64)">
-      <rect x="0" y="0" width="191" height="120" rx="4" fill="#fafafa" stroke="#e2e8f0" stroke-width="1" />
+    <!-- Prompt tasks -->
+    <g transform="translate(12, 92)">
+      <rect x="0" y="0" width="130" height="74" rx="5" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+      <circle cx="12" cy="16" r="3" fill="#2563eb" />
+      <text x="20" y="19" font-size="9" font-weight="700" fill="#0f172a">Find mentions</text>
+      <text x="8" y="36" font-size="8" fill="#64748b">Identifies every seizure</text>
+      <text x="8" y="49" font-size="8" fill="#64748b">frequency, cluster, and</text>
+      <text x="8" y="62" font-size="8" fill="#64748b">seizure-free statement.</text>
 
-      <rect x="6" y="8" width="179" height="23" rx="3" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
-      <text x="10" y="22" font-size="7.5" font-family="monospace" fill="#475569">"...several times per week"</text>
+      <g transform="translate(0, 86)">
+        <rect x="0" y="0" width="130" height="74" rx="5" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+        <circle cx="12" cy="16" r="3" fill="#2563eb" />
+        <text x="20" y="19" font-size="9" font-weight="700" fill="#0f172a">Quote evidence</text>
+        <text x="8" y="36" font-size="8" fill="#64748b">Copies verbatim quote</text>
+        <text x="8" y="49" font-size="8" fill="#64748b">spans directly from</text>
+        <text x="8" y="62" font-size="8" fill="#64748b">the source letter text.</text>
+      </g>
 
-      <rect x="6" y="33" width="179" height="20" rx="3" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" />
-      <text x="10" y="46" font-size="8" font-weight="700" font-family="monospace" fill="#0f172a">↳ "multiple per week"</text>
-
-      <rect x="6" y="63" width="179" height="23" rx="3" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
-      <text x="10" y="77" font-size="7.5" font-family="monospace" fill="#475569">"three... in past six months"</text>
-
-      <rect x="6" y="88" width="179" height="20" rx="3" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" />
-      <text x="10" y="101" font-size="8" font-weight="700" font-family="monospace" fill="#0f172a">↳ "3 per 6 months"</text>
+      <g transform="translate(0, 172)">
+        <rect x="0" y="0" width="130" height="74" rx="5" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+        <circle cx="12" cy="16" r="3" fill="#2563eb" />
+        <text x="20" y="19" font-size="9" font-weight="700" fill="#0f172a">Propose answer</text>
+        <text x="8" y="36" font-size="8" fill="#64748b">Suggests a provisional</text>
+        <text x="8" y="49" font-size="8" fill="#64748b">label and a one-sentence</text>
+        <text x="8" y="62" font-size="8" fill="#64748b">clinical rationale.</text>
+      </g>
     </g>
-
-    <text x="107" y="202" text-anchor="middle" font-size="9.5" font-weight="600" fill="#334155">Extracts Candidate Facts</text>
-    <text x="107" y="218" text-anchor="middle" font-size="8.5" fill="#64748b">Quotes each evidence span and</text>
-    <text x="107" y="230" text-anchor="middle" font-size="8.5" fill="#64748b">writes it in canonical form.</text>
   </g>
 
-  <!-- Connector 2 -->
-  <path d="M 475 145 L 495 145" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" fill="none" />
+  <!-- Flow: Extract -> Evidence record -->
+  <path d="M 384 214 L 404 214" stroke="#64748b" stroke-width="1.6" marker-end="url(#arrow)" fill="none" />
 
-  <!-- ================= 3. DECIDE ================= -->
-  <g transform="translate(499, 15)" filter="url(#shadow)">
-    <rect x="0" y="0" width="215" height="265" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
-    <path d="M 0 6 Q 0 0 6 0 L 209 0 Q 215 0 215 6 L 215 30 L 0 30 Z" fill="#f8fafc" />
-    <line x1="0" y1="30" x2="215" y2="30" stroke="#e2e8f0" stroke-width="1" />
-    <text x="107" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0f172a">2. Decide</text>
+  <!-- ================================================================== -->
+  <!-- 3. EVIDENCE RECORD (field names match Table tab:record)             -->
+  <!-- ================================================================== -->
+  <g transform="translate(412, 18)">
+    <rect x="0" y="0" width="284" height="392" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6" />
+    <path d="M 0 10 Q 0 0 10 0 L 274 0 Q 284 0 284 10 L 284 34 L 0 34 Z" fill="#334155" />
+    <text x="14" y="22" font-size="12" font-weight="700" fill="#ffffff" letter-spacing="0.3">Evidence record</text>
 
-    <!-- Executor pills: Rules (Hybrid) or LLM call 2 (LLM-only) -->
-    <g transform="translate(19, 38)">
-      <rect x="0" y="0" width="78" height="18" rx="9" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.2" />
-      <text x="39" y="12" text-anchor="middle" font-size="8.5" font-weight="700" fill="#0f172a">Rules</text>
+    <g transform="translate(10, 42)">
+      <!-- Event e1 -->
+      <rect x="0" y="0" width="264" height="96" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
+      <g transform="translate(10, 8)">
+        <rect x="0" y="1" width="20" height="15" rx="3" fill="#475569" />
+        <text x="10" y="12" text-anchor="middle" font-size="8" font-weight="800" fill="#ffffff">e1</text>
+        <text x="28" y="12.5" font-size="8" font-family="'Courier New', Courier, monospace" font-weight="700" fill="#64748b">kind</text>
+        <text x="58" y="12.5" font-size="9" font-weight="700" fill="#1e293b">frequency rate</text>
 
-      <text x="88.5" y="12.5" text-anchor="middle" font-size="8" font-weight="600" fill="#64748b">or</text>
+        <text x="0" y="36" font-size="8" font-family="'Courier New', Courier, monospace" font-weight="700" fill="#64748b">raw_value</text>
+        <text x="58" y="37" font-size="12" font-weight="800" fill="#0f172a">2 to 3 seizures</text>
 
-      <rect x="99" y="0" width="78" height="18" rx="9" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.2" />
-      <text x="138" y="12" text-anchor="middle" font-size="8.5" font-weight="700" fill="#0f172a">LLM call 2</text>
+        <text x="0" y="60" font-size="8" font-family="'Courier New', Courier, monospace" font-weight="700" fill="#64748b">evidence</text>
+        <rect x="54" y="48" width="190" height="20" rx="3" fill="#f8fafc" stroke="#e2e8f0" stroke-width="0.8" />
+        <text x="60" y="61" font-size="7.6" font-style="italic" fill="#475569">&#x201C;Shortly afterwards, she experienced 2 to 3 seizures&#x201D;</text>
+      </g>
+
+      <!-- Event e2 -->
+      <g transform="translate(0, 104)">
+        <rect x="0" y="0" width="264" height="96" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
+        <g transform="translate(10, 8)">
+          <rect x="0" y="1" width="20" height="15" rx="3" fill="#475569" />
+          <text x="10" y="12" text-anchor="middle" font-size="8" font-weight="800" fill="#ffffff">e2</text>
+          <text x="28" y="12.5" font-size="8" font-family="'Courier New', Courier, monospace" font-weight="700" fill="#64748b">kind</text>
+          <text x="58" y="12.5" font-size="9" font-weight="700" fill="#1e293b">seizure free</text>
+
+          <text x="0" y="36" font-size="8" font-family="'Courier New', Courier, monospace" font-weight="700" fill="#64748b">raw_value</text>
+          <text x="58" y="37" font-size="12" font-weight="800" fill="#0f172a">seizure-free since then</text>
+
+          <text x="0" y="60" font-size="8" font-family="'Courier New', Courier, monospace" font-weight="700" fill="#64748b">evidence</text>
+          <rect x="54" y="48" width="190" height="20" rx="3" fill="#f8fafc" stroke="#e2e8f0" stroke-width="0.8" />
+          <text x="60" y="61" font-size="7.6" font-style="italic" fill="#475569">&#x201C;She has remained seizure-free since then.&#x201D;</text>
+        </g>
+      </g>
+
+      <!-- Provisional answer -->
+      <g transform="translate(0, 208)">
+        <rect x="0" y="0" width="264" height="132" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
+        <g transform="translate(10, 10)">
+          <text x="0" y="10" font-size="9.5" font-weight="800" fill="#334155">Provisional answer</text>
+
+          <text x="0" y="30" font-size="8" font-family="'Courier New', Courier, monospace" font-weight="700" fill="#64748b">selected_event_ids</text>
+          <text x="112" y="30" font-size="9" font-weight="700" fill="#0f172a">[e2]</text>
+
+          <text x="0" y="48" font-size="8" font-family="'Courier New', Courier, monospace" font-weight="700" fill="#64748b">final_label</text>
+          <rect x="66" y="36" width="122" height="18" rx="3" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="0.8" />
+          <text x="127" y="49" text-anchor="middle" font-size="9" font-weight="700" fill="#334155">seizure free since then</text>
+
+          <text x="0" y="68" font-size="8" font-family="'Courier New', Courier, monospace" font-weight="700" fill="#64748b">evidence</text>
+          <text x="60" y="68" font-size="7.6" font-style="italic" fill="#475569">&#x201C;She has remained seizure-free since then.&#x201D;</text>
+
+          <text x="0" y="88" font-size="8" font-family="'Courier New', Courier, monospace" font-weight="700" fill="#64748b">rationale</text>
+          <text x="0" y="101" font-size="7.6" fill="#475569">&#x201C;The patient experienced a recent cluster of 2-3 seizures but has been</text>
+          <text x="0" y="113" font-size="7.6" fill="#475569">seizure-free since the discontinuation of Valproate on 10 July.&#x201D;</text>
+        </g>
+      </g>
     </g>
-
-    <g transform="translate(12, 64)">
-      <rect x="0" y="0" width="191" height="120" rx="4" fill="#fafafa" stroke="#e2e8f0" stroke-width="1" />
-
-      <rect x="6" y="8" width="179" height="23" rx="3" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.2" />
-      <text x="10" y="22" font-size="7.5" font-weight="700" font-family="monospace" fill="#0f172a">"...several times per week"</text>
-
-      <rect x="6" y="33" width="179" height="20" rx="3" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.2" />
-      <text x="10" y="46" font-size="8" font-weight="800" font-family="monospace" fill="#0f172a">✓ "multiple per week"</text>
-
-      <rect x="6" y="63" width="179" height="23" rx="3" fill="#fafafa" stroke="#e2e8f0" stroke-width="1" />
-      <text x="10" y="77" font-size="7.5" font-family="monospace" fill="#94a3b8">"three... in past six months"</text>
-
-      <rect x="6" y="88" width="179" height="20" rx="3" fill="#fafafa" stroke="#e2e8f0" stroke-width="1" />
-      <text x="10" y="101" font-size="8" font-family="monospace" fill="#94a3b8">✗ "3 per 6 months"</text>
-    </g>
-
-    <text x="107" y="202" text-anchor="middle" font-size="9.5" font-weight="600" fill="#334155">Applies Decision Policy</text>
-    <text x="107" y="218" text-anchor="middle" font-size="8.5" fill="#64748b">Chooses or combines candidates</text>
-    <text x="107" y="230" text-anchor="middle" font-size="8.5" fill="#64748b">to give the final answer.</text>
   </g>
 
-  <!-- Connector 3 -->
-  <path d="M 717 145 L 737 145" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" fill="none" />
+  <!-- Flow: Evidence record -> Decide (branch to both executors) -->
+  <path d="M 696 214 L 718 214" stroke="#64748b" stroke-width="1.6" fill="none" />
+  <path d="M 718 214 L 718 192 L 738 192" stroke="#64748b" stroke-width="1.6" marker-end="url(#arrow)" fill="none" />
+  <path d="M 718 214 L 718 334 L 738 334" stroke="#64748b" stroke-width="1.6" marker-end="url(#arrow)" fill="none" />
 
-  <!-- ================= 4. FINAL OUTPUT ================= -->
-  <g transform="translate(741, 15)" filter="url(#shadow)">
-    <rect x="0" y="0" width="215" height="265" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
-    <path d="M 0 6 Q 0 0 6 0 L 209 0 Q 215 0 215 6 L 215 30 L 0 30 Z" fill="#f8fafc" />
-    <line x1="0" y1="30" x2="215" y2="30" stroke="#e2e8f0" stroke-width="1" />
-    <text x="107" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="#334155">Final Output</text>
+  <!-- ================================================================== -->
+  <!-- 4. STAGE 2: DECIDE (one policy, two executors)                      -->
+  <!-- ================================================================== -->
+  <g transform="translate(746, 18)">
+    <rect x="0" y="0" width="224" height="392" rx="8" fill="#faf5ff" stroke="#c4b5fd" stroke-width="1.4" />
 
-    <rect x="25" y="38" width="165" height="18" rx="9" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1" />
-    <text x="107" y="50" text-anchor="middle" font-size="8.5" font-weight="600" fill="#64748b">Extracted Fact &amp; Evidence</text>
+    <path d="M 0 8 Q 0 0 8 0 L 216 0 Q 224 0 224 8 L 224 34 L 0 34 Z" fill="#ede9fe" />
+    <line x1="0" y1="34" x2="224" y2="34" stroke="#ddd6fe" stroke-width="1" />
+    <circle cx="21" cy="17" r="7" fill="#7c3aed" />
+    <text x="21" y="20.5" text-anchor="middle" font-size="9" font-weight="800" fill="#ffffff">2</text>
+    <text x="34" y="21" font-size="12" font-weight="700" fill="#5b21b6">Decide</text>
 
-    <g transform="translate(12, 64)">
-      <rect x="0" y="0" width="191" height="120" rx="4" fill="#fafafa" stroke="#e2e8f0" stroke-width="1" />
-
-      <rect x="8" y="12" width="175" height="42" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
-      <text x="14" y="28" font-size="8" font-weight="600" fill="#64748b">Final Label:</text>
-      <text x="14" y="44" font-size="10" font-weight="800" font-family="monospace" fill="#0f172a">"multiple per week"</text>
-
-      <rect x="8" y="60" width="175" height="48" rx="4" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" />
-      <text x="14" y="75" font-size="8" font-weight="600" fill="#64748b">Grounding Evidence:</text>
-      <text x="14" y="89" font-size="7.5" font-family="monospace" fill="#475569">"brief morning myoclonic jerks</text>
-      <text x="14" y="100" font-size="7.5" font-family="monospace" fill="#475569">several times per week"</text>
+    <!-- Policy row applied to this letter (shared by both executors) -->
+    <g transform="translate(10, 44)">
+      <rect x="0" y="0" width="204" height="54" rx="5" fill="#ffffff" stroke="#c4b5fd" stroke-width="1" stroke-dasharray="3 3" />
+      <text x="102" y="16" text-anchor="middle" font-size="8.5" font-weight="700" fill="#6d28d9">Policy applied</text>
+      <text x="102" y="31" text-anchor="middle" font-size="8" fill="#334155">recent count after seizure-free interval</text>
+      <text x="102" y="45" text-anchor="middle" font-size="8" fill="#334155">&#x2192; count over that interval</text>
     </g>
 
-    <text x="107" y="202" text-anchor="middle" font-size="9.5" font-weight="600" fill="#334155">Auditable Structured Facts</text>
-    <text x="107" y="218" text-anchor="middle" font-size="8.5" fill="#64748b">Final label preserved with</text>
-    <text x="107" y="230" text-anchor="middle" font-size="8.5" fill="#64748b">direct source evidence link.</text>
+    <!-- Executor A: Hybrid (rules) -->
+    <g transform="translate(10, 108)">
+      <rect x="0" y="0" width="204" height="132" rx="6" fill="#ffffff" stroke="#a78bfa" stroke-width="1.2" />
+      <g transform="translate(10, 10)">
+        <rect x="0" y="0" width="76" height="22" rx="11" fill="#ede9fe" stroke="#c4b5fd" stroke-width="1" />
+        <g color="#6d28d9"><use xlink:href="#glyph-rules" x="8" y="4" width="14" height="14" /></g>
+        <text x="26" y="15" font-size="9.5" font-weight="800" fill="#6d28d9">Hybrid</text>
+        <text x="0" y="37" font-size="8.5" fill="#334155">rules (named functions)</text>
+
+        <line x1="0" y1="46" x2="184" y2="46" stroke="#ede9fe" stroke-width="1" />
+
+        <text x="0" y="66" font-size="8" font-family="'Courier New', Courier, monospace" font-weight="700" fill="#64748b">selected_event_ids</text>
+        <text x="112" y="66" font-size="9" fill="#94a3b8">[e2]</text>
+        <text x="136" y="66" font-size="9" fill="#64748b">&#x2192;</text>
+        <text x="150" y="66" font-size="9" font-weight="800" fill="#0f172a">[e1]</text>
+
+        <text x="0" y="96" font-size="8" font-family="'Courier New', Courier, monospace" font-weight="700" fill="#64748b">final_label</text>
+        <rect x="70" y="82" width="114" height="20" rx="3" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="0.8" />
+        <text x="127" y="96" text-anchor="middle" font-size="9.5" font-weight="800" fill="#0f172a">2 to 3 per 1 month</text>
+      </g>
+    </g>
+
+    <!-- Executor B: LLM-only (LLM call 2) -->
+    <g transform="translate(10, 250)">
+      <rect x="0" y="0" width="204" height="132" rx="6" fill="#ffffff" stroke="#a78bfa" stroke-width="1.2" />
+      <g transform="translate(10, 10)">
+        <rect x="0" y="0" width="86" height="22" rx="11" fill="#ede9fe" stroke="#c4b5fd" stroke-width="1" />
+        <g color="#6d28d9"><use xlink:href="#glyph-llm" x="8" y="4" width="14" height="14" /></g>
+        <text x="26" y="15" font-size="9.5" font-weight="800" fill="#6d28d9">LLM-only</text>
+        <text x="0" y="37" font-size="8.5" fill="#334155">LLM call 2 (policy prompt)</text>
+
+        <line x1="0" y1="46" x2="184" y2="46" stroke="#ede9fe" stroke-width="1" />
+
+        <text x="0" y="66" font-size="8" font-family="'Courier New', Courier, monospace" font-weight="700" fill="#64748b">selected_event_ids</text>
+        <text x="112" y="66" font-size="9" fill="#94a3b8">[e2]</text>
+        <text x="136" y="66" font-size="9" fill="#64748b">&#x2192;</text>
+        <text x="150" y="66" font-size="9" font-weight="800" fill="#0f172a">[e1]</text>
+
+        <text x="0" y="96" font-size="8" font-family="'Courier New', Courier, monospace" font-weight="700" fill="#64748b">final_label</text>
+        <rect x="70" y="82" width="114" height="20" rx="3" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="0.8" />
+        <text x="127" y="96" text-anchor="middle" font-size="9.5" font-weight="800" fill="#0f172a">2 to 3 per 1 month</text>
+      </g>
+    </g>
   </g>
 
+  <!-- Flow: both executors -> join -> final output -->
+  <path d="M 970 192 L 988 192 L 988 214" stroke="#64748b" stroke-width="1.4" fill="none" />
+  <path d="M 970 334 L 988 334 L 988 214" stroke="#64748b" stroke-width="1.4" fill="none" />
+  <path d="M 988 214 L 1004 214" stroke="#64748b" stroke-width="1.4" marker-end="url(#arrow)" fill="none" />
+
+  <!-- ================================================================== -->
+  <!-- 5. FINAL OUTPUT                                                     -->
+  <!-- ================================================================== -->
+  <g transform="translate(1010, 176)">
+    <rect x="0" y="0" width="112" height="76" rx="6" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.2" />
+    <text x="56" y="22" text-anchor="middle" font-size="8" font-weight="700" fill="#64748b" letter-spacing="0.5">FINAL OUTPUT</text>
+    <line x1="20" y1="28" x2="92" y2="28" stroke="#e2e8f0" stroke-width="1" />
+    <text x="56" y="47" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1e293b">2 to 3 per</text>
+    <text x="56" y="62" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1e293b">1 month</text>
+
+    <!-- Where "1 month" comes from -->
+    <text x="56" y="92" text-anchor="middle" font-size="7.6" fill="#64748b">count from e1 over the interval</text>
+    <text x="56" y="104" text-anchor="middle" font-size="7.6" fill="#64748b">10 Jul &#x2192; 10 Aug &#x2248; 1 month</text>
+  </g>
 </svg>

@@ -283,7 +283,7 @@ def _spec_for(item: Mapping[str, Any]) -> ModelSpec:
     slug = str(item["slug"])
     hosted = item["route"] == "hosted"
     credentials = {
-        "grok46": ("AI_GATEWAY_API_KEY",),
+        "grok46": ("OPENROUTER_API_KEY",),
         "gpt56luna": ("OPENAI_API_KEY",),
         "gemini37flash": ("OPENROUTER_API_KEY",),
         "deepseek_v4_flash": ("DEEPSEEK_API_KEY",),

@@ -264,18 +264,23 @@ def test_hydrate_encode_row_rebuilds_events_from_raw() -> None:
     assert hydrated["comparison"]["purist_correct"] is True
 
 
-def test_select_from_extract_verify_is_gemini_only() -> None:
+def test_select_from_extract_verify_allows_living_slugs() -> None:
     payload = verify_gan("gan_llm_select_from_extract", "dev750", "gemini37flash")
     assert payload["ok"] is True
     holdout = verify_gan("gan_llm_select_from_extract", "test450", "gemini37flash")
     assert holdout["row_policy"] == "aggregate_only"
     assert holdout["holdout_scratch"].endswith("gan_llm_select_from_extract")
     with pytest.raises(RuntimeError, match="Gemini only"):
-        verify_gan("gan_llm_select_from_extract", "dev750", "grok46")
+        verify_gan("gan_llm_encode", "dev750", "grok46")
     assert verify_gan("gan_llm_select_from_extract", "test450", "qwen38_27b")[
         "row_policy"
     ] == "aggregate_only"
     assert verify_gan("gan_llm_select_from_extract", "test450", "gemma4_26b")["ok"] is True
+    assert verify_gan("gan_llm_select_from_extract", "test450", "deepseek_v4_flash")[
+        "ok"
+    ] is True
+    assert verify_gan("gan_llm_select_from_extract", "test450", "grok46")["ok"] is True
+    assert verify_gan("gan_llm_select_from_extract", "test450", "gpt56luna")["ok"] is True
 
 
 def test_llm_row_has_no_separate_encode_stage() -> None:

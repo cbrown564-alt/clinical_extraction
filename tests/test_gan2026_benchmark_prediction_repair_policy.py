@@ -113,12 +113,14 @@ def test_leftover_event_tokens_do_not_block_count_per_period() -> None:
     assert repair_prediction_label("1x/week") == "1 per week"
 
 
-def test_most_days_and_nights_are_multiple_per_week() -> None:
+def test_most_days_nights_and_shifts_are_multiple_per_week() -> None:
     assert repair_prediction_label("most days") == "multiple per week"
     assert repair_prediction_label("on most days") == "multiple per week"
     assert repair_prediction_label("brief episodes most days") == "multiple per week"
     assert repair_prediction_label("most nights") == "multiple per week"
     assert repair_prediction_label("most nights of the week") == "multiple per week"
+    assert repair_prediction_label("most shifts") == "multiple per week"
+    assert repair_prediction_label("episodes crop up most shifts") == "multiple per week"
     trace = repair_prediction_label_with_trace("most days")
     assert any(
         event.rule_id == "benchmark_repair.vague_frequency_to_multiple"
@@ -146,7 +148,6 @@ def test_timing_and_vague_words_are_not_invented_rates() -> None:
     assert repair_prediction_label("nocturnal") == "no seizure frequency reference"
     assert repair_prediction_label("intermittent") == "no seizure frequency reference"
     assert repair_prediction_label("1 cluster per week") == "unknown"
-    assert repair_prediction_label("most shifts") == "no seizure frequency reference"
 
 
 def test_daily_seizure_evidence_still_renders_one_per_day() -> None:

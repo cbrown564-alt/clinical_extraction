@@ -128,16 +128,20 @@ export default function TraceControls() {
   }, [recordQuery.data, setNoteText]);
 
   // Restore an exact run from the URL once the Gan comparison catalog arrives.
+  // Depend on the URL / catalog only — not selectedRunId. Including the store
+  // selection here re-applies the old URL after every picker change and snaps
+  // method/model back before the URL sync effect can catch up.
   useEffect(() => {
     if (pipelineOptions.length === 0) return;
+    const current = useArchitectStore.getState();
     if (demoLocked) {
       const locked =
         resolveGanPipelineOption(pipelineOptions, DEMO_GAN_RUN_ID) ??
         pipelineOptions[0];
       if (
         locked &&
-        (locked.run_id !== selectedRunId ||
-          locked.pipeline_family !== pipelineFamily)
+        (locked.run_id !== current.selectedRunId ||
+          locked.pipeline_family !== current.pipelineFamily)
       ) {
         setSelectedRunId(locked.run_id, locked.pipeline_family);
       }
@@ -150,21 +154,13 @@ export default function TraceControls() {
     if (!requestedOption || !isPaperCellId(ganPickerMethodId(requestedOption))) {
       return;
     }
-    const current = useArchitectStore.getState();
     if (
       requestedOption.run_id !== current.selectedRunId ||
       requestedOption.pipeline_family !== current.pipelineFamily
     ) {
       setSelectedRunId(requestedOption.run_id, requestedOption.pipeline_family);
     }
-  }, [
-    demoLocked,
-    pipelineFamily,
-    pipelineOptions,
-    requestedRunId,
-    selectedRunId,
-    setSelectedRunId,
-  ]);
+  }, [demoLocked, pipelineOptions, requestedRunId, setSelectedRunId]);
 
   // Keep adapter family aligned, or fall back from a legacy registry run id.
   useEffect(() => {

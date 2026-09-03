@@ -9,7 +9,7 @@ The dissertation cites Gan 2026 only
 ([Gan is the dissertation paper](decisions/gan-is-the-dissertation-paper.md)).
 The paper story is fixed by
 [paper-story simplification](decisions/paper-story-simplification.md):
-one Gan manuscript, one shared LLM extraction record, two ways to
+one Gan manuscript, one shared LLM evidence record, two ways to
 decide, a small mechanism table, and tight claim language.
 
 The pipeline has two paper-facing stages. **Extract** is one LLM call

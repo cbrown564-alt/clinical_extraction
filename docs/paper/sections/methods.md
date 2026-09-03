@@ -1,8 +1,11 @@
 # Paper methods
 
 Date: 2026-08-17
-Revised: 2026-09-02 (Gan only; two decision executors on one shared
-extract; paper stages are extract and decide)
+Revised: 2026-09-03 (methods reorganised by stage: Architecture and
+the evidence record, Extract, Decide, Evaluation; the record is named
+the evidence record and shown as a field table; Figure 2 redrawn as a
+funnel with a fork into the two executors; policy table cut to two
+columns; new one-row-two-implementations table)
 Status: current; matches `paper/draft/FES.tex` Section III
 Owner: this file
 Scope: [Gan is the dissertation paper](../decisions/gan-is-the-dissertation-paper.md),
@@ -24,7 +27,7 @@ the fine-tuned LLM previously reported on the same synthetic corpus
 (Gan et al., 2026)?
 
 **Secondary question.** Does extract then decide add value:
-does a decision applied to the extraction record improve on the
+does a decision applied to the evidence record improve on the
 provisional answer; does it matter whether
 rules or a second LLM call apply the policy; and which
 ingredients of the extraction prompt does the result depend on?
@@ -42,7 +45,7 @@ question.
 
 The study treats the route from a clinic letter to one submitted
 seizure-frequency label as two stages. **Extract** is one LLM call
-that reads the full letter and returns a structured record of every
+that reads the full letter and returns the evidence record: every
 candidate seizure-frequency event, each with an exact quoted evidence
 span, a category, and a label in one of the gold standard's canonical
 forms, together with a provisional answer chosen from those
@@ -93,13 +96,65 @@ development-first directional study of semantic sufficiency is
 specified before any further held-out replay
 ([protocol](../../research/gan2026/gan_directional_evidence_adjudication_dev750_protocol_2026-09-02.md)).
 
-## C. What each stage receives and returns
+## C. Architecture and the evidence record
 
-| | Extract | Decide |
-| --- | --- | --- |
-| Input | Full letter | Candidate record and decision policy; not the letter |
-| Output | Candidate record: events, each with quoted span, category, canonical label; provisional answer | Final label and its supporting event(s) |
-| Performed by | LLM call 1 | Hybrid: rules. LLM-only: LLM call 2 |
+Paper subsections are B. Architecture and the Evidence Record,
+C. Extract, D. Decide, E. Evaluation. The former "LLM Prompt Design",
+"Rule Design" and "Pipeline Optimisation" subsections are folded in:
+prompt design into Extract and Decide, rule design into Decide, and the
+one load-bearing sentence of optimisation (interacting policies
+motivated scoring after each stage) into Architecture; the development
+controls moved to Evaluation.
+
+The shared data structure is called the **evidence record** (not
+"extraction record" or "candidate record"): it is named for what decide
+consumes, and the evidence-obligation ablation stresses it.
+
+**Figure 2** (`paper/draft/pipeline_architecture.tex`, compiled to
+`pipeline_architecture.pdf`) follows one development letter through the
+pipeline and is drawn to show three things: the letter narrows to a
+record and the record to a label; one call produces the record; the
+record forks to two executors that reconverge on one label. The four
+prompt ingredients appear as tags on the extract call.
+
+Funnel numbers reported in the Figure 2 caption, computed from the
+cited Gemini 3.7 Flash `dev750` extraction cell
+(`paper_experiments/gan/gan_llm_extract/gemini37flash/dev750/rows.jsonl`,
+750 rows, all parsed): 2.16 events per letter (median 2; 216 letters
+with one event, 292 with two, 242 with three or more; max 6); 22.1
+quoted evidence words per letter (median 21); final label 3.9 words.
+Letters are about 400 words. These are development mechanism
+statistics for one model, not test results.
+
+Figure 2 example: `dev750`, `source_row_index` 14187, cited Gemini 3.7
+Flash cell. Letter: "She discontinued Valproate on 10 Jul. Shortly afterwards,
+she experienced 2 to 3 seizures, one triggered by missed medication. She has
+remained seizure-free since then." Record: e1 frequency rate, shortly after 10 Jul,
+2 to 3 seizures; e2 seizure free, since mid-July, seizure-free since then;
+provisional answer seizure free for a duration (e2). Decide: post-change burst
+row applies, counting the burst rate over that interval = 2 to 3 per 1 month.
+Rules (`post_change_burst`) and LLM call 2 both return 2 to 3 per 1 month, which
+matches gold. Sources:
+`paper_experiments/gan/rungs/gemini37flash/dev750/scored.jsonl`,
+`paper_experiments/gan/gan_llm_extract/gemini37flash/dev750/rows.jsonl`,
+`paper_experiments/gan/gan_llm_select_from_extract/gemini37flash/dev750/rows.jsonl`.
+Figure 1 (the example letter with two highlighted candidates) is a
+different development letter (`source_row_index` 5873) and is not a
+decide-corrects-extract example.
+
+**Table II, the evidence record**, lists the fields of the frozen
+extract schema
+([`gan_llm_extract_prompt_template.json`](../../../paper/supporting%20materials/gan_llm_extract_prompt_template.json))
+with the Figure 2 event e1 as the example event and e2 as the provisional selection. Per event: `event_id`,
+`kind` (six categories), `raw_value`, `evidence`, `time_window`,
+`applies_to`, `temporality`, `assertion_status`, `notes`. Selection:
+`selected_event_ids`, `final_label`, `final_kind`, `evidence`,
+`rationale`, `confidence`. Note the honest reading of the contract:
+events carry `raw_value` (instructed as source-near, in practice
+usually written in an allowed form), and the canonical label is on the
+selection only. The paper says "value" for events and "label" for the
+answer. The second call returns the selection block and may not add
+events or quotes.
 
 The pipeline is a fixed sequence of calls and functions. No LLM call
 uses tools, chooses the next step, or invokes another model; each call
@@ -125,50 +180,88 @@ that applies the policy inside the extraction call. They are
 summarised in the supporting materials with their scope
 ([results](results.md) section B and D).
 
-## E. Extraction prompt
+## E. Extract
 
-The extraction prompt has four ingredients, each removed in turn in
-the ablations:
+The paper frames extract as the larger task: whole letter in, record
+out, most complex prompt; the model finds and quotes, normalises, and
+chooses in one call. The extraction prompt has four ingredients, each
+removed in turn in the ablations:
 
-1. **Instructions** to identify relevant seizure-frequency events and
-   to propose a provisional answer under the decision policy.
+1. **Instructions** to find every seizure-frequency statement, represent
+   it as an event in one of six categories, and propose a provisional
+   answer.
 2. **Examples** of how events should be represented.
 3. **Allowed labels**: a closed list of the canonical label forms used
-   by the gold standard.
-4. **Evidence obligation**: schema fields for the evidence span of
-   every event, with the instruction that each span must be an exact
-   quote from the letter. The ablation removes the fields and the
-   instruction together as one package; it does not test the quote
-   instruction alone.
+   by the gold standard, with writing rules (digits, flattened bounds,
+   night counts as day counts).
+4. **Evidence obligation**: the `evidence` fields for every event and
+   the selection, with the instruction that each must be an exact
+   quote. The ablation removes the fields and the instruction together
+   as one package; it does not test the quote instruction alone.
 
 Each event is assigned one of six categories (frequency rate, cluster
 frequency, seizure free, last event only, unknown frequency, no
-reference). The decision policy is stated once and applied twice:
-provisionally by the model inside the extraction call, and finally at
-decide. The frozen template, without `note_text`, is
+reference). The extraction prompt states the first two rows of the
+decision policy table (overall count over breakdown; not seizure-free
+while events continue), so the model applies them when it proposes the
+provisional answer; the paper says so in the Extract text and marks the
+two rows with an asterisk in Table III. The remaining eight rows are
+the work of decide. The frozen template, without `note_text`, is
 [`gan_llm_extract_prompt_template.json`](../../../paper/supporting%20materials/gan_llm_extract_prompt_template.json).
 It is not the source-near variant (`gan_llm_extract_raw`) and not the
 second-call decide prompt.
 
-## F. Decision policy and rules
+## F. Decide: policy and two implementations
 
-| When | Do |
-| --- | --- |
-| Several current seizure types are present | Choose the highest current or recent frequency |
-| The letter gives an overall current count and a breakdown by type | Choose the overall count |
-| A seizure-free statement sits with other current seizure-like events | Keep seizure-free separate from unknown or last-event statements |
+**Table III, decision policy**, is now two columns (the record
+contains; final answer), ten rows in two groups; the
+provisional-to-final example column was cut and the worked examples are
+in the supporting materials. Rows and Hybrid rule families:
+
+| Group | The record contains | Final answer | Hybrid rule family |
+| --- | --- | --- | --- |
+| Choose a different event | An overall count and a breakdown by seizure type | The overall count | extract prompt; restated in call 2 |
+| Choose a different event | A seizure-free statement while other seizure-like events continue | The continuing events | extract prompt; restated in call 2 |
+| Choose a different event | A brief daily spell, or unknown, and the usual gap between seizures | The usual gap | `usual_interval` |
+| Choose a different event | A year-to-date total and a typical rate | The typical rate | `typical_over_ytd` |
+| Write a new label | Counts for named months (Figure 2) | Total over those months | `monthly_diary` |
+| Write a new label | Seizures on separate dates or months | Count over that span | `dated_sequence` |
+| Write a new label | A recent count after a stated seizure-free interval | Count over that interval | `breakthrough` |
+| Write a new label | A burst after a treatment change, then a quiet period | Burst count over the quiet period | `post_change_burst` |
+| Write a new label | A dated last seizure and a quiet period since of under six months | Count over the time since | `last_event_well_since` |
+| Write a new label | Current attacks that are not epileptic | Seizure free for multiple years | `non_epileptic` |
+
+On `dev750` the rules that changed an answer were `monthly_diary` (47),
+`last_event_well_since` (10), `dated_sequence` (10),
+`post_change_burst` (7), `breakthrough` (3) and `non_epileptic` (1)
+(`paper_experiments/gan/rungs/gemini37flash/dev750/hops.jsonl`).
+
+**Table IV, one policy row, two implementations**, shows the
+month-count row as (left) pseudocode of the Hybrid rule including its
+guards and (right) the instruction and worked example given to LLM
+call 2. Sources: `monthly_diary_label_from_events` in
+`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_monthly_diary.py`
+(sum counts over two or more named months; span is first to last month
+inclusive) and `_should_preserve_label_from_monthly_diary` in
+`hybrid_structured_events.py` (never replace a per-day or per-week
+rate, or seizure free for four months or more or any years); the
+"Month counts" case in
+`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/prompt_llm_select.py`
+(`CASES`), whose example is 3 in March + 6 in May → 9 per 3 month. The
+paper states the executors differ in how guards are expressed, how a
+pattern is recognised, and in determinism.
 
 In Hybrid, rules first rewrite any label the model left in a
 non-canonical form (at most 0.01 on `test450`: 355 → 360 before the
 decision rules), then apply the policy. Each rule is a named function
-that reads the record, never the letter. Rule authority is recorded by
-type: **gate** (block a provisional answer the policy forbids),
-**reselect** (choose a different already-extracted event), and
-**rewrite** (derive a new label from the extracted events, such as a
-diary total). No decision rule scans the letter for a new candidate.
-The named families are in the [rule catalogue](../rule_catalogue.md).
-In LLM-only, the second call states the same policy as instructions
-with worked examples and receives only the record.
+that reads the record, never the letter, and has guards that stop it
+firing. The repository's finer authority vocabulary (gate, reselect,
+rewrite) stays in the [rule catalogue](../rule_catalogue.md) and the
+supporting materials. No decision rule scans the letter for a new
+candidate. In LLM-only, the second call receives the record with the
+provisional answer marked as the first choice, one instruction with one
+worked example per row, and may write a new label only when no single
+event is the answer; it never adds events or quotes.
 
 ## G. Development controls and reproducibility
 

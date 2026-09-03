@@ -1,9 +1,13 @@
 # Paper results
 
 Date: 2026-08-24
-Revised: 2026-09-02 (two decision executors on one shared extract;
-Rules-only and five-cell rows move to secondary; section D keeps three
-codebook prompt ablations; inventory panel moves to supporting material)
+Revised: 2026-09-03 (section F2 adds six-model rule select without
+encode; section H adds same-model policy-example select transfer on
+`test450`; section C adds extract answer-or-evidence content recall on
+the shared Gemini record; 2026-09-02 two decision executors on one
+shared extract; Rules-only and five-cell rows move to secondary;
+section D keeps three codebook prompt ablations; inventory panel moves
+to supporting material)
 Status: structured draft matching `paper/draft/FES.tex`
 Owner: this file
 Scope: [Gan is the dissertation paper](../decisions/gan-is-the-dissertation-paper.md),
@@ -39,11 +43,11 @@ investigations, and seizure-frequency statements from the same
 synthetic letters. That study reports output volume and structure
 only. It has no inventory reference labels and is not scored.
 
-## B. Two decision executors on one shared extraction record
+## B. Two decision executors on one shared evidence record
 
 The paper's core comparison holds the extraction call fixed and
 changes only who performs decide. Both executors replay the same
-saved Gemini 3.7 Flash extraction record on locked `test450`, so the
+saved Gemini 3.7 Flash evidence record on locked `test450`, so the
 difference between them is attributable to the decision stage alone
 (Table 1).
 
@@ -97,6 +101,20 @@ Rules-only leaves the dissertation and supporting materials; the
 rows stay valid as research history.
 
 ## C. The most difficult errors involve interpretation, not detection
+
+On the shared Gemini extract record, gold is already present as a
+Purist-correct answer somewhere in the ledger (any event or the
+provisional label) or as overlapping gold-reference evidence on
+**433**/450 letters (**0.962**). Answer alone is 382/450 (0.849);
+evidence-overlap alone is 308/450 (0.684). Hybrid and LLM-only decide
+stops (387 and 383) sit below that stage-1 rate; decide-correct letters
+with no extract answer-or-evidence hit are **1** (Hybrid) and **0**
+(LLM-only). So residual final errors are mostly interpretation and
+label convention on an already-rich record, not missed detection.
+Owner and replay:
+[extract content recall](../../research/gan2026/gan_extract_content_recall_2026-09-03.md),
+`python scripts/measure_gan_extract_content_recall.py`
+(zero model calls; holdout aggregate-only).
 
 Hybrid submitted 387/450 cited Purist-correct labels. Residual errors
 were not spread evenly across frequency bands. Table 2 is the living
@@ -175,7 +193,7 @@ Pragmatic companion: Frequent 0.95, Infrequent 0.82, Unknown 0.74,
 Seizure free 0.90; micro-F1 0.88.
 
 **Table 2c (companion; supporting material).** LLM-only — the same
-Gemini extraction record with the living policy-example decide prompt
+Gemini evidence record with the living policy-example decide prompt
 as the second call. Purist 383/450; two later-stage rows with no
 scorable decide label count as incorrect. Same class order as Table 2a.
 
@@ -262,8 +280,8 @@ bundled codebook find.
 
 ### D3. Retained extraction-prompt mechanism evidence
 
-The revised paper retains exactly three focused ablations against the full
-codebook extraction prompt. Each uses the shared extraction record and the
+The revised paper retains four focused ablations against the full
+codebook extraction prompt. Each uses the shared evidence record and the
 same cell-3 rule replay: find is the provisional-answer F1 and select is the
 final-answer F1. The evidence variant removes the evidence fields and
 exact-quote instruction as one bundled **evidence-obligation package**; it is
@@ -271,7 +289,7 @@ not a quote-only ablation. These comparisons do not claim that effects are
 additive.
 
 The table holds Gemini 3.7 Flash and temperature 0. It changes the
-find request. The four codebook rows below stay living cell 3
+find request. The five codebook rows below stay living cell 3
 (`gan_rules_encode`, then `llm_select_after_codebook`). The source-near and
 Holgate rows are secondary and are reported separately below.
 
@@ -281,6 +299,7 @@ Holgate rows are secondary and are reported separately below.
 | No examples | Same | Same | Yes | No | Yes | Living parser |
 | Examples only | Same | Same | No | Yes | Yes | Living parser |
 | No evidence | Same, no `evidence` keys | Same, no quote rule | Yes | Yes | No | Living parser |
+| No examples, no evidence, no forms | Same, no `evidence` keys | Same, no quote rule | No | No | No | Living parser |
 | Source-near | Same | Same + informal form hint | No | No | Yes | Living parser |
 | Holgate-like | Same | Holgate three-step | No | No | Yes | `holgate_dialect_v1` |
 | Holgate one-label | No | Holgate three-step | No | No | No | `holgate_dialect_v1` |
@@ -301,6 +320,9 @@ list. Source-near still leaks a few informal labels such as
 `1 per day`.
 
 Removing examples cost 10 letters at find and 17 at select. Dropping
+the combined examples/forms/evidence deletion scored 0.051 (23/450) at
+find, 0.187 (84/450) after rule encode, and 0.233 (105/450) after rule
+select. Dropping
 the closed form list, while keeping the example strings, cost 8 at
 find and 23 at select (387 → 364). Dropping the quote obligation
 cost 10 at find and 17 at select (387 → 370), the same select total
@@ -312,6 +334,7 @@ schema or quote rule, scores 198 at find on that dialect map.
 There is no ledger to encode or select. Owner:
 [prompt-component ablation](../../research/gan2026/gan_extract_prompt_component_ablation_2026-08-30.md),
 [round 2](../../research/gan2026/gan_extract_prompt_component_ablation_round2_2026-08-30.md),
+[combined ablation protocol](../../research/gan2026/gan_extract_prompt_component_ablation_combined_protocol_2026-09-03.md),
 [source-near vs bundled encode](../../research/paper/gan_source_near_vs_bundled_encode_2026-08-23.md).
 
 | Find request | Provisional / find | Encode | Final / select |
@@ -320,9 +343,10 @@ There is no ledger to encode or select. Owner:
 | Allowed forms, no examples | 0.767 (345) | 0.776 (349) | 0.822 (370) |
 | Examples only, no forms | 0.771 (347) | 0.776 (349) | 0.809 (364) |
 | Codebook, no evidence keys | 0.767 (345) | 0.771 (347) | 0.822 (370) |
+| No examples, no evidence, no forms | 0.051 (23) | 0.187 (84) | 0.233 (105) |
 
 **Table 3b.** Main-paper prompt mechanism comparison. The full codebook
-prompt is compared with exactly three focused variants: no examples, no
+prompt is compared with four focused variants: no examples, no
 closed allowed-label forms, and the bundled evidence-obligation package
 ablation. The encode column exposes the shared replay; it is not a fourth
 prompt ablation.
@@ -464,6 +488,76 @@ validity, workflow fit, privacy compliance, or deployment readiness
 ([paper-story simplification](../decisions/paper-story-simplification.md),
 Decision 6).
 
+## F2. Rule select without encode separates encode from decide *(repository)*
+
+Table 4 always runs `gan_rules_encode` before rule select. Table H1
+runs same-model LLM select with no encode. The living cell-4 arm
+`llm_select_only` holds select families on and codebook encode off, so
+encode lift and decide lift can be read separately on each model's
+saved extract. Gemini matches living cell 4 (**0.849**).
+
+| Model | Find | Encode stop | Rule select only | Hybrid (F) | LLM select (H) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Gemini 3.7 Flash | 0.789 | 0.800 | **0.849** | 0.860 | 0.851 |
+| Grok 4.6 | 0.789 | 0.811 | **0.838** | 0.853 | 0.840 |
+| GPT-5.6 Luna | 0.693 | 0.738 | **0.742** | 0.789 | 0.744 |
+| DeepSeek V4 Flash | 0.742 | 0.758 | **0.802** | 0.820 | 0.767 |
+| Qwen 3.8 27B | 0.700 | 0.731 | **0.740** | 0.762 | 0.653 |
+| Gemma 4 26B | 0.664 | 0.682 | **0.702** | 0.724 | 0.618 |
+
+**Table F2.** Locked aggregate-only Purist micro-F1, n=450. Find, encode,
+and Hybrid from Table 4. LLM select from Table H1. Rule select only is
+no-call `llm_select_only` on each promoted `gan_llm_extract` ledger
+(select families including `last_event_well_since`; no
+`gan_rules_encode`). Select alone (select-only − find) is +0.060 /
++0.049 / +0.049 / +0.060 / +0.040 / +0.038. Encode at the final stop
+(Hybrid − select-only) is +0.011 / +0.015 / +0.047 / +0.018 / +0.022 /
++0.022. Holding encode off, rule select and LLM select differ by
+−0.002 / −0.002 / −0.002 / +0.035 / +0.087 / +0.084. Owners:
+[select-only roster](../../research/gan2026/gan_select_only_roster_test450_2026-09-03.md),
+[protocol](../../research/gan2026/gan_select_only_roster_test450_protocol_2026-09-03.md).
+Do not retune Table 1 or Table 4. Not a paper row.
+
+## H. Same-model policy-example select on holdout *(repository transfer row)*
+
+Table 1 and Table 4 hold the Hybrid stack fixed: each model's
+`gan_llm_extract` ledger, then `gan_rules_encode` and rule decide. A
+separate holdout measurement asks what happens when the living
+policy-example decide prompt (`gan_llm_select_from_extract`, cited
+Gemini cell 5) runs as a second LLM call on each model's **own**
+saved codebook extract ledger, with no later-stage encode and no
+hybrid rule post-stack. That cell is transfer evidence only. It is
+not a paper row, not cited cell 5, and not a six-model roster
+change. Gemini remains the cited later-stage model for encode and
+encode-then-select ablations.
+
+| Model | Find stop | Same-model select stop | Δ Purist | Pragmatic select |
+| --- | ---: | ---: | ---: | ---: |
+| DeepSeek V4 Flash | 334/450 (0.742) | **345**/450 (0.767) | +11 | 356/450 (0.791) |
+| Grok 4.6 | 355/450 (0.789) | **378**/450 (0.840) | +23 | 394/450 (0.876) |
+| GPT-5.6 Luna | 312/450 (0.693) | **335**/450 (0.744) | +23 | 353/450 (0.784) |
+| Qwen 3.8 27B | 315/450 (0.700) | 294/450 (0.653) | −21 | 312/450 (0.693) |
+| Gemma 4 26B | 299/450 (0.664) | 278/450 (0.618) | −21 | 306/450 (0.680) |
+| Gemini 3.7 Flash (cited cell 5) | 355/450 (0.789) | **383**/450 (0.851) | +28 | 391/450 (0.869) |
+
+**Table H1.** Locked aggregate-only Purist stops, n=450. Find is each
+model's promoted `gan_llm_extract` stop from Table 4. Same-model
+select is the living `gan_llm_select_policy_examples` prompt on that
+model's own extract ledger. DeepSeek, Grok, Luna, and Gemini **raised**
+the Purist stop versus find (+11, +23, +23, and +28). Qwen and Gemma
+**lowered** it (−21 each). Grok ran via OpenRouter after the living route
+moved off Vercel AI Gateway. Gemini is the cited later-stage model;
+its row is the promoted same-model select cell (383/450), not a roster
+replacement. Owners:
+[hosted protocol](../../research/gan2026/gan_llm_select_policy_examples_hosted_test450_protocol_2026-09-03.md),
+[hosted report](../../research/gan2026/gan_llm_select_policy_examples_hosted_test450_2026-09-03.md),
+[local protocol](../../research/gan2026/gan_llm_select_policy_examples_local_test450_protocol_2026-09-02.md),
+[local report](../../research/gan2026/gan_llm_select_policy_examples_local_test450_2026-09-03.md).
+Work cells:
+`scratch/holdout/paper/gan_llm_select_from_extract/{slug}/gan_llm_extract/test450/`.
+Do not inspect holdout rows. Do not retune Table 1 or Table 4 from
+these aggregates.
+
 **Figure 1.** Six-model Hybrid comparison, provisional answer and
 final answer, on Gan `test450`. The caption states the split, Purist
 micro-F1, and configuration.
@@ -545,7 +639,9 @@ and schemas, the event categories and label forms, the secondary
 prompt rows (Table 3c), the secondary LLM decompositions (Table 3a,
 the one-call ablation, verification and section-splitting development
 findings, the July sampling study), the Hybrid stack variants (cells
-2 and 4), the six-model adherence table with retry and event counts
+2 and 4), the rule-select-without-encode roster (Table F2), the
+same-model policy-example select transfer row (Table H1),
+the six-model adherence table with retry and event counts
 (Table 4b), the development-vs-test figure for the two executors,
 the LLM-only class table (Table 2c), the descriptive inventory panel
 (section G), the residual taxonomy, hardware and API settings, and

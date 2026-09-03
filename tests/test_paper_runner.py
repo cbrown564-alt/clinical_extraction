@@ -69,7 +69,7 @@ def test_living_roster_is_the_six_paper_models() -> None:
     assert LOCAL_SLUGS == ("qwen38_27b", "gemma4_26b")
     assert "gpt56sol" not in MODELS
     assert MODELS["grok46"].model == GROK46_MODEL == "xai/grok-4.6"
-    assert MODELS["grok46"].credential_env == ("AI_GATEWAY_API_KEY",)
+    assert MODELS["grok46"].credential_env == ("OPENROUTER_API_KEY",)
     assert MODELS["grok46"].reasoning_effort == "low"
     assert MODELS["grok46"].timeout == 600
     assert MODELS["grok46"].temperature == 0.0
@@ -86,7 +86,7 @@ def test_living_roster_is_the_six_paper_models() -> None:
     assert resolve_paper_api_base("gpt56sol", None) == AI_GATEWAY_OPENAI_BASE
     assert resolve_paper_api_base("gpt56luna", None) is None
     assert grok_api_base(None) == AI_GATEWAY_OPENAI_BASE
-    assert resolve_paper_api_base(GROK46_SLUG, None) == AI_GATEWAY_OPENAI_BASE
+    assert resolve_paper_api_base(GROK46_SLUG, None) == OPENROUTER_OPENAI_BASE
     assert MODELS["deepseek_v4_flash"].reasoning_effort == "low"
     assert MODELS["deepseek_v4_flash"].thinking_type == "enabled"
     assert thinking_work_segment(MODELS["deepseek_v4_flash"]) is None
@@ -328,7 +328,7 @@ def test_cli_dispatches_gan_live(monkeypatch: pytest.MonkeyPatch) -> None:
         run_gan("gan_llm_extract_raw", "gpt56luna", live=False, split="dev750")
 
 
-def test_grok46_paper_lm_uses_vercel_ai_gateway(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_grok46_paper_lm_uses_openrouter(monkeypatch: pytest.MonkeyPatch) -> None:
     captured: dict[str, Any] = {}
 
     def fake_lm(model: str, **kwargs: Any) -> object:
@@ -340,7 +340,7 @@ def test_grok46_paper_lm_uses_vercel_ai_gateway(monkeypatch: pytest.MonkeyPatch)
         "clinical_extraction.tasks.seizure_frequency.gan2026.llm_config.dspy.LM",
         fake_lm,
     )
-    monkeypatch.setenv("AI_GATEWAY_API_KEY", "gateway-test-key")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "openrouter-test-key")
 
     build_paper_lm(
         GROK46_MODEL,
@@ -350,10 +350,10 @@ def test_grok46_paper_lm_uses_vercel_ai_gateway(monkeypatch: pytest.MonkeyPatch)
         reasoning_effort="low",
     )
 
-    assert captured["model"] == GROK46_LITELLM_MODEL == "openai/xai/grok-4.6"
+    assert captured["model"] == GROK46_LITELLM_MODEL == "openai/x-ai/grok-4.6"
     assert captured.get("model_type") != "responses"
-    assert captured["api_base"] == AI_GATEWAY_OPENAI_BASE
-    assert captured["api_key"] == "gateway-test-key"
+    assert captured["api_base"] == OPENROUTER_OPENAI_BASE
+    assert captured["api_key"] == "openrouter-test-key"
     assert captured["temperature"] == 1.0
     assert captured["max_tokens"] == 16000
     assert captured["cache"] is False

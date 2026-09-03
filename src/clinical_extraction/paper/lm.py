@@ -14,7 +14,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import (
 
 SOL_MODEL = "openai/gpt-5.6-sol"
 GROK46_MODEL = "xai/grok-4.6"
-GROK46_LITELLM_MODEL = "openai/xai/grok-4.6"
+GROK46_LITELLM_MODEL = "openai/x-ai/grok-4.6"
 SOL_REQUEST_TIMEOUT_SECONDS = 300
 GROK46_REQUEST_TIMEOUT_SECONDS = 600
 AI_GATEWAY_OPENAI_BASE = "https://ai-gateway.vercel.sh/v1"
@@ -33,9 +33,9 @@ def sol_api_base(api_base: str | None) -> str:
 
 
 def grok_api_base(api_base: str | None) -> str:
-    """Resolve Grok's Vercel AI Gateway endpoint unless a caller overrides it."""
+    """Resolve Grok's OpenRouter endpoint unless a caller overrides it."""
 
-    return api_base or AI_GATEWAY_OPENAI_BASE
+    return api_base or OPENROUTER_OPENAI_BASE
 
 
 def resolve_paper_api_base(slug: str, api_base: str | None) -> str | None:
@@ -71,11 +71,11 @@ def build_paper_lm(
             "max_tokens": max_tokens,
             "cache": cache,
             "api_base": grok_api_base(api_base),
-            "num_retries": num_retries,
+            "num_retries": max(num_retries, 5),
             "timeout": timeout if timeout is not None else GROK46_REQUEST_TIMEOUT_SECONDS,
         }
         resolved_grok_key = (
-            api_key if api_key is not None else os.environ.get("AI_GATEWAY_API_KEY", "").strip()
+            api_key if api_key is not None else os.environ.get("OPENROUTER_API_KEY", "").strip()
         )
         if resolved_grok_key:
             grok_kwargs["api_key"] = resolved_grok_key

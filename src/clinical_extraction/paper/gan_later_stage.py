@@ -20,7 +20,6 @@ from clinical_extraction.paper.batch import (
 )
 from clinical_extraction.paper.comparison_contract import attach_living_envelope, gan_stage
 from clinical_extraction.paper.exect import (
-    LOCAL_SLUGS,
     MODELS,
     OLLAMA_NUM_CTX_ENV,
     ModelSpec,
@@ -72,7 +71,11 @@ LaterStageMethod = Literal[
 ]
 CITED_SLUG = "gemini37flash"
 EXTRACT_METHOD = "gan_llm_extract"
-ALLOWED_EXTRACT_METHODS = frozenset({"gan_llm_extract", "gan_llm_extract_raw"})
+ALLOWED_EXTRACT_METHODS = frozenset({
+    "gan_llm_extract",
+    "gan_llm_extract_raw",
+    "gan_llm_extract_no_examples_no_evidence_no_forms",
+})
 LLM_ENCODE_IS_EXTRACT = True
 LLM_SELECT_METHOD = GAN_LLM_SELECT_FROM_EXTRACT
 MAX_TOKENS = 8000
@@ -91,11 +94,11 @@ def _resolved_extract_method(extract_method: str | None = None) -> str:
 
 
 def later_stage_slug_permitted(method: LaterStageMethod, slug: str) -> None:
-    """Gemini owns later-stage cells; local slugs may run select-from-extract."""
+    """Gemini owns later-stage cells; living slugs may run select-from-extract."""
 
     if slug == CITED_SLUG:
         return
-    if method == LLM_SELECT_METHOD and slug in LOCAL_SLUGS:
+    if method == LLM_SELECT_METHOD and slug in MODELS:
         return
     raise RuntimeError("later-stage Gan encode and select run on Gemini only")
 

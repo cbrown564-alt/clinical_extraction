@@ -1,0 +1,105 @@
+{
+  "claim_boundary": "Combined extract content-recall aggregates. Holdout split is aggregate-only. Not a new Table 1 score.",
+  "date": "2026-09-03",
+  "model_calls": 0,
+  "model_slug": "gemini37flash",
+  "protocol": "docs/research/gan2026/gan_candidate_set_recall_test450_protocol_2026-09-03.md",
+  "schema_version": "gan.extract_content_recall.combined.v1",
+  "splits": {
+    "dev750": {
+      "claim_boundary": "Stage-1 extract content recall on the shared Gemini gan_llm_extract record. Aggregate-only on test450. Not a new Table 1 score.",
+      "date": "2026-09-03",
+      "decide_correct_but_extract_miss": {
+        "cell3_hybrid": 2
+      },
+      "decide_stops_purist": {
+        "cell3_hybrid": {
+          "accuracy": 0.8747,
+          "correct": 656
+        }
+      },
+      "definition": {
+        "answer": "provisional final_label or any event after _normalize_event is Purist-correct vs gold; all events count",
+        "either": "answer or evidence",
+        "evidence": "gold_reference overlaps selection evidence or any event evidence (folded either-contains)"
+      },
+      "extract_source": "paper_experiments/gan/gan_llm_extract/gemini37flash/dev750/rows.jsonl",
+      "holdout_loaded": false,
+      "model_calls": 0,
+      "model_slug": "gemini37flash",
+      "n": 750,
+      "pools": {
+        "answer": {
+          "accuracy": 0.8733,
+          "correct": 655
+        },
+        "answer_or_evidence": {
+          "accuracy": 0.984,
+          "correct": 738
+        },
+        "both": 458,
+        "evidence": {
+          "accuracy": 0.7213,
+          "correct": 541
+        }
+      },
+      "protocol": "docs/research/gan2026/gan_candidate_set_recall_test450_protocol_2026-09-03.md",
+      "row_policy": "development_review_permitted",
+      "schema_version": "gan.extract_content_recall.v1",
+      "split": "dev750"
+    },
+    "test450": {
+      "cell5_source": "scratch/holdout/paper/gan_llm_select_from_extract/gemini37flash/gan_llm_extract/test450/rows.jsonl",
+      "claim_boundary": "Stage-1 extract content recall on the shared Gemini gan_llm_extract record. Aggregate-only on test450. Not a new Table 1 score.",
+      "date": "2026-09-03",
+      "decide_correct_but_extract_miss": {
+        "cell3_hybrid": 1,
+        "cell5_llm_only": 0
+      },
+      "decide_stops_purist": {
+        "cell3_hybrid": {
+          "accuracy": 0.86,
+          "correct": 387
+        },
+        "cell5_llm_only": {
+          "accuracy": 0.8511,
+          "correct": 383
+        }
+      },
+      "definition": {
+        "answer": "provisional final_label or any event after _normalize_event is Purist-correct vs gold; all events count",
+        "either": "answer or evidence",
+        "evidence": "gold_reference overlaps selection evidence or any event evidence (folded either-contains)"
+      },
+      "extract_source": "paper_experiments/gan/gan_llm_extract/gemini37flash/test450/rows.jsonl",
+      "gates": {
+        "cell3_select_reproduces_cited": 387,
+        "cell5_select_reproduces_cited": 383,
+        "extract_parse_failures": 0
+      },
+      "holdout_loaded": true,
+      "model_calls": 0,
+      "model_slug": "gemini37flash",
+      "n": 450,
+      "pools": {
+        "answer": {
+          "accuracy": 0.8489,
+          "correct": 382
+        },
+        "answer_or_evidence": {
+          "accuracy": 0.9622,
+          "correct": 433
+        },
+        "both": 257,
+        "evidence": {
+          "accuracy": 0.6844,
+          "correct": 308
+        }
+      },
+      "protocol": "docs/research/gan2026/gan_candidate_set_recall_test450_protocol_2026-09-03.md",
+      "row_policy": "aggregate_only",
+      "schema_version": "gan.extract_content_recall.v1",
+      "split": "test450"
+    }
+  }
+}

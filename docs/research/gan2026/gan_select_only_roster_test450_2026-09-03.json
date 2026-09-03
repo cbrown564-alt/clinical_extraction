@@ -1,0 +1,180 @@
+{
+  "claim_boundary": "Gan aggregate-only select-only roster replay. Repository decomposition of encode versus decide. Do not inspect holdout rows. Do not retune Table 1 or Table 4.",
+  "gemini_cell4_gate_purist": 382,
+  "generated_on": "2026-09-03",
+  "model_calls": 0,
+  "models": [
+    {
+      "companions": {
+        "encode_purist": 360,
+        "find_purist": 355,
+        "hybrid_pragmatic": 396,
+        "hybrid_purist": 387,
+        "llm_select_pragmatic": 391,
+        "llm_select_purist": 383
+      },
+      "deltas_purist": {
+        "hybrid_minus_select_only": 5,
+        "select_only_minus_find": 27,
+        "select_only_minus_llm_select": -1
+      },
+      "extract_rows": "paper_experiments/gan/gan_llm_extract/gemini37flash/test450/rows.jsonl",
+      "model_slug": "gemini37flash",
+      "n": 450,
+      "repair_mode": "llm_select_only",
+      "row_policy": "aggregate_only",
+      "select_only": {
+        "pragmatic_correct": 391,
+        "pragmatic_micro_f1": 0.8689,
+        "purist_correct": 382,
+        "purist_micro_f1": 0.8489,
+        "scorable": 449
+      },
+      "split": "test450"
+    },
+    {
+      "companions": {
+        "encode_purist": 365,
+        "find_purist": 355,
+        "hybrid_pragmatic": 400,
+        "hybrid_purist": 384,
+        "llm_select_pragmatic": 394,
+        "llm_select_purist": 378
+      },
+      "deltas_purist": {
+        "hybrid_minus_select_only": 7,
+        "select_only_minus_find": 22,
+        "select_only_minus_llm_select": -1
+      },
+      "extract_rows": "paper_experiments/gan/gan_llm_extract/grok46/test450/rows.jsonl",
+      "model_slug": "grok46",
+      "n": 450,
+      "repair_mode": "llm_select_only",
+      "row_policy": "aggregate_only",
+      "select_only": {
+        "pragmatic_correct": 393,
+        "pragmatic_micro_f1": 0.8733,
+        "purist_correct": 377,
+        "purist_micro_f1": 0.8378,
+        "scorable": 450
+      },
+      "split": "test450"
+    },
+    {
+      "companions": {
+        "encode_purist": 332,
+        "find_purist": 312,
+        "hybrid_pragmatic": 369,
+        "hybrid_purist": 355,
+        "llm_select_pragmatic": 353,
+        "llm_select_purist": 335
+      },
+      "deltas_purist": {
+        "hybrid_minus_select_only": 21,
+        "select_only_minus_find": 22,
+        "select_only_minus_llm_select": -1
+      },
+      "extract_rows": "paper_experiments/gan/gan_llm_extract/gpt56luna/test450/rows.jsonl",
+      "model_slug": "gpt56luna",
+      "n": 450,
+      "repair_mode": "llm_select_only",
+      "row_policy": "aggregate_only",
+      "select_only": {
+        "pragmatic_correct": 348,
+        "pragmatic_micro_f1": 0.7733,
+        "purist_correct": 334,
+        "purist_micro_f1": 0.7422,
+        "scorable": 432
+      },
+      "split": "test450"
+    },
+    {
+      "companions": {
+        "encode_purist": 341,
+        "find_purist": 334,
+        "hybrid_pragmatic": 382,
+        "hybrid_purist": 369,
+        "llm_select_pragmatic": 356,
+        "llm_select_purist": 345
+      },
+      "deltas_purist": {
+        "hybrid_minus_select_only": 8,
+        "select_only_minus_find": 27,
+        "select_only_minus_llm_select": 16
+      },
+      "extract_rows": "paper_experiments/gan/gan_llm_extract/deepseek_v4_flash/test450/rows.jsonl",
+      "model_slug": "deepseek_v4_flash",
+      "n": 450,
+      "repair_mode": "llm_select_only",
+      "row_policy": "aggregate_only",
+      "select_only": {
+        "pragmatic_correct": 377,
+        "pragmatic_micro_f1": 0.8378,
+        "purist_correct": 361,
+        "purist_micro_f1": 0.8022,
+        "scorable": 445
+      },
+      "split": "test450"
+    },
+    {
+      "companions": {
+        "encode_purist": 329,
+        "find_purist": 315,
+        "hybrid_pragmatic": 363,
+        "hybrid_purist": 343,
+        "llm_select_pragmatic": 312,
+        "llm_select_purist": 294
+      },
+      "deltas_purist": {
+        "hybrid_minus_select_only": 10,
+        "select_only_minus_find": 18,
+        "select_only_minus_llm_select": 39
+      },
+      "extract_rows": "paper_experiments/gan/gan_llm_extract/qwen38_27b/test450/rows.jsonl",
+      "model_slug": "qwen38_27b",
+      "n": 450,
+      "repair_mode": "llm_select_only",
+      "row_policy": "aggregate_only",
+      "select_only": {
+        "pragmatic_correct": 352,
+        "pragmatic_micro_f1": 0.7822,
+        "purist_correct": 333,
+        "purist_micro_f1": 0.74,
+        "scorable": 442
+      },
+      "split": "test450"
+    },
+    {
+      "companions": {
+        "encode_purist": 307,
+        "find_purist": 299,
+        "hybrid_pragmatic": 348,
+        "hybrid_purist": 326,
+        "llm_select_pragmatic": 306,
+        "llm_select_purist": 278
+      },
+      "deltas_purist": {
+        "hybrid_minus_select_only": 10,
+        "select_only_minus_find": 17,
+        "select_only_minus_llm_select": 38
+      },
+      "extract_rows": "paper_experiments/gan/gan_llm_extract/gemma4_26b/test450/rows.jsonl",
+      "model_slug": "gemma4_26b",
+      "n": 450,
+      "repair_mode": "llm_select_only",
+      "row_policy": "aggregate_only",
+      "select_only": {
+        "pragmatic_correct": 338,
+        "pragmatic_micro_f1": 0.7511,
+        "purist_correct": 316,
+        "purist_micro_f1": 0.7022,
+        "scorable": 412
+      },
+      "split": "test450"
+    }
+  ],
+  "n": 450,
+  "protocol": "docs/research/gan2026/gan_select_only_roster_test450_protocol_2026-09-03.md",
+  "repair_mode": "llm_select_only",
+  "split": "test450"
+}

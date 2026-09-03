@@ -138,7 +138,12 @@ def _apply_deepseek_thinking(
 
 
 def _uses_native_openai_reasoning_param(model: str) -> bool:
-    return model.startswith("openai/") and "/xai/" not in model and "/google/" not in model
+    return (
+        model.startswith("openai/")
+        and "/xai/" not in model
+        and "/x-ai/" not in model
+        and "/google/" not in model
+    )
 
 
 def _ollama_options_from_environment() -> dict[str, int]:
