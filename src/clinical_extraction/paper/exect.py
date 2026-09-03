@@ -200,10 +200,16 @@ REASONING_EFFORT_SLUGS = frozenset(
 
 
 def thinking_work_segment(spec: ModelSpec) -> str | None:
-    """Return a work-directory segment for an explicit DeepSeek thinking-off repeat."""
+    """Return a work-directory segment when thinking differs from the living spec."""
 
+    living = MODELS.get(spec.slug)
+    living_thinking = living.thinking_type if living is not None else None
+    if spec.thinking_type == living_thinking:
+        return None
     if spec.thinking_type == "disabled":
         return "thinking_disabled"
+    if spec.thinking_type == "enabled":
+        return "thinking_enabled"
     return None
 
 

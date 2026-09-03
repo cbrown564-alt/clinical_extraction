@@ -517,8 +517,8 @@ def run_gan(
         temperature,
     )
     if thinking is not None:
-        if slug != "deepseek_v4_flash":
-            raise RuntimeError("thinking toggle is DeepSeek only")
+        if slug not in {"deepseek_v4_flash", "qwen38_27b"}:
+            raise RuntimeError("thinking toggle is DeepSeek or Qwen only")
         spec = replace(spec, thinking_type=thinking)
     elif slug == "deepseek_v4_flash" and spec.reasoning_effort:
         spec = replace(spec, thinking_type="enabled")
@@ -554,6 +554,8 @@ def run_gan(
     todo = [record for record in records if record.source_row_index not in done]
     resolved_base = resolve_paper_api_base(spec.slug, api_base)
     max_tokens = _max_tokens_for(method, spec.slug, spec.reasoning_effort)
+    if spec.slug == "qwen38_27b" and spec.thinking_type == "enabled":
+        max_tokens = cell3_thinking_max_tokens(max_tokens, "high")
     if todo and not uses_provider_batch(spec.slug):
         _prepare_live_runtime(
             spec,

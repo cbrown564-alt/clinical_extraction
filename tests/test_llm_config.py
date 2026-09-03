@@ -309,6 +309,47 @@ def test_deepseek_living_low_sends_thinking_and_effort(
     }
 
 
+def test_ollama_chat_defaults_to_think_false(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict[str, Any] = {}
+    monkeypatch.setattr(
+        llm_config.dspy,
+        "LM",
+        lambda _model, **kwargs: captured.update(kwargs) or object(),
+    )
+
+    llm_config.build_dspy_lm(
+        "ollama_chat/qwen3.8:27b",
+        temperature=0.0,
+        max_tokens=5000,
+        cache=False,
+    )
+
+    assert captured["extra_body"]["think"] is False
+
+
+def test_ollama_chat_sends_think_true_when_enabled(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict[str, Any] = {}
+    monkeypatch.setattr(
+        llm_config.dspy,
+        "LM",
+        lambda _model, **kwargs: captured.update(kwargs) or object(),
+    )
+
+    llm_config.build_dspy_lm(
+        "ollama_chat/qwen3.8:27b",
+        temperature=0.0,
+        max_tokens=5000,
+        cache=False,
+        thinking_type="enabled",
+    )
+
+    assert captured["extra_body"]["think"] is True
+
+
 def test_deepseek_omits_thinking_toggle_when_unset(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
