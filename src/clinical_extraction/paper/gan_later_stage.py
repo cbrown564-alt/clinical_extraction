@@ -13,9 +13,14 @@ import dspy
 from dotenv import load_dotenv
 
 from clinical_extraction.core.paths import discover_repo_root
-from clinical_extraction.paper.batch import BatchChatItem, complete_chat_batch
+from clinical_extraction.paper.batch import (
+    BatchChatItem,
+    complete_chat_batch,
+    uses_provider_batch,
+)
 from clinical_extraction.paper.comparison_contract import attach_living_envelope, gan_stage
 from clinical_extraction.paper.exect import (
+    LOCAL_SLUGS,
     MODELS,
     OLLAMA_NUM_CTX_ENV,
     ModelSpec,
@@ -83,6 +88,16 @@ def _resolved_extract_method(extract_method: str | None = None) -> str:
         allowed = ", ".join(sorted(ALLOWED_EXTRACT_METHODS))
         raise ValueError(f"extract_method must be {allowed}")
     return method
+
+
+def later_stage_slug_permitted(method: LaterStageMethod, slug: str) -> None:
+    """Gemini owns later-stage cells; local slugs may run select-from-extract."""
+
+    if slug == CITED_SLUG:
+        return
+    if method == LLM_SELECT_METHOD and slug in LOCAL_SLUGS:
+        return
+    raise RuntimeError("later-stage Gan encode and select run on Gemini only")
 
 
 def prompt_version(method: LaterStageMethod) -> str:
@@ -240,8 +255,7 @@ def run_later_stage(
     encode_work_leaf: str | None = None,
     encode_rows_path: Path | None = None,
 ) -> dict[str, Any]:
-    if slug != CITED_SLUG:
-        raise RuntimeError("later-stage Gan encode and select run on Gemini only")
+    later_stage_slug_permitted(method, slug)
     holdout = holdout_is_aggregate_only(split)
     spec = apply_reasoning_effort(MODELS[slug], reasoning_effort)
     load_dotenv(ROOT / ".env", override=False)
@@ -292,6 +306,7 @@ def run_later_stage(
     todo = [record for record in records if record.source_row_index not in done]
     resolved_base = resolve_paper_api_base(spec.slug, api_base)
     program = DspyStructuredExtractor()
+    use_sync = live_sync or not uses_provider_batch(spec.slug)
     if todo:
         _prepare_live_runtime(
             spec,
@@ -300,7 +315,7 @@ def run_later_stage(
             max_tokens=MAX_TOKENS,
         )
     batch_raws: dict[str, str] = {}
-    if todo and not live_sync:
+    if todo and not use_sync:
         batch_raws = complete_chat_batch(
             spec,
             _batch_items(method, todo, extract_by_index, encode_by_index, program),
@@ -311,7 +326,7 @@ def run_later_stage(
     by_index = {int(row["source_row_index"]): row for row in existing}
     for index, record in enumerate(todo, start=1):
         raw_output = batch_raws.get(str(record.source_row_index), "")
-        if live_sync:
+        if use_sync:
             raw_output = _live_sync_raw_output(
                 method,
                 record,
@@ -367,7 +382,7 @@ def run_later_stage(
         "started_utc": started,
         "finished_utc": datetime.now(UTC).isoformat(),
         "live": True,
-        "call_transport": "sync" if live_sync else "openrouter_batch",
+        "call_transport": "sync" if use_sync else "openrouter_batch",
         "model_calls": len(todo),
         "summary": _public_summary(summary, holdout=holdout),
         "claim_boundary": (

@@ -41,6 +41,7 @@ from clinical_extraction.paper.gan_later_stage import (
 )
 from clinical_extraction.paper.gan_later_stage import (
     LaterStageMethod,
+    later_stage_slug_permitted,
     run_later_stage,
     verify_later_stage_prompt,
 )
@@ -401,8 +402,8 @@ def verify_gan(
         "gan_llm_select",
         "gan_llm_select_from_extract",
     }:
-        if slug is not None and slug != LATER_STAGE_SLUG:
-            raise RuntimeError("later-stage Gan encode and select run on Gemini only")
+        if slug is not None:
+            later_stage_slug_permitted(cast(LaterStageMethod, method), slug)
         verify_later_stage_prompt(cast(LaterStageMethod, method))
         authored = (
             list(LLM_ENCODE_AUTHORED_KEYS)
@@ -516,8 +517,8 @@ def run_gan(
         temperature,
     )
     if thinking is not None:
-        if slug != "deepseek_v4_flash":
-            raise RuntimeError("thinking toggle is DeepSeek only")
+        if slug not in {"deepseek_v4_flash", "qwen38_27b"}:
+            raise RuntimeError("thinking toggle is DeepSeek or Qwen only")
         spec = replace(spec, thinking_type=thinking)
     elif slug == "deepseek_v4_flash" and spec.reasoning_effort:
         spec = replace(spec, thinking_type="enabled")
@@ -553,6 +554,8 @@ def run_gan(
     todo = [record for record in records if record.source_row_index not in done]
     resolved_base = resolve_paper_api_base(spec.slug, api_base)
     max_tokens = _max_tokens_for(method, spec.slug, spec.reasoning_effort)
+    if spec.slug == "qwen38_27b" and spec.thinking_type == "enabled":
+        max_tokens = cell3_thinking_max_tokens(max_tokens, "high")
     if todo and not uses_provider_batch(spec.slug):
         _prepare_live_runtime(
             spec,

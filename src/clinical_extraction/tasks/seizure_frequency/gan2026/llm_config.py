@@ -53,7 +53,7 @@ def build_dspy_lm(
         kwargs["api_key"] = api_key
     if model.startswith(OLLAMA_CHAT_PREFIX):
         kwargs["api_base"] = (api_base or "http://localhost:11434").removesuffix("/v1")
-        extra_body: dict[str, Any] = {"think": False}
+        extra_body: dict[str, Any] = {"think": thinking_type == "enabled"}
         ollama_options = _ollama_options_from_environment()
         if ollama_options:
             extra_body["options"] = ollama_options

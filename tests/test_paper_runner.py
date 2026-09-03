@@ -94,6 +94,10 @@ def test_living_roster_is_the_six_paper_models() -> None:
         thinking_work_segment(replace(MODELS["deepseek_v4_flash"], thinking_type="disabled"))
         == "thinking_disabled"
     )
+    assert (
+        paper_work_suffix(replace(MODELS["qwen38_27b"], thinking_type="enabled"))
+        == "thinking_enabled"
+    )
     assert paper_work_suffix(MODELS["deepseek_v4_flash"]) is None
     assert (
         paper_work_suffix(replace(MODELS["deepseek_v4_flash"], reasoning_effort="high"))
@@ -107,6 +111,17 @@ def test_living_roster_is_the_six_paper_models() -> None:
     assert (
         paper_work_suffix(replace(MODELS["gpt56luna"], reasoning_effort="high"))
         == "reasoning_high"
+    )
+    assert paper_work_suffix(MODELS["qwen38_27b"]) is None
+    assert (
+        paper_work_suffix(replace(MODELS["qwen38_27b"], temperature=1.0))
+        == "temperature_1"
+    )
+    assert (
+        paper_work_suffix(
+            replace(MODELS["gpt56luna"], reasoning_effort="high", temperature=0.0)
+        )
+        == "reasoning_high_temperature_0"
     )
     assert paper_work_suffix(MODELS["grok46"]) is None
     assert (
