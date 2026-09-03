@@ -1223,6 +1223,85 @@ Any family & 97 & 483 & 5 (0--11) & --- \\
 
 \section{Tools Descriptions}
 
+The tools were selected to support a staged software development lifecycle:
+implementation of deterministic and LLM components, controlled model
+execution, verification, and reproducible comparison. The descriptions
+below focus on the role each tool played in that lifecycle rather than on a
+complete package inventory.
+
+\subsection{Development environment and implementation}
+
+The implementation used Python (version 3.11 or later), which provided one
+language for data loading, deterministic extraction rules, experiment
+orchestration, and evaluation. DSPy supplied the structured interface for
+language-model programs and their typed inputs and outputs. LiteLLM provided
+a common model-access layer across hosted providers and the local Ollama
+route, allowing the experiment code to retain the same orchestration pattern
+while changing the model endpoint. Pydantic was used for explicit data
+models and validation, helping keep intermediate records and experiment
+configuration machine-readable. YAML was used through PyYAML for
+human-editable configuration where appropriate; this separated changeable
+settings from implementation code and made experiments easier to inspect and
+re-run.
+
+These choices supported incremental development: deterministic rules,
+structured LLM stages, and their hybrid combinations could be implemented and
+compared as separate components. The project declaration specified Python
+and the core dependencies, while the repository lockfile recorded the
+resolved environment used for a particular run.
+
+\subsection{Model access and inference infrastructure}
+
+Hosted models were accessed through provider APIs, with DSPy and LiteLLM
+handling the shared calling interface, request settings, timeouts, and retry
+behaviour. This made it possible to compare several providers within the
+same experiment design without treating their serving hardware as part of
+the local development environment. The hosted accelerators are undisclosed,
+so no matched cost, speed, or energy comparison between hosted and local
+execution is claimed.
+
+The local open-weight models used in the reported extracts were served with
+native Ollama chat at \texttt{http://localhost:11434}. In particular, Qwen
+3.8 27B and Gemma 4 26B used the \texttt{ollama\_chat/...} route. A separate
+vLLM-on-WSL2 probe was retained as a reproducibility and development option,
+but it was not the reported local experiment route; the reported local
+extracts used Ollama.
+
+\subsection{Verification, testing, and reproducibility}
+
+Pytest provided automated checks for the extraction pipeline and its data
+handling. Ruff checked Python style and common implementation errors, while
+mypy checked the consistency of annotated interfaces. Together these tools
+supported the implementation and testing stages by detecting regressions
+before experiments were run. The project configuration defined the test
+paths, the default non-deep test tier, lint rules, and the Python version for
+type checking.
+
+Reproducibility was supported by the dependency declaration and lockfile,
+prespecified model routes and request settings, and per-cell experiment
+artifacts retaining the prompt or program version, split, scorer, and retry
+settings. This made it possible to distinguish a software change from a
+model or execution-route change when interpreting results. API keys and
+other secrets were kept outside the supporting material.
+
+\subsection{Hardware and execution environment}
+
+The two computers had different lifecycle roles. Hosted API experiments
+were generally orchestrated from an Apple Mac mini (Macmini9,1), with an
+Apple M1 processor, 16~GB unified memory, macOS 26.5.2, and Python 3.14.4
+installed. The remote provider performed inference, so the Mac mini was the
+control and orchestration host rather than the hosted model's accelerator.
+
+Local inference ran on a Dell XPS 16 9640 running 64-bit Windows 11 Home.
+It had an Intel Core Ultra 9 185H processor, 32~GB system RAM, and an
+NVIDIA GeForce RTX 4070 Laptop GPU with 8188~MiB of VRAM. Ollama 0.32.15
+served the local models on that workstation. The hardware distinction is
+important for repeatability: local-model results should be associated with
+the Dell/Ollama route, while hosted-model results should record the API
+provider and the Mac mini orchestration context. Because provider hardware
+is not disclosed, these records do not support a matched hardware, cost,
+speed, or energy comparison.
+
 \section{Critical Appraisal}
 
 \subsection{Successes}
