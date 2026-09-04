@@ -13,6 +13,7 @@ from clinical_extraction.paper.comparison_contract import (
     adapt_legacy_comparison,
     stage_metric,
 )
+from clinical_extraction.paper.gan_later_stage import EXTRACT_METHOD
 from clinical_extraction.paper.methods import (
     gan_machine_split,
     gan_row_count,
@@ -43,7 +44,15 @@ def living_work_root(method: str, slug: str, split: str) -> Path:
     """Return the living-effort Gan work directory."""
 
     root = HOLDOUT_ROOT if holdout_is_aggregate_only(split) else WORK_ROOT
-    return root / method / slug / split
+    flat = root / method / slug / split
+    if method in {"gan_llm_encode", "gan_llm_select", "gan_llm_select_from_extract"}:
+        nested = root / method / slug / EXTRACT_METHOD / split
+        if (nested / "rows.jsonl").is_file():
+            return nested
+        if (flat / "rows.jsonl").is_file():
+            return flat
+        return nested
+    return flat
 
 
 def paper_cell_root(method: str, slug: str, split: str) -> Path:
