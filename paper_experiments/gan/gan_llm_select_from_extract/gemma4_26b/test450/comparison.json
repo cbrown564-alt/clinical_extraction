@@ -1,0 +1,79 @@
+{
+  "call_transport": "sync",
+  "cell": 5,
+  "claim_boundary": "Gan aggregate-only test450 later-stage cell. Do not inspect holdout rows.",
+  "extract_ledger": "gan_llm_extract",
+  "finished_utc": "2026-09-03T06:35:15.869190+00:00",
+  "generated_on": "2026-08-21",
+  "headline": "select",
+  "live": true,
+  "living_schema_version": "paper.living_cell.v1",
+  "method": "gan_llm_select_from_extract",
+  "model": "ollama_chat/gemma4:26b",
+  "model_calls": 450,
+  "model_slug": "gemma4_26b",
+  "prompt_version": "gan_llm_select_policy_examples",
+  "replay_mode": "live",
+  "row_count": 450,
+  "row_policy": "aggregate_only",
+  "schema_version": "paper.gan_llm_select_from_extract.v1",
+  "score": {
+    "micro_f1": 0.6178,
+    "n": 450,
+    "purist_accuracy": 0.6178,
+    "purist_correct": 278
+  },
+  "scorer": "purist",
+  "split": "test450",
+  "split_machine": "test",
+  "split_manifest": "gan2026_split_v1",
+  "stages": {
+    "encode": {
+      "micro_f1": 0.6178,
+      "n": 450,
+      "pragmatic_accuracy": 0.68,
+      "pragmatic_correct": 306,
+      "pragmatic_micro_f1": 0.68,
+      "purist_accuracy": 0.6178,
+      "purist_correct": 278
+    },
+    "extract": {
+      "micro_f1": 0.6178,
+      "n": 450,
+      "pragmatic_accuracy": 0.68,
+      "pragmatic_correct": 306,
+      "pragmatic_micro_f1": 0.68,
+      "purist_accuracy": 0.6178,
+      "purist_correct": 278
+    },
+    "select": {
+      "micro_f1": 0.6178,
+      "n": 450,
+      "pragmatic_accuracy": 0.68,
+      "pragmatic_correct": 306,
+      "pragmatic_micro_f1": 0.68,
+      "purist_accuracy": 0.6178,
+      "purist_correct": 278
+    }
+  },
+  "started_utc": "2026-09-03T04:17:00.493663+00:00",
+  "summary": {
+    "call_failures": 0,
+    "evidence_valid": 0,
+    "examples": 450,
+    "format_retries_applied": 0,
+    "format_retries_rejected": 0,
+    "initial_parse_or_validation_failures": 0,
+    "json_dialect_repairs": 0,
+    "parse_or_validation_failures": 0,
+    "pragmatic_accuracy": 0.68,
+    "pragmatic_correct": 306,
+    "predicted_candidate_count": 1068,
+    "purist_accuracy": 0.6178,
+    "purist_correct": 278,
+    "repair_notes": 0,
+    "reused_raw_outputs": 0,
+    "structured_records": 442
+  },
+  "task": "gan2026"
+}

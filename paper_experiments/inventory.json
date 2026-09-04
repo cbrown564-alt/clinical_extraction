@@ -752,6 +752,54 @@
       "row_policy": "development_review_permitted",
       "split": "dev750",
       "status": "present"
+    },
+    {
+      "empty_raw_count": 7,
+      "method": "gan_llm_select_from_extract",
+      "model": "ollama_chat/qwen3.8:27b",
+      "model_slug": "qwen38_27b",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_select_from_extract/qwen38_27b/dev750/rows.jsonl",
+      "replay_alias": "gan_llm_select_policy_examples",
+      "row_policy": "development_review_permitted",
+      "split": "dev750",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 2,
+      "method": "gan_llm_select_from_extract",
+      "model": "ollama_chat/qwen3.8:27b",
+      "model_slug": "qwen38_27b",
+      "n": 450,
+      "path": "paper_experiments/gan/gan_llm_select_from_extract/qwen38_27b/test450/rows.jsonl",
+      "replay_alias": "gan_llm_select_policy_examples",
+      "row_policy": "aggregate_only",
+      "split": "test450",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 13,
+      "method": "gan_llm_select_from_extract",
+      "model": "ollama_chat/gemma4:26b",
+      "model_slug": "gemma4_26b",
+      "n": 750,
+      "path": "paper_experiments/gan/gan_llm_select_from_extract/gemma4_26b/dev750/rows.jsonl",
+      "replay_alias": "gan_llm_select_policy_examples",
+      "row_policy": "development_review_permitted",
+      "split": "dev750",
+      "status": "present"
+    },
+    {
+      "empty_raw_count": 8,
+      "method": "gan_llm_select_from_extract",
+      "model": "ollama_chat/gemma4:26b",
+      "model_slug": "gemma4_26b",
+      "n": 450,
+      "path": "paper_experiments/gan/gan_llm_select_from_extract/gemma4_26b/test450/rows.jsonl",
+      "replay_alias": "gan_llm_select_policy_examples",
+      "row_policy": "aggregate_only",
+      "split": "test450",
+      "status": "present"
     }
   ],
   "purpose": "Replayable paper cells. Holdout files keep only replay keys.",

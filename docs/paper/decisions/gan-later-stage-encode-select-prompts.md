@@ -1,7 +1,7 @@
 # Gan later-stage encode and select prompts
 
 Date: 2026-08-21
-Revised: 2026-09-03 (same-model select-from-extract is transfer-only)
+Revised: 2026-09-04 (local select-from-extract promoted for comparison)
 Status: current
 Owner: [paper methods](../methods.md)
 Related: [Gemini is the cited model](gemini-is-the-cited-model.md)
@@ -49,6 +49,9 @@ encode-then-select stay Gemini only. Same-model
 `gan_llm_select_from_extract` may run on living slugs
 (`qwen38_27b`, `gemma4_26b`, `deepseek_v4_flash`, `grok46`,
 `gpt56luna`) as transfer evidence; that run is not cited cell 5.
-Headline tables cite the codebook find row and Gemini select. The
-source-near `gan_llm_extract_raw` ledger may still cite form-writing
-encode for that ablation only. This select is not hybrid select.
+Qwen and Gemma cells are promoted under
+`paper_experiments/gan/gan_llm_select_from_extract/` for a wider
+comparison. Headline tables cite the codebook find row and Gemini
+select. The source-near `gan_llm_extract_raw` ledger may still cite
+form-writing encode for that ablation only. This select is not
+hybrid select.

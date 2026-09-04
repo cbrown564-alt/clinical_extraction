@@ -1,0 +1,27 @@
+{
+  "call_mode": "live_2026-08-17",
+  "comparison": "comparison.json",
+  "empty_raw_count": 13,
+  "id_field": "source_row_index",
+  "living_effort": "none",
+  "method": "gan_llm_select_from_extract",
+  "micro_f1": 0.6347,
+  "model": "ollama_chat/gemma4:26b",
+  "model_slug": "gemma4_26b",
+  "n": 750,
+  "program": "gan_llm_select_policy_examples",
+  "purist_accuracy": 0.6347,
+  "purist_correct": 476,
+  "replay_fields": [
+    "source_row_index",
+    "prompt_version",
+    "raw_output"
+  ],
+  "row_count": 750,
+  "row_policy": "development_review_permitted",
+  "rows": "rows.jsonl",
+  "scored": "scored.jsonl",
+  "source": "experiments/paper/gan_llm_select_from_extract/gemma4_26b/gan_llm_extract/dev750",
+  "split": "dev750",
+  "split_machine": "validation"
+}

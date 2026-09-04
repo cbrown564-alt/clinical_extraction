@@ -42,7 +42,8 @@ Roster: [`roster.json`](roster.json). Inventory: [`inventory.json`](inventory.js
 | `gan/gan_llm_pre_post/` | No-forms both-find ablation. Not a headline column |
 | `exect/exect_llm_pre_post/` (non-Gemini) | Historical Compact both-find. `exect_llm_with_rules` is a live alias only |
 | `gan/gan_llm_encode/` | Gan later-stage LLM encode. Gemini only |
-| `gan/gan_llm_select/` | Gan later-stage LLM select. Gemini only |
+| `gan/gan_llm_select/` | Gan later-stage encode-then-select. Gemini only |
+| `gan/gan_llm_select_from_extract/` | Gan cell-5 select-from-extract. Cited Gemini cells; Qwen and Gemma are same-model transfer companions, not Table 1 |
 | `current_stack/` | Historical Full-ledger / enveloped-Gan fills |
 | `gan/dev750_panel.json` | Frontend cell-3 development index (rules / find / encode / select). Not `gan_llm_only` or `gan_llm_extract_raw` |
 | `exect/dev140_panel.json` | Frontend cell-3 development index. Still the previous Compact find until the panel is rebuilt from the promoted inventory find. Not `exect_llm_pre_post` |

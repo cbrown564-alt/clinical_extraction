@@ -103,6 +103,8 @@ def test_inventory_covers_present_and_missing_cells() -> None:
         ("gemma4_26b", "gan_llm_extract", "test450"),
         ("gemma4_26b", "gan_llm_only", "dev750"),
         ("gemma4_26b", "gan_llm_only", "test450"),
+        ("gemma4_26b", "gan_llm_select_from_extract", "dev750"),
+        ("gemma4_26b", "gan_llm_select_from_extract", "test450"),
         ("gpt56luna", "exect_llm_extract", "dev140"),
         ("gpt56luna", "exect_llm_extract", "test60"),
         ("gpt56luna", "exect_llm_pre_post", "dev140"),
@@ -126,6 +128,8 @@ def test_inventory_covers_present_and_missing_cells() -> None:
         ("qwen38_27b", "exect_llm_extract", "test60"),
         ("qwen38_27b", "gan_llm_extract", "dev750"),
         ("qwen38_27b", "gan_llm_extract", "test450"),
+        ("qwen38_27b", "gan_llm_select_from_extract", "dev750"),
+        ("qwen38_27b", "gan_llm_select_from_extract", "test450"),
     }
     missing_cells = {
         (row.get("model_slug"), row["method"], row.get("split")) for row in inventory["missing"]

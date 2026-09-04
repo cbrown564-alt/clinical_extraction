@@ -24,6 +24,8 @@ structured records.
 
 ## Claim boundary
 
-Holdout aggregate-only transfer measurement. Not Table 1. Not cited
-cell 5. Not a six-model roster change. Gemini remains the cited
-later-stage model. No row-level rescue or harm table. No promotion.
+Holdout aggregate-only transfer measurement. Promoted into
+`paper_experiments/gan/gan_llm_select_from_extract/` for a wider
+comparison. Not Table 1. Not cited cell 5. Not a six-model roster
+change. Gemini remains the cited later-stage model. No row-level
+rescue or harm table.
