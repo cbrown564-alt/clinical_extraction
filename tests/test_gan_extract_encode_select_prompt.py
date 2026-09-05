@@ -137,6 +137,17 @@ def test_one_call_payload_is_model_facing_and_registered() -> None:
     )
 
 
+def test_one_call_example_shape_parses() -> None:
+    raw_output = json.dumps(extract_encode_select.CASES[0]["example"])
+    extraction, normalized_events, errors = parse_structured_json(raw_output)
+    assert errors == []
+    assert extraction is not None
+    assert [event.event_id for event in extraction.events] == ["f1", "f2"]
+    assert extraction.selection.selected_event_ids == ["f2"]
+    assert extraction.selection.final_kind == "frequency"
+    assert normalized_events[1].normalized_label == "1 per 2 week"
+
+
 def test_one_call_output_parses_without_dropped_fields() -> None:
     raw_output = json.dumps(
         {

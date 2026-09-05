@@ -304,6 +304,44 @@ def test_repair_treats_null_selected_event_ids_as_omitted() -> None:
     assert payload["selection"]["selected_event_ids"] == []
 
 
+def test_repair_accepts_one_call_example_answer_shape() -> None:
+    payload = repair_structured_extraction_payload(
+        {
+            "facts": [
+                {
+                    "fact_id": "f1",
+                    "kind": "frequency_rate",
+                    "raw_value": "brief periods of daily seizures",
+                    "normalised_label": "1 per day",
+                    "temporality": "current",
+                    "applies_to": "seizures",
+                    "time_window": None,
+                    "evidence": "brief periods of daily seizures",
+                },
+                {
+                    "fact_id": "f2",
+                    "kind": "frequency_rate",
+                    "raw_value": "usually every 2 weeks",
+                    "normalised_label": "1 per 2 week",
+                    "temporality": "current",
+                    "applies_to": "seizures",
+                    "time_window": None,
+                    "evidence": "usually every 2 weeks",
+                },
+            ],
+            "answer": {"selected_fact_ids": ["f2"]},
+        }
+    )
+
+    assert "facts" not in payload
+    assert "answer" not in payload
+    assert [event["event_id"] for event in payload["events"]] == ["f1", "f2"]
+    assert payload["selection"]["selected_event_ids"] == ["f2"]
+    assert payload["selection"]["final_kind"] == "frequency"
+    assert payload["selection"]["rationale"] == ""
+    assert payload["selection"]["confidence"] == "medium"
+
+
 def test_repair_does_not_invent_selected_event_ids_from_the_event_list() -> None:
     payload = repair_structured_extraction_payload(
         {

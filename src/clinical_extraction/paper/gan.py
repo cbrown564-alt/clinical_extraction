@@ -582,7 +582,8 @@ def run_gan(
     max_tokens = _max_tokens_for(method, spec.slug, spec.reasoning_effort)
     if spec.slug == "qwen38_27b" and spec.thinking_type == "enabled":
         max_tokens = cell3_thinking_max_tokens(max_tokens, "high")
-    if todo and not uses_provider_batch(spec.slug):
+    use_batch = bool(todo) and uses_provider_batch(spec.slug) and not live_sync
+    if todo and not use_batch:
         _prepare_live_runtime(
             spec,
             api_base=resolved_base,
@@ -605,7 +606,7 @@ def run_gan(
     )
     batch_raws: dict[str, str] = {}
     call_transport = "sync"
-    if todo and uses_provider_batch(spec.slug):
+    if use_batch:
         call_transport = "openai_batch" if spec.slug == "gpt56luna" else "openrouter_batch"
         batch_raws = complete_chat_batch(
             spec,

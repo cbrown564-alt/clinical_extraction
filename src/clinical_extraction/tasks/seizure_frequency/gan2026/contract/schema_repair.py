@@ -55,6 +55,11 @@ def repair_structured_extraction_payload(payload: Any) -> Any:
         return payload
 
     repaired = dict(payload)
+    answer = repaired.get("answer")
+    if isinstance(answer, dict):
+        if "selection" not in repaired:
+            repaired["selection"] = answer
+        repaired.pop("answer", None)
     _move_key_alias(repaired, "facts", "events")
     events = repaired.get("events")
     if isinstance(events, list):
@@ -94,11 +99,14 @@ def repair_structured_extraction_payload(payload: Any) -> Any:
         repaired_selection = repair_decision_payload(selection)
         _move_key_alias(repaired_selection, "rationality", "rationale")
         _move_key_alias(repaired_selection, "selected_fact_ids", "selected_event_ids")
+        _move_key_alias(repaired_selection, "label", "final_label")
         repaired_selection.setdefault("confidence", "medium")
+        repaired_selection.setdefault("rationale", "")
         if repaired_selection.get("selected_event_ids") is None:
             repaired_selection["selected_event_ids"] = []
         repaired["selection"] = repaired_selection
     _fill_omitted_event_kinds(repaired)
+    _fill_omitted_final_kind(repaired)
     return repaired
 
 
@@ -184,6 +192,14 @@ _FINAL_KIND_TO_EVENT_KIND = {
     "unknown": "unknown_frequency",
     "no_reference": "no_reference",
 }
+_EVENT_KIND_TO_FINAL_KIND = {
+    "frequency_rate": "frequency",
+    "cluster_frequency": "frequency",
+    "last_event_only": "frequency",
+    "seizure_free": "seizure_free",
+    "unknown_frequency": "unknown",
+    "no_reference": "no_reference",
+}
 
 
 def _event_kind_omitted(event: dict[str, Any]) -> bool:
@@ -263,6 +279,37 @@ def _fill_omitted_event_kinds(payload: dict[str, Any]) -> None:
             filled = _omitted_event_kind_from_selection(event, final_kind)
         if filled is not None:
             event["kind"] = filled
+
+
+def _fill_omitted_final_kind(payload: dict[str, Any]) -> None:
+    selection = payload.get("selection")
+    if not isinstance(selection, dict):
+        return
+    final_kind = selection.get("final_kind")
+    if isinstance(final_kind, str) and final_kind.strip():
+        return
+    selected_ids = selection.get("selected_event_ids")
+    if not isinstance(selected_ids, (list, tuple)):
+        return
+    wanted = {str(event_id) for event_id in selected_ids if event_id is not None}
+    if not wanted:
+        return
+    events = payload.get("events")
+    if not isinstance(events, list):
+        return
+    mapped: set[str] = set()
+    for event in events:
+        if not isinstance(event, dict):
+            continue
+        event_id = event.get("event_id")
+        if event_id is None or str(event_id) not in wanted:
+            continue
+        kind = event.get("kind")
+        if kind not in _EVENT_KIND_TO_FINAL_KIND:
+            return
+        mapped.add(_EVENT_KIND_TO_FINAL_KIND[str(kind)])
+    if len(mapped) == 1:
+        selection["final_kind"] = mapped.pop()
 
 
 def _move_key_alias(payload: dict[str, Any], alias: str, canonical: str) -> None:
