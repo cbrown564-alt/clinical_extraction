@@ -15,14 +15,20 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
     build_prompt_input,
+    parse_structured_json,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_extract import (
     llm_extract_prompt_template,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_select import (
-    CASE_KEYS,
-    EXAMPLE_KEYS,
-    select_cases_payload,
+
+_ENCODE_SELECT_BANNED_PHRASES = (
+    "source-near",
+    "slim events",
+    "slim clinical",
+    "fully normalized",
+    "dated anchor",
+    "clinical target",
+    "semiologies",
 )
 
 
@@ -43,20 +49,43 @@ def _record() -> GanFrequencyRecord:
     )
 
 
-def test_one_call_keeps_extract_and_adds_living_select_cases() -> None:
+def test_one_call_prompt_is_self_contained() -> None:
     baseline = llm_extract_prompt_template()
     variant = extract_encode_select.llm_extract_encode_select_prompt_template()
-    cases = select_cases_payload()
-    assert variant["task"] == baseline["task"]
-    assert variant["event_schema"] == baseline["event_schema"]
-    assert variant["selection_schema"] == baseline["selection_schema"]
-    assert variant["label_forms"] == baseline["label_forms"]
-    assert variant["instructions"][: len(baseline["instructions"])] == baseline[
-        "instructions"
-    ]
-    assert variant["instructions"][-1] == extract_encode_select.SELECT_BRIDGE
-    assert variant["cases"] == cases
-    assert [row["title"] for row in cases] == [
+    blob = json.dumps(variant)
+    assert variant["task"] != baseline["task"]
+    assert "event_schema" not in variant
+    assert "fact_schema" in variant
+    assert "source-near" in json.dumps(baseline)
+    leaked = [phrase for phrase in _ENCODE_SELECT_BANNED_PHRASES if phrase in blob]
+    assert leaked == []
+    assert "raw_value" in variant["fact_schema"]
+    assert "normalised_label" in variant["fact_schema"]
+    assert "null" not in variant["fact_schema"]["raw_value"]
+    assert "null" not in variant["fact_schema"]["normalised_label"]
+    assert "fact_id" in variant["fact_schema"]
+    assert "f1" in variant["fact_schema"]["fact_id"]
+    assert "e1" not in variant["fact_schema"]["fact_id"]
+    assert "event_id" not in variant["fact_schema"]
+    assert "assertion_status" not in variant["fact_schema"]
+    assert "notes" not in variant["fact_schema"]
+    assert "selected_fact_ids" in variant["selection_schema"]
+    assert "selected_event_ids" not in variant["selection_schema"]
+    assert "confidence" not in variant["selection_schema"]
+    instruction_blob = " ".join(variant["instructions"])
+    assert "raw_value" in instruction_blob
+    assert "normalised_label" in instruction_blob
+    assert "assertion_status" not in instruction_blob
+    assert "confidence" not in instruction_blob
+    assert "highest current or recent" not in instruction_blob
+    assert "clinically most severe subtype" not in instruction_blob
+    assert "Do not select seizure-free" not in instruction_blob
+    assert "event_id" not in instruction_blob
+    assert "For each fact," in instruction_blob
+    assert "cannot write both" in instruction_blob
+    assert variant["label_forms"]["rules"] == extract_encode_select.LABEL_FORM_RULES
+    assert variant["label_forms"]["forms"] == extract_encode_select.LABEL_FORMS
+    assert [row["title"] for row in variant["cases"]] == [
         "Usual gap",
         "Usual rate, not a year total",
         "Recent seizures after a quiet spell",
@@ -64,13 +93,19 @@ def test_one_call_keeps_extract_and_adds_living_select_cases() -> None:
         "Month counts",
         "Dated seizures",
         "Burst after a change",
-        "Short quiet spell after a last event",
+        "Short quiet spell after a last seizure",
         "Overall count",
-        "Do not choose seizure-free while events continue",
+        "Do not choose seizure-free while seizures continue",
     ]
+    assert variant["instructions"][-1] == extract_encode_select.SELECT_BRIDGE
+    assert "first choice" not in blob.lower()
+    assert "first_choice" not in blob
     for row in variant["cases"]:
-        assert set(row) == set(CASE_KEYS)
-        assert set(row["example"]) == set(EXAMPLE_KEYS)
+        assert set(row) == set(extract_encode_select.CASE_KEYS)
+        assert set(row["example"]) == set(extract_encode_select.EXAMPLE_KEYS)
+        assert "event_id" not in json.dumps(row["example"])
+        assert "events" not in row["example"]
+        assert "first_choice" not in row["example"]
 
 
 def test_one_call_payload_is_model_facing_and_registered() -> None:
@@ -100,3 +135,36 @@ def test_one_call_payload_is_model_facing_and_registered() -> None:
     assert verified["prompt_version"] == (
         extract_encode_select.GAN_LLM_EXTRACT_ENCODE_SELECT
     )
+
+
+def test_one_call_output_parses_without_dropped_fields() -> None:
+    raw_output = json.dumps(
+        {
+            "facts": [
+                {
+                    "fact_id": "f1",
+                    "kind": "frequency_rate",
+                    "raw_value": "two seizures per month",
+                    "normalised_label": "2 per month",
+                    "applies_to": "seizures",
+                    "time_window": "per month",
+                    "temporality": "current",
+                    "evidence": "two seizures per month",
+                }
+            ],
+            "selection": {
+                "selected_fact_ids": ["f1"],
+                "final_kind": "frequency",
+                "final_label": "2 per month",
+                "evidence": "two seizures per month",
+                "rationale": "stated monthly rate",
+            },
+        }
+    )
+    extraction, normalized_events, errors = parse_structured_json(raw_output)
+    assert errors == []
+    assert extraction is not None
+    assert extraction.events[0].normalised_label == "2 per month"
+    assert extraction.events[0].assertion_status == "asserted"
+    assert extraction.selection.confidence == "medium"
+    assert normalized_events[0].normalized_label == "2 per month"

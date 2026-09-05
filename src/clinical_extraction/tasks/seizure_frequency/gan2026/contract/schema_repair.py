@@ -55,21 +55,28 @@ def repair_structured_extraction_payload(payload: Any) -> Any:
         return payload
 
     repaired = dict(payload)
+    _move_key_alias(repaired, "facts", "events")
     events = repaired.get("events")
     if isinstance(events, list):
         repaired_events: list[Any] = []
         has_any_event_id = any(
-            isinstance(event, dict) and (event.get("event_id") or event.get("pevent_id"))
+            isinstance(event, dict)
+            and (
+                event.get("event_id")
+                or event.get("fact_id")
+                or event.get("pevent_id")
+            )
             for event in events
         )
         used_event_ids = {
-            str(event.get("event_id"))
+            str(event.get("event_id") or event.get("fact_id"))
             for event in events
-            if isinstance(event, dict) and event.get("event_id")
+            if isinstance(event, dict) and (event.get("event_id") or event.get("fact_id"))
         }
         for index, event in enumerate(events):
             repaired_event = repair_decision_payload(event)
             if isinstance(repaired_event, dict):
+                _move_key_alias(repaired_event, "fact_id", "event_id")
                 _move_key_alias(repaired_event, "pevent_id", "event_id")
                 _move_key_alias(repaired_event, "temporlagity", "temporality")
                 if has_any_event_id and not repaired_event.get("event_id"):
@@ -86,6 +93,7 @@ def repair_structured_extraction_payload(payload: Any) -> Any:
     if isinstance(selection, dict):
         repaired_selection = repair_decision_payload(selection)
         _move_key_alias(repaired_selection, "rationality", "rationale")
+        _move_key_alias(repaired_selection, "selected_fact_ids", "selected_event_ids")
         repaired_selection.setdefault("confidence", "medium")
         if repaired_selection.get("selected_event_ids") is None:
             repaired_selection["selected_event_ids"] = []

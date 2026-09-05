@@ -270,10 +270,13 @@ class StructuredEventRecord(BaseModel):
         "no_reference",
     ]
     raw_value: str | None = None
+    normalised_label: str | None = None
     applies_to: str | None = None
     time_window: str | None = None
     temporality: Literal["current", "recent", "historical", "future", "unclear"]
-    assertion_status: Literal["asserted", "negated", "historical", "hypothetical", "unknown"]
+    assertion_status: Literal[
+        "asserted", "negated", "historical", "hypothetical", "unknown"
+    ] = "asserted"
     evidence: str = ""
     notes: str | None = None
 
@@ -293,7 +296,7 @@ class StructuredSelectionRecord(BaseModel):
     ]
     final_label: str | None = None
     evidence: str = ""
-    confidence: Literal["low", "medium", "high"]
+    confidence: Literal["low", "medium", "high"] = "medium"
     rationale: str
 
 
@@ -1661,6 +1664,8 @@ def _normalize_event(
 
 
 def _event_raw_label(event: StructuredEventRecord) -> str | None:
+    if event.normalised_label and str(event.normalised_label).strip():
+        return str(event.normalised_label).strip()
     if event.kind == "no_reference":
         return "no seizure frequency reference"
     if event.kind == "last_event_only":
