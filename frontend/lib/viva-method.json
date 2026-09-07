@@ -1,0 +1,947 @@
+{
+  "prompts": {
+    "extract": {
+      "event_schema": {
+        "applies_to": "seizure type or clinical target, or null",
+        "assertion_status": [
+          "asserted",
+          "negated",
+          "historical",
+          "hypothetical",
+          "unknown"
+        ],
+        "event_id": "stable string such as e1",
+        "evidence": "exact note substring",
+        "kind": [
+          "frequency_rate",
+          "cluster_frequency",
+          "seizure_free",
+          "last_event_only",
+          "unknown_frequency",
+          "no_reference"
+        ],
+        "notes": "optional short note or null",
+        "raw_value": "source-near expression or null",
+        "temporality": [
+          "current",
+          "recent",
+          "historical",
+          "future",
+          "unclear"
+        ],
+        "time_window": "source-near current/recent/historical window, or null"
+      },
+      "instructions": [
+        "Read the full clinical note and extract source-near seizure-frequency facts.",
+        "Return events as slim clinical facts, not fully normalized answer records. Use raw_value for the text's stated rate, duration, last-event statement, or unknown/no-reference cue.",
+        "Event kind must be one of frequency_rate, cluster_frequency, seizure_free, last_event_only, unknown_frequency, or no_reference.",
+        "Use one no_reference event only when the note contains no usable seizure-frequency evidence. Do not use no_reference when seizures are discussed but frequency is unclear; use unknown_frequency instead.",
+        "Keep seizure-free statements separate from unknown or last-event-only statements. Do not select seizure-free if other current seizure-like events remain active.",
+        "Selection must choose the highest current or recent seizure burden across semiologies when several current seizure types are present.",
+        "If the note gives an overall current seizure count plus a breakdown by seizure type, select the overall count for the seizure-frequency label rather than only the clinically most severe subtype count.",
+        "Write the seizure-frequency label using only the allowed forms. Copy an example and change the numbers if needed.",
+        "If the selected event has a countable stated rate, put the note's wording in raw_value and write the seizure-frequency label from the allowed forms.",
+        "When the note says a last event occurred on a date and the patient has been well, stable, or seizure-free since, still extract the dated last-event fact as its own event even if the selection is seizure-free.",
+        "When the note says a count such as 3 or 4 jerks occurred since a dated last tonic-clonic seizure, keep the source count and the dated anchor available in the event list.",
+        "Every evidence value must be an exact substring from the note when possible.",
+        "Return exactly one JSON object with no markdown."
+      ],
+      "label_forms": {
+        "forms": [
+          {
+            "description": "A single count in one day, week, month, or year.",
+            "examples": [
+              "1 per day",
+              "4 per week",
+              "3 per month",
+              "2 per year"
+            ],
+            "form": "N per unit"
+          },
+          {
+            "description": "A single count over a stated number of days, weeks, months, or years.",
+            "examples": [
+              "1 per 2 day",
+              "1 per 2 week",
+              "2 per 6 month"
+            ],
+            "form": "N per N unit"
+          },
+          {
+            "description": "A single count over a range of days, weeks, months, or years.",
+            "examples": [
+              "1 per 2 to 3 day",
+              "1 per 2 to 3 week",
+              "1 per 4 to 6 month"
+            ],
+            "form": "N per N to N unit"
+          },
+          {
+            "description": "A count range in one day, week, month, or year.",
+            "examples": [
+              "2 to 3 per day",
+              "2 to 4 per week",
+              "3 to 5 per month",
+              "2 to 4 per year"
+            ],
+            "form": "N to N per unit"
+          },
+          {
+            "description": "A count range over a stated number of days, weeks, months, or years.",
+            "examples": [
+              "2 to 4 per 3 month",
+              "2 to 3 per 2 week"
+            ],
+            "form": "N to N per N unit"
+          },
+          {
+            "description": "More than one seizure in one day, week, or month, with no number given.",
+            "examples": [
+              "multiple per day",
+              "multiple per week",
+              "multiple per month"
+            ],
+            "form": "multiple per unit"
+          },
+          {
+            "description": "More than one seizure over a stated number of months, with no number given.",
+            "examples": [
+              "multiple per 2 month"
+            ],
+            "form": "multiple per N unit"
+          },
+          {
+            "description": "A count over an unstated number of days or months.",
+            "examples": [
+              "1 per multiple day",
+              "1 per multiple month"
+            ],
+            "form": "N per multiple unit"
+          },
+          {
+            "description": "How often clusters happen, and how many seizures are in each cluster. The cluster count or the time between clusters may be a range.",
+            "examples": [
+              "1 cluster per day, 5 per cluster",
+              "1 cluster per week, 4 per cluster",
+              "1 cluster per 4 month, 5 per cluster",
+              "6 cluster per month, 4 per cluster",
+              "1 cluster per 4 to 5 day, 2 per cluster"
+            ],
+            "form": "cluster per unit, N per cluster"
+          },
+          {
+            "description": "How often clusters happen, and a range of seizures in each cluster.",
+            "examples": [
+              "1 cluster per day, 2 to 4 per cluster",
+              "1 cluster per week, 3 to 6 per cluster",
+              "1 cluster per month, 4 to 6 per cluster"
+            ],
+            "form": "cluster per unit, range per cluster"
+          },
+          {
+            "description": "How often clusters happen, and more than one seizure in each cluster with no number given.",
+            "examples": [
+              "1 cluster per day, multiple per cluster",
+              "1 cluster per week, multiple per cluster",
+              "1 cluster per month, multiple per cluster"
+            ],
+            "form": "cluster per unit, multiple per cluster"
+          },
+          {
+            "description": "Clusters are described, but how often they happen is not known.",
+            "examples": [
+              "unknown, 5 per cluster",
+              "unknown, 2 to 4 per cluster",
+              "unknown, multiple per cluster"
+            ],
+            "form": "unknown cluster count"
+          },
+          {
+            "description": "No seizures for a stated length of time.",
+            "examples": [
+              "seizure free for 6 month",
+              "seizure free for 2 year",
+              "seizure free for 3 months",
+              "seizure free for 2 years",
+              "seizure free for 2 to 3 months"
+            ],
+            "form": "seizure free for a duration"
+          },
+          {
+            "description": "No seizures for an unstated length of time.",
+            "examples": [
+              "seizure free for multiple month",
+              "seizure free for multiple year"
+            ],
+            "form": "seizure free for a vague duration"
+          },
+          {
+            "description": "Seizures are discussed, but there is no usable frequency.",
+            "examples": [
+              "unknown"
+            ],
+            "form": "unknown"
+          },
+          {
+            "description": "There is no usable frequency evidence.",
+            "examples": [
+              "no seizure frequency reference"
+            ],
+            "form": "no seizure frequency reference"
+          }
+        ],
+        "rules": [
+          "Write the label using only the forms below. Copy an example and change the numbers if needed.",
+          "Use digits, not word numbers.",
+          "Use day, week, month, or year. Prefer the singular word.",
+          "A night count is a day count: once per night becomes 1 per day.",
+          "Flatten a bound: at most four per day, or \u2264 four per day, becomes 4 per day.",
+          "Do not write <=, >=, up to, at most, several, handful, frequent, or a calendar date.",
+          "If none of these forms fit, write unknown when seizures are discussed, or no seizure frequency reference when there is no usable frequency evidence."
+        ]
+      },
+      "selection_schema": {
+        "confidence": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "evidence": "exact note substring supporting the final selection",
+        "final_kind": [
+          "frequency",
+          "seizure_free",
+          "unknown",
+          "no_reference",
+          "unresolved_multiple"
+        ],
+        "final_label": "normalized label, or null if not directly countable",
+        "rationale": "brief clinical reason for selecting these events",
+        "selected_event_ids": "list of selected event_id strings"
+      },
+      "task": "Read the clinical note. Extract seizure-frequency facts as slim events, then select the current burden."
+    },
+    "decide": {
+      "cases": [
+        {
+          "example": {
+            "answer": {
+              "selected_event_ids": [
+                "e2"
+              ]
+            },
+            "events": [
+              {
+                "applies_to": "seizures",
+                "assertion_status": "asserted",
+                "event_id": "e1",
+                "evidence": "brief periods of daily seizures",
+                "kind": "frequency_rate",
+                "label": "1 per day",
+                "temporality": "current",
+                "time_window": null
+              },
+              {
+                "applies_to": "seizures",
+                "assertion_status": "asserted",
+                "event_id": "e2",
+                "evidence": "usually every 2 weeks",
+                "kind": "frequency_rate",
+                "label": "1 per 2 week",
+                "temporality": "current",
+                "time_window": null
+              }
+            ],
+            "first_choice": {
+              "label": "1 per day",
+              "selected_event_ids": [
+                "e1"
+              ]
+            }
+          },
+          "instruction": "The first choice is unknown, 1 per day, or multiple per day during short or occasional daily spells. Another event gives the usual gap between seizures. Prefer that usual gap.",
+          "title": "Usual gap"
+        },
+        {
+          "example": {
+            "answer": {
+              "selected_event_ids": [
+                "e2"
+              ]
+            },
+            "events": [
+              {
+                "applies_to": "seizures",
+                "assertion_status": "asserted",
+                "event_id": "e1",
+                "evidence": "4 seizures so far this year",
+                "kind": "frequency_rate",
+                "label": "4 per year",
+                "temporality": "current",
+                "time_window": "this year"
+              },
+              {
+                "applies_to": "seizures",
+                "assertion_status": "asserted",
+                "event_id": "e2",
+                "evidence": "typically 1 per month",
+                "kind": "frequency_rate",
+                "label": "1 per month",
+                "temporality": "current",
+                "time_window": null
+              }
+            ],
+            "first_choice": {
+              "label": "4 per year",
+              "selected_event_ids": [
+                "e1"
+              ]
+            }
+          },
+          "instruction": "The first choice is how many seizures so far this year. Another event gives the usual or typical rate. Prefer the usual rate.",
+          "title": "Usual rate, not a year total"
+        },
+        {
+          "example": {
+            "answer": {
+              "label": "2 per 6 month",
+              "selected_event_ids": [
+                "e1",
+                "e2"
+              ]
+            },
+            "events": [
+              {
+                "applies_to": "tonic-clonic seizures",
+                "assertion_status": "asserted",
+                "event_id": "e1",
+                "evidence": "2 tonic-clonic seizures",
+                "kind": "unknown_frequency",
+                "label": "unknown",
+                "temporality": "current",
+                "time_window": null
+              },
+              {
+                "applies_to": "seizures",
+                "assertion_status": "asserted",
+                "event_id": "e2",
+                "evidence": "seizure-free for 6 months before that",
+                "kind": "seizure_free",
+                "label": "seizure free for 6 month",
+                "temporality": "current",
+                "time_window": "6 months"
+              }
+            ],
+            "first_choice": {
+              "label": "unknown",
+              "selected_event_ids": [
+                "e1"
+              ]
+            }
+          },
+          "instruction": "The first choice is unknown or no seizure frequency reference. The events give a recent count and how long the person had been seizure-free. Write that count over that time. Do this only if no event already has that label.",
+          "title": "Recent seizures after a quiet spell"
+        },
+        {
+          "example": {
+            "answer": {
+              "label": "seizure free for multiple year",
+              "selected_event_ids": [
+                "e1",
+                "e2"
+              ]
+            },
+            "events": [
+              {
+                "applies_to": "non-epileptic attacks",
+                "assertion_status": "asserted",
+                "event_id": "e1",
+                "evidence": "these are non-epileptic attacks",
+                "kind": "unknown_frequency",
+                "label": "unknown",
+                "temporality": "current",
+                "time_window": null
+              },
+              {
+                "applies_to": "seizures",
+                "assertion_status": "asserted",
+                "event_id": "e2",
+                "evidence": "no epileptic seizures",
+                "kind": "unknown_frequency",
+                "label": "unknown",
+                "temporality": "current",
+                "time_window": null
+              }
+            ],
+            "first_choice": {
+              "label": "unknown",
+              "selected_event_ids": [
+                "e1"
+              ]
+            }
+          },
+          "instruction": "The first choice is unknown or no seizure frequency reference. The current events are attacks that are not epileptic seizures. Write seizure free for multiple year.",
+          "title": "Not epileptic seizures"
+        },
+        {
+          "example": {
+            "answer": {
+              "label": "9 per 3 month",
+              "selected_event_ids": [
+                "e1",
+                "e2"
+              ]
+            },
+            "events": [
+              {
+                "applies_to": "seizures",
+                "assertion_status": "asserted",
+                "event_id": "e1",
+                "evidence": "3 seizures in March",
+                "kind": "frequency_rate",
+                "label": "3 per month",
+                "temporality": "current",
+                "time_window": "March"
+              },
+              {
+                "applies_to": "seizures",
+                "assertion_status": "asserted",
+                "event_id": "e2",
+                "evidence": "6 seizures in May",
+                "kind": "frequency_rate",
+                "label": "6 per month",
+                "temporality": "current",
+                "time_window": "May"
+              }
+            ],
+            "first_choice": {
+              "label": "6 per month",
+              "selected_event_ids": [
+                "e2"
+              ]
+            }
+          },
+          "instruction": "Quotes name how many seizures happened in named months, such as 3 in March and 6 in May. Add those counts and write the total over that time. Use this instead of the last month alone, unknown, or a short or vague seizure-free label. Do not replace a rate per day or per week. Do not replace seizure-free for 4 months or longer, or for any number of years. You may replace a vague seizure free for multiple label.",
+          "title": "Month counts"
+        },
+        {
+          "example": {
+            "answer": {
+              "label": "2 per 2 month",
+              "selected_event_ids": [
+                "e1",
+                "e2"
+              ]
+            },
+            "events": [
+              {
+                "applies_to": "seizures",
+                "assertion_status": "asserted",
+                "event_id": "e1",
+                "evidence": "a seizure in March 2019",
+                "kind": "unknown_frequency",
+                "label": "unknown",
+                "temporality": "current",
+                "time_window": "March 2019"
+              },
+              {
+                "applies_to": "seizures",
+                "assertion_status": "asserted",
+                "event_id": "e2",
+                "evidence": "a seizure in May 2019",
+                "kind": "unknown_frequency",
+                "label": "unknown",
+                "temporality": "current",
+                "time_window": "May 2019"
+              }
+            ],
+            "first_choice": {
+              "label": "unknown",
+              "selected_event_ids": [
+                "e1"
+              ]
+            }
+          },
+          "instruction": "Two or more events name seizures on different dates or months, or a quote already says how many seizures happened in a number of months. Write that count over that time. Use this instead of unknown, seizure-free after the last date, or a monthly or yearly rate when that time is more than 1 month. Do not replace a rate per day or per week. Do this only if the last dated event looks current or recent. Ignore dates described as before an improvement.",
+          "title": "Dated seizures"
+        },
+        {
+          "example": {
+            "answer": {
+              "label": "3 per 6 month",
+              "selected_event_ids": [
+                "e1",
+                "e2"
+              ]
+            },
+            "events": [
+              {
+                "applies_to": "seizures",
+                "assertion_status": "asserted",
+                "event_id": "e1",
+                "evidence": "3 seizures shortly after the dose change",
+                "kind": "frequency_rate",
+                "label": "3 per week",
+                "temporality": "current",
+                "time_window": "following week"
+              },
+              {
+                "applies_to": "seizures",
+                "assertion_status": "asserted",
+                "event_id": "e2",
+                "evidence": "no further seizures since then",
+                "kind": "seizure_free",
+                "label": "seizure free for 6 month",
+                "temporality": "current",
+                "time_window": "6 months"
+              }
+            ],
+            "first_choice": {
+              "label": "seizure free for 6 month",
+              "selected_event_ids": [
+                "e2"
+              ]
+            }
+          },
+          "instruction": "The first choice is seizure-free, or a rate per day or per week. The quotes describe seizures soon after a treatment change, then no further seizures for a stated time. Write that burst count over the quiet time. Do this only if the quotes already give both the burst and the quiet time.",
+          "title": "Burst after a change"
+        },
+        {
+          "example": {
+            "answer": {
+              "label": "1 per month",
+              "selected_event_ids": [
+                "e1",
+                "e2"
+              ]
+            },
+            "events": [
+              {
+                "applies_to": "seizures",
+                "assertion_status": "asserted",
+                "event_id": "e1",
+                "evidence": "last seizure on 12 March",
+                "kind": "last_event_only",
+                "label": "unknown",
+                "temporality": "current",
+                "time_window": "12 March"
+              },
+              {
+                "applies_to": "seizures",
+                "assertion_status": "asserted",
+                "event_id": "e2",
+                "evidence": "remained well since then",
+                "kind": "seizure_free",
+                "label": "seizure free for 3 week",
+                "temporality": "current",
+                "time_window": "3 weeks"
+              }
+            ],
+            "first_choice": {
+              "label": "seizure free for 3 week",
+              "selected_event_ids": [
+                "e2"
+              ]
+            }
+          },
+          "instruction": "The first choice is seizure-free for weeks, or for fewer than 6 months. A quote names the last seizure on a calendar day, or a burst count, and says the person has been well since then. Write that count over that time. If the quiet spell is 5 weeks or less, write the count per month.",
+          "title": "Short quiet spell after a last event"
+        },
+        {
+          "example": {
+            "answer": {
+              "selected_event_ids": [
+                "e3"
+              ]
+            },
+            "events": [
+              {
+                "applies_to": "focal seizures",
+                "assertion_status": "asserted",
+                "event_id": "e1",
+                "evidence": "4 focal seizures this month",
+                "kind": "frequency_rate",
+                "label": "4 per month",
+                "temporality": "current",
+                "time_window": "this month"
+              },
+              {
+                "applies_to": "tonic-clonic seizures",
+                "assertion_status": "asserted",
+                "event_id": "e2",
+                "evidence": "2 tonic-clonic seizures this month",
+                "kind": "frequency_rate",
+                "label": "2 per month",
+                "temporality": "current",
+                "time_window": "this month"
+              },
+              {
+                "applies_to": "seizures",
+                "assertion_status": "asserted",
+                "event_id": "e3",
+                "evidence": "6 seizures this month in total",
+                "kind": "frequency_rate",
+                "label": "6 per month",
+                "temporality": "current",
+                "time_window": "this month"
+              }
+            ],
+            "first_choice": {
+              "label": "4 per month",
+              "selected_event_ids": [
+                "e1"
+              ]
+            }
+          },
+          "instruction": "If several seizure types are listed, choose the highest current or recent overall count, not a breakdown by type.",
+          "title": "Overall count"
+        },
+        {
+          "example": {
+            "answer": {
+              "selected_event_ids": [
+                "e2"
+              ]
+            },
+            "events": [
+              {
+                "applies_to": "seizures",
+                "assertion_status": "asserted",
+                "event_id": "e1",
+                "evidence": "seizure free for 2 months",
+                "kind": "seizure_free",
+                "label": "seizure free for 2 month",
+                "temporality": "current",
+                "time_window": "2 months"
+              },
+              {
+                "applies_to": "absences",
+                "assertion_status": "asserted",
+                "event_id": "e2",
+                "evidence": "absences continue weekly",
+                "kind": "frequency_rate",
+                "label": "1 per week",
+                "temporality": "current",
+                "time_window": null
+              }
+            ],
+            "first_choice": {
+              "label": "seizure free for 2 month",
+              "selected_event_ids": [
+                "e1"
+              ]
+            }
+          },
+          "instruction": "Do not choose seizure-free if other current seizure-like events are still happening.",
+          "title": "Do not choose seizure-free while events continue"
+        }
+      ],
+      "instructions": [
+        "Each event has a seizure-frequency label and a supporting quote. Use both. The quote can justify a different answer than the label. Use only facts already in the events or their quotes. Any new label must match one of the label forms.",
+        "A first choice is given. Keep it unless one of the cases below applies.",
+        "Return the selected event ids. Write a new label only when no single event is the answer. Do not add events. Do not write a new quote. Return exactly one JSON object with no markdown."
+      ],
+      "label_forms": {
+        "forms": [
+          {
+            "description": "A single count in one day, week, month, or year.",
+            "examples": [
+              "1 per day",
+              "4 per week",
+              "3 per month",
+              "2 per year"
+            ],
+            "form": "N per unit"
+          },
+          {
+            "description": "A single count over a stated number of days, weeks, months, or years.",
+            "examples": [
+              "1 per 2 day",
+              "1 per 2 week",
+              "2 per 6 month"
+            ],
+            "form": "N per N unit"
+          },
+          {
+            "description": "A single count over a range of days, weeks, months, or years.",
+            "examples": [
+              "1 per 2 to 3 day",
+              "1 per 2 to 3 week",
+              "1 per 4 to 6 month"
+            ],
+            "form": "N per N to N unit"
+          },
+          {
+            "description": "A count range in one day, week, month, or year.",
+            "examples": [
+              "2 to 3 per day",
+              "2 to 4 per week",
+              "3 to 5 per month",
+              "2 to 4 per year"
+            ],
+            "form": "N to N per unit"
+          },
+          {
+            "description": "A count range over a stated number of days, weeks, months, or years.",
+            "examples": [
+              "2 to 4 per 3 month",
+              "2 to 3 per 2 week"
+            ],
+            "form": "N to N per N unit"
+          },
+          {
+            "description": "More than one seizure in one day, week, or month, with no number given.",
+            "examples": [
+              "multiple per day",
+              "multiple per week",
+              "multiple per month"
+            ],
+            "form": "multiple per unit"
+          },
+          {
+            "description": "More than one seizure over a stated number of months, with no number given.",
+            "examples": [
+              "multiple per 2 month"
+            ],
+            "form": "multiple per N unit"
+          },
+          {
+            "description": "A count over an unstated number of days or months.",
+            "examples": [
+              "1 per multiple day",
+              "1 per multiple month"
+            ],
+            "form": "N per multiple unit"
+          },
+          {
+            "description": "How often clusters happen, and how many seizures are in each cluster. The cluster count or the time between clusters may be a range.",
+            "examples": [
+              "1 cluster per day, 5 per cluster",
+              "1 cluster per week, 4 per cluster",
+              "1 cluster per 4 month, 5 per cluster",
+              "6 cluster per month, 4 per cluster",
+              "1 cluster per 4 to 5 day, 2 per cluster"
+            ],
+            "form": "cluster per unit, N per cluster"
+          },
+          {
+            "description": "How often clusters happen, and a range of seizures in each cluster.",
+            "examples": [
+              "1 cluster per day, 2 to 4 per cluster",
+              "1 cluster per week, 3 to 6 per cluster",
+              "1 cluster per month, 4 to 6 per cluster"
+            ],
+            "form": "cluster per unit, range per cluster"
+          },
+          {
+            "description": "How often clusters happen, and more than one seizure in each cluster with no number given.",
+            "examples": [
+              "1 cluster per day, multiple per cluster",
+              "1 cluster per week, multiple per cluster",
+              "1 cluster per month, multiple per cluster"
+            ],
+            "form": "cluster per unit, multiple per cluster"
+          },
+          {
+            "description": "Clusters are described, but how often they happen is not known.",
+            "examples": [
+              "unknown, 5 per cluster",
+              "unknown, 2 to 4 per cluster",
+              "unknown, multiple per cluster"
+            ],
+            "form": "unknown cluster count"
+          },
+          {
+            "description": "No seizures for a stated length of time.",
+            "examples": [
+              "seizure free for 6 month",
+              "seizure free for 2 year",
+              "seizure free for 3 months",
+              "seizure free for 2 years",
+              "seizure free for 2 to 3 months"
+            ],
+            "form": "seizure free for a duration"
+          },
+          {
+            "description": "No seizures for an unstated length of time.",
+            "examples": [
+              "seizure free for multiple month",
+              "seizure free for multiple year"
+            ],
+            "form": "seizure free for a vague duration"
+          },
+          {
+            "description": "Seizures are discussed, but there is no usable frequency.",
+            "examples": [
+              "unknown"
+            ],
+            "form": "unknown"
+          },
+          {
+            "description": "There is no usable frequency evidence.",
+            "examples": [
+              "no seizure frequency reference"
+            ],
+            "form": "no seizure frequency reference"
+          }
+        ],
+        "rules": [
+          "Write the label using only the forms below. Copy an example and change the numbers if needed.",
+          "Use digits, not word numbers.",
+          "Use day, week, month, or year. Prefer the singular word.",
+          "A night count is a day count: once per night becomes 1 per day.",
+          "Flatten a bound: at most four per day, or \u2264 four per day, becomes 4 per day.",
+          "Do not write <=, >=, up to, at most, several, handful, frequent, or a calendar date.",
+          "If none of these forms fit, write unknown when seizures are discussed, or no seizure frequency reference when there is no usable frequency evidence."
+        ]
+      },
+      "selection_schema": {
+        "label": "new seizure-frequency label from the label forms, only when no single event is the answer; otherwise omit",
+        "selected_event_ids": "ids of the events used for the answer"
+      },
+      "task": "Choose which events describe how often seizures are happening now."
+    }
+  },
+  "rules": {
+    "encode": [
+      {
+        "id": "gan.encode.format",
+        "name": "repair_prediction_label_format_preserving",
+        "source": "def repair_prediction_label_format_preserving(raw: str | None) -> str:\n    \"\"\"Repair only scorer-format issues without semantic fallback/remapping.\n\n    This path is intended for clean LLM-first attribution replays. It preserves\n    parser-compatible casing, units, word numbers, event-word noise, and compact\n    rate syntax, but leaves vague quantities and unrecognized labels untouched.\n    \"\"\"\n    return repair_prediction_label_format_preserving_with_trace(raw).final_label\n",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/normalize.py",
+        "line": 82,
+        "sha256": "3569457b9eb1787a7588d58d92325de661f0dcac6f3cc6afc7c061fb201e561f"
+      },
+      {
+        "id": "gan.encode.codebook.monthly_diary",
+        "name": "_monthly_diary",
+        "source": "def _monthly_diary(context: _CodebookEncodeContext) -> str | None:\n    sequence = _monthly_count_sequence(context)\n    if sequence is not None:\n        return sequence\n    return _canonical_label(monthly_diary_label_from_text(context.evidence))\n",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/selected_evidence/codebook_encode.py",
+        "line": 183,
+        "sha256": "59d5066bc3feb93bb0b0682500b84c3f15044167d19392bfa9bbbc61805a6348"
+      },
+      {
+        "id": "gan.encode.codebook.hourly_rate",
+        "name": "_hourly_rate",
+        "source": "def _hourly_rate(context: _CodebookEncodeContext) -> str | None:\n    if context.raw_label != \"unknown\":\n        return None\n    if not re.search(\n        r\"\\b(?:\\d+|multiple|several)\\s*(?:/|per)\\s*(?:h|hr|hour)\\b\",\n        context.normalized_evidence,\n    ):\n        return None\n    return context.evidence_label()\n",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/selected_evidence/codebook_encode.py",
+        "line": 190,
+        "sha256": "59d5066bc3feb93bb0b0682500b84c3f15044167d19392bfa9bbbc61805a6348"
+      },
+      {
+        "id": "gan.encode.codebook.single_last_period",
+        "name": "_single_last_period",
+        "source": "def _single_last_period(context: _CodebookEncodeContext) -> str | None:\n    if context.raw_label != \"unknown\":\n        return None\n    if not re.search(\n        rf\"\\b(?:single|one|1)\\b.{{0,50}}\\b(?:last|past)\\s+(?:{_UNIT})\\b\",\n        context.normalized_evidence,\n    ):\n        return None\n    return context.evidence_label()\n",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/selected_evidence/codebook_encode.py",
+        "line": 201,
+        "sha256": "59d5066bc3feb93bb0b0682500b84c3f15044167d19392bfa9bbbc61805a6348"
+      },
+      {
+        "id": "gan.encode.codebook.vague_periodic_cadence",
+        "name": "_vague_periodic_cadence",
+        "source": "def _vague_periodic_cadence(context: _CodebookEncodeContext) -> str | None:\n    if context.raw_label != \"unknown\":\n        return None\n    evidence = context.normalized_evidence\n    if not (\n        re.search(r\"\\bmost\\s+weekdays\\b\", evidence)\n        or re.search(\n            r\"\\bmultiple\\s+days\\b.{0,40}\\b(?:past|last)\\s+week\\b\",\n            evidence,\n        )\n    ):\n        return None\n    return context.evidence_label()\n",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/selected_evidence/codebook_encode.py",
+        "line": 212,
+        "sha256": "59d5066bc3feb93bb0b0682500b84c3f15044167d19392bfa9bbbc61805a6348"
+      },
+      {
+        "id": "gan.encode.codebook.complete_cluster_cadence",
+        "name": "_complete_cluster_cadence",
+        "source": "def _complete_cluster_cadence(context: _CodebookEncodeContext) -> str | None:\n    if \"cluster_frequency\" not in context.selected_event_kinds:\n        return None\n    if not (\n        context.raw_label == \"unknown\"\n        or context.raw_label == \"unknown cluster count\"\n        or context.raw_label.startswith(\"unknown,\")\n    ):\n        return None\n    candidate = context.evidence_label()\n    if candidate is None or \"cluster per\" not in candidate:\n        return None\n    return candidate\n",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/selected_evidence/codebook_encode.py",
+        "line": 227,
+        "sha256": "59d5066bc3feb93bb0b0682500b84c3f15044167d19392bfa9bbbc61805a6348"
+      },
+      {
+        "id": "gan.encode.codebook.explicit_cluster_interval",
+        "name": "_explicit_cluster_interval",
+        "source": "def _explicit_cluster_interval(context: _CodebookEncodeContext) -> str | None:\n    if not context.raw_label.startswith(\"unknown\"):\n        return None\n    match = re.search(\n        rf\"\\bclusters?\\b.{{0,80}}?\\b(?:generally\\s+)?\"\n        rf\"(?:spaced\\s+|every\\s+)(?P<interval>{_INTERVAL})\\s+\"\n        rf\"(?P<unit>{_UNIT})s?\\b\",\n        context.normalized_evidence,\n    )\n    if not match:\n        return None\n    return _canonical_label(\n        f\"1 per {match.group('interval')} {match.group('unit')}\"\n    )\n",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/selected_evidence/codebook_encode.py",
+        "line": 242,
+        "sha256": "59d5066bc3feb93bb0b0682500b84c3f15044167d19392bfa9bbbc61805a6348"
+      },
+      {
+        "id": "gan.encode.codebook.drop_unknown_wrapper",
+        "name": "_drop_unknown_wrapper",
+        "source": "def _drop_unknown_wrapper(context: _CodebookEncodeContext) -> str | None:\n    if context.raw_label != \"unknown, 1 per day\":\n        return None\n    candidate = context.evidence_label()\n    return candidate if candidate == \"1 per day\" else None\n",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/selected_evidence/codebook_encode.py",
+        "line": 258,
+        "sha256": "59d5066bc3feb93bb0b0682500b84c3f15044167d19392bfa9bbbc61805a6348"
+      },
+      {
+        "id": "gan.encode.codebook.year_to_date_window",
+        "name": "_year_to_date_window",
+        "source": "def _year_to_date_window(context: _CodebookEncodeContext) -> str | None:\n    if not re.search(\n        r\"\\b(?:so\\s+far\\s+this\\s+year|this\\s+year\\s+to\\s+date|\\d{4}\\s+so\\s+far)\\b\",\n        context.normalized_evidence,\n    ):\n        return None\n    return context.evidence_label()\n",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/selected_evidence/codebook_encode.py",
+        "line": 265,
+        "sha256": "59d5066bc3feb93bb0b0682500b84c3f15044167d19392bfa9bbbc61805a6348"
+      }
+    ],
+    "decide": [
+      {
+        "id": "gan.select.usual_interval",
+        "name": "usual_interval_label_from_events",
+        "source": "def usual_interval_label_from_events(\n    extraction: StructuredRepairExtractionLike,\n    repaired_label: str,\n) -> str | None:\n    selected_text = \" \".join(\n        part\n        for part in (\n            extraction.selection.evidence,\n            extraction.selection.rationale,\n            extraction.selection.final_label,\n        )\n        if part\n    ).lower()\n    selected_is_brief_daily = (\n        repaired_label in {\"1 per day\", \"multiple per day\", \"unknown\"}\n        and re.search(r\"\\b(?:occasionally|brief periods?|periods? of)\\b\", selected_text)\n        and re.search(r\"\\bdaily\\b\", selected_text)\n    )\n    for event in extraction.events:\n        label = _interval_label_from_event_text(event_text(event))\n        if not label:\n            continue\n        if repaired_label in {\"unknown\", \"no seizure frequency reference\"}:\n            return label\n        if selected_is_brief_daily:\n            return label\n    return None\n",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
+        "line": 87,
+        "sha256": "3ba37ee014153a533fbe43716979de5acbb86140922e929cf0119890eeeff263"
+      },
+      {
+        "id": "gan.select.typical_over_ytd",
+        "name": "typical_recurring_rate_over_ytd_from_events",
+        "source": "def typical_recurring_rate_over_ytd_from_events(\n    extraction: StructuredRepairExtractionLike,\n    repaired_label: str,\n) -> str | None:\n    \"\"\"Prefer typical/usual recurring rate over a year-to-date observation total.\n\n    Portability: ``seizure_frequency``. Applies only when selection or the current\n    label is an observation-window / so-far-this-year total and another event\n    already states a typical recurring rate.\n    \"\"\"\n    selection_text = \" \".join(\n        part\n        for part in (\n            extraction.selection.final_label,\n            extraction.selection.evidence,\n            extraction.selection.rationale,\n            repaired_label,\n        )\n        if part\n    ).lower()\n    selection_text = small_number_words_to_digits(selection_text)\n    is_ytd_selection = bool(\n        re.search(\n            r\"\\b(?:so\\s+far\\s+this\\s+year|this\\s+year\\s+to\\s+date|\"\n            r\"year\\s+to\\s+date|\\d{4}\\s+so\\s+far)\\b\",\n            selection_text,\n        )\n    )\n    # Require explicit YTD language in selection; do not treat every multi-month\n    # observation total as interchangeable with a typical recurring rate.\n    if not is_ytd_selection:\n        return None\n\n    for event in extraction.events:\n        text = small_number_words_to_digits(event_text(event).lower())\n        if not re.search(r\"\\b(?:typical(?:ly)?|usual(?:ly)?|at present)\\b\", text):\n            continue\n        monthly = re.search(\n            r\"\\b(?:a|one|1)?\\s*(?:focal\\s+)?seizure\\s+monthly\\b\",\n            text,\n        ) or re.search(\n            r\"\\b(?:typically|usually)\\s+(?P<count>\\d+(?:\\s*to\\s*\\d+)?)\\s+\"\n            r\"(?:[a-z-]+\\s+){0,4}(?:seizures?|events?|episodes?)\\s+monthly\\b\",\n            text,\n        )\n        if monthly:\n            if monthly.lastindex and monthly.groupdict().get(\"count\"):\n                return f\"{monthly.group('count')} per month\"\n            return \"1 per month\"\n        weekly = re.search(\n            r\"\\b(?:a|one|1)?\\s*(?:focal\\s+)?seizure\\s+weekly\\b\",\n            text,\n        ) or re.search(\n            r\"\\b(?:typically|usually)\\s+(?P<count>\\d+(?:\\s*to\\s*\\d+)?)\\s+\"\n            r\"(?:[a-z-]+\\s+){0,4}(?:seizures?|events?|episodes?)\\s+weekly\\b\",\n            text,\n        )\n        if weekly:\n            if weekly.lastindex and weekly.groupdict().get(\"count\"):\n                return f\"{weekly.group('count')} per week\"\n            return \"1 per week\"\n        per_month = re.search(\n            r\"\\b(?:typically|usually|at present).{0,40}?\"\n            r\"(?P<count>\\d+(?:\\s*to\\s*\\d+)?|multiple)\\s+per\\s+month\\b\",\n            text,\n        )\n        if per_month:\n            return f\"{per_month.group('count')} per month\"\n    return None\n",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
+        "line": 469,
+        "sha256": "3ba37ee014153a533fbe43716979de5acbb86140922e929cf0119890eeeff263"
+      },
+      {
+        "id": "gan.select.breakthrough",
+        "name": "breakthrough_label_from_events",
+        "source": "def breakthrough_label_from_events(\n    extraction: StructuredRepairExtractionLike,\n    repaired_label: str,\n) -> str | None:\n    if repaired_label not in {\"unknown\", \"no seizure frequency reference\"}:\n        return None\n    joined_text = \" \".join(event_text(event) for event in extraction.events)\n    if re.search(r\"\\b(?:perimenstrual|catamenial|outside this window)\\b\", joined_text):\n        return None\n    duration = _seizure_free_duration_from_events(extraction.events)\n    if duration is None:\n        return None\n    count = _recent_breakthrough_count(extraction)\n    if count is None:\n        return None\n    return f\"{count} per {duration}\"\n",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
+        "line": 116,
+        "sha256": "3ba37ee014153a533fbe43716979de5acbb86140922e929cf0119890eeeff263"
+      },
+      {
+        "id": "gan.select.non_epileptic",
+        "name": "non_epileptic_label_from_events",
+        "source": "def non_epileptic_label_from_events(\n    extraction: StructuredRepairExtractionLike,\n    repaired_label: str,\n) -> str | None:\n    if repaired_label not in {\"unknown\", \"no seizure frequency reference\"}:\n        return None\n    selected_ids = set(extraction.selection.selected_event_ids)\n    texts = [\n        extraction.selection.evidence,\n        extraction.selection.rationale,\n        *(\n            \" \".join(part for part in (event.evidence, event.raw_value, event.notes) if part)\n            for event in extraction.events\n            if not selected_ids or event.event_id in selected_ids\n        ),\n        *(\n            \" \".join(part for part in (event.evidence, event.raw_value, event.notes) if part)\n            for event in extraction.events\n            if event.temporality in {\"current\", \"recent\"}\n        ),\n    ]\n    if any(evidence_describes_current_non_epileptic_events(text.lower()) for text in texts if text):\n        return \"seizure free for multiple year\"\n    return None\n",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
+        "line": 134,
+        "sha256": "3ba37ee014153a533fbe43716979de5acbb86140922e929cf0119890eeeff263"
+      },
+      {
+        "id": "gan.select.post_change_burst",
+        "name": "post_change_burst_label_from_events",
+        "source": "def post_change_burst_label_from_events(\n    extraction: StructuredRepairExtractionLike,\n    repaired_label: str,\n    *,\n    note_text: str | None = None,\n) -> str | None:\n    if \"seizure free\" not in repaired_label and not re.search(\n        r\"\\bper\\s+(?:week|day)\\b\",\n        repaired_label,\n    ):\n        return None\n    selection_text = \" \".join(\n        part\n        for part in (\n            extraction.selection.final_label,\n            extraction.selection.evidence,\n            extraction.selection.rationale,\n        )\n        if part\n    ).lower()\n    marker_text = \" \".join(\n        [\n            selection_text,\n            *(\n                \" \".join(part for part in (event.evidence, event.raw_value, event.notes) if part)\n                for event in extraction.events\n                if event.kind == \"seizure_free\"\n            ),\n        ]\n    )\n    if not re.search(\n        r\"\\b(?:since then|no further|not had any further|had no seizures since|\"\n        r\"without seizures since|remained seizure-free since|remained stable without)\\b\",\n        marker_text,\n    ):\n        return None\n    duration = (\n        duration_from_text(selection_text)\n        or duration_from_events(extraction.events)\n        or duration_from_event_dates(extraction.events, note_text)\n    )\n    if duration is None:\n        return None\n    count = _post_change_burst_count(extraction.events)\n    if count is None:\n        return None\n    return f\"{count} per {duration}\"\n",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
+        "line": 227,
+        "sha256": "3ba37ee014153a533fbe43716979de5acbb86140922e929cf0119890eeeff263"
+      },
+      {
+        "id": "gan.select.last_event_well_since",
+        "name": "last_event_well_since_label_from_events",
+        "source": "def last_event_well_since_label_from_events(\n    extraction: StructuredRepairExtractionLike,\n    repaired_label: str,\n    *,\n    note_text: str | None = None,\n) -> str | None:\n    \"\"\"Rewrite a short seizure-free span after a named last event to a rate.\"\"\"\n\n    del note_text\n    parsed = _SHORT_SEIZURE_FREE.fullmatch((repaired_label or \"\").strip())\n    if parsed is None:\n        return None\n    interval_count = int(parsed.group(\"count\"))\n    unit = parsed.group(\"unit\")\n    duration_months = (\n        float(interval_count) if unit == \"month\" else interval_count * 7 / 30\n    )\n    if duration_months >= _MAX_SHORT_SEIZURE_FREE_MONTHS:\n        return None\n    marker_text = _last_event_well_since_text(extraction)\n    if not _WELL_SINCE.search(marker_text):\n        return None\n    burst_count = _last_event_or_burst_count(extraction.events)\n    if not _has_day_dated_last_event(extraction.events) and burst_count is None:\n        return None\n    count = burst_count or \"1\"\n    if unit == \"week\" and interval_count <= _WEEK_TO_MONTH_MAX:\n        return f\"{count} per month\" if count != \"1\" else \"1 per month\"\n    if unit == \"month\" and interval_count == 1:\n        return f\"{count} per month\" if count != \"1\" else \"1 per month\"\n    return f\"{count} per {interval_count} {unit}\"\n",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
+        "line": 621,
+        "sha256": "3ba37ee014153a533fbe43716979de5acbb86140922e929cf0119890eeeff263"
+      },
+      {
+        "id": "gan.select.dated_sequence",
+        "name": "dated_sequence_label_from_events",
+        "source": "def dated_sequence_label_from_events(\n    extraction: StructuredRepairExtractionLike,\n    repaired_label: str,\n    *,\n    note_text: str | None = None,\n) -> str | None:\n    texts = [\n        \" \".join(part for part in (event.evidence, event.raw_value, event.time_window) if part)\n        for event in extraction.events\n    ]\n    raw_joined = \" \".join(texts).lower()\n    if \"prior to this improvement\" in raw_joined:\n        return None\n    explicit = re.search(\n        r\"\\b(?P<count>\\d+)\\s+(?:seizures?|events?|episodes?)\\s+\"\n        r\"(?:in|within)\\s+(?P<months>\\d+)\\s+months?\\b\",\n        small_number_words_to_digits(raw_joined),\n    )\n    if not explicit:\n        explicit = re.search(\n            r\"\\b(?P<count>\\d+)\\s+(?:in|within)\\s+(?P<months>\\d+)\\s+months?\\b\",\n            small_number_words_to_digits(raw_joined),\n        )\n    if explicit:\n        if not _dated_sequence_can_override(repaired_label, int(explicit.group(\"months\"))):\n            return None\n        return f\"{explicit.group('count')} per {explicit.group('months')} month\"\n\n    dated_events = _distinct_dated_months(\n        [mention for text in texts for mention in _dated_event_mentions(text)]\n    )\n    if len(dated_events) < 2:\n        return None\n    first_month, first_year, _ = min(dated_events, key=lambda item: item[1] * 12 + item[0])\n    last_month, last_year, max_count = max(\n        dated_events,\n        key=lambda item: (item[1] * 12 + item[0], item[2]),\n    )\n    months = (last_year - first_year) * 12 + (last_month - first_month)\n    if months <= 0:\n        return None\n    if not _dated_sequence_can_override(repaired_label, months):\n        return None\n    if \"seizure free\" in repaired_label and not _dated_sequence_is_near_clinic(\n        last_month,\n        last_year,\n        note_text,\n    ):\n        return None\n    count = max(item[2] for item in dated_events)\n    if count < 2:\n        count = len(dated_events)\n    return f\"{count} per {months} month\"\n",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
+        "line": 414,
+        "sha256": "3ba37ee014153a533fbe43716979de5acbb86140922e929cf0119890eeeff263"
+      },
+      {
+        "id": "gan.select.monthly_diary",
+        "name": "monthly_diary_label_from_events",
+        "source": "def monthly_diary_label_from_events(\n    extraction: StructuredMonthlyDiaryExtractionLike,\n    *,\n    note_text: str | None,\n) -> str | None:\n    flags = post_stack_fix_flags()\n    if flags.date_list_span:\n        for event in extraction.events:\n            if not _is_monthly_diary_event(event):\n                continue\n            date_list_label = _date_list_diary_label_from_selected_evidence(\n                small_number_words_to_digits(_event_text(event))\n            )\n            if date_list_label:\n                return date_list_label\n\n    merged: dict[MonthlyDiaryMonthKey, tuple[int, str, frozenset[str]]] = {}\n    for event in extraction.events:\n        if not _is_monthly_diary_event(event):\n            continue\n        event_text = _event_text(event)\n        cover_text = (event.evidence or event_text).lower()\n        states = _diary_state_terms(event_text)\n        for month_key, count in _monthly_diary_event_counts(event, note_text=note_text).items():\n            if flags.diary_sum_all_months:\n                _merge_diary_month_count(merged, month_key, count, cover_text, states)\n            else:\n                merged.setdefault(month_key, (count, cover_text, states))\n    counts_by_month = {key: value[0] for key, value in merged.items()}\n\n    if len(counts_by_month) >= 2:\n        total = sum(counts_by_month.values())\n        months = _monthly_diary_span_months(counts_by_month)\n        return f\"{total} per {months} month\"\n\n    for event in extraction.events:\n        if event.kind not in _MONTHLY_DIARY_EVENT_KINDS:\n            continue\n        text = _event_text(event)\n        label = monthly_diary_label_from_text(text)\n        if label:\n            return label\n    return None\n",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_monthly_diary.py",
+        "line": 57,
+        "sha256": "89de0722ad7ac39b4a1fdff6e90ed5eb125f0512cf24aa85383bc4c3645f3579"
+      }
+    ]
+  },
+  "note": "Saved prompt payloads from development runs. Framework message wrappers are not included. Rule source is a snapshot of the local program at export time."
+}

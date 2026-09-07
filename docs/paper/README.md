@@ -58,7 +58,7 @@ later-paper evidence.
 | [methods](sections/methods.md) | Gan-only method: two stages, interface contract, two decision executors, prompt ingredients, splits, scorers |
 | [introduction](sections/introduction.md) | Gan-only introduction draft matching FES Section I |
 | [literature review](sections/literature_review.md) | Gan-only review draft matching FES Section II |
-| [manuscript](../../paper/draft/FES.tex) | The dissertation draft; [supporting materials](../../paper/supporting%20materials/Supporting%20materials.tex) hold moved detail |
+| [manuscript](../../paper/draft/Extract,%20then%20decide.tex) | The dissertation draft; [supporting materials](../../paper/supporting%20materials/Supporting%20materials.tex) hold moved detail |
 | [directional evidence protocol](../research/gan2026/gan_directional_evidence_adjudication_dev750_protocol_2026-09-02.md) | `dev750` reference-exactness and semantic-sufficiency study; drafted, adjudication not started |
 | [experiment environment](experiment_environment.md) | Mac mini orchestration + Dell XPS 16 local serving; hosted accelerators undisclosed |
 | [hardware](hardware_details.md) | Dated local-device snapshot for Qwen/Gemma |

@@ -6,7 +6,7 @@ the evidence record, Extract, Decide, Evaluation; the record is named
 the evidence record and shown as a field table; Figure 2 redrawn as a
 funnel with a fork into the two executors; policy table cut to two
 columns; new one-row-two-implementations table)
-Status: current; matches `paper/draft/FES.tex` Section III
+Status: current; matches `paper/draft/Extract, then decide.tex` Section III
 Owner: this file
 Scope: [Gan is the dissertation paper](../decisions/gan-is-the-dissertation-paper.md),
 [paper-story simplification](../decisions/paper-story-simplification.md)

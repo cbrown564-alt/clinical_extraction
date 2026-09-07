@@ -9,7 +9,7 @@ Related: [Gan is the dissertation paper](gan-is-the-dissertation-paper.md),
 Results outline: [results](../sections/results.md)
 Evidence protocol:
 [directional adjudication on `dev750`](../../research/gan2026/gan_directional_evidence_adjudication_dev750_protocol_2026-09-02.md)
-Implemented 2026-09-02 in `paper/draft/FES.tex`,
+Implemented 2026-09-02 in `paper/draft/Extract, then decide.tex`,
 `paper/supporting materials/Supporting materials.tex`,
 [results](../sections/results.md), [methods](../sections/methods.md),
 [introduction](../sections/introduction.md),

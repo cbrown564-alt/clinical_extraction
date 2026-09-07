@@ -37,19 +37,20 @@
 \section{Introduction}
 
 These supporting materials accompany the research paper
-\emph{Extract, then decide: a two-stage pipeline to identify seizure 
-frequency in epilepsy clinic letters}.
+\emph{Extract, then decide: a two-stage pipeline to identify seizure
+frequency patterns in epilepsy clinic letters}.
 
-It contains four sections: an extended literature review; a 
-description of the project life cycle (planning, development, 
-implementation, testing, and evaluation); the tools used 
-to build and run the system; and a critical appraisal of 
-design decisions, lessons learned, and the outcome with 
-hindsight.
+It is composed of four sections: an extended literature
+review; a description of the project life cycle (planning, development,
+implementation, testing, and evaluation); descriptions
+of the tools used to build and run the system; and a critical
+appraisal of design decisions, lessons learned, and the outcome
+with hindsight. Three appendices follow the references: the
+extract prompt, the decide prompt, and a web app demonstration.
 
 \section{Extended Literature Review}
 
-\subsection{Complexity of Clinical Narratives}
+\subsection{Complexity of clinical narratives}
 
 Clinical letters use narrative language so that clinicians can 
 record the patient's situation, their judgement, and their 
@@ -73,7 +74,7 @@ Effective extraction requires clearly defined policies and
 procedures describing what to extract and how to 
 represent it.
 
-\subsection{Seizure Frequency as a Selection Task}
+\subsection{Seizure frequency as a selection task}
 
 The same letter can be used for different purposes. 
 ExECT and the later annotation study treat it as 
@@ -84,7 +85,7 @@ administration frequency~\cite{b4,b3}. That form is
 appropriate when the aim is building a broad clinical
 inventory.
 
-The task in this study is different. Gan \emph{et al.} 
+The task in this study has a different purpose. Gan \emph{et al.} 
 assign each letter one label for the patient's current 
 seizure frequency status~\cite{b5}. The system has to gather 
 candidate descriptions, interpret their meaning and 
@@ -107,7 +108,7 @@ Different annotation guidelines would record those cases
 differently. Separate stages make the policy choice 
 inspectable rather than implicit.
 
-\subsection{Rules, Fine-Tuned Models, and LLMs}
+\subsection{Rules, BERT models, and modern LLMs}
 
 Several papers have published seizure frequency 
 extraction systems using rules, fine-tuned models, or 
@@ -163,7 +164,7 @@ This study explores whether structured
 prompting in a two-stage pipeline can deliver 
 comparable performance to a fine-tuned LLM.
 
-\subsection{Modular and Sequential Extraction Pipelines}
+\subsection{Modular extraction pipelines}
 
 Multi-stage clinical extraction pipelines split a task 
 into distinct stages instead of asking a model for 
@@ -203,7 +204,7 @@ phase:
 created by me.
 \end{enumerate}
 
-\subsection{Project Brief}
+\subsection{Project brief}
 
 The project brief outlines the initial scope of the
 project. The problem specification and project
@@ -351,7 +352,7 @@ translated into a focused and testable research approach.
 It records the evidence, design choices, and trade-offs 
 that led to the final method.
 
-\subsection{Original Design Requirements}
+\subsection{Original design requirements}
 
 The original brief contained a series of key design 
 requirements for the pipeline. It must:
@@ -404,7 +405,7 @@ more failure modes, and in a sequential
 process those errors propagate and multiply at 
 each step. 
 
-\subsection{Deterministic Code for Deterministic Tasks}
+\subsection{Deterministic code for deterministic tasks}
 
 A key design choice early on was to simplify. Any
 task that can be reliably completed by a deterministic
@@ -434,7 +435,7 @@ seizure frequency section, and splitting up the
 text encouraged the LLM to select wrong answers
 more frequently.
 
-\subsection{Pipeline Design Review}
+\subsection{Pipeline design review}
 
 After initial experiments, all four of the original
 proposed LLM agents had been ruled out because
@@ -495,7 +496,7 @@ performed schema validation and evidence
 verification more reliably than LLMs, so there was 
 a case for more deterministic code in the pipeline.
 
-\subsection{Final Pipeline Design}
+\subsection{Final pipeline design}
 
 The final outcome of this design review was a 
 pipeline with two stages, 
@@ -533,7 +534,7 @@ controlled comparison design; performance results and
 the findings of individual ablations are reported in the 
 evaluation section.
 
-\subsection{Structured Record}
+\subsection{Structured record}
 
 The pipeline receives a synthetic clinical letter as input
 and produces a structured seizure frequency record. The 
@@ -556,7 +557,7 @@ qualitative descriptions. Preserving the alternatives avoids
 losing information before the annotation policy has been 
 applied.
 
-\subsection{Extract and Decide}
+\subsection{Extract and decide}
 
 The record distinguishes the source wording from the 
 canonical label form and from the final answer. The 
@@ -577,7 +578,7 @@ final label with the event(s) that support it. In
 \texttt{Hybrid}, the decision rules also rewrite any 
 label the model left in a non-canonical form.
 
-\subsection{Rules and Deterministic Components}
+\subsection{Rules and deterministic components}
 
 Deterministic components implement tasks for which explicit, 
 reproducible handling is appropriate. These include parsing 
@@ -609,18 +610,20 @@ the record and adjudicates between competing candidates
 under the same policy that the rules apply, written as 
 instructions with worked examples. 
 
-The prompt at the end of this document is the template sent to the 
-model: task, instructions, allowed label forms, event schema 
-and decision schema. The four components ablated in the 
-accompanying paper map onto it as follows: the \emph{instructions} are the 
-task and instruction blocks; the \emph{examples} are the 
-worked examples inside the instructions; the \emph{allowed 
-labels} are the closed \texttt{label\_forms} block; and the 
-\emph{evidence obligation} is the evidence fields of the event 
-schema together with the exact-quote instruction. The letter 
-is attached at run time as \texttt{note\_text} and is omitted 
-here. Event categories are listed in Table~\ref{tab:event-categories}, 
-label forms in Table~\ref{tab:label-forms}, and short decide 
+Appendix~A is the extract template: task, instructions,
+allowed label forms, event schema and decision schema. The
+four components ablated in the accompanying paper map onto
+it as follows: the \emph{instructions} are the
+task and instruction blocks; the \emph{examples} are the
+worked examples inside the instructions; the \emph{allowed
+labels} are the closed \texttt{label\_forms} block; and the
+\emph{evidence obligation} is the evidence fields of the event
+schema together with the exact-quote instruction. The letter
+is attached at run time as \texttt{note\_text} and is omitted
+there. Appendix~B is the decide prompt used by \texttt{LLM-only}:
+the same policy written as instructions with worked examples.
+Event categories are listed in Table~\ref{tab:event-categories},
+label forms in Table~\ref{tab:label-forms}, and short decide
 examples in Table~\ref{tab:select-policy}.
 
 \begin{table}[!t]
@@ -973,7 +976,22 @@ the local development environment.
 
 The local open-weight models used in the reported extracts were served with
 native Ollama chat at \texttt{http://localhost:11434}. In particular, Qwen
-3.8 27B and Gemma 4 26B used the \texttt{ollama\_chat/...} route. 
+3.8 27B and Gemma 4 26B used the \texttt{ollama\_chat/...} route.
+
+\subsection{Local web app}
+
+A local web application was built to inspect letters and
+pipeline records side by side as they moved through find, encode
+and select (Appendix~C). It was used during development
+to examine candidate events, quoted evidence, rule rewrites
+and the final label, and to carry out qualitative error analysis
+on the development set. Held-out letters were not opened in
+this interface.
+
+The interface is a Next.js 16 and React 19 application styled
+with Tailwind CSS. TanStack Query loads replayed pipeline
+records from the local Python API. The assessed repository
+includes this frontend alongside the extraction code.
 
 \subsection{Verification, testing, and reproducibility}
 
@@ -1093,7 +1111,38 @@ reproducible research prototype rather than a clinical decision tool.
 \end{thebibliography}
 
 \section{Appendices}
-\subsection{Appendix 1: LLM prompt used in the extract stage}
+\subsection{Appendix A: LLM prompt used in the extract stage}
 \lstinputlisting{gan_llm_extract_prompt_template.json}
+
+\subsection{Appendix B: LLM prompt used in the decide stage}
+\lstinputlisting{gan_llm_select_prompt_template.json}
+
+\subsection{Appendix C: Web app demo}
+
+The workbench shows one development letter as it moves through
+find, encode and select. Two frequency statements are marked in
+the letter. Encode writes each as a monthly rate. Select keeps the
+typical monthly pattern as the current label.
+
+\begin{figure}[!t]
+    \centering
+    \includegraphics[width=\linewidth]{find.png}
+    \caption{Find: two candidate frequency statements in the letter.}
+    \label{app:find}
+\end{figure}
+
+\begin{figure}[!t]
+    \centering
+    \includegraphics[width=\linewidth]{encode.png}
+    \caption{Encode: each candidate written as a monthly rate.}
+    \label{app:encode}
+\end{figure}
+
+\begin{figure}[!t]
+    \centering
+    \includegraphics[width=\linewidth]{select.png}
+    \caption{Select: the typical monthly pattern is chosen as the current label.}
+    \label{app:select}
+\end{figure}
 
 \end{document}

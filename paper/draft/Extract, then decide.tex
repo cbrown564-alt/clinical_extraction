@@ -24,7 +24,7 @@
 \begin{titlepage}
     \centering
 
-    {\Huge\bfseries Extract, then decide: a two-stage pipeline to identify seizure frequency in epilepsy clinic letters \par}
+    {\Huge\bfseries Extract, then decide: a two-stage pipeline to identify seizure frequency patterns in epilepsy clinic letters \par}
     \vspace{5cm}
 
     {\large
@@ -92,35 +92,34 @@ Date of submission: 4th September 2026
 \clearpage
 \twocolumn
 
-\title{Extract, then decide: a two-stage pipeline to identify seizure frequency in epilepsy clinic letters \\}
+\title{Extract, then decide: a two-stage pipeline to identify seizure frequency patterns in epilepsy clinic letters \\}
 
 \maketitle
 
 \begin{abstract}
-Large language models can extract seizure frequency 
-patterns from epilepsy letters. However, fine-tuning a model 
-for this task requires substantial data and computation. This 
-paper proposes a combination of prompt engineering and rule-based
-systems as an alternative to fine-tuning. It uses a two-stage pipeline to 
-\texttt{extract} a rich structured evidence record, then \texttt{decide} the 
-final label using a fixed policy. The model extracts all seizure frequency
-patterns in the text, quotes exact evidence for each and makes an initial
-proposal for the patient's current status. A subsequent model call or 
-rules-based system reviews that evidence against a defined policy 
-and provides the final answer. The pipeline was developed 
-using a dataset of 1,200 synthetic letters. Performance was evaluated 
-on a clinician double-checked set of 300 real clinic letters and compared
-against a fine-tuned model previously evaluated on the same test set. 
-The two-stage pipeline delivered comparable performance (micro-F1: 
-0.77 and 0.80) to the fine-tuned model (0.79). Models can reliably extract 
-multiple seizure frequency patterns with exact evidence. Rules can
-reliably use that evidence to determine the correct answer in single-label
-extraction tasks. This method produces a richer evidence chain
-with comparable accuracy.
+Epilepsy clinic letters may contain several seizure frequency
+statements: descriptions of past events, reports of the
+patient's current condition, and plans for future treatment.
+The challenge is therefore not only to identify seizure frequency
+information, but also to determine which statement describes
+the patient's current status. This paper evaluates a two-stage
+approach that separates these tasks. First, a large language
+model identifies relevant seizure frequency patterns in each letter,
+records the exact supporting text, and proposes a current-status
+interpretation. Second, predefined rules or a further model call
+use that evidence to select the final seizure frequency label.
+The approach was developed using 1,200 synthetic letters and
+evaluated on 300 clinician double-checked real clinic letters,
+against a fine-tuned model previously evaluated on the same test
+set. The two-stage systems achieved micro-F1 scores of 0.77 and
+0.80, compared with 0.79 for the fine-tuned model. Separating
+evidence extraction from the final decision produced comparable
+accuracy while generating richer evidence and more transparent
+evidence trails.
 \end{abstract}
 
 \begin{IEEEkeywords}
-information extraction, hybrid pipeline, large language models, seizure frequency, epilepsy
+large language models, rules-based systems, seizure frequency, epilepsy, synthetic data
 \end{IEEEkeywords}
 
 \section{Introduction}
@@ -186,10 +185,10 @@ To answer these questions, the pipeline was developed on
 1,200 synthetic epilepsy clinic letters produced by Gan 
 \emph{et al.} \cite{b3}, each with a single expert-annotated 
 label for the patient's current seizure frequency pattern. 
-Results are compared with the benchmark Gan \emph{et al.} 
-report for their fine-tuned LLM using the same set of 300 clinic 
+Results are benchmarked against the fine-tuned model
+evaluated in Gan \emph{et al.} using the same set of 300 clinic
 letters from real patients. The primary evaluation metric
-is the F1 score. 
+is the F1 score.
 
 The rest of the paper is organised as follows. First, the
 literature review summarises previous methods used to extract

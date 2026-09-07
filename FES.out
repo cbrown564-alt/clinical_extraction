@@ -1,0 +1,21 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Literature Review}{}% 2
+\BOOKMARK [1][-]{section.3}{Methods}{}% 3
+\BOOKMARK [2][-]{subsection.3.1}{Data}{section.3}% 4
+\BOOKMARK [2][-]{subsection.3.2}{Architecture}{section.3}% 5
+\BOOKMARK [2][-]{subsection.3.3}{LLM Prompt Design}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.4}{Rule Design}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.5}{Pipeline Optimisation}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.6}{Evaluation}{section.3}% 9
+\BOOKMARK [1][-]{section.4}{Results}{}% 10
+\BOOKMARK [2][-]{subsection.4.1}{Benchmark Performance}{section.4}% 11
+\BOOKMARK [2][-]{subsection.4.2}{Provisional and Final Answers}{section.4}% 12
+\BOOKMARK [2][-]{subsection.4.3}{Extraction Prompt Ablations}{section.4}% 13
+\BOOKMARK [2][-]{subsection.4.4}{Model Comparison}{section.4}% 14
+\BOOKMARK [2][-]{subsection.4.5}{Model Configuration}{section.4}% 15
+\BOOKMARK [2][-]{subsection.4.6}{Error Analysis}{section.4}% 16
+\BOOKMARK [2][-]{subsection.4.7}{Experimental Environment}{section.4}% 17
+\BOOKMARK [1][-]{section.5}{Discussion}{}% 18
+\BOOKMARK [1][-]{section.6}{AI Ethical Considerations}{}% 19
+\BOOKMARK [1][-]{section.7}{Conclusion}{}% 20
+\BOOKMARK [1][-]{section*.14}{References}{}% 21

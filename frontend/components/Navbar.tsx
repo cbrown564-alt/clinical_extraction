@@ -21,6 +21,8 @@ export default function Navbar() {
     datasetId === DEFAULT_DATASET ? "" : `?${DATASET_PARAM}=${datasetId}`;
   const activeDestination = destinationForPath(pathname);
 
+  if (pathname === "/demo") return null;
+
   function hrefFor(destination: Pick<AppDestination, "href" | "scope">) {
     return destination.scope === "dataset" ? `${destination.href}${datasetQuery}` : destination.href;
   }
@@ -47,6 +49,7 @@ export default function Navbar() {
           aria-label="Main navigation"
           className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto"
         >
+          <Link href="/demo" className="inline-flex min-h-7 shrink-0 items-center rounded-md px-2.5 py-1 text-xs font-medium text-deterministic hover:bg-deterministic/10">Demo</Link>
           {APP_DESTINATIONS.map((destination) => {
             const active = pathname === destination.href || activeDestination?.href === destination.href;
             const Icon = destination.Icon;
@@ -88,4 +91,3 @@ function ScopeBadge({ label }: { label: string }) {
     </div>
   );
 }
-

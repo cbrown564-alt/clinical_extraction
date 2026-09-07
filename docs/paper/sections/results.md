@@ -8,7 +8,7 @@ the shared Gemini record; 2026-09-02 two decision executors on one
 shared extract; Rules-only and five-cell rows move to secondary;
 section D keeps three codebook prompt ablations; inventory panel moves
 to supporting material)
-Status: structured draft matching `paper/draft/FES.tex`
+Status: structured draft matching `paper/draft/Extract, then decide.tex`
 Owner: this file
 Scope: [Gan is the dissertation paper](../decisions/gan-is-the-dissertation-paper.md),
 [paper-story simplification](../decisions/paper-story-simplification.md)
@@ -622,7 +622,7 @@ correspondence.
 
 ## Visual and supporting-material plan
 
-The main Results section (`paper/draft/FES.tex`) contains: the
+The main Results section (`paper/draft/Extract, then decide.tex`) contains: the
 bounded previous-benchmark comparison (Table IV in the draft), the
 Hybrid Purist and Pragmatic class table (Table V; this file's Table
 2b), the two-executor provisional/final table (Table VI; this file's

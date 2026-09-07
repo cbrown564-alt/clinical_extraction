@@ -1,7 +1,7 @@
 # Literature review draft
 
 Revised: 2026-09-02 (Gan only; extract then decide). Matches
-`paper/draft/FES.tex` Section II. The extended review is in
+`paper/draft/Extract, then decide.tex` Section II. The extended review is in
 `paper/supporting materials/Supporting materials.tex`.
 Scope: [paper-story simplification](../decisions/paper-story-simplification.md)
 
