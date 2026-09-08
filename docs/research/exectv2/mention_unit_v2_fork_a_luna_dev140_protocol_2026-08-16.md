@@ -2,8 +2,8 @@
 
 Date: 2026-08-16  
 Status: complete; **revise**  
-Plan: [ExECT LLM representation and hybrid re-evaluation](../../plans/exect_llm_representation_and_hybrid_revaluation_2026-08-16.md)  
-Review: [prompt fundamentals](../../plans/exect_prompt_fundamentals_2026-08-16.md)  
+Plan: [ExECT LLM representation and hybrid re-evaluation](../../history/plans/exect_llm_representation_and_hybrid_revaluation_2026-08-16.md)\
+Review: [prompt fundamentals](../../history/plans/exect_prompt_fundamentals_2026-08-16.md)\
 Prior result: [mention-unit v2 `dev20`](mention_unit_v2_fork_a_luna_dev20_2026-08-16.md)  
 Decision: [0055](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md)  
 Glossary: [CONTEXT.md](../../../CONTEXT.md)

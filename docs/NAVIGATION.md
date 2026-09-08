@@ -39,6 +39,7 @@ engineering evidence, not evaluations of patient-history reconstruction.
 | Locked-holdout policy | [Aggregate-only holdout](paper/decisions/holdout-is-aggregate-only.md) |
 | Test admission and tiers | [Pytest firewall](paper/decisions/pytest-is-the-research-validity-firewall.md) |
 | Historical numbered decisions | [Decision history](history/decisions.md) |
+| Historical plans (superseded) | [Historical plans](history/plans/) |
 
 Some older indexes, experiment plans and claim documents disagree with later
 manuscript decisions. Follow the paper keep-set for manuscript scope and the new

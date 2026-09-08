@@ -1,8 +1,11 @@
+> [!NOTE]
+> **Historical Plan Archive**
+> This document records historical task scope from August 2026. It does not authorize new runs, govern the longitudinal schema, or supersede current project direction. The active project plan is [`docs/plans/ACTIVE_ROADMAP.md`](../../plans/ACTIVE_ROADMAP.md). Existing benchmark split, scoring, and holdout safeguards remain in force.
+
 # ExECT LLM representation and hybrid re-evaluation
 
 Date: 2026-08-16  
-Status: Fork A `v4` `dev20` is a negative result; v4 `dev140` damage catalog is an answer; trust-item remasure is an answer; mention-unit v1 `dev20` is a revise; prompt fundamentals are signed off; mention-unit v2 `dev20` is an answer; mention-unit v2 `dev140` is a revise; empty-gold extras catalog is an answer; hybrid encoder catalog is an answer; leftover-form remasure is an answer ([leftover-form](../research/exectv2/mention_unit_v2_leftover_form_encoder_luna_dev140_2026-08-16.md))  
-Owner: ExECT pipeline and evaluation work
+Status: Fork A `v4` `dev20` is a negative result; v4 `dev140` damage catalog is an answer; trust-item remasure is an answer; mention-unit v1 `dev20` is a revise; prompt fundamentals are signed off; mention-unit v2 `dev20` is an answer; mention-unit v2 `dev140` is a revise; empty-gold extras catalog is an answer; hybrid encoder catalog is an answer; leftover-form remasure is an answer ([leftover-form](../../research/exectv2/mention_unit_v2_leftover_form_encoder_luna_dev140_2026-08-16.md))\nOwner: ExECT pipeline and evaluation work
 
 ## Purpose
 
@@ -314,48 +317,48 @@ synthetic-letter quirks into ExECT.
 ## Completion record
 
 The implementation, protocol, contract tests, dev20 artifact, ablations, and
-bounded decision are recorded in the [development report](../research/exectv2/../../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
+bounded decision are recorded in the [development report](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
 The row-level revise decision is owned by the
-[dev20 mechanism analysis](../research/exectv2/../../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
+[dev20 mechanism analysis](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
 The deeper design challenge is
-[assumption challenge](../research/exectv2/../../decisions/0055-exect-semantic-inventory-and-method-contracts.md):
+[assumption challenge](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md):
 v2 changed the task and kept the scorer. **Fork A is selected:** the scored
 object remains the ExECT coded inventory; Decision 0040 stays in force; the
 v10 grammar belongs in named hybrid rules. The live `dev20` v3 run is a **revise**
-result: [v3 result](../research/exectv2/../../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
+result: [v3 result](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
 The measured research-lane contract is `exectv2_semantic_inventory_v4`.
 The live `dev20` v4 run is a **negative_result**:
-[v4 result](../research/exectv2/../../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
+[v4 result](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
 Mention-unit v1 on frozen `dev20` is a **revise**:
 mention-unit v1 (pruned; recover from Git history).
 Mention-unit v2 on frozen `dev20` is an **answer**:
-[mention-unit v2](../research/exectv2/mention_unit_v2_fork_a_luna_dev20_2026-08-16.md).
+[mention-unit v2](../../research/exectv2/mention_unit_v2_fork_a_luna_dev20_2026-08-16.md).
 The frozen-language `dev140` transfer is a **revise**: wording still
 copies (131/187 exact on `llm`); empty-gold extras rose versus v4 /
 trust-item. Do not retune. Do not start mention-unit v3 or Fork B from
 that extras rise.
-[mention-unit v2 `dev140`](../research/exectv2/mention_unit_v2_fork_a_luna_dev140_2026-08-16.md).
+[mention-unit v2 `dev140`](../../research/exectv2/mention_unit_v2_fork_a_luna_dev140_2026-08-16.md).
 The empty-gold extras catalog is an **answer**: more frequency
 statements on shared empty-gold letters, not more over-read letters.
-[extras catalog](../research/exectv2/mention_unit_v2_empty_gold_sf_extras_luna_dev140_2026-08-16.md).
+[extras catalog](../../research/exectv2/mention_unit_v2_empty_gold_sf_extras_luna_dev140_2026-08-16.md).
 The hybrid encoder catalog is an **answer**: names stay; counts and
 investigation results do not.
-[hybrid encoder](../research/exectv2/mention_unit_v2_hybrid_encoder_damage_luna_dev140_2026-08-16.md).
+[hybrid encoder](../../research/exectv2/mention_unit_v2_hybrid_encoder_damage_luna_dev140_2026-08-16.md).
 The leftover-form remasure is an **answer**: leftover evidence words
 recover form. Default encoder stays `landed`.
-[leftover-form](../research/exectv2/mention_unit_v2_leftover_form_encoder_luna_dev140_2026-08-16.md).
+[leftover-form](../../research/exectv2/mention_unit_v2_leftover_form_encoder_luna_dev140_2026-08-16.md).
 Prompt fundamentals stay signed off: only Prescription is current-only;
 leftover words go in `llm` fields or hybrid evidence.
 [prompt fundamentals](exect_prompt_fundamentals_2026-08-16.md).
 Protocol:
-[mention-unit v2](../research/exectv2/mention_unit_v2_fork_a_luna_dev20_protocol_2026-08-16.md);
-[mention-unit v2 `dev140`](../research/exectv2/mention_unit_v2_fork_a_luna_dev140_protocol_2026-08-16.md).
+[mention-unit v2](../../research/exectv2/mention_unit_v2_fork_a_luna_dev20_protocol_2026-08-16.md);
+[mention-unit v2 `dev140`](../../research/exectv2/mention_unit_v2_fork_a_luna_dev140_protocol_2026-08-16.md).
 Instruction job (also over-applies “current”):
-[instruction job](../research/exectv2/prompt_variant_slots_2026-08-16.md).
+[instruction job](../../research/exectv2/prompt_variant_slots_2026-08-16.md).
 A v4 `dev140` projection-damage catalog is an **answer**:
-[catalog](../research/exectv2/../../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
+[catalog](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
 The no-call `trust_item` remasure on those saved raws is an **answer**:
-[trust-item remasure](../research/exectv2/prompt_variant_slots_2026-08-16.md).
+[trust-item remasure](../../research/exectv2/prompt_variant_slots_2026-08-16.md).
 The published v9 manual is a closed coding book for rewrite, not a
 prompt (v9 placement note pruned; recover from Git history).
 No holdout claim or selected-stack change is authorized.

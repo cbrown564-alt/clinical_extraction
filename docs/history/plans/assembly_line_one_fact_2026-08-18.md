@@ -1,3 +1,7 @@
+> [!NOTE]
+> **Historical Plan Archive**
+> This document records historical task scope from August 2026. It does not authorize new runs, govern the longitudinal schema, or supersede current project direction. The active project plan is [`docs/plans/ACTIVE_ROADMAP.md`](../../plans/ACTIVE_ROADMAP.md). Existing benchmark split, scoring, and holdout safeguards remain in force.
+
 # Assembly Line: one fact through the pipeline
 
 Date: 2026-08-18

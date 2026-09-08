@@ -3,8 +3,8 @@
 Date: 2026-08-16  
 Status: complete; **answer**  
 Protocol: [mention_unit_v2_fork_a_luna_dev20_protocol_2026-08-16.md](mention_unit_v2_fork_a_luna_dev20_protocol_2026-08-16.md)  
-Review: [prompt fundamentals](../../plans/exect_prompt_fundamentals_2026-08-16.md)  
-Plan: [ExECT LLM representation and hybrid re-evaluation](../../plans/exect_llm_representation_and_hybrid_revaluation_2026-08-16.md)  
+Review: [prompt fundamentals](../../history/plans/exect_prompt_fundamentals_2026-08-16.md)\
+Plan: [ExECT LLM representation and hybrid re-evaluation](../../history/plans/exect_llm_representation_and_hybrid_revaluation_2026-08-16.md)\
 Decision: [0055](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md)  
 Prior result: [mention-unit v1 (mention-unit v1 pruned; recover from Git history)
 

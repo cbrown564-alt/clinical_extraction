@@ -106,8 +106,8 @@ Neither encoder is selected. `landed` stays the default. Do not start
 mention-unit v3 or Fork B from this assignment.
 
 Owners:
-[campaign](../../plans/exect_llm_representation_and_hybrid_revaluation_2026-08-16.md);
-[prompt fundamentals](../../plans/exect_prompt_fundamentals_2026-08-16.md);
+[campaign](../../history/plans/exect_llm_representation_and_hybrid_revaluation_2026-08-16.md);
+[prompt fundamentals](../../history/plans/exect_prompt_fundamentals_2026-08-16.md);
 [v2 `dev20`](mention_unit_v2_fork_a_luna_dev20_2026-08-16.md);
 [v2 `dev140`](mention_unit_v2_fork_a_luna_dev140_2026-08-16.md);
 [hybrid encoder](mention_unit_v2_hybrid_encoder_damage_luna_dev140_2026-08-16.md);

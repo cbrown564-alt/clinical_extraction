@@ -252,6 +252,12 @@ another migration project or blocking the pilot on cosmetic package renaming.
   with byte parity verified, filesystem callers updated (`FIGURE_DIR` in `gan_result_figures.py`,
   template path in `test_gan_extract_label_forms_prompt.py`), active Markdown links updated,
   and PDF compilation behavior verified before/after the move.
+- **Slice 3 (P0.4 plan archive)** executed on 2026-09-08: four obsolete historical plans
+  (`assembly_line_one_fact_2026-08-18.md`, `exect_llm_representation_and_hybrid_revaluation_2026-08-16.md`,
+  `exect_prompt_fundamentals_2026-08-16.md`, `paper_final_repo_scope_2026-08-17.md`) moved
+  from `docs/plans/` to `docs/history/plans/` with historical prose preserved, top archival notices
+  added, relative links rebased, incoming links updated, and `ACTIVE_ROADMAP.md` preserved as the
+  sole active plan.
 - **Remaining Phase 0 scope**: P0.2 continuation (complete file-level migration mapping for
   remaining trees), remaining P0.4 (documentation migration: `docs/paper/`, `docs/canon/`,
   `docs/decisions/`), P0.5 (results and run paths), P0.6 (helpers and data), and P0.7 (verification

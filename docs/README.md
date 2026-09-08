@@ -15,13 +15,13 @@ when their first artifact is ready, not as empty placeholders.
 | Current location | Role during transition |
 | --- | --- |
 | `plans/ACTIVE_ROADMAP.md` | Current scope, migration map and phased timeline |
-| `paper/` (in `docs/`) | Existing manuscript methods, decisions and claim context (to be migrated in next slice) |
+| `paper/` (in `docs/`) | Existing manuscript methods, decisions and claim context (migration planned) |
 | `publications/dissertation/` | Tracked dissertation manuscript sources, TeX templates, and supporting materials |
 | `research/` | Existing study protocols, interpretation and writing sources |
 | `design/`, `reference/`, `runbooks/` | Shared or dataset-specific guidance; scope checked before reuse |
 | `architecture/` | Generated explanation of existing implemented methods |
-| `history/` | Historical decision context |
-| `canon/`, `decisions/`, older plans | Superseded guidance awaiting the mapped file-level consolidation |
+| `history/` | Historical decision context and archived plans (`history/plans/`) |
+| `canon/`, `decisions/` | Superseded guidance awaiting the mapped file-level consolidation |
 
 The new annotation design is not governed by older Gan/ExECT output conventions.
 Existing benchmark split, scoring and evidence safeguards still apply.

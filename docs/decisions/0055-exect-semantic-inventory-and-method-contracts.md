@@ -7,7 +7,7 @@ Related: [Decision 0040](0040-final-exect-llm-with-rules-family-ownership.md),
 [Decision 0041](0041-single-call-exect-model-comparison.md),
 [Decision 0027](0027-clinical-recovery-is-the-exectv2-headline-projection-is-an-artifact-layer.md)  
 Implementation plan:
-[ExECT LLM representation and hybrid re-evaluation](../plans/exect_llm_representation_and_hybrid_revaluation_2026-08-16.md)
+[ExECT LLM representation and hybrid re-evaluation](../history/plans/exect_llm_representation_and_hybrid_revaluation_2026-08-16.md)
 
 ## Decision
 
@@ -168,7 +168,7 @@ Git history if needed.
 ## Owners
 
 * Implementation plan:
-  [ExECT LLM representation and hybrid re-evaluation](../plans/exect_llm_representation_and_hybrid_revaluation_2026-08-16.md)
+  [ExECT LLM representation and hybrid re-evaluation](../history/plans/exect_llm_representation_and_hybrid_revaluation_2026-08-16.md)
 * Instruction-job design note:
   [model-facing job](../research/exectv2/prompt_variant_slots_2026-08-16.md)
 * Mention-unit v2 hybrid encoder catalog:

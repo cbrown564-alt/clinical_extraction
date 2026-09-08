@@ -85,8 +85,8 @@ encoder stays landed. This prompt is ExECT current-hybrid slot 3.
 [Assignment](research/exectv2/prompt_variant_slots_2026-08-16.md).
 
 Owner:
-[plan](plans/exect_llm_representation_and_hybrid_revaluation_2026-08-16.md);
-[prompt fundamentals](plans/exect_prompt_fundamentals_2026-08-16.md);
+[plan](history/plans/exect_llm_representation_and_hybrid_revaluation_2026-08-16.md);
+[prompt fundamentals](history/plans/exect_prompt_fundamentals_2026-08-16.md);
 [leftover-form v4](research/exectv2/mention_unit_v2_leftover_form_v4_luna_dev140_2026-08-16.md);
 [leftover-form v3](research/exectv2/mention_unit_v2_leftover_form_v3_luna_dev140_2026-08-16.md);
 [leftover-form v2](research/exectv2/mention_unit_v2_leftover_form_v2_luna_dev140_2026-08-16.md);

@@ -1,10 +1,13 @@
+> [!NOTE]
+> **Historical Plan Archive**
+> This document records historical task scope from August 2026. It does not authorize new runs, govern the longitudinal schema, or supersede current project direction. The active project plan is [`docs/plans/ACTIVE_ROADMAP.md`](../../plans/ACTIVE_ROADMAP.md). Existing benchmark split, scoring, and holdout safeguards remain in force.
+
 # ExECT prompt fundamentals
 
 Date: 2026-08-16  
 Status: **signed off**; mention-unit v2 `dev20` is an answer; `dev140` is a revise  
 Owner campaign: [ExECT LLM representation and hybrid re-evaluation](exect_llm_representation_and_hybrid_revaluation_2026-08-16.md)  
-Glossary: [CONTEXT.md](../../CONTEXT.md)  
-Not a new roadmap, status board, or research canon. This is the review the
+Glossary: [CONTEXT.md](../../../CONTEXT.md)\nNot a new roadmap, status board, or research canon. This is the review the
 existing campaign needed before another prompt rewrite.
 
 ## Why this exists
@@ -27,10 +30,10 @@ No live calls. Decision 0050 and `test60` are unchanged.
 
 Grilled 2026-08-16. Fork A stays. Mention-unit v2 on frozen `dev20` is
 an **answer**:
-[report](../research/exectv2/mention_unit_v2_fork_a_luna_dev20_2026-08-16.md).
+[report](../../research/exectv2/mention_unit_v2_fork_a_luna_dev20_2026-08-16.md).
 One knob was this language. Do not retune it for EA0009 or empty-gold
 extras. The frozen-language `dev140` transfer is a **revise**:
-[report](../research/exectv2/mention_unit_v2_fork_a_luna_dev140_2026-08-16.md).
+[report](../../research/exectv2/mention_unit_v2_fork_a_luna_dev140_2026-08-16.md).
 
 ### Hard-question answers
 
@@ -369,11 +372,11 @@ unread; do not add an eighth cue.
 
 ## Sources
 
-- v9 extract: [annotation_guidelines_v9_extracted.md](../research/exectv2/annotation_guidelines_v9_extracted.md)
-- Guideline vs prompt / zoo drafts (v10–v27): pruned; recover from Git history. Living owners: [Decision 0054](../decisions/0054-model-request-order-and-metadata-are-explicit.md), [prompt variant slots](../research/exectv2/prompt_variant_slots_2026-08-16.md).
+- v9 extract: [annotation_guidelines_v9_extracted.md](../../research/exectv2/annotation_guidelines_v9_extracted.md)
+- Guideline vs prompt / zoo drafts (v10–v27): pruned; recover from Git history. Living owners: [Decision 0054](../../decisions/0054-model-request-order-and-metadata-are-explicit.md), [prompt variant slots](../../research/exectv2/prompt_variant_slots_2026-08-16.md).
 - Fork A: [campaign](exect_llm_representation_and_hybrid_revaluation_2026-08-16.md),
-  [Decision 0055](../decisions/0055-exect-semantic-inventory-and-method-contracts.md),
-  [instruction job](../research/exectv2/prompt_variant_slots_2026-08-16.md),
-  [trust-item](../research/exectv2/prompt_variant_slots_2026-08-16.md),
+  [Decision 0055](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md),
+  [instruction job](../../research/exectv2/prompt_variant_slots_2026-08-16.md),
+  [trust-item](../../research/exectv2/prompt_variant_slots_2026-08-16.md),
   (mention-unit v1 pruned; recover from Git history),
-  [mention-unit v2 protocol](../research/exectv2/mention_unit_v2_fork_a_luna_dev20_protocol_2026-08-16.md)
+  [mention-unit v2 protocol](../../research/exectv2/mention_unit_v2_fork_a_luna_dev20_protocol_2026-08-16.md)

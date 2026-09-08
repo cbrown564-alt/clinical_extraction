@@ -1,12 +1,12 @@
-Status: superseded as a paper-methods owner on 2026-08-23 (the paper method is five cells, not five rungs; see [docs/paper/methods.md](../paper/methods.md)). Superseded as a repository scope plan by the [Active Roadmap](ACTIVE_ROADMAP.md).
-
-This document defined the August 2026 paper-final repository scope for the single-letter Gan and ExECT benchmark comparisons. It does not govern the active repository plan or the new synthetic longitudinal epilepsy benchmark project, which is defined in [`docs/plans/ACTIVE_ROADMAP.md`](ACTIVE_ROADMAP.md) and tracked in [`PROJECT_STATUS.md`](../../PROJECT_STATUS.md). The active roadmap supersedes this plan's blanket prohibition against on-disk archives, while preserving benchmark holdout and scoring safeguards.
+> [!NOTE]
+> **Historical Plan Archive**
+> This document records historical task scope from August 2026. It was superseded as a paper-methods owner on 2026-08-23 and as a repository scope plan by [`docs/plans/ACTIVE_ROADMAP.md`](../../plans/ACTIVE_ROADMAP.md). It does not authorize new runs, govern the longitudinal schema, or supersede current project direction. Existing benchmark split, scoring, and holdout safeguards remain in force.
 
 # Paper-final repository scope
 
 Date: 2026-08-17
 Status: accepted after grilling; keep-set lives in `docs/paper/`
-Owner: [paper keep-set](../paper/README.md)
+Owner: [paper keep-set](../../paper/README.md)
 
 This repository's job is now to support the final paper. It is not a
 continuing research campaign. Everyday dumps, closed prune trails,

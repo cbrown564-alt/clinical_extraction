@@ -4,7 +4,7 @@ Date: 2026-08-16
 Status: complete; **answer**  
 Result: [leftover-form v3](mention_unit_v2_leftover_form_v3_luna_dev140_2026-08-16.md)  
 Prior: [leftover-form v2](mention_unit_v2_leftover_form_v2_luna_dev140_2026-08-16.md)  
-Review: [prompt fundamentals](../../plans/exect_prompt_fundamentals_2026-08-16.md)  
+Review: [prompt fundamentals](../../history/plans/exect_prompt_fundamentals_2026-08-16.md)\
 Decision: [0055](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md)
 
 Fork A stays. Mention-unit v2 language stays frozen. Default encoder
