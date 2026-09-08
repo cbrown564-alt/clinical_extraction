@@ -1,19 +1,26 @@
 # Documentation
 
-Start with [project status](../PROJECT_STATUS.md), then the
-[paper keep-set](paper/README.md). The map is
-[NAVIGATION](NAVIGATION.md).
+The active project is a synthetic longitudinal epilepsy benchmark for cohort
+identification and longitudinal analysis. The first phase is restructuring this
+repository while preserving the existing Gan and ExECT evidence.
 
-| Folder | Job |
+Start with the [project plan](plans/ACTIVE_ROADMAP.md), then use
+[navigation](NAVIGATION.md) to find the current owner for a subject.
+[Project status](../PROJECT_STATUS.md) is the local execution view.
+
+The plan contains the proposed whole-repository structure and migration checks.
+Most material still occupies its previous location. New target folders are created
+when their first artifact is ready, not as empty placeholders.
+
+| Current location | Role during transition |
 | --- | --- |
-| `paper/` | Current methods, claims, lineage, decisions |
-| `research/paper/` | Writing sources |
-| `research/artifacts/` | Exhibits the source library uses |
-| `history/` | Closed numbered-decision log |
-| `architecture/` | Generated method cards and teaching cases |
-| `design/` | Data and scoring contracts |
-| `plans/paper_final_repo_scope_2026-08-17.md` | Accepted cut |
-| `plans/assembly_line_one_fact_2026-08-18.md` | Assembly Line one-fact rebuild |
+| `plans/ACTIVE_ROADMAP.md` | Current scope, migration map and phased timeline |
+| `paper/` | Existing manuscript methods, decisions and claim context |
+| `research/` | Existing study protocols, interpretation and writing sources |
+| `design/`, `reference/`, `runbooks/` | Shared or dataset-specific guidance; scope checked before reuse |
+| `architecture/` | Generated explanation of existing implemented methods |
+| `history/` | Historical decision context |
+| `canon/`, `decisions/`, older plans | Superseded guidance awaiting the mapped file-level consolidation |
 
-Campaign reports, `THREAD_MAP`, numbered `docs/decisions/`, and
-canon `01`–`11` left the working tree. Recover them from git.
+The new annotation design is not governed by older Gan/ExECT output conventions.
+Existing benchmark split, scoring and evidence safeguards still apply.

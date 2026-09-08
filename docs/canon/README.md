@@ -1,5 +1,7 @@
 # Current research summaries
 
+These files represent historical research summaries (dated 2026-07-31) for the single-letter Gan and ExECTv2 campaigns. They do not govern the active synthetic longitudinal epilepsy benchmark project planned in [`docs/plans/ACTIVE_ROADMAP.md`](../plans/ACTIVE_ROADMAP.md). Per the roadmap and [`docs/runbooks/documentation_lifecycle.md`](../runbooks/documentation_lifecycle.md), the active plan supersedes earlier blanket prohibitions on on-disk archives, while benchmark holdout and scoring safeguards remain in force.
+
 Last updated: 2026-07-31
 
 These files give the shortest maintained account of the software, evidence,

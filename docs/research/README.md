@@ -1,20 +1,25 @@
-# Research writing sources
+# Research protocols and reports
 
-The paper source library is [`paper/`](paper/). Exhibits it uses
-are in [`artifacts/`](artifacts/). The reading order is
-[`docs/NAVIGATION.md`](../NAVIGATION.md).
+The active direction and study sequence are in the
+[project plan](../plans/ACTIVE_ROADMAP.md). New longitudinal protocols and reports
+will be added under `longitudinal/` when those studies begin. No longitudinal
+benchmark evaluation is recorded here yet.
 
-Draft results (2026-08-23):
-[three variables](paper/three_variables_rules_model_thinking_2026-08-23.md),
-[source-near vs bundled encode](paper/gan_source_near_vs_bundled_encode_2026-08-23.md),
-[extract then Select vs extract-and-select](paper/exect_extract_vs_extract_and_select_2026-08-25.md).
+Existing study records remain at their current paths during repository migration:
 
-Campaign reports left the working tree. Recover them from git.
+| Location | Scope |
+| --- | --- |
+| `gan2026/` | Gan seizure-frequency development and aggregate holdout studies |
+| `exectv2/` | ExECT extraction, representation and comparison studies |
+| `shared/` | Cross-task analyses; verify each study's own scope |
+| `paper/` | Existing publication writing sources and result interpretation |
+| `artifacts/`, `assets/` | Exhibits referenced by those sources |
+| `maintenance/` | Earlier repository-maintenance evidence |
 
-**Paper method boundary:** Cited headline tables are Gemini five-cell grids
-(select stop on each task). The six-model comparison is cell 3 only.
-`gan_llm_extract_raw` is a source-near wording ablation, not a results
-column. Removed 2026-08-09/10 HTML exhibits (recover from git). Historical HTML exhibits under `artifacts/` may show Grok
-two-method bars from an earlier campaign; they are not the cited table.
-Method claims and tables live in `docs/paper/*`; this tree holds drafts,
-mechanism archives, and historical exhibits only.
+Use the [paper keep-set](../paper/README.md) for the existing manuscript argument
+and [navigation](../NAVIGATION.md) for selected evidence owners. A protocol or
+report being present does not make its historical work queue active. Existing
+results and labels do not transfer to the new longitudinal benchmark.
+
+Phase 0 will classify manuscript prose, reusable findings and historical reports
+by purpose, preserving evidence and repairing dependencies before moving files.

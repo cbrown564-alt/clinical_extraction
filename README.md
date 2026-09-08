@@ -2,27 +2,13 @@
 
 Turn epilepsy clinic letters into structured clinical facts.
 
-This repository is research code and a working demonstration. The proposed
-method translates clinic letters into structured clinical facts in a designed
-form, with quoted source text. A model collects the facts and evidence;
-recorded rules shape them into the required form. Headline tables are Gemini
-five-cell grids: each of find, encode, and select is rules, LLM, or both.
-The cited score is the select stop; find and encode stops are stage
-ablations. The six-model comparison uses cell 3 only (LLM find, rules
-encode, rules select) on both Gan and ExECT. On the inventory task,
-ExECT cell 3 is both the roster row and the Gemini peak. Cell 4
-(LLM encode then rules select) stays Gemini-only. Neither table is
-an on/off hybrid switch. The public golds
-are the evaluation forms used here, not the task. Tables cite Gemini 3.7
-Flash so the story stays on the method. Grok, Luna, DeepSeek, Qwen, and
-Gemma fill the cell-3 roster. The recorded object keeps the source span
-and a change log, not only the score.
+The active direction for this repository is a synthetic longitudinal epilepsy benchmark for cohort identification and longitudinal analysis. The canonical project plan is the [Active Roadmap](docs/plans/ACTIVE_ROADMAP.md), and current task progress is tracked in [Project Status](PROJECT_STATUS.md). The longitudinal benchmark is not yet implemented, evaluated, or clinically validated. Existing code, pipelines, and saved results for the single-letter Gan 2026 and ExECTv2 benchmarks remain at their current locations; no runtime checks or benchmark regenerations were performed during this planning update. Existing reported metrics describe single-letter tasks only and do not measure longitudinal history reconstruction. Current interactive frontend features include authored synthetic-patient scenarios, which are curated illustrative examples rather than outputs of an extraction pipeline.
 
-This is a research and teaching package, not a clinical deployment claim.
+This repository is a research and teaching package, not a clinical deployment claim.
 
-The public tree is the package, tests, configs, and Demo UI fixtures. Clinic
-letters, the lab notebook, experiment dumps, and the paper library stay on the
-local research checkout and are not cloned.
+The repository includes the core package, tests, configurations, documentation, and Demo UI fixtures. Local research checkouts may contain uncommitted experiment runs, local data corpora (`data/`), local media (`media/`), and local literature reading copies (`literature/`), which are gitignored. Contrary to earlier documentation claims, much of `docs/` and `paper/` is tracked in Git (with specific local exceptions such as `docs/audio/` and local working files like `PROJECT_STATUS.md` and `CONTEXT.md`), but tracking does not imply all tracked materials are vetted for public release. The local `experiments/` directory is mostly untracked, but contains one tracked historical result (`experiments/paper/exect_llm_inventory/gemini37flash/dev140/comparison_residual.json`). Paper-facing benchmark evidence is tracked under `paper_experiments/`.
+
+The sections below describe the existing single-letter benchmarks and extraction methods.
 
 ## Results
 
@@ -265,7 +251,9 @@ server's `/v1/models` endpoint.
 
 A full Gan walkthrough on three synthetic letters is in [VLLM.md](VLLM.md).
 
-## Repository layout
+## Current repository layout
+
+The layout below reflects the current repository structure. The [Active Roadmap](docs/plans/ACTIVE_ROADMAP.md#proposed-target-structure) proposes a comprehensive reorganization (Phase 0) to be executed as the first implementation phase, but those folder moves have not yet occurred.
 
 ```text
 run.py                     HPC / no-install Gan walkthrough (`python run.py --flags`)
@@ -277,8 +265,8 @@ configs/                   Pipeline and model configuration
 tests/                     Contract and behavior checks
 scripts/                   CLI helpers and experiment runners
 paper_experiments/         Tracked paper fills and replayable local raws
+docs/                      Tracked documentation (except local docs/audio/)
+paper/                     Tracked manuscript sources, TeX templates, and notes
 ```
 
-A local research checkout may also have `data/`, `docs/`, `experiments/`,
-`literature/`, and `media/`. Those trees are gitignored and are not part of a
-public clone. Paper-facing fills are in `paper_experiments/`.
+A local research checkout may also contain local corpora (`data/`), local media (`media/`), local literature reading copies (`literature/`), and scratch work (`scratch/`), which are gitignored. The `experiments/` tree is mostly local and untracked, with the exception of one tracked historical result (`experiments/paper/exect_llm_inventory/gemini37flash/dev140/comparison_residual.json`). Status and glossary files (`PROJECT_STATUS.md` and `CONTEXT.md`) are gitignored local files. While much of `docs/` and `paper/` is tracked in Git, tracking does not imply all tracked materials have been cleared for public release.

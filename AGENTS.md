@@ -2,13 +2,15 @@
 
 Build modular deterministic, LLM, and hybrid pipelines for structured extraction from clinical notes. Preserve component attribution, evidence, reproducibility, and conservative claims. A higher score is not useful when its cause cannot be explained.
 
-Gan 2026 and ExECTv2 have different data and claim boundaries. Read `PROJECT_STATUS.md` before assuming which track is active; never transfer tuning or claim permissions between them.
+The active direction is a synthetic longitudinal epilepsy benchmark for cohort identification and longitudinal analysis. Preserve both the account supported at each visit and later retrospective interpretations. Gan 2026 and ExECTv2 remain separate existing benchmarks; never transfer their labels, tuning permissions, or claims to the new dataset. Read `PROJECT_STATUS.md` before assuming which work is active.
 
 ## Document owners
 
-Use `README.md` for the repository map, `docs/paper/README.md` for paper methods and claims, `docs/NAVIGATION.md` for the paper source library, and `PROJECT_STATUS.md` for current work. Then read the relevant owner. The paper-final cut is [`docs/plans/paper_final_repo_scope_2026-08-17.md`](docs/plans/paper_final_repo_scope_2026-08-17.md). Closed numbered decisions are [`docs/history/decisions.md`](docs/history/decisions.md).
+Use `README.md` for the repository map, `docs/NAVIGATION.md` for documentation owners, `docs/plans/ACTIVE_ROADMAP.md` for the project plan and repository migration, and `PROJECT_STATUS.md` for current work. Existing manuscript methods and claims remain under `docs/paper/README.md` until the planned migration. The August paper-final cut is historical scope for the earlier paper, not the current repository plan. Closed numbered decisions are [`docs/history/decisions.md`](docs/history/decisions.md).
 
 Do not add another roadmap, status board, evidence register, or research canon. Keep detailed results in their existing artifact or log; update `PROJECT_STATUS.md` only after its evidence owner.
+
+The roadmap's target paths are proposals until the corresponding migration is implemented and verified. Preserve source IDs, saved outputs, existing replay behavior, and local-only file boundaries during moves. Archive obsolete guidance by its original purpose; do not treat old paper-specific restrictions as requirements for the new longitudinal annotation. Existing holdout and scoring safeguards still apply.
 
 ## Research safeguards
 

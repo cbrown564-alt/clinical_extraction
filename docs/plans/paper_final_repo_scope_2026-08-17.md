@@ -1,4 +1,6 @@
-Status: superseded as a paper-methods owner on 2026-08-23. The paper is five cells (extract / encode / select), not five rungs. Use [docs/paper/methods.md](../paper/methods.md).
+Status: superseded as a paper-methods owner on 2026-08-23 (the paper method is five cells, not five rungs; see [docs/paper/methods.md](../paper/methods.md)). Superseded as a repository scope plan by the [Active Roadmap](ACTIVE_ROADMAP.md).
+
+This document defined the August 2026 paper-final repository scope for the single-letter Gan and ExECT benchmark comparisons. It does not govern the active repository plan or the new synthetic longitudinal epilepsy benchmark project, which is defined in [`docs/plans/ACTIVE_ROADMAP.md`](ACTIVE_ROADMAP.md) and tracked in [`PROJECT_STATUS.md`](../../PROJECT_STATUS.md). The active roadmap supersedes this plan's blanket prohibition against on-disk archives, while preserving benchmark holdout and scoring safeguards.
 
 # Paper-final repository scope
 
