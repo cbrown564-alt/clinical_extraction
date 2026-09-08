@@ -238,6 +238,19 @@ alone does not complete Phase 0. If a move proves disproportionately disruptive,
 record a bounded retained-path exception and its reason here instead of inventing
 another migration project or blocking the pilot on cosmetic package renaming.
 
+### Migration progress
+
+- **Slice 1 (P0.1–P0.3)** executed on 2026-09-08: baseline captured (with PID 26725
+  identified as a live runner targeting `experiments/paper/gan_llm_extract_encode_select/`),
+  partial file-level mapping created (covering P0.3 exact move and group proposals; full
+  mapping remains in progress), and `examples/vllm_gan_three_letters.jsonl` relocated
+  to `examples/gan2026/vllm_gan_three_letters.jsonl` with callers and walkthroughs updated.
+  See the tracked migration record at
+  [`docs/research/maintenance/repository_migration_2026-09-08.md`](../research/maintenance/repository_migration_2026-09-08.md).
+- **Remaining Phase 0 scope**: P0.2 continuation (complete file-level migration mapping),
+  P0.4 (documentation and publications), P0.5 (results and run paths), P0.6 (helpers and data),
+  and P0.7 (verification and closure).
+
 ## Timeline and dependencies
 
 Indicative elapsed working weeks from the start of execution, assuming one primary

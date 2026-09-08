@@ -10,7 +10,7 @@ To use cell 5 instead (same find, then LLM select), add
 `--method llm_select`. See [Cell 5](#cell-5-llm-select).
 
 It also includes a worked example for three synthetic clinic letters. The letters are
-fixed in `[examples/vllm_gan_three_letters.jsonl](examples/vllm_gan_three_letters.jsonl)`,
+fixed in [examples/gan2026/vllm_gan_three_letters.jsonl](examples/gan2026/vllm_gan_three_letters.jsonl),
 so anyone can repeat the same input. 
 
 ## What you need
@@ -104,7 +104,7 @@ Each line of the JSONL is one object with `id` and `text`.
 
 ```sh
 python run.py \
-  --input examples/vllm_gan_three_letters.jsonl \
+  --input examples/gan2026/vllm_gan_three_letters.jsonl \
   --output scratch/vllm_gan_three_letters.predictions.jsonl \
   --base-url http://127.0.0.1:8000/v1 \
   --model vllm/deepseek-v4-flash
@@ -226,7 +226,7 @@ not `gan_llm_only` (one call that writes a label from the letter).
 ```sh
 python run.py \
   --method llm_select \
-  --input examples/vllm_gan_three_letters.jsonl \
+  --input examples/gan2026/vllm_gan_three_letters.jsonl \
   --output scratch/vllm_gan_three_letters.cell5.predictions.jsonl \
   --base-url http://127.0.0.1:8000/v1 \
   --model vllm/deepseek-v4-flash
