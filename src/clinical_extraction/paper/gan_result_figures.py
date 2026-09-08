@@ -42,7 +42,7 @@ SPLIT_COLORS = {
     "Development": "#7C8B9E",
     "Test": "#15324F",
 }
-FIGURE_DIR = ROOT / "paper/draft"
+FIGURE_DIR = ROOT / "publications/dissertation/draft"
 STAGE_ORDER = ("Find", "Encode", "Select")
 # Each stop scores the answer submitted so far, not the stage in isolation.
 # The paper reports two stops (extract, decide); the encode stop stays

@@ -31,7 +31,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_extract_
 
 SUPPORTING_EXTRACT_TEMPLATE = (
     Path(__file__).resolve().parents[1]
-    / "paper"
+    / "publications"
+    / "dissertation"
     / "supporting materials"
     / "gan_llm_extract_prompt_template.json"
 )

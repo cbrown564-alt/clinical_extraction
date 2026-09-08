@@ -15,7 +15,8 @@ when their first artifact is ready, not as empty placeholders.
 | Current location | Role during transition |
 | --- | --- |
 | `plans/ACTIVE_ROADMAP.md` | Current scope, migration map and phased timeline |
-| `paper/` | Existing manuscript methods, decisions and claim context |
+| `paper/` (in `docs/`) | Existing manuscript methods, decisions and claim context (to be migrated in next slice) |
+| `publications/dissertation/` | Tracked dissertation manuscript sources, TeX templates, and supporting materials |
 | `research/` | Existing study protocols, interpretation and writing sources |
 | `design/`, `reference/`, `runbooks/` | Shared or dataset-specific guidance; scope checked before reuse |
 | `architecture/` | Generated explanation of existing implemented methods |

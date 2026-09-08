@@ -144,7 +144,7 @@ decide-corrects-extract example.
 
 **Table II, the evidence record**, lists the fields of the frozen
 extract schema
-([`gan_llm_extract_prompt_template.json`](../../../paper/supporting%20materials/gan_llm_extract_prompt_template.json))
+([`gan_llm_extract_prompt_template.json`](<../../../publications/dissertation/supporting materials/gan_llm_extract_prompt_template.json>))
 with the Figure 2 event e1 as the example event and e2 as the provisional selection. Per event: `event_id`,
 `kind` (six categories), `raw_value`, `evidence`, `time_window`,
 `applies_to`, `temporality`, `assertion_status`, `notes`. Selection:
@@ -207,7 +207,7 @@ while events continue), so the model applies them when it proposes the
 provisional answer; the paper says so in the Extract text and marks the
 two rows with an asterisk in Table III. The remaining eight rows are
 the work of decide. The frozen template, without `note_text`, is
-[`gan_llm_extract_prompt_template.json`](../../../paper/supporting%20materials/gan_llm_extract_prompt_template.json).
+[`gan_llm_extract_prompt_template.json`](<../../../publications/dissertation/supporting materials/gan_llm_extract_prompt_template.json>).
 It is not the source-near variant (`gan_llm_extract_raw`) and not the
 second-call decide prompt.
 

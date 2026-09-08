@@ -60,7 +60,7 @@ later-paper evidence.
 | [methods](sections/methods.md) | Gan-only method: two stages, interface contract, two decision executors, prompt ingredients, splits, scorers |
 | [introduction](sections/introduction.md) | Gan-only introduction draft matching FES Section I |
 | [literature review](sections/literature_review.md) | Gan-only review draft matching FES Section II |
-| [manuscript](<../../paper/draft/Extract, then decide.tex>) | The dissertation draft; [supporting materials](<../../paper/supporting materials/Supporting materials.tex>) hold moved detail |
+| [manuscript](<../../publications/dissertation/draft/Extract, then decide.tex>) | The dissertation draft; [supporting materials](<../../publications/dissertation/supporting materials/Supporting materials.tex>) hold moved detail |
 | [directional evidence protocol](../research/gan2026/gan_directional_evidence_adjudication_dev750_protocol_2026-09-02.md) | `dev750` reference-exactness and semantic-sufficiency study; drafted, adjudication not started |
 | [experiment environment](experiment_environment.md) | Mac mini orchestration + Dell XPS 16 local serving; hosted accelerators undisclosed |
 | [hardware](hardware_details.md) | Dated local-device snapshot for Qwen/Gemma |
@@ -85,5 +85,5 @@ later-paper evidence.
 | [paper experiments](../../paper_experiments/README.md) | Replayable cells |
 | [cells and runners](cells_and_runners.md) | Live runner names mapped onto the five cells |
 | [architecture](architecture.md) | Implementation stages (find / encode / select) and rule authority; paper names are extract / decide |
-| [Gan find prompt template](<../../paper/supporting materials/gan_llm_extract_prompt_template.json>) | Frozen `gan_llm_extract` request without `note_text` |
+| [Gan find prompt template](<../../publications/dissertation/supporting materials/gan_llm_extract_prompt_template.json>) | Frozen `gan_llm_extract` request without `note_text` |
 | [decision history](../history/decisions.md) | Closed numbered series |

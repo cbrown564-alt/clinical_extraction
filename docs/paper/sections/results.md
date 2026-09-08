@@ -647,7 +647,7 @@ the LLM-only class table (Table 2c), the descriptive inventory panel
 (section G), the residual taxonomy, hardware and API settings, and
 the directional evidence protocol summary. The cited extraction
 request is
-[`gan_llm_extract_prompt_template.json`](../../../paper/supporting%20materials/gan_llm_extract_prompt_template.json).
+[`gan_llm_extract_prompt_template.json`](<../../../publications/dissertation/supporting materials/gan_llm_extract_prompt_template.json>).
 Rules-only rows (Table 2a and the five-cell rules row) are
 repository history only. ExECT locked totals are later-paper
 evidence, not dissertation tables.

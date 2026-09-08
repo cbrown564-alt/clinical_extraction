@@ -1,7 +1,7 @@
 # Longitudinal epilepsy benchmark: project plan
 
 Updated: 2026-09-08. Owner: Conor Brown.
-Status: planning baseline; repository migration and benchmark implementation have not started.
+Status: planning baseline; example and publication moves implemented, broader migration ongoing, longitudinal benchmark not implemented.
 
 [Project status](../../PROJECT_STATUS.md) owns task progress and current checks.
 This document owns scope, task order, dependencies, completion criteria, and the
@@ -247,9 +247,15 @@ another migration project or blocking the pilot on cosmetic package renaming.
   to `examples/gan2026/vllm_gan_three_letters.jsonl` with callers and walkthroughs updated.
   See the tracked migration record at
   [`docs/research/maintenance/repository_migration_2026-09-08.md`](../research/maintenance/repository_migration_2026-09-08.md).
-- **Remaining Phase 0 scope**: P0.2 continuation (complete file-level migration mapping),
-  P0.4 (documentation and publications), P0.5 (results and run paths), P0.6 (helpers and data),
-  and P0.7 (verification and closure).
+- **Slice 2 (P0.4 publication materials move)** executed on 2026-09-08: all 55 tracked
+  manuscript and supporting files moved intact from `paper/` to `publications/dissertation/`
+  with byte parity verified, filesystem callers updated (`FIGURE_DIR` in `gan_result_figures.py`,
+  template path in `test_gan_extract_label_forms_prompt.py`), active Markdown links updated,
+  and PDF compilation behavior verified before/after the move.
+- **Remaining Phase 0 scope**: P0.2 continuation (complete file-level migration mapping for
+  remaining trees), remaining P0.4 (documentation migration: `docs/paper/`, `docs/canon/`,
+  `docs/decisions/`), P0.5 (results and run paths), P0.6 (helpers and data), and P0.7 (verification
+  and closure).
 
 ## Timeline and dependencies
 
