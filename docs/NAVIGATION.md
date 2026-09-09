@@ -1,6 +1,6 @@
 # Documentation navigation
 
-Updated: 2026-09-08. These links describe current locations. Proposed destinations
+Updated: 2026-09-09. These links describe current locations. Proposed destinations
 and the move sequence are in the [project plan](plans/ACTIVE_ROADMAP.md).
 
 ## Active project
@@ -13,10 +13,17 @@ and the move sequence are in the [project plan](plans/ACTIVE_ROADMAP.md).
 | Working rules and research safeguards | [AGENTS](../AGENTS.md) |
 | Document ownership and archiving procedure | [Documentation lifecycle](runbooks/documentation_lifecycle.md) |
 
-The longitudinal task definition, annotation guide, generation protocol and
-evaluation protocol will be created under `docs/longitudinal/` during Phases 1–3.
-Until then, the roadmap owns the agreed direction and open design questions.
-No new longitudinal benchmark result is available.
+| Longitudinal subject | Owner |
+| --- | --- |
+| Cohort queries, evidence cutoffs, endpoint, seed eligibility and pilot criteria | [Task definition](longitudinal/task_definition.md) |
+| Prior-work comparison, publication versions and source-use findings | [Literature rationale](reference/longitudinal_epilepsy_rationale.md) |
+| Three-letter example, filtered inputs and expected query answers | [Authored patient 001](../examples/longitudinal/authored_patient_001/README.md) |
+
+The annotation guide and generation protocol will be created during Phases 2–3;
+the evaluation protocol must be frozen before model comparison. The roadmap owns
+work order, not a duplicate query specification. No longitudinal benchmark result
+is available. P2.1's authored example is implemented; annotation guidance and
+independent review remain ahead.
 
 ## Existing letter-benchmark evidence
 

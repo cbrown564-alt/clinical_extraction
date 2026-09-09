@@ -1,0 +1,1563 @@
+{
+  "assertions": [
+    {
+      "assertion_id": "L1.diagnosis",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 101,
+          "end": 176,
+          "text": "Alex has an established diagnosis of epilepsy, currently of uncertain type."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "today",
+        "start": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "end": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "epilepsy of uncertain type",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L2.diagnosis",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 123,
+          "end": 216,
+          "text": "Their established epilepsy diagnosis remains, with the precise epilepsy type still uncertain."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "today",
+        "start": {
+          "earliest": "2025-06-20",
+          "latest": "2025-06-20"
+        },
+        "end": {
+          "earliest": "2025-06-20",
+          "latest": "2025-06-20"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "epilepsy of uncertain type",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L3.diagnosis",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 226,
+          "end": 282,
+          "text": "Epilepsy remains the diagnosis, with its type uncertain."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "today",
+        "start": {
+          "earliest": "2025-07-14",
+          "latest": "2025-07-14"
+        },
+        "end": {
+          "earliest": "2025-07-14",
+          "latest": "2025-07-14"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "epilepsy of uncertain type",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L1.inventory",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 177,
+          "end": 337,
+          "text": "We discussed three event types today: nocturnal convulsions, daytime staring spells and brief morning jerks. Alex and their partner report no other event types."
+        }
+      ],
+      "reporter": "mixed",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "today",
+        "start": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "end": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "nocturnal convulsions",
+          "daytime staring spells",
+          "morning jerks"
+        ],
+        "kind": "inventory",
+        "interpretation": "not_stated",
+        "scope": "all_reported",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L1.last_convulsion",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 339,
+          "end": 408,
+          "text": "The last nocturnal convulsion was on 12 August 2024, with none since."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "12 August 2024",
+        "start": {
+          "earliest": "2024-08-12",
+          "latest": "2024-08-12"
+        },
+        "end": {
+          "earliest": "2024-08-12",
+          "latest": "2024-08-12"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "nocturnal convulsions"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L1.no_convulsions",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 339,
+          "end": 408,
+          "text": "The last nocturnal convulsion was on 12 August 2024, with none since."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "none since",
+        "start": {
+          "earliest": "2024-08-13",
+          "latest": "2024-08-13"
+        },
+        "end": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "nocturnal convulsions"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L1.staring",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 409,
+          "end": 557,
+          "text": "Daytime staring spells began in November 2024 and continue two to three times a week; I currently regard these as focal impaired-awareness seizures."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "began in November 2024 and continue",
+        "start": {
+          "earliest": "2024-11-01",
+          "latest": "2024-11-30"
+        },
+        "end": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "daytime staring spells"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "rate",
+          "text": "two to three times a week",
+          "count": {
+            "lower": 2,
+            "upper": 3
+          },
+          "period": {
+            "amount": {
+              "lower": 1,
+              "upper": 1
+            },
+            "unit": "week"
+          },
+          "events_per_cluster": null,
+          "approximate": false
+        }
+      }
+    },
+    {
+      "assertion_id": "L1.staring_last",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 558,
+          "end": 601,
+          "text": "The latest staring spell was on 13 January."
+        },
+        {
+          "letter_id": "L1",
+          "start": 409,
+          "end": 557,
+          "text": "Daytime staring spells began in November 2024 and continue two to three times a week; I currently regard these as focal impaired-awareness seizures."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "13 January",
+        "start": {
+          "earliest": "2025-01-13",
+          "latest": "2025-01-13"
+        },
+        "end": {
+          "earliest": "2025-01-13",
+          "latest": "2025-01-13"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "daytime staring spells"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L1.jerks",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 602,
+          "end": 832,
+          "text": "Brief jerks of both arms after waking began in December 2024 and have occurred roughly every two weeks, most recently on 10 January. I regard the morning jerks as epileptic, although their precise classification remains uncertain."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "began in December 2024",
+        "start": {
+          "earliest": "2024-12-01",
+          "latest": "2024-12-31"
+        },
+        "end": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "morning jerks"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "rate",
+          "text": "roughly every two weeks",
+          "count": {
+            "lower": 1,
+            "upper": 1
+          },
+          "period": {
+            "amount": {
+              "lower": 2,
+              "upper": 2
+            },
+            "unit": "week"
+          },
+          "events_per_cluster": null,
+          "approximate": true
+        }
+      }
+    },
+    {
+      "assertion_id": "L1.jerks_last",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 602,
+          "end": 832,
+          "text": "Brief jerks of both arms after waking began in December 2024 and have occurred roughly every two weeks, most recently on 10 January. I regard the morning jerks as epileptic, although their precise classification remains uncertain."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "10 January",
+        "start": {
+          "earliest": "2025-01-10",
+          "latest": "2025-01-10"
+        },
+        "end": {
+          "earliest": "2025-01-10",
+          "latest": "2025-01-10"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "morning jerks"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L1.plan",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 1053,
+          "end": 1211,
+          "text": "We discussed adding lamotrigine, but agreed to defer starting it until the next review. This is a treatment proposal, not confirmation that Alex has taken it."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "today",
+        "start": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "end": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "medication",
+        "name": "lamotrigine",
+        "status": "proposed",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L1.request",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 1213,
+          "end": 1363,
+          "text": "I requested a routine EEG today. It has not yet been performed and no result is available. This is the only EEG requested for Alex since 20 July 2024."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "today",
+        "start": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "end": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "requested",
+        "result": null,
+        "request_count": null
+      }
+    },
+    {
+      "assertion_id": "L1.pending",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 1213,
+          "end": 1363,
+          "text": "I requested a routine EEG today. It has not yet been performed and no result is available. This is the only EEG requested for Alex since 20 July 2024."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "today",
+        "start": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "end": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "pending",
+        "result": null,
+        "request_count": null
+      }
+    },
+    {
+      "assertion_id": "L1.requests",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 1213,
+          "end": 1363,
+          "text": "I requested a routine EEG today. It has not yet been performed and no result is available. This is the only EEG requested for Alex since 20 July 2024."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "since 20 July 2024",
+        "start": {
+          "earliest": "2024-07-20",
+          "latest": "2024-07-20"
+        },
+        "end": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "request_inventory",
+        "result": null,
+        "request_count": 1
+      }
+    },
+    {
+      "assertion_id": "L2.staring",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 475,
+          "end": 731,
+          "text": "After reviewing the home videos and the detailed history today, I now diagnose these as functional non-epileptic spells. This reinterpretation applies to the same staring spells from their onset in November, including those described in the January letter."
+        },
+        {
+          "letter_id": "L2",
+          "start": 321,
+          "end": 474,
+          "text": "The daytime staring spells are the events I called focal impaired-awareness seizures in January. They continued intermittently, most recently on 10 June."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "from their onset in November",
+        "start": {
+          "earliest": "2024-11-01",
+          "latest": "2024-11-30"
+        },
+        "end": {
+          "earliest": "2025-06-20",
+          "latest": "2025-06-20"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "daytime staring spells"
+        ],
+        "kind": "pattern",
+        "interpretation": "non_epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.staring_last",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 321,
+          "end": 474,
+          "text": "The daytime staring spells are the events I called focal impaired-awareness seizures in January. They continued intermittently, most recently on 10 June."
+        },
+        {
+          "letter_id": "L2",
+          "start": 475,
+          "end": 731,
+          "text": "After reviewing the home videos and the detailed history today, I now diagnose these as functional non-epileptic spells. This reinterpretation applies to the same staring spells from their onset in November, including those described in the January letter."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "10 June",
+        "start": {
+          "earliest": "2025-06-10",
+          "latest": "2025-06-10"
+        },
+        "end": {
+          "earliest": "2025-06-10",
+          "latest": "2025-06-10"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "daytime staring spells"
+        ],
+        "kind": "occurrence",
+        "interpretation": "non_epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.jerks",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 872,
+          "end": 1018,
+          "text": "The morning jerks described in January remain epileptic in my assessment. They have continued roughly every two weeks, with the latest on 18 June."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "continued",
+        "start": null,
+        "end": {
+          "earliest": "2025-06-20",
+          "latest": "2025-06-20"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "morning jerks"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "rate",
+          "text": "roughly every two weeks",
+          "count": {
+            "lower": 1,
+            "upper": 1
+          },
+          "period": {
+            "amount": {
+              "lower": 2,
+              "upper": 2
+            },
+            "unit": "week"
+          },
+          "events_per_cluster": null,
+          "approximate": true
+        }
+      }
+    },
+    {
+      "assertion_id": "L2.jerks_last",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 872,
+          "end": 1018,
+          "text": "The morning jerks described in January remain epileptic in my assessment. They have continued roughly every two weeks, with the latest on 18 June."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "18 June",
+        "start": {
+          "earliest": "2025-06-18",
+          "latest": "2025-06-18"
+        },
+        "end": {
+          "earliest": "2025-06-18",
+          "latest": "2025-06-18"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "morning jerks"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.only_pattern",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 1019,
+          "end": 1251,
+          "text": "There have been no nocturnal convulsions since 12 August 2024. Reviewing the history up to today, the morning jerks have been the only active epileptic pattern since December; the staring spells are a separate non-epileptic pattern."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "since December",
+        "start": {
+          "earliest": "2024-12-01",
+          "latest": "2024-12-31"
+        },
+        "end": {
+          "earliest": "2025-06-20",
+          "latest": "2025-06-20"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "morning jerks"
+        ],
+        "kind": "inventory",
+        "interpretation": "epileptic",
+        "scope": "all_epileptic",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.no_start",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 1318,
+          "end": 1422,
+          "text": "Alex confirms that they have never taken lamotrigine. The addition discussed in January was not enacted."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "never",
+        "start": null,
+        "end": {
+          "earliest": "2025-06-20",
+          "latest": "2025-06-20"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "medication",
+        "name": "lamotrigine",
+        "status": "not_started",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L2.old_performed",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 1462,
+          "end": 1640,
+          "text": "The routine EEG requested on 15 January was performed on 10 February. Its report became available to our clinical team on 12 February and described no epileptiform abnormalities."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "10 February",
+        "start": {
+          "earliest": "2025-02-10",
+          "latest": "2025-02-10"
+        },
+        "end": {
+          "earliest": "2025-02-10",
+          "latest": "2025-02-10"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "performed",
+        "result": null,
+        "request_count": null
+      }
+    },
+    {
+      "assertion_id": "L2.old_result",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 1462,
+          "end": 1640,
+          "text": "The routine EEG requested on 15 January was performed on 10 February. Its report became available to our clinical team on 12 February and described no epileptiform abnormalities."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "12 February",
+        "start": {
+          "earliest": "2025-02-12",
+          "latest": "2025-02-12"
+        },
+        "end": {
+          "earliest": "2025-02-12",
+          "latest": "2025-02-12"
+        },
+        "kind": "result_available",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "result",
+        "result": "no epileptiform abnormalities",
+        "request_count": null
+      }
+    },
+    {
+      "assertion_id": "L2.new_request",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 1767,
+          "end": 1882,
+          "text": "I requested a separate repeat EEG today to investigate the continuing morning jerks; it has not yet been performed."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "today",
+        "start": {
+          "earliest": "2025-06-20",
+          "latest": "2025-06-20"
+        },
+        "end": {
+          "earliest": "2025-06-20",
+          "latest": "2025-06-20"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "requested",
+        "result": null,
+        "request_count": null
+      }
+    },
+    {
+      "assertion_id": "L2.pending",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 1767,
+          "end": 1882,
+          "text": "I requested a separate repeat EEG today to investigate the continuing morning jerks; it has not yet been performed."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "today",
+        "start": {
+          "earliest": "2025-06-20",
+          "latest": "2025-06-20"
+        },
+        "end": {
+          "earliest": "2025-06-20",
+          "latest": "2025-06-20"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "pending",
+        "result": null,
+        "request_count": null
+      }
+    },
+    {
+      "assertion_id": "L3.staring",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 283,
+          "end": 491,
+          "text": "The daytime staring spells remain classified as functional non-epileptic events, following the decision of 20 June. The earlier January assessment is retained in the record as the interpretation at that time."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "today",
+        "start": {
+          "earliest": "2025-07-14",
+          "latest": "2025-07-14"
+        },
+        "end": {
+          "earliest": "2025-07-14",
+          "latest": "2025-07-14"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "daytime staring spells"
+        ],
+        "kind": "pattern",
+        "interpretation": "non_epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L3.jerks_last",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 493,
+          "end": 663,
+          "text": "Alex and their partner confirm that the morning jerks on 18 June were the last epileptic events before this consultation, with none between 19 June and 14 July inclusive."
+        }
+      ],
+      "reporter": "mixed",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "18 June",
+        "start": {
+          "earliest": "2025-06-18",
+          "latest": "2025-06-18"
+        },
+        "end": {
+          "earliest": "2025-06-18",
+          "latest": "2025-06-18"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "morning jerks"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L3.absence",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 493,
+          "end": 663,
+          "text": "Alex and their partner confirm that the morning jerks on 18 June were the last epileptic events before this consultation, with none between 19 June and 14 July inclusive."
+        }
+      ],
+      "reporter": "mixed",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "between 19 June and 14 July inclusive",
+        "start": {
+          "earliest": "2025-06-19",
+          "latest": "2025-06-19"
+        },
+        "end": {
+          "earliest": "2025-07-14",
+          "latest": "2025-07-14"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "all epileptic events"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "all_epileptic",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L3.only_pattern",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 664,
+          "end": 841,
+          "text": "The morning jerks were the only active epileptic pattern between 16 April and 14 July inclusive. No nocturnal convulsion or other epileptic event type occurred in that interval."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "between 16 April and 14 July inclusive",
+        "start": {
+          "earliest": "2025-04-16",
+          "latest": "2025-04-16"
+        },
+        "end": {
+          "earliest": "2025-07-14",
+          "latest": "2025-07-14"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "morning jerks"
+        ],
+        "kind": "inventory",
+        "interpretation": "epileptic",
+        "scope": "all_epileptic",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L3.no_start",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 942,
+          "end": 1094,
+          "text": "At the consultation Alex confirmed that they had never taken lamotrigine, including between 20 June and 14 July. The January proposal was never started."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "never",
+        "start": null,
+        "end": {
+          "earliest": "2025-07-14",
+          "latest": "2025-07-14"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "medication",
+        "name": "lamotrigine",
+        "status": "not_started",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L3.performed",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 1156,
+          "end": 1348,
+          "text": "The repeat EEG requested on 20 June was performed on 3 July. Its report became available to our clinical team on 11 July, before this consultation, and described no epileptiform abnormalities."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "3 July",
+        "start": {
+          "earliest": "2025-07-03",
+          "latest": "2025-07-03"
+        },
+        "end": {
+          "earliest": "2025-07-03",
+          "latest": "2025-07-03"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "performed",
+        "result": null,
+        "request_count": null
+      }
+    },
+    {
+      "assertion_id": "L3.result",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 1156,
+          "end": 1348,
+          "text": "The repeat EEG requested on 20 June was performed on 3 July. Its report became available to our clinical team on 11 July, before this consultation, and described no epileptiform abnormalities."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "11 July",
+        "start": {
+          "earliest": "2025-07-11",
+          "latest": "2025-07-11"
+        },
+        "end": {
+          "earliest": "2025-07-11",
+          "latest": "2025-07-11"
+        },
+        "kind": "result_available",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "result",
+        "result": "no epileptiform abnormalities",
+        "request_count": null
+      }
+    },
+    {
+      "assertion_id": "L3.requests",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 1349,
+          "end": 1475,
+          "text": "This is a different EEG from the study performed in February. There were no other EEG requests between 16 January and 14 July."
+        },
+        {
+          "letter_id": "L3",
+          "start": 1156,
+          "end": 1348,
+          "text": "The repeat EEG requested on 20 June was performed on 3 July. Its report became available to our clinical team on 11 July, before this consultation, and described no epileptiform abnormalities."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "between 16 January and 14 July",
+        "start": {
+          "earliest": "2025-01-16",
+          "latest": "2025-01-16"
+        },
+        "end": {
+          "earliest": "2025-07-14",
+          "latest": "2025-07-14"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "request_inventory",
+        "result": null,
+        "request_count": 1
+      }
+    },
+    {
+      "assertion_id": "L1.taking",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 1014,
+          "end": 1052,
+          "text": "Alex reports continuing levetiracetam."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "today",
+        "start": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "end": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "medication",
+        "name": "levetiracetam",
+        "status": "taking",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L2.taking",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 1423,
+          "end": 1460,
+          "text": "They report continuing levetiracetam."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "today",
+        "start": {
+          "earliest": "2025-06-20",
+          "latest": "2025-06-20"
+        },
+        "end": {
+          "earliest": "2025-06-20",
+          "latest": "2025-06-20"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "medication",
+        "name": "levetiracetam",
+        "status": "taking",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L3.taking",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 1095,
+          "end": 1154,
+          "text": "Levetiracetam use was reported to be continuing on 14 July."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "today",
+        "start": {
+          "earliest": "2025-07-14",
+          "latest": "2025-07-14"
+        },
+        "end": {
+          "earliest": "2025-07-14",
+          "latest": "2025-07-14"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "medication",
+        "name": "levetiracetam",
+        "status": "taking",
+        "condition": null
+      }
+    }
+  ],
+  "links": [
+    {
+      "link_id": "K1",
+      "earlier_assertion": "L1.staring",
+      "later_assertion": "L2.staring",
+      "relation": "corrects_interpretation",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 321,
+          "end": 474,
+          "text": "The daytime staring spells are the events I called focal impaired-awareness seizures in January. They continued intermittently, most recently on 10 June."
+        },
+        {
+          "letter_id": "L2",
+          "start": 475,
+          "end": 731,
+          "text": "After reviewing the home videos and the detailed history today, I now diagnose these as functional non-epileptic spells. This reinterpretation applies to the same staring spells from their onset in November, including those described in the January letter."
+        },
+        {
+          "letter_id": "L2",
+          "start": 732,
+          "end": 870,
+          "text": "This is our first reclassification of any of Alex's events from epileptic to non-epileptic, and the decision was made today, 20 June 2025."
+        }
+      ],
+      "decision_time": {
+        "text": "20 June 2025",
+        "start": {
+          "earliest": "2025-06-20",
+          "latest": "2025-06-20"
+        },
+        "end": {
+          "earliest": "2025-06-20",
+          "latest": "2025-06-20"
+        },
+        "kind": "decision",
+        "anchor_letter_id": null
+      }
+    },
+    {
+      "link_id": "K2",
+      "earlier_assertion": "L1.staring",
+      "later_assertion": "L1.jerks",
+      "relation": "overlaps_active",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 833,
+          "end": 923,
+          "text": "The staring spells and morning jerks have both been recurring during December and January."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "K3",
+      "earlier_assertion": "L1.jerks",
+      "later_assertion": "L2.jerks",
+      "relation": "same_pattern",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 872,
+          "end": 1018,
+          "text": "The morning jerks described in January remain epileptic in my assessment. They have continued roughly every two weeks, with the latest on 18 June."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "K4",
+      "earlier_assertion": "L1.plan",
+      "later_assertion": "L2.no_start",
+      "relation": "plan_not_enacted",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 1318,
+          "end": 1422,
+          "text": "Alex confirms that they have never taken lamotrigine. The addition discussed in January was not enacted."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "K5",
+      "earlier_assertion": "L2.no_start",
+      "later_assertion": "L3.no_start",
+      "relation": "updates",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 942,
+          "end": 1094,
+          "text": "At the consultation Alex confirmed that they had never taken lamotrigine, including between 20 June and 14 July. The January proposal was never started."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "K6",
+      "earlier_assertion": "L1.request",
+      "later_assertion": "L2.old_performed",
+      "relation": "request_performed",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 1462,
+          "end": 1640,
+          "text": "The routine EEG requested on 15 January was performed on 10 February. Its report became available to our clinical team on 12 February and described no epileptiform abnormalities."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "K7",
+      "earlier_assertion": "L1.request",
+      "later_assertion": "L2.old_result",
+      "relation": "request_has_result",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 1462,
+          "end": 1640,
+          "text": "The routine EEG requested on 15 January was performed on 10 February. Its report became available to our clinical team on 12 February and described no epileptiform abnormalities."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "K8",
+      "earlier_assertion": "L2.new_request",
+      "later_assertion": "L3.performed",
+      "relation": "request_performed",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 1156,
+          "end": 1348,
+          "text": "The repeat EEG requested on 20 June was performed on 3 July. Its report became available to our clinical team on 11 July, before this consultation, and described no epileptiform abnormalities."
+        },
+        {
+          "letter_id": "L3",
+          "start": 1349,
+          "end": 1475,
+          "text": "This is a different EEG from the study performed in February. There were no other EEG requests between 16 January and 14 July."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "K9",
+      "earlier_assertion": "L2.new_request",
+      "later_assertion": "L3.result",
+      "relation": "request_has_result",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 1156,
+          "end": 1348,
+          "text": "The repeat EEG requested on 20 June was performed on 3 July. Its report became available to our clinical team on 11 July, before this consultation, and described no epileptiform abnormalities."
+        },
+        {
+          "letter_id": "L3",
+          "start": 1349,
+          "end": 1475,
+          "text": "This is a different EEG from the study performed in February. There were no other EEG requests between 16 January and 14 July."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "K10",
+      "earlier_assertion": "L2.staring",
+      "later_assertion": "L3.staring",
+      "relation": "repeats",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 283,
+          "end": 491,
+          "text": "The daytime staring spells remain classified as functional non-epileptic events, following the decision of 20 June. The earlier January assessment is retained in the record as the interpretation at that time."
+        }
+      ],
+      "decision_time": null
+    }
+  ]
+}

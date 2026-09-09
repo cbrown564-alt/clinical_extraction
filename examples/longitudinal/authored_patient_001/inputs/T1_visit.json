@@ -1,0 +1,11 @@
+{
+  "patient_id": "authored-001",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-01-15",
+      "available_date": "2025-01-15",
+      "text": "Epilepsy clinic letter\nConsultation: 15 January 2025\nPatient: Alex Morgan, aged 36\n\nDear colleague,\n\nAlex has an established diagnosis of epilepsy, currently of uncertain type. We discussed three event types today: nocturnal convulsions, daytime staring spells and brief morning jerks. Alex and their partner report no other event types.\n\nThe last nocturnal convulsion was on 12 August 2024, with none since. Daytime staring spells began in November 2024 and continue two to three times a week; I currently regard these as focal impaired-awareness seizures. The latest staring spell was on 13 January. Brief jerks of both arms after waking began in December 2024 and have occurred roughly every two weeks, most recently on 10 January. I regard the morning jerks as epileptic, although their precise classification remains uncertain. The staring spells and morning jerks have both been recurring during December and January. The absence of further nocturnal convulsions does not mean Alex is free of all seizures.\n\nAlex reports continuing levetiracetam. We discussed adding lamotrigine, but agreed to defer starting it until the next review. This is a treatment proposal, not confirmation that Alex has taken it.\n\nI requested a routine EEG today. It has not yet been performed and no result is available. This is the only EEG requested for Alex since 20 July 2024.\n\nWe will review the event descriptions and investigation findings at follow-up.\n"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 # Longitudinal epilepsy benchmark: project plan
 
 Updated: 2026-09-09. Owner: Conor Brown.
-Status: planning baseline; repository restructuring (Phase 0) complete; longitudinal benchmark planning (Phase 1).
+Status: P2.1 authored example implemented and mechanically checked; annotation guide and pilot remain ahead. Phase 0 retained-path limits remain documented.
 
 
 [Project status](../../PROJECT_STATUS.md) owns task progress and current checks.
@@ -47,10 +47,12 @@ Gan and ExECT results remain evidence for their original tasks only.
 
 **Planning assumptions to test in the pilot**
 
-- Target 300 synthetic patients, each with 2–5 letters (600–1,500 letters), assuming
-  one seed per generated patient. The proposed balance is 150 ExECT-style and 150
-  Gan-style patients. These are coverage targets, not estimates of population
-  prevalence or a statistically powered sample size.
+- Target 300 synthetic patients, each with 2–5 letters (600–1,500 letters).
+  Phase 1 replaces the infeasible 150/150 distinct-seed allocation with a
+  provisional ceiling of 140 ExECT development records and 160 Gan development
+  records, subject to source terms and lineage checks. Fewer eligible records
+  mean a smaller corpus or disclosed seed-free authoring, not locked-data reuse.
+  These are coverage targets, not prevalence estimates or a powered sample size.
 - Use four clinical families: epilepsy diagnosis, seizure events/patterns,
   medications, and investigations. Avoid an unrestricted patient-history family;
   add context only where a named research question needs it.
@@ -274,8 +276,36 @@ another migration project or blocking the pilot on cosmetic package renaming.
   and documented (`configs/longitudinal/`, `examples/{exectv2,longitudinal}/`,
   `scripts/{checks,benchmarks,longitudinal,publications}/`, `data/sources/{gan2026,exectv2}/`,
   `data/longitudinal/`, and ignored `runs/archive/`); `/runs/` added to `.gitignore`.
-- **Phase 0 Closure**: Repository restructuring complete across all targets; doc hygiene, type checks,
-  and replay tests verified; active project work transitions to Phase 1 (Research questions and scope).
+- **Phase 0 review correction (2026-09-09)**: The directory scaffolding above does
+  not mean every proposed move was executed. Current callers now use
+  `results/letter-benchmarks/`; saved provenance strings remain unchanged.
+  Verification and retained-path exceptions are recorded below and in the
+  migration record. Phase 1 planning can proceed; broad Phase 0 closure is not claimed.
+
+### Retained paths and compatibility removal
+
+- Keep existing scripts in `scripts/` and executable configurations in their
+  current dataset namespaces. The new script directories are destinations for
+  future tools, not a completed regrouping. Moving the existing helpers would
+  require coordinated CI, shell/PowerShell, import and command changes without
+  changing the longitudinal pilot outcome. Revisit each helper when it changes.
+- Keep source corpora under their existing `data/` paths until a separate move
+  verifies loader references, source IDs and split manifests. New source/data
+  directories are scaffolding only; no corpus relocation is claimed.
+- Keep historical runs in `experiments/` and protected scratch paths. Their
+  references and writer ownership have not been fully mapped; the baseline
+  identified a live writer. `runs/archive/` is a destination, not an executed
+  archive. Recheck writers and record a per-file mapping before any later move.
+- Keep the tracked `paper_experiments` symlink solely for historical saved paths
+  and external consumers. Current source, API and script path literals use the
+  canonical results directory. The symlink is not a filesystem permission barrier.
+  Remove it only after a separate old-to-new path mapping resolves saved artifact
+  references without changing their bytes, external supported commands are
+  accounted for, and replay/API checks pass in a checkout without the symlink.
+- Broader study-document classification remains unfinished. The executed archives
+  and research-note moves do not establish one current owner for every historical
+  concern. Resolve remaining conflicting active guidance before claiming full
+  documentation consolidation.
 
 
 ## Timeline and dependencies
@@ -331,6 +361,18 @@ shows fundamental ambiguity or unacceptable annotation effort.
 Completion: one task definition and literature rationale under `docs/longitudinal/`
 and `docs/reference/`; every proposed annotation field has a downstream purpose.
 
+Phase 1 work on 2026-09-09 produced the
+[task definition](../longitudinal/task_definition.md) and
+[literature rationale](../reference/longitudinal_epilepsy_rationale.md).
+P1.2–P1.3 are specified for the worked example. P1.4 adopts a revised candidate
+allocation; actual source matching and duplicate-lineage auditing remain required
+before source-conditioned generation. P1.5 defines coverage, scaling conditions
+and a £0 paid-call default pending a later pilot budget. P1.1 now includes the
+supplied Chang et al. preprint (22 February 2026), including its majority-phenotype
+aggregation and diagnostic-transition analysis. The working documents are ready
+for P2.1. No model comparison, new corpus or expert validation is claimed;
+source-use/lineage checks and any paid budget remain prerequisites for generation.
+
 ### Phase 2 — Design annotation through patient examples
 
 - P2.1 Author one three-letter patient and expected answers in both views. Include
@@ -360,6 +402,13 @@ and `docs/reference/`; every proposed annotation field has a downstream purpose.
 Completion: inspectable case pack, annotation guide, provisional schema and query
 answers with explicit unresolved cases. The pilot is development evidence, not
 expert gold. Guide and schema have one owner each and version together.
+
+P2.1 on 2026-09-09: [authored patient 001](../../examples/longitudinal/authored_patient_001/README.md)
+contains three seed-free fictional letters, 20 provisional answers and four
+physically filtered input sets. Checks cover evidence spans, source hashes, date
+arithmetic and cutoff eligibility. Task definition v0.2 records the query
+clarifications exposed by the example. P2.2–P2.6 remain unimplemented: no annotation
+guide/schema freeze, 12-patient pilot or independent annotation is claimed.
 
 ### Phase 3 — Generate and check synthetic records
 

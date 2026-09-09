@@ -9,7 +9,9 @@ Updated: 2026-09-08. Keep one current owner for each subject.
 | Reading paths and current locations | `docs/NAVIGATION.md` |
 | Existing manuscript argument and claim context | `docs/paper/README.md` and the section owners it names |
 | Existing result inventory | `paper_experiments/inventory.json` |
-| Longitudinal annotation/generation/evaluation | Planned `docs/longitudinal/` owners, created with their first substantive artifact |
+| Longitudinal task, queries and pilot policy | `docs/longitudinal/task_definition.md` |
+| Longitudinal literature rationale | `docs/reference/longitudinal_epilepsy_rationale.md` |
+| Longitudinal annotation/generation/evaluation implementation | Future `docs/longitudinal/` owners, created when the corresponding work begins |
 | Study protocol and interpretation | `docs/research/<track>/` |
 | Shared software and evidence rules | `docs/design/`; source and tests own implementation facts |
 | Repeatable procedure | `docs/runbooks/` |

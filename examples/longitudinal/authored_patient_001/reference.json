@@ -1,0 +1,425 @@
+{
+  "case_id": "authored-001",
+  "version": "0.1",
+  "reference_kind": "provisional text-supported authored answers; not model predictions or expert gold",
+  "offset_convention": "zero-based Python Unicode character indices; end exclusive; LF newlines",
+  "evidence": [
+    {
+      "evidence_id": "L1.diagnosis",
+      "letter_id": "L1",
+      "start": 101,
+      "end": 176,
+      "text": "Alex has an established diagnosis of epilepsy, currently of uncertain type."
+    },
+    {
+      "evidence_id": "L1.inventory",
+      "letter_id": "L1",
+      "start": 177,
+      "end": 337,
+      "text": "We discussed three event types today: nocturnal convulsions, daytime staring spells and brief morning jerks. Alex and their partner report no other event types."
+    },
+    {
+      "evidence_id": "L1.convulsions",
+      "letter_id": "L1",
+      "start": 339,
+      "end": 408,
+      "text": "The last nocturnal convulsion was on 12 August 2024, with none since."
+    },
+    {
+      "evidence_id": "L1.staring",
+      "letter_id": "L1",
+      "start": 409,
+      "end": 557,
+      "text": "Daytime staring spells began in November 2024 and continue two to three times a week; I currently regard these as focal impaired-awareness seizures."
+    },
+    {
+      "evidence_id": "L1.jerks",
+      "letter_id": "L1",
+      "start": 602,
+      "end": 832,
+      "text": "Brief jerks of both arms after waking began in December 2024 and have occurred roughly every two weeks, most recently on 10 January. I regard the morning jerks as epileptic, although their precise classification remains uncertain."
+    },
+    {
+      "evidence_id": "L1.concurrent",
+      "letter_id": "L1",
+      "start": 833,
+      "end": 923,
+      "text": "The staring spells and morning jerks have both been recurring during December and January."
+    },
+    {
+      "evidence_id": "L1.plan",
+      "letter_id": "L1",
+      "start": 1053,
+      "end": 1211,
+      "text": "We discussed adding lamotrigine, but agreed to defer starting it until the next review. This is a treatment proposal, not confirmation that Alex has taken it."
+    },
+    {
+      "evidence_id": "L1.eeg",
+      "letter_id": "L1",
+      "start": 1213,
+      "end": 1363,
+      "text": "I requested a routine EEG today. It has not yet been performed and no result is available. This is the only EEG requested for Alex since 20 July 2024."
+    },
+    {
+      "evidence_id": "L2.diagnosis",
+      "letter_id": "L2",
+      "start": 123,
+      "end": 216,
+      "text": "Their established epilepsy diagnosis remains, with the precise epilepsy type still uncertain."
+    },
+    {
+      "evidence_id": "L2.identity",
+      "letter_id": "L2",
+      "start": 321,
+      "end": 474,
+      "text": "The daytime staring spells are the events I called focal impaired-awareness seizures in January. They continued intermittently, most recently on 10 June."
+    },
+    {
+      "evidence_id": "L2.revision",
+      "letter_id": "L2",
+      "start": 475,
+      "end": 731,
+      "text": "After reviewing the home videos and the detailed history today, I now diagnose these as functional non-epileptic spells. This reinterpretation applies to the same staring spells from their onset in November, including those described in the January letter."
+    },
+    {
+      "evidence_id": "L2.revision_date",
+      "letter_id": "L2",
+      "start": 732,
+      "end": 870,
+      "text": "This is our first reclassification of any of Alex's events from epileptic to non-epileptic, and the decision was made today, 20 June 2025."
+    },
+    {
+      "evidence_id": "L2.jerks",
+      "letter_id": "L2",
+      "start": 872,
+      "end": 1018,
+      "text": "The morning jerks described in January remain epileptic in my assessment. They have continued roughly every two weeks, with the latest on 18 June."
+    },
+    {
+      "evidence_id": "L2.single_pattern",
+      "letter_id": "L2",
+      "start": 1019,
+      "end": 1251,
+      "text": "There have been no nocturnal convulsions since 12 August 2024. Reviewing the history up to today, the morning jerks have been the only active epileptic pattern since December; the staring spells are a separate non-epileptic pattern."
+    },
+    {
+      "evidence_id": "L2.no_start",
+      "letter_id": "L2",
+      "start": 1318,
+      "end": 1422,
+      "text": "Alex confirms that they have never taken lamotrigine. The addition discussed in January was not enacted."
+    },
+    {
+      "evidence_id": "L2.old_eeg",
+      "letter_id": "L2",
+      "start": 1462,
+      "end": 1640,
+      "text": "The routine EEG requested on 15 January was performed on 10 February. Its report became available to our clinical team on 12 February and described no epileptiform abnormalities."
+    },
+    {
+      "evidence_id": "L2.new_request",
+      "letter_id": "L2",
+      "start": 1767,
+      "end": 1882,
+      "text": "I requested a separate repeat EEG today to investigate the continuing morning jerks; it has not yet been performed."
+    },
+    {
+      "evidence_id": "L3.scope",
+      "letter_id": "L3",
+      "start": 123,
+      "end": 225,
+      "text": "This letter records the consultation on 14 July and does not update Alex's condition beyond that date."
+    },
+    {
+      "evidence_id": "L3.diagnosis",
+      "letter_id": "L3",
+      "start": 226,
+      "end": 282,
+      "text": "Epilepsy remains the diagnosis, with its type uncertain."
+    },
+    {
+      "evidence_id": "L3.revision",
+      "letter_id": "L3",
+      "start": 283,
+      "end": 491,
+      "text": "The daytime staring spells remain classified as functional non-epileptic events, following the decision of 20 June. The earlier January assessment is retained in the record as the interpretation at that time."
+    },
+    {
+      "evidence_id": "L3.jerks",
+      "letter_id": "L3",
+      "start": 493,
+      "end": 663,
+      "text": "Alex and their partner confirm that the morning jerks on 18 June were the last epileptic events before this consultation, with none between 19 June and 14 July inclusive."
+    },
+    {
+      "evidence_id": "L3.single_pattern",
+      "letter_id": "L3",
+      "start": 664,
+      "end": 841,
+      "text": "The morning jerks were the only active epileptic pattern between 16 April and 14 July inclusive. No nocturnal convulsion or other epileptic event type occurred in that interval."
+    },
+    {
+      "evidence_id": "L3.no_start",
+      "letter_id": "L3",
+      "start": 942,
+      "end": 1094,
+      "text": "At the consultation Alex confirmed that they had never taken lamotrigine, including between 20 June and 14 July. The January proposal was never started."
+    },
+    {
+      "evidence_id": "L3.new_result",
+      "letter_id": "L3",
+      "start": 1156,
+      "end": 1348,
+      "text": "The repeat EEG requested on 20 June was performed on 3 July. Its report became available to our clinical team on 11 July, before this consultation, and described no epileptiform abnormalities."
+    },
+    {
+      "evidence_id": "L3.eeg_identity",
+      "letter_id": "L3",
+      "start": 1349,
+      "end": 1475,
+      "text": "This is a different EEG from the study performed in February. There were no other EEG requests between 16 January and 14 July."
+    }
+  ],
+  "links": [
+    {
+      "link_id": "K1",
+      "relation": "corrects_interpretation",
+      "earlier_evidence": "L1.staring",
+      "later_evidence": "L2.revision",
+      "supporting_evidence": [
+        "L2.identity",
+        "L2.revision_date"
+      ],
+      "decision_date": "2025-06-20",
+      "meaning": "The staring pattern is reinterpreted back to its November onset; the decision itself is not backdated."
+    },
+    {
+      "link_id": "K2",
+      "relation": "plan_not_enacted",
+      "earlier_evidence": "L1.plan",
+      "later_evidence": "L2.no_start",
+      "supporting_evidence": [],
+      "meaning": "A proposal is explicitly reported never started, with later coverage extended through T2."
+    },
+    {
+      "link_id": "K3",
+      "relation": "request_has_result",
+      "earlier_evidence": "L1.eeg",
+      "later_evidence": "L2.old_eeg",
+      "supporting_evidence": [],
+      "meaning": "January request, February performance and February result; not the later repeat EEG."
+    },
+    {
+      "link_id": "K4",
+      "relation": "request_has_result",
+      "earlier_evidence": "L2.new_request",
+      "later_evidence": "L3.new_result",
+      "supporting_evidence": [
+        "L3.eeg_identity"
+      ],
+      "meaning": "June request, July performance and July clinical result availability, reported in an August letter."
+    },
+    {
+      "link_id": "K5",
+      "relation": "repeats_interpretation",
+      "earlier_evidence": "L2.revision",
+      "later_evidence": "L3.revision",
+      "supporting_evidence": [
+        "L2.revision_date"
+      ],
+      "meaning": "The third letter repeats the June decision; it is not a new correction."
+    }
+  ],
+  "answers": [
+    {
+      "request_id": "T1_visit_Q1",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.diagnosis",
+        "L1.jerks"
+      ],
+      "reason": "Epilepsy and the epileptic morning jerks on 10 January support the 90-day predicate."
+    },
+    {
+      "request_id": "T1_visit_Q2",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.staring",
+        "L1.jerks",
+        "L1.concurrent"
+      ],
+      "reason": "The visit account treats both recurring patterns as epileptic and documents overlap."
+    },
+    {
+      "request_id": "T1_visit_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.plan"
+      ],
+      "reason": "A deferred addition is not use, but the letter does not establish whether lamotrigine was started earlier in the 180-day period."
+    },
+    {
+      "request_id": "T1_visit_Q4",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L1.eeg"
+      ],
+      "reason": "The sole EEG requested in the period has not been performed and has no result at T1."
+    },
+    {
+      "request_id": "T1_visit_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.staring"
+      ],
+      "reason": "No explicit revision or complete negative revision history is supplied by T1."
+    },
+    {
+      "request_id": "T1_retrospective_Q1",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.diagnosis",
+        "L1.jerks",
+        "L2.jerks"
+      ],
+      "reason": "Morning jerks remain epileptic after the staring-spell correction; the January event remains in the lookback."
+    },
+    {
+      "request_id": "T1_retrospective_Q2",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L1.inventory",
+        "L1.convulsions",
+        "L1.staring",
+        "L1.jerks",
+        "L2.identity",
+        "L2.revision",
+        "L2.single_pattern"
+      ],
+      "reason": "The correction applies back to onset. With nocturnal convulsions absent, only the morning-jerk pattern is epileptic in the earlier window."
+    },
+    {
+      "request_id": "T1_retrospective_Q3",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L1.plan",
+        "L2.no_start"
+      ],
+      "reason": "The later explicit never-taken history rules out a start in the earlier 180-day period."
+    },
+    {
+      "request_id": "T1_retrospective_Q4",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L1.eeg",
+        "L2.old_eeg"
+      ],
+      "reason": "The February result cannot be backdated to 15 January."
+    },
+    {
+      "request_id": "T1_retrospective_Q5",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L1.staring",
+        "L2.revision",
+        "L2.revision_date"
+      ],
+      "reason": "The first reclassification was made on 20 June, after T1. Retrospective event interpretation can change without backdating the clinical decision."
+    },
+    {
+      "request_id": "T2_visit_Q1",
+      "status": "eligible",
+      "evidence_ids": [
+        "L2.diagnosis",
+        "L2.jerks"
+      ],
+      "reason": "The epileptic morning jerks on 18 June lie inside the 90-day window."
+    },
+    {
+      "request_id": "T2_visit_Q2",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L2.revision",
+        "L2.single_pattern"
+      ],
+      "reason": "Only one epileptic pattern is documented through 20 June. The remaining period to 14 July is unobserved in the available letters."
+    },
+    {
+      "request_id": "T2_visit_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L2.no_start"
+      ],
+      "reason": "Never taken is supported through 20 June, not through T2; no use or non-use can be invented for the remaining days."
+    },
+    {
+      "request_id": "T2_visit_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L2.old_eeg",
+        "L2.new_request"
+      ],
+      "reason": "The January request is one day outside the 180-day window. The June request is inside, but its later result status is not yet available in the supplied letters."
+    },
+    {
+      "request_id": "T2_visit_Q5",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.staring",
+        "L2.identity",
+        "L2.revision",
+        "L2.revision_date"
+      ],
+      "reason": "The same previously epileptic-labelled pattern recurred on 10 June and was explicitly reclassified by 20 June, both before T2."
+    },
+    {
+      "request_id": "T2_retrospective_Q1",
+      "status": "eligible",
+      "evidence_ids": [
+        "L3.diagnosis",
+        "L3.jerks"
+      ],
+      "reason": "The late letter confirms an epileptic event on 18 June; subsequent type-specific/event absence does not erase it."
+    },
+    {
+      "request_id": "T2_retrospective_Q2",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L3.scope",
+        "L3.single_pattern"
+      ],
+      "reason": "The late letter explicitly covers the entire 90-day window with only one active epileptic pattern."
+    },
+    {
+      "request_id": "T2_retrospective_Q3",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L3.scope",
+        "L3.no_start"
+      ],
+      "reason": "The late letter extends the explicit never-taken history through T2."
+    },
+    {
+      "request_id": "T2_retrospective_Q4",
+      "status": "eligible",
+      "evidence_ids": [
+        "L2.new_request",
+        "L3.new_result",
+        "L3.eeg_identity"
+      ],
+      "reason": "The June request links to the July study, whose result was available to the clinical team on 11 July. The letter reporting this arrives later."
+    },
+    {
+      "request_id": "T2_retrospective_Q5",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.staring",
+        "L2.identity",
+        "L2.revision",
+        "L2.revision_date",
+        "L3.revision"
+      ],
+      "reason": "The June reinterpretation remains supported; the late letter repeats it rather than creating a second correction."
+    }
+  ]
+}
