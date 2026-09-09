@@ -109,9 +109,7 @@ def discover_gan2026_validation_runs(
                     "artifact_paths": [
                         path.relative_to(config_path.parent.parent.parent).as_posix()
                     ],
-                    "date": (
-                        "2026-08-13" if config_method == "llm_with_rules" else "2026-07-19"
-                    ),
+                    "date": ("2026-08-13" if config_method == "llm_with_rules" else "2026-07-19"),
                     "decision": "development_comparison",
                     "mode": "replay",
                     "model": condition.route,
@@ -205,7 +203,7 @@ def _overlay_paper_dev750(
 
     by_run = {str(family["run_id"]): family for family in families}
     models = {item["slug"]: item for item in living_models()}
-    paper_gan = repo_root / "paper_experiments" / "gan"
+    paper_gan = repo_root / "results/letter-benchmarks" / "gan"
     for model in living_models():
         slug = str(model["slug"])
         for method in ("gan_llm_only", "gan_llm_extract_raw"):
@@ -275,9 +273,7 @@ def _overlay_paper_dev750(
             )
 
 
-_PANEL_CELL_METHODS = frozenset(
-    {"llm_extract", "llm_encode", "llm_select", "llm_pre_post"}
-)
+_PANEL_CELL_METHODS = frozenset({"llm_extract", "llm_encode", "llm_select", "llm_pre_post"})
 _PANEL_REPAIR_MODE = {
     "llm_extract": "llm_select",
     "llm_encode": "llm_encode",
@@ -294,7 +290,7 @@ def _overlay_paper_five_cell(
 ) -> None:
     """Serve living five-cell rows from the shared extract raw."""
 
-    panel_path = repo_root / "paper_experiments" / "gan" / "dev750_panel.json"
+    panel_path = repo_root / "results/letter-benchmarks" / "gan" / "dev750_panel.json"
     if not panel_path.is_file():
         return
     panel = json.loads(panel_path.read_text(encoding="utf-8"))
@@ -320,7 +316,13 @@ def _overlay_paper_five_cell(
         roster = models.get(slug, {})
         raw_name = str(cell.get("shared_raw_output") or "gan_llm_extract_raw")
         rows_path = (
-            repo_root / "paper_experiments" / "gan" / raw_name / slug / "dev750" / "rows.jsonl"
+            repo_root
+            / "results/letter-benchmarks"
+            / "gan"
+            / raw_name
+            / slug
+            / "dev750"
+            / "rows.jsonl"
         )
         present = cell.get("status") == "present" and rows_path.is_file()
         run_id = paper_run_id(method, slug)
@@ -408,9 +410,7 @@ def _paper_family(
         run_suffix="llm_with_rules" if method_name == "llm_with_rules" else "llm_only",
         pipeline_method=method_name,
         prompt_version=(
-            "gan_llm_extract_raw"
-            if method_name == "llm_with_rules"
-            else "gan_llm_only"
+            "gan_llm_extract_raw" if method_name == "llm_with_rules" else "gan_llm_only"
         ),
         repair_mode=(
             "llm_select"

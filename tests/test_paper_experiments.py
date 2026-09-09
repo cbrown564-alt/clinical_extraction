@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-EXECT_HYBRID_ROOT = ROOT / "paper_experiments/exect/exect_llm_pre_post"
+EXECT_HYBRID_ROOT = ROOT / "results/letter-benchmarks/exect/exect_llm_pre_post"
 LIVING_SLUGS = (
     "gemini37flash",
     "grok46",
@@ -29,7 +29,7 @@ EXECT_HYBRID_PRESENT = {
 
 def test_paper_hybrid_fills_are_present() -> None:
     e5 = json.loads(
-        (ROOT / "paper_experiments/exect/exect_rules/dev140.json").read_text(
+        (ROOT / "results/letter-benchmarks/exect/exect_rules/dev140.json").read_text(
             encoding="utf-8"
         )
     )
@@ -42,7 +42,7 @@ def test_paper_hybrid_fills_are_present() -> None:
     assert e5["test60"]["stage_rungs"]["encode"]["f1"] == 0.7994
     assert e5["test60"]["stage_rungs"]["select"]["f1"] == 0.8018
     test60 = json.loads(
-        (ROOT / "paper_experiments/exect/exect_rules/test60.json").read_text(
+        (ROOT / "results/letter-benchmarks/exect/exect_rules/test60.json").read_text(
             encoding="utf-8"
         )
     )
@@ -52,7 +52,9 @@ def test_paper_hybrid_fills_are_present() -> None:
 
 
 def test_roster_locks_the_living_six() -> None:
-    roster = json.loads((ROOT / "paper_experiments/roster.json").read_text(encoding="utf-8"))
+    roster = json.loads(
+        (ROOT / "results/letter-benchmarks/roster.json").read_text(encoding="utf-8")
+    )
     assert roster["schema_version"] == "paper_experiments.roster.v1"
     living = tuple(row["slug"] for row in roster["living"])
     assert living == LIVING_SLUGS
@@ -64,7 +66,7 @@ def test_roster_locks_the_living_six() -> None:
 
 def test_inventory_covers_present_and_missing_cells() -> None:
     inventory = json.loads(
-        (ROOT / "paper_experiments/inventory.json").read_text(encoding="utf-8")
+        (ROOT / "results/letter-benchmarks/inventory.json").read_text(encoding="utf-8")
     )
     assert inventory["schema_version"] == "paper_experiments.inventory.v1"
     present = {(row["model_slug"], row["method"], row["split"]) for row in inventory["present"]}
@@ -183,7 +185,7 @@ def test_inventory_covers_present_and_missing_cells() -> None:
 
 def test_gan_dev750_panel_is_rectangular() -> None:
     panel = json.loads(
-        (ROOT / "paper_experiments/gan/dev750_panel.json").read_text(encoding="utf-8")
+        (ROOT / "results/letter-benchmarks/gan/dev750_panel.json").read_text(encoding="utf-8")
     )
     assert panel["schema_version"] == "paper_experiments.gan.dev750_panel.v3"
     assert panel["split"] == "dev750"
@@ -226,7 +228,7 @@ def test_gan_dev750_panel_is_rectangular() -> None:
 
 def test_exect_dev140_panel_is_rectangular() -> None:
     panel = json.loads(
-        (ROOT / "paper_experiments/exect/dev140_panel.json").read_text(encoding="utf-8")
+        (ROOT / "results/letter-benchmarks/exect/dev140_panel.json").read_text(encoding="utf-8")
     )
     assert panel["schema_version"] == "paper_experiments.exect.dev140_panel.v4"
     assert panel["split"] == "dev140"
@@ -271,9 +273,7 @@ def test_exect_dev140_panel_is_rectangular() -> None:
 def test_exect_hybrid_cells_have_raw_and_hybrid() -> None:
     for slug, split, rows, model in EXECT_HYBRID_PRESENT:
         comparison = json.loads(
-            (EXECT_HYBRID_ROOT / slug / split / "comparison.json").read_text(
-                encoding="utf-8"
-            )
+            (EXECT_HYBRID_ROOT / slug / split / "comparison.json").read_text(encoding="utf-8")
         )
         assert comparison["split"] == split
         assert comparison["row_count"] == rows

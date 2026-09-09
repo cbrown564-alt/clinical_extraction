@@ -846,7 +846,7 @@ def reparse_gan_llm_extract_raw(slug: str, split: str) -> dict[str, Any]:
         raise RuntimeError(f"{slug} is not a living paper model")
     split_for("gan_llm_extract_raw", split)
     holdout = holdout_is_aggregate_only(split)
-    dest = ROOT / "paper_experiments/gan/gan_llm_extract_raw" / slug / split
+    dest = ROOT / "results/letter-benchmarks/gan/gan_llm_extract_raw" / slug / split
     rows_path = dest / "rows.jsonl"
     comparison_path = dest / "comparison.json"
     if not rows_path.is_file() or not comparison_path.is_file():

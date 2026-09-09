@@ -31,7 +31,7 @@ function gridPath(task: "gan" | "exect", slug: string): { path: string; split: s
   if (task === "gan") {
     const path = join(
       repoRoot,
-      "paper_experiments",
+      "results/letter-benchmarks",
       "gan",
       "five_cell_grid",
       slug,
@@ -42,7 +42,7 @@ function gridPath(task: "gan" | "exect", slug: string): { path: string; split: s
   }
   const test60 = join(
     repoRoot,
-    "paper_experiments",
+    "results/letter-benchmarks",
     "exect",
     "five_cell_grid",
     slug,
@@ -52,7 +52,7 @@ function gridPath(task: "gan" | "exect", slug: string): { path: string; split: s
   if (existsSync(test60)) return { path: test60, split: "test60" };
   const test450 = join(
     repoRoot,
-    "paper_experiments",
+    "results/letter-benchmarks",
     "exect",
     "five_cell_grid",
     slug,
@@ -100,7 +100,7 @@ export function GET(request: Request) {
     );
   }
   const payload = JSON.parse(readFileSync(found.path, "utf8")) as ComparisonFile;
-  const rel = found.path.split("paper_experiments/")[1];
+  const rel = found.path.split("results/letter-benchmarks/")[1];
   return Response.json({
     task: taskParam,
     model: payload.model ?? slug,
@@ -108,7 +108,7 @@ export function GET(request: Request) {
     n: payload.n ?? null,
     headline: payload.headline ?? "select",
     claim_boundary: payload.claim_boundary ?? null,
-    source: `paper_experiments/${rel}`,
+    source: `results/letter-benchmarks/${rel}`,
     cells: mapCells(payload.cells),
   });
 }

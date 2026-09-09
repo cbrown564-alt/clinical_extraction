@@ -131,7 +131,7 @@ def extract_rows_path(
             / "rows.jsonl"
         )
     candidates.append(
-        ROOT / "paper_experiments/gan" / ledger / slug / split / "rows.jsonl"
+        ROOT / "results/letter-benchmarks/gan" / ledger / slug / split / "rows.jsonl"
     )
     for path in candidates:
         if path.is_file():

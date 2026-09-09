@@ -26,11 +26,11 @@ ROOT = discover_repo_root(start=Path(__file__))
 CELLS: tuple[tuple[str, Path], ...] = (
     (
         "grok46_hybrid",
-        ROOT / "paper_experiments/gan/gan_llm_extract_raw/grok46/dev750/rows.jsonl",
+        ROOT / "results/letter-benchmarks/gan/gan_llm_extract_raw/grok46/dev750/rows.jsonl",
     ),
     (
         "gpt56luna_hybrid",
-        ROOT / "paper_experiments/gan/gan_llm_extract_raw/gpt56luna/dev750/rows.jsonl",
+        ROOT / "results/letter-benchmarks/gan/gan_llm_extract_raw/gpt56luna/dev750/rows.jsonl",
     ),
 )
 

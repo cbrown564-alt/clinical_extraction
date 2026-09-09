@@ -90,7 +90,7 @@ def rows(path: Path) -> dict:
 
 
 def build(ids: list[int]) -> None:
-    base = ROOT / "paper_experiments/gan"
+    base = ROOT / "results/letter-benchmarks/gan"
     source = ROOT / "experiments/paper/gan_llm_extract/gemini37flash/dev750/rows.jsonl"
     originals = rows(source)
     extracts = rows(base / "gan_llm_extract/gemini37flash/dev750/rows.jsonl")
@@ -154,10 +154,10 @@ def build(ids: list[int]) -> None:
                 ),
                 "source": str(source.relative_to(ROOT)),
                 "extract_source": (
-                    "paper_experiments/gan/gan_llm_extract/gemini37flash/dev750/rows.jsonl"
+                    "results/letter-benchmarks/gan/gan_llm_extract/gemini37flash/dev750/rows.jsonl"
                 ),
                 "decision_source": (
-                    "paper_experiments/gan/gan_llm_select_from_extract/"
+                    "results/letter-benchmarks/gan/gan_llm_select_from_extract/"
                     "gemini37flash/dev750/rows.jsonl"
                 ),
                 "sha256": hashlib.sha256(extract["raw_output"].encode()).hexdigest(),

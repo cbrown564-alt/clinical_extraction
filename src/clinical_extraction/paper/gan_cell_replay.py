@@ -50,7 +50,7 @@ def gan_living_extract_rows_path(slug: str, split: str) -> Path:
 
     holdout = holdout_is_aggregate_only(split)
     roots = (
-        ROOT / "paper_experiments/gan/gan_llm_extract" / slug / split / "rows.jsonl",
+        ROOT / "results/letter-benchmarks/gan/gan_llm_extract" / slug / split / "rows.jsonl",
         (
             ROOT
             / ("scratch/holdout/paper" if holdout else "experiments/paper")
@@ -71,7 +71,7 @@ def gan_source_near_rows_path(slug: str, split: str) -> Path:
 
     return (
         ROOT
-        / "paper_experiments/gan/gan_llm_extract_raw"
+        / "results/letter-benchmarks/gan/gan_llm_extract_raw"
         / slug
         / split
         / "rows.jsonl"
@@ -149,7 +149,7 @@ def living_gan_stages(
 def gan_rung_out_dir(slug: str, split: str) -> Path:
     """Return the rung-replay directory for one model and split."""
 
-    return ROOT / "paper_experiments/gan/rungs" / slug / split
+    return ROOT / "results/letter-benchmarks/gan/rungs" / slug / split
 
 
 def score_label(record: GanFrequencyRecord, label: str | None) -> dict[str, Any]:

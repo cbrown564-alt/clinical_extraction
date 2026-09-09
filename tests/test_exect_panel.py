@@ -16,7 +16,7 @@ from clinical_extraction.paper.roster import living_models
 
 
 def _patch_panel_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    paper = tmp_path / "paper_experiments"
+    paper = tmp_path / "results/letter-benchmarks"
     exect = paper / "exect"
     monkeypatch.setattr("clinical_extraction.paper.exect_panel.ROOT", tmp_path)
     monkeypatch.setattr(
@@ -98,8 +98,8 @@ def _write_work_cell(root: Path, slug: str) -> None:
 
 
 def _write_inventory(tmp_path: Path, *, present: list[dict[str, object]]) -> None:
-    paper = tmp_path / "paper_experiments"
-    paper.mkdir(exist_ok=True)
+    paper = tmp_path / "results/letter-benchmarks"
+    paper.mkdir(parents=True, exist_ok=True)
     (paper / "inventory.json").write_text(
         json.dumps(
             {
@@ -128,7 +128,7 @@ def test_promote_strips_replay_and_writes_scored_panel(
     _patch_panel_paths(tmp_path, monkeypatch)
 
     payload = promote_exect_dev140("grok46")
-    dest = tmp_path / "paper_experiments/exect/exect_llm_pre_post/grok46/dev140"
+    dest = tmp_path / "results/letter-benchmarks/exect/exect_llm_pre_post/grok46/dev140"
     replay = json.loads((dest / "structured.jsonl").read_text(encoding="utf-8").splitlines()[0])
     scored = json.loads((dest / "scored.jsonl").read_text(encoding="utf-8").splitlines()[0])
     assert set(replay) == {"letter_id", "prompt_version", "raw_output"}
@@ -155,7 +155,7 @@ def test_promote_strips_replay_and_writes_scored_panel(
     assert payload["cell"]["n"] == 140
     assert panel["models"] == [item["slug"] for item in living_models()]
     synced = json.loads(
-        (tmp_path / "paper_experiments/inventory.json").read_text(encoding="utf-8")
+        (tmp_path / "results/letter-benchmarks/inventory.json").read_text(encoding="utf-8")
     )
     assert any(
         row["model_slug"] == "grok46"
@@ -178,7 +178,7 @@ def test_promote_strips_replay_and_writes_scored_panel(
 def test_rebuild_keeps_existing_compact_present_without_cell_json(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    dest = tmp_path / "paper_experiments/exect/exect_llm_pre_post/gpt56luna/dev140"
+    dest = tmp_path / "results/letter-benchmarks/exect/exect_llm_pre_post/gpt56luna/dev140"
     dest.mkdir(parents=True)
     dest.joinpath("structured.jsonl").write_text(
         "".join(
@@ -211,7 +211,9 @@ def test_rebuild_keeps_existing_compact_present_without_cell_json(
         "split": "dev140",
         "n": 140,
         "row_policy": "development_review_permitted",
-        "path": "paper_experiments/exect/exect_llm_pre_post/gpt56luna/dev140/structured.jsonl",
+        "path": (
+            "results/letter-benchmarks/exect/exect_llm_pre_post/gpt56luna/dev140/structured.jsonl"
+        ),
         "status": "present",
         "empty_raw_count": 0,
     }
@@ -220,7 +222,7 @@ def test_rebuild_keeps_existing_compact_present_without_cell_json(
     panel = rebuild_dev140_panel()
     assert not any(cell["method"] == "llm_pre_post" for cell in panel["cells"])
     synced = json.loads(
-        (tmp_path / "paper_experiments/inventory.json").read_text(encoding="utf-8")
+        (tmp_path / "results/letter-benchmarks/inventory.json").read_text(encoding="utf-8")
     )
     assert historical in synced["present"]
 
@@ -287,7 +289,7 @@ def test_promote_exect_test60_strips_replay_and_updates_inventory(
         tmp_path,
         present=[],
     )
-    inventory_path = tmp_path / "paper_experiments/inventory.json"
+    inventory_path = tmp_path / "results/letter-benchmarks/inventory.json"
     payload = json.loads(inventory_path.read_text(encoding="utf-8"))
     payload["missing"] = [
         {
@@ -301,7 +303,7 @@ def test_promote_exect_test60_strips_replay_and_updates_inventory(
     _patch_panel_paths(tmp_path, monkeypatch)
 
     result = promote_exect("grok46", "test60")
-    dest = tmp_path / "paper_experiments/exect/exect_llm_pre_post/grok46/test60"
+    dest = tmp_path / "results/letter-benchmarks/exect/exect_llm_pre_post/grok46/test60"
     replay = json.loads((dest / "structured.jsonl").read_text(encoding="utf-8").splitlines()[0])
     assert set(replay) == {"letter_id", "prompt_version", "raw_output"}
     assert not (dest / "scored.jsonl").is_file()

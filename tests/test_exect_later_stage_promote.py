@@ -81,7 +81,7 @@ def _write_work_cell(
 
 
 def _patch_roots(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    paper = tmp_path / "paper_experiments"
+    paper = tmp_path / "results/letter-benchmarks"
     exect = paper / "exect"
     monkeypatch.setattr("clinical_extraction.paper.exect_later_stage.ROOT", tmp_path)
     monkeypatch.setattr(
@@ -163,7 +163,7 @@ def test_promote_later_stage_dev140_strips_replay_and_writes_inventory(
         headline_f1=0.1,
     )
     result = promote_exect_later_stage("exect_llm_encode", "gemini37flash", "dev140")
-    dest = tmp_path / "paper_experiments/exect/exect_llm_encode/gemini37flash/dev140"
+    dest = tmp_path / "results/letter-benchmarks/exect/exect_llm_encode/gemini37flash/dev140"
     replay = json.loads((dest / "rows.jsonl").read_text(encoding="utf-8").splitlines()[0])
     scored = json.loads((dest / "scored.jsonl").read_text(encoding="utf-8").splitlines()[0])
     comparison = json.loads((dest / "comparison.json").read_text(encoding="utf-8"))
@@ -172,7 +172,7 @@ def test_promote_later_stage_dev140_strips_replay_and_writes_inventory(
     assert scored["method"] == "exect_llm_encode"
     assert comparison["scorer"] == "clinical_inventory_unit_keys"
     inventory = json.loads(
-        (tmp_path / "paper_experiments/inventory.json").read_text(encoding="utf-8")
+        (tmp_path / "results/letter-benchmarks/inventory.json").read_text(encoding="utf-8")
     )
     present = {
         (row["model_slug"], row["method"], row["split"]) for row in inventory["present"]
@@ -192,7 +192,7 @@ def test_promote_later_stage_test60_is_aggregate_only(
         headline_f1=0.1,
     )
     result = promote_exect_later_stage("exect_llm_select", "gemini37flash", "test60")
-    dest = tmp_path / "paper_experiments/exect/exect_llm_select/gemini37flash/test60"
+    dest = tmp_path / "results/letter-benchmarks/exect/exect_llm_select/gemini37flash/test60"
     assert result["cell"]["row_policy"] == "aggregate_only"
     assert (dest / "rows.jsonl").is_file()
     assert not (dest / "scored.jsonl").is_file()

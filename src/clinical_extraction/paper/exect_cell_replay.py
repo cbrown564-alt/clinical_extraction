@@ -65,7 +65,7 @@ def exect_llm_only_rows_path(slug: str, split: str) -> Path:
 
     return (
         ROOT
-        / "paper_experiments/exect/exect_llm_only"
+        / "results/letter-benchmarks/exect/exect_llm_only"
         / slug
         / split
         / "structured.jsonl"
@@ -78,7 +78,7 @@ def exect_living_extract_rows_path(slug: str, split: str) -> Path:
     holdout = holdout_is_aggregate_only(split)
     roots = (
         ROOT
-        / "paper_experiments/exect/exect_llm_extract"
+        / "results/letter-benchmarks/exect/exect_llm_extract"
         / slug
         / split
         / "structured.jsonl",
@@ -117,7 +117,7 @@ def exect_pre_post_structured_path(slug: str, split: str) -> Path:
         return living
     promoted = (
         ROOT
-        / "paper_experiments/exect"
+        / "results/letter-benchmarks/exect"
         / PRE_POST_METHOD
         / slug
         / split
@@ -131,7 +131,7 @@ def exect_pre_post_cell_path(slug: str, split: str) -> Path:
 
     return (
         ROOT
-        / "paper_experiments/exect"
+        / "results/letter-benchmarks/exect"
         / PRE_POST_METHOD
         / slug
         / split
@@ -143,13 +143,13 @@ def exect_rules_path(split: str) -> Path:
     """Return the standalone-rules headline file that covers this split."""
 
     del split
-    return ROOT / "paper_experiments/exect/exect_rules/dev140.json"
+    return ROOT / "results/letter-benchmarks/exect/exect_rules/dev140.json"
 
 
 def exect_rung_out_dir(slug: str, split: str) -> Path:
     """Return the rung-replay directory for one model and split."""
 
-    return ROOT / "paper_experiments/exect/rungs" / slug / split
+    return ROOT / "results/letter-benchmarks/exect/rungs" / slug / split
 
 
 def write_exect_rung_artifacts(

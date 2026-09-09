@@ -9,7 +9,7 @@ from clinical_extraction.paper.paired_accuracy import paired_accuracy_test
 ROOT = Path(__file__).resolve().parents[1]
 PAIRED_ARTIFACT = (
     ROOT
-    / "paper_experiments/gan/paired_significance/gemini37flash/test450/comparison.json"
+    / "results/letter-benchmarks/gan/paired_significance/gemini37flash/test450/comparison.json"
 )
 
 

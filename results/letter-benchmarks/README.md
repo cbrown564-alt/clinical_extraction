@@ -12,8 +12,8 @@ select) on both Gan and ExECT. Gan cell-3 find is
 peak. Cell 4 (LLM encode then rule select) stays
 Gemini-only. All five ExECT rows use 4-family micro F1.
 
-Claim wording: [`docs/paper/claims.md`](../docs/paper/claims.md).
-Methods: [`docs/paper/methods.md`](../docs/paper/methods.md).
+Claim wording: [`docs/paper/claims.md`](../../docs/paper/claims.md).
+Methods: [`docs/paper/methods.md`](../../docs/paper/methods.md).
 Roster: [`roster.json`](roster.json). Inventory: [`inventory.json`](inventory.json).
 
 ## Cited cells
@@ -22,7 +22,7 @@ Roster: [`roster.json`](roster.json). Inventory: [`inventory.json`](inventory.js
 | --- | --- |
 | `gan/five_cell_grid/` | Gemini Gan five-cell holdout grid |
 | `gan/paired_significance/` | Predeclared Gemini McNemar contrasts; temperature on both splits |
-| `exect/five_cell_grid/` | Gemini ExECT five-cell holdout grid (4-family micro F1; cell 3 peak). Owner: [both-find on inventory](../docs/research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md) |
+| `exect/five_cell_grid/` | Gemini ExECT five-cell holdout grid (4-family micro F1; cell 3 peak). Owner: [both-find on inventory](../../docs/research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md) |
 | `gan/gan_llm_extract/` | Gan cell-3 codebook find raw; all six models, both splits |
 | `exect/exect_llm_extract/` | ExECT cell-3 inventory find raw; cells 3–5 replay this raw |
 | `exect/exect_llm_encode/` | ExECT cell-4 LLM encode. Gemini only, `dev140` and aggregate-only `test60` |

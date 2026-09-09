@@ -36,7 +36,7 @@ def test_write_five_cell_keeps_curated_exect_grid() -> None:
     curated = json.loads(
         (
             ROOT
-            / "paper_experiments/exect/five_cell_grid/gemini37flash/test60/comparison.json"
+            / "results/letter-benchmarks/exect/five_cell_grid/gemini37flash/test60/comparison.json"
         ).read_text(encoding="utf-8")
     )
     assert generated["headline"] == "select"
@@ -54,6 +54,6 @@ def test_write_five_cell_keeps_curated_exect_grid() -> None:
     assert payload["curated"]
     curated_path = (
         ROOT
-        / "paper_experiments/exect/five_cell_grid/gemini37flash/test60/comparison.json"
+        / "results/letter-benchmarks/exect/five_cell_grid/gemini37flash/test60/comparison.json"
     )
     assert curated_path.is_file()

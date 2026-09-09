@@ -11,7 +11,7 @@ function artifactDir(): string | null {
   const root = join(process.cwd(), "..");
   const candidates = [
     join(root, "experiments", "gan_inventory_feasibility_dev750_n100_20260828"),
-    join(root, "paper_experiments", "gan", "inventory_feasibility_dev750_n100"),
+    join(root, "results/letter-benchmarks", "gan", "inventory_feasibility_dev750_n100"),
   ];
   return (
     candidates.find(

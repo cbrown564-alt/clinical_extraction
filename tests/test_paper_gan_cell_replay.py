@@ -76,10 +76,10 @@ def test_gan_rung_paths_follow_slug_and_split() -> None:
     living = gan_living_extract_rows_path("grok46", "dev750").as_posix()
     assert living.endswith("gan_llm_extract/grok46/dev750/rows.jsonl")
     assert gan_source_near_rows_path("gemini37flash", "test450").as_posix().endswith(
-        "paper_experiments/gan/gan_llm_extract_raw/gemini37flash/test450/rows.jsonl"
+        "results/letter-benchmarks/gan/gan_llm_extract_raw/gemini37flash/test450/rows.jsonl"
     )
     assert gan_rung_out_dir("grok46", "test450").as_posix().endswith(
-        "paper_experiments/gan/rungs/grok46/test450"
+        "results/letter-benchmarks/gan/rungs/grok46/test450"
     )
     assert gan_row_count("test450") == 450
 

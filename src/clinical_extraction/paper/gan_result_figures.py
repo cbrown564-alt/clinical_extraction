@@ -18,16 +18,18 @@ from clinical_extraction.paper.roster import living_models
 
 ROOT = discover_repo_root(start=Path(__file__))
 FIVE_CELL_TEST450 = (
-    ROOT / "paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json"
+    ROOT / "results/letter-benchmarks/gan/five_cell_grid/gemini37flash/test450/comparison.json"
 )
-GAN_RULES_OWNER = ROOT / "paper_experiments/gan/gan_rules.json"
-GEMINI_DEV750_RUNGS = ROOT / "paper_experiments/gan/rungs/gemini37flash/dev750/comparison.json"
+GAN_RULES_OWNER = ROOT / "results/letter-benchmarks/gan/gan_rules.json"
+GEMINI_DEV750_RUNGS = (
+    ROOT / "results/letter-benchmarks/gan/rungs/gemini37flash/dev750/comparison.json"
+)
 CELL5_DEV750 = (
     ROOT
     / "experiments/paper/gan_llm_select_from_extract/gemini37flash"
     / "gan_llm_extract/dev750/comparison.json"
 )
-RUNGS_ROOT = ROOT / "paper_experiments/gan/rungs"
+RUNGS_ROOT = ROOT / "results/letter-benchmarks/gan/rungs"
 CELL_BARBELL_LABELS = ("Rules only", "LLM and rules", "LLM only")
 # The dissertation compares two decision executors on one shared extract.
 # Rules-only stays a repository row, not a paper row.
@@ -371,11 +373,7 @@ def load_living_purist_confusion_matrix(
         )
         label = None if extraction is None else extraction.selection.final_label
         parsed = label_to_frequency_record(label) if label else None
-        pred_cat = (
-            str(map_purist(parsed.monthly_frequency))
-            if parsed
-            else "seizure_freq_unknown"
-        )
+        pred_cat = str(map_purist(parsed.monthly_frequency)) if parsed else "seizure_freq_unknown"
 
         g_idx = cat_to_idx.get(gold_cat, cat_to_idx["seizure_freq_unknown"])
         p_idx = cat_to_idx.get(pred_cat, cat_to_idx["seizure_freq_unknown"])
@@ -437,9 +435,7 @@ def load_living_pragmatic_confusion_matrix(
         label = None if extraction is None else extraction.selection.final_label
         parsed = label_to_frequency_record(label) if label else None
         pred_cat = (
-            str(map_pragmatic(parsed.monthly_frequency))
-            if parsed
-            else "seizure_freq_unknown"
+            str(map_pragmatic(parsed.monthly_frequency)) if parsed else "seizure_freq_unknown"
         )
 
         g_idx = cat_to_idx.get(gold_cat, cat_to_idx["seizure_freq_unknown"])
@@ -453,8 +449,7 @@ def load_living_pragmatic_confusion_matrix(
         matrix=mat,
         n=len(rows),
         title=(
-            f"Pragmatic Categorisation Confusion Matrix "
-            f"({MODEL_LABELS.get(slug, slug)}, {split})"
+            f"Pragmatic Categorisation Confusion Matrix ({MODEL_LABELS.get(slug, slug)}, {split})"
         ),
     )
 
@@ -463,9 +458,7 @@ def latin_modern_regular() -> Path:
     """Return the installed Latin Modern Roman 10 Regular face."""
 
     texlive = Path("/usr/local/texlive")
-    discovered = sorted(
-        texlive.glob("*/texmf-dist/fonts/opentype/public/lm/lmroman10-regular.otf")
-    )
+    discovered = sorted(texlive.glob("*/texmf-dist/fonts/opentype/public/lm/lmroman10-regular.otf"))
     for path in (*reversed(discovered), *LATIN_MODERN_CANDIDATES):
         if path.is_file():
             return path
@@ -1140,4 +1133,3 @@ def render_living_figures(out_dir: Path | None = None) -> dict[str, str]:
         "confusion_matrix_pragmatic": pragmatic.as_posix(),
         "aa_healthcare_vs_purist": scatter.as_posix(),
     }
-

@@ -40,12 +40,12 @@ def write_five_cell_grid(
         if split not in {"dev750", "test450"}:
             raise ValueError("Gan five-cell grid accepts split dev750 or test450")
         grid = _gan_grid(slug, split)
-        out_dir = ROOT / "paper_experiments/gan/five_cell_grid" / slug / split
+        out_dir = ROOT / "results/letter-benchmarks/gan/five_cell_grid" / slug / split
     elif task == "exectv2":
         if split not in {"dev140", "test60"}:
             raise ValueError("ExECT five-cell grid accepts split dev140 or test60")
         grid = _exect_grid(slug, split)
-        out_dir = ROOT / "paper_experiments/exect/five_cell_grid" / slug / split
+        out_dir = ROOT / "results/letter-benchmarks/exect/five_cell_grid" / slug / split
     else:
         raise ValueError(f"unsupported five-cell task {task}")
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -260,7 +260,7 @@ def _load_comparison(
     slug: str,
     split: str,
 ) -> dict[str, Any] | None:
-    path = ROOT / "paper_experiments" / task / method / slug / split / "comparison.json"
+    path = ROOT / "results/letter-benchmarks" / task / method / slug / split / "comparison.json"
     if not path.is_file():
         return None
     return json.loads(path.read_text(encoding="utf-8"))
@@ -323,7 +323,7 @@ def _exect_rules_stage(split: str, stop: str) -> float | None:
 
 
 def _exect_rules_block(split: str) -> Mapping[str, Any] | None:
-    path = ROOT / "paper_experiments/exect/exect_rules/dev140.json"
+    path = ROOT / "results/letter-benchmarks/exect/exect_rules/dev140.json"
     if not path.is_file():
         return None
     payload = json.loads(path.read_text(encoding="utf-8"))
@@ -349,7 +349,7 @@ def _gan_count(payload: Mapping[str, Any] | None, stage: str) -> int | None:
 
 
 def _gan_rules_block() -> Mapping[str, Any] | None:
-    path = ROOT / "paper_experiments/gan/gan_rules.json"
+    path = ROOT / "results/letter-benchmarks/gan/gan_rules.json"
     if not path.is_file():
         return None
     payload = json.loads(path.read_text(encoding="utf-8"))
@@ -377,7 +377,7 @@ def _gan_rules_stage(split: str, stop: str) -> int | None:
 def _gan_rules_count(split: str) -> int | None:
     path = (
         ROOT
-        / "paper_experiments/gan/five_cell_grid/gemini37flash"
+        / "results/letter-benchmarks/gan/five_cell_grid/gemini37flash"
         / split
         / "comparison.json"
     )

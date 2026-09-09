@@ -111,7 +111,7 @@ def test_hydrate_saved_llm_only_row_rebuilds_decision_trace() -> None:
 def test_reparse_gan_llm_extract_raw_uses_saved_raw_and_no_call(
     tmp_path, monkeypatch
 ) -> None:
-    dest = tmp_path / "paper_experiments/gan/gan_llm_extract_raw/grok46/dev750"
+    dest = tmp_path / "results/letter-benchmarks/gan/gan_llm_extract_raw/grok46/dev750"
     dest.mkdir(parents=True)
     raw = _hybrid_raw()
     (dest / "rows.jsonl").write_text(

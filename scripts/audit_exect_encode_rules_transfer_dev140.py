@@ -53,7 +53,7 @@ SOURCES: dict[str, tuple[Path, SourceSchema]] = {
     **{
         f"llm_only/{model}": (
             ROOT
-            / "paper_experiments/exect/exect_llm_only"
+            / "results/letter-benchmarks/exect/exect_llm_only"
             / model
             / "dev140/structured.jsonl",
             "compact_events",
@@ -68,7 +68,7 @@ SOURCES: dict[str, tuple[Path, SourceSchema]] = {
     **{
         f"llm_pre_post/{model}": (
             ROOT
-            / "paper_experiments/exect/exect_llm_pre_post"
+            / "results/letter-benchmarks/exect/exect_llm_pre_post"
             / model
             / "dev140/structured.jsonl",
             "event_mentions",

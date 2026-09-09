@@ -8,7 +8,7 @@ import { proxyPython } from "../_upstream";
 export const dynamic = "force-static";
 
 function panelPath() {
-  return join(process.cwd(), "..", "paper_experiments", "gan", "dev750_panel.json");
+  return join(process.cwd(), "..", "results/letter-benchmarks", "gan", "dev750_panel.json");
 }
 
 export async function GET() {
@@ -37,7 +37,7 @@ export async function GET() {
     const families = ganFamiliesFromDev750Panel(panel);
     return Response.json({
       generated_on: "2026-08-19",
-      source_artifact: "paper_experiments/gan/dev750_panel.json",
+      source_artifact: "results/letter-benchmarks/gan/dev750_panel.json",
       claim_boundary: panel.claim_boundary,
       families: isDemoSurface() ? lockDemoGanFamilies(families) : families,
     });

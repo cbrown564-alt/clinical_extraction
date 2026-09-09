@@ -349,7 +349,7 @@ class FrontendDataStore:
             paths.extend(hybrid_root.glob("*/validation750.rows.jsonl"))
             paths.extend(hybrid_root.glob("*/*/validation750.rows.jsonl"))
             paths.extend(hybrid_root.glob("*--llm_with_rules.jsonl"))
-        paper_gan = repo_root / "paper_experiments" / "gan"
+        paper_gan = repo_root / "results/letter-benchmarks" / "gan"
         paths.append(paper_gan / "dev750_panel.json")
         paths.extend(paper_gan.glob("*/*/dev750/rows.jsonl"))
         return tuple(

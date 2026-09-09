@@ -1,7 +1,7 @@
-# Repository Migration Record: Phase 0 (Slices 1, 2 & 3)
+# Repository Migration Record: Phase 0
 
 Date: 2026-09-08
-Status: Slices 1 & 2 executed, Slice 3 implemented; Phase 0 underway.
+Status: Seven slices implemented to varying scope; review corrections and retained paths recorded below. Broad Phase 0 closure is not claimed.
 
 ## 1. Scope
 Tasks under the repository restructuring plan ([`ACTIVE_ROADMAP.md`](../../plans/ACTIVE_ROADMAP.md)):
@@ -134,3 +134,61 @@ Tasks under the repository restructuring plan ([`ACTIVE_ROADMAP.md`](../../plans
 - Git diff formatting verified: `git diff --check` passed cleanly across all repository files with 0 errors; trailing two-space breaks on changed lines replaced with explicit backslash breaks or removed.
 - Link target existence verified: Across all modified docs and four moved plans (311 relative links), no newly broken links were introduced. Exactly one pre-existing missing target remains in tracked `docs/THREAD_MAP.md` -> `research/artifacts/rescue_source_provenance_2026-08-13.html` (unchanged by this slice; historical artifact not regenerated).
 - Runtime verification: No runtime code or tests executed, as this is a documentation-only archival slice with no code/pipeline changes.
+
+
+## 5. Slices 4–7 and review corrections (2026-09-09)
+
+Git commits identify the exact tracked move/change mappings:
+
+- `27678056`: canon and numbered decisions archived under `docs/history/`.
+- `16337a89`: research notes and manuscript sections rehomed; benchmark entries added.
+- `aba0a42f`: results moved to `results/letter-benchmarks/`; compatibility symlink added.
+- `fc348197`: destination README scaffolding and `/runs/` ignore rule added.
+
+These commits do not prove that source corpora, local runs or helpers were moved.
+The roadmap's retained-path section owns those exceptions and the symlink removal
+condition. The earlier claim of complete restructuring across all targets was
+withdrawn after review. Full classification and local per-file mapping remain
+unfinished; existing publication mapping and baseline records remain applicable.
+
+Review corrections in the working tree:
+
+- Restore the ExECT Gemini development rung comparison to its original bytes;
+  the migration had changed only `generated_on` from August 29 to September 9.
+- Use the canonical results path in current Python callers, scripts, frontend API
+  routes and path fixtures. Preserve schema identifiers and saved artifact paths.
+  The root resolver no longer falls back to a different writable directory.
+- Rebase the results README's documentation links for its new depth.
+- Narrow the roadmap and local status claims to implemented work and explicit
+  retained-path exceptions. No private data/run move or benchmark regeneration
+  is part of these corrections.
+
+Verification results for these corrections are recorded below after checks finish.
+
+### Correction verification
+
+On 2026-09-09 in the working tree (including pre-existing unrelated user edits):
+
+- Full always-on `python -m pytest -q`: 781 passed; one upstream deprecation warning.
+- `python -m ruff check src tests`, `python -m mypy src`, documentation hygiene,
+  and `git diff --check`: passed.
+- Frontend `npm test -- --runInBand`: 24 suites / 163 tests passed;
+  `npx tsc --noEmit`: passed.
+- The replay path assertion first failed against the old path, then passed after
+  migration. Existing fixture-based promotion tests exercise the canonical tree
+  without a compatibility symlink.
+- The full suite exposed the known development replay timestamp side effect.
+  Redirected that test's output to `tmp_path` and restored original saved bytes;
+  the focused ExECT replay file was rerun after this isolation change.
+- Direct requests to the existing local frontend returned HTTP 200 and valid JSON
+  for Gan/ExECT panels, the five-cell grid and pipeline families. The grid reports
+  its canonical results source. No browser visual review was needed for path-only
+  API edits; user-authored UI changes were outside this task.
+- Machine artifact Git blob hashes match the pre-migration `a7b5451b` tree.
+  The results README is deliberately excluded because its links were repaired.
+- A generated teaching document modified by checks was restored to its pre-check
+  bytes; unrelated clinical changes are not incorporated into this migration.
+
+These checks do not establish clinical validation or complete historical document
+classification. PDF builds were not repeated because publication assets did not
+change. No model calls, source-data moves or locked-row error inspection occurred.

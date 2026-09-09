@@ -20,8 +20,8 @@ def load(path: str) -> dict:
 
 
 def main() -> None:
-    exect = load("paper_experiments/exect/five_cell_grid/gemini37flash/test60/comparison.json")
-    gan = load("paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json")
+    exect = load("results/letter-benchmarks/exect/five_cell_grid/gemini37flash/test60/comparison.json")
+    gan = load("results/letter-benchmarks/gan/five_cell_grid/gemini37flash/test450/comparison.json")
     requested_paths = [
         "experiments/six_model_category_cut_performance_20260806.json",
         "experiments/exectv2_family_error_catalog_20260806.json",

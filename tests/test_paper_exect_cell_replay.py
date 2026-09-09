@@ -34,19 +34,29 @@ def _scored_row() -> dict[str, object]:
 
 
 def test_exect_rung_paths_follow_slug_and_split() -> None:
-    assert exect_living_extract_rows_path(
-        "gemini37flash", "test60"
-    ).as_posix().endswith(
-        "paper_experiments/exect/exect_llm_extract/gemini37flash/test60/structured.jsonl"
+    assert (
+        exect_living_extract_rows_path("gemini37flash", "test60")
+        .as_posix()
+        .endswith(
+            "results/letter-benchmarks/exect/exect_llm_extract/gemini37flash/test60/structured.jsonl"
+        )
     )
-    assert exect_llm_only_rows_path("grok46", "dev140").as_posix().endswith(
-        "paper_experiments/exect/exect_llm_only/grok46/dev140/structured.jsonl"
+    assert (
+        exect_llm_only_rows_path("grok46", "dev140")
+        .as_posix()
+        .endswith("results/letter-benchmarks/exect/exect_llm_only/grok46/dev140/structured.jsonl")
     )
-    assert exect_llm_only_rows_path("gemini37flash", "test60").as_posix().endswith(
-        "paper_experiments/exect/exect_llm_only/gemini37flash/test60/structured.jsonl"
+    assert (
+        exect_llm_only_rows_path("gemini37flash", "test60")
+        .as_posix()
+        .endswith(
+            "results/letter-benchmarks/exect/exect_llm_only/gemini37flash/test60/structured.jsonl"
+        )
     )
-    assert exect_rung_out_dir("grok46", "test60").as_posix().endswith(
-        "paper_experiments/exect/rungs/grok46/test60"
+    assert (
+        exect_rung_out_dir("grok46", "test60")
+        .as_posix()
+        .endswith("results/letter-benchmarks/exect/rungs/grok46/test60")
     )
     assert exect_row_count("test60") == 59
 
@@ -119,7 +129,14 @@ def test_replay_exect_dev140_stays_a_development_alias() -> None:
 
 
 @pytest.mark.local_corpus
-def test_format_render_uses_pre_assembly_mentions_not_materialized_format_only() -> None:
+def test_format_render_uses_pre_assembly_mentions_not_materialized_format_only(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "clinical_extraction.paper.exect_cell_replay.exect_rung_out_dir",
+        lambda slug, split: tmp_path / slug / split,
+    )
     summary = replay_exect_rungs("dev140", slug="gemini37flash", source="living")
     check = summary["format_only_check"]
     assert check["surface"] == "format_render"
@@ -179,9 +196,7 @@ def test_format_render_is_not_schema_or_gated_predicted_mentions() -> None:
     schema_rows = schema_mention_rows(producer)
     gated = list(producer.row.get("predicted_mentions") or [])
     assert rendered != schema_rows
-    schema_missing_cui = any(
-        "CUI" not in dict(row.get("attributes") or {}) for row in schema_rows
-    )
+    schema_missing_cui = any("CUI" not in dict(row.get("attributes") or {}) for row in schema_rows)
     assert schema_missing_cui or not schema_rows
     assert rendered != gated
 
@@ -197,9 +212,7 @@ def test_cli_replay_rungs_accepts_test60(monkeypatch: pytest.MonkeyPatch) -> Non
         captured["source"] = source
         return {"split": split, "model_slug": slug, "row_policy": "aggregate_only"}
 
-    monkeypatch.setattr(
-        "clinical_extraction.paper.cli.replay_exect_rungs", fake_replay
-    )
+    monkeypatch.setattr("clinical_extraction.paper.cli.replay_exect_rungs", fake_replay)
     main(
         [
             "replay-rungs",
@@ -255,10 +268,6 @@ def test_frontend_hydrate_uses_select_surface(monkeypatch: pytest.MonkeyPatch) -
     monkeypatch.setattr(replay, "_frontend_letter", fake_frontend)
 
     letter = ExectLetter(letter_id="EA0000", note_text="x")
-    replay.hydrate_exect_five_cell_letter(
-        letter, "{}", model="test", cell="llm_extract"
-    )
+    replay.hydrate_exect_five_cell_letter(letter, "{}", model="test", cell="llm_extract")
     assert seen["assembled"] is True
-    assert seen["predicted"] == [
-        {"entity": "Diagnosis", "text": "epilepsy", "attributes": {}}
-    ]
+    assert seen["predicted"] == [{"entity": "Diagnosis", "text": "epilepsy", "attributes": {}}]

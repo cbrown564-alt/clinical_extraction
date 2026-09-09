@@ -16,7 +16,7 @@ from clinical_extraction.paper.roster import living_models
 
 
 def _patch_panel_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    paper = tmp_path / "paper_experiments"
+    paper = tmp_path / "results/letter-benchmarks"
     gan = paper / "gan"
     monkeypatch.setattr("clinical_extraction.paper.gan_panel.ROOT", tmp_path)
     monkeypatch.setattr(
@@ -52,9 +52,7 @@ def _write_work_cell(root: Path, method: str, slug: str, *, label: str) -> None:
                 "call_error": None,
                 "decision_record": {"final_label": label} if method == "gan_llm_only" else None,
                 "structured_record": (
-                    None
-                    if method == "gan_llm_only"
-                    else {"selection": {"final_label": label}}
+                    None if method == "gan_llm_only" else {"selection": {"final_label": label}}
                 ),
                 "comparison": {"purist_correct": True, "pragmatic_correct": True},
             }
@@ -97,15 +95,15 @@ def test_promote_writes_replay_scored_and_panel(
             }
         ],
     }
-    (tmp_path / "paper_experiments").mkdir()
-    (tmp_path / "paper_experiments/inventory.json").write_text(
+    (tmp_path / "results/letter-benchmarks").mkdir(parents=True)
+    (tmp_path / "results/letter-benchmarks/inventory.json").write_text(
         json.dumps(inventory),
         encoding="utf-8",
     )
     _patch_panel_paths(tmp_path, monkeypatch)
 
     payload = promote_gan_dev750("gan_llm_only", "grok46")
-    dest = tmp_path / "paper_experiments/gan/gan_llm_only/grok46/dev750"
+    dest = tmp_path / "results/letter-benchmarks/gan/gan_llm_only/grok46/dev750"
     replay = json.loads((dest / "rows.jsonl").read_text(encoding="utf-8").splitlines()[0])
     scored = json.loads((dest / "scored.jsonl").read_text(encoding="utf-8").splitlines()[0])
     assert set(replay) == {"source_row_index", "prompt_version", "raw_output"}
@@ -123,7 +121,9 @@ def test_promote_writes_replay_scored_and_panel(
     assert payload["cell"]["n"] == 750
     slugs = [item["slug"] for item in living_models()]
     assert panel["models"] == slugs
-    synced = json.loads((tmp_path / "paper_experiments/inventory.json").read_text(encoding="utf-8"))
+    synced = json.loads(
+        (tmp_path / "results/letter-benchmarks/inventory.json").read_text(encoding="utf-8")
+    )
     assert any(
         row["model_slug"] == "grok46"
         and row["method"] == "gan_llm_only"
@@ -132,8 +132,7 @@ def test_promote_writes_replay_scored_and_panel(
     )
     assert not any(row.get("note") == "old blob" for row in synced["missing"])
     assert not any(
-        row.get("method") in leftover and row.get("split") == "dev750"
-        for row in synced["missing"]
+        row.get("method") in leftover and row.get("split") == "dev750" for row in synced["missing"]
     )
 
 
@@ -148,12 +147,12 @@ def test_rebuild_keeps_historical_present_when_panel_slot_is_pending(
         "split": "dev750",
         "n": 750,
         "row_policy": "development_review_permitted",
-        "path": "paper_experiments/gan/gan_llm_only/gemma4_26b/dev750/rows.jsonl",
+        "path": "results/letter-benchmarks/gan/gan_llm_only/gemma4_26b/dev750/rows.jsonl",
         "status": "present",
         "empty_raw_count": 8,
     }
-    (tmp_path / "paper_experiments").mkdir()
-    (tmp_path / "paper_experiments/inventory.json").write_text(
+    (tmp_path / "results/letter-benchmarks").mkdir(parents=True)
+    (tmp_path / "results/letter-benchmarks/inventory.json").write_text(
         json.dumps(
             {
                 "schema_version": "paper_experiments.inventory.v1",
@@ -167,7 +166,9 @@ def test_rebuild_keeps_historical_present_when_panel_slot_is_pending(
     _patch_panel_paths(tmp_path, monkeypatch)
     panel = rebuild_dev750_panel()
     assert not any(cell["method"] == "gan_llm_only" for cell in panel["cells"])
-    synced = json.loads((tmp_path / "paper_experiments/inventory.json").read_text(encoding="utf-8"))
+    synced = json.loads(
+        (tmp_path / "results/letter-benchmarks/inventory.json").read_text(encoding="utf-8")
+    )
     assert historical in synced["present"]
 
 
@@ -179,8 +180,8 @@ def test_promote_rejects_non_living_effort_cell(
     comparison = json.loads(comparison_path.read_text(encoding="utf-8"))
     comparison["reasoning_effort"] = "high"
     comparison_path.write_text(json.dumps(comparison), encoding="utf-8")
-    (tmp_path / "paper_experiments").mkdir()
-    (tmp_path / "paper_experiments/inventory.json").write_text(
+    (tmp_path / "results/letter-benchmarks").mkdir(parents=True)
+    (tmp_path / "results/letter-benchmarks/inventory.json").write_text(
         json.dumps({"present": [], "missing": []}),
         encoding="utf-8",
     )
@@ -232,8 +233,8 @@ def test_promote_gan_test450_strips_replay_and_updates_inventory(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     _write_holdout_work_cell(tmp_path, "gan_llm_only", "grok46")
-    (tmp_path / "paper_experiments").mkdir()
-    (tmp_path / "paper_experiments/inventory.json").write_text(
+    (tmp_path / "results/letter-benchmarks").mkdir(parents=True)
+    (tmp_path / "results/letter-benchmarks/inventory.json").write_text(
         json.dumps(
             {
                 "schema_version": "paper_experiments.inventory.v1",
@@ -254,7 +255,7 @@ def test_promote_gan_test450_strips_replay_and_updates_inventory(
     _patch_panel_paths(tmp_path, monkeypatch)
 
     payload = promote_gan("gan_llm_only", "grok46", "test450")
-    dest = tmp_path / "paper_experiments/gan/gan_llm_only/grok46/test450"
+    dest = tmp_path / "results/letter-benchmarks/gan/gan_llm_only/grok46/test450"
     replay = json.loads((dest / "rows.jsonl").read_text(encoding="utf-8").splitlines()[0])
     assert set(replay) == {"source_row_index", "prompt_version", "raw_output"}
     assert not (dest / "scored.jsonl").is_file()
@@ -263,7 +264,9 @@ def test_promote_gan_test450_strips_replay_and_updates_inventory(
     assert "incorrect_source_row_indices" not in comparison
     assert payload["cell"]["n"] == 450
     assert payload["cell"]["row_policy"] == "aggregate_only"
-    synced = json.loads((tmp_path / "paper_experiments/inventory.json").read_text(encoding="utf-8"))
+    synced = json.loads(
+        (tmp_path / "results/letter-benchmarks/inventory.json").read_text(encoding="utf-8")
+    )
     assert any(
         row["model_slug"] == "grok46"
         and row["method"] == "gan_llm_only"
@@ -282,8 +285,8 @@ def test_promote_gan_llm_and_rules_extract_writes_inventory_without_changing_the
 ) -> None:
     _write_work_cell(tmp_path, "gan_llm_and_rules_extract", "gemini37flash", label="1 per month")
     _write_holdout_work_cell(tmp_path, "gan_llm_and_rules_extract", "gemini37flash")
-    (tmp_path / "paper_experiments").mkdir()
-    (tmp_path / "paper_experiments/inventory.json").write_text(
+    (tmp_path / "results/letter-benchmarks").mkdir(parents=True)
+    (tmp_path / "results/letter-benchmarks/inventory.json").write_text(
         json.dumps(
             {
                 "schema_version": "paper_experiments.inventory.v1",
@@ -299,9 +302,11 @@ def test_promote_gan_llm_and_rules_extract_writes_inventory_without_changing_the
     development = promote_gan("gan_llm_and_rules_extract", "gemini37flash", "dev750")
     holdout = promote_gan("gan_llm_and_rules_extract", "gemini37flash", "test450")
 
-    dev_dest = tmp_path / "paper_experiments/gan/gan_llm_and_rules_extract/gemini37flash/dev750"
+    dev_dest = (
+        tmp_path / "results/letter-benchmarks/gan/gan_llm_and_rules_extract/gemini37flash/dev750"
+    )
     holdout_dest = (
-        tmp_path / "paper_experiments/gan/gan_llm_and_rules_extract/gemini37flash/test450"
+        tmp_path / "results/letter-benchmarks/gan/gan_llm_and_rules_extract/gemini37flash/test450"
     )
     assert (dev_dest / "rows.jsonl").is_file()
     assert (dev_dest / "scored.jsonl").is_file()
@@ -313,7 +318,9 @@ def test_promote_gan_llm_and_rules_extract_writes_inventory_without_changing_the
     panel = rebuild_dev750_panel()
     assert panel["methods"] == ["rules_only", "llm_extract", "llm_encode", "llm_select"]
     assert len(panel["cells"]) == 24
-    synced = json.loads((tmp_path / "paper_experiments/inventory.json").read_text(encoding="utf-8"))
+    synced = json.loads(
+        (tmp_path / "results/letter-benchmarks/inventory.json").read_text(encoding="utf-8")
+    )
     present = {(row["model_slug"], row["method"], row["split"]) for row in synced["present"]}
     assert ("gemini37flash", "gan_llm_and_rules_extract", "dev750") in present
     assert ("gemini37flash", "gan_llm_and_rules_extract", "test450") in present
@@ -324,8 +331,8 @@ def test_promote_gan_later_stage_writes_inventory_without_changing_the_two_metho
 ) -> None:
     _write_work_cell(tmp_path, "gan_llm_encode", "gemini37flash", label="1 per day")
     _write_holdout_work_cell(tmp_path, "gan_llm_encode", "gemini37flash")
-    (tmp_path / "paper_experiments").mkdir()
-    (tmp_path / "paper_experiments/inventory.json").write_text(
+    (tmp_path / "results/letter-benchmarks").mkdir(parents=True)
+    (tmp_path / "results/letter-benchmarks/inventory.json").write_text(
         json.dumps(
             {
                 "schema_version": "paper_experiments.inventory.v1",
@@ -346,7 +353,7 @@ def test_promote_gan_later_stage_writes_inventory_without_changing_the_two_metho
     assert "panel" not in development
     panel = rebuild_dev750_panel()
     assert panel["methods"] == ["rules_only", "llm_extract", "llm_encode", "llm_select"]
-    synced = json.loads((tmp_path / "paper_experiments/inventory.json").read_text())
+    synced = json.loads((tmp_path / "results/letter-benchmarks/inventory.json").read_text())
     present = {(row["model_slug"], row["method"], row["split"]) for row in synced["present"]}
     assert ("gemini37flash", "gan_llm_encode", "dev750") in present
     assert ("gemini37flash", "gan_llm_encode", "test450") in present
@@ -362,8 +369,8 @@ def test_promote_gan_test450_rejects_row_level_comparison(
     comparison = json.loads(comparison_path.read_text(encoding="utf-8"))
     comparison["incorrect_source_row_indices"] = [10]
     comparison_path.write_text(json.dumps(comparison), encoding="utf-8")
-    (tmp_path / "paper_experiments").mkdir()
-    (tmp_path / "paper_experiments/inventory.json").write_text(
+    (tmp_path / "results/letter-benchmarks").mkdir(parents=True)
+    (tmp_path / "results/letter-benchmarks/inventory.json").write_text(
         json.dumps({"present": [], "missing": []}),
         encoding="utf-8",
     )

@@ -7,7 +7,7 @@ function scoredPath(method: string, slug: string) {
   return join(
     process.cwd(),
     "..",
-    "paper_experiments",
+    "results/letter-benchmarks",
     "gan",
     method,
     slug,

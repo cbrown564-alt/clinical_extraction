@@ -4,7 +4,7 @@ import { join } from "node:path";
 export const dynamic = "force-static";
 
 function panelPath() {
-  return join(process.cwd(), "..", "paper_experiments", "exect", "dev140_panel.json");
+  return join(process.cwd(), "..", "results/letter-benchmarks", "exect", "dev140_panel.json");
 }
 
 export function GET() {

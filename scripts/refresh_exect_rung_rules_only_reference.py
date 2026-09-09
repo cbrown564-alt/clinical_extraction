@@ -2,7 +2,7 @@
 """Refresh the rules_only reference in promoted ExECT rung comparison files.
 
 The rungs.rules_only entry is a reference copied from the promoted
-standalone-rules file (paper_experiments/exect/exect_rules/dev140.json)
+standalone-rules file (results/letter-benchmarks/exect/exect_rules/dev140.json)
 by exect_cell_replay._comparison_summary. Rung comparison files written
 before a rules promotion keep the retired number until the next full
 rung replay; this script reapplies the same derivation without
@@ -15,8 +15,8 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-RULES_PATH = ROOT / "paper_experiments/exect/exect_rules/dev140.json"
-RUNGS_ROOT = ROOT / "paper_experiments/exect/rungs"
+RULES_PATH = ROOT / "results/letter-benchmarks/exect/exect_rules/dev140.json"
+RUNGS_ROOT = ROOT / "results/letter-benchmarks/exect/rungs"
 SPLITS = ("dev140", "test60")
 
 

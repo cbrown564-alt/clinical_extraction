@@ -25,7 +25,7 @@ function normalizeMethod(method: string): string {
 }
 
 function scoredPath(method: string, slug: string) {
-  const root = join(process.cwd(), "..", "paper_experiments", "exect");
+  const root = join(process.cwd(), "..", "results/letter-benchmarks", "exect");
   const resolved = normalizeMethod(method);
   if (resolved === "exect_llm_with_rules" || resolved === "llm_pre_post") {
     return join(root, "exect_llm_pre_post", slug, "dev140", "scored.jsonl");

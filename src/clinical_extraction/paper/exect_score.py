@@ -532,7 +532,7 @@ def _jsonable(value: Any) -> Any:
 
 
 FROZEN_GEMINI_LLM_ONLY_DEV140 = (
-    "paper_experiments/exect/exect_llm_extract/gemini37flash/dev140/structured.jsonl"
+    "results/letter-benchmarks/exect/exect_llm_extract/gemini37flash/dev140/structured.jsonl"
 )
 
 

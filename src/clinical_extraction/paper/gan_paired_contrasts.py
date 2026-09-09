@@ -303,7 +303,7 @@ def write_predeclared_contrasts(
     """Write the aggregate-only paired-test artifact."""
 
     payload = run_predeclared_contrasts(slug=slug)
-    out_dir = ROOT / "paper_experiments/gan/paired_significance" / slug / SPLIT
+    out_dir = ROOT / "results/letter-benchmarks/gan/paired_significance" / slug / SPLIT
     out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / "comparison.json"
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")

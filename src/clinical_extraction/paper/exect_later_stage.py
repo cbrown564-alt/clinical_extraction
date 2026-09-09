@@ -126,7 +126,7 @@ def extract_rows_path(split: str, slug: str = EXTRACT_SLUG) -> Path:
         root / EXTRACT_METHOD / slug / split / EXTRACT_METHOD / "structured.jsonl",
         root / "exect_llm_inventory" / slug / split / "exect_llm_inventory" / "structured.jsonl",
         ROOT
-        / "paper_experiments/exect"
+        / "results/letter-benchmarks/exect"
         / EXTRACT_METHOD
         / slug
         / split

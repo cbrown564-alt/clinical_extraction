@@ -35,7 +35,7 @@ CLAIM_BOUNDARY = (
     "No inventory gold. Not scored. Not ExECT benchmark performance."
 )
 EXPERIMENT_DIR_NAME = "experiments/gan_inventory_feasibility_dev750_n100_20260828"
-PAPER_DIR_NAME = "paper_experiments/gan/inventory_feasibility_dev750_n100"
+PAPER_DIR_NAME = "results/letter-benchmarks/gan/inventory_feasibility_dev750_n100"
 
 
 def require_permitted_split(split: str) -> None:

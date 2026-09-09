@@ -84,11 +84,11 @@ INVENTORY_HOLDOUT_SCRATCH = EXTRACT_HOLDOUT_SCRATCH
 
 _DEV140_COMPACT_PAPER = {
     "gemini37flash": (
-        "paper_experiments/exect/exect_llm_pre_post/gemini37flash/dev140/"
+        "results/letter-benchmarks/exect/exect_llm_pre_post/gemini37flash/dev140/"
         "structured.jsonl"
     ),
     "gpt56luna": (
-        "paper_experiments/exect/exect_llm_pre_post/gpt56luna/dev140/"
+        "results/letter-benchmarks/exect/exect_llm_pre_post/gpt56luna/dev140/"
         "structured.jsonl"
     ),
 }
