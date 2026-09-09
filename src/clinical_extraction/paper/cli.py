@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, cast
 
 from clinical_extraction.paper.exect import (
-    MODELS,
+    RUNNABLE_MODELS,
     rescore_inventory_baseline,
     rescore_inventory_residuals,
     run_compact,
@@ -69,7 +69,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         ),
     )
     parser.add_argument("--method", required=True, choices=sorted(LIVE_METHODS))
-    parser.add_argument("--model", choices=tuple(MODELS))
+    parser.add_argument("--model", choices=tuple(RUNNABLE_MODELS))
     parser.add_argument("--split", required=True)
     parser.add_argument("--live", action="store_true")
     parser.add_argument("--overwrite", action="store_true")

@@ -37,7 +37,7 @@ from clinical_extraction.paper.exect_score import (
 )
 from clinical_extraction.paper.lm import build_paper_lm, resolve_paper_api_base
 from clinical_extraction.paper.methods import holdout_is_aggregate_only
-from clinical_extraction.paper.roster import living_models
+from clinical_extraction.paper.roster import living_models, local_ladder_models
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
     load_letters_for_split,
@@ -71,7 +71,10 @@ INVENTORY_ARM = EXTRACT_ARM
 INVENTORY_VERSION = EXTRACT_VERSION
 OLLAMA_NUM_CTX_ENV = "CLINICAL_EXTRACTION_OLLAMA_NUM_CTX"
 HOSTED_SLUGS = ("grok46", "gpt56luna", "gemini37flash", "deepseek_v4_flash")
-LOCAL_SLUGS = ("qwen38_27b", "gemma4_26b")
+LIVING_LOCAL_SLUGS = ("qwen38_27b", "gemma4_26b")
+LOCAL_SLUGS = LIVING_LOCAL_SLUGS + tuple(
+    item["slug"] for item in local_ladder_models()
+)
 GROK46_SLUG = "grok46"
 WORK_ROOT = ROOT / "experiments/paper/exect_llm_pre_post"
 HOLDOUT_SCRATCH = ROOT / "scratch/holdout/paper/exect_llm_pre_post"
@@ -289,6 +292,14 @@ def _spec_for(item: Mapping[str, Any]) -> ModelSpec:
         "deepseek_v4_flash": ("DEEPSEEK_API_KEY",),
     }
     hosted_timeout = 600 if slug in {"deepseek_v4_flash", "grok46"} else 300
+    if item.get("num_ctx") is not None:
+        num_ctx = int(item["num_ctx"])
+    elif slug == "qwen38_27b":
+        num_ctx = 32768
+    elif slug == "gemma4_26b":
+        num_ctx = 65536
+    else:
+        num_ctx = None
     return ModelSpec(
         slug=slug,
         model=str(item["model"]),
@@ -298,7 +309,7 @@ def _spec_for(item: Mapping[str, Any]) -> ModelSpec:
         route=str(item["route"]),
         credential_env=credentials.get(slug, ()),
         timeout=900 if not hosted else hosted_timeout,
-        num_ctx=32768 if slug == "qwen38_27b" else (65536 if slug == "gemma4_26b" else None),
+        num_ctx=num_ctx,
         reasoning_effort=(
             "low"
             if slug in {"grok46", "gpt56luna", "gemini37flash", "deepseek_v4_flash"}
@@ -310,6 +321,10 @@ def _spec_for(item: Mapping[str, Any]) -> ModelSpec:
 
 
 MODELS: dict[str, ModelSpec] = {item["slug"]: _spec_for(item) for item in living_models()}
+LADDER_MODELS: dict[str, ModelSpec] = {
+    item["slug"]: _spec_for(item) for item in local_ladder_models()
+}
+RUNNABLE_MODELS: dict[str, ModelSpec] = {**MODELS, **LADDER_MODELS}
 
 
 def letters_for_split(split: str) -> list[ExectLetter]:
