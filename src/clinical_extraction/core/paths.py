@@ -51,3 +51,19 @@ def discover_repo_root_or_cwd(
 
 def resolve_under_root(root: Path, path: Path) -> Path:
     return path if path.is_absolute() else root / path
+
+
+def resolve_letter_benchmarks_root(*, root: Path | None = None) -> Path:
+    """Resolve canonical letter benchmarks results directory.
+
+    Primary canonical path is `results/letter-benchmarks`.
+    Falls back to `paper_experiments` for read compatibility during migration.
+    """
+    repo = root or discover_repo_root_or_cwd()
+    primary = repo / "results/letter-benchmarks"
+    fallback = repo / "paper_experiments"
+    if primary.exists():
+        return primary
+    if fallback.exists():
+        return fallback
+    return primary

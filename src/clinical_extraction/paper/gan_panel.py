@@ -7,7 +7,10 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.core.paths import discover_repo_root
+from clinical_extraction.core.paths import (
+    discover_repo_root,
+    resolve_letter_benchmarks_root,
+)
 from clinical_extraction.paper.cells import normalize_rungs_payload
 from clinical_extraction.paper.comparison_contract import (
     adapt_legacy_comparison,
@@ -28,11 +31,13 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 )
 
 ROOT = discover_repo_root(start=Path(__file__))
+BENCHMARKS_ROOT = resolve_letter_benchmarks_root(root=ROOT)
 WORK_ROOT = ROOT / "experiments/paper"
 HOLDOUT_ROOT = ROOT / "scratch/holdout/paper"
-PAPER_GAN = ROOT / "paper_experiments/gan"
+PAPER_GAN = BENCHMARKS_ROOT / "gan"
 PANEL_PATH = PAPER_GAN / "dev750_panel.json"
-INVENTORY_PATH = ROOT / "paper_experiments/inventory.json"
+INVENTORY_PATH = BENCHMARKS_ROOT / "inventory.json"
+
 REPLAY_FIELDS = ("source_row_index", "prompt_version", "raw_output")
 GAN_METHODS = ("gan_llm_only", "gan_llm_extract_raw")
 PANEL_METHODS = ("rules_only", "llm_extract", "llm_encode", "llm_select")

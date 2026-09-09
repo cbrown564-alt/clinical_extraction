@@ -7,7 +7,10 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any, cast
 
-from clinical_extraction.core.paths import discover_repo_root
+from clinical_extraction.core.paths import (
+    discover_repo_root,
+    resolve_letter_benchmarks_root,
+)
 from clinical_extraction.paper.cells import normalize_cell_id, normalize_rungs_payload
 from clinical_extraction.paper.comparison_contract import (
     adapt_legacy_comparison,
@@ -43,6 +46,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 )
 
 ROOT = discover_repo_root(start=Path(__file__))
+
+BENCHMARKS_ROOT = resolve_letter_benchmarks_root(root=ROOT)
 WORK_ROOT = ROOT / "experiments/paper/exect_llm_pre_post"
 HOLDOUT_ROOT = ROOT / "scratch/holdout/paper/exect_llm_pre_post"
 LEGACY_WORK_ROOT = ROOT / "experiments/paper/exect_llm_with_rules"
@@ -53,9 +58,10 @@ EXTRACT_WORK_ROOT = ROOT / "experiments/paper/exect_llm_extract"
 EXTRACT_HOLDOUT_ROOT = ROOT / "scratch/holdout/paper/exect_llm_extract"
 FILTERED_WORK_ROOT = ROOT / "experiments/paper/exect_llm_extract_filtered"
 FILTERED_HOLDOUT_ROOT = ROOT / "scratch/holdout/paper/exect_llm_extract_filtered"
-PAPER_EXECT = ROOT / "paper_experiments/exect"
+PAPER_EXECT = BENCHMARKS_ROOT / "exect"
 PANEL_PATH = PAPER_EXECT / "dev140_panel.json"
-INVENTORY_PATH = ROOT / "paper_experiments/inventory.json"
+INVENTORY_PATH = BENCHMARKS_ROOT / "inventory.json"
+
 REPLAY_FIELDS = ("letter_id", "prompt_version", "raw_output")
 METHOD = "exect_llm_pre_post"
 LEGACY_METHOD = "exect_llm_with_rules"

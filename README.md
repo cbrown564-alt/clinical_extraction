@@ -6,7 +6,7 @@ The active direction for this repository is a synthetic longitudinal epilepsy be
 
 This repository is a research and teaching package, not a clinical deployment claim.
 
-The repository includes the core package, tests, configurations, documentation, and Demo UI fixtures. Local research checkouts may contain uncommitted experiment runs, local data corpora (`data/`), local media (`media/`), and local literature reading copies (`literature/`), which are gitignored. Contrary to earlier documentation claims, much of `docs/` and `publications/` is tracked in Git (with specific local exceptions such as `docs/audio/` and local working files like `PROJECT_STATUS.md` and `CONTEXT.md`), but tracking does not imply all tracked materials are vetted for public release. The local `experiments/` directory is mostly untracked, but contains one tracked historical result (`experiments/paper/exect_llm_inventory/gemini37flash/dev140/comparison_residual.json`). Paper-facing benchmark evidence is tracked under `paper_experiments/`.
+The repository includes the core package, tests, configurations, documentation, and Demo UI fixtures. Local research checkouts may contain uncommitted experiment runs, local data corpora (`data/`), local media (`media/`), and local literature reading copies (`literature/`), which are gitignored. Contrary to earlier documentation claims, much of `docs/` and `publications/` is tracked in Git (with specific local exceptions such as `docs/audio/` and local working files like `PROJECT_STATUS.md` and `CONTEXT.md`), but tracking does not imply all tracked materials are vetted for public release. The local `experiments/` directory is mostly untracked, but contains one tracked historical result (`experiments/paper/exect_llm_inventory/gemini37flash/dev140/comparison_residual.json`). Paper-facing benchmark evidence is tracked under `results/letter-benchmarks/` (with `paper_experiments/` retained for compatibility).
 
 The sections below describe the existing single-letter benchmarks and extraction methods.
 
@@ -80,8 +80,8 @@ roster stop. Gemini five-cell select is **0.86**.
 | Gemma 4 26B | 0.66 | 0.72 |
 
 Exact totals:
-[three variables](docs/research/paper/three_variables_rules_model_thinking_2026-08-23.md),
-`paper_experiments/gan/rungs/`.
+[three variables](docs/research/shared/three_variables_rules_model_thinking_2026-08-23.md),
+`results/letter-benchmarks/gan/rungs/`.
 
 **ExECT cell-3 roster** (4-family micro F1, locked `test60`,
 aggregate-only). LLM find (`exect_llm_extract`) then rules.
@@ -97,8 +97,9 @@ Select is the cited stop:
 | Gemma 4 26B | 0.72 | 0.76 |
 
 Exact totals and sources:
-[three variables](docs/research/paper/three_variables_rules_model_thinking_2026-08-23.md),
-`paper_experiments/exect/exect_llm_extract/`.
+[three variables](docs/research/shared/three_variables_rules_model_thinking_2026-08-23.md),
+`results/letter-benchmarks/exect/exect_llm_extract/`.
+
 
 **Ablations (not headline columns):** Gemini thinking low / medium /
 high on cell 3 only; Gan source-near `gan_llm_extract_raw` (source
@@ -253,20 +254,20 @@ A full Gan walkthrough on three synthetic letters is in [VLLM.md](VLLM.md).
 
 ## Current repository layout
 
-The layout below reflects the current repository structure. The [Active Roadmap](docs/plans/ACTIVE_ROADMAP.md#proposed-target-structure) proposes a comprehensive reorganization (Phase 0). The initial walkthrough example move (`examples/gan2026/`) and publication materials move (`publications/dissertation/`) are implemented; broader repository restructuring remains ongoing, and the longitudinal benchmark is not yet implemented.
+The layout below reflects the current repository structure following the Phase 0 restructuring. The [Active Roadmap](docs/plans/ACTIVE_ROADMAP.md) establishes the sequence for the subsequent longitudinal benchmark phases.
 
 ```text
 run.py                     HPC / no-install Gan walkthrough (`python run.py --flags`)
 requirements.txt           Runtime client packages for that walkthrough
 src/clinical_extraction/   Package: loaders, pipelines, scoring, API
 frontend/                  Interactive workbench and bundled Demo UI fixtures
-examples/                  Pinned walkthrough inputs, including the vLLM Gan letters
-configs/                   Pipeline and model configuration
+examples/                  Pinned walkthrough inputs (gan2026, exectv2, longitudinal)
+configs/                   Pipeline and model configuration (gan2026, exectv2, longitudinal)
 tests/                     Contract and behavior checks
-scripts/                   CLI helpers and experiment runners
-paper_experiments/         Tracked paper fills and replayable local raws
+scripts/                   CLI helpers, checks, and experiment runners
+results/letter-benchmarks/ Tracked paper fills and replayable local raws
 docs/                      Tracked documentation (except local docs/audio/)
 publications/dissertation/ Tracked dissertation manuscript sources, TeX templates, and notes
 ```
 
-A local research checkout may also contain local corpora (`data/`), local media (`media/`), local literature reading copies (`literature/`), and scratch work (`scratch/`), which are gitignored. The `experiments/` tree is mostly local and untracked, with the exception of one tracked historical result (`experiments/paper/exect_llm_inventory/gemini37flash/dev140/comparison_residual.json`). Status and glossary files (`PROJECT_STATUS.md` and `CONTEXT.md`) are gitignored local files. While much of `docs/` and `publications/` is tracked in Git, tracking does not imply all tracked materials have been cleared for public release.
+A local research checkout may also contain local corpora (`data/`), local media (`media/`), local literature reading copies (`literature/`), scratch work (`scratch/`), and local runs (`runs/`), which are gitignored. The `experiments/` tree is mostly local and untracked, with the exception of one tracked historical result (`experiments/paper/exect_llm_inventory/gemini37flash/dev140/comparison_residual.json`). Status and glossary files (`PROJECT_STATUS.md` and `CONTEXT.md`) are gitignored local files. While much of `docs/` and `publications/` is tracked in Git, tracking does not imply all tracked materials have been cleared for public release.

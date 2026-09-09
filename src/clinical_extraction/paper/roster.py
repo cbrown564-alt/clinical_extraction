@@ -6,10 +6,11 @@ import json
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.core.paths import discover_repo_root
+from clinical_extraction.core.paths import discover_repo_root, resolve_letter_benchmarks_root
 
 ROOT = discover_repo_root(start=Path(__file__))
-ROSTER_PATH = ROOT / "paper_experiments/roster.json"
+ROSTER_PATH = resolve_letter_benchmarks_root(root=ROOT) / "roster.json"
+
 
 
 def living_models() -> list[dict[str, Any]]:
