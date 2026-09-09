@@ -1,0 +1,19 @@
+.content { max-width: none !important; }
+.component { margin-top: 24px; padding: 20px 0; border-top: 1px solid #bccfc5; }
+.component[data-selected="true"] { background: #dcece3; outline: 2px solid #68967e; outline-offset: 8px; border-radius: 3px; }
+.component h3 { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 1rem; color: #285d48; margin-bottom: 8px; }
+.component h3 span { font-size: .6875rem; border: 1px solid #68967e; border-radius: 4px; padding: 2px 7px; }
+.component p { margin-bottom: 14px; }
+.component code { font-size: .75rem; overflow-wrap: anywhere; }
+.examples { display: flex; flex-direction: column; gap: 14px; }
+.examples > div { display: grid; grid-template-columns: 160px 1fr; gap: 14px; }
+.examples dt { font-size: .75rem; color: #435e51; }
+.examples dd, .forms { display: flex; flex-wrap: wrap; gap: 8px; }
+.examples dd code, .forms code { background: #fff; color: #285d48; border-radius: 3px; padding: 4px 8px; }
+.component blockquote { font-family: var(--font-source-serif), Georgia, serif; font-size: 1.0625rem; line-height: 1.65; color: #233a3b; margin: 14px 0; }
+.field { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+.forms { margin: 16px 0; }
+.component ul { padding-left: 20px; list-style: disc; }
+.component li + li { margin-top: 6px; }
+.source { border-top: 1px solid #bccfc5; padding-top: 16px; font-size: .75rem; }
+@media (max-width: 760px) { .examples > div { grid-template-columns: 1fr; gap: 5px; } }

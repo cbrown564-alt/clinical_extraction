@@ -10,6 +10,13 @@ clone does not need the local letter corpus.
 
 ## Viva demo
 
+Application introductions are designed for narrated presentation: short headlines,
+visual examples and working interactions carry the main story. Keep qualifications
+and literature context in **Presenter notes & sources**. Cohort uses a patient
+population, longitudinal analysis a selectable visit history, and prediction a
+time boundary and adjustable threshold. Preserve this distinction when extending
+the pages; avoid repeating prose cards or definition tables.
+
 Run `npm run dev` from `frontend`, then open
 [http://localhost:3000/demo](http://localhost:3000/demo). The guided pipeline,
 batch browser and method details use bundled development records and work without
@@ -17,15 +24,53 @@ the Python API or model access.
 
 Suggested walkthrough:
 
-1. Start with letter 16021. Step through the letter, extracted evidence and final
-   decision. Run the rules locally to reproduce the saved answer.
-2. Use the other four cases to show an unchanged answer, a difference between
+1. Start on **Introduction** (`/demo`). Switch between Time, Arithmetic and
+   Context, compare the three past approaches side by side and use **Trace a letter**,
+   then choose **Follow the evidence** in the research diagram. Select quotations
+   or evidence rows to see their source link; expand the Hybrid calculation to
+   inspect the three-month denominator. Stages can also be selected manually;
+   reduced motion shows the complete diagram. The workbench's **About the research** link opens this
+   same introduction.
+2. Open **The pipeline**, starting with letter 16021. Start at **Extract** with the source letter alongside the evidence, then move
+   to **Decide** for the final decision. Run the rules locally to reproduce the saved answer.
+3. Use the other four cases to show an unchanged answer, a difference between
    executors, and two disagreements with the reference label. Open the optional
    executor comparison and decision trace when useful.
-3. Choose **A batch of letters**, filter a category, and inspect a source letter.
+4. **Zoom out to the results** compares models, prompt ablations, and the
+   external 300-letter evaluation. Values are transcribed
+   at the submitted PDFs' precision in `lib/demoResults.ts`, with table/section
+   attribution in each panel. These are aggregate results, never holdout rows.
+5. **Applications → Find a cohort** starts with a guided research-cohort workflow:
+   define criteria, gather evidence, check matches and missing information, and
+   inspect the output. The example opens the explorer with focal epilepsy,
+   4+ seizures/month and month 6 selected. The overview separately counts unknown
+   frequency; it does not claim adjudicated membership. This teaching page draws
+   on the supplied Cohort Identification Literature Review (7 September 2026,
+   pp. 3, 7–8). The explorer uses 72 fictional patients and 360 co-generated notes
+   and records. Filter a cohort, follow the same patients across five visits, and
+   select visits to read their source notes. Unknown frequency stays distinct
+   from seizure freedom. Cohort JSON exports preserve the simulation provenance.
+   **Follow over time** now opens with a guided longitudinal workflow: define the
+   outcome, distinguish event and documentation time, reconcile history, and
+   compare a fixed cohort. A clickable five-visit example links observations to
+   their notes; a cohort summary preserves unknown states. The explorer opens
+   with all 72 patients and offers a return to the workflow. Background: supplied
+   Longitudinal Clinical Data Literature Review (7 September 2026, pp. 3, 7–8).
+
+6. **Build a prediction** starts with a guided page covering the prediction time,
+   outcome definition, earlier-only features, patient split and evaluation. A
+   threshold illustration distinguishes a score from a decision. It draws on the
+   supplied Clinical Text to Risk Prediction Review (7 September 2026).
+   The explorer fits a toy logistic regression in the browser. Compare
+   structured fields with note-derived features, inspect inputs, and adjust the
+   threshold. Features end at month 6; the outcome is month-12 documentation.
+   Patient partitions and training-only standardisation prevent leakage. Unknown
+   outcomes are excluded from both model comparisons. This simulation is not a
+   clinical performance result, and its notes have not been run through the LLM.
+7. Choose **A batch of letters** from the pipeline toolbar, filter a category, and inspect a source letter.
    Returning to the batch preserves the filters. Export the selected records as
    JSON with source text, evidence, provenance and an explicit review status.
-4. Open **Under the hood** at any stage. Its four views show the saved Extract
+8. Open **Under the hood** at any pipeline stage. Its four views show the saved Extract
    prompt, normalise/encode rules, Decide rules and saved Decide prompt. Rule
    entries include the actual Python entry-point function and source fingerprint;
    prompt views include the exact payload for the current letter.
@@ -34,6 +79,17 @@ The batch contains 25 evenly spaced saved synthetic dev750 records, selected
 without looking at outcomes. It demonstrates evidence inspection and preparation
 for review; it is not a population estimate, longitudinal patient dataset or
 accuracy evaluation. The five guided cases are selected teaching examples.
+
+The separate application simulation is deterministic (`lib/syntheticPatients.ts`,
+seed 8056, version 1); its distributions are arbitrary teaching assumptions.
+The cohort and longitudinal views are inspired by EpiDEA, Chang et al. (2026)
+and Xie et al. (2023). CLINES and Wang et al.'s SNOW motivate structuring and
+predictive feature workflows. Source links and limitations live in expandable
+context within the demo. These are application illustrations, not replications
+of those studies or extensions to the dissertation's measured extraction scope.
+
+Chapter URLs use `#introduction`, `#pipeline`, `#results`, `#applications` and
+`#batch`; browser back/forward navigation works between chapters.
 
 **Run rules locally** invokes the repository `.venv/bin/python` through the local
 Next.js server and applies the existing rules to the saved extraction record.

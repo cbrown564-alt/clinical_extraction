@@ -50,6 +50,7 @@ export default function Navbar() {
           className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto"
         >
           <Link href="/demo" className="inline-flex min-h-7 shrink-0 items-center rounded-md px-2.5 py-1 text-xs font-medium text-deterministic hover:bg-deterministic/10">Demo</Link>
+          <Link href="/demo#introduction" className="inline-flex min-h-7 shrink-0 items-center rounded-md px-2.5 py-1 text-xs text-muted hover:bg-surface-raised">About the research</Link>
           {APP_DESTINATIONS.map((destination) => {
             const active = pathname === destination.href || activeDestination?.href === destination.href;
             const Icon = destination.Icon;
