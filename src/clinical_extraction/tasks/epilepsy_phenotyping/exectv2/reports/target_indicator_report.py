@@ -22,7 +22,7 @@ TARGET_INDICATORS: tuple[str, ...] = (
     INVESTIGATIONS.name,
 )
 DEFAULT_TARGET_F1 = 0.9
-ADR_PATH = "docs/decisions/0030-four-exact-indicators-drive-exectv2-plan11.md"
+ADR_PATH = "docs/history/decisions/0030-four-exact-indicators-drive-exectv2-plan11.md"
 HEADLINE_SCORE_POLICIES: dict[str, str] = {
     DIAGNOSIS.name: (
         "exact per-letter clinical-fact unit-key score after deterministic "

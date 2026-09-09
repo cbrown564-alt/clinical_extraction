@@ -30,10 +30,12 @@ node_modules/
 /data/
 /docs/audio/
 /experiments/
+/runs/
 /literature/
 /media/
 /PROJECT_STATUS.md
 /CONTEXT.md
+
 
 # Scratch run scripts/outputs under scripts/ (underscore-prefixed by
 # convention) and captured run logs/streams.

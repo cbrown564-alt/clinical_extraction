@@ -51,7 +51,7 @@ writes codebook form. See
 [methods](sections/methods.md), [results](sections/results.md),
 [Gan five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md)
 (secondary), and
-[six-model roster](../research/paper/three_variables_rules_model_thinking_2026-08-23.md).
+[six-model roster](../research/shared/three_variables_rules_model_thinking_2026-08-23.md).
 `gan_llm_only` is not a results column. ExECT owners below are
 later-paper evidence.
 
@@ -65,10 +65,10 @@ later-paper evidence.
 | [experiment environment](experiment_environment.md) | Mac mini orchestration + Dell XPS 16 local serving; hosted accelerators undisclosed |
 | [hardware](hardware_details.md) | Dated local-device snapshot for Qwen/Gemma |
 | [method × stage](method_x_stage.md) | Plain-language method × stage grid, with one Gan and one ExECT development example |
-| [Gan rules and models](../research/paper/gan_rules_and_llms_across_stages_2026-08-21.md) | Gemini Gan reading: roles, order, encode/select lift |
-| [Three variables](../research/paper/three_variables_rules_model_thinking_2026-08-23.md) | Draft results: stage ownership, model, thinking; temperature 0/1 ablation |
-| [Source-near vs bundled encode](../research/paper/gan_source_near_vs_bundled_encode_2026-08-23.md) | Draft Gan ablation: codebook request vs second encode call |
-| [Find then Select vs find-and-select](../research/paper/exect_extract_vs_extract_and_select_2026-08-25.md) | Draft ExECT ablation: inventory find vs one-call filter |
+| [Gan rules and models](../research/gan2026/gan_rules_and_llms_across_stages_2026-08-21.md) | Gemini Gan reading: roles, order, encode/select lift |
+| [Three variables](../research/shared/three_variables_rules_model_thinking_2026-08-23.md) | Draft results: stage ownership, model, thinking; temperature 0/1 ablation |
+| [Source-near vs bundled encode](../research/gan2026/gan_source_near_vs_bundled_encode_2026-08-23.md) | Draft Gan ablation: codebook request vs second encode call |
+| [Find then Select vs find-and-select](../research/exectv2/exect_extract_vs_extract_and_select_2026-08-25.md) | Draft ExECT ablation: inventory find vs one-call filter |
 | [Gan five-cell grid](../research/gan2026/gan_five_cell_grid_2026-08-22.md) | Cited Gemini frequency five-cell totals |
 | [ExECT inventory grid](../research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md) | Cited Gemini ExECT five-cell grid (4-family micro F1; cell 3 peak). Replay: [`paper_experiments/exect/five_cell_grid/`](../../paper_experiments/exect/five_cell_grid/) |
 | [ExECT cell 4](../research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md) | Cited Gemini inventory LLM / LLM / rules stop |

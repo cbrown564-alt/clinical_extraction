@@ -1,7 +1,8 @@
 # Longitudinal epilepsy benchmark: project plan
 
-Updated: 2026-09-08. Owner: Conor Brown.
-Status: planning baseline; example and publication moves implemented, broader migration ongoing, longitudinal benchmark not implemented.
+Updated: 2026-09-09. Owner: Conor Brown.
+Status: planning baseline; repository restructuring (Phase 0) complete; longitudinal benchmark planning (Phase 1).
+
 
 [Project status](../../PROJECT_STATUS.md) owns task progress and current checks.
 This document owns scope, task order, dependencies, completion criteria, and the
@@ -177,7 +178,7 @@ authorise committing full raw runs, private source material, or hidden test gold
 | `media/` and `docs/audio/` | Keep local source assets by purpose; archive obsolete story productions locally | Source-letter provenance, audio project dependencies, app imports/served exports; preserve local-only visibility |
 | `literature/`, `docs/literature/` | Retain local reading copies; put authored synthesis under `docs/reference/` | Separate copyrighted copies, authored reviews and publication templates; do not turn ignored PDFs into tracked files during consolidation |
 | `docs/paper/`, `docs/research/paper/` | Put manuscript-specific prose under publication notes; shared benchmark policies under `docs/benchmarks/`; keep research evidence under `docs/research/` | Classify file by purpose; existing Gan manuscript and wider ExECT tables have different claim owners; repair incoming links before removal |
-| `docs/canon/`, `docs/decisions/` | Archive superseded guidance under `docs/history/`; migrate still-applicable safeguards into active owners | The old canon is already superseded; preserve rationale and code/test callers; avoid a second live claim register |
+| `docs/history/canon/`, `docs/history/decisions/` | Archive superseded guidance under `docs/history/`; migrate still-applicable safeguards into active owners | The old canon is already superseded; preserve rationale and code/test callers; avoid a second live claim register |
 | `docs/design/`, `reference/`, `runbooks/` | Keep shared content; relocate dataset-only policy to its benchmark home | Some procedures contain old model/split permissions; make scope explicit before reusing |
 | `docs/research/`, `docs/experiments/` | Consolidate study prose into `docs/research/<track>/`; retain required evidence; archive closed narrative | 271 research Markdown files and 73 experiment Markdown files need file-level classification; no wholesale deletion based on directory |
 | `docs/architecture/` | Keep generated reference in the first migration; re-scope only through generator changes | `scripts/build_architecture_docs.py` and `tests/test_architecture_stage_manifests.py` enforce generated content |
@@ -258,10 +259,24 @@ another migration project or blocking the pilot on cosmetic package renaming.
   from `docs/plans/` to `docs/history/plans/` with historical prose preserved, top archival notices
   added, relative links rebased, incoming links updated, and `ACTIVE_ROADMAP.md` preserved as the
   sole active plan.
-- **Remaining Phase 0 scope**: P0.2 continuation (complete file-level migration mapping for
-  remaining trees), remaining P0.4 (documentation migration: `docs/paper/`, `docs/canon/`,
-  `docs/decisions/`), P0.5 (results and run paths), P0.6 (helpers and data), and P0.7 (verification
-  and closure).
+- **Slice 4 (P0.4 guidance archive)** executed on 2026-09-09: all 13 files in `docs/canon/`
+  moved to `docs/history/canon/` and all 42 files in `docs/decisions/` moved to `docs/history/decisions/`
+  with archival headers, rebased links, and updated manifest/code references.
+- **Slice 5 (P0.4 research notes & sections)** executed on 2026-09-09: all 35 files in `docs/research/paper/`
+  rehomed to `docs/research/gan2026/`, `docs/research/exectv2/`, and `docs/research/shared/`;
+  draft manuscript sections relocated to `publications/dissertation/notes/sections/`;
+  `docs/benchmarks/gan2026/` and `docs/benchmarks/exectv2/` established for retained benchmark policies.
+- **Slice 6 (P0.5 results & run paths)** executed on 2026-09-09: all 283 files in `paper_experiments/`
+  relocated to `results/letter-benchmarks/` with git history preserved; explicit artifact-root
+  resolution helper `resolve_letter_benchmarks_root()` introduced in `src/clinical_extraction/core/paths.py`;
+  read-compatibility symlink `paper_experiments -> results/letter-benchmarks` maintained.
+- **Slice 7 (P0.6 helpers, configs, data, runs)** executed on 2026-09-09: target directories created
+  and documented (`configs/longitudinal/`, `examples/{exectv2,longitudinal}/`,
+  `scripts/{checks,benchmarks,longitudinal,publications}/`, `data/sources/{gan2026,exectv2}/`,
+  `data/longitudinal/`, and ignored `runs/archive/`); `/runs/` added to `.gitignore`.
+- **Phase 0 Closure**: Repository restructuring complete across all targets; doc hygiene, type checks,
+  and replay tests verified; active project work transitions to Phase 1 (Research questions and scope).
+
 
 ## Timeline and dependencies
 
