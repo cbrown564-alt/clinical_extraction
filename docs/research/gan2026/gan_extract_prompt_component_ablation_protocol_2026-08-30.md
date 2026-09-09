@@ -6,7 +6,7 @@ Owner: this file
 Report: [aggregates](gan_extract_prompt_component_ablation_2026-08-30.md)
 Related: [source-near vs bundled encode](../paper/gan_source_near_vs_bundled_encode_2026-08-23.md),
 [extract label-forms](gan_extract_label_forms_protocol_2026-08-22.md),
-[results §D](../../paper/sections/results.md)
+[results §D](../../../publications/dissertation/notes/sections/results.md)
 
 ## Primary question
 

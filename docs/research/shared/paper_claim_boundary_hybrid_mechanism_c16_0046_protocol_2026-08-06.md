@@ -40,7 +40,7 @@ accidentally rewrite C16 / Decision 0046 score ownership.
 3. List forbidden upgrades that would overclaim residuals, LOO, or holdout.
 4. Emit a machine-readable claim ledger and paste-ready manuscript paragraphs.
 5. Recommend at most two bounded companion rows for
-   `docs/canon/10_paper_provenance.md` if they are strictly weaker than a
+   `docs/history/canon/10_paper_provenance.md` if they are strictly weaker than a
    score rewrite.
 
 ## Stop rule

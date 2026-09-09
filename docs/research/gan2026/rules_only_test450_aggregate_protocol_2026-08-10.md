@@ -24,8 +24,8 @@ provenance owns Gan `test450` results for `llm_only` (Sol 0.74) and
 only. The rules-only holdout cell is empty and is explicitly named as absent in
 two current source documents:
 
-- `docs/research/paper/gan_story_2026-08-10.md:21`
-- `docs/research/paper/evidence_exploration_brief_2026-08-09.md:533`
+- `docs/research/gan2026/gan_story_2026-08-10.md:21`
+- `docs/research/shared/evidence_exploration_brief_2026-08-09.md:533`
 
 ExECT already owns the equivalent cell (`test60` rules-only four-family
 clinical-fact F1 `0.7154`, artifact
@@ -169,7 +169,7 @@ May not support:
   design.
 - Revision of C16, C18, C19, or Decision 0046 fills.
 - Promotion of the Gan matched-method development result over the rules-only
-  comparator — `docs/canon/10_paper_provenance.md:94` blocks this for reasons
+  comparator — `docs/history/canon/10_paper_provenance.md:94` blocks this for reasons
   this study does not address.
 - Reopening Gan `llm_with_rules` tuning. `10_paper_provenance.md:102` requires a
   separate predeclared study for that, and this result is not the trigger.
@@ -254,7 +254,7 @@ matter.
 
 - New row in `experiments/registry.jsonl` with `split: test`, `row_count: 450`,
   `architecture_family: rules_only`, `model_role: none`, `mode: no-call`.
-- New headline row in `docs/canon/10_paper_provenance.md`.
+- New headline row in `docs/history/canon/10_paper_provenance.md`.
 - Caveat removal in the two source documents named above.
 - `scripts/check_retained_evidence_manifest.py` and
   `scripts/check_locked_aggregate_safety.py` must both pass.

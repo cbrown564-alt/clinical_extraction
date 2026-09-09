@@ -26,9 +26,9 @@ hybrid switch. Replayable
 numbers live in
 [`paper_experiments/`](../../paper_experiments/README.md). Writing
 sources that unpack the same evidence are the
-[Gan Gemini stage reading](../research/paper/gan_rules_and_llms_across_stages_2026-08-21.md),
-the [Gan story](../research/paper/gan_story_2026-08-10.md), and the
-[ExECT story](../research/paper/exect_story_2026-08-12.md).
+[Gan Gemini stage reading](../research/gan2026/gan_rules_and_llms_across_stages_2026-08-21.md),
+the [Gan story](../research/gan2026/gan_story_2026-08-10.md), and the
+[ExECT story](../research/exectv2/exect_story_2026-08-12.md).
 
 A stronger sentence than this page is not a paper sentence. The job of
 the page is the supported reading, not a list of things to avoid.
@@ -290,7 +290,7 @@ DeepSeek **0.8099**, Luna **0.7983**, Qwen **0.7644**, and Gemma
 **0.7573**. Find stops for those models are 0.8491 / 0.7874 /
 0.7830 / 0.7650 / 0.7260 / 0.7198. Rules raise every model over its
 find stop and do not erase the gaps. Owner:
-[three variables](../research/paper/three_variables_rules_model_thinking_2026-08-23.md).
+[three variables](../research/shared/three_variables_rules_model_thinking_2026-08-23.md).
 Compact/headline Luna / DeepSeek / Gemma repair totals from the prior
 assembly remain on disk as secondary surfaces, not the cited roster.
 

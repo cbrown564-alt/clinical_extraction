@@ -5,7 +5,7 @@ Status: `test450` finds and cell-3 replay complete
 Owner: this file
 Report: [round-2 aggregates](gan_extract_prompt_component_ablation_round2_2026-08-30.md)
 Related: [round 1](gan_extract_prompt_component_ablation_protocol_2026-08-30.md),
-[results §D3](../../paper/sections/results.md)
+[results §D3](../../../publications/dissertation/notes/sections/results.md)
 
 ## Primary question
 

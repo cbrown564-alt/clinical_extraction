@@ -83,7 +83,7 @@ These mechanism readings are development attributions under ordered replay. They
 
 Preserve C16 and Decision 0046 / C17 score ownership. Accept bounded companion claims C18 (stage attribution) and C19 (named hybrid harm residuals) into paper provenance.
 
-Update `docs/canon/10_paper_provenance.md` with C18 and C19. Do not edit Decision 0046 fills or C16 headline numbers from this page.
+Update `docs/history/canon/10_paper_provenance.md` with C18 and C19. Do not edit Decision 0046 fills or C16 headline numbers from this page.
 
 ## Next
 

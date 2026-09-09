@@ -50,7 +50,7 @@ representative development rows for helpful and harmful changes.
 
 Machine-readable changed-row ledger:
 
-`docs/research/paper/gan_gemini_cell3_encode_to_select_dev750_changed_rows_2026-08-29.jsonl`
+`docs/research/gan2026/gan_gemini_cell3_encode_to_select_dev750_changed_rows_2026-08-29.jsonl`
 
 One row per encode→select label change. Fields: source id, gold,
 encode/select labels and kinds, Purist/Pragmatic direction, first

@@ -22,7 +22,7 @@ Tasks under the repository restructuring plan ([`ACTIVE_ROADMAP.md`](../../plans
   - Confirm no code/test runtime consumers or retained-evidence hash pins depend on them.
   - Add standardized archival notice banners linking `docs/plans/ACTIVE_ROADMAP.md` and reaffirming safeguards.
   - Rebase internal relative links within moved files.
-  - Update incoming references across documentation (`docs/THREAD_MAP.md`, `docs/decisions/0055-*.md`, research notes in `docs/research/exectv2/`).
+  - Update incoming references across documentation (`docs/THREAD_MAP.md`, `docs/history/decisions/0055-*.md`, research notes in `docs/research/exectv2/`).
   - Update `docs/README.md` and `docs/NAVIGATION.md` to reflect the move and planned status of remaining documentation.
   - Ensure `docs/plans/ACTIVE_ROADMAP.md` remains the sole active plan under `docs/plans/`.
 
@@ -66,8 +66,8 @@ Tasks under the repository restructuring plan ([`ACTIVE_ROADMAP.md`](../../plans
   - `tests/test_gan_extract_label_forms_prompt.py`: `SUPPORTING_EXTRACT_TEMPLATE` set to `publications/dissertation/supporting materials/gan_llm_extract_prompt_template.json`.
 - Updated active Markdown documentation links:
   - `docs/paper/README.md` (lines 63, 88).
-  - `docs/paper/sections/methods.md` (lines 147, 210).
-  - `docs/paper/sections/results.md` (line 650).
+  - `publications/dissertation/notes/sections/methods.md` (lines 147, 210).
+  - `publications/dissertation/notes/sections/results.md` (line 650).
   - Root `README.md` (layout overview and tracked descriptions).
 - Historical provenance notes:
   - `frontend/lib/demoResults.ts` (lines 2-3) references old PDF paths in comments; preserved untouched as historical provenance.
@@ -78,7 +78,7 @@ Tasks under the repository restructuring plan ([`ACTIVE_ROADMAP.md`](../../plans
   3. Revert only the specific path updates in callers and documentation:
      - `src/clinical_extraction/paper/gan_result_figures.py` (`FIGURE_DIR` back to `ROOT / "paper/draft"`)
      - `tests/test_gan_extract_label_forms_prompt.py` (`SUPPORTING_EXTRACT_TEMPLATE` back to `paper/supporting materials/...`)
-     - `docs/paper/README.md`, `docs/paper/sections/methods.md`, `docs/paper/sections/results.md`, and `README.md` (revert only the relocated publication paths).
+     - `docs/paper/README.md`, `publications/dissertation/notes/sections/methods.md`, `publications/dissertation/notes/sections/results.md`, and `README.md` (revert only the relocated publication paths).
    Never use `git checkout` of whole files as migration rollback, as doing so would risk clobbering concurrent or subsequent changes.
 
 ### Slice 3 (P0.4 Plan Archive)
@@ -90,7 +90,7 @@ Tasks under the repository restructuring plan ([`ACTIVE_ROADMAP.md`](../../plans
   - `docs/plans/paper_final_repo_scope_2026-08-17.md` -> `docs/history/plans/paper_final_repo_scope_2026-08-17.md` (pre-move SHA256: `c6f7294d90ab56339809d87c92b24fbbccf3a9c75701ecf57daa40b64e2c83d9`, git blob: `4d4c643078b54644a986315b19293c421737369f`)
 - Updated callers and readers:
   - `docs/THREAD_MAP.md` (tracked in Git; lines 88-89 updated).
-  - `docs/decisions/0055-exect-semantic-inventory-and-method-contracts.md` (lines 10, 171).
+  - `docs/history/decisions/0055-exect-semantic-inventory-and-method-contracts.md` (lines 10, 171).
   - 11 research notes in `docs/research/exectv2/` referencing `exect_llm_representation` and `exect_prompt_fundamentals`.
   - `docs/README.md` (updated description of `docs/paper/` to `(migration planned)` and `history/` to note archived plans).
   - `docs/NAVIGATION.md` (added row for historical plans).
@@ -98,7 +98,7 @@ Tasks under the repository restructuring plan ([`ACTIVE_ROADMAP.md`](../../plans
   Review the slice commit and reverse only its moves and path edits, preserving subsequent edits and unrelated work:
   1. Move the four files back from `docs/history/plans/` to `docs/plans/`.
   2. Remove the top archival notice blocks from the four files and restore relative links to `../` (or inspect the slice commit diff to reverse only the text edits to those four files).
-  3. Revert only the updated plan paths in `docs/THREAD_MAP.md`, `docs/decisions/0055-*.md`, and `docs/research/exectv2/*.md`.
+  3. Revert only the updated plan paths in `docs/THREAD_MAP.md`, `docs/history/decisions/0055-*.md`, and `docs/research/exectv2/*.md`.
   4. In `docs/README.md` and `docs/NAVIGATION.md`, revert the specific lines referencing `history/plans/`.
   5. Remove `docs/history/plans/` directory if empty.
   Never use `git checkout` of whole files as migration rollback.
@@ -128,7 +128,7 @@ Tasks under the repository restructuring plan ([`ACTIVE_ROADMAP.md`](../../plans
 - Pre-move base commit byte hashes and Git blob IDs verified against Git base `ed4f956f`.
 - Absence of code/test callers confirmed prior to move; verified no hash pins in `docs/experiments/retained_evidence_manifest.json` for the four moved plans or modified incoming-reference documents. Manifest bytes preserved intact.
 - Archival notice banners and rebased relative links verified across all four moved files.
-- Incoming Markdown links in `docs/THREAD_MAP.md` (tracked), `docs/decisions/0055-*.md`, and `docs/research/exectv2/` (11 files) verified.
+- Incoming Markdown links in `docs/THREAD_MAP.md` (tracked), `docs/history/decisions/0055-*.md`, and `docs/research/exectv2/` (11 files) verified.
 - Sole active plan invariant confirmed: `docs/plans/ACTIVE_ROADMAP.md` is the only file remaining in `docs/plans/`.
 - Repository documentation hygiene verified: `.venv/bin/python scripts/check_doc_hygiene.py` passed cleanly (doc-hygiene gates: OK).
 - Git diff formatting verified: `git diff --check` passed cleanly across all repository files with 0 errors; trailing two-space breaks on changed lines replaced with explicit backslash breaks or removed.

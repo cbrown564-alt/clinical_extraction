@@ -111,4 +111,4 @@ a Gan classification result.
 
 Stop. Do not retune from these letters. Do not redraw the sample.
 The compact table and three illustrations are now in
-[paper results §G](../../paper/sections/results.md).
+[paper results §G](../../../publications/dissertation/notes/sections/results.md).

@@ -22,9 +22,10 @@ rescues all rewrite a drug the model named. Investigations has two
 first-rescues, both inventory trims.
 
 These are pooled six-model first-rescues on development splits, not
-holdout component estimates. The [HTML exhibit](../artifacts/rescue_source_provenance_2026-08-13.html)
-shows the family split, the `EA0007` two-model contrast, and one card per
-source class.
+holdout component estimates. The family split, the `EA0007` two-model
+contrast, and one example card per source class are in this report;
+the machine-readable counts are in the
+[JSON artifact](../../experiments/hybrid_rescue_source_provenance_20260813.json).
 
 ## Source classes
 

@@ -75,6 +75,6 @@ than a direct file pin and is recorded as a known limitation.
   [passed](rules_only_validation750_gate_a_2026-08-10.md)
   (2026-08-11, 0 label diffs across 750 rows). Gate B (holdout execution) has
   not been entered.
-- `docs/canon/10_paper_provenance.md` has no Gan rules-only headline row, so no
+- `docs/history/canon/10_paper_provenance.md` has no Gan rules-only headline row, so no
   cited figure moved. Any future citation must use `673/741` or `682/750`, never
   the retired `688/741`.

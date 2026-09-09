@@ -25,21 +25,23 @@ engineering evidence, not evaluations of patient-history reconstruction.
 
 | Need | Current owner or entry |
 | --- | --- |
-| Dissertation scope and paper reading order | [Paper keep-set](paper/README.md) |
+| Dissertation scope and paper reading order | [Paper keep-set](paper/README.md) / [Dissertation publication](../publications/dissertation/) |
 | Gan-only manuscript decision | [Gan is the dissertation paper](paper/decisions/gan-is-the-dissertation-paper.md) |
-| Existing dataset description | [Dataset description](research/paper/dataset_description_2026-08-26.md) |
-| What the gold labels preserve or discard | [Annotation policy comparison](research/paper/what_the_two_golds_already_decided_2026-08-17.md) |
-| Current manuscript methods | [Methods](paper/sections/methods.md) |
-| Current manuscript results | [Results](paper/sections/results.md) |
-| Saved results and inventory | [Paper experiments](../paper_experiments/README.md), [inventory](../paper_experiments/inventory.json) |
-| Wider Gan/ExECT model comparison | [Three variables](research/paper/three_variables_rules_model_thinking_2026-08-23.md) |
+| Retained benchmark policies | [Gan 2026](benchmarks/gan2026/README.md), [ExECTv2](benchmarks/exectv2/README.md) |
+| Existing dataset description | [Dataset description](research/shared/dataset_description_2026-08-26.md) |
+| What the gold labels preserve or discard | [Annotation policy comparison](research/shared/what_the_two_golds_already_decided_2026-08-17.md) |
+| Current manuscript methods & notes | [Dissertation notes](../publications/dissertation/notes/) |
+| Saved results and inventory | [Letter benchmarks](../results/letter-benchmarks/README.md), [inventory](../results/letter-benchmarks/inventory.json) |
+| Wider Gan/ExECT model comparison | [Three variables](research/shared/three_variables_rules_model_thinking_2026-08-23.md) |
 | Study protocols and writing sources | [Research entry](research/README.md) |
 | Shared and task-specific design references | [Design entry](design/README.md) |
 | Implemented stage diagrams and teaching cases | [Generated architecture](architecture/README.md) |
 | Locked-holdout policy | [Aggregate-only holdout](paper/decisions/holdout-is-aggregate-only.md) |
 | Test admission and tiers | [Pytest firewall](paper/decisions/pytest-is-the-research-validity-firewall.md) |
 | Historical numbered decisions | [Decision history](history/decisions.md) |
+| Historical canon (superseded) | [Historical canon](history/canon/) |
 | Historical plans (superseded) | [Historical plans](history/plans/) |
+
 
 Some older indexes, experiment plans and claim documents disagree with later
 manuscript decisions. Follow the paper keep-set for manuscript scope and the new

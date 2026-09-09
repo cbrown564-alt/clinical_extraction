@@ -8,8 +8,8 @@ funnel with a fork into the two executors; policy table cut to two
 columns; new one-row-two-implementations table)
 Status: current; matches `paper/draft/Extract, then decide.tex` Section III
 Owner: this file
-Scope: [Gan is the dissertation paper](../decisions/gan-is-the-dissertation-paper.md),
-[paper-story simplification](../decisions/paper-story-simplification.md)
+Scope: [Gan is the dissertation paper](../history/decisions/gan-is-the-dissertation-paper.md),
+[paper-story simplification](../history/decisions/paper-story-simplification.md)
 
 Paper stage names are **extract** and **decide**. The implementation
 names three stages (`find`, `encode`, `select`). The cited extraction

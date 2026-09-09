@@ -10,8 +10,8 @@ section D keeps three codebook prompt ablations; inventory panel moves
 to supporting material)
 Status: structured draft matching `paper/draft/Extract, then decide.tex`
 Owner: this file
-Scope: [Gan is the dissertation paper](../decisions/gan-is-the-dissertation-paper.md),
-[paper-story simplification](../decisions/paper-story-simplification.md)
+Scope: [Gan is the dissertation paper](../history/decisions/gan-is-the-dissertation-paper.md),
+[paper-story simplification](../history/decisions/paper-story-simplification.md)
 Feasibility: [100-letter descriptive study](../../research/gan2026/gan_inventory_feasibility_dev750_n100_2026-08-28.md)
 
 Paper stage names are **extract** (one LLM call; implementation
@@ -96,7 +96,7 @@ five below Hybrid. Cell 3 versus rules throughout: 99 vs 37
 discordant, Δ+0.138, 95% CI 0.089 to 0.187, *p* = 1.0×10⁻⁷. Owner:
 [five-cell grid](../../research/gan2026/gan_five_cell_grid_2026-08-22.md).
 Per
-[paper-story simplification](../decisions/paper-story-simplification.md),
+[paper-story simplification](../history/decisions/paper-story-simplification.md),
 Rules-only leaves the dissertation and supporting materials; the
 rows stay valid as research history.
 
@@ -268,7 +268,7 @@ codebook ledger scored encode **0.78 → 0.69** (89 harm, 21 rescue;
 748 parsed letters) and both select paths at **0.79** (select after
 encode 592; select from extract 590). That study is why the LLM row
 skips the extra encode call. Owners:
-[later-stage encode/select decision](../decisions/gan-later-stage-encode-select-prompts.md),
+[later-stage encode/select decision](../history/decisions/gan-later-stage-encode-select-prompts.md),
 [encode on codebook extract](../../research/gan2026/gan_encode_on_codebook_extract_2026-08-22.md),
 [select-from-extract](../../research/gan2026/gan_select_from_extract_2026-08-22.md).
 
@@ -335,7 +335,7 @@ There is no ledger to encode or select. Owner:
 [prompt-component ablation](../../research/gan2026/gan_extract_prompt_component_ablation_2026-08-30.md),
 [round 2](../../research/gan2026/gan_extract_prompt_component_ablation_round2_2026-08-30.md),
 [combined ablation protocol](../../research/gan2026/gan_extract_prompt_component_ablation_combined_protocol_2026-09-03.md),
-[source-near vs bundled encode](../../research/paper/gan_source_near_vs_bundled_encode_2026-08-23.md).
+[source-near vs bundled encode](../../research/gan2026/gan_source_near_vs_bundled_encode_2026-08-23.md).
 
 | Find request | Provisional / find | Encode | Final / select |
 | --- | ---: | ---: | ---: |
@@ -485,7 +485,7 @@ result shows that the design can execute
 on a single laptop GPU under the same synthetic task conditions, not
 real-letter performance, clinical
 validity, workflow fit, privacy compliance, or deployment readiness
-([paper-story simplification](../decisions/paper-story-simplification.md),
+([paper-story simplification](../history/decisions/paper-story-simplification.md),
 Decision 6).
 
 ## F2. Rule select without encode separates encode from decide *(repository)*
@@ -565,7 +565,7 @@ micro-F1, and configuration.
 ## G. The same letters support a broader clinical inventory, descriptively (supporting material)
 
 Per
-[paper-story simplification](../decisions/paper-story-simplification.md),
+[paper-story simplification](../history/decisions/paper-story-simplification.md),
 this panel is descriptive only and sits in the supporting materials,
 not the main paper. The Gan gold is one current seizure-frequency
 state. The same synthetic letters also mention diagnoses, medicines,
