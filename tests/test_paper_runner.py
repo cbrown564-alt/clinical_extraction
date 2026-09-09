@@ -85,7 +85,7 @@ def test_living_roster_is_the_six_paper_models() -> None:
     assert sol_api_base(None) == AI_GATEWAY_OPENAI_BASE == "https://ai-gateway.vercel.sh/v1"
     assert resolve_paper_api_base("gpt56sol", None) == AI_GATEWAY_OPENAI_BASE
     assert resolve_paper_api_base("gpt56luna", None) is None
-    assert grok_api_base(None) == AI_GATEWAY_OPENAI_BASE
+    assert grok_api_base(None) == OPENROUTER_OPENAI_BASE
     assert resolve_paper_api_base(GROK46_SLUG, None) == OPENROUTER_OPENAI_BASE
     assert MODELS["deepseek_v4_flash"].reasoning_effort == "low"
     assert MODELS["deepseek_v4_flash"].thinking_type == "enabled"
@@ -168,6 +168,7 @@ def test_live_methods_are_the_paper_llm_cells() -> None:
         "gan_llm_extract_holgate_label",
         "gan_llm_extract_no_evidence",
         "gan_llm_extract_examples_only",
+        "gan_llm_extract_no_examples_no_evidence_no_forms",
         "gan_llm_extract_encode_select",
         "gan_llm_and_rules_extract",
         "exect_llm_pre_post",

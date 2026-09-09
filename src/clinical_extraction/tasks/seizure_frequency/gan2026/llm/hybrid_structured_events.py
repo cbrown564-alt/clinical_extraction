@@ -59,6 +59,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     prompt_llm_extract_no_examples as extract_no_examples,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    prompt_llm_extract_no_examples_no_evidence_no_forms as extract_combined,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_monthly_diary import (
     monthly_diary_label_from_events as _monthly_diary_label_from_events,
 )
@@ -109,7 +112,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_extract 
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_extract_raw import (
     build_llm_extract_raw_prompt_input,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm import prompt_llm_extract_no_examples_no_evidence_no_forms as extract_combined
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label,
@@ -146,7 +148,9 @@ GAN_LLM_EXTRACT_HOLGATE_LIKE = extract_holgate.GAN_LLM_EXTRACT_HOLGATE_LIKE
 GAN_LLM_EXTRACT_HOLGATE_LABEL = extract_holgate_label.GAN_LLM_EXTRACT_HOLGATE_LABEL
 GAN_LLM_EXTRACT_NO_EVIDENCE = extract_no_evidence.GAN_LLM_EXTRACT_NO_EVIDENCE
 GAN_LLM_EXTRACT_EXAMPLES_ONLY = extract_examples_only.GAN_LLM_EXTRACT_EXAMPLES_ONLY
-GAN_LLM_EXTRACT_NO_EXAMPLES_NO_EVIDENCE_NO_FORMS = extract_combined.GAN_LLM_EXTRACT_NO_EXAMPLES_NO_EVIDENCE_NO_FORMS
+GAN_LLM_EXTRACT_NO_EXAMPLES_NO_EVIDENCE_NO_FORMS = (
+    extract_combined.GAN_LLM_EXTRACT_NO_EXAMPLES_NO_EVIDENCE_NO_FORMS
+)
 GAN_LLM_EXTRACT_ENCODE_SELECT = extract_encode_select.GAN_LLM_EXTRACT_ENCODE_SELECT
 GAN_LLM_EXTRACT_RAW = "gan_llm_extract_raw"
 GAN_LLM_WITH_RULES = GAN_LLM_EXTRACT_RAW

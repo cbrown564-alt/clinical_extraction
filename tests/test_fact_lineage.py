@@ -7,7 +7,11 @@ from __future__ import annotations
 
 import pytest
 
-from clinical_extraction.architecture.fact_lineage import _render_unit
+from clinical_extraction.architecture.fact_lineage import (
+    _as_items,
+    _find_item,
+    _render_unit,
+)
 from clinical_extraction.architecture.paper_teaching_cases import (
     build_paper_teaching_letters,
 )
@@ -111,6 +115,26 @@ def test_unattributed_letter_stages_are_not_copied_onto_every_fact() -> None:
         assert not any(
             stage_id.endswith("repair.monthly_diary") for stage_id in stage_ids
         )
+
+
+def test_as_items_unwraps_extraction_json_wrapper() -> None:
+    items = _as_items(
+        '[[ ## extraction_json ## ]]\n{"clinical_events": [{'
+        '"family": "diagnosis", '
+        '"evidence": "2. Symptomatic structural epilepsy secondary to previous '
+        'cerebral abcess", '
+        '"fact": "Symptomatic structural epilepsy", '
+        '"attributes": {"DiagCategory": "Epilepsy"}}]}'
+    )
+    mention = {
+        "entity": "Diagnosis",
+        "text": "2. Symptomatic structural epilepsy secondary to previous cerebral abcess",
+    }
+    proposed = _find_item(items, mention)
+    assert proposed is not None
+    rendered = _render_unit(proposed)
+    assert "DiagCategory" in rendered
+    assert "CUI" not in rendered
 
 
 def test_lineage_render_drops_event_state_scratchpad() -> None:

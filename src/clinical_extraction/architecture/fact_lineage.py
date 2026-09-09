@@ -140,6 +140,20 @@ def _as_mapping(value: Any) -> Mapping[str, Any] | None:
     return None
 
 
+def _parse_jsonish(text: str) -> Any | None:
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        first = text.find("{")
+        last = text.rfind("}")
+        if first == -1 or last <= first:
+            return None
+        try:
+            return json.loads(text[first : last + 1])
+        except json.JSONDecodeError:
+            return None
+
+
 def _as_items(value: Any) -> list[Any]:
     if value is None:
         return []
@@ -147,9 +161,8 @@ def _as_items(value: Any) -> list[Any]:
         text = value.strip()
         if not text:
             return []
-        try:
-            parsed: Any = json.loads(text)
-        except json.JSONDecodeError:
+        parsed = _parse_jsonish(text)
+        if parsed is None:
             return [text]
         return _as_items(parsed)
     if isinstance(value, Mapping):
@@ -349,6 +362,12 @@ def _same_mention(left: Any, right: Any) -> bool:
         left_evidence
         and second["evidence"]
         and normalize_phrase(left_evidence) == normalize_phrase(second["evidence"])
+    ):
+        return True
+    if (
+        left_evidence
+        and second["text"]
+        and normalize_phrase(left_evidence) == normalize_phrase(second["text"])
     ):
         return True
     if left_data.get("mentions"):

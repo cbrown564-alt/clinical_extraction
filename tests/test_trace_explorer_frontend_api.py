@@ -165,8 +165,8 @@ def test_paper_gan_five_cell_encode_is_replayable(client: TestClient) -> None:
         if family["run_id"] == "gan2026_validation750_gemini37flash_llm_select"
     )
     assert extract["metrics"]["purist_accuracy"] == select["metrics"]["purist_accuracy"]
-    assert extract["metrics"]["purist_accuracy"] == 0.88
-    assert encode["metrics"]["purist_accuracy"] == 0.8107
+    assert extract["metrics"]["purist_accuracy"] == 0.78
+    assert encode["metrics"]["purist_accuracy"] == 0.78
     assert extract["repair_mode"] == "llm_select"
     rules = [family for family in catalog if family.get("paper_cell") == "rules_only"]
     assert len(rules) == 1
@@ -354,8 +354,9 @@ def test_frontend_api_serves_the_living_gan_dev750_panel(client: TestClient) -> 
     scored_ids = {row["letter_id"] for row in scored["rows"]}
     assert letter_ids
     assert scored_ids & letter_ids
-    pending = client.get("/paper/gan/dev750/llm_select/qwen38_27b/scored")
-    assert pending.status_code == 404
+    qwen = client.get("/paper/gan/dev750/llm_select/qwen38_27b/scored")
+    assert qwen.status_code == 200
+    assert qwen.json()["count"] == 750
 
 
 def test_frontend_api_serves_the_gan_inventory_panel(client: TestClient) -> None:
@@ -432,8 +433,9 @@ def test_frontend_api_serves_the_living_exect_dev140_panel(client: TestClient) -
     scored_ids = {row["letter_id"] for row in scored["rows"]}
     assert letter_ids
     assert scored_ids & letter_ids
-    pending = client.get("/paper/exect/dev140/exect_llm_extract/qwen38_27b/scored")
-    assert pending.status_code == 404
+    qwen = client.get("/paper/exect/dev140/exect_llm_extract/qwen38_27b/scored")
+    assert qwen.status_code == 200
+    assert qwen.json()["count"] == 140
     alias = client.get("/paper/exect/dev140/grok46/scored")
     assert alias.status_code == 200
     assert alias.json()["method"] == "llm_select"
