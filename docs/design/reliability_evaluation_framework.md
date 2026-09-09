@@ -23,7 +23,7 @@ metric or clinical validity.
 | `operational_reliability` | Operational reliability | Does the named runtime complete predictably, with failures, repairs, retries, latency, and usage reported at their measured scope? |
 
 Changing this set requires an amendment to
-[decision 0044](../decisions/0044-shared-reliability-criteria-use-task-specific-measures.md).
+[decision 0044](../history/decisions/0044-shared-reliability-criteria-use-task-specific-measures.md).
 
 ## Assurance gates
 

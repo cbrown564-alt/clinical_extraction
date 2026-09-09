@@ -43,7 +43,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DATE_STAMP = "20260806"
 REPORT_DATE = "2026-08-06"
 PROTOCOL = "docs/research/shared/six_model_category_cut_protocol_2026-08-06.md"
-DECISION_0046 = "docs/decisions/0046-exect-primary-method-comparison-boundary.md"
+DECISION_0046 = "docs/history/decisions/0046-exect-primary-method-comparison-boundary.md"
 DECISION_0046_REFERENCE_F1 = 0.8160
 OUT_JSONL = (
     REPO_ROOT

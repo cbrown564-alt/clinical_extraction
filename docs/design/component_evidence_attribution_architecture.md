@@ -92,4 +92,4 @@ Otherwise add instrumentation, replay saved outputs, or test named hard cases.
 
 For the family-specific application of this contract to the final ExECT model
 comparison, see
-[decision 0040](../decisions/0040-final-exect-llm-with-rules-family-ownership.md).
+[decision 0040](../history/decisions/0040-final-exect-llm-with-rules-family-ownership.md).

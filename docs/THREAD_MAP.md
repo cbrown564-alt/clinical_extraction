@@ -12,11 +12,11 @@ Use the shortest path that answers the question.
 [runbook](runbooks/current_stack_six_model_replay.md) →
 [inventory](../experiments/current_stack/SOURCES.json) →
 [living fills](../experiments/current_stack/latest/fills.json) →
-[decision 0050](decisions/0050-current-stack-hybrid-primary-fills.md)
+[decision 0050](history/decisions/0050-current-stack-hybrid-primary-fills.md)
 
 ## Resume Decision 0048 after the 2026-08-02 pause
 
-[Decision 0048](decisions/0048-comprehension-and-handoff-refactor.md) →
+[Decision 0048](history/decisions/0048-comprehension-and-handoff-refactor.md) →
 [status current point](../PROJECT_STATUS.md#decision-0048-current-point) →
 [active milestone sequence](plans/ACTIVE_ROADMAP.md#active-comprehension-and-handoff-work) →
 [regeneration and retention ledger](REGENERATION.md)
@@ -60,7 +60,7 @@ structured-prompt zoo are closed and pruned. Successor direction is
 Fork A / the three assigned hybrid slots, not a prompt add-back.
 
 Owner:
-[Decision 0054](decisions/0054-model-request-order-and-metadata-are-explicit.md);
+[Decision 0054](history/decisions/0054-model-request-order-and-metadata-are-explicit.md);
 [prompt variant slots](research/exectv2/prompt_variant_slots_2026-08-16.md).
 
 ## ExECT LLM representation (Fork A)
@@ -95,7 +95,7 @@ Owner:
 [extras catalog](research/exectv2/mention_unit_v2_empty_gold_sf_extras_luna_dev140_2026-08-16.md);
 [mention-unit v2 `dev140`](research/exectv2/mention_unit_v2_fork_a_luna_dev140_2026-08-16.md);
 [mention-unit v2](research/exectv2/mention_unit_v2_fork_a_luna_dev20_2026-08-16.md);
-[decision 0055](decisions/0055-exect-semantic-inventory-and-method-contracts.md).
+[decision 0055](history/decisions/0055-exect-semantic-inventory-and-method-contracts.md).
 
 ## ExECT current-hybrid prompt variants
 
@@ -153,7 +153,7 @@ runners are removed (recover from Git history). Live default stays
 `v0.9.24`.
 
 Owner:
-[decision 0054](decisions/0054-model-request-order-and-metadata-are-explicit.md);
+[decision 0054](history/decisions/0054-model-request-order-and-metadata-are-explicit.md);
 [prompt variant slots](research/exectv2/prompt_variant_slots_2026-08-16.md).
 
 ## Gan structured-prompt lineage
@@ -170,7 +170,7 @@ Owner:
 envelope identity strings. Luna `dev20`: no large drop (19/20 vs
 19/20). Luna `dev750`: no large drop (660/750 vs 663/750, −3). Not
 selected. Owner:
-[decision 0053](decisions/0053-gan-structured-events-final-prompt.md);
+[decision 0053](history/decisions/0053-gan-structured-events-final-prompt.md);
 [dev20 run](research/gan2026/structured_prompt_final_luna_dev20_2026-08-15.md);
 [dev750 run](research/gan2026/structured_prompt_final_luna_dev750_2026-08-15.md).
 
@@ -234,29 +234,29 @@ rejected slice artifact `experiments/gan2026_deepseek_unknown_heavy_slice_u_vs_a
 ## Write from the paper source library
 
 [NAVIGATION paper-source library](NAVIGATION.md#paper-source-library) →
-[why hybrid](research/paper/why_hybrid_architecture_2026-08-09.md) and the
-[Gan phrase-variant inventory](research/paper/gan_gold_phrase_variants_2026-08-13.md) and
-[ExECT phrase-variant inventory](research/paper/exect_gold_phrase_variants_2026-08-13.md) →
-[Gan story](research/paper/gan_story_2026-08-10.md) and
-[ExECT story](research/paper/exect_story_2026-08-12.md) →
-[rescue source exhibit](research/artifacts/rescue_source_provenance_2026-08-13.html) →
-[failures and limits](research/paper/failures_and_limits_2026-08-10.md) →
-[paper claim status](canon/10_paper_provenance.md)
+[why hybrid](research/shared/why_hybrid_architecture_2026-08-09.md) and the
+[Gan phrase-variant inventory](research/gan2026/gan_gold_phrase_variants_2026-08-13.md) and
+[ExECT phrase-variant inventory](research/exectv2/exect_gold_phrase_variants_2026-08-13.md) →
+[Gan story](research/gan2026/gan_story_2026-08-10.md) and
+[ExECT story](research/exectv2/exect_story_2026-08-12.md) →
+[rescue source exhibit](research/shared/hybrid_rescue_source_provenance_2026-08-13.md) →
+[failures and limits](research/shared/failures_and_limits_2026-08-10.md) →
+[paper claim status](history/canon/10_paper_provenance.md)
 
 Do not start from the historical
-[generated manuscript](research/paper/manuscript_2026-06-26.md).
+[generated manuscript](research/shared/manuscript_2026-06-26.md).
 
 ## Check a paper claim
 
-[paper claim status](canon/10_paper_provenance.md) →
+[paper claim status](history/canon/10_paper_provenance.md) →
 [retained evidence index](experiments/retained_evidence_manifest.md) →
 the selected report or data file
 
 ## Understand a score
 
-[scoring rules](canon/04_scoring.md) →
-[Gan evidence](canon/06_gan_clinical_policy.md) or
-[ExECT evidence](canon/07_exect_plan11.md)
+[scoring rules](history/canon/04_scoring.md) →
+[Gan evidence](history/canon/06_gan_clinical_policy.md) or
+[ExECT evidence](history/canon/07_exect_plan11.md)
 
 ## Change the implementation
 
@@ -269,21 +269,21 @@ the relevant decision record and tests
 
 Durable decision doors for selected methods:
 
-- [decision 0039](decisions/0039-final-exect-six-model-roster.md) — completed six-model roster
-- [decision 0051](decisions/0051-gemini-37-flash-succeeds-gpt41mini-six-model-slot.md) — successor six-model roster (Gemini 3.7 Flash)
-- [decision 0052](decisions/0052-gemini-37-flash-holdout-six-model-slot.md) — Gemini holdout six-model slot
+- [decision 0039](history/decisions/0039-final-exect-six-model-roster.md) — completed six-model roster
+- [decision 0051](history/decisions/0051-gemini-37-flash-succeeds-gpt41mini-six-model-slot.md) — successor six-model roster (Gemini 3.7 Flash)
+- [decision 0052](history/decisions/0052-gemini-37-flash-holdout-six-model-slot.md) — Gemini holdout six-model slot
 - [Gan Gemini LLM-only v0.8](research/gan2026/gemini37flash_llm_only_dev750_test450_2026-08-13.md) — successor `dev750` / `test450` llm cells
 - [ExECT Gemini LLM-only raw lane](research/exectv2/gemini37flash_llm_only_raw_lane_2026-08-14.md) — one-call `raw_lane_score` 0.8444 / 0.82; no second live call
 - [Qwen 3.8 27B candidate](research/shared/qwen38_27b_candidate_protocol_2026-08-14.md) — reserved local successor; not a Decision 0051 roster swap. Gan `dev750` vs 3.6: [stage comparison](research/gan2026/qwen38_27b_vs_qwen36_35b_dev750_2026-08-16.md)
-- [decision 0040](decisions/0040-final-exect-llm-with-rules-family-ownership.md) — ExECT family ownership
-- [decision 0041](decisions/0041-single-call-exect-model-comparison.md) — one-call ExECT comparison
-- [decision 0043](decisions/0043-gan-hosted-comparison-uses-v05-prompt.md) — hosted Gan prompt (`v0.5` selected identity)
-- [decision 0053](decisions/0053-gan-structured-events-final-prompt.md) — Gan `final` envelope hygiene; Luna `dev750` complete, not selected
-- [decision 0054](decisions/0054-model-request-order-and-metadata-are-explicit.md) — rendered request order and research-metadata separation; ExECT v17 unmeasured
-- [decision 0044](decisions/0044-shared-reliability-criteria-use-task-specific-measures.md) — shared reliability criteria
-- [decision 0046](decisions/0046-exect-primary-method-comparison-boundary.md) — ExECT primary method-comparison boundary
-- [decision 0048](decisions/0048-comprehension-and-handoff-refactor.md) — comprehension and handoff refactor
-- [decision 0049](decisions/0049-pytest-research-validity-firewall.md) — pytest research-validity firewall
+- [decision 0040](history/decisions/0040-final-exect-llm-with-rules-family-ownership.md) — ExECT family ownership
+- [decision 0041](history/decisions/0041-single-call-exect-model-comparison.md) — one-call ExECT comparison
+- [decision 0043](history/decisions/0043-gan-hosted-comparison-uses-v05-prompt.md) — hosted Gan prompt (`v0.5` selected identity)
+- [decision 0053](history/decisions/0053-gan-structured-events-final-prompt.md) — Gan `final` envelope hygiene; Luna `dev750` complete, not selected
+- [decision 0054](history/decisions/0054-model-request-order-and-metadata-are-explicit.md) — rendered request order and research-metadata separation; ExECT v17 unmeasured
+- [decision 0044](history/decisions/0044-shared-reliability-criteria-use-task-specific-measures.md) — shared reliability criteria
+- [decision 0046](history/decisions/0046-exect-primary-method-comparison-boundary.md) — ExECT primary method-comparison boundary
+- [decision 0048](history/decisions/0048-comprehension-and-handoff-refactor.md) — comprehension and handoff refactor
+- [decision 0049](history/decisions/0049-pytest-research-validity-firewall.md) — pytest research-validity firewall
 
 Also: [pipeline trace explorer spec](design/pipeline_trace_explorer_spec.md),
 [evidence groundedness metric](reference/evidence_groundedness_metric.md),
@@ -293,13 +293,13 @@ and [runbooks](runbooks/).
 
 [model strategy](design/model_strategy.md) →
 [software design](design/architecture.md) →
-[ExECT family ownership](decisions/0040-final-exect-llm-with-rules-family-ownership.md) →
-[one-call ExECT architecture](decisions/0041-single-call-exect-model-comparison.md) →
-[local structured-output repair](decisions/0042-shared-local-model-structured-output-repair.md) →
+[ExECT family ownership](history/decisions/0040-final-exect-llm-with-rules-family-ownership.md) →
+[one-call ExECT architecture](history/decisions/0041-single-call-exect-model-comparison.md) →
+[local structured-output repair](history/decisions/0042-shared-local-model-structured-output-repair.md) →
 [local vLLM dev10 runbook](runbooks/local_vllm_dev10_windows_2026-08-10.md)
 
 ## Change evidence or split policy
 
-[evidence rules](canon/03_evidence_claims_frozen.md) →
+[evidence rules](history/canon/03_evidence_claims_frozen.md) →
 [locked-data procedure](runbooks/gated_blockers_2026-06-18.md) →
 [retained evidence checks](experiments/retained_evidence_manifest.md)

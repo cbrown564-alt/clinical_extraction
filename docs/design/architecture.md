@@ -64,7 +64,7 @@ The final model comparison is model-led at the input to each main family:
 Rules that change a clinical fact remain prediction owners and make that fact
 hybrid. The attribution record must preserve those changes instead of crediting
 the final result entirely to the model. See
-[decision 0040](../decisions/0040-final-exect-llm-with-rules-family-ownership.md).
+[decision 0040](../history/decisions/0040-final-exect-llm-with-rules-family-ownership.md).
 
 ## Deterministic rule groups
 

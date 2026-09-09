@@ -36,7 +36,7 @@ is a transport condition, not permission to change the clinical prompt or
 rules.
 
 Local structured-output handling is governed by
-[decision 0042](../decisions/0042-shared-local-model-structured-output-repair.md).
+[decision 0042](../history/decisions/0042-shared-local-model-structured-output-repair.md).
 Qwen and Gemma use the same defect-based schema repairs, failure codes,
 value-preserving retry rule, and pre-run native Ollama probe. The normal path is
 one extraction call. A parseable schema failure may add one format-only retry;
@@ -80,7 +80,7 @@ output-schema repair.
 ## Corrected final-comparison core
 
 All new six-model evidence must implement
-[decision 0040](../decisions/0040-final-exect-llm-with-rules-family-ownership.md):
+[decision 0040](../history/decisions/0040-final-exect-llm-with-rules-family-ownership.md):
 
 - the named model supplies the candidate facts and evidence for Diagnosis,
   Seizure Frequency, Prescription, and Investigations;
@@ -109,7 +109,7 @@ comparison condition.
 ## Six-model claim boundary
 
 Decision 0039 fixed the completed roster (including GPT-4.1-mini). New
-six-model calls use [decision 0051](../decisions/0051-gemini-37-flash-succeeds-gpt41mini-six-model-slot.md):
+six-model calls use [decision 0051](../history/decisions/0051-gemini-37-flash-succeeds-gpt41mini-six-model-slot.md):
 
 | Model condition | Availability class | Route |
 | --- | --- | --- |
@@ -148,8 +148,8 @@ No six-model ordering or size/reasoning conclusion is permitted until all six
 conditions run under the corrected final-comparison core and the runtime
 asymmetries are either removed or reported as explicit conditions.
 
-Completed-panel roster owner: [decision 0039](../decisions/0039-final-exect-six-model-roster.md).
-New-call roster owner: [decision 0051](../decisions/0051-gemini-37-flash-succeeds-gpt41mini-six-model-slot.md).
+Completed-panel roster owner: [decision 0039](../history/decisions/0039-final-exect-six-model-roster.md).
+New-call roster owner: [decision 0051](../history/decisions/0051-gemini-37-flash-succeeds-gpt41mini-six-model-slot.md).
 
 ## Run metadata and change control
 

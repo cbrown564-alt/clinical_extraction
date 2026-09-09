@@ -113,7 +113,7 @@ by its assembly config; those inputs are selected and hash-checked here.
 ## Authority and deletion rule
 
 Claim status is owned by
-[`docs/canon/10_paper_provenance.md`](../canon/10_paper_provenance.md). This
+[`docs/history/canon/10_paper_provenance.md`](../history/canon/10_paper_provenance.md). This
 manifest owns the files selected as proof. `experiments/registry.jsonl` owns run
 lineage.
 

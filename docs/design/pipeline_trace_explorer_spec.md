@@ -75,14 +75,14 @@ handling, secrets, audit retention, and operational ownership.
 The explorer is subordinate to these owners:
 
 - [`data_contract.md`](data_contract.md) owns dataset and split behavior.
-- [`03_evidence_claims_frozen.md`](../canon/03_evidence_claims_frozen.md) owns
+- [`03_evidence_claims_frozen.md`](../history/canon/03_evidence_claims_frozen.md) owns
   row-inspection limits.
-- [`04_scoring.md`](../canon/04_scoring.md) owns score names and meanings.
+- [`04_scoring.md`](../history/canon/04_scoring.md) owns score names and meanings.
 - [`component_evidence_attribution_architecture.md`](component_evidence_attribution_architecture.md)
   owns component credit and required comparison records.
-- [Decision 0040](../decisions/0040-final-exect-llm-with-rules-family-ownership.md)
+- [Decision 0040](../history/decisions/0040-final-exect-llm-with-rules-family-ownership.md)
   owns ExECT family-level model and deterministic responsibilities.
-- [Decision 0041](../decisions/0041-single-call-exect-model-comparison.md)
+- [Decision 0041](../history/decisions/0041-single-call-exect-model-comparison.md)
   owns the selected one-call ExECT graph.
 - [`evidence_groundedness_metric.md`](../reference/evidence_groundedness_metric.md)
   owns evidence grades.

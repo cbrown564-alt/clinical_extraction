@@ -3,7 +3,7 @@
 Repeatable no-call readout of the selected six-model `llm_with_rules` cells
 through HEAD repairs. This is the procedure to run again after a repair lands.
 
-Owners: [Decision 0050](../decisions/0050-current-stack-hybrid-primary-fills.md)
+Owners: [Decision 0050](../history/decisions/0050-current-stack-hybrid-primary-fills.md)
 (policy), `paper_experiments/current_stack/` (inventory and living numbers).
 
 Do not make new model calls. Do not inspect locked holdout rows. Do not

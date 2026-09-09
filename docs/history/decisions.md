@@ -4,13 +4,13 @@ Date: 2026-08-17
 Status: historical log
 Owner: [paper keep-set](../paper/README.md)
 
-The numbered `docs/decisions/00xx-*.md` series is closed. Current
+The numbered `docs/history/decisions/00xx-*.md` series is closed. Current
 decisions live under [`docs/paper/decisions/`](../paper/decisions/).
 Claim sentences live in [`docs/paper/claims.md`](../paper/claims.md).
-Recover a full numbered file from git.
+The numbered series is archived under [`decisions/`](decisions/).
 
 Canon `01`–`11` was a second claim register. It is not current.
-Recover from git under `docs/canon/`.
+Recover from git under `docs/history/canon/`.
 
 | Id | What it locked | Where that now lives |
 | --- | --- | --- |

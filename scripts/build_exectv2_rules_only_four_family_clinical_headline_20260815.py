@@ -197,7 +197,7 @@ def _score_from_restricted(
     return {
         "schema_version": f"exectv2.rules_only_four_family_clinical_headline.{split}.v1",
         "protocol": PROTOCOL,
-        "decision": "docs/decisions/0046-exect-primary-method-comparison-boundary.md",
+        "decision": "docs/history/decisions/0046-exect-primary-method-comparison-boundary.md",
         "generated_on": date.today().isoformat(),
         "split": split,
         "split_loader": split_loader,
