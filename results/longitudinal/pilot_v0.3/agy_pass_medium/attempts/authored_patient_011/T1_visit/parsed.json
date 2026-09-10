@@ -1,0 +1,500 @@
+{
+  "annotations": {
+    "assertions": [
+      {
+        "assertion_id": "as1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 134,
+            "end": 190,
+            "text": "He has an established diagnosis of focal motor epilepsy."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal motor epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "as2",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 192,
+            "end": 278,
+            "text": "His seizures typically occur in severe explosive clusters rather than isolated events."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal motor clusters"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "clusters",
+            "text": "severe explosive clusters rather than isolated events",
+            "count": null,
+            "period": null,
+            "events_per_cluster": null,
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "as3",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 279,
+            "end": 424,
+            "text": "On 5 and 6 February 2025, over a 48-hour period, he suffered an acute cluster of 5 focal motor seizures with left facial and arm clonic activity."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "On 5 and 6 February 2025, over a 48-hour period",
+          "start": {
+            "earliest": "2025-02-05",
+            "latest": "2025-02-05"
+          },
+          "end": {
+            "earliest": "2025-02-06",
+            "latest": "2025-02-06"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal motor seizures with left facial and arm clonic activity"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "clusters",
+            "text": "an acute cluster of 5 focal motor seizures",
+            "count": {
+              "lower": 1,
+              "upper": 1
+            },
+            "period": null,
+            "events_per_cluster": {
+              "lower": 5,
+              "upper": 5
+            },
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "as4",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 425,
+            "end": 484,
+            "text": "He had no seizures between that cluster and today's review."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "complete",
+        "time": {
+          "text": "between that cluster and today's review",
+          "start": {
+            "earliest": "2025-02-06",
+            "latest": "2025-02-06"
+          },
+          "end": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "seizures"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "all_epileptic",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "as5",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 485,
+            "end": 511,
+            "text": "He reports no convulsions."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "convulsions"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "as6",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 512,
+            "end": 558,
+            "text": "He continues carbamazepine 400 mg twice daily."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "carbamazepine",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "as7",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 597,
+            "end": 614,
+            "text": "No EEG requested."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "end": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "as8",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 639,
+            "end": 723,
+            "text": "A second pattern consists of brief bilateral arm shaking without facial involvement."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "brief bilateral arm shaking without facial involvement"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "as9",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 724,
+            "end": 864,
+            "text": "These shaking episodes and his focal motor clusters have both recurred since November 2024, including throughout January and early February."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "since November 2024, including throughout January and early February",
+          "start": {
+            "earliest": "2024-11-01",
+            "latest": "2024-11-30"
+          },
+          "end": {
+            "earliest": "2025-02-01",
+            "latest": "2025-02-12"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "brief bilateral arm shaking without facial involvement",
+            "focal motor clusters"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "as10",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 903,
+            "end": 985,
+            "text": "These are the only two patterns reported since November; they are distinct events."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": "since November",
+          "start": {
+            "earliest": "2024-11-01",
+            "latest": "2024-11-30"
+          },
+          "end": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "brief bilateral arm shaking without facial involvement",
+            "focal motor clusters"
+          ],
+          "kind": "inventory",
+          "interpretation": "epileptic",
+          "scope": "all_reported",
+          "burden": null
+        }
+      }
+    ],
+    "links": [
+      {
+        "link_id": "lk1",
+        "earlier_assertion": "as2",
+        "later_assertion": "as8",
+        "relation": "overlaps_active",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 724,
+            "end": 864,
+            "text": "These shaking episodes and his focal motor clusters have both recurred since November 2024, including throughout January and early February."
+          }
+        ],
+        "decision_time": null
+      },
+      {
+        "link_id": "lk2",
+        "earlier_assertion": "as2",
+        "later_assertion": "as3",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 279,
+            "end": 424,
+            "text": "On 5 and 6 February 2025, over a 48-hour period, he suffered an acute cluster of 5 focal motor seizures with left facial and arm clonic activity."
+          }
+        ],
+        "decision_time": null
+      }
+    ]
+  },
+  "answers": [
+    {
+      "request_id": "T1_visit_Q1",
+      "status": "eligible",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 134,
+          "end": 190,
+          "text": "He has an established diagnosis of focal motor epilepsy."
+        },
+        {
+          "letter_id": "L1",
+          "start": 279,
+          "end": 424,
+          "text": "On 5 and 6 February 2025, over a 48-hour period, he suffered an acute cluster of 5 focal motor seizures with left facial and arm clonic activity."
+        },
+        {
+          "letter_id": "L1",
+          "start": 865,
+          "end": 902,
+          "text": "I currently regard both as epileptic."
+        }
+      ],
+      "reason": "The patient has a documented established diagnosis of focal motor epilepsy as of the index date (12 February 2025), and suffered an acute cluster of focal motor seizures on 5 and 6 February 2025 within the 90-day lookback window (starting 15 November 2024), which the clinician regards as epileptic."
+    },
+    {
+      "request_id": "T1_visit_Q2",
+      "status": "eligible",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 639,
+          "end": 723,
+          "text": "A second pattern consists of brief bilateral arm shaking without facial involvement."
+        },
+        {
+          "letter_id": "L1",
+          "start": 724,
+          "end": 864,
+          "text": "These shaking episodes and his focal motor clusters have both recurred since November 2024, including throughout January and early February."
+        },
+        {
+          "letter_id": "L1",
+          "start": 865,
+          "end": 902,
+          "text": "I currently regard both as epileptic."
+        },
+        {
+          "letter_id": "L1",
+          "start": 903,
+          "end": 985,
+          "text": "These are the only two patterns reported since November; they are distinct events."
+        }
+      ],
+      "reason": "Two distinct patterns (focal motor clusters and brief bilateral arm shaking) are documented, both currently interpreted as epileptic by the clinician and noted to be distinct events. Both have recurred since November 2024, including throughout January and early February 2025, demonstrating overlapping active intervals within the 90-day timeframe."
+    },
+    {
+      "request_id": "T1_visit_Q3",
+      "status": "indeterminate",
+      "evidence": [],
+      "reason": "There is no documentation regarding the initiation, use, or non-initiation of lamotrigine in the supplied letter, and the evidence does not provide an exhaustive medication history for the 180-day timeframe."
+    },
+    {
+      "request_id": "T1_visit_Q4",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 597,
+          "end": 614,
+          "text": "No EEG requested."
+        }
+      ],
+      "reason": "While 'No EEG requested' is recorded for the consultation of 12 February 2025, the letter does not provide a complete inventory of test requests across the entire 180-day timeframe (since 17 August 2024), leaving it unresolved whether an EEG was requested during that window with a result available by the index date."
+    },
+    {
+      "request_id": "T1_visit_Q5",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 865,
+          "end": 902,
+          "text": "I currently regard both as epileptic."
+        }
+      ],
+      "reason": "Both active patterns within the 180-day timeframe are regarded as epileptic, and no documented event or pattern was reinterpreted as non-epileptic. Per the query definition, absence of a revision alone is indeterminate."
+    }
+  ]
+}

@@ -1,0 +1,336 @@
+{
+  "annotations": {
+    "assertions": [
+      {
+        "assertion_id": "A1_L1_diag",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 105,
+            "end": 198,
+            "text": "Christopher is a 29-year-old gentleman with an established diagnosis of generalized epilepsy."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "established",
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "generalized epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "A2_L1_med",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 199,
+            "end": 286,
+            "text": "He has been taking levetiracetam 1000 mg twice daily with excellent reported adherence."
+          }
+        ],
+        "reporter": "mixed",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "He has been taking",
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "levetiracetam",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "A3_L1_freedom",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 287,
+            "end": 426,
+            "text": "He has been entirely seizure-free for over fourteen months, with his last generalized tonic-clonic convulsion occurring on 10 January 2024."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": "for over fourteen months",
+          "start": {
+            "earliest": null,
+            "latest": "2024-01-10"
+          },
+          "end": {
+            "earliest": "2025-03-01",
+            "latest": "2025-03-01"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "seizure"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "all_epileptic",
+          "burden": {
+            "kind": "freedom",
+            "text": "over fourteen months",
+            "count": null,
+            "period": {
+              "amount": {
+                "lower": 14,
+                "upper": null,
+                "lower_inclusive": false,
+                "upper_inclusive": true
+              },
+              "unit": "month"
+            },
+            "events_per_cluster": null,
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "A4_L1_last_gtc",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 347,
+            "end": 425,
+            "text": "his last generalized tonic-clonic convulsion occurring on 10 January 2024"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "10 January 2024",
+          "start": {
+            "earliest": "2024-01-10",
+            "latest": "2024-01-10"
+          },
+          "end": {
+            "earliest": "2024-01-10",
+            "latest": "2024-01-10"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "generalized tonic-clonic convulsion"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "count",
+            "text": "last generalized tonic-clonic convulsion",
+            "count": {
+              "lower": 1,
+              "upper": 1,
+              "lower_inclusive": true,
+              "upper_inclusive": true
+            },
+            "period": null,
+            "events_per_cluster": null,
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "A5_L1_absence_types",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 427,
+            "end": 477,
+            "text": "He reports no myoclonic jerks or daytime absences."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "myoclonic jerks",
+            "daytime absences"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A6_L2_seizure",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 528,
+            "end": 657,
+            "text": "a single breakthrough nocturnal convulsion occurred on 28 May 2025 following severe sleep deprivation."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "28 May 2025",
+          "start": {
+            "earliest": "2025-05-28",
+            "latest": "2025-05-28"
+          },
+          "end": {
+            "earliest": "2025-05-28",
+            "latest": "2025-05-28"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "nocturnal convulsion"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "count",
+            "text": "single",
+            "count": {
+              "lower": 1,
+              "upper": 1,
+              "lower_inclusive": true,
+              "upper_inclusive": true
+            },
+            "period": null,
+            "events_per_cluster": null,
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "A7_L2_no_eeg",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 846,
+            "end": 868,
+            "text": "No EEG was requested."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-06-12",
+            "latest": "2025-06-12"
+          },
+          "end": {
+            "earliest": "2025-06-12",
+            "latest": "2025-06-12"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "request_inventory",
+          "result": null,
+          "request_count": 0
+        }
+      }
+    ],
+    "links": []
+  },
+  "answers": [
+    {
+      "request_id": "T1_retrospective_Q1",
+      "status": "ineligible",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 287,
+          "end": 426,
+          "text": "He has been entirely seizure-free for over fourteen months, with his last generalized tonic-clonic convulsion occurring on 10 January 2024."
+        }
+      ],
+      "reason": "The patient has an established diagnosis of generalized epilepsy, but the letters explicitly document that he was entirely seizure-free for over fourteen months prior to the index date of 2025-03-01, with his last seizure on 10 January 2024. This explicit absence of all epileptic seizures across the 90-day timeframe (2024-12-02 to 2025-03-01) refutes the condition."
+    },
+    {
+      "request_id": "T1_retrospective_Q2",
+      "status": "ineligible",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 287,
+          "end": 426,
+          "text": "He has been entirely seizure-free for over fourteen months, with his last generalized tonic-clonic convulsion occurring on 10 January 2024."
+        }
+      ],
+      "reason": "The patient was explicitly reported to be entirely seizure-free for over fourteen months prior to 2025-03-01, establishing a complete inventory of zero active epileptic patterns throughout the 90-day lookback timeframe (2024-12-02 to 2025-03-01), which refutes the requirement of at least two active overlapping patterns."
+    },
+    {
+      "request_id": "T1_retrospective_Q3",
+      "status": "indeterminate",
+      "evidence": [],
+      "reason": "There is no mention of lamotrigine in the letters, and silence does not establish explicit non-initiation throughout the 180-day timeframe (2024-09-03 to 2025-03-01)."
+    },
+    {
+      "request_id": "T1_retrospective_Q4",
+      "status": "indeterminate",
+      "evidence": [],
+      "reason": "No EEG was requested or resulted during the 180-day timeframe (2024-09-03 to 2025-03-01), but the letters do not provide a complete request inventory covering the full 180-day lookback period to refute that a qualifying request occurred."
+    },
+    {
+      "request_id": "T1_retrospective_Q5",
+      "status": "indeterminate",
+      "evidence": [],
+      "reason": "No previously documented epileptic event or pattern was explicitly reinterpreted as non-epileptic by the index date; under the query definition, absence of a revision alone is indeterminate."
+    }
+  ]
+}

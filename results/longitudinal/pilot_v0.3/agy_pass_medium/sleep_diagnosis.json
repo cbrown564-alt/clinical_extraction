@@ -1,0 +1,145 @@
+{
+  "note": "Original wall_seconds used monotonic time, which excludes host sleep on this platform. UTC elapsed is reported separately; raw metadata untouched.",
+  "rows": [
+    {
+      "attempt": "agy_pass_medium/attempts/authored_patient_001/T2_visit/attempt.json",
+      "status": "parsed",
+      "utc_elapsed_seconds": 94.171715,
+      "reported_wall_seconds_monotonic": 94.17458525003167,
+      "clock_gap_seconds": -0.0028702500316626356
+    },
+    {
+      "attempt": "agy_pass_medium/attempts/authored_patient_001/T2_retrospective/attempt.json",
+      "status": "parsed",
+      "utc_elapsed_seconds": 102.189131,
+      "reported_wall_seconds_monotonic": 102.19222108297981,
+      "clock_gap_seconds": -0.0030900829798099494
+    },
+    {
+      "attempt": "agy_pass_medium/attempts/authored_patient_001/T1_visit/attempt.json",
+      "status": "parsed",
+      "utc_elapsed_seconds": 63.188265,
+      "reported_wall_seconds_monotonic": 63.18979525001487,
+      "clock_gap_seconds": -0.0015302500148663967
+    },
+    {
+      "attempt": "agy_pass_medium/attempts/authored_patient_001/T1_retrospective/attempt.json",
+      "status": "parsed",
+      "utc_elapsed_seconds": 42.128845,
+      "reported_wall_seconds_monotonic": 42.13599404197885,
+      "clock_gap_seconds": -0.0071490419788489135
+    },
+    {
+      "attempt": "agy_pass_medium/attempts/authored_patient_003/T2_visit/attempt.json",
+      "status": "parsed",
+      "utc_elapsed_seconds": 68.906227,
+      "reported_wall_seconds_monotonic": 68.18353508401196,
+      "clock_gap_seconds": 0.7226919159880367
+    },
+    {
+      "attempt": "agy_pass_medium/attempts/authored_patient_003/T2_retrospective/attempt.json",
+      "status": "parsed",
+      "utc_elapsed_seconds": 72.155785,
+      "reported_wall_seconds_monotonic": 71.4331197499996,
+      "clock_gap_seconds": 0.7226652500003894
+    },
+    {
+      "attempt": "agy_pass_medium/attempts/authored_patient_003/T1_visit/attempt.json",
+      "status": "parsed",
+      "utc_elapsed_seconds": 61.619846,
+      "reported_wall_seconds_monotonic": 61.621736166998744,
+      "clock_gap_seconds": -0.0018901669987414493
+    },
+    {
+      "attempt": "agy_pass_medium/attempts/authored_patient_003/T1_retrospective/attempt.json",
+      "status": "parsed",
+      "utc_elapsed_seconds": 23.320272,
+      "reported_wall_seconds_monotonic": 23.32098041602876,
+      "clock_gap_seconds": -0.0007084160287611496
+    },
+    {
+      "attempt": "agy_pass_medium/attempts/authored_patient_004/T2_visit/attempt.json",
+      "status": "failed",
+      "utc_elapsed_seconds": 295.063845,
+      "reported_wall_seconds_monotonic": 85.57426770799793,
+      "clock_gap_seconds": 209.48957729200208
+    },
+    {
+      "attempt": "agy_pass_medium/attempts/authored_patient_004/T2_retrospective/attempt.json",
+      "status": "failed",
+      "utc_elapsed_seconds": 312.215117,
+      "reported_wall_seconds_monotonic": 102.72573775000637,
+      "clock_gap_seconds": 209.48937924999365
+    },
+    {
+      "attempt": "agy_pass_medium/attempts/authored_patient_004/T1_visit/attempt.json",
+      "status": "parsed",
+      "utc_elapsed_seconds": 58.29602,
+      "reported_wall_seconds_monotonic": 57.57292058301391,
+      "clock_gap_seconds": 0.7230994169860878
+    },
+    {
+      "attempt": "agy_pass_medium/attempts/authored_patient_004/T1_retrospective/attempt.json",
+      "status": "parsed",
+      "utc_elapsed_seconds": 22.906251,
+      "reported_wall_seconds_monotonic": 22.907001041981857,
+      "clock_gap_seconds": -0.000750041981856242
+    },
+    {
+      "attempt": "agy_pass_medium/attempts/authored_patient_005/T2_visit/attempt.json",
+      "status": "failed",
+      "utc_elapsed_seconds": 422.193664,
+      "reported_wall_seconds_monotonic": 68.55444854096277,
+      "clock_gap_seconds": 353.63921545903725
+    },
+    {
+      "attempt": "agy_pass_medium/attempts/authored_patient_005/T1_visit/attempt.json",
+      "status": "failed",
+      "utc_elapsed_seconds": 281.754004,
+      "reported_wall_seconds_monotonic": 72.26424966700142,
+      "clock_gap_seconds": 209.4897543329986
+    },
+    {
+      "attempt": "agy_pass_medium/attempts/authored_patient_005/T1_retrospective/attempt.json",
+      "status": "parsed",
+      "utc_elapsed_seconds": 76.159629,
+      "reported_wall_seconds_monotonic": 57.5783419579966,
+      "clock_gap_seconds": 18.581287042003396
+    },
+    {
+      "attempt": "agy_pass_medium/attempts/authored_patient_002/T2_visit/attempt.json",
+      "status": "parsed",
+      "utc_elapsed_seconds": 62.57789,
+      "reported_wall_seconds_monotonic": 62.57981587498216,
+      "clock_gap_seconds": -0.0019258749821631227
+    },
+    {
+      "attempt": "agy_pass_medium/attempts/authored_patient_002/T2_retrospective/attempt.json",
+      "status": "parsed",
+      "utc_elapsed_seconds": 65.63214,
+      "reported_wall_seconds_monotonic": 65.63418604200706,
+      "clock_gap_seconds": -0.0020460420070520513
+    },
+    {
+      "attempt": "agy_pass_medium/attempts/authored_patient_002/T1_visit/attempt.json",
+      "status": "parsed",
+      "utc_elapsed_seconds": 70.211111,
+      "reported_wall_seconds_monotonic": 70.21323566703359,
+      "clock_gap_seconds": -0.00212466703358416
+    },
+    {
+      "attempt": "agy_pass_medium/attempts/authored_patient_002/T1_retrospective/attempt.json",
+      "status": "parsed",
+      "utc_elapsed_seconds": 57.541113,
+      "reported_wall_seconds_monotonic": 57.542903708002996,
+      "clock_gap_seconds": -0.001790708002992858
+    },
+    {
+      "attempt": "agy_sleep_probe/attempts/authored_patient_005/T2_visit/attempt.json",
+      "status": "parsed",
+      "utc_elapsed_seconds": 51.401928,
+      "reported_wall_seconds_monotonic": 51.40389191696886,
+      "clock_gap_seconds": -0.0019639169688616676
+    }
+  ]
+}

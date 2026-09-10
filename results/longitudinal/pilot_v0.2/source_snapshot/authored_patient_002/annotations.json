@@ -1,0 +1,724 @@
+{
+  "assertions": [
+    {
+      "assertion_id": "L1.diagnosis",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 104,
+          "end": 281,
+          "text": "Beatrice attended our clinic for routine annual review. She has an established diagnosis of focal epilepsy with impaired awareness, which has been well characterized since 2021."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-10",
+          "latest": "2025-02-10"
+        },
+        "end": {
+          "earliest": "2025-02-10",
+          "latest": "2025-02-10"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "focal epilepsy with impaired awareness",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L1.pattern",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 283,
+          "end": 771,
+          "text": "Her seizure frequency remains entirely stable on carbamazepine modified-release 400 mg twice daily, which she takes regularly without significant adverse effects. Over the past year she has continued to experience roughly one focal seizure per month. Her most recent focal seizure occurred on 28 January 2025. She describes a brief epigastric sensation followed by confusion lasting one to two minutes. She has had no generalized tonic-clonic convulsions and reports no other event types."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-10",
+          "latest": "2025-02-10"
+        },
+        "end": {
+          "earliest": "2025-02-10",
+          "latest": "2025-02-10"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal seizure"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "rate",
+          "text": "one focal seizure per month",
+          "count": {
+            "lower": 1,
+            "upper": 1
+          },
+          "period": {
+            "amount": {
+              "lower": 1,
+              "upper": 1
+            },
+            "unit": "month"
+          },
+          "events_per_cluster": null,
+          "approximate": true
+        }
+      }
+    },
+    {
+      "assertion_id": "L1.latest",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 283,
+          "end": 771,
+          "text": "Her seizure frequency remains entirely stable on carbamazepine modified-release 400 mg twice daily, which she takes regularly without significant adverse effects. Over the past year she has continued to experience roughly one focal seizure per month. Her most recent focal seizure occurred on 28 January 2025. She describes a brief epigastric sensation followed by confusion lasting one to two minutes. She has had no generalized tonic-clonic convulsions and reports no other event types."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-01-28",
+          "latest": "2025-01-28"
+        },
+        "end": {
+          "earliest": "2025-01-28",
+          "latest": "2025-01-28"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal seizure"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L1.carbamazepine",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 283,
+          "end": 771,
+          "text": "Her seizure frequency remains entirely stable on carbamazepine modified-release 400 mg twice daily, which she takes regularly without significant adverse effects. Over the past year she has continued to experience roughly one focal seizure per month. Her most recent focal seizure occurred on 28 January 2025. She describes a brief epigastric sensation followed by confusion lasting one to two minutes. She has had no generalized tonic-clonic convulsions and reports no other event types."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-10",
+          "latest": "2025-02-10"
+        },
+        "end": {
+          "earliest": "2025-02-10",
+          "latest": "2025-02-10"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "medication",
+        "name": "carbamazepine",
+        "status": "taking",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L1.inventory",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 283,
+          "end": 771,
+          "text": "Her seizure frequency remains entirely stable on carbamazepine modified-release 400 mg twice daily, which she takes regularly without significant adverse effects. Over the past year she has continued to experience roughly one focal seizure per month. Her most recent focal seizure occurred on 28 January 2025. She describes a brief epigastric sensation followed by confusion lasting one to two minutes. She has had no generalized tonic-clonic convulsions and reports no other event types."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-10",
+          "latest": "2025-02-10"
+        },
+        "end": {
+          "earliest": "2025-02-10",
+          "latest": "2025-02-10"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal seizure"
+        ],
+        "kind": "inventory",
+        "interpretation": "epileptic",
+        "scope": "all_reported",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.diagnosis",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 93,
+          "end": 191,
+          "text": "I reviewed Beatrice in clinic today. Her diagnosis remains focal epilepsy with impaired awareness."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-08-15",
+          "latest": "2025-08-15"
+        },
+        "end": {
+          "earliest": "2025-08-15",
+          "latest": "2025-08-15"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "focal epilepsy with impaired awareness",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L2.pattern",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 193,
+          "end": 527,
+          "text": "Her clinical pattern is unchanged. She continues carbamazepine 400 mg twice daily with good compliance. She continues to experience approximately one focal seizure per month, with the latest episode on 2 August 2025. There have been no tonic-clonic convulsions, nocturnal attacks, or new semiologies since our last review in February."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-08-15",
+          "latest": "2025-08-15"
+        },
+        "end": {
+          "earliest": "2025-08-15",
+          "latest": "2025-08-15"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal seizure"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "rate",
+          "text": "one focal seizure per month",
+          "count": {
+            "lower": 1,
+            "upper": 1
+          },
+          "period": {
+            "amount": {
+              "lower": 1,
+              "upper": 1
+            },
+            "unit": "month"
+          },
+          "events_per_cluster": null,
+          "approximate": true
+        }
+      }
+    },
+    {
+      "assertion_id": "L2.latest",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 193,
+          "end": 527,
+          "text": "Her clinical pattern is unchanged. She continues carbamazepine 400 mg twice daily with good compliance. She continues to experience approximately one focal seizure per month, with the latest episode on 2 August 2025. There have been no tonic-clonic convulsions, nocturnal attacks, or new semiologies since our last review in February."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-08-02",
+          "latest": "2025-08-02"
+        },
+        "end": {
+          "earliest": "2025-08-02",
+          "latest": "2025-08-02"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal seizure"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.carbamazepine",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 193,
+          "end": 527,
+          "text": "Her clinical pattern is unchanged. She continues carbamazepine 400 mg twice daily with good compliance. She continues to experience approximately one focal seizure per month, with the latest episode on 2 August 2025. There have been no tonic-clonic convulsions, nocturnal attacks, or new semiologies since our last review in February."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-08-15",
+          "latest": "2025-08-15"
+        },
+        "end": {
+          "earliest": "2025-08-15",
+          "latest": "2025-08-15"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "medication",
+        "name": "carbamazepine",
+        "status": "taking",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L2.inventory",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 193,
+          "end": 527,
+          "text": "Her clinical pattern is unchanged. She continues carbamazepine 400 mg twice daily with good compliance. She continues to experience approximately one focal seizure per month, with the latest episode on 2 August 2025. There have been no tonic-clonic convulsions, nocturnal attacks, or new semiologies since our last review in February."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-08-15",
+          "latest": "2025-08-15"
+        },
+        "end": {
+          "earliest": "2025-08-15",
+          "latest": "2025-08-15"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal seizure"
+        ],
+        "kind": "inventory",
+        "interpretation": "epileptic",
+        "scope": "all_reported",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L3.diagnosis",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 95,
+          "end": 358,
+          "text": "Beatrice attended for a short routine check. She remains on carbamazepine 400 mg twice daily. Her focal epilepsy remains stable, with her typical single focal seizure per month. Her last event occurred on 5 November 2025. She has experienced no other event types."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-11-20",
+          "latest": "2025-11-20"
+        },
+        "end": {
+          "earliest": "2025-11-20",
+          "latest": "2025-11-20"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "focal epilepsy with impaired awareness",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L3.pattern",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 95,
+          "end": 358,
+          "text": "Beatrice attended for a short routine check. She remains on carbamazepine 400 mg twice daily. Her focal epilepsy remains stable, with her typical single focal seizure per month. Her last event occurred on 5 November 2025. She has experienced no other event types."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-11-20",
+          "latest": "2025-11-20"
+        },
+        "end": {
+          "earliest": "2025-11-20",
+          "latest": "2025-11-20"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal seizure"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "rate",
+          "text": "one focal seizure per month",
+          "count": {
+            "lower": 1,
+            "upper": 1
+          },
+          "period": {
+            "amount": {
+              "lower": 1,
+              "upper": 1
+            },
+            "unit": "month"
+          },
+          "events_per_cluster": null,
+          "approximate": true
+        }
+      }
+    },
+    {
+      "assertion_id": "L3.latest",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 95,
+          "end": 358,
+          "text": "Beatrice attended for a short routine check. She remains on carbamazepine 400 mg twice daily. Her focal epilepsy remains stable, with her typical single focal seizure per month. Her last event occurred on 5 November 2025. She has experienced no other event types."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-11-05",
+          "latest": "2025-11-05"
+        },
+        "end": {
+          "earliest": "2025-11-05",
+          "latest": "2025-11-05"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal seizure"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L3.carbamazepine",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 95,
+          "end": 358,
+          "text": "Beatrice attended for a short routine check. She remains on carbamazepine 400 mg twice daily. Her focal epilepsy remains stable, with her typical single focal seizure per month. Her last event occurred on 5 November 2025. She has experienced no other event types."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-11-20",
+          "latest": "2025-11-20"
+        },
+        "end": {
+          "earliest": "2025-11-20",
+          "latest": "2025-11-20"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "medication",
+        "name": "carbamazepine",
+        "status": "taking",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L3.inventory",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 95,
+          "end": 358,
+          "text": "Beatrice attended for a short routine check. She remains on carbamazepine 400 mg twice daily. Her focal epilepsy remains stable, with her typical single focal seizure per month. Her last event occurred on 5 November 2025. She has experienced no other event types."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-11-20",
+          "latest": "2025-11-20"
+        },
+        "end": {
+          "earliest": "2025-11-20",
+          "latest": "2025-11-20"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal seizure"
+        ],
+        "kind": "inventory",
+        "interpretation": "epileptic",
+        "scope": "all_reported",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L1.no_convulsions",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 283,
+          "end": 771,
+          "text": "Her seizure frequency remains entirely stable on carbamazepine modified-release 400 mg twice daily, which she takes regularly without significant adverse effects. Over the past year she has continued to experience roughly one focal seizure per month. Her most recent focal seizure occurred on 28 January 2025. She describes a brief epigastric sensation followed by confusion lasting one to two minutes. She has had no generalized tonic-clonic convulsions and reports no other event types."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-10",
+          "latest": "2025-02-10"
+        },
+        "end": {
+          "earliest": "2025-02-10",
+          "latest": "2025-02-10"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "generalized tonic-clonic convulsion"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.no_new_types",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 193,
+          "end": 527,
+          "text": "Her clinical pattern is unchanged. She continues carbamazepine 400 mg twice daily with good compliance. She continues to experience approximately one focal seizure per month, with the latest episode on 2 August 2025. There have been no tonic-clonic convulsions, nocturnal attacks, or new semiologies since our last review in February."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-10",
+          "latest": "2025-02-10"
+        },
+        "end": {
+          "earliest": "2025-08-15",
+          "latest": "2025-08-15"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "tonic-clonic convulsions",
+          "nocturnal attacks",
+          "new semiologies"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "all_reported",
+        "burden": null
+      }
+    }
+  ],
+  "links": [
+    {
+      "link_id": "L1.pattern__L2.pattern__same_pattern",
+      "earlier_assertion": "L1.pattern",
+      "later_assertion": "L2.pattern",
+      "relation": "same_pattern",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 193,
+          "end": 527,
+          "text": "Her clinical pattern is unchanged. She continues carbamazepine 400 mg twice daily with good compliance. She continues to experience approximately one focal seizure per month, with the latest episode on 2 August 2025. There have been no tonic-clonic convulsions, nocturnal attacks, or new semiologies since our last review in February."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "L2.pattern__L3.pattern__same_pattern",
+      "earlier_assertion": "L2.pattern",
+      "later_assertion": "L3.pattern",
+      "relation": "same_pattern",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 95,
+          "end": 358,
+          "text": "Beatrice attended for a short routine check. She remains on carbamazepine 400 mg twice daily. Her focal epilepsy remains stable, with her typical single focal seizure per month. Her last event occurred on 5 November 2025. She has experienced no other event types."
+        }
+      ],
+      "decision_time": null
+    }
+  ]
+}

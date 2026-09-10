@@ -1,0 +1,17 @@
+{
+  "patient_id": "authored-012",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-03-05",
+      "available_date": "2025-03-05",
+      "text": "Epilepsy clinic letter\nConsultation: 05 March 2025\nPatient: Laura Chen, aged 28\n\nDear colleague,\n\nLaura attended our clinic following referral for episodic paroxysmal sensory symptoms.\n\nShe describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications.\n\nWe arranged brain MRI and routine outpatient EEG. Follow-up in four months.\n"
+    },
+    {
+      "letter_id": "L2",
+      "visit_date": "2025-07-16",
+      "available_date": "2025-07-16",
+      "text": "Epilepsy clinic letter\nConsultation: 16 July 2025\nPatient: Laura Chen\n\nDear colleague,\n\nI reviewed Laura today. Her brain MRI was completely normal.\n\nShe continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved.\n\nNo anti-seizure medication commenced. We agreed to arrange prolonged ambulatory EEG monitoring. Follow-up in four months.\n"
+    }
+  ]
+}

@@ -1,0 +1,296 @@
+{
+  "case_id": "authored-003",
+  "version": "0.2",
+  "reference_kind": "provisional authored correction; not independent annotation or model predictions",
+  "offset_convention": "zero-based Python Unicode character indices; end exclusive; LF newlines",
+  "evidence": [
+    {
+      "evidence_id": "L1.p1",
+      "letter_id": "L1",
+      "start": 105,
+      "end": 477,
+      "text": "Christopher is a 29-year-old gentleman with an established diagnosis of generalized epilepsy. He has been taking levetiracetam 1000 mg twice daily with excellent reported adherence. He has been entirely seizure-free for over fourteen months, with his last generalized tonic-clonic convulsion occurring on 10 January 2024. He reports no myoclonic jerks or daytime absences."
+    },
+    {
+      "evidence_id": "L1.p2",
+      "letter_id": "L1",
+      "start": 479,
+      "end": 599,
+      "text": "We agreed to maintain his levetiracetam dosage. No changes or investigations are indicated. Next review in three months."
+    },
+    {
+      "evidence_id": "L2.p1",
+      "letter_id": "L2",
+      "start": 95,
+      "end": 467,
+      "text": "Christopher is a 29-year-old gentleman with an established diagnosis of generalized epilepsy. He has been taking levetiracetam 1000 mg twice daily with excellent reported adherence. He has been entirely seizure-free for over fourteen months, with his last generalized tonic-clonic convulsion occurring on 10 January 2024. He reports no myoclonic jerks or daytime absences."
+    },
+    {
+      "evidence_id": "L2.p2",
+      "letter_id": "L2",
+      "start": 469,
+      "end": 784,
+      "text": "However, since the above routine background was recorded, Christopher reports that a single breakthrough nocturnal convulsion occurred on 28 May 2025 following severe sleep deprivation. He had no post-ictal injury and resumed his normal baseline the following day. This is his only seizure event since January 2024."
+    },
+    {
+      "evidence_id": "L2.p3",
+      "letter_id": "L2",
+      "start": 786,
+      "end": 891,
+      "text": "We agreed to continue levetiracetam 1000 mg twice daily. No EEG was requested. Follow-up in three months."
+    },
+    {
+      "evidence_id": "L3.p1",
+      "letter_id": "L3",
+      "start": 100,
+      "end": 365,
+      "text": "I reviewed Christopher today. His diagnosis remains generalized epilepsy on levetiracetam 1000 mg twice daily. He confirms that the nocturnal convulsion on 28 May 2025 was an isolated event, with no further seizures of any kind between 29 May and 18 September 2025."
+    },
+    {
+      "evidence_id": "L3.p2",
+      "letter_id": "L3",
+      "start": 367,
+      "end": 396,
+      "text": "Management remains unchanged."
+    }
+  ],
+  "links": [],
+  "answers": [
+    {
+      "request_id": "T1_visit_Q1",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2"
+      ],
+      "reason": "Explicit seizure freedom since January 2024 covers the whole 90-day lookback."
+    },
+    {
+      "request_id": "T1_visit_Q2",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2"
+      ],
+      "reason": "Explicit global seizure freedom covers the entire 90-day lookback, so two active patterns cannot qualify."
+    },
+    {
+      "request_id": "T1_visit_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2"
+      ],
+      "reason": "The permitted letters do not establish a lamotrigine start or explicit non-initiation throughout the 180-day interval; other treatment or current use cannot supply that history."
+    },
+    {
+      "request_id": "T1_visit_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2"
+      ],
+      "reason": "No qualifying EEG request with a result available by T is established, and the permitted letters do not exhaust all requests in the 180-day interval. Silence or one pending test cannot establish a complete negative."
+    },
+    {
+      "request_id": "T1_visit_Q5",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2"
+      ],
+      "reason": "Explicit global seizure freedom since January 2024 excludes an epileptic event or active pattern from the full 180-day lookback."
+    },
+    {
+      "request_id": "T1_retrospective_Q1",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3"
+      ],
+      "reason": "The May breakthrough is after T1 and does not change the earlier seizure-free interval."
+    },
+    {
+      "request_id": "T1_retrospective_Q2",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3"
+      ],
+      "reason": "Explicit global seizure freedom covers the entire 90-day lookback, so two active patterns cannot qualify."
+    },
+    {
+      "request_id": "T1_retrospective_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3"
+      ],
+      "reason": "The permitted letters do not establish a lamotrigine start or explicit non-initiation throughout the 180-day interval; other treatment or current use cannot supply that history."
+    },
+    {
+      "request_id": "T1_retrospective_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3"
+      ],
+      "reason": "No qualifying EEG request with a result available by T is established, and the permitted letters do not exhaust all requests in the 180-day interval. Silence or one pending test cannot establish a complete negative."
+    },
+    {
+      "request_id": "T1_retrospective_Q5",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3"
+      ],
+      "reason": "Explicit global seizure freedom since January 2024 excludes an epileptic event or active pattern from the full 180-day lookback."
+    },
+    {
+      "request_id": "T2_visit_Q1",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3"
+      ],
+      "reason": "The 28 May event is before the 31 May lookback start; L2 does not cover the rest of the interval through T2."
+    },
+    {
+      "request_id": "T2_visit_Q2",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3"
+      ],
+      "reason": "No explicit complete inventory and overlapping-activity account covers the whole 90-day interval; one named pattern or absence of convulsions does not exclude every other epileptic pattern."
+    },
+    {
+      "request_id": "T2_visit_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3"
+      ],
+      "reason": "The permitted letters do not establish a lamotrigine start or explicit non-initiation throughout the 180-day interval; other treatment or current use cannot supply that history."
+    },
+    {
+      "request_id": "T2_visit_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3"
+      ],
+      "reason": "No qualifying EEG request with a result available by T is established, and the permitted letters do not exhaust all requests in the 180-day interval. Silence or one pending test cannot establish a complete negative."
+    },
+    {
+      "request_id": "T2_visit_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3"
+      ],
+      "reason": "No qualifying dated reinterpretation is established, and no complete reassessment or event inventory refutes the predicate throughout the 180-day interval. Absence of a recorded revision is not a negative."
+    },
+    {
+      "request_id": "T2_retrospective_Q1",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3",
+        "L3.p1",
+        "L3.p2"
+      ],
+      "reason": "L3 explicitly reports no seizures from 29 May through 18 September, covering the whole lookback."
+    },
+    {
+      "request_id": "T2_retrospective_Q2",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3",
+        "L3.p1",
+        "L3.p2"
+      ],
+      "reason": "Explicit global seizure freedom covers the entire 90-day lookback, so two active patterns cannot qualify."
+    },
+    {
+      "request_id": "T2_retrospective_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3",
+        "L3.p1",
+        "L3.p2"
+      ],
+      "reason": "The permitted letters do not establish a lamotrigine start or explicit non-initiation throughout the 180-day interval; other treatment or current use cannot supply that history."
+    },
+    {
+      "request_id": "T2_retrospective_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3",
+        "L3.p1",
+        "L3.p2"
+      ],
+      "reason": "No qualifying EEG request with a result available by T is established, and the permitted letters do not exhaust all requests in the 180-day interval. Silence or one pending test cannot establish a complete negative."
+    },
+    {
+      "request_id": "T2_retrospective_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3",
+        "L3.p1",
+        "L3.p2"
+      ],
+      "reason": "No qualifying dated reinterpretation is established, and no complete reassessment or event inventory refutes the predicate throughout the 180-day interval. Absence of a recorded revision is not a negative."
+    }
+  ],
+  "review_note": "All 20 answers reassessed against fixed task-v0.2 dates and permitted letters. Paragraph evidence retains qualifications; it is deliberately broader than a minimal explanation span. Structured relationships are in annotations.json. No independent second pass or timing measurement occurred."
+}

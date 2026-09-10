@@ -1,0 +1,587 @@
+{
+  "status": "prepared_not_run",
+  "pilot_version": "0.3",
+  "annotation_guide_version": "0.1",
+  "schema_version": "0.1",
+  "additional_paid_call_budget_gbp": 0,
+  "jobs": [
+    {
+      "input": "inputs/authored_patient_001/T1_visit.json",
+      "sha256": "f637326a37b776555d444e44c2d5226eff896f5c05985274c755c22c853df85c",
+      "case_id": "authored-001",
+      "request_ids": [
+        "T1_visit_Q1",
+        "T1_visit_Q2",
+        "T1_visit_Q3",
+        "T1_visit_Q4",
+        "T1_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_001/T1_retrospective.json",
+      "sha256": "e71f97bf2635e5669d6e9b4cac5487c84cfec2cd2483274c49952b23fbb42ff5",
+      "case_id": "authored-001",
+      "request_ids": [
+        "T1_retrospective_Q1",
+        "T1_retrospective_Q2",
+        "T1_retrospective_Q3",
+        "T1_retrospective_Q4",
+        "T1_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_001/T2_visit.json",
+      "sha256": "076d49b155e26f34d50a83829513e6692c5b0f319ed66a87d4ecc37a13992746",
+      "case_id": "authored-001",
+      "request_ids": [
+        "T2_visit_Q1",
+        "T2_visit_Q2",
+        "T2_visit_Q3",
+        "T2_visit_Q4",
+        "T2_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_001/T2_retrospective.json",
+      "sha256": "4b90489aee22fcb21232b3904eb4c707612f21a1038c618d5a1a32633feea7c3",
+      "case_id": "authored-001",
+      "request_ids": [
+        "T2_retrospective_Q1",
+        "T2_retrospective_Q2",
+        "T2_retrospective_Q3",
+        "T2_retrospective_Q4",
+        "T2_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_002/T1_visit.json",
+      "sha256": "972493db4f0dd524f9928dfe30032801853b608eff4ea04fdbebaee7c145290d",
+      "case_id": "authored-002",
+      "request_ids": [
+        "T1_visit_Q1",
+        "T1_visit_Q2",
+        "T1_visit_Q3",
+        "T1_visit_Q4",
+        "T1_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_002/T1_retrospective.json",
+      "sha256": "47b04103d7e45fce187c83b8fa335d2e3c0513150e2d2a2a7d5f7f4656d979b4",
+      "case_id": "authored-002",
+      "request_ids": [
+        "T1_retrospective_Q1",
+        "T1_retrospective_Q2",
+        "T1_retrospective_Q3",
+        "T1_retrospective_Q4",
+        "T1_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_002/T2_visit.json",
+      "sha256": "6d05250b05f6d36bd97683e965cf261a5b093976669116b39405eb7eadb87191",
+      "case_id": "authored-002",
+      "request_ids": [
+        "T2_visit_Q1",
+        "T2_visit_Q2",
+        "T2_visit_Q3",
+        "T2_visit_Q4",
+        "T2_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_002/T2_retrospective.json",
+      "sha256": "d2846f0af5b821a0f9c2055da6c504cd9370397a8e775e68ba60ed7bd5c8f00f",
+      "case_id": "authored-002",
+      "request_ids": [
+        "T2_retrospective_Q1",
+        "T2_retrospective_Q2",
+        "T2_retrospective_Q3",
+        "T2_retrospective_Q4",
+        "T2_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_003/T1_visit.json",
+      "sha256": "cd28d1f3770715372f1914eccdbb1a31bca9de9919960d4d735999a6945da18d",
+      "case_id": "authored-003",
+      "request_ids": [
+        "T1_visit_Q1",
+        "T1_visit_Q2",
+        "T1_visit_Q3",
+        "T1_visit_Q4",
+        "T1_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_003/T1_retrospective.json",
+      "sha256": "0f8ae80bc171578fdc5c08b3d4edeaa87b1ed691e92afe99b81adf9470226aa8",
+      "case_id": "authored-003",
+      "request_ids": [
+        "T1_retrospective_Q1",
+        "T1_retrospective_Q2",
+        "T1_retrospective_Q3",
+        "T1_retrospective_Q4",
+        "T1_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_003/T2_visit.json",
+      "sha256": "a559269a10a92772645aaea6f779153961080aaa064bd52ca841e5edae4c21ba",
+      "case_id": "authored-003",
+      "request_ids": [
+        "T2_visit_Q1",
+        "T2_visit_Q2",
+        "T2_visit_Q3",
+        "T2_visit_Q4",
+        "T2_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_003/T2_retrospective.json",
+      "sha256": "3fb5d8317352ec482703b11fc4654bb0597ff8213d9de0f51c83650d7fc77b92",
+      "case_id": "authored-003",
+      "request_ids": [
+        "T2_retrospective_Q1",
+        "T2_retrospective_Q2",
+        "T2_retrospective_Q3",
+        "T2_retrospective_Q4",
+        "T2_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_004/T1_visit.json",
+      "sha256": "875a21a0bbd52bc27642e01f8ec5f8a0c664f846c4a970dbcccc270bfdc2509e",
+      "case_id": "authored-004",
+      "request_ids": [
+        "T1_visit_Q1",
+        "T1_visit_Q2",
+        "T1_visit_Q3",
+        "T1_visit_Q4",
+        "T1_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_004/T1_retrospective.json",
+      "sha256": "f74b4e4687bf17320cc643dc2770d86c0db6c21263b09a3af984ef3c49fde3c8",
+      "case_id": "authored-004",
+      "request_ids": [
+        "T1_retrospective_Q1",
+        "T1_retrospective_Q2",
+        "T1_retrospective_Q3",
+        "T1_retrospective_Q4",
+        "T1_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_004/T2_visit.json",
+      "sha256": "6936cec7317b311e80765560b7ff164fb94fd889226b7845e4abe5114abc8165",
+      "case_id": "authored-004",
+      "request_ids": [
+        "T2_visit_Q1",
+        "T2_visit_Q2",
+        "T2_visit_Q3",
+        "T2_visit_Q4",
+        "T2_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_004/T2_retrospective.json",
+      "sha256": "aef756c14d6ca007bf9dd03c97553b8bfeb4ffa768f569bc8eb959bcaa0e521d",
+      "case_id": "authored-004",
+      "request_ids": [
+        "T2_retrospective_Q1",
+        "T2_retrospective_Q2",
+        "T2_retrospective_Q3",
+        "T2_retrospective_Q4",
+        "T2_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_005/T1_visit.json",
+      "sha256": "7241bca1fb5133929366f13eaccd752ece631d4c7dda48fd9f1d5a7246ffced1",
+      "case_id": "authored-005",
+      "request_ids": [
+        "T1_visit_Q1",
+        "T1_visit_Q2",
+        "T1_visit_Q3",
+        "T1_visit_Q4",
+        "T1_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_005/T1_retrospective.json",
+      "sha256": "5ff62f9bbaefb28ef77b016adde35fddc9645d3bfd191a7751fbfe39cd0a6d67",
+      "case_id": "authored-005",
+      "request_ids": [
+        "T1_retrospective_Q1",
+        "T1_retrospective_Q2",
+        "T1_retrospective_Q3",
+        "T1_retrospective_Q4",
+        "T1_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_005/T2_visit.json",
+      "sha256": "2dd3d32b2c906964391f9355ec6f0eab99d140fd441b9dee04e81054fa36ec44",
+      "case_id": "authored-005",
+      "request_ids": [
+        "T2_visit_Q1",
+        "T2_visit_Q2",
+        "T2_visit_Q3",
+        "T2_visit_Q4",
+        "T2_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_005/T2_retrospective.json",
+      "sha256": "d9ce9b797731c08c2c73c511ffff3ee078bfbfc00cf54d67bf401c4a25f27f27",
+      "case_id": "authored-005",
+      "request_ids": [
+        "T2_retrospective_Q1",
+        "T2_retrospective_Q2",
+        "T2_retrospective_Q3",
+        "T2_retrospective_Q4",
+        "T2_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_006/T1_visit.json",
+      "sha256": "decf0129152b78f368e30d3c5af8f941a9001e3c47175e048dab0c46557e0405",
+      "case_id": "authored-006",
+      "request_ids": [
+        "T1_visit_Q1",
+        "T1_visit_Q2",
+        "T1_visit_Q3",
+        "T1_visit_Q4",
+        "T1_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_006/T1_retrospective.json",
+      "sha256": "5d6862826014b450c6678223b2e273e5b13c5b4115a0b5a461984fe4d94a4bd6",
+      "case_id": "authored-006",
+      "request_ids": [
+        "T1_retrospective_Q1",
+        "T1_retrospective_Q2",
+        "T1_retrospective_Q3",
+        "T1_retrospective_Q4",
+        "T1_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_006/T2_visit.json",
+      "sha256": "563a660a6f6aca9834d52149d25ba9d9f11dc5e9519f69dce7f1e9ccbc40461f",
+      "case_id": "authored-006",
+      "request_ids": [
+        "T2_visit_Q1",
+        "T2_visit_Q2",
+        "T2_visit_Q3",
+        "T2_visit_Q4",
+        "T2_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_006/T2_retrospective.json",
+      "sha256": "b8e4340b006483caca8653ea657903d3a7145697f36139c1dc648f8a2e6eb4e6",
+      "case_id": "authored-006",
+      "request_ids": [
+        "T2_retrospective_Q1",
+        "T2_retrospective_Q2",
+        "T2_retrospective_Q3",
+        "T2_retrospective_Q4",
+        "T2_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_007/T1_visit.json",
+      "sha256": "eb5a3936a2802394bee199bbde96877b06ff0ccee24060431cd95251f3c2d704",
+      "case_id": "authored-007",
+      "request_ids": [
+        "T1_visit_Q1",
+        "T1_visit_Q2",
+        "T1_visit_Q3",
+        "T1_visit_Q4",
+        "T1_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_007/T1_retrospective.json",
+      "sha256": "e6c6741193265c8c406be64a04f3c82776e29d1680b97a8fbdeeadca012f81b3",
+      "case_id": "authored-007",
+      "request_ids": [
+        "T1_retrospective_Q1",
+        "T1_retrospective_Q2",
+        "T1_retrospective_Q3",
+        "T1_retrospective_Q4",
+        "T1_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_007/T2_visit.json",
+      "sha256": "095bed43b033a6f810e3b0696dfe2603bc24b5838201633c2f519c0e896020b9",
+      "case_id": "authored-007",
+      "request_ids": [
+        "T2_visit_Q1",
+        "T2_visit_Q2",
+        "T2_visit_Q3",
+        "T2_visit_Q4",
+        "T2_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_007/T2_retrospective.json",
+      "sha256": "bc30c222cdb3755c7a1c672f423500dbcf1eeaa2031c21279662f49c681ec938",
+      "case_id": "authored-007",
+      "request_ids": [
+        "T2_retrospective_Q1",
+        "T2_retrospective_Q2",
+        "T2_retrospective_Q3",
+        "T2_retrospective_Q4",
+        "T2_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_008/T1_visit.json",
+      "sha256": "5a6b0bc1197f2b63215ed86067da31e840a9bab2d9060c09fe3f8627e434057a",
+      "case_id": "authored-008",
+      "request_ids": [
+        "T1_visit_Q1",
+        "T1_visit_Q2",
+        "T1_visit_Q3",
+        "T1_visit_Q4",
+        "T1_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_008/T1_retrospective.json",
+      "sha256": "d248b990aeab970ece15f0020c4f578fc8ef783af7dfe9ae79820afc35e52c87",
+      "case_id": "authored-008",
+      "request_ids": [
+        "T1_retrospective_Q1",
+        "T1_retrospective_Q2",
+        "T1_retrospective_Q3",
+        "T1_retrospective_Q4",
+        "T1_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_008/T2_visit.json",
+      "sha256": "4a373c8fdd89dad11e8c3aa6fc5870f9680a74c046e27a5756533fda2b350563",
+      "case_id": "authored-008",
+      "request_ids": [
+        "T2_visit_Q1",
+        "T2_visit_Q2",
+        "T2_visit_Q3",
+        "T2_visit_Q4",
+        "T2_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_008/T2_retrospective.json",
+      "sha256": "40dc583d78617957fc9bb60186c2f119ac9099dd3018fb27f27aaa9d2800865c",
+      "case_id": "authored-008",
+      "request_ids": [
+        "T2_retrospective_Q1",
+        "T2_retrospective_Q2",
+        "T2_retrospective_Q3",
+        "T2_retrospective_Q4",
+        "T2_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_009/T1_visit.json",
+      "sha256": "88e1d8759152c5db018d13706bab411f4f199530da782c3b02688c029efc5c18",
+      "case_id": "authored-009",
+      "request_ids": [
+        "T1_visit_Q1",
+        "T1_visit_Q2",
+        "T1_visit_Q3",
+        "T1_visit_Q4",
+        "T1_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_009/T1_retrospective.json",
+      "sha256": "4bb7344ebc9a187a8528e78c935eb16c97e7f9e4dde6c55d8cd300b1633c622b",
+      "case_id": "authored-009",
+      "request_ids": [
+        "T1_retrospective_Q1",
+        "T1_retrospective_Q2",
+        "T1_retrospective_Q3",
+        "T1_retrospective_Q4",
+        "T1_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_009/T2_visit.json",
+      "sha256": "d77811ca5996085cd8da5e7e91dfe3477ade97b95246b1914b0b83ca7d1c9bee",
+      "case_id": "authored-009",
+      "request_ids": [
+        "T2_visit_Q1",
+        "T2_visit_Q2",
+        "T2_visit_Q3",
+        "T2_visit_Q4",
+        "T2_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_009/T2_retrospective.json",
+      "sha256": "88a09e63bb58a73743c3f30a19ac69eee487b4eb682ae5375f200b0d58017726",
+      "case_id": "authored-009",
+      "request_ids": [
+        "T2_retrospective_Q1",
+        "T2_retrospective_Q2",
+        "T2_retrospective_Q3",
+        "T2_retrospective_Q4",
+        "T2_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_010/T1_visit.json",
+      "sha256": "6e67535e62368443fe952ad6beea36a949005fd3746faaacd45d8db3c637bb7b",
+      "case_id": "authored-010",
+      "request_ids": [
+        "T1_visit_Q1",
+        "T1_visit_Q2",
+        "T1_visit_Q3",
+        "T1_visit_Q4",
+        "T1_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_010/T1_retrospective.json",
+      "sha256": "330f1e555b66a82ed22f447e5c858084830e75849b9bc1ad2e1b7ecb8c961865",
+      "case_id": "authored-010",
+      "request_ids": [
+        "T1_retrospective_Q1",
+        "T1_retrospective_Q2",
+        "T1_retrospective_Q3",
+        "T1_retrospective_Q4",
+        "T1_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_010/T2_visit.json",
+      "sha256": "7464530bab1b97f6579c137ae08bbef5af2e64d9fbfc94a674168a7802b77da3",
+      "case_id": "authored-010",
+      "request_ids": [
+        "T2_visit_Q1",
+        "T2_visit_Q2",
+        "T2_visit_Q3",
+        "T2_visit_Q4",
+        "T2_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_010/T2_retrospective.json",
+      "sha256": "05292de9fa9a40c372f569d0e2252b1df9420bfff9b44ebeacc1e83a6a590b24",
+      "case_id": "authored-010",
+      "request_ids": [
+        "T2_retrospective_Q1",
+        "T2_retrospective_Q2",
+        "T2_retrospective_Q3",
+        "T2_retrospective_Q4",
+        "T2_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_011/T1_visit.json",
+      "sha256": "af369c352ba39272456d9ed674795f6b7fc17acf45539449cf61820922f7e6be",
+      "case_id": "authored-011",
+      "request_ids": [
+        "T1_visit_Q1",
+        "T1_visit_Q2",
+        "T1_visit_Q3",
+        "T1_visit_Q4",
+        "T1_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_011/T1_retrospective.json",
+      "sha256": "8c04e445469d93a59f54ab42e46b7a72db895195306170d3677e15d09bc9e7d6",
+      "case_id": "authored-011",
+      "request_ids": [
+        "T1_retrospective_Q1",
+        "T1_retrospective_Q2",
+        "T1_retrospective_Q3",
+        "T1_retrospective_Q4",
+        "T1_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_011/T2_visit.json",
+      "sha256": "e76a795831270dbef625e33e983de72392a416a8867e5687c57c6893d1178a88",
+      "case_id": "authored-011",
+      "request_ids": [
+        "T2_visit_Q1",
+        "T2_visit_Q2",
+        "T2_visit_Q3",
+        "T2_visit_Q4",
+        "T2_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_011/T2_retrospective.json",
+      "sha256": "5b3faec59227ea83cd199dc8ce5c8275a047d8194c7187218b607477646a6787",
+      "case_id": "authored-011",
+      "request_ids": [
+        "T2_retrospective_Q1",
+        "T2_retrospective_Q2",
+        "T2_retrospective_Q3",
+        "T2_retrospective_Q4",
+        "T2_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_012/T1_visit.json",
+      "sha256": "fb95921db78b871d27e289a367b478a08d12c467b83f75fbd0f2e382e98a024e",
+      "case_id": "authored-012",
+      "request_ids": [
+        "T1_visit_Q1",
+        "T1_visit_Q2",
+        "T1_visit_Q3",
+        "T1_visit_Q4",
+        "T1_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_012/T1_retrospective.json",
+      "sha256": "c9a37dba2e0ab3e435de141c07f19b5242c287525cbc71dba3da75a3cdb30161",
+      "case_id": "authored-012",
+      "request_ids": [
+        "T1_retrospective_Q1",
+        "T1_retrospective_Q2",
+        "T1_retrospective_Q3",
+        "T1_retrospective_Q4",
+        "T1_retrospective_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_012/T2_visit.json",
+      "sha256": "faae7e1dd3c1ba49b7b71431ebab1c1445426f04d13dd6aa5e6b4b2b0f88055d",
+      "case_id": "authored-012",
+      "request_ids": [
+        "T2_visit_Q1",
+        "T2_visit_Q2",
+        "T2_visit_Q3",
+        "T2_visit_Q4",
+        "T2_visit_Q5"
+      ]
+    },
+    {
+      "input": "inputs/authored_patient_012/T2_retrospective.json",
+      "sha256": "f186d6785cd43805a8eb4d8d76ee0c75fc2d98a9d76357dfa0e753e4e15f47a8",
+      "case_id": "authored-012",
+      "request_ids": [
+        "T2_retrospective_Q1",
+        "T2_retrospective_Q2",
+        "T2_retrospective_Q3",
+        "T2_retrospective_Q4",
+        "T2_retrospective_Q5"
+      ]
+    }
+  ],
+  "agreement": null,
+  "annotation_time": null
+}

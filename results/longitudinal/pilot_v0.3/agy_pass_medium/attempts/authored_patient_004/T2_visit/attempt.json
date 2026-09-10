@@ -1,0 +1,22 @@
+{
+  "status": "failed",
+  "input_sha256": "6936cec7317b311e80765560b7ff164fb94fd889226b7845e4abe5114abc8165",
+  "rendered_prompt_sha256": "b35b7491e9ee317df64cb8144d7e40e9d6d542407d9c5ed295810c4164d6bd6c",
+  "model_requested": "gemini-3.8-flash-medium",
+  "effort": "medium",
+  "interface": "agy",
+  "executable_sha256": "2a63488c33221627f1798ff4ccb1d5131b6abe3160286c84b357a7456905f763",
+  "fresh_project": true,
+  "sandbox": true,
+  "tools_requested": false,
+  "started_at": "2026-09-09T21:06:18.747489+00:00",
+  "semantic_repair": false,
+  "provider_cost": null,
+  "human_annotation_minutes": null,
+  "exit_code": 0,
+  "ended_at": "2026-09-09T21:11:13.811334+00:00",
+  "wall_seconds": 85.57426770799793,
+  "error": "No successful result: {\"conversation_id\": \"fba510b2-03c4-432a-a11a-0eaae50adbf2\", \"status\": \"ERROR\", \"error\": \"The stream was interrupted. Please continue the task you were working on.\", \"duration_seconds\": 291.371776, \"num_turns\": 1, \"usage\": {\"input_tokens\": 30400, \"output_tokens\": 22022, \"thinking_tokens\": 16501, \"cache_read_tokens\": 20397, \"total_tokens\": 52422}}",
+  "tool_catalog_present": true,
+  "isolation_limit": "fresh temporary project; no observed tool steps required; tool catalog remains present and plan mode is ignored by CLI with slash expansion disabled"
+}

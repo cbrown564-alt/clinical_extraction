@@ -1,0 +1,35 @@
+{
+  "status": "parsed",
+  "input_sha256": "e6c6741193265c8c406be64a04f3c82776e29d1680b97a8fbdeeadca012f81b3",
+  "rendered_prompt_sha256": "701a57ee876527c75d83b16924a5ee1fb3a1d4fca00cf6265453d780bc37f360",
+  "model_requested": "gemini-3.8-flash-medium",
+  "effort": "medium",
+  "interface": "agy",
+  "executable_sha256": "2a63488c33221627f1798ff4ccb1d5131b6abe3160286c84b357a7456905f763",
+  "fresh_project": true,
+  "sandbox": true,
+  "tools_requested": false,
+  "started_at": "2026-09-09T22:56:02.147242+00:00",
+  "semantic_repair": false,
+  "provider_cost": null,
+  "human_annotation_minutes": null,
+  "exit_code": 0,
+  "ended_at": "2026-09-09T22:56:52.004621+00:00",
+  "wall_seconds": 49.85838570800843,
+  "telemetry": {
+    "conversation_id": "c644da33-ee6f-448a-b3c9-318e06163fb3",
+    "status": "SUCCESS",
+    "duration_seconds": 46.430584,
+    "num_turns": 1,
+    "usage": {
+      "input_tokens": 25341,
+      "output_tokens": 17878,
+      "thinking_tokens": 13526,
+      "cache_read_tokens": 0,
+      "total_tokens": 43219
+    }
+  },
+  "observed_tool_steps": 0,
+  "tool_catalog_present": true,
+  "isolation_limit": "fresh temporary project; no observed tool steps required; tool catalog remains present and plan mode is ignored by CLI with slash expansion disabled"
+}

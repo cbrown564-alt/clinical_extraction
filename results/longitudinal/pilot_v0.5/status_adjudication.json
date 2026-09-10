@@ -1,0 +1,221 @@
+{
+  "reviewer": "authoring assistant, user-authorized",
+  "date": "2026-09-10",
+  "claim": "development adjudication, not independent clinical validation",
+  "rows": [
+    {
+      "case": "authored_patient_002",
+      "request_id": "T2_retrospective_Q2",
+      "original_status": "indeterminate",
+      "model_status": "ineligible",
+      "adjudicated_status": "indeterminate",
+      "decision": "reference_retained",
+      "reason": "Retain earlier adjudication: absence of named alternatives and unchanged pattern do not explicitly exclude every other pattern over the full window.",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3"
+      ]
+    },
+    {
+      "case": "authored_patient_002",
+      "request_id": "T2_retrospective_Q4",
+      "original_status": "indeterminate",
+      "model_status": "ineligible",
+      "adjudicated_status": "indeterminate",
+      "decision": "reference_retained",
+      "reason": "Retain earlier adjudication: no investigations at the 15 August visit does not inventory requests during the window ending 9 August.",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3"
+      ]
+    },
+    {
+      "case": "authored_patient_003",
+      "request_id": "T2_retrospective_Q2",
+      "original_status": "ineligible",
+      "model_status": "indeterminate",
+      "adjudicated_status": "ineligible",
+      "decision": "reference_retained",
+      "reason": "Retain earlier adjudication: L3 explicitly covers the full window with no seizures of any kind.",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3",
+        "L3.p1",
+        "L3.p2"
+      ]
+    },
+    {
+      "case": "authored_patient_005",
+      "request_id": "T1_retrospective_Q1",
+      "original_status": "indeterminate",
+      "model_status": "eligible",
+      "adjudicated_status": "eligible",
+      "decision": "reference_corrected",
+      "reason": "Accept coarse holiday timing within this broad window without inventing an exact date. This revises the prior overly strict requirement for explicit date bounds.",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ]
+    },
+    {
+      "case": "authored_patient_005",
+      "request_id": "T1_retrospective_Q2",
+      "original_status": "indeterminate",
+      "model_status": "ineligible",
+      "adjudicated_status": "ineligible",
+      "decision": "reference_corrected",
+      "reason": "L1 excludes all other seizure patterns in the described recurring history, unlike a list of selected absent types. Apply identically to T1 visit.",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ]
+    },
+    {
+      "case": "authored_patient_005",
+      "request_id": "T2_retrospective_Q2",
+      "original_status": "indeterminate",
+      "model_status": "ineligible",
+      "adjudicated_status": "indeterminate",
+      "decision": "reference_retained",
+      "reason": "L2 only describes history through 2 July and L3 does not inventory every pattern in the remaining interval through 31 July. T1 completeness cannot be extended forward.",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3",
+        "L3.p1",
+        "L3.p2"
+      ]
+    },
+    {
+      "case": "authored_patient_006",
+      "request_id": "T1_retrospective_Q1",
+      "original_status": "indeterminate",
+      "model_status": "eligible",
+      "adjudicated_status": "indeterminate",
+      "decision": "reference_retained",
+      "reason": "L2 verifies June nocturnal seizures but does not explicitly resolve the disputed 12 February episode or date the acknowledged pattern back into the T1 lookback. Similar later events alone do not resolve that earlier disagreement.",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3"
+      ]
+    },
+    {
+      "case": "authored_patient_006",
+      "request_id": "T2_retrospective_Q3",
+      "original_status": "indeterminate",
+      "model_status": "ineligible",
+      "adjudicated_status": "indeterminate",
+      "decision": "reference_retained",
+      "reason": "Prior use, a June increase and later tolerance document treatment at those times, but do not explicitly date initiation or establish uninterrupted use across the entire February\u2013August window. An increase itself is not initiation.",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3",
+        "L3.p1",
+        "L3.p2"
+      ]
+    },
+    {
+      "case": "authored_patient_010",
+      "request_id": "T2_retrospective_Q3",
+      "original_status": "indeterminate",
+      "model_status": "ineligible",
+      "adjudicated_status": "ineligible",
+      "decision": "reference_corrected",
+      "reason": "L2 explicitly dates actual initiation before the window and reports reliable use; L3 says she remains compliant on that same regimen. This affirmative continuity supports one ongoing course across T2, not an inferred absence from silence.",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3",
+        "L3.p1",
+        "L3.p2"
+      ]
+    },
+    {
+      "case": "authored_patient_011",
+      "request_id": "T2_visit_Q2",
+      "original_status": "indeterminate",
+      "model_status": "ineligible",
+      "adjudicated_status": "indeterminate",
+      "decision": "reference_retained",
+      "reason": "L2 complete inventory ends at its 20 June consultation; it cannot exclude another pattern between then and T2 on 11 August.",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3"
+      ]
+    },
+    {
+      "case": "authored_patient_011",
+      "request_id": "T2_retrospective_Q2",
+      "original_status": "indeterminate",
+      "model_status": "ineligible",
+      "adjudicated_status": "indeterminate",
+      "decision": "reference_retained",
+      "reason": "L3 adds September clusters and no events since those clusters, not a complete pattern inventory for June\u201311 August. The gap remains.",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3",
+        "L3.p1",
+        "L3.p2"
+      ]
+    },
+    {
+      "case": "authored_patient_012",
+      "request_id": "T2_retrospective_Q3",
+      "original_status": "indeterminate",
+      "model_status": "ineligible",
+      "adjudicated_status": "indeterminate",
+      "decision": "reference_retained",
+      "reason": "No medication commenced by July and no medication changes at the November visit do not explicitly exclude initiation during July\u20131 September. A visit-level no-change statement is not a whole-interval non-initiation statement.",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3",
+        "L3.p1",
+        "L3.p2"
+      ]
+    }
+  ],
+  "companion_corrections": [
+    "authored_patient_005/T1_visit_Q1",
+    "authored_patient_005/T1_visit_Q2"
+  ],
+  "original_score_unchanged": true
+}

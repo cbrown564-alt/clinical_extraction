@@ -1,0 +1,1322 @@
+{
+  "pilot_version": "0.4",
+  "task_definition_version": "0.2",
+  "dataset": "authored longitudinal pilot",
+  "split": "development_only",
+  "row_policy": "12 patients; all 20 requests per patient; no exclusions",
+  "reference_provenance": "AI-authored references corrected by the authoring assistant",
+  "scorer": "exact status match, mean within patient then across patients",
+  "model": null,
+  "prompt_version": null,
+  "replay_mode": "local saved references only",
+  "repair_policy": "none during scoring; authored corrections are versioned in case files",
+  "program_sha256": "109c89d07f050c1dd2a26882d6b8f5a58ed2b08712b251913c4c70b8aa519058",
+  "input_sha256": {
+    "authored_patient_001/annotations.json": "5efc3129b4ed014faa53980332880641a4f62447ec7b4e8374a25e0f02504899",
+    "authored_patient_001/inputs/T1_retrospective.json": "4c4d50d6ddaecc64f646013d9812834fd62b89c8353129bbf1c7f80a63dcf1f9",
+    "authored_patient_001/inputs/T1_visit.json": "4178ac5b2596d51deeca52aae466384ffcbb45df55c2946a2f84adeedeb7acfe",
+    "authored_patient_001/inputs/T2_retrospective.json": "a7223ecfb02ab218edb4577ed44564c96ed12bc1a3edfe42804e2f776c1c2472",
+    "authored_patient_001/inputs/T2_visit.json": "4c4d50d6ddaecc64f646013d9812834fd62b89c8353129bbf1c7f80a63dcf1f9",
+    "authored_patient_001/letters/L1.txt": "ba73f9c235da6c434adc37114a52de6229f62ceb24cb81f147a65d0bbf074805",
+    "authored_patient_001/letters/L2.txt": "e438b617d2f9c810b6bd9f1f9e065143c43c9e61aef2af3d4ba426abbdc3b92a",
+    "authored_patient_001/letters/L3.txt": "a624d14e096a112e191ff05f86d02b2d49113868b4c7449d15d6314295592852",
+    "authored_patient_001/manifest.json": "b01836ca4570a660083bc605661db809b57ef03dbaf66584c7d117b8a7c69b22",
+    "authored_patient_001/reference.json": "b63deac0b49d16ade9115ccc57d4e87c9036f5610890daa0da721ed6a64cb16b",
+    "authored_patient_002/annotations.json": "5bd9dee59434a6fef739d828e07f8c5f4005f9abb79865c3a15d985c89140c2b",
+    "authored_patient_002/inputs/T1_retrospective.json": "490c07fc3e00bbb98160ca74d59f20e5e1d96c13cc3029e1a823832d9eafdb2a",
+    "authored_patient_002/inputs/T1_visit.json": "490c07fc3e00bbb98160ca74d59f20e5e1d96c13cc3029e1a823832d9eafdb2a",
+    "authored_patient_002/inputs/T2_retrospective.json": "3dd8a48af01480e4e40926b8c70f63b03a4f4437ab8916e58e5b8803da4cd133",
+    "authored_patient_002/inputs/T2_visit.json": "490c07fc3e00bbb98160ca74d59f20e5e1d96c13cc3029e1a823832d9eafdb2a",
+    "authored_patient_002/letters/L1.txt": "0488353ee2525e98a4619fbb49f971b47189b20934a201027b2d808315fcf76c",
+    "authored_patient_002/letters/L2.txt": "9de894da60b2e21d4cd06f9cb3820d8140cb0056685644198b3aec6af969b191",
+    "authored_patient_002/letters/L3.txt": "1a798eb258d934cbaa9145e40d5ee00f597281bb9f340554def78dbce04a328f",
+    "authored_patient_002/manifest.json": "06a1a53b695ed205ccf42d0c8638efdde644ad8e1d47acc66ca9bf33144d38ca",
+    "authored_patient_002/reference.json": "97bf094421e33f827d01db32113f983724b28c48dd06f518d8d099ea88b8d80e",
+    "authored_patient_003/annotations.json": "9931081656626bf433c8494a766e49e9fcbeefec1af42013e8f9900df08e1ea8",
+    "authored_patient_003/inputs/T1_retrospective.json": "aeb114e5401bb438dfc4b7616dd9790128e5357249ec97eaec48a5125b0a9086",
+    "authored_patient_003/inputs/T1_visit.json": "9e33d873cec3fcf44033fbc81706d21e682f849586297da7580f1e6177d8ad50",
+    "authored_patient_003/inputs/T2_retrospective.json": "d6026fc396767ac5a18ff6435531b8600afa68d0aa9983672b43ec3bd18a6bb5",
+    "authored_patient_003/inputs/T2_visit.json": "aeb114e5401bb438dfc4b7616dd9790128e5357249ec97eaec48a5125b0a9086",
+    "authored_patient_003/letters/L1.txt": "2e4cc34bf7dd56b09c63439db1de3249b8f0718f7cc4e0584a1324e4e7c294a3",
+    "authored_patient_003/letters/L2.txt": "9de0d0fcc18a63c886672eba1989a6a0a78fb1b5a58dd0341f1d36cdafe4f65e",
+    "authored_patient_003/letters/L3.txt": "cdb4bb99dbabdd379081f0e27ff039e71b890232e6a3421ad42134623796f05b",
+    "authored_patient_003/manifest.json": "740c5bc6c56ec3752195f934f737b60386d7b4ecdb5a7e877beeeb14f054b1d2",
+    "authored_patient_003/reference.json": "63dbe963cb776f62dc583f55830fb254a50accfa9472b16cb7a72b56b570f3c8",
+    "authored_patient_004/annotations.json": "d87e94c60e5c7195085508f49980dd388a5f40117fe4f3c0b006b3e664120fcd",
+    "authored_patient_004/inputs/T1_retrospective.json": "dd8a73a78e5cbd737809c2791a0688448d9e33f73ed4fecbed12a0f785cc95f2",
+    "authored_patient_004/inputs/T1_visit.json": "b940e48339141353c2e89b12402546cfd8d49764e7d27d3deea4b0fdb787ecd6",
+    "authored_patient_004/inputs/T2_retrospective.json": "ae802252024bdbaa9c53b60673cb7628d49282557daa1c900cbdd03dcce499df",
+    "authored_patient_004/inputs/T2_visit.json": "dd8a73a78e5cbd737809c2791a0688448d9e33f73ed4fecbed12a0f785cc95f2",
+    "authored_patient_004/letters/L1.txt": "f02dbb18c4dbcadeaee53d139fa02202b5c1771da3df7221cd405ed4ed878fda",
+    "authored_patient_004/letters/L2.txt": "291e54da2f01b6a60c1a0101068934e71c097906bfd3d6c0686960a3a77d94eb",
+    "authored_patient_004/letters/L3.txt": "00b98f5a84ed7882b689a7f408731dd21abbecb9321007b688af2aceca1c6ec4",
+    "authored_patient_004/manifest.json": "418fc516bca39b0e6c270cbcce56bf0678a3dbb915a66a5fd83ce9bf438a7dee",
+    "authored_patient_004/reference.json": "0f48d6ee631f5428f8a3d0a9b9bb37997ddf60879b0c3b2c77fcc2e1121b907d",
+    "authored_patient_005/annotations.json": "2e236ee7957837b460b323b536ae07da9fc9b3809ec56885024ec35528996794",
+    "authored_patient_005/inputs/T1_retrospective.json": "2b973ba44f8241f6b23cf7f5b7bd6b9d1d992450b681b82544c93efae084aed4",
+    "authored_patient_005/inputs/T1_visit.json": "2b973ba44f8241f6b23cf7f5b7bd6b9d1d992450b681b82544c93efae084aed4",
+    "authored_patient_005/inputs/T2_retrospective.json": "b93b22e71b3806b7ed03f955471b5c4b8543160ded91474bc1eee2a4858f2fa5",
+    "authored_patient_005/inputs/T2_visit.json": "2b973ba44f8241f6b23cf7f5b7bd6b9d1d992450b681b82544c93efae084aed4",
+    "authored_patient_005/letters/L1.txt": "8352845a339e7b05feb1f5cc0cdcb169ffbf1da709b3d9fd65f265891cd5e4a1",
+    "authored_patient_005/letters/L2.txt": "ca62c9f3201c674f0a73c206d5208828a7377013910e0854be72afdd311f3225",
+    "authored_patient_005/letters/L3.txt": "b0a7c485b5ed3dcddca9b902626948ca90006dc98bcc1e0d710e29c9276dd6b0",
+    "authored_patient_005/manifest.json": "765d1c847a0a9b68efd7805ee75da8035eb8d604dc6d8495bd4124cc1f5e9b47",
+    "authored_patient_005/reference.json": "64c2c6593b41680c1b3f89c6cefa58228bbdd98b56085804e35538df1e33263f",
+    "authored_patient_006/annotations.json": "eebaa150c8b13ec82d31c78b677a989ccdc0a2c884e6596799ee227dcfaf15e7",
+    "authored_patient_006/inputs/T1_retrospective.json": "5705f9a57b0c04a0a1d16a9cc016865829727fd2357f850fb869e5b12b4a9e34",
+    "authored_patient_006/inputs/T1_visit.json": "7cdd9d9686c0236e9130da22c2a49e7c439c0071e2c546e94b2b8126df6c0e37",
+    "authored_patient_006/inputs/T2_retrospective.json": "db26e1a646ea341f47ce65307c2595aab37357d93c0b729d37b055e473bda4fe",
+    "authored_patient_006/inputs/T2_visit.json": "5705f9a57b0c04a0a1d16a9cc016865829727fd2357f850fb869e5b12b4a9e34",
+    "authored_patient_006/letters/L1.txt": "e7d4bc51d9ce381cde70110f4a509e44a158c6e905ecab28787d78e3cc4affed",
+    "authored_patient_006/letters/L2.txt": "cfafad98224aec158f01357a1153acc7cd038c0a06838b02b6a00102293ff1b0",
+    "authored_patient_006/letters/L3.txt": "d2cda7cead3f4910fff5291e04ecec7fd7503b155d3d8acf6a707c7241d4bacb",
+    "authored_patient_006/manifest.json": "c61a4f802d4e7023b07dd420dea982a527bf3410d1316eff1913ddae5bfd0b85",
+    "authored_patient_006/reference.json": "7061153b30973d2a9c80f9b6008abf998268c2baec2a0a6124d5188c35c65805",
+    "authored_patient_007/annotations.json": "4d7f7dc0f2a2dbd3794d7f4ec7afbe5d70a76c041db57e2a4f0eaa7d7ad5efc5",
+    "authored_patient_007/inputs/T1_retrospective.json": "4281a29ecaad89fb13dcc1f57fa91a854ea4b34dd71d2e0b76c264871d4906f1",
+    "authored_patient_007/inputs/T1_visit.json": "020fd81391cad19d7309c19931daac6f5d698cbed11f507045a4f2d7b7ff4996",
+    "authored_patient_007/inputs/T2_retrospective.json": "96b5c268fcee130474b5b120d1dc73bd88033963df13851b41bf943f7ad1b7b5",
+    "authored_patient_007/inputs/T2_visit.json": "4281a29ecaad89fb13dcc1f57fa91a854ea4b34dd71d2e0b76c264871d4906f1",
+    "authored_patient_007/letters/L1.txt": "d12638684e3babeb0917ae56f05e9b9f6abf2ca23ca0a6da9b7ca6dfebd3c1c6",
+    "authored_patient_007/letters/L2.txt": "462a6654503c313680957b4b49fa787bb66877d1ad56b952979efbc536fbb7ec",
+    "authored_patient_007/letters/L3.txt": "752df412f49c1045a130e8234bca1b51a0f582b6c7976d2436d80e825da6c6c2",
+    "authored_patient_007/manifest.json": "dfa1b077fb3164323ec572a45b659358843a29674812b0e9df7ace217b332446",
+    "authored_patient_007/reference.json": "4063627653a65f8ecb9af825c9da73668b5d492e56293df75c3bfef6daa837a2",
+    "authored_patient_008/annotations.json": "1afc26a668b70da5060792ee11e56d8bab961d58e521569fd24b95d0f95430ae",
+    "authored_patient_008/inputs/T1_retrospective.json": "0d40aba477372bf5599199023f51a0e1546b88ef3578f0850fcc9387694e5bc1",
+    "authored_patient_008/inputs/T1_visit.json": "0d40aba477372bf5599199023f51a0e1546b88ef3578f0850fcc9387694e5bc1",
+    "authored_patient_008/inputs/T2_retrospective.json": "0d40aba477372bf5599199023f51a0e1546b88ef3578f0850fcc9387694e5bc1",
+    "authored_patient_008/inputs/T2_visit.json": "0d40aba477372bf5599199023f51a0e1546b88ef3578f0850fcc9387694e5bc1",
+    "authored_patient_008/letters/L1.txt": "a4508119b9dd2677c6f11cd941634ada968101382a9c4dc5413d09d5344cc07a",
+    "authored_patient_008/letters/L2.txt": "fe13ab10c1a41870d1fd68cf7443539fbe0a40bb859aaccc08ef2617beb45729",
+    "authored_patient_008/letters/L3.txt": "c1c48a9605a6d86920d92633972eca6189d0b43d80c1ab1f7dda89412feea52d",
+    "authored_patient_008/manifest.json": "97a97919fbe2f359972bcb6b700074b835f71f27b021131e244a84d18dde6131",
+    "authored_patient_008/reference.json": "e96fee3495b7c05acad58d72900a0f5ba01effc5b6a937259d2ae4d2d5024a68",
+    "authored_patient_009/annotations.json": "b88bc3a2367b4593c03a86f7f2c097bc6e4e8f890927fc1e937242c1bcae0196",
+    "authored_patient_009/inputs/T1_retrospective.json": "5ca6e500e3896fc27f5d92b59f0fa2d3bf642ca6f2b27500da35e5b317b555fd",
+    "authored_patient_009/inputs/T1_visit.json": "c233563608488d50a21d91c9e7dbb36df2e78f1da40034397ffe5871be918e23",
+    "authored_patient_009/inputs/T2_retrospective.json": "348e918af515705ae99e6d268d238f21b3a4d4b8fe1ce6f6fe5d5d2a00b90fa6",
+    "authored_patient_009/inputs/T2_visit.json": "5ca6e500e3896fc27f5d92b59f0fa2d3bf642ca6f2b27500da35e5b317b555fd",
+    "authored_patient_009/letters/L1.txt": "fbfbecf64c0d643fda7372824456f4fe362ae30ee5797d931c8dc497d24a91df",
+    "authored_patient_009/letters/L2.txt": "7bd427cf94277368a92abea70be074988abd0eb6e7738b57c7fe8699f93b4a06",
+    "authored_patient_009/letters/L3.txt": "541d0af21daacc10f98f917c0a865f8663c7c9788fa3dbd6ffe08a8b25c889e8",
+    "authored_patient_009/manifest.json": "11f77698fc7557abcf6acf3a730fbab70bd5cfa68fa8ff773b45b2da51e22700",
+    "authored_patient_009/reference.json": "c98d0b6cfff104eae1a9d01daafffa14ca46495d2b0b72c27471e62bb086b130",
+    "authored_patient_010/annotations.json": "e9a4c7f7c39bc71072b358deb929d2a6bd284c88306e0c3c6e023737cf012ed8",
+    "authored_patient_010/inputs/T1_retrospective.json": "9bf78a89c0d0f4c0cc564d1e8ff6f1428e64d86a3a2b863f1c9b19814da05ec0",
+    "authored_patient_010/inputs/T1_visit.json": "7f0bd9938d199bc968a24feeb3572cc2eb50c7ee3dd23cd2d971f42fc8941d72",
+    "authored_patient_010/inputs/T2_retrospective.json": "e083773d8ab71d89cad138019e9da1d24ed58b8539f92f2cf70f713705181f2a",
+    "authored_patient_010/inputs/T2_visit.json": "9bf78a89c0d0f4c0cc564d1e8ff6f1428e64d86a3a2b863f1c9b19814da05ec0",
+    "authored_patient_010/letters/L1.txt": "cd3b9c4e4502cb079f4be9152637d50ad457794dce438de43f0cfd1850d641dd",
+    "authored_patient_010/letters/L2.txt": "a320bf4e240f803859d2e58df5057ea2649a54fcce0064b1bb40e1e830ad732d",
+    "authored_patient_010/letters/L3.txt": "85c3a8f83f876d03b598c19a3716204a2387fe2deb7e012ebf145619df2e9642",
+    "authored_patient_010/manifest.json": "d28d714521b2b8e8335224a0f8ee81cd6959e50fc28348d01c8301f6e1aeda6f",
+    "authored_patient_010/reference.json": "914bd3dc86e26be24c5cef6ba0a9a2cca4b53ed385df0504d23a5854a6cf25ff",
+    "authored_patient_011/annotations.json": "0c72bfcdf9de874a4117f288180456cde2c55dd370c69ef152599cd7b6dc38cd",
+    "authored_patient_011/inputs/T1_retrospective.json": "b2a7601918ad532ec6fec28829e4c17b38bbc89f64191ffdd1bfd7f4a39f32be",
+    "authored_patient_011/inputs/T1_visit.json": "21882430675f59e05f3f8dd73643ca81f3db58ebdd7a92b747b1efea85a47601",
+    "authored_patient_011/inputs/T2_retrospective.json": "90c01bedd94763acb83daa7014e58db62f1144806d263546841c811d3456aeaf",
+    "authored_patient_011/inputs/T2_visit.json": "b2a7601918ad532ec6fec28829e4c17b38bbc89f64191ffdd1bfd7f4a39f32be",
+    "authored_patient_011/letters/L1.txt": "313fc2cbb438b813c36415dd7abcd8d7283a4d156a916367ed7754ecfe4bb8fc",
+    "authored_patient_011/letters/L2.txt": "0bdc83af31d26e624c2381521e0a1fdcecf07be8d79dd9702bd1b508327578b3",
+    "authored_patient_011/letters/L3.txt": "c76d9897c824f025a2bceaba3ed41c916202aafb9f33492716017448d73d2fc6",
+    "authored_patient_011/manifest.json": "1a14080e438c3cce40a3d06e1c714163fd9315ac70b9bc945b1d3ddd23f972c1",
+    "authored_patient_011/reference.json": "999220b03d43274125301faa27d31335068a599c867a1d4a136f165a77af31c7",
+    "authored_patient_012/annotations.json": "f15fd8c991aa9d5df4c9d4432e0603f7e22958731702be63e15a0cc83475cb92",
+    "authored_patient_012/inputs/T1_retrospective.json": "d93fd951585880955dc3f4214a9edad8c962ec73a329cc035e24899ab44fafcf",
+    "authored_patient_012/inputs/T1_visit.json": "8ea464531b40e32c4a8e630d29ae7ebab75d90b9b40299998bc29f4ddd57d418",
+    "authored_patient_012/inputs/T2_retrospective.json": "b35a28bd0695683715cb93d42807321061640b64cbfc55ca7ce56bc6cfaf1a05",
+    "authored_patient_012/inputs/T2_visit.json": "d93fd951585880955dc3f4214a9edad8c962ec73a329cc035e24899ab44fafcf",
+    "authored_patient_012/letters/L1.txt": "fc0d3bf80dbd46071f8e2ed2c102aa63afe9bf5ed715fc16003a578cb45ae855",
+    "authored_patient_012/letters/L2.txt": "3b07469ecbf4443e6f7d3c3a5d33f9f6b8bf47d91f5a0fee4c7d861b59b4a28b",
+    "authored_patient_012/letters/L3.txt": "b2dca410b6205702e2de4a55a4f7ec7cdaeeb627e13d90affb49044165bf6a84",
+    "authored_patient_012/manifest.json": "4433a0bde0ca68d512e656996188c1f0191f2791be4ecd23e1c754c3b5b00005",
+    "authored_patient_012/reference.json": "69668fafd2385bf6a26e70174237d416e40dc3c60fa1967b5084abec126bcddc"
+  },
+  "cases_count": 12,
+  "total_letters": 36,
+  "total_requests": 240,
+  "total_evidence_spans": 125,
+  "total_assertions": 210,
+  "total_links": 49,
+  "overall_status_distribution": {
+    "eligible": 39,
+    "ineligible": 19,
+    "indeterminate": 182
+  },
+  "query_breakdown": {
+    "Q1": {
+      "eligible": 29,
+      "ineligible": 3,
+      "indeterminate": 16
+    },
+    "Q2": {
+      "eligible": 2,
+      "ineligible": 8,
+      "indeterminate": 38
+    },
+    "Q3": {
+      "eligible": 2,
+      "ineligible": 4,
+      "indeterminate": 42
+    },
+    "Q4": {
+      "eligible": 2,
+      "ineligible": 2,
+      "indeterminate": 44
+    },
+    "Q5": {
+      "eligible": 4,
+      "ineligible": 2,
+      "indeterminate": 42
+    }
+  },
+  "dual_perspective_divergence": {
+    "total_matched_pairs": 120,
+    "divergent_pairs": 14,
+    "pairs": [
+      {
+        "case_id": "authored-001",
+        "index": 1,
+        "query_id": "Q1",
+        "visit": "eligible",
+        "retrospective": "eligible",
+        "differs": false
+      },
+      {
+        "case_id": "authored-001",
+        "index": 1,
+        "query_id": "Q2",
+        "visit": "eligible",
+        "retrospective": "ineligible",
+        "differs": true
+      },
+      {
+        "case_id": "authored-001",
+        "index": 1,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "ineligible",
+        "differs": true
+      },
+      {
+        "case_id": "authored-001",
+        "index": 1,
+        "query_id": "Q4",
+        "visit": "ineligible",
+        "retrospective": "ineligible",
+        "differs": false
+      },
+      {
+        "case_id": "authored-001",
+        "index": 1,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "ineligible",
+        "differs": true
+      },
+      {
+        "case_id": "authored-001",
+        "index": 2,
+        "query_id": "Q1",
+        "visit": "eligible",
+        "retrospective": "eligible",
+        "differs": false
+      },
+      {
+        "case_id": "authored-001",
+        "index": 2,
+        "query_id": "Q2",
+        "visit": "indeterminate",
+        "retrospective": "ineligible",
+        "differs": true
+      },
+      {
+        "case_id": "authored-001",
+        "index": 2,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "ineligible",
+        "differs": true
+      },
+      {
+        "case_id": "authored-001",
+        "index": 2,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "eligible",
+        "differs": true
+      },
+      {
+        "case_id": "authored-001",
+        "index": 2,
+        "query_id": "Q5",
+        "visit": "eligible",
+        "retrospective": "eligible",
+        "differs": false
+      },
+      {
+        "case_id": "authored-002",
+        "index": 1,
+        "query_id": "Q1",
+        "visit": "eligible",
+        "retrospective": "eligible",
+        "differs": false
+      },
+      {
+        "case_id": "authored-002",
+        "index": 1,
+        "query_id": "Q2",
+        "visit": "ineligible",
+        "retrospective": "ineligible",
+        "differs": false
+      },
+      {
+        "case_id": "authored-002",
+        "index": 1,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-002",
+        "index": 1,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-002",
+        "index": 1,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-002",
+        "index": 2,
+        "query_id": "Q1",
+        "visit": "indeterminate",
+        "retrospective": "eligible",
+        "differs": true
+      },
+      {
+        "case_id": "authored-002",
+        "index": 2,
+        "query_id": "Q2",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-002",
+        "index": 2,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-002",
+        "index": 2,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-002",
+        "index": 2,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-003",
+        "index": 1,
+        "query_id": "Q1",
+        "visit": "ineligible",
+        "retrospective": "ineligible",
+        "differs": false
+      },
+      {
+        "case_id": "authored-003",
+        "index": 1,
+        "query_id": "Q2",
+        "visit": "ineligible",
+        "retrospective": "ineligible",
+        "differs": false
+      },
+      {
+        "case_id": "authored-003",
+        "index": 1,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-003",
+        "index": 1,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-003",
+        "index": 1,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-003",
+        "index": 2,
+        "query_id": "Q1",
+        "visit": "indeterminate",
+        "retrospective": "ineligible",
+        "differs": true
+      },
+      {
+        "case_id": "authored-003",
+        "index": 2,
+        "query_id": "Q2",
+        "visit": "indeterminate",
+        "retrospective": "ineligible",
+        "differs": true
+      },
+      {
+        "case_id": "authored-003",
+        "index": 2,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-003",
+        "index": 2,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-003",
+        "index": 2,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-004",
+        "index": 1,
+        "query_id": "Q1",
+        "visit": "eligible",
+        "retrospective": "eligible",
+        "differs": false
+      },
+      {
+        "case_id": "authored-004",
+        "index": 1,
+        "query_id": "Q2",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-004",
+        "index": 1,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-004",
+        "index": 1,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-004",
+        "index": 1,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-004",
+        "index": 2,
+        "query_id": "Q1",
+        "visit": "eligible",
+        "retrospective": "eligible",
+        "differs": false
+      },
+      {
+        "case_id": "authored-004",
+        "index": 2,
+        "query_id": "Q2",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-004",
+        "index": 2,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-004",
+        "index": 2,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-004",
+        "index": 2,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-005",
+        "index": 1,
+        "query_id": "Q1",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-005",
+        "index": 1,
+        "query_id": "Q2",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-005",
+        "index": 1,
+        "query_id": "Q3",
+        "visit": "ineligible",
+        "retrospective": "ineligible",
+        "differs": false
+      },
+      {
+        "case_id": "authored-005",
+        "index": 1,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-005",
+        "index": 1,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-005",
+        "index": 2,
+        "query_id": "Q1",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-005",
+        "index": 2,
+        "query_id": "Q2",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-005",
+        "index": 2,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "eligible",
+        "differs": true
+      },
+      {
+        "case_id": "authored-005",
+        "index": 2,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "eligible",
+        "differs": true
+      },
+      {
+        "case_id": "authored-005",
+        "index": 2,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-006",
+        "index": 1,
+        "query_id": "Q1",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-006",
+        "index": 1,
+        "query_id": "Q2",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-006",
+        "index": 1,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-006",
+        "index": 1,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-006",
+        "index": 1,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-006",
+        "index": 2,
+        "query_id": "Q1",
+        "visit": "eligible",
+        "retrospective": "eligible",
+        "differs": false
+      },
+      {
+        "case_id": "authored-006",
+        "index": 2,
+        "query_id": "Q2",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-006",
+        "index": 2,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-006",
+        "index": 2,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-006",
+        "index": 2,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-007",
+        "index": 1,
+        "query_id": "Q1",
+        "visit": "eligible",
+        "retrospective": "eligible",
+        "differs": false
+      },
+      {
+        "case_id": "authored-007",
+        "index": 1,
+        "query_id": "Q2",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-007",
+        "index": 1,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-007",
+        "index": 1,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-007",
+        "index": 1,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-007",
+        "index": 2,
+        "query_id": "Q1",
+        "visit": "eligible",
+        "retrospective": "eligible",
+        "differs": false
+      },
+      {
+        "case_id": "authored-007",
+        "index": 2,
+        "query_id": "Q2",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-007",
+        "index": 2,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-007",
+        "index": 2,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-007",
+        "index": 2,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-008",
+        "index": 1,
+        "query_id": "Q1",
+        "visit": "eligible",
+        "retrospective": "eligible",
+        "differs": false
+      },
+      {
+        "case_id": "authored-008",
+        "index": 1,
+        "query_id": "Q2",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-008",
+        "index": 1,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-008",
+        "index": 1,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-008",
+        "index": 1,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-008",
+        "index": 2,
+        "query_id": "Q1",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-008",
+        "index": 2,
+        "query_id": "Q2",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-008",
+        "index": 2,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-008",
+        "index": 2,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-008",
+        "index": 2,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-009",
+        "index": 1,
+        "query_id": "Q1",
+        "visit": "eligible",
+        "retrospective": "eligible",
+        "differs": false
+      },
+      {
+        "case_id": "authored-009",
+        "index": 1,
+        "query_id": "Q2",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-009",
+        "index": 1,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-009",
+        "index": 1,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-009",
+        "index": 1,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-009",
+        "index": 2,
+        "query_id": "Q1",
+        "visit": "eligible",
+        "retrospective": "eligible",
+        "differs": false
+      },
+      {
+        "case_id": "authored-009",
+        "index": 2,
+        "query_id": "Q2",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-009",
+        "index": 2,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-009",
+        "index": 2,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-009",
+        "index": 2,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-010",
+        "index": 1,
+        "query_id": "Q1",
+        "visit": "eligible",
+        "retrospective": "eligible",
+        "differs": false
+      },
+      {
+        "case_id": "authored-010",
+        "index": 1,
+        "query_id": "Q2",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-010",
+        "index": 1,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "eligible",
+        "differs": true
+      },
+      {
+        "case_id": "authored-010",
+        "index": 1,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-010",
+        "index": 1,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-010",
+        "index": 2,
+        "query_id": "Q1",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-010",
+        "index": 2,
+        "query_id": "Q2",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-010",
+        "index": 2,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-010",
+        "index": 2,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-010",
+        "index": 2,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-011",
+        "index": 1,
+        "query_id": "Q1",
+        "visit": "eligible",
+        "retrospective": "eligible",
+        "differs": false
+      },
+      {
+        "case_id": "authored-011",
+        "index": 1,
+        "query_id": "Q2",
+        "visit": "eligible",
+        "retrospective": "ineligible",
+        "differs": true
+      },
+      {
+        "case_id": "authored-011",
+        "index": 1,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-011",
+        "index": 1,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-011",
+        "index": 1,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "ineligible",
+        "differs": true
+      },
+      {
+        "case_id": "authored-011",
+        "index": 2,
+        "query_id": "Q1",
+        "visit": "eligible",
+        "retrospective": "eligible",
+        "differs": false
+      },
+      {
+        "case_id": "authored-011",
+        "index": 2,
+        "query_id": "Q2",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-011",
+        "index": 2,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-011",
+        "index": 2,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-011",
+        "index": 2,
+        "query_id": "Q5",
+        "visit": "eligible",
+        "retrospective": "eligible",
+        "differs": false
+      },
+      {
+        "case_id": "authored-012",
+        "index": 1,
+        "query_id": "Q1",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-012",
+        "index": 1,
+        "query_id": "Q2",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-012",
+        "index": 1,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-012",
+        "index": 1,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-012",
+        "index": 1,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-012",
+        "index": 2,
+        "query_id": "Q1",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-012",
+        "index": 2,
+        "query_id": "Q2",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-012",
+        "index": 2,
+        "query_id": "Q3",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-012",
+        "index": 2,
+        "query_id": "Q4",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      },
+      {
+        "case_id": "authored-012",
+        "index": 2,
+        "query_id": "Q5",
+        "visit": "indeterminate",
+        "retrospective": "indeterminate",
+        "differs": false
+      }
+    ]
+  },
+  "constant_baselines": {
+    "eligible": {
+      "patient_averaged_accuracy": 0.1625,
+      "patient_scores": [
+        0.4,
+        0.15,
+        0.0,
+        0.2,
+        0.1,
+        0.1,
+        0.2,
+        0.1,
+        0.2,
+        0.15,
+        0.35,
+        0.0
+      ],
+      "interpretation": "arithmetic baseline on authored development references; not extractor performance"
+    },
+    "ineligible": {
+      "patient_averaged_accuracy": 0.07916666666666666,
+      "patient_scores": [
+        0.35,
+        0.1,
+        0.3,
+        0.0,
+        0.1,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.1,
+        0.0
+      ],
+      "interpretation": "arithmetic baseline on authored development references; not extractor performance"
+    },
+    "indeterminate": {
+      "patient_averaged_accuracy": 0.7583333333333333,
+      "patient_scores": [
+        0.25,
+        0.75,
+        0.7,
+        0.8,
+        0.8,
+        0.9,
+        0.8,
+        0.9,
+        0.8,
+        0.85,
+        0.55,
+        1.0
+      ],
+      "interpretation": "arithmetic baseline on authored development references; not extractor performance"
+    }
+  },
+  "independent_pass_status": "not_performed",
+  "inter_annotator_agreement": null,
+  "effort_analysis": null,
+  "field_cost_utility": null,
+  "cases": [
+    {
+      "case_id": "authored-001",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 25,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 35,
+      "links": 10
+    },
+    {
+      "case_id": "authored-002",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 6,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 12,
+      "links": 1
+    },
+    {
+      "case_id": "authored-003",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 7,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 16,
+      "links": 2
+    },
+    {
+      "case_id": "authored-004",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 8,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 14,
+      "links": 3
+    },
+    {
+      "case_id": "authored-005",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 16,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 26,
+      "links": 7
+    },
+    {
+      "case_id": "authored-006",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 8,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 11,
+      "links": 4
+    },
+    {
+      "case_id": "authored-007",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 8,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 15,
+      "links": 2
+    },
+    {
+      "case_id": "authored-008",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 8,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 12,
+      "links": 2
+    },
+    {
+      "case_id": "authored-009",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 8,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 14,
+      "links": 2
+    },
+    {
+      "case_id": "authored-010",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 8,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 19,
+      "links": 6
+    },
+    {
+      "case_id": "authored-011",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 13,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 16,
+      "links": 4
+    },
+    {
+      "case_id": "authored-012",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 10,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 20,
+      "links": 6
+    }
+  ]
+}

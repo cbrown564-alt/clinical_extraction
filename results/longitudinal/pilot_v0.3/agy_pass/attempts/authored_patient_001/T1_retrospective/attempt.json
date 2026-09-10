@@ -1,0 +1,22 @@
+{
+  "status": "failed",
+  "input_sha256": "e71f97bf2635e5669d6e9b4cac5487c84cfec2cd2483274c49952b23fbb42ff5",
+  "rendered_prompt_sha256": "32f5b3bab84baf77cc93ad1e6442827ea8a8dab908d8b3a0ac772585bc2b7ec7",
+  "model_requested": "gemini-3.8-flash-high",
+  "effort": "high",
+  "interface": "agy",
+  "executable_sha256": "2a63488c33221627f1798ff4ccb1d5131b6abe3160286c84b357a7456905f763",
+  "fresh_project": true,
+  "sandbox": true,
+  "tools_requested": false,
+  "started_at": "2026-09-09T20:19:28.476111+00:00",
+  "semantic_repair": false,
+  "provider_cost": null,
+  "human_annotation_minutes": null,
+  "exit_code": 0,
+  "ended_at": "2026-09-09T20:22:25.351303+00:00",
+  "wall_seconds": 176.87840774998767,
+  "error": "agy ERROR: output token limit exceeded; automatic continuation did not produce an accepted success.",
+  "tool_catalog_present": true,
+  "isolation_limit": "fresh temporary project; no observed tool steps required; tool catalog remains present and plan mode is ignored by CLI with slash expansion disabled"
+}

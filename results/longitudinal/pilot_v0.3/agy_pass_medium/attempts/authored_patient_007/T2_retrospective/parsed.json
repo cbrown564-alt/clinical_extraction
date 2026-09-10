@@ -1,0 +1,707 @@
+{
+  "annotations": {
+    "assertions": [
+      {
+        "assertion_id": "A1_diag",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 143,
+            "end": 237,
+            "text": "He has an established diagnosis of genetic generalized epilepsy with typical absence seizures."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "established",
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "genetic generalized epilepsy with typical absence seizures",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "A1_seiz_pattern",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 239,
+            "end": 407,
+            "text": "He describes recurring daytime absence episodes characterized by brief staring and eyelid fluttering lasting 5 to 10 seconds, occurring approximately once or twice daily."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "recurring",
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "daytime absence episodes"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "approximately once or twice daily",
+            "count": {
+              "lower": 1.0,
+              "upper": 2.0
+            },
+            "period": {
+              "amount": {
+                "lower": 1.0,
+                "upper": 1.0
+              },
+              "unit": "day"
+            },
+            "events_per_cluster": null,
+            "approximate": true
+          }
+        }
+      },
+      {
+        "assertion_id": "A1_seiz_occ",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 408,
+            "end": 469,
+            "text": "His latest absence spell occurred yesterday, 9 January 2025."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "yesterday, 9 January 2025",
+          "start": {
+            "earliest": "2025-01-09",
+            "latest": "2025-01-09"
+          },
+          "end": {
+            "earliest": "2025-01-09",
+            "latest": "2025-01-09"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "absence spell"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A1_seiz_neg",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 470,
+            "end": 527,
+            "text": "He reports no generalized convulsions or myoclonic jerks."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "generalized convulsions",
+            "myoclonic jerks"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A1_med_valproate",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 528,
+            "end": 577,
+            "text": "He continues sodium valproate 500 mg twice daily."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "continues",
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "sodium valproate",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "A1_inv_eeg",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 621,
+            "end": 644,
+            "text": "No EEG requested today."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": "today",
+          "start": {
+            "earliest": "2025-01-10",
+            "latest": "2025-01-10"
+          },
+          "end": {
+            "earliest": "2025-01-10",
+            "latest": "2025-01-10"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "A2_diag",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 126,
+            "end": 172,
+            "text": "His diagnosis is genetic generalized epilepsy."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "today",
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "genetic generalized epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "A2_seiz_pattern",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 174,
+            "end": 316,
+            "text": "He continues to experience typical absence spells, currently occurring once or twice daily, with the most recent episode noted on 14 May 2025."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "currently",
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "typical absence spells"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "once or twice daily",
+            "count": {
+              "lower": 1.0,
+              "upper": 2.0
+            },
+            "period": {
+              "amount": {
+                "lower": 1.0,
+                "upper": 1.0
+              },
+              "unit": "day"
+            },
+            "events_per_cluster": null,
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "A2_seiz_occ",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 174,
+            "end": 316,
+            "text": "He continues to experience typical absence spells, currently occurring once or twice daily, with the most recent episode noted on 14 May 2025."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "14 May 2025",
+          "start": {
+            "earliest": "2025-05-18",
+            "latest": "2025-05-18"
+          },
+          "end": {
+            "earliest": "2025-05-18",
+            "latest": "2025-05-18"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "typical absence spells"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A2_seiz_neg",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 317,
+            "end": 375,
+            "text": "There have been no convulsive attacks or myoclonic events."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "convulsive attacks",
+            "myoclonic events"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A2_med_valproate",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 376,
+            "end": 457,
+            "text": "He remains on sodium valproate 500 mg twice daily with good reported compliance."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "remains on",
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "medication",
+          "name": "sodium valproate",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "A3_diag",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 132,
+            "end": 207,
+            "text": "He has genetic generalized epilepsy on sodium valproate 500 mg twice daily."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L3"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "genetic generalized epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "A3_seiz_pattern",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 208,
+            "end": 280,
+            "text": "Absence events continue once or twice daily, latest on 8 September 2025."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "continue",
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L3"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "Absence events"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "once or twice daily",
+            "count": {
+              "lower": 1.0,
+              "upper": 2.0
+            },
+            "period": {
+              "amount": {
+                "lower": 1.0,
+                "upper": 1.0
+              },
+              "unit": "day"
+            },
+            "events_per_cluster": null,
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "A3_seiz_occ",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 208,
+            "end": 280,
+            "text": "Absence events continue once or twice daily, latest on 8 September 2025."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "8 September 2025",
+          "start": {
+            "earliest": "2025-09-08",
+            "latest": "2025-09-08"
+          },
+          "end": {
+            "earliest": "2025-09-08",
+            "latest": "2025-09-08"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": "L3"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "Absence events"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A3_seiz_neg",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 281,
+            "end": 296,
+            "text": "No convulsions."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L3"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "convulsions"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A3_med_valproate",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 132,
+            "end": 207,
+            "text": "He has genetic generalized epilepsy on sodium valproate 500 mg twice daily."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "on",
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L3"
+        },
+        "content": {
+          "family": "medication",
+          "name": "sodium valproate",
+          "status": "taking",
+          "condition": null
+        }
+      }
+    ],
+    "links": [
+      {
+        "link_id": "LNK_diag_1_2",
+        "earlier_assertion": "A1_diag",
+        "later_assertion": "A2_diag",
+        "relation": "repeats",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 126,
+            "end": 172,
+            "text": "His diagnosis is genetic generalized epilepsy."
+          }
+        ],
+        "decision_time": null
+      },
+      {
+        "link_id": "LNK_seiz_1_2",
+        "earlier_assertion": "A1_seiz_pattern",
+        "later_assertion": "A2_seiz_pattern",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 174,
+            "end": 316,
+            "text": "He continues to experience typical absence spells, currently occurring once or twice daily, with the most recent episode noted on 14 May 2025."
+          }
+        ],
+        "decision_time": null
+      },
+      {
+        "link_id": "LNK_med_1_2",
+        "earlier_assertion": "A1_med_valproate",
+        "later_assertion": "A2_med_valproate",
+        "relation": "repeats",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 376,
+            "end": 457,
+            "text": "He remains on sodium valproate 500 mg twice daily with good reported compliance."
+          }
+        ],
+        "decision_time": null
+      }
+    ]
+  },
+  "answers": [
+    {
+      "request_id": "T2_retrospective_Q1",
+      "status": "eligible",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 126,
+          "end": 172,
+          "text": "His diagnosis is genetic generalized epilepsy."
+        },
+        {
+          "letter_id": "L2",
+          "start": 174,
+          "end": 316,
+          "text": "He continues to experience typical absence spells, currently occurring once or twice daily, with the most recent episode noted on 14 May 2025."
+        }
+      ],
+      "reason": "The patient has a documented continuing diagnosis of genetic generalized epilepsy as of the index date (2025-07-09), and experienced an epileptic seizure (typical absence spell) on 14 May 2025, which falls within the supplied 90-day lookback window (2025-04-11 to 2025-07-09)."
+    },
+    {
+      "request_id": "T2_retrospective_Q2",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 174,
+          "end": 316,
+          "text": "He continues to experience typical absence spells, currently occurring once or twice daily, with the most recent episode noted on 14 May 2025."
+        },
+        {
+          "letter_id": "L2",
+          "start": 317,
+          "end": 375,
+          "text": "There have been no convulsive attacks or myoclonic events."
+        }
+      ],
+      "reason": "Only one active epileptic pattern (typical absence spells) is documented in the 90-day timeframe (2025-04-11 to 2025-07-09). While convulsive attacks and myoclonic events are reported absent, there is no explicit complete inventory of all active epileptic patterns throughout the timeframe, leaving it indeterminate whether at least two distinct active patterns existed."
+    },
+    {
+      "request_id": "T2_retrospective_Q3",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 376,
+          "end": 457,
+          "text": "He remains on sodium valproate 500 mg twice daily with good reported compliance."
+        }
+      ],
+      "reason": "The records do not mention lamotrigine initiation within the 180-day lookback timeframe (2025-01-11 to 2025-07-09), nor do they provide an explicit statement of non-initiation. Because silence does not establish non-use, the status is indeterminate."
+    },
+    {
+      "request_id": "T2_retrospective_Q4",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 621,
+          "end": 644,
+          "text": "No EEG requested today."
+        }
+      ],
+      "reason": "No EEG request or result is documented within the 180-day timeframe (2025-01-11 to 2025-07-09). However, without an explicit complete request inventory, an unmentioned request cannot be excluded, leaving the status indeterminate."
+    },
+    {
+      "request_id": "T2_retrospective_Q5",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 174,
+          "end": 316,
+          "text": "He continues to experience typical absence spells, currently occurring once or twice daily, with the most recent episode noted on 14 May 2025."
+        }
+      ],
+      "reason": "The patient experienced documented epileptic absence spells within the 180-day timeframe (2025-01-11 to 2025-07-09), but there is no explicit reinterpretation of any epileptic event or pattern as non-epileptic by the index date. Absence of a revision alone is indeterminate."
+    }
+  ]
+}

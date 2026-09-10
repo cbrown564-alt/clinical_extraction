@@ -1,0 +1,696 @@
+{
+  "annotations": {
+    "assertions": [
+      {
+        "assertion_id": "A1_L1_diagnosis",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 143,
+            "end": 186,
+            "text": "She has a known diagnosis of focal epilepsy"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "known",
+          "start": null,
+          "end": {
+            "earliest": "2025-02-15",
+            "latest": "2025-02-15"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "A2_L1_partner_pattern",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 251,
+            "end": 435,
+            "text": "Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing"
+          }
+        ],
+        "reporter": "caregiver",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-02-15",
+            "latest": "2025-02-15"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "nocturnal seizures"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "roughly two to three times a week",
+            "count": {
+              "lower": 2.0,
+              "upper": 3.0
+            },
+            "period": {
+              "amount": {
+                "lower": 1.0,
+                "upper": 1.0
+              },
+              "unit": "week"
+            },
+            "events_per_cluster": null,
+            "approximate": true
+          }
+        }
+      },
+      {
+        "assertion_id": "A3_L1_partner_recent_event",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 436,
+            "end": 513,
+            "text": "The partner states the most recent nocturnal seizure was on 12 February 2025"
+          }
+        ],
+        "reporter": "caregiver",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "12 February 2025",
+          "start": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "end": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "nocturnal seizure"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A4_L1_patient_denial",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 567,
+            "end": 612,
+            "text": "firmly denies that any nocturnal events occur"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-02-15",
+            "latest": "2025-02-15"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "nocturnal events"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A5_L1_patient_seizure_free",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 618,
+            "end": 654,
+            "text": "insists she is entirely seizure-free"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-02-15",
+            "latest": "2025-02-15"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "seizures"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "all_epileptic",
+          "burden": {
+            "kind": "freedom",
+            "text": "entirely seizure-free",
+            "count": null,
+            "period": null,
+            "events_per_cluster": null,
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "A6_L1_lamotrigine_use",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 768,
+            "end": 813,
+            "text": "She continues lamotrigine 100 mg twice daily"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "continues",
+          "start": null,
+          "end": {
+            "earliest": "2025-02-15",
+            "latest": "2025-02-15"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "lamotrigine",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "A7_L1_maintain_lamotrigine",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 815,
+            "end": 906,
+            "text": "We agreed to maintain her lamotrigine dose while her partner attempts home video recording"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-02-15",
+            "latest": "2025-02-15"
+          },
+          "end": {
+            "earliest": "2025-02-15",
+            "latest": "2025-02-15"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "lamotrigine",
+          "status": "proposed",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "A8_L1_no_eeg",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 907,
+            "end": 923,
+            "text": "No EEG requested"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-02-15",
+            "latest": "2025-02-15"
+          },
+          "end": {
+            "earliest": "2025-02-15",
+            "latest": "2025-02-15"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "A9_L2_diagnosis",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 131,
+            "end": 167,
+            "text": "Her diagnosis remains focal epilepsy"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "remains",
+          "start": null,
+          "end": {
+            "earliest": "2025-06-25",
+            "latest": "2025-06-25"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "A10_L2_video_event",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 170,
+            "end": 289,
+            "text": "Her partner captured a clear home video on 10 June 2025 showing nocturnal hypermotor tonic activity lasting 45 seconds"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "10 June 2025",
+          "start": {
+            "earliest": "2025-06-10",
+            "latest": "2025-06-10"
+          },
+          "end": {
+            "earliest": "2025-06-10",
+            "latest": "2025-06-10"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "nocturnal hypermotor tonic activity"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A11_L2_patient_acknowledges",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 290,
+            "end": 428,
+            "text": "Having viewed the video, Fatima now acknowledges that nocturnal seizures are indeed taking place despite her lack of subjective awareness"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "now",
+          "start": null,
+          "end": {
+            "earliest": "2025-06-25",
+            "latest": "2025-06-25"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "nocturnal seizures"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A12_L2_partner_weekly_pattern",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 429,
+            "end": 508,
+            "text": "The partner reports similar nocturnal seizures continued weekly until mid-June"
+          }
+        ],
+        "reporter": "caregiver",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "until mid-June",
+          "start": null,
+          "end": {
+            "earliest": "2025-06-10",
+            "latest": "2025-06-20"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "nocturnal seizures"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "weekly",
+            "count": {
+              "lower": 1.0,
+              "upper": 1.0
+            },
+            "period": {
+              "amount": {
+                "lower": 1.0,
+                "upper": 1.0
+              },
+              "unit": "week"
+            },
+            "events_per_cluster": null,
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "A13_L2_increase_lamotrigine",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 510,
+            "end": 618,
+            "text": "In light of this verified active seizure frequency, we agreed to increase lamotrigine to 150 mg twice daily"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-06-25",
+            "latest": "2025-06-25"
+          },
+          "end": {
+            "earliest": "2025-06-25",
+            "latest": "2025-06-25"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "medication",
+          "name": "lamotrigine",
+          "status": "proposed",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "A14_L2_no_eeg",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 619,
+            "end": 635,
+            "text": "No EEG requested"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-06-25",
+            "latest": "2025-06-25"
+          },
+          "end": {
+            "earliest": "2025-06-25",
+            "latest": "2025-06-25"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      }
+    ],
+    "links": [
+      {
+        "link_id": "LNK1_diag_continuity",
+        "earlier_assertion": "A1_L1_diagnosis",
+        "later_assertion": "A9_L2_diagnosis",
+        "relation": "repeats",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 131,
+            "end": 167,
+            "text": "Her diagnosis remains focal epilepsy"
+          }
+        ],
+        "decision_time": null
+      },
+      {
+        "link_id": "LNK2_informant_discordance",
+        "earlier_assertion": "A2_L1_partner_pattern",
+        "later_assertion": "A4_L1_patient_denial",
+        "relation": "contradicts",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 680,
+            "end": 767,
+            "text": "Because of this direct informant discordance, I have recorded both accounts separately"
+          }
+        ],
+        "decision_time": null
+      },
+      {
+        "link_id": "LNK3_denial_settled_by_video",
+        "earlier_assertion": "A4_L1_patient_denial",
+        "later_assertion": "A11_L2_patient_acknowledges",
+        "relation": "updates",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 290,
+            "end": 428,
+            "text": "Having viewed the video, Fatima now acknowledges that nocturnal seizures are indeed taking place despite her lack of subjective awareness"
+          }
+        ],
+        "decision_time": {
+          "text": "25 June 2025",
+          "start": {
+            "earliest": "2025-06-25",
+            "latest": "2025-06-25"
+          },
+          "end": {
+            "earliest": "2025-06-25",
+            "latest": "2025-06-25"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L2"
+        }
+      },
+      {
+        "link_id": "LNK4_pattern_identity",
+        "earlier_assertion": "A2_L1_partner_pattern",
+        "later_assertion": "A12_L2_partner_weekly_pattern",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 429,
+            "end": 508,
+            "text": "The partner reports similar nocturnal seizures continued weekly until mid-June"
+          }
+        ],
+        "decision_time": null
+      }
+    ]
+  },
+  "answers": [
+    {
+      "request_id": "T1_retrospective_Q1",
+      "status": "eligible",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 143,
+          "end": 186,
+          "text": "She has a known diagnosis of focal epilepsy"
+        },
+        {
+          "letter_id": "L1",
+          "start": 436,
+          "end": 513,
+          "text": "The partner states the most recent nocturnal seizure was on 12 February 2025"
+        },
+        {
+          "letter_id": "L2",
+          "start": 290,
+          "end": 428,
+          "text": "Having viewed the video, Fatima now acknowledges that nocturnal seizures are indeed taking place despite her lack of subjective awareness"
+        }
+      ],
+      "reason": "At the index date (2025-02-15), focal epilepsy is documented as a known diagnosis. Within the 90-day lookback window (2024-11-18 to 2025-02-15), her partner reported an epileptic seizure occurring on 2025-02-12. While the patient initially denied nocturnal events due to total amnesia, the subsequent letter L2 explicitly settles this factual discordance following objective video evidence, confirming that nocturnal epileptic seizures were indeed occurring."
+    },
+    {
+      "request_id": "T1_retrospective_Q2",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 295,
+          "end": 435,
+          "text": "recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing"
+        }
+      ],
+      "reason": "Only a single epileptic seizure pattern (nocturnal tonic seizures) is documented. However, the available records do not contain an explicit complete inventory establishing that no other active epileptic patterns existed during the 90-day timeframe."
+    },
+    {
+      "request_id": "T1_retrospective_Q3",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 768,
+          "end": 813,
+          "text": "She continues lamotrigine 100 mg twice daily"
+        }
+      ],
+      "reason": "The consultation letter states that Fatima continues lamotrigine 100 mg twice daily as of 2025-02-15, but ongoing treatment alone does not establish when the medication was initiated, and there is no record of initiation date or explicit non-initiation within the 180-day lookback window."
+    },
+    {
+      "request_id": "T1_retrospective_Q4",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 907,
+          "end": 923,
+          "text": "No EEG requested"
+        }
+      ],
+      "reason": "Although no EEG was requested at the 2025-02-15 consultation, there is no complete inventory of diagnostic test requests covering the full 180-day lookback period (2024-08-20 to 2025-02-15)."
+    },
+    {
+      "request_id": "T1_retrospective_Q5",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 143,
+          "end": 186,
+          "text": "She has a known diagnosis of focal epilepsy"
+        }
+      ],
+      "reason": "No previously documented epileptic event or pattern was reinterpreted as non-epileptic by the index date; under the query definition, absence of an explicit revision alone is indeterminate."
+    }
+  ]
+}

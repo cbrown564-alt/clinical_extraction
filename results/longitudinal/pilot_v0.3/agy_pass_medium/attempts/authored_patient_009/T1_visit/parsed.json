@@ -1,0 +1,361 @@
+{
+  "annotations": {
+    "assertions": [
+      {
+        "assertion_id": "L1_diagnosis_1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 133,
+            "end": 183,
+            "text": "He has an established diagnosis of focal epilepsy."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-02-14",
+            "latest": "2025-02-14"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "L1_seizure_pattern_1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 185,
+            "end": 326,
+            "text": "He continues to experience focal seizures with sensory numbness in the left arm roughly every three weeks, most recently on 10 February 2025."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-02-14",
+            "latest": "2025-02-14"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal seizures with sensory numbness in the left arm"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "roughly every three weeks",
+            "count": {
+              "lower": 1,
+              "upper": 1
+            },
+            "period": {
+              "amount": {
+                "lower": 3,
+                "upper": 3
+              },
+              "unit": "week"
+            },
+            "events_per_cluster": null,
+            "approximate": true
+          }
+        }
+      },
+      {
+        "assertion_id": "L1_seizure_occurrence_1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 185,
+            "end": 326,
+            "text": "He continues to experience focal seizures with sensory numbness in the left arm roughly every three weeks, most recently on 10 February 2025."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "10 February 2025",
+          "start": {
+            "earliest": "2025-02-10",
+            "latest": "2025-02-10"
+          },
+          "end": {
+            "earliest": "2025-02-10",
+            "latest": "2025-02-10"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal seizures with sensory numbness in the left arm"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L1_seizure_absence_1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 327,
+            "end": 361,
+            "text": "He reports no convulsive seizures."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-02-14",
+            "latest": "2025-02-14"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "convulsive seizures"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L1_medication_1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 362,
+            "end": 415,
+            "text": "He currently takes levetiracetam 750 mg twice daily."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "currently",
+          "start": null,
+          "end": {
+            "earliest": "2025-02-14",
+            "latest": "2025-02-14"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "levetiracetam",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L1_investigation_1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 417,
+            "end": 495,
+            "text": "I requested a routine outpatient EEG today to re-evaluate his focal discharge."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "today",
+          "start": {
+            "earliest": "2025-02-14",
+            "latest": "2025-02-14"
+          },
+          "end": {
+            "earliest": "2025-02-14",
+            "latest": "2025-02-14"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L1_medication_2",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 496,
+            "end": 649,
+            "text": "We also discussed potentially adding lamotrigine in the future if his sensory events remain uncontrolled, but deferred any decision until the next visit."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "possible",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "in the future",
+          "start": {
+            "earliest": "2025-02-14",
+            "latest": null
+          },
+          "end": null,
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "lamotrigine",
+          "status": "conditional",
+          "condition": "if his sensory events remain uncontrolled"
+        }
+      }
+    ],
+    "links": [
+      {
+        "link_id": "L1_link_1",
+        "earlier_assertion": "L1_seizure_pattern_1",
+        "later_assertion": "L1_seizure_occurrence_1",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 185,
+            "end": 326,
+            "text": "He continues to experience focal seizures with sensory numbness in the left arm roughly every three weeks, most recently on 10 February 2025."
+          }
+        ],
+        "decision_time": null
+      }
+    ]
+  },
+  "answers": [
+    {
+      "request_id": "T1_visit_Q1",
+      "status": "eligible",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 133,
+          "end": 183,
+          "text": "He has an established diagnosis of focal epilepsy."
+        },
+        {
+          "letter_id": "L1",
+          "start": 185,
+          "end": 326,
+          "text": "He continues to experience focal seizures with sensory numbness in the left arm roughly every three weeks, most recently on 10 February 2025."
+        }
+      ],
+      "reason": "Ian has an established diagnosis of focal epilepsy documented at the 14 February 2025 consultation, and experienced a focal seizure on 10 February 2025, which falls within the 90-day lookback window (2024-11-17 to 2025-02-14)."
+    },
+    {
+      "request_id": "T1_visit_Q2",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 185,
+          "end": 326,
+          "text": "He continues to experience focal seizures with sensory numbness in the left arm roughly every three weeks, most recently on 10 February 2025."
+        },
+        {
+          "letter_id": "L1",
+          "start": 327,
+          "end": 361,
+          "text": "He reports no convulsive seizures."
+        }
+      ],
+      "reason": "Only one active epileptic pattern (focal seizures with sensory numbness in the left arm) is documented. While he reports no convulsive seizures, there is no explicit complete inventory of epileptic patterns throughout the 90-day timeframe to refute the presence of a second active pattern."
+    },
+    {
+      "request_id": "T1_visit_Q3",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 496,
+          "end": 649,
+          "text": "We also discussed potentially adding lamotrigine in the future if his sensory events remain uncontrolled, but deferred any decision until the next visit."
+        }
+      ],
+      "reason": "Lamotrigine was discussed as a potential future addition if sensory symptoms remain uncontrolled, but a decision was deferred. There is neither confirmation of initiation within the 180-day timeframe nor an explicit complete record of non-initiation spanning the entire timeframe."
+    },
+    {
+      "request_id": "T1_visit_Q4",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 417,
+          "end": 495,
+          "text": "I requested a routine outpatient EEG today to re-evaluate his focal discharge."
+        }
+      ],
+      "reason": "A routine outpatient EEG was requested on the index date (14 February 2025) and remains pending without a result clinically available. Because the inventory of requests is not stated to be complete, this pending request alone cannot exclude the existence of another qualifying EEG requested within the 180-day timeframe."
+    },
+    {
+      "request_id": "T1_visit_Q5",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 185,
+          "end": 326,
+          "text": "He continues to experience focal seizures with sensory numbness in the left arm roughly every three weeks, most recently on 10 February 2025."
+        }
+      ],
+      "reason": "The patient experiences focal seizures interpreted as epileptic, and no documented reinterpretation of an epileptic event or pattern as non-epileptic occurred by the index date. Per the query definition, absence of a revision alone is indeterminate."
+    }
+  ]
+}

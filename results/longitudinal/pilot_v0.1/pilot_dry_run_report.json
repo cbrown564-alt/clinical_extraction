@@ -1,0 +1,6 @@
+{
+  "status": "withdrawn",
+  "withdrawn_on": "2026-09-09",
+  "reason": "Agreement, effort and sensitivity values were hard-coded, not measured. Reference counts used invalid dates and unsupported answers. Do not cite as evidence.",
+  "replacement": "../pilot_v0.2/pilot_dry_run_report.json"
+}

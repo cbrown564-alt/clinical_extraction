@@ -1,0 +1,22 @@
+{
+  "status": "failed",
+  "input_sha256": "076d49b155e26f34d50a83829513e6692c5b0f319ed66a87d4ecc37a13992746",
+  "rendered_prompt_sha256": "946ffd60d0b7f31f597232e547b86bf88c1f285482f3ae3d60274da2ed70eca9",
+  "model_requested": "gemini-3.8-flash-high",
+  "effort": "high",
+  "interface": "agy",
+  "executable_sha256": "2a63488c33221627f1798ff4ccb1d5131b6abe3160286c84b357a7456905f763",
+  "fresh_project": true,
+  "sandbox": true,
+  "tools_requested": false,
+  "started_at": "2026-09-09T20:16:06.743343+00:00",
+  "semantic_repair": false,
+  "provider_cost": null,
+  "human_annotation_minutes": null,
+  "exit_code": "unexpected_tool_step",
+  "ended_at": "2026-09-09T20:18:55.680147+00:00",
+  "wall_seconds": 168.94050591700943,
+  "error": "CLI exit: unexpected_tool_step",
+  "tool_catalog_present": true,
+  "isolation_limit": "fresh temporary project; no observed tool steps required; tool catalog remains present and plan mode is ignored by CLI with slash expansion disabled"
+}

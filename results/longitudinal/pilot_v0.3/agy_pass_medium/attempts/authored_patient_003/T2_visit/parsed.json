@@ -1,0 +1,584 @@
+{
+  "annotations": {
+    "assertions": [
+      {
+        "assertion_id": "a_l1_diag",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 105,
+            "end": 198,
+            "text": "Christopher is a 29-year-old gentleman with an established diagnosis of generalized epilepsy."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "generalized epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "a_l1_med",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 199,
+            "end": 286,
+            "text": "He has been taking levetiracetam 1000 mg twice daily with excellent reported adherence."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "levetiracetam",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "a_l1_seiz_free",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 287,
+            "end": 427,
+            "text": "He has been entirely seizure-free for over fourteen months, with his last generalized tonic-clonic convulsion occurring on 10 January 2024."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": "over fourteen months",
+          "start": null,
+          "end": {
+            "earliest": "2025-03-01",
+            "latest": "2025-03-01"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "epileptic seizure"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "all_epileptic",
+          "burden": {
+            "kind": "freedom",
+            "text": "over fourteen months",
+            "count": null,
+            "period": {
+              "amount": {
+                "lower": 14.0,
+                "upper": null,
+                "lower_inclusive": false,
+                "upper_inclusive": true
+              },
+              "unit": "month"
+            },
+            "events_per_cluster": null,
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "a_l1_last_gtc",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 287,
+            "end": 427,
+            "text": "He has been entirely seizure-free for over fourteen months, with his last generalized tonic-clonic convulsion occurring on 10 January 2024."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "10 January 2024",
+          "start": {
+            "earliest": "2024-01-10",
+            "latest": "2024-01-10"
+          },
+          "end": {
+            "earliest": "2024-01-10",
+            "latest": "2024-01-10"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "generalized tonic-clonic convulsion"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "a_l1_neg_seiz",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 428,
+            "end": 478,
+            "text": "He reports no myoclonic jerks or daytime absences."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "myoclonic jerks",
+            "daytime absences"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "a_l1_plan",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 480,
+            "end": 527,
+            "text": "We agreed to maintain his levetiracetam dosage."
+          }
+        ],
+        "reporter": "mixed",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "levetiracetam",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "a_l1_no_inv",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 528,
+            "end": 571,
+            "text": "No changes or investigations are indicated."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "investigations",
+          "status": "request_inventory",
+          "result": null,
+          "request_count": 0
+        }
+      },
+      {
+        "assertion_id": "a_l2_diag",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 95,
+            "end": 188,
+            "text": "Christopher is a 29-year-old gentleman with an established diagnosis of generalized epilepsy."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "generalized epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "a_l2_breakthrough",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 470,
+            "end": 655,
+            "text": "However, since the above routine background was recorded, Christopher reports that a single breakthrough nocturnal convulsion occurred on 28 May 2025 following severe sleep deprivation."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "28 May 2025",
+          "start": {
+            "earliest": "2025-05-28",
+            "latest": "2025-05-28"
+          },
+          "end": {
+            "earliest": "2025-05-28",
+            "latest": "2025-05-28"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "breakthrough nocturnal convulsion"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "count",
+            "text": "single",
+            "count": {
+              "lower": 1.0,
+              "upper": 1.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true
+            },
+            "period": null,
+            "events_per_cluster": null,
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "a_l2_only_seiz",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 735,
+            "end": 785,
+            "text": "This is his only seizure event since January 2024."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": "since January 2024",
+          "start": {
+            "earliest": "2024-01-01",
+            "latest": "2024-01-31"
+          },
+          "end": {
+            "earliest": "2025-06-12",
+            "latest": "2025-06-12"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "seizure event"
+          ],
+          "kind": "inventory",
+          "interpretation": "epileptic",
+          "scope": "all_epileptic",
+          "burden": {
+            "kind": "count",
+            "text": "only seizure event",
+            "count": {
+              "lower": 1.0,
+              "upper": 1.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true
+            },
+            "period": null,
+            "events_per_cluster": null,
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "a_l2_med_cont",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 787,
+            "end": 843,
+            "text": "We agreed to continue levetiracetam 1000 mg twice daily."
+          }
+        ],
+        "reporter": "mixed",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "decision",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "medication",
+          "name": "levetiracetam",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "a_l2_no_eeg",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 844,
+            "end": 865,
+            "text": "No EEG was requested."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "decision",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "request_inventory",
+          "result": null,
+          "request_count": 0
+        }
+      }
+    ],
+    "links": [
+      {
+        "link_id": "link_1",
+        "earlier_assertion": "a_l1_diag",
+        "later_assertion": "a_l2_diag",
+        "relation": "repeats",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 95,
+            "end": 188,
+            "text": "Christopher is a 29-year-old gentleman with an established diagnosis of generalized epilepsy."
+          }
+        ],
+        "decision_time": null
+      },
+      {
+        "link_id": "link_2",
+        "earlier_assertion": "a_l1_seiz_free",
+        "later_assertion": "a_l2_breakthrough",
+        "relation": "updates",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 470,
+            "end": 655,
+            "text": "However, since the above routine background was recorded, Christopher reports that a single breakthrough nocturnal convulsion occurred on 28 May 2025 following severe sleep deprivation."
+          }
+        ],
+        "decision_time": null
+      }
+    ]
+  },
+  "answers": [
+    {
+      "request_id": "T2_visit_Q1",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 470,
+          "end": 655,
+          "text": "However, since the above routine background was recorded, Christopher reports that a single breakthrough nocturnal convulsion occurred on 28 May 2025 following severe sleep deprivation."
+        },
+        {
+          "letter_id": "L2",
+          "start": 735,
+          "end": 785,
+          "text": "This is his only seizure event since January 2024."
+        }
+      ],
+      "reason": "Christopher Vance has an established diagnosis of generalized epilepsy persisting at the index date. His documented breakthrough convulsion occurred on 28 May 2025, which lies before the 90-day window (2025-05-31 to 2025-08-28). Letter L2 establishes that this was his only seizure event since January 2024 up to the 12 June 2025 consultation date. However, there is no clinical evidence covering the remaining period from 12 June 2025 to the index date of 28 August 2025. Because evidence is incomplete across the entire timeframe, the question is indeterminate."
+    },
+    {
+      "request_id": "T2_visit_Q2",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 105,
+          "end": 198,
+          "text": "Christopher is a 29-year-old gentleman with an established diagnosis of generalized epilepsy."
+        },
+        {
+          "letter_id": "L1",
+          "start": 428,
+          "end": 478,
+          "text": "He reports no myoclonic jerks or daytime absences."
+        },
+        {
+          "letter_id": "L2",
+          "start": 470,
+          "end": 655,
+          "text": "However, since the above routine background was recorded, Christopher reports that a single breakthrough nocturnal convulsion occurred on 28 May 2025 following severe sleep deprivation."
+        },
+        {
+          "letter_id": "L2",
+          "start": 735,
+          "end": 785,
+          "text": "This is his only seizure event since January 2024."
+        }
+      ],
+      "reason": "The patient has generalized epilepsy with historical generalized tonic-clonic convulsions and a single breakthrough nocturnal convulsion on 28 May 2025, with no daytime absences or myoclonic jerks reported. There is no complete inventory of active patterns through the entire 90-day timeframe (2025-05-31 to 2025-08-28), as clinical evidence is missing between 12 June 2025 and 28 August 2025. Missing information leaves the question indeterminate."
+    },
+    {
+      "request_id": "T2_visit_Q3",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 199,
+          "end": 286,
+          "text": "He has been taking levetiracetam 1000 mg twice daily with excellent reported adherence."
+        },
+        {
+          "letter_id": "L1",
+          "start": 480,
+          "end": 527,
+          "text": "We agreed to maintain his levetiracetam dosage."
+        },
+        {
+          "letter_id": "L2",
+          "start": 787,
+          "end": 843,
+          "text": "We agreed to continue levetiracetam 1000 mg twice daily."
+        }
+      ],
+      "reason": "The letters document current use and maintenance of levetiracetam, with no mention of lamotrigine. Silence does not establish non-use, and there is no explicit statement of non-initiation of lamotrigine throughout the 180-day timeframe (2025-03-02 to 2025-08-28). Without complete evidence refuting initiation, the status is indeterminate."
+    },
+    {
+      "request_id": "T2_visit_Q4",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 528,
+          "end": 571,
+          "text": "No changes or investigations are indicated."
+        },
+        {
+          "letter_id": "L2",
+          "start": 844,
+          "end": 865,
+          "text": "No EEG was requested."
+        }
+      ],
+      "reason": "Letter L1 recorded that no investigations were indicated, and Letter L2 affirmed that no EEG was requested as of 12 June 2025. However, there is no exhaustive request inventory covering the full 180-day timeframe up to 28 August 2025. Because an EEG could have been requested and resulted after 12 June 2025, the incomplete evidence makes the status indeterminate."
+    },
+    {
+      "request_id": "T2_visit_Q5",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 470,
+          "end": 655,
+          "text": "However, since the above routine background was recorded, Christopher reports that a single breakthrough nocturnal convulsion occurred on 28 May 2025 following severe sleep deprivation."
+        },
+        {
+          "letter_id": "L2",
+          "start": 735,
+          "end": 785,
+          "text": "This is his only seizure event since January 2024."
+        }
+      ],
+      "reason": "A breakthrough nocturnal convulsion occurred on 28 May 2025 within the 180-day timeframe (2025-03-02 to 2025-08-28) and was interpreted as an epileptic seizure event. There is no explicit reinterpretation of this event as non-epileptic by the index date. Under the query definition, absence of a revision alone is indeterminate."
+    }
+  ]
+}

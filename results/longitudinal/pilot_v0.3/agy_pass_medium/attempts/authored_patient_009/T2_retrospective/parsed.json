@@ -1,0 +1,704 @@
+{
+  "annotations": {
+    "assertions": [
+      {
+        "assertion_id": "L1_A1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 167,
+            "end": 181,
+            "text": "focal epilepsy"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "established",
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "L1_A2",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 211,
+            "end": 263,
+            "text": "focal seizures with sensory numbness in the left arm"
+          },
+          {
+            "letter_id": "L1",
+            "start": 264,
+            "end": 289,
+            "text": "roughly every three weeks"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "continues",
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal seizures with sensory numbness in the left arm"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "roughly every three weeks",
+            "count": {
+              "lower": 1,
+              "upper": 1
+            },
+            "period": {
+              "amount": {
+                "lower": 3,
+                "upper": 3
+              },
+              "unit": "week"
+            },
+            "events_per_cluster": null,
+            "approximate": true
+          }
+        }
+      },
+      {
+        "assertion_id": "L1_A3",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 211,
+            "end": 263,
+            "text": "focal seizures with sensory numbness in the left arm"
+          },
+          {
+            "letter_id": "L1",
+            "start": 308,
+            "end": 324,
+            "text": "10 February 2025"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "10 February 2025",
+          "start": {
+            "earliest": "2025-02-10",
+            "latest": "2025-02-10"
+          },
+          "end": {
+            "earliest": "2025-02-10",
+            "latest": "2025-02-10"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal seizures with sensory numbness in the left arm"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L1_A4",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 340,
+            "end": 359,
+            "text": "convulsive seizures"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "convulsive seizures"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L1_A5",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 380,
+            "end": 393,
+            "text": "levetiracetam"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "currently",
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "levetiracetam",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L1_A6",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 448,
+            "end": 451,
+            "text": "EEG"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "today",
+          "start": {
+            "earliest": "2025-02-14",
+            "latest": "2025-02-14"
+          },
+          "end": {
+            "earliest": "2025-02-14",
+            "latest": "2025-02-14"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L1_A7",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 531,
+            "end": 542,
+            "text": "lamotrigine"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "in the future",
+          "start": null,
+          "end": null,
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "lamotrigine",
+          "status": "conditional",
+          "condition": "if his sensory events remain uncontrolled"
+        }
+      },
+      {
+        "assertion_id": "L2_A1",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 142,
+            "end": 156,
+            "text": "focal epilepsy"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "remains",
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "L2_A2",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 182,
+            "end": 204,
+            "text": "focal sensory seizures"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "continues",
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal sensory seizures"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L2_A3",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 182,
+            "end": 204,
+            "text": "focal sensory seizures"
+          },
+          {
+            "letter_id": "L2",
+            "start": 243,
+            "end": 254,
+            "text": "2 June 2025"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "2 June 2025",
+          "start": {
+            "earliest": "2025-06-02",
+            "latest": "2025-06-02"
+          },
+          "end": {
+            "earliest": "2025-06-02",
+            "latest": "2025-06-02"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal sensory seizures"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L2_A4",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 269,
+            "end": 282,
+            "text": "levetiracetam"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "continues",
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "medication",
+          "name": "levetiracetam",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L3_A1",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 137,
+            "end": 150,
+            "text": "levetiracetam"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "continues",
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L3"
+        },
+        "content": {
+          "family": "medication",
+          "name": "levetiracetam",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L3_A2",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 175,
+            "end": 189,
+            "text": "focal seizures"
+          },
+          {
+            "letter_id": "L3",
+            "start": 198,
+            "end": 214,
+            "text": "every few weeks"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "persist",
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L3"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal seizures"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "every few weeks",
+            "count": {
+              "lower": 1,
+              "upper": 1
+            },
+            "period": {
+              "amount": {
+                "lower": 2,
+                "upper": 4
+              },
+              "unit": "week"
+            },
+            "events_per_cluster": null,
+            "approximate": true
+          }
+        }
+      },
+      {
+        "assertion_id": "L3_A3",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 175,
+            "end": 189,
+            "text": "focal seizures"
+          },
+          {
+            "letter_id": "L3",
+            "start": 226,
+            "end": 241,
+            "text": "10 October 2025"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "10 October 2025",
+          "start": {
+            "earliest": "2025-10-10",
+            "latest": "2025-10-10"
+          },
+          "end": {
+            "earliest": "2025-10-10",
+            "latest": "2025-10-10"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal seizures"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      }
+    ],
+    "links": [
+      {
+        "link_id": "LINK_1",
+        "earlier_assertion": "L1_A1",
+        "later_assertion": "L2_A1",
+        "relation": "repeats",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 120,
+            "end": 156,
+            "text": "His diagnosis remains focal epilepsy"
+          }
+        ],
+        "decision_time": null
+      },
+      {
+        "link_id": "LINK_2",
+        "earlier_assertion": "L1_A2",
+        "later_assertion": "L2_A2",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 159,
+            "end": 204,
+            "text": "He continues to report focal sensory seizures"
+          }
+        ],
+        "decision_time": null
+      },
+      {
+        "link_id": "LINK_3",
+        "earlier_assertion": "L2_A2",
+        "later_assertion": "L3_A2",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 171,
+            "end": 214,
+            "text": "His focal seizures persist every few weeks"
+          }
+        ],
+        "decision_time": null
+      },
+      {
+        "link_id": "LINK_4",
+        "earlier_assertion": "L1_A5",
+        "later_assertion": "L2_A4",
+        "relation": "repeats",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 256,
+            "end": 301,
+            "text": "He continues levetiracetam 750 mg twice daily"
+          }
+        ],
+        "decision_time": null
+      },
+      {
+        "link_id": "LINK_5",
+        "earlier_assertion": "L2_A4",
+        "later_assertion": "L3_A1",
+        "relation": "repeats",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 124,
+            "end": 169,
+            "text": "He continues levetiracetam 750 mg twice daily"
+          }
+        ],
+        "decision_time": null
+      }
+    ]
+  },
+  "answers": [
+    {
+      "request_id": "T2_retrospective_Q1",
+      "status": "eligible",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 120,
+          "end": 157,
+          "text": "His diagnosis remains focal epilepsy."
+        },
+        {
+          "letter_id": "L2",
+          "start": 159,
+          "end": 254,
+          "text": "He continues to report focal sensory seizures, with the latest episode occurring on 2 June 2025."
+        }
+      ],
+      "reason": "The patient has a documented continuing diagnosis of focal epilepsy reaffirmed on 18 June 2025, which persists at the index date (13 August 2025). Furthermore, a focal sensory seizure interpreted as epileptic occurred on 2 June 2025, which falls within the 90-day lookback window (16 May 2025 to 13 August 2025)."
+    },
+    {
+      "request_id": "T2_retrospective_Q2",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 159,
+          "end": 204,
+          "text": "He continues to report focal sensory seizures"
+        }
+      ],
+      "reason": "Only one pattern interpreted as epileptic (focal sensory seizures) is documented as active within the 90-day timeframe. In the absence of an explicit complete inventory of active patterns, whether a second active epileptic pattern existed remains unresolved and therefore indeterminate."
+    },
+    {
+      "request_id": "T2_retrospective_Q3",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 494,
+          "end": 649,
+          "text": "We also discussed potentially adding lamotrigine in the future if his sensory events remain uncontrolled, but deferred any decision until the next visit."
+        },
+        {
+          "letter_id": "L2",
+          "start": 427,
+          "end": 486,
+          "text": "nor whether lamotrigine was ever prescribed or started."
+        },
+        {
+          "letter_id": "L3",
+          "start": 286,
+          "end": 331,
+          "text": "or any start of lamotrigine."
+        }
+      ],
+      "reason": "Lamotrigine was only conditionally discussed as a potential future addition on 14 February 2025. Subsequent letters specifically note that there is no documentation indicating whether lamotrigine was ever prescribed or started. Without evidence of actual initiation or complete evidence refuting initiation throughout the 180-day window, status is indeterminate."
+    },
+    {
+      "request_id": "T2_retrospective_Q4",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 415,
+          "end": 493,
+          "text": "I requested a routine outpatient EEG today to re-evaluate his focal discharge."
+        },
+        {
+          "letter_id": "L2",
+          "start": 372,
+          "end": 425,
+          "text": "whether an EEG was ever scheduled or performed"
+        },
+        {
+          "letter_id": "L3",
+          "start": 242,
+          "end": 285,
+          "text": "regarding the outcome of the February EEG"
+        }
+      ],
+      "reason": "The only documented EEG was requested on 14 February 2025, which is prior to the 180-day lookback window (starting 15 February 2025), and follow-up letters state there is no documentation of any result. Because the request inventory for the 180-day timeframe is not explicitly complete, other qualifying requests cannot be excluded, leaving the requirement indeterminate."
+    },
+    {
+      "request_id": "T2_retrospective_Q5",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 159,
+          "end": 254,
+          "text": "He continues to report focal sensory seizures, with the latest episode occurring on 2 June 2025."
+        }
+      ],
+      "reason": "The patient experienced an epileptic event on 2 June 2025 within the 180-day timeframe. However, there is no explicit reinterpretation of this event or pattern as non-epileptic by the index date; by the query definition, absence of a revision alone is indeterminate."
+    }
+  ]
+}

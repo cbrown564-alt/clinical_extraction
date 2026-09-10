@@ -1,0 +1,17 @@
+{
+  "patient_id": "authored-011",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-02-12",
+      "available_date": "2025-02-12",
+      "text": "Epilepsy clinic letter\nConsultation: 12 February 2025\nPatient: Kevin O'Connor, aged 45\n\nDear colleague,\n\nKevin attended clinic today. He has an established diagnosis of focal motor epilepsy.\n\nHis seizures typically occur in severe explosive clusters rather than isolated events. On 5 and 6 February 2025, over a 48-hour period, he suffered an acute cluster of 5 focal motor seizures with left facial and arm clonic activity. He had no seizures between that cluster and today's review. He reports no other seizure patterns or convulsions. He continues carbamazepine 400 mg twice daily.\n\nNo changes were made to his regimen. No EEG requested. Review in four months.\n"
+    },
+    {
+      "letter_id": "L2",
+      "visit_date": "2025-06-20",
+      "available_date": "2025-06-20",
+      "text": "Epilepsy clinic letter\nConsultation: 20 June 2025\nPatient: Kevin O'Connor\n\nDear colleague,\n\nI reviewed Kevin in clinic today. His diagnosis remains focal motor epilepsy on carbamazepine 400 mg twice daily.\n\nHe experienced a further cluster of 4 focal motor seizures over 24 hours on 2 and 3 June 2025. Between clusters he remains entirely seizure-free. He reports no other semiologies.\n\nManagement maintained. Follow-up in four months.\n"
+    }
+  ]
+}

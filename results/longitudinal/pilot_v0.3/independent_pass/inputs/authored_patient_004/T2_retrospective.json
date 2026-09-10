@@ -1,0 +1,828 @@
+{
+  "instructions": "Extract the clinical assertions and supported relationships from the supplied letters, then answer each question about its index date using only these letters. Return an object containing annotations (matching annotation_schema) and answers (matching answer_schema).\nPreserve the interpretation expressed in each letter, even when a later letter revises it. Keep reporter disagreement unresolved unless the text explicitly settles the disputed fact. Later evidence can explain an earlier event but a subsequent new event does not change an earlier absence interval. Repeated text is not independent corroboration. Leave uncertain event identity unresolved.\nKeep clinical dates separate from letter availability. Preserve endpoint uncertainty and original time wording; do not invent exact dates for vague seasons. Current assertions do not establish unobserved earlier or later intervals. A continuing documented diagnosis can persist until revised. Preserve rates, counts, cluster counts and events per cluster separately. Do not infer a diagnosis from medication or test results.\nUse eligible when all necessary conditions are supported, ineligible when evidence refutes a necessary condition, and indeterminate when information is missing or an unresolved conflict can change the answer. To answer ineligible because no qualifying event or action exists, require complete evidence for the relevant scope and timeframe. No clinical content means no clinical assertions, not negative clinical findings.\nEvidence quotes must exactly match the unchanged source. Offsets count Unicode characters from zero; end is exclusive. Give each answer its request_id, status, supporting evidence and a plain explanation. Cite supporting evidence from multiple letters where the decision requires it.",
+  "patient_id": "authored-004",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-01-20",
+      "available_date": "2025-01-20",
+      "text": "Epilepsy clinic letter\nConsultation: 20 January 2025\nPatient: Danielle Kim, aged 51\n\nDear colleague,\n\nDanielle attended our epilepsy review clinic. She has a longstanding history of temporal lobe epilepsy.\n\nHer typical pattern has been complex partial seizures occurring approximately twice a month, characterized by behavioral arrest, lip smacking and post-ictal amnesia. Her latest complex partial seizure occurred on 5 January 2025. In the distant past she had grand mal convulsions, but she has suffered no grand mal attacks since December 2021. She continues carbamazepine 200 mg three times daily.\n\nWe agreed to keep her carbamazepine unchanged. No EEG was requested. Review in four months.\n"
+    },
+    {
+      "letter_id": "L2",
+      "visit_date": "2025-05-10",
+      "available_date": "2025-05-10",
+      "text": "Epilepsy clinic letter\nConsultation: 10 May 2025\nPatient: Danielle Kim\n\nDear colleague,\n\nI reviewed Danielle today. We discussed her semiology and terminology in detail.\n\nWhat were previously recorded in her notes as complex partial seizures correspond precisely to focal impaired-awareness seizures under contemporary classification; she had two such focal impaired-awareness seizures in April, with the latest on 22 April 2025. The historical grand mal attacks represent focal to bilateral tonic-clonic seizures, and she confirms complete freedom from bilateral tonic-clonic convulsions since 2021. This is a modernization of descriptive terminology, not a change in underlying clinical diagnosis.\n\nShe remains on carbamazepine 200 mg three times daily. No investigations needed. Follow-up in four months.\n"
+    },
+    {
+      "letter_id": "L3",
+      "visit_date": "2025-09-05",
+      "available_date": "2025-09-05",
+      "text": "Epilepsy clinic letter\nConsultation: 05 September 2025\nPatient: Danielle Kim\n\nDear colleague,\n\nDanielle attended for review. She continues to experience focal impaired-awareness seizures, with the latest on 18 August 2025. No tonic-clonic convulsions have occurred.\n\nCarbamazepine is maintained. Routine follow-up arranged.\n"
+    }
+  ],
+  "requests": [
+    {
+      "request_id": "T2_retrospective_Q1",
+      "query_id": "Q1",
+      "parameters": {},
+      "index_date": "2025-07-19",
+      "view": "retrospective",
+      "information_cutoff": "2026-01-15",
+      "retrospective_cutoff": "2026-01-15",
+      "lookback_90_start": "2025-04-21",
+      "lookback_180_start": "2025-01-21"
+    },
+    {
+      "request_id": "T2_retrospective_Q2",
+      "query_id": "Q2",
+      "parameters": {},
+      "index_date": "2025-07-19",
+      "view": "retrospective",
+      "information_cutoff": "2026-01-15",
+      "retrospective_cutoff": "2026-01-15",
+      "lookback_90_start": "2025-04-21",
+      "lookback_180_start": "2025-01-21"
+    },
+    {
+      "request_id": "T2_retrospective_Q3",
+      "query_id": "Q3",
+      "parameters": {
+        "medication": "lamotrigine"
+      },
+      "index_date": "2025-07-19",
+      "view": "retrospective",
+      "information_cutoff": "2026-01-15",
+      "retrospective_cutoff": "2026-01-15",
+      "lookback_90_start": "2025-04-21",
+      "lookback_180_start": "2025-01-21"
+    },
+    {
+      "request_id": "T2_retrospective_Q4",
+      "query_id": "Q4",
+      "parameters": {
+        "modality": "EEG"
+      },
+      "index_date": "2025-07-19",
+      "view": "retrospective",
+      "information_cutoff": "2026-01-15",
+      "retrospective_cutoff": "2026-01-15",
+      "lookback_90_start": "2025-04-21",
+      "lookback_180_start": "2025-01-21"
+    },
+    {
+      "request_id": "T2_retrospective_Q5",
+      "query_id": "Q5",
+      "parameters": {},
+      "index_date": "2025-07-19",
+      "view": "retrospective",
+      "information_cutoff": "2026-01-15",
+      "retrospective_cutoff": "2026-01-15",
+      "lookback_90_start": "2025-04-21",
+      "lookback_180_start": "2025-01-21"
+    }
+  ],
+  "query_definitions": {
+    "Q1": "Documented epilepsy at the index date and at least one event interpreted as epileptic in the supplied 90-day timeframe. Explicit absence of all epileptic seizures throughout that timeframe can refute. Missing evidence is indeterminate.",
+    "Q2": "At least two distinct patterns interpreted as epileptic, with overlapping active intervals within the supplied 90-day timeframe. An explicit complete inventory of at most one active epileptic pattern throughout the timeframe can refute. Different names need not mean different patterns.",
+    "Q3": "The named medication was actually started within the supplied 180-day timeframe. A plan or prescription is not confirmed use. Explicit non-initiation throughout the timeframe can refute. Current use alone does not date initiation.",
+    "Q4": "A test of the named modality requested within the supplied 180-day timeframe has a result clinically available by the index date. Match the particular request to its result. The result availability date differs from the letter availability date. One pending or unrelated older test cannot exclude other qualifying requests when the request inventory is incomplete.",
+    "Q5": "A previously documented epileptic event or pattern with an occurrence in the supplied 180-day timeframe was explicitly reinterpreted as non-epileptic by the index date. Require identity, an earlier interpretation and a dated revision. A later decision cannot be moved back to the index date. Absence of a revision alone is indeterminate."
+  },
+  "annotation_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "description": "Clinical statements and their evidence.",
+    "properties": {
+      "assertions": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/Assertion"
+        },
+        "minItems": 0,
+        "description": "Statements preserved separately from each supplied letter."
+      },
+      "links": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/Link"
+        },
+        "minItems": 0,
+        "description": "Supported relationships; leave uncertain identity unresolved."
+      }
+    },
+    "required": [
+      "assertions",
+      "links"
+    ],
+    "additionalProperties": false,
+    "$defs": {
+      "DateBounds": {
+        "type": "object",
+        "description": "Bounds on one endpoint, not an interval between two events.",
+        "properties": {
+          "earliest": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date",
+                "description": "Calendar date in YYYY-MM-DD form."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "latest": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date",
+                "description": "Calendar date in YYYY-MM-DD form."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "earliest",
+          "latest"
+        ],
+        "additionalProperties": false
+      },
+      "Time": {
+        "type": "object",
+        "description": "Time supported by the text. An uncertain endpoint has bounds; an unstated endpoint is null.",
+        "properties": {
+          "text": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "description": "Source time expression; null when not stated."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "start": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/DateBounds"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "end": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/DateBounds"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "occurrence",
+              "active_interval",
+              "as_of",
+              "decision",
+              "result_available",
+              "unknown"
+            ],
+            "description": "What the time describes. Result availability refers to the clinical team."
+          },
+          "anchor_letter_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "description": "Letter whose visit date anchors a relative or implicit current time; null if no anchor is needed."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "text",
+          "start",
+          "end",
+          "kind",
+          "anchor_letter_id"
+        ],
+        "additionalProperties": false
+      },
+      "Span": {
+        "type": "object",
+        "description": "Exact evidence in an unchanged letter.",
+        "properties": {
+          "letter_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "ID of the supplied letter."
+          },
+          "start": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Zero-based character position of the first quoted character."
+          },
+          "end": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Character position immediately after the quote."
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Exact quote, including punctuation and spaces."
+          }
+        },
+        "required": [
+          "letter_id",
+          "start",
+          "end",
+          "text"
+        ],
+        "additionalProperties": false
+      },
+      "Quantity": {
+        "type": "object",
+        "description": "Inclusive numerical bounds. Null bounds preserve unspecified amounts; do not invent a midpoint.",
+        "properties": {
+          "lower": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "description": "Lowest supported amount; null when unspecified."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "upper": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "description": "Highest supported amount; null when unspecified."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "lower_inclusive": {
+            "type": "boolean",
+            "description": "False for a strict lower bound; omitted means inclusive."
+          },
+          "upper_inclusive": {
+            "type": "boolean",
+            "description": "False for a strict upper bound; omitted means inclusive."
+          }
+        },
+        "required": [
+          "lower",
+          "upper"
+        ],
+        "additionalProperties": false
+      },
+      "Period": {
+        "type": "object",
+        "description": "Time basis of a reported rate.",
+        "properties": {
+          "amount": {
+            "$ref": "#/$defs/Quantity"
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "day",
+              "week",
+              "month",
+              "year"
+            ],
+            "description": "Time unit as documented; do not convert months to days."
+          }
+        },
+        "required": [
+          "amount",
+          "unit"
+        ],
+        "additionalProperties": false
+      },
+      "Burden": {
+        "type": "object",
+        "description": "Preserve counts, time basis, ranges and cluster structure separately. For freedom, period is the stated duration.",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "rate",
+              "count",
+              "clusters",
+              "freedom",
+              "qualitative"
+            ],
+            "description": "Rate, interval count, clusters, seizure-free duration, or words without a recoverable number."
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Original frequency or duration wording."
+          },
+          "count": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Quantity"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "period": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Period"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "events_per_cluster": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Quantity"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "approximate": {
+            "type": "boolean",
+            "description": "True when the source qualifies the amount as approximate."
+          }
+        },
+        "required": [
+          "kind",
+          "text",
+          "count",
+          "period",
+          "events_per_cluster",
+          "approximate"
+        ],
+        "additionalProperties": false
+      },
+      "Diagnosis": {
+        "type": "object",
+        "description": "An epilepsy diagnosis assertion; a seizure description is not a diagnosis.",
+        "properties": {
+          "family": {
+            "const": "diagnosis"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Documented epilepsy diagnosis, preserving unspecified type."
+          },
+          "phase": {
+            "type": "string",
+            "enum": [
+              "current",
+              "historical"
+            ],
+            "description": "Whether the diagnosis applies now or is described as past."
+          }
+        },
+        "required": [
+          "family",
+          "name",
+          "phase"
+        ],
+        "additionalProperties": false
+      },
+      "Seizure": {
+        "type": "object",
+        "description": "Seizure-related information, including explicitly non-epileptic events.",
+        "properties": {
+          "family": {
+            "const": "seizure"
+          },
+          "names": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Documented event or pattern name."
+            },
+            "minItems": 1,
+            "description": "One name per pattern; several only for an explicit inventory."
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "occurrence",
+              "pattern",
+              "absence",
+              "inventory"
+            ],
+            "description": "A dated event, recurring pattern, explicit absence, or stated complete/incomplete list."
+          },
+          "interpretation": {
+            "type": "string",
+            "enum": [
+              "epileptic",
+              "non_epileptic",
+              "uncertain",
+              "not_stated"
+            ],
+            "description": "Interpretation asserted in this letter, not the latest interpretation elsewhere."
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "named_pattern",
+              "all_epileptic",
+              "all_reported"
+            ],
+            "description": "Whether the assertion concerns a named pattern, all epileptic events, or all reported event types."
+          },
+          "burden": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Burden"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "family",
+          "names",
+          "kind",
+          "interpretation",
+          "scope",
+          "burden"
+        ],
+        "additionalProperties": false
+      },
+      "Medication": {
+        "type": "object",
+        "description": "A medication statement; silence does not establish non-use.",
+        "properties": {
+          "family": {
+            "const": "medication"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Drug name in the text."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "proposed",
+              "conditional",
+              "prescribed",
+              "started",
+              "taking",
+              "not_started",
+              "stopped"
+            ],
+            "description": "Keep a plan or prescription separate from reported use."
+          },
+          "condition": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "description": "Condition stated for a conditional action."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "family",
+          "name",
+          "status",
+          "condition"
+        ],
+        "additionalProperties": false
+      },
+      "Investigation": {
+        "type": "object",
+        "description": "An investigation assertion; identical modalities need not identify the same test.",
+        "properties": {
+          "family": {
+            "const": "investigation"
+          },
+          "modality": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Named test modality such as EEG or MRI."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "requested",
+              "performed",
+              "result",
+              "pending",
+              "cancelled",
+              "request_inventory"
+            ],
+            "description": "Keep request, performance and result separate; inventory describes all requests in an interval."
+          },
+          "result": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "description": "Reported result, without inferring a diagnosis."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "request_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Count only for an explicitly enumerated request inventory."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "family",
+          "modality",
+          "status",
+          "result",
+          "request_count"
+        ],
+        "additionalProperties": false
+      },
+      "Assertion": {
+        "type": "object",
+        "description": "One attributable assertion about one clinical fact and time. Split changing statuses into separate assertions.",
+        "properties": {
+          "assertion_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Unique ID for this statement. Preserve an earlier ID when later text disagrees."
+          },
+          "letter_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "ID of the letter making the statement."
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Span"
+            },
+            "minItems": 1,
+            "description": "Quotes supporting this statement, its scope and qualifications."
+          },
+          "reporter": {
+            "type": "string",
+            "enum": [
+              "clinician",
+              "patient",
+              "caregiver",
+              "mixed",
+              "unspecified"
+            ],
+            "description": "Whose assertion is recorded; mixed only when agreement is explicitly reported."
+          },
+          "certainty": {
+            "type": "string",
+            "enum": [
+              "asserted",
+              "possible",
+              "uncertain"
+            ],
+            "description": "Certainty expressed in the text, not confidence in the extraction."
+          },
+          "polarity": {
+            "type": "string",
+            "enum": [
+              "affirmed",
+              "negated"
+            ],
+            "description": "Whether the statement is asserted or denied. Do not negate a not_started status twice."
+          },
+          "coverage": {
+            "type": "string",
+            "enum": [
+              "complete",
+              "partial",
+              "not_stated"
+            ],
+            "description": "Complete only when the text explicitly exhausts the named scope and interval."
+          },
+          "time": {
+            "$ref": "#/$defs/Time"
+          },
+          "content": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Diagnosis"
+              },
+              {
+                "$ref": "#/$defs/Seizure"
+              },
+              {
+                "$ref": "#/$defs/Medication"
+              },
+              {
+                "$ref": "#/$defs/Investigation"
+              }
+            ]
+          }
+        },
+        "required": [
+          "assertion_id",
+          "letter_id",
+          "evidence",
+          "reporter",
+          "certainty",
+          "polarity",
+          "coverage",
+          "time",
+          "content"
+        ],
+        "additionalProperties": false
+      },
+      "Link": {
+        "type": "object",
+        "description": "A supported relationship. Keep both endpoint assertions; do not overwrite either one.",
+        "properties": {
+          "link_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Unique ID for this relationship."
+          },
+          "earlier_assertion": {
+            "type": "string",
+            "minLength": 1,
+            "description": "ID of the earlier/source assertion."
+          },
+          "later_assertion": {
+            "type": "string",
+            "minLength": 1,
+            "description": "ID of the later/target assertion."
+          },
+          "relation": {
+            "type": "string",
+            "enum": [
+              "same_pattern",
+              "overlaps_active",
+              "repeats",
+              "updates",
+              "corrects_interpretation",
+              "contradicts",
+              "plan_not_enacted",
+              "request_performed",
+              "request_has_result"
+            ],
+            "description": "How the assertions relate. A correction requires explicit reinterpretation of the same event."
+          },
+          "certainty": {
+            "type": "string",
+            "enum": [
+              "asserted",
+              "uncertain"
+            ],
+            "description": "Whether identity and relationship are supported or remain unresolved."
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Span"
+            },
+            "minItems": 1,
+            "description": "Text supporting identity and the relationship, not merely the existence of both assertions."
+          },
+          "decision_time": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "link_id",
+          "earlier_assertion",
+          "later_assertion",
+          "relation",
+          "certainty",
+          "evidence",
+          "decision_time"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "answer_schema": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "request_id": {
+          "type": "string",
+          "description": "ID of the supplied question."
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "eligible",
+            "ineligible",
+            "indeterminate"
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Span"
+          },
+          "description": "Exact supporting quotes from supplied letters."
+        },
+        "reason": {
+          "type": "string",
+          "description": "Explain what supports, refutes or leaves the requested condition unresolved."
+        }
+      },
+      "required": [
+        "request_id",
+        "status",
+        "evidence",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "$defs": {
+      "Span": {
+        "type": "object",
+        "description": "Exact evidence in an unchanged letter.",
+        "properties": {
+          "letter_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "ID of the supplied letter."
+          },
+          "start": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Zero-based character position of the first quoted character."
+          },
+          "end": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Character position immediately after the quote."
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Exact quote, including punctuation and spaces."
+          }
+        },
+        "required": [
+          "letter_id",
+          "start",
+          "end",
+          "text"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+}

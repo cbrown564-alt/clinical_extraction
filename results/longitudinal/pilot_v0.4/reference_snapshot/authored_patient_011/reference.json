@@ -1,0 +1,340 @@
+{
+  "case_id": "authored-011",
+  "version": "0.3",
+  "reference_kind": "provisional authored correction; not independent annotation or model predictions",
+  "offset_convention": "zero-based Python Unicode character indices; end exclusive; LF newlines",
+  "evidence": [
+    {
+      "evidence_id": "L1.p1",
+      "letter_id": "L1",
+      "start": 105,
+      "end": 190,
+      "text": "Kevin attended clinic today. He has an established diagnosis of focal motor epilepsy."
+    },
+    {
+      "evidence_id": "L1.p2",
+      "letter_id": "L1",
+      "start": 192,
+      "end": 558,
+      "text": "His seizures typically occur in severe explosive clusters rather than isolated events. On 5 and 6 February 2025, over a 48-hour period, he suffered an acute cluster of 5 focal motor seizures with left facial and arm clonic activity. He had no seizures between that cluster and today's review. He reports no convulsions. He continues carbamazepine 400 mg twice daily."
+    },
+    {
+      "evidence_id": "L1.p3",
+      "letter_id": "L1",
+      "start": 560,
+      "end": 637,
+      "text": "No changes were made to his regimen. No EEG requested. Review in four months."
+    },
+    {
+      "evidence_id": "L2.p1",
+      "letter_id": "L2",
+      "start": 92,
+      "end": 205,
+      "text": "I reviewed Kevin in clinic today. His diagnosis remains focal motor epilepsy on carbamazepine 400 mg twice daily."
+    },
+    {
+      "evidence_id": "L2.p2",
+      "letter_id": "L2",
+      "start": 207,
+      "end": 401,
+      "text": "He experienced a further cluster of 4 focal motor seizures over 24 hours on 2 and 3 June 2025. Between clusters he remains entirely seizure-free. The two patterns are discussed separately below."
+    },
+    {
+      "evidence_id": "L2.p3",
+      "letter_id": "L2",
+      "start": 403,
+      "end": 451,
+      "text": "Management maintained. Follow-up in four months."
+    },
+    {
+      "evidence_id": "L3.p1",
+      "letter_id": "L3",
+      "start": 95,
+      "end": 235,
+      "text": "Kevin attended for review. He suffered another cluster of 6 focal motor seizures over two days on 15 and 16 September 2025. No events since."
+    },
+    {
+      "evidence_id": "L3.p2",
+      "letter_id": "L3",
+      "start": 237,
+      "end": 291,
+      "text": "Carbamazepine continued. Routine review in six months."
+    },
+    {
+      "evidence_id": "L1.shaking",
+      "letter_id": "L1",
+      "start": 639,
+      "end": 985,
+      "text": "A second pattern consists of brief bilateral arm shaking without facial involvement. These shaking episodes and his focal motor clusters have both recurred since November 2024, including throughout January and early February. I currently regard both as epileptic. These are the only two patterns reported since November; they are distinct events."
+    },
+    {
+      "evidence_id": "L1.concurrent_inventory",
+      "letter_id": "L1",
+      "start": 639,
+      "end": 985,
+      "text": "A second pattern consists of brief bilateral arm shaking without facial involvement. These shaking episodes and his focal motor clusters have both recurred since November 2024, including throughout January and early February. I currently regard both as epileptic. These are the only two patterns reported since November; they are distinct events."
+    },
+    {
+      "evidence_id": "L2.shaking_revised",
+      "letter_id": "L2",
+      "start": 453,
+      "end": 959,
+      "text": "The brief bilateral arm shaking is the same second pattern described as epileptic in February; it recurred on 21 May 2025. On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events. This is the first change from an epileptic to a non-epileptic interpretation in his record, and it was decided today, not earlier. The focal motor clusters remain epileptic and are the only epileptic pattern active since November 2024."
+    },
+    {
+      "evidence_id": "L2.shaking_may",
+      "letter_id": "L2",
+      "start": 453,
+      "end": 959,
+      "text": "The brief bilateral arm shaking is the same second pattern described as epileptic in February; it recurred on 21 May 2025. On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events. This is the first change from an epileptic to a non-epileptic interpretation in his record, and it was decided today, not earlier. The focal motor clusters remain epileptic and are the only epileptic pattern active since November 2024."
+    },
+    {
+      "evidence_id": "L2.only_epileptic",
+      "letter_id": "L2",
+      "start": 453,
+      "end": 959,
+      "text": "The brief bilateral arm shaking is the same second pattern described as epileptic in February; it recurred on 21 May 2025. On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events. This is the first change from an epileptic to a non-epileptic interpretation in his record, and it was decided today, not earlier. The focal motor clusters remain epileptic and are the only epileptic pattern active since November 2024."
+    }
+  ],
+  "links": [],
+  "answers": [
+    {
+      "request_id": "T1_visit_Q1",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "Documented focal motor epilepsy and the 5\u20136 February cluster support the predicate."
+    },
+    {
+      "request_id": "T1_visit_Q2",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.concurrent_inventory"
+      ],
+      "reason": "Two explicitly epileptic patterns overlap in January and early February within the 90-day lookback."
+    },
+    {
+      "request_id": "T1_visit_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "The permitted letters do not establish a lamotrigine start or explicit non-initiation throughout the 180-day interval; other treatment or current use cannot supply that history."
+    },
+    {
+      "request_id": "T1_visit_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "No qualifying EEG request with a result available by T is established, and the permitted letters do not exhaust all requests in the 180-day interval. Silence or one pending test cannot establish a complete negative."
+    },
+    {
+      "request_id": "T1_visit_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "No qualifying dated reinterpretation is established, and no complete reassessment or event inventory refutes the predicate throughout the 180-day interval. Absence of a recorded revision is not a negative."
+    },
+    {
+      "request_id": "T1_retrospective_Q1",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3"
+      ],
+      "reason": "The February cluster remains supported."
+    },
+    {
+      "request_id": "T1_retrospective_Q2",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L1.shaking",
+        "L2.shaking_revised",
+        "L2.only_epileptic"
+      ],
+      "reason": "L2 explicitly revises the shaking pattern back to onset; only focal motor clusters were epileptic in this interval."
+    },
+    {
+      "request_id": "T1_retrospective_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3"
+      ],
+      "reason": "The permitted letters do not establish a lamotrigine start or explicit non-initiation throughout the 180-day interval; other treatment or current use cannot supply that history."
+    },
+    {
+      "request_id": "T1_retrospective_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3"
+      ],
+      "reason": "No qualifying EEG request with a result available by T is established, and the permitted letters do not exhaust all requests in the 180-day interval. Silence or one pending test cannot establish a complete negative."
+    },
+    {
+      "request_id": "T1_retrospective_Q5",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L2.shaking_revised"
+      ],
+      "reason": "L2 explicitly dates the first reinterpretation to 20 June, after T1."
+    },
+    {
+      "request_id": "T2_visit_Q1",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3"
+      ],
+      "reason": "The 2\u20133 June cluster is within the lookback starting 14 May."
+    },
+    {
+      "request_id": "T2_visit_Q2",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3"
+      ],
+      "reason": "No explicit complete inventory and overlapping-activity account covers the whole 90-day interval; one named pattern or absence of convulsions does not exclude every other epileptic pattern."
+    },
+    {
+      "request_id": "T2_visit_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3"
+      ],
+      "reason": "The permitted letters do not establish a lamotrigine start or explicit non-initiation throughout the 180-day interval; other treatment or current use cannot supply that history."
+    },
+    {
+      "request_id": "T2_visit_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3"
+      ],
+      "reason": "No qualifying EEG request with a result available by T is established, and the permitted letters do not exhaust all requests in the 180-day interval. Silence or one pending test cannot establish a complete negative."
+    },
+    {
+      "request_id": "T2_visit_Q5",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.shaking",
+        "L2.shaking_may",
+        "L2.shaking_revised"
+      ],
+      "reason": "The same previously epileptic pattern recurred on 21 May and was explicitly reinterpreted on 20 June, both within the relevant period and before T2."
+    },
+    {
+      "request_id": "T2_retrospective_Q1",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3",
+        "L3.p1",
+        "L3.p2"
+      ],
+      "reason": "The June cluster remains supported; the September cluster is after T2."
+    },
+    {
+      "request_id": "T2_retrospective_Q2",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3",
+        "L3.p1",
+        "L3.p2"
+      ],
+      "reason": "No explicit complete inventory and overlapping-activity account covers the whole 90-day interval; one named pattern or absence of convulsions does not exclude every other epileptic pattern."
+    },
+    {
+      "request_id": "T2_retrospective_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3",
+        "L3.p1",
+        "L3.p2"
+      ],
+      "reason": "The permitted letters do not establish a lamotrigine start or explicit non-initiation throughout the 180-day interval; other treatment or current use cannot supply that history."
+    },
+    {
+      "request_id": "T2_retrospective_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3",
+        "L2.p1",
+        "L2.p2",
+        "L2.p3",
+        "L3.p1",
+        "L3.p2"
+      ],
+      "reason": "No qualifying EEG request with a result available by T is established, and the permitted letters do not exhaust all requests in the 180-day interval. Silence or one pending test cannot establish a complete negative."
+    },
+    {
+      "request_id": "T2_retrospective_Q5",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.shaking",
+        "L2.shaking_may",
+        "L2.shaking_revised"
+      ],
+      "reason": "The same previously epileptic pattern recurred on 21 May and was explicitly reinterpreted on 20 June, both within the relevant period and before T2."
+    }
+  ],
+  "review_note": "Version 0.3 intentionally revises fictional case content for declared coverage gaps; previous files retained. Query dates unchanged. Authoring pass only."
+}

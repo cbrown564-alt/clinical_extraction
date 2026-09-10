@@ -1,0 +1,45 @@
+{
+  "dataset": "authored longitudinal pilot v0.3",
+  "split": "development_only",
+  "reference_comparator": "frozen v0.3 reference_snapshot",
+  "attempted_jobs": 48,
+  "parsed_jobs": 44,
+  "failed_jobs": 4,
+  "unstarted_jobs": 0,
+  "primary_status_matches": 206,
+  "primary_requests": 240,
+  "patient_averaged_status_agreement": 0.8583333333333334,
+  "returned_status_disagreements": 14,
+  "previously_adjudicated_reference_errors": 2,
+  "remaining_status_disagreements_against_v0_4": 12,
+  "schema_and_source_grounded_annotation_jobs": 44,
+  "answer_rows_with_evidence": 194,
+  "answer_rows_all_evidence_overlaps_reference": 178,
+  "literal_assertion_comparison": {
+    "reference_assertions": 522,
+    "observed_assertions": 506,
+    "matched_assertions": 202
+  },
+  "attributes_on_literal_matches": {
+    "time_matched": 202,
+    "time_agree": 15,
+    "reporter_matched": 202,
+    "reporter_agree": 171,
+    "certainty_matched": 202,
+    "certainty_agree": 200,
+    "polarity_matched": 202,
+    "polarity_agree": 200,
+    "coverage_matched": 202,
+    "coverage_agree": 191
+  },
+  "sleep_prevented_resume": {
+    "jobs": 29,
+    "parsed": 29,
+    "failures": 0
+  },
+  "diagnostic_retry_in_primary": false,
+  "human_effort": null,
+  "field_utility": null,
+  "claim": "AI development agreement against provisional authored references; no clinical validation",
+  "raw_output_repair": "none"
+}

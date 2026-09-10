@@ -1,0 +1,213 @@
+{
+  "annotations": {
+    "assertions": [
+      {
+        "assertion_id": "A1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 162,
+            "end": 200,
+            "text": "She has a diagnosis of focal epilepsy."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "today",
+          "start": {
+            "earliest": null,
+            "latest": "2023-08-10"
+          },
+          "end": {
+            "earliest": "2023-08-10",
+            "latest": null
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "A2",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 202,
+            "end": 250,
+            "text": "Her last focal seizure occurred on 15 July 2023."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": "15 July 2023",
+          "start": {
+            "earliest": "2023-07-15",
+            "latest": "2023-07-15"
+          },
+          "end": {
+            "earliest": "2023-07-15",
+            "latest": "2023-07-15"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal seizure"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A3",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 251,
+            "end": 297,
+            "text": "We initiated levetiracetam 500 mg twice daily."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": null,
+            "latest": "2023-08-10"
+          },
+          "end": {
+            "earliest": null,
+            "latest": "2023-08-10"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "levetiracetam",
+          "status": "started",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "A4",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 298,
+            "end": 364,
+            "text": "She has experienced no further seizures since starting medication."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": "since starting medication",
+          "start": {
+            "earliest": null,
+            "latest": "2023-08-10"
+          },
+          "end": {
+            "earliest": "2023-08-10",
+            "latest": "2023-08-10"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "seizures"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "all_epileptic",
+          "burden": null
+        }
+      }
+    ],
+    "links": []
+  },
+  "answers": [
+    {
+      "request_id": "T1_visit_Q1",
+      "status": "eligible",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 162,
+          "end": 200,
+          "text": "She has a diagnosis of focal epilepsy."
+        },
+        {
+          "letter_id": "L1",
+          "start": 202,
+          "end": 250,
+          "text": "Her last focal seizure occurred on 15 July 2023."
+        }
+      ],
+      "reason": "Hannah has a documented diagnosis of focal epilepsy at the index date (10 August 2023) and experienced a focal seizure on 15 July 2023, which is within the 90-day lookback window (2023-05-13 to 2023-08-10)."
+    },
+    {
+      "request_id": "T1_visit_Q2",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 202,
+          "end": 250,
+          "text": "Her last focal seizure occurred on 15 July 2023."
+        }
+      ],
+      "reason": "Only a single epileptic pattern (focal seizures) is documented. In the absence of an explicit complete inventory of epileptic patterns covering the 90-day timeframe, whether another pattern existed remains indeterminate."
+    },
+    {
+      "request_id": "T1_visit_Q3",
+      "status": "indeterminate",
+      "evidence": [],
+      "reason": "There is no mention of lamotrigine being initiated or used in the record, nor is there an explicit statement of non-initiation or complete medication inventory for the 180-day lookback window."
+    },
+    {
+      "request_id": "T1_visit_Q4",
+      "status": "indeterminate",
+      "evidence": [],
+      "reason": "There is no documentation regarding an EEG request or result, and without an explicit complete inventory of investigation requests, the status is indeterminate."
+    },
+    {
+      "request_id": "T1_visit_Q5",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 202,
+          "end": 250,
+          "text": "Her last focal seizure occurred on 15 July 2023."
+        }
+      ],
+      "reason": "A focal seizure occurred within the 180-day lookback window on 15 July 2023, but there is no explicit reinterpretation of it as non-epileptic; by definition, absence of a revision alone is indeterminate."
+    }
+  ]
+}

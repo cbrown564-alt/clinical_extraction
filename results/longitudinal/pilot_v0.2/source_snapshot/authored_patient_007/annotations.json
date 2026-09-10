@@ -1,0 +1,637 @@
+{
+  "assertions": [
+    {
+      "assertion_id": "L1.diagnosis",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 103,
+          "end": 237,
+          "text": "George attended our outpatient service. He has an established diagnosis of genetic generalized epilepsy with typical absence seizures."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-01-10",
+          "latest": "2025-01-10"
+        },
+        "end": {
+          "earliest": "2025-01-10",
+          "latest": "2025-01-10"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "genetic generalized epilepsy",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L1.pattern",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 239,
+          "end": 578,
+          "text": "He describes recurring daytime absence episodes characterized by brief staring and eyelid fluttering lasting 5 to 10 seconds, occurring approximately once or twice daily. His latest absence spell occurred yesterday, 9 January 2025. He reports no generalized convulsions or myoclonic jerks. He continues sodium valproate 500 mg twice daily."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-01-10",
+          "latest": "2025-01-10"
+        },
+        "end": {
+          "earliest": "2025-01-10",
+          "latest": "2025-01-10"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "absence seizure"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "rate",
+          "text": "once or twice daily",
+          "count": {
+            "lower": 1,
+            "upper": 2
+          },
+          "period": {
+            "amount": {
+              "lower": 1,
+              "upper": 1
+            },
+            "unit": "day"
+          },
+          "events_per_cluster": null,
+          "approximate": true
+        }
+      }
+    },
+    {
+      "assertion_id": "L1.latest",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 239,
+          "end": 578,
+          "text": "He describes recurring daytime absence episodes characterized by brief staring and eyelid fluttering lasting 5 to 10 seconds, occurring approximately once or twice daily. His latest absence spell occurred yesterday, 9 January 2025. He reports no generalized convulsions or myoclonic jerks. He continues sodium valproate 500 mg twice daily."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-01-09",
+          "latest": "2025-01-09"
+        },
+        "end": {
+          "earliest": "2025-01-09",
+          "latest": "2025-01-09"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "absence seizure"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L1.no_convulsions",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 239,
+          "end": 578,
+          "text": "He describes recurring daytime absence episodes characterized by brief staring and eyelid fluttering lasting 5 to 10 seconds, occurring approximately once or twice daily. His latest absence spell occurred yesterday, 9 January 2025. He reports no generalized convulsions or myoclonic jerks. He continues sodium valproate 500 mg twice daily."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-01-10",
+          "latest": "2025-01-10"
+        },
+        "end": {
+          "earliest": "2025-01-10",
+          "latest": "2025-01-10"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "generalized convulsion",
+          "myoclonic jerk"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L1.valproate",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 239,
+          "end": 578,
+          "text": "He describes recurring daytime absence episodes characterized by brief staring and eyelid fluttering lasting 5 to 10 seconds, occurring approximately once or twice daily. His latest absence spell occurred yesterday, 9 January 2025. He reports no generalized convulsions or myoclonic jerks. He continues sodium valproate 500 mg twice daily."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-01-10",
+          "latest": "2025-01-10"
+        },
+        "end": {
+          "earliest": "2025-01-10",
+          "latest": "2025-01-10"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "medication",
+        "name": "sodium valproate",
+        "status": "taking",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L2.diagnosis",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 90,
+          "end": 172,
+          "text": "I evaluated George in clinic today. His diagnosis is genetic generalized epilepsy."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-05-18",
+          "latest": "2025-05-18"
+        },
+        "end": {
+          "earliest": "2025-05-18",
+          "latest": "2025-05-18"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "genetic generalized epilepsy",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L2.pattern",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 174,
+          "end": 462,
+          "text": "He continues to experience typical absence spells, currently occurring two to three times a week, with the most recent episode noted on 14 May 2025. There have been no convulsive attacks or myoclonic events. He remains on sodium valproate 500 mg twice daily with good reported compliance."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-05-18",
+          "latest": "2025-05-18"
+        },
+        "end": {
+          "earliest": "2025-05-18",
+          "latest": "2025-05-18"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "absence seizure"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "rate",
+          "text": "two to three times a week",
+          "count": {
+            "lower": 2,
+            "upper": 3
+          },
+          "period": {
+            "amount": {
+              "lower": 1,
+              "upper": 1
+            },
+            "unit": "week"
+          },
+          "events_per_cluster": null,
+          "approximate": true
+        }
+      }
+    },
+    {
+      "assertion_id": "L2.latest",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 174,
+          "end": 462,
+          "text": "He continues to experience typical absence spells, currently occurring two to three times a week, with the most recent episode noted on 14 May 2025. There have been no convulsive attacks or myoclonic events. He remains on sodium valproate 500 mg twice daily with good reported compliance."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-05-14",
+          "latest": "2025-05-14"
+        },
+        "end": {
+          "earliest": "2025-05-14",
+          "latest": "2025-05-14"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "absence seizure"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.no_convulsions",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 174,
+          "end": 462,
+          "text": "He continues to experience typical absence spells, currently occurring two to three times a week, with the most recent episode noted on 14 May 2025. There have been no convulsive attacks or myoclonic events. He remains on sodium valproate 500 mg twice daily with good reported compliance."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-05-18",
+          "latest": "2025-05-18"
+        },
+        "end": {
+          "earliest": "2025-05-18",
+          "latest": "2025-05-18"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "generalized convulsion",
+          "myoclonic jerk"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.valproate",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 174,
+          "end": 462,
+          "text": "He continues to experience typical absence spells, currently occurring two to three times a week, with the most recent episode noted on 14 May 2025. There have been no convulsive attacks or myoclonic events. He remains on sodium valproate 500 mg twice daily with good reported compliance."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-05-18",
+          "latest": "2025-05-18"
+        },
+        "end": {
+          "earliest": "2025-05-18",
+          "latest": "2025-05-18"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "medication",
+        "name": "sodium valproate",
+        "status": "taking",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L3.diagnosis",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 96,
+          "end": 289,
+          "text": "George was seen for routine review. He has genetic generalized epilepsy on sodium valproate 500 mg twice daily. Absence events continue occasionally, latest on 8 September 2025. No convulsions."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-09-12",
+          "latest": "2025-09-12"
+        },
+        "end": {
+          "earliest": "2025-09-12",
+          "latest": "2025-09-12"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "genetic generalized epilepsy",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L3.pattern",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 96,
+          "end": 289,
+          "text": "George was seen for routine review. He has genetic generalized epilepsy on sodium valproate 500 mg twice daily. Absence events continue occasionally, latest on 8 September 2025. No convulsions."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-09-12",
+          "latest": "2025-09-12"
+        },
+        "end": {
+          "earliest": "2025-09-12",
+          "latest": "2025-09-12"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "absence seizure"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "qualitative",
+          "text": "occasionally",
+          "count": null,
+          "period": null,
+          "events_per_cluster": null,
+          "approximate": true
+        }
+      }
+    },
+    {
+      "assertion_id": "L3.latest",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 96,
+          "end": 289,
+          "text": "George was seen for routine review. He has genetic generalized epilepsy on sodium valproate 500 mg twice daily. Absence events continue occasionally, latest on 8 September 2025. No convulsions."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-09-08",
+          "latest": "2025-09-08"
+        },
+        "end": {
+          "earliest": "2025-09-08",
+          "latest": "2025-09-08"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "absence seizure"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L3.no_convulsions",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 96,
+          "end": 289,
+          "text": "George was seen for routine review. He has genetic generalized epilepsy on sodium valproate 500 mg twice daily. Absence events continue occasionally, latest on 8 September 2025. No convulsions."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-09-12",
+          "latest": "2025-09-12"
+        },
+        "end": {
+          "earliest": "2025-09-12",
+          "latest": "2025-09-12"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "convulsion"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L3.valproate",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 96,
+          "end": 289,
+          "text": "George was seen for routine review. He has genetic generalized epilepsy on sodium valproate 500 mg twice daily. Absence events continue occasionally, latest on 8 September 2025. No convulsions."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-09-12",
+          "latest": "2025-09-12"
+        },
+        "end": {
+          "earliest": "2025-09-12",
+          "latest": "2025-09-12"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "medication",
+        "name": "sodium valproate",
+        "status": "taking",
+        "condition": null
+      }
+    }
+  ],
+  "links": [
+    {
+      "link_id": "L1.pattern__L2.pattern__same_pattern",
+      "earlier_assertion": "L1.pattern",
+      "later_assertion": "L2.pattern",
+      "relation": "same_pattern",
+      "certainty": "uncertain",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 174,
+          "end": 462,
+          "text": "He continues to experience typical absence spells, currently occurring two to three times a week, with the most recent episode noted on 14 May 2025. There have been no convulsive attacks or myoclonic events. He remains on sodium valproate 500 mg twice daily with good reported compliance."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "L2.pattern__L3.pattern__same_pattern",
+      "earlier_assertion": "L2.pattern",
+      "later_assertion": "L3.pattern",
+      "relation": "same_pattern",
+      "certainty": "uncertain",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 96,
+          "end": 289,
+          "text": "George was seen for routine review. He has genetic generalized epilepsy on sodium valproate 500 mg twice daily. Absence events continue occasionally, latest on 8 September 2025. No convulsions."
+        }
+      ],
+      "decision_time": null
+    }
+  ]
+}

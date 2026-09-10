@@ -1,0 +1,810 @@
+{
+  "annotations": {
+    "assertions": [
+      {
+        "assertion_id": "L1_diag_1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 178,
+            "end": 217,
+            "text": "established diagnosis of focal epilepsy"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "established",
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "L1_seiz_pattern_1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 220,
+            "end": 383,
+            "text": "She experiences recurring focal sensory seizures characterized by an ascending epigastric sensation and auditory distortion, occurring approximately twice a month."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "recurring",
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal sensory seizures"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "approximately twice a month",
+            "count": {
+              "lower": 2.0,
+              "upper": 2.0
+            },
+            "period": {
+              "amount": {
+                "lower": 1.0,
+                "upper": 1.0
+              },
+              "unit": "month"
+            },
+            "events_per_cluster": null,
+            "approximate": true
+          }
+        }
+      },
+      {
+        "assertion_id": "L1_seiz_occ_1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 384,
+            "end": 450,
+            "text": "Her most recent focal sensory seizure occurred on 12 January 2025."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "12 January 2025",
+          "start": {
+            "earliest": "2025-01-12",
+            "latest": "2025-01-12"
+          },
+          "end": {
+            "earliest": "2025-01-12",
+            "latest": "2025-01-12"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal sensory seizure"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L1_seiz_conv_abs_1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 451,
+            "end": 490,
+            "text": "She has had no generalized convulsions."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "complete",
+        "time": {
+          "text": "She has had no",
+          "start": null,
+          "end": {
+            "earliest": "2025-01-18",
+            "latest": "2025-01-18"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "generalized convulsions"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L1_med_not_taking_1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 491,
+            "end": 547,
+            "text": "She is not currently taking any anti-seizure medication."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "complete",
+        "time": {
+          "text": "currently",
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "anti-seizure medication",
+          "status": "not_started",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L1_med_plan_1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 549,
+            "end": 707,
+            "text": "Today, 18 January 2025, we agreed to start lamotrigine at 25 mg once daily, titrating by 25 mg every two weeks towards an initial target dose of 100 mg daily."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "Today, 18 January 2025",
+          "start": {
+            "earliest": "2025-01-18",
+            "latest": "2025-01-18"
+          },
+          "end": {
+            "earliest": "2025-01-18",
+            "latest": "2025-01-18"
+          },
+          "kind": "decision",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "medication",
+          "name": "lamotrigine",
+          "status": "proposed",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L1_inv_req_1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 708,
+            "end": 796,
+            "text": "I also requested a routine outpatient EEG today to establish baseline cortical activity."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "today",
+          "start": {
+            "earliest": "2025-01-18",
+            "latest": "2025-01-18"
+          },
+          "end": {
+            "earliest": "2025-01-18",
+            "latest": "2025-01-18"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L1_inv_pending_1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 797,
+            "end": 827,
+            "text": "It has not yet been performed."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "not yet",
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "pending",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L2_diag_1",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 124,
+            "end": 161,
+            "text": "Her diagnosis remains focal epilepsy."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "remains",
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "L2_inv_perf_1",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 163,
+            "end": 248,
+            "text": "The routine outpatient EEG requested on 18 January was performed on 12 February 2025."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "12 February 2025",
+          "start": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "end": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "performed",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L2_inv_res_1",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 249,
+            "end": 381,
+            "text": "Its report became available to our clinical team on 16 February 2025 and demonstrated right temporal sharp-and-slow wave discharges."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "16 February 2025",
+          "start": {
+            "earliest": "2025-02-16",
+            "latest": "2025-02-16"
+          },
+          "end": {
+            "earliest": "2025-02-16",
+            "latest": "2025-02-16"
+          },
+          "kind": "result_available",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "result",
+          "result": "right temporal sharp-and-slow wave discharges",
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L2_med_start_1",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 382,
+            "end": 564,
+            "text": "Julia confirms that she initiated lamotrigine on 18 January 2025 and successfully titrated as instructed, reaching 100 mg daily on 1 March 2025, which she continues to take reliably."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "18 January 2025",
+          "start": {
+            "earliest": "2025-01-18",
+            "latest": "2025-01-18"
+          },
+          "end": {
+            "earliest": "2025-01-18",
+            "latest": "2025-01-18"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "medication",
+          "name": "lamotrigine",
+          "status": "started",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L2_med_taking_1",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 382,
+            "end": 564,
+            "text": "Julia confirms that she initiated lamotrigine on 18 January 2025 and successfully titrated as instructed, reaching 100 mg daily on 1 March 2025, which she continues to take reliably."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "continues to take reliably",
+          "start": {
+            "earliest": "2025-03-01",
+            "latest": "2025-03-01"
+          },
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "medication",
+          "name": "lamotrigine",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L2_seiz_occ_1",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 565,
+            "end": 668,
+            "text": "Her focal sensory seizures have reduced in frequency, with her latest event occurring on 10 April 2025."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "10 April 2025",
+          "start": {
+            "earliest": "2025-04-10",
+            "latest": "2025-04-10"
+          },
+          "end": {
+            "earliest": "2025-04-10",
+            "latest": "2025-04-10"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal sensory seizures"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L2_seiz_conv_abs_1",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 669,
+            "end": 692,
+            "text": "No convulsive seizures."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "complete",
+        "time": {
+          "text": "No convulsive seizures",
+          "start": null,
+          "end": {
+            "earliest": "2025-04-25",
+            "latest": "2025-04-25"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "convulsive seizures"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L3_med_taking_1",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 126,
+            "end": 178,
+            "text": "She remains compliant with lamotrigine 100 mg daily."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "remains compliant",
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L3"
+        },
+        "content": {
+          "family": "medication",
+          "name": "lamotrigine",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L3_seiz_occ_1",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 179,
+            "end": 258,
+            "text": "Her focal sensory seizures remain infrequent, with the latest on 2 August 2025."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "2 August 2025",
+          "start": {
+            "earliest": "2025-08-02",
+            "latest": "2025-08-02"
+          },
+          "end": {
+            "earliest": "2025-08-02",
+            "latest": "2025-08-02"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal sensory seizures"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L3_inv_inventory_1",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 259,
+            "end": 293,
+            "text": "No new symptoms or investigations."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "complete",
+        "time": {
+          "text": "No new",
+          "start": null,
+          "end": {
+            "earliest": "2025-08-20",
+            "latest": "2025-08-20"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L3"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "unspecified",
+          "status": "request_inventory",
+          "result": null,
+          "request_count": 0
+        }
+      }
+    ],
+    "links": [
+      {
+        "link_id": "link_diag_update",
+        "earlier_assertion": "L1_diag_1",
+        "later_assertion": "L2_diag_1",
+        "relation": "repeats",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 124,
+            "end": 161,
+            "text": "Her diagnosis remains focal epilepsy."
+          }
+        ],
+        "decision_time": null
+      },
+      {
+        "link_id": "link_seiz_same_pattern",
+        "earlier_assertion": "L1_seiz_pattern_1",
+        "later_assertion": "L2_seiz_occ_1",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 565,
+            "end": 668,
+            "text": "Her focal sensory seizures have reduced in frequency, with her latest event occurring on 10 April 2025."
+          }
+        ],
+        "decision_time": null
+      },
+      {
+        "link_id": "link_inv_req_perf",
+        "earlier_assertion": "L1_inv_req_1",
+        "later_assertion": "L2_inv_perf_1",
+        "relation": "request_performed",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 163,
+            "end": 248,
+            "text": "The routine outpatient EEG requested on 18 January was performed on 12 February 2025."
+          }
+        ],
+        "decision_time": null
+      },
+      {
+        "link_id": "link_inv_req_result",
+        "earlier_assertion": "L1_inv_req_1",
+        "later_assertion": "L2_inv_res_1",
+        "relation": "request_has_result",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 249,
+            "end": 381,
+            "text": "Its report became available to our clinical team on 16 February 2025 and demonstrated right temporal sharp-and-slow wave discharges."
+          }
+        ],
+        "decision_time": null
+      },
+      {
+        "link_id": "link_med_plan_started",
+        "earlier_assertion": "L1_med_plan_1",
+        "later_assertion": "L2_med_start_1",
+        "relation": "updates",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 382,
+            "end": 564,
+            "text": "Julia confirms that she initiated lamotrigine on 18 January 2025 and successfully titrated as instructed, reaching 100 mg daily on 1 March 2025, which she continues to take reliably."
+          }
+        ],
+        "decision_time": null
+      }
+    ]
+  },
+  "answers": [
+    {
+      "request_id": "T2_retrospective_Q1",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 565,
+          "end": 668,
+          "text": "Her focal sensory seizures have reduced in frequency, with her latest event occurring on 10 April 2025."
+        },
+        {
+          "letter_id": "L3",
+          "start": 179,
+          "end": 258,
+          "text": "Her focal sensory seizures remain infrequent, with the latest on 2 August 2025."
+        }
+      ],
+      "reason": "Julia has an established diagnosis of focal epilepsy, but no individual epileptic seizures are documented within the 90-day lookback timeframe (2025-04-19 to 2025-07-17); the nearest documented occurrences are 10 April 2025 and 2 August 2025. There is also no explicit evidence of total absence of seizures throughout that period. Per query rules, missing evidence is indeterminate."
+    },
+    {
+      "request_id": "T2_retrospective_Q2",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 220,
+          "end": 383,
+          "text": "She experiences recurring focal sensory seizures characterized by an ascending epigastric sensation and auditory distortion, occurring approximately twice a month."
+        },
+        {
+          "letter_id": "L2",
+          "start": 565,
+          "end": 668,
+          "text": "Her focal sensory seizures have reduced in frequency, with her latest event occurring on 10 April 2025."
+        }
+      ],
+      "reason": "Only one epileptic pattern (focal sensory seizures) is described in the record, with generalized convulsive seizures explicitly absent. However, there is no explicit complete inventory establishing that at most one pattern was active across the 90-day timeframe (2025-04-19 to 2025-07-17). In the absence of a complete inventory, the status is indeterminate."
+    },
+    {
+      "request_id": "T2_retrospective_Q3",
+      "status": "ineligible",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 382,
+          "end": 564,
+          "text": "Julia confirms that she initiated lamotrigine on 18 January 2025 and successfully titrated as instructed, reaching 100 mg daily on 1 March 2025, which she continues to take reliably."
+        }
+      ],
+      "reason": "Julia confirmed that she initiated lamotrigine on 18 January 2025, which precedes the 180-day timeframe (2025-01-19 to 2025-07-17). Because the medication was started prior to the timeframe and continued thereafter, it was not started within the supplied 180-day timeframe, refuting eligibility."
+    },
+    {
+      "request_id": "T2_retrospective_Q4",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 708,
+          "end": 796,
+          "text": "I also requested a routine outpatient EEG today to establish baseline cortical activity."
+        },
+        {
+          "letter_id": "L2",
+          "start": 163,
+          "end": 248,
+          "text": "The routine outpatient EEG requested on 18 January was performed on 12 February 2025."
+        },
+        {
+          "letter_id": "L2",
+          "start": 249,
+          "end": 381,
+          "text": "Its report became available to our clinical team on 16 February 2025 and demonstrated right temporal sharp-and-slow wave discharges."
+        }
+      ],
+      "reason": "The outpatient EEG in the record was requested on 18 January 2025, prior to the supplied 180-day timeframe (2025-01-19 to 2025-07-17). Because the request inventory is incomplete, this older test cannot exclude other potential qualifying requests within the timeframe. Therefore, the status is indeterminate."
+    },
+    {
+      "request_id": "T2_retrospective_Q5",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 178,
+          "end": 217,
+          "text": "established diagnosis of focal epilepsy"
+        },
+        {
+          "letter_id": "L2",
+          "start": 124,
+          "end": 161,
+          "text": "Her diagnosis remains focal epilepsy."
+        }
+      ],
+      "reason": "No documented epileptic event or pattern was reinterpreted as non-epileptic; the diagnosis consistently remains focal epilepsy. Under the query definition, absence of a revision alone is indeterminate."
+    }
+  ]
+}

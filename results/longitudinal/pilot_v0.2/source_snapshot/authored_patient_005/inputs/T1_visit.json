@@ -1,0 +1,11 @@
+{
+  "patient_id": "authored-005",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-02-01",
+      "available_date": "2025-02-01",
+      "text": "Epilepsy clinic letter\nConsultation: 01 February 2025\nPatient: Edward Davies, aged 67\n\nDear colleague,\n\nEdward attended clinic accompanied by his daughter. He has an established diagnosis of focal epilepsy following an ischemic stroke three years ago.\n\nHe describes recurring focal motor seizures involving clonic jerking of the right hand. His most recent event occurred sometime around Christmas, though the exact calendar date was not noted by the family. He had a prior focal attack a few months ago in autumn 2024. He reports no other seizure patterns or convulsions. He continues levetiracetam 500 mg twice daily.\n\nI requested a routine outpatient EEG today to reassess his baseline epileptiform activity. It has not yet been performed. Follow-up in five months.\n"
+    }
+  ]
+}

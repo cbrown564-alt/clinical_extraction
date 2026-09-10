@@ -1,0 +1,62 @@
+{
+  "review_date": "2026-09-09",
+  "reviewer": "authoring assistant",
+  "scope": "nine original non-overlap answers; permitted synthetic development only",
+  "clinical_validation": false,
+  "rows": [
+    {
+      "job": "authored_patient_001/T1_visit",
+      "request_id": "T1_visit_Q1",
+      "decision": "acceptable_alternative_evidence",
+      "reason": "Grounded same-letter passages address the query predicate or explain incomplete temporal coverage. Literal reference containment misses alternative selections; no status or source changes."
+    },
+    {
+      "job": "authored_patient_001/T1_visit",
+      "request_id": "T1_visit_Q5",
+      "decision": "acceptable_alternative_evidence",
+      "reason": "Grounded same-letter passages address the query predicate or explain incomplete temporal coverage. Literal reference containment misses alternative selections; no status or source changes."
+    },
+    {
+      "job": "authored_patient_001/T1_retrospective",
+      "request_id": "T1_retrospective_Q2",
+      "decision": "acceptable_alternative_evidence",
+      "reason": "Grounded same-letter passages address the query predicate or explain incomplete temporal coverage. Literal reference containment misses alternative selections; no status or source changes."
+    },
+    {
+      "job": "authored_patient_001/T2_visit",
+      "request_id": "T2_visit_Q2",
+      "decision": "acceptable_alternative_evidence",
+      "reason": "Grounded same-letter passages address the query predicate or explain incomplete temporal coverage. Literal reference containment misses alternative selections; no status or source changes."
+    },
+    {
+      "job": "authored_patient_001/T2_visit",
+      "request_id": "T2_visit_Q3",
+      "decision": "acceptable_alternative_evidence",
+      "reason": "Grounded same-letter passages address the query predicate or explain incomplete temporal coverage. Literal reference containment misses alternative selections; no status or source changes."
+    },
+    {
+      "job": "authored_patient_001/T2_visit",
+      "request_id": "T2_visit_Q4",
+      "decision": "acceptable_alternative_evidence",
+      "reason": "Grounded same-letter passages address the query predicate or explain incomplete temporal coverage. Literal reference containment misses alternative selections; no status or source changes."
+    },
+    {
+      "job": "authored_patient_001/T2_retrospective",
+      "request_id": "T2_retrospective_Q1",
+      "decision": "acceptable_alternative_evidence",
+      "reason": "Grounded same-letter passages address the query predicate or explain incomplete temporal coverage. Literal reference containment misses alternative selections; no status or source changes."
+    },
+    {
+      "job": "authored_patient_001/T2_retrospective",
+      "request_id": "T2_retrospective_Q2",
+      "decision": "acceptable_alternative_evidence",
+      "reason": "Grounded same-letter passages address the query predicate or explain incomplete temporal coverage. Literal reference containment misses alternative selections; no status or source changes."
+    },
+    {
+      "job": "authored_patient_001/T2_retrospective",
+      "request_id": "T2_retrospective_Q3",
+      "decision": "acceptable_alternative_evidence",
+      "reason": "Grounded same-letter passages address the query predicate or explain incomplete temporal coverage. Literal reference containment misses alternative selections; no status or source changes."
+    }
+  ]
+}

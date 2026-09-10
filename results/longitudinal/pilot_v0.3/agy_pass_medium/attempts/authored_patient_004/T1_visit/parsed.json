@@ -1,0 +1,441 @@
+{
+  "annotations": {
+    "assertions": [
+      {
+        "assertion_id": "A1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 148,
+            "end": 205,
+            "text": "She has a longstanding history of temporal lobe epilepsy."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "longstanding history",
+          "start": null,
+          "end": {
+            "earliest": "2025-01-20",
+            "latest": "2025-01-20"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "temporal lobe epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "A2",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 207,
+            "end": 372,
+            "text": "Her typical pattern has been complex partial seizures occurring approximately twice a month, characterized by behavioral arrest, lip smacking and post-ictal amnesia."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "typical pattern has been",
+          "start": null,
+          "end": {
+            "earliest": "2025-01-20",
+            "latest": "2025-01-20"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "complex partial seizures"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "approximately twice a month",
+            "count": {
+              "lower": 2,
+              "upper": 2
+            },
+            "period": {
+              "amount": {
+                "lower": 1,
+                "upper": 1
+              },
+              "unit": "month"
+            },
+            "events_per_cluster": null,
+            "approximate": true
+          }
+        }
+      },
+      {
+        "assertion_id": "A3",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 373,
+            "end": 435,
+            "text": "Her latest complex partial seizure occurred on 5 January 2025."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "5 January 2025",
+          "start": {
+            "earliest": "2025-01-05",
+            "latest": "2025-01-05"
+          },
+          "end": {
+            "earliest": "2025-01-05",
+            "latest": "2025-01-05"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "complex partial seizure"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "count",
+            "text": "latest complex partial seizure",
+            "count": {
+              "lower": 1,
+              "upper": 1
+            },
+            "period": null,
+            "events_per_cluster": null,
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "A4",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 436,
+            "end": 485,
+            "text": "In the distant past she had grand mal convulsions"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "In the distant past",
+          "start": null,
+          "end": {
+            "earliest": null,
+            "latest": "2021-12-31"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "grand mal convulsions"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A5",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 491,
+            "end": 549,
+            "text": "she has suffered no grand mal attacks since December 2021."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "since December 2021",
+          "start": {
+            "earliest": "2021-12-01",
+            "latest": "2021-12-31"
+          },
+          "end": {
+            "earliest": "2025-01-20",
+            "latest": "2025-01-20"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "grand mal attacks"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A6",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 550,
+            "end": 603,
+            "text": "She continues carbamazepine 200 mg three times daily."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "continues",
+          "start": null,
+          "end": {
+            "earliest": "2025-01-20",
+            "latest": "2025-01-20"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "carbamazepine",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "A7",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 605,
+            "end": 651,
+            "text": "We agreed to keep her carbamazepine unchanged."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-01-20",
+            "latest": "2025-01-20"
+          },
+          "end": {
+            "earliest": "2025-01-20",
+            "latest": "2025-01-20"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "carbamazepine",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "A8",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 652,
+            "end": 673,
+            "text": "No EEG was requested."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "partial",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-01-20",
+            "latest": "2025-01-20"
+          },
+          "end": {
+            "earliest": "2025-01-20",
+            "latest": "2025-01-20"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      }
+    ],
+    "links": [
+      {
+        "link_id": "LNK1",
+        "earlier_assertion": "A4",
+        "later_assertion": "A5",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 436,
+            "end": 549,
+            "text": "In the distant past she had grand mal convulsions, but she has suffered no grand mal attacks since December 2021."
+          }
+        ],
+        "decision_time": null
+      },
+      {
+        "link_id": "LNK2",
+        "earlier_assertion": "A6",
+        "later_assertion": "A7",
+        "relation": "updates",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 605,
+            "end": 651,
+            "text": "We agreed to keep her carbamazepine unchanged."
+          }
+        ],
+        "decision_time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-01-20",
+            "latest": "2025-01-20"
+          },
+          "end": {
+            "earliest": "2025-01-20",
+            "latest": "2025-01-20"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        }
+      }
+    ]
+  },
+  "answers": [
+    {
+      "request_id": "T1_visit_Q1",
+      "status": "eligible",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 148,
+          "end": 205,
+          "text": "She has a longstanding history of temporal lobe epilepsy."
+        },
+        {
+          "letter_id": "L1",
+          "start": 373,
+          "end": 435,
+          "text": "Her latest complex partial seizure occurred on 5 January 2025."
+        }
+      ],
+      "reason": "Temporal lobe epilepsy is documented as an active diagnosis at the index date (2025-01-20), and a complex partial seizure occurred on 2025-01-05, which is within the 90-day lookback window (2024-10-23 to 2025-01-20) and interpreted as epileptic."
+    },
+    {
+      "request_id": "T1_visit_Q2",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 207,
+          "end": 372,
+          "text": "Her typical pattern has been complex partial seizures occurring approximately twice a month, characterized by behavioral arrest, lip smacking and post-ictal amnesia."
+        },
+        {
+          "letter_id": "L1",
+          "start": 436,
+          "end": 549,
+          "text": "In the distant past she had grand mal convulsions, but she has suffered no grand mal attacks since December 2021."
+        }
+      ],
+      "reason": "Only one epileptic pattern (complex partial seizures) is documented as active in the 90-day timeframe, with grand mal convulsions reported absent since December 2021. However, in the absence of an explicit complete inventory of epileptic patterns, the non-existence of a second active pattern cannot be definitively confirmed."
+    },
+    {
+      "request_id": "T1_visit_Q3",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 550,
+          "end": 603,
+          "text": "She continues carbamazepine 200 mg three times daily."
+        }
+      ],
+      "reason": "The text documents ongoing carbamazepine therapy but does not mention lamotrigine. Because complete evidence of non-initiation for the 180-day timeframe is not present, the status is indeterminate."
+    },
+    {
+      "request_id": "T1_visit_Q4",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 652,
+          "end": 673,
+          "text": "No EEG was requested."
+        }
+      ],
+      "reason": "Although no EEG was requested at the index consultation, there is no complete inventory of requests covering the entire 180-day timeframe, leaving it indeterminate whether a prior qualifying EEG request exists."
+    },
+    {
+      "request_id": "T1_visit_Q5",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 207,
+          "end": 372,
+          "text": "Her typical pattern has been complex partial seizures occurring approximately twice a month, characterized by behavioral arrest, lip smacking and post-ictal amnesia."
+        }
+      ],
+      "reason": "Complex partial seizures occurred within the 180-day timeframe, but no reinterpretation as non-epileptic is documented. Per query instructions, absence of a revision alone is indeterminate."
+    }
+  ]
+}

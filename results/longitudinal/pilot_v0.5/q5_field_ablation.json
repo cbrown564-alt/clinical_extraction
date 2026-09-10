@@ -1,0 +1,327 @@
+{
+  "scope": "patient 001, four Q5 requests, authored development annotations",
+  "evaluator": "positive-witness prototype; no negative-inventory inference",
+  "semantic_rule_family": "longitudinal_epilepsy_Q5",
+  "model_calls": 0,
+  "raw_output_repair": false,
+  "program_sha256": "0dd8862faa9f0674500d36edd1375d399ce6346ba826963e5dd0807223af0d37",
+  "input_sha256": {
+    "annotations.json": "5efc3129b4ed014faa53980332880641a4f62447ec7b4e8374a25e0f02504899",
+    "manifest.json": "b01836ca4570a660083bc605661db809b57ef03dbaf66584c7d117b8a7c69b22",
+    "reference.json": "b63deac0b49d16ade9115ccc57d4e87c9036f5610890daa0da721ed6a64cb16b"
+  },
+  "rows": [
+    {
+      "variant": "full",
+      "request_id": "T1_visit_Q5",
+      "reference_status": "indeterminate",
+      "status": "indeterminate",
+      "witnesses": [],
+      "reason": "No supported positive witness; complete negative history is not encoded"
+    },
+    {
+      "variant": "full",
+      "request_id": "T1_retrospective_Q5",
+      "reference_status": "ineligible",
+      "status": "indeterminate",
+      "witnesses": [],
+      "reason": "No supported positive witness; complete negative history is not encoded"
+    },
+    {
+      "variant": "full",
+      "request_id": "T2_visit_Q5",
+      "reference_status": "eligible",
+      "status": "eligible",
+      "witnesses": [
+        {
+          "link_id": "K1",
+          "assertion_ids": [
+            "L1.staring",
+            "L2.staring"
+          ],
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 409,
+              "end": 557,
+              "text": "Daytime staring spells began in November 2024 and continue two to three times a week; I currently regard these as focal impaired-awareness seizures."
+            },
+            {
+              "letter_id": "L2",
+              "start": 475,
+              "end": 731,
+              "text": "After reviewing the home videos and the detailed history today, I now diagnose these as functional non-epileptic spells. This reinterpretation applies to the same staring spells from their onset in November, including those described in the January letter."
+            },
+            {
+              "letter_id": "L2",
+              "start": 321,
+              "end": 474,
+              "text": "The daytime staring spells are the events I called focal impaired-awareness seizures in January. They continued intermittently, most recently on 10 June."
+            },
+            {
+              "letter_id": "L2",
+              "start": 321,
+              "end": 474,
+              "text": "The daytime staring spells are the events I called focal impaired-awareness seizures in January. They continued intermittently, most recently on 10 June."
+            },
+            {
+              "letter_id": "L2",
+              "start": 475,
+              "end": 731,
+              "text": "After reviewing the home videos and the detailed history today, I now diagnose these as functional non-epileptic spells. This reinterpretation applies to the same staring spells from their onset in November, including those described in the January letter."
+            },
+            {
+              "letter_id": "L2",
+              "start": 732,
+              "end": 870,
+              "text": "This is our first reclassification of any of Alex's events from epileptic to non-epileptic, and the decision was made today, 20 June 2025."
+            }
+          ]
+        }
+      ],
+      "reason": "Supported same-pattern correction with occurrence and decision in scope"
+    },
+    {
+      "variant": "full",
+      "request_id": "T2_retrospective_Q5",
+      "reference_status": "eligible",
+      "status": "eligible",
+      "witnesses": [
+        {
+          "link_id": "K1",
+          "assertion_ids": [
+            "L1.staring",
+            "L2.staring"
+          ],
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 409,
+              "end": 557,
+              "text": "Daytime staring spells began in November 2024 and continue two to three times a week; I currently regard these as focal impaired-awareness seizures."
+            },
+            {
+              "letter_id": "L2",
+              "start": 475,
+              "end": 731,
+              "text": "After reviewing the home videos and the detailed history today, I now diagnose these as functional non-epileptic spells. This reinterpretation applies to the same staring spells from their onset in November, including those described in the January letter."
+            },
+            {
+              "letter_id": "L2",
+              "start": 321,
+              "end": 474,
+              "text": "The daytime staring spells are the events I called focal impaired-awareness seizures in January. They continued intermittently, most recently on 10 June."
+            },
+            {
+              "letter_id": "L2",
+              "start": 321,
+              "end": 474,
+              "text": "The daytime staring spells are the events I called focal impaired-awareness seizures in January. They continued intermittently, most recently on 10 June."
+            },
+            {
+              "letter_id": "L2",
+              "start": 475,
+              "end": 731,
+              "text": "After reviewing the home videos and the detailed history today, I now diagnose these as functional non-epileptic spells. This reinterpretation applies to the same staring spells from their onset in November, including those described in the January letter."
+            },
+            {
+              "letter_id": "L2",
+              "start": 732,
+              "end": 870,
+              "text": "This is our first reclassification of any of Alex's events from epileptic to non-epileptic, and the decision was made today, 20 June 2025."
+            }
+          ]
+        }
+      ],
+      "reason": "Supported same-pattern correction with occurrence and decision in scope"
+    },
+    {
+      "variant": "without_correction_links",
+      "request_id": "T1_visit_Q5",
+      "reference_status": "indeterminate",
+      "status": "indeterminate",
+      "witnesses": [],
+      "reason": "No supported positive witness; complete negative history is not encoded"
+    },
+    {
+      "variant": "without_correction_links",
+      "request_id": "T1_retrospective_Q5",
+      "reference_status": "ineligible",
+      "status": "indeterminate",
+      "witnesses": [],
+      "reason": "No supported positive witness; complete negative history is not encoded"
+    },
+    {
+      "variant": "without_correction_links",
+      "request_id": "T2_visit_Q5",
+      "reference_status": "eligible",
+      "status": "indeterminate",
+      "witnesses": [],
+      "reason": "No supported positive witness; complete negative history is not encoded"
+    },
+    {
+      "variant": "without_correction_links",
+      "request_id": "T2_retrospective_Q5",
+      "reference_status": "eligible",
+      "status": "indeterminate",
+      "witnesses": [],
+      "reason": "No supported positive witness; complete negative history is not encoded"
+    },
+    {
+      "variant": "without_decision_time",
+      "request_id": "T1_visit_Q5",
+      "reference_status": "indeterminate",
+      "status": "indeterminate",
+      "witnesses": [],
+      "reason": "No supported positive witness; complete negative history is not encoded"
+    },
+    {
+      "variant": "without_decision_time",
+      "request_id": "T1_retrospective_Q5",
+      "reference_status": "ineligible",
+      "status": "indeterminate",
+      "witnesses": [],
+      "reason": "No supported positive witness; complete negative history is not encoded"
+    },
+    {
+      "variant": "without_decision_time",
+      "request_id": "T2_visit_Q5",
+      "reference_status": "eligible",
+      "status": "indeterminate",
+      "witnesses": [],
+      "reason": "No supported positive witness; complete negative history is not encoded"
+    },
+    {
+      "variant": "without_decision_time",
+      "request_id": "T2_retrospective_Q5",
+      "reference_status": "eligible",
+      "status": "indeterminate",
+      "witnesses": [],
+      "reason": "No supported positive witness; complete negative history is not encoded"
+    },
+    {
+      "variant": "without_time_wording",
+      "request_id": "T1_visit_Q5",
+      "reference_status": "indeterminate",
+      "status": "indeterminate",
+      "witnesses": [],
+      "reason": "No supported positive witness; complete negative history is not encoded"
+    },
+    {
+      "variant": "without_time_wording",
+      "request_id": "T1_retrospective_Q5",
+      "reference_status": "ineligible",
+      "status": "indeterminate",
+      "witnesses": [],
+      "reason": "No supported positive witness; complete negative history is not encoded"
+    },
+    {
+      "variant": "without_time_wording",
+      "request_id": "T2_visit_Q5",
+      "reference_status": "eligible",
+      "status": "eligible",
+      "witnesses": [
+        {
+          "link_id": "K1",
+          "assertion_ids": [
+            "L1.staring",
+            "L2.staring"
+          ],
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 409,
+              "end": 557,
+              "text": "Daytime staring spells began in November 2024 and continue two to three times a week; I currently regard these as focal impaired-awareness seizures."
+            },
+            {
+              "letter_id": "L2",
+              "start": 475,
+              "end": 731,
+              "text": "After reviewing the home videos and the detailed history today, I now diagnose these as functional non-epileptic spells. This reinterpretation applies to the same staring spells from their onset in November, including those described in the January letter."
+            },
+            {
+              "letter_id": "L2",
+              "start": 321,
+              "end": 474,
+              "text": "The daytime staring spells are the events I called focal impaired-awareness seizures in January. They continued intermittently, most recently on 10 June."
+            },
+            {
+              "letter_id": "L2",
+              "start": 321,
+              "end": 474,
+              "text": "The daytime staring spells are the events I called focal impaired-awareness seizures in January. They continued intermittently, most recently on 10 June."
+            },
+            {
+              "letter_id": "L2",
+              "start": 475,
+              "end": 731,
+              "text": "After reviewing the home videos and the detailed history today, I now diagnose these as functional non-epileptic spells. This reinterpretation applies to the same staring spells from their onset in November, including those described in the January letter."
+            },
+            {
+              "letter_id": "L2",
+              "start": 732,
+              "end": 870,
+              "text": "This is our first reclassification of any of Alex's events from epileptic to non-epileptic, and the decision was made today, 20 June 2025."
+            }
+          ]
+        }
+      ],
+      "reason": "Supported same-pattern correction with occurrence and decision in scope"
+    },
+    {
+      "variant": "without_time_wording",
+      "request_id": "T2_retrospective_Q5",
+      "reference_status": "eligible",
+      "status": "eligible",
+      "witnesses": [
+        {
+          "link_id": "K1",
+          "assertion_ids": [
+            "L1.staring",
+            "L2.staring"
+          ],
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 409,
+              "end": 557,
+              "text": "Daytime staring spells began in November 2024 and continue two to three times a week; I currently regard these as focal impaired-awareness seizures."
+            },
+            {
+              "letter_id": "L2",
+              "start": 475,
+              "end": 731,
+              "text": "After reviewing the home videos and the detailed history today, I now diagnose these as functional non-epileptic spells. This reinterpretation applies to the same staring spells from their onset in November, including those described in the January letter."
+            },
+            {
+              "letter_id": "L2",
+              "start": 321,
+              "end": 474,
+              "text": "The daytime staring spells are the events I called focal impaired-awareness seizures in January. They continued intermittently, most recently on 10 June."
+            },
+            {
+              "letter_id": "L2",
+              "start": 321,
+              "end": 474,
+              "text": "The daytime staring spells are the events I called focal impaired-awareness seizures in January. They continued intermittently, most recently on 10 June."
+            },
+            {
+              "letter_id": "L2",
+              "start": 475,
+              "end": 731,
+              "text": "After reviewing the home videos and the detailed history today, I now diagnose these as functional non-epileptic spells. This reinterpretation applies to the same staring spells from their onset in November, including those described in the January letter."
+            },
+            {
+              "letter_id": "L2",
+              "start": 732,
+              "end": 870,
+              "text": "This is our first reclassification of any of Alex's events from epileptic to non-epileptic, and the decision was made today, 20 June 2025."
+            }
+          ]
+        }
+      ],
+      "reason": "Supported same-pattern correction with occurrence and decision in scope"
+    }
+  ]
+}

@@ -1,0 +1,350 @@
+{
+  "annotations": {
+    "assertions": [
+      {
+        "assertion_id": "A_L1_diag",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 134,
+            "end": 190,
+            "text": "He has an established diagnosis of focal motor epilepsy."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "today",
+          "start": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "end": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal motor epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "A_L1_shaking_pattern",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 865,
+            "end": 902,
+            "text": "I currently regard both as epileptic."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "currently",
+          "start": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "end": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "brief bilateral arm shaking"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A_L2_diag",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 126,
+            "end": 168,
+            "text": "His diagnosis remains focal motor epilepsy"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "today",
+          "start": {
+            "earliest": "2025-06-20",
+            "latest": "2025-06-20"
+          },
+          "end": {
+            "earliest": "2025-06-20",
+            "latest": "2025-06-20"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal motor epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "A_L2_cluster_june",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 207,
+            "end": 302,
+            "text": "He experienced a further cluster of 4 focal motor seizures over 24 hours on 2 and 3 June 2025."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "partial",
+        "time": {
+          "text": "on 2 and 3 June 2025",
+          "start": {
+            "earliest": "2025-06-02",
+            "latest": "2025-06-02"
+          },
+          "end": {
+            "earliest": "2025-06-03",
+            "latest": "2025-06-03"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal motor seizures"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "clusters",
+            "text": "a further cluster of 4 focal motor seizures",
+            "count": {
+              "lower": 1.0,
+              "upper": 1.0
+            },
+            "period": null,
+            "events_per_cluster": {
+              "lower": 4.0,
+              "upper": 4.0
+            },
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "A_L2_shaking_reclass",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 578,
+            "end": 726,
+            "text": "On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "today, 20 June",
+          "start": {
+            "earliest": "2025-06-20",
+            "latest": "2025-06-20"
+          },
+          "end": {
+            "earliest": "2025-06-20",
+            "latest": "2025-06-20"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "brief bilateral arm shaking"
+          ],
+          "kind": "pattern",
+          "interpretation": "non_epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A_L2_active_inventory",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 857,
+            "end": 961,
+            "text": "The focal motor clusters remain epileptic and are the only epileptic pattern active since November 2024."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": "since November 2024",
+          "start": {
+            "earliest": "2024-11-01",
+            "latest": "2024-11-30"
+          },
+          "end": {
+            "earliest": "2025-06-20",
+            "latest": "2025-06-20"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal motor clusters"
+          ],
+          "kind": "inventory",
+          "interpretation": "epileptic",
+          "scope": "all_epileptic",
+          "burden": null
+        }
+      }
+    ],
+    "links": [
+      {
+        "link_id": "L_shaking_reinterpretation",
+        "earlier_assertion": "A_L1_shaking_pattern",
+        "later_assertion": "A_L2_shaking_reclass",
+        "relation": "corrects_interpretation",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 454,
+            "end": 577,
+            "text": "The brief bilateral arm shaking is the same second pattern described as epileptic in February; it recurred on 21 May 2025."
+          },
+          {
+            "letter_id": "L2",
+            "start": 578,
+            "end": 726,
+            "text": "On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events."
+          }
+        ],
+        "decision_time": {
+          "text": "today, 20 June",
+          "start": {
+            "earliest": "2025-06-20",
+            "latest": "2025-06-20"
+          },
+          "end": {
+            "earliest": "2025-06-20",
+            "latest": "2025-06-20"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L2"
+        }
+      }
+    ]
+  },
+  "answers": [
+    {
+      "request_id": "T2_retrospective_Q1",
+      "status": "eligible",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 126,
+          "end": 168,
+          "text": "His diagnosis remains focal motor epilepsy"
+        },
+        {
+          "letter_id": "L2",
+          "start": 207,
+          "end": 302,
+          "text": "He experienced a further cluster of 4 focal motor seizures over 24 hours on 2 and 3 June 2025."
+        }
+      ],
+      "reason": "Kevin has an established diagnosis of focal motor epilepsy confirmed at his 20 June 2025 review, which persists on the index date of 11 August 2025. Within the 90-day lookback timeframe (14 May 2025 to 11 August 2025), he experienced an acute cluster of 4 focal motor seizures on 2 and 3 June 2025 that was explicitly interpreted as epileptic."
+    },
+    {
+      "request_id": "T2_retrospective_Q2",
+      "status": "ineligible",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 857,
+          "end": 961,
+          "text": "The focal motor clusters remain epileptic and are the only epileptic pattern active since November 2024."
+        }
+      ],
+      "reason": "Letter L2 provides an explicit and complete inventory refuting the presence of multiple active epileptic patterns, specifying that focal motor clusters are the only epileptic pattern active since November 2024, following the explicit reclassification of the brief bilateral arm shaking pattern as functional non-epileptic."
+    },
+    {
+      "request_id": "T2_retrospective_Q3",
+      "status": "indeterminate",
+      "evidence": [],
+      "reason": "Lamotrigine is never mentioned in the supplied letters, and there is no complete medication inventory confirming explicit non-initiation during the 180-day lookback timeframe (13 February 2025 to 11 August 2025)."
+    },
+    {
+      "request_id": "T2_retrospective_Q4",
+      "status": "indeterminate",
+      "evidence": [],
+      "reason": "No EEG test was requested or reported within the 180-day lookback timeframe (13 February 2025 to 11 August 2025). The prior mention that no EEG was requested occurred on 12 February 2025 (outside the timeframe), and there is no exhaustive investigation request inventory covering the relevant lookback period."
+    },
+    {
+      "request_id": "T2_retrospective_Q5",
+      "status": "eligible",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 865,
+          "end": 902,
+          "text": "I currently regard both as epileptic."
+        },
+        {
+          "letter_id": "L2",
+          "start": 454,
+          "end": 577,
+          "text": "The brief bilateral arm shaking is the same second pattern described as epileptic in February; it recurred on 21 May 2025."
+        },
+        {
+          "letter_id": "L2",
+          "start": 578,
+          "end": 726,
+          "text": "On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events."
+        }
+      ],
+      "reason": "The brief bilateral arm shaking pattern was documented and interpreted as epileptic in February 2025 (letter L1), recurred on 21 May 2025 within the 180-day lookback timeframe, and was explicitly reclassified on 20 June 2025 (prior to the 11 August 2025 index date) as functional non-epileptic events with confirmed pattern identity."
+    }
+  ]
+}

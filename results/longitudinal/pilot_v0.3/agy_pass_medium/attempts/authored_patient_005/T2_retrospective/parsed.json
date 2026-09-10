@@ -1,0 +1,993 @@
+{
+  "annotations": {
+    "assertions": [
+      {
+        "assertion_id": "L1_A1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 156,
+            "end": 251,
+            "text": "He has an established diagnosis of focal epilepsy following an ischemic stroke three years ago."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "established",
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal epilepsy following an ischemic stroke",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "L1_A2",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 253,
+            "end": 340,
+            "text": "He describes recurring focal motor seizures involving clonic jerking of the right hand."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "recurring",
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal motor seizures"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "qualitative",
+            "text": "recurring",
+            "count": null,
+            "period": null,
+            "events_per_cluster": null,
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "L1_A3",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 341,
+            "end": 458,
+            "text": "His most recent event occurred sometime around Christmas, though the exact calendar date was not noted by the family."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "sometime around Christmas",
+          "start": {
+            "earliest": "2024-12-20",
+            "latest": "2024-12-30"
+          },
+          "end": {
+            "earliest": "2024-12-20",
+            "latest": "2024-12-30"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal motor seizures"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L1_A4",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 459,
+            "end": 519,
+            "text": "He had a prior focal attack a few months ago in autumn 2024."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "in autumn 2024",
+          "start": {
+            "earliest": "2024-09-01",
+            "latest": "2024-11-30"
+          },
+          "end": {
+            "earliest": "2024-09-01",
+            "latest": "2024-11-30"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal motor seizures"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L1_A5",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 520,
+            "end": 572,
+            "text": "He reports no other seizure patterns or convulsions."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "complete",
+        "time": {
+          "text": "at consultation",
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "other seizure patterns or convulsions"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "all_reported",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L1_A6",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 573,
+            "end": 619,
+            "text": "He continues levetiracetam 500 mg twice daily."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "continues",
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "levetiracetam",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L1_A7",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 621,
+            "end": 711,
+            "text": "I requested a routine outpatient EEG today to reassess his baseline epileptiform activity."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "today",
+          "start": {
+            "earliest": "2025-02-01",
+            "latest": "2025-02-01"
+          },
+          "end": {
+            "earliest": "2025-02-01",
+            "latest": "2025-02-01"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L1_A8",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 712,
+            "end": 742,
+            "text": "It has not yet been performed."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "not yet",
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "pending",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L1_A9",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 770,
+            "end": 851,
+            "text": "In August 2024 we proposed adding lamotrigine, but that proposal was not enacted."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "In August 2024",
+          "start": {
+            "earliest": "2024-08-01",
+            "latest": "2024-08-31"
+          },
+          "end": {
+            "earliest": "2024-08-01",
+            "latest": "2024-08-31"
+          },
+          "kind": "decision",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "medication",
+          "name": "lamotrigine",
+          "status": "proposed",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L1_A10",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 852,
+            "end": 966,
+            "text": "Edward confirms he has never taken lamotrigine, including at any time before this consultation on 1 February 2025."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": "before this consultation on 1 February 2025",
+          "start": null,
+          "end": {
+            "earliest": "2025-02-01",
+            "latest": "2025-02-01"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "lamotrigine",
+          "status": "not_started",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L2_A1",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 126,
+            "end": 175,
+            "text": "His diagnosis remains post-stroke focal epilepsy."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "remains",
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "post-stroke focal epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "L2_A2",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 177,
+            "end": 256,
+            "text": "The routine outpatient EEG requested on 1 February was performed in late March."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "in late March",
+          "start": {
+            "earliest": "2025-03-20",
+            "latest": "2025-03-31"
+          },
+          "end": {
+            "earliest": "2025-03-20",
+            "latest": "2025-03-31"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "performed",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L2_A3",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 257,
+            "end": 404,
+            "text": "Its report became available to our clinical team in early April and demonstrated left frontotemporal sharp waves consistent with his focal lesion."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "in early April",
+          "start": {
+            "earliest": "2025-04-01",
+            "latest": "2025-04-10"
+          },
+          "end": {
+            "earliest": "2025-04-01",
+            "latest": "2025-04-10"
+          },
+          "kind": "result_available",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "result",
+          "result": "left frontotemporal sharp waves consistent with his focal lesion",
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L2_A4",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 405,
+            "end": 490,
+            "text": "He experienced another focal motor attack sometime in late spring, probably May 2025."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "uncertain",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "sometime in late spring, probably May 2025",
+          "start": {
+            "earliest": "2025-04-15",
+            "latest": "2025-05-31"
+          },
+          "end": {
+            "earliest": "2025-04-15",
+            "latest": "2025-05-31"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal motor attack"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L2_A5",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 491,
+            "end": 525,
+            "text": "He reports no other seizure types."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "complete",
+        "time": {
+          "text": "at review",
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "other seizure types"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "all_reported",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L2_A6",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 527,
+            "end": 588,
+            "text": "He continues levetiracetam 500 mg twice daily without change."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "continues",
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "medication",
+          "name": "levetiracetam",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L2_A7",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 613,
+            "end": 730,
+            "text": "Edward confirms that he first took lamotrigine on 20 May 2025 after a new treatment decision, and is still taking it."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "on 20 May 2025",
+          "start": {
+            "earliest": "2025-05-20",
+            "latest": "2025-05-20"
+          },
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "medication",
+          "name": "lamotrigine",
+          "status": "started",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L2_A8",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 731,
+            "end": 807,
+            "text": "He had never taken it before that date; the August proposal was not enacted."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": "before that date",
+          "start": null,
+          "end": {
+            "earliest": "2025-05-20",
+            "latest": "2025-05-20"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "medication",
+          "name": "lamotrigine",
+          "status": "not_started",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L2_A9",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 808,
+            "end": 941,
+            "text": "A separate repeat EEG was requested on 6 May, performed on 15 May, and its normal report became available to our team on 16 May 2025."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "requested on 6 May",
+          "start": {
+            "earliest": "2025-05-06",
+            "latest": "2025-05-06"
+          },
+          "end": {
+            "earliest": "2025-05-06",
+            "latest": "2025-05-06"
+          },
+          "kind": "decision",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L2_A10",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 808,
+            "end": 941,
+            "text": "A separate repeat EEG was requested on 6 May, performed on 15 May, and its normal report became available to our team on 16 May 2025."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "performed on 15 May",
+          "start": {
+            "earliest": "2025-05-15",
+            "latest": "2025-05-15"
+          },
+          "end": {
+            "earliest": "2025-05-15",
+            "latest": "2025-05-15"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "performed",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L2_A11",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 808,
+            "end": 941,
+            "text": "A separate repeat EEG was requested on 6 May, performed on 15 May, and its normal report became available to our team on 16 May 2025."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "became available to our team on 16 May 2025",
+          "start": {
+            "earliest": "2025-05-16",
+            "latest": "2025-05-16"
+          },
+          "end": {
+            "earliest": "2025-05-16",
+            "latest": "2025-05-16"
+          },
+          "kind": "result_available",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "result",
+          "result": "normal report",
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L3_A1",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 129,
+            "end": 239,
+            "text": "He reports continuing stability on levetiracetam, with his last focal motor seizure occurring over the summer."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "continuing",
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L3"
+        },
+        "content": {
+          "family": "medication",
+          "name": "levetiracetam",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L3_A2",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 129,
+            "end": 239,
+            "text": "He reports continuing stability on levetiracetam, with his last focal motor seizure occurring over the summer."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "over the summer",
+          "start": {
+            "earliest": "2025-06-01",
+            "latest": "2025-08-31"
+          },
+          "end": {
+            "earliest": "2025-06-01",
+            "latest": "2025-08-31"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal motor seizure"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      }
+    ],
+    "links": [
+      {
+        "link_id": "LINK_1",
+        "earlier_assertion": "L1_A1",
+        "later_assertion": "L2_A1",
+        "relation": "repeats",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 126,
+            "end": 175,
+            "text": "His diagnosis remains post-stroke focal epilepsy."
+          }
+        ],
+        "decision_time": null
+      },
+      {
+        "link_id": "LINK_2",
+        "earlier_assertion": "L1_A7",
+        "later_assertion": "L2_A2",
+        "relation": "request_performed",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 177,
+            "end": 256,
+            "text": "The routine outpatient EEG requested on 1 February was performed in late March."
+          }
+        ],
+        "decision_time": null
+      },
+      {
+        "link_id": "LINK_3",
+        "earlier_assertion": "L1_A7",
+        "later_assertion": "L2_A3",
+        "relation": "request_has_result",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 257,
+            "end": 404,
+            "text": "Its report became available to our clinical team in early April and demonstrated left frontotemporal sharp waves consistent with his focal lesion."
+          }
+        ],
+        "decision_time": null
+      },
+      {
+        "link_id": "LINK_4",
+        "earlier_assertion": "L1_A2",
+        "later_assertion": "L2_A4",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 405,
+            "end": 490,
+            "text": "He experienced another focal motor attack sometime in late spring, probably May 2025."
+          }
+        ],
+        "decision_time": null
+      },
+      {
+        "link_id": "LINK_5",
+        "earlier_assertion": "L1_A9",
+        "later_assertion": "L2_A8",
+        "relation": "plan_not_enacted",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 731,
+            "end": 807,
+            "text": "He had never taken it before that date; the August proposal was not enacted."
+          }
+        ],
+        "decision_time": null
+      },
+      {
+        "link_id": "LINK_6",
+        "earlier_assertion": "L2_A9",
+        "later_assertion": "L2_A10",
+        "relation": "request_performed",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 808,
+            "end": 941,
+            "text": "A separate repeat EEG was requested on 6 May, performed on 15 May, and its normal report became available to our team on 16 May 2025."
+          }
+        ],
+        "decision_time": null
+      },
+      {
+        "link_id": "LINK_7",
+        "earlier_assertion": "L2_A9",
+        "later_assertion": "L2_A11",
+        "relation": "request_has_result",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 808,
+            "end": 941,
+            "text": "A separate repeat EEG was requested on 6 May, performed on 15 May, and its normal report became available to our team on 16 May 2025."
+          }
+        ],
+        "decision_time": null
+      }
+    ]
+  },
+  "answers": [
+    {
+      "request_id": "T2_retrospective_Q1",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 126,
+          "end": 175,
+          "text": "His diagnosis remains post-stroke focal epilepsy."
+        },
+        {
+          "letter_id": "L2",
+          "start": 405,
+          "end": 490,
+          "text": "He experienced another focal motor attack sometime in late spring, probably May 2025."
+        },
+        {
+          "letter_id": "L3",
+          "start": 129,
+          "end": 239,
+          "text": "He reports continuing stability on levetiracetam, with his last focal motor seizure occurring over the summer."
+        }
+      ],
+      "reason": "Edward has documented focal epilepsy as of the index date. However, the focal motor attack in Letter 2 is dated vaguely to 'sometime in late spring, probably May 2025', which carries endpoint uncertainty that may fall before the start of the 90-day lookback window (3 May 2025), and Letter 3 notes a seizure 'over the summer' that could have occurred after the index date (in August). Because exact dates cannot be invented for vague seasons, it remains indeterminate whether a qualifying epileptic event occurred within the 90-day timeframe (2025-05-03 to 2025-07-31)."
+    },
+    {
+      "request_id": "T2_retrospective_Q2",
+      "status": "ineligible",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 520,
+          "end": 572,
+          "text": "He reports no other seizure patterns or convulsions."
+        },
+        {
+          "letter_id": "L2",
+          "start": 491,
+          "end": 525,
+          "text": "He reports no other seizure types."
+        }
+      ],
+      "reason": "The patient experiences only a single epileptic pattern (focal motor seizures). An explicit complete inventory refutes the existence of any other seizure types or patterns across the records, so there are not two distinct patterns active in the timeframe."
+    },
+    {
+      "request_id": "T2_retrospective_Q3",
+      "status": "eligible",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 613,
+          "end": 730,
+          "text": "Edward confirms that he first took lamotrigine on 20 May 2025 after a new treatment decision, and is still taking it."
+        }
+      ],
+      "reason": "Edward explicitly confirmed that he first took lamotrigine on 20 May 2025, which falls squarely within the supplied 180-day timeframe (2025-02-02 to 2025-07-31)."
+    },
+    {
+      "request_id": "T2_retrospective_Q4",
+      "status": "eligible",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 808,
+          "end": 941,
+          "text": "A separate repeat EEG was requested on 6 May, performed on 15 May, and its normal report became available to our team on 16 May 2025."
+        },
+        {
+          "letter_id": "L2",
+          "start": 942,
+          "end": 994,
+          "text": "This was a different test from the February request."
+        }
+      ],
+      "reason": "A separate repeat EEG was requested on 6 May 2025 (within the 180-day window starting 2025-02-02), and its normal report became clinically available to the team on 16 May 2025, which is prior to the index date of 2025-07-31."
+    },
+    {
+      "request_id": "T2_retrospective_Q5",
+      "status": "indeterminate",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 126,
+          "end": 175,
+          "text": "His diagnosis remains post-stroke focal epilepsy."
+        }
+      ],
+      "reason": "There is no documentation reinterpreting any previously documented epileptic event or pattern as non-epileptic by the index date. Under the query definition, absence of a revision alone is indeterminate."
+    }
+  ]
+}
