@@ -26,6 +26,7 @@ from clinical_extraction.paper.exect import (
     LOCAL_SLUGS,
     MODELS,
     OLLAMA_NUM_CTX_ENV,
+    RUNNABLE_MODELS,
     ModelSpec,
     apply_reasoning_effort,
     apply_temperature,
@@ -57,7 +58,7 @@ from clinical_extraction.paper.methods import (
     method_spec,
     split_for,
 )
-from clinical_extraction.paper.roster import model_by_slug
+from clinical_extraction.paper.roster import runnable_model_row
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     FrequencyLabelKind,
 )
@@ -481,7 +482,7 @@ def verify_gan(
         ),
     }
     if slug is not None:
-        result["model"] = model_by_slug(slug)["model"]
+        result["model"] = runnable_model_row(slug)["model"]
         result["model_slug"] = slug
     return result
 
@@ -536,10 +537,10 @@ def run_gan(
             encode_work_leaf=encode_work_leaf,
             encode_rows_path=encode_rows_path,
         )
-    if slug not in MODELS:
-        raise RuntimeError(f"{slug} is not a living paper model")
+    if slug not in RUNNABLE_MODELS:
+        raise RuntimeError(f"{slug} is not a runnable paper model")
     spec = apply_temperature(
-        apply_reasoning_effort(MODELS[slug], reasoning_effort),
+        apply_reasoning_effort(RUNNABLE_MODELS[slug], reasoning_effort),
         temperature,
     )
     if thinking is not None:

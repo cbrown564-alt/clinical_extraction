@@ -9,8 +9,9 @@ from typing import Any
 from clinical_extraction.core.paths import discover_repo_root, resolve_letter_benchmarks_root
 
 ROOT = discover_repo_root(start=Path(__file__))
-ROSTER_PATH = resolve_letter_benchmarks_root(root=ROOT) / "roster.json"
-
+BENCHMARKS_ROOT = resolve_letter_benchmarks_root(root=ROOT)
+ROSTER_PATH = BENCHMARKS_ROOT / "roster.json"
+LOCAL_LADDER_PATH = BENCHMARKS_ROOT / "local_size_ladder.json"
 
 
 def living_models() -> list[dict[str, Any]]:
@@ -38,3 +39,37 @@ def model_by_slug(slug: str) -> dict[str, Any]:
         if item["slug"] == slug:
             return item
     raise KeyError(f"unknown living model {slug}")
+
+
+def local_ladder_models() -> list[dict[str, Any]]:
+    """Return the non-living local size-and-era ladder."""
+
+    payload = json.loads(LOCAL_LADDER_PATH.read_text(encoding="utf-8"))
+    if payload.get("living") is not False:
+        raise RuntimeError("local size ladder must stay off the living roster")
+    models = list(payload["models"])
+    slugs = [item["slug"] for item in models]
+    if slugs != [
+        "qwen25_14b",
+        "llama31_8b",
+        "qwen35_9b",
+        "qwen36_35b",
+    ]:
+        raise RuntimeError(f"local size ladder drifted: {slugs}")
+    living = {item["slug"] for item in living_models()}
+    overlap = living.intersection(slugs)
+    if overlap:
+        raise RuntimeError(f"local size ladder overlaps living roster: {sorted(overlap)}")
+    return models
+
+
+def runnable_model_row(slug: str) -> dict[str, Any]:
+    """Return a living roster row or a local-ladder row."""
+
+    try:
+        return model_by_slug(slug)
+    except KeyError:
+        for item in local_ladder_models():
+            if item["slug"] == slug:
+                return item
+    raise KeyError(f"unknown runnable model {slug}")

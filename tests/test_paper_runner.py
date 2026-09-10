@@ -12,8 +12,10 @@ from clinical_extraction.paper.exect import (
     CANDIDATE_VERSION,
     GROK46_SLUG,
     HOSTED_SLUGS,
+    LADDER_MODELS,
     LOCAL_SLUGS,
     MODELS,
+    RUNNABLE_MODELS,
     apply_temperature,
     cell3_thinking_max_tokens,
     paper_work_suffix,
@@ -66,7 +68,14 @@ def test_living_roster_is_the_six_paper_models() -> None:
     assert living_models()[0]["method_identity"] is True
     assert tuple(MODELS) == tuple(slugs)
     assert HOSTED_SLUGS == ("grok46", "gpt56luna", "gemini37flash", "deepseek_v4_flash")
-    assert LOCAL_SLUGS == ("qwen38_27b", "gemma4_26b")
+    assert LOCAL_SLUGS == (
+        "qwen38_27b",
+        "gemma4_26b",
+        "qwen25_14b",
+        "llama31_8b",
+        "qwen35_9b",
+        "qwen36_35b",
+    )
     assert "gpt56sol" not in MODELS
     assert MODELS["grok46"].model == GROK46_MODEL == "xai/grok-4.6"
     assert MODELS["grok46"].credential_env == ("OPENROUTER_API_KEY",)
@@ -131,6 +140,29 @@ def test_living_roster_is_the_six_paper_models() -> None:
     assert apply_temperature(MODELS["grok46"], 1.0).temperature == 1.0
     with pytest.raises(RuntimeError, match="living paper setting"):
         apply_temperature(MODELS["grok46"], 0.0)
+
+
+def test_local_size_ladder_is_runnable_but_not_living() -> None:
+    assert "llama31_8b" not in MODELS
+    assert "qwen36_35b" not in MODELS
+    assert "llama2_13b" not in LADDER_MODELS
+    assert "llama2_13b" not in RUNNABLE_MODELS
+    assert tuple(LADDER_MODELS) == (
+        "qwen25_14b",
+        "llama31_8b",
+        "qwen35_9b",
+        "qwen36_35b",
+    )
+    assert RUNNABLE_MODELS["qwen25_14b"].model == "ollama_chat/qwen2.5:14b"
+    assert RUNNABLE_MODELS["llama31_8b"].model == "ollama_chat/llama3.1:8b"
+    assert RUNNABLE_MODELS["qwen35_9b"].model == "ollama_chat/qwen3.5:9b"
+    assert RUNNABLE_MODELS["qwen36_35b"].model == "ollama_chat/qwen3.6:35b"
+    assert RUNNABLE_MODELS["qwen36_35b"].num_ctx == 16384
+    payload = verify_gan("gan_llm_extract_encode_select", "test450", "llama31_8b")
+    assert payload["ok"] is True
+    assert payload["row_policy"] == "aggregate_only"
+    assert payload["model"] == "ollama_chat/llama3.1:8b"
+    assert payload["local"] == list(LOCAL_SLUGS)
 
 
 def test_sol_paper_lm_uses_vercel_ai_gateway(monkeypatch: pytest.MonkeyPatch) -> None:

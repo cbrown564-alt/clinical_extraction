@@ -1,0 +1,36 @@
+{
+  "schema_version": "paper_experiments.local_size_ladder.v1",
+  "role": "size_and_era_local_ladder",
+  "living": false,
+  "claim_boundary": "Local-model ablation set. Not a living six-model roster swap. Not Table 1. Llama 2 13B is excluded because its native context is 4096 tokens.",
+  "models": [
+    {
+      "slug": "qwen25_14b",
+      "model": "ollama_chat/qwen2.5:14b",
+      "label": "Qwen 2.5 14B",
+      "route": "local",
+      "num_ctx": 32768
+    },
+    {
+      "slug": "llama31_8b",
+      "model": "ollama_chat/llama3.1:8b",
+      "label": "Llama 3.1 8B",
+      "route": "local",
+      "num_ctx": 32768
+    },
+    {
+      "slug": "qwen35_9b",
+      "model": "ollama_chat/qwen3.5:9b",
+      "label": "Qwen 3.5 9B",
+      "route": "local",
+      "num_ctx": 32768
+    },
+    {
+      "slug": "qwen36_35b",
+      "model": "ollama_chat/qwen3.6:35b",
+      "label": "Qwen 3.6 35B",
+      "route": "local",
+      "num_ctx": 16384
+    }
+  ]
+}

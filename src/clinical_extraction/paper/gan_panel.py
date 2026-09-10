@@ -24,7 +24,11 @@ from clinical_extraction.paper.methods import (
     method_spec,
     split_for,
 )
-from clinical_extraction.paper.roster import living_models, model_by_slug
+from clinical_extraction.paper.roster import (
+    living_models,
+    model_by_slug,
+    runnable_model_row,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
     write_jsonl_rows,
@@ -102,7 +106,7 @@ def promote_gan(method: str, slug: str, split: str) -> dict[str, Any]:
         raise RuntimeError("promote-gan is Gan only")
     split_for(method, split)
     holdout = holdout_is_aggregate_only(split)
-    model = model_by_slug(slug)
+    model = runnable_model_row(slug)
     source = living_work_root(method, slug, split)
     rows_path = source / "rows.jsonl"
     comparison_path = source / "comparison.json"
