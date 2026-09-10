@@ -44,25 +44,26 @@ export function aucFor(rows: { probability: number; target: number }[]): number 
   if (!positives.length || !negatives.length) return null;
   return positives.reduce((sum, p) => sum + negatives.reduce((s, n) => s + (p.probability > n.probability ? 1 : p.probability === n.probability ? .5 : 0), 0), 0) / (positives.length * negatives.length);
 }
-export function fitSyntheticModel(includeNotes: boolean) {
-  const eligible = syntheticPatients.filter(p => targetFor(p) !== null);
+export function fitSyntheticModel(includeNotes: boolean, options = { patients: syntheticPatients, features: featuresFor, target: targetFor }) {
+  const { patients, features, target } = options;
+  const eligible = patients.filter(p => target(p) !== null);
   const train = eligible.filter(p => p.partition === "train");
   const test = eligible.filter(p => p.partition === "test");
-  const raw = train.map(p => featuresFor(p, includeNotes));
+  const raw = train.map(p => features(p, includeNotes));
   const means = raw[0].map((_, j) => raw.reduce((sum, x) => sum + x[j], 0) / raw.length);
   const scales = means.map((mean, j) => Math.sqrt(raw.reduce((sum, x) => sum + (x[j] - mean) ** 2, 0) / raw.length) || 1);
-  const vector = (p: SyntheticPatient) => [1, ...featuresFor(p, includeNotes).map((x, j) => (x - means[j]) / scales[j])];
+  const vector = (p: SyntheticPatient) => [1, ...features(p, includeNotes).map((x, j) => (x - means[j]) / scales[j])];
   const weights = Array(means.length + 1).fill(0) as number[];
   const sigmoid = (z: number) => 1 / (1 + Math.exp(-Math.max(-30, Math.min(30, z))));
   const predict = (x: number[]) => sigmoid(x.reduce((sum, value, j) => sum + value * weights[j], 0));
   const vectors = train.map(vector);
   for (let step = 0; step < 700; step++) {
     const gradient = weights.map(() => 0);
-    vectors.forEach((x, i) => { const error = predict(x) - targetFor(train[i])!; x.forEach((value, j) => { gradient[j] += error * value / train.length; }); });
+    vectors.forEach((x, i) => { const error = predict(x) - target(train[i])!; x.forEach((value, j) => { gradient[j] += error * value / train.length; }); });
     weights.forEach((w, j) => { weights[j] -= .08 * (gradient[j] + (j ? .04 * w : 0)); });
   }
-  const rows = test.map(p => ({ patient: p, probability: predict(vector(p)), target: targetFor(p)! }));
-  return { train, test, rows, weights, auc: aucFor(rows), excluded: syntheticPatients.length - eligible.length, featureNames: ["Age", "Medication count", ...(includeNotes ? ["Latest recorded frequency", "Change in frequency", "Missing-frequency visits"] : [])] };
+  const rows = test.map(p => ({ patient: p, probability: predict(vector(p)), target: target(p)! }));
+  return { train, test, rows, weights, auc: aucFor(rows), excluded: patients.length - eligible.length, featureNames: ["Age", "Medication count", ...(includeNotes ? ["Latest recorded frequency", "Change in frequency", "Missing-frequency visits"] : [])] };
 }
 export function confusionFor(rows: { probability: number; target: number }[], threshold: number) {
   return rows.reduce((c, r) => { if (r.probability >= threshold) { if (r.target) c.tp++; else c.fp++; } else { if (r.target) c.fn++; else c.tn++; } return c; }, { tp: 0, fp: 0, fn: 0, tn: 0 });

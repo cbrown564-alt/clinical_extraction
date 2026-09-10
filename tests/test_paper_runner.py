@@ -66,7 +66,14 @@ def test_living_roster_is_the_six_paper_models() -> None:
         "gemma4_26b",
     ]
     assert living_models()[0]["method_identity"] is True
-    assert tuple(MODELS) == tuple(slugs)
+    assert list(MODELS)[:6] == slugs
+    assert "deepseek_v41_flash" not in slugs
+    assert MODELS["deepseek_v41_flash"].model == "deepseek/deepseek-flash"
+    assert MODELS["deepseek_v41_flash"].label == "DeepSeek V4.1 Flash"
+    assert MODELS["deepseek_v41_flash"].credential_env == ("DEEPSEEK_API_KEY",)
+    assert MODELS["deepseek_v41_flash"].thinking_type == "enabled"
+    assert MODELS["deepseek_v41_flash"].reasoning_effort == "low"
+    assert MODELS["deepseek_v41_flash"].timeout == 600
     assert HOSTED_SLUGS == ("grok46", "gpt56luna", "gemini37flash", "deepseek_v4_flash")
     assert LOCAL_SLUGS == (
         "qwen38_27b",

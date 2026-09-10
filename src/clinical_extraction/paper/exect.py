@@ -37,7 +37,7 @@ from clinical_extraction.paper.exect_score import (
 )
 from clinical_extraction.paper.lm import build_paper_lm, resolve_paper_api_base
 from clinical_extraction.paper.methods import holdout_is_aggregate_only
-from clinical_extraction.paper.roster import living_models, local_ladder_models
+from clinical_extraction.paper.roster import extra_models, living_models, local_ladder_models
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
     load_letters_for_split,
@@ -75,6 +75,7 @@ LIVING_LOCAL_SLUGS = ("qwen38_27b", "gemma4_26b")
 LOCAL_SLUGS = LIVING_LOCAL_SLUGS + tuple(
     item["slug"] for item in local_ladder_models()
 )
+DEEPSEEK_FLASH_SLUGS = frozenset({"deepseek_v4_flash", "deepseek_v41_flash"})
 GROK46_SLUG = "grok46"
 WORK_ROOT = ROOT / "experiments/paper/exect_llm_pre_post"
 HOLDOUT_SCRATCH = ROOT / "scratch/holdout/paper/exect_llm_pre_post"
@@ -198,7 +199,7 @@ class ModelSpec:
 
 
 REASONING_EFFORT_SLUGS = frozenset(
-    {"grok46", "gpt56luna", "gemini37flash", "deepseek_v4_flash"}
+    {"grok46", "gpt56luna", "gemini37flash", *DEEPSEEK_FLASH_SLUGS}
 )
 
 
@@ -290,8 +291,9 @@ def _spec_for(item: Mapping[str, Any]) -> ModelSpec:
         "gpt56luna": ("OPENAI_API_KEY",),
         "gemini37flash": ("OPENROUTER_API_KEY",),
         "deepseek_v4_flash": ("DEEPSEEK_API_KEY",),
+        "deepseek_v41_flash": ("DEEPSEEK_API_KEY",),
     }
-    hosted_timeout = 600 if slug in {"deepseek_v4_flash", "grok46"} else 300
+    hosted_timeout = 600 if slug in {*DEEPSEEK_FLASH_SLUGS, "grok46"} else 300
     if item.get("num_ctx") is not None:
         num_ctx = int(item["num_ctx"])
     elif slug == "qwen38_27b":
@@ -305,22 +307,24 @@ def _spec_for(item: Mapping[str, Any]) -> ModelSpec:
         model=str(item["model"]),
         label=str(item["label"]),
         temperature=1.0 if slug == "gpt56luna" else 0.0,
-        max_tokens=64000 if slug == "deepseek_v4_flash" else 16000,
+        max_tokens=64000 if slug in DEEPSEEK_FLASH_SLUGS else 16000,
         route=str(item["route"]),
         credential_env=credentials.get(slug, ()),
         timeout=900 if not hosted else hosted_timeout,
         num_ctx=num_ctx,
         reasoning_effort=(
             "low"
-            if slug in {"grok46", "gpt56luna", "gemini37flash", "deepseek_v4_flash"}
+            if slug in {"grok46", "gpt56luna", "gemini37flash", *DEEPSEEK_FLASH_SLUGS}
             else None
         ),
-        thinking_type="enabled" if slug == "deepseek_v4_flash" else None,
+        thinking_type="enabled" if slug in DEEPSEEK_FLASH_SLUGS else None,
         provider_revision=item.get("provider_revision"),
     )
 
 
-MODELS: dict[str, ModelSpec] = {item["slug"]: _spec_for(item) for item in living_models()}
+MODELS: dict[str, ModelSpec] = {
+    item["slug"]: _spec_for(item) for item in [*living_models(), *extra_models()]
+}
 LADDER_MODELS: dict[str, ModelSpec] = {
     item["slug"]: _spec_for(item) for item in local_ladder_models()
 }

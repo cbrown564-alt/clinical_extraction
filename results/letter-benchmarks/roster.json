@@ -41,6 +41,16 @@
       "route": "local"
     }
   ],
+  "runnable": [
+    {
+      "slug": "deepseek_v41_flash",
+      "model": "deepseek/deepseek-flash",
+      "label": "DeepSeek V4.1 Flash",
+      "route": "hosted",
+      "paper_cell": false,
+      "provider_revision": "DeepSeek-V4.1-Flash-2026-09-10"
+    }
+  ],
   "historical": [
     {
       "slug": "gpt56sol",

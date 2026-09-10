@@ -45,7 +45,7 @@ export default function CasePicker({ value, onChange }: { value: number; onChang
       <ChevronDown size={16} aria-hidden />
     </button>
     {open && <div className={styles.caseMenu}>
-      <div className={styles.caseMenuHeading}>Explore the method <span>5 guided cases</span></div>
+      <div className={styles.caseMenuHeading}>Select a walkthrough <span>5 sample cases</span></div>
       <div id={listId} role="listbox" aria-label="Case study" onKeyDown={e => {
         const index = options.current.findIndex(el => el === document.activeElement);
         let next = index;

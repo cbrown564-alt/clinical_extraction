@@ -1,0 +1,84 @@
+{
+  "tool": "built-in image_gen",
+  "background": "#f6f7f5",
+  "assets": [
+    {
+      "original": "hero-clinic-v1",
+      "name": "hero-clinic-v2",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-37ad41fa-5631-44ab-b220-7918d80a5a90.png",
+      "prompt": "Edit this exact illustration, preserving all foreground subjects, composition, framing, aspect ratio, paper textures, colours, objects, connectors, and all text verbatim except the specified deletion. Replace ONLY the background and floor with a seamless flat pale grey-green #f6f7f5 (RGB 246,247,245), matching a website background. No stark white rectangle, no vignette, no horizon. Soft contact shadows should fade smoothly into #f6f7f5, and all outer edges should be that exact colour. Do not redesign or add anything."
+    },
+    {
+      "original": "research-value-trials-v1",
+      "name": "research-value-trials-v2",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-39134cc0-0fa6-49b6-b6de-e07d91567ee4.png",
+      "prompt": "Edit this exact illustration, preserving all foreground subjects, composition, framing, aspect ratio, paper textures, colours, objects, connectors, and all text verbatim except the specified deletion. Replace ONLY the background and floor with a seamless flat pale grey-green #f6f7f5 (RGB 246,247,245), matching a website background. No stark white rectangle, no vignette, no horizon. Soft contact shadows should fade smoothly into #f6f7f5, and all outer edges should be that exact colour. Do not redesign or add anything."
+    },
+    {
+      "original": "research-value-registry-v1",
+      "name": "research-value-registry-v2",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-7892dcc0-eded-4a7f-b3c8-553a4eddf1f8.png",
+      "prompt": "Edit this exact illustration, preserving all foreground subjects, composition, framing, aspect ratio, paper textures, colours, objects, connectors, and all text verbatim except the specified deletion. Replace ONLY the background and floor with a seamless flat pale grey-green #f6f7f5 (RGB 246,247,245), matching a website background. No stark white rectangle, no vignette, no horizon. Soft contact shadows should fade smoothly into #f6f7f5, and all outer edges should be that exact colour. Do not redesign or add anything."
+    },
+    {
+      "original": "research-value-risk-v1",
+      "name": "research-value-risk-v2",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-1e808a78-d82d-4db4-92b0-669b1b901872.png",
+      "prompt": "Edit this exact illustration, preserving all foreground subjects, composition, framing, aspect ratio, paper textures, colours, objects, connectors, and all text verbatim except the specified deletion. Replace ONLY the background and floor with a seamless flat pale grey-green #f6f7f5 (RGB 246,247,245), matching a website background. No stark white rectangle, no vignette, no horizon. Soft contact shadows should fade smoothly into #f6f7f5, and all outer edges should be that exact colour. Do not redesign or add anything."
+    },
+    {
+      "original": "challenge-time-v1",
+      "name": "challenge-time-v2",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-970ac261-61fd-4199-8159-169557dff781.png",
+      "prompt": "Edit this exact illustration, preserving all foreground subjects, composition, framing, aspect ratio, paper textures, colours, objects, connectors, and all text verbatim except the specified deletion. Replace ONLY the background and floor with a seamless flat pale grey-green #f6f7f5 (RGB 246,247,245), matching a website background. No stark white rectangle, no vignette, no horizon. Soft contact shadows should fade smoothly into #f6f7f5, and all outer edges should be that exact colour. Do not redesign or add anything."
+    },
+    {
+      "original": "challenge-arithmetic-v1",
+      "name": "challenge-arithmetic-v2",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-8e7de3d2-fd39-4a7b-853a-8b244c4879e5.png",
+      "prompt": "Edit this exact illustration, preserving all foreground subjects, composition, framing, aspect ratio, paper textures, colours, objects, connectors, and all text verbatim except the specified deletion. Replace ONLY the background and floor with a seamless flat pale grey-green #f6f7f5 (RGB 246,247,245), matching a website background. No stark white rectangle, no vignette, no horizon. Soft contact shadows should fade smoothly into #f6f7f5, and all outer edges should be that exact colour. Do not redesign or add anything."
+    },
+    {
+      "original": "challenge-context-v1",
+      "name": "challenge-context-v2",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-f7b74321-ede4-403a-b184-9c3492b8a94e.png",
+      "prompt": "Edit this exact illustration, preserving all foreground subjects, composition, framing, aspect ratio, paper textures, colours, objects, connectors, and all text verbatim except the specified deletion. Replace ONLY the background and floor with a seamless flat pale grey-green #f6f7f5 (RGB 246,247,245), matching a website background. No stark white rectangle, no vignette, no horizon. Soft contact shadows should fade smoothly into #f6f7f5, and all outer edges should be that exact colour. Do not redesign or add anything."
+    },
+    {
+      "original": "past-rules-untitled-v1",
+      "name": "past-rules-untitled-v2",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-11206dad-8a4e-4350-b023-93788a1c693a.png",
+      "prompt": "Edit this exact illustration, preserving all foreground subjects, composition, framing, aspect ratio, paper textures, colours, objects, connectors, and all text verbatim except the specified deletion. Replace ONLY the background and floor with a seamless flat pale grey-green #f6f7f5 (RGB 246,247,245), matching a website background. No stark white rectangle, no vignette, no horizon. Soft contact shadows should fade smoothly into #f6f7f5, and all outer edges should be that exact colour. Do not redesign or add anything. Remove the tiny 'Illustrative approach' note at the bottom entirely; keep all other text unchanged."
+    },
+    {
+      "original": "past-trained-untitled-v1",
+      "name": "past-trained-untitled-v2",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-494766a2-96fe-4ceb-bc53-20cb8d50c74d.png",
+      "prompt": "Edit this exact illustration, preserving all foreground subjects, composition, framing, aspect ratio, paper textures, colours, objects, connectors, and all text verbatim except the specified deletion. Replace ONLY the background and floor with a seamless flat pale grey-green #f6f7f5 (RGB 246,247,245), matching a website background. No stark white rectangle, no vignette, no horizon. Soft contact shadows should fade smoothly into #f6f7f5, and all outer edges should be that exact colour. Do not redesign or add anything. Remove the tiny 'Illustrative approach' note at the bottom entirely; keep all other text unchanged."
+    },
+    {
+      "original": "past-prompted-untitled-v1",
+      "name": "past-prompted-untitled-v2",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-afb4a625-5c73-4b5a-9768-070045d4d377.png",
+      "prompt": "Edit this exact illustration, preserving all foreground subjects, composition, framing, aspect ratio, paper textures, colours, objects, connectors, and all text verbatim except the specified deletion. Replace ONLY the background and floor with a seamless flat pale grey-green #f6f7f5 (RGB 246,247,245), matching a website background. No stark white rectangle, no vignette, no horizon. Soft contact shadows should fade smoothly into #f6f7f5, and all outer edges should be that exact colour. Do not redesign or add anything. Remove the tiny 'Illustrative approach' note at the bottom entirely; keep all other text unchanged."
+    },
+    {
+      "original": "research-overview-v2",
+      "name": "research-overview-v3",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-054e1172-6040-4119-b36d-3a62ac243833.png",
+      "prompt": "Edit this exact illustration, preserving all foreground subjects, composition, framing, aspect ratio, paper textures, colours, objects, connectors, and all text verbatim except the specified deletion. Replace ONLY the background and floor with a seamless flat pale grey-green #f6f7f5 (RGB 246,247,245), matching a website background. No stark white rectangle, no vignette, no horizon. Soft contact shadows should fade smoothly into #f6f7f5, and all outer edges should be that exact colour. Do not redesign or add anything."
+    },
+    {
+      "original": "research-extract-v2",
+      "name": "research-extract-v3",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-db90a016-560f-44b4-8dbb-85782246f30c.png",
+      "prompt": "Edit this exact illustration, preserving all foreground subjects, composition, framing, aspect ratio, paper textures, colours, objects, connectors, and all text verbatim except the specified deletion. Replace ONLY the background and floor with a seamless flat pale grey-green #f6f7f5 (RGB 246,247,245), matching a website background. No stark white rectangle, no vignette, no horizon. Soft contact shadows should fade smoothly into #f6f7f5, and all outer edges should be that exact colour. Do not redesign or add anything. Remove the entire 'Time: February' and 'Time: April' field rows from Fact 1 and Fact 2. Leave the Evidence quotes and Normalised labels unchanged, and preserve the month mentions inside quotations and rationale. Keep all other text and diagram details unchanged."
+    },
+    {
+      "original": "research-decide-v1",
+      "name": "research-decide-v2",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-84e77a57-cde0-47d3-9b93-69a1301bdcdc.png",
+      "prompt": "Edit this exact illustration, preserving all foreground subjects, composition, framing, aspect ratio, paper textures, colours, objects, connectors, and all text verbatim except the specified deletion. Replace ONLY the background and floor with a seamless flat pale grey-green #f6f7f5 (RGB 246,247,245), matching a website background. No stark white rectangle, no vignette, no horizon. Soft contact shadows should fade smoothly into #f6f7f5, and all outer edges should be that exact colour. Do not redesign or add anything. Remove the entire 'Time: February' and 'Time: April' field rows from Fact 1 and Fact 2. Leave the Evidence quotes and Normalised labels unchanged, and preserve the month mentions inside quotations and rationale. Keep all other text and diagram details unchanged."
+    }
+  ]
+}

@@ -150,7 +150,7 @@ def _max_tokens_for(
     slug: str | None = None,
     reasoning_effort: str | None = None,
 ) -> int:
-    if slug == "deepseek_v4_flash":
+    if slug in {"deepseek_v4_flash", "deepseek_v41_flash"}:
         return DEEPSEEK_MAX_TOKENS
     if method == "gan_llm_only" and reasoning_effort == "high":
         return HIGH_REASONING_GAN_LLM_ONLY_MAX_TOKENS
@@ -544,10 +544,10 @@ def run_gan(
         temperature,
     )
     if thinking is not None:
-        if slug not in {"deepseek_v4_flash", "qwen38_27b"}:
+        if slug not in {"deepseek_v4_flash", "deepseek_v41_flash", "qwen38_27b"}:
             raise RuntimeError("thinking toggle is DeepSeek or Qwen only")
         spec = replace(spec, thinking_type=thinking)
-    elif slug == "deepseek_v4_flash" and spec.reasoning_effort:
+    elif slug in {"deepseek_v4_flash", "deepseek_v41_flash"} and spec.reasoning_effort:
         spec = replace(spec, thinking_type="enabled")
     holdout = holdout_is_aggregate_only(split)
     machine = gan_machine_split(split)

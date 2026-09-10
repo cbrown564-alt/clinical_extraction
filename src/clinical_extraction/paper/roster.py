@@ -32,10 +32,21 @@ def living_models() -> list[dict[str, Any]]:
     return living
 
 
-def model_by_slug(slug: str) -> dict[str, Any]:
-    """Return one living roster row."""
+def extra_models() -> list[dict[str, Any]]:
+    """Return runnable models that are not living paper cells."""
 
-    for item in living_models():
+    payload = json.loads(ROSTER_PATH.read_text(encoding="utf-8"))
+    extra = list(payload.get("runnable") or [])
+    slugs = [item["slug"] for item in extra]
+    if slugs != ["deepseek_v41_flash"]:
+        raise RuntimeError(f"runnable roster drifted: {slugs}")
+    return extra
+
+
+def model_by_slug(slug: str) -> dict[str, Any]:
+    """Return one living or extra runnable roster row."""
+
+    for item in [*living_models(), *extra_models()]:
         if item["slug"] == slug:
             return item
     raise KeyError(f"unknown living model {slug}")
@@ -64,7 +75,7 @@ def local_ladder_models() -> list[dict[str, Any]]:
 
 
 def runnable_model_row(slug: str) -> dict[str, Any]:
-    """Return a living roster row or a local-ladder row."""
+    """Return a living, extra-runnable, or local-ladder roster row."""
 
     try:
         return model_by_slug(slug)

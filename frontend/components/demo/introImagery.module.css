@@ -1,14 +1,25 @@
-.imageLink { display: block; background: white; }
+.imageLink { display: block; }
 .imageLink:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
 .image { display: block; width: 100%; height: auto; }
 .hero { display: grid; grid-template-columns: 1fr 1.15fr; align-items: center; gap: 32px; padding-bottom: 56px; }
 .hero p { margin-bottom: 24px; }
-.challenges { padding: 40px 0; border-block: 1px solid var(--line); }
-.challenges > p { margin-top: 12px; }
-.challengeGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 28px; }
-.challenge { min-width: 0; }
-.challenge p { font-size: .875rem; margin-top: 16px; }
-.challenge h3 { font-size: 1.25rem; margin-bottom: 12px; }
+.challenges { padding: 44px 0; border-block: 1px solid var(--line); }
+.challenges > h2 { font-size: 1.625rem; font-weight: 500; letter-spacing: -.02em; }
+.challenges > p { margin-top: 16px; }
+.valueBeat { padding: 44px 0; border-block: 1px solid var(--line); }
+.valueBeat header { max-width: 75ch; margin-bottom: 24px; }
+.valueBeat header h2 { font-size: 1.625rem; font-weight: 500; letter-spacing: -.02em; }
+.valueBeat header p { margin-top: 8px; font-size: 1rem; color: var(--muted); line-height: 1.6; }
+.valueGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.valueCard { min-width: 0; }
+.valueCard > .imageLink { margin-bottom: 20px; }
+.valueCard strong { display: block; font-size: 1rem; font-weight: 500; color: var(--ink); margin-bottom: 8px; }
+.valueCard p { font-size: .875rem; color: var(--muted); line-height: 1.55; }
+.challengeGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; margin-top: 28px; }
+.challenge { min-width: 0; display: flex; flex-direction: column; }
+.challenge > .imageLink { margin-bottom: 20px; }
+.challengeCopy h3 { font-size: 1.125rem; font-weight: 500; margin-bottom: 8px; color: var(--ink); }
+.challengeCopy p { font-size: .875rem; line-height: 1.55; color: var(--muted); margin: 0; }
 .section { padding: 48px 0; }
 .section > header { max-width: 75ch; margin-bottom: 24px; }
 .section > header p { margin-top: 12px; }
@@ -29,4 +40,4 @@
 .recordText ul { padding-left: 24px; }
 .recordText li { margin: 10px 0; line-height: 1.65; }
 @media (max-width: 900px) { .methods { grid-template-columns: 1fr; gap: 48px; } .method { max-width: 620px; margin-inline: auto; } .method header { min-height: 0; margin-bottom: 20px; } }
-@media (max-width: 760px) { .hero, .challengeGrid { grid-template-columns: 1fr; gap: 24px; } .hero { padding-bottom: 32px; } .section { padding-block: 32px; } .stage { margin-top: 36px; } }
+@media (max-width: 760px) { .hero, .challengeGrid, .valueGrid { grid-template-columns: 1fr; gap: 28px; } .hero { padding-bottom: 32px; } .section { padding-block: 32px; } .stage { margin-top: 36px; } }

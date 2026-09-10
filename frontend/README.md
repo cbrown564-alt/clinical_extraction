@@ -5,8 +5,9 @@ research pipelines. On Vercel, the Next.js API routes at `/api/*` serve the bund
 demonstration fixtures. Local development forwards those routes to the Python API
 when it is running.
 
-The workbench demonstration runs from the bundled fixtures in `public/mock-data/`. A public
-clone does not need the local letter corpus.
+The public demonstration is `/demo`. The workbench at `/workbench` is the
+deeper inspection view. Both run from the bundled fixtures in
+`public/mock-data/`. A public clone does not need the local letter corpus.
 
 ## Viva demo
 
@@ -14,7 +15,7 @@ Application introductions are designed for narrated presentation: short headline
 visual examples and working interactions carry the main story. Keep qualifications
 and literature context in **Presenter notes & sources**. Cohort uses a patient
 population, longitudinal analysis a selectable visit history, and prediction a
-time boundary and adjustable threshold. Preserve this distinction when extending
+time boundary and adjustable review capacity. Preserve this distinction when extending
 the pages; avoid repeating prose cards or definition tables.
 
 Run `npm run dev` from `frontend`, then open
@@ -57,16 +58,25 @@ Suggested walkthrough:
    with all 72 patients and offers a return to the workflow. Background: supplied
    Longitudinal Clinical Data Literature Review (7 September 2026, pp. 3, 7–8).
 
-6. **Build a prediction** starts with a guided page covering the prediction time,
-   outcome definition, earlier-only features, patient split and evaluation. A
-   threshold illustration distinguishes a score from a decision. It draws on the
-   supplied Clinical Text to Risk Prediction Review (7 September 2026).
-   The explorer fits a toy logistic regression in the browser. Compare
-   structured fields with note-derived features, inspect inputs, and adjust the
-   threshold. Features end at month 6; the outcome is month-12 documentation.
-   Patient partitions and training-only standardisation prevent leakage. Unknown
-   outcomes are excluded from both model comparisons. This simulation is not a
-   clinical performance result, and its notes have not been run through the LLM.
+6. **Risk stratification** uses seizure history as an input to a separate
+   emergency-care outcome: seizure-related ED attendance or admission during
+   months 6–18, using information available through month 6. The introduction
+   compares two fictional histories; the explorer compares structured-only and
+   note-enhanced logistic regressions on the same patients. Adjust review capacity,
+   inspect ranking changes, and read the supporting notes. Counts show subsequent
+   events captured, events outside the list, and reviews without an event; these
+   are not estimates of events prevented. AUC, Brier score and a limited aggregate
+   calibration comparison are available in the model details.
+   Emergency simulation v1 (lib/emergencyRisk.ts, seed 91026) extends the existing
+   profiles without changing cohort/timeline fixtures. Its arbitrary outcome
+   formula intentionally uses note features. Missing emergency follow-up excludes
+   patients from both model comparisons; missing predictors remain visible with
+   model-only placeholders and missingness indicators. Patient partitions and
+   training-only standardisation preserve the prediction cutoff. No extraction
+   model was run and no clinical performance or validation is claimed.
+   The [2025 emergency-care/death prediction protocol](https://pubmed.ncbi.nlm.nih.gov/41212874/)
+   motivates the use case, not the simulation's coefficients. Links to SUDEP and
+   medication-withdrawal recurrence studies describe separate applications.
 7. Choose **A batch of letters** from the pipeline toolbar, filter a category, and inspect a source letter.
    Returning to the batch preserves the filters. Export the selected records as
    JSON with source text, evidence, provenance and an explicit review status.
@@ -132,7 +142,7 @@ npm ci
 npm run dev
 ```
 
-Open [http://127.0.0.1:3000/workbench](http://127.0.0.1:3000/workbench).
+Open [http://127.0.0.1:3000/demo](http://127.0.0.1:3000/demo). The workbench is at `/workbench`.
 
 On Vercel, the fixture files under `public/mock-data` are read by the static API
 routes at build/runtime and are not exposed as direct browser file routes.

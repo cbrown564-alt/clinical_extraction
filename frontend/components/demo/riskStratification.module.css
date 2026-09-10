@@ -1,0 +1,70 @@
+.explorer { color: var(--ink); }
+.heading { margin-bottom: 26px; }
+.heading h1 { scroll-margin-top: 100px; }
+
+.heading button { flex-shrink: 0; }
+.toolbar { gap: 36px; }
+.capacity { flex: 1; max-width: 380px; }
+.capacity > span { display: flex; justify-content: space-between; gap: 16px; }
+.capacity strong { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+.capacity input { width: 100%; height: 42px; margin: 0; accent-color: #477d70; cursor: pointer; }
+.outcomes { display: flex; align-items: center; gap: 32px; padding: 24px 0; margin-bottom: 8px; }
+.outcomes > div { flex: 1; }
+.outcomes strong { display: block; font-size: 2.75rem; font-weight: 400; color: var(--accent); line-height: 1.1; font-variant-numeric: tabular-nums; }
+.outcomes small { font-size: 1rem; color: var(--muted); font-weight: 400; }
+.outcomes span { display: block; font-size: .75rem; color: var(--muted); line-height: 1.5; margin-top: 8px; }
+.workspace { display: grid; grid-template-columns: minmax(0,1.6fr) minmax(300px,1fr); gap: 28px; align-items: start; }
+.workspace > * { min-width: 0; }
+.ranking { padding-top: 8px; }
+.panelHeading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.panelHeading h2 { margin: 0; }
+.panelHeading > span { font-size: .75rem; color: var(--muted); }
+.columnLabels, .patient { display: grid; grid-template-columns: 36px 1fr minmax(100px,1.2fr) 86px; gap: 12px; align-items: center; }
+.columnLabels { padding: 12px; border-block: 1px solid var(--line); color: var(--muted); font-size: .6875rem; }
+.columnLabels > :last-child { text-align: right; }
+.list { max-height: 484px; overflow-y: auto; padding: 2px; }
+.patient { text-align: left; width: 100%; min-height: 48px; padding: 10px; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--ink); font-size: .8125rem; cursor: pointer; font-variant-numeric: tabular-nums; transition: background 150ms ease-out; }
+.patient strong { font-weight: 500; }
+.patient:hover { background: #eef5ef; }
+.patient[aria-pressed="true"] { background: #eef5ef; outline: 1px solid #518d7b; outline-offset: -1px; border-radius: 4px; }
+.patient:focus-visible, .explorer summary:focus-visible, .toolbar select:focus-visible, .capacity input:focus-visible { outline: 2px solid #326353; outline-offset: 2px; }
+.rank { color: var(--muted); }
+.risk { display: flex; align-items: center; gap: 12px; }
+.risk > span:last-child { min-width: 32px; text-align: right; }
+.track { flex: 1; height: 6px; background: #e5eae6; border-radius: 2px; overflow: hidden; }
+.track i { display: block; height: 100%; background: #80968b; }
+.patient[data-review="true"] .track i { background: #477d70; }
+.shift { justify-self: end; color: var(--muted); }
+.shift[data-direction="up"] { color: #326353; }
+.cutoff { padding: 10px; font-size: .6875rem; background: #edf0ed; color: #53635b; border-block: 1px solid var(--line); }
+.explorer .listNote { font-size: .75rem; margin-top: 14px; line-height: 1.8; }
+.evidence { min-width: 0; }
+.evidence .panelHeading { margin-bottom: 8px; }
+.explorer .patientMeta { font-size: .75rem; margin-bottom: 20px; }
+.rankComparison { display: flex; align-items: center; gap: 20px; padding-block: 16px; border-block: 1px solid var(--line); }
+.rankComparison > div { flex: 1; }
+.rankComparison span { display: block; font-size: .6875rem; color: var(--muted); }
+.rankComparison strong { display: block; margin-top: 8px; font-size: 1.5rem; color: var(--accent); font-weight: 500; font-variant-numeric: tabular-nums; }
+.explorer .evidence h3 { font-size: .8125rem; letter-spacing: 0; margin: 24px 0 8px; }
+.features > div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid #edf0ed; font-size: .75rem; line-height: 1.5; }
+.features small { display: block; color: var(--muted); font-size: .6875rem; margin-top: 3px; }
+.features dd { margin: 0; text-align: right; font-weight: 500; }
+.source { margin-top: 14px; }
+.evidence pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; font-size: .75rem; line-height: 1.7; margin-top: 14px; padding: 14px; background: #f4f6f3; border-radius: 4px; }
+.explorer .source p { font-size: .75rem; margin-top: 12px; }
+.visits > details { border-bottom: 1px solid var(--line); padding: 12px 0; }
+.visits > details > summary { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: .75rem; }
+.visits > details > summary::before { content: "›"; color: var(--muted); }
+.visits > details[open] > summary::before { transform: rotate(90deg); }
+.visits strong { margin-left: auto; font-weight: 500; }
+.visits blockquote { font-family: var(--font-source-serif), Georgia, serif; font-size: 1.25rem; line-height: 1.6; margin: 24px 0 16px; }
+.explorer .footnote { font-size: .75rem; margin: 24px 0; max-width: 85ch; }
+.methods { margin-top: 12px; font-size: .8125rem; line-height: 1.7; }
+.methods p { margin: 14px 0; max-width: 80ch; }
+.methods table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 16px; font-size: .75rem; }
+.methods caption { text-align: left; margin-bottom: 12px; }
+.methods td, .methods th { padding: 10px 8px; border-bottom: 1px solid var(--line); }
+.methods a { text-decoration: underline; }
+@media(max-width:1000px) { .workspace { grid-template-columns: minmax(0,1.25fr) minmax(280px,1fr); gap: 20px; } .columnLabels, .patient { grid-template-columns: 26px 1fr 95px 65px; gap: 8px; } .evidence { padding: 20px; } .outcomes { gap: 20px; } }
+@media(max-width:760px) { .heading { align-items: flex-start; flex-direction: column; gap: 16px; } .toolbar { flex-direction: column; align-items: stretch; gap: 20px; } .capacity { max-width: none; } .workspace { grid-template-columns: 1fr; gap: 24px; } .outcomes { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; } .columnLabels, .patient { grid-template-columns: 24px 1fr 90px 65px; gap: 8px; } .track { display: none; } .risk { justify-content: flex-end; } .columnLabels > :nth-child(3) { text-align: right; } }
+@media(prefers-reduced-motion:reduce) { .patient { transition: none; } }

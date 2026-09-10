@@ -1,0 +1,81 @@
+{
+  "tool": "image_gen.imagegen",
+  "prompt": "Edit this exact illustration. Preserve all foreground subjects, composition, framing, aspect ratio, paper textures, colours, objects, connectors, and all text verbatim. Change ONLY the backdrop and exposed floor to seamless pale grey-green #f6f7f5 (RGB 246,247,245), matching a website background. No stark white rectangle, no vignette or horizon. Soft contact shadows fade smoothly into #f6f7f5; outer background edges should match that colour. If a desk is present preserve its geometry and foreground objects, but soften its pale surface colour into the matching background. No redesign, additions, removals, new text, or changed symbols.",
+  "assets": [
+    {
+      "name": "cohort-hero",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-93f7313c-b9da-4ee5-ac73-c544e220f39e.png",
+      "destination": "frontend/public/demo/imagery/cohort-hero-v2.png"
+    },
+    {
+      "name": "cohort-criteria",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-5b9699de-252e-4159-8b90-8a6a121fafc9.png",
+      "destination": "frontend/public/demo/imagery/cohort-criteria-v2.png"
+    },
+    {
+      "name": "cohort-evidence",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-f02c7542-f558-4610-b510-2538a0864eeb.png",
+      "destination": "frontend/public/demo/imagery/cohort-evidence-v2.png"
+    },
+    {
+      "name": "candidate-record",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-5a338fd2-3334-4699-a731-3d796518f6e9.png",
+      "destination": "frontend/public/demo/imagery/candidate-record-v2.png"
+    },
+    {
+      "name": "longitudinal-hero",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-83834e06-24fe-4aa9-b9be-34525e928898.png",
+      "destination": "frontend/public/demo/imagery/longitudinal-hero-v2.png"
+    },
+    {
+      "name": "longitudinal-two-dates",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-1ec224bd-05af-410f-a58d-c9e50d97e0df.png",
+      "destination": "frontend/public/demo/imagery/longitudinal-two-dates-v2.png"
+    },
+    {
+      "name": "history-mentions",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-f75a47b3-c051-44a3-acc6-63926f65801f.png",
+      "destination": "frontend/public/demo/imagery/history-mentions-v2.png"
+    },
+    {
+      "name": "history-new-evidence",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-cffab172-63bd-4aad-b5bd-a69ed8a00fcc.png",
+      "destination": "frontend/public/demo/imagery/history-new-evidence-v2.png"
+    },
+    {
+      "name": "history-gap",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-bfd18bb8-afc3-4c60-93e2-37464b20384d.png",
+      "destination": "frontend/public/demo/imagery/history-gap-v2.png"
+    },
+    {
+      "name": "prediction-hero",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-b26c05bc-2463-45f5-a925-92d20ef43625.png",
+      "destination": "frontend/public/demo/imagery/prediction-hero-v2.png"
+    },
+    {
+      "name": "prediction-features",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-b05071b0-6eeb-41e3-9e76-819b23dc03c8.png",
+      "destination": "frontend/public/demo/imagery/prediction-features-v2.png"
+    },
+    {
+      "name": "prediction-review-list",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-50bb3d88-e598-4ebc-aebc-5d38ace91106.png",
+      "destination": "frontend/public/demo/imagery/prediction-review-list-v2.png"
+    },
+    {
+      "name": "application-cohort-icon",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-f2c79ea5-027f-41b1-9982-09d3bb5daf42.png",
+      "destination": "frontend/public/demo/imagery/application-cohort-icon-v2.png"
+    },
+    {
+      "name": "application-longitudinal-icon",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-0c47d2fa-6f9f-439f-8060-11879a121f22.png",
+      "destination": "frontend/public/demo/imagery/application-longitudinal-icon-v2.png"
+    },
+    {
+      "name": "application-prediction-icon",
+      "source": "/Users/cobro/.codex/generated_images/01a08722-2e5c-7d31-8628-aa24a1af8161/exec-ebd6e111-7b35-4524-9ea0-8fa7e52315b4.png",
+      "destination": "frontend/public/demo/imagery/application-prediction-icon-v2.png"
+    }
+  ]
+}

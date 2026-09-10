@@ -1,0 +1,17 @@
+{
+  "tool": "built-in image_gen",
+  "assets": [
+    {
+      "name": "research-value-trials-v1",
+      "prompt": "Use case: illustration-story. Create a refined handcrafted paper-sculpture editorial illustration for a clinical research website, landscape 3:2. Tactile cut cream paper, folded dark teal cardstock, sage green and small ochre accents, soft realistic studio shadows, warm near-white seamless background. Quiet, human, precise, consistent with a premium miniature paper diorama. Simple bold composition readable in a small three-column card. No text, letters, numbers, titles, watermarks, or charts claiming performance. Subject: screening clinical trial participants. A researcher's hand carefully selecting one cream patient record card from a small fan of several patient cards in a dark teal file tray; each card has a small sculpted person silhouette and evidence strips, the selected card has a single ochre tab. Focus on thoughtful selection supported by records. No checkmarks implying clinical approval."
+    },
+    {
+      "name": "research-value-registry-v1",
+      "prompt": "Use case: illustration-story. Create a refined handcrafted paper-sculpture editorial illustration for a clinical research website, landscape 3:2. Tactile cut cream paper, folded dark teal cardstock, sage green and small ochre accents, soft realistic studio shadows, warm near-white seamless background. Quiet, human, precise, consistent with a premium miniature paper diorama. Simple bold composition readable in a small three-column card. No text, letters, numbers, titles, watermarks, or charts claiming performance. Subject: long-term patient registry. One elegant accordion-fold cream patient history unfolds across the scene, four successive connected panels with small sage and ochre evidence strips, held by a dark teal folder at its left edge. A continuous teal thread follows the panels to communicate one person's story over time. Small layered calendar-tab shapes without any text. Focus on continuity and accumulated evidence."
+    },
+    {
+      "name": "research-value-risk-v1",
+      "prompt": "Use case: illustration-story. Create a refined handcrafted paper-sculpture editorial illustration for a clinical research website, landscape 3:2. Tactile cut cream paper, folded dark teal cardstock, sage green and small ochre accents, soft realistic studio shadows, warm near-white seamless background. Quiet, human, precise, consistent with a premium miniature paper diorama. Simple bold composition readable in a small three-column card. No text, letters, numbers, titles, watermarks, or charts claiming performance. Subject: patient risk stratification from clinical histories. Three small groups of cream patient record cards arranged in an ordered gentle arc, each group in a shallow sculpted paper tray, sage then ochre then muted plum, connected to an open dark teal evidence folio in the foreground by slender paper ribbons. Cards show subtle person silhouettes and evidence strips. Communicate organising histories into distinct risk groups; no numerical scores or guaranteed outcomes."
+    }
+  ]
+}
