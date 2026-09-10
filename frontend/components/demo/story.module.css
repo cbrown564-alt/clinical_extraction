@@ -102,6 +102,12 @@ button.modelRow:hover, button.modelRow[aria-pressed="true"] { background: #f3f7f
 .externalChart .barTrack { height: 26px; margin-right: 42px; }
 .externalChart .barTrack b { top: 4px; }
 .srOnly { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.riskGroups { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+.riskGroups > div { display: flex; flex-direction: column; gap: 6px; padding: 18px; background: #f3f1f4; border-radius: 8px; }
+.riskGroups > div:first-child { background: #eee7f2; }
+.riskGroups span { font-size: .875rem; }
+.riskGroups strong { font-size: 2rem; color: #755487; font-weight: 500; }
+.riskGroups small { font-size: .75rem; color: var(--muted); }
 .applicationHeading { display: flex; justify-content: space-between; align-items: center; gap: 40px; margin-bottom: 28px; }
 .applicationHeading h1 { font-size: 2.75rem; }
 .syntheticBadge { padding: 18px 22px; border-left: 2px solid #ae8344; min-width: 255px; }

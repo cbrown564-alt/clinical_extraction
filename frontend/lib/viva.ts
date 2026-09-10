@@ -14,7 +14,7 @@ export const caseStories: Record<number, { title: string; question: string; less
     question: "Five seizures in April. Is that the whole answer?",
     lesson: "A letter can contain more than one useful frequency statement. Extract keeps them; decide applies a policy to the record.",
     rule: "Combine the diary counts",
-    explanation: "The diary policy totals the recorded counts over the inclusive calendar span, February through April. March is part of the denominator; its count is not separately reported.",
+    explanation: "Add the reported counts across February–April.",
     calculation: "(3 + 1) + (5 + 0) = 9 seizures · February–April = 3 months",
   },
   10: {
@@ -22,14 +22,14 @@ export const caseStories: Record<number, { title: string; question: string; less
     question: "What does “four per day” become?",
     lesson: "Begin with one clear frequency statement. The model keeps the quote and writes a label in the required form.",
     rule: "Keep the provisional answer",
-    explanation: "The extraction call has already expressed the upper bound as 4 per day, following the allowed-label instructions. The decision rules make no further change.",
+    explanation: "Keep the extracted label: 4 per day.",
   },
   14187: {
     title: "Seizures, then seizure freedom",
     question: "Seizure-free now. What about the recent events?",
     lesson: "The letter describes a brief run of seizures after a medication change, followed by seizure freedom. Both statements belong in the evidence record.",
     rule: "Account for the post-change seizures",
-    explanation: "The post-change burst rule uses the recorded count and time window to revise the seizure-free proposal. This is the study’s decision policy, rather than a new clinical judgement.",
+    explanation: "Use the seizures after the medication change and their time span.",
     caveat: "The rule changes the label but retains the original E2 selection and seizure-free quote. The saved trace exposes this attribution limitation; it does not claim that E2 alone supports the new rate.",
   },
   11254: {
@@ -37,7 +37,7 @@ export const caseStories: Record<number, { title: string; question: string; less
     question: "A dated seizure, followed by three quiet months.",
     lesson: "A date and an event-free interval support more than one possible interpretation. The policy determines which representation is submitted.",
     rule: "Count the last event over the interval",
-    explanation: "The last-event rule writes 1 per 3 month from the dated seizure and subsequent interval. Both executors produce this label, but the gold label is unknown. Agreement between executors does not establish correctness.",
+    explanation: "Use the last seizure and the three-month interval: 1 per 3 month.",
     caveat: "Both final answers disagree with the gold label on this development example.",
   },
   743: {
@@ -45,7 +45,7 @@ export const caseStories: Record<number, { title: string; question: string; less
     question: "How often is “most shifts”?",
     lesson: "The evidence can be quoted exactly while the frequency remains uncertain. Inspecting the words makes that uncertainty visible.",
     rule: "Retain unknown frequency",
-    explanation: "The model does not infer how many shifts the patient works. The rules leave unknown unchanged. The gold label is multiple per week, so this is a scored error despite the exact quote.",
+    explanation: "The number of shifts is unstated, so the answer stays unknown.",
     caveat: "An exact quotation checks where the words came from. It does not prove that the answer is correct or that the quote is sufficient.",
   },
 };
@@ -57,8 +57,8 @@ export function storyFor(current: DemoCase) {
     lesson: "Open the original passage, inspect the extracted events, and follow the recorded decision before using this result.",
     rule: current.hybrid.hops.some(h => h.changed) ? "A recorded rule changed the answer" : "Keep the provisional answer",
     explanation: current.hybrid.hops.some(h => h.changed)
-      ? "The trace below records each label change. The source quotes and the original extraction remain available for inspection."
-      : "No rule changed the provisional label on this record. Keeping an answer is still a decision under the fixed policy.",
+      ? "The rules revise the proposed answer."
+      : "The rules keep the proposed answer.",
     caveat: current.hybrid_correct ? undefined : "The final answer does not match the gold Purist category on this development letter.",
     calculation: undefined,
   };

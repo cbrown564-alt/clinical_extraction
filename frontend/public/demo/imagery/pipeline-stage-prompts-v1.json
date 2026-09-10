@@ -1,0 +1,14 @@
+{
+  "mode": "built-in imagegen",
+  "status": "Exploratory stage artwork, not integrated",
+  "prompts": [
+    {
+      "name": "extract",
+      "prompt": "Use case: illustration-story. Create a compact stage illustration for a working clinical research record viewer. Match the reference's tactile paper sculpture, deep teal and sage cardstock, cream paper fibers, amber highlights, soft studio shadows and white background. Wide 3:2 composition, few large objects, easily recognizable at small size. No readable text, no numbers, no title, no labels, no clinical claims. This is a decorative process illustration; actual case data is elsewhere in the UI. An open compact teal folio holding two cream fact cards. Each card contains an amber quotation stripe and two grey structured-field lines. A small separate cream selection slip beneath the pair. At left a partial source paper with two amber highlighted passages; two short folded paper tabs link those passages separately to the corresponding fact cards. The record is dominant. Visually preserve both facts and a distinct proposed selection. No arrows to external objects."
+    },
+    {
+      "name": "decide",
+      "prompt": "Use case: illustration-story. Create a compact stage illustration for a working clinical research record viewer. Match the reference's tactile paper sculpture, deep teal and sage cardstock, cream paper fibers, amber highlights, soft studio shadows and white background. Wide 3:2 composition, few large objects, easily recognizable at small size. No readable text, no numbers, no title, no labels, no clinical claims. This is a decorative process illustration; actual case data is elsewhere in the UI. At left a compact open teal evidence folio with two cream fact cards and amber evidence stripes, both clearly visible. At centre a raised teal decision-tree symbol made of one diamond with two branches ending in square nodes. At right a single cream answer card on a sage backing with a prominent amber answer stripe and two short grey rationale lines underneath. Two unobtrusive forward teal arrows connect record to tree to answer. Simple confident sculptural objects with generous whitespace, no source letter or model network."
+    }
+  ]
+}

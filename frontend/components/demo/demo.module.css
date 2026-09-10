@@ -6,7 +6,7 @@
 .demo :is(button,a,select,summary):focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 .header { min-height: 72px; display: flex; align-items: center; justify-content: space-between; padding: 16px 32px; border-bottom: 1px solid var(--line); gap: 24px; background: #fff; }
 .identity { display: flex; gap: 12px; align-items: center; font-size: 1.125rem; font-weight: 600; letter-spacing: -.025em; }
-.logo { width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center; background: var(--wash); color: var(--accent); }
+.logo { width: 40px; height: 40px; flex-shrink: 0; object-fit: contain; }
 .subtitle { margin-left: 12px; padding-left: 24px; border-left: 1px solid var(--line); font-size: .8125rem; font-weight: 400; color: var(--muted); letter-spacing: 0; }
 .workbenchLink { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .8125rem; }
 .workbenchLink:hover { color: var(--accent); }
@@ -88,10 +88,6 @@
 .eventBody strong { display: block; font-size: .9375rem; font-weight: 500; line-height: 1.5; }
 .eventBody q { display: block; font-family: var(--font-source-serif), Georgia, serif; font-size: .9375rem; line-height: 1.55; color: var(--muted); margin-top: 8px; }
 .quoteLink { color: var(--accent); }
-.provisional { margin-top: 28px; background: #f5f1e9; padding: 20px 24px; border-radius: 8px; }
-.provisional > span { font-size: .75rem; color: #6d593b; }
-.provisional h2 { font-size: 1.5rem; font-weight: 500; margin: 8px 0; color: #624a2b; }
-.provisional p { font-size: .8125rem; line-height: 1.7; color: #6d604d; }
 .decision { border: 1px solid #b8d0c5; border-radius: 9px; overflow: hidden; }
 .decisionHeading { padding: 13px 20px; display: flex; justify-content: space-between; gap: 10px; background: var(--wash); font-size: .75rem; color: var(--accent); }
 .decisionHeading > span:first-child { display: flex; align-items: center; gap: 8px; font-weight: 600; }
@@ -294,3 +290,34 @@
 @media (max-width: 1280px) { .header .subtitle { display: none; } .toolbar { gap: 16px; } .steps { gap: 12px; } .stepArrow { margin-left: 4px; } }
 @media (max-width: 760px) { .chapterContainer { flex: none; overflow: visible; } .batchShortcut { order: 4; margin-inline: auto; } .viewNav button { padding-inline: 8px; font-size: .75rem; } }
 @media (max-width: 760px) { .viewNav button { white-space: nowrap; padding-inline: 6px; } }
+
+/* Keep case controls on one row and reserve space for the saved record. */
+@media (min-width: 761px) {
+  .toolbar { grid-template-columns: minmax(0, 1fr) auto auto; min-height: 76px; padding-block: 10px; }
+  .stageContent { padding: 20px 28px; }
+  .stageHeading { margin-bottom: 16px; }
+  .stageHeading h1 { font-size: 1.4rem; margin-bottom: 8px; }
+  .stageHeading p { line-height: 1.5; }
+  .events { margin-bottom: 16px; }
+  .events .event { padding-block: 10px; }
+  .eventMeta { margin-bottom: 4px; }
+  .eventBody q { margin-top: 4px; line-height: 1.45; }
+}
+
+.stageIllustration { float: right; width: 150px; height: auto; margin: 0 0 8px 16px; }
+.stageHeading::after { content: ""; display: block; clear: both; }
+@media (max-width: 760px) { .stageIllustration { width: 110px; margin-left: 12px; } }
+
+.extractionAnswer { margin-top: 16px; border: 1px solid #b8ceca; border-radius: 8px; overflow: hidden; }
+.extractionAnswer > header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 6px 16px; background: #eaf3f0; color: var(--accent); font-size: .8125rem; font-weight: 500; }
+.extractionAnswer > header > div { display: flex; flex-wrap: wrap; gap: 6px; }
+.extractionAnswer > header button { display: inline-flex; align-items: center; gap: 5px; min-height: 28px; padding: 3px 7px; border: 1px solid #aac5bd; border-radius: 4px; font-size: .75rem; }
+.extractionAnswer > header button:hover { background: white; }
+.extractionAnswerBody { padding: 10px 16px 12px; }
+.extractionAnswerBody h2 { font-size: 1.375rem; font-weight: 600; color: var(--accent); line-height: 1.3; margin: 0 0 8px; }
+.answerRationale h3 { font-size: .75rem; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+.answerRationale p { color: var(--muted); font-size: .8125rem; line-height: 1.5; }
+
+@media (min-width: 761px) {
+  .stageHeading .stageIllustration { width: 130px; margin-bottom: 0; }
+}

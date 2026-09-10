@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Check, ChevronDown, Code2, FileText, Play, RotateCcw } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft, ArrowRight, Check, ChevronDown, Code2, FileText, Play } from "lucide-react";
 import { demoCases, storyFor, demoProvenance, evidenceParagraphs, quoteSegments } from "@/lib/viva";
 import CasePicker from "./CasePicker";
 import FullLetter from "./FullLetter";
@@ -79,7 +80,7 @@ export default function VivaDemo() {
 
   return <div className={styles.demo}>
     <header className={styles.header}>
-      <Link className={styles.identity} href="/demo"><span className={styles.logo}><FileText size={19} /></span>Extract, then decide<span className={styles.subtitle}>A research demonstration</span></Link>
+      <Link className={styles.identity} href="/demo"><Image className={styles.logo} src="/demo/imagery/header-mark-v1.png" alt="" width={40} height={40} sizes="40px" />Extract, then decide<span className={styles.subtitle}>A research demonstration</span></Link>
       <nav className={styles.viewNav} aria-label="Demo views">{([{ id: "introduction", label: "Introduction" }, { id: "pipeline", label: "The pipeline" }, { id: "results", label: "Results" }, { id: "applications", label: "Applications" }] as const).map(item => <button key={item.id} aria-pressed={view === item.id || (item.id === "pipeline" && view === "batch")} onClick={() => setView(item.id)}>{item.label}</button>)}</nav>
       <Link className={styles.workbenchLink} href="/workbench">Open workbench <ArrowRight size={15} /></Link>
     </header>
@@ -92,7 +93,6 @@ export default function VivaDemo() {
       <CasePicker value={caseId} onChange={reset} />
       <button className={styles.batchShortcut} onClick={() => setView("batch")}>A batch of letters</button>
       <nav className={styles.steps} aria-label="Demonstration progress">{stepNames.map((name, i) => <button key={name} aria-current={step === i ? "step" : undefined} onClick={() => { setStep(i); setActiveEvent(null); }}><span>{i < step ? <Check size={14} /> : i + 1}</span>{name}{i < 1 && <ArrowRight className={styles.stepArrow} size={15} />}</button>)}</nav>
-      <button className={styles.iconButton} onClick={() => reset()} aria-label="Restart case"><RotateCcw size={17} /></button>
     </div>
     <div className={styles.workspace}>
       <section className={styles.source} aria-label="Source letter">
@@ -107,28 +107,27 @@ export default function VivaDemo() {
         <div className={styles.sectionBar}><span>{step === 0 ? "One LLM call" : "A fixed decision policy"}</span><button className={styles.underHoodButton} onClick={() => setInspector(step === 1 ? "rules" : "extract")}><Code2 size={15} />Under the hood</button></div>
         <div className={styles.explanationScroll} key={`${caseId}-${step}`}>
           <div key={step} className={styles.stageContent}>
-            <div className={styles.stageHeading}><h1>{step === 0 ? "Keep every candidate." : "Make the decision explicit."}</h1><p>{step === 0 ? "Saved Gemini 3.7 Flash output. The model records the evidence and proposes an answer. Select an event to find its exact words in the letter." : "Decide receives this extraction record. It has no access to the full letter and cannot collect new evidence."}</p></div>
+            <div className={styles.stageHeading}><Image className={styles.stageIllustration} src={`/demo/imagery/pipeline-stage-${step === 0 ? "extract-v2" : "decide-v1"}.png`} width={1536} height={1024} sizes="(max-width: 760px) 110px, 150px" alt="" /><h1>{step === 0 ? "Capture the facts." : "Apply the decision policy."}</h1><p>{step === 0 ? "Keep the evidence and propose an answer. Select a fact to see its source." : "Use the saved facts to select the answer."}</p></div>
             <div className={step === 1 ? styles.compactEvents : styles.events} aria-label="Extracted events">{events.map((event, i) => <button key={event.event_id} className={styles.event} data-active={activeEvent === event.event_id} onClick={() => focusEvent(event.event_id)} aria-pressed={activeEvent === event.event_id}>
               <span className={styles.eventNumber}>{event.event_id.toUpperCase()}</span><span className={styles.eventBody}><span className={styles.eventMeta}>{event.time_window || event.temporality} · {event.kind.replaceAll("_", " ")}</span><strong>{event.raw_value || event.evidence}</strong>{step === 0 && <q>{event.evidence}</q>}</span><span className={styles.quoteLink} aria-hidden>{i + 1 < 10 ? "↗" : ""}</span>
             </button>)}</div>
-            {step === 0 ? <div className={styles.provisional}><span>Provisional answer · extraction call</span><h2>{current.record.selection.final_label}</h2><p>{current.record.selection.rationale}</p></div> : <>
+            {step === 0 ? <section className={styles.extractionAnswer} aria-label="Proposed answer"><header><span>Proposed answer</span><div aria-label="Selected facts">{current.record.selection.selected_event_ids.map(id => <button key={id} onClick={() => focusEvent(id)} aria-label={`Find selected fact ${id.toUpperCase()}`}>{id.toUpperCase()} <ArrowRight size={12} /></button>)}</div></header><div className={styles.extractionAnswerBody}><h2>{current.record.selection.final_label}</h2><div className={styles.answerRationale}><h3>Rationale</h3><p>{current.record.selection.rationale}</p></div></div></section> : <>
               <div className={styles.decision}>
-                <div className={styles.decisionHeading}><span>Hybrid · recorded rules</span><span>{changed ? "Answer revised" : "Answer retained"}</span></div>
-                <div className={styles.answerChange}><div><span>Provisional</span><p>{current.record.selection.final_label}</p></div><ArrowRight size={24} /><div><span>Final answer</span><h2>{current.hybrid.selection.final_label}</h2></div></div>
+                <div className={styles.decisionHeading}><span>Rules decision</span><span>{changed ? "Answer revised" : "Answer retained"}</span></div>
+                <div className={styles.answerChange}><div><span>Proposed answer</span><p>{current.record.selection.final_label}</p></div><ArrowRight size={24} /><div><span>Final answer</span><h2>{current.hybrid.selection.final_label}</h2></div></div>
                 <div className={styles.rule}><h3>{story.rule}</h3><p>{story.explanation}</p>{story.calculation && <div className={styles.calculation}>{story.calculation}</div>}</div>
               </div>
-              {story.caveat && <p className={styles.caveat}>{story.caveat}</p>}
-              <div className={styles.executionRow}><button className={styles.secondary} disabled={execution === "running"} onClick={runRules}><Play size={14} />{execution === "running" ? "Running local rules…" : "Run rules locally"}</button><span role="status">{execution === "live" ? "Same record. Same answer. Verified just now." : execution === "running" ? "Executing Python on the saved record" : "Saved decision · no model connection needed"}</span>{execution === "running" && <button onClick={() => { abort.current?.abort(); setExecution("saved"); }}>Cancel</button>}</div>
+              <div className={styles.executionRow}><button className={styles.secondary} disabled={execution === "running"} onClick={runRules}><Play size={14} />{execution === "running" ? "Running local rules…" : "Run rules locally"}</button><span role="status">{execution === "live" ? "Replay matched." : execution === "running" ? "Running…" : "Saved result"}</span>{execution === "running" && <button onClick={() => { abort.current?.abort(); setExecution("saved"); }}>Cancel</button>}</div>
               {execution === "error" && <div className={styles.error} role="alert"><p>{error}</p><button onClick={() => { setExecution("saved"); setError(""); }}>Continue with saved decision</button></div>}
               <button className={styles.compareToggle} aria-expanded={compare} onClick={() => setCompare(!compare)}>{compare ? "Hide" : "Compare with"} the second LLM decision <ChevronDown size={16} /></button>
-              {compare && <div className={styles.comparison}><div><span>Hybrid · rules</span><strong>{current.hybrid.selection.final_label}</strong></div><div><span>LLM-only · second call</span><strong>{current.llm.label}</strong></div><p>Same extracted candidates · saved Gemini 3.7 Flash decisions. {current.llm.label === current.hybrid.selection.final_label ? "Both executors return the same label here." : "The two executors return different labels here."}</p></div>}
-              <details className={styles.details}><summary><Code2 size={15} /> Inspect the recorded trace and provenance</summary><div className={styles.detailBody}><p>The trace preserves the original selection fields. A label rewrite does not necessarily update its event IDs, evidence quote or model rationale.</p><p>Recorded selection: {current.hybrid.selection.selected_event_ids.join(", ")}. Changed rules: {changes.map(h => h.stage_id).join(", ") || "none"}.</p><p>Gold label: {current.gold}. Hybrid {current.hybrid_correct ? "matches" : "does not match"} the Purist category. Exact quotation is not proof of clinical correctness.</p><p>{demoProvenance.dataset} / {demoProvenance.split} / {demoProvenance.model}<br />Prompt: {current.prompt_version}<br />Replay: {demoProvenance.repair}</p><p>Extraction source: {current.extract_source}<br />Decision source: {current.decision_source}<br />Extraction SHA-256: {current.sha256}</p><pre>{JSON.stringify({ record: current.record, rule_trace: current.hybrid, llm_output: current.llm }, null, 2)}</pre></div></details>
+              {compare && <div className={styles.comparison}><div><span>Hybrid · rules</span><strong>{current.hybrid.selection.final_label}</strong></div><div><span>LLM-only · second call</span><strong>{current.llm.label}</strong></div><p>{current.llm.label === current.hybrid.selection.final_label ? "Both methods return the same answer." : "The methods return different answers."}</p></div>}
+              <details className={styles.details}><summary><Code2 size={15} /> Trace & provenance</summary><div className={styles.detailBody}>{story.caveat && <p>{story.caveat}</p>}<p>The trace preserves the original selection fields. A label rewrite does not necessarily update its event IDs, evidence quote or model rationale.</p><p>Recorded selection: {current.hybrid.selection.selected_event_ids.join(", ")}. Changed rules: {changes.map(h => h.stage_id).join(", ") || "none"}.</p><p>Gold label: {current.gold}. Hybrid {current.hybrid_correct ? "matches" : "does not match"} the Purist category. Exact quotation is not proof of clinical correctness.</p><p>{demoProvenance.dataset} / {demoProvenance.split} / {demoProvenance.model}<br />Prompt: {current.prompt_version}<br />Replay: {demoProvenance.repair}</p><p>Extraction source: {current.extract_source}<br />Decision source: {current.decision_source}<br />Extraction SHA-256: {current.sha256}</p><pre>{JSON.stringify({ record: current.record, rule_trace: current.hybrid, llm_output: current.llm }, null, 2)}</pre></div></details>
             </>}
           </div>
         </div>
       </section>
     </div>
-    <footer className={styles.footer}><span>Research demonstration <span className={styles.footerDot}>·</span> Synthetic examples, not clinical advice</span><div><button className={styles.secondary} disabled={step === 0} onClick={() => setStep(step - 1)}><ArrowLeft size={16} />Back</button>{step < 1 ? <button className={styles.primary} onClick={() => setStep(step + 1)}>Apply decision policy<ArrowRight size={16} /></button> : <button className={styles.primary} onClick={() => setView("results")}>Zoom out to the results <ArrowRight size={16} /></button>}</div></footer>
+    <footer className={styles.footer}><span>Research demonstration <span className={styles.footerDot}>·</span> Synthetic examples</span><div><button className={styles.secondary} disabled={step === 0} onClick={() => setStep(step - 1)}><ArrowLeft size={16} />Back</button>{step < 1 ? <button className={styles.primary} onClick={() => setStep(step + 1)}>Apply decision policy<ArrowRight size={16} /></button> : <button className={styles.primary} onClick={() => setView("results")}>View results <ArrowRight size={16} /></button>}</div></footer>
     </div>
     {inspector && <UnderTheHood current={current} initial={inspector} onClose={() => setInspector(null)} />}
     {fullLetter && <FullLetter current={current} showEvidence onClose={() => setFullLetter(false)} />}

@@ -1,0 +1,17 @@
+{
+  "mode": "built-in imagegen",
+  "prompts": [
+    {
+      "name": "rules",
+      "prompt": "Use case: precise-object-edit. Remove ONLY the large standalone title \"Rules\" at the very top of the supplied illustration. Replace the title area with the matching plain white background. Preserve image dimensions and all objects in their exact existing positions. Keep every other label and all diagram content unchanged, including any \"Rules\" or similar label INSIDE the diagram, clinic letter, instructions or training inputs, arrows, model or rules board, structured data, footer, textures, colors and shadows. Do not crop, resize, rearrange or add anything."
+    },
+    {
+      "name": "trained",
+      "prompt": "Use case: precise-object-edit. Remove ONLY the large standalone title \"Trained models\" at the very top of the supplied illustration. Replace the title area with the matching plain white background. Preserve image dimensions and all objects in their exact existing positions. Keep every other label and all diagram content unchanged, including any \"Trained models\" or similar label INSIDE the diagram, clinic letter, instructions or training inputs, arrows, model or rules board, structured data, footer, textures, colors and shadows. Do not crop, resize, rearrange or add anything."
+    },
+    {
+      "name": "prompted",
+      "prompt": "Use case: precise-object-edit. Remove ONLY the large standalone title \"Prompted LLMs\" at the very top of the supplied illustration. Replace the title area with the matching plain white background. Preserve image dimensions and all objects in their exact existing positions. Keep every other label and all diagram content unchanged, including any \"Prompted LLMs\" or similar label INSIDE the diagram, clinic letter, instructions or training inputs, arrows, model or rules board, structured data, footer, textures, colors and shadows. Do not crop, resize, rearrange or add anything."
+    }
+  ]
+}
