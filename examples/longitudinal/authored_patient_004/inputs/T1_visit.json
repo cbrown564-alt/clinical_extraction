@@ -1,0 +1,11 @@
+{
+  "patient_id": "authored-004",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-01-20",
+      "available_date": "2025-01-20",
+      "text": "Epilepsy clinic letter\nConsultation: 20 January 2025\nPatient: Danielle Kim, aged 51\n\nDear colleague,\n\nDanielle attended our epilepsy review clinic. She has a longstanding history of temporal lobe epilepsy.\n\nHer typical pattern has been complex partial seizures occurring approximately twice a month, characterized by behavioral arrest, lip smacking and post-ictal amnesia. Her latest complex partial seizure occurred on 5 January 2025. In the distant past she had grand mal convulsions, but she has suffered no grand mal attacks since December 2021. She continues carbamazepine 200 mg three times daily.\n\nWe agreed to keep her carbamazepine unchanged. No EEG was requested. Review in four months.\n"
+    }
+  ]
+}

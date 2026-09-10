@@ -1,0 +1,23 @@
+{
+  "patient_id": "authored-010",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-01-18",
+      "available_date": "2025-01-18",
+      "text": "Epilepsy clinic letter\nConsultation: 18 January 2025\nPatient: Julia Rossi, aged 31\n\nDear colleague,\n\nJulia attended clinic today following referral from primary care. She has an established diagnosis of focal epilepsy.\n\nShe experiences recurring focal sensory seizures characterized by an ascending epigastric sensation and auditory distortion, occurring approximately twice a month. Her most recent focal sensory seizure occurred on 12 January 2025. She has had no generalized convulsions. She is not currently taking any anti-seizure medication.\n\nToday, 18 January 2025, we agreed to start lamotrigine at 25 mg once daily, titrating by 25 mg every two weeks towards an initial target dose of 100 mg daily. I also requested a routine outpatient EEG today to establish baseline cortical activity. It has not yet been performed. Follow-up in three months.\n"
+    },
+    {
+      "letter_id": "L2",
+      "visit_date": "2025-04-25",
+      "available_date": "2025-04-25",
+      "text": "Epilepsy clinic letter\nConsultation: 25 April 2025\nPatient: Julia Rossi\n\nDear colleague,\n\nI reviewed Julia in clinic today. Her diagnosis remains focal epilepsy.\n\nThe routine outpatient EEG requested on 18 January was performed on 12 February 2025. Its report became available to our clinical team on 16 February 2025 and demonstrated right temporal sharp-and-slow wave discharges. Julia confirms that she initiated lamotrigine on 18 January 2025 and successfully titrated as instructed, reaching 100 mg daily on 1 March 2025, which she continues to take reliably. Her focal sensory seizures have reduced in frequency, with her latest event occurring on 10 April 2025. No convulsive seizures.\n\nWe agreed to maintain lamotrigine 100 mg daily. Review in four months.\n"
+    },
+    {
+      "letter_id": "L3",
+      "visit_date": "2025-08-20",
+      "available_date": "2025-08-20",
+      "text": "Epilepsy clinic letter\nConsultation: 20 August 2025\nPatient: Julia Rossi\n\nDear colleague,\n\nJulia was seen for routine review. She remains compliant with lamotrigine 100 mg daily. Her focal sensory seizures remain infrequent, with the latest on 2 August 2025. No new symptoms or investigations.\n\nTreatment maintained. Follow-up in six months.\n"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "patient_id": "authored-002",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-02-10",
+      "available_date": "2025-02-10",
+      "text": "Epilepsy clinic letter\nConsultation: 10 February 2025\nPatient: Beatrice Hall, aged 42\n\nDear colleague,\n\nBeatrice attended our clinic for routine annual review. She has an established diagnosis of focal epilepsy with impaired awareness, which has been well characterized since 2021.\n\nHer seizure frequency remains entirely stable on carbamazepine modified-release 400 mg twice daily, which she takes regularly without significant adverse effects. Over the past year she has continued to experience roughly one focal seizure per month. Her most recent focal seizure occurred on 28 January 2025. She describes a brief epigastric sensation followed by confusion lasting one to two minutes. She has had no generalized tonic-clonic convulsions and reports no other event types.\n\nWe agreed to make no changes to her carbamazepine dosage. No additional medications or investigations are required at this time. We will arrange routine follow-up in six months.\n"
+    }
+  ]
+}

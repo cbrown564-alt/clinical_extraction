@@ -1,6 +1,6 @@
 # Longitudinal epilepsy benchmark: task definition
 
-Date: 2026-09-09. Version: working definition v0.2 (authored-example clarifications).
+Date: 2026-09-09. Version: working definition v0.2 (with 2026-09-09 adjudication clarification).
 Mode: Explore. Owner: Conor Brown for research decisions.
 
 This document owns cohort questions, the two patient views, proposed annotation
@@ -309,3 +309,29 @@ Next: P2.2–P2.4 annotation guide and provisional schema, then pilot expansion 
 independent annotation. No extraction model comparison, outreach or public release
 occurred. The authored example is provisional development material, not a corpus
 freeze or expert reference.
+
+
+## Pilot reference amendment: v0.4 (2026-09-09)
+
+User-authorized adjudication corrects patient 003 T1 Q5 in both views from
+ineligible to indeterminate. Seizure freedom excludes active epileptic seizures
+for Q2 when it covers the whole window, but does not inventory earlier episodes
+that may have been reclassified for Q5. A visit-level negative about tests or a
+named pattern is not a whole-window inventory for Q4 or Q2. The five predicates,
+query dates and schema are unchanged. The pilot review owns all five decisions;
+original v0.3 references and model captures remain preserved separately.
+
+
+## Pilot reference amendment: v0.5 (2026-09-10)
+
+Adjudication of the remaining 12 disagreements corrects three reference decisions
+and retains nine. Two parallel T1 visit answers receive the same correction as
+their identical-input retrospective counterparts, for five reference changes.
+Patient 005 T1 Q1 is eligible in both views using coarse holiday inclusion in a
+broad window; Q2 is ineligible in both views using explicit exclusion of all
+other patterns in the described history. Patient 010 T2 retrospective Q3 is
+ineligible using confirmed pre-window initiation and affirmative continued
+adherence. No exact holiday date or new date bound is imputed. The annotation
+guide owns these interpretation clarifications; the pilot review records each
+decision. This revises the previous overly strict date-bound/reference treatment,
+not the five predicates, supplied cutoffs or frozen model inputs.

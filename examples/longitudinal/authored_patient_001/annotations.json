@@ -16,7 +16,7 @@
       "polarity": "affirmed",
       "coverage": "not_stated",
       "time": {
-        "text": "today",
+        "text": null,
         "start": {
           "earliest": "2025-01-15",
           "latest": "2025-01-15"
@@ -50,7 +50,7 @@
       "polarity": "affirmed",
       "coverage": "not_stated",
       "time": {
-        "text": "today",
+        "text": null,
         "start": {
           "earliest": "2025-06-20",
           "latest": "2025-06-20"
@@ -84,7 +84,7 @@
       "polarity": "affirmed",
       "coverage": "not_stated",
       "time": {
-        "text": "today",
+        "text": null,
         "start": {
           "earliest": "2025-07-14",
           "latest": "2025-07-14"
@@ -118,7 +118,7 @@
       "polarity": "affirmed",
       "coverage": "complete",
       "time": {
-        "text": "today",
+        "text": null,
         "start": {
           "earliest": "2025-01-15",
           "latest": "2025-01-15"
@@ -431,7 +431,7 @@
       "polarity": "affirmed",
       "coverage": "not_stated",
       "time": {
-        "text": "today",
+        "text": null,
         "start": {
           "earliest": "2025-01-15",
           "latest": "2025-01-15"
@@ -502,7 +502,7 @@
       "polarity": "affirmed",
       "coverage": "not_stated",
       "time": {
-        "text": "today",
+        "text": null,
         "start": {
           "earliest": "2025-01-15",
           "latest": "2025-01-15"
@@ -934,7 +934,7 @@
       "polarity": "affirmed",
       "coverage": "not_stated",
       "time": {
-        "text": "today",
+        "text": null,
         "start": {
           "earliest": "2025-06-20",
           "latest": "2025-06-20"
@@ -970,7 +970,7 @@
       "polarity": "affirmed",
       "coverage": "not_stated",
       "time": {
-        "text": "today",
+        "text": null,
         "start": {
           "earliest": "2025-07-14",
           "latest": "2025-07-14"
@@ -1272,7 +1272,7 @@
       "polarity": "affirmed",
       "coverage": "not_stated",
       "time": {
-        "text": "today",
+        "text": null,
         "start": {
           "earliest": "2025-01-15",
           "latest": "2025-01-15"
@@ -1307,7 +1307,7 @@
       "polarity": "affirmed",
       "coverage": "not_stated",
       "time": {
-        "text": "today",
+        "text": null,
         "start": {
           "earliest": "2025-06-20",
           "latest": "2025-06-20"
@@ -1342,7 +1342,7 @@
       "polarity": "affirmed",
       "coverage": "not_stated",
       "time": {
-        "text": "today",
+        "text": null,
         "start": {
           "earliest": "2025-07-14",
           "latest": "2025-07-14"
@@ -1401,7 +1401,15 @@
         },
         "kind": "decision",
         "anchor_letter_id": null
-      }
+      },
+      "first_reinterpretation_evidence": [
+        {
+          "letter_id": "L2",
+          "start": 732,
+          "end": 870,
+          "text": "This is our first reclassification of any of Alex's events from epileptic to non-epileptic, and the decision was made today, 20 June 2025."
+        }
+      ]
     },
     {
       "link_id": "K2",

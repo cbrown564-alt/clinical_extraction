@@ -25,6 +25,7 @@ trace-explorer = "clinical_extraction.trace_explorer.api.app:main"
 
 [project.optional-dependencies]
 dev = [
+  "jsonschema>=4.0",
   "pytest>=8.0.0",
   "ruff>=0.5.0",
   "mypy>=1.10.0",

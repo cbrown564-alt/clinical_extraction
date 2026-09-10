@@ -1,6 +1,6 @@
 {
   "case_id": "authored-001",
-  "version": "0.1",
+  "version": "0.6",
   "task_definition_version": "0.2",
   "origin": "AI-authored fictional development example; no source seed or real patient",
   "inspection_policy": "development_only",
@@ -289,5 +289,12 @@
       "lookback_180_start": "2025-01-16",
       "input_path": "inputs/T2_retrospective.json"
     }
-  ]
+  ],
+  "annotation": {
+    "path": "annotations.json",
+    "guide_version": "0.2",
+    "schema_version": "0.2",
+    "schema": "../../../docs/longitudinal/annotation.schema.json",
+    "review_note": "Explicit patient-wide first reinterpretation evidence added; original schema and annotations preserved under pilot_v0.5/schema_snapshot."
+  }
 }

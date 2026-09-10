@@ -132,6 +132,12 @@ Task definition v0.2 clarifies three previously ambiguous points:
 3. Q5 permits a pattern first documented before the lookback when it has a supported
    occurrence inside the lookback. Its reinterpretation must still have occurred by T.
 
-Next is P2.2–P2.4: draft the minimal annotation guide and provisional schema using
-this case, then expand and independently review the pilot. No schema freeze or
-clinical validation is claimed here.
+P2.2–P2.4 add [annotations.json](annotations.json): 35 assertions and 10
+relationships under [guide v0.1](../../../docs/longitudinal/annotation_guide.md)
+and its paired schema. These detailed relationships are distinct from the five
+query-explanation links in the original reference. Original letters, inputs and
+query answers are preserved. Run `python scripts/longitudinal/check_annotations.py`
+from the repository root for structural and source checks.
+
+Next is the expanded pilot and independent annotation pass (P2.5–P2.6). No schema
+freeze, executable query scorer or clinical validation is claimed.

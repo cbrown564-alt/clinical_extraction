@@ -1,0 +1,578 @@
+{
+  "assertions": [
+    {
+      "assertion_id": "L1.diagnosis",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 101,
+          "end": 183,
+          "text": "Ian attended clinic for review. He has an established diagnosis of focal epilepsy."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-14",
+          "latest": "2025-02-14"
+        },
+        "end": {
+          "earliest": "2025-02-14",
+          "latest": "2025-02-14"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "focal epilepsy",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L2.diagnosis",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 88,
+          "end": 157,
+          "text": "I reviewed Ian in clinic today. His diagnosis remains focal epilepsy."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-06-18",
+          "latest": "2025-06-18"
+        },
+        "end": {
+          "earliest": "2025-06-18",
+          "latest": "2025-06-18"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "focal epilepsy",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L1.pattern",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 185,
+          "end": 414,
+          "text": "He continues to experience focal seizures with sensory numbness in the left arm roughly every three weeks, most recently on 10 February 2025. He reports no convulsive seizures. He currently takes levetiracetam 750 mg twice daily."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-14",
+          "latest": "2025-02-14"
+        },
+        "end": {
+          "earliest": "2025-02-14",
+          "latest": "2025-02-14"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal sensory seizure"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "rate",
+          "text": "roughly every three weeks",
+          "count": {
+            "lower": 1,
+            "upper": 1
+          },
+          "period": {
+            "amount": {
+              "lower": 3,
+              "upper": 3
+            },
+            "unit": "week"
+          },
+          "events_per_cluster": null,
+          "approximate": true
+        }
+      }
+    },
+    {
+      "assertion_id": "L1.latest",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 185,
+          "end": 414,
+          "text": "He continues to experience focal seizures with sensory numbness in the left arm roughly every three weeks, most recently on 10 February 2025. He reports no convulsive seizures. He currently takes levetiracetam 750 mg twice daily."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-10",
+          "latest": "2025-02-10"
+        },
+        "end": {
+          "earliest": "2025-02-10",
+          "latest": "2025-02-10"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal sensory seizure"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L1.levetiracetam",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 185,
+          "end": 414,
+          "text": "He continues to experience focal seizures with sensory numbness in the left arm roughly every three weeks, most recently on 10 February 2025. He reports no convulsive seizures. He currently takes levetiracetam 750 mg twice daily."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-14",
+          "latest": "2025-02-14"
+        },
+        "end": {
+          "earliest": "2025-02-14",
+          "latest": "2025-02-14"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "medication",
+        "name": "levetiracetam",
+        "status": "taking",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L2.pattern",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 159,
+          "end": 584,
+          "text": "He continues to report focal sensory seizures, with the latest episode occurring on 2 June 2025. He continues levetiracetam 750 mg twice daily. The letter from our previous consultation in February mentioned an EEG request and a tentative discussion regarding lamotrigine; however, today's consultation made no mention of whether an EEG was ever scheduled or performed, nor whether lamotrigine was ever prescribed or started."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-06-18",
+          "latest": "2025-06-18"
+        },
+        "end": {
+          "earliest": "2025-06-18",
+          "latest": "2025-06-18"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal sensory seizure"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.latest",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 159,
+          "end": 584,
+          "text": "He continues to report focal sensory seizures, with the latest episode occurring on 2 June 2025. He continues levetiracetam 750 mg twice daily. The letter from our previous consultation in February mentioned an EEG request and a tentative discussion regarding lamotrigine; however, today's consultation made no mention of whether an EEG was ever scheduled or performed, nor whether lamotrigine was ever prescribed or started."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-06-02",
+          "latest": "2025-06-02"
+        },
+        "end": {
+          "earliest": "2025-06-02",
+          "latest": "2025-06-02"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal sensory seizure"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.levetiracetam",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 159,
+          "end": 584,
+          "text": "He continues to report focal sensory seizures, with the latest episode occurring on 2 June 2025. He continues levetiracetam 750 mg twice daily. The letter from our previous consultation in February mentioned an EEG request and a tentative discussion regarding lamotrigine; however, today's consultation made no mention of whether an EEG was ever scheduled or performed, nor whether lamotrigine was ever prescribed or started."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-06-18",
+          "latest": "2025-06-18"
+        },
+        "end": {
+          "earliest": "2025-06-18",
+          "latest": "2025-06-18"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "medication",
+        "name": "levetiracetam",
+        "status": "taking",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L3.pattern",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 91,
+          "end": 346,
+          "text": "Ian attended for routine follow-up. He continues levetiracetam 750 mg twice daily. His focal seizures persist every few weeks, latest on 10 October 2025. There remains no documentation regarding the outcome of the February EEG or any start of lamotrigine."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-10-22",
+          "latest": "2025-10-22"
+        },
+        "end": {
+          "earliest": "2025-10-22",
+          "latest": "2025-10-22"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal sensory seizure"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "qualitative",
+          "text": "every few weeks",
+          "count": null,
+          "period": null,
+          "events_per_cluster": null,
+          "approximate": true
+        }
+      }
+    },
+    {
+      "assertion_id": "L3.latest",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 91,
+          "end": 346,
+          "text": "Ian attended for routine follow-up. He continues levetiracetam 750 mg twice daily. His focal seizures persist every few weeks, latest on 10 October 2025. There remains no documentation regarding the outcome of the February EEG or any start of lamotrigine."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-10-10",
+          "latest": "2025-10-10"
+        },
+        "end": {
+          "earliest": "2025-10-10",
+          "latest": "2025-10-10"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal sensory seizure"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L3.levetiracetam",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 91,
+          "end": 346,
+          "text": "Ian attended for routine follow-up. He continues levetiracetam 750 mg twice daily. His focal seizures persist every few weeks, latest on 10 October 2025. There remains no documentation regarding the outcome of the February EEG or any start of lamotrigine."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-10-22",
+          "latest": "2025-10-22"
+        },
+        "end": {
+          "earliest": "2025-10-22",
+          "latest": "2025-10-22"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "medication",
+        "name": "levetiracetam",
+        "status": "taking",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L1.no_convulsions",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 185,
+          "end": 414,
+          "text": "He continues to experience focal seizures with sensory numbness in the left arm roughly every three weeks, most recently on 10 February 2025. He reports no convulsive seizures. He currently takes levetiracetam 750 mg twice daily."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-14",
+          "latest": "2025-02-14"
+        },
+        "end": {
+          "earliest": "2025-02-14",
+          "latest": "2025-02-14"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "convulsive seizure"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L1.lamotrigine_plan",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 416,
+          "end": 672,
+          "text": "I requested a routine outpatient EEG today to re-evaluate his focal discharge. We also discussed potentially adding lamotrigine in the future if his sensory events remain uncontrolled, but deferred any decision until the next visit. Review in four months.\n"
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-14",
+          "latest": "2025-02-14"
+        },
+        "end": {
+          "earliest": "2025-02-14",
+          "latest": "2025-02-14"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "medication",
+        "name": "lamotrigine",
+        "status": "conditional",
+        "condition": "if his sensory events remain uncontrolled"
+      }
+    },
+    {
+      "assertion_id": "L1.request",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 416,
+          "end": 672,
+          "text": "I requested a routine outpatient EEG today to re-evaluate his focal discharge. We also discussed potentially adding lamotrigine in the future if his sensory events remain uncontrolled, but deferred any decision until the next visit. Review in four months.\n"
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-14",
+          "latest": "2025-02-14"
+        },
+        "end": {
+          "earliest": "2025-02-14",
+          "latest": "2025-02-14"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "requested",
+        "result": null,
+        "request_count": null
+      }
+    }
+  ],
+  "links": [
+    {
+      "link_id": "L1.pattern__L2.pattern__same_pattern",
+      "earlier_assertion": "L1.pattern",
+      "later_assertion": "L2.pattern",
+      "relation": "same_pattern",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 159,
+          "end": 584,
+          "text": "He continues to report focal sensory seizures, with the latest episode occurring on 2 June 2025. He continues levetiracetam 750 mg twice daily. The letter from our previous consultation in February mentioned an EEG request and a tentative discussion regarding lamotrigine; however, today's consultation made no mention of whether an EEG was ever scheduled or performed, nor whether lamotrigine was ever prescribed or started."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "L2.pattern__L3.pattern__same_pattern",
+      "earlier_assertion": "L2.pattern",
+      "later_assertion": "L3.pattern",
+      "relation": "same_pattern",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 91,
+          "end": 346,
+          "text": "Ian attended for routine follow-up. He continues levetiracetam 750 mg twice daily. His focal seizures persist every few weeks, latest on 10 October 2025. There remains no documentation regarding the outcome of the February EEG or any start of lamotrigine."
+        }
+      ],
+      "decision_time": null
+    }
+  ]
+}

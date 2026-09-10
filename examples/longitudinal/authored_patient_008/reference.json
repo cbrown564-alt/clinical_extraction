@@ -1,0 +1,268 @@
+{
+  "case_id": "authored-008",
+  "version": "0.2",
+  "reference_kind": "provisional authored correction; not independent annotation or model predictions",
+  "offset_convention": "zero-based Python Unicode character indices; end exclusive; LF newlines",
+  "evidence": [
+    {
+      "evidence_id": "L1.p1",
+      "letter_id": "L1",
+      "start": 102,
+      "end": 200,
+      "text": "Hannah was seen in clinic today following a first referral. She has a diagnosis of focal epilepsy."
+    },
+    {
+      "evidence_id": "L1.p2",
+      "letter_id": "L1",
+      "start": 202,
+      "end": 364,
+      "text": "Her last focal seizure occurred on 15 July 2023. We initiated levetiracetam 500 mg twice daily. She has experienced no further seizures since starting medication."
+    },
+    {
+      "evidence_id": "L1.p3",
+      "letter_id": "L1",
+      "start": 366,
+      "end": 407,
+      "text": "We will review her in six to nine months."
+    },
+    {
+      "evidence_id": "L2.p1",
+      "letter_id": "L2",
+      "start": 95,
+      "end": 244,
+      "text": "Hannah re-attended clinic today after an eighteen-month interval, having missed scheduled interim appointments. Her diagnosis remains focal epilepsy."
+    },
+    {
+      "evidence_id": "L2.p2",
+      "letter_id": "L2",
+      "start": 246,
+      "end": 654,
+      "text": "She explained that she discontinued levetiracetam on her own initiative in early 2024. She remained relatively well until 12 February 2025, when she suffered an explosive cluster of three generalized convulsive seizures within twelve hours, prompting emergency department admission and intravenous lorazepam. No other seizure types occurred. She was restarted on levetiracetam 500 mg twice daily in hospital."
+    },
+    {
+      "evidence_id": "L2.p3",
+      "letter_id": "L2",
+      "start": 656,
+      "end": 764,
+      "text": "We strongly counseled adherence and maintained levetiracetam. No EEG requested today. Review in four months."
+    },
+    {
+      "evidence_id": "L3.p1",
+      "letter_id": "L3",
+      "start": 91,
+      "end": 326,
+      "text": "Hannah attended for review. She reports full adherence to levetiracetam 500 mg twice daily. She has remained entirely seizure-free since her discharge following the February cluster, with no events between 13 February and 15 June 2025."
+    },
+    {
+      "evidence_id": "L3.p2",
+      "letter_id": "L3",
+      "start": 328,
+      "end": 374,
+      "text": "Treatment maintained. Follow-up in six months."
+    }
+  ],
+  "links": [],
+  "answers": [
+    {
+      "request_id": "T1_visit_Q1",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "Documented focal epilepsy and the 15 July 2023 seizure support the predicate."
+    },
+    {
+      "request_id": "T1_visit_Q2",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "No explicit complete inventory and overlapping-activity account covers the whole 90-day interval; one named pattern or absence of convulsions does not exclude every other epileptic pattern."
+    },
+    {
+      "request_id": "T1_visit_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "The permitted letters do not establish a lamotrigine start or explicit non-initiation throughout the 180-day interval; other treatment or current use cannot supply that history."
+    },
+    {
+      "request_id": "T1_visit_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "No qualifying EEG request with a result available by T is established, and the permitted letters do not exhaust all requests in the 180-day interval. Silence or one pending test cannot establish a complete negative."
+    },
+    {
+      "request_id": "T1_visit_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "No qualifying dated reinterpretation is established, and no complete reassessment or event inventory refutes the predicate throughout the 180-day interval. Absence of a recorded revision is not a negative."
+    },
+    {
+      "request_id": "T1_retrospective_Q1",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "Only L1 is available by the fixed February 2024 cutoff; the July event supports T1."
+    },
+    {
+      "request_id": "T1_retrospective_Q2",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "No explicit complete inventory and overlapping-activity account covers the whole 90-day interval; one named pattern or absence of convulsions does not exclude every other epileptic pattern."
+    },
+    {
+      "request_id": "T1_retrospective_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "The permitted letters do not establish a lamotrigine start or explicit non-initiation throughout the 180-day interval; other treatment or current use cannot supply that history."
+    },
+    {
+      "request_id": "T1_retrospective_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "No qualifying EEG request with a result available by T is established, and the permitted letters do not exhaust all requests in the 180-day interval. Silence or one pending test cannot establish a complete negative."
+    },
+    {
+      "request_id": "T1_retrospective_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "No qualifying dated reinterpretation is established, and no complete reassessment or event inventory refutes the predicate throughout the 180-day interval. Absence of a recorded revision is not a negative."
+    },
+    {
+      "request_id": "T2_visit_Q1",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "No follow-up is available and L1 does not establish events or freedom during the November\u2013February lookback."
+    },
+    {
+      "request_id": "T2_visit_Q2",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "No explicit complete inventory and overlapping-activity account covers the whole 90-day interval; one named pattern or absence of convulsions does not exclude every other epileptic pattern."
+    },
+    {
+      "request_id": "T2_visit_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "The permitted letters do not establish a lamotrigine start or explicit non-initiation throughout the 180-day interval; other treatment or current use cannot supply that history."
+    },
+    {
+      "request_id": "T2_visit_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "No qualifying EEG request with a result available by T is established, and the permitted letters do not exhaust all requests in the 180-day interval. Silence or one pending test cannot establish a complete negative."
+    },
+    {
+      "request_id": "T2_visit_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "No qualifying dated reinterpretation is established, and no complete reassessment or event inventory refutes the predicate throughout the 180-day interval. Absence of a recorded revision is not a negative."
+    },
+    {
+      "request_id": "T2_retrospective_Q1",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "The next letter is in February 2025, beyond R in August 2024; the observation gap remains unknown."
+    },
+    {
+      "request_id": "T2_retrospective_Q2",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "No explicit complete inventory and overlapping-activity account covers the whole 90-day interval; one named pattern or absence of convulsions does not exclude every other epileptic pattern."
+    },
+    {
+      "request_id": "T2_retrospective_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "The permitted letters do not establish a lamotrigine start or explicit non-initiation throughout the 180-day interval; other treatment or current use cannot supply that history."
+    },
+    {
+      "request_id": "T2_retrospective_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "No qualifying EEG request with a result available by T is established, and the permitted letters do not exhaust all requests in the 180-day interval. Silence or one pending test cannot establish a complete negative."
+    },
+    {
+      "request_id": "T2_retrospective_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.p1",
+        "L1.p2",
+        "L1.p3"
+      ],
+      "reason": "No qualifying dated reinterpretation is established, and no complete reassessment or event inventory refutes the predicate throughout the 180-day interval. Absence of a recorded revision is not a negative."
+    }
+  ],
+  "review_note": "All 20 answers reassessed against fixed task-v0.2 dates and permitted letters. Paragraph evidence retains qualifications; it is deliberately broader than a minimal explanation span. Structured relationships are in annotations.json. No independent second pass or timing measurement occurred."
+}

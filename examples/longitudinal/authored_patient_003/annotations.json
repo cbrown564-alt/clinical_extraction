@@ -1,0 +1,662 @@
+{
+  "assertions": [
+    {
+      "assertion_id": "L1.diagnosis",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 105,
+          "end": 477,
+          "text": "Christopher is a 29-year-old gentleman with an established diagnosis of generalized epilepsy. He has been taking levetiracetam 1000 mg twice daily with excellent reported adherence. He has been entirely seizure-free for over fourteen months, with his last generalized tonic-clonic convulsion occurring on 10 January 2024. He reports no myoclonic jerks or daytime absences."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-03-01",
+          "latest": "2025-03-01"
+        },
+        "end": {
+          "earliest": "2025-03-01",
+          "latest": "2025-03-01"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "generalized epilepsy",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L1.levetiracetam",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 105,
+          "end": 477,
+          "text": "Christopher is a 29-year-old gentleman with an established diagnosis of generalized epilepsy. He has been taking levetiracetam 1000 mg twice daily with excellent reported adherence. He has been entirely seizure-free for over fourteen months, with his last generalized tonic-clonic convulsion occurring on 10 January 2024. He reports no myoclonic jerks or daytime absences."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-03-01",
+          "latest": "2025-03-01"
+        },
+        "end": {
+          "earliest": "2025-03-01",
+          "latest": "2025-03-01"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "medication",
+        "name": "levetiracetam",
+        "status": "taking",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L2.diagnosis",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 95,
+          "end": 467,
+          "text": "Christopher is a 29-year-old gentleman with an established diagnosis of generalized epilepsy. He has been taking levetiracetam 1000 mg twice daily with excellent reported adherence. He has been entirely seizure-free for over fourteen months, with his last generalized tonic-clonic convulsion occurring on 10 January 2024. He reports no myoclonic jerks or daytime absences."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-06-12",
+          "latest": "2025-06-12"
+        },
+        "end": {
+          "earliest": "2025-06-12",
+          "latest": "2025-06-12"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "generalized epilepsy",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L2.levetiracetam",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 95,
+          "end": 467,
+          "text": "Christopher is a 29-year-old gentleman with an established diagnosis of generalized epilepsy. He has been taking levetiracetam 1000 mg twice daily with excellent reported adherence. He has been entirely seizure-free for over fourteen months, with his last generalized tonic-clonic convulsion occurring on 10 January 2024. He reports no myoclonic jerks or daytime absences."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-06-12",
+          "latest": "2025-06-12"
+        },
+        "end": {
+          "earliest": "2025-06-12",
+          "latest": "2025-06-12"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "medication",
+        "name": "levetiracetam",
+        "status": "taking",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L3.diagnosis",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 100,
+          "end": 365,
+          "text": "I reviewed Christopher today. His diagnosis remains generalized epilepsy on levetiracetam 1000 mg twice daily. He confirms that the nocturnal convulsion on 28 May 2025 was an isolated event, with no further seizures of any kind between 29 May and 18 September 2025."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-09-18",
+          "latest": "2025-09-18"
+        },
+        "end": {
+          "earliest": "2025-09-18",
+          "latest": "2025-09-18"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "generalized epilepsy",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L3.levetiracetam",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 100,
+          "end": 365,
+          "text": "I reviewed Christopher today. His diagnosis remains generalized epilepsy on levetiracetam 1000 mg twice daily. He confirms that the nocturnal convulsion on 28 May 2025 was an isolated event, with no further seizures of any kind between 29 May and 18 September 2025."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-09-18",
+          "latest": "2025-09-18"
+        },
+        "end": {
+          "earliest": "2025-09-18",
+          "latest": "2025-09-18"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "medication",
+        "name": "levetiracetam",
+        "status": "taking",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L1.old_convulsion",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 105,
+          "end": 477,
+          "text": "Christopher is a 29-year-old gentleman with an established diagnosis of generalized epilepsy. He has been taking levetiracetam 1000 mg twice daily with excellent reported adherence. He has been entirely seizure-free for over fourteen months, with his last generalized tonic-clonic convulsion occurring on 10 January 2024. He reports no myoclonic jerks or daytime absences."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2024-01-10",
+          "latest": "2024-01-10"
+        },
+        "end": {
+          "earliest": "2024-01-10",
+          "latest": "2024-01-10"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "generalized tonic-clonic convulsion"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L1.background_absence",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 105,
+          "end": 477,
+          "text": "Christopher is a 29-year-old gentleman with an established diagnosis of generalized epilepsy. He has been taking levetiracetam 1000 mg twice daily with excellent reported adherence. He has been entirely seizure-free for over fourteen months, with his last generalized tonic-clonic convulsion occurring on 10 January 2024. He reports no myoclonic jerks or daytime absences."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2024-01-11",
+          "latest": "2024-01-11"
+        },
+        "end": {
+          "earliest": "2025-03-01",
+          "latest": "2025-03-01"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "all epileptic seizures"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "all_epileptic",
+        "burden": {
+          "kind": "freedom",
+          "text": "over fourteen months",
+          "count": null,
+          "period": {
+            "amount": {
+              "lower": 14,
+              "upper": null,
+              "lower_inclusive": false
+            },
+            "unit": "month"
+          },
+          "events_per_cluster": null,
+          "approximate": false
+        }
+      }
+    },
+    {
+      "assertion_id": "L1.no_other_types",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 105,
+          "end": 477,
+          "text": "Christopher is a 29-year-old gentleman with an established diagnosis of generalized epilepsy. He has been taking levetiracetam 1000 mg twice daily with excellent reported adherence. He has been entirely seizure-free for over fourteen months, with his last generalized tonic-clonic convulsion occurring on 10 January 2024. He reports no myoclonic jerks or daytime absences."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-03-01",
+          "latest": "2025-03-01"
+        },
+        "end": {
+          "earliest": "2025-03-01",
+          "latest": "2025-03-01"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "myoclonic jerks",
+          "daytime absences"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.old_convulsion",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 95,
+          "end": 467,
+          "text": "Christopher is a 29-year-old gentleman with an established diagnosis of generalized epilepsy. He has been taking levetiracetam 1000 mg twice daily with excellent reported adherence. He has been entirely seizure-free for over fourteen months, with his last generalized tonic-clonic convulsion occurring on 10 January 2024. He reports no myoclonic jerks or daytime absences."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2024-01-10",
+          "latest": "2024-01-10"
+        },
+        "end": {
+          "earliest": "2024-01-10",
+          "latest": "2024-01-10"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "generalized tonic-clonic convulsion"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.background_absence",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 95,
+          "end": 467,
+          "text": "Christopher is a 29-year-old gentleman with an established diagnosis of generalized epilepsy. He has been taking levetiracetam 1000 mg twice daily with excellent reported adherence. He has been entirely seizure-free for over fourteen months, with his last generalized tonic-clonic convulsion occurring on 10 January 2024. He reports no myoclonic jerks or daytime absences."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2024-01-11",
+          "latest": "2024-01-11"
+        },
+        "end": null,
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "all epileptic seizures"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "all_epileptic",
+        "burden": {
+          "kind": "freedom",
+          "text": "over fourteen months",
+          "count": null,
+          "period": {
+            "amount": {
+              "lower": 14,
+              "upper": null,
+              "lower_inclusive": false
+            },
+            "unit": "month"
+          },
+          "events_per_cluster": null,
+          "approximate": false
+        }
+      }
+    },
+    {
+      "assertion_id": "L2.no_other_types",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 95,
+          "end": 467,
+          "text": "Christopher is a 29-year-old gentleman with an established diagnosis of generalized epilepsy. He has been taking levetiracetam 1000 mg twice daily with excellent reported adherence. He has been entirely seizure-free for over fourteen months, with his last generalized tonic-clonic convulsion occurring on 10 January 2024. He reports no myoclonic jerks or daytime absences."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-06-12",
+          "latest": "2025-06-12"
+        },
+        "end": {
+          "earliest": "2025-06-12",
+          "latest": "2025-06-12"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "myoclonic jerks",
+          "daytime absences"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.breakthrough",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 469,
+          "end": 784,
+          "text": "However, since the above routine background was recorded, Christopher reports that a single breakthrough nocturnal convulsion occurred on 28 May 2025 following severe sleep deprivation. He had no post-ictal injury and resumed his normal baseline the following day. This is his only seizure event since January 2024."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-05-28",
+          "latest": "2025-05-28"
+        },
+        "end": {
+          "earliest": "2025-05-28",
+          "latest": "2025-05-28"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "nocturnal convulsion"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.only_event",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 469,
+          "end": 784,
+          "text": "However, since the above routine background was recorded, Christopher reports that a single breakthrough nocturnal convulsion occurred on 28 May 2025 following severe sleep deprivation. He had no post-ictal injury and resumed his normal baseline the following day. This is his only seizure event since January 2024."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2024-01-11",
+          "latest": "2024-01-11"
+        },
+        "end": {
+          "earliest": "2025-06-12",
+          "latest": "2025-06-12"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "nocturnal convulsion"
+        ],
+        "kind": "inventory",
+        "interpretation": "epileptic",
+        "scope": "all_epileptic",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L3.breakthrough",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 100,
+          "end": 365,
+          "text": "I reviewed Christopher today. His diagnosis remains generalized epilepsy on levetiracetam 1000 mg twice daily. He confirms that the nocturnal convulsion on 28 May 2025 was an isolated event, with no further seizures of any kind between 29 May and 18 September 2025."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-05-28",
+          "latest": "2025-05-28"
+        },
+        "end": {
+          "earliest": "2025-05-28",
+          "latest": "2025-05-28"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "nocturnal convulsion"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L3.absence",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 100,
+          "end": 365,
+          "text": "I reviewed Christopher today. His diagnosis remains generalized epilepsy on levetiracetam 1000 mg twice daily. He confirms that the nocturnal convulsion on 28 May 2025 was an isolated event, with no further seizures of any kind between 29 May and 18 September 2025."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-05-29",
+          "latest": "2025-05-29"
+        },
+        "end": {
+          "earliest": "2025-09-18",
+          "latest": "2025-09-18"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "all epileptic seizures"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "all_epileptic",
+        "burden": null
+      }
+    }
+  ],
+  "links": [
+    {
+      "link_id": "L1.background_absence__L2.background_absence__repeats",
+      "earlier_assertion": "L1.background_absence",
+      "later_assertion": "L2.background_absence",
+      "relation": "repeats",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 469,
+          "end": 784,
+          "text": "However, since the above routine background was recorded, Christopher reports that a single breakthrough nocturnal convulsion occurred on 28 May 2025 following severe sleep deprivation. He had no post-ictal injury and resumed his normal baseline the following day. This is his only seizure event since January 2024."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "L2.breakthrough__L3.breakthrough__repeats",
+      "earlier_assertion": "L2.breakthrough",
+      "later_assertion": "L3.breakthrough",
+      "relation": "repeats",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 100,
+          "end": 365,
+          "text": "I reviewed Christopher today. His diagnosis remains generalized epilepsy on levetiracetam 1000 mg twice daily. He confirms that the nocturnal convulsion on 28 May 2025 was an isolated event, with no further seizures of any kind between 29 May and 18 September 2025."
+        }
+      ],
+      "decision_time": null
+    }
+  ]
+}

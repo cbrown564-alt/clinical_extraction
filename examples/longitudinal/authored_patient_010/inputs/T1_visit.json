@@ -1,0 +1,11 @@
+{
+  "patient_id": "authored-010",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-01-18",
+      "available_date": "2025-01-18",
+      "text": "Epilepsy clinic letter\nConsultation: 18 January 2025\nPatient: Julia Rossi, aged 31\n\nDear colleague,\n\nJulia attended clinic today following referral from primary care. She has an established diagnosis of focal epilepsy.\n\nShe experiences recurring focal sensory seizures characterized by an ascending epigastric sensation and auditory distortion, occurring approximately twice a month. Her most recent focal sensory seizure occurred on 12 January 2025. She has had no generalized convulsions. She is not currently taking any anti-seizure medication.\n\nToday, 18 January 2025, we agreed to start lamotrigine at 25 mg once daily, titrating by 25 mg every two weeks towards an initial target dose of 100 mg daily. I also requested a routine outpatient EEG today to establish baseline cortical activity. It has not yet been performed. Follow-up in three months.\n"
+    }
+  ]
+}

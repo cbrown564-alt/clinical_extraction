@@ -1,0 +1,23 @@
+{
+  "patient_id": "authored-003",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-03-01",
+      "available_date": "2025-03-01",
+      "text": "Epilepsy clinic letter\nConsultation: 01 March 2025\nPatient: Christopher Vance, aged 29\n\nDear colleague,\n\nChristopher is a 29-year-old gentleman with an established diagnosis of generalized epilepsy. He has been taking levetiracetam 1000 mg twice daily with excellent reported adherence. He has been entirely seizure-free for over fourteen months, with his last generalized tonic-clonic convulsion occurring on 10 January 2024. He reports no myoclonic jerks or daytime absences.\n\nWe agreed to maintain his levetiracetam dosage. No changes or investigations are indicated. Next review in three months.\n"
+    },
+    {
+      "letter_id": "L2",
+      "visit_date": "2025-06-12",
+      "available_date": "2025-06-12",
+      "text": "Epilepsy clinic letter\nConsultation: 12 June 2025\nPatient: Christopher Vance\n\nDear colleague,\n\nChristopher is a 29-year-old gentleman with an established diagnosis of generalized epilepsy. He has been taking levetiracetam 1000 mg twice daily with excellent reported adherence. He has been entirely seizure-free for over fourteen months, with his last generalized tonic-clonic convulsion occurring on 10 January 2024. He reports no myoclonic jerks or daytime absences.\n\nHowever, since the above routine background was recorded, Christopher reports that a single breakthrough nocturnal convulsion occurred on 28 May 2025 following severe sleep deprivation. He had no post-ictal injury and resumed his normal baseline the following day. This is his only seizure event since January 2024.\n\nWe agreed to continue levetiracetam 1000 mg twice daily. No EEG was requested. Follow-up in three months.\n"
+    },
+    {
+      "letter_id": "L3",
+      "visit_date": "2025-09-18",
+      "available_date": "2025-09-18",
+      "text": "Epilepsy clinic letter\nConsultation: 18 September 2025\nPatient: Christopher Vance\n\nDear colleague,\n\nI reviewed Christopher today. His diagnosis remains generalized epilepsy on levetiracetam 1000 mg twice daily. He confirms that the nocturnal convulsion on 28 May 2025 was an isolated event, with no further seizures of any kind between 29 May and 18 September 2025.\n\nManagement remains unchanged.\n"
+    }
+  ]
+}

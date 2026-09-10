@@ -1,0 +1,17 @@
+{
+  "patient_id": "authored-004",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-01-20",
+      "available_date": "2025-01-20",
+      "text": "Epilepsy clinic letter\nConsultation: 20 January 2025\nPatient: Danielle Kim, aged 51\n\nDear colleague,\n\nDanielle attended our epilepsy review clinic. She has a longstanding history of temporal lobe epilepsy.\n\nHer typical pattern has been complex partial seizures occurring approximately twice a month, characterized by behavioral arrest, lip smacking and post-ictal amnesia. Her latest complex partial seizure occurred on 5 January 2025. In the distant past she had grand mal convulsions, but she has suffered no grand mal attacks since December 2021. She continues carbamazepine 200 mg three times daily.\n\nWe agreed to keep her carbamazepine unchanged. No EEG was requested. Review in four months.\n"
+    },
+    {
+      "letter_id": "L2",
+      "visit_date": "2025-05-10",
+      "available_date": "2025-05-10",
+      "text": "Epilepsy clinic letter\nConsultation: 10 May 2025\nPatient: Danielle Kim\n\nDear colleague,\n\nI reviewed Danielle today. We discussed her semiology and terminology in detail.\n\nWhat were previously recorded in her notes as complex partial seizures correspond precisely to focal impaired-awareness seizures under contemporary classification; she had two such focal impaired-awareness seizures in April, with the latest on 22 April 2025. The historical grand mal attacks represent focal to bilateral tonic-clonic seizures, and she confirms complete freedom from bilateral tonic-clonic convulsions since 2021. This is a modernization of descriptive terminology, not a change in underlying clinical diagnosis.\n\nShe remains on carbamazepine 200 mg three times daily. No investigations needed. Follow-up in four months.\n"
+    }
+  ]
+}

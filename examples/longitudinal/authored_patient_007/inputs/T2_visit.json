@@ -1,0 +1,17 @@
+{
+  "patient_id": "authored-007",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-01-10",
+      "available_date": "2025-01-10",
+      "text": "Epilepsy clinic letter\nConsultation: 10 January 2025\nPatient: George Taylor, aged 38\n\nDear colleague,\n\nGeorge attended our outpatient service. He has an established diagnosis of genetic generalized epilepsy with typical absence seizures.\n\nHe describes recurring daytime absence episodes characterized by brief staring and eyelid fluttering lasting 5 to 10 seconds, occurring approximately once or twice daily. His latest absence spell occurred yesterday, 9 January 2025. He reports no generalized convulsions or myoclonic jerks. He continues sodium valproate 500 mg twice daily.\n\nWe agreed to maintain his valproate dose. No EEG requested today. Follow-up in four months.\n"
+    },
+    {
+      "letter_id": "L2",
+      "visit_date": "2025-05-18",
+      "available_date": "2025-05-18",
+      "text": "Epilepsy clinic letter\nConsultation: 18 May 2025\nPatient: George Taylor\n\nDear colleague,\n\nI evaluated George in clinic today. His diagnosis is genetic generalized epilepsy.\n\nHe continues to experience typical absence spells, currently occurring once or twice daily, with the most recent episode noted on 14 May 2025. There have been no convulsive attacks or myoclonic events. He remains on sodium valproate 500 mg twice daily with good reported compliance.\n\nManagement plan is unchanged. Routine review in four months.\n"
+    }
+  ]
+}

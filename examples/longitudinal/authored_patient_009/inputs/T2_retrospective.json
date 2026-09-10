@@ -1,0 +1,23 @@
+{
+  "patient_id": "authored-009",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-02-14",
+      "available_date": "2025-02-14",
+      "text": "Epilepsy clinic letter\nConsultation: 14 February 2025\nPatient: Ian Wright, aged 58\n\nDear colleague,\n\nIan attended clinic for review. He has an established diagnosis of focal epilepsy.\n\nHe continues to experience focal seizures with sensory numbness in the left arm roughly every three weeks, most recently on 10 February 2025. He reports no convulsive seizures. He currently takes levetiracetam 750 mg twice daily.\n\nI requested a routine outpatient EEG today to re-evaluate his focal discharge. We also discussed potentially adding lamotrigine in the future if his sensory events remain uncontrolled, but deferred any decision until the next visit. Review in four months.\n"
+    },
+    {
+      "letter_id": "L2",
+      "visit_date": "2025-06-18",
+      "available_date": "2025-06-18",
+      "text": "Epilepsy clinic letter\nConsultation: 18 June 2025\nPatient: Ian Wright\n\nDear colleague,\n\nI reviewed Ian in clinic today. His diagnosis remains focal epilepsy.\n\nHe continues to report focal sensory seizures, with the latest episode occurring on 2 June 2025. He continues levetiracetam 750 mg twice daily. The letter from our previous consultation in February mentioned an EEG request and a tentative discussion regarding lamotrigine; however, today's consultation made no mention of whether an EEG was ever scheduled or performed, nor whether lamotrigine was ever prescribed or started.\n\nWe will review him again in autumn.\n"
+    },
+    {
+      "letter_id": "L3",
+      "visit_date": "2025-10-22",
+      "available_date": "2025-10-22",
+      "text": "Epilepsy clinic letter\nConsultation: 22 October 2025\nPatient: Ian Wright\n\nDear colleague,\n\nIan attended for routine follow-up. He continues levetiracetam 750 mg twice daily. His focal seizures persist every few weeks, latest on 10 October 2025. There remains no documentation regarding the outcome of the February EEG or any start of lamotrigine.\n\nFollow-up in six months.\n"
+    }
+  ]
+}

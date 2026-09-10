@@ -1,0 +1,11 @@
+{
+  "patient_id": "authored-006",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-02-15",
+      "available_date": "2025-02-15",
+      "text": "Epilepsy clinic letter\nConsultation: 15 February 2025\nPatient: Fatima Patel, aged 24\n\nDear colleague,\n\nFatima attended clinic with her partner. She has a known diagnosis of focal epilepsy.\n\nThere is a striking discrepancy in the history provided today. Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing. The partner states the most recent nocturnal seizure was on 12 February 2025. Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well. Because of this direct informant discordance, I have recorded both accounts separately. She continues lamotrigine 100 mg twice daily.\n\nWe agreed to maintain her lamotrigine dose while her partner attempts home video recording. No EEG requested. Review in four months.\n"
+    }
+  ]
+}

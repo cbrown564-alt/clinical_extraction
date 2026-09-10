@@ -1,0 +1,11 @@
+{
+  "patient_id": "authored-009",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-02-14",
+      "available_date": "2025-02-14",
+      "text": "Epilepsy clinic letter\nConsultation: 14 February 2025\nPatient: Ian Wright, aged 58\n\nDear colleague,\n\nIan attended clinic for review. He has an established diagnosis of focal epilepsy.\n\nHe continues to experience focal seizures with sensory numbness in the left arm roughly every three weeks, most recently on 10 February 2025. He reports no convulsive seizures. He currently takes levetiracetam 750 mg twice daily.\n\nI requested a routine outpatient EEG today to re-evaluate his focal discharge. We also discussed potentially adding lamotrigine in the future if his sensory events remain uncontrolled, but deferred any decision until the next visit. Review in four months.\n"
+    }
+  ]
+}

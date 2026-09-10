@@ -1,0 +1,609 @@
+{
+  "assertions": [
+    {
+      "assertion_id": "L1.diagnosis",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 102,
+          "end": 205,
+          "text": "Danielle attended our epilepsy review clinic. She has a longstanding history of temporal lobe epilepsy."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-01-20",
+          "latest": "2025-01-20"
+        },
+        "end": {
+          "earliest": "2025-01-20",
+          "latest": "2025-01-20"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "temporal lobe epilepsy",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L1.pattern",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 207,
+          "end": 603,
+          "text": "Her typical pattern has been complex partial seizures occurring approximately twice a month, characterized by behavioral arrest, lip smacking and post-ictal amnesia. Her latest complex partial seizure occurred on 5 January 2025. In the distant past she had grand mal convulsions, but she has suffered no grand mal attacks since December 2021. She continues carbamazepine 200 mg three times daily."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-01-20",
+          "latest": "2025-01-20"
+        },
+        "end": {
+          "earliest": "2025-01-20",
+          "latest": "2025-01-20"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "complex partial seizure"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "rate",
+          "text": "approximately twice a month",
+          "count": {
+            "lower": 2,
+            "upper": 2
+          },
+          "period": {
+            "amount": {
+              "lower": 1,
+              "upper": 1
+            },
+            "unit": "month"
+          },
+          "events_per_cluster": null,
+          "approximate": true
+        }
+      }
+    },
+    {
+      "assertion_id": "L1.latest",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 207,
+          "end": 603,
+          "text": "Her typical pattern has been complex partial seizures occurring approximately twice a month, characterized by behavioral arrest, lip smacking and post-ictal amnesia. Her latest complex partial seizure occurred on 5 January 2025. In the distant past she had grand mal convulsions, but she has suffered no grand mal attacks since December 2021. She continues carbamazepine 200 mg three times daily."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-01-05",
+          "latest": "2025-01-05"
+        },
+        "end": {
+          "earliest": "2025-01-05",
+          "latest": "2025-01-05"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "complex partial seizure"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L1.carbamazepine",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 207,
+          "end": 603,
+          "text": "Her typical pattern has been complex partial seizures occurring approximately twice a month, characterized by behavioral arrest, lip smacking and post-ictal amnesia. Her latest complex partial seizure occurred on 5 January 2025. In the distant past she had grand mal convulsions, but she has suffered no grand mal attacks since December 2021. She continues carbamazepine 200 mg three times daily."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-01-20",
+          "latest": "2025-01-20"
+        },
+        "end": {
+          "earliest": "2025-01-20",
+          "latest": "2025-01-20"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "medication",
+        "name": "carbamazepine",
+        "status": "taking",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L1.no_convulsions",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 207,
+          "end": 603,
+          "text": "Her typical pattern has been complex partial seizures occurring approximately twice a month, characterized by behavioral arrest, lip smacking and post-ictal amnesia. Her latest complex partial seizure occurred on 5 January 2025. In the distant past she had grand mal convulsions, but she has suffered no grand mal attacks since December 2021. She continues carbamazepine 200 mg three times daily."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2021-12-01",
+          "latest": "2021-12-31"
+        },
+        "end": {
+          "earliest": "2025-01-20",
+          "latest": "2025-01-20"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "grand mal convulsion"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.pattern",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 171,
+          "end": 699,
+          "text": "What were previously recorded in her notes as complex partial seizures correspond precisely to focal impaired-awareness seizures under contemporary classification; she had two such focal impaired-awareness seizures in April, with the latest on 22 April 2025. The historical grand mal attacks represent focal to bilateral tonic-clonic seizures, and she confirms complete freedom from bilateral tonic-clonic convulsions since 2021. This is a modernization of descriptive terminology, not a change in underlying clinical diagnosis."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-05-10",
+          "latest": "2025-05-10"
+        },
+        "end": {
+          "earliest": "2025-05-10",
+          "latest": "2025-05-10"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal impaired-awareness seizure"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.latest",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 171,
+          "end": 699,
+          "text": "What were previously recorded in her notes as complex partial seizures correspond precisely to focal impaired-awareness seizures under contemporary classification; she had two such focal impaired-awareness seizures in April, with the latest on 22 April 2025. The historical grand mal attacks represent focal to bilateral tonic-clonic seizures, and she confirms complete freedom from bilateral tonic-clonic convulsions since 2021. This is a modernization of descriptive terminology, not a change in underlying clinical diagnosis."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-04-22",
+          "latest": "2025-04-22"
+        },
+        "end": {
+          "earliest": "2025-04-22",
+          "latest": "2025-04-22"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal impaired-awareness seizure"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.carbamazepine",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 701,
+          "end": 808,
+          "text": "She remains on carbamazepine 200 mg three times daily. No investigations needed. Follow-up in four months.\n"
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-05-10",
+          "latest": "2025-05-10"
+        },
+        "end": {
+          "earliest": "2025-05-10",
+          "latest": "2025-05-10"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "medication",
+        "name": "carbamazepine",
+        "status": "taking",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L2.no_convulsions",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 171,
+          "end": 699,
+          "text": "What were previously recorded in her notes as complex partial seizures correspond precisely to focal impaired-awareness seizures under contemporary classification; she had two such focal impaired-awareness seizures in April, with the latest on 22 April 2025. The historical grand mal attacks represent focal to bilateral tonic-clonic seizures, and she confirms complete freedom from bilateral tonic-clonic convulsions since 2021. This is a modernization of descriptive terminology, not a change in underlying clinical diagnosis."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2021-01-01",
+          "latest": "2021-12-31"
+        },
+        "end": {
+          "earliest": "2025-05-10",
+          "latest": "2025-05-10"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal to bilateral tonic-clonic seizure"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L3.pattern",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 95,
+          "end": 265,
+          "text": "Danielle attended for review. She continues to experience focal impaired-awareness seizures, with the latest on 18 August 2025. No tonic-clonic convulsions have occurred."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-09-05",
+          "latest": "2025-09-05"
+        },
+        "end": {
+          "earliest": "2025-09-05",
+          "latest": "2025-09-05"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal impaired-awareness seizure"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L3.latest",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 95,
+          "end": 265,
+          "text": "Danielle attended for review. She continues to experience focal impaired-awareness seizures, with the latest on 18 August 2025. No tonic-clonic convulsions have occurred."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-08-18",
+          "latest": "2025-08-18"
+        },
+        "end": {
+          "earliest": "2025-08-18",
+          "latest": "2025-08-18"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal impaired-awareness seizure"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L3.carbamazepine",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 267,
+          "end": 324,
+          "text": "Carbamazepine is maintained. Routine follow-up arranged.\n"
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-09-05",
+          "latest": "2025-09-05"
+        },
+        "end": {
+          "earliest": "2025-09-05",
+          "latest": "2025-09-05"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "medication",
+        "name": "carbamazepine",
+        "status": "taking",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L3.no_convulsions",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 95,
+          "end": 265,
+          "text": "Danielle attended for review. She continues to experience focal impaired-awareness seizures, with the latest on 18 August 2025. No tonic-clonic convulsions have occurred."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-09-05",
+          "latest": "2025-09-05"
+        },
+        "end": {
+          "earliest": "2025-09-05",
+          "latest": "2025-09-05"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal to bilateral tonic-clonic seizure"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.april_count",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 171,
+          "end": 699,
+          "text": "What were previously recorded in her notes as complex partial seizures correspond precisely to focal impaired-awareness seizures under contemporary classification; she had two such focal impaired-awareness seizures in April, with the latest on 22 April 2025. The historical grand mal attacks represent focal to bilateral tonic-clonic seizures, and she confirms complete freedom from bilateral tonic-clonic convulsions since 2021. This is a modernization of descriptive terminology, not a change in underlying clinical diagnosis."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-04-01",
+          "latest": "2025-04-01"
+        },
+        "end": {
+          "earliest": "2025-04-30",
+          "latest": "2025-04-30"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal impaired-awareness seizure"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "count",
+          "text": "two such focal impaired-awareness seizures in April",
+          "count": {
+            "lower": 2,
+            "upper": 2
+          },
+          "period": null,
+          "events_per_cluster": null,
+          "approximate": false
+        }
+      }
+    }
+  ],
+  "links": [
+    {
+      "link_id": "L1.pattern__L2.pattern__same_pattern",
+      "earlier_assertion": "L1.pattern",
+      "later_assertion": "L2.pattern",
+      "relation": "same_pattern",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 171,
+          "end": 699,
+          "text": "What were previously recorded in her notes as complex partial seizures correspond precisely to focal impaired-awareness seizures under contemporary classification; she had two such focal impaired-awareness seizures in April, with the latest on 22 April 2025. The historical grand mal attacks represent focal to bilateral tonic-clonic seizures, and she confirms complete freedom from bilateral tonic-clonic convulsions since 2021. This is a modernization of descriptive terminology, not a change in underlying clinical diagnosis."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "L1.no_convulsions__L2.no_convulsions__same_pattern",
+      "earlier_assertion": "L1.no_convulsions",
+      "later_assertion": "L2.no_convulsions",
+      "relation": "same_pattern",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 171,
+          "end": 699,
+          "text": "What were previously recorded in her notes as complex partial seizures correspond precisely to focal impaired-awareness seizures under contemporary classification; she had two such focal impaired-awareness seizures in April, with the latest on 22 April 2025. The historical grand mal attacks represent focal to bilateral tonic-clonic seizures, and she confirms complete freedom from bilateral tonic-clonic convulsions since 2021. This is a modernization of descriptive terminology, not a change in underlying clinical diagnosis."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "L2.pattern__L3.pattern__same_pattern",
+      "earlier_assertion": "L2.pattern",
+      "later_assertion": "L3.pattern",
+      "relation": "same_pattern",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 95,
+          "end": 265,
+          "text": "Danielle attended for review. She continues to experience focal impaired-awareness seizures, with the latest on 18 August 2025. No tonic-clonic convulsions have occurred."
+        }
+      ],
+      "decision_time": null
+    }
+  ]
+}
