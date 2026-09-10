@@ -2,37 +2,79 @@
 
 Turn epilepsy clinic letters into structured clinical facts.
 
-This repository is research code and a working demonstration. The proposed
-method translates clinic letters into structured clinical facts in a designed
-form, with quoted source text. A model collects the facts and evidence;
-recorded rules shape them into the required form. Headline tables are Gemini
-five-cell grids: each of find, encode, and select is rules, LLM, or both.
-The cited score is the select stop; find and encode stops are stage
-ablations. The six-model comparison uses cell 3 only (LLM find, rules
-encode, rules select) on both Gan and ExECT. On the inventory task,
-ExECT cell 3 is both the roster row and the Gemini peak. Cell 4
-(LLM encode then rules select) stays Gemini-only. Neither table is
-an on/off hybrid switch. The public golds
-are the evaluation forms used here, not the task. Tables cite Gemini 3.7
-Flash so the story stays on the method. Grok, Luna, DeepSeek, Qwen, and
-Gemma fill the cell-3 roster. The recorded object keeps the source span
-and a change log, not only the score.
+The submitted dissertation is **Extract, then decide: a two-stage pipeline to identify seizure frequency patterns in epilepsy clinic letters**.
+Public repository: [cbrown564-alt/clinical_extraction](https://github.com/cbrown564-alt/clinical_extraction).
+An assessed copy is on [QUB EEECS GitLab](https://gitlab.eeecs.qub.ac.uk/40466218/clinical_extraction.git).
+
+The submitted paper is the extract-then-decide two-stage pipeline: Hybrid rules decide versus LLM-only decide on the same saved extract.
 
 This is a research and teaching package, not a clinical deployment claim.
-
 The public tree is the package, tests, configs, and Demo UI fixtures. Clinic
 letters, the lab notebook, experiment dumps, and the paper library stay on the
 local research checkout and are not cloned.
 
+## Try the demo
+
+The frontend is the quick-reference path:
+[frontend/](https://github.com/cbrown564-alt/clinical_extraction/tree/main/frontend).
+It uses the bundled fixtures under `frontend/public/mock-data/`; no local letter
+corpus is required. Run it locally from the repository root in two terminals.
+
+Windows PowerShell:
+
+```powershell
+# Terminal 1: local Python API
+.venv\Scripts\python.exe -m clinical_extraction.trace_explorer.api.app
+
+# Terminal 2: Next.js frontend
+Set-Location frontend
+npm ci                 # first run only
+npm run dev
+```
+
+macOS or Linux:
+
+```sh
+# Terminal 1: local Python API
+.venv/bin/python -m clinical_extraction.trace_explorer.api.app
+
+# Terminal 2: Next.js frontend
+cd frontend
+npm ci                 # first run only
+npm run dev
+```
+
+Open [http://127.0.0.1:3000/workbench](http://127.0.0.1:3000/workbench).
+Saved and fixture views explain the selected methods without new model calls.
+More detail is in the [frontend README](frontend/README.md).
+
 ## Results
 
-Held-out test scores for Gemini 3.7 Flash (2 d.p.), the cited model.
-Find and encode columns are stage ablations; select is the headline.
-The six-model roster compares cell 3 only on both tasks. GPT-5.6 Sol
-cells stay historical. Rules are deterministic and do not use a model.
+The Gemini five-cell grids and six-model rosters below are repository
+research notes for this package. They are not the dissertation’s
+headline claim.
 
-**Gan 2026** (Purist micro-F1, locked `test450`). Headline is the submitted
-(select) score:
+A model collects facts and evidence; recorded rules shape them into the
+required form. The tables below are Gemini five-cell grids: each of
+find, encode, and select is rules, LLM, or both. The cited score is the
+select stop; find and encode stops are stage ablations. The six-model
+comparison uses cell 3 only (LLM find, rules encode, rules select) on
+both Gan and ExECT. On the inventory task, ExECT cell 3 is both the
+roster row and the Gemini peak. Cell 4 (LLM encode then rules select)
+stays Gemini-only. Neither table is an on/off hybrid switch. The public
+golds are the evaluation forms used here, not the task. Tables cite
+Gemini 3.7 Flash so the story stays on the method. Grok, Luna,
+DeepSeek, Qwen, and Gemma fill the cell-3 roster. The recorded object
+keeps the source span and a change log, not only the score.
+
+Held-out test scores for Gemini 3.7 Flash (2 d.p.), the cited model.
+Find and encode columns are stage ablations; select is the cited stop
+in these notes. The six-model roster compares cell 3 only on both
+tasks. GPT-5.6 Sol cells stay historical. Rules are deterministic and
+do not use a model.
+
+**Gan 2026** (Purist micro-F1, locked `test450`). Cited stop is the
+select score:
 
 | Find | Encode | Select | Purist micro-F1 |
 | --- | --- | --- | ---: |
@@ -42,8 +84,8 @@ cells stay historical. Rules are deterministic and do not use a model.
 | LLM | LLM | rules | 0.85 |
 | LLM | LLM | LLM | 0.85 |
 
-**ExECTv2** (4-family micro F1, locked `test60`). Headline is the
-submitted (select) score. All five rows use the same scorer.
+**ExECTv2** (4-family micro F1, locked `test60`). Cited stop is the
+select score. All five rows use the same scorer.
 
 | Find | Encode | Select | F1 |
 | --- | --- | --- | ---: |
@@ -167,40 +209,6 @@ flowchart LR
    and records which component produced the result.
 5. **Score** — the task scorer turns the final representation into Gan
    categories or ExECT fact metrics.
-
-## Try the demo
-
-The frontend is the main interactive demonstration. It uses the bundled
-fixtures under `frontend/public/mock-data/`; no local letter corpus is
-required. From the repository root, use two terminals.
-
-Windows PowerShell:
-
-```powershell
-# Terminal 1: local Python API
-.venv\Scripts\python.exe -m clinical_extraction.trace_explorer.api.app
-
-# Terminal 2: Next.js frontend
-Set-Location frontend
-npm ci                 # first run only
-npm run dev
-```
-
-macOS or Linux:
-
-```sh
-# Terminal 1: local Python API
-.venv/bin/python -m clinical_extraction.trace_explorer.api.app
-
-# Terminal 2: Next.js frontend
-cd frontend
-npm ci                 # first run only
-npm run dev
-```
-
-Open [http://127.0.0.1:3000/workbench](http://127.0.0.1:3000/workbench).
-Saved and fixture views explain the selected methods without new model calls.
-More detail is in the [frontend README](frontend/README.md).
 
 ## Setup
 
