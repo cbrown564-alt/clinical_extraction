@@ -1,19 +1,18 @@
-# Longitudinal Epilepsy Benchmark
+# Longitudinal epilepsy benchmark
 
-This directory owns task definition, annotation guidance, generation, and evaluation policies for the synthetic longitudinal epilepsy benchmark.
+This directory owns the task and provisional annotation policies.
 
-- [Task definition](task_definition.md): Phase 1 working questions, evidence cutoffs,
-  primary endpoint, annotation needs, seed policy and pilot/scaling criteria.
-- [Literature rationale](../reference/longitudinal_epilepsy_rationale.md): verified
-  prior-work comparison, version checks and source-use findings.
-- [Authored patient 001](../../examples/longitudinal/authored_patient_001/README.md):
-  P2.1's three letters, both patient accounts and all 20 provisional query answers.
+- [Task definition](task_definition.md): cohort queries, cutoffs, endpoint and pilot criteria.
+- [Annotation guide](annotation_guide.md) and [schema](annotation.schema.json): assertion meaning and structure, paired version 0.1.
+- [Literature rationale](../reference/longitudinal_epilepsy_rationale.md): prior-work sources and limits.
+- [Authored patient 001](../../examples/longitudinal/authored_patient_001/README.md): the original worked example.
+- [Pilot coverage](pilot_coverage_matrix.md): 12 authored cases and outstanding coverage.
+- [Pilot review](pilot_disagreement_report.md): corrections, computed reference summary and unperformed independent pass.
 
-Annotation guidance, generation configuration and the frozen evaluation protocol
-remain future work. The authored example has not had independent clinical review.
-No frozen longitudinal corpus
-or benchmark result is available. The named Chang reference has been verified and
-incorporated into the literature rationale.
+The case pack is implemented and mechanically checked. Phase 2 remains open for
+coverage acceptance and independent annotation. Unsupported agreement and timing
+claims have been withdrawn. No clinical validation, corpus freeze or extraction
+benchmark result is available. Guide/schema v0.2 remain provisional.
 
-- Active roadmap: [`docs/plans/ACTIVE_ROADMAP.md`](../plans/ACTIVE_ROADMAP.md)
-- Current task status: [`PROJECT_STATUS.md`](../../PROJECT_STATUS.md)
+The [roadmap](../plans/ACTIVE_ROADMAP.md) owns work order; local
+[project status](../../PROJECT_STATUS.md) owns current verification.

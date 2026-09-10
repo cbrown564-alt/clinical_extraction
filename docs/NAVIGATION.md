@@ -18,12 +18,16 @@ and the move sequence are in the [project plan](plans/ACTIVE_ROADMAP.md).
 | Cohort queries, evidence cutoffs, endpoint, seed eligibility and pilot criteria | [Task definition](longitudinal/task_definition.md) |
 | Prior-work comparison, publication versions and source-use findings | [Literature rationale](reference/longitudinal_epilepsy_rationale.md) |
 | Three-letter example, filtered inputs and expected query answers | [Authored patient 001](../examples/longitudinal/authored_patient_001/README.md) |
+| Annotation meaning, uncertainty and relationship rules | [Annotation guide v0.2](longitudinal/annotation_guide.md) |
+| Provisional annotation structure | [Annotation schema v0.2](longitudinal/annotation.schema.json) |
+| Authored pilot coverage and gaps | [Pilot coverage](longitudinal/pilot_coverage_matrix.md) |
+| Pilot corrections, computed summary and remaining independent pass | [Pilot review](longitudinal/pilot_disagreement_report.md) |
 
-The annotation guide and generation protocol will be created during Phases 2–3;
+The generation protocol will be created during Phase 3;
 the evaluation protocol must be frozen before model comparison. The roadmap owns
 work order, not a duplicate query specification. No longitudinal benchmark result
-is available. P2.1's authored example is implemented; annotation guidance and
-independent review remain ahead.
+is available. The 12-case pilot is implemented and mechanically checked; coverage
+acceptance and independent review remain open. Unsupported P2.6 measurements are withdrawn.
 
 ## Existing letter-benchmark evidence
 

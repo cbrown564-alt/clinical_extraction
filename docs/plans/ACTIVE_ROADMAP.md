@@ -1,7 +1,7 @@
 # Longitudinal epilepsy benchmark: project plan
 
 Updated: 2026-09-09. Owner: Conor Brown.
-Status: P2.1 authored example implemented and mechanically checked; annotation guide and pilot remain ahead. Phase 0 retained-path limits remain documented.
+Status: Phase 2 remains open. Pilot v0.5 has complete independent AI attempt coverage and reviewed query-status disagreements. Temporal/link alignment and an executable field-utility comparison remain outstanding. Unsupported human-effort claims remain withdrawn. Phase 0 retained-path limits remain documented.
 
 
 [Project status](../../PROJECT_STATUS.md) owns task progress and current checks.
@@ -399,6 +399,16 @@ source-use/lineage checks and any paid budget remain prerequisites for generatio
   fields that do not change any query. Revise before implementing the full schema.
   Audit model-facing schemas/instructions with the plain-language prompt skill.
 
+Current P2.6 evidence (2026-09-10): 44 successful outputs and four preserved call
+failures across all 48 jobs. All returned query-status disagreements have been
+reviewed; pilot v0.5 preserves versioned corrections. Temporal triage separates
+43 representation-only differences from 144 unresolved bounds/kind/anchor
+candidates on 202 matched assertions. Link matching covers only 20/97 permitted
+reference links. The [pilot review](../longitudinal/pilot_disagreement_report.md)
+owns findings and field purposes. A patient-001 Q5 evaluator now provides a first field-deletion comparison:
+links and decision_time each change two answers. Complete negative revision
+history is not represented yet; all-query utility remains unmeasured. Earlier dated “not run” notes below describe historical preparation.
+
 Completion: inspectable case pack, annotation guide, provisional schema and query
 answers with explicit unresolved cases. The pilot is development evidence, not
 expert gold. Guide and schema have one owner each and version together.
@@ -407,8 +417,29 @@ P2.1 on 2026-09-09: [authored patient 001](../../examples/longitudinal/authored_
 contains three seed-free fictional letters, 20 provisional answers and four
 physically filtered input sets. Checks cover evidence spans, source hashes, date
 arithmetic and cutoff eligibility. Task definition v0.2 records the query
-clarifications exposed by the example. P2.2–P2.6 remain unimplemented: no annotation
-guide/schema freeze, 12-patient pilot or independent annotation is claimed.
+clarifications exposed by the example.
+
+P2.2–P2.4 on 2026-09-09: [annotation guide v0.1](../longitudinal/annotation_guide.md)
+and its paired provisional schema cover the four families, temporal uncertainty,
+source evidence and conservative relationships. The worked example has 35
+assertions and 10 links checked for structure, spans, bounds and references.
+Clinical entailment and complete executable query coverage remain unverified.
+
+P2.5–P2.6 correction on 2026-09-09: the [12-case pack](../longitudinal/pilot_coverage_matrix.md)
+retains 36 original fictional letters and now uses the fixed task-v0.2 schedule,
+exact filtered inputs, corrected query references and annotations across all letters.
+The [pilot review](../longitudinal/pilot_disagreement_report.md) records 202 assertions,
+44 relationships, outstanding coverage and a reproducible reference summary with
+constant-answer baselines. Earlier agreement, timing and sensitivity numbers were
+hard-coded and have been withdrawn. Coverage acceptance, an independent annotation
+pass, measured disagreement/effort and a field-utility comparison remain open.
+Phase 2 is not complete; schema v0.1 remains provisional.
+
+P2.5 coverage revision v0.3 on 2026-09-09: five cases intentionally revised with
+prior files retained. The coverage matrix maps every task minimum to authored
+content; every query has at least two of each status. Forty-eight reference-free
+jobs are prepared for the independent pass. None has been run; P2.6 remains open.
+
 
 ### Phase 3 — Generate and check synthetic records
 
