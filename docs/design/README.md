@@ -3,6 +3,7 @@
 | Document | Purpose |
 | --- | --- |
 | [software design](architecture.md) | Package and task ownership |
+| [architecture review — 11 September 2026](architecture_review_2026-09-11.md) | Code-grounded review of shared abstractions, longitudinal epilepsy and guideline evidence; advisory recommendations |
 | [data rules](data_contract.md) | Records, splits, and schemas |
 | [component attribution](component_evidence_attribution_architecture.md) | Evidence needed to credit a component |
 | [deterministic rule groups](deterministic_projection_rule_taxonomy.md) | Rule categories and ownership |
