@@ -52,12 +52,8 @@ def _dx(text: str) -> ExectAnnotation:
 
 def test_extract_is_the_living_cell_3_method() -> None:
     assert "exect_llm_extract" in LIVE_METHODS
-    assert LIVE_METHODS["exect_llm_extract"].get("scorer") == (
-        "clinical_inventory_unit_keys"
-    )
-    assert LIVE_METHODS["exect_llm_pre_post"].get("scorer") == (
-        "clinical_inventory_unit_keys"
-    )
+    assert LIVE_METHODS["exect_llm_extract"].get("scorer") == ("clinical_inventory_unit_keys")
+    assert LIVE_METHODS["exect_llm_pre_post"].get("scorer") == ("clinical_inventory_unit_keys")
     assert LIVE_METHODS["exect_llm_extract"].get("paper_cell") is not False
     assert LIVE_METHODS["exect_llm_extract_filtered"].get("paper_cell") is False
     assert LIVE_METHODS["exect_llm_only"]["alias_of"] == "exect_llm_extract_and_select"
@@ -87,13 +83,9 @@ def test_dev140_diagnosis_inventory_count_vs_headline() -> None:
     assert dx_h == 289
     assert dx_i >= dx_h
     assert dx_i == 329
-    assert inventory["by_family"]["SeizureFrequency"] == headline["by_family"][
-        "SeizureFrequency"
-    ]
+    assert inventory["by_family"]["SeizureFrequency"] == headline["by_family"]["SeizureFrequency"]
     assert inventory["by_family"]["Prescription"] == headline["by_family"]["Prescription"]
-    assert inventory["by_family"]["Investigations"] == headline["by_family"][
-        "Investigations"
-    ]
+    assert inventory["by_family"]["Investigations"] == headline["by_family"]["Investigations"]
 
 
 def test_inventory_prompt_is_authored_separately_from_compact() -> None:
@@ -108,9 +100,7 @@ def test_inventory_prompt_is_authored_separately_from_compact() -> None:
     assert "INVENTORY_AUTHORED_KEYS" not in compact_source
     assert "_INVENTORY_DROPPED_DIAGNOSIS_RULES" not in compact_source
     letter = ExectLetter(letter_id="EA0002", note_text="placeholder")
-    payload = json.loads(
-        structured.build_prompt_input(letter, prompt_version=INVENTORY_VERSION)
-    )
+    payload = json.loads(structured.build_prompt_input(letter, prompt_version=INVENTORY_VERSION))
     shared = " ".join(payload["clinical_rules"]["shared"])
     assert "Use one event per medication, diagnostic concept" not in shared
     assert "Write a separate event for each stated" in shared
@@ -119,9 +109,7 @@ def test_inventory_prompt_is_authored_separately_from_compact() -> None:
 def test_inventory_prompt_emits_both_and_leaves_live_default() -> None:
     before = structured.PROMPT_VERSION
     letter = ExectLetter(letter_id="EA0002", note_text="placeholder")
-    payload = json.loads(
-        structured.build_prompt_input(letter, prompt_version=INVENTORY_VERSION)
-    )
+    payload = json.loads(structured.build_prompt_input(letter, prompt_version=INVENTORY_VERSION))
     diagnosis_rules = " ".join(payload["clinical_rules"]["diagnosis"])
     sf_rules = " ".join(payload["clinical_rules"]["seizure_frequency"])
     procedure = " ".join(payload["decision_procedure"])
@@ -141,12 +129,8 @@ def test_inventory_prompt_emits_both_and_leaves_live_default() -> None:
     assert "Reject vague words such as 'events'" not in sf_rules
     assert "previous seizure was a year ago" not in sf_rules
     assert "Onset-history statements such as" not in sf_rules
-    assert "Do not add a separate generic epilepsy diagnosis to a specific" not in (
-        diagnosis_rules
-    )
-    assert "Prefer the most specific epilepsy syndrome or seizure type" not in (
-        diagnosis_rules
-    )
+    assert "Do not add a separate generic epilepsy diagnosis to a specific" not in (diagnosis_rules)
+    assert "Prefer the most specific epilepsy syndrome or seizure type" not in (diagnosis_rules)
     assert "Onset-history phrases such as" not in diagnosis_rules
     assert "remove exact duplicate events" not in procedure
     assert "only after the state is clear" not in procedure
@@ -159,13 +143,9 @@ def test_inventory_prompt_emits_both_and_leaves_live_default() -> None:
     )
     assert len(payload["examples"]) == 5
     assert any(
-        "has not had any further seizures" in json.dumps(example)
-        for example in payload["examples"]
+        "has not had any further seizures" in json.dumps(example) for example in payload["examples"]
     )
-    assert any(
-        "Myoclonic jerks daily" in json.dumps(example)
-        for example in payload["examples"]
-    )
+    assert any("Myoclonic jerks daily" in json.dumps(example) for example in payload["examples"])
     blob = json.dumps(payload).lower()
     for phrase in (
         "gold label",
@@ -200,12 +180,8 @@ def test_inventory_prompt_emits_both_and_leaves_live_default() -> None:
     only_dx = " ".join(only["clinical_rules"]["diagnosis"])
     only_sf = " ".join(only["clinical_rules"]["seizure_frequency"])
     only_shared = " ".join(only["clinical_rules"]["shared"])
-    assert "Do not add a separate generic epilepsy diagnosis to a specific" not in (
-        only_dx
-    )
-    assert "Prefer the most specific epilepsy syndrome or seizure type" not in (
-        only_dx
-    )
+    assert "Do not add a separate generic epilepsy diagnosis to a specific" not in (only_dx)
+    assert "Prefer the most specific epilepsy syndrome or seizure type" not in (only_dx)
     assert "Onset-history phrases such as" not in only_dx
     assert "Use one event per medication, diagnostic concept" not in only_shared
     assert "Keep a generic epilepsy diagnosis when the letter states it" in only_dx
@@ -220,13 +196,9 @@ def test_both_extract_is_inventory_plus_suggested_candidates() -> None:
         letter_id="EA0000",
         note_text="Diagnosis: Epilepsy, probable focal onset. She remains well.",
     )
-    extract = json.loads(
-        structured.build_prompt_input(letter, prompt_version=INVENTORY_VERSION)
-    )
+    extract = json.loads(structured.build_prompt_input(letter, prompt_version=INVENTORY_VERSION))
     both = json.loads(
-        structured.build_prompt_input(
-            letter, prompt_version=structured.EXECT_LLM_PRE_POST
-        )
+        structured.build_prompt_input(letter, prompt_version=structured.EXECT_LLM_PRE_POST)
     )
     assert list(both) == list(structured.INVENTORY_BOTH_AUTHORED_KEYS)
     assert "suggested_evidence" in both
@@ -304,8 +276,7 @@ def test_inventory_residuals_ablation_invents_named_type() -> None:
     added = next(
         row
         for row in updated
-        if row["entity"] == "Diagnosis"
-        and row["text"] == "focal seizures with altered awareness"
+        if row["entity"] == "Diagnosis" and row["text"] == "focal seizures with altered awareness"
     )
     assert added["attributes"]["DiagCategory"] == "MultipleSeizures"
     assert stats["sf_adds"] == 0

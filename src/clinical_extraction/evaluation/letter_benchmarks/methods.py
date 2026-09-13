@@ -170,8 +170,7 @@ def method_spec(method: str) -> dict[str, object]:
         return LIVE_METHODS[method]
     except KeyError as exc:
         raise ValueError(
-            f"unsupported paper method {method!r}; "
-            f"expected one of {sorted(LIVE_METHODS)}"
+            f"unsupported paper method {method!r}; expected one of {sorted(LIVE_METHODS)}"
         ) from exc
 
 
@@ -182,9 +181,7 @@ def split_for(method: str, split: str) -> str:
     allowed = spec["splits"]
     assert isinstance(allowed, tuple)
     if split not in allowed:
-        raise ValueError(
-            f"{method} does not use split {split!r}; expected one of {allowed}"
-        )
+        raise ValueError(f"{method} does not use split {split!r}; expected one of {allowed}")
     return split
 
 

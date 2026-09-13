@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from clinical_extraction.core.shared_reliability_schema import SIX_MODELS
-from clinical_extraction.core.six_model_roster import (
+from clinical_extraction.evaluation.letter_benchmarks.shared_reliability_schema import SIX_MODELS
+from clinical_extraction.evaluation.letter_benchmarks.six_model_roster import (
     GEMINI_37_FLASH_MODEL,
     HISTORICAL_SIX_MODELS,
     SUCCESSOR_SIX_MODEL_IDS,

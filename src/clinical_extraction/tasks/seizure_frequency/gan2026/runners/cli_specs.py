@@ -2,16 +2,15 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
 
 
 def get_cli_specs() -> dict[str, Any]:
+    from clinical_extraction.core.jsonl import (
+        write_jsonl_rows,
+    )
     from clinical_extraction.operational.gan_benchmark import (
         GanLlmPipelineCliSpec,
-    )
-    from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-        write_jsonl_rows,
     )
     from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
         hybrid_structured_events,
@@ -30,12 +29,6 @@ def get_cli_specs() -> dict[str, Any]:
     return {
         "rules": GanLlmPipelineCliSpec(
             description="Run the Gan rules-only pipeline.",
-            default_jsonl_path=Path(
-                "experiments/gan2026_deterministic_canonical_pipeline_validation.jsonl"
-            ),
-            default_report_path=Path(
-                "experiments/gan2026_deterministic_canonical_pipeline_validation.md"
-            ),
             run_split=lambda records, **kwargs: run_split(
                 records,
                 architecture="rules",
@@ -47,8 +40,6 @@ def get_cli_specs() -> dict[str, Any]:
         ),
         "llm": GanLlmPipelineCliSpec(
             description="Run the Gan LLM-only pipeline (one model call per letter).",
-            default_jsonl_path=llm_pipeline.DEFAULT_JSONL_PATH,
-            default_report_path=llm_pipeline.DEFAULT_REPORT_PATH,
             run_split=lambda records, **kwargs: run_split(
                 records,
                 architecture="llm",
@@ -64,8 +55,6 @@ def get_cli_specs() -> dict[str, Any]:
                 "Run the Gan pipeline that extracts events with one model call, then "
                 "normalizes and scores them with deterministic code."
             ),
-            default_jsonl_path=hybrid_structured_events.DEFAULT_JSONL_PATH,
-            default_report_path=hybrid_structured_events.DEFAULT_REPORT_PATH,
             run_split=lambda records, **kwargs: run_split(
                 records,
                 architecture="llm_with_rules",

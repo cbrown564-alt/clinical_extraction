@@ -45,12 +45,7 @@ from clinical_extraction.tasks.shared.epilepsy.normalization import (
     FrequencyLabelKind,
 )
 
-RESEARCH = (
-    Path(__file__).resolve().parents[1]
-    / "docs"
-    / "research"
-    / "gan2026"
-)
+RESEARCH = Path(__file__).resolve().parents[1] / "docs" / "research" / "gan2026"
 NO_EXAMPLES_TEMPLATE = RESEARCH / "gan_llm_extract_no_examples_prompt_template.json"
 HOLGATE_TEMPLATE = RESEARCH / "gan_llm_extract_holgate_like_prompt_template.json"
 HOLGATE_LABEL_TEMPLATE = RESEARCH / "gan_llm_extract_holgate_label_prompt_template.json"
@@ -78,9 +73,7 @@ def _record() -> GanFrequencyRecord:
 def test_no_examples_keeps_forms_and_drops_example_strings() -> None:
     baseline = llm_extract_prompt_template()
     variant = extract_no_examples.llm_extract_no_examples_prompt_template()
-    payload = json.loads(
-        extract_no_examples.build_llm_extract_no_examples_prompt_input(_record())
-    )
+    payload = json.loads(extract_no_examples.build_llm_extract_no_examples_prompt_input(_record()))
     assert variant["event_schema"] == EVENT_SCHEMA == baseline["event_schema"]
     assert variant["selection_schema"] == SELECTION_SCHEMA == baseline["selection_schema"]
     assert variant["label_forms"] == label_forms_without_examples_payload()
@@ -102,9 +95,7 @@ def test_no_examples_frozen_template_matches_living_prompt() -> None:
 def test_holgate_like_drops_codebook_and_keeps_schema() -> None:
     baseline = llm_extract_prompt_template()
     variant = extract_holgate.llm_extract_holgate_like_prompt_template()
-    payload = json.loads(
-        extract_holgate.build_llm_extract_holgate_like_prompt_input(_record())
-    )
+    payload = json.loads(extract_holgate.build_llm_extract_holgate_like_prompt_input(_record()))
     assert "label_forms" not in variant
     assert variant["event_schema"] == EVENT_SCHEMA == baseline["event_schema"]
     assert variant["selection_schema"] == SELECTION_SCHEMA == baseline["selection_schema"]
@@ -131,9 +122,7 @@ def test_dispatch_keeps_default_extract_raw() -> None:
         )
     )
     holgate = json.loads(
-        build_prompt_input(
-            _record(), prompt_version=extract_holgate.GAN_LLM_EXTRACT_HOLGATE_LIKE
-        )
+        build_prompt_input(_record(), prompt_version=extract_holgate.GAN_LLM_EXTRACT_HOLGATE_LIKE)
     )
     codebook = json.loads(build_prompt_input(_record(), prompt_version=GAN_LLM_EXTRACT))
     no_evidence = json.loads(
@@ -197,17 +186,12 @@ def test_component_ablation_verify_accepts_gemini_holdout_identity() -> None:
 def test_no_evidence_drops_quote_keys_and_keeps_codebook() -> None:
     baseline = llm_extract_prompt_template()
     variant = extract_no_evidence.llm_extract_no_evidence_prompt_template()
-    payload = json.loads(
-        extract_no_evidence.build_llm_extract_no_evidence_prompt_input(_record())
-    )
+    payload = json.loads(extract_no_evidence.build_llm_extract_no_evidence_prompt_input(_record()))
     assert variant["label_forms"] == label_forms_payload()
     assert "evidence" not in variant["event_schema"]
     assert "evidence" not in variant["selection_schema"]
     assert variant["event_schema"].keys() == baseline["event_schema"].keys() - {"evidence"}
-    assert (
-        variant["selection_schema"].keys()
-        == baseline["selection_schema"].keys() - {"evidence"}
-    )
+    assert variant["selection_schema"].keys() == baseline["selection_schema"].keys() - {"evidence"}
     blob = json.dumps(payload)
     assert "exact substring" not in blob
     assert "Every evidence value" not in blob
@@ -230,9 +214,7 @@ def test_examples_only_keeps_example_strings_and_drops_forms() -> None:
     assert "allowed forms" not in json.dumps(variant).lower()
     assert "Copy an example" in json.dumps(variant)
     assert "exact substring" in json.dumps(variant)
-    assert set(payload) == set(
-        extract_examples_only.LLM_EXTRACT_EXAMPLES_ONLY_AUTHORED_KEYS
-    )
+    assert set(payload) == set(extract_examples_only.LLM_EXTRACT_EXAMPLES_ONLY_AUTHORED_KEYS)
     on_disk = json.loads(EXAMPLES_ONLY_TEMPLATE.read_text(encoding="utf-8"))
     assert on_disk == variant
 

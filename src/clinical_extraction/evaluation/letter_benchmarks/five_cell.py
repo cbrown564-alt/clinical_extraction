@@ -26,6 +26,8 @@ EXECT_CELL_ORDER = (
     "llm_extract_encode_then_select_rules",
     "llm",
 )
+
+
 def write_five_cell_grid(
     method: str,
     *,
@@ -56,15 +58,11 @@ def write_five_cell_grid(
     )
     curated_path = out_dir / "comparison.json"
     curated = (
-        json.loads(curated_path.read_text(encoding="utf-8"))
-        if curated_path.is_file()
-        else None
+        json.loads(curated_path.read_text(encoding="utf-8")) if curated_path.is_file() else None
     )
     return {
         "artifact": generated_path.relative_to(ROOT).as_posix(),
-        "curated": (
-            curated_path.relative_to(ROOT).as_posix() if curated_path.is_file() else None
-        ),
+        "curated": (curated_path.relative_to(ROOT).as_posix() if curated_path.is_file() else None),
         "matches_curated": _selects_match(grid, curated) if curated else None,
         "grid": grid,
     }
@@ -76,9 +74,7 @@ def _exect_grid(slug: str, split: str) -> dict[str, Any]:
     extract = _load_comparison("exect", "exect_llm_extract", slug, split)
     both = _load_comparison("exect", "exect_llm_pre_post", slug, split)
     encode = _load_comparison("exect", "exect_llm_encode", slug, split)
-    rule_select = _load_comparison(
-        "exect", "exect_rule_select_after_llm_encode", slug, split
-    )
+    rule_select = _load_comparison("exect", "exect_rule_select_after_llm_encode", slug, split)
     llm_select = _load_comparison("exect", "exect_llm_select", slug, split)
     rules = _exect_rules_score(split)
     extract_f1 = _stage(extract, "extract")
@@ -334,11 +330,7 @@ def _exect_rules_block(split: str) -> Mapping[str, Any] | None:
 def _gan_count(payload: Mapping[str, Any] | None, stage: str) -> int | None:
     if payload is None:
         return None
-    living = (
-        payload
-        if payload.get("living_schema_version")
-        else adapt_legacy_comparison(payload)
-    )
+    living = payload if payload.get("living_schema_version") else adapt_legacy_comparison(payload)
     if living is None:
         return None
     block = (living.get("stages") or {}).get(stage)

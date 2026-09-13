@@ -114,9 +114,7 @@ def test_standard_names_cover_every_family() -> None:
     blob = json.dumps(payload)
     assert "C0014544" not in blob
     assert "CUI" not in blob
-    epilepsy = next(
-        row for row in payload["diagnosis"] if row["standard_name"] == "epilepsy"
-    )
+    epilepsy = next(row for row in payload["diagnosis"] if row["standard_name"] == "epilepsy")
     assert "also" not in epilepsy
 
 
@@ -136,9 +134,7 @@ def test_standard_names_list_the_sixteen_heads() -> None:
     assert "grand mal" in gtc["also"]
     assert "tonic clonic seizures" in gtc["also"]
     assert "generalised" not in gtc["also"]
-    seizures = next(
-        row for row in payload["seizure_types"] if row["standard_name"] == "seizures"
-    )
+    seizures = next(row for row in payload["seizure_types"] if row["standard_name"] == "seizures")
     assert "no further seizures" not in seizures["also"]
 
 
@@ -233,9 +229,7 @@ def test_select_reads_joined_standard_name() -> None:
         ],
     )
     payload = json.loads(build_llm_select_prompt_input(joined))
-    assert payload["mentions"][0]["standard_name"] == (
-        "generalised tonic clonic seizures"
-    )
+    assert payload["mentions"][0]["standard_name"] == ("generalised tonic clonic seizures")
 
 
 def test_join_select_keep_drop_merge_and_also_list() -> None:

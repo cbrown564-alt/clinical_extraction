@@ -6,7 +6,7 @@ Does not load test450.
 
 from __future__ import annotations
 
-from scripts.measure_gan_rules_only_three_stage_phase_d_test450 import (
+from scripts.benchmarks.measure_gan_rules_only_three_stage_phase_d_test450 import (
     CITED_SELECT_CORRECT,
     assert_public_payload_aggregate_only,
     phase_d_verdict,

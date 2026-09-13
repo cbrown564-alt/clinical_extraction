@@ -43,9 +43,7 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
 
 
 def _prompt_fields_without_letter(payload: dict) -> str:
-    return json.dumps(
-        {key: value for key, value in payload.items() if key != "letter_text"}
-    )
+    return json.dumps({key: value for key, value in payload.items() if key != "letter_text"})
 
 
 def test_no_prompt_version_mentions_cui() -> None:
@@ -110,9 +108,7 @@ def test_compact_schema_is_flat_fact_events() -> None:
     )
     event_schema = payload["output_schema"]["clinical_events"][0]
     assert list(event_schema) == ["family", "evidence", "fact", "attributes"]
-    assert event_schema["family"] == (
-        "medication | diagnosis | seizure_frequency | investigation"
-    )
+    assert event_schema["family"] == ("medication | diagnosis | seizure_frequency | investigation")
     assert "mentions" not in event_schema
     assert "anchor_text" not in event_schema
     assert "event_state" not in event_schema
@@ -237,28 +233,20 @@ def test_extract_and_select_alias_matches_living_name() -> None:
         )
     )
     alias = json.loads(
-        structured.build_prompt_input(
-            _LETTER, prompt_version=structured.EXECT_LLM_ONLY
-        )
+        structured.build_prompt_input(_LETTER, prompt_version=structured.EXECT_LLM_ONLY)
     )
     assert living == alias
     assert "suggested_evidence" not in living
-    assert "heading types such as myoclonic jerks" in living["family_guidance"][
-        "diagnosis"
-    ]
+    assert "heading types such as myoclonic jerks" in living["family_guidance"]["diagnosis"]
     assert all("Keep, reject, split" not in step for step in living["decision_procedure"])
 
 
 def test_paper_names_are_aliases_of_both_extract() -> None:
     both = json.loads(
-        structured.build_prompt_input(
-            _LETTER, prompt_version=structured.EXECT_LLM_PRE_POST
-        )
+        structured.build_prompt_input(_LETTER, prompt_version=structured.EXECT_LLM_PRE_POST)
     )
     alias = json.loads(
-        structured.build_prompt_input(
-            _LETTER, prompt_version=structured.EXECT_LLM_WITH_RULES
-        )
+        structured.build_prompt_input(_LETTER, prompt_version=structured.EXECT_LLM_WITH_RULES)
     )
     assert both == alias
     assert list(both) == list(structured.INVENTORY_BOTH_AUTHORED_KEYS)

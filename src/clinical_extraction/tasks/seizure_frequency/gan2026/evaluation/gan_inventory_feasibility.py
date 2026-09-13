@@ -54,9 +54,7 @@ def select_sample_indices(
 ) -> tuple[int, ...]:
     unique_sorted = tuple(sorted({int(index) for index in pool}))
     if size > len(unique_sorted):
-        raise ValueError(
-            f"Cannot sample {size} letters from a pool of {len(unique_sorted)}"
-        )
+        raise ValueError(f"Cannot sample {size} letters from a pool of {len(unique_sorted)}")
     selected = random.Random(seed).sample(list(unique_sorted), size)
     return tuple(sorted(selected))
 
@@ -123,8 +121,7 @@ def family_summaries(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         }
         if subtypes is not None:
             packed["common_subtypes"] = [
-                {"subtype": label, "count": count}
-                for label, count in subtypes.most_common(5)
+                {"subtype": label, "count": count} for label, count in subtypes.most_common(5)
             ]
         return packed
 
@@ -143,9 +140,7 @@ def choose_illustration_indices(
         mentions = list(row.get("mentions") or [])
         counts = _family_counts(mentions)
         families_present = sum(1 for family in FAMILIES if counts[family] > 0)
-        scored.append(
-            (families_present, sum(counts.values()), int(row["source_row_index"]))
-        )
+        scored.append((families_present, sum(counts.values()), int(row["source_row_index"])))
     chosen: list[int] = []
     for family_floor in (3, 2, 1):
         eligible = [
@@ -220,9 +215,7 @@ def load_inventory_panel(*, artifact_dir: Path | None = None) -> dict[str, Any]:
     if row_indices != selected_set:
         raise ValueError("inventory rows do not match the selected sample")
     letters = sorted(rows, key=lambda item: int(item["source_row_index"]))
-    illustrations = [
-        int(index) for index in summary.get("illustration_source_row_indices") or []
-    ]
+    illustrations = [int(index) for index in summary.get("illustration_source_row_indices") or []]
     return {
         "schema_version": str(summary.get("schema_version") or "gan_inventory_feasibility.v1"),
         "study": str(summary.get("study") or SAMPLE_ID),

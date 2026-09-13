@@ -6,7 +6,7 @@ from typing import cast
 
 from pydantic import BaseModel
 
-from clinical_extraction.core.scoring import PRF1, multiset_prf1, sum_prf1
+from clinical_extraction.evaluation.scoring import PRF1, multiset_prf1, sum_prf1
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.drug_lexicon import (
     canonicalize_medication_name,
 )

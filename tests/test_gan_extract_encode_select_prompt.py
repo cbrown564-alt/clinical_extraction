@@ -116,9 +116,7 @@ def test_one_call_payload_is_model_facing_and_registered() -> None:
         )
     )
     blob = json.dumps(payload)
-    assert set(payload) == set(
-        extract_encode_select.LLM_EXTRACT_ENCODE_SELECT_AUTHORED_KEYS
-    )
+    assert set(payload) == set(extract_encode_select.LLM_EXTRACT_ENCODE_SELECT_AUTHORED_KEYS)
     assert payload["note_text"] == _record().note_text
     assert "prompt_version" not in payload
     assert "source_row_index" not in payload
@@ -127,14 +125,10 @@ def test_one_call_payload_is_model_facing_and_registered() -> None:
     assert "codebook" not in blob.lower()
     assert "benchmark" not in blob.lower()
     assert LIVE_METHODS["gan_llm_extract_encode_select"]["paper_cell"] is False
-    verified = verify_gan(
-        "gan_llm_extract_encode_select", "test450", "gemini37flash"
-    )
+    verified = verify_gan("gan_llm_extract_encode_select", "test450", "gemini37flash")
     assert verified["ok"] is True
     assert verified["row_policy"] == "aggregate_only"
-    assert verified["prompt_version"] == (
-        extract_encode_select.GAN_LLM_EXTRACT_ENCODE_SELECT
-    )
+    assert verified["prompt_version"] == (extract_encode_select.GAN_LLM_EXTRACT_ENCODE_SELECT)
 
 
 def test_one_call_example_shape_parses() -> None:

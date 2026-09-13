@@ -8,6 +8,9 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.core.jsonl import (
+    load_jsonl_rows,
+)
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.evaluation.letter_benchmarks.cells import GAN_REPAIR_MODE_FOR_RUNG
 from clinical_extraction.evaluation.letter_benchmarks.methods import (
@@ -26,9 +29,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_cell_replay import (
     gan_living_extract_rows_path,
     score_label,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    load_jsonl_rows,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
     StructuredRepairConfig,
@@ -78,9 +78,7 @@ def aligned_correctness(
 
     keys = sorted(set(left) & set(right))
     if len(keys) != expected:
-        raise RuntimeError(
-            f"expected {expected} paired {split} letters, found {len(keys)}"
-        )
+        raise RuntimeError(f"expected {expected} paired {split} letters, found {len(keys)}")
     return (
         tuple(left[key] for key in keys),
         tuple(right[key] for key in keys),
@@ -251,10 +249,7 @@ def run_predeclared_contrasts(
             _pair(cell3, thinking_high, split=SPLIT),
             a="cell3_thinking_low",
             b="cell3_thinking_high",
-            claim=(
-                "Gemini living thinking (low) versus high effort at the "
-                "cell-3 select stop"
-            ),
+            claim=("Gemini living thinking (low) versus high effort at the cell-3 select stop"),
             split=SPLIT,
         ),
     }

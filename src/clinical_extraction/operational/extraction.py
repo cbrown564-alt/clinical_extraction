@@ -1,4 +1,5 @@
 """Supported one-call task profiles using the shared persistent artifact lifecycle."""
+
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
@@ -27,17 +28,24 @@ class ExtractionTask:
 
 
 def task_profile(name: str) -> ExtractionTask:
-    if name == 'gan':
+    if name == "gan":
         from clinical_extraction.tasks.seizure_frequency.gan2026.llm.extraction import (
             execute_gan_request,
             prepare_gan_request,
         )
-        from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
+        from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (  # noqa: E501
             DspyStructuredExtractor,
         )
-        return ExtractionTask(name, 'gan-artifact-v1', prepare_gan_request,
-                              execute_gan_request, DspyStructuredExtractor, 'structured_json')
-    if name == 'exect':
+
+        return ExtractionTask(
+            name,
+            "gan-artifact-v1",
+            prepare_gan_request,
+            execute_gan_request,
+            DspyStructuredExtractor,
+            "structured_json",
+        )
+    if name == "exect":
         from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.extraction import (
             execute_exect_request,
             prepare_exect_request,
@@ -45,16 +53,27 @@ def task_profile(name: str) -> ExtractionTask:
         from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.signatures import (  # noqa: E501
             DspyKeyEntitiesStructuredExtractor,
         )
-        return ExtractionTask(name, 'exect-artifact-v1', prepare_exect_request,
-                              execute_exect_request, DspyKeyEntitiesStructuredExtractor,
-                              'extraction_json')
-    raise ValueError(f'unsupported extraction task: {name}')
+
+        return ExtractionTask(
+            name,
+            "exect-artifact-v1",
+            prepare_exect_request,
+            execute_exect_request,
+            DspyKeyEntitiesStructuredExtractor,
+            "extraction_json",
+        )
+    raise ValueError(f"unsupported extraction task: {name}")
 
 
 def run_artifact_notes(
-    notes: Sequence[InputNote], runtime: RuntimeConfig, *, task: str,
+    notes: Sequence[InputNote],
+    runtime: RuntimeConfig,
+    *,
+    task: str,
     completion: Callable[[PreparedExtractionRequest], str] | None = None,
-    store_path: Path | None = None, replay_only: bool = False, retry_failed: bool = False,
+    store_path: Path | None = None,
+    replay_only: bool = False,
+    retry_failed: bool = False,
 ) -> list[dict[str, Any]]:
     """Preserve input order/failures; exact saved requests never construct a provider."""
     profile = task_profile(task)
@@ -69,11 +88,18 @@ def run_artifact_notes(
             import dspy
 
             from clinical_extraction.core.dspy_runtime import build_dspy_lm
-            dspy.configure(lm=build_dspy_lm(
-                runtime.model, temperature=runtime.temperature, max_tokens=runtime.max_tokens,
-                cache=False, api_base=runtime.base_url, api_key=runtime.api_key,
-                timeout=int(runtime.timeout_seconds),
-            ))
+
+            dspy.configure(
+                lm=build_dspy_lm(
+                    runtime.model,
+                    temperature=runtime.temperature,
+                    max_tokens=runtime.max_tokens,
+                    cache=False,
+                    api_base=runtime.base_url,
+                    api_key=runtime.api_key,
+                    timeout=int(runtime.timeout_seconds),
+                )
+            )
             program = profile.program_factory()
         prediction = program(prompt_input_json=request.prompt_input_json)
         return str(getattr(prediction, profile.response_field))
@@ -85,27 +111,52 @@ def run_artifact_notes(
             source = SourceDocument.from_text(source_id=note.note_id, text=note.text)
             request = profile.prepare(source)
 
-            def capture() -> ExtractionArtifact[Any]:
-                return profile.execute(request, source=source, completion=complete,
-                                       provider_metadata={'runtime': execution.to_dict()})
+            def capture(
+                request: PreparedExtractionRequest = request,
+                source: SourceDocument = source,
+            ) -> ExtractionArtifact[Any]:
+                return profile.execute(
+                    request,
+                    source=source,
+                    completion=complete,
+                    provider_metadata={"runtime": execution.to_dict()},
+                )
 
             try:
                 if store is not None:
-                    artifact = store.execute(request, execution,
-                        program_version=profile.program_version, capture=capture,
-                        replay_only=replay_only, retry_failed=retry_failed)
+                    artifact = store.execute(
+                        request,
+                        execution,
+                        program_version=profile.program_version,
+                        capture=capture,
+                        replay_only=replay_only,
+                        retry_failed=retry_failed,
+                    )
                 elif replay_only:
-                    raise ValueError('replay requires an artifact store')
+                    raise ValueError("replay requires an artifact store")
                 else:
                     artifact = capture()
             except ValueError as exc:
-                rows.append({'id': note.note_id, 'task': task, 'status': 'error',
-                             'error': str(exc), 'request_id': request.request_id})
+                rows.append(
+                    {
+                        "id": note.note_id,
+                        "task": task,
+                        "status": "error",
+                        "error": str(exc),
+                        "request_id": request.request_id,
+                    }
+                )
                 continue
-            rows.append({'id': note.note_id, 'task': task,
-                         'status': 'ok' if artifact.status == 'ready' else 'error',
-                         'model': runtime.api_model, 'pipeline': f'{task}_llm_extract_artifact_v1',
-                         'artifact': artifact.to_dict()})
+            rows.append(
+                {
+                    "id": note.note_id,
+                    "task": task,
+                    "status": "ok" if artifact.status == "ready" else "error",
+                    "model": runtime.api_model,
+                    "pipeline": f"{task}_llm_extract_artifact_v1",
+                    "artifact": artifact.to_dict(),
+                }
+            )
     finally:
         if store is not None:
             store.connection.close()

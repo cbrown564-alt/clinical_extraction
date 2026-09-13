@@ -18,7 +18,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_panel im
 def _patch_panel_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     paper = tmp_path / "results/letter-benchmarks"
     gan = paper / "gan"
-    monkeypatch.setattr("clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_panel.ROOT", tmp_path)
+    monkeypatch.setattr(
+        "clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_panel.ROOT", tmp_path
+    )
     monkeypatch.setattr(
         "clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_panel.WORK_ROOT",
         tmp_path / "experiments/paper",
@@ -27,7 +29,9 @@ def _patch_panel_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         "clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_panel.HOLDOUT_ROOT",
         tmp_path / "scratch/holdout/paper",
     )
-    monkeypatch.setattr("clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_panel.PAPER_GAN", gan)
+    monkeypatch.setattr(
+        "clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_panel.PAPER_GAN", gan
+    )
     monkeypatch.setattr(
         "clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_panel.PANEL_PATH",
         gan / "dev750_panel.json",

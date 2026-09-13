@@ -20,6 +20,8 @@ from functools import cache
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.core.paths import discover_repo_root
+
 MANIFEST_DIR = Path(__file__).resolve().parent / "manifests"
 # Gitignored local research trees. A public clone has none of these; existence
 # checks against paths inside them are skipped when the tree is absent.
@@ -27,7 +29,7 @@ LOCAL_RESEARCH_TREES = frozenset({"data", "docs", "experiments"})
 
 
 def repo_root() -> Path:
-    return Path(__file__).resolve().parents[3]
+    return discover_repo_root(start=Path(__file__), require_src=True)
 
 
 # Every stage declares exactly one effect class. This is the taxonomy the
@@ -35,8 +37,7 @@ def repo_root() -> Path:
 # without opening the code, whether a stage can move a clinical answer.
 EFFECT_CLASSES: Mapping[str, str] = {
     "transport_or_schema": (
-        "Changes transport or schema shape only. Cannot change which clinical "
-        "answer is expressed."
+        "Changes transport or schema shape only. Cannot change which clinical answer is expressed."
     ),
     "representation": (
         "Changes how a clinical fact is written down (units, casing, state "
@@ -265,8 +266,7 @@ def _stage(payload: Mapping[str, Any]) -> Stage:
     missing = [field for field in _REQUIRED_STAGE_FIELDS if field not in payload]
     if missing:
         raise ValueError(
-            f"stage {payload.get('stage_id', '<unknown>')!r} missing fields: "
-            f"{', '.join(missing)}"
+            f"stage {payload.get('stage_id', '<unknown>')!r} missing fields: {', '.join(missing)}"
         )
     return Stage(
         stage_id=str(payload["stage_id"]),
@@ -282,13 +282,9 @@ def _stage(payload: Mapping[str, Any]) -> Stage:
         governing_test=str(payload["governing_test"]),
         trace_fields=tuple(str(field) for field in payload["trace_fields"]),
         paper_wording=str(payload["paper_wording"]),
-        rule_category=(
-            str(payload["rule_category"]) if payload.get("rule_category") else None
-        ),
+        rule_category=(str(payload["rule_category"]) if payload.get("rule_category") else None),
         notes=str(payload["notes"]) if payload.get("notes") else None,
-        runtime_action=(
-            str(payload["runtime_action"]) if payload.get("runtime_action") else None
-        ),
+        runtime_action=(str(payload["runtime_action"]) if payload.get("runtime_action") else None),
     )
 
 
@@ -332,9 +328,7 @@ def load_manifest(method_id: str) -> MethodManifest:
     payload = json.loads(path.read_text(encoding="utf-8"))
     manifest = _manifest(payload)
     if manifest.method_id != resolved:
-        raise ValueError(
-            f"{path.name} declares method_id {manifest.method_id!r}"
-        )
+        raise ValueError(f"{path.name} declares method_id {manifest.method_id!r}")
     return manifest
 
 
@@ -369,15 +363,13 @@ def validate_manifest(manifest: MethodManifest, *, root: Path | None = None) -> 
             problems.append(f"{tag}: owner {stage.owner!r} not in {sorted(OWNERS)}")
         if stage.effect_class not in EFFECT_CLASSES:
             problems.append(
-                f"{tag}: effect_class {stage.effect_class!r} not in "
-                f"{sorted(EFFECT_CLASSES)}"
+                f"{tag}: effect_class {stage.effect_class!r} not in {sorted(EFFECT_CLASSES)}"
             )
         if stage.owner == "deterministic" and stage.rule_category is None:
             problems.append(f"{tag}: deterministic stage must declare a rule_category")
         if stage.rule_category and stage.rule_category not in RULE_CATEGORIES:
             problems.append(
-                f"{tag}: rule_category {stage.rule_category!r} not in "
-                f"{sorted(RULE_CATEGORIES)}"
+                f"{tag}: rule_category {stage.rule_category!r} not in {sorted(RULE_CATEGORIES)}"
             )
         if stage.owner == "model" and stage.effect_class != "clinical_meaning":
             problems.append(
@@ -390,16 +382,12 @@ def validate_manifest(manifest: MethodManifest, *, root: Path | None = None) -> 
         problems.extend(_check_implementation(tag, stage.implementation, root))
         problems.extend(_check_governing_test(tag, stage.governing_test, root))
 
-    problems.extend(
-        _check_implementation(f"{prefix}/entry_point", manifest.entry_point, root)
-    )
+    problems.extend(_check_implementation(f"{prefix}/entry_point", manifest.entry_point, root))
     for related in manifest.related_paths:
         if _local_research_path_absent(root, related.path):
             continue
         if not (root / related.path).exists():
-            problems.append(
-                f"{prefix}: related path {related.path} does not exist"
-            )
+            problems.append(f"{prefix}: related path {related.path} does not exist")
     for owner in manifest.evidence_owners:
         if _local_research_path_absent(root, owner):
             continue
@@ -479,8 +467,7 @@ def stage_index() -> list[dict[str, Any]]:
     """Flat index of every stage, for cross-method search."""
 
     return [
-        {"method_id": manifest.method_id, **stage.to_dict()}
-        for manifest, stage in iter_stages()
+        {"method_id": manifest.method_id, **stage.to_dict()} for manifest, stage in iter_stages()
     ]
 
 

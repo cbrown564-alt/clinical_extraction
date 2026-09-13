@@ -113,7 +113,8 @@ def test_hybrid_identity_and_cli_aliases_are_active() -> None:
         "llm_with_rules",
     ]
     assert retained_method_id("llm_with_rules") == "exectv2_llm_pre_post"
-    assert set(LLM_WITH_RULES_METHOD_ALIASES) <= set(get_cli_specs())
+    assert "llm_with_rules" in get_cli_specs()
+    assert "llm_pre_post" not in get_cli_specs()
 
 
 def test_hybrid_public_runner_uses_canonical_projection_and_fresh_identity() -> None:

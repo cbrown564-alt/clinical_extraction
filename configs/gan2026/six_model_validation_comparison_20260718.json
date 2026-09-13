@@ -1,5 +1,5 @@
 {
-  "protocol": "docs/experiments/gan2026/gan2026_six_model_validation_comparison_protocol_2026-07-18.md",
+  "protocol": "docs/history/experiments/gan2026/gan2026_six_model_validation_comparison_protocol_2026-07-18.md",
   "dataset": "Gan 2026",
   "split_manifest": "gan2026_split_v1",
   "split": "validation",

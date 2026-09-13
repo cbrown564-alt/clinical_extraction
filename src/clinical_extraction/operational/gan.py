@@ -81,25 +81,17 @@ def run_gan_notes(
         prompt_version=GAN_LLM_EXTRACT,
         repair_mode="raw_model" if method == "llm_select" else None,
     )
-    pipeline = (
-        GAN_LLM_SELECT_FROM_EXTRACT if method == "llm_select" else GAN_LLM_EXTRACT
-    )
-    prompt_version = (
-        GAN_LLM_SELECT_POLICY_EXAMPLES if method == "llm_select" else GAN_LLM_EXTRACT
-    )
+    pipeline = GAN_LLM_SELECT_FROM_EXTRACT if method == "llm_select" else GAN_LLM_EXTRACT
+    prompt_version = GAN_LLM_SELECT_POLICY_EXAMPLES if method == "llm_select" else GAN_LLM_EXTRACT
     output: list[dict[str, Any]] = []
     for index, note in enumerate(notes):
         record = _note_record(index, note)
         try:
             result = llm_with_rules.run_record(record, config)
             if method == "llm_select":
-                output.append(
-                    _select_row(note, runtime, result, pipeline, prompt_version)
-                )
+                output.append(_select_row(note, runtime, result, pipeline, prompt_version))
             else:
-                output.append(
-                    _extract_row(note, runtime, result, pipeline, prompt_version)
-                )
+                output.append(_extract_row(note, runtime, result, pipeline, prompt_version))
         except Exception as exc:
             output.append(_error_row(note.note_id, runtime.api_model, pipeline, exc))
     return output
@@ -118,9 +110,7 @@ def score_projection(final_label: str | None) -> dict[str, Any] | None:
         "normalized_label": record.normalized_label,
         "kind": str(record.kind),
         "monthly_frequency": record.monthly_frequency,
-        "yearly_bounds": (
-            list(record.yearly_bounds) if record.yearly_bounds is not None else None
-        ),
+        "yearly_bounds": (list(record.yearly_bounds) if record.yearly_bounds is not None else None),
         "purist_category": str(map_purist(record.monthly_frequency)),
         "pragmatic_category": str(map_pragmatic(record.monthly_frequency)),
     }
@@ -206,9 +196,7 @@ def _select_row(
     }
 
 
-def _error_row(
-    note_id: str, model: str, pipeline: str, exc: Exception
-) -> dict[str, Any]:
+def _error_row(note_id: str, model: str, pipeline: str, exc: Exception) -> dict[str, Any]:
     return {
         "id": note_id,
         "task": "gan",

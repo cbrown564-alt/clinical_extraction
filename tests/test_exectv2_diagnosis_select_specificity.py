@@ -165,8 +165,7 @@ def test_hierarchy_blocks_cross_branch_and_sibling_overwrite() -> None:
     assert (
         sd.diagnosis_select_specificity_target(
             "generalised epilepsy",
-            "Diagnosis: generalised epilepsy and symptomatic structural temporal "
-            "lobe epilepsy",
+            "Diagnosis: generalised epilepsy and symptomatic structural temporal lobe epilepsy",
         )
         is None
     )

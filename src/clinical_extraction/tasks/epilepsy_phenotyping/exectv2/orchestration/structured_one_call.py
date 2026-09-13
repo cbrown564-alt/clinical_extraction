@@ -155,9 +155,7 @@ def produce_structured_letter(
             else:
                 parse_errors = [*initial_parse_errors, *format_retry_notes]
         except Exception as exc:  # pragma: no cover - live provider behavior.
-            format_retry_notes = [
-                f"format_retry_rejected: provider_error:{type(exc).__name__}"
-            ]
+            format_retry_notes = [f"format_retry_rejected: provider_error:{type(exc).__name__}"]
             parse_errors = [*initial_parse_errors, *format_retry_notes]
 
     mentions = mentions_from_events(record) if record else []
@@ -304,9 +302,7 @@ def run_llm_only_letter(
         "view": "raw_candidate",
         "n_mentions": len(producer.projected_letter.mentions),
     }
-    row["first_prediction_changing_owner"] = (
-        "model" if producer.raw_output else None
-    )
+    row["first_prediction_changing_owner"] = "model" if producer.raw_output else None
     row["first_failure"] = producer.call_error or next(iter(producer.parse_errors), None)
     return ExectRecordResult(
         prediction=producer.projected_letter,
@@ -360,9 +356,7 @@ def _run_llm_pre_post_letter(
         return _fail_closed_hybrid_result(letter, producer, config=config, failure=failure)
 
     producer_row = deep_thaw(producer.row)
-    assembled = assemble_structured_rows([letter], [producer_row], config=config)[
-        letter.letter_id
-    ]
+    assembled = assemble_structured_rows([letter], [producer_row], config=config)[letter.letter_id]
     stages = list(_hybrid_producer_stages(producer))
     stages.extend(
         [
@@ -425,9 +419,7 @@ def _run_llm_pre_post_letter(
                 changed=lane["raw_lane_mentions"] != lane["predicted_mentions"],
                 action="apply_named_family_lens",
                 rule_category=(
-                    "seizure_frequency"
-                    if entity == SEIZURE_FREQUENCY.name
-                    else "clinical_epilepsy"
+                    "seizure_frequency" if entity == SEIZURE_FREQUENCY.name else "clinical_epilepsy"
                 ),
             )
         )
@@ -461,8 +453,7 @@ def _run_llm_pre_post_letter(
                 effect_class="benchmark_projection",
                 input_value=len(assembled["predicted_mentions"]),
                 output_value={
-                    surface: len(rows)
-                    for surface, rows in assembled["prediction_surfaces"].items()
+                    surface: len(rows) for surface, rows in assembled["prediction_surfaces"].items()
                 },
                 changed=True,
                 action="materialize_scoring_views",
@@ -499,9 +490,7 @@ def _run_llm_pre_post_letter(
         "view": "clinical_headline",
         "n_mentions": len(prediction.mentions),
     }
-    row["first_prediction_changing_owner"] = (
-        "model" if producer.raw_output else None
-    )
+    row["first_prediction_changing_owner"] = "model" if producer.raw_output else None
     row["first_failure"] = _producer_first_failure(producer)
     return ExectRecordResult(
         prediction=prediction,
@@ -524,9 +513,7 @@ def _blocking_producer_failure(producer: StructuredProducerResult) -> str | None
             return str(error)
     if producer.initial_parse_errors and not producer.format_retry_output:
         for error in producer.initial_parse_errors:
-            if str(error).startswith(
-                ("invalid_json:", "schema_validation_error:", "not_run")
-            ):
+            if str(error).startswith(("invalid_json:", "schema_validation_error:", "not_run")):
                 return str(error)
     if producer.parsed_record is None:
         failure_codes = producer.row.get("structured_output_failure_codes", [])
@@ -647,9 +634,7 @@ def run_primary_pair(
     return llm_only, hybrid
 
 
-def _require_matching_letter(
-    letter: ExectLetter, producer: StructuredProducerResult
-) -> None:
+def _require_matching_letter(letter: ExectLetter, producer: StructuredProducerResult) -> None:
     if producer.letter_id != letter.letter_id:
         raise ValueError(
             f"producer letter_id {producer.letter_id!r} does not match "
@@ -763,7 +748,7 @@ def run_split(
         ),
     )
     run_contract["source_hashes"] = {
-        letter.letter_id: hashlib.sha256(letter.text.encode("utf-8")).hexdigest()
+        letter.letter_id: hashlib.sha256(letter.note_text.encode("utf-8")).hexdigest()
         for letter in letters
     }
     run_fingerprint = _run_fingerprint(run_contract)
@@ -901,8 +886,7 @@ def _prediction_from_assembly(letter: ExectLetter, row: Mapping[str, Any]) -> Pr
     return PredictedLetter(
         letter_id=letter.letter_id,
         mentions=tuple(
-            _predicted_mention(mention)
-            for mention in row.get("predicted_mentions", [])
+            _predicted_mention(mention) for mention in row.get("predicted_mentions", [])
         ),
         diagnostics={"view": "clinical_headline", "policy": row.get("policy", {})},
     )

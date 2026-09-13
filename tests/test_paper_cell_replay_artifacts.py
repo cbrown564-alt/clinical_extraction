@@ -20,9 +20,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def test_gan_dev750_rungs_use_codebook_encode_as_cell_3() -> None:
     payload = json.loads(
-        (
-            ROOT / "results/letter-benchmarks/gan/rungs/grok46/dev750/comparison.json"
-        ).read_text(encoding="utf-8")
+        (ROOT / "results/letter-benchmarks/gan/rungs/grok46/dev750/comparison.json").read_text(
+            encoding="utf-8"
+        )
     )
     check = payload["format_only_check"]
     assert normalize_repair_mode(check["repair_mode"]) == "gan_rules_encode"
@@ -40,9 +40,9 @@ def test_gan_dev750_rungs_use_codebook_encode_as_cell_3() -> None:
 
 def test_exect_dev140_rungs_score_format_render_not_materialized_format_only() -> None:
     payload = json.loads(
-        (
-            ROOT / "results/letter-benchmarks/exect/rungs/grok46/dev140/comparison.json"
-        ).read_text(encoding="utf-8")
+        (ROOT / "results/letter-benchmarks/exect/rungs/grok46/dev140/comparison.json").read_text(
+            encoding="utf-8"
+        )
     )
     check = payload["format_only_check"]
     assert check["surface"] == "format_render"

@@ -108,9 +108,7 @@ def ledger(
             if any(item.grade.value == evidence_grade for item in row.selected_evidence)
         ]
     if entity:
-        finding_ids = {
-            finding.finding_id for finding in trace.findings if finding.entity == entity
-        }
+        finding_ids = {finding.finding_id for finding in trace.findings if finding.entity == entity}
         rows = [
             row
             for row in rows
@@ -170,10 +168,10 @@ def resolve_comparison(
     same_record = (
         left.run.dataset == right.run.dataset and left.source.source_id == right.source.source_id
     )
-    task_explanation = (
-        left.source.source_id == right.source.source_id == "SYN-014"
-        and {left.run.task, right.run.task} == {"exectv2", "gan2026"}
-    )
+    task_explanation = left.source.source_id == right.source.source_id == "SYN-014" and {
+        left.run.task,
+        right.run.task,
+    } == {"exectv2", "gan2026"}
     if not same_record and not task_explanation:
         raise not_found()
     return {

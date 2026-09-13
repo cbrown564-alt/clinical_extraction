@@ -8,6 +8,9 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.core.jsonl import (
+    load_jsonl_rows,
+)
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.evaluation.letter_benchmarks.methods import (
     exect_machine_split,
@@ -32,9 +35,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_hea
     annotation_from_mapping,
     exact_clinical_inventory_scores,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    load_jsonl_rows,
-)
 
 ROOT = discover_repo_root(start=Path(__file__))
 STUDY_DIR = ROOT / "experiments/exectv2_rule_select_after_llm_encode_20260823"
@@ -53,9 +53,7 @@ def apply_rule_select_after_llm_encode(
         source_mentions=extract_mentions,
         note_text=note_text,
         enabled_rule_ids=(
-            frozenset(INVENTORY_SELECT_RULE_IDS)
-            if enabled_rule_ids is None
-            else enabled_rule_ids
+            frozenset(INVENTORY_SELECT_RULE_IDS) if enabled_rule_ids is None else enabled_rule_ids
         ),
     )
 
@@ -116,9 +114,7 @@ def replay_rule_select_after_llm_encode(split: str) -> dict[str, Any]:
         "split": split,
         "split_machine": exect_machine_split(split),
         "row_count": len(letters),
-        "row_policy": (
-            "aggregate_only" if holdout else "development_review_permitted"
-        ),
+        "row_policy": ("aggregate_only" if holdout else "development_review_permitted"),
         "call_state": "no_call",
         "scorer": LATER_STAGE_SCORER,
         "encode_stop": {

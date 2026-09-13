@@ -261,9 +261,7 @@ def test_gan_operational_artifact_path_needs_no_dummy_gold_record() -> None:
     request = rows[0]["artifact"]["request"]
     assert request["sources"][0]["source_id"] == "ordinary-note"
     assert "gold" not in request["prompt_input_json"].casefold()
-    runtime_metadata = rows[0]["artifact"]["attempts"][0]["provider_metadata"][
-        "runtime"
-    ]
+    runtime_metadata = rows[0]["artifact"]["attempts"][0]["provider_metadata"]["runtime"]
     assert runtime_metadata["model"] == "vllm/fixture"
     assert runtime_metadata["settings"]["timeout_seconds"] == 300.0
     assert "EMPTY" not in json.dumps(runtime_metadata)
@@ -279,10 +277,7 @@ def test_gan_saved_development_response_retains_selected_output() -> None:
     )
     saved_row = json.loads(rows_path.read_text(encoding="utf-8").splitlines()[0])
     scored_row = json.loads(scored_path.read_text(encoding="utf-8").splitlines()[0])
-    records = {
-        record.source_row_index: record
-        for record in load_records_for_split("validation")
-    }
+    records = {record.source_row_index: record for record in load_records_for_split("validation")}
     record = records[int(saved_row["source_row_index"])]
     source = SourceDocument.from_text(
         source_id=str(record.source_row_index),
@@ -533,6 +528,11 @@ def test_longitudinal_artifact_serves_two_policies_and_both_cutoffs_immutably() 
         artifact_kind="provisional_reference",
         query_independent_capture=True,
     )
+    from clinical_extraction.longitudinal.artifacts import load_longitudinal_artifact
+
+    original = artifact.to_dict()
+    artifact = load_longitudinal_artifact(original)
+    assert artifact.to_dict() == original
     requests = {item["request_id"]: item for item in manifest["requests"]}
     before = artifact.content_sha256
 
@@ -599,9 +599,7 @@ def test_longitudinal_artifact_serves_two_policies_and_both_cutoffs_immutably() 
     no_medication = {
         **annotations,
         "assertions": [
-            row
-            for row in annotations["assertions"]
-            if row["content"]["family"] != "medication"
+            row for row in annotations["assertions"] if row["content"]["family"] != "medication"
         ],
     }
     no_medication_artifact = build_longitudinal_artifact(
@@ -617,3 +615,142 @@ def test_longitudinal_artifact_serves_two_policies_and_both_cutoffs_immutably() 
     )
     assert "medication" in no_medication_artifact.coverage.capture_families
     assert no_medication_decision.status == "ready"
+
+
+def test_persistent_capture_preserves_failures_and_exact_execution_identity(tmp_path):
+    """Replaces retired dispatcher/parity checks with the persistent execution obligation."""
+    from clinical_extraction.core.artifact_store import ArtifactStore
+    from clinical_extraction.operational.extraction import run_artifact_notes
+
+    runtime = RuntimeConfig(base_url="http://localhost:8000/v1", api_key="EMPTY", model="vllm/test")
+    path = tmp_path / "captures.sqlite3"
+    calls = []
+
+    def complete(request):
+        calls.append(request.request_id)
+        return _gan_raw()
+
+    notes = [InputNote(note_id="a", text="He has two seizures per month.")]
+    first = run_artifact_notes(notes, runtime, task="gan", completion=complete, store_path=path)
+    second = run_artifact_notes(
+        notes, runtime, task="gan", completion=complete, store_path=path, replay_only=True
+    )
+    assert first == second and len(calls) == 1
+    assert first[0]["status"] == "ok"
+    changed = [InputNote(note_id="a", text="He previously had two seizures per month.")]
+    missing = run_artifact_notes(
+        changed, runtime, task="gan", completion=complete, store_path=path, replay_only=True
+    )
+    assert missing[0]["status"] == "error" and len(calls) == 1
+    changed_runtime = replace(runtime, temperature=0.3)
+    assert (
+        run_artifact_notes(
+            notes,
+            changed_runtime,
+            task="gan",
+            completion=complete,
+            store_path=path,
+            replay_only=True,
+        )[0]["status"]
+        == "error"
+    )
+    failing_notes = [InputNote(note_id="b", text="He has two seizures per month.")]
+
+    def fail(request):
+        calls.append(request.request_id)
+        raise RuntimeError("offline")
+
+    failed = run_artifact_notes(
+        failing_notes, runtime, task="gan", completion=fail, store_path=path
+    )
+    assert failed[0]["artifact"]["status"] == "failed"
+    assert (
+        run_artifact_notes(failing_notes, runtime, task="gan", completion=complete, store_path=path)
+        == failed
+    )
+    assert len(calls) == 2
+    recovered = run_artifact_notes(
+        failing_notes, runtime, task="gan", completion=complete, store_path=path, retry_failed=True
+    )
+    assert recovered[0]["status"] == "ok" and len(calls) == 3
+    with ArtifactStore(path) as store:
+        records = store.records()
+        assert len(records) == 3
+        assert sum(r["failure_count"] for r in records) == 1
+        assert all(r["call_count"] == 1 for r in records)
+        store.connection.execute(
+            "UPDATE artifacts SET payload = '{}' WHERE artifact_id = ?",
+            (recovered[0]["artifact"]["artifact_id"],),
+        )
+        store.connection.commit()
+    with pytest.raises(ValueError, match="checksum mismatch"):
+        with ArtifactStore(path) as store:
+            store.get(records[-1]["execution_key"])
+
+
+def test_exect_artifact_round_trip_preserves_projection(tmp_path):
+    from clinical_extraction.core.artifact_store import artifact_from_record
+
+    source = SourceDocument.from_text(source_id="exect-fixture", text="Diagnosis: focal epilepsy")
+    request = prepare_exect_request(source)
+    artifact = replay_exect_response(
+        request,
+        source=source,
+        saved_request_id=request.request_id,
+        response_text='{"clinical_events": []}',
+    )
+    restored = artifact_from_record(artifact.to_dict())
+    assert restored.to_dict() == artifact.to_dict()
+    assert project_exect_artifact(restored, source=source) == project_exect_artifact(
+        artifact, source=source
+    )
+    changed = deepcopy(artifact.to_dict())
+    changed["request"]["prompt_input_json"] += "changed"
+    with pytest.raises(ValueError, match="hash mismatch"):
+        artifact_from_record(changed)
+
+
+def test_saved_path_mapping_and_retired_execution_commands(tmp_path, monkeypatch):
+    from clinical_extraction.core.paths import resolve_saved_artifact_path
+    from clinical_extraction.operational.cli import main
+
+    assert resolve_saved_artifact_path(tmp_path, "paper_experiments/gan/example.json") == (
+        tmp_path / "results/letter-benchmarks/gan/example.json"
+    )
+    assert resolve_saved_artifact_path(tmp_path, "paper_experiments_other/example.json") == (
+        tmp_path / "paper_experiments_other/example.json"
+    )
+    with pytest.raises(SystemExit) as error:
+        main(["evaluate", "run", "--method", "gan_llm_extract", "--split", "dev750"])
+    assert error.value.code == 2
+
+    from clinical_extraction.operational import exect_benchmark
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.cli_specs import ExectCliSpec
+
+    seen = []
+
+    def run(letters, **kwargs):
+        seen.append((letters, kwargs))
+        return [], {"n_letters": 0}
+
+    monkeypatch.setattr(
+        exect_benchmark, "get_cli_specs", lambda: {"llm": ExectCliSpec("test", run)}
+    )
+    monkeypatch.setattr(exect_benchmark, "load_letters_for_split", lambda split: [])
+    flags = [
+        "--method",
+        "llm",
+        "--out-jsonl",
+        str(tmp_path / "rows.jsonl"),
+        "--out-report",
+        str(tmp_path / "report.json"),
+        "--resume",
+    ]
+    assert main(["benchmark", "exect", *flags]) == 0
+    assert seen[0][1]["mode"] == "prompt-only"
+    assert seen[0][1]["resume"] is True
+    with pytest.raises(SystemExit):
+        main(["benchmark", "exect", *flags, "--split", "test60"])
+    assert len(seen) == 1
+    monkeypatch.setattr(exect_benchmark, "main", lambda argv: 7)
+    assert main(["benchmark", "exect"]) == 7

@@ -10,8 +10,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_paired_c
 
 ROOT = Path(__file__).resolve().parents[1]
 PAIRED_ARTIFACT = (
-    ROOT
-    / "results/letter-benchmarks/gan/paired_significance/gemini37flash/test450/comparison.json"
+    ROOT / "results/letter-benchmarks/gan/paired_significance/gemini37flash/test450/comparison.json"
 )
 
 

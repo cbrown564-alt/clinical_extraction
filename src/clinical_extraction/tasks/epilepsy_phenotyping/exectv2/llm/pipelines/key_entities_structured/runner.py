@@ -102,8 +102,6 @@ def run_split(
     )
 
 
-
-
 def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
     n = len(rows)
     if n == 0:
@@ -166,7 +164,7 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
 
 
 def write_jsonl(rows: Sequence[Mapping[str, Any]], path: Path) -> None:
-    from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (  # noqa: E501
+    from clinical_extraction.core.jsonl import (  # noqa: E501
         write_jsonl_rows,
     )
 

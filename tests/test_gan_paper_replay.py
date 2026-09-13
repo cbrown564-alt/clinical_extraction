@@ -111,9 +111,7 @@ def test_hydrate_saved_llm_only_row_rebuilds_decision_trace() -> None:
     assert "structured_record" not in row
 
 
-def test_reparse_gan_llm_extract_raw_uses_saved_raw_and_no_call(
-    tmp_path, monkeypatch
-) -> None:
+def test_reparse_gan_llm_extract_raw_uses_saved_raw_and_no_call(tmp_path, monkeypatch) -> None:
     dest = tmp_path / "results/letter-benchmarks/gan/gan_llm_extract_raw/grok46/dev750"
     dest.mkdir(parents=True)
     raw = _hybrid_raw()
@@ -145,12 +143,17 @@ def test_reparse_gan_llm_extract_raw_uses_saved_raw_and_no_call(
         ),
         encoding="utf-8",
     )
-    monkeypatch.setattr("clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan.ROOT", tmp_path)
+    monkeypatch.setattr(
+        "clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan.ROOT", tmp_path
+    )
     monkeypatch.setattr(
         "clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan.load_records_for_split",
         lambda _machine: [_record()],
     )
-    monkeypatch.setattr("clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan.gan_row_count", lambda _split: 1)
+    monkeypatch.setattr(
+        "clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan.gan_row_count",
+        lambda _split: 1,
+    )
 
     payload = reparse_gan_llm_extract_raw("grok46", "dev750")
 

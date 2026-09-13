@@ -77,11 +77,7 @@ def project_holgate_dialect_label(
     seizures = _SEIZURES_PER.match(stripped)
     if seizures is not None:
         low, high, denom, unit = seizures.group(1, 2, 3, 4)
-        count = (
-            f"{_as_int(low)} to {_as_int(high)}"
-            if high is not None
-            else _as_int(low)
-        )
+        count = f"{_as_int(low)} to {_as_int(high)}" if high is not None else _as_int(low)
         if denom is not None:
             return f"{count} per {_as_int(denom)} {unit}"
         return f"{count} per {unit}"

@@ -58,9 +58,7 @@ PROMPT_BUILDERS: dict[str, Callable[[], str | dict[str, object]]] = {
     "gan2026__hybrid_structured_events": lambda: hybrid_structured_events.build_prompt_input(
         _gan_record()
     ),
-    "gan2026__llm": lambda: llm.build_prompt_input(
-        _gan_record()
-    ),
+    "gan2026__llm": lambda: llm.build_prompt_input(_gan_record()),
     "exectv2__structured_key_families": lambda: exectv2_structured.build_prompt_input(
         _exect_letter(), prompt_version=exectv2_structured.EXECT_LLM_EXTRACT_AND_SELECT
     ),

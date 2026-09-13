@@ -321,7 +321,6 @@ def _canonicalize_seizure_free(text: str) -> str:
     return "seizure free for multiple year"
 
 
-
 def _fix_cluster_block(text: str) -> str:
     if "cluster" not in text:
         return text

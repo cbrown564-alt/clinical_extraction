@@ -89,9 +89,7 @@ def test_vllm_thinking_settings_are_read_from_environment(
         cache=False,
     )
 
-    assert captured["extra_body"] == {
-        "chat_template_kwargs": {"thinking": False}
-    }
+    assert captured["extra_body"] == {"chat_template_kwargs": {"thinking": False}}
 
 
 def test_vllm_route_and_key_default_to_vllm_environment(

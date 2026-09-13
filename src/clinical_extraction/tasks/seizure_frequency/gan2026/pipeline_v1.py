@@ -3,9 +3,6 @@ from __future__ import annotations
 from pydantic import BaseModel, ConfigDict, Field
 
 from clinical_extraction.core.evidence import locate_evidence
-from clinical_extraction.core.pipeline import PipelineResult
-from clinical_extraction.core.schemas import FinalExtraction
-from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic import temporal
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidates import (
     CandidateKind,
@@ -44,7 +41,6 @@ _relative_note_date = temporal.relative_note_date
 
 __all__ = [
     "CandidateKind",
-    "Gan2026PipelineV1",
     "_RawCandidate",
     "_candidate_event",
     "_clinic_date",
@@ -80,23 +76,6 @@ class NormalizedEvent(BaseModel):
     semantic_kind: FrequencyLabelKind
     monthly_frequency: float
     validation_errors: tuple[str, ...] = ()
-
-
-class Gan2026PipelineV1:
-    """First deterministic, schema-shaped seizure-frequency baseline."""
-
-    def __init__(self, ablation_config: AblationConfig | None = None) -> None:
-        self.ablation_config = ablation_config or AblationConfig()
-        from .runner import Gan2026PipelineRunner, PipelineConfiguration
-
-        config = PipelineConfiguration(
-            architecture="rules",
-            ablation_config=self.ablation_config,
-        )
-        self._runner = Gan2026PipelineRunner(config)
-
-    def run(self, item: GanRecord) -> PipelineResult[FinalExtraction]:
-        return self._runner.run(item)
 
 
 def _candidate_event(index: int, candidate: _RawCandidate, note_text: str) -> CandidateEvent:

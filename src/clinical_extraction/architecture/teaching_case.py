@@ -128,8 +128,7 @@ GAN_HYBRID_RAW_OUTPUT = json.dumps(
             "evidence": "He has had seven seizures so far this year",
             "confidence": "medium",
             "rationale": (
-                "The counted total so far this year is the most concrete "
-                "figure in the letter."
+                "The counted total so far this year is the most concrete figure in the letter."
             ),
         },
     }
@@ -147,8 +146,7 @@ GAN_LLM_ONLY_RAW_OUTPUT = json.dumps(
         "applied_rule_families": ["observation_window_total"],
         "confidence": "medium",
         "rationale": (
-            "The counted total so far this year is the most concrete figure "
-            "in the letter."
+            "The counted total so far this year is the most concrete figure in the letter."
         ),
     }
 )
@@ -251,9 +249,7 @@ GAN_DIARY_HYBRID_RAW_OUTPUT = json.dumps(
             "final_label": "2 per month",
             "evidence": "two seizures in June",
             "confidence": "medium",
-            "rationale": (
-                "The most recent month is the best guide to the current rate."
-            ),
+            "rationale": ("The most recent month is the best guide to the current rate."),
         },
     }
 )
@@ -269,9 +265,7 @@ GAN_DIARY_LLM_ONLY_RAW_OUTPUT = json.dumps(
         "time_window": "June 2026",
         "applied_rule_families": ["recency"],
         "confidence": "medium",
-        "rationale": (
-            "The most recent month is the best guide to the current rate."
-        ),
+        "rationale": ("The most recent month is the best guide to the current rate."),
     }
 )
 
@@ -363,9 +357,7 @@ GAN_FREE_HYBRID_RAW_OUTPUT = json.dumps(
             "final_label": "seizure free since March 2025",
             "evidence": "He has remained seizure-free since March 2025",
             "confidence": "high",
-            "rationale": (
-                "The letter reports sustained seizure freedom since March 2025."
-            ),
+            "rationale": ("The letter reports sustained seizure freedom since March 2025."),
         },
     }
 )
@@ -379,9 +371,7 @@ GAN_FREE_LLM_ONLY_RAW_OUTPUT = json.dumps(
         "time_window": "since March 2025",
         "applied_rule_families": [],
         "confidence": "high",
-        "rationale": (
-            "The letter reports sustained seizure freedom since March 2025."
-        ),
+        "rationale": ("The letter reports sustained seizure freedom since March 2025."),
     }
 )
 
@@ -800,9 +790,9 @@ def _gan_scoring(
         ),
         changed=True,
         note="The scorer turns one label into two categorical verdicts.",
-            owner="scorer",
-            stage_name="Score",
-            effect_class="benchmark_projection",
+        owner="scorer",
+        stage_name="Score",
+        effect_class="benchmark_projection",
     )
 
 
@@ -842,8 +832,7 @@ def _gan_rules_only_run(spec: GanCaseSpec) -> MethodRun:
         "gan.rules.select_and_render",
         input_value=[_normalized_summary(event) for event in normalized],
         output_value=(
-            f"selected {selection.get('selected_event_ids')} -> "
-            f"{selection.get('final_label')}"
+            f"selected {selection.get('selected_event_ids')} -> {selection.get('final_label')}"
         ),
         changed=True,
         note="The rules own this choice. Nothing before it made a selection.",
@@ -895,9 +884,7 @@ def _gan_llm_only_run(spec: GanCaseSpec) -> MethodRun:
         note="Fixture boundary. Everything after this line is real code.",
     )
 
-    decision, errors, trace = pipeline.parse_decision_json_with_trace(
-        spec.llm_only_raw_output
-    )
+    decision, errors, trace = pipeline.parse_decision_json_with_trace(spec.llm_only_raw_output)
     run.record(
         "gan.llm.json_schema_repair",
         input_value=spec.llm_only_raw_output,
@@ -936,9 +923,7 @@ def _gan_llm_only_run(spec: GanCaseSpec) -> MethodRun:
         ),
         changed=False,
     )
-    evidence_valid = (
-        evidence_is_substring(spec.note_text, decision.evidence) if decision else False
-    )
+    evidence_valid = evidence_is_substring(spec.note_text, decision.evidence) if decision else False
     run.record(
         "gan.llm.evidence_containment",
         input_value=decision.evidence if decision else None,
@@ -1047,9 +1032,7 @@ def _gan_llm_extract_raw_run(
         ),
     )
 
-    final_label = (
-        extraction.selection.final_label if extraction and extraction.selection else None
-    )
+    final_label = extraction.selection.final_label if extraction and extraction.selection else None
     semantic = trace["deterministic_semantic"]
     model_extraction = hybrid.StructuredExtractionRecord.model_validate(
         trace["model_prediction"]["record"]
@@ -1061,7 +1044,7 @@ def _gan_llm_extract_raw_run(
         repair_config=repair_config,
         expected_final_label=final_label,
     )
-    for (family, before, after, vetoed_with) in walk:
+    for family, before, after, vetoed_with in walk:
         if before != after:
             note = "fired on this letter"
         elif vetoed_with:
@@ -1197,15 +1180,11 @@ def _gan_repair_walk(
             codebook_encode,
         )
 
-        repair_codebook_label_with_evidence = (
-            codebook_encode.repair_codebook_label_with_evidence
-        )
+        repair_codebook_label_with_evidence = codebook_encode.repair_codebook_label_with_evidence
 
         selected_ids = set(model_extraction.selection.selected_event_ids)
         selected_kinds = [
-            str(event.kind)
-            for event in model_extraction.events
-            if event.event_id in selected_ids
+            str(event.kind) for event in model_extraction.events if event.event_id in selected_ids
         ]
         codebook_trace = repair_codebook_label_with_evidence(
             label,
@@ -1256,17 +1235,13 @@ def _gan_repair_walk(
     )
     step(
         "residual_jerk",
-        families.residual_jerk_label_from_events(
-            model_extraction, label, note_text=note_text
-        )
+        families.residual_jerk_label_from_events(model_extraction, label, note_text=note_text)
         if repair_config.residual_jerk_repair
         else None,
     )
     step(
         "post_change_burst",
-        families.post_change_burst_label_from_events(
-            model_extraction, label, note_text=note_text
-        )
+        families.post_change_burst_label_from_events(model_extraction, label, note_text=note_text)
         if repair_config.post_change_burst_repair
         else None,
     )
@@ -1280,9 +1255,7 @@ def _gan_repair_walk(
     )
     step(
         "dated_sequence",
-        families.dated_sequence_label_from_events(
-            model_extraction, label, note_text=note_text
-        )
+        families.dated_sequence_label_from_events(model_extraction, label, note_text=note_text)
         if repair_config.dated_sequence_repair
         else None,
     )
@@ -1324,10 +1297,7 @@ def _normalized_summary(event: Any) -> str:
     if not isinstance(data, Mapping):
         return str(data)
     identifier = data.get("event_id") or data.get("candidate_id") or "?"
-    return (
-        f"{identifier}: {data.get('normalized_label')} "
-        f"(monthly {data.get('monthly_frequency')})"
-    )
+    return f"{identifier}: {data.get('normalized_label')} (monthly {data.get('monthly_frequency')})"
 
 
 def _gan_case(spec: GanCaseSpec) -> TeachingCase:
@@ -1408,9 +1378,7 @@ def _exect_rules_only_run(letter: Any | None = None) -> MethodRun:
     run = MethodRun(method_id=manifest.method_id, manifest=manifest)
     letter = letter or _exect_letter()
 
-    result = Exectv2PipelineRunner(
-        Exectv2PipelineConfiguration(method="rules")
-    ).run(letter).result
+    result = Exectv2PipelineRunner(Exectv2PipelineConfiguration(method="rules")).run(letter).result
     for event in result.stage_events[:3]:
         run.record(
             event.stage_id,
@@ -1444,9 +1412,7 @@ def _exect_rules_only_run(letter: Any | None = None) -> MethodRun:
     return run
 
 
-def _exect_llm_only_run(
-    letter: Any | None = None, raw_output: str | None = None
-) -> MethodRun:
+def _exect_llm_only_run(letter: Any | None = None, raw_output: str | None = None) -> MethodRun:
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
         structured_one_call,
     )
@@ -1498,9 +1464,7 @@ def _exect_llm_only_run(
     return run
 
 
-def _exect_llm_pre_post_run(
-    letter: Any | None = None, raw_output: str | None = None
-) -> MethodRun:
+def _exect_llm_pre_post_run(letter: Any | None = None, raw_output: str | None = None) -> MethodRun:
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
         structured_one_call,
     )
@@ -1541,8 +1505,7 @@ def _exect_llm_pre_post_run(
             output_value=event.output_value,
             changed=event.changed,
             note=(
-                "Fixture boundary at the one-call producer; no live model call "
-                "is made."
+                "Fixture boundary at the one-call producer; no live model call is made."
                 if event.stage_id == "exect.llm_pre_post.model_call"
                 else ""
             ),
@@ -1584,9 +1547,7 @@ def _structured_row(letter: Any, predicted: Any, gate_warnings: Any) -> dict[str
         "call_error": None,
         "parse_errors": [],
         "gate_warnings": list(gate_warnings),
-        "predicted_mentions": [
-            _jsonable(mention) for mention in predicted.mentions
-        ],
+        "predicted_mentions": [_jsonable(mention) for mention in predicted.mentions],
         "n_mentions_raw": len(predicted.mentions),
         "n_mentions_scored": len(predicted.mentions),
         "n_evidence_invalid": 0,
@@ -1617,9 +1578,7 @@ def _format_headline_key(family: str, key: Any, letter: ExectLetter) -> str:
                 phrase = annotation.text.replace("-", " ")
                 return f"{phrase} ({state})" if state else phrase
         type_key = key[0] if isinstance(key, tuple) else key
-        type_label = (
-            type_key[1] if isinstance(type_key, tuple) and len(type_key) >= 2 else type_key
-        )
+        type_label = type_key[1] if isinstance(type_key, tuple) and len(type_key) >= 2 else type_key
         return f"{type_label} ({state})" if state else str(type_label)
     if family == "Prescription" and isinstance(key, tuple) and key:
         if key[0] == "ordinary" and len(key) >= 5:
@@ -1762,9 +1721,7 @@ def _mention_mapping(mention: Any) -> dict[str, Any]:
         "entity": str(data.get("entity", "")),
         "text": str(data.get("text", mention)),
         "attributes": {
-            str(key): str(value)
-            for key, value in dict(attributes).items()
-            if value is not None
+            str(key): str(value) for key, value in dict(attributes).items() if value is not None
         },
     }
 
@@ -1790,8 +1747,7 @@ def _exect_scoring(
             letter_id=str(letter.letter_id),
             note_text=letter.note_text,
             annotations=tuple(
-                annotation_from_mapping(_mention_mapping(mention))
-                for mention in mentions
+                annotation_from_mapping(_mention_mapping(mention)) for mention in mentions
             ),
         )
         emitted = _family_output_lines(predicted)
@@ -1803,9 +1759,7 @@ def _exect_scoring(
             if nine_entity
             else ""
         )
-        run.correctness_note = (
-            f"{boundary}Gold comparison lives on Workbench."
-        )
+        run.correctness_note = f"{boundary}Gold comparison lives on Workbench."
         score_note = "What left the line. Gold comparison lives on Workbench."
         output_value: Any = "\n".join(emitted)
         input_value = f"{len(mentions)} finding(s) entering the scorer"

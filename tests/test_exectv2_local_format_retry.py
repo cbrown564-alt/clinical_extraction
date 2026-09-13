@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from types import SimpleNamespace
 
+import dspy
+
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines import (
     key_entities_structured,
@@ -40,7 +42,7 @@ def test_local_schema_failure_gets_one_value_preserving_format_retry(monkeypatch
 
     monkeypatch.setattr(runner, "DspyKeyEntitiesStructuredExtractor", Extractor)
     monkeypatch.setattr(runner, "FormatOnlyJsonRetry", Retry)
-    monkeypatch.setattr(runner.dspy, "configure", lambda **_kwargs: None)
+    monkeypatch.setattr(dspy, "configure", lambda **_kwargs: None)
     monkeypatch.setattr(runner, "build_dspy_lm", lambda *_args, **_kwargs: object())
 
     rows, metadata = runner.run_split(

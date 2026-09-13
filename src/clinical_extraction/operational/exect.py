@@ -138,12 +138,9 @@ def run_exect_notes(
                             "error": {
                                 "type": "model_or_parse_failure",
                                 "message": row.get("call_error")
+                                or "; ".join(str(error) for error in row.get("parse_errors", []))
                                 or "; ".join(
-                                    str(error) for error in row.get("parse_errors", [])
-                                )
-                                or "; ".join(
-                                    str(error)
-                                    for error in row.get("initial_parse_errors", [])
+                                    str(error) for error in row.get("initial_parse_errors", [])
                                 ),
                             }
                         }

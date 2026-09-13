@@ -122,8 +122,8 @@
       "output_type": "GanFrequencyRecord or an unscorable_final_label error",
       "output_example": "unscorable_final_label: unrecognized label",
       "implementation": {
-        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/label_parser.py",
-        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser:label_to_frequency_record"
+        "path": "src/clinical_extraction/tasks/shared/epilepsy/normalization.py",
+        "symbol": "clinical_extraction.tasks.shared.epilepsy.normalization:label_to_frequency_record"
       },
       "governing_test": "tests/test_gan2026_labels.py",
       "trace_fields": ["parse_errors"],
@@ -176,7 +176,7 @@
     }
   ],
   "evidence_owners": [
-    "docs/paper/methods.md",
-    "docs/paper/claims.md"
+    "publications/dissertation/notes/methods.md",
+    "publications/dissertation/notes/claims.md"
   ]
 }

@@ -15,7 +15,7 @@ from clinical_extraction.architecture.paper_teaching_cases import (
 )
 from clinical_extraction.architecture.render import all_documents
 from clinical_extraction.architecture.teaching_case import build_exect_case
-from scripts.build_architecture_docs import build
+from scripts.checks.build_architecture_docs import build
 
 
 def test_manifests_agree_with_the_repository() -> None:
@@ -25,9 +25,7 @@ def test_manifests_agree_with_the_repository() -> None:
 
 def test_every_manifest_stage_resolves_to_a_real_callable() -> None:
     for manifest, stage in sm.iter_stages():
-        assert stage.implementation.resolve() is not None, (
-            f"{manifest.method_id}/{stage.stage_id}"
-        )
+        assert stage.implementation.resolve() is not None, f"{manifest.method_id}/{stage.stage_id}"
 
 
 def test_model_owned_stages_are_clinical_meaning_stages() -> None:
@@ -57,13 +55,14 @@ def test_published_documents_match_the_pipeline() -> None:
         relative = path.relative_to(root)
         assert path.is_file(), f"missing generated document: {relative}"
         assert path.read_text(encoding="utf-8") == content, (
-            f"{relative} is stale; run python scripts/build_architecture_docs.py"
+            f"{relative} is stale; run python scripts/checks/build_architecture_docs.py"
         )
 
 
 def test_ownership_matrix_covers_every_method() -> None:
     rows = sm.ownership_matrix()
     assert {row["method_id"] for row in rows} == set(sm.METHOD_IDS)
+
 
 @pytest.mark.local_corpus
 def test_teaching_documents_work_the_four_paper_letters() -> None:
@@ -97,17 +96,12 @@ def test_teaching_documents_work_the_four_paper_letters() -> None:
         assert case.gold in body
         assert case.letter_id in index
         assert case.letter_id in walk
-        assert f"{case.letter_id.lower()}.md" in (
-            gan_hub if case.task == "gan2026" else exect_hub
-        )
+        assert f"{case.letter_id.lower()}.md" in (gan_hub if case.task == "gan2026" else exect_hub)
+
 
 @pytest.mark.local_corpus
 def test_paper_exect_score_shows_what_left_the_line() -> None:
-    letter = next(
-        case
-        for case in build_paper_teaching_letters()
-        if case.letter_id == "EA0186"
-    )
+    letter = next(case for case in build_paper_teaching_letters() if case.letter_id == "EA0186")
     for run in letter.runs:
         assert "vs gold:" not in run.final_answer
         assert "Workbench" in run.correctness_note
@@ -124,20 +118,13 @@ def test_paper_exect_score_shows_what_left_the_line() -> None:
         assert "vs gold:" not in str(score.output_value)
         assert "Workbench" in score.note
 
+
 @pytest.mark.local_corpus
 def test_ea0057_hybrid_lenses_show_clinical_rewrites_not_json() -> None:
-    letter = next(
-        case
-        for case in build_paper_teaching_letters()
-        if case.letter_id == "EA0057"
-    )
-    hybrid = next(
-        run for run in letter.runs if run.method_id == "exect_llm_pre_post"
-    )
+    letter = next(case for case in build_paper_teaching_letters() if case.letter_id == "EA0057")
+    hybrid = next(run for run in letter.runs if run.method_id == "exect_llm_pre_post")
     lenses = {
-        obs.stage_id.split(".")[-1]: obs
-        for obs in hybrid.observations
-        if ".lens." in obs.stage_id
+        obs.stage_id.split(".")[-1]: obs for obs in hybrid.observations if ".lens." in obs.stage_id
     }
     diagnosis = lenses["diagnosis"]
     assert diagnosis.changed is True

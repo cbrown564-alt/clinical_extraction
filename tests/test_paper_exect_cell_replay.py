@@ -157,6 +157,9 @@ def test_format_render_uses_pre_assembly_mentions_not_materialized_format_only(
 
 @pytest.mark.local_corpus
 def test_format_render_is_not_schema_or_gated_predicted_mentions() -> None:
+    from clinical_extraction.core.jsonl import (
+        load_jsonl_rows,
+    )
     from clinical_extraction.evaluation.letter_benchmarks.roster import model_by_slug
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect import (
         letters_for_split,
@@ -169,9 +172,6 @@ def test_format_render_is_not_schema_or_gated_predicted_mentions() -> None:
     )
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.contracts import (
         StructuredMethodConfig,
-    )
-    from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-        load_jsonl_rows,
     )
 
     letter = next(iter(letters_for_split("dev140")))
@@ -214,7 +214,9 @@ def test_cli_replay_rungs_accepts_test60(monkeypatch: pytest.MonkeyPatch) -> Non
         captured["source"] = source
         return {"split": split, "model_slug": slug, "row_policy": "aggregate_only"}
 
-    monkeypatch.setattr("clinical_extraction.operational.evaluation_cli.replay_exect_rungs", fake_replay)
+    monkeypatch.setattr(
+        "clinical_extraction.operational.evaluation_cli.replay_exect_rungs", fake_replay
+    )
     main(
         [
             "replay-rungs",

@@ -93,8 +93,7 @@ def _make_evidence(
 def _make_stage(raw: dict[str, Any], source: SourceRecord) -> TraceStage:
     stage_id = raw["stage_id"]
     evidence = tuple(
-        _make_evidence(item, source=source, stage_id=stage_id)
-        for item in raw.get("evidence", ())
+        _make_evidence(item, source=source, stage_id=stage_id) for item in raw.get("evidence", ())
     )
     changes = tuple(
         TraceChange.model_validate({**item, "stage_id": stage_id})
@@ -171,8 +170,7 @@ def load_illustrative_artifact(path: Path) -> ImportedArtifact:
                 findings=findings,
                 score_views=score_views,
                 diagnostics=tuple(
-                    TraceDiagnostic.model_validate(item)
-                    for item in raw_run.get("diagnostics", ())
+                    TraceDiagnostic.model_validate(item) for item in raw_run.get("diagnostics", ())
                 ),
             )
 

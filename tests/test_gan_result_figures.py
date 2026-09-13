@@ -198,4 +198,3 @@ def test_living_pragmatic_confusion_matrix_totals() -> None:
     correct = sum(cm.matrix[i][i] for i in range(4))
     assert correct == 396
     assert cm.labels == ["Frequent", "Infrequent", "Unknown", "Seizure free"]
-

@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from pathlib import Path
 
 from clinical_extraction.operational.exect import run_exect_notes
@@ -18,6 +18,7 @@ from clinical_extraction.operational.runtime import RuntimeConfig
 def main(argv: Sequence[str] | None = None) -> int:
     raw = list(argv) if argv is not None else sys.argv[1:]
     if raw and raw[0] in {"evaluate", "inspect", "index", "benchmark"}:
+        operation: Callable[..., object]
         command, *rest = raw
         if command == "evaluate":
             from clinical_extraction.operational.evaluation_cli import main as operation
@@ -27,14 +28,16 @@ def main(argv: Sequence[str] | None = None) -> int:
             from clinical_extraction.inspection.index import main as operation
         elif rest and rest[0] == "gan":
             from clinical_extraction.operational.gan_benchmark import run_cli as operation
+
             rest = rest[1:]
         elif rest and rest[0] == "exect":
             from clinical_extraction.operational.exect_benchmark import main as operation
+
             rest = rest[1:]
         else:
             raise SystemExit("benchmark requires gan or exect")
-        operation(rest)
-        return 0
+        outcome = operation(rest)
+        return outcome if isinstance(outcome, int) else 0
     parser = _parser()
     args = parser.parse_args(list(argv) if argv is not None else None)
     try:
@@ -70,15 +73,21 @@ def main(argv: Sequence[str] | None = None) -> int:
         parser.error(str(exc))
     if args.command in {"extract", "replay"}:
         from clinical_extraction.operational.extraction import run_artifact_notes
-        rows = run_artifact_notes(notes, runtime, task=args.task, store_path=args.store,
-                                 replay_only=args.command == "replay",
-                                 retry_failed=args.retry_failed)
+
+        rows = run_artifact_notes(
+            notes,
+            runtime,
+            task=args.task,
+            store_path=args.store,
+            replay_only=args.command == "replay",
+            retry_failed=args.retry_failed,
+        )
     else:
         rows = (
-        run_gan_notes(notes, runtime, method=args.method)
-        if args.command == "gan"
-        else run_exect_notes(notes, runtime, method=args.method)
-    )
+            run_gan_notes(notes, runtime, method=args.method)
+            if args.command == "gan"
+            else run_exect_notes(notes, runtime, method=args.method)
+        )
     write_jsonl_atomic(rows, args.output)
     failures = sum(row.get("status") != "ok" for row in rows)
     print(json.dumps({"rows": len(rows), "failures": failures, "output": str(args.output)}))
@@ -86,7 +95,10 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 
 def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description=__doc__, epilog="Additional operations: evaluate, benchmark gan|exect, inspect, index.")
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        epilog="Additional operations: evaluate, benchmark gan|exect, inspect, index.",
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
     for command in ("gan", "exect"):
         child = subparsers.add_parser(command)
@@ -132,10 +144,7 @@ def _add_runtime_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--base-url", help="OpenAI-compatible API base URL")
     parser.add_argument(
         "--api-key",
-        help=(
-            "endpoint API key; optional for vllm/<served-model> routes, "
-            "which default to EMPTY"
-        ),
+        help=("endpoint API key; optional for vllm/<served-model> routes, which default to EMPTY"),
     )
     parser.add_argument(
         "--model",

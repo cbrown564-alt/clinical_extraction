@@ -9,6 +9,10 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.core.jsonl import (
+    load_jsonl_rows,
+    write_jsonl_rows,
+)
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.evaluation.letter_benchmarks.answer_states import (
     graph_from_hops,
@@ -27,10 +31,6 @@ from clinical_extraction.evaluation.letter_benchmarks.methods import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     GanFrequencyRecord,
     load_records_for_split,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    load_jsonl_rows,
-    write_jsonl_rows,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
     map_pragmatic,
@@ -75,13 +75,7 @@ def gan_living_extract_rows_path(slug: str, split: str) -> Path:
 def gan_source_near_rows_path(slug: str, split: str) -> Path:
     """Return the source-near ablation replay file."""
 
-    return (
-        ROOT
-        / "results/letter-benchmarks/gan/gan_llm_extract_raw"
-        / slug
-        / split
-        / "rows.jsonl"
-    )
+    return ROOT / "results/letter-benchmarks/gan/gan_llm_extract_raw" / slug / split / "rows.jsonl"
 
 
 def gan_hybrid_rows_path(slug: str, split: str) -> Path:
@@ -102,12 +96,8 @@ def living_gan_stages(
     """Score extract / encode / select on saved Gan rows without new calls."""
 
     n = len(rows)
-    select_correct = sum(
-        1 for row in rows if (row.get("comparison") or {}).get("purist_correct")
-    )
-    select_prag = sum(
-        1 for row in rows if (row.get("comparison") or {}).get("pragmatic_correct")
-    )
+    select_correct = sum(1 for row in rows if (row.get("comparison") or {}).get("purist_correct"))
+    select_prag = sum(1 for row in rows if (row.get("comparison") or {}).get("pragmatic_correct"))
     select = gan_stage(
         purist_correct=select_correct,
         n=n,
@@ -142,12 +132,8 @@ def living_gan_stages(
                 encode_correct += int(scored["purist_correct"])
                 encode_prag += int(scored["pragmatic_correct"])
     return {
-        "extract": gan_stage(
-            purist_correct=extract_correct, n=n, pragmatic_correct=extract_prag
-        ),
-        "encode": gan_stage(
-            purist_correct=encode_correct, n=n, pragmatic_correct=encode_prag
-        ),
+        "extract": gan_stage(purist_correct=extract_correct, n=n, pragmatic_correct=extract_prag),
+        "encode": gan_stage(purist_correct=encode_correct, n=n, pragmatic_correct=encode_prag),
         "select": select,
     }
 
@@ -239,16 +225,13 @@ def replay_gan_rungs(
         else gan_living_extract_rows_path(slug, split)
     )
     if not raw_path.is_file():
-        raise FileNotFoundError(
-            f"missing gan extract replay file for {slug} {split}: {raw_path}"
-        )
+        raise FileNotFoundError(f"missing gan extract replay file for {slug} {split}: {raw_path}")
     records = {
         record.source_row_index: record
         for record in load_records_for_split(gan_machine_split(split))
     }
     raw_rows = {
-        int(row["source_row_index"]): str(row["raw_output"])
-        for row in load_jsonl_rows(raw_path)
+        int(row["source_row_index"]): str(row["raw_output"]) for row in load_jsonl_rows(raw_path)
     }
     if len(raw_rows) != expected_n:
         raise RuntimeError(
@@ -265,18 +248,14 @@ def replay_gan_rungs(
         record = records[source_row_index]
         rules_result = run_record_three_stage(record, rules_config)
         rules_scored = score_label(record, rules_result.stops.select_label)
-        competing = [
-            entry for entry in rules_result.ledger if entry.drop_reason is None
-        ]
+        competing = [entry for entry in rules_result.ledger if entry.drop_reason is None]
         rules_scored["predicted_candidate_count"] = len(competing)
         rules_scored["predicted_candidate_count_by_stage"] = {
             "extract": len(rules_result.ledger),
             "encode": len(competing),
             "select": len(competing),
         }
-        by_rung: dict[str, dict[str, Any]] = {
-            "rules_only": rules_scored
-        }
+        by_rung: dict[str, dict[str, Any]] = {"rules_only": rules_scored}
         schema_ids: list[str] = []
         schema_kind: str | None = None
         full_hops: list[dict[str, Any]] = []
@@ -291,13 +270,9 @@ def replay_gan_rungs(
             )
             label = extraction.selection.final_label if extraction else None
             scored_rung = score_label(record, label)
-            selected_ids = (
-                list(extraction.selection.selected_event_ids) if extraction else []
-            )
+            selected_ids = list(extraction.selection.selected_event_ids) if extraction else []
             scored_rung["selected_event_ids"] = selected_ids
-            scored_rung["predicted_candidate_count"] = (
-                len(extraction.events) if extraction else 0
-            )
+            scored_rung["predicted_candidate_count"] = len(extraction.events) if extraction else 0
             by_rung[rung] = scored_rung
             if rung == "llm_extract":
                 schema_ids = selected_ids
@@ -315,11 +290,7 @@ def replay_gan_rungs(
                     format_harms += 1
             if rung == "llm_select" and not holdout:
                 full_hops = list(trace.get("answer_states") or [])
-                events = (
-                    [event.model_dump() for event in extraction.events]
-                    if extraction
-                    else []
-                )
+                events = [event.model_dump() for event in extraction.events] if extraction else []
                 unused = unused_model_events(events, selected_ids)
         scored.append(
             {
@@ -345,9 +316,7 @@ def replay_gan_rungs(
         kind_changes=kind_changes,
         format_rescues=format_rescues,
         format_harms=format_harms,
-        shared_raw_output=(
-            "gan_llm_extract_raw" if source == "ablation" else "gan_llm_extract"
-        ),
+        shared_raw_output=("gan_llm_extract_raw" if source == "ablation" else "gan_llm_extract"),
     )
     write_gan_rung_artifacts(
         out_dir or gan_rung_out_dir(slug, split),
@@ -403,9 +372,7 @@ def _comparison_summary(
         "model_slug": slug,
         "row_count": len(scored),
         "row_policy": "aggregate_only" if holdout else "development_review_permitted",
-        "rungs": {
-            rung: _rung_summary(scored, rung) for rung in RUNG_IDS if rung != "llm_pre_post"
-        },
+        "rungs": {rung: _rung_summary(scored, rung) for rung in RUNG_IDS if rung != "llm_pre_post"},
         "shared_raw_output": shared_raw_output,
         "split": split,
     }
@@ -416,9 +383,7 @@ def _rung_summary(rows: Sequence[Mapping[str, Any]], rung: str) -> dict[str, Any
     purist = sum(1 for row in rows if row["rungs"][rung]["purist_correct"])
     pragmatic = sum(1 for row in rows if row["rungs"][rung]["pragmatic_correct"])
     scorable = sum(1 for row in rows if row["rungs"][rung].get("scorable"))
-    kinds = Counter(
-        str(row["rungs"][rung].get("predicted_kind") or "unscorable") for row in rows
-    )
+    kinds = Counter(str(row["rungs"][rung].get("predicted_kind") or "unscorable") for row in rows)
     purist_rate = round(purist / n, 4) if n else 0.0
     pragmatic_rate = round(pragmatic / n, 4) if n else 0.0
     return {

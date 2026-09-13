@@ -102,9 +102,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         return
     if args.action == "score-inventory-residual":
         if canonical_exect_method(args.method) != "exect_llm_extract":
-            raise SystemExit(
-                "score-inventory-residual requires --method exect_llm_extract"
-            )
+            raise SystemExit("score-inventory-residual requires --method exect_llm_extract")
         if args.split != "dev140":
             raise SystemExit("score-inventory-residual is DEV140 only")
         print(
@@ -163,9 +161,7 @@ def main(argv: Sequence[str] | None = None) -> None:
                 )
             )
             return
-        raise SystemExit(
-            "replay-rungs accepts --split dev750, test450, dev140, or test60"
-        )
+        raise SystemExit("replay-rungs accepts --split dev750, test450, dev140, or test60")
     if args.action == "reparse-gan":
         if args.method != "gan_llm_extract_raw":
             raise SystemExit("reparse-gan only accepts --method gan_llm_extract_raw")
@@ -228,9 +224,7 @@ def main(argv: Sequence[str] | None = None) -> None:
             )
             return
         if args.method not in {"exect_llm_pre_post", "exect_llm_with_rules"}:
-            raise SystemExit(
-                "promote-exect is ExECT pre-post, LLM only, encode, or select"
-            )
+            raise SystemExit("promote-exect is ExECT pre-post, LLM only, encode, or select")
         print(
             json.dumps(
                 promote_exect(args.model, args.split),
@@ -258,15 +252,11 @@ def verify(method: str, split: str, slug: str | None = None) -> dict[str, Any]:
                 "ok": True,
                 "method": method,
                 "prompt_version": (
-                    "exect_llm_encode"
-                    if method == "exect_llm_encode"
-                    else "exect_llm_select"
+                    "exect_llm_encode" if method == "exect_llm_encode" else "exect_llm_select"
                 ),
                 "split": split,
                 "row_policy": (
-                    "aggregate_only"
-                    if split == "test60"
-                    else "development_review_permitted"
+                    "aggregate_only" if split == "test60" else "development_review_permitted"
                 ),
             }
         resolved = canonical_exect_method(method)
@@ -276,4 +266,3 @@ def verify(method: str, split: str, slug: str | None = None) -> dict[str, Any]:
             return verify_llm_extract(split=split, slug=slug)
         return verify_compact(split=split, slug=slug)
     return verify_gan(method, split, slug)
-

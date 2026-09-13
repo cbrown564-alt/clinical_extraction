@@ -17,6 +17,10 @@ from clinical_extraction.core.batch import (
     complete_chat_batch,
     uses_provider_batch,
 )
+from clinical_extraction.core.jsonl import (
+    load_jsonl_rows,
+    write_jsonl_rows,
+)
 from clinical_extraction.core.model_routes import build_paper_lm, resolve_paper_api_base
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.evaluation.letter_benchmarks.comparison_contract import (
@@ -37,10 +41,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect imp
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     GanFrequencyRecord,
     load_records_for_split,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    load_jsonl_rows,
-    write_jsonl_rows,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
     DspyStructuredExtractor,
@@ -74,11 +74,13 @@ LaterStageMethod = Literal[
 ]
 CITED_SLUG = "gemini37flash"
 EXTRACT_METHOD = "gan_llm_extract"
-ALLOWED_EXTRACT_METHODS = frozenset({
-    "gan_llm_extract",
-    "gan_llm_extract_raw",
-    "gan_llm_extract_no_examples_no_evidence_no_forms",
-})
+ALLOWED_EXTRACT_METHODS = frozenset(
+    {
+        "gan_llm_extract",
+        "gan_llm_extract_raw",
+        "gan_llm_extract_no_examples_no_evidence_no_forms",
+    }
+)
 LLM_ENCODE_IS_EXTRACT = True
 LLM_SELECT_METHOD = GAN_LLM_SELECT_FROM_EXTRACT
 MAX_TOKENS = 8000
@@ -133,9 +135,7 @@ def extract_rows_path(
             / split
             / "rows.jsonl"
         )
-    candidates.append(
-        ROOT / "results/letter-benchmarks/gan" / ledger / slug / split / "rows.jsonl"
-    )
+    candidates.append(ROOT / "results/letter-benchmarks/gan" / ledger / slug / split / "rows.jsonl")
     for path in candidates:
         if path.is_file():
             return path
@@ -271,9 +271,7 @@ def run_later_stage(
     if len(records) != expected:
         raise RuntimeError(f"expected {expected} {split} records, found {len(records)}")
     ledger = _resolved_extract_method(extract_method)
-    extract_by_index = _load_jsonl_by_index(
-        extract_rows_path(split, slug, extract_method=ledger)
-    )
+    extract_by_index = _load_jsonl_by_index(extract_rows_path(split, slug, extract_method=ledger))
     encode_by_index: dict[int, dict[str, Any]] = {}
     if method == "gan_llm_select":
         encode_path = encode_rows_path or encode_work_rows_path(
@@ -358,9 +356,7 @@ def run_later_stage(
             )
         by_index[record.source_row_index] = row
         rows = [
-            by_index[item.source_row_index]
-            for item in records
-            if item.source_row_index in by_index
+            by_index[item.source_row_index] for item in records if item.source_row_index in by_index
         ]
         write_jsonl_rows(rows, rows_path)
         if progress_every and index % progress_every == 0:
@@ -380,9 +376,7 @@ def run_later_stage(
         "split_machine": machine,
         "split_manifest": SPLIT_MANIFEST,
         "row_count": len(records),
-        "row_policy": (
-            "aggregate_only" if holdout else "development_review_permitted"
-        ),
+        "row_policy": ("aggregate_only" if holdout else "development_review_permitted"),
         "extract_ledger": ledger,
         "prompt_version": prompt,
         "started_utc": started,
@@ -510,9 +504,7 @@ def score_later_stage_row(
                 if encode_row is None:
                     raise RuntimeError("select row is missing its encode row")
                 encoded_events = list(encode_row["encoded_events"])
-            labels_by_id = {
-                str(event["event_id"]): str(event["label"]) for event in encoded_events
-            }
+            labels_by_id = {str(event["event_id"]): str(event["label"]) for event in encoded_events}
             prompt_input = build_llm_select_prompt_input(
                 encoded_events,
                 extract_selected_event_ids=extract.selection.selected_event_ids,
@@ -608,9 +600,7 @@ def _prepare_live_runtime(
         existing = os.environ.get(OLLAMA_NUM_CTX_ENV)
         declared = str(spec.num_ctx)
         if existing is not None and existing != declared:
-            raise RuntimeError(
-                f"{OLLAMA_NUM_CTX_ENV}={existing} conflicts with {declared}"
-            )
+            raise RuntimeError(f"{OLLAMA_NUM_CTX_ENV}={existing} conflicts with {declared}")
         os.environ[OLLAMA_NUM_CTX_ENV] = declared
     if spec.slug == "gemini37flash" and spec.reasoning_effort:
         os.environ["GEMINI_REASONING_EFFORT"] = spec.reasoning_effort
@@ -647,9 +637,7 @@ def _later_stage_prompt_input(
     except ValueError:
         return None
     if method == "gan_llm_encode":
-        return build_llm_encode_prompt_input(
-            [event.model_dump() for event in extract.events]
-        )
+        return build_llm_encode_prompt_input([event.model_dump() for event in extract.events])
     if method == "gan_llm_select_from_extract":
         return build_llm_select_prompt_input(
             extract_events_as_select_ledger(extract),
@@ -672,9 +660,7 @@ def _live_sync_raw_output(
     encode_by_index: Mapping[int, Mapping[str, Any]],
     program: DspyStructuredExtractor,
 ) -> str:
-    prompt_input = _later_stage_prompt_input(
-        method, record, extract_by_index, encode_by_index
-    )
+    prompt_input = _later_stage_prompt_input(method, record, extract_by_index, encode_by_index)
     if prompt_input is None:
         return ""
     prediction = program(prompt_input_json=prompt_input)
@@ -690,9 +676,7 @@ def _batch_items(
 ) -> list[BatchChatItem]:
     items: list[BatchChatItem] = []
     for record in records:
-        prompt_input = _later_stage_prompt_input(
-            method, record, extract_by_index, encode_by_index
-        )
+        prompt_input = _later_stage_prompt_input(method, record, extract_by_index, encode_by_index)
         if prompt_input is None:
             continue
         items.append(

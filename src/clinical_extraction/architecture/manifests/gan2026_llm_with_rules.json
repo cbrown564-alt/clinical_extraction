@@ -394,8 +394,8 @@
       "output_type": "GanFrequencyRecord or an unscorable_final_label error",
       "output_example": "unscorable_final_label: unrecognized label",
       "implementation": {
-        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/label_parser.py",
-        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser:label_to_frequency_record"
+        "path": "src/clinical_extraction/tasks/shared/epilepsy/normalization.py",
+        "symbol": "clinical_extraction.tasks.shared.epilepsy.normalization:label_to_frequency_record"
       },
       "governing_test": "tests/test_gan2026_labels.py",
       "trace_fields": [
@@ -465,12 +465,12 @@
     {
       "name": "Paper live runner",
       "role": "replay path",
-      "path": "src/clinical_extraction/paper/cli.py",
-      "note": "python -m clinical_extraction.paper run --method gan_llm_extract_raw --model <slug> --split <dev750|test450>"
+      "path": "src/clinical_extraction/operational/evaluation_cli.py",
+      "note": "Historical live dispatcher retired. Use clinical-extract extract for current profiles; clinical-extract evaluate for saved-result verification."
     }
   ],
   "evidence_owners": [
-    "docs/paper/methods.md",
-    "docs/paper/claims.md"
+    "publications/dissertation/notes/methods.md",
+    "publications/dissertation/notes/claims.md"
   ]
 }

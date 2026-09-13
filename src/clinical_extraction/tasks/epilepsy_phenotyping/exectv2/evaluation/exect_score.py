@@ -8,6 +8,10 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, TypedDict
 
+from clinical_extraction.core.jsonl import (
+    load_jsonl_rows,
+    write_jsonl_rows,
+)
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.views import (
     predictions_from_rows,
@@ -42,10 +46,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_hea
     gold_headline_support,
     gold_inventory_support,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    load_jsonl_rows,
-    write_jsonl_rows,
-)
 
 
 class ResidualFired(TypedDict):
@@ -79,12 +79,11 @@ def _existing_complete_rows(path: Path, prompt_version: str) -> list[dict[str, A
         letter_id = str(row.get("letter_id") or "")
         if not letter_id or letter_id in seen:
             continue
-        if structured.canonicalize_prompt_version(
-            str(row.get("prompt_version") or "")
-        ) != prompt_version:
-            raise RuntimeError(
-                f"{path} has {letter_id} with {row.get('prompt_version')}"
-            )
+        if (
+            structured.canonicalize_prompt_version(str(row.get("prompt_version") or ""))
+            != prompt_version
+        ):
+            raise RuntimeError(f"{path} has {letter_id} with {row.get('prompt_version')}")
         if row.get("call_error") or not row.get("raw_output"):
             continue
         seen.add(letter_id)
@@ -148,17 +147,13 @@ def _score_arm(
         "raw_headline_f1": raw_prf["overall"]["f1"],
         "raw_family_f1": {family: raw_prf["by_family"][family]["f1"] for family in FAMILIES},
         "hybrid_headline_f1": hybrid_prf["overall"]["f1"],
-        "hybrid_family_f1": {
-            family: hybrid_prf["by_family"][family]["f1"] for family in FAMILIES
-        },
+        "hybrid_family_f1": {family: hybrid_prf["by_family"][family]["f1"] for family in FAMILIES},
         "raw_headline_prf": raw_prf["overall"],
         "raw_family_prf": raw_prf["by_family"],
         "hybrid_headline_prf": hybrid_prf["overall"],
         "hybrid_family_prf": hybrid_prf["by_family"],
         "raw_four_family_letter_exact": _four_family_exact(letter_rows, "raw_letter_exact"),
-        "hybrid_four_family_letter_exact": _four_family_exact(
-            letter_rows, "hybrid_letter_exact"
-        ),
+        "hybrid_four_family_letter_exact": _four_family_exact(letter_rows, "hybrid_letter_exact"),
         "raw_family_letter_exact": _family_exact(letter_rows, "raw_letter_exact"),
         "hybrid_family_letter_exact": _family_exact(letter_rows, "hybrid_letter_exact"),
         "hybrid_rewrite_letters": sorted(
@@ -188,9 +183,7 @@ def _letter_family_rows(
     model: str,
     unit_keys: Any = None,
 ) -> list[dict[str, Any]]:
-    structured_rows = {
-        str(row["letter_id"]): row for row in load_jsonl_rows(structured_path)
-    }
+    structured_rows = {str(row["letter_id"]): row for row in load_jsonl_rows(structured_path)}
     assembly_rows = {str(row["letter_id"]): row for row in load_jsonl_rows(assembly_path)}
     raw_letters = {
         prediction.letter_id: to_exect_letter(prediction)
@@ -200,9 +193,7 @@ def _letter_family_rows(
     }
     hybrid_letters = {
         prediction.letter_id: to_exect_letter(prediction)
-        for prediction in predictions_from_rows(
-            list(assembly_rows.values()), "predicted_mentions"
-        )
+        for prediction in predictions_from_rows(list(assembly_rows.values()), "predicted_mentions")
     }
     key_fn = unit_keys or clinical_headline_unit_keys
     out: list[dict[str, Any]] = []
@@ -219,19 +210,11 @@ def _letter_family_rows(
                 if mention.entity == family
             ]
             gold_mentions = [
-                annotation
-                for annotation in letter.annotations
-                if annotation.entity == family
+                annotation for annotation in letter.annotations if annotation.entity == family
             ]
-            raw_keys = Counter(
-                key_fn(family, raw_mentions, letter.note_text)
-            )
-            hybrid_keys = Counter(
-                key_fn(family, hybrid_mentions, letter.note_text)
-            )
-            gold_keys = Counter(
-                key_fn(family, gold_mentions, letter.note_text)
-            )
+            raw_keys = Counter(key_fn(family, raw_mentions, letter.note_text))
+            hybrid_keys = Counter(key_fn(family, hybrid_mentions, letter.note_text))
+            gold_keys = Counter(key_fn(family, gold_mentions, letter.note_text))
             out.append(
                 {
                     "arm": arm,
@@ -309,9 +292,7 @@ def _compare_pair(
     ctrl = control["summary"]
     cand = candidate["summary"]
     control_rows = {(row["letter_id"], row["family"]): row for row in control["letter_rows"]}
-    candidate_rows = {
-        (row["letter_id"], row["family"]): row for row in candidate["letter_rows"]
-    }
+    candidate_rows = {(row["letter_id"], row["family"]): row for row in candidate["letter_rows"]}
     surfaces: dict[str, Any] = {}
     triggers: list[str] = []
     for surface, f1_field, exact_field, family_f1_field in (
@@ -372,9 +353,7 @@ def _changed_rows(
     letters: Sequence[ExectLetter],
 ) -> list[dict[str, Any]]:
     control_rows = {(row["letter_id"], row["family"]): row for row in control["letter_rows"]}
-    candidate_rows = {
-        (row["letter_id"], row["family"]): row for row in candidate["letter_rows"]
-    }
+    candidate_rows = {(row["letter_id"], row["family"]): row for row in candidate["letter_rows"]}
     out: list[dict[str, Any]] = []
     for letter in letters:
         control_all = True
@@ -567,9 +546,7 @@ def score_structured_inventory(
             ExectLetter(
                 letter_id=letter.letter_id,
                 note_text=letter.note_text,
-                annotations=tuple(
-                    annotation_from_mapping(mention) for mention in mentions
-                ),
+                annotations=tuple(annotation_from_mapping(mention) for mention in mentions),
             )
         )
     headline = exact_clinical_headline_scores(letters, pred_letters)
@@ -633,7 +610,6 @@ def write_inventory_baseline_comparison(
     return artifact
 
 
-
 def write_inventory_residual_comparison(
     *,
     structured_path: Path,
@@ -662,9 +638,7 @@ def write_inventory_residual_comparison(
         model=model,
         unit_keys=clinical_inventory_unit_keys,
     )
-    assembly_rows = {
-        str(row["letter_id"]): row for row in load_jsonl_rows(assembly_path)
-    }
+    assembly_rows = {str(row["letter_id"]): row for row in load_jsonl_rows(assembly_path)}
     residual_by_id: dict[str, list[dict[str, Any]]] = {}
     fired: ResidualFired = {
         "diagnosis_residual_letters": [],
@@ -709,12 +683,8 @@ def write_inventory_residual_comparison(
             ).annotations
             if annotation.entity == family
         ]
-        residual_keys = Counter(
-            clinical_inventory_unit_keys(family, pred, "")
-        )
-        gold_keys = Counter(
-            clinical_inventory_unit_keys(family, gold_mentions, "")
-        )
+        residual_keys = Counter(clinical_inventory_unit_keys(family, pred, ""))
+        gold_keys = Counter(clinical_inventory_unit_keys(family, gold_mentions, ""))
         row["residual_keys"] = _counter_rows(residual_keys)
         row["residual_letter_exact"] = residual_keys == gold_keys
         row["residual_mention_count"] = len(pred)
@@ -742,9 +712,7 @@ def write_inventory_residual_comparison(
         "residual_family_prf": residual_prf["by_family"],
         "raw_family_letter_exact": _family_exact(letter_rows, "raw_letter_exact"),
         "hybrid_family_letter_exact": _family_exact(letter_rows, "hybrid_letter_exact"),
-        "residual_family_letter_exact": _family_exact(
-            letter_rows, "residual_letter_exact"
-        ),
+        "residual_family_letter_exact": _family_exact(letter_rows, "residual_letter_exact"),
         "fired": {
             **fired,
             "diagnosis_residual_letter_count": len(fired["diagnosis_residual_letters"]),
@@ -774,4 +742,4 @@ score_arm = _score_arm
 
 
 if __name__ == "__main__":
-    raise SystemExit("use python -m clinical_extraction.paper")
+    raise SystemExit("use clinical-extract evaluate")

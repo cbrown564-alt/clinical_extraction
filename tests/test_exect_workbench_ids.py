@@ -31,9 +31,7 @@ def test_paper_exect_identity_reads_five_cell_and_legacy_suffixes() -> None:
 
 def test_paper_exect_catalog_includes_gemini_five_cell_and_one_rules_lane() -> None:
     runs = paper_exect_catalog_runs()
-    encode = next(
-        run for run in runs if run["run_id"] == "exectv2_dev140_gemini37flash_llm_encode"
-    )
+    encode = next(run for run in runs if run["run_id"] == "exectv2_dev140_gemini37flash_llm_encode")
     assert encode["paper_cell"] == "llm_encode"
     assert encode["model"] == "gemini/gemini-3.7-flash"
     assert encode["artifact_paths"]
@@ -41,18 +39,13 @@ def test_paper_exect_catalog_includes_gemini_five_cell_and_one_rules_lane() -> N
         run.get("paper_cell") == "rules_only" and run["model"] != "(model-independent)"
         for run in runs
     )
-    assert not any(
-        run.get("kind") == "llm" or run["run_id"].endswith("_llm_only")
-        for run in runs
-    )
+    assert not any(run.get("kind") == "llm" or run["run_id"].endswith("_llm_only") for run in runs)
 
 
 def test_paper_exect_catalog_shows_select_stop_metrics_for_extract_cell() -> None:
     runs = paper_exect_catalog_runs()
     extract = next(
-        run
-        for run in runs
-        if run["run_id"] == "exectv2_dev140_gemini37flash_llm_extract"
+        run for run in runs if run["run_id"] == "exectv2_dev140_gemini37flash_llm_extract"
     )
     metrics = extract["metrics"]
     assert metrics["overall_f1"] == 0.8877
@@ -61,17 +54,11 @@ def test_paper_exect_catalog_shows_select_stop_metrics_for_extract_cell() -> Non
     assert metrics["families"]["Prescription"]["f1"] == 0.9604
     assert metrics["families"]["Investigations"]["f1"] == 0.9591
 
-    encode = next(
-        run
-        for run in runs
-        if run["run_id"] == "exectv2_dev140_gemini37flash_llm_encode"
-    )
+    encode = next(run for run in runs if run["run_id"] == "exectv2_dev140_gemini37flash_llm_encode")
     assert encode["metrics"]["overall_f1"] == 0.8699
     assert encode["metrics"]["families"]["Diagnosis"]["f1"] == 0.8146
 
     pre_post = next(
-        run
-        for run in runs
-        if run["run_id"] == "exectv2_dev140_gemini37flash_llm_plus_rules"
+        run for run in runs if run["run_id"] == "exectv2_dev140_gemini37flash_llm_plus_rules"
     )
     assert pre_post["metrics"]["families"]["Diagnosis"]["f1"] == 0.847

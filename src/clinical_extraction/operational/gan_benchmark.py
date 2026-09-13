@@ -19,13 +19,13 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal, Protocol
 
+from clinical_extraction.core.jsonl import (
+    load_jsonl_rows,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     GanFrequencyRecord,
     load_records_for_split,
     load_split_manifest,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    load_jsonl_rows,
 )
 
 
@@ -70,8 +70,6 @@ class GanLlmPipelineCliSpec:
     """Callbacks and defaults for one command-line pipeline choice."""
 
     description: str
-    default_jsonl_path: Path
-    default_report_path: Path
     run_split: PipelineRunFn
     write_jsonl: Callable[[Sequence[Mapping[str, Any]], Path], None]
     write_report: PipelineReportWriter
@@ -103,8 +101,8 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
         default=None,
         help="Required existing dated protocol file for an authorized frozen test run.",
     )
-    parser.add_argument("--jsonl", type=Path, default=spec.default_jsonl_path)
-    parser.add_argument("--markdown", type=Path, default=spec.default_report_path)
+    parser.add_argument("--jsonl", type=Path, default=None)
+    parser.add_argument("--markdown", type=Path, default=None)
     parser.add_argument("--model", default=spec.default_model)
     parser.add_argument(
         "--api-base",
@@ -169,6 +167,9 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
         ),
     )
     args = parser.parse_args(raw_argv)
+    output_root = Path("runs/benchmarks/gan") / args.pipeline / args.split
+    args.jsonl = args.jsonl or output_root / "rows.jsonl"
+    args.markdown = args.markdown or output_root / "report.md"
     spec = specs[args.pipeline]
     if args.model.startswith("vllm/") and args.api_base is None:
         args.api_base = os.environ.get("VLLM_BASE_URL")

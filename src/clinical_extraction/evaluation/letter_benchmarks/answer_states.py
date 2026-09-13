@@ -58,9 +58,7 @@ def normalize_hop(hop: Mapping[str, Any]) -> dict[str, Any]:
     """Accept sealed hops that used ``rung`` / old effect-class strings."""
 
     payload = dict(hop)
-    cell = cell_id_from_legacy_rung(
-        payload.get("cell_id") or payload.get("rung")
-    )
+    cell = cell_id_from_legacy_rung(payload.get("cell_id") or payload.get("rung"))
     if cell is not None:
         payload["cell_id"] = cell
         payload["cell_order"] = CELL_ORDER[cell]

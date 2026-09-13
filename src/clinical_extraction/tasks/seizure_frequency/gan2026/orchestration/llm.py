@@ -6,6 +6,7 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal
 
+from clinical_extraction.core.evidence import evidence_is_substring
 from clinical_extraction.core.schemas import FinalExtraction
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.contracts import (
@@ -91,7 +92,7 @@ def run_record(
     evidence_text_contained = bool(
         decision
         and decision.evidence
-        and legacy.evidence_is_substring(record.note_text, decision.evidence)
+        and evidence_is_substring(record.note_text, decision.evidence)
     )
     row_trace["evidence_validation"] = {
         "evidence": decision.evidence if decision else "",
@@ -153,8 +154,7 @@ def run_record(
             input_value=raw_text,
             output_value=decision.model_dump() if decision else None,
             changed=any(
-                str(error).startswith("schema_validation_error:")
-                for error in parse_errors
+                str(error).startswith("schema_validation_error:") for error in parse_errors
             ),
             action="validate_decision_schema",
             rule_category="benchmark_format",
@@ -179,9 +179,7 @@ def run_record(
                     "unscorable_final_label:" in str(error) for error in parse_errors
                 )
             },
-            changed=any(
-                "unscorable_final_label:" in str(error) for error in parse_errors
-            ),
+            changed=any("unscorable_final_label:" in str(error) for error in parse_errors),
             action="validate_scorable_label",
             rule_category="benchmark_format",
         ),

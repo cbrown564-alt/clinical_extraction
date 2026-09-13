@@ -44,13 +44,9 @@ PAPER_EXECT_IDS = (
 )
 PAPER_METHOD_IDS = PAPER_GAN_IDS + PAPER_EXECT_IDS
 
-GAN_EXTRACT_RAW = (
-    ROOT
-    / "experiments/paper/gan_llm_extract/gemini37flash/dev750/rows.jsonl"
-)
+GAN_EXTRACT_RAW = ROOT / "experiments/paper/gan_llm_extract/gemini37flash/dev750/rows.jsonl"
 GAN_PRE_POST_RAW = (
-    ROOT
-    / "experiments/paper/gan_llm_and_rules_extract/gemini37flash/dev750/rows.jsonl"
+    ROOT / "experiments/paper/gan_llm_and_rules_extract/gemini37flash/dev750/rows.jsonl"
 )
 GAN_SELECT_RAW = (
     ROOT
@@ -62,15 +58,10 @@ EXECT_PRE_POST_RAW = (
     / "results/letter-benchmarks/exect/exect_llm_pre_post/gemini37flash/dev140/structured.jsonl"
 )
 EXECT_ONLY_RAW = (
-    ROOT
-    / "results/letter-benchmarks/exect/exect_llm_extract/gemini37flash/dev140/structured.jsonl"
+    ROOT / "results/letter-benchmarks/exect/exect_llm_extract/gemini37flash/dev140/structured.jsonl"
 )
-EXECT_ENCODE_RAW = (
-    ROOT / "experiments/paper/exect_llm_encode/gemini37flash/dev140/rows.jsonl"
-)
-EXECT_SELECT_RAW = (
-    ROOT / "experiments/paper/exect_llm_select/gemini37flash/dev140/rows.jsonl"
-)
+EXECT_ENCODE_RAW = ROOT / "experiments/paper/exect_llm_encode/gemini37flash/dev140/rows.jsonl"
+EXECT_SELECT_RAW = ROOT / "experiments/paper/exect_llm_select/gemini37flash/dev140/rows.jsonl"
 
 GAN_SOURCE_NOTES = {
     "gan_rules": "rules (no model raw)",
@@ -306,9 +297,7 @@ def _collapse_gan_hybrid(
     )
 
 
-def _gan_select_from_extract_run(
-    spec: GanCaseSpec, extract_raw: str, select_raw: str
-) -> MethodRun:
+def _gan_select_from_extract_run(spec: GanCaseSpec, extract_raw: str, select_raw: str) -> MethodRun:
     from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_later_stage import (
         score_later_stage_row,
     )
@@ -469,12 +458,12 @@ def _collapse_exect_existing(
 
 
 def _exect_later_encode_run(letter: Any, extract_raw: str, encode_row: dict[str, Any]) -> MethodRun:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_later_stage import (
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_later_stage import (  # noqa: E501
         flatten_extract_mentions,
         join_encode_mentions,
         parse_encode_mentions,
     )
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_rule_select_after_encode import (
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_rule_select_after_encode import (  # noqa: E501
         apply_rule_select_after_llm_encode,
     )
     from clinical_extraction.tasks.seizure_frequency.gan2026.llm.parse_diagnostics import (
@@ -533,7 +522,7 @@ def _exect_later_encode_run(letter: Any, extract_raw: str, encode_row: dict[str,
 def _exect_later_select_run(
     letter: Any, extract_raw: str, encode_row: dict[str, Any], select_row: dict[str, Any]
 ) -> MethodRun:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_later_stage import (
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_later_stage import (  # noqa: E501
         flatten_extract_mentions,
         join_select_mentions,
         parse_select_mentions,

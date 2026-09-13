@@ -51,8 +51,7 @@ def test_select_refines_one_unambiguous_named_type_from_local_evidence() -> None
                 "text": "seizures",
                 "attributes": {"NumberOfSeizures": "3", "TimePeriod": "Month"},
                 "evidence": (
-                    "She has focal seizures and generalised tonic clonic "
-                    "seizures every month."
+                    "She has focal seizures and generalised tonic clonic seizures every month."
                 ),
             },
         ]
@@ -63,9 +62,7 @@ def test_select_refines_one_unambiguous_named_type_from_local_evidence() -> None
         "typical absences",
         "seizures",
     ]
-    assert {action["rule_id"] for action in actions} == {
-        "selection.sf_named_type_from_evidence"
-    }
+    assert {action["rule_id"] for action in actions} == {"selection.sf_named_type_from_evidence"}
 
 
 def test_select_encodes_explicit_recurrence_as_a_lower_bound() -> None:
@@ -76,8 +73,7 @@ def test_select_encodes_explicit_recurrence_as_a_lower_bound() -> None:
                 "text": "generalised tonic clonic seizures",
                 "attributes": {"PointInTime": "LastClinic"},
                 "evidence": (
-                    "He has had further generalised tonic clonic seizures since "
-                    "I last saw him."
+                    "He has had further generalised tonic clonic seizures since I last saw him."
                 ),
             }
         ]
@@ -96,17 +92,14 @@ def test_select_projection_applies_local_evidence_rewrites() -> None:
                     "entity": SEIZURE_FREQUENCY.name,
                     "text": "seizure",
                     "attributes": {"NumberOfSeizures": "1"},
-                    "evidence": (
-                        "She had a recent generalised tonic chronic seizure at home."
-                    ),
+                    "evidence": ("She had a recent generalised tonic chronic seizure at home."),
                 },
                 {
                     "entity": SEIZURE_FREQUENCY.name,
                     "text": "generalised tonic clonic seizures",
                     "attributes": {"PointInTime": "LastClinic"},
                     "evidence": (
-                        "He has had further generalised tonic clonic seizures "
-                        "since I last saw him."
+                        "He has had further generalised tonic clonic seizures since I last saw him."
                     ),
                 },
             ],

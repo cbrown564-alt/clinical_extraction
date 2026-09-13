@@ -55,9 +55,7 @@ def _write_work_cell(
     headline_f1: float,
 ) -> Path:
     root = (
-        tmp_path / "scratch/holdout/paper"
-        if split == "test60"
-        else tmp_path / "experiments/paper"
+        tmp_path / "scratch/holdout/paper" if split == "test60" else tmp_path / "experiments/paper"
     )
     cell = root / method / "gemini37flash" / "exect_llm_extract" / split
     cell.mkdir(parents=True)
@@ -71,9 +69,7 @@ def _write_work_cell(
                 "method": method,
                 "split": split,
                 "row_policy": (
-                    "aggregate_only"
-                    if split == "test60"
-                    else "development_review_permitted"
+                    "aggregate_only" if split == "test60" else "development_review_permitted"
                 ),
                 "four_family_headline_f1": headline_f1,
                 "reasoning_effort": "low",
@@ -87,7 +83,10 @@ def _write_work_cell(
 def _patch_roots(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     paper = tmp_path / "results/letter-benchmarks"
     exect = paper / "exect"
-    monkeypatch.setattr("clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_later_stage.ROOT", tmp_path)
+    monkeypatch.setattr(
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_later_stage.ROOT",
+        tmp_path,
+    )
     monkeypatch.setattr(
         "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_later_stage.WORK_ROOT",
         tmp_path / "experiments/paper",
@@ -108,8 +107,14 @@ def _patch_roots(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_panel.exect_row_count",
         lambda split: 1,
     )
-    monkeypatch.setattr("clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_panel.ROOT", tmp_path)
-    monkeypatch.setattr("clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_panel.PAPER_EXECT", exect)
+    monkeypatch.setattr(
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_panel.ROOT",
+        tmp_path,
+    )
+    monkeypatch.setattr(
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_panel.PAPER_EXECT",
+        exect,
+    )
     monkeypatch.setattr(
         "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_panel.INVENTORY_PATH",
         paper / "inventory.json",
@@ -178,9 +183,7 @@ def test_promote_later_stage_dev140_strips_replay_and_writes_inventory(
     inventory = json.loads(
         (tmp_path / "results/letter-benchmarks/inventory.json").read_text(encoding="utf-8")
     )
-    present = {
-        (row["model_slug"], row["method"], row["split"]) for row in inventory["present"]
-    }
+    present = {(row["model_slug"], row["method"], row["split"]) for row in inventory["present"]}
     assert ("gemini37flash", "exect_llm_encode", "dev140") in present
 
 

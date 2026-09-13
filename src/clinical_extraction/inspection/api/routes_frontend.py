@@ -29,7 +29,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_meta
     Portability,
     RuleGroup,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_inventory_feasibility import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_inventory_feasibility import (  # noqa: E501
     load_inventory_panel,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_panel import (
@@ -317,9 +317,7 @@ def semantic_support_review_packets(
     reviewer_id: str | None = Query(default=None, min_length=1, max_length=120),
 ) -> dict[str, Any]:
     payload = data.semantic_support_review_packets()
-    decisions = (
-        reviews.list(_semantic_support_review_kind(reviewer_id)) if reviewer_id else []
-    )
+    decisions = reviews.list(_semantic_support_review_kind(reviewer_id)) if reviewer_id else []
     decided_ids = {str(item["review_item_id"]) for item in decisions}
     packets = payload["packets"]
     for packet in packets:
@@ -401,9 +399,9 @@ def gold_audit_rows(
     if isinstance(rows, list):
         for row in rows:
             if isinstance(row, dict):
-                row["has_decision"] = bool(row.get("has_decision")) or _gold_row_identity(
-                    row
-                ) in decided_ids
+                row["has_decision"] = (
+                    bool(row.get("has_decision")) or _gold_row_identity(row) in decided_ids
+                )
         payload["decided"] = sum(bool(row.get("has_decision")) for row in rows)
     return payload
 

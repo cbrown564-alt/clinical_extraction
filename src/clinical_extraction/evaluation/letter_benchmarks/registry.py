@@ -8,6 +8,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal, cast
 
+from clinical_extraction.core.paths import resolve_saved_artifact_path
+
 RunDecision = Literal[
     "promote",
     "promote_to_phase3_report",
@@ -264,7 +266,7 @@ def validate_run_registry_artifacts(
             if path.is_absolute() or ".." in path.parts:
                 invalid.append(f"{entry.run_id}: {artifact_path}")
                 continue
-            resolved = (root / path).resolve()
+            resolved = resolve_saved_artifact_path(root, path).resolve()
             if root not in (resolved, *resolved.parents):
                 invalid.append(f"{entry.run_id}: {artifact_path}")
                 continue

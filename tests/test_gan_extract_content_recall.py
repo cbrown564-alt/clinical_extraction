@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import pytest
+
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
-from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_extract_content_recall import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_extract_content_recall import (  # noqa: E501
     CITED_CELL3_TEST450,
     CITED_CELL5_TEST450,
     answer_hit,
@@ -111,6 +113,7 @@ def test_evidence_hit_without_purist_answer() -> None:
     assert content_hits(record, extraction)["either"]
 
 
+@pytest.mark.local_corpus
 def test_measure_test450_reproduces_sealed_aggregates() -> None:
     payload = measure_extract_content_recall("test450")
     pools = payload["pools"]

@@ -19,6 +19,10 @@ from clinical_extraction.core.batch import (
     complete_chat_batch,
     uses_provider_batch,
 )
+from clinical_extraction.core.jsonl import (
+    load_jsonl_rows,
+    write_jsonl_rows,
+)
 from clinical_extraction.core.model_routes import build_paper_lm, resolve_paper_api_base
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.evaluation.letter_benchmarks.comparison_contract import (
@@ -61,10 +65,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.contra
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     clinical_inventory_unit_keys,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    load_jsonl_rows,
-    write_jsonl_rows,
-)
 
 ROOT = discover_repo_root(start=Path(__file__))
 CANDIDATE_VERSION = structured.EXECT_LLM_PRE_POST
@@ -78,9 +78,7 @@ INVENTORY_VERSION = EXTRACT_VERSION
 OLLAMA_NUM_CTX_ENV = "CLINICAL_EXTRACTION_OLLAMA_NUM_CTX"
 HOSTED_SLUGS = ("grok46", "gpt56luna", "gemini37flash", "deepseek_v4_flash")
 LIVING_LOCAL_SLUGS = ("qwen38_27b", "gemma4_26b")
-LOCAL_SLUGS = LIVING_LOCAL_SLUGS + tuple(
-    item["slug"] for item in local_ladder_models()
-)
+LOCAL_SLUGS = LIVING_LOCAL_SLUGS + tuple(item["slug"] for item in local_ladder_models())
 DEEPSEEK_FLASH_SLUGS = frozenset({"deepseek_v4_flash", "deepseek_v41_flash"})
 GROK46_SLUG = "grok46"
 WORK_ROOT = ROOT / "experiments/paper/exect_llm_pre_post"
@@ -94,12 +92,10 @@ INVENTORY_HOLDOUT_SCRATCH = EXTRACT_HOLDOUT_SCRATCH
 
 _DEV140_COMPACT_PAPER = {
     "gemini37flash": (
-        "results/letter-benchmarks/exect/exect_llm_pre_post/gemini37flash/dev140/"
-        "structured.jsonl"
+        "results/letter-benchmarks/exect/exect_llm_pre_post/gemini37flash/dev140/structured.jsonl"
     ),
     "gpt56luna": (
-        "results/letter-benchmarks/exect/exect_llm_pre_post/gpt56luna/dev140/"
-        "structured.jsonl"
+        "results/letter-benchmarks/exect/exect_llm_pre_post/gpt56luna/dev140/structured.jsonl"
     ),
 }
 ALLOWED_REASONING_ABLATIONS = frozenset(
@@ -150,12 +146,10 @@ _LLM_ONLY_ARM = _ExectArmSpec(
     generated_on="2026-08-18",
     progress_label="extract_and_select",
     holdout_claim_boundary=(
-        "ExECT aggregate-only test60 extract-and-select ablation. "
-        "Not the cited cell-3 extract."
+        "ExECT aggregate-only test60 extract-and-select ablation. Not the cited cell-3 extract."
     ),
     dev_claim_boundary=(
-        "ExECT development extract-and-select ablation. Gemini comparison "
-        "only. Not holdout."
+        "ExECT development extract-and-select ablation. Gemini comparison only. Not holdout."
     ),
     drift_before="live default drifted before the extract-and-select run",
     drift_after="extract-and-select left the live default changed",
@@ -172,8 +166,7 @@ _EXTRACT_ARM = _ExectArmSpec(
     generated_on="2026-08-23",
     progress_label="llm_extract",
     holdout_claim_boundary=(
-        "ExECT aggregate-only test60 inventory extract. Do not inspect "
-        "holdout rows."
+        "ExECT aggregate-only test60 inventory extract. Do not inspect holdout rows."
     ),
     dev_claim_boundary=(
         "Extract proposes; select filters. Residual dictionary is an "
@@ -204,9 +197,7 @@ class ModelSpec:
     provider_revision: str | None = None
 
 
-REASONING_EFFORT_SLUGS = frozenset(
-    {"grok46", "gpt56luna", "gemini37flash", *DEEPSEEK_FLASH_SLUGS}
-)
+REASONING_EFFORT_SLUGS = frozenset({"grok46", "gpt56luna", "gemini37flash", *DEEPSEEK_FLASH_SLUGS})
 
 
 def thinking_work_segment(spec: ModelSpec) -> str | None:
@@ -427,9 +418,7 @@ def verify_llm_extract_filtered(
     """Check filtered-extract payload identity without changing the live default."""
 
     def _payload(letter: ExectLetter) -> Mapping[str, Any]:
-        payload = json.loads(
-            structured.build_prompt_input(letter, prompt_version=LLM_ONLY_VERSION)
-        )
+        payload = json.loads(structured.build_prompt_input(letter, prompt_version=LLM_ONLY_VERSION))
         if list(payload) != list(structured.LLM_ONLY_AUTHORED_KEYS):
             raise RuntimeError(f"LLM-only key order drifted: {list(payload)}")
         if "categories" in payload or "suggested_evidence" in payload:
@@ -529,11 +518,7 @@ def _run_live(
         prompt_version=arm.prompt_version,
         arm=arm.method,
         progress_label=arm.progress_label,
-        unit_keys=(
-            clinical_inventory_unit_keys
-            if _uses_inventory_select(arm.method)
-            else None
-        ),
+        unit_keys=(clinical_inventory_unit_keys if _uses_inventory_select(arm.method) else None),
     )
     if structured.PROMPT_VERSION != structured.EXECT_LLM_PRE_POST:
         raise RuntimeError(arm.drift_after)
@@ -848,9 +833,7 @@ def run_compact_reasoning_ablation(
             f"{effort} is the living paper setting for {slug}; omit --reasoning-effort"
         )
     if (slug, effort) not in ALLOWED_REASONING_ABLATIONS:
-        raise RuntimeError(
-            f"{slug} {effort} is not an allowed Compact reasoning ablation"
-        )
+        raise RuntimeError(f"{slug} {effort} is not an allowed Compact reasoning ablation")
     paper_structured_path = ROOT / _DEV140_COMPACT_PAPER[slug]
     if not paper_structured_path.is_file():
         raise RuntimeError(f"missing living Compact {split} cell: {paper_structured_path}")
@@ -914,13 +897,9 @@ def run_compact_reasoning_ablation(
             f"{CANDIDATE_ARM}_{paper_effort}": _public_arm_summary(
                 control["summary"], holdout=False
             ),
-            f"{CANDIDATE_ARM}_{effort}": _public_arm_summary(
-                candidate["summary"], holdout=False
-            ),
+            f"{CANDIDATE_ARM}_{effort}": _public_arm_summary(candidate["summary"], holdout=False),
         },
-        "comparison": {
-            f"{CANDIDATE_ARM}_{effort}_minus_{CANDIDATE_ARM}_{paper_effort}": versus
-        },
+        "comparison": {f"{CANDIDATE_ARM}_{effort}_minus_{CANDIDATE_ARM}_{paper_effort}": versus},
         "decision": {
             CANDIDATE_ARM: {
                 "status": "scored",
@@ -1044,9 +1023,7 @@ def _run_replay_arm(
                 split=split,
                 config=StructuredMethodConfig.selected(),
             )
-            hybrid = _hybrid_letter(
-                letter, producer, inventory=_uses_inventory_select(arm)
-            )
+            hybrid = _hybrid_letter(letter, producer, inventory=_uses_inventory_select(arm))
             producer_rows.append(dict(producer.row))
             assembly_rows.append(
                 assembly_row(hybrid.row, prompt_version, "saved_structured_no_call")
@@ -1064,9 +1041,7 @@ def _run_replay_arm(
         structured_path=structured_path,
         assembly_path=assembly_path,
         model=spec.model,
-        unit_keys=(
-            clinical_inventory_unit_keys if _uses_inventory_select(arm) else None
-        ),
+        unit_keys=(clinical_inventory_unit_keys if _uses_inventory_select(arm) else None),
     )
 
 
@@ -1138,9 +1113,10 @@ def _run_candidate(
                 row = dict(producer.row)
                 if raw_output is not None:
                     row["mode"] = "live"
-                if structured.canonicalize_prompt_version(
-                    str(row.get("prompt_version") or "")
-                ) != prompt_version:
+                if (
+                    structured.canonicalize_prompt_version(str(row.get("prompt_version") or ""))
+                    != prompt_version
+                ):
                     raise RuntimeError(
                         "a test60 letter used the wrong prompt version"
                         if holdout
@@ -1156,8 +1132,7 @@ def _run_candidate(
                 write_jsonl_rows(rows, structured_path)
                 if progress_every and index % progress_every == 0:
                     print(
-                        f"{spec.slug} {progress_label} {split}: "
-                        f"{len(rows)}/{len(letters)}",
+                        f"{spec.slug} {progress_label} {split}: {len(rows)}/{len(letters)}",
                         flush=True,
                     )
             existing = rows
@@ -1173,9 +1148,7 @@ def _run_candidate(
                 split=split,
                 config=StructuredMethodConfig.selected(),
             )
-            hybrid = _hybrid_letter(
-                letter, producer, inventory=_uses_inventory_select(arm)
-            )
+            hybrid = _hybrid_letter(letter, producer, inventory=_uses_inventory_select(arm))
             assembly_rows.append(assembly_row(hybrid.row, prompt_version, "live"))
         write_jsonl_rows(existing, structured_path)
         write_jsonl_rows(assembly_rows, assembly_path)
@@ -1204,9 +1177,7 @@ def _prepare_live_runtime(
         existing = os.environ.get(OLLAMA_NUM_CTX_ENV)
         declared = str(spec.num_ctx)
         if existing is not None and existing != declared:
-            raise RuntimeError(
-                f"{OLLAMA_NUM_CTX_ENV}={existing} conflicts with {declared}"
-            )
+            raise RuntimeError(f"{OLLAMA_NUM_CTX_ENV}={existing} conflicts with {declared}")
         os.environ[OLLAMA_NUM_CTX_ENV] = declared
     if spec.slug == "gemini37flash" and spec.reasoning_effort:
         os.environ["GEMINI_REASONING_EFFORT"] = spec.reasoning_effort
@@ -1257,8 +1228,7 @@ def hydrate_saved_exect_letter(
             predicted = list(hybrid.row.get("predicted_mentions") or [])
             if not predicted:
                 predicted = [
-                    mention.model_dump(mode="json")
-                    for mention in hybrid.prediction.mentions
+                    mention.model_dump(mode="json") for mention in hybrid.prediction.mentions
                 ]
     finally:
         structured.set_active_prompt_version(before)
