@@ -192,3 +192,184 @@ On 2026-09-09 in the working tree (including pre-existing unrelated user edits):
 These checks do not establish clinical validation or complete historical document
 classification. PDF builds were not repeated because publication assets did not
 change. No model calls, source-data moves or locked-row error inspection occurred.
+
+## 6. Staged reconstruction compatibility slice (2026-09-13)
+
+The reconstruction began at Git base `b005d6d0` in an already dirty working tree.
+Existing documentation, longitudinal, frontend and result work was preserved. A
+local process audit immediately before final verification found no matching model,
+generation or pytest writer. The earlier per-file migration and local-only path
+inventory above remains authoritative; no data, experiment, scratch, literature,
+media, credential or saved-result path moved in this slice.
+
+Implemented boundaries:
+
+- added task-neutral immutable source/request/artifact/lifecycle records under
+  `src/clinical_extraction/core/artifacts.py`;
+- moved shared DSPy provider construction to `core/dspy_runtime.py`, retained the
+  Gan import as a compatibility wrapper, and changed ExECT callers to the shared
+  path;
+- added explicit Gan and ExECT artifact paths beside their historical runners,
+  preserving task-owned parsers, projections, scorers and defaults;
+- added a longitudinal adapter over existing assertions/links, with source/date
+  identity checks, cutoff handling and immutable decision records;
+- added focused acceptance coverage in `tests/test_extraction_artifacts.py`.
+
+No historical runner delegates to the new path yet, so rollback is additive:
+remove the new artifact entry points and their tests, point the four provider
+imports back through the retained Gan wrapper, then remove the two new `core`
+modules only after checking that no subsequent caller uses them. Source and saved
+response bytes require no rollback. Do not revert whole files that contain other
+user work.
+
+Verification in the repository `.venv`: 13 artifact acceptance tests and the
+119-test Gan/ExECT/operational compatibility selection passed. Full always-on
+pytest passed 823 tests with the two already known unrelated documentation/
+inventory expectation failures. Ruff passed across `src tests`; mypy passed across
+411 source files; documentation hygiene and `git diff --check` passed. Independent
+Astra review reproduced seven initial provenance/failure defects and one projection-
+origin ambiguity; the corrected no-call probes passed and the final review found
+no blocker for the bounded slice.
+
+No model call, locked-row inspection, benchmark/result regeneration, frontend
+change or clinical-schema change occurred. Package/public-checkout verification
+was not run because the configured build backend is absent from the repository
+environment. The different-domain R5 task is unselected. Persisted registry/resume
+integration and full R6 consolidation remain separately scoped.
+
+## 7. Legacy support investigation (2026-09-13)
+
+Status: Conor approved L1–L7, L9 and L10; L8 is retained. Approval includes moving
+required portions of `paper/` and `trace_explorer/` to their functional owners
+before deleting obsolete code and old namespaces. The architecture owner records
+the destination map. No code, command, artifact, data or compatibility path has
+been removed by this investigation or decision update. Conor selected research-paper
+tables for R5, deferring its full implementation, and put reconstruction and
+migration before further programme research. The roadmap owns that decision;
+the architecture document owns its foundation requirements.
+
+### Scope and evidence limits
+
+Inspected the current working tree: package entry points, operational and paper
+CLIs, task runners and facades, shared registry/resume helpers, scripts, CI,
+frontend routing, relevant tests and active documentation. Used source searches
+and Python AST inspection of `src/`, `tests/` and `scripts/` for callers. This
+identifies in-repository consumers, not usage on other machines or dynamically
+constructed calls. Historical/private run contents and locked rows were not read.
+No model, queue, scoring run or broad artifact regeneration was executed.
+
+The important distinction is between maintaining an old way to launch a new run
+and retaining the ability to read, explain and replay an existing result. Many
+command aliases and wrappers can go while the latter remains supported. A name
+containing `legacy` is not sufficient evidence that its implementation is unused.
+
+### Approved dispositions and original investigation
+
+Paths below are repository-relative. Removal means a future coordinated change,
+including the listed consumers and checks. The recommendations below retain the
+investigation's reasoning; the status above and decision below record Conor's
+subsequent approval, with L8 explicitly kept.
+
+| ID | Candidate and evidence | Recommendation and consequence |
+| --- | --- | --- |
+| L1 | Three `_legacy_run_split` bodies in `gan2026/llm/llm.py`, `gan2026/llm/hybrid_structured_events.py` and ExECT `llm/pipelines/key_entities_structured/runner.py`. Their public `run_split` functions already delegate to canonical orchestration. References to the old bodies are in `scripts/check_canonical_orchestrator_parity.py` and `scripts/check_canonical_orchestrator_development_parity.py`; the latter also passes functions as callbacks. | Remove the duplicate execution bodies after replacing old-versus-new checks with pinned no-call request/output expectations. Keep parsers, prompt builders and reporting helpers still called by current orchestration. This removes duplicate code, not deterministic/hybrid methods. |
+| L2 | Gan `llm_config.py` delegates provider construction to `core/dspy_runtime.py`; `contract/label_parser.py` re-exports shared epilepsy normalisation. ExECT `llm/llm_only_key_entities_structured.py` re-exports its package, including private helpers. `paper/lm.py`, Gan runners, paper modules, scripts and tests still use these facades. | Remove old import paths after redirecting callers to actual owners. Move monkeypatch tests to the new provider owner. The ExECT package documents an import-order cycle, so verify fresh-process imports while narrowing exports. No outside Python-import compatibility guarantee. |
+| L3 | `gan2026/runner.py` combines re-exports with `Gan2026PipelineRunner`; `pipeline_v1.py::Gan2026PipelineV1` constructs it. Tests call both; current deterministic stages import helper types/functions from `pipeline_v1.py`. | Retire redundant runner classes/facades after moving callers to the chosen execution API. Do not delete `pipeline_v1.py` wholesale: its candidate types and helpers still have production callers. Removes an old object-oriented entry point without removing the deterministic baseline. |
+| L4 | `pyproject.toml` exposes `gan2026-llm-experiment`; Gan has a separate split/checkpoint CLI and ExECT has `cli/rules.py` and shared CLI helpers. `clinical-extract` handles ordinary input notes; `paper/cli.py` separately handles run, verify, replay, reparse and result promotion. The older Gan command appears in the Windows vLLM runbook. | Consolidate user entry points around one command with distinct extraction, evaluation and saved-result operations. Retire task-specific launchers after preserving necessary split guards, runtime controls, checkpoint/resume and reports. The operational CLI alone does not yet replace benchmark evaluation. Old command lines would need updating. |
+| L5 | Gan `runners/naming.py`, ExECT `runners/naming.py` and `paper/methods.py` accept multiple method names. Examples: `hybrid_structured_events`, `llm_pre_post`, `exect_llm_inventory`, `exect_llm_extract_filtered`. Some names also identify persisted results. | Accept one canonical name per method for new execution. Keep historical names only in saved-result readers and explicit import adapters; preserve stored IDs. Separate the launch-name change from prompt/scorer meaning. Update configs, tests and current documentation together. |
+| L6 | `scripts/run_deepseek_cell3_overnight.sh`, `scripts/run_gan_deepseek_living_low.sh` and `scripts/run_paper_local_queue.ps1` encode dated model queues rather than current programme tasks. The overnight and PowerShell queues include holdout jobs. The roadmap separately records a GEPA launcher whose imported implementation was removed. | Retire these from supported runnable tooling; retain source in history or the appropriate historical study archive where it explains a run. Do not restore GEPA execution just to make an old launcher run. Preserve associated outputs, instructions and provenance. Archive other study scripts only after file-level consumer classification; do not bulk-delete `scripts/`. |
+| L7 | Tracked `paper_experiments` symlink points to `results/letter-benchmarks`. `core/paths.py` writes only to the canonical location; historical saved paths still depend on the old name. | Remove after implementing a read-time old-to-new path resolver and verifying replay/API behavior in a checkout without the symlink. Keep saved record bytes unchanged. External filesystem consumers of the old path would need updating. |
+| L8 | `run.py` bootstraps `src` and rewrites flat Gan flags via `operational/script_argv.py`; `requirements.txt` duplicates runtime dependencies. README and `VLLM.md` explicitly offer this no-install HPC/vLLM workflow. | Retire if installation with `pip install -e .` or a wheel is acceptable on target machines. Otherwise retain this small launcher deliberately. This is a real workflow choice, not dead code: removal ends the documented no-install route and requires rewriting the walkthrough. |
+| L9 | `paper/methods.py` exposes old ablations and multi-call methods as live options; `paper/cli.py` mixes live execution with replay, scoring and result writers. Paper modules also supply prompt/parser, saved-row hydration and UI data functions. | Retire the old live experiment dispatcher and closed-study launch presets after required current methods move to versioned task profiles. Retain saved-result verification/replay/scorers and methods used by the demo. Do not delete the `paper` package as a unit. Conor should explicitly decide whether fresh execution of historical methods remains supported. |
+| L10 | `core/registry.py` contains old phase-specific decisions and architecture categories; `core/run_resume.py` keys completion by row ID and `merge_rows` uses last-write-wins. ExECT orchestration still calls those resume helpers; registry consumers include retained-evidence and report code. | Replace the new-run dependence on historical registry vocabulary and row-key-only resume with the artifact lifecycle and exact request identity. Retain a reader for old registry records; remove old helpers only after all execution callers move. Failure accounting and retries must remain explicit. This is replacement work, not immediate deletion. |
+
+### Support to retain unless the intended experience changes
+
+- Task-owned Gan/ExECT scorers, saved prompt versions, projections and necessary
+  clinical rules. New extraction adapters still call existing parsers and prompt
+  builders. Removing rule-heavy methods from the main paper comparison does not
+  make their replay or teaching implementation unused.
+- `paper/comparison_contract.py::adapt_legacy_comparison` and
+  `paper/cells.py::cell_id_from_legacy_rung`: current panels, five-cell views and
+  answer-state reconstruction consume them. Keep these read adapters unless an
+  equally faithful replacement can read the retained bytes.
+- `trace_explorer`: `frontend/next.config.ts` routes local API requests to the
+  Python service; `api/app.py` registers catalog, trace and frontend routes, and
+  stores reviews. `frontend_data.py` imports saved-row hydration from `paper/`;
+  ExECT paper replay imports `_frontend_letter` in the other direction. This is
+  coupling to remove, not evidence that the API is obsolete. Extract shared data
+  conversion before retiring any route. Preserve `/demo`, `/workbench` and
+  `/longitudinal` unless Conor separately chooses to remove an experience.
+- Raw outputs, issued publication assets, source IDs, splits, protected local
+  material and review records. Removing executable support does not authorise
+  deleting these records or relabelling their clinical meaning.
+
+### Additional findings and verification
+
+- Both canonical-orchestrator parity scripts import
+  `gan2026.llm.llm_only_canonical_pipeline`, which is absent in this checkout.
+  A fresh `.venv` import probe reproduced `ModuleNotFoundError`; the current
+  `gan2026.llm.llm` import succeeds. Replace the stale parity mechanism under L1
+  rather than requiring a resurrected module alias. These scripts were not run
+  against corpora.
+- The ExECT facade exists at `exectv2/llm/llm_only_key_entities_structured.py`,
+  not under its `pipelines/` directory. A guessed nested-path probe failed;
+  subsequent source inspection and pytest collection confirmed the actual path.
+  No ExECT missing-module defect is inferred from that probe.
+- `observatory/` has no tracked source files or current source implementation;
+  only local bytecode residue was found. It should cease appearing as an active
+  package in current documentation. This is not another server to migrate or a
+  meaningful code-removal saving; no cache was deleted.
+- Gan `experiments/artifact_io.py::load_raw_outputs_by_source_index` is a forwarding
+  function with no external import/call found in the inspected Python trees.
+  Current callers use `pipeline/replay_io.py`. It is a small L2 removal candidate;
+  the containing JSONL IO module still has many Gan and ExECT consumers.
+- `.venv/bin/python -m pytest --collect-only -q tests/test_paper_runner.py
+  tests/test_exectv2_llm_only_parsing.py` collected 21 tests successfully. This
+  verifies collection of relevant current imports, not execution or replay parity.
+  No full backend/frontend suite was rerun for this investigation.
+- Documentation hygiene and `git diff --check` passed. Local Markdown link targets
+  in the roadmap, architecture, migration record, navigation and local status all
+  exist. These checks do not establish that proposed removals are safe to execute.
+
+Final decision (2026-09-13): Conor approved L1–L7, L9 and L10 as coordinated removals
+or replacements, retaining saved-result replay and demonstration behavior.
+L8 stays: `run.py`, `requirements.txt` and the no-install HPC/vLLM workflow remain
+supported. Move required code to its functional owner, then delete the rest;
+neither the `paper` nor `trace_explorer` namespace needs permanent import support.
+The [architecture destination map](../../design/architecture.md#reconstruction-destinations-after-the-legacy-support-decision)
+defines the boundaries. Implementation must capture current dirty files, map
+actual callers and verify each replacement before deleting its predecessor.
+No source moves or removals have been performed in this decision update.
+
+
+## 8. Documentation reduction (2026-09-13)
+
+Conor approved a smaller checkout documentation set, including deletion rather
+than automatic archiving of superseded tracked narrative. The active roadmap
+owns completion scope; the documentation lifecycle owns retention rules.
+
+First cut: remove the old Assembly Line UI build plan and August paper-final
+repository scope. Both are superseded planning prose, unchanged from the recovery
+commit below. Current programme scope belongs to the active roadmap; current UI
+behaviour belongs to source and tests. Repository reference searches found only
+historical move records and roadmap history, with no code, test, manifest or
+current Markdown-link consumers. Those historical move records remain accurate
+as dated records; their paths are no longer current files.
+
+| Removed file under `docs/history/plans/` | Lines removed | SHA256 |
+| --- | ---: | --- |
+| `assembly_line_one_fact_2026-08-18.md` | 163 | `3ff2133bd2fbddccca3550943704541c56d3c1240da4e6ec69dea05abb943077` |
+| `paper_final_repo_scope_2026-08-17.md` | 260 | `667823757dac0315870562758fd0486850461c6cc54cac13bab744a4804aba6c` |
+
+Recovery: `git show b005d6d020e525d657d5d9f018c0f019bff777a5:<original-path>`.
+This cut removes 2 Markdown files and 423 lines of obsolete
+plans, without adding replacement archive files. The two ExECT plans remain
+pending classification because they contain study-specific rationale and links
+to retained research. No study protocols, results, generated reference files or
+local-only material were removed. This is the first applied cut, not completion
+of the broader study-document review.
+
+Verification: documentation hygiene and `git diff --check` passed. Both removed
+files matched the recovery commit byte-for-byte before deletion. Runtime tests
+were not run because this cut changes only guidance and unused historical prose.

@@ -28,12 +28,19 @@ been implemented and verified, then update all affected owners in the same slice
 - **Evidence record:** a dated protocol/result and its reproducible artifacts.
 - **Archive:** superseded guidance or narrative, with its original date and purpose.
 
-The new roadmap supersedes the August paper-only repository cut and earlier
-blanket policies against on-disk archives. Preserve worthwhile historical context
-under `docs/history/`; preserve local-only history in an ignored location. Do not
-copy local experiment dumps, clinical source material or private metadata into a
-tracked archive. Git history can recover tracked files, but cannot replace a
-backup of ignored material.
+Default to a small working documentation set: current owners, necessary evidence,
+and references or procedures with a named continuing use. Consolidate duplicated
+explanations into their owner. Remove superseded plans, repeated status narratives,
+and redundant indexes from the checkout when tracked Git history is sufficient.
+An archive directory is not a default destination for obsolete prose: retain an
+on-disk historical document only when a current method, claim, reproducibility
+requirement or useful reference depends on it, and state that reason.
+
+This policy was approved on 2026-09-13. It replaces the migration's default of
+archiving superseded narrative; it does not restore the August paper-only scope.
+Keep raw outputs, source identifiers, original protocols needed to interpret
+results, and required provenance. Git cannot recover ignored material: preserve
+sole local copies separately. Never turn private material into a tracked archive.
 
 Before moving or retiring a file, establish its purpose, consumers, tracking and
 sharing boundary, replacement owner and rollback location. Preserve selected

@@ -2,7 +2,7 @@
 
 Build modular deterministic, LLM, and hybrid pipelines for structured extraction from clinical notes. Preserve component attribution, evidence, reproducibility, and conservative claims. A higher score is not useful when its cause cannot be explained.
 
-The active direction is a synthetic longitudinal epilepsy benchmark for cohort identification and longitudinal analysis. Preserve both the account supported at each visit and later retrospective interpretations. Gan 2026 and ExECTv2 remain separate existing benchmarks; never transfer their labels, tuning permissions, or claims to the new dataset. Read `PROJECT_STATUS.md` before assuming which work is active.
+The active programme has three strands: a primary one-shot, evidence-grounded extraction paper emphasising locally deployable models; bounded epilepsy cohort and longitudinal applications; and staged investigation beyond epilepsy. The active roadmap owns their scope and reconstruction strategy. For longitudinal work, preserve both the account supported at each visit and later retrospective interpretations. Gan 2026 and ExECTv2 remain separate existing benchmarks; never transfer their labels, tuning permissions, or claims to the new dataset. Read `PROJECT_STATUS.md` before assuming which work is active.
 
 ## Document owners
 
@@ -10,7 +10,7 @@ Use `README.md` for the repository map, `docs/NAVIGATION.md` for documentation o
 
 Do not add another roadmap, status board, evidence register, or research canon. Keep detailed results in their existing artifact or log; update `PROJECT_STATUS.md` only after its evidence owner.
 
-The roadmap's target paths are proposals until the corresponding migration is implemented and verified. Preserve source IDs, saved outputs, existing replay behavior, and local-only file boundaries during moves. Archive obsolete guidance by its original purpose; do not treat old paper-specific restrictions as requirements for the new longitudinal annotation. Existing holdout and scoring safeguards still apply.
+The roadmap's target paths are proposals until the corresponding migration is implemented and verified. Preserve source IDs, saved outputs, existing replay behavior, and local-only file boundaries during moves. Remove superseded tracked guidance when Git history suffices; retain on-disk history only for a named continuing use. Do not treat old paper-specific restrictions as requirements for the new longitudinal annotation. Existing holdout and scoring safeguards still apply.
 
 ## Research safeguards
 
@@ -22,7 +22,7 @@ The roadmap's target paths are proposals until the corresponding migration is im
 - Preserve source identifiers, valid evidence, permitted row-level mechanism examples, and reproducible machine-readable artifacts.
 - Never present synthetic development evidence as clinical benchmark performance or validation evidence as holdout generalization.
 
-Use the project skills whose descriptions match the task; their procedures and trigger rules belong in the skills, not here. Model-facing prompts, schemas, and field descriptions require the plain-language prompt audit.
+Keep model-facing prompts, schemas, and field descriptions clear and task-relevant. Inspect the rendered instructions when they are generated; keep experiment metadata out unless it changes the model’s task.
 
 Run focused tests while iterating. Before a broad completion claim, activate `.venv` and run the relevant combination of `python -m pytest`, `ruff check src tests`, and `mypy src`. Do not run expensive model calls, inspect locked data, or regenerate broad artifacts merely to update documentation.
 

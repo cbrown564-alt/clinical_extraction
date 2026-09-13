@@ -38,7 +38,12 @@ On 300 clinician-checked letters, the two-stage systems scored **0.77** and **0.
 
 ## What's next
 
-Current work is a synthetic longitudinal epilepsy benchmark for cohort identification and history over time. It is not yet evaluated or clinically validated. The paper scores above are letter-level only.
+The [research programme](docs/plans/ACTIVE_ROADMAP.md) separates a future one-shot,
+evidence-grounded extraction paper focused on locally deployable models, epilepsy
+cohort and longitudinal applications, and a staged test beyond epilepsy. A local
+synthetic longitudinal prototype is implemented and has development checks;
+clinical validation remains future work. The dissertation scores above are
+letter-level only.
 
 ## How to cite
 
