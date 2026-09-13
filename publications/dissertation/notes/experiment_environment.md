@@ -56,9 +56,9 @@ launch). GPT-5-family reasoning routes also require `1` in DSPy.
 Grok’s living setting is `0.0`. Luna stays at `1.0` because the
 provider rejects `0`. Gemini, DeepSeek, Qwen, and Gemma use 0.0.
 The Grok cell-3 shift versus the cited temperature-1 row is in
-[Grok temperature 0](../../../docs/research/gan2026/gan_grok46_temperature_0_2026-08-28.md).
+[Grok temperature 0](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_grok46_temperature_0_2026-08-28.md).
 The Gemini cell-3 shift versus living temperature 0 is in
-[Gemini temperature 1](../../../docs/research/gan2026/gan_gemini37flash_temperature_1_2026-08-28.md).
+[Gemini temperature 1](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_gemini37flash_temperature_1_2026-08-28.md).
 Hosted accelerators are undisclosed. Local serving is the Dell
 workstation below. Cache is off for live cells (`num_retries` 2 on the
 LM constructor). Retry and exact prompt or program version stay on the
@@ -72,7 +72,7 @@ the six-model table above.
 
 Observed on that machine on 2026-08-27. The same GPU and VRAM were already
 recorded for local six-model work on 2026-07-15
-([ExECT six-model protocol](../../../docs/research/exectv2/reliability/exectv2_six_model_comparison_protocol_2026-07-15.md)).
+([ExECT six-model protocol](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/exectv2/reliability/exectv2_six_model_comparison_protocol_2026-07-15.md)).
 
 | Item | Recorded value |
 | --- | --- |
@@ -112,7 +112,7 @@ Published local context settings (not inferred from this snapshot):
 - Qwen 3.8 27B: `think=false`, `num_ctx` 32768
 
 Qwen 3.8 27B pull required a newer Ollama than 0.32.4
-([Qwen 3.8 protocol](../../../docs/research/shared/qwen38_27b_candidate_protocol_2026-08-14.md)).
+([Qwen 3.8 protocol](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/shared/qwen38_27b_candidate_protocol_2026-08-14.md)).
 Confirm the Ollama version against the specific cell being cited. Living
 Qwen 3.8 work required a newer server than the 0.30.10 freeze used for the
 July local panel.

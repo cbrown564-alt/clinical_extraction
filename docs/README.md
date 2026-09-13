@@ -1,20 +1,12 @@
 # Documentation
 
-The programme covers one-shot evidence-grounded extraction, bounded epilepsy
-applications and a deferred research-paper table task. The
-[active roadmap](plans/ACTIVE_ROADMAP.md) owns scope and work order;
-[navigation](NAVIGATION.md) names each current documentation owner.
+Start with [navigation](NAVIGATION.md), the [paper roadmap](plans/ACTIVE_ROADMAP.md)
+and the [evaluation protocol](research/gan2026/one_shot_paper_protocol.md).
+The one-call paper is the exclusive current focus. Longitudinal work is paused.
 
-- `design/`: shared software interfaces and architecture.
-- `longitudinal/`: task, annotation, generation and evaluation policies.
-- `benchmarks/`: Gan/ExECT-specific safeguards and limitations.
-- `research/`: original study protocols, result interpretation and maintenance evidence.
-- `runbooks/` and `reference/`: repeatable procedures and scoped reference material.
-- `architecture/`: generated implementation explanations.
-- `history/`: retained decision rationale and historical guidance with continuing use.
-
-Dissertation methods and claims live with the manuscript in
-[publication notes](../publications/dissertation/notes/README.md).
-The [JAMIA outline](../publications/jamia-one-shot/README.md) is a separate planned
-paper. Existing benchmark labels, permissions and results do not transfer to it
-or to the longitudinal task.
+The checkout retains current owners, required benchmark/reference material,
+generated implementation pages and policies needed to interpret paused artifacts.
+Historical study prose is recovered from Git when needed; it is not an active
+experiment queue. The [migration record](research/maintenance/repository_migration_2026-09-08.md)
+owns counts and recovery instructions. Machine evidence and publication assets
+remain in their existing locations.

@@ -7,7 +7,7 @@ Related: [holdout is aggregate-only](../../../../docs/benchmarks/holdout-is-aggr
 [living comparison contract](living-comparison-contract.md),
 [paper-story simplification](paper-story-simplification.md),
 [claims](../claims.md)
-Feasibility: [Gan inventory feasibility](../../../../docs/research/gan2026/gan_inventory_feasibility_dev750_n100_2026-08-28.md)
+Feasibility: [Gan inventory feasibility](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_inventory_feasibility_dev750_n100_2026-08-28.md)
 
 ## Decision
 

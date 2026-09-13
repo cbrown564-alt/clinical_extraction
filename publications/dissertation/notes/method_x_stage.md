@@ -10,9 +10,9 @@ The cited Gan table is five role rows. Each of **find**,
 **encode**, and **select** is **rules**, **LLM**, or **both**. The
 cited score is the select stop. ExECT uses the same five role rows.
 Locked Gan totals:
-[five-cell grid](../../../docs/research/gan2026/gan_five_cell_grid_2026-08-22.md).
+[five-cell grid](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_five_cell_grid_2026-08-22.md).
 Locked ExECT cell 4:
-[rule-select-after-LLM-encode](../../../docs/research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md).
+[rule-select-after-LLM-encode](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md).
 This page is the plain-language owner for what those cells are, how
 they run on one Gan letter and one ExECT letter, and what the full
 design is worth. Replayable numbers stay in
@@ -211,11 +211,11 @@ second use case.
 
 | Need | File |
 | --- | --- |
-| Gan Gemini reading of this grid | [rules and models across stages](../../../docs/research/gan2026/gan_rules_and_llms_across_stages_2026-08-21.md) |
+| Gan Gemini reading of this grid | [rules and models across stages](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_rules_and_llms_across_stages_2026-08-21.md) |
 | Locked wording | [claims](claims.md) |
 | Identities, splits, scorers | [methods](methods.md) |
 | Named find / encode / select rules | [rule catalogue](rule_catalogue.md) |
-| Why a model plus recorded rules | [hybrid architecture](../../../docs/research/shared/why_hybrid_architecture_2026-08-09.md) |
+| Why a model plus recorded rules | [hybrid architecture](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/shared/why_hybrid_architecture_2026-08-09.md) |
 | The two golds | [what the two golds already decided](../../../docs/research/shared/what_the_two_golds_already_decided_2026-08-17.md) |
-| Earlier pair of reviewable traces | [reviewable case pair](../../../docs/research/shared/reviewable_case_pair_2026-08-09.md) |
+| Earlier pair of reviewable traces | [reviewable case pair](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/shared/reviewable_case_pair_2026-08-09.md) |
 | Replayable cells | [`paper_experiments/`](../../../results/letter-benchmarks/README.md) |

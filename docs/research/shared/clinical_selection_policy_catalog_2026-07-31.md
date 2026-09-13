@@ -4,7 +4,7 @@ Date: 2026-07-31
 Status: development reference  
 Paper-library role: internal policy reference; not part of the main reading path
 
-Companion: [why the error floor persists](why_the_error_floor_persists_2026-07-31.md)
+Companion: [why the error floor persists](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/shared/why_the_error_floor_persists_2026-07-31.md)
 
 ## Why this document exists
 

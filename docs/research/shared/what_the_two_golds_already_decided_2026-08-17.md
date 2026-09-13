@@ -130,19 +130,19 @@ change gold, scorers, or selected scores.
 
 The diagnostic owner, with IAA tables, guideline lists, and corpus
 distinctions, is
-[why Gan and ExECT annotated so differently](../shared/annotation_approach_comparison_2026-08-16.md).
+[why Gan and ExECT annotated so differently](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/shared/annotation_approach_comparison_2026-08-16.md).
 
 IAA as a literature theme, not a paper topic:
 
-- [scoped scan](../shared/annotation_iaa_literature_theme_2026-08-16.md)
-- [convention review](../shared/annotation_convention_iaa_literature_review_2026-08-16.md)
+- [scoped scan](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/shared/annotation_iaa_literature_theme_2026-08-16.md)
+- [convention review](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/shared/annotation_convention_iaa_literature_review_2026-08-16.md)
 
 Primary published sources are listed on the annotation comparison and
-on the [citation map](related_work_seed_2026-08-17.md).
+on the [citation map](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/shared/related_work_seed_2026-08-17.md).
 
 The project's reading of the inherited labels, without the annotation
 history, is
-[what the two extraction tasks ask](../shared/task_shape_framework_2026-08-06.md).
+[what the two extraction tasks ask](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/shared/task_shape_framework_2026-08-06.md).
 
 ## Writing test
 

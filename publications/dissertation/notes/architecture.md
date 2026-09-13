@@ -30,7 +30,7 @@ On Gan, living rules find is source-near (`gan_llm_extract_raw`
 dialect): found tokens, not codebook spelling. `gan_llm_extract`
 already writes codebook form, so it is bundled find-and-encode.
 Cell 3 shares encode between that request and `gan_rules_encode`.
-Owner: [rules find dialects](../../../docs/research/gan2026/gan_rules_find_llm_dialects_2026-08-31.md).
+Owner: [rules find dialects](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_rules_find_llm_dialects_2026-08-31.md).
 
 Encode does not reselect. A quoted span is not proof the right statement
 was chosen. Select is the leftover that may change the fact.

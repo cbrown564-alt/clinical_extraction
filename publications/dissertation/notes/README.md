@@ -49,9 +49,9 @@ second-call decide, prompt ablations, thinking, and temperature are
 Gemini only. Cited Gan extraction is `gan_llm_extract`, which already
 writes codebook form. See
 [methods](sections/methods.md), [results](sections/results.md),
-[Gan five-cell grid](../../../docs/research/gan2026/gan_five_cell_grid_2026-08-22.md)
+[Gan five-cell grid](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_five_cell_grid_2026-08-22.md)
 (secondary), and
-[six-model roster](../../../docs/research/shared/three_variables_rules_model_thinking_2026-08-23.md).
+[six-model roster](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/shared/three_variables_rules_model_thinking_2026-08-23.md).
 `gan_llm_only` is not a results column. ExECT owners below are
 later-paper evidence.
 
@@ -61,17 +61,17 @@ later-paper evidence.
 | [introduction](sections/introduction.md) | Gan-only introduction draft matching FES Section I |
 | [literature review](sections/literature_review.md) | Gan-only review draft matching FES Section II |
 | [manuscript](<../draft/Extract, then decide.tex>) | The dissertation draft; [supporting materials](<../supporting materials/Supporting materials.tex>) hold moved detail |
-| [directional evidence protocol](../../../docs/research/gan2026/gan_directional_evidence_adjudication_dev750_protocol_2026-09-02.md) | `dev750` reference-exactness and semantic-sufficiency study; drafted, adjudication not started |
+| [directional evidence protocol](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_directional_evidence_adjudication_dev750_protocol_2026-09-02.md) | `dev750` reference-exactness and semantic-sufficiency study; drafted, adjudication not started |
 | [experiment environment](experiment_environment.md) | Mac mini orchestration + Dell XPS 16 local serving; hosted accelerators undisclosed |
 | [hardware](hardware_details.md) | Dated local-device snapshot for Qwen/Gemma |
 | [method × stage](method_x_stage.md) | Plain-language method × stage grid, with one Gan and one ExECT development example |
-| [Gan rules and models](../../../docs/research/gan2026/gan_rules_and_llms_across_stages_2026-08-21.md) | Gemini Gan reading: roles, order, encode/select lift |
-| [Three variables](../../../docs/research/shared/three_variables_rules_model_thinking_2026-08-23.md) | Draft results: stage ownership, model, thinking; temperature 0/1 ablation |
-| [Source-near vs bundled encode](../../../docs/research/gan2026/gan_source_near_vs_bundled_encode_2026-08-23.md) | Draft Gan ablation: codebook request vs second encode call |
-| [Find then Select vs find-and-select](../../../docs/research/exectv2/exect_extract_vs_extract_and_select_2026-08-25.md) | Draft ExECT ablation: inventory find vs one-call filter |
-| [Gan five-cell grid](../../../docs/research/gan2026/gan_five_cell_grid_2026-08-22.md) | Cited Gemini frequency five-cell totals |
-| [ExECT inventory grid](../../../docs/research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md) | Cited Gemini ExECT five-cell grid (4-family micro F1; cell 3 peak). Replay: [`paper_experiments/exect/five_cell_grid/`](../../../results/letter-benchmarks/exect/five_cell_grid) |
-| [ExECT cell 4](../../../docs/research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md) | Cited Gemini inventory LLM / LLM / rules stop |
+| [Gan rules and models](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_rules_and_llms_across_stages_2026-08-21.md) | Gemini Gan reading: roles, order, encode/select lift |
+| [Three variables](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/shared/three_variables_rules_model_thinking_2026-08-23.md) | Draft results: stage ownership, model, thinking; temperature 0/1 ablation |
+| [Source-near vs bundled encode](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_source_near_vs_bundled_encode_2026-08-23.md) | Draft Gan ablation: codebook request vs second encode call |
+| [Find then Select vs find-and-select](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/exectv2/exect_extract_vs_extract_and_select_2026-08-25.md) | Draft ExECT ablation: inventory find vs one-call filter |
+| [Gan five-cell grid](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_five_cell_grid_2026-08-22.md) | Cited Gemini frequency five-cell totals |
+| [ExECT inventory grid](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md) | Cited Gemini ExECT five-cell grid (4-family micro F1; cell 3 peak). Replay: [`paper_experiments/exect/five_cell_grid/`](../../../results/letter-benchmarks/exect/five_cell_grid) |
+| [ExECT cell 4](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md) | Cited Gemini inventory LLM / LLM / rules stop |
 | [rule catalogue](rule_catalogue.md) | Named find / encode / select rules on both tasks |
 | [claims](claims.md) | Repository evidence reading; stale as a dissertation claim list |
 | [results](sections/results.md) | Gan-only dissertation results draft: two executors, class table, three prompt ablations, six-model roster; inventory panel is supporting material |
@@ -79,7 +79,7 @@ later-paper evidence.
 | [decisions](../../../docs/paper/decisions) | Current decisions |
 | [Gan is the dissertation paper](decisions/gan-is-the-dissertation-paper.md) | Dissertation cites Gan only; ExECT is a later paper; inventory feasibility is descriptive |
 | [Paper-story simplification](decisions/paper-story-simplification.md) | Two decision executors on a shared extract; Rules-only leaves the paper; mechanism and claim bounds |
-| [Gan inventory feasibility](../../../docs/research/gan2026/gan_inventory_feasibility_dev750_n100_2026-08-28.md) | Descriptive 100-letter `dev750` inventory panel; not an accuracy table |
+| [Gan inventory feasibility](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_inventory_feasibility_dev750_n100_2026-08-28.md) | Descriptive 100-letter `dev750` inventory panel; not an accuracy table |
 | [living comparison contract](decisions/living-comparison-contract.md) | Envelope, stage stops, forbidden living names |
 | [source library](.) | Writing sources |
 | [paper experiments](../../../results/letter-benchmarks/README.md) | Replayable cells |

@@ -5,9 +5,10 @@ Status: historical log
 Owner: [paper keep-set](../../publications/dissertation/notes/README.md)
 
 The numbered `docs/history/decisions/00xx-*.md` series is closed. Current
-decisions live under [`docs/paper/decisions/`](../paper/decisions/).
+decisions live under [dissertation decisions](../../publications/dissertation/notes/decisions/).
 Claim sentences live in [`docs/paper/claims.md`](../../publications/dissertation/notes/claims.md).
-The numbered series is archived under [`decisions/`](decisions/).
+The numbered files are recoverable from Git at the revision in the migration record;
+this compact log remains for the architecture manifest.
 
 Canon `01`–`11` was a second claim register. It is not current.
 Recover from git under `docs/history/canon/`.

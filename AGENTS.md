@@ -2,7 +2,12 @@
 
 Build modular deterministic, LLM, and hybrid pipelines for structured extraction from clinical notes. Preserve component attribution, evidence, reproducibility, and conservative claims. A higher score is not useful when its cause cannot be explained.
 
-The active programme has three strands: a primary one-shot, evidence-grounded extraction paper emphasising locally deployable models; bounded epilepsy cohort and longitudinal applications; and staged investigation beyond epilepsy. The active roadmap owns their scope and reconstruction strategy. For longitudinal work, preserve both the account supported at each visit and later retrospective interpretations. Gan 2026 and ExECTv2 remain separate existing benchmarks; never transfer their labels, tuning permissions, or claims to the new dataset. Read `PROJECT_STATUS.md` before assuming which work is active.
+The exclusive current focus is the one-call evidence-grounded seizure-frequency
+paper. Longitudinal prototype work, broader applications and research-paper tables
+are postponed. Preserve their saved artifacts and reference semantics. The roadmap
+owns current decisions; the paper outline and evaluation protocol own this study.
+Gan 2026 and ExECTv2 retain separate labels, scoring and split permissions.
+Read `PROJECT_STATUS.md` before assuming which work is active.
 
 ## Document owners
 
@@ -10,7 +15,7 @@ Use `README.md` for the repository map, `docs/NAVIGATION.md` for documentation o
 
 Do not add another roadmap, status board, evidence register, or research canon. Keep detailed results in their existing artifact or log; update `PROJECT_STATUS.md` only after its evidence owner.
 
-The roadmap's target paths are proposals until the corresponding migration is implemented and verified. Preserve source IDs, saved outputs, existing replay behavior, and local-only file boundaries during moves. Remove superseded tracked guidance when Git history suffices; retain on-disk history only for a named continuing use. Do not treat old paper-specific restrictions as requirements for the new longitudinal annotation. Existing holdout and scoring safeguards still apply.
+Repository reconstruction and migration are complete. Preserve source IDs, saved outputs, existing replay behavior, and local-only file boundaries during moves. Remove superseded tracked guidance when Git history suffices; retain on-disk history only for a named continuing use. Do not treat old paper-specific restrictions as requirements for the new longitudinal annotation. Existing holdout and scoring safeguards still apply.
 
 ## Research safeguards
 

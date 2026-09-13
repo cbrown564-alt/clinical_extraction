@@ -3,7 +3,7 @@
 Date: 2026-08-26
 Revised: 2026-08-27 (split-stratum percentages)
 Status: development inventory; holdout aggregates only
-Owners: [dataset gold support](dataset_gold_support_2026-08-22.md),
+Owners: [dataset gold support](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/shared/dataset_gold_support_2026-08-22.md),
 [what the two golds already decided](what_the_two_golds_already_decided_2026-08-17.md),
 [score definitions](score_definitions_2026-08-17.md)
 Artifact: [dataset_description_2026-08-26.json](dataset_description_2026-08-26.json)
@@ -53,7 +53,7 @@ corpora:
   `dev750` and `test450`.
 
 Leave family occupancy, Compact collapse, and Purist band counts in
-[dataset gold support](dataset_gold_support_2026-08-22.md). Do not put
+[dataset gold support](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/shared/dataset_gold_support_2026-08-22.md). Do not put
 predicted ledger volume, holdout examples, or train-300 rows here.
 
 ## Letter corpus
@@ -151,7 +151,7 @@ that gold is the task.
 Lengths use official ExECT and Gan loaders on cleaned `note_text`.
 Inventory totals reuse `clinical_inventory_unit_keys` (836 / 349).
 Compact/headline totals and Gan kind / `row_ok` counts match
-[dataset gold support](dataset_gold_support_2026-08-22.md). ExECT SF
+[dataset gold support](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/shared/dataset_gold_support_2026-08-22.md). ExECT SF
 presence is a JSON-entity count (`entity == SeizureFrequency`). Gan
 kind × `row_ok` cells are the `gan2026_split_v1` manifest
 `strata_counts`.

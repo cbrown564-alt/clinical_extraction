@@ -8,7 +8,7 @@ Related: [Gan is the dissertation paper](gan-is-the-dissertation-paper.md),
 [Gemini is the cited model](gemini-is-the-cited-model.md)
 Results outline: [results](../sections/results.md)
 Evidence protocol:
-[directional adjudication on `dev750`](../../../../docs/research/gan2026/gan_directional_evidence_adjudication_dev750_protocol_2026-09-02.md)
+[directional adjudication on `dev750`](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_directional_evidence_adjudication_dev750_protocol_2026-09-02.md)
 Implemented 2026-09-02 in `paper/draft/Extract, then decide.tex`,
 `paper/supporting materials/Supporting materials.tex`,
 [results](../sections/results.md), [methods](../sections/methods.md),
@@ -90,9 +90,9 @@ measurement and protocol check. It is not clinical validation and not
 permission to inspect or tune locked rows.
 
 Operational owner:
-[protocol](../../../../docs/research/gan2026/gan_directional_evidence_adjudication_dev750_protocol_2026-09-02.md),
+[protocol](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_directional_evidence_adjudication_dev750_protocol_2026-09-02.md),
 [prompt](../../../../docs/research/gan2026/gan_directional_evidence_adjudication_prompt_2026-09-02.json),
-[rendered example](../../../../docs/research/gan2026/gan_directional_evidence_adjudication_rendered_example_2026-09-02.md).
+[rendered example](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_directional_evidence_adjudication_rendered_example_2026-09-02.md).
 Adjudication has not started.
 
 ## Decision 3 — main-paper mechanism evidence

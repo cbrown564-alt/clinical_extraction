@@ -2059,7 +2059,7 @@
       "path": "docs/research/exectv2/diagnosis/exectv2_dx_canonical_row_analysis_2026-06-30.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "Diagnosis row analysis — separating recall errors from annotation mismatch",
+      "study": "Diagnosis row analysis \u2014 separating recall errors from annotation mismatch",
       "lines": 177,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -2083,7 +2083,7 @@
       "path": "docs/research/exectv2/diagnosis_residual_additions_compensation_removal_2026-08-11.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "`Diagnosis:diagnosis_residual_additions` model-compensation removal study — result",
+      "study": "`Diagnosis:diagnosis_residual_additions` model-compensation removal study \u2014 result",
       "lines": 164,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -2123,7 +2123,7 @@
       "path": "docs/research/exectv2/exect_four_family_micro_f1_cells_1_2_protocol_2026-08-23.md",
       "disposition": "retain",
       "purpose": "protocol",
-      "study": "ExECT cells 1–2 on 4-family micro F1",
+      "study": "ExECT cells 1\u20132 on 4-family micro F1",
       "lines": 49,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -2131,7 +2131,7 @@
       "path": "docs/research/exectv2/exect_gemini_inventory_cells_3_5_protocol_2026-08-23.md",
       "disposition": "retain",
       "purpose": "protocol",
-      "study": "Gemini inventory cells 3–5 cite",
+      "study": "Gemini inventory cells 3\u20135 cite",
       "lines": 68,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -2243,7 +2243,7 @@
       "path": "docs/research/exectv2/exect_rules_only_recall_first_restructure_2026-08-27.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "Results: ExECT rules-only recall-first restructure (Phases A–C)",
+      "study": "Results: ExECT rules-only recall-first restructure (Phases A\u2013C)",
       "lines": 128,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -2443,7 +2443,7 @@
       "path": "docs/research/exectv2/mention_unit_v2_empty_gold_sf_extras_luna_dev140_2026-08-16.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "ExECT mention-unit v2 empty-gold SF extras — `dev140`",
+      "study": "ExECT mention-unit v2 empty-gold SF extras \u2014 `dev140`",
       "lines": 76,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -2451,7 +2451,7 @@
       "path": "docs/research/exectv2/mention_unit_v2_empty_gold_sf_extras_luna_dev140_protocol_2026-08-16.md",
       "disposition": "retain",
       "purpose": "protocol",
-      "study": "ExECT mention-unit v2 empty-gold SF extras — `dev140` protocol",
+      "study": "ExECT mention-unit v2 empty-gold SF extras \u2014 `dev140` protocol",
       "lines": 92,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -2459,7 +2459,7 @@
       "path": "docs/research/exectv2/mention_unit_v2_fork_a_luna_dev140_2026-08-16.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "ExECT mention-unit v2 — GPT-5.6 Luna `dev140`",
+      "study": "ExECT mention-unit v2 \u2014 GPT-5.6 Luna `dev140`",
       "lines": 110,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -2467,7 +2467,7 @@
       "path": "docs/research/exectv2/mention_unit_v2_fork_a_luna_dev140_protocol_2026-08-16.md",
       "disposition": "retain",
       "purpose": "protocol",
-      "study": "ExECT mention-unit v2 — GPT-5.6 Luna `dev140` protocol",
+      "study": "ExECT mention-unit v2 \u2014 GPT-5.6 Luna `dev140` protocol",
       "lines": 130,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -2475,7 +2475,7 @@
       "path": "docs/research/exectv2/mention_unit_v2_fork_a_luna_dev20_2026-08-16.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "ExECT mention-unit v2 — GPT-5.6 Luna `dev20`",
+      "study": "ExECT mention-unit v2 \u2014 GPT-5.6 Luna `dev20`",
       "lines": 136,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -2483,7 +2483,7 @@
       "path": "docs/research/exectv2/mention_unit_v2_fork_a_luna_dev20_protocol_2026-08-16.md",
       "disposition": "retain",
       "purpose": "protocol",
-      "study": "ExECT mention-unit v2 — GPT-5.6 Luna protocol",
+      "study": "ExECT mention-unit v2 \u2014 GPT-5.6 Luna protocol",
       "lines": 277,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -2491,7 +2491,7 @@
       "path": "docs/research/exectv2/mention_unit_v2_hybrid_encoder_damage_luna_dev140_2026-08-16.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "ExECT mention-unit v2 hybrid encoder damage — `dev140`",
+      "study": "ExECT mention-unit v2 hybrid encoder damage \u2014 `dev140`",
       "lines": 79,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -2499,7 +2499,7 @@
       "path": "docs/research/exectv2/mention_unit_v2_hybrid_encoder_damage_luna_dev140_protocol_2026-08-16.md",
       "disposition": "retain",
       "purpose": "protocol",
-      "study": "ExECT mention-unit v2 hybrid encoder damage — `dev140` protocol",
+      "study": "ExECT mention-unit v2 hybrid encoder damage \u2014 `dev140` protocol",
       "lines": 90,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -2507,7 +2507,7 @@
       "path": "docs/research/exectv2/mention_unit_v2_leftover_form_encoder_luna_dev140_2026-08-16.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "ExECT mention-unit v2 leftover-form encoder — `dev140`",
+      "study": "ExECT mention-unit v2 leftover-form encoder \u2014 `dev140`",
       "lines": 82,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -2515,7 +2515,7 @@
       "path": "docs/research/exectv2/mention_unit_v2_leftover_form_encoder_luna_dev140_protocol_2026-08-16.md",
       "disposition": "retain",
       "purpose": "protocol",
-      "study": "ExECT mention-unit v2 leftover-form encoder — `dev140` protocol",
+      "study": "ExECT mention-unit v2 leftover-form encoder \u2014 `dev140` protocol",
       "lines": 134,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -2523,7 +2523,7 @@
       "path": "docs/research/exectv2/mention_unit_v2_leftover_form_v2_luna_dev140_2026-08-16.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "ExECT mention-unit v2 leftover-form v2 knobs — `dev140`",
+      "study": "ExECT mention-unit v2 leftover-form v2 knobs \u2014 `dev140`",
       "lines": 105,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -2539,7 +2539,7 @@
       "path": "docs/research/exectv2/mention_unit_v2_leftover_form_v3_luna_dev140_2026-08-16.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "ExECT mention-unit v2 leftover-form v3 intervening counts — `dev140`",
+      "study": "ExECT mention-unit v2 leftover-form v3 intervening counts \u2014 `dev140`",
       "lines": 98,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -2555,7 +2555,7 @@
       "path": "docs/research/exectv2/mention_unit_v2_leftover_form_v4_luna_dev140_2026-08-16.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "ExECT mention-unit v2 leftover-form v4 leftover-word contracts — `dev140`",
+      "study": "ExECT mention-unit v2 leftover-form v4 leftover-word contracts \u2014 `dev140`",
       "lines": 91,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -2987,7 +2987,7 @@
       "path": "docs/research/exectv2/seizure_frequency/exectv2_sf_canonical_metric_row_analysis_2026-06-29.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "SF canonical metric row-analysis — every dev140 row, on exactly the metric we score, stage 1 vs stage 2",
+      "study": "SF canonical metric row-analysis \u2014 every dev140 row, on exactly the metric we score, stage 1 vs stage 2",
       "lines": 308,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -3003,7 +3003,7 @@
       "path": "docs/research/exectv2/v0924_cheap_further_prune_luna_dev20_2026-08-16.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "ExECT cheap-stack further prune — GPT-5.6 Luna `dev20`",
+      "study": "ExECT cheap-stack further prune \u2014 GPT-5.6 Luna `dev20`",
       "lines": 90,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -3019,7 +3019,7 @@
       "path": "docs/research/exectv2/v0924_cheap_further_prune_stacked_luna_dev20_2026-08-17.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "ExECT cheap-stack stacked further prune — GPT-5.6 Luna `dev20`",
+      "study": "ExECT cheap-stack stacked further prune \u2014 GPT-5.6 Luna `dev20`",
       "lines": 63,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -3043,7 +3043,7 @@
       "path": "docs/research/exectv2/v0924_cheap_stack_luna_dev140_2026-08-16.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "ExECT `v0.9.24` cheap-slice stack — GPT-5.6 Luna `dev140`",
+      "study": "ExECT `v0.9.24` cheap-slice stack \u2014 GPT-5.6 Luna `dev140`",
       "lines": 85,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -3059,7 +3059,7 @@
       "path": "docs/research/exectv2/v0924_cheap_stack_luna_dev20_2026-08-16.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "ExECT `v0.9.24` cheap-slice stack — GPT-5.6 Luna `dev20`",
+      "study": "ExECT `v0.9.24` cheap-slice stack \u2014 GPT-5.6 Luna `dev20`",
       "lines": 71,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -3075,7 +3075,7 @@
       "path": "docs/research/exectv2/v0924_cheap_stack_plain_luna_dev20_2026-08-16.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "ExECT cheap-stack plain-language remasure — GPT-5.6 Luna `dev20`",
+      "study": "ExECT cheap-stack plain-language remasure \u2014 GPT-5.6 Luna `dev20`",
       "lines": 74,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -3091,7 +3091,7 @@
       "path": "docs/research/exectv2/v0924_cumulative_prune_luna_dev20_2026-08-16.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "ExECT `v0.9.24` cumulative prune — GPT-5.6 Luna `dev20`",
+      "study": "ExECT `v0.9.24` cumulative prune \u2014 GPT-5.6 Luna `dev20`",
       "lines": 80,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -3099,7 +3099,7 @@
       "path": "docs/research/exectv2/v0924_non_sf_slice_luna_dev20_2026-08-16.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "ExECT `v0.9.24` non-SF encoding and example prune — GPT-5.6 Luna `dev20`",
+      "study": "ExECT `v0.9.24` non-SF encoding and example prune \u2014 GPT-5.6 Luna `dev20`",
       "lines": 71,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -3107,7 +3107,7 @@
       "path": "docs/research/exectv2/v0924_prompt_ablation_luna_dev20_2026-08-16.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "ExECT `v0.9.24` leave-one-out prompt prune — GPT-5.6 Luna `dev20`",
+      "study": "ExECT `v0.9.24` leave-one-out prompt prune \u2014 GPT-5.6 Luna `dev20`",
       "lines": 73,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -3123,7 +3123,7 @@
       "path": "docs/research/exectv2/v0924_scope_cluster_luna_dev20_2026-08-16.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "ExECT `v0.9.24` scope-cluster prune — GPT-5.6 Luna `dev20`",
+      "study": "ExECT `v0.9.24` scope-cluster prune \u2014 GPT-5.6 Luna `dev20`",
       "lines": 74,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -3131,7 +3131,7 @@
       "path": "docs/research/exectv2/v0924_sf_examples_luna_dev20_2026-08-16.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "ExECT `v0.9.24` SeizureFrequency example split — GPT-5.6 Luna `dev20`",
+      "study": "ExECT `v0.9.24` SeizureFrequency example split \u2014 GPT-5.6 Luna `dev20`",
       "lines": 68,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -3139,7 +3139,7 @@
       "path": "docs/research/gan2026/architecture/simplest_near_ceiling_architecture_results_2026-06-16.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "Gan 2026 — Simplest Near-Ceiling Architecture: Results, Analysis, and Principles",
+      "study": "Gan 2026 \u2014 Simplest Near-Ceiling Architecture: Results, Analysis, and Principles",
       "lines": 244,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -3195,7 +3195,7 @@
       "path": "docs/research/gan2026/gan2026_agentic_redo_results_2026-07-01.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "Gan 2026 Agentic Redo — Results (2026-07-01)",
+      "study": "Gan 2026 Agentic Redo \u2014 Results (2026-07-01)",
       "lines": 187,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -3643,7 +3643,7 @@
       "path": "docs/research/gan2026/gan_gemini_cell3_encode_to_select_dev750_protocol_2026-08-29.md",
       "disposition": "retain",
       "purpose": "protocol",
-      "study": "Protocol: Gemini cell 3 encode→select changes on Gan `dev750`",
+      "study": "Protocol: Gemini cell 3 encode\u2192select changes on Gan `dev750`",
       "lines": 71,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -3843,7 +3843,7 @@
       "path": "docs/research/gan2026/gan_pragmatic_infrequent_error_mode_2026-08-29.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "Pragmatic rate → unknown / no-seizure error modes",
+      "study": "Pragmatic rate \u2192 unknown / no-seizure error modes",
       "lines": 364,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -3851,7 +3851,7 @@
       "path": "docs/research/gan2026/gan_pragmatic_infrequent_error_mode_protocol_2026-08-29.md",
       "disposition": "retain",
       "purpose": "protocol",
-      "study": "Protocol: Pragmatic rate → unknown / no-seizure error modes",
+      "study": "Protocol: Pragmatic rate \u2192 unknown / no-seizure error modes",
       "lines": 86,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -3859,7 +3859,7 @@
       "path": "docs/research/gan2026/gan_pragmatic_unknown_error_mode_2026-08-29.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "Pragmatic gold → unknown error modes",
+      "study": "Pragmatic gold \u2192 unknown error modes",
       "lines": 217,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -3867,7 +3867,7 @@
       "path": "docs/research/gan2026/gan_pragmatic_unknown_error_mode_protocol_2026-08-29.md",
       "disposition": "retain",
       "purpose": "protocol",
-      "study": "Protocol: Pragmatic gold → unknown error modes",
+      "study": "Protocol: Pragmatic gold \u2192 unknown error modes",
       "lines": 81,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -3971,7 +3971,7 @@
       "path": "docs/research/gan2026/gan_rules_only_three_stage_protocol_2026-08-29.md",
       "disposition": "retain",
       "purpose": "protocol",
-      "study": "Protocol: Gan rules-only three-stage reconstruction (Phases A–C)",
+      "study": "Protocol: Gan rules-only three-stage reconstruction (Phases A\u2013C)",
       "lines": 129,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -4211,7 +4211,7 @@
       "path": "docs/research/gan2026/rules_only_campaign_g5_remeasure_2026-08-15.md",
       "disposition": "retain",
       "purpose": "result interpretation or mechanism reference",
-      "study": "Gan 2026 Rules-Only Phase G1–G5 Remeasure & Fairness Plateau Closure",
+      "study": "Gan 2026 Rules-Only Phase G1\u2013G5 Remeasure & Fairness Plateau Closure",
       "lines": 39,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -4683,7 +4683,7 @@
       "path": "docs/research/shared/six_model_open_mechanism_questions_abc_protocol_2026-08-03.md",
       "disposition": "retain",
       "purpose": "protocol",
-      "study": "Six-model open mechanism questions A–C protocol",
+      "study": "Six-model open mechanism questions A\u2013C protocol",
       "lines": 142,
       "reason": "original study conditions or interpretation for retained evidence; not an active work queue"
     },
@@ -4774,5 +4774,2998 @@
     "scratch": "protected and sole-copy records; no bulk cleanup",
     ".trace_explorer": "existing review/index state"
   },
-  "new_capture_root": "runs/extraction"
+  "new_capture_root": "runs/extraction",
+  "paper_documentation_cut": {
+    "date": "2026-09-13",
+    "recovery_commit": "2d069e69b8fb526af49cb67a81e7484b38a9eff6",
+    "scope": "Tracked Markdown under docs; includes generated references and paused policies. Does not count publication prose or frozen artifact README files; no prose moved there.",
+    "before_files": 465,
+    "after_files": 49,
+    "removed_lines": 57236,
+    "removed": [
+      {
+        "path": "docs/REGENERATION.md",
+        "sha256": "0e45fd37e5db0819fb5a22d2d079ab1aafade0a78ba4f5eb7da00d521737980c",
+        "lines": 367,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/THREAD_MAP.md",
+        "sha256": "00f0193187d1d76aa7184c651861b36809fcee3df5441207eb3a45439afd0657",
+        "lines": 305,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/design/README.md",
+        "sha256": "9fceee2d9b365c289f124f670c05dcf8f21a40d9ae312818e2d5c30282c629ce",
+        "lines": 17,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/design/architecture_review_2026-09-11.md",
+        "sha256": "0fa0d34cbbbd48a2a28671512536f883bbe4dab8951408ec99fe014d3055ebca",
+        "lines": 249,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/design/component_evidence_attribution_architecture.md",
+        "sha256": "980aaa6491483e9edf81507df592a2bc5b33977517640756067e996cd077ef79",
+        "lines": 95,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/design/data_contract.md",
+        "sha256": "06b38c255ab05d2014249ac1f3c3d53cc0da15f132dd39ebae53b98967ab65d8",
+        "lines": 48,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/design/deterministic_projection_rule_taxonomy.md",
+        "sha256": "2ef9a40d0805ab5b91320eee18d4a3a42d20f6a56ff7d28ba9ff949c98b86ed8",
+        "lines": 52,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/design/llm_repair_attribution_protocol_2026-06-22.md",
+        "sha256": "86f15943c8f63d6f82e22465a78cd99a29370c3a197e82c7cf9d1f8ac3f7a535",
+        "lines": 221,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/design/model_strategy.md",
+        "sha256": "e8876d9e6e2887a10ebb3f5dc436fda1743846d21c56d1e2f5b4ed8f0506598b",
+        "lines": 165,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/design/pipeline_trace_explorer_spec.md",
+        "sha256": "92df749fcee6da324dfa0055718b97a0cbea7696f4d955994edec15dd1c914be",
+        "lines": 954,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/design/reliability_evaluation_framework.md",
+        "sha256": "65d6f4f4153bfca164b410fcf0edfa4abf09207a18d8b6e44eb240492da3f5ec",
+        "lines": 189,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/design/reliability_thesis.md",
+        "sha256": "71af560a5dac4cfc9a33ba1a998dfaead1b770d3436b0a79ef4daa78cdb0a75e",
+        "lines": 60,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/canon/01_system_architecture.md",
+        "sha256": "a1a1046cad429a7c7b2cb9e37fe35449c673a50044d1747bbc91909af3bc7169",
+        "lines": 40,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/canon/02_pipeline_steps.md",
+        "sha256": "e5a44fbe5dbadadde87f49d4ce24359975202b80bc587d0c2634f173ba111919",
+        "lines": 70,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/canon/03_evidence_claims_frozen.md",
+        "sha256": "78152124881c629cf0942901eef015a9fbb14576de4b7429be728b96c2effaf3",
+        "lines": 39,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/canon/04_scoring.md",
+        "sha256": "8a8722c24c15c217df51b2caa449db80d86e406cdfda2fd5499fb3b24d4397f3",
+        "lines": 92,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/canon/05_ceilings_wall.md",
+        "sha256": "154088395f28f32060deae457b7bea3225d9237bb7df4c6f0ca602268122a875",
+        "lines": 37,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/canon/06_gan_clinical_policy.md",
+        "sha256": "6a70a16f49a5404f8b4b0f82262a2c02f2550ca7ca569b0aa12eeb955d4a7c0a",
+        "lines": 93,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/canon/07_exect_plan11.md",
+        "sha256": "2510bf86a7df55709474c162906b541756fd36a8fda4c09a35028d0113f240e2",
+        "lines": 154,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/canon/08_gepa.md",
+        "sha256": "3b4e22e241b9a6fce1b888453835e87ac82b8ce79321413a059257796540b93b",
+        "lines": 30,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/canon/09_cross_task_reliability.md",
+        "sha256": "bc3f895b038362509f3e542d672a7e8c34ebe777c5b399dbba2e90f986453c89",
+        "lines": 80,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/canon/10_paper_provenance.md",
+        "sha256": "0e4b00058525a022403f4bbc1955d564bf09167e3530e4f2859cb9c964b72b1f",
+        "lines": 152,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/canon/11_agentic_exploration.md",
+        "sha256": "e4857ad02d2fc2c5ad9b7f82739049eb2d77dd8b0b2821a9d28403a517dcfc3f",
+        "lines": 33,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/canon/README.md",
+        "sha256": "429207d1258c90806aaaaa239a7de02ab3415af357149fa526de090ed0c3ec8a",
+        "lines": 31,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/canon/workstreams/DIAGNOSIS_FAMILY_LADDER_CANON.md",
+        "sha256": "e92d441f1ce7b48c412ff24bb55e743bc66a9e2e22906cc0a1871b47c6a7157a",
+        "lines": 40,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0001-gan-first-small-core.md",
+        "sha256": "521aa67b7218b3a0b1be7f57a647cb4f96303ef499cb04a6f66aede3517fb51e",
+        "lines": 25,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0002-rules-as-controlled-variables.md",
+        "sha256": "b7da25df04ea36e71652c47271f4bb8ce2057cd57774dbf7f5ad63c656dbaad6",
+        "lines": 30,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0003-experiment-family-ontology.md",
+        "sha256": "4236c0c675bb00601509ac3e3939b46accfa3c7dc61b511a39685d14bbaec938",
+        "lines": 42,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0005-benchmark-format-rules-vs-llm-clinical-reasoning.md",
+        "sha256": "c20875317bcbaaf691a7362cff56f5e3ec2461035f1d3562b046efe7a2cb5d18",
+        "lines": 118,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0008-component-evidence-contract-for-candidate-promotion.md",
+        "sha256": "b05d55bbca4d01057199756e68dc6c732170f9a36ecc169299ed3fd1c0e4bce3",
+        "lines": 31,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0009-gan2026-staged-hybrid-assembly.md",
+        "sha256": "2004e70a56016d6772c868632bb4152c51b4ac9ce9c3fd8c1a8d5356be3fb2e7",
+        "lines": 60,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0014-evidence-trace-check-not-verify-for-deterministic-canonical-pipeline.md",
+        "sha256": "c8b1d80cdbc658833bdbf4137d9de825634a4b4e4f8a647bc121923f596ee611",
+        "lines": 19,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0015-model-facing-prompt-language-must-drop-internal-architecture-vocabulary.md",
+        "sha256": "57a1fcebdb14a2708c6fb7bd69f17b4bcbef04f8aded39ae325298457ec7e4e1",
+        "lines": 34,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0016-current-rate-supersedes-coexisting-current-seizure-free.md",
+        "sha256": "aa84464980e69adb919e952a830db2822eb273db43d4999779d12e9560d736ef",
+        "lines": 93,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0019-prescription-phrase-projection-is-clinically-bounded-regimen-span.md",
+        "sha256": "3730530851bf5553ba8b3e4a927bbe59830a0d8527a348719f5e05af4f6be146",
+        "lines": 10,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0020-prescription-medication-identity-and-cui-projection-are-separate-layers.md",
+        "sha256": "69b0969ae8cc0d952bb0df425f3501cc452edf72f81f1ba3edbdc594e11cdcb3",
+        "lines": 10,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0021-prescription-missing-frequency-defaults-are-benchmark-projection.md",
+        "sha256": "4617c5525e098c7ec32052fa31f093d71c5d6e8b4784f4d210543a64ff86ff05",
+        "lines": 10,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0022-split-dose-prescriptions-score-as-separate-clinical-tuples.md",
+        "sha256": "0bcac748999ac1e9dd3450a0d2981a7538e95808a077e7338ff64b06b458119b",
+        "lines": 10,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0023-weight-based-prescription-dosing-is-a-separate-diagnostic.md",
+        "sha256": "5f7a770815c5658434ea1714683217bedd452eace2b7c0338432ec56eb878dae",
+        "lines": 10,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0024-rescue-prescriptions-have-a-dose-optional-regimen-shape.md",
+        "sha256": "673348f5ab8930f99e0b430cd1fdc0c78424463f1c2eb4098edd549e9b9368f8",
+        "lines": 10,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0025-prescription-scorecard-has-one-clinical-headline.md",
+        "sha256": "58ea682970ab2d65b4e79331c5da70448e98749b9f196d1e94443418ba3c65fa",
+        "lines": 15,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0026-component-scoring-requires-a-decomposable-clinical-object.md",
+        "sha256": "b5b2d7924a2d09e91b8f90b62c200090c286eb1dce1bf709dbd004552aef76d9",
+        "lines": 10,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0027-clinical-recovery-is-the-exectv2-headline-projection-is-an-artifact-layer.md",
+        "sha256": "99a7d901d367294dcbec660ad5b3311f3e5b4d7909fa62557cfec902218d3808",
+        "lines": 23,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0028-concept-identity-recall-is-entity-agnostic-precision-is-home-tagged.md",
+        "sha256": "77a27833129b61cb4d7c8072df85fc4ea2302226e8d859b951ebd36837cf7564",
+        "lines": 14,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0029-epilepsy-cause-remains-a-low-frequency-diagnostic-family.md",
+        "sha256": "448d0bcadd84f700cfdeb212882c3c7d4ec2667e5fd1bbd4de403e6187b60852",
+        "lines": 30,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0030-four-exact-indicators-drive-exectv2-plan11.md",
+        "sha256": "0816f2093c719397f075fbff01f6fa539f48293626c6dd0e95416a57fa0ddebd",
+        "lines": 19,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0032-clinical-finding-assembly-is-the-exectv2-plan11-spine.md",
+        "sha256": "1faf2b2a54566e6f47daa5b4032161cfcf1151aa798f0288f9a9cae7b1b3c3c9",
+        "lines": 24,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0033-deduplicated-clinical-fact-recovery-is-the-primary-llm-only-target.md",
+        "sha256": "bbfca14ad5788c502f10e6d3cf3062fa3a650b84cdcad3ac4b435605eea980e1",
+        "lines": 20,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0037-sf-state-profile-is-primary-clinical-metric.md",
+        "sha256": "3daf876ed0225c8a50867ee2ff6d44511b04cfbb5cc664d5115f2f32b5f87463",
+        "lines": 20,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0038-json-dialect-repair-as-explicit-schema-repair.md",
+        "sha256": "28fcf3bf9adf9fe07555ecc83c299758eeb3941b93871f7a7a110241657022eb",
+        "lines": 55,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0039-final-exect-six-model-roster.md",
+        "sha256": "cbf4eb0df91f80726c079f61a7925c837987e1caa6f8394756b521d6f87e6d38",
+        "lines": 67,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0040-final-exect-llm-with-rules-family-ownership.md",
+        "sha256": "0df6f990b65fd333ccc479ed08f8db7fa666320027c1191a4c9b85b5a1c8a9a8",
+        "lines": 128,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0041-single-call-exect-model-comparison.md",
+        "sha256": "9e7d0372ad932b8bb1c3609cc444a732c0e67c3efffab9262d9e08cdcb395174",
+        "lines": 84,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0042-shared-local-model-structured-output-repair.md",
+        "sha256": "68c5c489cbd0c5eb186cf91b796e5c2212b6ac79ffab111b4c631ba6e5959630",
+        "lines": 160,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0043-gan-hosted-comparison-uses-v05-prompt.md",
+        "sha256": "a9efe5968563a562222abcc7cbcb66b0cd65323951cfbb41742798d2a92c806c",
+        "lines": 121,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0044-shared-reliability-criteria-use-task-specific-measures.md",
+        "sha256": "10ff76d6652d51aacc5c7f3ed6f010be4459fc802e19c938f873b0fe4857dc4a",
+        "lines": 97,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0045-exect-default-policy-not-joint-combined.md",
+        "sha256": "b2624b50e048c3f8af5efb7da56d644249d5e1435982b1a4edc4d49aa3508eeb",
+        "lines": 69,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0046-exect-primary-method-comparison-boundary.md",
+        "sha256": "c96da1c181a3bf99e62f826f5f3d8afb3fe4ff515d78ea68aec7429029ea3a73",
+        "lines": 148,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0047-full-canonical-pipeline-orchestrator-refactor.md",
+        "sha256": "018a37ddf2fff63f37748f397471ce78f799d8b2e369aea72ebf76c2fb0c0f03",
+        "lines": 538,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0048-comprehension-and-handoff-refactor.md",
+        "sha256": "e2788f025992412ea0316a8857267feb20aa1bc300f5f11e7e5402bc02da1d66",
+        "lines": 203,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0049-pytest-research-validity-firewall.md",
+        "sha256": "8034dd7c16ce565bfacd48f2fb8f162dbc694f8b28297e17e45aa497570ce648",
+        "lines": 145,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0050-current-stack-hybrid-primary-fills.md",
+        "sha256": "f68b5de60d599f3478c1282b7daa08e2b3db843dc10d430d3a3c250a6c72acc3",
+        "lines": 104,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0051-gemini-37-flash-succeeds-gpt41mini-six-model-slot.md",
+        "sha256": "b17689304c26ac7417a806e22ff3767c85c452381c40c71adc2c9197ea761a71",
+        "lines": 75,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0052-gemini-37-flash-holdout-six-model-slot.md",
+        "sha256": "49b680ad9d12e60098c77a6ca8b877fd697ae91c7b5fd6326dc642b62ddfc1a2",
+        "lines": 50,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0053-gan-structured-events-final-prompt.md",
+        "sha256": "7f06a5b77da9afef3cbcc8aea3ba1808a01c5c3450bce144f27f7f0dec190cb4",
+        "lines": 104,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0054-model-request-order-and-metadata-are-explicit.md",
+        "sha256": "fe752db27ed64299f6e71702de42bf682664eea668cd71a5506f2bab6ced596d",
+        "lines": 124,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/decisions/0055-exect-semantic-inventory-and-method-contracts.md",
+        "sha256": "6bf992e83de4e72d9763ff6f5d65b325aed820e831f730b1edc16b4a86c899e8",
+        "lines": 198,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/plans/exect_llm_representation_and_hybrid_revaluation_2026-08-16.md",
+        "sha256": "03d09df43b1acd11f8e229babe158c40be7250b9e99c3514fad91d67ea1e26a2",
+        "lines": 399,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/history/plans/exect_prompt_fundamentals_2026-08-16.md",
+        "sha256": "bf12f5115dc9c5976f5a9e32673e413a0f86afca9e52d46f3828786b9dbd2b19",
+        "lines": 382,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/reference/longitudinal_epilepsy_rationale.md",
+        "sha256": "5ca07154f56dac8af4423a65e00e5add2c8e3b4076dd56e8424908d31dcabea6",
+        "lines": 127,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/README.md",
+        "sha256": "f744b4ea7e3a9c494b948d3b6e427ffae4e458c7939402bbf2caf32416d9a3ca",
+        "lines": 25,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/annotation_guidelines_v9_extracted.md",
+        "sha256": "7836f109cdcb7be9ca315747e0d15b29739f2c0e1b5baf83871ec2bdffb6a9fb",
+        "lines": 1011,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/category_cut_representative_examples_2026-08-08.md",
+        "sha256": "8e2358596c116b9125fb7cb2ee6693e43641296dd0ec41fbd40f94a1d2a8903a",
+        "lines": 363,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/compact_ledger_local_gemma_qwen38_protocol_2026-08-17.md",
+        "sha256": "4cd116ee8c9684c181ea2864a719be948d6563b3d332f161b99ad11ba9f56f8a",
+        "lines": 75,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/diagnosis/exectv2_diagnosis_component_comparison_2026-07-14.md",
+        "sha256": "98a4f70ff527c497a1c72f5567bb4663990794b1de785f6a9e3f4fd2e1b6831f",
+        "lines": 49,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/diagnosis/exectv2_dx_canonical_row_analysis_2026-06-30.md",
+        "sha256": "da4f7aee52e9b2c763713fcf84eb942bd7d706e22a21a89f5b9b2f05b40a962c",
+        "lines": 177,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/diagnosis/exectv2_gpt41mini_single_call_diagnosis_ablation_2026-07-15.md",
+        "sha256": "8aa4f324111a74a00fd054d629fcc150e6c1647de402baa05ac15cd64993dff1",
+        "lines": 68,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/diagnosis/exectv2_gpt41mini_single_call_diagnosis_ablation_protocol_2026-07-15.md",
+        "sha256": "59f8e845099403d399c3f8ca06ae73bd8c5ce01de5d1d4e61b68c3a3a7e166bc",
+        "lines": 103,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/diagnosis_residual_additions_compensation_removal_2026-08-11.md",
+        "sha256": "5429417cf705a91b825ffed3a5481f62f4bc02c47962b3bf576f1500175b6287",
+        "lines": 164,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md",
+        "sha256": "037d4017e4a51a1b57c8c5f0522f8add387aee4e0f9a4ae706748f53ad3b6c6d",
+        "lines": 53,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_encode_rule_development_2026-08-22.md",
+        "sha256": "061d715e0276c478b059c1b9fced849c1f9d7567e189a79518a7047d1bbef46f",
+        "lines": 266,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_encode_rule_development_protocol_2026-08-21.md",
+        "sha256": "5adeda436aba1bba0b175fa8cf28d8325ccf9b9e6b2d2b2dbae2a16c943a2858",
+        "lines": 187,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_extract_vs_extract_and_select_2026-08-25.md",
+        "sha256": "c3a8b8865dc1a1a495e5c99eea2fe78dff78ef07eec7819b3c476b8467ec79f2",
+        "lines": 111,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_four_family_micro_f1_cells_1_2_protocol_2026-08-23.md",
+        "sha256": "ae4615a283dc430077952f4a4bff8601aa3af51e392ca8e6800a8c395bc32517",
+        "lines": 49,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_gemini_inventory_cells_3_5_protocol_2026-08-23.md",
+        "sha256": "ac2697cc7a4574f63b561ed51ab879c6ca9664961d1ab63287009e7fa27ab876",
+        "lines": 68,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_gold_phrase_variant_catalog_2026-08-13.md",
+        "sha256": "2f22dc95385955035d3056415212e87a40c96911f09665e3cb4ad6597b6db03a",
+        "lines": 1498,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_gold_phrase_variants_2026-08-13.md",
+        "sha256": "024e465f3ad9df95c8fdfc265febf50a4cddab86b71d109aef1e8dee728bc348",
+        "lines": 353,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_inventory_select_replay_protocol_2026-08-23.md",
+        "sha256": "a6facbfa321014e1c76936d10d9000b271dfd7f66abdc9abc6467b1935462a2a",
+        "lines": 72,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_llm_extract_primary_2026-08-23.md",
+        "sha256": "6d50aadaadc2d486dc2f216c2c392f043f4bb818c7804f6345a4c28e8db4a617",
+        "lines": 56,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_llm_inventory_track.md",
+        "sha256": "bcf0cee9cbd3d80914f744d996a1e1e7d56e9b097aef83efb950709eee623b83",
+        "lines": 41,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_one_call_select_vs_rule_select_2026-08-25.md",
+        "sha256": "216739b8bc5d9a948f05685ebcbf150cf07931903c5e5bfd8f58af7a56abb041",
+        "lines": 92,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_published_metric_is_not_the_comparison_2026-08-24.md",
+        "sha256": "4adf9ae4153fbf03fa71863f9ecc11abf7a748af969c18e98f49b1ac3229b72d",
+        "lines": 78,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md",
+        "sha256": "5fb42f222baf73cf5472d11d21fe9a3e556a805d98f051ca772da65bb2b7fd7a",
+        "lines": 66,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rule_select_after_llm_encode_protocol_2026-08-22.md",
+        "sha256": "3627a0cc11caeb181fe20fa2927c32b723a88e9c43fa6fe4edd45d71cbf4656b",
+        "lines": 80,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rules_only_inventory_retune_2026-08-27.md",
+        "sha256": "4943e440cc5d02af30d9d29e79984a7985b8f43c1b6894ba8ea46203b747bd29",
+        "lines": 48,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rules_only_inventory_retune_audit_2026-08-27.md",
+        "sha256": "eea4abc64507ebe3853f62f3670449defefb7d8dfd912f35089422137100857b",
+        "lines": 169,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rules_only_inventory_retune_audit_protocol_2026-08-27.md",
+        "sha256": "1a946435765b334fc4f6c77dd7c3d08639b5f3710f2e4f7d9766cb77f38db1fd",
+        "lines": 52,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rules_only_inventory_retune_protocol_2026-08-27.md",
+        "sha256": "b605409e3a7637da6e1556b0f75632fe6f67cae9fc53d0e9b89f81b1cf42a9fc",
+        "lines": 51,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rules_only_recall_first_restructure_2026-08-27.md",
+        "sha256": "cfcbd6aebe232c825fcc15ef73da4f5fc32e3f91c320630c9c4b281dbb4189d4",
+        "lines": 128,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rules_only_recall_first_restructure_protocol_2026-08-27.md",
+        "sha256": "5d2700557be7c98ed99d889f6d4f11e6badf8595dc0c7d532448076f1660e55a",
+        "lines": 118,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rules_only_recall_first_test60_aggregate_2026-08-27.md",
+        "sha256": "42f0a7d325efe99c3379ebd153f932bd7fa688ede0076ff472fbf5e707f94f5f",
+        "lines": 63,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rules_only_recall_first_test60_aggregate_protocol_2026-08-27.md",
+        "sha256": "aade987c74fab4c0450aa060f17b150a57d9bb71ac2c97cec380d8b5686bec3f",
+        "lines": 114,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rules_only_recall_first_transferred_2026-08-27.md",
+        "sha256": "c6fa5c12c45e3babd427a2c616e8e76604e841a246864729642599aedb32f4eb",
+        "lines": 43,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rules_only_recall_first_transferred_protocol_2026-08-27.md",
+        "sha256": "66205cb6b49725f5618f0f7398b16a518c2325fd1728c5bdea202193fc3fa346",
+        "lines": 76,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rules_only_rule_taxonomy_audit_2026-08-27.md",
+        "sha256": "a82fe97db941b0ba128fd1e9c2b6d9444e1029f71a8678d0639c01f5cb95d5fc",
+        "lines": 147,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rules_only_sf_gated_rewrite_candidate_2026-08-27.md",
+        "sha256": "2ff4d73ff04e00ad1df4cb72ffdd91b061b74f56407f782e8c7f84dbf8f7bbfe",
+        "lines": 73,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rules_only_sf_gated_rewrite_protocol_2026-08-27.md",
+        "sha256": "2bcc715c1b2f7bf7b65cde942e3a12638d9f28ac5c0c9f0fefd79ae7957efed6",
+        "lines": 68,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rules_only_stage_rungs_2026-08-27.md",
+        "sha256": "ccb5cede5a9cbb45134cfb8eb27fcd37aa87e761f8d14e0992f7e61f2e55d5bf",
+        "lines": 70,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rules_only_stage_rungs_protocol_2026-08-27.md",
+        "sha256": "20419db4175f28b3c7d806dcf68d5fb91347090dd6dbf5d927ce60b9ae122bfc",
+        "lines": 102,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rules_only_three_stage_reconstruction_2026-08-27.md",
+        "sha256": "8e6348881eb52998bd07b5d700a0124dd7b2fef35e28f27ede363899d9d3c0ec",
+        "lines": 110,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rules_only_three_stage_reconstruction_brief_2026-08-27.md",
+        "sha256": "ac0035997ac007ff201f6a8bef997985ad5a3d0f5ba6248d9f07f2c3a02a2c2f",
+        "lines": 252,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rules_only_three_stage_reconstruction_protocol_2026-08-27.md",
+        "sha256": "d3231955ee08ac587e362bcba2a5db832e839d5d96421c9fe9ddd4ac1c1c8710",
+        "lines": 133,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rules_only_three_stage_test60_aggregate_2026-08-27.md",
+        "sha256": "d433254624aeb40a04e4b2b77767720db8b420cfc3046aad604c06f41c8fbd7f",
+        "lines": 63,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_rules_only_three_stage_test60_aggregate_protocol_2026-08-27.md",
+        "sha256": "d39f3f5ba3c3f36218dd93cc824ccf58f3768caa1bf389f1a6a0614430010f41",
+        "lines": 156,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_select_rule_development_2026-08-22.md",
+        "sha256": "83ad882ba3fe5eadc24f67b3cc9d45bf84b76b33ed658161f2fe67947a7e1522",
+        "lines": 307,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_select_rule_development_protocol_2026-08-22.md",
+        "sha256": "2867d5a5aca2126dd6fc4427be64a31dae80de8bc95f1f65cbcc1cb54c3a01b6",
+        "lines": 171,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/exect_story_2026-08-12.md",
+        "sha256": "a7fc1360cded70c49656febd1e6ea2df50adb878a05a39883d90fe3a210c7040",
+        "lines": 177,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/family_error_catalog_2026-08-06.md",
+        "sha256": "3d2b5b4b811be2dd6e7511596fb6450da86c897128e59d1a10e216213ea80965",
+        "lines": 394,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/family_error_catalog_protocol_2026-08-06.md",
+        "sha256": "26b9ac70b8914cc708b9779fdbedc22c4b45d723dc39c6151f8a674c3850aa80",
+        "lines": 66,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/gemini37flash_llm_only_raw_lane_2026-08-14.md",
+        "sha256": "38697b3f47fdae94b44ee3df458374c026b6d0c99b49df294e93a271797eb02b",
+        "lines": 37,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/gold_task_taxonomy_2026-08-06.md",
+        "sha256": "5599baa1c594fd75a5b414e843f142485647625bab82b2891a6cfe921fac0981",
+        "lines": 190,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/hybrid_stage_ablation_2026-08-06.md",
+        "sha256": "a6149ec765d2fe1ef0ce5356a4d42c63e1c9e713ecd844b5713c2fb8dc57dde7",
+        "lines": 382,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/hybrid_stage_ablation_protocol_2026-08-06.md",
+        "sha256": "406dec261eb6a44d8db17c31a6920d95f841f33d44db9e2a82d2b7b18b569dba",
+        "lines": 103,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/mention_unit_v2_empty_gold_sf_extras_luna_dev140_2026-08-16.md",
+        "sha256": "ac9013281da96faef95eb65f4f789d7eacd95c66f32cbe9cf040f2d37cf82a4e",
+        "lines": 76,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/mention_unit_v2_empty_gold_sf_extras_luna_dev140_protocol_2026-08-16.md",
+        "sha256": "feb7dfec1bea590b48fa2341c36b0afea2703b3cfdb482ba6d69a6508efdfe2e",
+        "lines": 92,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/mention_unit_v2_fork_a_luna_dev140_2026-08-16.md",
+        "sha256": "c73ea3780864ae0abcc804b709901789e5e4ba7608c3eb17c29522ce4e3c8172",
+        "lines": 110,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/mention_unit_v2_fork_a_luna_dev140_protocol_2026-08-16.md",
+        "sha256": "d73e758156d5a292108c36373b81be48d5dd7f7b830523e8fb3165aca18a1032",
+        "lines": 130,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/mention_unit_v2_fork_a_luna_dev20_2026-08-16.md",
+        "sha256": "711987ef084f9425fcc23278f66c5d8d3cbcd82eb9e7ed134539f2162ddaa9a7",
+        "lines": 136,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/mention_unit_v2_fork_a_luna_dev20_protocol_2026-08-16.md",
+        "sha256": "ac8506c1f6f4e3d0039925adae7f4aa480bd8cd1850b38717499ab26ea826794",
+        "lines": 277,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/mention_unit_v2_hybrid_encoder_damage_luna_dev140_2026-08-16.md",
+        "sha256": "8ca6b7e289cf4b5fe28c18817ebdff2d70daa3be3abdd8546d3d2d36751a6869",
+        "lines": 79,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/mention_unit_v2_hybrid_encoder_damage_luna_dev140_protocol_2026-08-16.md",
+        "sha256": "5a6763aa7ad1cc9c1b9519661bdbf567bf3f8b8fc5ca77eec00a98153bec8e27",
+        "lines": 90,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/mention_unit_v2_leftover_form_encoder_luna_dev140_2026-08-16.md",
+        "sha256": "fc078feefff73c4d6caf861ed07468aa9c35be19e93858ae6ef3b2f606080982",
+        "lines": 82,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/mention_unit_v2_leftover_form_encoder_luna_dev140_protocol_2026-08-16.md",
+        "sha256": "1762bde1d811fbfe49474487c51c4ccb1d461c588c1753e9e02bd14d792c206d",
+        "lines": 134,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/mention_unit_v2_leftover_form_v2_luna_dev140_2026-08-16.md",
+        "sha256": "b84aaaba4827098e33b0382ad4c93f1a948404a157a7eb2c38ad99f31b49ed95",
+        "lines": 105,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/mention_unit_v2_leftover_form_v2_luna_dev140_protocol_2026-08-16.md",
+        "sha256": "fa9edb49b9c9b57f515f88013e1d8855576c1718ac19b57ad0c831b252e1711c",
+        "lines": 97,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/mention_unit_v2_leftover_form_v3_luna_dev140_2026-08-16.md",
+        "sha256": "f447f540ea4e6bacc9b747a7aec11c7ab39873fd674ad22dcd4afcc82aaa84b6",
+        "lines": 98,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/mention_unit_v2_leftover_form_v3_luna_dev140_protocol_2026-08-16.md",
+        "sha256": "43d0cf8282d6e6f95d71c5cea908d8833f649cc9e5f2ac36fb35bb2f50133c28",
+        "lines": 114,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/mention_unit_v2_leftover_form_v4_luna_dev140_2026-08-16.md",
+        "sha256": "5793362ba7a53cea7c084ebbc01c52320243ff40bea644b66895fe6158ce403f",
+        "lines": 91,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/mention_unit_v2_leftover_form_v4_luna_dev140_protocol_2026-08-16.md",
+        "sha256": "ce474d218bb7f69c0551752d0eb62c50c4211c814b6272f448f78eb5edc54679",
+        "lines": 133,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/prescription_lens_counterfactual_2026-08-06.md",
+        "sha256": "1f472cf5d9a199c96aa3be5cbcb433f14b5e4dedf182e260f7c017884dda15ba",
+        "lines": 87,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/prescription_lens_rule_decomposition_2026-08-10.md",
+        "sha256": "f61849bc4de4f30c4e412c19277472d12abcbdadec8bb43236b1547fe950b10e",
+        "lines": 148,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/prescription_lens_v10_holdout_confirmation_2026-08-10.md",
+        "sha256": "e1626d1394b72335a7e62e0863bca17bc8f2ec0bd2db1afe197cec3c2f65b9a0",
+        "lines": 89,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/prompt_variant_slots_2026-08-16.md",
+        "sha256": "9311d94964dc7cefd36585bf5f5e8e0ca39d74071cf5eded37c57c270c32e580",
+        "lines": 164,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_annotation_evidence_synthesis_2026-07-15.md",
+        "sha256": "42ebb5d50d32ae14c3a9e9723c9dac2db2528fcbc49a033d913b9d8da114d17f",
+        "lines": 125,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_annotation_evidence_synthesis_protocol_2026-07-15.md",
+        "sha256": "ad9aad51cfc5357a2cc62f2c7a8b01322a8d4242faeeaf964b5a2d48dbb4b55b",
+        "lines": 99,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_calibration_redesign_2026-07-07.md",
+        "sha256": "5059cb5d31cdd74d76850df5ce291d3e94246892304ee5884249f782755564bd",
+        "lines": 178,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_calibration_validation_audit_2026-06-25.md",
+        "sha256": "f88402959a151b305d7015026e705b586cbb4bf6fcfab2da1cf1f9c64d305f53",
+        "lines": 84,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_deepseek_v4_flash_0731_dev140_2026-07-31.md",
+        "sha256": "6c5da66741bcc4f743f44d4f42e072eeaa5f0368061d799f43d654a97cb6ffb0",
+        "lines": 176,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_deepseek_v4_flash_0731_dev140_protocol_2026-07-31.md",
+        "sha256": "179aa131fd996d2ac635d8b9c6ac206d63e36368ade88c0fc45dd3250d2dd1ef",
+        "lines": 94,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_deepseek_v4_flash_20260715_model_current_rules_dev140_2026-07-31.md",
+        "sha256": "d3add6098857b06450167526b8bb95ef24543f66397dde4958e291af6c41d8cd",
+        "lines": 103,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_deterministic_all9_dev_20260714.md",
+        "sha256": "100c964a188b3bbb2e9992ab7f29069f5ae1b384c0258ae27809a00e181d9249",
+        "lines": 93,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_gold_quality_adjudication_blind_replication_2026-07-01.md",
+        "sha256": "3d032be36687e67dc8c654858a2ab5a2e0d363cf7b4a1a02bb13550a5937d33e",
+        "lines": 230,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_holistic_finding_assembly_v08_dev140_p7_treatment_20260702.md",
+        "sha256": "eb36af5e5e87dfb2483c10662d17becea16786daba92c9634fabfb9aa685c2e6",
+        "lines": 91,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_hosted_test60_protocol_2026-07-15.md",
+        "sha256": "cf9b745460e1ab698b07f48d20ba190457788323d2af4ff20fd4de2f98325825",
+        "lines": 111,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_llm_with_rules_component_audit_2026-07-14.md",
+        "sha256": "2bcf93887ae5957e368c456a38075c40c4333f7c608e596d0f54c46ffed9e07b",
+        "lines": 240,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_luna_prompt_variants_dev140_2026-07-31.md",
+        "sha256": "25bd71fb1b4692a844b4f09b4f11b9d35291f856b67c82d24a28f6f89e5f2363",
+        "lines": 24,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_luna_prompt_variants_dev140_protocol_2026-07-31.md",
+        "sha256": "38376ed6112e7207b69b737af9da3ec61682d8697380293e116ee5412b827746",
+        "lines": 186,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_luna_prompt_variants_exemplar_pack_2026-07-31.md",
+        "sha256": "ac9700f2987b2e45a59041b1f93c9600732a26db6c9ee7a420a2956427ce1f57",
+        "lines": 53,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_luna_prompt_variants_test60_2026-07-31.md",
+        "sha256": "fff06f1635ee2c947c0307954e023f1bb267f74d871cbf713a0605ab7814cadb",
+        "lines": 26,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_luna_prompt_variants_test60_protocol_2026-07-31.md",
+        "sha256": "17bc8bd3b8ec234656a16fa4622f9ce7e46a7dc020c2438d21fbff11b7289613",
+        "lines": 101,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_luna_single_call_dev140_residual_map_2026-07-31.md",
+        "sha256": "12ede1957b59024e3b3b02b7af00d811a93defb1156b86529c7d849c50c70abe",
+        "lines": 107,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_luna_single_call_dev140_residual_map_protocol_2026-07-31.md",
+        "sha256": "5a06ba19c60b05aa73308d3ea72e989bd897154b37167046a840642d67252636",
+        "lines": 100,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_model_led_dev140_regression_analysis_2026-07-15.md",
+        "sha256": "5d69177240f0fa7ac3d5a6f025a24524fbc51c8b627d0654ac99c913e07e955d",
+        "lines": 181,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_model_led_dev140_regression_analysis_protocol_2026-07-15.md",
+        "sha256": "51e6df329ff70ffc3c87a9654b09e6b4e215b31d68e7060fbe2024536ea70039",
+        "lines": 107,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_model_reported_confidence_out_of_sample_2026-07-15.md",
+        "sha256": "f7d78ac36b3d82822b87cd223db57a7f8ee2957185767d185ba96549383e8a32",
+        "lines": 56,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_model_reported_confidence_protocol_2026-07-15.md",
+        "sha256": "b2f58b805756506358faaa1273e31a4bad4c824038c6915f440e0b5e733bbd3a",
+        "lines": 79,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_prescription_bounded_policy_candidate_2026-07-15.md",
+        "sha256": "2fc3332849ffe27fcf4e4e8afa3f48c0a348030c43f77108b9a759493c8d2f08",
+        "lines": 135,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_prescription_bounded_policy_candidate_protocol_2026-07-15.md",
+        "sha256": "c300993c5585f8ebd60bee36893b35cbf032d24b058656f0e328d0415db8af5e",
+        "lines": 156,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_prescription_rescue_scope_candidate_2026-07-15.md",
+        "sha256": "7a63ef9f1806feea1b80b0607df8b1ddcde69015daca2619e8e5e86b023dea0a",
+        "lines": 114,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_prescription_rescue_scope_candidate_protocol_2026-07-15.md",
+        "sha256": "b6dba2a10c6a8404976f80131b03e3d332f48bff1845d0a39f86e6bae5b7b080",
+        "lines": 111,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_primary_method_comparison_surface_protocol_2026-08-01.md",
+        "sha256": "e0d0754e76366ce9ec12c21a069929839367fefdccd41431598d654ed851008f",
+        "lines": 236,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_published_metric_reproduction_2026-07-14.md",
+        "sha256": "48d2675e2724dca8d9538f645fc1646243817fedb738273b6218c310d40d2398",
+        "lines": 150,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_published_metric_reproduction_results_2026-07-14.md",
+        "sha256": "243ddf98937780a09754b0065b6b780a119aa20beb5fc43ef9b013c5d4a9e6c6",
+        "lines": 73,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_qwen_model_swap_repair_v02_full200_readout_2026-06-26.md",
+        "sha256": "35e23d48b6a38fbe972e8fd29bcc858b3e996684a6dd1271f685018ec363e737",
+        "lines": 91,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_rules_only_four_family_clinical_headline_dev140_2026-08-15.md",
+        "sha256": "da6d6da26de78709447e6793fbdea6733c7d0ea664024e78f95da74718c87d7b",
+        "lines": 31,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_rules_only_four_family_clinical_headline_test60_2026-08-15.md",
+        "sha256": "c2591cba50ed25950738ad16983b36ecb9596e6c91bdeaebdc6c329ba6771cc8",
+        "lines": 31,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_same_core_model_swap_full200_2026-06-25.md",
+        "sha256": "bfa06651383d9610839aa1031a83c2dfa8735bf7acb9d32fa17730100d1445ed",
+        "lines": 46,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md",
+        "sha256": "47db96e7d0b4a134edcc29091f8ce3c54187b22b26c07b33643a663120327e08",
+        "lines": 103,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_six_model_comparison_protocol_2026-07-15.md",
+        "sha256": "4c0c7d1123100d1b1e44813c0a8aeb744242d5bea6de37dc62edcd1587f83da2",
+        "lines": 167,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_six_model_sf_overinference_2026-07-18.md",
+        "sha256": "1ae8dcb0625f274f2b4f7401931339f51ff2b6381885b1ca805ea1b8e90eb7c5",
+        "lines": 68,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_six_model_sf_overinference_protocol_2026-07-18.md",
+        "sha256": "d0a3931d28abef8697f6e33f5735e3abd066beab8d722e68dba2df0d34b888c4",
+        "lines": 98,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_six_model_single_call_deepseek_v4_flash_dev140_2026-07-15.md",
+        "sha256": "030d437ceadee0bed835616557e0f223531abc365a349ac6731dc29a3222cff4",
+        "lines": 103,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_six_model_single_call_gemini37flash_dev140_2026-08-13.md",
+        "sha256": "4aeddbcf0870cae8641567c2132b2c1e761c3b3b5cfb696fedd6d2104f1fe21b",
+        "lines": 103,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_six_model_single_call_gemma4_26b_dev140_2026-07-15.md",
+        "sha256": "985941742f27565ec351d027c0b29bce679998a16e96f14849b0e642afc9d7f4",
+        "lines": 103,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_six_model_single_call_gpt41mini_dev140_2026-07-15.md",
+        "sha256": "b97548e52fda6704c40f088bb69abdbe19cf8dc6540ffd993cb4292c1a7b5919",
+        "lines": 103,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_six_model_single_call_gpt56luna_dev140_2026-07-15.md",
+        "sha256": "3643d536f93b9d36b114e67172019e53d2252d7adfe642e19139b06dbda38c0e",
+        "lines": 103,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_six_model_single_call_gpt56sol_dev140_2026-07-15.md",
+        "sha256": "93b71502252f2d24273f6d9978a34cbd1f4a4a8467dc8839023c11a02888ad32",
+        "lines": 103,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_six_model_single_call_qwen36_35b_dev140_2026-07-15.md",
+        "sha256": "df66dd8718a6ca77e0f4b17050fe3886190f7efd58d5cd8b947346a3285f6b72",
+        "lines": 103,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/reliability/exectv2_six_model_test60_stage_panel_2026-08-01.md",
+        "sha256": "bbc20e07eb706b7d35d29e3267c5e9500854e0afc539109187a3aa9bf95f8947",
+        "lines": 38,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/rules_only_campaign_e5_remeasure_2026-08-15.md",
+        "sha256": "83013f969fb324099c0c9a88959055ad85c0e20b724eb087c748ba9150b520a5",
+        "lines": 33,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/rules_only_investigations_result_binding_2026-08-15.md",
+        "sha256": "ca7768869c5445fb5eeb68900baa382392a7fbe421877cf8e224aa99d31b1640",
+        "lines": 99,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/seizure_frequency/exectv2_sf_canonical_metric_row_analysis_2026-06-29.md",
+        "sha256": "739d9e60ba52eeb08e9e5859b35f05e87cd7339470e621a7f10ac5c221771cd7",
+        "lines": 308,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/sf_active_rate_overread_guard_2026-08-11.md",
+        "sha256": "f8e66942ae13dc3769299091bc50c5ddb8922d17761267809b9709c1099da9ee",
+        "lines": 141,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/v0924_cheap_further_prune_luna_dev20_2026-08-16.md",
+        "sha256": "7f8f53a48913c26f3c887fe51ae81401457ac48c1717ebfaae6f5606483b2467",
+        "lines": 90,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/v0924_cheap_further_prune_luna_dev20_protocol_2026-08-16.md",
+        "sha256": "5c3edceb205da9d9d4485c443b10454109c0bdb5311c46755cc8214ac6de6992",
+        "lines": 104,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/v0924_cheap_further_prune_stacked_luna_dev20_2026-08-17.md",
+        "sha256": "675e28fa402921fcde70f865c88ac3252332bcc941ca496bf3e7afacb29a9e6d",
+        "lines": 63,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/v0924_cheap_further_prune_stacked_luna_dev20_protocol_2026-08-17.md",
+        "sha256": "4d6b42bdc49824a9c025f7234e44e9649b8e2e7ec2af53d0eacdec08ed816d60",
+        "lines": 103,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/v0924_cheap_slot2_dev140_protocol_2026-08-17.md",
+        "sha256": "d892f540df690cc935323d1a3a10ad2840ae70d4e26d6de3e7092f3f30a948b1",
+        "lines": 121,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/v0924_cheap_stack_luna_dev140_2026-08-16.md",
+        "sha256": "388884522e62dcadbd3301677bf5ef611e19dc954b827cc21f46aef24383f8ae",
+        "lines": 85,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/v0924_cheap_stack_luna_dev140_protocol_2026-08-16.md",
+        "sha256": "eb689bd58bdd7805b93dbd86eda4a509f26a53017bd5f76a6a4261e671569990",
+        "lines": 104,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/v0924_cheap_stack_luna_dev20_2026-08-16.md",
+        "sha256": "38d9c7aa79240696f9bb68e6d8e58e636d6eaebb1f10db241d0e1dc3f42935b5",
+        "lines": 71,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/v0924_cheap_stack_luna_dev20_protocol_2026-08-16.md",
+        "sha256": "bd404aee66321045573b8e06e67b3e3cf0acb5f0144a9c857343efe042a112b1",
+        "lines": 42,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/v0924_cheap_stack_plain_luna_dev20_2026-08-16.md",
+        "sha256": "52585abc2e7031ed0f6ee5810bed6d0938d301c2f004a2a59d9e5ef0c5f371be",
+        "lines": 74,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/v0924_cheap_stack_plain_luna_dev20_protocol_2026-08-16.md",
+        "sha256": "a5d7dba3f4956127534ea488b69a3c39ca72cf00aaea4af5260bd445266ae3ad",
+        "lines": 99,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/v0924_cumulative_prune_luna_dev20_2026-08-16.md",
+        "sha256": "18e78243d5778f28dddcfb490f2b9f8d9b425fff6f81f96142247f993f620c87",
+        "lines": 80,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/v0924_non_sf_slice_luna_dev20_2026-08-16.md",
+        "sha256": "3c63b203601c8b0d2647626fd42c7d1290661a205b61f5ad7a46e9532eb0f5f3",
+        "lines": 71,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/v0924_prompt_ablation_luna_dev20_2026-08-16.md",
+        "sha256": "43e88fd1dc5af239cec4f6da3df98f05fabb745aa20dfb96a20a134c3af4fff7",
+        "lines": 73,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/v0924_prompt_ablation_luna_dev20_protocol_2026-08-16.md",
+        "sha256": "6346ef77e481c835a721426e9359e482398e49b9b6de24e5df093e8e79b82e65",
+        "lines": 95,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/v0924_scope_cluster_luna_dev20_2026-08-16.md",
+        "sha256": "fa926afad4a0bdcc1ba84d3b657037b4d11c99aad04144984684a528f4ac67bd",
+        "lines": 74,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/exectv2/v0924_sf_examples_luna_dev20_2026-08-16.md",
+        "sha256": "d4509684fc29dfa73f5090baf87b1f3375e7564b3ba5484cf85230dc1875c9b1",
+        "lines": 68,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/category_cut_representative_examples_2026-08-08.md",
+        "sha256": "885a96e7591ddc8fb9ec556ea52819f327bc274f9b8d54ccfbe94eb2c6a65de7",
+        "lines": 187,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/category_error_catalog_2026-08-06.md",
+        "sha256": "c2ef5972648f3b4d29f9c640ea1863678470d5934ae5aeccdfbd5a0c407d4a5a",
+        "lines": 410,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/category_error_catalog_protocol_2026-08-06.md",
+        "sha256": "7beaea6fe1e443f64f84c64a47c33668a6fbfd19d2a9f629dba7c373367a61ea",
+        "lines": 61,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/deepseek_unknown_competence_thread_2026-07-31.md",
+        "sha256": "622ed62f8e0aba60b2e874d14bcc909e1b822f162d29ae3895953ea8539d3bc7",
+        "lines": 72,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/efficiency/single_vs_multimodel_efficiency_protocol_2026-07-14.md",
+        "sha256": "f549fcc8ba815cc7055fb62c7722793d996ce973c2f90c01563e182030ac29a7",
+        "lines": 84,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/efficiency/single_vs_multimodel_efficiency_report_2026-07-14.md",
+        "sha256": "395d81ed1c45a09d56627805ea12618ed843af6e3fb54b0bb8e20a82f51a82bf",
+        "lines": 78,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan2026_agentic_redo_results_2026-07-01.md",
+        "sha256": "18d48859f2973f7fa81345d1ee20630a0fa1ec44347f2e31f110e3ff54fab150",
+        "lines": 187,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan2026_deepseek_unknown_competence_protocol_2026-07-31.md",
+        "sha256": "f4f0dc42d615e0e83c660bb5cdc6f717833873a55935ecca05190b66e055114c",
+        "lines": 144,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan2026_deepseek_unknown_prompt_dev750_protocol_2026-07-31.md",
+        "sha256": "c782277f32794512098a81b70bd39ae25cb59753795c412535059fbb8733c7f6",
+        "lines": 79,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan2026_hosted_test450_protocol_2026-07-15.md",
+        "sha256": "93b36e842bd04800f79aeea2f5f9a796afbd4b6269e257ef286e28586d3a3a0d",
+        "lines": 133,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan2026_luna_prompt_variants_dev750_2026-07-30.md",
+        "sha256": "6c4b2f0eebee60c686af59e1bd9210e804c69cc922da11d2e1c16945b19d36ce",
+        "lines": 15,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan2026_luna_prompt_variants_dev750_protocol_2026-07-30.md",
+        "sha256": "f73fd08e61cbeac83da96ecda40510c7afa255b3e49359769bbe21558c137209",
+        "lines": 176,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan2026_luna_prompt_variants_exemplar_pack_2026-07-30.md",
+        "sha256": "0d7e869a2eec0ff4471b42ae08fe2eaf154120f29b98c7940e6c77f3a3335b07",
+        "lines": 316,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan2026_luna_prompt_variants_test450_2026-07-30.md",
+        "sha256": "1ff7898c8c8ea8434ee8e0523edc402b813c781362ad192b5b7734bc1f5cd334",
+        "lines": 18,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan2026_luna_prompt_variants_test450_protocol_2026-07-30.md",
+        "sha256": "119d385e698d94dc60a190743e63d9f16a2d00990caf9484573a139bee121689",
+        "lines": 97,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan2026_matched_v05_dev750_panel_2026-07-27.md",
+        "sha256": "8a7b46844429a5701c25093443899c439e9b11a372c83c8b974bce1536a7bb16",
+        "lines": 44,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan2026_matched_v05_dev750_protocol_2026-07-27.md",
+        "sha256": "0bf900640805c8a6f1087265bf9c52a38198ef8bdb58782f4cb1bd966c22f3ec",
+        "lines": 116,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md",
+        "sha256": "9d8ca845d5b552705f3b93f31802cda469e73e50d901d638ed068cb44169cbee",
+        "lines": 125,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan2026_matched_v05_test450_protocol_2026-07-16.md",
+        "sha256": "9822e4c23271aa3453f6097ab561c52f863f6601d25eeae66733a461e95f7ed0",
+        "lines": 168,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan2026_matched_v07_test450_protocol_2026-07-15.md",
+        "sha256": "e989e1bfae1cdf859f8bc0800588d83aa1dac432e8361936c2e03b570da63b22",
+        "lines": 180,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan2026_qwen_sol_rule_benefit_audit_2026-07-20.md",
+        "sha256": "f5f96a2532ed75b462e1ec9050504cbcd2d6b81b4a623298c47280c31494d89e",
+        "lines": 2318,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan2026_qwen_sol_rule_benefit_audit_protocol_2026-07-20.md",
+        "sha256": "410eadf3e809553d0fd84250ffdbfe71c2495caaf9c11106c7e3d751b271d7e8",
+        "lines": 77,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan2026_six_model_llm_only_test450_protocol_2026-08-01.md",
+        "sha256": "40daaddaf8efe9c6fe17b8d8f34a47d3be5fa0535daaa1d46caa54f9f022d67e",
+        "lines": 78,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan2026_six_model_post_panel_attribution_2026-07-20.md",
+        "sha256": "7c0a01049725114886bc60bda4ef5c45482362a54535a49f1c250a7ff53ddec8",
+        "lines": 87,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan2026_six_model_post_panel_replay_protocol_2026-07-20.md",
+        "sha256": "afd02eb1604469fc5ae45b625c8d951a0f6467d42f40c359999e118dcd06ec95",
+        "lines": 71,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan2026_six_model_validation_comparison_protocol_2026-07-18.md",
+        "sha256": "257e7fe13fbec3105ac85f22c00f2e0a51bbbae7ee2ba94e9c5c9bc74acb4897",
+        "lines": 261,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_candidate_set_recall_test450_2026-09-03.md",
+        "sha256": "e62fead55d9b78a21d240b1bf9e3c70389b8272740c8200005ec1f2b54d40c7d",
+        "lines": 50,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_candidate_set_recall_test450_protocol_2026-09-03.md",
+        "sha256": "ff6ee42cbda34f834f03914c6c40a02060af4bd6bb86ec8635405f8793e559bd",
+        "lines": 123,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_cell3_candidate_volume_dev750_2026-08-29.md",
+        "sha256": "7f62af3a2a0c9ca429a6af759e1e89abcb31fe32917e9f5e29be73d23d6633d1",
+        "lines": 215,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_cell3_candidate_volume_dev750_protocol_2026-08-29.md",
+        "sha256": "5695fe869b06fd3752c2a3574150543d484ece9794225041c400cf7e0aae3bfa",
+        "lines": 74,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_cell3_codebook_roster_replay_2026-08-28.md",
+        "sha256": "cef954d9cd64019fd3b13a7afb288d366e0acc27df878333a3f78587306eb2c0",
+        "lines": 52,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_cell3_codebook_roster_replay_protocol_2026-08-28.md",
+        "sha256": "d8d1b8e6cb5aeddc611e78ea23f25928feecc795b2227b07abb12745c735039c",
+        "lines": 68,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_cell3_roster_fill_protocol_2026-08-22.md",
+        "sha256": "7e4cd9d34c8d07026c590bcc68acee4650c43605ce0ea2dbab4ed7df6c638b44",
+        "lines": 49,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_codebook_encode_holdout_2026-08-22.md",
+        "sha256": "a1f4734b228c15701dc5a93444d5f55e24f55457694d60c6457ff641e8aa1d25",
+        "lines": 88,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_codebook_encode_holdout_protocol_2026-08-22.md",
+        "sha256": "586d732d6a54ea79807d8db1f40d4f1c936ce74ac11670b4dc53e6fa8ec9c706",
+        "lines": 75,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_codebook_encode_rule_development_2026-08-22.md",
+        "sha256": "bb738aba7d291c8a0a6bcd89c6c8c9d7c7d9a3d2e69f5d778cda880befa70dec",
+        "lines": 235,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_codebook_encode_rule_development_protocol_2026-08-22.md",
+        "sha256": "56d9096bfff6c8e21d296195d1b3588b260d08ac6a3e894b0202edef63e613ae",
+        "lines": 126,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_codebook_extract_grid_2026-08-22.md",
+        "sha256": "2166c57b8d1dcca5e586675383b691b93b7ad1dd0e7a00703af39ce37365ec1a",
+        "lines": 83,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_codebook_extract_grid_protocol_2026-08-22.md",
+        "sha256": "5952c1a83d09f71eea24380284df33de3b66af7abe1c0ce9b1520493b19a7081",
+        "lines": 61,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_codebook_holdout_protocol_2026-08-22.md",
+        "sha256": "f84b48c7ca9a870c27ada76788b0c9971e3c34801fb6552175927e9e8095ecf8",
+        "lines": 61,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_directional_evidence_adjudication_dev750_protocol_2026-09-02.md",
+        "sha256": "1e91008b92cdbe0ef4e66b284ab64245739975c7bef07f912a0348c06d50c5ba",
+        "lines": 151,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_directional_evidence_adjudication_rendered_example_2026-09-02.md",
+        "sha256": "f1adaf899a0ad976c0266a91709291be80449d01084974591ffd2d01a0a6ff8c",
+        "lines": 75,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_encode_on_codebook_extract_2026-08-22.md",
+        "sha256": "073b3e2b78d133d58efde42bd00106bd913502ad0f8fbd2036f7bd8ee9429781",
+        "lines": 71,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_encode_then_select_living_prompt_test450_2026-09-02.md",
+        "sha256": "913232a6637a43c2a2f681982412c91503f8b38ba8676e47554673ad0530aa56",
+        "lines": 49,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_encode_then_select_living_prompt_test450_protocol_2026-09-02.md",
+        "sha256": "5b1c3b2a6d9814b6d021488df3dfc6cb5b9b582641d51b4a1e99a3ff608a12d6",
+        "lines": 105,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_extract_content_recall_2026-09-03.md",
+        "sha256": "a782ef29b20cd71190f51c6b4f738b8015e990e02a0c7bf726533dc8b2974169",
+        "lines": 51,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_extract_encode_select_deepseek_v41_test450_protocol_2026-09-10.md",
+        "sha256": "07ddf23230513797ff3945d1032561027659cc0b910e90e5539fd0237102859c",
+        "lines": 44,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_extract_encode_select_dev750_2026-09-02.md",
+        "sha256": "bbe41307d1c2ba9737287aed39c4056553580fca2d05db1069d4ac4f5d69795f",
+        "lines": 63,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_extract_encode_select_dev750_protocol_2026-09-02.md",
+        "sha256": "31e144888b68ae1fb2892492c3be669a4297521793162537377a44723c69d8a4",
+        "lines": 76,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_extract_encode_select_hosted_2026-09-05_protocol.md",
+        "sha256": "a0e5659e6d86c5f4f66247559c184e5e6b4da2f79ea4b4bba2a1ea92b28fc4ab",
+        "lines": 124,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_extract_label_forms_2026-08-22.md",
+        "sha256": "115e5b01d67cbc8e1575a800b8b1c01b86f52963f746d52867d6f7592f05bfac",
+        "lines": 68,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_extract_label_forms_protocol_2026-08-22.md",
+        "sha256": "ee003894c80cecf393302f0dacd15b5fd23400bedcd825224f61bd9b4ad17750",
+        "lines": 76,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_extract_prompt_component_ablation_2026-08-30.md",
+        "sha256": "db5c2735fd5bb6012f94825fc8ba26fc482e5d35ebd62caebbd11232742816c3",
+        "lines": 103,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_extract_prompt_component_ablation_combined_protocol_2026-09-03.md",
+        "sha256": "e4a4c3a6d62e47682c1324143cf01ae5b33f5d1e5e8b06686b1082585437a441",
+        "lines": 40,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_extract_prompt_component_ablation_protocol_2026-08-30.md",
+        "sha256": "55aa737470b55844c076dafbaee8b579910ebf2557a7bb68b4f0b0f63c7b851f",
+        "lines": 176,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_extract_prompt_component_ablation_round2_2026-08-30.md",
+        "sha256": "deeb24d3e1020187dbcf802e1f66f50ece3a5ce1ece3f4e586cfc4acdd33f143",
+        "lines": 76,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_extract_prompt_component_ablation_round2_protocol_2026-08-30.md",
+        "sha256": "b9ad2cd436851c0aaf5b8a0d4ce1cbc4c6229e53d9a7e1a6558a543d5aa59979",
+        "lines": 129,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_five_cell_grid_2026-08-22.md",
+        "sha256": "78a028374a55cffe25747ab60d10a51d088048145abefc37bea1341cd163a2eb",
+        "lines": 100,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_five_cell_grid_protocol_2026-08-22.md",
+        "sha256": "3013540047752a047048997f44c14c6aefcef02e8bf1e0374ae6970b35314f3c",
+        "lines": 52,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_gemini37flash_temperature_1_2026-08-28.md",
+        "sha256": "596eaf89c42fc84eaec936078e43570a6e64b415160dbeaa8191303f0f320719",
+        "lines": 57,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_gemini37flash_temperature_1_protocol_2026-08-28.md",
+        "sha256": "031818835ac44ca27664d6ac4a5a9cb5b983060d33205357b27283b2c917d0c5",
+        "lines": 79,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_gemini_cell3_encode_to_select_dev750_2026-08-29.md",
+        "sha256": "03b899f19e41197ef07d13bad9becdf12fe3067eea8e95e329f0e55760bc83eb",
+        "lines": 306,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_gemini_cell3_encode_to_select_dev750_protocol_2026-08-29.md",
+        "sha256": "ae9e16cf2c1bb49736739714471dea0f8070e543d76340663df8a717693e4ca0",
+        "lines": 71,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_gemini_vs_qwen25_14b_cot_synthetic_2026-08-28.md",
+        "sha256": "e9acea6579d69f57eb3a79674f076a17e43fdae182e2795364d48fadc425599c",
+        "lines": 99,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_gold_phrase_variant_catalog_2026-08-13.md",
+        "sha256": "b28c48a78000ce1fb52da9c3c363747fdfab9013859ab9fae0ac0bc62ffe1fe2",
+        "lines": 2138,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_gold_phrase_variants_2026-08-13.md",
+        "sha256": "4e0029aba70637a8e1c4172dc9af55dc2394819841d5b5346d7efafa3252b1a1",
+        "lines": 333,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_grok46_temperature_0_2026-08-28.md",
+        "sha256": "fa017e2ad7d2622d338574a3d8e3176ca29b63d48623da0855b1a5008f8108e1",
+        "lines": 68,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_grok46_temperature_0_test450_protocol_2026-08-28.md",
+        "sha256": "b8784dce0a45fef87e7967d3965a0928c5be598cc8fc6f07c9a7073482b6ca1b",
+        "lines": 75,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_holgate_like_dev250_2026-08-30.md",
+        "sha256": "6591c8675d742e65b02cb9f42a8f828b489ff74a57b55963cc84da7a4314d884",
+        "lines": 71,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_holgate_like_dev250_protocol_2026-08-30.md",
+        "sha256": "8157ca8e5829eab25aa387fa577287bd95432506eec41bfa689f4799077279d9",
+        "lines": 103,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_inventory_feasibility_dev750_n100_2026-08-28.md",
+        "sha256": "5c8ead7bcb13396b8443426782248453f849c8a1d53d8e6c7373cf4db25d6dc9",
+        "lines": 114,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_inventory_feasibility_dev750_n100_protocol_2026-08-28.md",
+        "sha256": "b5f72ebd921da9c847e060781adbe2bd12a56448e5d3971437a267d5ea8e3d60",
+        "lines": 147,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_last_event_well_since_promotion_2026-08-29.md",
+        "sha256": "7c0e1a823ffcb098f7f1a24087a88297a6b37a580e2ad4b2ac7db66f08fc729d",
+        "lines": 44,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_last_event_well_since_protocol_2026-08-29.md",
+        "sha256": "06f9577caf5217db3673f4421d9464e6d6772480171366e5443aa327355438c0",
+        "lines": 93,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_llm_pre_post_protocol_2026-08-20.md",
+        "sha256": "d590b7a11f8c94b13b09733bb0674c46e15f0f1b9c72a9a962788575fb7b7e14",
+        "lines": 171,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_llm_select_policy_examples_dev750_2026-08-31.md",
+        "sha256": "3ff233739d4ad2a7bd5151478afadbb432866439ed28bfdb50bd5a6e6086a426",
+        "lines": 55,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_llm_select_policy_examples_dev750_protocol_2026-08-31.md",
+        "sha256": "ec03ed393585e448c98747748076f8cd594aa5a8f505d7f49457523434810a1c",
+        "lines": 75,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_llm_select_policy_examples_hosted_test450_2026-09-03.md",
+        "sha256": "3d0d4a8e443cc854cd336fdafdc69e108c8533eda3f42e1a19dbd9bd44b39de4",
+        "lines": 39,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_llm_select_policy_examples_hosted_test450_protocol_2026-09-03.md",
+        "sha256": "95c6443d759a344a6575c818df41619bb94f5c5cde06d95e0619a5d9168d8215",
+        "lines": 88,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_llm_select_policy_examples_local_dev750_2026-09-04.md",
+        "sha256": "6a07c0df1cee492ebcccc991b59ed1a928fbc510d84a4790bb203d40ef648408",
+        "lines": 60,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_llm_select_policy_examples_local_dev750_protocol_2026-09-03.md",
+        "sha256": "d5704407f4a45a7e5fd0a50c2c70c678f4f4b2eb0a2e0fd72b9d50a97e68c971",
+        "lines": 81,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_llm_select_policy_examples_local_test450_2026-09-03.md",
+        "sha256": "b7314b2d8fb116e2853a58f03da47250c19a53378844f65222a27aae02aaf971",
+        "lines": 31,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_llm_select_policy_examples_local_test450_protocol_2026-09-02.md",
+        "sha256": "839148bfd535dc9c8ad55a14f3a1fa319864f9dbdd0d46a3efd256eec4336d54",
+        "lines": 81,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_llm_select_policy_examples_test450_2026-08-31.md",
+        "sha256": "ea82c61280df778f070b7509307ab871e85186f9f11c74ba5b5c681c2bc94160",
+        "lines": 42,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_llm_select_policy_examples_test450_protocol_2026-08-31.md",
+        "sha256": "8cd7f28d5d19fe30b78d4d9510d8ff45082374ecd5cc522b8ff100305e7dfa40",
+        "lines": 77,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_paired_significance_test450_2026-08-29.md",
+        "sha256": "72a60bf550dd2dd387ca7dee919c38c0ac33c31f39e12f3fedfdc3c97c31b506",
+        "lines": 58,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_paired_significance_test450_protocol_2026-08-29.md",
+        "sha256": "4cd2d3c467eb295f0cb5b0062fa87e2e35102a0e47b801f9548c392414c9a4f5",
+        "lines": 66,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_pragmatic_infrequent_error_mode_2026-08-29.md",
+        "sha256": "3edda7e85faa65559f01154bd41c1a66e264e27d965268c53b97db41ed0fbbf0",
+        "lines": 364,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_pragmatic_infrequent_error_mode_protocol_2026-08-29.md",
+        "sha256": "14bb946f5c1b239e35fe5fabcbff9ff683d5a5735fcc56b832357b7a55e138aa",
+        "lines": 86,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_pragmatic_unknown_error_mode_2026-08-29.md",
+        "sha256": "31e8ac90eb38f244391646b14fc504a601df48f785ea77802445920edb9cac7c",
+        "lines": 217,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_pragmatic_unknown_error_mode_protocol_2026-08-29.md",
+        "sha256": "26bc93959cf158a8e29e9ccb6605c2891ef5f5f9b7a645bafdfb2bbcdff870bf",
+        "lines": 81,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_rules_and_llms_across_stages_2026-08-21.md",
+        "sha256": "6a5706401422d8b767d83f1bfabf2ed0718677240b76cd898630f5323a461894",
+        "lines": 428,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_rules_find_llm_dialects_2026-08-31.md",
+        "sha256": "10866d8a309007f03be2ff7e7b043853374324912c33670e7083bdb45e0c3c98",
+        "lines": 66,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_rules_find_llm_dialects_protocol_2026-08-31.md",
+        "sha256": "99f8947b4056f17e2dc19587b024aecef9345aa06e403f78363d39d78debab8d",
+        "lines": 41,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_rules_only_three_stage_phase_a_2026-08-29.md",
+        "sha256": "19df28efa9a89124c02e23f4e16892b5e94f0ddb616c6b769755e22a6953c132",
+        "lines": 126,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_rules_only_three_stage_phase_b_2026-08-29.md",
+        "sha256": "41fa01e712da583e1ae7cf45ac5a96b1943116abb39ad25108eb8647aedc947d",
+        "lines": 99,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_rules_only_three_stage_phase_c_2026-08-29.md",
+        "sha256": "568b77de35b4e2e238c0c0ba9bcd985fd204ac93a8451591eebda90752d7b24f",
+        "lines": 97,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_rules_only_three_stage_phase_d_2026-08-29.md",
+        "sha256": "38c7ca7c39b798cfb7651c8c88004d1d9283088d68ad695219ea529dea3aec1c",
+        "lines": 57,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_rules_only_three_stage_phase_d_protocol_2026-08-29.md",
+        "sha256": "348c9dda6b421b2a75d0af1eb40274e25599920d77b5c0036e2bf2f57e1a9e47",
+        "lines": 143,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_rules_only_three_stage_phase_e2_2026-08-30.md",
+        "sha256": "f53b7b0b51e2ce5db67221a652d8c5a2bd83fb2438731d97ca6e59668f37b460",
+        "lines": 64,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_rules_only_three_stage_phase_e2_protocol_2026-08-30.md",
+        "sha256": "904a48663200aa0765e73f3f0a16247ffdb32982a967dd84317868c35236d209",
+        "lines": 42,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_rules_only_three_stage_phase_e_2026-08-30.md",
+        "sha256": "14afcfe9f5f7e1d2f3bad840fd58e9b978c61a832c08d5f8a0d5579191b49e1e",
+        "lines": 55,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_rules_only_three_stage_phase_e_protocol_2026-08-30.md",
+        "sha256": "36b9c123ed72d73c8367ee1b3b0f7c82225ae18631f2b7c95c45472a98d36831",
+        "lines": 111,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_rules_only_three_stage_protocol_2026-08-29.md",
+        "sha256": "131c5cf9c60a4af136e6534ed1527ddb2e9115cf9cb96a4442f68c7ab854e983",
+        "lines": 129,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_rules_only_three_stage_reconstruction_brief_2026-08-29.md",
+        "sha256": "a3fc11c64b0fd9b596bc10bd02a97e09fc9d4fd359f1cdf714cf5976fa020def",
+        "lines": 257,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_rules_source_near_find_test450_2026-08-31.md",
+        "sha256": "e27999188441c594708a1104bfba55c96e69dcb3f243ce0abfbde29e18c2c6e4",
+        "lines": 32,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_rules_source_near_find_test450_protocol_2026-08-31.md",
+        "sha256": "54b80f293e911dea999c6b503b45bc37a437e3d8b509971c9f90b569bd47f0b2",
+        "lines": 56,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_rules_taxonomy_audit_2026-08-29.md",
+        "sha256": "24ecfd088c3e3428a39c60a51e473b10be2ec7e2fc11b1f5140e7a40dddb9f38",
+        "lines": 70,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_select_from_extract_2026-08-22.md",
+        "sha256": "39e29234c8f7556e019b46f0d8bb57068cfe5a06af7a5bf123e1368b4375ee50",
+        "lines": 47,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_select_from_extract_protocol_2026-08-22.md",
+        "sha256": "a78597bd89666da971ed5bd3f9cdf550947159e7738f0a53f5df83a7a06dee65",
+        "lines": 59,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_select_only_roster_test450_2026-09-03.md",
+        "sha256": "1300e2fee57481580d644c54a9bff5b711c176199dfb5b17194d66184b576ae8",
+        "lines": 68,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_select_only_roster_test450_protocol_2026-09-03.md",
+        "sha256": "412c3cc22604efc7954ee8a756649717b49815b47aa4d342f9cf31cff01e41a5",
+        "lines": 77,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_semantic_family_order_2026-08-20.md",
+        "sha256": "9803bbe0db59c693473f73ad5dfb1a8990bfe022df1869725009919b19e5205c",
+        "lines": 57,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_semantic_family_order_protocol_2026-08-20.md",
+        "sha256": "98cac83333beee913abf16843b766131762d4737472eb9d9a4689fd5e5797ac1",
+        "lines": 83,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_source_near_vs_bundled_encode_2026-08-23.md",
+        "sha256": "662a50544f55630f1b77ca9d4a452d46c09f75beb631bc180bcda27421a77885",
+        "lines": 124,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_story_2026-08-10.md",
+        "sha256": "cdec6db5fa13bc068cf61aed3e98102e605c0f1e6a8b82e7f6ce2d23a93ff7d8",
+        "lines": 156,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gan_test450_classification_report_2026-08-28.md",
+        "sha256": "72a76d5d639668aedb4f89cd4c01234edb838c1d842bc165057785419ac8ce00",
+        "lines": 186,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gemini37flash_llm_only_dev750_test450_2026-08-13.md",
+        "sha256": "bbf829da14d7122c108384a81eb4d66540837ba0536e0788118bfe8fe5a9eb70",
+        "lines": 75,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gemini37flash_llm_only_dev750_test450_protocol_2026-08-13.md",
+        "sha256": "20b6d4ad81e025f854e0707048b7a72ec13c90ea1ab23bde65359b770c66ac1b",
+        "lines": 134,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gemini_cell3_thinking_ablation_protocol_2026-08-22.md",
+        "sha256": "96fce8dec7a8d406e28349ab3abfbc94187b4a514ef20b4165b28c7fe143705d",
+        "lines": 44,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/gold_task_taxonomy_2026-08-06.md",
+        "sha256": "f05781d15d70f4a6cc6793c62eae1c74098042ddc451aea13d8fd36bac7f8bf3",
+        "lines": 176,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/hybrid_stage_ablation_2026-08-06.md",
+        "sha256": "1597fc70f9e5b5762af1b40feb37f3ae1dbcebc87389c61f281fa103f356361f",
+        "lines": 306,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/hybrid_stage_ablation_protocol_2026-08-06.md",
+        "sha256": "bd8379bc66741fc835ef2bc36a9b9e2047e2b08f1f48cd4b4d6bce8b78ae15f9",
+        "lines": 61,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/inexact_span_family_rewrite_2026-08-15.md",
+        "sha256": "56b539154cd3a86beb27f4cf83c4a0f6c751b060f335902b224046fc36533829",
+        "lines": 57,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/local_test450_temperature_1_protocol_2026-08-28.md",
+        "sha256": "1277e631ee62dd0cfbf6e42825ec4438240f628c97fc784c560306c959b70528",
+        "lines": 61,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/luna_prompt_variants_report_2026-07-30.md",
+        "sha256": "727b92bf2f1cdc2fbe7aa5dba79753e61f2ab5dcee5996705372c66a86c62f3d",
+        "lines": 103,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/minor_rules_pruning_test450_confirmation_2026-08-10.md",
+        "sha256": "e09ac2bf821d9734101934d464829853c3ca398e4f107b4b9e21f4c1c001c7db",
+        "lines": 36,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/one_call_cell3_replay_2026-09-10.md",
+        "sha256": "cd6534888f80920d472b2b31e1a2641045d9ec6d4220a0643628fa05e8b22ca7",
+        "lines": 73,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/qwen38_27b_vs_qwen36_35b_dev750_2026-08-16.md",
+        "sha256": "d4252790d658a75bac9f56904e471d550381bd0bca4653aa7407c4ac1096d407",
+        "lines": 387,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/qwen38_test450_thinking_on_protocol_2026-08-29.md",
+        "sha256": "1820030d3fffb8e9b60a2f429d52f89aeb6be4040c11d53f2ab824dc8450e97f",
+        "lines": 50,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/qwen_rescue_overfiring_2026-08-15.md",
+        "sha256": "046af48cc3f651d9e72dff1c1c3654b9ab5b2ea4ee9966fcf4925d5b25a17ec8",
+        "lines": 240,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/rule_decomposition_and_mechanism_audit_2026-08-10.md",
+        "sha256": "e4eacd897aeb36ea71f9fbc105c4f44f34bde83734321d531302dc50c29f1e36",
+        "lines": 74,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/rules_only_campaign_g5_remeasure_2026-08-15.md",
+        "sha256": "8bd28293ab14859e154194c2c0c01aefc3c88059ef1b3e6329d1a6261353a4a2",
+        "lines": 39,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/rules_only_reference_refresh_2026-08-10.md",
+        "sha256": "f405a1d938ad72a0ceb2db21891de09006fe57c2c77190beaedffdbb79053024",
+        "lines": 80,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/rules_only_test450_aggregate_2026-08-10.md",
+        "sha256": "15d3cc6507a9bc12cc931035b25576130978c4832b69675df021c33b2cba7c5e",
+        "lines": 45,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/rules_only_test450_aggregate_protocol_2026-08-10.md",
+        "sha256": "19836ed4d003ffcedb33a60bf8d49f0fdf878ec90629bd310fc5fa706afcb4b4",
+        "lines": 260,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/rules_only_validation750_gate_a_2026-08-10.md",
+        "sha256": "303f018e1ee1a34c1882893c5cf432c66cf79a39f55d771a82054f6b44f3651b",
+        "lines": 122,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/six_model_current_stack_dev750_replay_2026-08-13.md",
+        "sha256": "6ea9bb6a9cb7316d777aa5662d184cd1789e610938e3bb14ea14dfa3f2801548",
+        "lines": 90,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/six_model_current_stack_dev750_replay_protocol_2026-08-13.md",
+        "sha256": "5251e5f9720d3a1dc29ddad6fd61ff05c67c0a2f8c0393603191201927b552af",
+        "lines": 110,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/structured_prompt_final_luna_dev20_2026-08-15.md",
+        "sha256": "c2f947f3c5a6356f924dfa3735ce2f6db58e6532f1f402f08d291f99723ef340",
+        "lines": 60,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/structured_prompt_final_luna_dev750_2026-08-15.md",
+        "sha256": "2831f3d53d22a9783390ea922536390ce125eca4ad9ea216df1cb4b97ac8595e",
+        "lines": 110,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/structured_prompt_final_protocol_2026-08-15.md",
+        "sha256": "28c80ec3a1deecca1cc7a696a10d06be3f74af69be73ac1cfbbeaae00203b129",
+        "lines": 75,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/structured_prompt_lineage_2026-08-15.md",
+        "sha256": "060b97f80fbd92c96faa87a3ec2fa944ae49824492c136bccf29382d702cee8b",
+        "lines": 247,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/unknown_breakthrough_loo_2026-08-06.md",
+        "sha256": "8f20a81acffb99714878736eda651b19cdf5c416c218b976118bb461957b28b7",
+        "lines": 90,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/gan2026/unknown_sentinel_clinical_harm_2026-08-06.md",
+        "sha256": "65792940a2402302e45a572951e61699304a99555cfc70264ccaa93191367abf",
+        "lines": 90,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/maintenance/retention_candidate_table_2026-08-16.md",
+        "sha256": "3f52e1fa2e3aa0115ad5dc7e5cb588cd128d6299bada355ac036e8824ed73ecb",
+        "lines": 142,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/maintenance/retention_keep_and_leftovers_2026-08-16.md",
+        "sha256": "f23b009aea667ec817da4abe02489e86e3b06a3df80c642dba2fbae80263d85f",
+        "lines": 151,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/maintenance/retention_slice_hierarchical_retention_matrix_2026-08-16.md",
+        "sha256": "c491ac97588c8eef2d7cf52f1d42e403e0ba6eba83b78771a87c94c0a3510e07",
+        "lines": 41,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/annotation_approach_comparison_2026-08-16.md",
+        "sha256": "c4eb3fca6507b64641282e23f9bfb92bcc8bcc2bdbb980dfa4ad40cb6b96f9b2",
+        "lines": 531,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/annotation_convention_iaa_literature_review_2026-08-16.md",
+        "sha256": "f7f1ab48efbf162258190dc678e6327e1737eed6d4fa6274b8a2dd79585bad58",
+        "lines": 391,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/annotation_iaa_literature_theme_2026-08-16.md",
+        "sha256": "e8df171f5b37518c65e7aaa87fae102756b53199d4688f16ddd114204e561342",
+        "lines": 250,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/category_cut_representative_examples_protocol_2026-08-08.md",
+        "sha256": "735ed423703dc7906ef3d5ccf47b1a05258841fc0cca576492a34871a7a90691",
+        "lines": 61,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/cross_task_hybrid_mechanism_synthesis_2026-08-06.md",
+        "sha256": "700feb9746569b04d6fb3effa3a1ebc669e00a635bed5af43e250a0e63c784f9",
+        "lines": 248,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/cross_task_hybrid_mechanism_synthesis_protocol_2026-08-06.md",
+        "sha256": "23a3f963faf0aee55d8ecdaad46ccca135d7094338b4b0ad70118ec71c57ac65",
+        "lines": 57,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/cross_task_shared_component_ablation_2026-06-27.md",
+        "sha256": "ffe250a4783a75a19e1ba6d4819155989dc86292b4ff1bc37d09f324b6d4cf59",
+        "lines": 65,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/dataset_gold_support_2026-08-22.md",
+        "sha256": "9fd6685afc7b35526f32121607da378b34ae7d60f727f369e90a6c7452b2d087",
+        "lines": 229,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/deepseek_v4_flash_0731_matched_comparison_protocol_2026-08-03.md",
+        "sha256": "8bb7375747c7017be8c0dc6f55cc22816a57a01d20867cf7cfad252c1c8eac3e",
+        "lines": 72,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/deepseek_v4_flash_0731_matched_comparison_report_2026-08-03.md",
+        "sha256": "0cc37e68e57bb2e24efbb973723ff18bb47a7c546190961f973007a9a61c4427",
+        "lines": 139,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/evidence_exploration_brief_2026-08-09.md",
+        "sha256": "2c8be00f1cff0bbec76f7d23399ee9b93dc512af73d099a28bca8190bb1e0eb8",
+        "lines": 709,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/exect_gan_similar_sf_letter_pair.md",
+        "sha256": "bfcfd7a1ed5ee48e095b3b54ce18964c857acc21b12366bf66faf1d680cb0363",
+        "lines": 118,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/exploratory_research_directions_multiagent_review_2026-07-01.md",
+        "sha256": "9c88a14ed9ca4b58cff79453d94ab15876353a9752d2dc6af756849f86417580",
+        "lines": 373,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/failures_and_limits_2026-08-10.md",
+        "sha256": "2a3370c54269105e59461e7c8e726b7a7bd504295456e063e797bb7668b29772",
+        "lines": 113,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/flagship_3_letter_suite_2026-08-11.md",
+        "sha256": "c5f34bc00b2d83152149bc1af4c4e8ed02f655533cd416f44b7f98a711a15aff",
+        "lines": 312,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/hybrid_rescue_source_provenance_2026-08-13.md",
+        "sha256": "8b079815d06aeedeff8c8a13f3de3fcd4138c212b22944fadc1c715d43d97a64",
+        "lines": 223,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/hybrid_rescue_source_provenance_protocol_2026-08-13.md",
+        "sha256": "49c68575532b479e6bfb3f0f69b4073356cc2fb7f5b867096c23e68746935faa",
+        "lines": 74,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/local_six_model_queue_protocol_2026-07-15.md",
+        "sha256": "22b6877a7bcfc85022a4b3c21e521264ca83f48a5facc26bccb625cf259b4587",
+        "lines": 50,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/manuscript_2026-06-26.md",
+        "sha256": "9e3c47b72c07d51291c31bc319a1b54bc5ca2f37bcc6af2d07769963240de4be",
+        "lines": 341,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/model_compensating_rule_audit_2026-08-11.md",
+        "sha256": "7a7c41262a670044f82aadc9b82cd1db55029555437488a74d2ad7bc0f9c9738",
+        "lines": 292,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/paper_claim_boundary_hybrid_mechanism_c16_0046_2026-08-06.md",
+        "sha256": "4f3d83613c6415b0145bab25b62504b4e73c23fabde3ef3aca94757f36ac63e1",
+        "lines": 101,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/paper_claim_boundary_hybrid_mechanism_c16_0046_protocol_2026-08-06.md",
+        "sha256": "3c17645c877c1801bbb5a86b67605fee4cad42c3f3392aed13350917f8378943",
+        "lines": 56,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/paper_story_simplification_2026-09-02.md",
+        "sha256": "206b5e2cba798962ab165210f809928ab9f896aa24d7765c0cc53b9087e52b3a",
+        "lines": 336,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/qwen38_27b_candidate_protocol_2026-08-14.md",
+        "sha256": "125726a87f5e3d9531d61f9f5f4aeb17c173ef163224a5ab37fdb648b19aaedb",
+        "lines": 84,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/related_work_seed_2026-08-17.md",
+        "sha256": "b4320872afd003a693f1c3d72c1069d507691356ed0021ba194b1712a17a9f12",
+        "lines": 77,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/reliability_scorecard_2026-07-18.md",
+        "sha256": "30040a1161f8d5c7cd6bb5a6579d0682939c8e5799665a0c1350454d95fa02a1",
+        "lines": 179,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/retained_evidence_manifest.md",
+        "sha256": "ca76bc9cd900f6df7ee2cfd15f625be2edd275bca5ba63d46a390357fbb1f0b8",
+        "lines": 123,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/reviewable_case_pair_2026-08-09.md",
+        "sha256": "6bd91c2b1fe0109579c8fec09bb8bce2c5bd8c166d8d9362884ab1e699ebd8b6",
+        "lines": 108,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/six_model_category_cut_performance_2026-08-06.md",
+        "sha256": "e0b38e38b4e8c5d610d60a5c16a178b42ba1129ec330f2042a53aeae21fbcdb7",
+        "lines": 254,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/six_model_category_cut_protocol_2026-08-06.md",
+        "sha256": "7597c18bde7ad07ff1942bdfd3cac2cded0e623182f5b6eefa3b1d50a87c136f",
+        "lines": 153,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/six_model_comparison_report_2026-07-18.md",
+        "sha256": "dfb3202dee2ebefe4ed29e24f04afc22367c446804ad91add6209c9f5979f5b1",
+        "lines": 515,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/six_model_current_stack_remaining_cells_replay_2026-08-13.md",
+        "sha256": "d5e74865d5a965aeaac3cb7dd5e85c7f7c35cc429378f8ee7a75b76bbd0f6186",
+        "lines": 136,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/six_model_current_stack_remaining_cells_replay_protocol_2026-08-13.md",
+        "sha256": "a218f7d757c262835c388aac5b805c19ab379149a2008e70ac79af0f456ee26f",
+        "lines": 200,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/six_model_gemini37flash_holdout_protocol_2026-08-13.md",
+        "sha256": "8ae51c8f26ddcf9647d82c2cb89a1446a49f7d2c5067f810af39270fe6dbaeb6",
+        "lines": 76,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/six_model_gemini37flash_successor_2026-08-13.md",
+        "sha256": "fa7c0d786fbcb385b6031773bb3bb496cd7640a6e328eb3470296050d3cf7837",
+        "lines": 61,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/six_model_gemini37flash_successor_protocol_2026-08-13.md",
+        "sha256": "f8a97e554609a1f554ccba8624b1d8be22070bb43cc45db7e1ac2402b768587a",
+        "lines": 131,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/six_model_hard_slice_error_mode_examples_2026-08-06.md",
+        "sha256": "57a867aa31b60d594eb92202f0cab3223a863e2d0ebd5099e382c511008ae115",
+        "lines": 304,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/six_model_hard_slice_error_mode_examples_protocol_2026-08-06.md",
+        "sha256": "ed86dfd6b102a426ede6df3f54cec76d3320b8f832b158640854865dd82bce18",
+        "lines": 34,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/six_model_hard_slice_error_modes_2026-08-06.md",
+        "sha256": "98db8cbad540e63e6a78bfefb99b77160893618fc23adb794de93008e80b5c2d",
+        "lines": 192,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/six_model_hard_slice_error_modes_protocol_2026-08-06.md",
+        "sha256": "b3f264917bc85bbc07fad531872de55ee8631f6783f553c87e4e12e5958a3022",
+        "lines": 117,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/six_model_holdout_category_aggregates_2026-08-06.md",
+        "sha256": "9e8facef25123d70f0eadf5c3803514587d078c597ac3a04a9697afd6cf1a1db",
+        "lines": 136,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/six_model_holdout_category_aggregates_protocol_2026-08-06.md",
+        "sha256": "c32b6d1c65c8cb9e9e834be6ac653239e6e99ecd57aa1c8f638dafe5d3a3370e",
+        "lines": 85,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/six_model_holdout_category_aggregates_unlock_protocol_2026-08-06.md",
+        "sha256": "9a554803bbceb4f59fdbb6e2208fe37e3830887faae55b7dae46c5ba552d0c22",
+        "lines": 98,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/six_model_open_mechanism_questions_abc_protocol_2026-08-03.md",
+        "sha256": "763890d585a348ad2cc58eadec07ca8823d45a76489076ce862fae5b5c1d498b",
+        "lines": 142,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/six_model_single_letter_walkthrough_2026-08-15.md",
+        "sha256": "130f86e96474b737829fd9e3a13efa1599a4db8c90d2012ec5d0f92060be4549",
+        "lines": 541,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/subgroup_results_2026-08-24.md",
+        "sha256": "d707dd2d8dcd64d51d4ccadddfa5354a053740118bea601d415960f47c111690",
+        "lines": 45,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/task_shape_framework_2026-08-06.md",
+        "sha256": "25e6306fc0b207887022b62f5e20d37663c158e68cce3eb5d318c021f9584ad3",
+        "lines": 108,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/three_variables_rules_model_thinking_2026-08-23.md",
+        "sha256": "3368e4dc93d9b79473e2b4af093f2b63e6f0362004c71e540cdbf9e5c4c9858d",
+        "lines": 243,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/what_prior_extraction_approaches_already_did_2026-08-17.md",
+        "sha256": "f7de6b33123dd9197acec550f85cd8c0c3252094e86f4b20bb615c083edfd2e7",
+        "lines": 143,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/why_evidence_uncertainty_and_human_review_belong_together_2026-08-09.md",
+        "sha256": "5a23061f95bc768cc387b8df268febbf4d2d4e79bee653076deab30534196e49",
+        "lines": 130,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/why_hybrid_architecture_2026-08-09.md",
+        "sha256": "fbed5d4370f986f1a4e64cf58207ccbeb5e216d37914e492369b79fa8fd1d748",
+        "lines": 182,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/why_narrative_letters_are_a_research_problem_2026-08-17.md",
+        "sha256": "09ab33a33938ae99d55e757521d49e707264ed579116890c4f7fd38ef5f80e9d",
+        "lines": 101,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/research/shared/why_the_error_floor_persists_2026-07-31.md",
+        "sha256": "85390290cf69e8720694f0f6a3b971d4b80f495e5a786ae851e0c54c8eae5b18",
+        "lines": 481,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/runbooks/current_stack_six_model_replay.md",
+        "sha256": "b00e182dc80eab0a0e62015fd2caee4fa55555be22bd60941ff907718ed265e8",
+        "lines": 93,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/runbooks/external_validation_readiness.md",
+        "sha256": "5eab8da902833a6f59492883c31c0feaa40288158e3f1f01c48eb2f9245933db",
+        "lines": 147,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/runbooks/gan_workbench_validation_replay_artifacts.md",
+        "sha256": "fe0f754c17bc65f28763a1180abd49c3d62082441f692b3b6adca6b5ca7ee3f1",
+        "lines": 91,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/runbooks/gated_blockers_2026-06-18.md",
+        "sha256": "4a211f616e3d48ed5a9ed3e7649790f688e77534fdab82db77bcdde856db3415",
+        "lines": 57,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      },
+      {
+        "path": "docs/runbooks/restore_sealed_holdout_ledgers_for_category_cuts.md",
+        "sha256": "719573bce0809608c74e0b805720b8fe2783220492386a3e1c16563baa7ebb61",
+        "lines": 139,
+        "disposition": "git-history",
+        "reason": "Outside current paper scope; historical study, superseded guidance or redundant narrative."
+      }
+    ],
+    "retained": [
+      "docs/NAVIGATION.md",
+      "docs/README.md",
+      "docs/architecture/README.md",
+      "docs/architecture/diagrams/attribution_origins.md",
+      "docs/architecture/diagrams/exectv2_llm_pre_post_stages.md",
+      "docs/architecture/diagrams/gan2026_llm_with_rules_stages.md",
+      "docs/architecture/diagrams/overview.md",
+      "docs/architecture/diagrams/ownership_matrix.md",
+      "docs/architecture/method_cards/exectv2_llm_only.md",
+      "docs/architecture/method_cards/exectv2_llm_pre_post.md",
+      "docs/architecture/method_cards/exectv2_rules_only.md",
+      "docs/architecture/method_cards/gan2026_llm_only.md",
+      "docs/architecture/method_cards/gan2026_llm_with_rules.md",
+      "docs/architecture/method_cards/gan2026_rules_only.md",
+      "docs/architecture/teaching_cases/ea0057.md",
+      "docs/architecture/teaching_cases/ea0186.md",
+      "docs/architecture/teaching_cases/exectv2.md",
+      "docs/architecture/teaching_cases/gan-15431.md",
+      "docs/architecture/teaching_cases/gan-2166.md",
+      "docs/architecture/teaching_cases/gan2026.md",
+      "docs/architecture/teaching_cases/six_paths.md",
+      "docs/benchmarks/exectv2/README.md",
+      "docs/benchmarks/gan2026/README.md",
+      "docs/benchmarks/holdout-is-aggregate-only.md",
+      "docs/design/architecture.md",
+      "docs/design/gan2026_normalization_semantics.md",
+      "docs/design/gan2026_split_protocol.md",
+      "docs/history/decisions.md",
+      "docs/longitudinal/README.md",
+      "docs/longitudinal/annotation_guide.md",
+      "docs/longitudinal/evaluation_protocol.md",
+      "docs/longitudinal/generation_protocol.md",
+      "docs/longitudinal/pilot_coverage_matrix.md",
+      "docs/longitudinal/pilot_disagreement_report.md",
+      "docs/longitudinal/task_definition.md",
+      "docs/plans/ACTIVE_ROADMAP.md",
+      "docs/reference/evidence_groundedness_metric.md",
+      "docs/reference/plain_language_glossary.md",
+      "docs/research/gan2026/architecture/simplest_near_ceiling_architecture_results_2026-06-16.md",
+      "docs/research/gan2026/one_shot_paper_protocol.md",
+      "docs/research/maintenance/repository_migration_2026-09-08.md",
+      "docs/research/shared/clinical_selection_policy_catalog_2026-07-31.md",
+      "docs/research/shared/dataset_description_2026-08-26.md",
+      "docs/research/shared/score_definitions_2026-08-17.md",
+      "docs/research/shared/what_the_two_golds_already_decided_2026-08-17.md",
+      "docs/runbooks/documentation_lifecycle.md",
+      "docs/runbooks/local_vllm_dev10_windows_2026-08-10.md",
+      "docs/runbooks/pytest-is-the-research-validity-firewall.md",
+      "docs/runbooks/scorer_edit_predeclaration_gate.md"
+    ],
+    "updated_link_files": [
+      "docs/NAVIGATION.md",
+      "docs/design/architecture.md",
+      "docs/longitudinal/README.md",
+      "docs/longitudinal/task_definition.md",
+      "docs/research/shared/clinical_selection_policy_catalog_2026-07-31.md",
+      "docs/research/shared/dataset_description_2026-08-26.md",
+      "docs/research/shared/score_definitions_2026-08-17.md",
+      "docs/research/shared/what_the_two_golds_already_decided_2026-08-17.md",
+      "publications/dissertation/notes/README.md",
+      "publications/dissertation/notes/architecture.md",
+      "publications/dissertation/notes/claims.md",
+      "publications/dissertation/notes/decisions/gan-is-the-dissertation-paper.md",
+      "publications/dissertation/notes/decisions/paper-story-simplification.md",
+      "publications/dissertation/notes/experiment_environment.md",
+      "publications/dissertation/notes/hardware_details.md",
+      "publications/dissertation/notes/method_x_stage.md",
+      "publications/dissertation/notes/sections/methods.md",
+      "publications/dissertation/notes/sections/results.md"
+    ]
+  }
 }

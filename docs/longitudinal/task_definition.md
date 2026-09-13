@@ -6,7 +6,7 @@ Mode: Explore. Owner: Conor Brown for research decisions.
 This document owns cohort questions, the two patient views, proposed annotation
 needs, seed eligibility and pilot/scaling criteria. It is a concrete starting
 definition for the authored example, not a frozen evaluation protocol or an
-implemented annotation schema. The [literature rationale](../reference/longitudinal_epilepsy_rationale.md)
+implemented annotation schema. The [literature rationale](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/reference/longitudinal_epilepsy_rationale.md)
 owns source comparisons; the [roadmap](../plans/ACTIVE_ROADMAP.md) owns task order.
 
 ## Question and bounded population
@@ -148,7 +148,7 @@ Predeclare these comparisons before Phase 7 model selection:
   directly. Keep model/version and available context comparable; record token,
   call and latency differences rather than asserting equal computation.
 - **Majority-phenotype diagnostic comparator:** following the aggregation idea in
-  [Chang 2026](../reference/longitudinal_epilepsy_rationale.md#chang-reference-resolved),
+  [Chang 2026](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/reference/longitudinal_epilepsy_rationale.md#chang-reference-resolved),
   compare majority epilepsy category across eligible visits, then specificity
   within that category. Apply the same cutoff and preserve ties as unresolved.
   This is an epilepsy-phenotype diagnostic, not a complete Q1–Q5 baseline or a
@@ -222,7 +222,7 @@ Counts/pool meanings follow the existing
 [dataset inventory](../research/shared/dataset_description_2026-08-26.md).
 No locked IDs or contents are reproduced here.
 
-The [source-use audit](../reference/longitudinal_epilepsy_rationale.md#source-use-findings)
+The [source-use audit](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/reference/longitudinal_epilepsy_rationale.md#source-use-findings)
 verifies the ExECT letter release licence; Gan subset release terms remain
 unresolved. Before source-conditioned generation, record release/version, local
 hash match, permitted split membership, attribution and any restrictions for the

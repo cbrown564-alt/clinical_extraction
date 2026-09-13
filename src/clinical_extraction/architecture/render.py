@@ -782,7 +782,7 @@ def render_index(cases: Sequence[TeachingCase] | None = None) -> str:
         "runners, and who owns each change. These runners explain "
         "mechanism only; they are not the paper's five-cell headline "
         "table. For cited methods, scores, and claims see "
-        "[publications/dissertation/notes/methods.md](../paper/methods.md)."
+        "[publications/dissertation/notes/methods.md](../../publications/dissertation/notes/methods.md)."
     )
     lines.append("")
     lines.append(

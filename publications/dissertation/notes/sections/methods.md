@@ -94,7 +94,7 @@ missing. Evidence quality is therefore measured in the paper as
 exact-substring adherence of the selected event's quote, and a
 development-first directional study of semantic sufficiency is
 specified before any further held-out replay
-([protocol](../../../../docs/research/gan2026/gan_directional_evidence_adjudication_dev750_protocol_2026-09-02.md)).
+([protocol](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_directional_evidence_adjudication_dev750_protocol_2026-09-02.md)).
 
 ## C. Architecture and the evidence record
 

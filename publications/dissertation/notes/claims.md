@@ -26,9 +26,9 @@ hybrid switch. Replayable
 numbers live in
 [`paper_experiments/`](../../../results/letter-benchmarks/README.md). Writing
 sources that unpack the same evidence are the
-[Gan Gemini stage reading](../../../docs/research/gan2026/gan_rules_and_llms_across_stages_2026-08-21.md),
-the [Gan story](../../../docs/research/gan2026/gan_story_2026-08-10.md), and the
-[ExECT story](../../../docs/research/exectv2/exect_story_2026-08-12.md).
+[Gan Gemini stage reading](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_rules_and_llms_across_stages_2026-08-21.md),
+the [Gan story](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_story_2026-08-10.md), and the
+[ExECT story](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/exectv2/exect_story_2026-08-12.md).
 
 A stronger sentence than this page is not a paper sentence. The job of
 the page is the supported reading, not a list of things to avoid.
@@ -107,9 +107,9 @@ select is later-stage `exect_llm_select`. The old `gan_llm_extract_raw` grid is 
 ablation, not a headline. The six-model row is LLM / rules / rules
 on both tasks. The worked reading is
 [five cells of rule help](method_x_stage.md),
-the [Gan five-cell grid](../../../docs/research/gan2026/gan_five_cell_grid_2026-08-22.md),
+the [Gan five-cell grid](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_five_cell_grid_2026-08-22.md),
 and
-[ExECT cell 4](../../../docs/research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md).
+[ExECT cell 4](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/exectv2/exect_rule_select_after_llm_encode_2026-08-22.md).
 `gan_llm_only` is a different prompt and is not a results column.
 An unrepaired `*_pre_post` body is not LLM find.
 A recorded rule may change clinical meaning; deterministic does not
@@ -129,8 +129,8 @@ That request is a different prompt (one finished label). Its Grok
 holdout cell is 0.73; it is not find or encode.
 
 Named Gemini `test450` headline (aggregate-only; select stop). Owner:
-[five-cell grid](../../../docs/research/gan2026/gan_five_cell_grid_2026-08-22.md).
-Class report: [gan_test450_classification_report_2026-08-28.md](../../../docs/research/gan2026/gan_test450_classification_report_2026-08-28.md).
+[five-cell grid](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_five_cell_grid_2026-08-22.md).
+Class report: [gan_test450_classification_report_2026-08-28.md](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_test450_classification_report_2026-08-28.md).
 
 | Find | Encode | Select | Purist micro-F1 |
 | --- | --- | --- | ---: |
@@ -247,7 +247,7 @@ Compact/headline cell 2 / cell 3 / cell 4 / cell 5 selects (0.8031
 
 Named Gemini `test60` (aggregate-only; select stop). All five rows
 use 4-family micro F1 (`clinical_inventory_unit_keys`). Owner:
-[both-find on inventory](../../../docs/research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md)
+[both-find on inventory](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md)
 and
 `paper_experiments/exect/five_cell_grid/gemini37flash/test60/comparison.json`.
 
@@ -290,7 +290,7 @@ DeepSeek **0.8099**, Luna **0.7983**, Qwen **0.7644**, and Gemma
 **0.7573**. Find stops for those models are 0.8491 / 0.7874 /
 0.7830 / 0.7650 / 0.7260 / 0.7198. Rules raise every model over its
 find stop and do not erase the gaps. Owner:
-[three variables](../../../docs/research/shared/three_variables_rules_model_thinking_2026-08-23.md).
+[three variables](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/shared/three_variables_rules_model_thinking_2026-08-23.md).
 Compact/headline Luna / DeepSeek / Gemma repair totals from the prior
 assembly remain on disk as secondary surfaces, not the cited roster.
 
@@ -426,7 +426,7 @@ exists.
 On a prespecified 100-letter Gan `dev750` sample, the frozen
 four-family inventory program emitted at least one fact in 97 letters
 (483 facts; median 5 per letter). Owner:
-[feasibility report](../../../docs/research/gan2026/gan_inventory_feasibility_dev750_n100_2026-08-28.md).
+[feasibility report](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/gan2026/gan_inventory_feasibility_dev750_n100_2026-08-28.md).
 
 **Development mechanism / descriptive output.** The sentence may say
 the schema produced those counts and subtypes. It may not say the

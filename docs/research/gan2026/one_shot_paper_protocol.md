@@ -1,230 +1,173 @@
-# Strand A: one-call extraction evaluation protocol
+# One-call extraction evaluation protocol
 
-Draft for decisions, 2026-09-13. Owner: Conor Brown.
-Not frozen; no new calls, spending, data access or locked-test evaluation authorised.
-The [roadmap](../../plans/ACTIVE_ROADMAP.md) owns scope and sequencing;
-the [manuscript outline](../../../publications/jamia-one-shot/README.md) owns presentation.
-This protocol owns the future comparison procedure, including its distinct real-data
-evaluation. Its location under `gan2026/` does not give real records Gan permissions
-or reference semantics.
+Draft for execution decisions, 2026-09-13. Owner: Conor Brown.
+Aligned with the [paper outline](../../../publications/jamia-one-shot/README.md)
+and [roadmap](../../plans/ACTIVE_ROADMAP.md). No model calls, spending or new
+sealed-data use are authorised by this document. Longitudinal work is postponed.
 
-## Question and proposed method
+## Question and scope
 
-Can a locally deployable model provide a correct current seizure-frequency answer
-and supported structured assertions in one inference call, with acceptable coverage
-and execution reliability? The primary task is seizure frequency. ExECT schema
-adaptation is a compact secondary demonstration within epilepsy. Longitudinal
-evaluation belongs primarily to a separate paper; an optional fictional example
-may illustrate downstream use without adding a longitudinal performance claim.
+Can a locally deployable model preserve the established seizure-frequency answer
+while returning a richer, inspectable evidence record in one clinical inference
+call? The primary outcome uses the existing expert-selected current-frequency
+label. The richer record is a model-produced inventory, not private reasoning and
+not a newly gold-annotated clinical-fact benchmark.
 
-Proposed terminology: **one-call** means one clinical inference request per note;
-**zero-shot** means no demonstrations. A one-call prompt may contain demonstrations.
-Use these terms separately in tables instead of relying on an ambiguous “one-shot”.
+The primary real-letter result, controlled synthetic rich/simple contrast,
+contract reliability, actual runtime and one compact configuration example are
+the complete study. Hybrid/rule-heavy comparators, longitudinal evaluation,
+optimizer search, authoring-effort and participant usability studies are out of
+scope. Historical results remain context, not results of this method.
 
-The model returns the task answer and the assertions/evidence supporting it in the
-same response. Freeze which assertion families and temporal qualifiers are required
-before implementation. Preserve original responses, parse failures and any transforms.
-Syntax checking or value-preserving serialization must not select events, change
-clinical values, resolve uncertainty or invent an answer. A second clinical call or
-deterministic clinical selection is a separate method, outside the primary condition.
+## Data and reference
 
-The existing `gan_llm_extract` path is a reconstruction/replay starting point, not
-automatically the final study method. Audit its exact prompt, parser and projection
-for semantic changes before adopting it. The architecture's compatibility path
-preserves historical behaviour; that alone does not prove a repair-free condition.
-
-## Data and reference roles
-
-| Source | Role | Permitted planning basis and unresolved conditions |
+| Source | Reference and intended role | Use conditions |
 | --- | --- | --- |
-| Real-patient seizure-frequency notes | Primary clinical evaluation | Confirm source, access authority, cohort and sample, patient linkage, reference process and all prior development/test exposure. Existing Real(300) is sealed under the retained policy; its existence grants no new use. |
-| Gan synthetic letters | Controlled prompt/model comparisons | Retain `dev750` development and `test450` aggregate-only restrictions. The historical paper uses 1,200 letters, including `row_ok=False`; `train300` is not implicitly available. A new experiment needs an explicit reuse decision. |
-| ExECT synthetic, expert-annotated letters | Small descriptive schema-adaptation check | Keep `dev140`/`test60` permissions and native reference semantics. Select the demonstration from permitted development data; describe selection and avoid a new multi-model benchmark. |
-| Authored/generated longitudinal cases | Outside the core evaluation; optional application illustration | Primarily separate-paper material. Synthetic development references and saved predictions remain separately labelled. Existing query-conditioned captures cannot establish fresh query-independent extraction. |
+| Real Gan 300 | Existing expert-selected current-frequency label; primary clinical-task evaluation, native Purist and Pragmatic companion. | Confirm authority, reference version, prior development/evaluation exposure and eligibility before access. Real(300) remains sealed. Do not substitute the synthetic split permissions. |
+| Synthetic Gan | Existing single-label reference; controlled prompt/model comparison. Historical study union is 1,200 letters, dev750 + test450, including row_ok=False. | Develop on permitted dev750 only. Freeze reuse/evaluation policy before any test450 run; train300 is not implicitly available. Disclose prior use of every evaluated partition. |
+| ExECT | Expert-annotated synthetic four-family inventory; one small descriptive configuration example. | Select from permitted dev140; retain native units and scoring. No new test60 run or model leaderboard is needed. |
 
-Counts and historical row policies are documented in the
-[dataset description](../shared/dataset_description_2026-08-26.md).
-The [holdout policy](../../benchmarks/holdout-is-aggregate-only.md) applies
-throughout. Repeated historical evaluation must be disclosed; an old holdout must
-not be described as newly untouched. No locked rows or errors are needed for planning.
+The [dataset description](../shared/dataset_description_2026-08-26.md) owns the
+historical corpus counts; counts for this study must come from its authorised
+manifest. The [holdout policy](../../benchmarks/holdout-is-aggregate-only.md)
+continues to apply. Never inspect sealed identifiers, notes, quotes, predictions
+or errors during development. A custodian/execution process may produce permitted
+aggregates under a separately approved frozen run procedure.
 
-## Outcomes and capability decision
+Use all eligible real letters, targeting the existing 300 rather than selecting
+easy or successful cases. Record any exclusions with prespecified, prediction-free
+reasons and the resulting denominator. Patient linkage and prior exposure require
+metadata confirmation; if independence cannot be established, disclose it and do
+not claim patient-level generalisation or unsupported precision. The existing
+reference does not support full inventory recall, precision or completeness.
 
-The real-data reference and intended use determine the primary endpoint. Do not
-assume its labels support Gan's categories or complete assertion-level recall.
-Proposed capability decision: require a prespecified lower confidence bound for
-task correctness and minimum coverage, plus upper bounds for unsupported assertions
-and execution failures. Conor and a named domain reviewer must set the numerical
-thresholds and clinically consequential error definitions before model selection.
-Until then, the study may describe measurements but cannot establish “good enough”.
+## Conditions and output
 
-| Measure | Proposed denominator and interpretation |
-| --- | --- |
-| Primary task correctness | All eligible evaluation notes, including execution failures. Freeze scoring of uncertain states and abstention; distinguish a correct reference “unknown” from system refusal. |
-| Answer coverage | Notes with a usable task answer / all eligible notes. Also show correctness conditional on coverage; it cannot replace the all-note result. |
-| Gan task agreement | Native Purist micro-F1 (accuracy for one label per note), with Pragmatic as companion; retain frozen scorer and row policy. These do not score complete histories. |
-| Unsupported assertions | Unsupported / reviewed emitted assertions, plus notes with at least one unsupported assertion / reviewed notes. Review clinical support separately from exact quote location. |
-| Evidence support | Supported / reviewed asserted clinical facts, with missing evidence counted explicitly. Report exact-span validity separately. A quotation match alone is insufficient. |
-| Omission and uncertainty | Recall only where a complete task-scoped reference exists. Otherwise report a bounded reviewed sample and do not invent a recall denominator. Preserve missing, negated, uncertain and conflicting states. |
-| Execution reliability | First-call parse/schema failures, timeouts and empty responses / all scheduled notes. A format-only retry has separate recovered counts, residual failures and total calls. |
-| Runtime | Latency distribution, input/output tokens, measured memory, hardware, engine and concurrency. State whether queueing, loading and retries are included. |
-
-Evidence review needs written task-specific support criteria, a prespecified sample,
-reviewer roles, independent review/adjudication and recorded uncertainty. Select
-samples without filtering to correct answers or successful parses. This protocol
-does not claim that such review or a suitable clinical reference currently exists.
-
-Use patient-level uncertainty estimates when multiple notes belong to one patient;
-respect known synthetic source families. Compare matched predictions with paired
-intervals on the same sampling units. Choose sample size from the desired precision,
-error thresholds and available independent patients before evaluation; no sample
-size or power claim is supplied here. Prespecify primary contrasts and treat other
-slice analyses as descriptive. A domain reviewer should define the error slices
-(for example temporal selection, multiple seizure types and unsupported certainty).
-
-## Bounded comparison design
-
-First prove one complete development condition: fixed input and reference, rendered
-request, untouched response, declared format handling, native scoring and evidence
-review output. Then extend the same mechanism to the planned comparisons.
-
-### Agreed prompt comparisons (2026-09-13)
-
-Conor will compare the structured prompt with Ben Holgate's Llama 2 prompt.
-Conor's supervisor will obtain the full prompt from Holgate. It has not been
-received or inspected for this protocol; do not reconstruct it from a description
-or substitute a repository prompt based only on its name. Record the supplied
-version, provenance, system/user messages, demonstrations, output instructions and
-any original runtime requirements. Confirm quotation/sharing permission before
-including supplied prompt text in publication materials.
-
-| Condition | Task and emitted output | Purpose |
+| Condition | One response contains | Interpretation |
 | --- | --- | --- |
-| Holgate prompt | Exact supplied task instructions and output format, once obtained | External whole-prompt comparator |
-| Own rich prompt | Extract all seizure-frequency facts within the declared scope; represent each fact with evidence, then select one final label with a rationale in the same response | Full structured condition |
-| Own simple prompt | Return one final seizure-frequency label with supporting evidence; omit the emitted fact inventory and selection rationale | Matched simplified condition |
+| Rich, primary | Zero or more scoped seizure-frequency findings with type/value, relevant seizure type, temporality, uncertainty/negation and exact quotations; one native task answer linked to relevant findings where applicable. | Tests the richer extraction contract. Any brief stated selection basis is visible output, not evidence of internal reasoning. |
+| Simple, controlled | One native task answer and supporting quotation; no emitted finding inventory. | Primary paired comparator for the cost and task effect of the richer contract. |
+| Holgate, contingent | Original supplied task and output form, parsed under its documented constraints. | External whole-prompt comparator; not an isolated feature ablation. |
 
-Run the Holgate and own-prompt conditions on the same model and same permitted
-notes to estimate a prompt-package difference. Comparing only Holgate/Llama 2 with
-the new prompt on a newer model would conflate prompt and model progress. If a
-historical Llama 2 condition is included, either cross both prompts with both model
-conditions or label the unmatched comparison as historical context. Do not assume
-the original model was unadapted or its inference setup from the prompt's name.
+Freeze the concrete schema and scope before calls. A valid zero-finding response
+is allowed when appropriate; it is not permission to omit a required answer or
+fabricate evidence for a no-reference state. Define required fields and the legal
+representation of absent evidence for each sentinel in the no-call fixtures.
 
-The rich-versus-simple own-prompt comparison is the primary controlled contrast.
-Keep model/revision, decoding, runtime, input text, target label definitions,
-selection policy, uncertainty conventions, evidence requirement, examples' clinical
-content, scorer and row policy fixed. Change only the extraction-scope instructions
-and their corresponding output fields. Where example outputs must match the schema,
-record the exact paired edits; do not improve the examples in only one condition.
-Inspect a rendered prompt diff before execution.
+Match rich/simple note text, model and revision, decoding, runtime, label and
+selection definitions, uncertainty convention, evidence obligation and examples'
+clinical content. Record exact paired edits to scope instructions and schema-shaped
+example outputs. Use the same development-chosen output cap and timeout, generous
+enough for rich output; report truncation and realised costs. Keep the constrained
+decoding policy fixed while recording each condition's schema. This contrast
+changes scope and output together; any selection-basis field must be recorded as
+part of that intervention. Additional component ablations are not required.
 
-Both conditions make one clinical inference call. “Then select” specifies the
-requested organisation of that response, not a second call or proof of internal
-reasoning order. The model selects the final label; no deterministic clinical
-selector replaces it. Assess the rationale for support and consistency with the
-facts and final label, not as a faithful account of hidden computation.
+Conor's supervisor is obtaining Holgate's full Llama 2 prompt. Record supplied
+version, provenance, message roles, examples, output requirements and original
+runtime/adaptation assumptions. Confirm use and quotation permissions. Do not
+reconstruct or substitute it. Compare supplied and own prompts on the same chosen
+model and notes where feasible; a Holgate/Llama 2 versus newer-model comparison
+alone confounds prompt and model. Any adapted external prompt is separately named.
+Missing comparator evidence fields remain unavailable, never manufactured.
 
-This contrast estimates the combined effect of requesting comprehensive extraction,
-emitting a fact inventory and providing a selection rationale. It cannot attribute
-any improvement solely to schema richness or precise wording. If attribution is
-needed after the representative comparison, consider prespecified intermediate
-conditions: single label/evidence plus rationale, then fact inventory plus final
-label/evidence without rationale. These are proposals, not agreed extra runs.
-Instructions to extract all facts without emitting them cannot verify whether a
-complete internal inventory was produced.
+## One-call and failure accounting
 
-Use the same sufficiently generous output cap and timeout for the controlled
-conditions, with the limit chosen on development inputs; report truncation and
-actual token/latency costs. Do not force equal realised output length, since richer
-output is part of the intervention. Keep any schema-constrained decoding policy
-fixed and record the condition-specific schema. For the external comparison,
-preserve Holgate's supplied output form and document format-specific parsing; an
-adapted Holgate prompt must be a separately named condition.
+One-call means one clinical inference request per note, not zero demonstrations.
+The model supplies both findings and final answer. Deterministic handling may
+parse, check types, validate quotation locations and serialise values without
+changing their meaning. It must not choose a different event, resolve ambiguity,
+normalise a clinical value semantically or invent an answer. Audit the actual
+prompt/parser/adapter path before adopting an existing runner.
 
-Score the same final target in all conditions through declared value-preserving
-adapters. Missing evidence or unavailable output fields in the supplied comparator
-are reported as such, not invented by a repair step. Compare selected-answer evidence
-on the common output where available; assess full-inventory support/completeness
-separately for rich outputs. Keep failures in denominators and report richer-output
-costs even when accuracy improves.
+The primary condition uses first-attempt output with no repair call. Preserve raw
+responses and failure categories: no response/timeout, truncation, invalid syntax,
+invalid schema, invalid target label and absent required evidence. Apply a fixed
+precedence for mutually exclusive unusable-response counts; diagnostic flags may
+overlap. Schema-invalid or otherwise unusable responses count as incorrect in the
+all-note task denominator, even if a plausible label can be salvaged from text.
+A correct native unknown/no-reference label is not a system refusal; preserve those
+states in scoring and coverage. Exact quotation checks are separately reported; they do not adjudicate entailment.
 
-### Subsequent comparisons and execution order
+Any deterministic format-only recovery is a separately reported secondary view,
+with original validity, recovered count and remaining failures. An extra model
+repair request is outside the primary one-call condition and must show total calls
+and cost. Operational retries cannot replace failed first attempts invisibly.
+Clinical repair or deterministic clinical selection constitutes another method,
+not a format fix in this study.
 
-1. Prove the rich and simple conditions with no-call rendering and permitted
-   development examples before expanding the experiment matrix.
-2. Additional component ablations (field descriptions, evidence obligation, scope
-   wording or demonstrations) remain optional. Each needs a named question and
-   controlled rendered edits; they are not prerequisites to the agreed contrast.
-3. Freeze the main prompt before the local-model panel. Pin model revision, size,
-   quantisation, context, inference engine, hardware and decoding. Select feasible
-   older and newer models only after checking their runtime and source conditions.
-   No particular roster or performance ranking is established here.
-4. Change runtime settings in separately named conditions. Do not attribute a
-   difference simultaneously caused by model, quantisation, hardware and prompt
-   to model age or capability alone. Published unmatched results are context.
-5. Freeze the chosen condition and reference protocol before authorised real-data
-   evaluation. Synthetic development guides selection; real-test failures do not.
+## Outcomes and analysis
 
-Keep historical hybrid and two-call results as dissertation context, rather than
-the main method or a main comparator. Do not relabel historical provisional-answer
-scores as results of a newly frozen prompt. The ExECT extension uses one declared
-condition with native family-level reference checks and explicit mapping losses;
-it does not inherit Gan's scorer or capability threshold.
-
-## Reproducibility and execution readiness
-
-### Optional exploration: configuration and authoring effort
-
-Conor proposes that task descriptions and schemas could offer some of the practical
-control of rules with less programming effort. Explore this before adding a broad
-usability claim to the paper. Keep it separate from the primary accuracy comparison;
-a small rules-authoring comparison would investigate configurability, not restore a
-rule-heavy main extraction method.
-
-Start with one permitted development task and two prespecified changes, such as
-retaining frequency per seizure type and distinguishing current from historical
-statements. Give each approach the same written target and acceptance examples.
-Map the target to concept definitions, scope/time rules, uncertainty conventions,
-evidence obligations, schema fields and examples. Record the exact edits and why
-each belongs in that component. Freeze evaluation cases independently of examples
-used during authoring; use no existing locked-test material.
-
-Measure intended behaviour on the changed cases and regressions on unaffected
-cases, along with authoring time, iterations, code changes and technical assistance.
-If a rule implementation is compared, match starting functionality and author
-experience and report setup costs. A developer's own exercise establishes software
-feasibility only. Claims about lower expertise or domain-expert participation need
-representative participants, recorded roles and a comparable task procedure.
-
-Natural-language editability does not establish predictable control: a local prompt
-edit may alter unrelated behaviour. Preserve those failures as evidence. A useful
-deliverable from the exploration is one worked specification → component mapping →
-verified change, with the limitations visible. Expansion and participant recruitment
-remain future decisions.
-
-### Required run record
-
-Each future result records dataset/version, split, patient/note selection and row
-policy, reference/scorer version, model/runtime, prompt components and rendered
-request hashes, source hashes, replay mode, repair policy, raw attempts, failures,
-exclusions, denominators and resource accounting. Keep extraction, format handling,
-semantic adaptation and scoring independently inspectable. Record whether a value
-was model-produced or changed by an adapter.
-
-Before requesting an experiment run, resolve these decisions in this document:
-
-| Decision | Responsible person | Current state |
+| Outcome | Denominator and report | Outline exhibit |
 | --- | --- | --- |
-| Real-data source, permitted use and prior exposure | Conor with data custodian | Unconfirmed; no inspection or new use authorised |
-| Task target, reference and clinical error costs | Conor with domain reviewer | Frequency task agreed; precise reference and review procedure open |
-| Primary endpoint, numerical thresholds and precision/sample size | Conor with domain reviewer and analysis contributor | Proposed structure above; values unset |
-| Prompt, permissible serialization and native scoring | Implementation contributor, reviewed by Conor | Audit and no-call development proof required |
-| Full Holgate comparator prompt and original setup | Conor's supervisor obtains from Ben Holgate | Pending receipt; exact contents and runtime assumptions unknown |
-| Local model panel, hardware feasibility and execution budget | Conor with implementation contributor | Unselected; no spending authorised |
-| Locked evaluation/reuse procedure | Conor with evaluation owner | Retained protections apply; new protocol not frozen |
+| Primary real-letter task agreement | Native Purist correct / all eligible scheduled real notes, unusable output incorrect. Pragmatic companion; no pooled cross-corpus score. | Table 2 |
+| Usable-answer coverage | Usable responses / all eligible scheduled notes. Conditional agreement is secondary and never replaces all-note agreement. | Table 2 |
+| Controlled task difference | Rich minus simple all-note Purist on the same authorised synthetic notes; Pragmatic companion, paired wins/losses/ties and uncertainty. | Table 3 |
+| First-pass contract validity | Schema-valid responses / all scheduled notes; distinguish responses received from absent responses. | Table 4 |
+| Exact-source quotations | Exact matches / all schema-required quotation slots in received outputs, counting missing required quotes as failures; also notes with every required quote exact / all scheduled notes. Report no-evidence states separately, never as vacuous successes. | Table 4 |
+| Rich record description | Finding counts and declared types/qualifiers among schema-valid outputs, with usable counts and exclusions. | Table 4 |
+| Execution | Failure categories, truncation, any secondary recovery, call counts, latency and tokens; actual model revision, quantisation, engine, hardware and concurrency. | Table 4 |
 
-The immediate planning decision is which real-data reference can support the primary
-claim and what prior use constrains it. Resolve it from existing documentation and
-custodian confirmation, without opening sealed notes. Engineering reconstruction
-remains the prerequisite to new experiment execution under the roadmap.
+A matching quote proves location only. No full assertion annotation or independent
+clinical inventory review is required for this paper, and no unsupported-assertion
+rate, clinical finding precision/recall or inventory completeness claim follows
+from these measures. Show only fictional or permitted development examples.
+Classified failures on sealed data are mechanical aggregate categories, not a
+request for clinical row review. A future entailment study needs a separate design.
+
+The primary real endpoint and primary controlled contrast above are fixed. Report
+absolute scores and paired differences with 95% intervals under a prespecified
+analysis implementation. Use patient clusters where known; otherwise use the
+established sampling unit with the independence limitation explicit. Respect known
+synthetic source families. Freeze the interval method, random seed if resampling,
+and handling of small strata before evaluation. Do not choose an analysis after
+seeing which makes a difference persuasive. Other slices are descriptive.
+
+The real cohort target is 300 eligible existing letters, subject to authority and
+eligibility; it is not a newly powered sample-size claim. Report attainable
+precision rather than inventing a larger recruitment target. Absence of a
+statistically clear rich/simple difference does not establish equivalence or
+non-inferiority. Such a claim requires a justified margin and analysis agreed
+before runs. Numerical adequacy thresholds remain unset: without prespecified
+thresholds report measured performance, not that the system is clinically good
+enough. This preserves the roadmap's capability question without requiring a new
+clinical validation study for the planned descriptive paper.
+
+## Model panel and execution order
+
+1. Complete no-call rich/simple rendering, schema and native-adapter fixtures,
+   including numeric, uncertain/no-reference, multiple-statement and unusable cases.
+   Inspect exact prompts; do not reopen sealed notes.
+2. Confirm feasible local runtime candidates and budget, then prespecify a compact
+   panel with the same contract. An older model may provide capability context if
+   it is feasible and matched; no historical model list is mandatory. Pin revision,
+   quantisation, engine, context and decoding. Do not infer hospital deployment.
+3. Use permitted synthetic development to settle prompts and output limits. Record
+   selection and all attempts; development comparisons are not held-out results.
+4. Freeze conditions, scorer/adapter, row policy, panel and analysis before the
+   authorised synthetic evaluation. Report runtime changes as distinct conditions.
+5. Freeze the selected real-evaluation condition before any authorised real run.
+   Do not revise it from sealed errors. Report prior exposure and permitted
+   aggregate outcomes, whether favourable or not.
+6. Complete one compact ExECT specification-to-component change on development
+   examples with the same model/decoding. Show edited fields, scope, evidence rules
+   and examples, native descriptive checks and visible regressions. It demonstrates
+   configurability, not clinician usability, reduced expertise or generalisation.
+
+## Readiness and reproducibility
+
+| Decision still required | Owner | Evidence needed before dependent execution |
+| --- | --- | --- |
+| Real-set authority, prior use, reference version, linkage and eligibility | Conor with custodian | Recorded metadata/access decision; no sealed-row inspection to resolve it. |
+| Concrete rich/simple schemas, answer adapter and no-call fixtures | Implementation contributor, reviewed by Conor | Rendered diff, semantic audit and failure accounting matching this protocol. |
+| Model/runtime panel and budget | Conor with implementation contributor | Feasible pinned configurations and authorised cost envelope. |
+| Synthetic evaluation/reuse and real aggregate-only procedure | Conor with evaluation owner | Frozen manifests, permitted outputs and prior-exposure disclosure. |
+| Interval implementation; any adequacy threshold or non-inferiority claim | Conor with analysis contributor | Prespecified method; justified numerical boundaries only if that claim is pursued. |
+| Holgate prompt and permitted use | Conor's supervisor | Original supplied material and conditions; blocks this comparator only. |
+
+Every run records dataset/version, split, source hashes, selection and row policy,
+reference and scorer versions, model/runtime, rendered request and component hashes,
+raw attempts, first-pass failures, repair policy, replay mode, exclusions,
+denominators and costs. Keep extraction, format handling and scoring separable.
+The outline's Figure 1 shows that path; Table 1 shows data/reference roles; Figure 2
+shows the configuration change. Fill tables only from reviewed run artifacts.

@@ -28,7 +28,7 @@ Gan scores one rendered seizure-frequency label per letter.
 
 The band definitions and the `unknown` / no-seizure sentinels belong to the
 Gan dataset paper and to
-[Gan clinical policy](../../history/canon/06_gan_clinical_policy.md). This glossary
+[Gan clinical policy](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/history/canon/06_gan_clinical_policy.md). This glossary
 does not redefine them. What counts as one correct answer on each gold is
 [what the two golds already decided](what_the_two_golds_already_decided_2026-08-17.md).
 
@@ -72,10 +72,10 @@ selected fills, holdout limits, or claim strength.
 
 ## Evidence owners
 
-- [ExECT scoring](../../history/canon/04_scoring.md)
-- [Gan clinical policy](../../history/canon/06_gan_clinical_policy.md)
-- [Paper claim status](../../history/canon/10_paper_provenance.md)
-- [Decision 0046](../../history/decisions/0046-exect-primary-method-comparison-boundary.md)
+- [ExECT scoring](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/history/canon/04_scoring.md)
+- [Gan clinical policy](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/history/canon/06_gan_clinical_policy.md)
+- [Paper claim status](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/history/canon/10_paper_provenance.md)
+- [Decision 0046](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/history/decisions/0046-exect-primary-method-comparison-boundary.md)
 
 ## Writing test
 

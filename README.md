@@ -38,12 +38,13 @@ On 300 clinician-checked letters, the two-stage systems scored **0.77** and **0.
 
 ## What's next
 
-The [research programme](docs/plans/ACTIVE_ROADMAP.md) separates a future one-shot,
-evidence-grounded extraction paper focused on locally deployable models, epilepsy
-cohort and longitudinal applications, and a staged test beyond epilepsy. A local
-synthetic longitudinal prototype is implemented and has development checks;
-clinical validation remains future work. The dissertation scores above are
-letter-level only.
+The [paper roadmap](docs/plans/ACTIVE_ROADMAP.md) now focuses exclusively on
+one-call evidence-grounded seizure-frequency extraction. The
+[paper outline](publications/jamia-one-shot/README.md) and
+[evaluation protocol](docs/research/gan2026/one_shot_paper_protocol.md) define the
+planned study. Longitudinal prototype work and other applications are postponed;
+their code and saved results remain available. Historical dissertation scores do
+not evaluate the new method.
 
 ## How to cite
 

@@ -16,7 +16,7 @@ latency comparison between hosted and local routes.
 
 Observed on this machine on 2026-08-27. The same GPU and VRAM were
 already recorded for local six-model work on 2026-07-15
-([ExECT six-model protocol](../../../docs/research/exectv2/reliability/exectv2_six_model_comparison_protocol_2026-07-15.md)).
+([ExECT six-model protocol](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/exectv2/reliability/exectv2_six_model_comparison_protocol_2026-07-15.md)).
 
 | Field | Value |
 | --- | --- |
@@ -58,7 +58,7 @@ Historical local tag still on disk: Qwen 3.6:35B
 | Server | Ollama at `http://localhost:11434` | Paper local extracts use `ollama_chat/...` |
 | Ollama on this machine (2026-08-27) | 0.32.15 | Live `ollama --version` |
 | Earlier frozen local panel (2026-07-15) | Ollama 0.30.10 | Qwen 3.6:35B and Gemma 4 26B identities below |
-| Qwen 3.8 27B pull | Newer than 0.32.4 required | [Qwen 3.8 protocol](../../../docs/research/shared/qwen38_27b_candidate_protocol_2026-08-14.md) |
+| Qwen 3.8 27B pull | Newer than 0.32.4 required | [Qwen 3.8 protocol](https://github.com/cbrown564-alt/clinical_extraction/blob/2d069e69b8fb526af49cb67a81e7484b38a9eff6/docs/research/shared/qwen38_27b_candidate_protocol_2026-08-14.md) |
 
 Installed tags observed 2026-08-27 (paper-relevant only):
 
