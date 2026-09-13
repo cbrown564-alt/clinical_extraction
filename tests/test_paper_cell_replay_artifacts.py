@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from clinical_extraction.paper.cells import (
+from clinical_extraction.evaluation.letter_benchmarks.cells import (
     normalize_cell_id,
     normalize_repair_mode,
     normalize_rungs_payload,

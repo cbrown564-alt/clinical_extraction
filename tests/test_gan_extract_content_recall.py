@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from clinical_extraction.paper.gan_extract_content_recall import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_extract_content_recall import (
     CITED_CELL3_TEST450,
     CITED_CELL5_TEST450,
     answer_hit,
@@ -12,12 +13,11 @@ from clinical_extraction.paper.gan_extract_content_recall import (
     measure_extract_content_recall,
     surfaces_overlap,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    label_to_frequency_record,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
     StructuredExtractionRecord,
+)
+from clinical_extraction.tasks.shared.epilepsy.normalization import (
+    label_to_frequency_record,
 )
 
 

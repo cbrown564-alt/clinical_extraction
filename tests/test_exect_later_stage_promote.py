@@ -7,12 +7,16 @@ from pathlib import Path
 
 import pytest
 
-from clinical_extraction.paper.cli import main
-from clinical_extraction.paper.exect_later_stage import rescore_later_stage
-from clinical_extraction.paper.exect_panel import promote_exect_later_stage
+from clinical_extraction.operational.evaluation_cli import main
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_later_stage import (
+    rescore_later_stage,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_panel import (
+    promote_exect_later_stage,
 )
 
 
@@ -83,31 +87,31 @@ def _write_work_cell(
 def _patch_roots(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     paper = tmp_path / "results/letter-benchmarks"
     exect = paper / "exect"
-    monkeypatch.setattr("clinical_extraction.paper.exect_later_stage.ROOT", tmp_path)
+    monkeypatch.setattr("clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_later_stage.ROOT", tmp_path)
     monkeypatch.setattr(
-        "clinical_extraction.paper.exect_later_stage.WORK_ROOT",
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_later_stage.WORK_ROOT",
         tmp_path / "experiments/paper",
     )
     monkeypatch.setattr(
-        "clinical_extraction.paper.exect_later_stage.HOLDOUT_SCRATCH",
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_later_stage.HOLDOUT_SCRATCH",
         tmp_path / "scratch/holdout/paper",
     )
     monkeypatch.setattr(
-        "clinical_extraction.paper.exect_later_stage.letters_for_split",
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_later_stage.letters_for_split",
         lambda split: [_letter()],
     )
     monkeypatch.setattr(
-        "clinical_extraction.paper.exect_later_stage.exect_row_count",
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_later_stage.exect_row_count",
         lambda split: 1,
     )
     monkeypatch.setattr(
-        "clinical_extraction.paper.exect_panel.exect_row_count",
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_panel.exect_row_count",
         lambda split: 1,
     )
-    monkeypatch.setattr("clinical_extraction.paper.exect_panel.ROOT", tmp_path)
-    monkeypatch.setattr("clinical_extraction.paper.exect_panel.PAPER_EXECT", exect)
+    monkeypatch.setattr("clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_panel.ROOT", tmp_path)
+    monkeypatch.setattr("clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_panel.PAPER_EXECT", exect)
     monkeypatch.setattr(
-        "clinical_extraction.paper.exect_panel.INVENTORY_PATH",
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_panel.INVENTORY_PATH",
         paper / "inventory.json",
     )
     paper.mkdir(parents=True)
@@ -219,7 +223,7 @@ def test_promote_exect_cli_accepts_later_stage(
         return {"ok": True}
 
     monkeypatch.setattr(
-        "clinical_extraction.paper.cli.promote_exect_later_stage",
+        "clinical_extraction.operational.evaluation_cli.promote_exect_later_stage",
         fake_promote,
     )
     main(

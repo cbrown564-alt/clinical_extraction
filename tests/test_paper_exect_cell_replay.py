@@ -7,8 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from clinical_extraction.paper.cli import main
-from clinical_extraction.paper.exect_cell_replay import (
+from clinical_extraction.evaluation.letter_benchmarks.methods import exect_row_count
+from clinical_extraction.operational.evaluation_cli import main
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_cell_replay import (
     exect_living_extract_rows_path,
     exect_llm_only_rows_path,
     exect_rung_out_dir,
@@ -18,7 +19,6 @@ from clinical_extraction.paper.exect_cell_replay import (
     schema_mention_rows,
     write_exect_rung_artifacts,
 )
-from clinical_extraction.paper.methods import exect_row_count
 
 
 def _scored_row() -> dict[str, object]:
@@ -134,7 +134,7 @@ def test_format_render_uses_pre_assembly_mentions_not_materialized_format_only(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        "clinical_extraction.paper.exect_cell_replay.exect_rung_out_dir",
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_cell_replay.exect_rung_out_dir",
         lambda slug, split: tmp_path / slug / split,
     )
     summary = replay_exect_rungs("dev140", slug="gemini37flash", source="living")
@@ -157,10 +157,12 @@ def test_format_render_uses_pre_assembly_mentions_not_materialized_format_only(
 
 @pytest.mark.local_corpus
 def test_format_render_is_not_schema_or_gated_predicted_mentions() -> None:
-    from clinical_extraction.paper.exect import letters_for_split
-    from clinical_extraction.paper.roster import model_by_slug
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-        llm_only_key_entities_structured as structured,
+    from clinical_extraction.evaluation.letter_benchmarks.roster import model_by_slug
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect import (
+        letters_for_split,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines import (
+        key_entities_structured as structured,
     )
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
         structured_one_call,
@@ -212,7 +214,7 @@ def test_cli_replay_rungs_accepts_test60(monkeypatch: pytest.MonkeyPatch) -> Non
         captured["source"] = source
         return {"split": split, "model_slug": slug, "row_policy": "aggregate_only"}
 
-    monkeypatch.setattr("clinical_extraction.paper.cli.replay_exect_rungs", fake_replay)
+    monkeypatch.setattr("clinical_extraction.operational.evaluation_cli.replay_exect_rungs", fake_replay)
     main(
         [
             "replay-rungs",
@@ -228,8 +230,10 @@ def test_cli_replay_rungs_accepts_test60(monkeypatch: pytest.MonkeyPatch) -> Non
 
 
 def test_frontend_hydrate_uses_select_surface(monkeypatch: pytest.MonkeyPatch) -> None:
-    from clinical_extraction.paper import exect_cell_replay as replay
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation import (
+        exect_cell_replay as replay,
+    )
 
     seen: dict[str, object] = {}
 

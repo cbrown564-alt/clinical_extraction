@@ -3,16 +3,16 @@ import json
 import pytest
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    llm_only_key_entities_structured as exectv2_structured,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    label_to_frequency_record,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines import (
+    key_entities_structured as exectv2_structured,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     hybrid_structured_events,
     llm,
+)
+from clinical_extraction.tasks.shared.epilepsy.normalization import (
+    label_to_frequency_record,
 )
 
 INTERNAL_MODEL_FACING_PHRASES = (

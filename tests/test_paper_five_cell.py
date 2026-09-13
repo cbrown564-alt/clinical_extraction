@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from clinical_extraction.paper.five_cell import (
+from clinical_extraction.evaluation.letter_benchmarks.five_cell import (
     _exect_rules_stage,
     _gan_rules_stage,
     write_five_cell_grid,

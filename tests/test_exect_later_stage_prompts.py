@@ -4,13 +4,13 @@ from __future__ import annotations
 
 import json
 
-from clinical_extraction.paper.exect_later_stage import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_later_stage import (
     join_encode_mentions,
     join_select_mentions,
     later_stage_work_root,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    llm_only_key_entities_structured as structured,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines import (
+    key_entities_structured as structured,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.prompt_llm_encode import (
     EXECT_LLM_ENCODE,

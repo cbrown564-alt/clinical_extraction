@@ -6,7 +6,7 @@ from typing import Protocol
 
 from pydantic import BaseModel, ConfigDict
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+from clinical_extraction.tasks.shared.epilepsy.normalization import (
     FrequencyLabelKind,
 )
 

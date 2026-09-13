@@ -5,10 +5,6 @@ from pydantic import BaseModel, ConfigDict, Field
 from clinical_extraction.core.evidence import locate_evidence
 from clinical_extraction.core.pipeline import PipelineResult
 from clinical_extraction.core.schemas import FinalExtraction
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    FrequencyLabelKind,
-    label_to_frequency_record,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic import temporal
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidates import (
@@ -22,6 +18,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_meta
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label,
+)
+from clinical_extraction.tasks.shared.epilepsy.normalization import (
+    FrequencyLabelKind,
+    label_to_frequency_record,
 )
 
 from .deterministic.deterministic_extraction import (

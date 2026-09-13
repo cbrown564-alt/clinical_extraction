@@ -18,10 +18,7 @@ dependencies = [
 ]
 
 [project.scripts]
-gan2026-llm-experiment = "clinical_extraction.tasks.seizure_frequency.gan2026.cli.llm_pipeline_cli:main"
 clinical-extract = "clinical_extraction.operational.cli:main"
-trace-explorer-index = "clinical_extraction.trace_explorer.index:main"
-trace-explorer = "clinical_extraction.trace_explorer.api.app:main"
 
 [project.optional-dependencies]
 dev = [

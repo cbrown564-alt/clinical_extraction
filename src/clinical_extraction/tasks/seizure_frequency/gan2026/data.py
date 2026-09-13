@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from clinical_extraction.core.evidence import clean_semantically_neutral_text_artifacts
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+from clinical_extraction.tasks.shared.epilepsy.normalization import (
     FrequencyLabelKind,
     label_to_frequency_record,
 )

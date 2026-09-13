@@ -6,8 +6,9 @@ import json
 
 import pytest
 
-from clinical_extraction.paper.gan import verify_gan
-from clinical_extraction.paper.gan_later_stage import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan import verify_gan
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_later_stage import (
     EXTRACT_METHOD,
     LLM_ENCODE_IS_EXTRACT,
     LLM_SELECT_METHOD,
@@ -19,16 +20,15 @@ from clinical_extraction.paper.gan_later_stage import (
     parse_encode_labels,
     score_later_stage_row,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    FrequencyLabelKind,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.select_from_extract import (
     extract_events_as_select_ledger,
     parse_extract_ledger,
     parse_select_answer,
     project_encode_label,
     project_select_label,
+)
+from clinical_extraction.tasks.shared.epilepsy.normalization import (
+    FrequencyLabelKind,
 )
 
 

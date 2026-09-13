@@ -17,7 +17,7 @@ import argparse
 import json
 from pathlib import Path
 
-from clinical_extraction.paper.gan_select_only_roster import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_select_only_roster import (
     DEFAULT_ARTIFACT,
     measure_and_write,
 )

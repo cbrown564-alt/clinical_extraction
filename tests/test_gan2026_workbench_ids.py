@@ -1,4 +1,4 @@
-from clinical_extraction.trace_explorer.gan2026_comparison import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.review_records import (
     paper_identity_from_run_id,
     paper_run_id,
 )

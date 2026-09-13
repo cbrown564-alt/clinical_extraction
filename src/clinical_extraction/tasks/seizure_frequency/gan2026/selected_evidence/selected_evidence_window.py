@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+from clinical_extraction.tasks.shared.epilepsy.normalization import (
     normalize_frequency_label,
 )
 from clinical_extraction.tasks.shared.epilepsy.terms import FULL_MONTHS

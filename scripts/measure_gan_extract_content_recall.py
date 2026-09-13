@@ -18,7 +18,7 @@ import argparse
 import json
 from pathlib import Path
 
-from clinical_extraction.paper.gan_extract_content_recall import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_extract_content_recall import (
     DEFAULT_ARTIFACT,
     measure_and_write,
 )

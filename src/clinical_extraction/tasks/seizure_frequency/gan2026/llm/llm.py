@@ -29,10 +29,6 @@ import dspy
 from dspy.adapters.chat_adapter import ChatAdapter
 from pydantic import BaseModel, ConfigDict, ValidationError
 
-from clinical_extraction.core.evidence import evidence_is_substring
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    label_to_frequency_record,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair import (
     parse_json_payload_with_schema_repair,
     repair_decision_payload,
@@ -60,7 +56,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.parse_diagnostics i
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_only import (
     build_llm_only_prompt_input,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_with_evidence,
 )
@@ -70,6 +65,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.replay_io impo
 from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
     llm_model_metadata_lines,
     write_markdown_report,
+)
+from clinical_extraction.tasks.shared.epilepsy.normalization import (
+    label_to_frequency_record,
 )
 
 GAN_LLM_ONLY = "gan_llm_only"
@@ -332,121 +330,6 @@ def run_split(
     )
 
 
-def _legacy_run_split(
-    records: Sequence[GanFrequencyRecord],
-    *,
-    split: str,
-    split_manifest: str,
-    model: str,
-    temperature: float,
-    max_tokens: int,
-    mode: Literal["live", "prompt-only"],
-    dspy_cache: bool = True,
-    api_base: str | None = None,
-    reuse_raw_outputs: Mapping[int, str] | None = None,
-    reuse_source: str | None = None,
-    escalation_reason: str | None = None,
-    progress_every: int | None = None,
-    checkpoint_jsonl_path: Path | None = None,
-    checkpoint_report_path: Path | None = None,
-) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    reuse_raw_outputs = reuse_raw_outputs or {}
-    metadata = _run_metadata(
-        records,
-        split=split,
-        split_manifest=split_manifest,
-        model=model,
-        temperature=temperature,
-        max_tokens=max_tokens,
-        mode=mode,
-        api_base=api_base,
-    )
-    metadata["dspy_cache"] = dspy_cache
-    metadata["reuse_source"] = reuse_source
-    metadata["escalation_reason"] = escalation_reason
-    program = DspyCanonicalLlmExtractor()
-    if mode == "live":
-        dspy.configure(
-            lm=build_dspy_lm(
-                model,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                cache=dspy_cache,
-                api_base=api_base,
-            )
-        )
-
-    rows: list[dict[str, Any]] = []
-    for record in records:
-        prompt_input_json = build_prompt_input(record)
-        raw_output = reuse_raw_outputs.get(record.source_row_index, "")
-        call_error: str | None = None
-        reused_raw_output = raw_output != ""
-        if mode == "live" and not reused_raw_output:
-            try:
-                prediction = program(prompt_input_json=prompt_input_json)
-                raw_output = str(prediction.decision_json)
-            except Exception as exc:  # pragma: no cover - exercised only with live APIs.
-                call_error = f"{type(exc).__name__}: {exc}"
-
-        decision, parse_errors, row_trace = (
-            parse_decision_json_with_trace(raw_output)
-            if raw_output
-            else (
-                None,
-                ["not_run"],
-                _llm_only_row_trace(
-                    model_decision=None,
-                    schema_payload_changed=False,
-                    format_events=["not_run"],
-                    adapter_events=[],
-                ),
-            )
-        )
-        evidence_text_contained = (
-            evidence_is_substring(record.note_text, decision.evidence)
-            if decision and decision.evidence
-            else False
-        )
-        comparison = _compare_to_gold(record, decision) if decision else None
-        row_trace["evidence_validation"] = {
-            "evidence": decision.evidence if decision else "",
-            "exact_substring": evidence_text_contained,
-        }
-        row_trace["scoring"] = comparison
-        rows.append(
-            {
-                "source_row_index": record.source_row_index,
-                "split": split,
-                "split_manifest": split_manifest,
-                "prompt_version": PROMPT_VERSION,
-                "prompt_input_json": prompt_input_json,
-                "raw_output": raw_output,
-                "reused_raw_output": reused_raw_output,
-                "call_error": call_error,
-                "parse_errors": parse_errors,
-                "decision_record": decision.model_dump() if decision else None,
-                "evidence_text_contained": evidence_text_contained,
-                "row_trace": row_trace,
-                "reference": {
-                    "gold_label": record.gold_label,
-                    "gold_monthly_frequency": record.gold_monthly_frequency,
-                    "row_ok": record.row_ok,
-                },
-                "comparison": comparison,
-            }
-        )
-        if progress_every and len(rows) % progress_every == 0:
-            _emit_progress_checkpoint(
-                rows,
-                metadata,
-                total=len(records),
-                jsonl_path=checkpoint_jsonl_path,
-                report_path=checkpoint_report_path,
-            )
-
-    metadata["summary"] = summarize_records(rows)
-    return rows, metadata
 
 
 def _emit_progress_checkpoint(

@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import json
 
-from clinical_extraction.paper.gan_result_figures import render_living_figures
+from scripts.publications.gan_result_figures import render_living_figures
 
 
 def main() -> None:

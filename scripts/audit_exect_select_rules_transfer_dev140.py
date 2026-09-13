@@ -19,7 +19,7 @@ from analyze_exect_select_rules_dev140 import (
 )
 from audit_exect_encode_rules_transfer_dev140 import SOURCES, _mentions_from_raw
 
-from clinical_extraction.paper.exect import letters_for_split
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect import letters_for_split
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select_rules import (
     ACCEPTED_SELECT_RULE_IDS,
 )

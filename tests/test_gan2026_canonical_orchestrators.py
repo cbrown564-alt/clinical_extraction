@@ -96,15 +96,15 @@ def test_gan_llm_canonical_replay_keeps_model_boundary_and_evidence_gate() -> No
 def test_gan_hybrid_runner_active_and_legacy_dispatch_is_strictly_no_call(
     monkeypatch,
 ) -> None:
-    from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-        label_to_frequency_record,
-    )
     from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
     from clinical_extraction.tasks.seizure_frequency.gan2026.runner import (
         Gan2026PipelineRunner,
     )
     from clinical_extraction.tasks.seizure_frequency.gan2026.runners import (
         hybrid_structured_events,
+    )
+    from clinical_extraction.tasks.shared.epilepsy.normalization import (
+        label_to_frequency_record,
     )
 
     seen: list[str] = []

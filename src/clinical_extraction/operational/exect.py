@@ -2,12 +2,25 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from typing import Any
 
+from clinical_extraction.core.artifacts import PreparedExtractionRequest
 from clinical_extraction.operational.io import InputNote
 from clinical_extraction.operational.runtime import RuntimeConfig
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
+
+
+def run_exect_artifact_notes(
+    notes: Sequence[InputNote],
+    runtime: RuntimeConfig,
+    *,
+    completion: Callable[[PreparedExtractionRequest], str] | None = None,
+) -> list[dict[str, Any]]:
+    """Run the task through the shared source/artifact execution path."""
+    from clinical_extraction.operational.extraction import run_artifact_notes
+
+    return run_artifact_notes(notes, runtime, task="exect", completion=completion)
 
 
 def run_exect_notes(

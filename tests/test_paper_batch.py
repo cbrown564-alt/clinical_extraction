@@ -8,7 +8,7 @@ from pathlib import Path
 import httpx
 import pytest
 
-from clinical_extraction.paper.batch import (
+from clinical_extraction.core.batch import (
     OPENAI_BATCH_MODEL,
     OPENROUTER_GEMINI_MODEL,
     BatchChatItem,
@@ -19,7 +19,7 @@ from clinical_extraction.paper.batch import (
     openrouter_batch_payload,
     uses_provider_batch,
 )
-from clinical_extraction.paper.exect import MODELS
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect import MODELS
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     hybrid_structured_events,
 )

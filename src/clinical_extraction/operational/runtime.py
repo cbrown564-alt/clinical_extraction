@@ -6,6 +6,14 @@ import os
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import cast
+
+from clinical_extraction.core.artifacts import (
+    ExecutionConfiguration,
+    JsonValue,
+    sha256_json,
+)
+from clinical_extraction.core.dspy_runtime import resolved_environment_settings
 
 GEMINI_PREFIX = "gemini/"
 GEMINI_OPENAI_BASE = "https://generativelanguage.googleapis.com/v1beta/openai"
@@ -108,6 +116,41 @@ class RuntimeConfig:
         """Return the provider model name without DSPy's routing prefix."""
 
         return self.model.split("/", 1)[1] if "/" in self.model else self.model
+
+    def execution_configuration(self) -> ExecutionConfiguration:
+        """Return the complete non-secret runtime record used by operational calls."""
+
+        provider = self.model.split("/", 1)[0] if "/" in self.model else "openai"
+        settings: dict[str, JsonValue] = {
+            "api_base": self.base_url,
+            "timeout_seconds": self.timeout_seconds,
+            "cache": False,
+            "dspy_num_retries": 2,
+            "environment": cast(
+                dict[str, JsonValue],
+                resolved_environment_settings(
+                    self.model,
+                    api_base=self.base_url,
+                ),
+            ),
+        }
+        identity = {
+            "provider": provider,
+            "model": self.model,
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+            "retry_limit": 2,
+            "settings": settings,
+        }
+        return ExecutionConfiguration(
+            runtime_id=f"runtime:{sha256_json(identity)}",
+            provider=provider,
+            model=self.model,
+            temperature=self.temperature,
+            max_tokens=self.max_tokens,
+            retry_limit=2,
+            settings=settings,
+        )
 
 
 def _load_repo_dotenv() -> None:

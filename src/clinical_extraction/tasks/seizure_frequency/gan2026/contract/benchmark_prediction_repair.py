@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import re
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract import label_parser as _labels
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.gold_policy import (
     UNIT_SYNONYMS,
     _normalize_ranges,
     _words_to_numbers,
 )
+from clinical_extraction.tasks.shared.epilepsy import normalization as _labels
 from clinical_extraction.tasks.shared.epilepsy.terms import MONTH_NAME_PATTERN
 
 from ..deterministic.rules.benchmark_repair import (

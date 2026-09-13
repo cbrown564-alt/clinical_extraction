@@ -7,7 +7,7 @@ from typing import Any
 
 
 def get_cli_specs() -> dict[str, Any]:
-    from clinical_extraction.tasks.seizure_frequency.gan2026.cli.llm_pipeline_cli import (
+    from clinical_extraction.operational.gan_benchmark import (
         GanLlmPipelineCliSpec,
     )
     from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (

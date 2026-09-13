@@ -13,8 +13,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.paper.gan_cell_replay import score_label
-from clinical_extraction.paper.methods import gan_machine_split, gan_row_count
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_cell_replay import score_label
+from clinical_extraction.evaluation.letter_benchmarks.methods import gan_machine_split, gan_row_count
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     load_records_for_split,
 )

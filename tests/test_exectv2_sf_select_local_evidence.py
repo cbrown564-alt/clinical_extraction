@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from clinical_extraction.paper.rule_records import RULE_BY_NAME
+from clinical_extraction.evaluation.letter_benchmarks.rule_records import RULE_BY_NAME
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     SEIZURE_FREQUENCY,
 )

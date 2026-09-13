@@ -6,9 +6,6 @@ from types import SimpleNamespace
 
 import pytest
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    FrequencyLabelKind,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
     DEFAULT_SEMANTIC_FAMILY_ORDER,
@@ -27,6 +24,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_e
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families import (
     dated_sequence_label_from_events,
+)
+from clinical_extraction.tasks.shared.epilepsy.normalization import (
+    FrequencyLabelKind,
 )
 
 

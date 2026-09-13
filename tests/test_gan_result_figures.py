@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from clinical_extraction.paper.gan_result_figures import (
+from scripts.publications.gan_result_figures import (
     BARBELL_CONNECTOR_MIN_ABS_DELTA,
     BARBELL_DELTA_LABEL_MIN_ABS_DELTA,
     PRAGMATIC_DISPLAY_LABELS,
@@ -170,7 +170,7 @@ def test_living_barbell_matches_sealed_cell_selects() -> None:
 
 @pytest.mark.local_corpus
 def test_living_purist_confusion_matrix_totals() -> None:
-    from clinical_extraction.paper.gan_result_figures import (
+    from scripts.publications.gan_result_figures import (
         load_living_purist_confusion_matrix,
     )
 
@@ -186,7 +186,7 @@ def test_living_purist_confusion_matrix_totals() -> None:
 
 @pytest.mark.local_corpus
 def test_living_pragmatic_confusion_matrix_totals() -> None:
-    from clinical_extraction.paper.gan_result_figures import (
+    from scripts.publications.gan_result_figures import (
         load_living_pragmatic_confusion_matrix,
     )
 

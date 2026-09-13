@@ -40,7 +40,7 @@ def configure_split_lm(
 ) -> None:
     import dspy
 
-    from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
+    from clinical_extraction.core.dspy_runtime import build_dspy_lm
 
     dspy.configure(
         lm=build_dspy_lm(

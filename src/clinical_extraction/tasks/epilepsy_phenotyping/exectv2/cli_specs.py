@@ -7,9 +7,6 @@ from dataclasses import dataclass
 from typing import Any
 
 from .runners import (
-    LLM_METHOD_ALIASES,
-    LLM_WITH_RULES_METHOD_ALIASES,
-    RULES_METHOD_ALIASES,
     split,
 )
 
@@ -42,9 +39,9 @@ def get_cli_specs() -> dict[str, ExectCliSpec]:
         "Run the ExECT LLM-with-rules method.", run_llm_with_rules
     )
     return {
-        **{name: spec for name in RULES_METHOD_ALIASES},
-        **{name: llm_spec for name in LLM_METHOD_ALIASES},
-        **{name: hybrid_spec for name in LLM_WITH_RULES_METHOD_ALIASES},
+        "rules": spec,
+        "llm": llm_spec,
+        "llm_with_rules": hybrid_spec,
     }
 
 

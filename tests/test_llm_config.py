@@ -4,7 +4,7 @@ from typing import Any
 
 import pytest
 
-from clinical_extraction.tasks.seizure_frequency.gan2026 import llm_config
+from clinical_extraction.core import dspy_runtime as llm_config
 
 
 def test_build_dspy_lm_configures_vllm_chat_template(

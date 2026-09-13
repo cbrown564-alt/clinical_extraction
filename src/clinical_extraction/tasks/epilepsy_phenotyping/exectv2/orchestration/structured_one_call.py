@@ -10,13 +10,14 @@ from typing import Any, Literal
 
 import dspy
 
+from clinical_extraction.core.checkpoints import read_completed
+from clinical_extraction.core.dspy_runtime import build_dspy_lm
 from clinical_extraction.core.local_structured_output import (
     FormatOnlyJsonRetry,
     assess_structured_output,
     build_format_only_retry_input,
     validate_format_retry,
 )
-from clinical_extraction.core.run_resume import merge_rows, pending_items, read_completed
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     DIAGNOSIS,
     INVESTIGATIONS,
@@ -31,7 +32,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_p
     is_terminal_provider_error,
     raw_output_from_adapter_parse_error,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
 from ..llm.pipelines.key_entities_structured.constants import (
     PIPELINE_FAMILY,
@@ -762,6 +762,10 @@ def run_split(
             _replay_content_fingerprint(raw_outputs) if mode == "replay" else None
         ),
     )
+    run_contract["source_hashes"] = {
+        letter.letter_id: hashlib.sha256(letter.text.encode("utf-8")).hexdigest()
+        for letter in letters
+    }
     run_fingerprint = _run_fingerprint(run_contract)
     requested = set(order)
     try:
@@ -780,7 +784,7 @@ def run_split(
         )
     rows: list[dict[str, Any]] = list(existing_rows)
     n_resumed = len(rows)
-    todo = pending_items(letters, completed, key_of=lambda letter: letter.letter_id)
+    todo = [letter for letter in letters if letter.letter_id not in completed]
     retry_program = format_retry_program
     if mode == "live" and todo:
         model_builder = model_builder or build_dspy_lm
@@ -853,7 +857,8 @@ def run_split(
             )
             continue
         rows.append(row)
-    rows = merge_rows(rows, order, key="letter_id")
+    rows_by_id = {row["letter_id"]: row for row in rows}
+    rows = [rows_by_id[letter_id] for letter_id in order]
     metadata = {
         "prompt_version": prompt_version,
         "prompt_profile": config.prompt_profile,

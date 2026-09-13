@@ -117,7 +117,9 @@ def test_exect_rules_active_runner_matches_governed_independent_dev_base_fingerp
 
 
 def test_exect_trace_generation_calls_active_rules_boundary(monkeypatch, tmp_path: Path) -> None:
-    from clinical_extraction.trace_explorer import exectv2_comparison
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation import (
+        review_records as exectv2_comparison,
+    )
 
     calls = 0
     real_run_letter = exectv2_comparison.rules.run_letter

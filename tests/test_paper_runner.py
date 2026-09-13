@@ -7,8 +7,27 @@ from typing import Any
 
 import pytest
 
-from clinical_extraction.paper.cli import run
-from clinical_extraction.paper.exect import (
+from clinical_extraction.core.dspy_runtime import (
+    OPENROUTER_OPENAI_BASE,
+)
+from clinical_extraction.core.model_routes import (
+    AI_GATEWAY_OPENAI_BASE,
+    GROK46_LITELLM_MODEL,
+    GROK46_MODEL,
+    SOL_MODEL,
+    build_paper_lm,
+    gemini_api_base,
+    grok_api_base,
+    resolve_paper_api_base,
+    sol_api_base,
+)
+from clinical_extraction.evaluation.letter_benchmarks.methods import (
+    LIVE_METHODS,
+    gan_machine_split,
+    split_for,
+)
+from clinical_extraction.evaluation.letter_benchmarks.roster import living_models
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect import (
     CANDIDATE_VERSION,
     GROK46_SLUG,
     HOSTED_SLUGS,
@@ -25,31 +44,18 @@ from clinical_extraction.paper.exect import (
     verify_compact,
     verify_llm_only,
 )
-from clinical_extraction.paper.gan import _max_tokens_for, run_gan, verify_gan
-from clinical_extraction.paper.lm import (
-    AI_GATEWAY_OPENAI_BASE,
-    GROK46_LITELLM_MODEL,
-    GROK46_MODEL,
-    SOL_MODEL,
-    build_paper_lm,
-    gemini_api_base,
-    grok_api_base,
-    resolve_paper_api_base,
-    sol_api_base,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines import (
+    key_entities_structured as structured,
 )
-from clinical_extraction.paper.methods import LIVE_METHODS, gan_machine_split, split_for
-from clinical_extraction.paper.roster import living_models
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    llm_only_key_entities_structured as structured,
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan import (
+    _max_tokens_for,
+    verify_gan,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     hybrid_structured_events,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     llm as gan_llm_only,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import (
-    OPENROUTER_OPENAI_BASE,
 )
 
 pytestmark = pytest.mark.local_corpus
@@ -180,7 +186,7 @@ def test_sol_paper_lm_uses_vercel_ai_gateway(monkeypatch: pytest.MonkeyPatch) ->
         captured.update(kwargs)
         return object()
 
-    monkeypatch.setattr("clinical_extraction.paper.lm.dspy.LM", fake_lm)
+    monkeypatch.setattr("clinical_extraction.core.model_routes.dspy.LM", fake_lm)
     monkeypatch.setenv("AI_GATEWAY_API_KEY", "gateway-test-key")
 
     build_paper_lm(SOL_MODEL, temperature=1.0, max_tokens=5000, cache=False)
@@ -326,46 +332,6 @@ def test_verify_gan_test450_is_aggregate_only() -> None:
     assert "incorrect_source_row_indices" not in payload
 
 
-def test_cli_dispatches_gan_live(monkeypatch: pytest.MonkeyPatch) -> None:
-    captured: dict[str, object] = {}
-
-    def fake_run(
-        method: str,
-        slug: str,
-        *,
-        live: bool,
-        split: str,
-        overwrite: bool = False,
-        api_base: str | None = None,
-        timeout: int | None = None,
-        progress_every: int = 1,
-        thinking: str | None = None,
-        reasoning_effort: str | None = None,
-        row_limit: int | None = None,
-        slice_name: str | None = None,
-        **_kwargs: object,
-    ) -> dict[str, object]:
-        captured.update(
-            method=method,
-            slug=slug,
-            live=live,
-            split=split,
-            reasoning_effort=reasoning_effort,
-        )
-        return {"ok": True, "method": method}
-
-    monkeypatch.setattr("clinical_extraction.paper.cli.run_gan", fake_run)
-    payload = run("gan_llm_only", "qwen38_27b", "dev750")
-    assert payload == {"ok": True, "method": "gan_llm_only"}
-    assert captured == {
-        "method": "gan_llm_only",
-        "slug": "qwen38_27b",
-        "live": True,
-        "split": "dev750",
-        "reasoning_effort": None,
-    }
-    with pytest.raises(RuntimeError, match="requires live=True"):
-        run_gan("gan_llm_extract_raw", "gpt56luna", live=False, split="dev750")
 
 
 def test_grok46_paper_lm_uses_openrouter(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -377,7 +343,7 @@ def test_grok46_paper_lm_uses_openrouter(monkeypatch: pytest.MonkeyPatch) -> Non
         return object()
 
     monkeypatch.setattr(
-        "clinical_extraction.tasks.seizure_frequency.gan2026.llm_config.dspy.LM",
+        "clinical_extraction.core.dspy_runtime.dspy.LM",
         fake_lm,
     )
     monkeypatch.setenv("OPENROUTER_API_KEY", "openrouter-test-key")
@@ -414,41 +380,6 @@ def test_grok46_is_living_compact() -> None:
     assert structured.PROMPT_VERSION == before == structured.EXECT_LLM_PRE_POST
 
 
-def test_cli_dispatches_grok46_compact(monkeypatch: pytest.MonkeyPatch) -> None:
-    captured: dict[str, object] = {}
-
-    def fake_compact(
-        slug: str,
-        *,
-        live: bool,
-        split: str,
-        overwrite: bool = False,
-        api_base: str | None = None,
-        timeout: int | None = None,
-        progress_every: int = 1,
-        thinking: str | None = None,
-        reasoning_effort: str | None = None,
-    ) -> dict[str, object]:
-        captured.update(slug=slug, live=live, split=split, reasoning_effort=reasoning_effort)
-        return {"ok": True, "method": "exect_llm_with_rules"}
-
-    monkeypatch.setattr("clinical_extraction.paper.cli.run_compact", fake_compact)
-    monkeypatch.setattr(
-        "clinical_extraction.paper.cli.run_llm_extract_filtered",
-        lambda *args, **kwargs: {"ok": True, "method": "exect_llm_extract_filtered"},
-    )
-    payload = run("exect_llm_with_rules", GROK46_SLUG, "dev140")
-    assert payload == {"ok": True, "method": "exect_llm_with_rules"}
-    assert run("exect_llm_only", GROK46_SLUG, "dev140") == {
-        "ok": True,
-        "method": "exect_llm_extract_filtered",
-    }
-    assert captured == {
-        "slug": GROK46_SLUG,
-        "live": True,
-        "split": "dev140",
-        "reasoning_effort": None,
-    }
 
 
 def test_gemini_reasoning_ablation_is_dev140_medium_only() -> None:
@@ -478,80 +409,6 @@ def test_gemini_reasoning_ablation_is_dev140_medium_only() -> None:
     assert structured.PROMPT_VERSION == before == structured.EXECT_LLM_PRE_POST
 
 
-def test_cli_dispatches_non_living_effort_to_live_runners(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    compact: dict[str, object] = {}
-    gan: dict[str, object] = {}
-
-    def fake_compact(
-        slug: str,
-        *,
-        live: bool,
-        split: str,
-        overwrite: bool = False,
-        api_base: str | None = None,
-        timeout: int | None = None,
-        progress_every: int = 1,
-        thinking: str | None = None,
-        reasoning_effort: str | None = None,
-    ) -> dict[str, object]:
-        compact.update(slug=slug, split=split, reasoning_effort=reasoning_effort)
-        return {"ok": True, "method": "exect_llm_with_rules"}
-
-    def fake_gan(
-        method: str,
-        slug: str,
-        *,
-        live: bool,
-        split: str,
-        overwrite: bool = False,
-        api_base: str | None = None,
-        timeout: int | None = None,
-        progress_every: int = 1,
-        thinking: str | None = None,
-        reasoning_effort: str | None = None,
-        row_limit: int | None = None,
-        slice_name: str | None = None,
-        **_kwargs: object,
-    ) -> dict[str, object]:
-        gan.update(
-            method=method,
-            slug=slug,
-            split=split,
-            reasoning_effort=reasoning_effort,
-        )
-        return {"ok": True, "method": method}
-
-    monkeypatch.setattr("clinical_extraction.paper.cli.run_compact", fake_compact)
-    monkeypatch.setattr("clinical_extraction.paper.cli.run_gan", fake_gan)
-    assert run(
-        "exect_llm_with_rules",
-        "gpt56luna",
-        "test60",
-        reasoning_effort="high",
-    ) == {"ok": True, "method": "exect_llm_with_rules"}
-    assert compact == {
-        "slug": "gpt56luna",
-        "split": "test60",
-        "reasoning_effort": "high",
-    }
-    assert run(
-        "gan_llm_extract_raw",
-        "gpt56luna",
-        "dev750",
-        reasoning_effort="medium",
-    ) == {"ok": True, "method": "gan_llm_extract_raw"}
-    assert gan == {
-        "method": "gan_llm_extract_raw",
-        "slug": "gpt56luna",
-        "split": "dev750",
-        "reasoning_effort": "medium",
-    }
-    with pytest.raises(RuntimeError, match="living paper setting"):
-        run_gan("gan_llm_only", "gpt56luna", live=True, split="dev750", reasoning_effort="low")
-    with pytest.raises(RuntimeError, match="living paper setting"):
-        run_compact("gpt56luna", live=True, split="dev140", reasoning_effort="low")
 
 
 def test_luna_paper_lm_sends_explicit_low_reasoning_effort(
@@ -565,7 +422,7 @@ def test_luna_paper_lm_sends_explicit_low_reasoning_effort(
         return object()
 
     monkeypatch.setattr(
-        "clinical_extraction.tasks.seizure_frequency.gan2026.llm_config.dspy.LM",
+        "clinical_extraction.core.dspy_runtime.dspy.LM",
         fake_lm,
     )
 

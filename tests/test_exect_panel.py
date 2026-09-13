@@ -7,33 +7,33 @@ from pathlib import Path
 
 import pytest
 
-from clinical_extraction.paper.exect_panel import (
+from clinical_extraction.evaluation.letter_benchmarks.roster import living_models
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_panel import (
     promote_exect,
     promote_exect_dev140,
     rebuild_dev140_panel,
 )
-from clinical_extraction.paper.roster import living_models
 
 
 def _patch_panel_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     paper = tmp_path / "results/letter-benchmarks"
     exect = paper / "exect"
-    monkeypatch.setattr("clinical_extraction.paper.exect_panel.ROOT", tmp_path)
+    monkeypatch.setattr("clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_panel.ROOT", tmp_path)
     monkeypatch.setattr(
-        "clinical_extraction.paper.exect_panel.WORK_ROOT",
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_panel.WORK_ROOT",
         tmp_path / "experiments/paper/exect_llm_pre_post",
     )
     monkeypatch.setattr(
-        "clinical_extraction.paper.exect_panel.HOLDOUT_ROOT",
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_panel.HOLDOUT_ROOT",
         tmp_path / "scratch/holdout/paper/exect_llm_pre_post",
     )
-    monkeypatch.setattr("clinical_extraction.paper.exect_panel.PAPER_EXECT", exect)
+    monkeypatch.setattr("clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_panel.PAPER_EXECT", exect)
     monkeypatch.setattr(
-        "clinical_extraction.paper.exect_panel.PANEL_PATH",
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_panel.PANEL_PATH",
         exect / "dev140_panel.json",
     )
     monkeypatch.setattr(
-        "clinical_extraction.paper.exect_panel.INVENTORY_PATH",
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_panel.INVENTORY_PATH",
         paper / "inventory.json",
     )
 

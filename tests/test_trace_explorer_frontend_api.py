@@ -6,9 +6,9 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from clinical_extraction.trace_explorer.api.app import create_app
-from clinical_extraction.trace_explorer.frontend_data import FrontendDataStore
-from clinical_extraction.trace_explorer.index import build_index
+from clinical_extraction.inspection.api.app import create_app
+from clinical_extraction.inspection.frontend_data import FrontendDataStore
+from clinical_extraction.inspection.index import build_index
 
 TRACE_FIXTURE = (
     Path("src")

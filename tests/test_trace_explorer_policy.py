@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from clinical_extraction.trace_explorer.policy import RowPolicy, derive_row_policy
+from clinical_extraction.inspection.policy import RowPolicy, derive_row_policy
 
 
 @pytest.mark.parametrize(

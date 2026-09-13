@@ -16,6 +16,25 @@ from clinical_extraction.operational.runtime import RuntimeConfig
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    raw = list(argv) if argv is not None else sys.argv[1:]
+    if raw and raw[0] in {"evaluate", "inspect", "index", "benchmark"}:
+        command, *rest = raw
+        if command == "evaluate":
+            from clinical_extraction.operational.evaluation_cli import main as operation
+        elif command == "inspect":
+            from clinical_extraction.inspection.api.app import main as operation
+        elif command == "index":
+            from clinical_extraction.inspection.index import main as operation
+        elif rest and rest[0] == "gan":
+            from clinical_extraction.operational.gan_benchmark import run_cli as operation
+            rest = rest[1:]
+        elif rest and rest[0] == "exect":
+            from clinical_extraction.operational.exect_benchmark import main as operation
+            rest = rest[1:]
+        else:
+            raise SystemExit("benchmark requires gan or exect")
+        operation(rest)
+        return 0
     parser = _parser()
     args = parser.parse_args(list(argv) if argv is not None else None)
     try:
@@ -31,7 +50,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         else:
             runtime = RuntimeConfig.from_environment(
                 base_url=args.base_url,
-                api_key=args.api_key,
+                api_key=("replay" if args.command == "replay" else args.api_key),
                 model=args.model,
                 temperature=getattr(args, "temperature", 0.0),
                 max_tokens=getattr(args, "max_tokens", 16000),
@@ -49,7 +68,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         notes = read_notes(args.input)
     except ValueError as exc:
         parser.error(str(exc))
-    rows = (
+    if args.command in {"extract", "replay"}:
+        from clinical_extraction.operational.extraction import run_artifact_notes
+        rows = run_artifact_notes(notes, runtime, task=args.task, store_path=args.store,
+                                 replay_only=args.command == "replay",
+                                 retry_failed=args.retry_failed)
+    else:
+        rows = (
         run_gan_notes(notes, runtime, method=args.method)
         if args.command == "gan"
         else run_exect_notes(notes, runtime, method=args.method)
@@ -61,7 +86,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 
 def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, epilog="Additional operations: evaluate, benchmark gan|exect, inspect, index.")
     subparsers = parser.add_subparsers(dest="command", required=True)
     for command in ("gan", "exect"):
         child = subparsers.add_parser(command)
@@ -86,6 +111,17 @@ def _parser() -> argparse.ArgumentParser:
                 choices=("rules", "llm", "llm_with_rules"),
                 default="llm_with_rules",
             )
+        _add_runtime_arguments(child)
+    for command in ("extract", "replay"):
+        child = subparsers.add_parser(command)
+        child.add_argument("--task", choices=("gan", "exect"), required=True)
+        child.add_argument("--input", type=Path, required=True)
+        child.add_argument("--output", type=Path, required=True)
+        child.add_argument("--store", type=Path, default=Path("runs/extraction/artifacts.sqlite3"))
+        child.add_argument("--overwrite", action="store_true")
+        child.add_argument("--retry-failed", action="store_true")
+        child.add_argument("--temperature", type=float, default=0.0)
+        child.add_argument("--max-tokens", type=int, default=16000)
         _add_runtime_arguments(child)
     probe = subparsers.add_parser("probe")
     _add_runtime_arguments(probe)

@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 
 from clinical_extraction.core.evidence import evidence_is_substring
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+from clinical_extraction.tasks.shared.epilepsy.normalization import (
     FrequencyLabelKind,
     label_to_frequency_record,
     normalize_frequency_label,

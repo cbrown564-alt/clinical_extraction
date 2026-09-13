@@ -12,7 +12,7 @@ import re
 import sys
 from collections import Counter
 from collections.abc import Mapping, Sequence
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal, cast
 
@@ -21,16 +21,6 @@ from dspy.adapters.chat_adapter import ChatAdapter
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from clinical_extraction.core.evidence import evidence_is_substring
-from clinical_extraction.core.local_structured_output import (
-    FormatOnlyJsonRetry,
-    assess_structured_output,
-    build_format_only_retry_input,
-    raw_output_from_adapter_error,
-    validate_format_retry,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    label_to_frequency_record,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair import (
     parse_json_payload_with_schema_repair,
     repair_selected_answer_payload,
@@ -112,7 +102,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_extract 
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_extract_raw import (
     build_llm_extract_raw_prompt_input,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label,
     repair_prediction_label_with_evidence,
@@ -122,6 +111,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.post_stack_fix_flags im
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.selected_evidence.codebook_encode import (
     repair_codebook_label_with_evidence,
+)
+from clinical_extraction.tasks.shared.epilepsy.normalization import (
+    label_to_frequency_record,
 )
 
 _clinic_date = llm_structured_temporal.clinic_date
@@ -1079,7 +1071,7 @@ def _answer_hop(
     cell_id: str,
     vetoed: str | None = None,
 ) -> dict[str, Any]:
-    from clinical_extraction.paper.cells import CELL_ORDER, normalize_cell_id
+    from clinical_extraction.evaluation.letter_benchmarks.cells import CELL_ORDER, normalize_cell_id
 
     resolved = normalize_cell_id(cell_id)
     return {
@@ -1333,200 +1325,6 @@ def run_split(
     )
 
 
-def _legacy_run_split(
-    records: Sequence[GanFrequencyRecord],
-    *,
-    split: str,
-    split_manifest: str,
-    model: str,
-    temperature: float,
-    max_tokens: int,
-    mode: Literal["live", "prompt-only"],
-    dspy_cache: bool = True,
-    api_base: str | None = None,
-    reuse_raw_outputs: Mapping[int, str] | None = None,
-    reuse_source: str | None = None,
-    escalation_reason: str | None = None,
-    progress_every: int | None = None,
-    checkpoint_jsonl_path: Path | None = None,
-    checkpoint_report_path: Path | None = None,
-    repair_config: StructuredRepairConfig | None = None,
-) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.repair_modes import (
-        repair_mode_metadata,
-    )
-
-    repair_config = repair_config or StructuredRepairConfig()
-    reuse_raw_outputs = reuse_raw_outputs or {}
-    metadata = _run_metadata(
-        records,
-        split=split,
-        split_manifest=split_manifest,
-        model=model,
-        temperature=temperature,
-        max_tokens=max_tokens,
-        mode=mode,
-        api_base=api_base,
-    )
-    metadata["dspy_cache"] = dspy_cache
-    metadata["reuse_source"] = reuse_source
-    metadata["escalation_reason"] = escalation_reason
-    metadata["repair_mode"] = repair_config.resolved_repair_mode
-    metadata["repair_mode_metadata"] = repair_mode_metadata(repair_config.resolved_repair_mode)
-    metadata["repair_config"] = asdict(repair_config)
-    program = DspyStructuredExtractor()
-    format_retry_program = FormatOnlyJsonRetry()
-    if mode == "live":
-        dspy.configure(
-            lm=build_dspy_lm(
-                model,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                cache=dspy_cache,
-                api_base=api_base,
-            )
-        )
-
-    rows: list[dict[str, Any]] = []
-    for record in records:
-        prompt_input_json = build_prompt_input(record)
-        raw_output = reuse_raw_outputs.get(record.source_row_index, "")
-        call_error: str | None = None
-        adapter_repair_notes: list[str] = []
-        reused_raw_output = raw_output != ""
-        if mode == "live" and not reused_raw_output:
-            try:
-                prediction = program(prompt_input_json=prompt_input_json)
-                raw_output = str(prediction.structured_json)
-            except Exception as exc:  # pragma: no cover - exercised only with live APIs.
-                call_error = f"{type(exc).__name__}: {exc}"
-                recovered = raw_output_from_adapter_error(call_error)
-                if recovered:
-                    raw_output = recovered
-                    call_error = None
-                    adapter_repair_notes.append(
-                        "adapter_output_field_repaired: structured_json_missing"
-                    )
-
-        extraction, normalized_events, parse_errors, row_trace = (
-            parse_structured_json_with_trace(
-                raw_output,
-                note_text=record.note_text,
-                repair_config=repair_config,
-            )
-            if raw_output
-            else (
-                None,
-                [],
-                ["not_run"],
-                _hybrid_row_trace(
-                    model_extraction=None,
-                    schema_payload_changed=False,
-                    format_events=["not_run"],
-                    resolved_label=None,
-                    final_label=None,
-                    semantic_events=[],
-                ),
-            )
-        )
-        initial_parse_errors = list(parse_errors)
-        assessment = assess_structured_output(
-            raw_output, initial_parse_errors, call_error=call_error
-        )
-        format_retry_output = ""
-        format_retry_notes: list[str] = []
-        if mode == "live" and model.startswith("ollama_chat/") and assessment.retry_eligible:
-            try:
-                retry_prediction = format_retry_program(
-                    retry_input_json=build_format_only_retry_input(
-                        malformed_output=raw_output,
-                        schema=StructuredExtractionRecord.model_json_schema(),
-                    )
-                )
-                format_retry_output = str(retry_prediction.repaired_json)
-                retry_validation = validate_format_retry(
-                    raw_output, initial_parse_errors, format_retry_output
-                )
-                retry_extraction, retry_events, retry_errors, retry_row_trace = (
-                    parse_structured_json_with_trace(
-                    format_retry_output,
-                    note_text=record.note_text,
-                    repair_config=repair_config,
-                )
-                )
-                format_retry_notes = list(retry_validation.notes)
-                if retry_validation.accepted and retry_extraction is not None:
-                    extraction = retry_extraction
-                    normalized_events = retry_events
-                    row_trace = retry_row_trace
-                    row_trace["model_prediction"]["raw_output_field"] = "format_retry_output"
-                    parse_errors = [*retry_errors, *format_retry_notes]
-                elif retry_validation.accepted:
-                    format_retry_notes = ["format_retry_rejected: schema_validation"]
-                    parse_errors = [*initial_parse_errors, *format_retry_notes]
-                else:
-                    parse_errors = [*initial_parse_errors, *format_retry_notes]
-            except Exception as exc:  # pragma: no cover - live provider behavior.
-                format_retry_notes = [
-                    f"format_retry_rejected: provider_error:{type(exc).__name__}"
-                ]
-                parse_errors = [*initial_parse_errors, *format_retry_notes]
-        parse_errors = [*adapter_repair_notes, *parse_errors]
-        evidence_valid = (
-            evidence_is_substring(record.note_text, extraction.selection.evidence)
-            if extraction and extraction.selection.evidence
-            else False
-        )
-        comparison = _compare_to_gold(record, extraction) if extraction else None
-        row_trace["format_repair"]["events"] = [
-            *adapter_repair_notes,
-            *row_trace["format_repair"]["events"],
-            *format_retry_notes,
-        ]
-        row_trace["evidence_validation"] = {
-            "evidence": extraction.selection.evidence if extraction else "",
-            "exact_substring": evidence_valid,
-        }
-        row_trace["scoring"] = comparison
-        row: dict[str, Any] = {
-            "source_row_index": record.source_row_index,
-            "split": split,
-            "split_manifest": split_manifest,
-            "prompt_version": PROMPT_VERSION,
-            "prompt_input_json": prompt_input_json,
-            "raw_output": raw_output,
-            "reused_raw_output": reused_raw_output,
-            "call_error": call_error,
-            "initial_parse_errors": initial_parse_errors,
-            "parse_errors": parse_errors,
-            "structured_output_failure_codes": list(assessment.failure_codes),
-            "format_retry_output": format_retry_output,
-            "format_retry_notes": format_retry_notes,
-            "structured_record": extraction.model_dump() if extraction else None,
-            "normalized_events": [event.model_dump() for event in normalized_events],
-            "evidence_valid": evidence_valid,
-            "row_trace": row_trace,
-            "reference": {
-                "gold_label": record.gold_label,
-                "gold_normalized_label": record.gold_normalized_label,
-                "gold_label_kind": str(record.gold_label_kind),
-                "gold_monthly_frequency": record.gold_monthly_frequency,
-                "row_ok": record.row_ok,
-            },
-            "comparison": comparison,
-        }
-        rows.append(row)
-        if progress_every and len(rows) % progress_every == 0:
-            _emit_progress_checkpoint(
-                rows,
-                metadata,
-                total=len(records),
-                jsonl_path=checkpoint_jsonl_path,
-                report_path=checkpoint_report_path,
-            )
-
-    metadata["summary"] = summarize_records(rows)
-    return rows, metadata
 
 
 def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:

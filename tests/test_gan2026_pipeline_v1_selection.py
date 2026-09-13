@@ -1,13 +1,13 @@
 """Invariant-focused tests for gan2026 pipeline v1 selection."""
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    FrequencyLabelKind,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     GanRecord,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import (
     Gan2026PipelineV1,
+)
+from clinical_extraction.tasks.shared.epilepsy.normalization import (
+    FrequencyLabelKind,
 )
 
 

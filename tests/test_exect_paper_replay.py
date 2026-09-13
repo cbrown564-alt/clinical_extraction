@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import json
 
-from clinical_extraction.paper.exect import hydrate_saved_exect_letter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect import (
+    hydrate_saved_exect_letter,
+)
 
 
 def _letter() -> ExectLetter:

@@ -14,7 +14,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.paper.gan_later_stage import run_later_stage
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_later_stage import run_later_stage
 
 ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL = (

@@ -23,12 +23,3 @@ def load_jsonl_rows(path: Path) -> list[dict[str, Any]]:
     with path.open(encoding="utf-8-sig") as handle:
         return [json.loads(line) for line in handle if line.strip()]
 
-
-def load_raw_outputs_by_source_index(path: Path) -> dict[int, str]:
-    """Compatibility wrapper for saved-output replay analysis loading."""
-
-    from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.replay_io import (
-        load_raw_outputs_by_source_index as _load_raw_outputs_by_source_index,
-    )
-
-    return _load_raw_outputs_by_source_index(path)

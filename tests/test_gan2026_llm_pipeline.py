@@ -1,9 +1,6 @@
 import json
 from pathlib import Path
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    FrequencyLabelKind,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm import (
     GAN_LLM_ONLY,
@@ -14,6 +11,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm import (
     load_reusable_raw_outputs,
     parse_decision_json,
     run_split,
+)
+from clinical_extraction.tasks.shared.epilepsy.normalization import (
+    FrequencyLabelKind,
 )
 
 

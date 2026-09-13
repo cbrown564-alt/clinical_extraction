@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from typing import Any, Literal
 
+from clinical_extraction.core.artifacts import PreparedExtractionRequest
 from clinical_extraction.operational.io import InputNote
 from clinical_extraction.operational.runtime import RuntimeConfig
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    label_to_frequency_record,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
     map_pragmatic,
@@ -34,9 +32,24 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.select_from_extract
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners.config import (
     PipelineConfiguration,
 )
+from clinical_extraction.tasks.shared.epilepsy.normalization import (
+    label_to_frequency_record,
+)
 
 GanOperationalMethod = Literal["llm_extract", "llm_select"]
 DEFAULT_GAN_METHOD: GanOperationalMethod = "llm_extract"
+
+
+def run_gan_artifact_notes(
+    notes: Sequence[InputNote],
+    runtime: RuntimeConfig,
+    *,
+    completion: Callable[[PreparedExtractionRequest], str] | None = None,
+) -> list[dict[str, Any]]:
+    """Run the task through the shared source/artifact execution path."""
+    from clinical_extraction.operational.extraction import run_artifact_notes
+
+    return run_artifact_notes(notes, runtime, task="gan", completion=completion)
 
 
 def complete_structured_prompt(prompt_input_json: str) -> str:

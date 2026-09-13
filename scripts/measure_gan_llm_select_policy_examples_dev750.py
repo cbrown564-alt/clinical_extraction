@@ -12,7 +12,7 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
-from clinical_extraction.paper.gan_later_stage import run_later_stage
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_later_stage import run_later_stage
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
 )

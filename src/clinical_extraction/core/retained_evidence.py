@@ -8,7 +8,7 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.core.registry import load_run_registry
+from clinical_extraction.evaluation.letter_benchmarks.registry import load_run_registry
 
 _TASKS = {"exectv2", "gan2026"}
 _FAMILIES = {"rules_only", "llm_only", "hybrid"}

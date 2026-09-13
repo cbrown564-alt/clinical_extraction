@@ -4,13 +4,16 @@ from __future__ import annotations
 
 import json
 
-from clinical_extraction.paper.gan import hydrate_saved_raw_row, reparse_gan_llm_extract_raw
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    FrequencyLabelKind,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan import (
+    hydrate_saved_raw_row,
+    reparse_gan_llm_extract_raw,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
     ROW_TRACE_SCHEMA_VERSION,
+)
+from clinical_extraction.tasks.shared.epilepsy.normalization import (
+    FrequencyLabelKind,
 )
 
 
@@ -142,12 +145,12 @@ def test_reparse_gan_llm_extract_raw_uses_saved_raw_and_no_call(
         ),
         encoding="utf-8",
     )
-    monkeypatch.setattr("clinical_extraction.paper.gan.ROOT", tmp_path)
+    monkeypatch.setattr("clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan.ROOT", tmp_path)
     monkeypatch.setattr(
-        "clinical_extraction.paper.gan.load_records_for_split",
+        "clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan.load_records_for_split",
         lambda _machine: [_record()],
     )
-    monkeypatch.setattr("clinical_extraction.paper.gan.gan_row_count", lambda _split: 1)
+    monkeypatch.setattr("clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan.gan_row_count", lambda _split: 1)
 
     payload = reparse_gan_llm_extract_raw("grok46", "dev750")
 

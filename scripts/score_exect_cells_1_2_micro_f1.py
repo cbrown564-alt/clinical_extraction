@@ -8,18 +8,16 @@ import json
 from collections.abc import Sequence
 from typing import Any
 
-from clinical_extraction.paper.exect import letters_for_split
-from clinical_extraction.paper.exect_cell_replay import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect import letters_for_split
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_cell_replay import (
     exect_pre_post_structured_path,
     format_render_mention_rows,
     schema_mention_rows,
 )
-from clinical_extraction.paper.methods import exect_row_count, holdout_is_aggregate_only
-from clinical_extraction.paper.roster import model_by_slug
+from clinical_extraction.evaluation.letter_benchmarks.methods import exect_row_count, holdout_is_aggregate_only
+from clinical_extraction.evaluation.letter_benchmarks.roster import model_by_slug
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    llm_only_key_entities_structured as structured,
-)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines import key_entities_structured as structured
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
     structured_one_call,
 )

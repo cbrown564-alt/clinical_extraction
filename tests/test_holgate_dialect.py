@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import pytest
 
-from clinical_extraction.paper.holgate_dialect import project_holgate_dialect_label
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.holgate_dialect import (
+    project_holgate_dialect_label,
+)
+from clinical_extraction.tasks.shared.epilepsy.normalization import (
     label_to_frequency_record,
 )
 

@@ -1,4 +1,4 @@
-from clinical_extraction.paper.exect_panel import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_panel import (
     paper_exect_catalog_runs,
     paper_exect_identity,
     paper_exect_run_id,

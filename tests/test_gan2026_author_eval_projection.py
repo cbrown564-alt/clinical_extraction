@@ -1,8 +1,8 @@
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
+from clinical_extraction.tasks.shared.epilepsy.normalization import (
     FrequencyLabelKind,
     label_to_frequency_record,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
 
 
 def test_multiple_per_week_projects_as_two_per_week() -> None:

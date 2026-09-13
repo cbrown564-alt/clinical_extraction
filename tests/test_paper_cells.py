@@ -6,8 +6,8 @@ import json
 
 import pytest
 
-from clinical_extraction.paper.answer_states import graph_from_hops, make_hop
-from clinical_extraction.paper.cells import (
+from clinical_extraction.evaluation.letter_benchmarks.answer_states import graph_from_hops, make_hop
+from clinical_extraction.evaluation.letter_benchmarks.cells import (
     CELL_ORDER,
     EXECT_HOP_EFFECT_CLASS,
     EXECT_RUNG_SOURCE,
@@ -20,20 +20,20 @@ from clinical_extraction.paper.cells import (
     gan_method_for_rung,
     normalize_repair_mode,
 )
-from clinical_extraction.paper.exect_cell_replay import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_cell_replay import (
     exect_pre_post_structured_path,
     replay_exect_pre_post_encode,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.letter_assembly import (
     MATERIALIZED_SURFACES,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    FrequencyLabelKind,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
     StructuredRepairConfig,
     parse_structured_json_with_trace,
+)
+from clinical_extraction.tasks.shared.epilepsy.normalization import (
+    FrequencyLabelKind,
 )
 
 
@@ -260,7 +260,7 @@ def test_exect_hops_use_the_same_effect_class_names() -> None:
 
 
 def test_legacy_hop_int_still_means_encode() -> None:
-    from clinical_extraction.paper.cells import cell_id_from_legacy_rung
+    from clinical_extraction.evaluation.letter_benchmarks.cells import cell_id_from_legacy_rung
 
     assert cell_id_from_legacy_rung(3) == "llm_encode"
     assert cell_id_from_legacy_rung(2) == "llm_extract"

@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import re
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract import label_parser as _labels
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
     AblationConfig,
 )
+from clinical_extraction.tasks.shared.epilepsy import normalization as _labels
 
 from .contract.benchmark_prediction_repair import (
     BENCHMARK_REPAIR_RULES,

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from clinical_extraction.paper.gan_select_only_roster import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_select_only_roster import (
     CITED_GEMINI_CELL4_TEST450,
     REPAIR_MODE,
     measure_select_only,

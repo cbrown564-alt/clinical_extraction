@@ -13,8 +13,8 @@ from pathlib import Path
 from typing import Any
 
 from clinical_extraction.core.paths import discover_repo_root
-from clinical_extraction.paper.exect import letters_for_split
-from clinical_extraction.paper.exect_cell_replay import FAMILIES, _family_keys
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect import letters_for_split
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_cell_replay import FAMILIES, _family_keys
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
 )

@@ -4,10 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from clinical_extraction.paper.exect_rule_select_after_encode import (
-    apply_rule_select_after_llm_encode,
-)
-from clinical_extraction.paper.rule_records import RULE_BY_NAME
+from clinical_extraction.evaluation.letter_benchmarks.rule_records import RULE_BY_NAME
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select_rules import (
     ACCEPTED_SELECT_RULE_IDS,
@@ -28,6 +25,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select
     SF_SEIZURE_FREE_POSITIVE_COUNT_DROP,
     SF_TO_DIAGNOSIS_EXPLICIT_TYPE,
     apply_select_rules,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_rule_select_after_encode import (
+    apply_rule_select_after_llm_encode,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.contracts import (
     StructuredMethodConfig,

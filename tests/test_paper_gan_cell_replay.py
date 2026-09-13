@@ -7,8 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from clinical_extraction.paper.cli import main
-from clinical_extraction.paper.gan_cell_replay import (
+from clinical_extraction.evaluation.letter_benchmarks.methods import gan_row_count
+from clinical_extraction.operational.evaluation_cli import main
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_cell_replay import (
     _rung_summary,
     gan_living_extract_rows_path,
     gan_rung_out_dir,
@@ -16,7 +17,6 @@ from clinical_extraction.paper.gan_cell_replay import (
     replay_gan_dev750,
     write_gan_rung_artifacts,
 )
-from clinical_extraction.paper.methods import gan_row_count
 
 
 def _scored_row() -> dict[str, object]:
@@ -166,7 +166,7 @@ def test_cli_replay_rungs_accepts_test450(monkeypatch: pytest.MonkeyPatch) -> No
         return {"split": split, "model_slug": slug, "row_policy": "aggregate_only"}
 
     monkeypatch.setattr(
-        "clinical_extraction.paper.cli.replay_gan_rungs", fake_replay
+        "clinical_extraction.operational.evaluation_cli.replay_gan_rungs", fake_replay
     )
     main(
         [

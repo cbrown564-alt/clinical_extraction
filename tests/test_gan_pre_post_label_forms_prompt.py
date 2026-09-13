@@ -6,11 +6,8 @@ import json
 
 import pytest
 
-from clinical_extraction.paper.gan import verify_gan
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    FrequencyLabelKind,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan import verify_gan
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     prompt_llm_and_rules_extract as and_rules_extract,
 )
@@ -19,6 +16,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_e
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_label_forms import (
     label_forms_payload,
+)
+from clinical_extraction.tasks.shared.epilepsy.normalization import (
+    FrequencyLabelKind,
 )
 
 

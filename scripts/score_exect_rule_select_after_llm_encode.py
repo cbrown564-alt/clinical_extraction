@@ -6,7 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 
-from clinical_extraction.paper.exect_rule_select_after_encode import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_rule_select_after_encode import (
     replay_rule_select_after_llm_encode,
 )
 

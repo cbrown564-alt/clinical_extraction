@@ -13,8 +13,8 @@ from clinical_extraction.core.json_schema_repair import (
     parse_json_payload_with_schema_repair,
 )
 from clinical_extraction.core.paths import discover_repo_root
-from clinical_extraction.paper.exect import letters_for_split
-from clinical_extraction.paper.exect_cell_replay import FAMILIES, _family_keys
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect import letters_for_split
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_cell_replay import FAMILIES, _family_keys
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedMention,
 )

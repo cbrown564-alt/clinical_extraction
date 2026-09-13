@@ -7,14 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from clinical_extraction.paper.cells import CELL_ORDER, RESULT_COLUMNS
-from clinical_extraction.paper.exect import (
-    EXTRACT_VERSION,
-    INVENTORY_VERSION,
-    verify_llm_extract,
-    verify_llm_inventory,
-)
-from clinical_extraction.paper.methods import LIVE_METHODS
+from clinical_extraction.evaluation.letter_benchmarks.cells import CELL_ORDER, RESULT_COLUMNS
+from clinical_extraction.evaluation.letter_benchmarks.methods import LIVE_METHODS
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     DIAGNOSIS,
 )
@@ -23,8 +17,14 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
     load_letters_for_split,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    llm_only_key_entities_structured as structured,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect import (
+    EXTRACT_VERSION,
+    INVENTORY_VERSION,
+    verify_llm_extract,
+    verify_llm_inventory,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines import (
+    key_entities_structured as structured,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines import (
     key_entities_structured as structured_pkg,

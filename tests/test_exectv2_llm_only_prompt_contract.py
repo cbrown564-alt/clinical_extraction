@@ -8,8 +8,8 @@ from pathlib import Path
 import pytest
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    llm_only_key_entities_structured as structured,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines import (
+    key_entities_structured as structured,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines import (
     key_entities_structured as structured_pkg,

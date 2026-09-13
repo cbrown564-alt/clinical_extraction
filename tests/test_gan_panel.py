@@ -7,33 +7,33 @@ from pathlib import Path
 
 import pytest
 
-from clinical_extraction.paper.gan_panel import (
+from clinical_extraction.evaluation.letter_benchmarks.roster import living_models
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_panel import (
     promote_gan,
     promote_gan_dev750,
     rebuild_dev750_panel,
 )
-from clinical_extraction.paper.roster import living_models
 
 
 def _patch_panel_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     paper = tmp_path / "results/letter-benchmarks"
     gan = paper / "gan"
-    monkeypatch.setattr("clinical_extraction.paper.gan_panel.ROOT", tmp_path)
+    monkeypatch.setattr("clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_panel.ROOT", tmp_path)
     monkeypatch.setattr(
-        "clinical_extraction.paper.gan_panel.WORK_ROOT",
+        "clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_panel.WORK_ROOT",
         tmp_path / "experiments/paper",
     )
     monkeypatch.setattr(
-        "clinical_extraction.paper.gan_panel.HOLDOUT_ROOT",
+        "clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_panel.HOLDOUT_ROOT",
         tmp_path / "scratch/holdout/paper",
     )
-    monkeypatch.setattr("clinical_extraction.paper.gan_panel.PAPER_GAN", gan)
+    monkeypatch.setattr("clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_panel.PAPER_GAN", gan)
     monkeypatch.setattr(
-        "clinical_extraction.paper.gan_panel.PANEL_PATH",
+        "clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_panel.PANEL_PATH",
         gan / "dev750_panel.json",
     )
     monkeypatch.setattr(
-        "clinical_extraction.paper.gan_panel.INVENTORY_PATH",
+        "clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_panel.INVENTORY_PATH",
         paper / "inventory.json",
     )
 

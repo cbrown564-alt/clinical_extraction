@@ -3,8 +3,10 @@
 import json
 from pathlib import Path
 
-from clinical_extraction.paper.gan_paired_contrasts import aligned_correctness
-from clinical_extraction.paper.paired_accuracy import paired_accuracy_test
+from clinical_extraction.evaluation.paired_accuracy import paired_accuracy_test
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_paired_contrasts import (
+    aligned_correctness,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 PAIRED_ARTIFACT = (

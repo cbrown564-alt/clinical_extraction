@@ -4,12 +4,9 @@ from __future__ import annotations
 
 import json
 
-from clinical_extraction.paper.gan import verify_gan
-from clinical_extraction.paper.methods import LIVE_METHODS
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    FrequencyLabelKind,
-)
+from clinical_extraction.evaluation.letter_benchmarks.methods import LIVE_METHODS
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan import verify_gan
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     prompt_llm_extract_encode_select as extract_encode_select,
 )
@@ -19,6 +16,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_e
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.prompt_llm_extract import (
     llm_extract_prompt_template,
+)
+from clinical_extraction.tasks.shared.epilepsy.normalization import (
+    FrequencyLabelKind,
 )
 
 _ENCODE_SELECT_BANNED_PHRASES = (

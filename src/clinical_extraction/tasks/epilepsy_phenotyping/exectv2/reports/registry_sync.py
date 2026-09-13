@@ -12,13 +12,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from clinical_extraction.core.registry import (
+from clinical_extraction.evaluation.letter_benchmarks.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,
     write_run_registry,
 )
-from clinical_extraction.core.run_registry_report import (
+from clinical_extraction.evaluation.letter_benchmarks.registry_report import (
     write_run_registry_markdown,
 )
 

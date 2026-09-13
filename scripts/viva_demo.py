@@ -12,7 +12,7 @@ import inspect
 import json
 from pathlib import Path
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+from clinical_extraction.tasks.shared.epilepsy.normalization import (
     label_to_frequency_record,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic

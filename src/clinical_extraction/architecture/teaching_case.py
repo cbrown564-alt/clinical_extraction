@@ -724,7 +724,7 @@ def _jsonable(value: Any) -> Any:
 def _gan_gold_monthly_frequency(gold_label: str) -> float:
     """Take the gold monthly rate from the label parser, not from a literal."""
 
-    from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+    from clinical_extraction.tasks.shared.epilepsy.normalization import (
         label_to_frequency_record,
     )
 
@@ -732,10 +732,10 @@ def _gan_gold_monthly_frequency(gold_label: str) -> float:
 
 
 def _gan_record(spec: GanCaseSpec) -> Any:
-    from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+    from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
+    from clinical_extraction.tasks.shared.epilepsy.normalization import (
         label_to_frequency_record,
     )
-    from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 
     gold = label_to_frequency_record(spec.gold)
     return GanFrequencyRecord(
@@ -757,12 +757,12 @@ def _gan_record(spec: GanCaseSpec) -> Any:
 def _gan_scoring(
     run: MethodRun, stage_id: str, final_label: str | None, *, gold_label: str
 ) -> None:
-    from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-        label_to_frequency_record,
-    )
     from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
         map_pragmatic,
         map_purist,
+    )
+    from clinical_extraction.tasks.shared.epilepsy.normalization import (
+        label_to_frequency_record,
     )
 
     gold_monthly = _gan_gold_monthly_frequency(gold_label)

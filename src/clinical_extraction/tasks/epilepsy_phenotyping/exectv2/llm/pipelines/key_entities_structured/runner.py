@@ -11,15 +11,10 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal
 
-import dspy
-
+from clinical_extraction.core.dspy_runtime import build_dspy_lm
 from clinical_extraction.core.local_structured_output import (
     FormatOnlyJsonRetry,
-    assess_structured_output,
-    build_format_only_retry_input,
-    validate_format_retry,
 )
-from clinical_extraction.core.run_resume import merge_rows, pending_items, read_completed
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedLetter,
     PredictedMention,
@@ -32,7 +27,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
     has_blocking_parse_issue,
     is_terminal_provider_error,
-    raw_output_from_adapter_parse_error,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     PHRASE_ONLY,
@@ -45,7 +39,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_hea
     aggregate_scores,
     exact_clinical_headline_scores,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
 from .constants import (
     KEY_ENTITY_ITEM_F1_TARGET,
@@ -53,19 +46,7 @@ from .constants import (
     PIPELINE_FAMILY,
     PROMPT_VERSION,
     PUBLISHED_PER_ENTITY_ITEM_F1,
-    prompt_version_for,
 )
-from .parsing import (
-    mentions_from_events,
-    parse_structured_events_json,
-)
-from .projection import (
-    to_predicted_letter,
-)
-from .prompt_builders import (
-    build_prompt_input,
-)
-from .records import format_retry_schema_for
 from .signatures import (
     DspyKeyEntitiesStructuredExtractor,
 )
@@ -121,185 +102,6 @@ def run_split(
     )
 
 
-def _legacy_run_split(
-    letters: Sequence[ExectLetter],
-    *,
-    split: str,
-    model: str,
-    temperature: float,
-    max_tokens: int,
-    mode: Literal["live", "prompt-only"],
-    dspy_cache: bool = True,
-    api_base: str | None = None,
-    api_key: str | None = None,
-    timeout: int | None = None,
-    progress_every: int | None = None,
-    checkpoint_jsonl_path: Path | None = None,
-    checkpoint_report_path: Path | None = None,
-    resume: bool = False,
-    prompt_profile: str = "full",
-) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    program = DspyKeyEntitiesStructuredExtractor()
-    format_retry_program = FormatOnlyJsonRetry()
-    if mode == "live":
-        dspy.configure(
-            lm=build_dspy_lm(
-                model,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                cache=dspy_cache,
-                api_base=api_base,
-                api_key=api_key,
-                timeout=timeout,
-            )
-        )
-
-    order = [letter.letter_id for letter in letters]
-    requested = set(order)
-    existing_rows, completed = read_completed(
-        checkpoint_jsonl_path if resume else None, key="letter_id"
-    )
-    rows: list[dict[str, Any]] = [r for r in existing_rows if r.get("letter_id") in requested]
-    n_resumed = len(rows)
-    todo = pending_items(letters, completed, key_of=lambda letter: letter.letter_id)
-    prompt_version = prompt_version_for()
-
-    for letter in todo:
-        prompt_input_json = build_prompt_input(letter)
-        raw_output = ""
-        call_error: str | None = None
-        adapter_repair_notes: list[str] = []
-        if mode == "live":
-            try:
-                prediction = program(prompt_input_json=prompt_input_json)
-                raw_output = str(prediction.extraction_json)
-            except Exception as exc:  # pragma: no cover
-                call_error = f"{type(exc).__name__}: {exc}"
-                if _is_terminal_provider_error(call_error):
-                    raise RuntimeError(
-                        "Terminal model-provider error; stopping before recording "
-                        "placeholder rows: " + call_error
-                    ) from exc
-                recovered = raw_output_from_adapter_parse_error(call_error)
-                if recovered:
-                    raw_output = recovered
-                    call_error = None
-                    adapter_repair_notes.append(
-                        "adapter_output_field_repaired: extraction_json_missing"
-                    )
-
-        record, parse_errors = (
-            parse_structured_events_json(raw_output, prompt_version=prompt_version)
-            if raw_output
-            else (None, ["not_run"])
-        )
-        initial_parse_errors = list(parse_errors)
-        assessment = assess_structured_output(
-            raw_output, initial_parse_errors, call_error=call_error
-        )
-        format_retry_output = ""
-        format_retry_notes: list[str] = []
-        if mode == "live" and model.startswith("ollama_chat/") and assessment.retry_eligible:
-            try:
-                retry_prediction = format_retry_program(
-                    retry_input_json=build_format_only_retry_input(
-                        malformed_output=raw_output,
-                        schema=format_retry_schema_for(prompt_version),
-                    )
-                )
-                format_retry_output = str(retry_prediction.repaired_json)
-                retry_validation = validate_format_retry(
-                    raw_output, initial_parse_errors, format_retry_output
-                )
-                retry_record, retry_parse_errors = parse_structured_events_json(
-                    format_retry_output, prompt_version=prompt_version
-                )
-                format_retry_notes = list(retry_validation.notes)
-                if retry_validation.accepted and retry_record is not None:
-                    record = retry_record
-                    parse_errors = [*retry_parse_errors, *format_retry_notes]
-                elif retry_validation.accepted:
-                    format_retry_notes = ["format_retry_rejected: schema_validation"]
-                    parse_errors = [*initial_parse_errors, *format_retry_notes]
-                else:
-                    parse_errors = [*initial_parse_errors, *format_retry_notes]
-            except Exception as exc:  # pragma: no cover - live provider behavior.
-                format_retry_notes = [
-                    f"format_retry_rejected: provider_error:{type(exc).__name__}"
-                ]
-                parse_errors = [*initial_parse_errors, *format_retry_notes]
-        parse_errors = [*adapter_repair_notes, *parse_errors]
-        mentions = mentions_from_events(record) if record else []
-        predicted_letter, gate_warnings = to_predicted_letter(
-            letter.letter_id,
-            mentions,
-            note_text=letter.note_text,
-            prompt_version=prompt_version,
-        )
-
-        rows.append(
-            {
-                "letter_id": letter.letter_id,
-                "split": split,
-                "prompt_version": prompt_version,
-                "prompt_profile": prompt_profile,
-                "pipeline_family": PIPELINE_FAMILY,
-                "model": model,
-                "mode": mode,
-                "prompt_input_json": prompt_input_json,
-                "raw_output": raw_output,
-                "call_error": call_error,
-                "initial_parse_errors": initial_parse_errors,
-                "parse_errors": parse_errors,
-                "structured_output_failure_codes": list(assessment.failure_codes),
-                "format_retry_output": format_retry_output,
-                "format_retry_notes": format_retry_notes,
-                "gate_warnings": gate_warnings,
-                "n_events_raw": len(record.clinical_events) if record else 0,
-                "n_mentions_raw": len(mentions),
-                "n_mentions_scored": len(predicted_letter.mentions),
-                "n_evidence_invalid": len(mentions) - len(predicted_letter.mentions),
-                "structured_events": [
-                    event.model_dump() for event in (record.clinical_events if record else [])
-                ],
-                "predicted_mentions": [_mention_to_row(m) for m in predicted_letter.mentions],
-                "gold_mentions": [
-                    {"entity": a.entity, "text": a.text, "attributes": dict(a.attributes)}
-                    for a in letter.annotations
-                    if a.entity in KEY_ENTITY_NAMES
-                ],
-            }
-        )
-
-        if progress_every and (len(rows) - n_resumed) % progress_every == 0:
-            _emit_checkpoint(
-                rows,
-                total=len(letters),
-                jsonl_path=checkpoint_jsonl_path,
-                report_path=checkpoint_report_path,
-                split=split,
-                model=model,
-                mode=mode,
-                prompt_version=prompt_version,
-                prompt_profile=prompt_profile,
-            )
-
-    rows = merge_rows(rows, order, key="letter_id")
-    metadata = {
-        "prompt_version": prompt_version,
-        "prompt_profile": prompt_profile,
-        "pipeline_family": PIPELINE_FAMILY,
-        "model": model,
-        "temperature": temperature,
-        "max_tokens": max_tokens,
-        "mode": mode,
-        "split": split,
-        "n_letters": len(letters),
-        "n_resumed": n_resumed,
-        "dspy_version": getattr(dspy, "__version__", "unknown"),
-    }
-    metadata["summary"] = summarize_rows(rows)
-    return rows, metadata
 
 
 def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:

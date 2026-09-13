@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from clinical_extraction.paper.comparison_contract import (
+from clinical_extraction.evaluation.letter_benchmarks.comparison_contract import (
     EXECT_SCORER,
     FORBIDDEN_LIVING_PRIMARY,
     GAN_SCORER,

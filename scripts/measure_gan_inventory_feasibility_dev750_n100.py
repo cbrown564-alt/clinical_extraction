@@ -13,7 +13,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.paper.gan_inventory_feasibility import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_inventory_feasibility import (
     FAMILIES,
     MACHINE_SPLIT,
     PERMITTED_SPLIT,

@@ -8,7 +8,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.core.registry import (
+from clinical_extraction.evaluation.letter_benchmarks.registry import (
     RunRegistryEntry,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (

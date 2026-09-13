@@ -14,8 +14,8 @@ from pathlib import Path
 from typing import Any
 
 from clinical_extraction.core.paths import discover_repo_root
-from clinical_extraction.paper.exect import letters_for_split
-from clinical_extraction.paper.exect_cell_replay import FAMILIES, _family_keys
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect import letters_for_split
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_cell_replay import FAMILIES, _family_keys
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select_rules import (
     ACCEPTED_SELECT_RULE_IDS,
@@ -30,9 +30,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select
     SF_TO_DIAGNOSIS_EXPLICIT_TYPE,
     apply_select_rules,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    llm_only_key_entities_structured as structured,
-)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines import key_entities_structured as structured
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.format_stack import (  # noqa: E501
     DEFAULT_FORMAT_RULES,
     apply_format_stack,

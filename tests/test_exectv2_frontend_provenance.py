@@ -1,6 +1,6 @@
 """Exemplars for ExECT frontend last-rule provenance labels."""
 
-from clinical_extraction.trace_explorer.exectv2_comparison import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.review_records import (
     _project_predicted_cuis,
     last_diverging_provenance_action,
     last_rule_label,

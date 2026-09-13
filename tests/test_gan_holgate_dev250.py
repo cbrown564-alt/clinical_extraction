@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from clinical_extraction.paper.gan_holgate_dev250 import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_holgate_dev250 import (
     SAMPLE_ID,
     SAMPLE_SIZE,
     draw_holgate_dev250_indices,

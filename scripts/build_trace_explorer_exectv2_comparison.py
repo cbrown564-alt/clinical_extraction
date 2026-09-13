@@ -6,7 +6,7 @@ import argparse
 from collections.abc import Sequence
 from pathlib import Path
 
-from clinical_extraction.trace_explorer.exectv2_comparison import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.review_records import (
     write_exectv2_comparison,
 )
 

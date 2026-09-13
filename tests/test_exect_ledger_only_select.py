@@ -21,8 +21,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLet
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     standard_dictionary as sd,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    llm_only_key_entities_structured as structured,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines import (
+    key_entities_structured as structured,
 )
 
 

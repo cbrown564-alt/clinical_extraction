@@ -110,9 +110,6 @@ def _run_deterministic_split(
     dspy_cache: bool,
     api_base: str | None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-        label_to_frequency_record,
-    )
     from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadata import (
         build_run_metadata,
     )
@@ -121,6 +118,9 @@ def _run_deterministic_split(
         map_purist,
     )
     from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration import rules
+    from clinical_extraction.tasks.shared.epilepsy.normalization import (
+        label_to_frequency_record,
+    )
 
     config = PipelineConfiguration(
         architecture=architecture,

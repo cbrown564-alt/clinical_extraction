@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-_COMMANDS = frozenset({"gan", "exect", "probe"})
+_COMMANDS = frozenset({"gan", "exect", "probe", "extract", "replay", "evaluate", "benchmark", "inspect", "index"})
 
 
 def gan_script_argv(argv: Sequence[str]) -> list[str]:

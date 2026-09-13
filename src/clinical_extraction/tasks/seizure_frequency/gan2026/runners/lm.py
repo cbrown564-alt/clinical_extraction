@@ -15,7 +15,7 @@ def configure_lm(
 ) -> None:
     import dspy
 
-    from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import (
+    from clinical_extraction.core.dspy_runtime import (
         build_dspy_lm,
     )
 

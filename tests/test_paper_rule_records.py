@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from clinical_extraction.paper.rule_records import (
+from clinical_extraction.evaluation.letter_benchmarks.rule_records import (
     RULE_BY_NAME,
     RULE_RECORDS,
     SELECT_HIERARCHY,
