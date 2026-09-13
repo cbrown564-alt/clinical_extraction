@@ -58,13 +58,13 @@ as a matched aggregate-only panel, not a pristine one-shot or model-neutral
 capability ranking. The local conditions have the same retained claim status as
 the hosted conditions; the route and reparse differences are caveats, not a
 lower evidence tier. See the
-[hosted protocol](../../experiments/gan2026/gan2026_matched_v05_test450_protocol_2026-07-16.md)
-and [local/replay extension](../../experiments/gan2026/gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md).
+[hosted protocol](../../research/gan2026/gan2026_matched_v05_test450_protocol_2026-07-16.md)
+and [local/replay extension](../../research/gan2026/gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md).
 
 ## Six-model development coverage
 
 The selected v0.5 six-model `dev750` panel is complete under
-[the development protocol](../../experiments/gan2026/gan2026_matched_v05_dev750_protocol_2026-07-27.md).
+[the development protocol](../../research/gan2026/gan2026_matched_v05_dev750_protocol_2026-07-27.md).
 Frozen panel artifacts remain the row-trace/attribution owners under the prior
 repair. Final-ruleset development scores are no-call replays of those saved
 raw outputs. Do not use the quarantined v0.7 `dev750` panel as the development

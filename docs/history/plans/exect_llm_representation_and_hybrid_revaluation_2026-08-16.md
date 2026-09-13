@@ -317,18 +317,18 @@ synthetic-letter quirks into ExECT.
 ## Completion record
 
 The implementation, protocol, contract tests, dev20 artifact, ablations, and
-bounded decision are recorded in the [development report](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
+bounded decision are recorded in the [development report](../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
 The row-level revise decision is owned by the
-[dev20 mechanism analysis](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
+[dev20 mechanism analysis](../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
 The deeper design challenge is
-[assumption challenge](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md):
+[assumption challenge](../decisions/0055-exect-semantic-inventory-and-method-contracts.md):
 v2 changed the task and kept the scorer. **Fork A is selected:** the scored
 object remains the ExECT coded inventory; Decision 0040 stays in force; the
 v10 grammar belongs in named hybrid rules. The live `dev20` v3 run is a **revise**
-result: [v3 result](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
+result: [v3 result](../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
 The measured research-lane contract is `exectv2_semantic_inventory_v4`.
 The live `dev20` v4 run is a **negative_result**:
-[v4 result](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
+[v4 result](../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
 Mention-unit v1 on frozen `dev20` is a **revise**:
 mention-unit v1 (pruned; recover from Git history).
 Mention-unit v2 on frozen `dev20` is an **answer**:
@@ -356,7 +356,7 @@ Protocol:
 Instruction job (also over-applies “current”):
 [instruction job](../../research/exectv2/prompt_variant_slots_2026-08-16.md).
 A v4 `dev140` projection-damage catalog is an **answer**:
-[catalog](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
+[catalog](../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
 The no-call `trust_item` remasure on those saved raws is an **answer**:
 [trust-item remasure](../../research/exectv2/prompt_variant_slots_2026-08-16.md).
 The published v9 manual is a closed coding book for rewrite, not a

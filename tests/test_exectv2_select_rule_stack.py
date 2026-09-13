@@ -26,7 +26,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.select
     SF_TO_DIAGNOSIS_EXPLICIT_TYPE,
     apply_select_rules,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_rule_select_after_encode import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_rule_select_after_encode import (  # noqa: E501
     apply_rule_select_after_llm_encode,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.contracts import (
@@ -393,9 +393,7 @@ def test_exact_regimen_dedupe_keeps_incomplete_regimens() -> None:
         "evidence": "Once started on lamotrigine she felt dizzy.",
     }
 
-    repaired, actions = _apply(
-        [current, historical], [], PRESCRIPTION_EXACT_REGIMEN_DEDUPE
-    )
+    repaired, actions = _apply([current, historical], [], PRESCRIPTION_EXACT_REGIMEN_DEDUPE)
 
     assert repaired == [current, historical]
     assert actions == []
@@ -920,9 +918,7 @@ def test_emitted_actions_by_rule_id_covers_candidate_rules() -> None:
         if rule_id.startswith("selection.keep_"):
             # Keep rules are gates consulted by the recall-first drop;
             # they never emit actions of their own.
-            assert actions == frozenset(), (
-                f"keep rule {rule_id} must not declare emitted actions"
-            )
+            assert actions == frozenset(), f"keep rule {rule_id} must not declare emitted actions"
             continue
         assert actions, f"{rule_id} must declare at least one action kind"
         assert actions <= frozenset({"rewrite", "add", "drop"}), (

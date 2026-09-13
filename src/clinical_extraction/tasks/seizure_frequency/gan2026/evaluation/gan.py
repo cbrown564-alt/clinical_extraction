@@ -18,6 +18,10 @@ from clinical_extraction.core.batch import (
     complete_chat_batch,
     uses_provider_batch,
 )
+from clinical_extraction.core.jsonl import (
+    load_jsonl_rows,
+    write_jsonl_rows,
+)
 from clinical_extraction.core.local_structured_output import FormatOnlyJsonRetry
 from clinical_extraction.core.model_routes import build_paper_lm, resolve_paper_api_base
 from clinical_extraction.core.paths import discover_repo_root
@@ -66,10 +70,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_later_st
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_later_stage import (
     prompt_version as later_stage_prompt_version,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    load_jsonl_rows,
-    write_jsonl_rows,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     hybrid_structured_events,
@@ -221,9 +221,7 @@ def verify_gan(
         authored = list(extract_no_examples.LLM_EXTRACT_NO_EXAMPLES_AUTHORED_KEYS)
         blob = json.dumps(payload)
         if set(payload) != set(authored):
-            raise RuntimeError(
-                "gan_llm_extract_no_examples prompt drifted from authored keys"
-            )
+            raise RuntimeError("gan_llm_extract_no_examples prompt drifted from authored keys")
         if "prompt_version" in payload or "source_row_index" in payload:
             raise RuntimeError(
                 "gan_llm_extract_no_examples request still emits the research envelope"
@@ -249,9 +247,7 @@ def verify_gan(
         authored = list(extract_holgate.LLM_EXTRACT_HOLGATE_LIKE_AUTHORED_KEYS)
         blob = json.dumps(payload)
         if set(payload) != set(authored):
-            raise RuntimeError(
-                "gan_llm_extract_holgate_like prompt drifted from authored keys"
-            )
+            raise RuntimeError("gan_llm_extract_holgate_like prompt drifted from authored keys")
         if "prompt_version" in payload or "source_row_index" in payload:
             raise RuntimeError(
                 "gan_llm_extract_holgate_like request still emits the research envelope"
@@ -277,9 +273,7 @@ def verify_gan(
         authored = list(extract_holgate_label.LLM_EXTRACT_HOLGATE_LABEL_AUTHORED_KEYS)
         blob = json.dumps(payload)
         if set(payload) != set(authored):
-            raise RuntimeError(
-                "gan_llm_extract_holgate_label prompt drifted from authored keys"
-            )
+            raise RuntimeError("gan_llm_extract_holgate_label prompt drifted from authored keys")
         if "prompt_version" in payload or "source_row_index" in payload:
             raise RuntimeError(
                 "gan_llm_extract_holgate_label request still emits the research envelope"
@@ -305,9 +299,7 @@ def verify_gan(
         authored = list(extract_no_evidence.LLM_EXTRACT_NO_EVIDENCE_AUTHORED_KEYS)
         blob = json.dumps(payload)
         if set(payload) != set(authored):
-            raise RuntimeError(
-                "gan_llm_extract_no_evidence prompt drifted from authored keys"
-            )
+            raise RuntimeError("gan_llm_extract_no_evidence prompt drifted from authored keys")
         if "prompt_version" in payload or "source_row_index" in payload:
             raise RuntimeError(
                 "gan_llm_extract_no_evidence request still emits the research envelope"
@@ -333,9 +325,7 @@ def verify_gan(
         authored = list(extract_examples_only.LLM_EXTRACT_EXAMPLES_ONLY_AUTHORED_KEYS)
         blob = json.dumps(payload)
         if set(payload) != set(authored):
-            raise RuntimeError(
-                "gan_llm_extract_examples_only prompt drifted from authored keys"
-            )
+            raise RuntimeError("gan_llm_extract_examples_only prompt drifted from authored keys")
         if "prompt_version" in payload or "source_row_index" in payload:
             raise RuntimeError(
                 "gan_llm_extract_examples_only request still emits the research envelope"
@@ -352,10 +342,12 @@ def verify_gan(
             raise RuntimeError("gan_llm_extract_raw live default drifted")
     elif method == "gan_llm_extract_no_examples_no_evidence_no_forms":
         before = hybrid_structured_events.PROMPT_VERSION
-        payload = json.loads(hybrid_structured_events.build_prompt_input(
-            _placeholder_record(),
-            prompt_version=extract_combined.GAN_LLM_EXTRACT_NO_EXAMPLES_NO_EVIDENCE_NO_FORMS,
-        ))
+        payload = json.loads(
+            hybrid_structured_events.build_prompt_input(
+                _placeholder_record(),
+                prompt_version=extract_combined.GAN_LLM_EXTRACT_NO_EXAMPLES_NO_EVIDENCE_NO_FORMS,
+            )
+        )
         authored = list(extract_combined.LLM_EXTRACT_COMBINED_AUTHORED_KEYS)
         blob = json.dumps(payload)
         if set(payload) != set(authored):
@@ -383,17 +375,13 @@ def verify_gan(
         authored = list(extract_encode_select.LLM_EXTRACT_ENCODE_SELECT_AUTHORED_KEYS)
         blob = json.dumps(payload)
         if set(payload) != set(authored):
-            raise RuntimeError(
-                "gan_llm_extract_encode_select prompt drifted from authored keys"
-            )
+            raise RuntimeError("gan_llm_extract_encode_select prompt drifted from authored keys")
         if "prompt_version" in payload or "source_row_index" in payload:
             raise RuntimeError(
                 "gan_llm_extract_encode_select request still emits the research envelope"
             )
         if "Gan 2026" in blob:
-            raise RuntimeError(
-                "gan_llm_extract_encode_select request still names the dataset"
-            )
+            raise RuntimeError("gan_llm_extract_encode_select request still names the dataset")
         if "cases" not in payload or "label_forms" not in payload:
             raise RuntimeError("gan_llm_extract_encode_select dropped a required block")
         if hybrid_structured_events.PROMPT_VERSION != before:
@@ -413,9 +401,7 @@ def verify_gan(
         authored = list(and_rules_extract.LLM_AND_RULES_EXTRACT_AUTHORED_KEYS)
         blob = json.dumps(payload)
         if set(payload) != set(authored):
-            raise RuntimeError(
-                "gan_llm_and_rules_extract prompt drifted from authored keys"
-            )
+            raise RuntimeError("gan_llm_and_rules_extract prompt drifted from authored keys")
         if "prompt_version" in payload or "source_row_index" in payload:
             raise RuntimeError(
                 "gan_llm_and_rules_extract request still emits the research envelope"
@@ -454,9 +440,7 @@ def verify_gan(
         if set(payload) != set(authored):
             raise RuntimeError("gan_llm_extract_raw prompt drifted from authored keys")
         if "prompt_version" in payload or "source_row_index" in payload:
-            raise RuntimeError(
-                "gan_llm_extract_raw request still emits the research envelope"
-            )
+            raise RuntimeError("gan_llm_extract_raw request still emits the research envelope")
         if "Gan 2026" in blob:
             raise RuntimeError("gan_llm_extract_raw request still names the dataset")
         if hybrid_structured_events.PROMPT_VERSION != before:
@@ -480,9 +464,7 @@ def verify_gan(
         "holdout_scratch": (HOLDOUT_SCRATCH / method).relative_to(ROOT).as_posix(),
         "authored_keys": authored,
         "default_prompt_version": (
-            gan_llm_only.PROMPT_VERSION
-            if method == "gan_llm_only"
-            else prompt
+            gan_llm_only.PROMPT_VERSION if method == "gan_llm_only" else prompt
         ),
     }
     if slug is not None:
@@ -564,9 +546,7 @@ def run_gan(
         if holdout:
             raise RuntimeError("development samples are not allowed on holdout")
         wanted = {int(index) for index in source_row_indices}
-        records = [
-            record for record in records if record.source_row_index in wanted
-        ]
+        records = [record for record in records if record.source_row_index in wanted]
         found = {record.source_row_index for record in records}
         if found != wanted:
             missing = sorted(wanted - found)
@@ -646,17 +626,13 @@ def run_gan(
             )
         by_index[record.source_row_index] = row
         rows = [
-            by_index[item.source_row_index]
-            for item in records
-            if item.source_row_index in by_index
+            by_index[item.source_row_index] for item in records if item.source_row_index in by_index
         ]
         write_jsonl_rows(rows, rows_path)
         if progress_every and index % progress_every == 0:
             print(f"{spec.slug} {method} {split}: {len(rows)}/{len(records)}", flush=True)
     if len(by_index) != len(records):
-        raise RuntimeError(
-            f"{method} {split} has {len(by_index)} rows, expected {len(records)}"
-        )
+        raise RuntimeError(f"{method} {split} has {len(by_index)} rows, expected {len(records)}")
     rows = [by_index[record.source_row_index] for record in records]
     write_jsonl_rows(rows, rows_path)
     summary = _summarize(method, rows)
@@ -921,14 +897,10 @@ def reparse_gan_llm_extract_raw(slug: str, split: str) -> dict[str, Any]:
                 "letter_id": str(row["source_row_index"]),
                 "method": "gan_llm_extract_raw",
                 "predicted_label": (
-                    ((row.get("structured_record") or {}).get("selection") or {}).get(
-                        "final_label"
-                    )
+                    ((row.get("structured_record") or {}).get("selection") or {}).get("final_label")
                 ),
                 "purist_correct": (row.get("comparison") or {}).get("purist_correct"),
-                "pragmatic_correct": (row.get("comparison") or {}).get(
-                    "pragmatic_correct"
-                ),
+                "pragmatic_correct": (row.get("comparison") or {}).get("pragmatic_correct"),
                 "parse_ok": row.get("structured_record") is not None,
             }
             for row in hydrated
@@ -1046,9 +1018,7 @@ def _run_record(
         "call_error": result.diagnostics["call_error"],
         "initial_parse_errors": result.diagnostics["initial_parse_errors"],
         "parse_errors": result.diagnostics["parse_errors"],
-        "structured_output_failure_codes": result.diagnostics[
-            "structured_output_failure_codes"
-        ],
+        "structured_output_failure_codes": result.diagnostics["structured_output_failure_codes"],
         "format_retry_output": result.diagnostics["format_retry_output"],
         "format_retry_notes": result.diagnostics["format_retry_notes"],
         "structured_record": extraction.model_dump() if extraction else None,
@@ -1091,9 +1061,7 @@ def _prepare_live_runtime(
         existing = os.environ.get(OLLAMA_NUM_CTX_ENV)
         declared = str(spec.num_ctx)
         if existing is not None and existing != declared:
-            raise RuntimeError(
-                f"{OLLAMA_NUM_CTX_ENV}={existing} conflicts with {declared}"
-            )
+            raise RuntimeError(f"{OLLAMA_NUM_CTX_ENV}={existing} conflicts with {declared}")
         os.environ[OLLAMA_NUM_CTX_ENV] = declared
     if spec.slug == "gemini37flash" and spec.reasoning_effort:
         os.environ["GEMINI_REASONING_EFFORT"] = spec.reasoning_effort

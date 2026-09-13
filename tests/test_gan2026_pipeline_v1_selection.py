@@ -3,12 +3,15 @@
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     GanRecord,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import (
-    Gan2026PipelineV1,
-)
+from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.rules import run_record
+from clinical_extraction.tasks.seizure_frequency.gan2026.runners.config import PipelineConfiguration
 from clinical_extraction.tasks.shared.epilepsy.normalization import (
     FrequencyLabelKind,
 )
+
+
+def _run(record):
+    return run_record(record, PipelineConfiguration(architecture="rules"))
 
 
 def _record(note_text: str, gold_label: str = "unknown") -> GanRecord:
@@ -29,7 +32,7 @@ def test_pipeline_prefers_cluster_spacing_over_incidental_daily_mentions() -> No
         "His seizures typically occur in clusters, generally spaced four days "
         "apart, though brief periods of daily seizures have been reported."
     )
-    result = Gan2026PipelineV1().run(_record(note_text))
+    result = _run(_record(note_text))
 
     assert result.output.final_value == "1 per 4 day"
     assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
@@ -47,7 +50,7 @@ def test_pipeline_extracts_sparse_parenthetical_month_event_lists() -> None:
         "self-terminating). In Feb he had 7 nocturnal seizures, and in Apr "
         "a single tonic seizure was recorded during respite care."
     )
-    result = Gan2026PipelineV1().run(_record(note_text))
+    result = _run(_record(note_text))
 
     assert result.output.final_value == "11 per 5 month"
     assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
@@ -61,7 +64,7 @@ def test_pipeline_extracts_sparse_parenthetical_month_event_lists() -> None:
 
 
 def test_pipeline_selects_more_frequent_no_more_than_weekly_semiology() -> None:
-    result = Gan2026PipelineV1().run(
+    result = _run(
         _record(
             "Over the past year seizure control has been relatively stable. "
             "She experiences two generalised tonic-clonic seizures every "
@@ -77,7 +80,7 @@ def test_pipeline_selects_more_frequent_no_more_than_weekly_semiology() -> None:
 
 
 def test_pipeline_extracts_persistent_adverbial_semiology_rates() -> None:
-    result = Gan2026PipelineV1().run(
+    result = _run(
         _record(
             "Only a single tonic-clonic seizure occurred over the past six months. "
             "Brief myoclonic jerks persist daily on awakening but are considered "
@@ -98,7 +101,7 @@ def test_pipeline_prefers_current_improved_frequency_over_historical_baseline() 
         "Prior to this period the seizures were occurring every 1 or 2 weeks. "
         "Over the past year, however, the current pattern is <= two or four per year."
     )
-    result = Gan2026PipelineV1().run(_record(note_text))
+    result = _run(_record(note_text))
 
     assert result.output.final_value == "2 to 4 per year"
     assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
@@ -108,10 +111,9 @@ def test_pipeline_prefers_current_improved_frequency_over_historical_baseline() 
 
 def test_pipeline_ignores_medication_dose_frequencies() -> None:
     note_text = (
-        "Dose is levetiracetam 1 g twice a day. Patient reports 5 or 7 epileptic "
-        "spasms this year."
+        "Dose is levetiracetam 1 g twice a day. Patient reports 5 or 7 epileptic spasms this year."
     )
-    result = Gan2026PipelineV1().run(_record(note_text))
+    result = _run(_record(note_text))
 
     assert result.output.final_value == "5 to 7 per year"
     assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY

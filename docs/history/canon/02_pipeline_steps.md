@@ -8,7 +8,7 @@
 Last updated: 2026-07-31
 
 Exact source, configuration, scorer, test, and replay paths are in the
-[retained evidence index](../../experiments/retained_evidence_manifest.md).
+[retained evidence index](../../research/shared/retained_evidence_manifest.md).
 
 This page is the abstract. The arrows below compress each method into four
 steps, which is too few to explain ownership, improvement, regression, or
@@ -53,7 +53,7 @@ producer and Seizure Frequency extractor union do not meet the final family
 ownership boundary.
 
 New final-comparison evidence must follow
-[decision 0040](../../decisions/0040-final-exect-llm-with-rules-family-ownership.md):
+[decision 0040](../decisions/0040-final-exect-llm-with-rules-family-ownership.md):
 the named model supplies all four families, Prescription uses bounded
 post-model correction rather than deterministic substitution, and Seizure
 Frequency uses attributable projection and suppression without an independent

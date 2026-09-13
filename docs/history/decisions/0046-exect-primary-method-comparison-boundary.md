@@ -1,15 +1,15 @@
 # 0046: ExECT primary method comparison uses one-call Sol peers
 
-Date: 2026-08-01  
-Status: accepted  
+Date: 2026-08-01\
+Status: accepted\
 
 > [!NOTE]
 > **Historical Guidance Archive**
 > This document records historical guidance from earlier phases of the project. It does not authorize new runs, govern the longitudinal schema, or supersede current project direction. The active project plan is `docs/plans/ACTIVE_ROADMAP.md` (relative link: `../../plans/ACTIVE_ROADMAP.md`). Existing benchmark split, scoring, and holdout safeguards remain in force.
 
 Amends: paper-facing ExECT method identity implied by
-[canon scoring](../../canon/04_scoring.md) and
-[paper provenance](../../canon/10_paper_provenance.md)  
+[canon scoring](../canon/04_scoring.md) and
+[paper provenance](../canon/10_paper_provenance.md)\
 Does not change: [decision 0040](0040-final-exect-llm-with-rules-family-ownership.md)
 family ownership, [decision 0041](0041-single-call-exect-model-comparison.md)
 one-call architecture, or [decision 0045](0045-exect-default-policy-not-joint-combined.md)
@@ -126,16 +126,16 @@ readouts.
 ## Evidence and glossary owners
 
 - Evidence protocol (A → B → C):
-  [primary method-comparison surface protocol](../../experiments/exectv2/reliability/exectv2_primary_method_comparison_surface_protocol_2026-08-01.md)
+  [primary method-comparison surface protocol](../../research/exectv2/reliability/exectv2_primary_method_comparison_surface_protocol_2026-08-01.md)
 - Phase A — public six-model `test60` stage panel:
-  [stage panel report](../../experiments/exectv2/reliability/exectv2_six_model_test60_stage_panel_2026-08-01.md)
+  [stage panel report](../../research/exectv2/reliability/exectv2_six_model_test60_stage_panel_2026-08-01.md)
   and [panel aggregate](../../../experiments/exectv2_six_model_test60_stage_panel_20260801/panel_aggregate.json)
 - Phase B — rules-only four-family `dev140`:
-  [Phase B report](../../experiments/exectv2/reliability/exectv2_rules_only_four_family_clinical_headline_dev140_2026-08-15.md)
+  [Phase B report](../../research/exectv2/reliability/exectv2_rules_only_four_family_clinical_headline_dev140_2026-08-15.md)
   (08-01 headline pruned 2026-08-16; recover from Git history; living
   rules-only fill is E5)
 - Phase C — rules-only four-family aggregate-only `test60`:
-  [Phase C report](../../experiments/exectv2/reliability/exectv2_rules_only_four_family_clinical_headline_test60_2026-08-15.md)
+  [Phase C report](../../research/exectv2/reliability/exectv2_rules_only_four_family_clinical_headline_test60_2026-08-15.md)
   (08-01 headline pruned 2026-08-16; living aggregate is
   [`test60` `20260815`](../../../experiments/exectv2_rules_only_four_family_clinical_headline_test60_20260815.json))
 - Architecture:

@@ -1,13 +1,13 @@
 <!-- GENERATED FILE. Do not edit by hand.
      Source: src/clinical_extraction/architecture/ (stage manifests +
      executed teaching cases). Regenerate with
-     python scripts/build_architecture_docs.py -->
+     python scripts/checks/build_architecture_docs.py -->
 
 # Architecture: how a record moves through each method
 
-This directory answers one question: what happens to a letter, stage by stage, in each of the six implemented task-method runners, and who owns each change. These runners explain mechanism only; they are not the paper's five-cell headline table. For cited methods, scores, and claims see [docs/paper/methods.md](../paper/methods.md).
+This directory answers one question: what happens to a letter, stage by stage, in each of the six implemented task-method runners, and who owns each change. These runners explain mechanism only; they are not the paper's five-cell headline table. For cited methods, scores, and claims see [publications/dissertation/notes/methods.md](../paper/methods.md).
 
-Everything here is generated from the stage manifests in `src/clinical_extraction/architecture/manifests/` and from teaching cases that execute the real pipelines. Do not edit these files by hand - change the manifest or the code, then run `python scripts/build_architecture_docs.py`.
+Everything here is generated from the stage manifests in `src/clinical_extraction/architecture/manifests/` and from teaching cases that execute the real pipelines. Do not edit these files by hand - change the manifest or the code, then run `python scripts/checks/build_architecture_docs.py`.
 
 ## Start here
 
@@ -26,7 +26,7 @@ Everything here is generated from the stage manifests in `src/clinical_extractio
 | Gan 2026 | LLM with rules | The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer. This is the source-near wording ablation; the cited Gan extract is gan_llm_extract. | [card](method_cards/gan2026_llm_with_rules.md) |
 | ExECTv2 | Rules only | Nine independent deterministic extractors produce the all-nine prediction, while an explicit four-family projection defines the primary model comparison. | [card](method_cards/exectv2_rules_only.md) |
 | ExECTv2 | LLM only | ExECT LLM only: one model call on the note proposes four-family findings, and the raw-candidate view scores those findings without family repair. | [card](method_cards/exectv2_llm_only.md) |
-| ExECTv2 | LLM pre-post | ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms and named Select rules reconcile those findings into the scored representation (hybrid F1). This is the both-extract row; the paper's cited select stop uses later-stage encode/select per docs/paper/methods.md. | [card](method_cards/exectv2_llm_pre_post.md) |
+| ExECTv2 | LLM pre-post | ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms and named Select rules reconcile those findings into the scored representation (hybrid F1). This is the both-extract row; the paper's cited select stop uses later-stage encode/select per publications/dissertation/notes/methods.md. | [card](method_cards/exectv2_llm_pre_post.md) |
 
 ## Teaching cases
 
@@ -49,4 +49,4 @@ Everything here is generated from the stage manifests in `src/clinical_extractio
 
 ## What this layer does not own
 
-Scores, claim strength, and evidence freshness are owned elsewhere: `PROJECT_STATUS.md` for current evidence and `docs/paper/` for methods and claims. This layer explains mechanism only, and links to those owners rather than restating them.
+Scores, claim strength, and evidence freshness are owned elsewhere: `PROJECT_STATUS.md` for current evidence and `publications/dissertation/notes/` for methods and claims. This layer explains mechanism only, and links to those owners rather than restating them.

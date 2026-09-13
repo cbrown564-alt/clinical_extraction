@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from clinical_extraction.core.paths import resolve_saved_artifact_path
+
 ROOT = Path(__file__).resolve().parents[1]
 EXECT_HYBRID_ROOT = ROOT / "results/letter-benchmarks/exect/exect_llm_pre_post"
 LIVING_SLUGS = (
@@ -132,7 +134,18 @@ def test_inventory_covers_present_and_missing_cells() -> None:
         ("qwen38_27b", "gan_llm_extract", "test450"),
         ("qwen38_27b", "gan_llm_select_from_extract", "dev750"),
         ("qwen38_27b", "gan_llm_select_from_extract", "test450"),
+    } | {
+        (slug, "gan_llm_extract_encode_select", "test450")
+        for slug in (
+            "llama31_8b",
+            "qwen25_14b",
+            "qwen35_9b",
+            "qwen36_35b",
+            "qwen38_27b",
+            "gemma4_26b",
+        )
     }
+
     missing_cells = {
         (row.get("model_slug"), row["method"], row.get("split")) for row in inventory["missing"]
     }
@@ -160,7 +173,7 @@ def test_inventory_covers_present_and_missing_cells() -> None:
     gan_fields = set(inventory["strip"]["gan"])
     exect_fields = set(inventory["strip"]["exect"])
     for row in inventory["present"]:
-        path = ROOT / row["path"]
+        path = resolve_saved_artifact_path(ROOT, row["path"])
         assert path.is_file()
         lines = [line for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
         assert len(lines) == row["n"]
@@ -213,7 +226,7 @@ def test_gan_dev750_panel_is_rectangular() -> None:
     for cell in panel["cells"]:
         if cell["status"] != "present":
             continue
-        scored_path = ROOT / cell["scored"]
+        scored_path = resolve_saved_artifact_path(ROOT, cell["scored"])
         rows = [
             json.loads(line)
             for line in scored_path.read_text(encoding="utf-8").splitlines()
@@ -259,7 +272,7 @@ def test_exect_dev140_panel_is_rectangular() -> None:
     for cell in panel["cells"]:
         if cell["status"] != "present" or not cell.get("scored"):
             continue
-        scored_path = ROOT / cell["scored"]
+        scored_path = resolve_saved_artifact_path(ROOT, cell["scored"])
         rows = [
             json.loads(line)
             for line in scored_path.read_text(encoding="utf-8").splitlines()

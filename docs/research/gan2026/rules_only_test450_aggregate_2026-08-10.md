@@ -8,7 +8,7 @@ Model calls: zero
 Protocol: [docs/research/gan2026/rules_only_test450_aggregate_protocol_2026-08-10.md](rules_only_test450_aggregate_protocol_2026-08-10.md)
 Gate A: [rules_only_validation750_gate_a_2026-08-10.md](rules_only_validation750_gate_a_2026-08-10.md)
 
-Machine artifact: [JSON](../../experiments/gan2026_rules_only_test450_20260810.json)
+Machine artifact: [JSON](../../../experiments/gan2026_rules_only_test450_20260810.json)
 
 ## Question
 

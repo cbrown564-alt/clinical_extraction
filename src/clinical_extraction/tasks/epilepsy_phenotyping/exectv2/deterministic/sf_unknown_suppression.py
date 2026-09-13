@@ -58,7 +58,6 @@ _CONTEXTUAL_OR_HISTORICAL_CHANGE_RE = re.compile(
 )
 
 
-
 def suppress_rows(rows: Sequence[Mapping[str, Any]]) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.sf_replay_scoring import (  # noqa: E501
         summarize_sf_rows,
@@ -198,7 +197,7 @@ def write_rows_and_report(
     jsonl_path: Path,
     report_path: Path,
 ) -> dict[str, Any]:
-    from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (  # noqa: E501
+    from clinical_extraction.core.jsonl import (  # noqa: E501
         write_jsonl_rows as write_jsonl,
     )
 
@@ -219,7 +218,6 @@ def _suppression_rule(mention: Mapping[str, Any]) -> str | None:
     if _CONTEXTUAL_OR_HISTORICAL_CHANGE_RE.search(evidence):
         return "unknown_suppression.contextual_or_historical_change"
     return None
-
 
 
 def _copy_mention(mention: Mapping[str, Any]) -> dict[str, Any]:
@@ -249,7 +247,6 @@ def _action_counts(rows: Sequence[Mapping[str, Any]]) -> dict[str, int]:
         for action in row.get("suppression_actions", []):
             counts[str(action.get("rule_id", "unknown"))] += 1
     return dict(counts)
-
 
 
 def _success_gate(

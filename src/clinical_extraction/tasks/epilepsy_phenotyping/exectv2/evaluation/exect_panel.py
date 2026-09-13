@@ -7,6 +7,10 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any, cast
 
+from clinical_extraction.core.jsonl import (
+    load_jsonl_rows,
+    write_jsonl_rows,
+)
 from clinical_extraction.core.paths import (
     discover_repo_root,
     resolve_letter_benchmarks_root,
@@ -45,10 +49,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.evaluation.exect_lat
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines import (
     key_entities_structured as structured,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    load_jsonl_rows,
-    write_jsonl_rows,
-)
 
 ROOT = discover_repo_root(start=Path(__file__))
 
@@ -75,9 +75,7 @@ EXTRACT_METHOD = "exect_llm_extract"
 FILTERED_METHOD = "exect_llm_extract_filtered"
 REQUEST_METHODS = (LLM_ONLY_METHOD, METHOD)
 PANEL_REQUEST_METHODS = (EXTRACT_METHOD,)
-EXECT_METHODS = (
-    REQUEST_METHODS + (EXTRACT_METHOD, FILTERED_METHOD)
-)
+EXECT_METHODS = REQUEST_METHODS + (EXTRACT_METHOD, FILTERED_METHOD)
 LATER_STAGE_METHODS = ("exect_llm_encode", "exect_llm_select")
 PANEL_METHODS = ("rules_only", "llm_extract", "llm_encode", "llm_select")
 PROMOTE_SPLIT = "dev140"
@@ -264,9 +262,7 @@ def promote_exect_llm_only(slug: str, split: str) -> dict[str, Any]:
     structured_path = _work_structured_path(source, LLM_ONLY_METHOD)
     comparison_path = source / "comparison.json"
     if structured_path is None or not comparison_path.is_file():
-        raise RuntimeError(
-            f"missing finished living-effort {LLM_ONLY_METHOD} {slug} {split} run"
-        )
+        raise RuntimeError(f"missing finished living-effort {LLM_ONLY_METHOD} {slug} {split} run")
     rows = load_jsonl_rows(structured_path)
     expected = exect_row_count(split)
     if len(rows) != expected:
@@ -354,9 +350,7 @@ def promote_exect_llm_extract(slug: str, split: str) -> dict[str, Any]:
     structured_path = _work_structured_path(source, EXTRACT_METHOD)
     comparison_path = source / "comparison.json"
     if structured_path is None or not comparison_path.is_file():
-        raise RuntimeError(
-            f"missing finished living-effort {EXTRACT_METHOD} {slug} {split} run"
-        )
+        raise RuntimeError(f"missing finished living-effort {EXTRACT_METHOD} {slug} {split} run")
     rows = load_jsonl_rows(structured_path)
     expected = exect_row_count(split)
     if len(rows) != expected:
@@ -583,9 +577,7 @@ def rebuild_dev140_panel() -> dict[str, Any]:
             else {}
         )
         raw_rungs = rung_payload.get("rungs") or {}
-        rung_scores = (
-            normalize_rungs_payload(raw_rungs) if isinstance(raw_rungs, dict) else {}
-        )
+        rung_scores = normalize_rungs_payload(raw_rungs) if isinstance(raw_rungs, dict) else {}
         pre_post_dest = paper_method_cell_root(METHOD, slug)
         for method in PANEL_METHODS:
             if method == "rules_only":
@@ -599,9 +591,7 @@ def rebuild_dev140_panel() -> dict[str, Any]:
                             "method": method,
                             "status": "present",
                             "path": dest.relative_to(ROOT).as_posix() + "/",
-                            "comparison": (
-                                dest / "dev140.json"
-                            ).relative_to(ROOT).as_posix(),
+                            "comparison": (dest / "dev140.json").relative_to(ROOT).as_posix(),
                             "n": exect_row_count(PROMOTE_SPLIT),
                             "clinical_fact_f1": rules_f1,
                             "four_family_micro_f1": rules_f1,
@@ -651,8 +641,7 @@ def rebuild_dev140_panel() -> dict[str, Any]:
                             "clinical_fact_f1": arm.get("hybrid_headline_f1"),
                             "raw_headline_f1": arm.get("raw_headline_f1"),
                             "hybrid_headline_f1": arm.get("hybrid_headline_f1"),
-                            "living_effort": extra.get("living_effort")
-                            or _living_effort(slug),
+                            "living_effort": extra.get("living_effort") or _living_effort(slug),
                         }
                     )
                 else:
@@ -668,9 +657,7 @@ def rebuild_dev140_panel() -> dict[str, Any]:
                         }
                     )
                 continue
-            extract_metric = (
-                extract_stages.get(method) if extract_stages is not None else None
-            )
+            extract_metric = extract_stages.get(method) if extract_stages is not None else None
             extract_dest = paper_method_cell_root(EXTRACT_METHOD, slug)
             extract_comparison = extract_dest / "comparison.json"
             extract_scored = extract_dest / "scored.jsonl"
@@ -835,14 +822,10 @@ def _catalog_rung_metrics(
         family_f1 = rung.get("family_f1")
         precision = rung.get("precision")
         recall = rung.get("recall")
-    return _catalog_prf_metrics(
-        overall, family_f1, precision=precision, recall=recall
-    )
+    return _catalog_prf_metrics(overall, family_f1, precision=precision, recall=recall)
 
 
-def _rungs_for_slug(
-    cache: dict[str, dict[str, Any]], slug: str
-) -> dict[str, Any]:
+def _rungs_for_slug(cache: dict[str, dict[str, Any]], slug: str) -> dict[str, Any]:
     cached = cache.get(slug)
     if cached is not None:
         return cached
@@ -852,9 +835,7 @@ def _rungs_for_slug(
         return cache[slug]
     payload = json.loads(path.read_text(encoding="utf-8"))
     raw = payload.get("rungs") or {}
-    cache[slug] = (
-        normalize_rungs_payload(raw) if isinstance(raw, dict) else {}
-    )
+    cache[slug] = normalize_rungs_payload(raw) if isinstance(raw, dict) else {}
     return cache[slug]
 
 
@@ -1137,12 +1118,9 @@ def _public_scored_llm_only(metrics: list[dict[str, Any]]) -> list[dict[str, Any
 
 def _ensure_missing_standalone_extract() -> None:
     inventory = json.loads(INVENTORY_PATH.read_text(encoding="utf-8"))
-    present = {
-        (row["model_slug"], row["method"], row["split"]) for row in inventory["present"]
-    }
+    present = {(row["model_slug"], row["method"], row["split"]) for row in inventory["present"]}
     missing = {
-        (row.get("model_slug"), row["method"], row.get("split"))
-        for row in inventory["missing"]
+        (row.get("model_slug"), row["method"], row.get("split")) for row in inventory["missing"]
     }
     extra: list[dict[str, Any]] = []
     for model in living_models():
@@ -1161,8 +1139,7 @@ def _ensure_missing_standalone_extract() -> None:
                     "method": EXTRACT_METHOD,
                     "n": n,
                     "note": (
-                        "Six-model cell-3 extract (ExECT). Inventory prompt "
-                        "and inventory F1."
+                        "Six-model cell-3 extract (ExECT). Inventory prompt and inventory F1."
                     ),
                     "primary": True,
                     "row_policy": policy,
@@ -1180,12 +1157,9 @@ def _ensure_missing_standalone_extract() -> None:
 
 def _ensure_missing_standalone_llm_only() -> None:
     inventory = json.loads(INVENTORY_PATH.read_text(encoding="utf-8"))
-    present = {
-        (row["model_slug"], row["method"], row["split"]) for row in inventory["present"]
-    }
+    present = {(row["model_slug"], row["method"], row["split"]) for row in inventory["present"]}
     missing = {
-        (row.get("model_slug"), row["method"], row.get("split"))
-        for row in inventory["missing"]
+        (row.get("model_slug"), row["method"], row.get("split")) for row in inventory["missing"]
     }
     extra: list[dict[str, Any]] = []
     for model in living_models():
@@ -1224,12 +1198,7 @@ def _compact_arm(comparison: Mapping[str, Any]) -> dict[str, Any]:
     arms = comparison.get("arms") or {}
     if not isinstance(arms, Mapping):
         return {}
-    arm = (
-        arms.get(METHOD)
-        or arms.get(LEGACY_METHOD)
-        or arms.get("compact_ledger")
-        or {}
-    )
+    arm = arms.get(METHOD) or arms.get(LEGACY_METHOD) or arms.get("compact_ledger") or {}
     return dict(arm) if isinstance(arm, Mapping) else {}
 
 
@@ -1238,9 +1207,7 @@ def _living_extract_stages(slug: str) -> dict[str, float] | None:
     comparison_path = dest / "comparison.json"
     if not comparison_path.is_file():
         return None
-    living = adapt_legacy_comparison(
-        json.loads(comparison_path.read_text(encoding="utf-8"))
-    )
+    living = adapt_legacy_comparison(json.loads(comparison_path.read_text(encoding="utf-8")))
     if living is None:
         return None
     extract = stage_metric(living, "extract")
@@ -1261,9 +1228,7 @@ def _living_effort(slug: str) -> str:
     return "none"
 
 
-def _public_later_stage_scored(
-    method: str, rows: list[dict[str, Any]]
-) -> list[dict[str, Any]]:
+def _public_later_stage_scored(method: str, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     scored: list[dict[str, Any]] = []
     for row in rows:
         scored.append(
@@ -1309,9 +1274,7 @@ def _public_scored(metrics: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "raw_headline_f1": raw_prf.get("f1"),
                 "hybrid_headline_f1": hybrid_prf.get("f1"),
                 "raw_four_family_letter_exact": row.get("raw_four_family_letter_exact"),
-                "hybrid_four_family_letter_exact": row.get(
-                    "hybrid_four_family_letter_exact"
-                ),
+                "hybrid_four_family_letter_exact": row.get("hybrid_four_family_letter_exact"),
                 "family_letter_exact": row.get("family_letter_exact"),
                 "parse_ok": int(quality.get("parse") or 0) == 0
                 and int(quality.get("schema") or 0) == 0,
@@ -1324,8 +1287,7 @@ def _sync_inventory(panel: Mapping[str, Any]) -> None:
     inventory = json.loads(INVENTORY_PATH.read_text(encoding="utf-8"))
     living_slugs = {item["slug"] for item in living_models()}
     existing_present = {
-        (row["model_slug"], row["method"], row["split"]): row
-        for row in inventory["present"]
+        (row["model_slug"], row["method"], row["split"]): row for row in inventory["present"]
     }
 
     def living_dev140(row: Mapping[str, Any]) -> bool:
@@ -1378,8 +1340,7 @@ def _sync_inventory(panel: Mapping[str, Any]) -> None:
                     "n": exect_row_count(PROMOTE_SPLIT),
                     "status": "missing",
                     "note": (
-                        "Living-effort ExECT development cell. "
-                        "Promote when the run finishes."
+                        "Living-effort ExECT development cell. Promote when the run finishes."
                     ),
                 }
             )

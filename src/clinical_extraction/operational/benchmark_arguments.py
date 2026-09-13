@@ -10,14 +10,14 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.core.jsonl import (
+    write_jsonl_rows as write_jsonl,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     load_letters_for_split,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.split_policy import (
     require_development_split,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    write_jsonl_rows as write_jsonl,
 )
 
 TEST_SPLIT_ERROR = "ERROR: only the row-inspectable ExECT development split is permitted."

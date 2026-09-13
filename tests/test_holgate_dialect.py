@@ -46,7 +46,6 @@ def test_holgate_dialect_maps_prompted_and_format_aliases(
 
 def test_holgate_dialect_leaves_unresolved_narrative_alone() -> None:
     text = (
-        "Multiple seizure types: 1 generalized tonic-clonic seizure every 3 "
-        "months, weekly absences"
+        "Multiple seizure types: 1 generalized tonic-clonic seizure every 3 months, weekly absences"
     )
     assert project_holgate_dialect_label(text) == text

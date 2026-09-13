@@ -1,7 +1,7 @@
 <!-- GENERATED FILE. Do not edit by hand.
      Source: src/clinical_extraction/architecture/ (stage manifests +
      executed teaching cases). Regenerate with
-     python scripts/build_architecture_docs.py -->
+     python scripts/checks/build_architecture_docs.py -->
 
 # ExECTv2 - LLM pre-post
 
@@ -12,7 +12,7 @@ Stages that may change clinical meaning: 7
 
 ## One sentence
 
-> ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms and named Select rules reconcile those findings into the scored representation (hybrid F1). This is the both-extract row; the paper's cited select stop uses later-stage encode/select per docs/paper/methods.md.
+> ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms and named Select rules reconcile those findings into the scored representation (hybrid F1). This is the both-extract row; the paper's cited select stop uses later-stage encode/select per publications/dissertation/notes/methods.md.
 
 ## Sixty seconds
 
@@ -26,7 +26,7 @@ ExECT LLM pre-post (`exect_llm_pre_post`, alias `exect_llm_with_rules`) uses its
 | Who first proposes the clinical answer? | the named model proposes all four families (exect.llm_pre_post.model_call); four family transforms and the named Select-rule stack may change findings afterwards |
 | Which later stages may change clinical meaning? | `exect.llm_pre_post.project_and_gate`, `exect.llm_pre_post.sf_state_projection`, `exect.llm_pre_post.sf_unknown_suppression`, `exect.llm_pre_post.lens.diagnosis`, `exect.llm_pre_post.lens.prescription`, `exect.llm_pre_post.select_rules` |
 | What final representation is scored? | A PredictedLetter of four-family mentions materialized into named score views; the primary view is clinical fact recovery (`clinical_headline`, hybrid F1). |
-| What evidence shows whether each component helped or harmed? | `docs/paper/decisions/exect-compact-is-the-cited-hybrid.md`, `docs/paper/methods.md`, `docs/paper/claims.md` |
+| What evidence shows whether each component helped or harmed? | `publications/dissertation/notes/decisions/exect-compact-is-the-cited-hybrid.md`, `publications/dissertation/notes/methods.md`, `publications/dissertation/notes/claims.md` |
 
 ## Stages
 
@@ -343,7 +343,7 @@ These paths exist and are easy to mistake for this runner. They are named here s
 | Path | Role | Why it is not this runner |
 | --- | --- | --- |
 | `src/clinical_extraction/operational/exect.py` | operational wrapper | Adds endpoint handling and live assembly around the same stages. Not a separate method; it must not drift from this manifest. |
-| `docs/paper/decisions/exect-compact-is-the-cited-hybrid.md` | paper identity | This runner is the both-extract row (`exect_llm_pre_post` / `exect_llm_with_rules`). The paper's cited select stop uses later-stage encode/select; see docs/paper/methods.md. |
+| `publications/dissertation/notes/decisions/exect-compact-is-the-cited-hybrid.md` | paper identity | This runner is the both-extract row (`exect_llm_pre_post` / `exect_llm_with_rules`). The paper's cited select stop uses later-stage encode/select; see publications/dissertation/notes/methods.md. |
 | `docs/history/decisions.md` | historical pointer | 0040/0041/0045 family-ownership and no-joint locks. Recover the full files from git. |
 
 ## Executable trace

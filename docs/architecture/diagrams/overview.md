@@ -1,11 +1,11 @@
 <!-- GENERATED FILE. Do not edit by hand.
      Source: src/clinical_extraction/architecture/ (stage manifests +
      executed teaching cases). Regenerate with
-     python scripts/build_architecture_docs.py -->
+     python scripts/checks/build_architecture_docs.py -->
 
 # Overview: two tasks x three implemented runners
 
-Six implemented runners on one page. Each cell names who first proposes the clinical answer, which is the fact most often lost when these pipelines are described informally. These runners are not the paper's five-cell headline table; for cited methods, scores, and claims see [docs/paper/methods.md](../../../docs/paper/methods.md).
+Six implemented runners on one page. Each cell names who first proposes the clinical answer, which is the fact most often lost when these pipelines are described informally. These runners are not the paper's five-cell headline table; for cited methods, scores, and claims see [publications/dissertation/notes/methods.md](../../../publications/dissertation/notes/methods.md).
 
 ```mermaid
 flowchart TB
@@ -42,4 +42,4 @@ flowchart TB
 | Gan 2026 | LLM with rules | The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer. This is the source-near wording ablation; the cited Gan extract is gan_llm_extract. |
 | ExECTv2 | Rules only | Nine independent deterministic extractors produce the all-nine prediction, while an explicit four-family projection defines the primary model comparison. |
 | ExECTv2 | LLM only | ExECT LLM only: one model call on the note proposes four-family findings, and the raw-candidate view scores those findings without family repair. |
-| ExECTv2 | LLM pre-post | ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms and named Select rules reconcile those findings into the scored representation (hybrid F1). This is the both-extract row; the paper's cited select stop uses later-stage encode/select per docs/paper/methods.md. |
+| ExECTv2 | LLM pre-post | ExECT LLM pre-post: the model proposes findings for four families in one request; deterministic family transforms and named Select rules reconcile those findings into the scored representation (hybrid F1). This is the both-extract row; the paper's cited select stop uses later-stage encode/select per publications/dissertation/notes/methods.md. |

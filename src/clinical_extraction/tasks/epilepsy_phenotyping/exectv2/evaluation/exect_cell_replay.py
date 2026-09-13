@@ -9,6 +9,10 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.core.jsonl import (
+    load_jsonl_rows,
+    write_jsonl_rows,
+)
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.evaluation.letter_benchmarks.answer_states import graph_from_hops, make_hop
 from clinical_extraction.evaluation.letter_benchmarks.cells import EXECT_HOP_EFFECT_CLASS, RUNG_IDS
@@ -48,10 +52,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     clinical_headline_unit_keys,
     clinical_inventory_unit_keys,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    load_jsonl_rows,
-    write_jsonl_rows,
-)
 
 ROOT = discover_repo_root(start=Path(__file__))
 FAMILIES = ("Diagnosis", "SeizureFrequency", "Prescription", "Investigations")
@@ -68,11 +68,7 @@ def exect_llm_only_rows_path(slug: str, split: str) -> Path:
     """Return the Compact / filtered-extract ablation replay file."""
 
     return (
-        ROOT
-        / "results/letter-benchmarks/exect/exect_llm_only"
-        / slug
-        / split
-        / "structured.jsonl"
+        ROOT / "results/letter-benchmarks/exect/exect_llm_only" / slug / split / "structured.jsonl"
     )
 
 
@@ -133,14 +129,7 @@ def exect_pre_post_structured_path(slug: str, split: str) -> Path:
 def exect_pre_post_cell_path(slug: str, split: str) -> Path:
     """Return the living rung-5 cell for one model and split."""
 
-    return (
-        ROOT
-        / "results/letter-benchmarks/exect"
-        / PRE_POST_METHOD
-        / slug
-        / split
-        / "cell.json"
-    )
+    return ROOT / "results/letter-benchmarks/exect" / PRE_POST_METHOD / slug / split / "cell.json"
 
 
 def exect_rules_path(split: str) -> Path:
@@ -225,9 +214,7 @@ def hydrate_exect_five_cell_letter(
             [dict(producer.row)],
             config=assembly,
         )[letter.letter_id]
-        predicted = list(
-            assembled["prediction_surfaces"].get("residual_benchmark_added") or []
-        )
+        predicted = list(assembled["prediction_surfaces"].get("residual_benchmark_added") or [])
     finally:
         structured.set_active_prompt_version(before)
     full = _frontend_letter(gold=letter, predicted=predicted, source_model=model)
@@ -251,9 +238,7 @@ def format_render_mention_rows(
 ) -> list[dict[str, Any]]:
     """Same findings, standard writing. No evidence reject or clinical post."""
 
-    formatted, _warnings = structured.apply_format_stack(
-        producer.spelled_mentions, note_text
-    )
+    formatted, _warnings = structured.apply_format_stack(producer.spelled_mentions, note_text)
     return structured.assign_flatten_mention_ids(
         [structured.mention_row(mention) for mention in formatted]
     )
@@ -275,9 +260,7 @@ def inventory_hash(
     keys: list[str] = []
     for family in FAMILIES:
         family_mentions = [
-            annotation
-            for annotation in predicted_letter.annotations
-            if annotation.entity == family
+            annotation for annotation in predicted_letter.annotations if annotation.entity == family
         ]
         for key in unit_keys(family, family_mentions, note_text):
             keys.append(json.dumps(key, sort_keys=True, default=str))
@@ -304,20 +287,14 @@ def replay_exect_rungs(
         else exect_living_extract_rows_path(slug, split)
     )
     if not raw_path.is_file():
-        raise FileNotFoundError(
-            f"missing exect extract replay file for {slug} {split}: {raw_path}"
-        )
+        raise FileNotFoundError(f"missing exect extract replay file for {slug} {split}: {raw_path}")
     letters = {letter.letter_id: letter for letter in letters_for_split(split)}
     structured_rows = load_jsonl_rows(raw_path)
     raws = {str(row["letter_id"]): str(row["raw_output"]) for row in structured_rows}
     if len(raws) != expected_n:
-        raise RuntimeError(
-            f"expected {expected_n} extract raw rows for {split}, found {len(raws)}"
-        )
+        raise RuntimeError(f"expected {expected_n} extract raw rows for {split}, found {len(raws)}")
     unit_keys = (
-        clinical_headline_unit_keys
-        if source == "ablation"
-        else clinical_inventory_unit_keys
+        clinical_headline_unit_keys if source == "ablation" else clinical_inventory_unit_keys
     )
     assembly = (
         StructuredMethodConfig.selected()
@@ -325,9 +302,7 @@ def replay_exect_rungs(
         else StructuredMethodConfig.inventory()
     )
     prompt_version = (
-        structured.EXECT_LLM_ONLY
-        if source == "ablation"
-        else structured.EXECT_LLM_EXTRACT
+        structured.EXECT_LLM_ONLY if source == "ablation" else structured.EXECT_LLM_EXTRACT
     )
     rules = json.loads(exect_rules_path(split).read_text(encoding="utf-8"))
     hybrid_cell_path = exect_pre_post_cell_path(slug, split)
@@ -364,9 +339,7 @@ def replay_exect_rungs(
             surfaces = assembled["prediction_surfaces"]
             schema_rows = schema_mention_rows(producer)
             format_render_mentions = format_render_mention_rows(producer, letter.note_text)
-            schema_hash = inventory_hash(
-                schema_rows, letter.note_text, unit_keys=unit_keys
-            )
+            schema_hash = inventory_hash(schema_rows, letter.note_text, unit_keys=unit_keys)
             format_hash = inventory_hash(
                 format_render_mentions, letter.note_text, unit_keys=unit_keys
             )
@@ -499,9 +472,7 @@ def replay_exect_rungs(
         hybrid_cell=hybrid_cell,
         mention_counts=mention_counts,
         scored=scored,
-        shared_raw_output=(
-            "exect_llm_only" if source == "ablation" else "exect_llm_extract"
-        ),
+        shared_raw_output=("exect_llm_only" if source == "ablation" else "exect_llm_extract"),
     )
     write_exect_rung_artifacts(
         exect_rung_out_dir(slug, split),
@@ -522,14 +493,9 @@ def replay_exect_pre_post_encode(split: str, *, slug: str = "gemini37flash") -> 
     expected_n = exect_row_count(split)
     raw_path = exect_pre_post_structured_path(slug, split)
     if not raw_path.is_file():
-        raise FileNotFoundError(
-            f"missing exect_llm_pre_post raw for {slug} {split}: {raw_path}"
-        )
+        raise FileNotFoundError(f"missing exect_llm_pre_post raw for {slug} {split}: {raw_path}")
     letters = {letter.letter_id: letter for letter in letters_for_split(split)}
-    raws = {
-        str(row["letter_id"]): str(row["raw_output"])
-        for row in load_jsonl_rows(raw_path)
-    }
+    raws = {str(row["letter_id"]): str(row["raw_output"]) for row in load_jsonl_rows(raw_path)}
     if len(raws) != expected_n:
         raise RuntimeError(
             f"expected {expected_n} pre_post raw rows for {split}, found {len(raws)}"
@@ -611,8 +577,7 @@ def replay_exect_pre_post_encode(split: str, *, slug: str = "gemini37flash") -> 
     select["predicted_mention_count"] = mention_counts["select"]
     summary = {
         "claim_boundary": (
-            "ExECT aggregate-only test60 pre-post rule encode. "
-            "Do not inspect holdout rows."
+            "ExECT aggregate-only test60 pre-post rule encode. Do not inspect holdout rows."
             if holdout
             else "ExECT development pre-post rule encode. Not holdout."
         ),
@@ -728,8 +693,7 @@ def _comparison_summary(
                 else None
             ),
             "same_as_schema": (
-                _surface_prf(family_rows["llm_extract"])
-                == _surface_prf(family_rows["llm_encode"])
+                _surface_prf(family_rows["llm_extract"]) == _surface_prf(family_rows["llm_encode"])
             ),
             "note": (
                 "Rung 2 is flatten only. Rung 3 is same-fact format (closed-vocab "

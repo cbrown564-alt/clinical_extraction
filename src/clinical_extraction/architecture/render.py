@@ -6,7 +6,7 @@ behaviour, so a diagram cannot disagree with runtime ownership: if the code
 moves, the manifest fails validation or the teaching case fails to build, and
 the documents are regenerated from the corrected source.
 
-``scripts/build_architecture_docs.py --check`` re-renders and compares, so
+``scripts/checks/build_architecture_docs.py --check`` re-renders and compares, so
 drift between the code and the published explanation fails CI.
 """
 
@@ -28,7 +28,7 @@ GENERATED_BANNER = (
     "<!-- GENERATED FILE. Do not edit by hand.\n"
     "     Source: src/clinical_extraction/architecture/ (stage manifests +\n"
     "     executed teaching cases). Regenerate with\n"
-    "     python scripts/build_architecture_docs.py -->"
+    "     python scripts/checks/build_architecture_docs.py -->"
 )
 
 _EFFECT_LABEL = {
@@ -82,8 +82,7 @@ def render_method_card(manifest: MethodManifest) -> str:
     lines.append(f"Role: **{manifest.role}**  ")
     lines.append(f"Stages: {len(manifest.stages)}")
     lines.append(
-        f"Stages that may change clinical meaning: "
-        f"{len(manifest.clinical_meaning_stages)}"
+        f"Stages that may change clinical meaning: {len(manifest.clinical_meaning_stages)}"
     )
     lines.append("")
 
@@ -109,8 +108,7 @@ def render_method_card(manifest: MethodManifest) -> str:
                 [
                     "Which later stages may change clinical meaning?",
                     ", ".join(
-                        f"`{stage.stage_id}`"
-                        for stage in manifest.clinical_meaning_stages[1:]
+                        f"`{stage.stage_id}`" for stage in manifest.clinical_meaning_stages[1:]
                     )
                     or "none - the first proposer is the only one",
                 ],
@@ -154,9 +152,11 @@ def render_method_card(manifest: MethodManifest) -> str:
     for index, stage in enumerate(manifest.stages, start=1):
         lines.append(f"### {index}. {stage.name}")
         lines.append("")
-        lines.append(f"`{stage.stage_id}` - {_OWNER_LABEL[stage.owner]}-owned, "
-                     f"{_EFFECT_LABEL[stage.effect_class]}"
-                     + (f", rule category `{stage.rule_category}`" if stage.rule_category else ""))
+        lines.append(
+            f"`{stage.stage_id}` - {_OWNER_LABEL[stage.owner]}-owned, "
+            f"{_EFFECT_LABEL[stage.effect_class]}"
+            + (f", rule category `{stage.rule_category}`" if stage.rule_category else "")
+        )
         lines.append("")
         lines.append(stage.operation)
         lines.append("")
@@ -175,21 +175,25 @@ def render_method_card(manifest: MethodManifest) -> str:
             lines.append("")
         code_path = stage.implementation.path
         lines.append(
-            f"- Code: [`{code_path}`](../../../{code_path}) "
-            f"(`{stage.implementation.symbol}`)"
+            f"- Code: [`{code_path}`](../../../{code_path}) (`{stage.implementation.symbol}`)"
         )
-        lines.append(f"- Test: [`{stage.governing_test.split('::')[0]}`]"
-                     f"(../../../{stage.governing_test.split('::')[0]})")
-        lines.append("- Proven in a trace by: "
-                     + ", ".join(f"`{field}`" for field in stage.trace_fields))
+        lines.append(
+            f"- Test: [`{stage.governing_test.split('::')[0]}`]"
+            f"(../../../{stage.governing_test.split('::')[0]})"
+        )
+        lines.append(
+            "- Proven in a trace by: " + ", ".join(f"`{field}`" for field in stage.trace_fields)
+        )
         lines.append(f"- Paper wording: {stage.paper_wording}")
         lines.append("")
 
     lines.append("## Code map")
     lines.append("")
-    lines.append(f"Entry point: [`{manifest.entry_point.path}`]"
-                 f"(../../../{manifest.entry_point.path}) "
-                 f"(`{manifest.entry_point.symbol}`)")
+    lines.append(
+        f"Entry point: [`{manifest.entry_point.path}`]"
+        f"(../../../{manifest.entry_point.path}) "
+        f"(`{manifest.entry_point.symbol}`)"
+    )
     lines.append("")
     lines.extend(
         _table(
@@ -253,7 +257,7 @@ def render_overview_diagram() -> str:
         "when these pipelines are described informally. These runners are "
         "not the paper's five-cell headline table; for cited methods, "
         "scores, and claims see "
-        "[docs/paper/methods.md](../../../docs/paper/methods.md)."
+        "[publications/dissertation/notes/methods.md](../../../publications/dissertation/notes/methods.md)."
     )
     lines.append("")
     lines.append("```mermaid")
@@ -265,14 +269,12 @@ def render_overview_diagram() -> str:
             if manifest.task != task:
                 continue
             node = manifest.method_id
-            owner = "model" if any(
-                stage.owner == "model" for stage in manifest.stages
-            ) else "rules"
+            owner = "model" if any(stage.owner == "model" for stage in manifest.stages) else "rules"
             changing = len(manifest.clinical_meaning_stages)
             lines.append(
-                f"    {node}[\"{_mermaid_label(manifest.method_label)}"
+                f'    {node}["{_mermaid_label(manifest.method_label)}'
                 f"<br/>first proposer: {owner}"
-                f"<br/>{changing} stage(s) can change the answer\"]"
+                f'<br/>{changing} stage(s) can change the answer"]'
             )
         lines.append("  end")
     lines.append("")
@@ -426,9 +428,7 @@ def render_ownership_matrix() -> str:
                     stage.rule_category or "-",
                 ]
             )
-    lines.extend(
-        _table(["Task", "Method", "Stage", "Owner", "Rule category"], rows)
-    )
+    lines.extend(_table(["Task", "Method", "Stage", "Owner", "Rule category"], rows))
     lines.append("")
     return "\n".join(lines)
 
@@ -576,20 +576,16 @@ def _render_run(run: MethodRun, case: TeachingCase | None = None) -> list[str]:
 
     changed = [obs for obs in run.observations if obs.changed]
     lines.append(
-        f"{len(changed)} of {len(run.observations)} stages changed something "
-        "on this letter."
+        f"{len(changed)} of {len(run.observations)} stages changed something on this letter."
     )
     lines.append("")
 
     for index, obs in enumerate(run.observations, start=1):
         marker = "**changed**" if obs.changed else "no change"
-        lines.append(
-            f"### {index}. {obs.stage_name} <sub>`{obs.stage_id}`</sub>"
-        )
+        lines.append(f"### {index}. {obs.stage_name} <sub>`{obs.stage_id}`</sub>")
         lines.append("")
         lines.append(
-            f"{_OWNER_LABEL[obs.owner]}-owned, "
-            f"{_EFFECT_LABEL[obs.effect_class]} - {marker}"
+            f"{_OWNER_LABEL[obs.owner]}-owned, {_EFFECT_LABEL[obs.effect_class]} - {marker}"
         )
         lines.append("")
         lines.append("```text")
@@ -678,10 +674,7 @@ def render_six_path_walkthrough(cases: Sequence[TeachingCase]) -> str:
     lines.extend(
         _table(
             ["Letter", "Task", "Gold", "What it teaches"],
-            [
-                [f"`{case.letter_id}`", case.task_label, case.gold, case.story]
-                for case in cases
-            ],
+            [[f"`{case.letter_id}`", case.task_label, case.gold, case.story] for case in cases],
         )
     )
     lines.append("")
@@ -692,9 +685,7 @@ def render_six_path_walkthrough(cases: Sequence[TeachingCase]) -> str:
         if case.mechanism:
             lines.append(case.mechanism)
             lines.append("")
-        lines.append(
-            f"**Gold:** {case.gold}  "
-        )
+        lines.append(f"**Gold:** {case.gold}  ")
         lines.append("")
         lines.append(case.gold_note)
         lines.append("")
@@ -750,8 +741,7 @@ def render_six_path_walkthrough(cases: Sequence[TeachingCase]) -> str:
                 repairs = _changed_repairs(hybrid)
                 credited = repairs[0] if repairs else "a named deterministic repair"
                 lines.append(
-                    f"On this letter the hybrid path is a rescue, credited to "
-                    f"`{credited}`."
+                    f"On this letter the hybrid path is a rescue, credited to `{credited}`."
                 )
                 lines.append("")
             elif hybrid.correct is False:
@@ -792,7 +782,7 @@ def render_index(cases: Sequence[TeachingCase] | None = None) -> str:
         "runners, and who owns each change. These runners explain "
         "mechanism only; they are not the paper's five-cell headline "
         "table. For cited methods, scores, and claims see "
-        "[docs/paper/methods.md](../paper/methods.md)."
+        "[publications/dissertation/notes/methods.md](../paper/methods.md)."
     )
     lines.append("")
     lines.append(
@@ -800,7 +790,7 @@ def render_index(cases: Sequence[TeachingCase] | None = None) -> str:
         "`src/clinical_extraction/architecture/manifests/` and from teaching "
         "cases that execute the real pipelines. Do not edit these files by "
         "hand - change the manifest or the code, then run "
-        "`python scripts/build_architecture_docs.py`."
+        "`python scripts/checks/build_architecture_docs.py`."
     )
     lines.append("")
     lines.append("## Start here")
@@ -818,10 +808,7 @@ def render_index(cases: Sequence[TeachingCase] | None = None) -> str:
         "a clinical answer, everywhere."
     )
     lines.append("4. A method card below, for the method you need.")
-    lines.append(
-        "5. A teaching letter for that task, to see a development letter "
-        "move through it."
-    )
+    lines.append("5. A teaching letter for that task, to see a development letter move through it.")
     lines.append("")
     lines.append("## Method cards")
     lines.append("")
@@ -858,8 +845,7 @@ def render_index(cases: Sequence[TeachingCase] | None = None) -> str:
         lines.append("")
         for case in cases:
             lines.append(
-                f"- [`{case.letter_id}`](teaching_cases/{_letter_slug(case)}.md) "
-                f"- {case.story}"
+                f"- [`{case.letter_id}`](teaching_cases/{_letter_slug(case)}.md) - {case.story}"
             )
     lines.append("")
     lines.append("## Diagrams")
@@ -874,7 +860,7 @@ def render_index(cases: Sequence[TeachingCase] | None = None) -> str:
     lines.append("")
     lines.append(
         "Scores, claim strength, and evidence freshness are owned elsewhere: "
-        "`PROJECT_STATUS.md` for current evidence and `docs/paper/` for "
+        "`PROJECT_STATUS.md` for current evidence and `publications/dissertation/notes/` for "
         "methods and claims. This layer explains mechanism only, and links "
         "to those owners rather than restating them."
     )
@@ -890,27 +876,15 @@ def all_documents(cases: Sequence[TeachingCase]) -> dict[str, str]:
         "diagrams/overview.md": render_overview_diagram(),
         "diagrams/ownership_matrix.md": render_ownership_matrix(),
         "diagrams/attribution_origins.md": render_attribution_view(),
-        "diagrams/gan2026_llm_with_rules_stages.md": render_stage_diagram(
-            "gan2026_llm_with_rules"
-        ),
-        "diagrams/exectv2_llm_pre_post_stages.md": render_stage_diagram(
-            "exectv2_llm_pre_post"
-        ),
+        "diagrams/gan2026_llm_with_rules_stages.md": render_stage_diagram("gan2026_llm_with_rules"),
+        "diagrams/exectv2_llm_pre_post_stages.md": render_stage_diagram("exectv2_llm_pre_post"),
     }
     for method_id in METHOD_IDS:
-        documents[f"method_cards/{method_id}.md"] = render_method_card(
-            load_manifest(method_id)
-        )
+        documents[f"method_cards/{method_id}.md"] = render_method_card(load_manifest(method_id))
     for case in cases:
-        documents[f"teaching_cases/{_letter_slug(case)}.md"] = render_teaching_case(
-            case
-        )
-    documents["teaching_cases/gan2026.md"] = render_task_letter_index(
-        cases, "gan2026"
-    )
-    documents["teaching_cases/exectv2.md"] = render_task_letter_index(
-        cases, "exectv2"
-    )
+        documents[f"teaching_cases/{_letter_slug(case)}.md"] = render_teaching_case(case)
+    documents["teaching_cases/gan2026.md"] = render_task_letter_index(cases, "gan2026")
+    documents["teaching_cases/exectv2.md"] = render_task_letter_index(cases, "exectv2")
     documents["teaching_cases/six_paths.md"] = render_six_path_walkthrough(cases)
     return documents
 

@@ -63,15 +63,11 @@ class RetainedModelRun:
 
     @property
     def summary_name(self) -> str:
-        return (
-            f"exectv2_six_model_single_call_{self.slug}_dev140_{self.package_date}.json"
-        )
+        return f"exectv2_six_model_single_call_{self.slug}_dev140_{self.package_date}.json"
 
     @property
     def rows_name(self) -> str:
-        return (
-            f"exectv2_six_model_single_call_{self.slug}_dev140_{self.package_date}.jsonl"
-        )
+        return f"exectv2_six_model_single_call_{self.slug}_dev140_{self.package_date}.jsonl"
 
     @property
     def display_date(self) -> str:
@@ -213,9 +209,7 @@ def _model_run(
                     split="dev140",
                 )
                 result = structured_one_call.run_llm_pre_post_letter(gold, producer)
-                predicted_mentions_payload = _list_of_mappings(
-                    result.row.get("predicted_mentions")
-                )
+                predicted_mentions_payload = _list_of_mappings(result.row.get("predicted_mentions"))
                 if not predicted_mentions_payload:
                     predicted_mentions_payload = [
                         m.model_dump(mode="json") for m in result.prediction.mentions
@@ -252,7 +246,7 @@ def _model_run(
         "architecture_family": "decision_0041_model_led_single_call",
         # The saved frontend run id and source artifact remain immutable.  Only
         # the active outward method identity changes for the raw lane.
-    "pipeline_family": "exectv2_model_led_key_family_event_ledger",
+        "pipeline_family": "exectv2_model_led_key_family_event_ledger",
         "split": "dev140",
         "row_count": 140,
         "date": retained.display_date,
@@ -350,9 +344,7 @@ def _deterministic_run(root: Path, gold_letters: Sequence[ExectLetter]) -> dict[
             "call_failures": 0,
             "parse_schema_failures": 0,
             "evidence_invalid_dropped": 0,
-            "exact_evidence_rate": round(exact_count / scored_count, 4)
-            if scored_count
-            else 1.0,
+            "exact_evidence_rate": round(exact_count / scored_count, 4) if scored_count else 1.0,
             "by_family": by_family,
         },
         "letters": letters,
@@ -390,9 +382,7 @@ def _compact_letters(runs: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
                 "split": letter["split"],
                 "stage": letter["stage"],
                 "predicted_mentions": letter["predicted_mentions"],
-                "predicted_family_counts": _mapping(letter["family_counts"])[
-                    "predicted"
-                ],
+                "predicted_family_counts": _mapping(letter["family_counts"])["predicted"],
                 "evidence_spans": [
                     span
                     for span in letter["evidence_spans"]
@@ -437,9 +427,10 @@ def _project_predicted_cuis(
             for item in predicted
         ),
     )
-    projected = {id(before): after for before, after in zip(
-        letter.mentions, project_cuis(letter).mentions, strict=True
-    )}
+    projected = {
+        id(before): after
+        for before, after in zip(letter.mentions, project_cuis(letter).mentions, strict=True)
+    }
     out: list[dict[str, Any]] = []
     for item, mention in zip(predicted, letter.mentions, strict=True):
         payload = dict(item)
@@ -447,9 +438,7 @@ def _project_predicted_cuis(
         if mention.entity == "Diagnosis":
             current = attributes.get("DiagCategory")
             if current not in {"MultipleSeizures", "SingleSeizure"}:
-                attributes["DiagCategory"] = sd.diagnosis_convention_category(
-                    mention.text
-                )
+                attributes["DiagCategory"] = sd.diagnosis_convention_category(mention.text)
         payload["attributes"] = attributes
         out.append(payload)
     return out
@@ -628,12 +617,7 @@ def _frontend_mention(
 ) -> dict[str, Any]:
     attributes = _string_mapping(mention.get("attributes"))
     finding_id = str(mention.get("finding_id") or "")
-    evidence = str(
-        mention.get("evidence")
-        or mention.get("raw_text")
-        or mention.get("text")
-        or ""
-    )
+    evidence = str(mention.get("evidence") or mention.get("raw_text") or mention.get("text") or "")
     return {
         "id": finding_id or f"{letter_id}:{source}:{index}",
         "source": source,
@@ -654,9 +638,7 @@ def _frontend_mention(
     }
 
 
-def _headline_counts(
-    mentions: Sequence[Mapping[str, Any]], note_text: str
-) -> dict[str, int]:
+def _headline_counts(mentions: Sequence[Mapping[str, Any]], note_text: str) -> dict[str, int]:
     annotations = [_annotation_from_mapping(item) for item in mentions]
     return {
         family: len(
@@ -702,9 +684,7 @@ def _evidence_spans(
     return spans
 
 
-def _locate_evidence(
-    note_text: str, mention: Mapping[str, Any]
-) -> tuple[int, int, str] | None:
+def _locate_evidence(note_text: str, mention: Mapping[str, Any]) -> tuple[int, int, str] | None:
     span = mention.get("evidence_span")
     if isinstance(span, Mapping):
         start = span.get("start_char")
@@ -790,9 +770,7 @@ def _model_operational(
         "evidence_invalid_dropped": sum(
             int(item.get("evidence_invalid_dropped", 0)) for item in by_family.values()
         ),
-        "exact_evidence_rate": round(total_exact / total_scored, 4)
-        if total_scored
-        else 1.0,
+        "exact_evidence_rate": round(total_exact / total_scored, 4) if total_scored else 1.0,
         "by_family": by_family,
     }
 

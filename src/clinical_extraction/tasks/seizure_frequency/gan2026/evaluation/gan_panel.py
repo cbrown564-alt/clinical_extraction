@@ -7,6 +7,10 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.core.jsonl import (
+    load_jsonl_rows,
+    write_jsonl_rows,
+)
 from clinical_extraction.core.paths import (
     discover_repo_root,
     resolve_letter_benchmarks_root,
@@ -30,10 +34,6 @@ from clinical_extraction.evaluation.letter_benchmarks.roster import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_later_stage import (
     EXTRACT_METHOD,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    load_jsonl_rows,
-    write_jsonl_rows,
 )
 
 ROOT = discover_repo_root(start=Path(__file__))
@@ -77,9 +77,7 @@ def _living_extract_stages(slug: str) -> dict[str, float] | None:
     comparison_path = dest / "comparison.json"
     if not comparison_path.is_file():
         return None
-    living = adapt_legacy_comparison(
-        json.loads(comparison_path.read_text(encoding="utf-8"))
-    )
+    living = adapt_legacy_comparison(json.loads(comparison_path.read_text(encoding="utf-8")))
     if living is None:
         return None
     extract = stage_metric(living, "extract")
@@ -207,16 +205,12 @@ def rebuild_dev750_panel() -> dict[str, Any]:
             else {}
         )
         raw_rungs = payload.get("rungs") or {}
-        rungs = (
-            normalize_rungs_payload(raw_rungs) if isinstance(raw_rungs, dict) else {}
-        )
+        rungs = normalize_rungs_payload(raw_rungs) if isinstance(raw_rungs, dict) else {}
         extract_dest = paper_cell_root("gan_llm_extract", slug, PROMOTE_SPLIT)
         extract_comparison = extract_dest / "comparison.json"
         extract_scored = extract_dest / "scored.jsonl"
         for method in PANEL_METHODS:
-            extract_metric = (
-                extract_stages.get(method) if extract_stages is not None else None
-            )
+            extract_metric = extract_stages.get(method) if extract_stages is not None else None
             rung = rungs.get(method)
             if extract_metric is not None and method != "rules_only":
                 cells.append(
@@ -430,8 +424,7 @@ def _sync_inventory() -> None:
     inventory = json.loads(INVENTORY_PATH.read_text(encoding="utf-8"))
     living_slugs = {item["slug"] for item in living_models()}
     existing_present = {
-        (row["model_slug"], row["method"], row["split"]): row
-        for row in inventory["present"]
+        (row["model_slug"], row["method"], row["split"]): row for row in inventory["present"]
     }
 
     def living_dev750(row: Mapping[str, Any]) -> bool:
@@ -450,9 +443,7 @@ def _sync_inventory() -> None:
 
     present = [row for row in inventory["present"] if not living_dev750(row)]
     missing = [
-        row
-        for row in inventory["missing"]
-        if not living_dev750(row) and not generic_gan_blank(row)
+        row for row in inventory["missing"] if not living_dev750(row) and not generic_gan_blank(row)
     ]
     by_slug = {item["slug"]: item for item in living_models()}
     for model in living_models():

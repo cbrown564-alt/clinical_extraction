@@ -73,7 +73,7 @@ development gold alone it is already large: 45 render templates, 333 distinct
 labels, and 852 distinct official source phrases, with the gold string itself
 present in the official reference on only 11 of 1,050 rows. One ordinary
 label, `1 per day`, is licensed by 42 different official phrases. The
-[Gan phrase-variant inventory](gan_gold_phrase_variants_2026-08-13.md) is the
+[Gan phrase-variant inventory](../gan2026/gan_gold_phrase_variants_2026-08-13.md) is the
 worked list, with a
 [row workbook](../artifacts/gan_gold_phrase_variants_2026-08-13.xlsx).
 
@@ -85,7 +85,7 @@ is licensed by `MRI`, `MRI scan`, `MRI brain`, and a dated infarct line;
 seventy SF mentions are type tokens whose scored state lives elsewhere.
 Listing those aliases still would not specify which facts to keep, drop,
 or split. The
-[ExECT phrase-variant inventory](exect_gold_phrase_variants_2026-08-13.md)
+[ExECT phrase-variant inventory](../exectv2/exect_gold_phrase_variants_2026-08-13.md)
 is the worked list, with a
 [mention workbook](../artifacts/exect_gold_phrase_variants_2026-08-13.xlsx).
 
@@ -148,19 +148,19 @@ This brief uses both evidence lanes defined in the
   [what the two golds already decided](what_the_two_golds_already_decided_2026-08-17.md)
   and the [task-shape framework](../shared/task_shape_framework_2026-08-06.md)
   own the task definitions and label or ambiguity limits. The
-  [Gan phrase-variant inventory](gan_gold_phrase_variants_2026-08-13.md)
-  and the [ExECT phrase-variant inventory](exect_gold_phrase_variants_2026-08-13.md)
+  [Gan phrase-variant inventory](../gan2026/gan_gold_phrase_variants_2026-08-13.md)
+  and the [ExECT phrase-variant inventory](../exectv2/exect_gold_phrase_variants_2026-08-13.md)
   own the development-gold input dialects and the prompt-enumeration
   argument. This brief does not claim novelty over those prior systems
   or evidence of real-world use.
-- **Project, system, and experimental lane:** [system architecture](../../canon/01_system_architecture.md),
-  [pipeline ownership](../../canon/02_pipeline_steps.md), the
+- **Project, system, and experimental lane:** [system architecture](../../history/canon/01_system_architecture.md),
+  [pipeline ownership](../../history/canon/02_pipeline_steps.md), the
   [cross-task mechanism synthesis](../shared/cross_task_hybrid_mechanism_synthesis_2026-08-06.md),
-  and [paper provenance](../../canon/10_paper_provenance.md) support the
+  and [paper provenance](../../history/canon/10_paper_provenance.md) support the
   description of this implementation and its bounded development behaviour.
 
 The strength of paper claims remains with
-[paper provenance](../../canon/10_paper_provenance.md). This brief does not establish
+[paper provenance](../../history/canon/10_paper_provenance.md). This brief does not establish
 state of the art, a universal advantage for hybrid systems, absolute clinical
 truth, clinical validation, or deployment readiness.
 

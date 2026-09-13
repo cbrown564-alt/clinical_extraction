@@ -18,7 +18,7 @@ jobs:
       - name: Documentation hygiene
         id: hygiene
         continue-on-error: true
-        run: python scripts/check_doc_hygiene.py
+        run: python scripts/checks/check_doc_hygiene.py
       - name: Ruff
         id: ruff
         continue-on-error: true

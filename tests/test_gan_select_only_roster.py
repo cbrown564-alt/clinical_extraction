@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_select_only_roster import (
     CITED_GEMINI_CELL4_TEST450,
     REPAIR_MODE,
@@ -19,6 +21,7 @@ def test_llm_select_only_keeps_encode_off() -> None:
     assert config.last_event_well_since_repair is True
 
 
+@pytest.mark.local_corpus
 def test_gemini_select_only_matches_living_cell4() -> None:
     payload = measure_select_only("gemini37flash", "test450")
     assert payload["select_only"]["purist_correct"] == CITED_GEMINI_CELL4_TEST450

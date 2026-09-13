@@ -128,7 +128,7 @@
     }
   ],
   "evidence_owners": [
-    "docs/paper/methods.md",
-    "docs/paper/claims.md"
+    "publications/dissertation/notes/methods.md",
+    "publications/dissertation/notes/claims.md"
   ]
 }

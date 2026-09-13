@@ -40,15 +40,11 @@ def _record() -> GanFrequencyRecord:
 
 
 def test_both_extract_keeps_suggested_rows_and_forms() -> None:
-    payload = json.loads(
-        and_rules_extract.build_llm_and_rules_extract_prompt_input(_record())
-    )
+    payload = json.loads(and_rules_extract.build_llm_and_rules_extract_prompt_input(_record()))
     blob = json.dumps(payload)
     authored = and_rules_extract.LLM_AND_RULES_EXTRACT_AUTHORED_KEYS
     assert set(payload) == set(authored)
-    assert payload["suggested_evidence"] == and_rules_extract.suggested_evidence_rows(
-        _record()
-    )
+    assert payload["suggested_evidence"] == and_rules_extract.suggested_evidence_rows(_record())
     assert payload["label_forms"] == label_forms_payload()
     assert "keep, reject, split, or merge" in blob
     assert "allowed forms" in blob.lower()

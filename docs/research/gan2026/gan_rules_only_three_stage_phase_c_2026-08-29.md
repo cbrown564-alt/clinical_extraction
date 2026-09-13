@@ -5,7 +5,7 @@ Protocol: [three-stage protocol](gan_rules_only_three_stage_protocol_2026-08-29.
 Phase B: [recall-first result](gan_rules_only_three_stage_phase_b_2026-08-29.md)
 Artifacts: `experiments/gan2026_rules_only_three_stage_20260829/keep_arms/`
 (one JSON per arm: config, net, rescued/regressed/changed row lists)
-Script: `scripts/measure_gan_rules_only_select_keeps_dev750.py`
+Script: `scripts/benchmarks/measure_gan_rules_only_select_keeps_dev750.py`
 
 Dataset `dev750` (development, row review permitted); Purist scorer via
 `score_label`; zero model calls; `test450` never loaded. Baseline arm =

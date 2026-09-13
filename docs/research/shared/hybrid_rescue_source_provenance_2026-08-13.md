@@ -5,7 +5,7 @@ Date: 2026-08-13
 Status: development mechanism evidence; no model calls
 
 Protocol: [docs/research/shared/hybrid_rescue_source_provenance_protocol_2026-08-13.md](hybrid_rescue_source_provenance_protocol_2026-08-13.md)
-Artifact: [`experiments/hybrid_rescue_source_provenance_20260813.json`](../../experiments/hybrid_rescue_source_provenance_20260813.json)
+Artifact: [`experiments/hybrid_rescue_source_provenance_20260813.json`](../../../experiments/hybrid_rescue_source_provenance_20260813.json)
 
 ## Plain answer
 
@@ -25,7 +25,7 @@ These are pooled six-model first-rescues on development splits, not
 holdout component estimates. The family split, the `EA0007` two-model
 contrast, and one example card per source class are in this report;
 the machine-readable counts are in the
-[JSON artifact](../../experiments/hybrid_rescue_source_provenance_20260813.json).
+[JSON artifact](../../../experiments/hybrid_rescue_source_provenance_20260813.json).
 
 ## Source classes
 

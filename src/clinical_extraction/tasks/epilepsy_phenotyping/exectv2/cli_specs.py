@@ -20,7 +20,7 @@ class ExectCliSpec:
 
 
 def get_cli_specs() -> dict[str, ExectCliSpec]:
-    """Return active method CLIs and their exact legacy aliases."""
+    """Return the canonical names accepted for new benchmark execution."""
 
     def run_rules(letters, **kwargs):
         return split.run_split(letters, method="rules", **kwargs)
@@ -35,9 +35,7 @@ def get_cli_specs() -> dict[str, ExectCliSpec]:
     def run_llm_with_rules(letters, **kwargs):
         return split.run_split(letters, method="llm_with_rules", **kwargs)
 
-    hybrid_spec = ExectCliSpec(
-        "Run the ExECT LLM-with-rules method.", run_llm_with_rules
-    )
+    hybrid_spec = ExectCliSpec("Run the ExECT LLM-with-rules method.", run_llm_with_rules)
     return {
         "rules": spec,
         "llm": llm_spec,

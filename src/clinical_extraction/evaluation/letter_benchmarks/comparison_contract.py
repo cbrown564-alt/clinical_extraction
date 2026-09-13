@@ -256,7 +256,8 @@ def adapt_legacy_comparison(payload: Mapping[str, Any]) -> dict[str, Any] | None
                 if key in arms:
                     method = (
                         "exect_llm_extract_and_select"
-                        if key in {
+                        if key
+                        in {
                             "exect_llm_only",
                             "exect_llm_extract_filtered",
                             "compact_ledger",
@@ -324,9 +325,7 @@ def adapt_legacy_comparison(payload: Mapping[str, Any]) -> dict[str, Any] | None
         method=method,
         stages={"extract": extract, "encode": encode, "select": select},
         replay_mode="live" if payload.get("live") else "no_call",
-        prompt_version=str(
-            arm.get("prompt_version") or payload.get("prompt_version") or method
-        ),
+        prompt_version=str(arm.get("prompt_version") or payload.get("prompt_version") or method),
     )
 
 

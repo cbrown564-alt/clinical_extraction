@@ -270,9 +270,9 @@ class StructuredEventRecord(BaseModel):
     applies_to: str | None = None
     time_window: str | None = None
     temporality: Literal["current", "recent", "historical", "future", "unclear"]
-    assertion_status: Literal[
-        "asserted", "negated", "historical", "hypothetical", "unknown"
-    ] = "asserted"
+    assertion_status: Literal["asserted", "negated", "historical", "hypothetical", "unknown"] = (
+        "asserted"
+    )
     evidence: str = ""
     notes: str | None = None
 
@@ -535,17 +535,13 @@ class StructuredRepairConfig:
         """True when this mode may write a designed-form label."""
 
         return (
-            self.selected_evidence_repair
-            or self.basic_label_repair
-            or self.codebook_label_repair
+            self.selected_evidence_repair or self.basic_label_repair or self.codebook_label_repair
         )
 
     def select_enabled(self) -> bool:
         """True when a named select family may change the facts."""
 
-        return any(
-            getattr(self, flag_name) for flag_name in _SEMANTIC_FAMILY_FLAG.values()
-        )
+        return any(getattr(self, flag_name) for flag_name in _SEMANTIC_FAMILY_FLAG.values())
 
     def _flags(self) -> dict[str, bool]:
         return {
@@ -649,9 +645,7 @@ def build_prompt_input(
     """Dispatch to the paper extract prompt or the both-extract variant."""
 
     selected_prompt_version = normalize_prompt_version(prompt_version or PROMPT_VERSION)
-    if selected_prompt_version not in _SUPPORTED_PROMPT_VERSIONS - set(
-        PROMPT_VERSION_ALIASES
-    ):
+    if selected_prompt_version not in _SUPPORTED_PROMPT_VERSIONS - set(PROMPT_VERSION_ALIASES):
         raise ValueError(
             f"unsupported prompt version {selected_prompt_version!r}; "
             f"expected one of {sorted(_SUPPORTED_PROMPT_VERSIONS)}"
@@ -769,13 +763,18 @@ def parse_structured_json_with_trace(
         errors.extend(quarantine_notes)
     except json.JSONDecodeError as exc:
         errors = [f"invalid_json: {exc.msg}"]
-        return None, [], errors, _hybrid_row_trace(
-            model_extraction=None,
-            schema_payload_changed=False,
-            format_events=errors,
-            resolved_label=None,
-            final_label=None,
-            semantic_events=[],
+        return (
+            None,
+            [],
+            errors,
+            _hybrid_row_trace(
+                model_extraction=None,
+                schema_payload_changed=False,
+                format_events=errors,
+                resolved_label=None,
+                final_label=None,
+                semantic_events=[],
+            ),
         )
     schema_payload_changed = payload != raw_payload
     format_events = list(errors)
@@ -784,21 +783,24 @@ def parse_structured_json_with_trace(
         extraction = StructuredExtractionRecord.model_validate(payload)
     except ValidationError as exc:
         errors.append(f"schema_validation_error: {exc.errors()[0]['msg']}")
-        return None, [], errors, _hybrid_row_trace(
-            model_extraction=None,
-            schema_payload_changed=schema_payload_changed,
-            format_events=errors,
-            resolved_label=None,
-            final_label=None,
-            semantic_events=[],
+        return (
+            None,
+            [],
+            errors,
+            _hybrid_row_trace(
+                model_extraction=None,
+                schema_payload_changed=schema_payload_changed,
+                format_events=errors,
+                resolved_label=None,
+                final_label=None,
+                semantic_events=[],
+            ),
         )
     model_extraction = extraction
     hops: list[dict[str, Any]] = []
     evidence = extraction.selection.evidence
     operands = list(extraction.selection.selected_event_ids)
-    evidence_exact = (
-        evidence_is_substring(note_text, evidence) if note_text and evidence else None
-    )
+    evidence_exact = evidence_is_substring(note_text, evidence) if note_text and evidence else None
     hops.append(
         _answer_hop(
             stage_id="gan.model.selection",
@@ -814,14 +816,19 @@ def parse_structured_json_with_trace(
     )
 
     if not repair_config.encode_enabled() and not repair_config.select_enabled():
-        return extraction, [], errors, _hybrid_row_trace(
-            model_extraction=model_extraction,
-            schema_payload_changed=schema_payload_changed,
-            format_events=format_events,
-            resolved_label=None,
-            final_label=extraction.selection.final_label,
-            semantic_events=[],
-            answer_states=hops,
+        return (
+            extraction,
+            [],
+            errors,
+            _hybrid_row_trace(
+                model_extraction=model_extraction,
+                schema_payload_changed=schema_payload_changed,
+                format_events=format_events,
+                resolved_label=None,
+                final_label=extraction.selection.final_label,
+                semantic_events=[],
+                answer_states=hops,
+            ),
         )
 
     normalized_events = [
@@ -847,14 +854,19 @@ def parse_structured_json_with_trace(
             )
     if resolved_label is None:
         errors.append("unscorable_final_label: no selected event normalized to a Gan label")
-        return extraction, normalized_events, errors, _hybrid_row_trace(
-            model_extraction=model_extraction,
-            schema_payload_changed=schema_payload_changed,
-            format_events=format_events,
-            resolved_label=None,
-            final_label=None,
-            semantic_events=[],
-            answer_states=hops,
+        return (
+            extraction,
+            normalized_events,
+            errors,
+            _hybrid_row_trace(
+                model_extraction=model_extraction,
+                schema_payload_changed=schema_payload_changed,
+                format_events=format_events,
+                resolved_label=None,
+                final_label=None,
+                semantic_events=[],
+                answer_states=hops,
+            ),
         )
 
     repaired_label = resolved_label
@@ -935,17 +947,20 @@ def parse_structured_json_with_trace(
                 "selection": extraction.selection.model_copy(update={"final_label": repaired_label})
             }
         )
-    semantic_events = [
-        error for error in errors if str(error).startswith("final_label_repaired:")
-    ]
-    return extraction, normalized_events, errors, _hybrid_row_trace(
-        model_extraction=model_extraction,
-        schema_payload_changed=schema_payload_changed,
-        format_events=format_events,
-        resolved_label=resolved_label,
-        final_label=repaired_label,
-        semantic_events=semantic_events,
-        answer_states=hops,
+    semantic_events = [error for error in errors if str(error).startswith("final_label_repaired:")]
+    return (
+        extraction,
+        normalized_events,
+        errors,
+        _hybrid_row_trace(
+            model_extraction=model_extraction,
+            schema_payload_changed=schema_payload_changed,
+            format_events=format_events,
+            resolved_label=resolved_label,
+            final_label=repaired_label,
+            semantic_events=semantic_events,
+            answer_states=hops,
+        ),
     )
 
 
@@ -1325,8 +1340,6 @@ def run_split(
     )
 
 
-
-
 def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     structured_rows = [row for row in rows if row.get("structured_record")]
     call_failures = sum(bool(row.get("call_error")) for row in rows)
@@ -1390,7 +1403,7 @@ def _row_candidate_count(row: Mapping[str, Any]) -> int:
 
 
 def write_jsonl(rows: Sequence[Mapping[str, Any]], path: Path) -> None:
-    from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
+    from clinical_extraction.core.jsonl import (
         write_jsonl_rows,
     )
 

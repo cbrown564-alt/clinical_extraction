@@ -1,13 +1,13 @@
 # ExECTv2 llm_with_rules stage ablation
 
-Date: 2026-08-06  
-Status: development stage ablation inside hybrid only  
+Date: 2026-08-06\
+Status: development stage ablation inside hybrid only\
 Paper-library role: ExECT component-attribution record; start with the [component deck](../artifacts/paper_source_component_roles_and_limits_2026-08-09.pptx)
 
-Protocol: [hybrid stage ablation protocol](hybrid_stage_ablation_protocol_2026-08-06.md)  
-Parent: [family error catalog](family_error_catalog_2026-08-06.md)  
-Companions: [task-shape framework](../shared/task_shape_framework_2026-08-06.md), [architecture stage diagram](../../architecture/diagrams/exectv2_llm_with_rules_stages.md), [Gan peer](../gan2026/hybrid_stage_ablation_2026-08-06.md)  
-Artifact: [`experiments/exectv2_hybrid_stage_ablation_20260806.json`](../../experiments/exectv2_hybrid_stage_ablation_20260806.json)
+Protocol: [hybrid stage ablation protocol](hybrid_stage_ablation_protocol_2026-08-06.md)\
+Parent: [family error catalog](family_error_catalog_2026-08-06.md)\
+Companions: [task-shape framework](../shared/task_shape_framework_2026-08-06.md), [architecture stage diagram](../../architecture/diagrams/exectv2_llm_pre_post_stages.md), [Gan peer](../gan2026/hybrid_stage_ablation_2026-08-06.md)\
+Artifact: [`experiments/exectv2_hybrid_stage_ablation_20260806.json`](../../../experiments/exectv2_hybrid_stage_ablation_20260806.json)
 
 > **Update 2026-08-10:** The Prescription band in this historical replay is
 > the pre-v10 lens. Its 0.81 exactness endpoint and 44-rescue/60-harm ledger
@@ -359,7 +359,7 @@ Fires 14; first-changer 14 (rescue 2, harm 4); any-rescue 2, any-harm 4.
 | --- | --- |
 | Band mode tables and stage examples | JSON artifact |
 | llm vs hybrid mode catalog | [family error catalog](family_error_catalog_2026-08-06.md) |
-| Stage ownership definitions | [llm_with_rules stages](../../architecture/diagrams/exectv2_llm_with_rules_stages.md) |
+| Stage ownership definitions | [llm_with_rules stages](../../architecture/diagrams/exectv2_llm_pre_post_stages.md) |
 | Gan peer report | [Gan hybrid stage ablation](../gan2026/hybrid_stage_ablation_2026-08-06.md) |
 | Regenerate | `python scripts/build_exectv2_hybrid_stage_ablation.py` |
 

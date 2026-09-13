@@ -108,7 +108,7 @@ the prompt-side use would invalidate every retained sidecar.
 The lens shipped with an unused guard (`is_bounded_explicit_current_prescription`)
 that fixes exactly the `EA0008` deletion, reachable only via
 `prescription_policy_variant="combined"` — disabled by
-[Decision 0045](../../decisions/0045-exect-default-policy-not-joint-combined.md) on
+[Decision 0045](../../history/decisions/0045-exect-default-policy-not-joint-combined.md) on
 complexity grounds. Measured, Rx-only, Dx/SF/Inv fixed:
 
 | Rx policy | P | R | F1 | Exactness | Four-family F1 |

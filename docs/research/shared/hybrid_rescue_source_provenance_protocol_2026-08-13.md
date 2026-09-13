@@ -6,8 +6,8 @@ Status: predeclared development mechanism study; no model calls
 Reports: [hybrid rescue source provenance](hybrid_rescue_source_provenance_2026-08-13.md)
 Parents: [Gan stage ablation](../gan2026/hybrid_stage_ablation_2026-08-06.md),
 [ExECT stage ablation](../exectv2/hybrid_stage_ablation_2026-08-06.md)
-Paper sources: [Gan story](../paper/gan_story_2026-08-10.md),
-[ExECT story](../paper/exect_story_2026-08-12.md)
+Paper sources: [Gan story](../gan2026/gan_story_2026-08-10.md),
+[ExECT story](../exectv2/exect_story_2026-08-12.md)
 
 ## Primary question
 

@@ -36,10 +36,7 @@ def test_added_residual_is_the_diverging_action() -> None:
             _event("applied_standard_dictionary_diagnosis_repair"),
         ]
     }
-    assert (
-        last_diverging_provenance_action(mention)
-        == "added_diagnosis_residual_from_dictionary"
-    )
+    assert last_diverging_provenance_action(mention) == "added_diagnosis_residual_from_dictionary"
 
 
 def test_prescription_label_names_attribute_before_and_after() -> None:
@@ -59,10 +56,7 @@ def test_prescription_label_names_attribute_before_and_after() -> None:
             _event("applied_standard_dictionary_prescription_repair"),
         ]
     }
-    assert (
-        last_rule_label(mention)
-        == "Dictionary set DrugName from tegretol to carbamazepine"
-    )
+    assert last_rule_label(mention) == "Dictionary set DrugName from tegretol to carbamazepine"
 
 
 def test_explorer_repairs_epilepsy_category_on_named_seizure_types() -> None:

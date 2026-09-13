@@ -35,16 +35,16 @@ def test_author_eval_multiple_count_projections() -> None:
     assert label_to_frequency_record("multiple per 15 month").monthly_frequency == (
         label_to_frequency_record("8 per 15 month").monthly_frequency
     )
-    assert label_to_frequency_record(
-        "1 cluster per month, multiple per cluster"
-    ).monthly_frequency == label_to_frequency_record("8 per month").monthly_frequency
-    assert label_to_frequency_record(
-        "1 cluster per week, multiple per cluster"
-    ).monthly_frequency == label_to_frequency_record("2 per week").monthly_frequency
+    assert (
+        label_to_frequency_record("1 cluster per month, multiple per cluster").monthly_frequency
+        == label_to_frequency_record("8 per month").monthly_frequency
+    )
+    assert (
+        label_to_frequency_record("1 cluster per week, multiple per cluster").monthly_frequency
+        == label_to_frequency_record("2 per week").monthly_frequency
+    )
 
 
 def test_unknown_and_no_reference_remain_scoring_sentinels() -> None:
     assert label_to_frequency_record("unknown").monthly_frequency == 1000.0
-    assert label_to_frequency_record("no seizure frequency reference").monthly_frequency == (
-        1000.0
-    )
+    assert label_to_frequency_record("no seizure frequency reference").monthly_frequency == (1000.0)

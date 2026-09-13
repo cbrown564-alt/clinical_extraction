@@ -1,6 +1,6 @@
 # Documentation navigation
 
-Updated: 2026-09-11. These links describe current locations. Proposed destinations
+Updated: 2026-09-13. These links describe current locations. Proposed destinations
 and the move sequence are in the [project plan](plans/ACTIVE_ROADMAP.md).
 
 ## Active project
@@ -11,7 +11,7 @@ and the move sequence are in the [project plan](plans/ACTIVE_ROADMAP.md).
 | Strand A comparisons, capability thresholds and configuration exploration | [Draft evaluation protocol](research/gan2026/one_shot_paper_protocol.md) |
 | Project purpose and current repository layout | [README](../README.md) |
 | Three-strand programme, DSPy/GEPA evidence, reconstruction strategy and longitudinal timeline | [Active roadmap](plans/ACTIVE_ROADMAP.md) |
-| Worked architecture examples, proposed interfaces and first implementation slice | [Software architecture](design/architecture.md) |
+| Software interfaces, worked examples and reconstruction boundaries | [Software architecture](design/architecture.md) |
 | Migration evidence and approved legacy-support dispositions | [Migration record and investigation](research/maintenance/repository_migration_2026-09-08.md#7-legacy-support-investigation-2026-09-13) |
 | Current task state and verification (local checkout) | [Project status](../PROJECT_STATUS.md) |
 | Working rules and research safeguards | [AGENTS](../AGENTS.md) |
@@ -53,8 +53,8 @@ engineering evidence, not evaluations of patient-history reconstruction.
 
 | Need | Current owner or entry |
 | --- | --- |
-| Dissertation scope and paper reading order | [Paper keep-set](paper/README.md) / [Dissertation publication](../publications/dissertation/) |
-| Gan-only manuscript decision | [Gan is the dissertation paper](paper/decisions/gan-is-the-dissertation-paper.md) |
+| Dissertation scope and paper reading order | [Paper keep-set](../publications/dissertation/notes/README.md) / [Dissertation publication](../publications/dissertation/) |
+| Gan-only manuscript decision | [Gan is the dissertation paper](../publications/dissertation/notes/decisions/gan-is-the-dissertation-paper.md) |
 | Retained benchmark policies | [Gan 2026](benchmarks/gan2026/README.md), [ExECTv2](benchmarks/exectv2/README.md) |
 | Existing dataset description | [Dataset description](research/shared/dataset_description_2026-08-26.md) |
 | What the gold labels preserve or discard | [Annotation policy comparison](research/shared/what_the_two_golds_already_decided_2026-08-17.md) |
@@ -64,8 +64,8 @@ engineering evidence, not evaluations of patient-history reconstruction.
 | Study protocols and writing sources | [Research entry](research/README.md) |
 | Shared and task-specific design references | [Design entry](design/README.md) |
 | Implemented stage diagrams and teaching cases | [Generated architecture](architecture/README.md) |
-| Locked-holdout policy | [Aggregate-only holdout](paper/decisions/holdout-is-aggregate-only.md) |
-| Test admission and tiers | [Pytest firewall](paper/decisions/pytest-is-the-research-validity-firewall.md) |
+| Locked-holdout policy | [Aggregate-only holdout](benchmarks/holdout-is-aggregate-only.md) |
+| Test admission and tiers | [Pytest firewall](runbooks/pytest-is-the-research-validity-firewall.md) |
 | Historical numbered decisions | [Decision history](history/decisions.md) |
 | Historical canon (superseded) | [Historical canon](history/canon/) |
 | Historical plans (superseded) | [Historical plans](history/plans/) |

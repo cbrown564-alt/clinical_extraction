@@ -2,7 +2,7 @@
 
 Date: 2026-07-31  
 Status: development synthesis from retained artifacts  
-Paper-library role: technical record; start with [failures and limits](../paper/failures_and_limits_2026-08-10.md)
+Paper-library role: technical record; start with [failures and limits](failures_and_limits_2026-08-10.md)
 
 Method: parallel audit of residual analyses, attribution panels, annotation
 reviews, scoring code, and deterministic-rule studies. No new model calls. No
@@ -470,10 +470,10 @@ without a predeclared study.
 
 - [Gan Luna prompt variants](../gan2026/luna_prompt_variants_report_2026-07-30.md)
 - Gan dated-count / competing-rate floors (companion pruned; recover from Git history)
-- [ExECT annotation-evidence synthesis](../../experiments/exectv2/reliability/exectv2_annotation_evidence_synthesis_2026-07-15.md)
-- [Scoring canon](../../canon/04_scoring.md)
+- [ExECT annotation-evidence synthesis](../exectv2/reliability/exectv2_annotation_evidence_synthesis_2026-07-15.md)
+- [Scoring canon](../../history/canon/04_scoring.md)
 - [Six-model comparison](six_model_comparison_report_2026-07-18.md)
-- [Decision 0045 (default vs joint ExECT policy)](../../decisions/0045-exect-default-policy-not-joint-combined.md)
+- [Decision 0045 (default vs joint ExECT policy)](../../history/decisions/0045-exect-default-policy-not-joint-combined.md)
 - Machine artifacts under
   `experiments/gan2026_luna_prompt_variants_dev750_20260730/`,
   `experiments/gan2026_matched_v05_dev750_attribution_20260727.json`,

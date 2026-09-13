@@ -187,7 +187,7 @@ development harms are the suspected overfit set. Not landed.
 ## Generalization cliff (aggregate-only holdout)
 
 Holdout numbers are copied from
-[`experiments/current_stack/latest/fills.json`](../../experiments/current_stack/latest/fills.json)
+[`experiments/current_stack/latest/fills.json`](../../../experiments/current_stack/latest/fills.json)
 and the living panel. No `test450` row was read.
 
 | Comparison | Qwen | Gemini | Sol |

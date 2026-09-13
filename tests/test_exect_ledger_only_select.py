@@ -126,9 +126,7 @@ def test_pre_post_suggested_evidence_uses_high_priority_cues() -> None:
         note_text="Diagnosis: Epilepsy, probable focal onset. She remains well.",
     )
     payload = json.loads(
-        structured.build_prompt_input(
-            letter, prompt_version=structured.EXECT_LLM_PRE_POST
-        )
+        structured.build_prompt_input(letter, prompt_version=structured.EXECT_LLM_PRE_POST)
     )
     expected = [
         {

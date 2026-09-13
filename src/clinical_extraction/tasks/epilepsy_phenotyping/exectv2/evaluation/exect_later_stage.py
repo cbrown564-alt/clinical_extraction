@@ -13,6 +13,10 @@ from dotenv import load_dotenv
 from dspy.adapters.chat_adapter import ChatAdapter
 
 from clinical_extraction.core.batch import BatchChatItem, complete_chat_batch
+from clinical_extraction.core.jsonl import (
+    load_jsonl_rows,
+    write_jsonl_rows,
+)
 from clinical_extraction.core.model_routes import resolve_paper_api_base
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.evaluation.letter_benchmarks.comparison_contract import (
@@ -69,10 +73,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.clinical_hea
     annotation_from_mapping,
     exact_clinical_inventory_scores,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    load_jsonl_rows,
-    write_jsonl_rows,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.parse_diagnostics import (
     extract_json_object,
 )
@@ -95,9 +95,7 @@ class ExectLaterStageSignature(dspy.Signature):
     prompt_input_json: str = dspy.InputField(
         desc="JSON with the task, instructions, and mention rows."
     )
-    structured_json: str = dspy.OutputField(
-        desc="One JSON object with a mentions list."
-    )
+    structured_json: str = dspy.OutputField(desc="One JSON object with a mentions list.")
 
 
 class ExectLaterStageProgram(dspy.Module):
@@ -137,9 +135,7 @@ def extract_rows_path(split: str, slug: str = EXTRACT_SLUG) -> Path:
     for path in candidates:
         if path.is_file():
             return path
-    raise FileNotFoundError(
-        f"missing {EXTRACT_METHOD} extract rows for {slug} {split}"
-    )
+    raise FileNotFoundError(f"missing {EXTRACT_METHOD} extract rows for {slug} {split}")
 
 
 def later_stage_work_root(
@@ -177,10 +173,7 @@ def comparison_from_later_stage_rows(
         ExectLetter(
             letter_id=letter.letter_id,
             note_text=letter.note_text,
-            annotations=tuple(
-                annotation_from_mapping(mention)
-                for mention in row[pred_key]
-            ),
+            annotations=tuple(annotation_from_mapping(mention) for mention in row[pred_key]),
         )
         for letter, row in zip(letters, rows, strict=True)
     ]
@@ -199,16 +192,12 @@ def comparison_from_later_stage_rows(
         "split": split,
         "split_machine": exect_machine_split(split),
         "row_count": len(letters),
-        "row_policy": (
-            "aggregate_only" if holdout else "development_review_permitted"
-        ),
+        "row_policy": ("aggregate_only" if holdout else "development_review_permitted"),
         "prompt_version": prompt,
         "started_utc": None if existing is None else existing.get("started_utc"),
         "finished_utc": None if existing is None else existing.get("finished_utc"),
         "live": False if existing is None else existing.get("live", False),
-        "call_transport": (
-            None if existing is None else existing.get("call_transport")
-        ),
+        "call_transport": (None if existing is None else existing.get("call_transport")),
         "model_calls": 0 if existing is None else existing.get("model_calls", 0),
         "scorer": LATER_STAGE_SCORER,
         "clinical_headline": family_scores,
@@ -218,10 +207,7 @@ def comparison_from_later_stage_rows(
         "claim_boundary": (
             "ExECT aggregate-only test60 later-stage cell. Do not inspect holdout rows."
             if holdout
-            else (
-                "ExECT development later-stage cell. Not holdout. "
-                "Join only. CUI is decoration."
-            )
+            else ("ExECT development later-stage cell. Not holdout. Join only. CUI is decoration.")
         ),
     }
     if prior is not None and prior != overall["f1"]:
@@ -374,9 +360,7 @@ def join_encode_mentions(
     for extract in extract_mentions:
         row_id = mention_id(extract)
         encoded = by_id.get(row_id, {})
-        standard_name = str(
-            encoded.get("standard_name") or extract.get("text") or ""
-        )
+        standard_name = str(encoded.get("standard_name") or extract.get("text") or "")
         details = encoded.get("details")
         if not isinstance(details, Mapping):
             details = {}
@@ -419,9 +403,7 @@ def _apply_select_writes(
     base: Mapping[str, Any],
     writes: Mapping[str, Any],
 ) -> dict[str, Any]:
-    standard_name = str(
-        writes.get("standard_name") or mention_standard_name(base) or ""
-    )
+    standard_name = str(writes.get("standard_name") or mention_standard_name(base) or "")
     details = writes.get("details")
     if not isinstance(details, Mapping):
         details = {}
@@ -523,9 +505,7 @@ def run_later_stage(
         encode_path = encode_work_rows_path(split, spec.slug)
         if not encode_path.exists():
             raise RuntimeError("exect_llm_select needs a finished exect_llm_encode work cell")
-        encode_rows = {
-            str(row["letter_id"]): row for row in load_jsonl_rows(encode_path)
-        }
+        encode_rows = {str(row["letter_id"]): row for row in load_jsonl_rows(encode_path)}
     work_root = later_stage_work_root(method, spec.slug, split)
     work_root.mkdir(parents=True, exist_ok=True)
     rows_path = work_root / "rows.jsonl"
@@ -664,9 +644,7 @@ def score_later_stage_row(
     selected: list[Any] = list(extract_mentions)
     try:
         if method == "exect_llm_encode":
-            encoded = join_encode_mentions(
-                extract_mentions, parse_encode_mentions(raw_output)
-            )
+            encoded = join_encode_mentions(extract_mentions, parse_encode_mentions(raw_output))
             selected = encoded
         else:
             if encode_row is None:

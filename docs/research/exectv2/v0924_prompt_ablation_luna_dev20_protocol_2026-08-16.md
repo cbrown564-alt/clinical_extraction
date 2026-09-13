@@ -1,8 +1,8 @@
 # Protocol: ExECT `v0.9.24` leave-one-out prompt prune on Luna `dev20`
 
-Date: 2026-08-16  
-Status: **complete; four-arm answer. Scope is load-bearing; the other three slices are low_value.**  
-Parent: [Decision 0054](../../decisions/0054-model-request-order-and-metadata-are-explicit.md); [prompt variant slots](prompt_variant_slots_2026-08-16.md)  
+Date: 2026-08-16\
+Status: **complete; four-arm answer. Scope is load-bearing; the other three slices are low_value.**\
+Parent: [Decision 0054](../../history/decisions/0054-model-request-order-and-metadata-are-explicit.md); [prompt variant slots](prompt_variant_slots_2026-08-16.md)\
 Catalog: Phase 1/2 convention catalog pruned; living owner
 [prompt variant slots](prompt_variant_slots_2026-08-16.md)
 

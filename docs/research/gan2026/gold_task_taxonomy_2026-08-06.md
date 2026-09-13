@@ -4,7 +4,7 @@ Date: 2026-08-06
 Status: gold-label framework (no model performance cuts)  
 Parent: [task-shape framework](../shared/task_shape_framework_2026-08-06.md)  
 Artifact: [`experiments/gan2026_gold_task_taxonomy_20260806.json`](../../experiments/gan2026_gold_task_taxonomy_20260806.json)  
-Regenerator: `python scripts/build_gold_task_taxonomy_inventories.py`
+Regenerator: `python scripts/benchmarks/build_gold_task_taxonomy_inventories.py`
 
 ## Broad shape of the Gan task
 
@@ -131,7 +131,7 @@ only.
 | --- | --- | --- |
 | Ordinary point rate | Usually easy if the note has one clear rate; still fails when a second true number is more salient | Easy when patterns match; fails on paraphrases and unusual units |
 | Range rate | Must keep both ends and the unit; format repair can collapse the meaning | Pattern coverage; mid-point / band edge cases |
-| Cluster burden | Dialect is arbitrary relative to clinical paraphrase ([Decision 0005](../../decisions/0005-benchmark-format-rules-vs-llm-clinical-reasoning.md)) | Needs explicit cluster grammar; easy to under- or over-match |
+| Cluster burden | Dialect is arbitrary relative to clinical paraphrase ([Decision 0005](../../history/decisions/0005-benchmark-format-rules-vs-llm-clinical-reasoning.md)) | Needs explicit cluster grammar; easy to under- or over-match |
 | Seizure-free | Competing “still having rare events” vs “free since …” | Duration templates vs nearby active-rate phrases |
 | Unknown | Clinical caution vs gold that sometimes wants a rate (A2) or sometimes forbids it (A3) | Hard to encode soft epileptic-status judgments as regex |
 | Unresolved multiple | Temptation to invent `N` or map to a weekly band | “Multiple” is intentionally not a numeric rate |
@@ -171,6 +171,6 @@ the rules-only method.
 - Do not cite this document as evidence that models succeed or fail on any
   bucket.
 
-The later [phrase-variant inventory](../paper/gan_gold_phrase_variants_2026-08-13.md)
+The later [phrase-variant inventory](gan_gold_phrase_variants_2026-08-13.md)
 lists official source phrases behind development gold labels. It does not
 change these buckets.

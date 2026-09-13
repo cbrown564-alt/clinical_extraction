@@ -3,7 +3,7 @@
 Ledger: [REGENERATION.md](../../REGENERATION.md).
 Slot inventory: [candidate table](retention_candidate_table_2026-08-16.md).
 Taxonomy: [hierarchical matrix](retention_slice_hierarchical_retention_matrix_2026-08-16.md).
-Decision: [0048](../../decisions/0048-comprehension-and-handoff-refactor.md).
+Decision: [0048](../../history/decisions/0048-comprehension-and-handoff-refactor.md).
 
 This note records what the 2026-08-16 living-stack freeze and the
 docs/scripts confident cut kept, why, and what is still uncertain.
@@ -33,7 +33,7 @@ calls.
 
 Owners: [`SOURCES.json`](../../../experiments/current_stack/SOURCES.json),
 [`latest/fills.json`](../../../experiments/current_stack/latest/fills.json),
-[retained evidence](../../experiments/retained_evidence_manifest.md).
+[retained evidence](../shared/retained_evidence_manifest.md).
 Replay type `current_stack_primary` owns the living fills / sources /
 E5 inputs. Historical sidecar keys (`gpt41mini`, pre-0731
 `deepseek_v4_flash`) are gone from `SOURCES.json`.

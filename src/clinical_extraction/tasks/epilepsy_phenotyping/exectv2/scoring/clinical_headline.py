@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Hashable, Iterable, Sequence
 from typing import Any
 
-from clinical_extraction.core.scoring import PRF1, multiset_prf1
+from clinical_extraction.evaluation.scoring import PRF1, multiset_prf1
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
@@ -132,9 +132,7 @@ def exact_clinical_headline_prf1_scores(
             gold = gold_by_id.get(letter_id)
             pred = pred_by_id.get(letter_id)
             note_text = (
-                gold.note_text
-                if gold is not None
-                else pred.note_text if pred is not None else ""
+                gold.note_text if gold is not None else pred.note_text if pred is not None else ""
             )
             if gold is not None:
                 gold_units.extend(
@@ -214,9 +212,7 @@ def exact_clinical_inventory_prf1_scores(
             gold = gold_by_id.get(letter_id)
             pred = pred_by_id.get(letter_id)
             note_text = (
-                gold.note_text
-                if gold is not None
-                else pred.note_text if pred is not None else ""
+                gold.note_text if gold is not None else pred.note_text if pred is not None else ""
             )
             if gold is not None:
                 gold_units.extend(

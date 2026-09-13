@@ -5,7 +5,7 @@ Status: complete; **answer**
 Result: [leftover-form remasure](mention_unit_v2_leftover_form_encoder_luna_dev140_2026-08-16.md)  
 Prior: [hybrid encoder damage catalog](mention_unit_v2_hybrid_encoder_damage_luna_dev140_2026-08-16.md)  
 Review: [prompt fundamentals](../../history/plans/exect_prompt_fundamentals_2026-08-16.md)\
-Decision: [0055](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md)
+Decision: [0055](../../history/decisions/0055-exect-semantic-inventory-and-method-contracts.md)
 
 Fork A stays. Decision 0050 and `test60` are unchanged. Mention-unit
 v2 language stays frozen. This study does not retune the prompt or

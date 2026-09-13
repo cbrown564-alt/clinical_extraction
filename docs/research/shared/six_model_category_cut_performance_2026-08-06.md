@@ -1,18 +1,18 @@
 # Six-model competence by gold task category
 
 Date: 2026-08-06 (rules surface and ExECT within-family cuts extended 2026-08-08)
-Status: development answer on retained / regenerated no-call artifacts  
-Paper-library role: technical category record; start with the [Gan story](../paper/gan_story_2026-08-10.md) or [ExECT story](../paper/exect_story_2026-08-12.md)
+Status: development answer on retained / regenerated no-call artifacts\
+Paper-library role: technical category record; start with the [Gan story](../gan2026/gan_story_2026-08-10.md) or [ExECT story](../exectv2/exect_story_2026-08-12.md)
 
-Protocol: [category-cut protocol](six_model_category_cut_protocol_2026-08-06.md)  
-Parent: [task-shape framework](task_shape_framework_2026-08-06.md)  
-Artifact: [`experiments/six_model_category_cut_performance_20260806.json`](../../experiments/six_model_category_cut_performance_20260806.json)  
+Protocol: [category-cut protocol](six_model_category_cut_protocol_2026-08-06.md)\
+Parent: [task-shape framework](task_shape_framework_2026-08-06.md)\
+Artifact: [`experiments/six_model_category_cut_performance_20260806.json`](../../../experiments/six_model_category_cut_performance_20260806.json)\
 ExECT rules letter scores: pruned 2026-08-16
 (`experiments/exectv2_rules_only_four_family_letter_scores_dev140_20260806.jsonl`;
 recover from Git history). Living category-cut package remains this report's
 JSON artifact below.
 
-Readable development-row companions: [Gan representative examples](../gan2026/category_cut_representative_examples_2026-08-08.md) and [ExECT representative examples](../exectv2/category_cut_representative_examples_2026-08-08.md). The companion artifact is [`experiments/category_cut_representative_examples_20260808.json`](../../experiments/category_cut_representative_examples_20260808.json).
+Readable development-row companions: [Gan representative examples](../gan2026/category_cut_representative_examples_2026-08-08.md) and [ExECT representative examples](../exectv2/category_cut_representative_examples_2026-08-08.md). The companion artifact is [`experiments/category_cut_representative_examples_20260808.json`](../../../experiments/category_cut_representative_examples_20260808.json).
 
 ## Plain answer
 
@@ -97,8 +97,8 @@ model competence. Hybrid still fails to make clusters common across models
 
 ### llm only — x / y / z
 
-**x:** `unresolved_multiple` only.  
-**y:** unknown, range, seizure-free, no-reference.  
+**x:** `unresolved_multiple` only.\
+**y:** unknown, range, seizure-free, no-reference.\
 **z:** `ordinary_point_rate`, `cluster_burden`.
 
 Without the model lane’s post-processing, the **largest gold mass is a shared
@@ -106,8 +106,8 @@ floor**.
 
 ### llm_with_rules — x / y / z
 
-**x:** `seizure_free`, `range_rate`, `no_reference_sentinel`, `unresolved_multiple`  
-**y:** `ordinary_point_rate`, `unknown_sentinel`, `cluster_burden`  
+**x:** `seizure_free`, `range_rate`, `no_reference_sentinel`, `unresolved_multiple`\
+**y:** `ordinary_point_rate`, `unknown_sentinel`, `cluster_burden`\
 **practical z:** `cluster_burden` (no strict z; best only 0.77)
 
 ---
@@ -234,8 +234,8 @@ aggregate. Gold mix share shifts stay small.
 - Development category competence on **rules**, **llm**, and **llm_with_rules**.
 - Rules bands are single-system; x/y/z remain six-model only.
 - Regenerable via
-  `python scripts/build_exectv2_rules_only_four_family_letter_scores_dev140.py`
-  then `python scripts/build_six_model_category_cut_performance.py`.
+  `python scripts/benchmarks/build_exectv2_rules_only_four_family_letter_scores_dev140.py`
+  then `python scripts/publications/build_six_model_category_cut_performance.py`.
 - ExECT rules helper F1 is not a rewrite of Decision 0046 `0.8160`.
 - DeepSeek Gan `llm` `dev750` remains pre-0731.
 - Not a Decision 0046 method-fill rewrite.

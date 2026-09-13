@@ -4,10 +4,10 @@ Date: 2026-08-28
 Status: complete; report
 [gan_gemini37flash_temperature_1_2026-08-28.md](gan_gemini37flash_temperature_1_2026-08-28.md)
 Owner: this file
-Roster: [`paper_experiments/roster.json`](../../../paper_experiments/roster.json)
+Roster: [`paper_experiments/roster.json`](../../../results/letter-benchmarks/roster.json)
 Related: [Grok temperature 0](gan_grok46_temperature_0_2026-08-28.md),
-[six-model roster](../../paper/decisions/six-model-roster.md),
-[experiment environment](../../paper/experiment_environment.md)
+[six-model roster](../../../publications/dissertation/notes/decisions/six-model-roster.md),
+[experiment environment](../../../publications/dissertation/notes/experiment_environment.md)
 
 ## Question
 

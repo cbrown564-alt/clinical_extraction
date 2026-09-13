@@ -34,8 +34,8 @@ The selected current-stack prompt. Scaffold, encoding, scope, and all
 
 - Prompt identity: `exectv2_hybrid_key_family_event_ledger_v0.9.24`
 - EA0133 live payload: 58,382 characters
-- Owners: [Decision 0050](../../decisions/0050-current-stack-hybrid-primary-fills.md);
-  [Decision 0046](../../decisions/0046-exect-primary-method-comparison-boundary.md);
+- Owners: [Decision 0050](../../history/decisions/0050-current-stack-hybrid-primary-fills.md);
+  [Decision 0046](../../history/decisions/0046-exect-primary-method-comparison-boundary.md);
   current-stack sidecars
 - Prune lineage: [THREAD_MAP door](../../THREAD_MAP.md#exect-v0924-leave-one-out-prune)
 
@@ -112,7 +112,7 @@ Owners:
 [v2 `dev140`](mention_unit_v2_fork_a_luna_dev140_2026-08-16.md);
 [hybrid encoder](mention_unit_v2_hybrid_encoder_damage_luna_dev140_2026-08-16.md);
 [leftover-form](mention_unit_v2_leftover_form_encoder_luna_dev140_2026-08-16.md);
-[Decision 0055](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
+[Decision 0055](../../history/decisions/0055-exect-semantic-inventory-and-method-contracts.md).
 
 What this slot may claim today: gold SeizureFrequency wording can
 appear as `clinical_name` on frozen Luna `dev20`; the `dev140`

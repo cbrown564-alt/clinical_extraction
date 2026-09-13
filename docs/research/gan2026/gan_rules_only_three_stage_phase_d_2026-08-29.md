@@ -13,7 +13,7 @@ holdout deltas were never computed.
 
 ## Gate A
 
-`scripts/measure_gan_rules_only_select_keeps_dev750.py phase_c_candidate`
+`scripts/benchmarks/measure_gan_rules_only_select_keeps_dev750.py phase_c_candidate`
 on current HEAD: baseline 669/750, candidate **691/750**, net +22,
 **zero** regressions. `phase_c_candidate_config()` matched the keep-arm
 union. Passed.

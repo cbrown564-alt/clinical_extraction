@@ -29,7 +29,7 @@ clinical reading.
 The same team produced and reviewed these outputs, so the paper must state that
 limitation.
 
-The [Diagnosis component comparison](../../experiments/exectv2/diagnosis/exectv2_diagnosis_component_comparison_2026-07-14.md)
+The [Diagnosis component comparison](../../research/exectv2/diagnosis/exectv2_diagnosis_component_comparison_2026-07-14.md)
 owns the completed review, sensitivity views, and development candidates. Do
 not transfer the historical 0.9501 adjustment onto the current scoring surface.
 

@@ -54,4 +54,4 @@ Codebook replay aggregates:
 
 The joint Grok reading and the paper-facing bound are in
 [Grok temperature 0](gan_grok46_temperature_0_2026-08-28.md) and
-[three variables §2b](../paper/three_variables_rules_model_thinking_2026-08-23.md).
+[three variables §2b](../shared/three_variables_rules_model_thinking_2026-08-23.md).

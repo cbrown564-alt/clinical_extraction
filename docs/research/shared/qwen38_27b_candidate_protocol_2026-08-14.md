@@ -4,8 +4,8 @@ Date: 2026-08-14
 Status: smoke passed; overnight queue started 2026-08-14
 Authorization: user requested an Ollama download, a one-letter smoke,
 then overnight `test` then `dev` if the smoke passes
-Does not change: [decision 0051](../../decisions/0051-gemini-37-flash-succeeds-gpt41mini-six-model-slot.md)
-roster, [decision 0050](../../decisions/0050-current-stack-hybrid-primary-fills.md)
+Does not change: [decision 0051](../../history/decisions/0051-gemini-37-flash-succeeds-gpt41mini-six-model-slot.md)
+roster, [decision 0050](../../history/decisions/0050-current-stack-hybrid-primary-fills.md)
 fills, Decision 0046 Sol method identity, or Qwen 3.6:35B scores
 
 ## Question

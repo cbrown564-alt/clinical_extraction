@@ -1,11 +1,11 @@
 # ExECT mention-unit v2 — GPT-5.6 Luna `dev140` protocol
 
-Date: 2026-08-16  
-Status: complete; **revise**  
+Date: 2026-08-16\
+Status: complete; **revise**\
 Plan: [ExECT LLM representation and hybrid re-evaluation](../../history/plans/exect_llm_representation_and_hybrid_revaluation_2026-08-16.md)\
 Review: [prompt fundamentals](../../history/plans/exect_prompt_fundamentals_2026-08-16.md)\
-Prior result: [mention-unit v2 `dev20`](mention_unit_v2_fork_a_luna_dev20_2026-08-16.md)  
-Decision: [0055](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md)  
+Prior result: [mention-unit v2 `dev20`](mention_unit_v2_fork_a_luna_dev20_2026-08-16.md)\
+Decision: [0055](../../history/decisions/0055-exect-semantic-inventory-and-method-contracts.md)\
 Glossary: [CONTEXT.md](../../../CONTEXT.md)
 
 Fork A stays. Decision 0050 and `test60` are unchanged. This study

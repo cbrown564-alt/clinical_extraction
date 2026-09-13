@@ -33,9 +33,7 @@ from clinical_extraction.tasks.shared.epilepsy.normalization import (
 
 
 def test_encode_projects_the_extract_pick_label() -> None:
-    assert (
-        project_encode_label({"e1": "4 per day", "e2": "unknown"}, ["e1"]) == "4 per day"
-    )
+    assert project_encode_label({"e1": "4 per day", "e2": "unknown"}, ["e1"]) == "4 per day"
 
 
 def test_select_uses_a_written_label_only_when_present() -> None:
@@ -45,12 +43,10 @@ def test_select_uses_a_written_label_only_when_present() -> None:
 
 
 def test_parse_encode_and_select_payloads() -> None:
-    assert parse_encode_labels(
-        '{"labels": [{"event_id": "e1", "label": "4 per day"}]}'
-    ) == [{"event_id": "e1", "label": "4 per day"}]
-    assert parse_select_answer('{"selected_event_ids": ["e1"]}') == {
-        "selected_event_ids": ["e1"]
-    }
+    assert parse_encode_labels('{"labels": [{"event_id": "e1", "label": "4 per day"}]}') == [
+        {"event_id": "e1", "label": "4 per day"}
+    ]
+    assert parse_select_answer('{"selected_event_ids": ["e1"]}') == {"selected_event_ids": ["e1"]}
     assert parse_select_answer(
         '{"events": [], "selection": {"selected_event_ids": ["e2"], "label": "1 per month"}}'
     ) == {"selected_event_ids": ["e2"], "label": "1 per month"}
@@ -76,9 +72,10 @@ def test_later_stage_holdout_cells_use_scratch() -> None:
     assert "experiments/paper" in encode_dev.as_posix()
     assert EXTRACT_METHOD in encode_dev.as_posix()
     assert "scratch/holdout/paper" in encode_holdout.as_posix()
-    assert "scratch/holdout/paper" in later_stage_work_root(
-        "gan_llm_select", "gemini37flash", "test450"
-    ).as_posix()
+    assert (
+        "scratch/holdout/paper"
+        in later_stage_work_root("gan_llm_select", "gemini37flash", "test450").as_posix()
+    )
 
 
 def test_unparsed_extract_is_scored_without_a_call() -> None:
@@ -272,13 +269,12 @@ def test_select_from_extract_verify_allows_living_slugs() -> None:
     assert holdout["holdout_scratch"].endswith("gan_llm_select_from_extract")
     with pytest.raises(RuntimeError, match="Gemini only"):
         verify_gan("gan_llm_encode", "dev750", "grok46")
-    assert verify_gan("gan_llm_select_from_extract", "test450", "qwen38_27b")[
-        "row_policy"
-    ] == "aggregate_only"
+    assert (
+        verify_gan("gan_llm_select_from_extract", "test450", "qwen38_27b")["row_policy"]
+        == "aggregate_only"
+    )
     assert verify_gan("gan_llm_select_from_extract", "test450", "gemma4_26b")["ok"] is True
-    assert verify_gan("gan_llm_select_from_extract", "test450", "deepseek_v4_flash")[
-        "ok"
-    ] is True
+    assert verify_gan("gan_llm_select_from_extract", "test450", "deepseek_v4_flash")["ok"] is True
     assert verify_gan("gan_llm_select_from_extract", "test450", "grok46")["ok"] is True
     assert verify_gan("gan_llm_select_from_extract", "test450", "gpt56luna")["ok"] is True
 
@@ -287,6 +283,7 @@ def test_llm_row_has_no_separate_encode_stage() -> None:
     assert LLM_ENCODE_IS_EXTRACT is True
     assert LLM_SELECT_METHOD == "gan_llm_select_from_extract"
     assert EXTRACT_METHOD == "gan_llm_extract"
+
 
 @pytest.mark.local_corpus
 def test_later_stage_reads_codebook_extract_work_cell() -> None:

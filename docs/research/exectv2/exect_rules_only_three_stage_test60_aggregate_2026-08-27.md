@@ -23,7 +23,7 @@ remains well below Gemini cell 3 **0.8674**.
 
 ## Gate A
 
-`scripts/measure_exect_rules_only_three_stage_dev140.py` on current HEAD:
+`scripts/benchmarks/measure_exect_rules_only_three_stage_dev140.py` on current HEAD:
 comparator **0.8949**, candidate **0.9167**, zero comparator-exact
 regressions. Passed.
 

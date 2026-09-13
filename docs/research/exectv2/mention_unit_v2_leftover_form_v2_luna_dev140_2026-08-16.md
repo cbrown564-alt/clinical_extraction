@@ -4,7 +4,7 @@ Date: 2026-08-16
 Status: complete; four-arm **revise**  
 Protocol: [leftover-form v2](mention_unit_v2_leftover_form_v2_luna_dev140_protocol_2026-08-16.md)  
 Prior: [leftover-form v1](mention_unit_v2_leftover_form_encoder_luna_dev140_2026-08-16.md)  
-Decision: [0055](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md)
+Decision: [0055](../../history/decisions/0055-exect-semantic-inventory-and-method-contracts.md)
 
 ## Executive result
 

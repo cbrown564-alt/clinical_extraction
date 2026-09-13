@@ -7,7 +7,7 @@ Owners: [Gan extract label-forms](../gan2026/gan_extract_label_forms_2026-08-22.
 [encode on codebook find](../gan2026/gan_encode_on_codebook_extract_2026-08-22.md),
 [codebook-encode holdout](../gan2026/gan_codebook_encode_holdout_2026-08-22.md),
 [five-cell grid](../gan2026/gan_five_cell_grid_2026-08-22.md)
-Related: [three variables](three_variables_rules_model_thinking_2026-08-23.md)
+Related: [three variables](../shared/three_variables_rules_model_thinking_2026-08-23.md)
 
 This is the Gan request-and-encode ablation. It is not the six-model
 row and not a thinking or roster result. Holdout is aggregate-only.
@@ -120,5 +120,5 @@ It may not treat `gan_llm_only` as find. It may not retune
 Synthesis of the locked Gemini codebook cells. Mechanism on
 `dev750` may name letters; holdout may not. Companion models have
 `gan_llm_extract` extracts; this report does not restage them.
-See [three variables](three_variables_rules_model_thinking_2026-08-23.md)
+See [three variables](../shared/three_variables_rules_model_thinking_2026-08-23.md)
 for the roster reading.

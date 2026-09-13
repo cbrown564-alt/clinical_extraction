@@ -40,9 +40,7 @@ from clinical_extraction.tasks.shared.epilepsy.normalization import (
 def _record() -> GanFrequencyRecord:
     return GanFrequencyRecord(
         source_row_index=10,
-        note_text=(
-            "the observed frequency is noted as ≤ four per day, with variable clustering"
-        ),
+        note_text=("the observed frequency is noted as ≤ four per day, with variable clustering"),
         gold_label="4 per day",
         gold_reference="≤ four per day",
         labels_match_all_categories=True,
@@ -80,8 +78,7 @@ def _bound_raw() -> str:
                 "final_kind": "frequency",
                 "final_label": "≤ 4 per day",
                 "evidence": (
-                    "the observed frequency is noted as ≤ four per day, "
-                    "with variable clustering"
+                    "the observed frequency is noted as ≤ four per day, with variable clustering"
                 ),
                 "confidence": "high",
                 "rationale": "Accommodation logs give the current count.",
@@ -149,10 +146,7 @@ def test_legacy_repair_mode_aliases_still_load() -> None:
     assert aliased.resolved_repair_mode == "llm_encode"
     assert modern.resolved_repair_mode == "llm_encode"
     assert aliased._flags() == modern._flags()
-    assert (
-        StructuredRepairConfig.for_mode("hybrid_full_stack").resolved_repair_mode
-        == "llm_select"
-    )
+    assert StructuredRepairConfig.for_mode("hybrid_full_stack").resolved_repair_mode == "llm_select"
     assert GAN_REPAIR_MODE_FOR_RUNG["llm_extract"] == "raw_model"
     assert StructuredRepairConfig.for_mode("raw_model").repair_mode == "raw_model"
 

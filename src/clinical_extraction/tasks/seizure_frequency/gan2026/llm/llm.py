@@ -29,15 +29,15 @@ import dspy
 from dspy.adapters.chat_adapter import ChatAdapter
 from pydantic import BaseModel, ConfigDict, ValidationError
 
+from clinical_extraction.core.jsonl import (
+    write_jsonl_rows,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair import (
     parse_json_payload_with_schema_repair,
     repair_decision_payload,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     GanFrequencyRecord,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    write_jsonl_rows,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadata import (
     build_run_metadata,
@@ -174,11 +174,15 @@ def parse_decision_json_with_trace(
         )
     except json.JSONDecodeError as exc:
         errors = [f"invalid_json: {exc.msg}"]
-        return None, errors, _llm_only_row_trace(
-            model_decision=None,
-            schema_payload_changed=False,
-            format_events=errors,
-            adapter_events=[],
+        return (
+            None,
+            errors,
+            _llm_only_row_trace(
+                model_decision=None,
+                schema_payload_changed=False,
+                format_events=errors,
+                adapter_events=[],
+            ),
         )
     errors.extend(dialect_notes)
     payload = _coerce_rationale_key_typo(raw_payload)
@@ -190,11 +194,15 @@ def parse_decision_json_with_trace(
         model_decision = CanonicalLlmDecisionRecord.model_validate(payload)
     except ValidationError as exc:
         errors.append(f"schema_validation_error: {exc.errors()[0]['msg']}")
-        return None, errors, _llm_only_row_trace(
-            model_decision=None,
-            schema_payload_changed=schema_payload_changed,
-            format_events=errors,
-            adapter_events=[],
+        return (
+            None,
+            errors,
+            _llm_only_row_trace(
+                model_decision=None,
+                schema_payload_changed=schema_payload_changed,
+                format_events=errors,
+                adapter_events=[],
+            ),
         )
 
     repaired_label = repair_prediction_label_with_evidence(
@@ -213,12 +221,16 @@ def parse_decision_json_with_trace(
     except ValueError as exc:
         errors.append(f"unscorable_final_label: {exc}")
 
-    return decision, errors, _llm_only_row_trace(
-        model_decision=model_decision,
-        schema_payload_changed=schema_payload_changed,
-        format_events=list(dialect_notes),
-        adapter_events=adapter_events,
-        scored_decision=decision,
+    return (
+        decision,
+        errors,
+        _llm_only_row_trace(
+            model_decision=model_decision,
+            schema_payload_changed=schema_payload_changed,
+            format_events=list(dialect_notes),
+            adapter_events=adapter_events,
+            scored_decision=decision,
+        ),
     )
 
 
@@ -328,8 +340,6 @@ def run_split(
         checkpoint_jsonl_path=checkpoint_jsonl_path,
         checkpoint_report_path=checkpoint_report_path,
     )
-
-
 
 
 def _emit_progress_checkpoint(

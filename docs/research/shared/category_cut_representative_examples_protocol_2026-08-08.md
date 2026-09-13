@@ -50,7 +50,7 @@ families into the example's conclusion.
 
 ## Artifact and report
 
-The generator is `scripts/build_category_cut_representative_examples.py`.
+The generator is `scripts/benchmarks/build_category_cut_representative_examples.py`.
 It writes one JSON artifact and two Markdown reports. No model calls are made.
 
 ## Claim boundary

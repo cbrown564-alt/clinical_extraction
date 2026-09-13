@@ -189,8 +189,7 @@ def test_extract_keeps_model_label_and_encode_owns_resolve() -> None:
     assert resolve_hops[0]["cell_id"] == "llm_encode"
     assert resolve_hops[0]["effect_class"] == "encode"
     assert not any(
-        hop["stage_id"] == "gan.encode.resolve_label"
-        for hop in extract_trace["answer_states"]
+        hop["stage_id"] == "gan.encode.resolve_label" for hop in extract_trace["answer_states"]
     )
 
 
@@ -243,18 +242,13 @@ def test_dated_sequence_does_not_mine_dates_from_the_letter() -> None:
         ]
     )
     note = (
-        "Clinic Date: 1 June 2024\n"
-        "She had a seizure in March 2024 and another seizure in May 2024."
+        "Clinic Date: 1 June 2024\nShe had a seizure in March 2024 and another seizure in May 2024."
     )
-    assert (
-        dated_sequence_label_from_events(extraction, "unknown", note_text=note) is None
-    )
+    assert dated_sequence_label_from_events(extraction, "unknown", note_text=note) is None
 
 
 def test_elapsed_anchor_converts_seizure_free_since_date_to_month_duration() -> None:
-    evidence = (
-        "Seizure-free since 27 March 2024 as per patient and collateral reports."
-    )
+    evidence = "Seizure-free since 27 March 2024 as per patient and collateral reports."
     raw = json.dumps(
         {
             "events": [
@@ -310,9 +304,7 @@ def test_elapsed_seizure_free_is_not_replaced_by_a_short_diary() -> None:
 
     Family: monthly_diary after elapsed_anchor. Portability: seizure_frequency.
     """
-    evidence = (
-        "Seizure-free since 27 March 2024 as per patient and collateral reports."
-    )
+    evidence = "Seizure-free since 27 March 2024 as per patient and collateral reports."
     raw = json.dumps(
         {
             "events": [
@@ -392,9 +384,7 @@ def test_default_semantic_order_puts_diary_after_elapsed_anchor() -> None:
         "monthly_diary",
     )
     swaps = adjacent_semantic_family_orders()
-    assert ("elapsed_anchor", "monthly_diary") in {
-        pair for pair, _order in swaps
-    }
+    assert ("elapsed_anchor", "monthly_diary") in {pair for pair, _order in swaps}
     diary_first = next(
         order for pair, order in swaps if pair == ("elapsed_anchor", "monthly_diary")
     )

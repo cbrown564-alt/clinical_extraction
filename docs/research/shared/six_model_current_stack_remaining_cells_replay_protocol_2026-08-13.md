@@ -1,14 +1,14 @@
 # Protocol: six-model current-stack remaining-cell hybrid replay
 
-Date: 2026-08-13  
-Status: **complete** (predeclared before scoring; executed 2026-08-13)  
-Parents: [Decision 0043](../../decisions/0043-gan-hosted-comparison-uses-v05-prompt.md),
-[Decision 0046](../../decisions/0046-exect-primary-method-comparison-boundary.md),
+Date: 2026-08-13\
+Status: **complete** (predeclared before scoring; executed 2026-08-13)\
+Parents: [Decision 0043](../../history/decisions/0043-gan-hosted-comparison-uses-v05-prompt.md),
+[Decision 0046](../../history/decisions/0046-exect-primary-method-comparison-boundary.md),
 [Decision 0047](../../decisions/0047-gan-primary-orchestration-and-scoring-boundary.md),
 [13 Aug Gan `dev750` current-stack replay](../gan2026/six_model_current_stack_dev750_replay_protocol_2026-08-13.md),
-[Decision 0050](../../decisions/0050-current-stack-hybrid-primary-fills.md) / current-stack remaining-cells report  
-Report target: `docs/research/shared/six_model_current_stack_remaining_cells_replay_2026-08-13.md`  
-Artifact target: `experiments/six_model_current_stack_remaining_cells_replay_20260813/`  
+[Decision 0050](../../history/decisions/0050-current-stack-hybrid-primary-fills.md) / current-stack remaining-cells report\
+Report target: `docs/research/shared/six_model_current_stack_remaining_cells_replay_2026-08-13.md`\
+Artifact target: `experiments/six_model_current_stack_remaining_cells_replay_20260813/`\
 Rebuild: `python scripts/replay_six_model_current_stack_remaining_cells.py`
 
 ## 1. Primary question

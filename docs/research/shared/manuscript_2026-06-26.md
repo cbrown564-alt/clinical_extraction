@@ -8,10 +8,10 @@ planning is owned by the
 [paper-evidence exploration brief](evidence_exploration_brief_2026-08-09.md).
 This file is retained for reference and does not control future paper structure.
 
-The [paper claim status](../../canon/10_paper_provenance.md) limits what this
-manuscript may say. The [retained evidence index](../../experiments/retained_evidence_manifest.md)
+The [paper claim status](../../history/canon/10_paper_provenance.md) limits what this
+manuscript may say. The [retained evidence index](retained_evidence_manifest.md)
 records the supporting files and hashes. ExECT primary method rows follow
-[decision 0046](../../decisions/0046-exect-primary-method-comparison-boundary.md).
+[decision 0046](../../history/decisions/0046-exect-primary-method-comparison-boundary.md).
 
 ## Abstract
 

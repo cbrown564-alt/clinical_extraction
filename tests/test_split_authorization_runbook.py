@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-DECISION = ROOT / "docs/paper/decisions/holdout-is-aggregate-only.md"
+DECISION = ROOT / "docs/benchmarks/holdout-is-aggregate-only.md"
 
 pytestmark = pytest.mark.local_corpus
 

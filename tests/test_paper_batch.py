@@ -90,11 +90,7 @@ def test_openai_jsonl_uses_chat_completions_batch_lines() -> None:
 
 def test_extract_assistant_text_from_chat_completion() -> None:
     text = extract_assistant_text(
-        {
-            "choices": [
-                {"message": {"role": "assistant", "content": '{"events": []}'}}
-            ]
-        }
+        {"choices": [{"message": {"role": "assistant", "content": '{"events": []}'}}]}
     )
     assert text == '{"events": []}'
 
@@ -192,9 +188,7 @@ def test_openai_batch_uploads_jsonl_and_reads_output_file(tmp_path: Path) -> Non
                 "response": {
                     "status_code": 200,
                     "body": {
-                        "choices": [
-                            {"message": {"content": '{"final_label":"2 per month"}'}}
-                        ]
+                        "choices": [{"message": {"content": '{"final_label":"2 per month"}'}}]
                     },
                 },
                 "error": None,
@@ -241,9 +235,7 @@ def test_openrouter_retries_not_found_then_completes(tmp_path: Path) -> None:
                             "custom_id": "11",
                             "response": {
                                 "status_code": 200,
-                                "body": {
-                                    "choices": [{"message": {"content": '{"ok": true}'}}]
-                                },
+                                "body": {"choices": [{"message": {"content": '{"ok": true}'}}]},
                             },
                             "error": None,
                         }
@@ -294,9 +286,7 @@ def test_openrouter_resumes_existing_batch_id(tmp_path: Path) -> None:
                         "custom_id": "11",
                         "response": {
                             "status_code": 200,
-                            "body": {
-                                "choices": [{"message": {"content": '{"resumed": true}'}}]
-                            },
+                            "body": {"choices": [{"message": {"content": '{"resumed": true}'}}]},
                         },
                         "error": None,
                     }
@@ -346,9 +336,7 @@ def test_openrouter_overwrite_submits_a_new_batch(tmp_path: Path) -> None:
                         "custom_id": "11",
                         "response": {
                             "status_code": 200,
-                            "body": {
-                                "choices": [{"message": {"content": '{"fresh": true}'}}]
-                            },
+                            "body": {"choices": [{"message": {"content": '{"fresh": true}'}}]},
                         },
                         "error": None,
                     }

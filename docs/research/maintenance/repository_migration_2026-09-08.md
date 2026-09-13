@@ -1,7 +1,9 @@
 # Repository Migration Record: Phase 0
 
 Date: 2026-09-08
-Status: Seven slices implemented to varying scope; review corrections and retained paths recorded below. Broad Phase 0 closure is not claimed.
+Status (2026-09-13): selected Phase 0 migration and reconstruction implemented;
+section 9 owns final verification and deliberate retained-path exceptions.
+Sections 1–8 preserve their dated progress and review corrections.
 
 ## 1. Scope
 Tasks under the repository restructuring plan ([`ACTIVE_ROADMAP.md`](../../plans/ACTIVE_ROADMAP.md)):
@@ -34,7 +36,7 @@ Tasks under the repository restructuring plan ([`ACTIVE_ROADMAP.md`](../../plans
   - Under a conservative rule, this run directory is kept in place while the process is live. (Note: A writer in that run directory does not imply all `paper_experiments/` paths are blocked; individual dependencies must be assessed before subsequent moves).
   - Limits of observability: Confirmed to local host processes via `ps` and `lsof`. File presence on disk alone does not prove external/hosted runs have completed.
 - Baseline check results:
-  - `python scripts/check_doc_hygiene.py`: PASS.
+  - `python scripts/checks/check_doc_hygiene.py`: PASS.
   - `python -m mypy src`: PASS (399 files checked).
   - `python -m ruff check src tests`: Pre-existing failures (7 errors across 2 files).
   - `python -m pytest`: 771 passed, 9 failed out of 780 tests (pre-existing failures categorized into doc manifests, ExECT fact lineage lens, paper runner model roster metadata, reference evidence replay, and frontend API fixtures). Raw logs preserved locally at `scratch/agy-phase0/baseline/`.
@@ -120,7 +122,7 @@ Tasks under the repository restructuring plan ([`ACTIVE_ROADMAP.md`](../../plans
   - `Extract, then decide.tex`: Two passes with pdflatex produce a 10-page PDF matching pre-move build text/fonts identically.
   - `Supporting materials.tex`: Rebuild fails with nonzero exit due to `inventory.png` missing from this checkout (known baseline failure), producing a 15-page document. Pre-move and post-move rebuild streams/text are identical, confirming no move regressions, but this defective rebuild does not match the preserved 16-page PDF.
   - Visual page sanity renders of selected pages (pages 1-2) verified via `pdftoppm`.
-- Repository documentation hygiene verified: `python scripts/check_doc_hygiene.py` passed cleanly (doc-hygiene gates: OK).
+- Repository documentation hygiene verified: `python scripts/checks/check_doc_hygiene.py` passed cleanly (doc-hygiene gates: OK).
 - Git diff formatting verified: `git diff --check` passed with 0 errors; no unintended trailing whitespace.
 - Documentation link integrity verified across changed files.
 
@@ -130,7 +132,7 @@ Tasks under the repository restructuring plan ([`ACTIVE_ROADMAP.md`](../../plans
 - Archival notice banners and rebased relative links verified across all four moved files.
 - Incoming Markdown links in `docs/THREAD_MAP.md` (tracked), `docs/history/decisions/0055-*.md`, and `docs/research/exectv2/` (11 files) verified.
 - Sole active plan invariant confirmed: `docs/plans/ACTIVE_ROADMAP.md` is the only file remaining in `docs/plans/`.
-- Repository documentation hygiene verified: `.venv/bin/python scripts/check_doc_hygiene.py` passed cleanly (doc-hygiene gates: OK).
+- Repository documentation hygiene verified: `.venv/bin/python scripts/checks/check_doc_hygiene.py` passed cleanly (doc-hygiene gates: OK).
 - Git diff formatting verified: `git diff --check` passed cleanly across all repository files with 0 errors; trailing two-space breaks on changed lines replaced with explicit backslash breaks or removed.
 - Link target existence verified: Across all modified docs and four moved plans (311 relative links), no newly broken links were introduced. Exactly one pre-existing missing target remains in tracked `docs/THREAD_MAP.md` -> `research/artifacts/rescue_source_provenance_2026-08-13.html` (unchanged by this slice; historical artifact not regenerated).
 - Runtime verification: No runtime code or tests executed, as this is a documentation-only archival slice with no code/pipeline changes.
@@ -373,3 +375,120 @@ of the broader study-document review.
 Verification: documentation hygiene and `git diff --check` passed. Both removed
 files matched the recovery commit byte-for-byte before deletion. Runtime tests
 were not run because this cut changes only guidance and unused historical prose.
+
+## 9. Applied reconstruction and migration (2026-09-13)
+
+Conor authorised completion after approving L1–L7/L9/L10 and keeping L8.
+The selected code and repository migration is implemented. The
+[file disposition manifest](repository_migration_2026-09-13.json) records 212
+original-to-final file moves, 18 removed files, baseline hashes, final hashes and
+343 retained study documents with their named purposes. It is a migration mapping,
+not a new research evidence register. Earlier sections describe their dated states.
+
+### Implemented boundaries and behavior
+
+- Shared source/request identity, immutable artifacts, provider mechanics and
+  JSONL IO live in `core`. SQLite stores captures and execution manifests with
+  complete request/runtime/program identity. Offline replay refuses changed
+  inputs, preserves failures and never constructs a provider. Retry is explicit;
+  prior failed execution records remain available. Longitudinal reloading restores
+  typed content so the same saved assertions support both historical policies.
+- Gan and ExECT saved-response hydration, projections, scorers and comparisons
+  have task-owned evaluation modules. Shared metrics live in `evaluation`;
+  historical five-cell, registry, roster and split-policy vocabulary is explicitly
+  scoped to `evaluation/letter_benchmarks`, outside `core`.
+- `inspection` owns HTTP routes, frontend adapters and review storage. Evaluation
+  no longer imports inspection. Existing API URLs and `.trace_explorer` local
+  review/index storage remain stable; the old Python namespaces are retired.
+- The supported command is `clinical-extract`: extraction, exact replay,
+  operational methods, benchmark runners, saved-result evaluation, inspection
+  and indexing. Canonical method names are accepted for new runs; saved-record
+  readers retain historical identifiers. Gan benchmark defaults write under
+  `runs/benchmarks/gan`; ExECT accepts explicit output paths and retains its
+  development-only guard, runtime controls and strict checkpoint resume.
+- Removed duplicate legacy split bodies, provider/normalisation/import facades,
+  redundant Gan runner classes, dated queues, the old live paper dispatcher and
+  the `paper_experiments` symlink. Historical paths are resolved at read time;
+  saved record bytes and method IDs are not rewritten. ExECT's retained checkpoint
+  reader rejects duplicate IDs and requires matching source hashes and runtime/
+  prompt provenance. New artifact execution does not depend on row-key resume.
+- `run.py`, `requirements.txt` and the no-install HPC/vLLM workflow remain (L8).
+  Research-paper tables remain R5; generic source identity, task-owned content and
+  multiple evidence references are foundations, while table locators, parsing/OCR
+  and the complete table workflow are deferred.
+
+### Repository and documentation disposition
+
+Helpers now live under `scripts/checks`, `scripts/benchmarks`,
+`scripts/publications` and the existing `scripts/longitudinal`. CI, pre-commit,
+imports and current command documentation use those paths. Dissertation methods
+and claims moved beside the manuscript into `publications/dissertation/notes`;
+shared holdout and pytest safeguards have benchmark/runbook owners.
+
+The 73 former experiment Markdown records (10,459 lines before and after) are
+original protocols, scoring rationale or result interpretation. They were classified for continuing study
+use and moved under `docs/research/{gan2026,exectv2,shared}`, rather than retaining
+another blanket archive. Together with existing study records, the final
+classification keeps 343 documents (147 Gan, 139 ExECT, 57 shared); the manifest
+records each title and role. No exact duplicate bodies were found. Keeping these
+records does not reactivate their queues. Two old ExECT plans remain historical
+references for prompt/representation rationale and their linked study sequence.
+
+Two stale generated ExECT method/diagram pages were removed (349 + 77 lines;
+2 files / 426 lines before, 0 after). The current generator and manifest own
+their replacements. The earlier two-plan deletion in section 8
+remains applied. Incoming links and publication-note links now resolve to current
+owners. Remaining unavailable references in historical study prose refer to
+pre-existing missing local artifacts or retired records; no replacement evidence
+has been invented. Issued PDFs and their TeX/assets were not changed or rebuilt.
+
+Private `data` source/split paths, historical `experiments` runs, protected scratch,
+local reading/media copies and `.trace_explorer` review state remain at their
+existing paths and keep their ignore boundaries. Their embedded provenance or
+sole-copy status makes a cosmetic relocation counterproductive. The roadmap
+records these bounded retained-path exceptions. New artifact captures use
+`runs/extraction`; no raw corpus, credentials or protected run was exported.
+
+### Recovery and verification
+
+Before editing, the dirty working tree was inventoried and preserved locally in
+`scratch/reconstruction-2026-09-13/before`, with SHA256 values in
+`baseline_hashes.json`, the starting revision in `git-head.txt`, and move maps and
+check logs beside them. Recovery of a pre-existing dirty file must use that
+snapshot, not overwrite it with HEAD. The public disposition manifest records
+hashes and paths without embedding private source contents. No reset, clean or
+rewrite of unrelated work was used. The active-writer check found no matching
+model/generation job; two old TeX processes were left alone and manuscript assets
+were not moved by this slice.
+
+Verification uses the repository `.venv`, no paid model calls and no locked-row
+failure inspection. The two baseline failures (stale generated teaching prose and
+an inventory expectation omitting six already-present cells) were repaired
+without editing benchmark results. Acceptance includes the always-on Python
+suite, Ruff, mypy, fresh-process imports, installed wheel in a clean public tree,
+frontend tests/build, browser interaction and documentation hygiene. Final outcomes are recorded below.
+
+
+| Check | Final outcome |
+| --- | --- |
+| `.venv/bin/python -m pytest -q` | 824 passed; always-on tier; both baseline failures resolved |
+| `.venv/bin/ruff check src tests` | Passed |
+| `.venv/bin/mypy src` | Passed across 410 source files |
+| Fresh-process imports and dependency audit | Seven independent imports passed; no old namespace imports, no task/evaluation dependency in `core`, no inspection dependency in evaluation |
+| Wheel build and installation | Built with Hatch; installed into an isolated target and imported from that target |
+| Clean public-checkout test | 736 passed, 88 corpus-dependent skips; private data/run trees absent; wheel import location asserted |
+| No-install HPC launcher | Five dedicated tests passed; `run.py --help` passed; obsolete console scripts absent after editable reinstall |
+| Supported command help | Evaluation and both benchmark dispatchers passed |
+| Frontend | 26 suites / 167 tests passed; Next production build passed |
+| Browser QA | Demo extraction → decision, loaded validation workbench trace, longitudinal visit → retrospective policy change all exercised |
+| Documentation | Hygiene and whitespace checks passed; generated reference matched the passing suite; active owner/publication-note links repaired |
+| Preservation | 1,371 baseline evidence/example/asset/publication files checked. No machine evidence or issued asset changed; only four publication-note link repairs and the main result README changed |
+
+Frozen result documentation snapshots were restored to their exact baseline
+bytes after the link audit; their historical relative links are not rewritten.
+All 135 examples and 123 frontend assets are byte-identical. Of 1,050 result
+files, only the navigation README changed. Issued PDFs, TeX and publication
+assets remain identical. No model call, locked-row failure review, new scientific
+result, deployment or full research-table implementation occurred. The optional
+deep tier was not run; the documented always-on firewall and the relevant full
+engineering checks passed. Temporary browser/API verification servers were stopped.

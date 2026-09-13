@@ -1,7 +1,7 @@
 <!-- GENERATED FILE. Do not edit by hand.
      Source: src/clinical_extraction/architecture/ (stage manifests +
      executed teaching cases). Regenerate with
-     python scripts/build_architecture_docs.py -->
+     python scripts/checks/build_architecture_docs.py -->
 
 # Four-letter teaching walkthrough
 

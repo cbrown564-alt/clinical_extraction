@@ -4,7 +4,7 @@ Date: 2026-08-16
 
 Status: source-backed literature synthesis; diagnostic, not a new experiment.
 The paper-source writing brief is
-[what the two golds already decided](../paper/what_the_two_golds_already_decided_2026-08-17.md).
+[what the two golds already decided](what_the_two_golds_already_decided_2026-08-17.md).
 
 Question: why did the two programmes take their particular annotation
 approaches, what challenges shaped those choices, and what did that do to
@@ -338,7 +338,7 @@ stated result are ignored. Drugs without a dose are ignored except
 rescue midazolam/diazepam. If frequency is missing, gold writes
 once daily, or `As Required` for clobazam and rescue drugs. Those
 defaults are annotation conventions, not source-stated schedules
-([Decision 0021](../../decisions/0021-prescription-missing-frequency-defaults-are-benchmark-projection.md)).
+([Decision 0021](../../history/decisions/0021-prescription-missing-frequency-defaults-are-benchmark-projection.md)).
 Seizure semiology, family history, and most negation are out of
 scope (2024 Discussion). Empty gold in a family therefore means
 **not annotated under the guideline**, not “clinically false.”
@@ -470,7 +470,7 @@ Residual gold defects remain possible; the thesis says so, and this
 project's later annotation-evidence synthesis found mechanical
 defects and representation disagreements without treating them as a
 licence to change frozen gold
-([synthesis](../../experiments/exectv2/reliability/exectv2_annotation_evidence_synthesis_2026-07-15.md)).
+([synthesis](../exectv2/reliability/exectv2_annotation_evidence_synthesis_2026-07-15.md)).
 
 Gan's real test gold was double-reviewed by two senior clinicians,
 which is a stronger endpoint check than ExECT's mixed

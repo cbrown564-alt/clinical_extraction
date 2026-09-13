@@ -94,9 +94,7 @@ def openrouter_batch_payload(
         "requests": [
             {
                 "custom_id": item.custom_id,
-                "body": chat_completion_body(
-                    spec, messages=item.messages, max_tokens=max_tokens
-                ),
+                "body": chat_completion_body(spec, messages=item.messages, max_tokens=max_tokens),
             }
             for item in items
         ],

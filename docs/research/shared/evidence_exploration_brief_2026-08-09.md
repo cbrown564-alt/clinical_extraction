@@ -3,8 +3,8 @@
 Date: 2026-08-10
 Revised: 2026-08-19 (proposed method named without Grok or hybrid shorthand)
 Status: source library implemented and source-checked; final browser-render QA remains open for the 2026-08-10 HTML and SVG sources
-Work order: [active roadmap](../plans/ACTIVE_ROADMAP.md)  
-Claim authority: [paper claim status](../../canon/10_paper_provenance.md)
+Work order: [active roadmap](../../plans/ACTIVE_ROADMAP.md)\
+Claim authority: [paper claim status](../../history/canon/10_paper_provenance.md)
 
 ## Purpose
 
@@ -71,7 +71,7 @@ component claim without changing the primary C16/C17 score fills.
   paper personally from the source library and canonical evidence owners.
 
 These are planning decisions. They become paper claims only if the
-[paper claim owner](../../canon/10_paper_provenance.md) supports them at the
+[paper claim owner](../../history/canon/10_paper_provenance.md) supports them at the
 required strength.
 
 ## Boundaries
@@ -156,10 +156,10 @@ and a novelty claim.
 need, prior-system gap, task definitions, and ambiguity limits. Project evidence
 supports only the implemented architecture and retained results.
 
-**Best existing owners:** [system architecture](../../canon/01_system_architecture.md),
-[pipeline steps](../../canon/02_pipeline_steps.md),
+**Best existing owners:** [system architecture](../../history/canon/01_system_architecture.md),
+[pipeline steps](../../history/canon/02_pipeline_steps.md),
 [task-shape framework](../shared/task_shape_framework_2026-08-06.md), and
-[paper claim status](../../canon/10_paper_provenance.md) statements S1, S2, and S6.
+[paper claim status](../../history/canon/10_paper_provenance.md) statements S1, S2, and S6.
 
 **Boundary:** the repository directly supports one modular package, three
 method forms, explicit stages, and retained runs on Gan 2026 and ExECTv2. Paper
@@ -196,8 +196,8 @@ stages, intermediate records, attribution, replay, and checks in this system.
 
 **Best existing owners:** the generated [architecture index](../../architecture/README.md),
 [ownership matrix](../../architecture/diagrams/ownership_matrix.md),
-[component-attribution design](../design/component_evidence_attribution_architecture.md),
-[retained evidence index](../../experiments/retained_evidence_manifest.md), and
+[component-attribution design](../../design/component_evidence_attribution_architecture.md),
+[retained evidence index](retained_evidence_manifest.md), and
 paper provenance S6 and C5.
 
 **Boundary:** generated manifests, executed teaching cases, stage tests, and
@@ -231,8 +231,8 @@ comparisons. Literature and dataset evidence supplies benchmark definitions,
 comparator context, and metric or label limits; it cannot strengthen the
 project's scores.
 
-**Best existing owners:** [paper provenance](../../canon/10_paper_provenance.md)
-C10, C11, and C15–C17; [Decision 0046](../../decisions/0046-exect-primary-method-comparison-boundary.md);
+**Best existing owners:** [paper provenance](../../history/canon/10_paper_provenance.md)
+C10, C11, and C15–C17; [Decision 0046](../../history/decisions/0046-exect-primary-method-comparison-boundary.md);
 and the [six-model comparison](../shared/six_model_comparison_report_2026-07-18.md).
 
 **Boundary:** headline tables are five role rows; the cited score is the
@@ -270,7 +270,7 @@ clinical significance only when a suitable source states it directly.
 **Best existing owners:** paper provenance C18 and C19;
 [hybrid mechanism synthesis](../shared/cross_task_hybrid_mechanism_synthesis_2026-08-06.md);
 the linked Gan and ExECT stage ablations; and the
-[component-attribution design](../design/component_evidence_attribution_architecture.md).
+[component-attribution design](../../design/component_evidence_attribution_architecture.md).
 
 **Boundary:** ordered no-call replay supports first-change attribution on Gan
 dev750 and ExECT dev140. It is not leave-one-stage-out necessity or a general
@@ -305,10 +305,10 @@ incomparable measures.
 matter. Project evidence supports only the reliability properties measured or
 demonstrated for this system, together with their gaps.
 
-**Best existing owners:** [cross-task reliability](../../canon/09_cross_task_reliability.md),
-[reliability framework](../design/reliability_evaluation_framework.md),
+**Best existing owners:** [cross-task reliability](../../history/canon/09_cross_task_reliability.md),
+[reliability framework](../../design/reliability_evaluation_framework.md),
 paper provenance S8 and C13, and the shared reliability package in the
-[retained evidence index](../../experiments/retained_evidence_manifest.md).
+[retained evidence index](retained_evidence_manifest.md).
 
 **Boundary:** all sixteen task-by-question cells have explicit states and
 sources, but evidence strength is uneven. Most cross-task comparisons are
@@ -349,10 +349,10 @@ of what is reused versus what remains task-specific.
 labels, and ambiguity limits. Project evidence shows the shared architecture
 applied to both tasks. Neither lane currently supports performance transfer.
 
-**Best existing owners:** [system architecture](../../canon/01_system_architecture.md),
+**Best existing owners:** [system architecture](../../history/canon/01_system_architecture.md),
 the generated [six-path architecture](../../architecture/README.md),
 [task-shape framework](../shared/task_shape_framework_2026-08-06.md),
-[cross-task reliability](../../canon/09_cross_task_reliability.md), and paper
+[cross-task reliability](../../history/canon/09_cross_task_reliability.md), and paper
 provenance S1, S6, and C13.
 
 **Boundary:** the evidence supports two task-specific implementations inside
@@ -529,7 +529,7 @@ that job:
    the long audit. The shortcut now closes the default claim before opening the
    requested one.
 2. **Parallel two-task performance view.** The initial standalone
-   [HTML evidence view](../../paper/methods.md)
+   [HTML evidence view](../../../publications/dissertation/notes/methods.md)
    presents Gemini five-cell holdout comparisons as two separate task
    stories, with each metric, split, shown role row, evidence owner, and
    limit visible. Gan cites select-stop Purist on the five role rows;
@@ -576,7 +576,7 @@ form for inspecting one journey. The tests above establish writing usefulness,
 not clinical usability or a broader paper claim. Preserve protocols and
 machine-readable evidence as trace records, and return any proposed claim
 promotion to
-[paper provenance](../../canon/10_paper_provenance.md) for a separate decision.
+[paper provenance](../../history/canon/10_paper_provenance.md) for a separate decision.
 
 ## Corpus disposition
 
@@ -668,9 +668,9 @@ The library now answers each writing question in a form suited to the evidence:
 | What did the two golds already decide? | [Golds brief](what_the_two_golds_already_decided_2026-08-17.md) | Writing brief; diagnostic owner stays in `shared/` |
 | What did prior extractors already do? | [Prior-approaches brief](what_prior_extraction_approaches_already_did_2026-08-17.md) | Related work by shape and method; not novelty |
 | What makes Gan and ExECT different? | [Task-shape source](../shared/task_shape_framework_2026-08-06.md) | Concise explanation and diagram |
-| How does the proposed method keep a source span and shape facts into a designed form? | [Method rationale](why_hybrid_architecture_2026-08-09.md) and [architecture view](../../paper/architecture.md) | Brief plus visual system map |
-| What did Gan achieve, how, and within what limits? | [Gan story](gan_story_2026-08-10.md) | Self-contained task account |
-| What did ExECT achieve, how, and within what limits? | [ExECT story](exect_story_2026-08-12.md) | Self-contained task account |
+| How does the proposed method keep a source span and shape facts into a designed form? | [Method rationale](why_hybrid_architecture_2026-08-09.md) and [architecture view](../../../publications/dissertation/notes/architecture.md) | Brief plus visual system map |
+| What did Gan achieve, how, and within what limits? | [Gan story](../gan2026/gan_story_2026-08-10.md) | Self-contained task account |
+| What did ExECT achieve, how, and within what limits? | [ExECT story](../exectv2/exect_story_2026-08-12.md) | Self-contained task account |
 | Where do components help, harm, or do nothing? | [Component deck](failures_and_limits_2026-08-10.md) and [failure source](failures_and_limits_2026-08-10.md) | Sequenced visual argument plus concise reference |
 | Which cases make reviewability concrete? | [Paired cases](reviewable_case_pair_2026-08-09.md) and [case explorer](reviewable_case_pair_2026-08-09.md) | Two guided journeys |
 | Which letters show the task difficulties? | [Flagship 3-letter suite](flagship_3_letter_suite_2026-08-11.md) | Six development letters; not a holdout sample |
@@ -696,14 +696,14 @@ or claim promotion were part of this work.
 
 ## Governing sources
 
-- [Project status](../../PROJECT_STATUS.md)
-- [Active roadmap](../plans/ACTIVE_ROADMAP.md)
-- [Paper claims and supporting evidence](../../canon/10_paper_provenance.md)
-- [Retained evidence index](../../experiments/retained_evidence_manifest.md)
-- [System architecture](../../canon/01_system_architecture.md)
-- [Pipeline steps and ownership](../../canon/02_pipeline_steps.md)
-- [Cross-task reliability](../../canon/09_cross_task_reliability.md)
+- [Project status](../../../PROJECT_STATUS.md)
+- [Active roadmap](../../plans/ACTIVE_ROADMAP.md)
+- [Paper claims and supporting evidence](../../history/canon/10_paper_provenance.md)
+- [Retained evidence index](retained_evidence_manifest.md)
+- [System architecture](../../history/canon/01_system_architecture.md)
+- [Pipeline steps and ownership](../../history/canon/02_pipeline_steps.md)
+- [Cross-task reliability](../../history/canon/09_cross_task_reliability.md)
 - [Task-shape framework](../shared/task_shape_framework_2026-08-06.md)
 - [Six-model comparison](../shared/six_model_comparison_report_2026-07-18.md)
 - [Hybrid mechanism synthesis](../shared/cross_task_hybrid_mechanism_synthesis_2026-08-06.md)
-- [Component-attribution design](../design/component_evidence_attribution_architecture.md)
+- [Component-attribution design](../../design/component_evidence_attribution_architecture.md)

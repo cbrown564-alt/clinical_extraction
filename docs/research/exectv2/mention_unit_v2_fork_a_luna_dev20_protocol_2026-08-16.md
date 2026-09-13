@@ -1,14 +1,14 @@
 # ExECT mention-unit v2 — GPT-5.6 Luna protocol
 
-Date: 2026-08-16  
-Status: complete; frozen `dev20` live run is an **answer**  
-Result: [mention-unit v2](mention_unit_v2_fork_a_luna_dev20_2026-08-16.md)  
+Date: 2026-08-16\
+Status: complete; frozen `dev20` live run is an **answer**\
+Result: [mention-unit v2](mention_unit_v2_fork_a_luna_dev20_2026-08-16.md)\
 Plan: [ExECT LLM representation and hybrid re-evaluation](../../history/plans/exect_llm_representation_and_hybrid_revaluation_2026-08-16.md)\
 Review: [prompt fundamentals](../../history/plans/exect_prompt_fundamentals_2026-08-16.md) (signed off)\
-Decision: [0055](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md)  
-Prior result: [mention-unit v1 (mention-unit v1 pruned; recover from Git history)  
-Leftover owner: [trust-item remasure](prompt_variant_slots_2026-08-16.md)  
-Design note: [what we ask the model to do](prompt_variant_slots_2026-08-16.md)  
+Decision: [0055](../../history/decisions/0055-exect-semantic-inventory-and-method-contracts.md)\
+Prior result: [mention-unit v1 (mention-unit v1 pruned; recover from Git history)\
+Leftover owner: [trust-item remasure](prompt_variant_slots_2026-08-16.md)\
+Design note: [what we ask the model to do](prompt_variant_slots_2026-08-16.md)\
 Glossary: [CONTEXT.md](../../../CONTEXT.md)
 
 Fork A stays. Decision 0050 and `test60` are unchanged. This file

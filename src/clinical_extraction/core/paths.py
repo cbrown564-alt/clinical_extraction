@@ -56,8 +56,27 @@ def resolve_under_root(root: Path, path: Path) -> Path:
 def resolve_letter_benchmarks_root(*, root: Path | None = None) -> Path:
     """Return the canonical results location for current readers and writers.
 
-    Historical artifact paths remain readable through the repository symlink.
+    Historical artifact paths remain readable through resolve_saved_artifact_path.
     Never select a different write destination based on directory existence.
     """
     repo = root or discover_repo_root_or_cwd()
     return repo / "results/letter-benchmarks"
+
+
+def resolve_saved_artifact_path(root: Path, recorded_path: str | Path) -> Path:
+    """Resolve an old result path without rewriting immutable saved provenance.
+
+    Only the exact historical root component is remapped. This is a reader
+    adapter; current writers always use resolve_letter_benchmarks_root.
+    """
+    path = Path(recorded_path)
+    if path.is_absolute():
+        try:
+            relative = path.relative_to(root)
+        except ValueError:
+            return path
+    else:
+        relative = path
+    if relative.parts and relative.parts[0] == "paper_experiments":
+        return root / "results" / "letter-benchmarks" / Path(*relative.parts[1:])
+    return root / relative

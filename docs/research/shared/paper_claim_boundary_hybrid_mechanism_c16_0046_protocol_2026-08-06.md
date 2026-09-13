@@ -2,11 +2,11 @@
 
 Paper-library status: historical protocol retained with its packaging record.
 
-Date: 2026-08-06  
-Status: complete; packaging only; no score-fill rewrite  
+Date: 2026-08-06\
+Status: complete; packaging only; no score-fill rewrite\
 Parents: [cross-task hybrid mechanism synthesis](cross_task_hybrid_mechanism_synthesis_2026-08-06.md),
-[paper provenance](../../canon/10_paper_provenance.md),
-[Decision 0046](../../decisions/0046-exect-primary-method-comparison-boundary.md)  
+[paper provenance](../../history/canon/10_paper_provenance.md),
+[Decision 0046](../../history/decisions/0046-exect-primary-method-comparison-boundary.md)\
 Report: [claim-boundary packaging](paper_claim_boundary_hybrid_mechanism_c16_0046_2026-08-06.md)
 
 ## Primary question

@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 
 from pydantic import BaseModel
 
-from clinical_extraction.core.scoring import PRF1, multiset_prf1, prf1_from_counts, sum_prf1
+from clinical_extraction.evaluation.scoring import PRF1, multiset_prf1, prf1_from_counts, sum_prf1
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     POINT_RANGE_TRIPLES,
 )
@@ -259,6 +259,7 @@ def clinical_headline_unit_keys(
 
         return _prescription_component_keys(annotations, "clinical_headline", note_text)
     return []
+
 
 def clinical_inventory_unit_keys(
     entity: str,

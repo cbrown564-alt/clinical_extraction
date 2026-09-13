@@ -3,7 +3,7 @@
 Date: 2026-08-22
 Status: in progress
 Owner: this file
-Related: [six-model roster](../../paper/decisions/six-model-roster.md),
+Related: [six-model roster](../../../publications/dissertation/notes/decisions/six-model-roster.md),
 [extract label-forms](gan_extract_label_forms_protocol_2026-08-22.md)
 
 ## Question

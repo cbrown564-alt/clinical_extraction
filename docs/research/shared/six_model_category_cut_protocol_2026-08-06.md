@@ -67,7 +67,7 @@ owns the category.”
 | Track | Split | Row policy | Prediction sources |
 | --- | --- | --- | --- |
 | Gan 2026 | `dev750` (`validation`) | development review permitted | `rules` = retained three-way deterministic JSONL; `llm_only` JSONL in `experiments/gan2026_six_model_validation_20260718/`; `llm_with_rules` = matched v0.5 attribution + current-floors changed-row patch |
-| ExECTv2 | `dev140` | development review permitted | `rules` = regenerated four-family letter scores (`scripts/build_exectv2_rules_only_four_family_letter_scores_dev140.py`); assembled JSONL `predicted_mentions` (llm_with_rules); `raw_lane_mentions` scored with the clinical-headline helper (llm surface) |
+| ExECTv2 | `dev140` | development review permitted | `rules` = regenerated four-family letter scores (`scripts/benchmarks/build_exectv2_rules_only_four_family_letter_scores_dev140.py`); assembled JSONL `predicted_mentions` (llm_with_rules); `raw_lane_mentions` scored with the clinical-headline helper (llm surface) |
 | Holdout | `test450` / `test60` | **aggregate-only** | No sealed row files opened. Holdout discussion uses panel aggregates + gold mix only |
 
 No new model calls. No locked-test row inspection. ExECT rules-only letter
@@ -76,7 +76,7 @@ scores are a no-call deterministic regeneration.
 ## Categories
 
 Use regenerable gold categories from
-`scripts/build_gold_task_taxonomy_inventories.py` and the shared within-family
+`scripts/benchmarks/build_gold_task_taxonomy_inventories.py` and the shared within-family
 classifier:
 
 - Gan: `a_priori_buckets` (+ optional `boundary_band`)

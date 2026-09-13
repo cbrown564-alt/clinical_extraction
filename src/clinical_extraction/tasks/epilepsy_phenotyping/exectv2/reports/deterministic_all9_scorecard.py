@@ -161,9 +161,7 @@ def write_scorecard_artifacts(
     gold_letters = load_letters_for_split(split)
     predictions = run_all9_on_letters(
         gold_letters,
-        include_diagnosis_resolution_candidate=(
-            include_diagnosis_resolution_candidate
-        ),
+        include_diagnosis_resolution_candidate=(include_diagnosis_resolution_candidate),
         include_diagnosis_benchmark_residuals=include_diagnosis_benchmark_residuals,
     )
     scorecard = build_scorecard(gold_letters, predictions)

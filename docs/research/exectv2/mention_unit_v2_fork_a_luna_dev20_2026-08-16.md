@@ -1,11 +1,11 @@
 # ExECT mention-unit v2 — GPT-5.6 Luna `dev20`
 
-Date: 2026-08-16  
-Status: complete; **answer**  
-Protocol: [mention_unit_v2_fork_a_luna_dev20_protocol_2026-08-16.md](mention_unit_v2_fork_a_luna_dev20_protocol_2026-08-16.md)  
+Date: 2026-08-16\
+Status: complete; **answer**\
+Protocol: [mention_unit_v2_fork_a_luna_dev20_protocol_2026-08-16.md](mention_unit_v2_fork_a_luna_dev20_protocol_2026-08-16.md)\
 Review: [prompt fundamentals](../../history/plans/exect_prompt_fundamentals_2026-08-16.md)\
 Plan: [ExECT LLM representation and hybrid re-evaluation](../../history/plans/exect_llm_representation_and_hybrid_revaluation_2026-08-16.md)\
-Decision: [0055](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md)  
+Decision: [0055](../../history/decisions/0055-exect-semantic-inventory-and-method-contracts.md)\
 Prior result: [mention-unit v1 (mention-unit v1 pruned; recover from Git history)
 
 ## Executive result
@@ -40,8 +40,8 @@ numbers now sit in `llm` fields instead of inside the name.
 - 0 blocking parse rows. 0 forbidden hybrid fields. 0 ECG or other
   non-target mentions. 0 hybrid mentions grown from unused letter text.
 
-Artifact: [`comparison.json`](../../../experiments/exectv2_mention_unit_v2_luna_dev20_20260816/comparison.json)  
-Rows: [`rows.jsonl`](../../../experiments/exectv2_mention_unit_v2_luna_dev20_20260816/rows.jsonl)  
+Artifact: [`comparison.json`](../../../experiments/exectv2_mention_unit_v2_luna_dev20_20260816/comparison.json)\
+Rows: [`rows.jsonl`](../../../experiments/exectv2_mention_unit_v2_luna_dev20_20260816/rows.jsonl)\
 Emission: [`emission_census.json`](../../../experiments/exectv2_mention_unit_v2_luna_dev20_20260816/emission_census.json)
 
 ## Gold wording as clinical name

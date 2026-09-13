@@ -2,7 +2,7 @@
 
 Date: 2026-08-13
 Status: thinking level selected (`low`); live ExECT `dev140` and Gan `dev750` hybrid cells complete; Gan LLM-only `dev750`/`test450` complete ([report](../gan2026/gemini37flash_llm_only_dev750_test450_2026-08-13.md))
-Decision: [0051](../../decisions/0051-gemini-37-flash-succeeds-gpt41mini-six-model-slot.md)
+Decision: [0051](../../history/decisions/0051-gemini-37-flash-succeeds-gpt41mini-six-model-slot.md)
 
 ## Question
 
@@ -78,7 +78,7 @@ Live cells go under `experiments/`, not `scratch/`.
   four-family call, Decision 0045 `default`/`default` assembly, prompt
   `exectv2_hybrid_key_family_event_ledger_v0.9.24`.
 - Gan hybrid: `llm_with_rules` / `hybrid_structured_events`, selected hosted
-  prompt `gan2026_hybrid_structured_events_v0.5` ([decision 0043](../../decisions/0043-gan-hosted-comparison-uses-v05-prompt.md)).
+  prompt `gan2026_hybrid_structured_events_v0.5` ([decision 0043](../../history/decisions/0043-gan-hosted-comparison-uses-v05-prompt.md)).
 - Gan LLM-only, if run: `gan2026_llm_only_canonical_pipeline_v0.8`.
 - Scorers, splits, and clinical repairs stay on HEAD. A repair or scorer edit
   is a new study.

@@ -2,7 +2,7 @@
 
 Date: 2026-08-06  
 Status: development no-call counterfactual  
-Paper-library role: ExECT counterfactual record; start with [failures and limits](../paper/failures_and_limits_2026-08-10.md)
+Paper-library role: ExECT counterfactual record; start with [failures and limits](../shared/failures_and_limits_2026-08-10.md)
 
 Protocol: recovered from git history; this report is the answer.  
 Parent: [cross-task hybrid mechanism synthesis](../shared/cross_task_hybrid_mechanism_synthesis_2026-08-06.md)  

@@ -113,7 +113,7 @@ curl -s http://127.0.0.1:8000/v1/models | python3 -m json.tool
 This is the most likely real incompatibility and should be tested deliberately.
 
 `build_dspy_lm` in
-[`llm_config.py`](../../src/clinical_extraction/tasks/seizure_frequency/gan2026/llm_config.py)
+[`dspy_runtime.py`](../../src/clinical_extraction/core/dspy_runtime.py)
 sends, for every `vllm/` route:
 
 ```python
@@ -203,7 +203,7 @@ These are development rows and are inspectable. Gan `test450` and ExECT
 export VLLM_BASE_URL=http://127.0.0.1:8000/v1
 export VLLM_THINKING=false
 
-gan2026-llm-experiment \
+clinical-extract benchmark gan \
   --pipeline llm_with_rules \
   --split validation \
   --source-row-indices 10,40,79,103,128,156,180,182,187,190 \

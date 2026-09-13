@@ -2,7 +2,7 @@
 
 Date: 2026-08-22
 Status: development inventory; holdout aggregates only
-Owners: [methods](../../paper/methods.md),
+Owners: [methods](../../../publications/dissertation/notes/methods.md),
 [score definitions](score_definitions_2026-08-17.md),
 [what the two golds already decided](what_the_two_golds_already_decided_2026-08-17.md)
 Letter-length and gold-density table:

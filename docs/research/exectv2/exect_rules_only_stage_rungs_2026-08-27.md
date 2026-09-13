@@ -7,8 +7,8 @@ Program: `run_letter_three_stage(ACCEPTED_THREE_STAGE_CONFIG)` (frozen; unchange
 Artifacts:
 [`experiments/exect_rules_only_stage_rungs_20260827/dev140_summary.json`](../../../experiments/exect_rules_only_stage_rungs_20260827/dev140_summary.json),
 [`experiments/exect_rules_only_stage_rungs_test60_aggregate_20260827.json`](../../../experiments/exect_rules_only_stage_rungs_test60_aggregate_20260827.json)
-Runners: `scripts/measure_exect_rules_only_stage_rungs_dev140.py`,
-`scripts/measure_exect_rules_only_stage_rungs_test60_aggregate.py`
+Runners: `scripts/benchmarks/measure_exect_rules_only_stage_rungs_dev140.py`,
+`scripts/benchmarks/measure_exect_rules_only_stage_rungs_test60_aggregate.py`
 
 ## Answer
 
@@ -49,7 +49,7 @@ extract rung.
   (0.7934 / 0.7994 vs select 0.8018) instead of copies of the select
   score (`five_cell.py::_exect_rules_stage`; regenerated
   `generated.json` and curated `comparison.json` updated).
-- `scripts/refresh_exect_rung_rules_only_reference.py` refreshed the
+- `scripts/benchmarks/refresh_exect_rung_rules_only_reference.py` refreshed the
   stale `rungs.rules_only` reference in all eight
   `paper_experiments/exect/rungs/*/{dev140,test60}/comparison.json`
   files (retired 0.9042 / 0.7937 headline numbers → promoted 0.9167 /

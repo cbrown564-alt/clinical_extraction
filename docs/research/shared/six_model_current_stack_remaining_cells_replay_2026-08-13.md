@@ -28,7 +28,7 @@ the 1 Aug stage panel. Sol moves **0.8047 → 0.8196**. Selected DeepSeek 0731
 moves **0.8118 → 0.8223**. Gemma's empty-event letters stay in the
 denominator as empty predictions.
 
-This is not a new model run. [Decision 0050](../../decisions/0050-current-stack-hybrid-primary-fills.md)
+This is not a new model run. [Decision 0050](../../history/decisions/0050-current-stack-hybrid-primary-fills.md)
 promotes these hybrid fills as the selected primary scores. DeepSeek holdout
 uses the 0731 raws: Gan **366/450**, ExECT **0.8223**.
 
@@ -130,7 +130,7 @@ Investigations 0.9231.
 No-call current-repair evidence. Gan `test450` is current repair on **v0.5**
 saved outputs. ExECT cells are current `default` / `default` assembly on
 saved v0.9.24 structured sidecars. `dev140` is development. Holdout cells are
-aggregate-only. [Decision 0050](../../decisions/0050-current-stack-hybrid-primary-fills.md)
+aggregate-only. [Decision 0050](../../history/decisions/0050-current-stack-hybrid-primary-fills.md)
 selects these hybrid fills as primary. DeepSeek holdout is the 0731
 current-stack cell (Gan 366/450, ExECT 0.8223).
 Scores are not interchangeable across tasks.

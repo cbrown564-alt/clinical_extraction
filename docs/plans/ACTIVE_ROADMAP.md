@@ -17,8 +17,12 @@ L8 is retained: `run.py`, `requirements.txt` and the no-install HPC/vLLM workflo
 remain supported. Move required code out of `paper/` and `trace_explorer/` to its
 functional owners, migrate consumers, then delete obsolete implementations and
 old import paths. Saved-result replay, source/output bytes and the existing demo,
-workbench and longitudinal experiences remain supported. These are approved
-dispositions; the moves and removals are not yet implemented.
+workbench and longitudinal experiences remain supported. The approved code moves, removals and persistent artifact lifecycle are now
+implemented. The migration record owns verification and retained-path exceptions.
+Selected reconstruction and Phase 0 migration are complete: 824 Python tests,
+167 frontend tests, package/public-checkout, type/lint, browser and preservation
+checks pass. Research resumes under its own protocol and remaining decisions;
+this closure does not authorise new model runs.
 
 Longitudinal status: Phases 2–4 are complete for their synthetic development scopes. Phase 4
 adds the twelve-patient local viewer, both histories, five evidence-traced cohort
@@ -31,7 +35,7 @@ No expert validation, dataset freeze or deployment is claimed. Phase 5 is next.
 [Project status](../../PROJECT_STATUS.md) owns task progress and current checks.
 This document owns scope, task order, dependencies, completion criteria, and the
 repository restructuring map. [Navigation](../NAVIGATION.md) names the current
-locations. Target paths below do not imply that those directories exist yet.
+locations. The selected current layout and deliberate local-path exceptions are recorded below.
 
 ## Programme direction
 
@@ -50,9 +54,8 @@ preserving existing evidence, before defining Strand A's experiment. Full R5
 implementation and the remaining longitudinal research phases are deferred.
 
 The completed MSc dissertation remains under `publications/dissertation/`.
-`docs/paper/` and its linked evidence owners retain the submitted work's methods
-and claims. A future JAMIA manuscript will have its own publication directory
-when actual manuscript work starts. The new narrative must be supported by its
+`publications/dissertation/notes/` and its linked evidence owners retain the
+submitted work's methods and claims. The JAMIA outline has its own publication directory. The new narrative must be supported by its
 own comparison protocol; relabelling old hybrid results as one-shot extraction
 is not permitted. Gan 2026 and ExECTv2 keep their separate populations, reference
 semantics, scorers and split permissions.
@@ -315,10 +318,9 @@ and GEPA versions for any future comparison.
 
 ## Staged codebase reconstruction
 
-This is a proposed strategy, not implementation authorisation for broad changes.
-Keep one package initially. Prove a behaviour-preserving slice, record what can be
-reused, then extend it. A changed directory name or DSPy base class is not a
-modularity result.
+Conor authorised completion on 2026-09-13. The selected reconstruction is
+implemented in one package: shared capture/persistence, task-owned projections
+and evaluation, separate inspection, and one supported command dispatcher.
 
 The [software specification](../design/architecture.md) owns the component design
 and acceptance criteria. The agreed sequence is Gan prompt composition and replay
@@ -336,35 +338,28 @@ before paper work; decide which compatibility adapters to retain from the audit.
 | R5. Prepare for research-paper tables; full task deferred | Preserve the extension boundary for document/table identity, structured evidence locations and study-owned result types during reconstruction. Select concrete sources and implement the workflow later. | Foundations do not require epilepsy labels or prose-only evidence for every task. Current text-only support and deferred table parsing/extraction remain explicit; this is not a different-domain result. |
 | R6. Consolidate demonstrated overlap | Move only utilities used correctly by both slices; update callers, compatibility, documentation and tests together. Add serving only for a named application need. | Required replay, package, UI and public-checkout checks pass; unused abstractions are removed; rollback and provenance remain possible. |
 
-Implementation progress on 2026-09-13:
+Implementation on 2026-09-13:
 
-- R1 retains the migration record's byte, path and local-only inventory. The
-  implementation started at `b005d6d0` with existing user work preserved; a new
-  active-writer check found no matching local model, generation or pytest process.
-- R2 is implemented for the explicitly selected `gan_llm_extract` profile. Prompt
-  components compose the byte-identical legacy payload and rendered messages;
-  ordinary-source execution needs no benchmark gold, and replay has no live-call
-  fallback. A permitted validation/development saved response retains its selected
-  compatibility output.
-- The bounded R3 path is implemented as an additive ExECT library and operational
-  path. Its explicit
-  profiles do not mutate the legacy default; raw event positions and unknown fields
-  precede the named Compact adapter; scoring stays task-owned; lifecycle manifests
-  bind recorded runtime metadata when present and account for parse/schema failure.
-  The older row-key resume helper is not used as request identity because it can
-  overwrite duplicate keys; persisted artifact loading and registry integration
-  remain future work if a named run needs them.
-- R4 is implemented for the existing synthetic longitudinal facts. One immutable,
-  query-independent artifact serves visit and retrospective policies; source dates
-  and text are identity-bound, cutoff-limited captures exclude later sources, and
-  query-conditioned saved outputs are refused as reusable evidence.
-- R5 is selected as research-paper tables. The study-report example remains
-  fictional; source/reference selection and full implementation are deferred.
-  The present decision records foundation requirements, not implemented table support.
-- R6 moves only the demonstrated source/artifact/lifecycle records and DSPy provider
-  construction into `core/`. Gan keeps its historical provider import, old runners
-  and outputs through compatibility paths. No serving layer was added because no
-  application need was named.
+- R1: baseline working-tree bytes, known test failures, callers and active writers
+  were recorded before moves. Existing user work and saved evidence were preserved.
+- R2: the Gan profile retains exact composed requests and permitted development
+  replay outputs. Its artifact path accepts ordinary notes without dummy gold.
+- R3: Gan and ExECT use shared task-profile execution and SQLite artifact storage.
+  Persisted requests bind source content, prompt components, runtime and program
+  version. Replay refuses changed identities and never falls back to a provider.
+  Failures remain stored; retry is explicit. Task projections and scorers remain
+  separate. The old ExECT checkpoint reader now rejects duplicate IDs and binds
+  its resume manifest to source hashes as well as prompt/runtime settings.
+- R4: serialized longitudinal artifacts reload their task-owned content and serve
+  both visit and retrospective policies without changing source assertions.
+- R5: research-paper tables remain selected and deferred. Original source/view
+  identity, multiple evidence references and task-owned content are foundations;
+  current evidence locations are text-only. No parser/OCR or table result is claimed.
+- R6: required `paper` and `trace_explorer` code has moved to task evaluation,
+  shared evaluation and `inspection`. Benchmark study vocabulary is outside `core`.
+  Obsolete loops, facades, aliases, queues and live paper dispatch are removed.
+  `clinical-extract` owns supported commands; `run.py` and requirements remain.
+  The migration record contains the package, public-checkout, UI and replay checks.
 
 These are software implementation claims, not a new model result, clinical
 validation, completed paper protocol, different-domain result or deployment.
@@ -375,20 +370,20 @@ The approved support reduction supersedes earlier blanket import/CLI compatibili
 requirements in this document. Preserve required behavior and evidence through
 the replacement interfaces; old aliases and package paths need not remain.
 The [architecture destination map](../design/architecture.md#reconstruction-destinations-after-the-legacy-support-decision)
-owns the code boundaries. The migration record will record exact file moves and
+owns the code boundaries. The migration record records exact file moves and
 verification. Do not treat a directory rename as completion of that separation.
 
-| Current boundary | Disposition and reason |
+| Current boundary | Applied disposition |
 | --- | --- |
-| `tasks/.../gan2026` and `tasks/.../exectv2` | Preserve dataset IDs, parsing/normalisation, split policies and scoring as benchmark adapters. Separate reusable domain facts from benchmark label/mention semantics gradually. |
-| `core/` | Retain genuinely shared evidence, validation, IO/path and arithmetic utilities. `FinalExtraction` is answer-centred and `EvidenceSpan` lacks document/version identity; add an adjacent assertion/source representation before replacing callers. Task-specific reliability and roster helpers do not become universal merely by living here. |
-| Gan `llm_config.py`, `paper/lm.py`, `operational/runtime.py` | Map overlapping provider concerns, then extract a shared execution configuration. ExECT currently imports the Gan model factory: correct that dependency with compatibility wrappers after parity is shown. Preserve actual provider payloads and route-specific settings. |
-| `operational/gan.py` | Remove the need to construct a benchmark record with dummy gold fields for a new runtime path. This is interface coupling, not evidence that gold is sent to the model. Keep old CLI behaviour through an adapter. |
-| ExECT `assembly/` and scoring views | Reuse lessons from provenance and findings; do not relocate benchmark-specific dictionaries, mention conversions or gold-dependent scoring into a supposedly generic core. Separate pure projection from evaluation. |
-| `longitudinal/` | Preserve evidence, source accounts, linking, temporal and query ownership. Its dictionary/schema representation and source-specific semantic rules need review; do not silently repair prediction errors while adding types. |
-| `paper/` | Move retained task-specific replay and evaluation to benchmark-owned evaluation modules, shared comparison mechanics to `evaluation/`, and publication builders to their script owner. Retire the historical live dispatcher and remove the old namespace after consumers move. Preserve dissertation result semantics. |
-| `core/registry.py`, resume and comparison records | Adapt existing manifests before inventing another registry. Old phase/architecture enums are legacy metadata, not universal task-profile concepts. Unified evaluation means a shared report interface, not one clinical score. |
-| `trace_explorer/`, frontend, generated architecture docs | Move API, inspection and review storage to `inspection/`; put benchmark hydration in benchmark-owned evaluation modules. Preserve review/error capture and distinct demonstration sources. Rebind frontend consumers; generated diagrams must describe implemented paths. |
+| `tasks/.../gan2026` and `tasks/.../exectv2` | Own task profiles, parsing, projections, split policy and benchmark evaluation; original labels and result semantics are preserved. |
+| `core/` | Owns shared identity, artifacts, persistent execution, provider, evidence, validation and IO mechanics. Benchmark reliability, roster and registry vocabulary moved into scoped evaluation adapters. |
+| Provider configuration | Callers use `core/dspy_runtime.py`; the Gan forwarding module is removed. Operational runtime configuration remains its caller-facing adapter. |
+| `operational/` | One command dispatches supported operations. Ordinary artifact capture needs no dummy gold; retained operational methods preserve their outputs. |
+| ExECT `assembly/` and scoring views | Keep clinical dictionaries and mention/gold semantics task-owned. Review-record hydration no longer depends on inspection. |
+| `longitudinal/` | Owns typed content reloading, linking, temporal and query policies over immutable artifacts; prediction errors remain explicit. |
+| `evaluation/` | Shared metrics; `letter_benchmarks/` scopes historical five-cell, registry and comparison meaning. Task-specific replay moved to task evaluation. |
+| `inspection/` | HTTP routes, frontend adapters and review storage consume evaluation records. Existing API URLs and local review state are preserved. |
+| Publication and repository tooling | Figures and builders live in `scripts/publications`; checks and benchmark helpers have their own script groups. |
 
 The lifecycle manifest should identify task/schema/prompt/program/scorer versions,
 dataset and permitted split, source and output hashes, runtime/model revision,
@@ -397,7 +392,7 @@ format and semantic changes, reviewer decisions and artifact visibility. A task
 profile declares required fields and policy compatibility. Neither a profile nor
 a registry entry grants access to locked data or authorises a model run.
 
-### Decisions required before a major refactor
+### Remaining research decisions before new experiments
 
 1. What exact extraction unit, families and evidence-backed outputs define the
    primary one-shot paper, and which existing references can score them fairly?
@@ -405,8 +400,8 @@ a registry entry grants access to locked data or authorises a model run.
    claim, and what constitutes a matched Llama 3.1/Qwen 2.5 comparison?
 3. What counts as one-shot, a permitted format repair, unsupported evidence and
    an abstention? Which metric is primary and which errors must be reported apart?
-4. Which retained interfaces/commands need compatibility, and which old outputs
-   cannot be losslessly mapped to the proposed assertion representation?
+4. Compatibility is settled by L1–L10. Query-conditioned historical longitudinal
+   outputs remain readable but cannot be reused as query-independent captures.
 5. Which policy/scorer revisions explain the GEPA score discrepancy, and which
    missing logs must be recovered before attributing the search outcome?
 6. Can feedback distinguish extraction, evidence, annotation and selection errors
@@ -415,8 +410,8 @@ a registry entry grants access to locked data or authorises a model run.
 7. Research-paper tables are selected for R5. Exact sources, reference and review
    ownership remain later research decisions; preserve the table-evidence extension
    boundary now without implementing the full task.
-8. What immediate application needs serving, if any? Until there is one, keep
-   reproducible batch execution and review sufficient for the research workflow.
+8. Existing inspection serves the demo/workbench. Add further serving only when
+   a named application requires it; batch capture/replay is sufficient today.
 
 Implementation contributor owns dependency mapping and verification; Conor owns
 research scope and sequencing. Independent domain reviewers are required for
@@ -521,7 +516,7 @@ README, much of `docs/` and all observed `paper/` files are tracked. Gitignore
 patterns do not untrack existing files. A move must preserve the intended
 visibility, not merely copy the old ignore rules.
 
-### Proposed target structure
+### Selected structure
 
 Keep one Python package and one frontend. Organise publications by output,
 results by evaluation, and studies by question. Avoid a new package architecture
@@ -536,12 +531,12 @@ pyproject.toml / uv.lock          package and pinned development environment
 run.py / requirements.txt        retained external Gan runner compatibility
 src/clinical_extraction/
   core/                          demonstrated shared functionality
-  tasks/                         existing Gan/ExECT implementations retained
+  tasks/                         Gan/ExECT extraction, projection and evaluation
   longitudinal/                  new implementation, added with the pilot
   operational/                   supported operational entry points
-  paper/                         existing benchmark replay API, initially retained
+  evaluation/                    shared metrics; letter_benchmarks holds old study adapters
   architecture/                  existing generators and manifests
-  trace_explorer/ / observatory/  retain until their consumers are classified
+  inspection/                    API, review storage and frontend adapters
 frontend/                         shared UI; benchmark views and new patient views
 configs/{gan2026,exectv2,longitudinal}/
 tests/                            current checks plus new behavior checks
@@ -558,7 +553,7 @@ runs/                             ignored execution outputs, organised by study
   archive/                       local historical runs required for provenance
 scratch/                          ignored transient and quarantined working material
 data/                             local-only; versioned release exports are separate
-  sources/{gan2026,exectv2}/       source copies + preserved IDs and split provenance
+  Gan (2026)/, ExECTv2 (2025)/             retained local source/split paths; see exception below
   longitudinal/<version>/         generated letters, annotations, splits, QC
 media/<purpose>/                  local production assets; served exports in frontend
 literature/                       local reading copies; no automatic redistribution
@@ -579,9 +574,13 @@ Create a directory when its first owned artifact exists. Dataset release packagi
 and storage are decided after volume and sharing review; the target tree does not
 authorise committing full raw runs, private source material, or hidden test gold.
 
-### Disposition and dependency map
+### Original disposition and dependency map (historical proposal)
 
-| Current location | Proposed disposition | Dependencies and completion evidence |
+The table records the original move dependencies. Current locations are in the
+selected structure and navigation; L1–L10 and the completion record supersede
+its initial compatibility requirements.
+
+| Original location | Proposed disposition at planning time | Dependencies and completion evidence |
 | --- | --- | --- |
 | Root `README.md`, `AGENTS.md`, status and glossary | Retain names; make new direction primary and old task terms explicitly scoped | One active plan; public README does not require ignored files to explain the project |
 | `paper/` | Move to `publications/dissertation/`; classify draft, final, reference/template and historical material within it | TeX image/bibliography paths, supporting-material links and figure builders; build and visually inspect affected PDFs; preserve earlier output provenance |
@@ -603,17 +602,16 @@ authorise committing full raw runs, private source material, or hidden test gold
 | `docs/history/canon/`, `docs/history/decisions/` | Retain historical guidance only for a named use; migrate still-applicable safeguards into active owners | The old canon is already superseded; preserve rationale and code/test callers; avoid a second live claim register |
 | `docs/design/`, `reference/`, `runbooks/` | Keep shared content; relocate dataset-only policy to its benchmark home | Some procedures contain old model/split permissions; make scope explicit before reusing |
 | `docs/research/`, `docs/experiments/` | Consolidate study prose into `docs/research/<track>/`; retain required evidence; remove superseded narrative when Git suffices | 271 research Markdown files and 73 experiment Markdown files need file-level classification; no wholesale deletion based on directory |
-| `docs/architecture/` | Keep generated reference in the first migration; re-scope only through generator changes | `scripts/build_architecture_docs.py` and `tests/test_architecture_stage_manifests.py` enforce generated content |
+| `docs/architecture/` | Keep generated reference in the first migration; re-scope only through generator changes | `scripts/checks/build_architecture_docs.py` and `tests/test_architecture_stage_manifests.py` enforce generated content |
 | `docs/plans/` | This roadmap remains active; remove superseded plans unless a continuing use requires them | Supersede old paper-only pruning instructions; no renewed authorisation for old experiment queues |
 | `.github/`, `.pre-commit-config.yaml`, `.gitignore`, package manifests | Retain; update with each affected move | Clean public-checkout CI, tracked/local boundaries, packaging and path discovery |
 | `.env`, `.venv/`, caches, `.skills/`, `.worktrees/` | Keep as environment state outside content reorganisation | No credential inspection, virtualenv move, worktree deletion or dependency churn |
 
-Known hard callers include `src/clinical_extraction/paper/{gan,exect,gan_panel,exect_panel}.py`,
+Original hard callers included `src/clinical_extraction/paper/{gan,exect,gan_panel,exect_panel}.py`,
 `gan_cell_replay.py`, `exect_cell_replay.py`, `gan_result_figures.py`, the operational
 CLI, `scripts/build_*`, `tests/test_paper_*`, panel tests, and CI's documentation
-hygiene paths. Use these as starting points; Phase 0 still requires a complete
-per-move caller search, including JSON metadata, TeX, TypeScript and ignored local
-configuration. Do not enumerate or print locked row content to find path strings.
+hygiene paths. Their replacements were checked across Python, JSON metadata,
+TypeScript, configuration and Markdown without displaying locked-row content.
 
 ### Documentation reduction decision (2026-09-13)
 
@@ -633,8 +631,22 @@ percentage or delete a directory merely because it is old.
 
 Completion requires applied dispositions for the remaining study documents,
 resolved competing guidance, and before/after file and line counts for each cut.
-The migration record owns those counts and recovery references. The first cut is
-implemented there; broader classification remains open.
+The migration record owns those counts and recovery references. The first cut
+and the file-level study classification are applied in sections 8–9: original
+protocols and interpretations are retained by named study purpose, two stale
+generated pages are removed, and the current documentation has functional owners.
+
+### Retained local paths after migration
+
+Existing private `data/` source/split subtrees, historical `experiments/` run
+folders, protected scratch and `.trace_explorer/` review/index storage stay in
+place. They contain source-version provenance, immutable run-path references or
+user review state; moving them provides no functional benefit and risks changing
+replay identity. They remain ignored. New artifact captures use `runs/extraction/`;
+new longitudinal artifacts use their versioned example/result owners. This is a
+bounded retained-path decision under Phase 0, not an unfinished bulk move.
+Machine-readable evidence under `docs/experiments/` also retains its original
+location and bytes; its prose now has study owners under `docs/research/`.
 
 ### Migration procedure and acceptance
 

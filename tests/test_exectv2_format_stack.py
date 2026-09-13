@@ -174,9 +174,7 @@ def test_live_gate_still_drops_ungrounded_and_no_state_findings() -> None:
         ),
     ]
 
-    letter, warnings = structured.to_predicted_letter(
-        "TEST001", mentions, note_text=_NOTE
-    )
+    letter, warnings = structured.to_predicted_letter("TEST001", mentions, note_text=_NOTE)
 
     assert [mention.entity for mention in letter.mentions] == [PRESCRIPTION.name]
     assert any("dropped_evidence_not_substring" in warning for warning in warnings)
@@ -281,8 +279,7 @@ def test_format_does_not_apply_a_sibling_diagnosis_qualifier() -> None:
         "generalised epilepsy",
         attributes={"DiagCategory": "Epilepsy"},
         evidence=(
-            "Diagnosis: generalised epilepsy and symptomatic structural temporal "
-            "lobe epilepsy"
+            "Diagnosis: generalised epilepsy and symptomatic structural temporal lobe epilepsy"
         ),
     )
 
@@ -325,10 +322,7 @@ def test_format_repairs_residual_same_fact_diagnosis_names() -> None:
         "focal seizures",
         "Simple partial seizures with secondary generalisation",
     ]
-    assert all(
-        mention.attributes["DiagCategory"] == "MultipleSeizures"
-        for mention in formatted
-    )
+    assert all(mention.attributes["DiagCategory"] == "MultipleSeizures" for mention in formatted)
 
     single, _warnings = structured.apply_format_stack(
         [
@@ -592,8 +586,7 @@ def test_format_explicit_abnormal_investigation_cue_beats_otherwise_normal() -> 
             "EEG",
             attributes={"EEG_Performed": "Yes", "EEG_Results": "Normal"},
             evidence=(
-                "Her EEG showed some minor temporal slowing but otherwise was "
-                "reported as normal."
+                "Her EEG showed some minor temporal slowing but otherwise was reported as normal."
             ),
         ),
         _mention(
@@ -720,10 +713,7 @@ def test_format_does_not_retarget_sf_type_or_invent_a_lower_bound() -> None:
             SEIZURE_FREQUENCY.name,
             "generalised tonic clonic seizures",
             attributes={"PointInTime": "LastClinic"},
-            evidence=(
-                "He has had further generalised tonic clonic seizures since I "
-                "last saw him."
-            ),
+            evidence=("He has had further generalised tonic clonic seizures since I last saw him."),
         ),
     ]
 
@@ -751,9 +741,7 @@ def test_format_writes_explicit_seizure_free_as_the_closed_zero_name() -> None:
             SEIZURE_FREQUENCY.name,
             "seizure",
             attributes={"NumberOfSeizures": "0", "TimeSince_or_TimeOfEvent": "Since"},
-            evidence=(
-                "He remains seizure free. His last seizure was in November 2015."
-            ),
+            evidence=("He remains seizure free. His last seizure was in November 2015."),
         ),
     ]
 

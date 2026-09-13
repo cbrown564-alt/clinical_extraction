@@ -13,6 +13,9 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.core.jsonl import (
+    load_jsonl_rows,
+)
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.evaluation.letter_benchmarks.methods import (
     gan_machine_split,
@@ -26,21 +29,14 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_cell_rep
     gan_living_extract_rows_path,
     score_label,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    load_jsonl_rows,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
     StructuredRepairConfig,
     parse_structured_json_with_trace,
 )
 
 ROOT = discover_repo_root(start=Path(__file__))
-PROTOCOL = (
-    "docs/research/gan2026/gan_select_only_roster_test450_protocol_2026-09-03.md"
-)
-DEFAULT_ARTIFACT = (
-    ROOT / "docs/research/gan2026/gan_select_only_roster_test450_2026-09-03.json"
-)
+PROTOCOL = "docs/research/gan2026/gan_select_only_roster_test450_protocol_2026-09-03.md"
+DEFAULT_ARTIFACT = ROOT / "docs/research/gan2026/gan_select_only_roster_test450_2026-09-03.json"
 ROSTER_SLUGS: tuple[str, ...] = (
     "gemini37flash",
     "grok46",

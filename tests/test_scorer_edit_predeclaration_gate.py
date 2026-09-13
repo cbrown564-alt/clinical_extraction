@@ -10,7 +10,10 @@ import pytest
 # Load the gate script by path so the test does not depend on repo root being on
 # sys.path (the `scripts/` dir is not an installed package under pytest).
 _GATE_PATH = (
-    Path(__file__).resolve().parent.parent / "scripts" / "check_scorer_edit_predeclaration.py"
+    Path(__file__).resolve().parent.parent
+    / "scripts"
+    / "checks"
+    / "check_scorer_edit_predeclaration.py"
 )
 _spec = importlib.util.spec_from_file_location("check_scorer_edit_predeclaration", _GATE_PATH)
 _gate = importlib.util.module_from_spec(_spec)

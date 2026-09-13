@@ -8,7 +8,7 @@ Parent: [Phases A–C protocol](gan_rules_only_three_stage_protocol_2026-08-29.m
 Frozen candidate: [Phase C result](gan_rules_only_three_stage_phase_c_2026-08-29.md)
 Config: `phase_c_candidate_config()` in `gan2026/orchestration/three_stage.py`
 Guardrail: `gan2026-scoring-guardrail`; row policy
-[holdout is aggregate-only](../../paper/decisions/holdout-is-aggregate-only.md)
+[holdout is aggregate-only](../../benchmarks/holdout-is-aggregate-only.md)
 
 ## Primary question
 
@@ -103,7 +103,7 @@ to explain either outcome.
 `test450` is not loaded until Gate A passes on current HEAD.
 
 Re-run
-`scripts/measure_gan_rules_only_select_keeps_dev750.py phase_c_candidate`
+`scripts/benchmarks/measure_gan_rules_only_select_keeps_dev750.py phase_c_candidate`
 and confirm:
 
 | Target | Value |
@@ -132,7 +132,7 @@ select count, delta versus 321, verdict. No `source_row_index`,
 note, label, class table, or stage-stop block unless promotion is
 accepted (then find/encode/select Purist counts only).
 
-`scripts/check_locked_aggregate_safety.py` is extended with the new
+`scripts/checks/check_locked_aggregate_safety.py` is extended with the new
 path and must pass.
 
 ## Claim boundary

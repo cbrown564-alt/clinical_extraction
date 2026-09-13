@@ -68,12 +68,10 @@ def test_exect_rules_public_runner_routes_aliases_to_canonical_active_runner(mon
     assert calls == len(aliases)
     assert all(result.method == "rules" for result in results)
     assert all(
-        len(result.result.prediction.diagnostics["active_entities"]) == 9
-        for result in results
+        len(result.result.prediction.diagnostics["active_entities"]) == 9 for result in results
     )
     assert all(
-        len(result.result.comparison_projection.mentions)
-        <= len(result.result.prediction.mentions)
+        len(result.result.comparison_projection.mentions) <= len(result.result.prediction.mentions)
         for result in results
     )
     assert all(event.owner and event.action for event in results[0].result.stage_events)
@@ -155,9 +153,7 @@ def test_exect_rules_split_active_and_legacy_aliases_are_no_call_parity() -> Non
         mode="no-call",
     )
     active_rows, active_metadata = run_split([_letter()], method="rules", **kwargs)
-    legacy_rows, legacy_metadata = run_split(
-        [_letter()], method="exectv2_rules_only", **kwargs
-    )
+    legacy_rows, legacy_metadata = run_split([_letter()], method="exectv2_rules_only", **kwargs)
 
     assert active_rows == legacy_rows
     assert active_metadata == legacy_metadata
@@ -220,18 +216,7 @@ def test_exect_rules_cli_spec_dispatches_active_method(monkeypatch) -> None:
     get_cli_specs()["rules"].run_split([], split="dev", model="none")
 
     assert seen["method"] == "rules"
-    assert set(get_cli_specs()) == {
-        "rules",
-        "rules_only",
-        "exectv2_rules_only",
-        "llm",
-        "llm_only",
-        "exectv2_llm_only",
-        "llm_with_rules",
-        "llm_pre_post",
-        "exectv2_llm_with_rules",
-        "exectv2_llm_pre_post",
-    }
+    assert set(get_cli_specs()) == {"rules", "llm", "llm_with_rules"}
 
 
 def test_exect_rules_operational_api_is_no_call_and_traceable() -> None:
@@ -281,12 +266,8 @@ def test_exect_rules_registry_accepts_active_family_without_rewriting_saved_id()
                 layer: {"per_item": {"f1": 0.0}, "per_letter": {"f1": 0.0}}
                 for layer in ("phrase_only", "semantic", "benchmark")
             },
-            "prescription_component_scores": {
-                "clinical_headline": {"f1": 0.0}
-            },
-            "prescription_benchmark_projection_scores": {
-                "benchmark_with_cui": {"f1": 0.0}
-            },
+            "prescription_component_scores": {"clinical_headline": {"f1": 0.0}},
+            "prescription_benchmark_projection_scores": {"benchmark_with_cui": {"f1": 0.0}},
         },
         json_path=Path("experiments/rules.json"),
         md_path=Path("experiments/rules.md"),

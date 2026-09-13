@@ -4,7 +4,7 @@ Date: 2026-08-15
 Status: **complete; Phases E0–E5 executed, verified, and landed**
 Track: ExECTv2 rules-only parity campaign
 Parent: [G5 remasure](../gan2026/rules_only_campaign_g5_remeasure_2026-08-15.md)
-Governing decision: [Decision 0046](../../decisions/0046-exect-primary-method-comparison-boundary.md)
+Governing decision: [Decision 0046](../../history/decisions/0046-exect-primary-method-comparison-boundary.md)
 Artifact: [`experiments/exectv2_rules_only_campaign_e5_remeasure_20260815.json`](../../../experiments/exectv2_rules_only_campaign_e5_remeasure_20260815.json)
 
 ## 1. Executive Summary

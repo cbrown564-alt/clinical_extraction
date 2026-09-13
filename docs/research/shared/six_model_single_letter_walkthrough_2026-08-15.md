@@ -337,7 +337,7 @@ DeepSeek emitted those heading seizure types twice as Diagnosis: once as standal
 This appendix is a faithful transcript of the live `v0.9.24` payload.
 It is not a recommended paper appendix. Provenance and the v10 cut
 are in
-[Decision 0054](../../decisions/0054-model-request-order-and-metadata-are-explicit.md) / [prompt variant slots](../exectv2/prompt_variant_slots_2026-08-16.md).
+[Decision 0054](../../history/decisions/0054-model-request-order-and-metadata-are-explicit.md) / [prompt variant slots](../exectv2/prompt_variant_slots_2026-08-16.md).
 
 Source: `prompt_input_json` on every structured one-call row for this letter. Prompt version **`exectv2_hybrid_key_family_event_ledger_v0.9.24`**. Profile `full`.
 

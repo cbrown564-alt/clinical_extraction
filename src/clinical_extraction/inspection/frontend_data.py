@@ -7,6 +7,10 @@ import json
 from pathlib import Path
 from typing import Any, Literal
 
+from clinical_extraction.core.jsonl import (
+    load_jsonl_rows,
+)
+from clinical_extraction.core.paths import resolve_saved_artifact_path
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     DEFAULT_SPLIT_MANIFEST as EXECT_SPLIT_MANIFEST,
 )
@@ -41,9 +45,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.review_recor
     GanValidationDiscovery,
     discover_gan2026_validation_runs,
     paper_identity_from_run_id,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    load_jsonl_rows,
 )
 
 DatasetId = Literal["gan2026", "exectv2"]
@@ -99,9 +100,7 @@ class FrontendDataStore:
         self._repo_root = self._resolve_repo_root(self.root)
         self._exectv2_payload = self._object(self.root / _NAMED_RESOURCES["exectv2_runs"])
         self._artifacts = {
-            path.stem: path
-            for path in (self.root / "artifacts").glob("*.json")
-            if path.is_file()
+            path.stem: path for path in (self.root / "artifacts").glob("*.json") if path.is_file()
         }
         validation_dir = self.root / "records" / "validation"
         self._validation_records = {
@@ -110,8 +109,7 @@ class FrontendDataStore:
             if path.is_file() and path.stem.isdigit()
         }
         self._validation_dataset_records = {
-            int(record.source_row_index): record
-            for record in load_records_for_split("validation")
+            int(record.source_row_index): record for record in load_records_for_split("validation")
         }
         self._gan_fingerprint: tuple[tuple[str, int, int], ...] = ()
         self._gan_validation = self._discover_gan_validation()
@@ -144,9 +142,7 @@ class FrontendDataStore:
             runs = value.get("runs")
             if not isinstance(runs, list):
                 raise ValueError("frontend registry must contain a run list")
-            dynamic_ids = {
-                str(item["run_id"]) for item in self._gan_validation.registry_entries
-            }
+            dynamic_ids = {str(item["run_id"]) for item in self._gan_validation.registry_entries}
             value["runs"] = [
                 item
                 for item in runs
@@ -394,7 +390,7 @@ class FrontendDataStore:
         paths = summary.get("artifact_paths") or []
         if not paths:
             return None
-        rows_path = self._repo_root / str(paths[0])
+        rows_path = resolve_saved_artifact_path(self._repo_root, str(paths[0]))
         if not rows_path.is_file():
             return None
         gold_by_id = self._exect_gold_letters()
@@ -562,9 +558,7 @@ class FrontendDataStore:
             canonical.setdefault("saved_run_id", "exectv2_deterministic_all9_dev140")
         )
         retained_evidence_id = str(
-            canonical.setdefault(
-                "retained_evidence_id", "exectv2_deterministic_all9_dev_20260714"
-            )
+            canonical.setdefault("retained_evidence_id", "exectv2_deterministic_all9_dev_20260714")
         )
         prior_aliases = canonical.get("legacy_run_ids", [])
         approved_prior_aliases = [

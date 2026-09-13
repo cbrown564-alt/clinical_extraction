@@ -27,4 +27,4 @@ search establishes a limit for all models.
 The `v08` comparator is reproducible but uses a deterministic Prescription
 producer and a Seizure Frequency extractor union. It does not satisfy the final
 model-led family contract in
-[decision 0040](../../decisions/0040-final-exect-llm-with-rules-family-ownership.md).
+[decision 0040](../decisions/0040-final-exect-llm-with-rules-family-ownership.md).

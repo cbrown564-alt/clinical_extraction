@@ -4,7 +4,7 @@ Date: 2026-08-13
 Status: generated development catalog; first draft  
 Parent: [phrase-variant argument](exect_gold_phrase_variants_2026-08-13.md)  
 Artifact: [`experiments/exectv2_gold_phrase_variant_inventory_20260813.json`](../../../experiments/exectv2_gold_phrase_variant_inventory_20260813.json)  
-Regenerator: `python scripts/build_exectv2_gold_phrase_variant_inventory.py`
+Regenerator: `python scripts/benchmarks/build_exectv2_gold_phrase_variant_inventory.py`
 
 Every distinct official `raw_text` for every four-family gold mention
 on ExECT `dev140`. Locked `test` letters were not loaded. Official

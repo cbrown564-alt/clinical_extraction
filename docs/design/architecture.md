@@ -1,29 +1,27 @@
-# Software architecture and first reconstruction slice
+# Software architecture and reconstruction
 
-Updated: 2026-09-13. This document owns the proposed software interfaces, worked
-examples and first implementation slice. The
+Updated: 2026-09-13. This document owns software interfaces, worked
+examples and the reconstruction boundaries. The
 [programme and reconstruction plan](../plans/ACTIVE_ROADMAP.md) owns priorities,
 sequencing and the DSPy/GEPA investigation. Source and tests own implemented
 behaviour; the retained implementation reference below remains separately scoped.
 The [11 September advisory review](architecture_review_2026-09-11.md) analyses an
 earlier snapshot and remains historical advice, not an implementation claim.
 
-Status: the bounded Gan-first, ExECT-second and longitudinal-consumer slices are
-implemented in the working tree. They add compatibility paths and shared runtime
-records; they do not change a benchmark schema, run a model or complete the paper
-protocol. The subsequent R5 decision selects research-paper tables, with full
-implementation deferred. Conor approved L1–L7, L9 and L10 and retained L8 in the
-[migration investigation](../research/maintenance/repository_migration_2026-09-08.md#7-legacy-support-investigation-2026-09-13).
-The destinations below define the next migration; approval does not mean the code
-has moved or the replacement lifecycle is complete.
+Status: the selected Gan, ExECT and longitudinal reconstruction is implemented.
+Shared immutable artifacts now have request-aware SQLite persistence and offline
+replay. Required old package code has moved to the functional owners below;
+L1–L7/L9/L10 removals are applied and L8 remains. R5 is research-paper tables,
+with full implementation deferred. See the
+[migration record](../research/maintenance/repository_migration_2026-09-08.md)
+for verification, exact moves, preserved evidence and local-path exceptions.
 
 ## Reconstruction destinations after the legacy-support decision
 
 Keep required behavior, move it to the owner of that behavior, and delete obsolete
 code after callers migrate and verification passes. Do not preserve entire old
 packages merely because some functions are still used. Retain one Python package
-and one frontend. These are target paths within `src/clinical_extraction/`, not
-claims about directories already present.
+and one frontend. These are current owners within `src/clinical_extraction/`.
 
 | Responsibility currently mixed into old packages | Destination and boundary |
 | --- | --- |
@@ -36,11 +34,10 @@ claims about directories already present.
 | Publication-specific figures and build entry points | `scripts/publications/`, reading reviewed results. Reusable benchmark calculations stay with evaluation; issued manuscript files remain in `publications/dissertation/`. |
 | Closed-study launch presets and duplicate loops, classes, aliases and import facades | Remove from the supported runtime once the approved replacement works. Preserve historically necessary source in Git or its study archive; do not leave an executable duplicate in the active package. |
 
-The current ExECT replay-to-`_frontend_letter` dependency and the reverse imports
-from `trace_explorer/frontend_data.py` into `paper/` must be separated before moving
-the inspection package. Benchmark hydration belongs with evaluation; converting
-its records for a screen belongs with inspection. This prevents moving the same
-dependency cycle under new directory names.
+ExECT replay hydration now lives in task-owned `evaluation/review_records.py`.
+Inspection consumes these records; evaluation no longer imports the inspection
+package. Saved five-cell and historical registry meanings live explicitly under
+`evaluation/letter_benchmarks/`, outside the task-neutral core.
 
 Completion requires supported workflows to use these owners, old namespaces to
 have no remaining runtime consumers, unchanged saved evidence, replay parity,
@@ -460,21 +457,19 @@ specification inspected the current rendered request's structure and retained
 its wording; it does not certify a new prompt or claim that all inherited
 instructions have been simplified.
 
-Implementation verification on 2026-09-13 used the repository `.venv`. The final
-always-on suite passed 823 tests and retained two known unrelated failures: the
-stale generated `gan-2166` teaching case and an inventory expectation that omits
-six present encode-select cells. Ruff passed across `src tests`; mypy passed across
-411 source files; documentation hygiene and `git diff --check` passed. A focused
-119-test compatibility run passed before the final projection-origin regression
-was added, and all 13 artifact acceptance tests pass afterward. Independent Astra
-review reproduced the initial failure cases, verified their repairs and found no
-remaining blocker for this bounded slice.
+The initial additive slice had two known test failures. The completed migration
+repairs both: generated teaching documentation is current, and the inventory
+expectation includes the six already-present encode-select cells. No saved result
+was changed to satisfy a test. Final commands and outcomes belong to the migration
+record, including installed-wheel/public-checkout and browser checks.
 
-No frontend or package build was rerun because this change does not expose a UI
-and the repository environment lacks the configured build backend. Those checks,
-persisted registry/resume integration and a clean public-checkout exercise remain
-requirements before claiming full R6 consolidation. No model call, locked-row
-inspection, result regeneration, schema change or clinical review occurred.
+`core/artifact_store.py` validates serialized request, response and artifact hashes,
+stores immutable captures and append-only execution revisions, and refuses replay
+under changed request/runtime/program identity. Failed attempts remain visible;
+retry is explicit. It is a local sequential batch store, not a distributed job
+scheduler or a guarantee of exactly-once provider execution across concurrent jobs.
+`operational/extraction.py` uses task-owned prepare/execute/projection adapters;
+longitudinal loading restores typed domain content through a decoder callback.
 
 ## Retained implementation reference
 

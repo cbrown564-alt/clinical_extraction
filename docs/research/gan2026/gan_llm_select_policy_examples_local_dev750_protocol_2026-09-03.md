@@ -5,7 +5,7 @@ Status: complete
 Report: [result](gan_llm_select_policy_examples_local_dev750_2026-09-04.md)
 Owner: this file
 Guardrail: `gan2026-scoring-guardrail`;
-[later-stage select](../../paper/decisions/gan-later-stage-encode-select-prompts.md)
+[later-stage select](../../../publications/dissertation/notes/decisions/gan-later-stage-encode-select-prompts.md)
 Related holdout: [test450 transfer](gan_llm_select_policy_examples_local_test450_2026-09-03.md)
 
 ## Primary question

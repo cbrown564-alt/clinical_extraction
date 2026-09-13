@@ -4,7 +4,7 @@ Scoring, final formatting, and lexicon code determine what the project measures.
 A change can move a reported number without changing extraction. Before such a
 change is committed, state a hypothesis and replay dev140.
 
-`scripts/check_scorer_edit_predeclaration.py` checks changed paths and a commit
+`scripts/checks/check_scorer_edit_predeclaration.py` checks changed paths and a commit
 or pull-request message. When protected code changes, the message must name a
 `hypothesis_id` from `experiments/hypothesis_registry.jsonl` and mention a
 dev140 replay, rescore, or rerun. Exit codes are 0 for pass, 1 for missing

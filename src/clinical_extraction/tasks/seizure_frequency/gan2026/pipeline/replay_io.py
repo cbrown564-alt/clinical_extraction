@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
+from clinical_extraction.core.jsonl import (
     load_jsonl_rows,
 )
 

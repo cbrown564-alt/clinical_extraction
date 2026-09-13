@@ -168,9 +168,7 @@ def build_longitudinal_artifact(
         for record in _record_list(annotations.get("assertions"))
         if str(record.get("letter_id") or "") in sources
     ]
-    retained_assertion_ids = {
-        str(record.get("assertion_id") or "") for record in assertion_records
-    }
+    retained_assertion_ids = {str(record.get("assertion_id") or "") for record in assertion_records}
     relationship_records = [
         record
         for record in _record_list(annotations.get("links"))
@@ -208,12 +206,10 @@ def build_longitudinal_artifact(
         provider_metadata={"artifact_kind": artifact_kind},
     )
     assertions = tuple(
-        _assertion_from_record(record, sources=sources)
-        for record in assertion_records
+        _assertion_from_record(record, sources=sources) for record in assertion_records
     )
     relationships = tuple(
-        _relationship_from_record(record, sources=sources)
-        for record in relationship_records
+        _relationship_from_record(record, sources=sources) for record in relationship_records
     )
     invalid_source_ids = {
         evidence.source.source_id
@@ -227,9 +223,7 @@ def build_longitudinal_artifact(
         for evidence in relationship.evidence
         if not evidence.location_valid
     )
-    present_families = tuple(
-        sorted({assertion.content.family for assertion in assertions})
-    )
+    present_families = tuple(sorted({assertion.content.family for assertion in assertions}))
     return ExtractionArtifact.create(
         status="failed" if invalid_source_ids else "ready",
         request=request,
@@ -297,17 +291,14 @@ def evaluate_artifact_query(
         requirement,
         permitted_source_ids=permitted_source_ids,
     )
-    capture_is_independent = bool(
-        artifact.diagnostics.get("query_independent_capture", False)
-    )
+    capture_is_independent = bool(artifact.diagnostics.get("query_independent_capture", False))
     saved_cutoff = artifact.diagnostics.get("input_cutoff")
     current_sources = source_documents_from_longitudinal(documents)
     artifact_sources = {source.source_id: source for source in artifact.request.sources}
     unavailable.extend(
         f"source_document_mismatch:{source_id}"
         for source_id, source in artifact_sources.items()
-        if current_sources.get(source_id) is None
-        or current_sources[source_id].ref() != source
+        if current_sources.get(source_id) is None or current_sources[source_id].ref() != source
     )
     unavailable.extend(
         f"source_not_captured:{source_id}"
@@ -381,8 +372,7 @@ def _assertion_from_record(
         if key not in {"assertion_id", "evidence"}
     }
     evidence = tuple(
-        _evidence_from_span(span, sources=sources)
-        for span in _record_list(record.get("evidence"))
+        _evidence_from_span(span, sources=sources) for span in _record_list(record.get("evidence"))
     )
     return Assertion(
         assertion_id=str(record["assertion_id"]),
@@ -399,8 +389,7 @@ def _relationship_from_record(
     sources: Mapping[str, SourceDocument],
 ) -> Relationship:
     evidence = tuple(
-        _evidence_from_span(span, sources=sources)
-        for span in _record_list(record.get("evidence"))
+        _evidence_from_span(span, sources=sources) for span in _record_list(record.get("evidence"))
     )
     remainder = {
         str(key): _json_compatible(value)
@@ -491,8 +480,7 @@ def _unavailable_requirements(
             assertion
             for assertion in artifact.assertions
             if assertion.content.family in requirement.required_families
-            and str(assertion.content.record.get("letter_id") or "")
-            in permitted_source_ids
+            and str(assertion.content.record.get("letter_id") or "") in permitted_source_ids
         ]
         if relevant and any(field_name not in assertion.content.record for assertion in relevant):
             unavailable.append(f"assertion_field:{field_name}")
@@ -526,3 +514,14 @@ __all__ = [
     "longitudinal_artifact_profile",
     "source_documents_from_longitudinal",
 ]
+
+
+def load_longitudinal_artifact(
+    record: Mapping[str, Any],
+) -> ExtractionArtifact[LongitudinalAssertionContent]:
+    """Restore task-owned content from the common immutable artifact format."""
+    from clinical_extraction.core.artifact_store import artifact_from_record
+
+    return artifact_from_record(
+        record, content_decoder=lambda value: LongitudinalAssertionContent(**value)
+    )

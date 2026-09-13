@@ -143,15 +143,9 @@ def _repair_policy_description(repair_mode: str) -> str:
             "raw structured model selection plus Python-literal JSON dialect repair only"
         ),
         "raw_model": "raw structured model selection with no deterministic final-label repair",
-        "llm_encode": (
-            "structured model selection plus selected-evidence derivation only"
-        ),
-        "llm_select": (
-            "hybrid full deterministic repair stack after structured model selection"
-        ),
-        "llm_revise": (
-            "hybrid full deterministic repair stack after structured model selection"
-        ),
+        "llm_encode": ("structured model selection plus selected-evidence derivation only"),
+        "llm_select": ("hybrid full deterministic repair stack after structured model selection"),
+        "llm_revise": ("hybrid full deterministic repair stack after structured model selection"),
         # Sealed / legacy names still resolve via normalize_repair_mode callers.
         "selected_evidence_derivation": (
             "structured model selection plus selected-evidence derivation only"

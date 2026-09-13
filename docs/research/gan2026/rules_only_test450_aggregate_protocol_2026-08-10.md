@@ -116,7 +116,7 @@ One run. `split="test"`, 450 rows.
 
 `_run_deterministic_split` emits per-row `source_row_index`, `diagnostics`,
 `final_label`, and `reference.gold_label`. Under
-`scripts/check_locked_aggregate_safety.py` these are all forbidden in a public
+`scripts/checks/check_locked_aggregate_safety.py` these are all forbidden in a public
 artifact (`FORBIDDEN_KEYS`, plus any `rows` collection). Therefore:
 
 - The row-level JSONL is written to
@@ -126,7 +126,7 @@ artifact (`FORBIDDEN_KEYS`, plus any `rows` collection). Therefore:
 - The public artifact contains aggregates only.
 - No row text, row index, label, diagnostic, or failure case from `test450` is
   read, quoted, summarized, or used to motivate any subsequent change.
-- `scripts/check_locked_aggregate_safety.py` is extended with the new artifact
+- `scripts/checks/check_locked_aggregate_safety.py` is extended with the new artifact
   path and must pass before the result is cited anywhere.
 
 ## Predeclared reporting
@@ -182,8 +182,8 @@ May not support:
 | Sealed row-level predictions | `scratch/holdout/gan2026_rules_only_test450_20260810/rows.jsonl` (not committed) |
 | Gate A parity artifact | `experiments/gan2026_rules_only_validation750_parity_20260810.json` |
 | Report | `docs/research/gan2026/rules_only_test450_aggregate_2026-08-10.md` |
-| Runner | `scripts/build_gan2026_rules_only_test450_aggregate.py` |
-| Safety check | `scripts/check_locked_aggregate_safety.py` (extended with the new path) |
+| Runner | `scripts/benchmarks/build_gan2026_rules_only_test450_aggregate.py` |
+| Safety check | `scripts/checks/check_locked_aggregate_safety.py` (extended with the new path) |
 
 Public artifact schema: `gan2026.rules_only.test450.v1`, carrying `protocol`,
 `split`, `row_count`, `row_policy`, `method` (architecture, ablation config,
@@ -257,4 +257,4 @@ matter.
 - New headline row in `docs/history/canon/10_paper_provenance.md`.
 - Caveat removal in the two source documents named above.
 - `scripts/check_retained_evidence_manifest.py` and
-  `scripts/check_locked_aggregate_safety.py` must both pass.
+  `scripts/checks/check_locked_aggregate_safety.py` must both pass.

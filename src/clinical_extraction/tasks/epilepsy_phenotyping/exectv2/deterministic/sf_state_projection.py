@@ -204,6 +204,8 @@ _ONSET_FRAMING_RE = re.compile(
     r")\b",
     re.IGNORECASE,
 )
+
+
 def project_rows(
     rows: Sequence[Mapping[str, Any]],
     *,
@@ -432,8 +434,7 @@ def _apply_ownership_projection(
             and _state(mention) == "active-rate"
             and (
                 _is_generic_type(mention)
-                or normalize_phrase(str(mention.get("text", "")))
-                != normalize_phrase(named_type)
+                or normalize_phrase(str(mention.get("text", ""))) != normalize_phrase(named_type)
             )
         ):
             converted = _copy_mention(mention)
@@ -550,8 +551,7 @@ def _repair_state_mention(mention: Mapping[str, Any]) -> dict[str, Any] | Mappin
 
     # Rule 6: Strip FrequencyChange from concrete numeric count mentions
     has_count = any(
-        k in attrs
-        for k in ("NumberOfSeizures", "LowerNumberOfSeizures", "UpperNumberOfSeizures")
+        k in attrs for k in ("NumberOfSeizures", "LowerNumberOfSeizures", "UpperNumberOfSeizures")
     )
     if has_count and "FrequencyChange" in repaired_attrs:
         repaired_attrs.pop("FrequencyChange")
@@ -615,9 +615,9 @@ def _rewrite_dated_last_event(mention: Mapping[str, Any]) -> dict[str, Any] | Ma
 
     evidence = str(mention.get("evidence") or "")
     attrs = dict(mention.get("attributes") or {})
-    already_free = attrs.get("NumberOfSeizures") == "0" and attrs.get(
-        "TimeSince_or_TimeOfEvent"
-    ) == "Since"
+    already_free = (
+        attrs.get("NumberOfSeizures") == "0" and attrs.get("TimeSince_or_TimeOfEvent") == "Since"
+    )
     if already_free and any(attrs.get(key) for key in ("YearDate", "MonthDate", "AgeLower")):
         return mention
 
@@ -698,9 +698,7 @@ def _rewrite_last_event(mention: Mapping[str, Any], evidence: str) -> dict[str, 
         return dict(mention)
     number, unit = duration
     repaired = _copy_mention(mention)
-    repaired["text"] = (
-        "seizure" if "seizure" in normalize_phrase(evidence).split() else "seizures"
-    )
+    repaired["text"] = "seizure" if "seizure" in normalize_phrase(evidence).split() else "seizures"
     repaired["attributes"] = {
         "NumberOfSeizures": "0",
         "NumberOfTimePeriods": number,
@@ -1073,7 +1071,6 @@ def _action_counts(rows: Sequence[Mapping[str, Any]]) -> dict[str, int]:
     return dict(counts)
 
 
-
 def _slice_row(label: str, score: Mapping[str, Any]) -> str:
     return (
         f"| {label} | {score.get('f1', 0):.3f} | {score.get('precision', 0):.3f} | "
@@ -1089,7 +1086,7 @@ def write_rows_and_report(
     jsonl_path: Path,
     report_path: Path,
 ) -> dict[str, Any]:
-    from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (  # noqa: E501
+    from clinical_extraction.core.jsonl import (  # noqa: E501
         write_jsonl_rows as write_jsonl,
     )
 

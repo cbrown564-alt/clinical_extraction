@@ -3,7 +3,7 @@
 Revised: 2026-09-02 (Gan only; extract then decide). Matches
 `paper/draft/Extract, then decide.tex` Section II. The extended review is in
 `paper/supporting materials/Supporting materials.tex`.
-Scope: [paper-story simplification](../history/decisions/paper-story-simplification.md)
+Scope: [paper-story simplification](../decisions/paper-story-simplification.md)
 
 The best approach to extracting seizure-frequency information from epilepsy clinic letters is an active area of research, with rules-based methods (Fonferko-Shadrach et al., 2024; Decker et al., 2022), transformer-based methods (Xie et al., 2022; Holgate et al., 2025; Gan et al., 2026) and combinations of both (Xie et al., 2022b; Fernandes et al., 2024) all published this decade. Rules-based methods struggled with the lexical variety of frequency descriptions. Both rules and BERT-based methods failed to generalise to letters from a different hospital (Decker et al., 2022; Fernandes et al., 2024). LLMs were the first method to show strong generalisation to a new dataset (Gan et al., 2026), but by fine-tuning on over 1,000 synthetic letters. This paper asks whether similar performance is reachable with a prompted model and rules.
 

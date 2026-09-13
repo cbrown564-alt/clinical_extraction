@@ -10,8 +10,8 @@ Related: [ExECT reconstruction brief](../exectv2/exect_rules_only_three_stage_re
 [grid protocol](gan_five_cell_grid_protocol_2026-08-22.md),
 [G5 remeasure & plateau closure](rules_only_campaign_g5_remeasure_2026-08-15.md),
 [codebook-encode development](gan_codebook_encode_rule_development_2026-08-22.md),
-[stage roles](../paper/gan_rules_and_llms_across_stages_2026-08-21.md),
-[Gan is the dissertation paper](../../paper/decisions/gan-is-the-dissertation-paper.md)
+[stage roles](gan_rules_and_llms_across_stages_2026-08-21.md),
+[Gan is the dissertation paper](../../../publications/dissertation/notes/decisions/gan-is-the-dissertation-paper.md)
 
 ## Why this exists
 

@@ -113,7 +113,7 @@ the repository root:
 
 ```sh
 source .venv/bin/activate
-python scripts/viva_demo.py --build 16021 10 14187 11254 743
+python scripts/publications/viva_demo.py --build 16021 10 14187 11254 743
 ```
 
 This checks extraction and decision provenance, exact source quotes, shared prompt
@@ -133,7 +133,7 @@ From the repository root, start the API with the repository environment, then ru
 the frontend in another terminal:
 
 ```sh
-.venv/bin/python -m clinical_extraction.trace_explorer.api.app
+.venv/bin/python run.py inspect
 ```
 
 ```sh

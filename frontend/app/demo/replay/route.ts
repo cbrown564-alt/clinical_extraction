@@ -22,7 +22,7 @@ export async function POST(request: Request) {
   }
   try {
     const root = resolve(process.cwd(), "..");
-    const { stdout } = await execute(resolve(root, ".venv/bin/python"), [resolve(root, "scripts/viva_demo.py"), "--decide", String(id)], {
+    const { stdout } = await execute(resolve(root, ".venv/bin/python"), [resolve(root, "scripts/publications/viva_demo.py"), "--decide", String(id)], {
       cwd: root, timeout: 15000, maxBuffer: 1024 * 1024,
     });
     return Response.json(JSON.parse(stdout), { headers: { "Cache-Control": "no-store" } });

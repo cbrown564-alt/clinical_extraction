@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_inventory_feasibility import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_inventory_feasibility import (  # noqa: E501
     CLAIM_BOUNDARY,
     FAMILIES,
     MACHINE_SPLIT,
@@ -125,11 +125,14 @@ def test_mention_subtype_uses_the_declared_preference_order() -> None:
     assert mention_subtype("Prescription", "keppra 500", {"DrugName": "levetiracetam"}) == (
         "levetiracetam"
     )
-    assert mention_subtype(
-        "Investigations",
-        "MRI brain",
-        {"MRI_Results": "Normal", "EEG_Results": "Abnormal"},
-    ) == "MRI:Normal+EEG:Abnormal"
+    assert (
+        mention_subtype(
+            "Investigations",
+            "MRI brain",
+            {"MRI_Results": "Normal", "EEG_Results": "Abnormal"},
+        )
+        == "MRI:Normal+EEG:Abnormal"
+    )
     assert mention_subtype("SeizureFrequency", "2 per week", {"FrequencyChange": "Decreased"}) == (
         "Decreased"
     )

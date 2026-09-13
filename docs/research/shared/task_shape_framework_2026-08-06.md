@@ -82,9 +82,9 @@ ExECT, they mainly project, check, and assemble a fact inventory. The package
 and method names are shared; the task schemas, clinical policies, and measures
 are not. The proposed method is the same on both tasks; tables cite Grok.
 
-Read [why the proposed method is a model plus recorded rules](../paper/why_hybrid_architecture_2026-08-09.md)
+Read [why the proposed method is a model plus recorded rules](why_hybrid_architecture_2026-08-09.md)
 for the design rationale and the
-[architecture view](../../paper/architecture.md)
+[architecture view](../../../publications/dissertation/notes/architecture.md)
 for the end-to-end system.
 
 ## Evidence and limits
@@ -93,14 +93,14 @@ This source describes the tasks from their gold labels and retained project
 definitions. It does not show that the hybrid succeeds. Results are owned by
 the [six-model comparison](six_model_comparison_report_2026-07-18.md),
 [category analysis](six_model_category_cut_performance_2026-08-06.md), and
-[paper provenance](../../canon/10_paper_provenance.md).
+[paper provenance](../../history/canon/10_paper_provenance.md).
 
 Gan and ExECT scores are not numerically comparable. The project does not claim
 zero-shot transfer, one shared clinical policy, or clinical validation.
 
 ## Detailed sources
 
-- [What the two golds already decided](../paper/what_the_two_golds_already_decided_2026-08-17.md)
+- [What the two golds already decided](what_the_two_golds_already_decided_2026-08-17.md)
 - [Why the two programmes annotated differently](annotation_approach_comparison_2026-08-16.md)
 - [Gan gold-label taxonomy](../gan2026/gold_task_taxonomy_2026-08-06.md)
 - [ExECT gold-label taxonomy](../exectv2/gold_task_taxonomy_2026-08-06.md)

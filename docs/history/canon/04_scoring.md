@@ -21,7 +21,7 @@ full-attribute views, but it has not reproduced the paper's original system or
 reported validation scores.
 
 The primary ExECT method comparison is now the Sol-matched four-family score
-defined by [decision 0046](../../decisions/0046-exect-primary-method-comparison-boundary.md).
+defined by [decision 0046](../decisions/0046-exect-primary-method-comparison-boundary.md).
 Rules-only and LLM-with-rules rows use the same `headline_target` /
 `clinical_headline` assembly score; the Sol LLM-only row uses `raw_lane_score`.
 The all-nine rules-only results and the historical GEPA and `v08` results
@@ -50,7 +50,7 @@ attribute agreement, especially for Diagnosis, is the main remaining loss. The
 paper's original 0.87 per-item and 0.90 per-letter results are reference values,
 not reproduced scores.
 
-The [annotation-evidence synthesis](../../experiments/exectv2/reliability/exectv2_annotation_evidence_synthesis_2026-07-15.md)
+The [annotation-evidence synthesis](../../research/exectv2/reliability/exectv2_annotation_evidence_synthesis_2026-07-15.md)
 combines the selected row analyses, four family ledgers, direct gold issues,
 annotation guidelines, blind re-review, completed Diagnosis review, scoring
 effects, sensitivity handling, and review status. Its generated taxonomy

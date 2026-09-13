@@ -225,9 +225,9 @@ kept machine artifacts in
 
 ## DeepSeek unknown collaboration (active; hosted)
 
-[protocol](experiments/gan2026/gan2026_deepseek_unknown_competence_protocol_2026-07-31.md) →
+[protocol](research/gan2026/gan2026_deepseek_unknown_competence_protocol_2026-07-31.md) →
 [thread](research/gan2026/deepseek_unknown_competence_thread_2026-07-31.md) →
-[A/U run protocol](experiments/gan2026/gan2026_deepseek_unknown_prompt_dev750_protocol_2026-07-31.md) →
+[A/U run protocol](research/gan2026/gan2026_deepseek_unknown_prompt_dev750_protocol_2026-07-31.md) →
 rejected slice artifact `experiments/gan2026_deepseek_unknown_heavy_slice_u_vs_a_20260731.json` →
 [roadmap](plans/ACTIVE_ROADMAP.md#deepseek-unknown-competence-open)
 
@@ -249,7 +249,7 @@ Do not start from the historical
 ## Check a paper claim
 
 [paper claim status](history/canon/10_paper_provenance.md) →
-[retained evidence index](experiments/retained_evidence_manifest.md) →
+[retained evidence index](research/shared/retained_evidence_manifest.md) →
 the selected report or data file
 
 ## Understand a score
@@ -302,4 +302,4 @@ and [runbooks](runbooks/).
 
 [evidence rules](history/canon/03_evidence_claims_frozen.md) →
 [locked-data procedure](runbooks/gated_blockers_2026-06-18.md) →
-[retained evidence checks](experiments/retained_evidence_manifest.md)
+[retained evidence checks](research/shared/retained_evidence_manifest.md)

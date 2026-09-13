@@ -8,7 +8,7 @@ ExECT current-hybrid prompt slots were later assigned in
 (`v0.9.24`, cheap stack, mention-unit v2). This slice records the
 taxonomy; that note owns the ExECT prompt fill. Agentic/multi-agent
 exploration closed with canonical owner and research reports restored.
-Decision: [0048](../../decisions/0048-comprehension-and-handoff-refactor.md)
+Decision: [0048](../../history/decisions/0048-comprehension-and-handoff-refactor.md)
 Ledger owner: [REGENERATION.md](../../REGENERATION.md)
 
 ## What this slice did
@@ -30,10 +30,10 @@ Ledger owner: [REGENERATION.md](../../REGENERATION.md)
      - Slot 3: Attribution, rescue provenance, and removal ablation studies.
 
 2. **Restored Agentic / Multi-Agent Canon & Research Evidence (Slot 3 Closure)**:
-   - Created canonical claim owner [`docs/history/canon/11_agentic_exploration.md`](../../canon/11_agentic_exploration.md) documenting empirical findings (Gan hard50 ceiling & dynamism advantage, gate failure due to clean-row regressions, and negative comparison boundary).
+   - Created canonical claim owner [`docs/history/canon/11_agentic_exploration.md`](../../history/canon/11_agentic_exploration.md) documenting empirical findings (Gan hard50 ceiling & dynamism advantage, gate failure due to clean-row regressions, and negative comparison boundary).
    - Restored [`docs/research/gan2026/gan2026_agentic_redo_results_2026-07-01.md`](../gan2026/gan2026_agentic_redo_results_2026-07-01.md).
    - Restored [`docs/research/shared/exploratory_research_directions_multiagent_review_2026-07-01.md`](../shared/exploratory_research_directions_multiagent_review_2026-07-01.md).
-   - Updated canon index in [`docs/history/canon/README.md`](../../canon/README.md).
+   - Updated canon index in [`docs/history/canon/README.md`](../../history/canon/README.md).
 
 3. **Safeguards & Verifications Respected**:
    - Zero model calls made.

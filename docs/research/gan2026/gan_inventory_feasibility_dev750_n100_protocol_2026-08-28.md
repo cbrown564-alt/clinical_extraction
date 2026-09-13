@@ -3,7 +3,7 @@
 Date: 2026-08-28
 Status: completed 2026-08-28; one frozen pass; no retune
 Result: [feasibility report](gan_inventory_feasibility_dev750_n100_2026-08-28.md)
-Decision: [Gan is the dissertation paper](../../paper/decisions/gan-is-the-dissertation-paper.md)
+Decision: [Gan is the dissertation paper](../../../publications/dissertation/notes/decisions/gan-is-the-dissertation-paper.md)
 Artifact: `experiments/gan_inventory_feasibility_dev750_n100_20260828/`
 
 ## Primary question

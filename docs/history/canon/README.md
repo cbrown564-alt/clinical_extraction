@@ -27,5 +27,5 @@ scoring, and paper claims. Detailed experiment history remains in Git.
 | [11](11_agentic_exploration.md) | Agentic and multi-agent exploration |
 
 For exact files and hashes, use the
-[retained evidence index](../../experiments/retained_evidence_manifest.md). For the
+[retained evidence index](../../research/shared/retained_evidence_manifest.md). For the
 work order, use the [active roadmap](../../plans/ACTIVE_ROADMAP.md).

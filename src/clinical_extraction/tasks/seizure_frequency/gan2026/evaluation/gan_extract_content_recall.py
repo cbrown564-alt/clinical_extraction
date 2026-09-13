@@ -17,6 +17,9 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.core.jsonl import (
+    load_jsonl_rows,
+)
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.evaluation.letter_benchmarks.methods import (
     gan_machine_split,
@@ -35,9 +38,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_paired_c
     codebook_select_correct,
     row_comparison_correct,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    load_jsonl_rows,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
     StructuredExtractionRecord,
     StructuredRepairConfig,
@@ -46,15 +46,11 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_e
 )
 
 ROOT = discover_repo_root(start=Path(__file__))
-PROTOCOL = (
-    "docs/research/gan2026/gan_candidate_set_recall_test450_protocol_2026-09-03.md"
-)
+PROTOCOL = "docs/research/gan2026/gan_candidate_set_recall_test450_protocol_2026-09-03.md"
 CITED_SLUG = "gemini37flash"
 CITED_CELL3_TEST450 = 387
 CITED_CELL5_TEST450 = 383
-DEFAULT_ARTIFACT = (
-    ROOT / "docs/research/gan2026/gan_extract_content_recall_2026-09-03.json"
-)
+DEFAULT_ARTIFACT = ROOT / "docs/research/gan2026/gan_extract_content_recall_2026-09-03.json"
 CELL5_SCORED_TEST450 = (
     ROOT
     / "scratch/holdout/paper/gan_llm_select_from_extract"
@@ -110,9 +106,7 @@ def evidence_hit(
     gold_reference = record.gold_reference or ""
     if surfaces_overlap(extraction.selection.evidence, gold_reference):
         return True
-    return any(
-        surfaces_overlap(event.evidence, gold_reference) for event in extraction.events
-    )
+    return any(surfaces_overlap(event.evidence, gold_reference) for event in extraction.events)
 
 
 def content_hits(
@@ -170,13 +164,9 @@ def measure_extract_content_recall(
         cell5_path = cell5_rows_path or CELL5_SCORED_TEST450
         cell5 = row_comparison_correct(cell5_path)
         if sum(cell3.values()) != CITED_CELL3_TEST450:
-            raise RuntimeError(
-                f"cell3 gate failed: {sum(cell3.values())} != {CITED_CELL3_TEST450}"
-            )
+            raise RuntimeError(f"cell3 gate failed: {sum(cell3.values())} != {CITED_CELL3_TEST450}")
         if sum(cell5.values()) != CITED_CELL5_TEST450:
-            raise RuntimeError(
-                f"cell5 gate failed: {sum(cell5.values())} != {CITED_CELL5_TEST450}"
-            )
+            raise RuntimeError(f"cell5 gate failed: {sum(cell5.values())} != {CITED_CELL5_TEST450}")
 
     answer = 0
     evidence = 0
@@ -248,15 +238,9 @@ def measure_extract_content_recall(
         ),
     }
     if cell5 is not None:
-        payload["cell5_source"] = str(
-            (cell5_rows_path or CELL5_SCORED_TEST450).relative_to(ROOT)
-        )
-        payload["decide_stops_purist"]["cell5_llm_only"] = _rate(
-            sum(cell5.values()), expected_n
-        )
-        payload["decide_correct_but_extract_miss"]["cell5_llm_only"] = (
-            cell5_ok_extract_miss
-        )
+        payload["cell5_source"] = str((cell5_rows_path or CELL5_SCORED_TEST450).relative_to(ROOT))
+        payload["decide_stops_purist"]["cell5_llm_only"] = _rate(sum(cell5.values()), expected_n)
+        payload["decide_correct_but_extract_miss"]["cell5_llm_only"] = cell5_ok_extract_miss
         payload["gates"] = {
             "cell3_select_reproduces_cited": CITED_CELL3_TEST450,
             "cell5_select_reproduces_cited": CITED_CELL5_TEST450,

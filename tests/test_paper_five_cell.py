@@ -42,9 +42,10 @@ def test_write_five_cell_keeps_curated_exect_grid() -> None:
     assert generated["headline"] == "select"
     assert generated["scorer"] == "4-family micro F1"
     assert set(generated["cells"]) == set(curated["cells"])
-    assert generated["cells"]["llm_extract_then_rules"]["select"] == curated["cells"][
-        "llm_extract_then_rules"
-    ]["select"]
+    assert (
+        generated["cells"]["llm_extract_then_rules"]["select"]
+        == curated["cells"]["llm_extract_then_rules"]["select"]
+    )
     assert generated["cells"]["rules"]["select"] == curated["cells"]["rules"]["select"]
     assert generated["cells"]["llm"]["select"] == curated["cells"]["llm"]["select"]
     assert (
@@ -53,7 +54,6 @@ def test_write_five_cell_keeps_curated_exect_grid() -> None:
     )
     assert payload["curated"]
     curated_path = (
-        ROOT
-        / "results/letter-benchmarks/exect/five_cell_grid/gemini37flash/test60/comparison.json"
+        ROOT / "results/letter-benchmarks/exect/five_cell_grid/gemini37flash/test60/comparison.json"
     )
     assert curated_path.is_file()

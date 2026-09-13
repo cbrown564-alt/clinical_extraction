@@ -4,9 +4,9 @@ Date: 2026-08-28
 Status: complete; report
 [gan_grok46_temperature_0_2026-08-28.md](gan_grok46_temperature_0_2026-08-28.md)
 Owner: this file
-Roster: [`paper_experiments/roster.json`](../../../paper_experiments/roster.json)
-Related: [six-model roster](../../paper/decisions/six-model-roster.md),
-[experiment environment](../../paper/experiment_environment.md),
+Roster: [`paper_experiments/roster.json`](../../../results/letter-benchmarks/roster.json)
+Related: [six-model roster](../../../publications/dissertation/notes/decisions/six-model-roster.md),
+[experiment environment](../../../publications/dissertation/notes/experiment_environment.md),
 [cell-3 roster fill](gan_cell3_roster_fill_protocol_2026-08-22.md)
 
 ## Question

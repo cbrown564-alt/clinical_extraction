@@ -1,27 +1,20 @@
 # Documentation
 
-The active project is a synthetic longitudinal epilepsy benchmark for cohort
-identification and longitudinal analysis. The first phase is restructuring this
-repository while preserving the existing Gan and ExECT evidence.
+The programme covers one-shot evidence-grounded extraction, bounded epilepsy
+applications and a deferred research-paper table task. The
+[active roadmap](plans/ACTIVE_ROADMAP.md) owns scope and work order;
+[navigation](NAVIGATION.md) names each current documentation owner.
 
-Start with the [project plan](plans/ACTIVE_ROADMAP.md), then use
-[navigation](NAVIGATION.md) to find the current owner for a subject.
-[Project status](../PROJECT_STATUS.md) is the local execution view.
+- `design/`: shared software interfaces and architecture.
+- `longitudinal/`: task, annotation, generation and evaluation policies.
+- `benchmarks/`: Gan/ExECT-specific safeguards and limitations.
+- `research/`: original study protocols, result interpretation and maintenance evidence.
+- `runbooks/` and `reference/`: repeatable procedures and scoped reference material.
+- `architecture/`: generated implementation explanations.
+- `history/`: retained decision rationale and historical guidance with continuing use.
 
-The plan contains the proposed whole-repository structure and migration checks.
-Most material still occupies its previous location. New target folders are created
-when their first artifact is ready, not as empty placeholders.
-
-| Current location | Role during transition |
-| --- | --- |
-| `plans/ACTIVE_ROADMAP.md` | Current scope, migration map and phased timeline |
-| `paper/` (in `docs/`) | Existing manuscript methods, decisions and claim context (migration planned) |
-| `publications/dissertation/` | Tracked dissertation manuscript sources, TeX templates, and supporting materials |
-| `research/` | Existing study protocols, interpretation and writing sources |
-| `design/`, `reference/`, `runbooks/` | Shared or dataset-specific guidance; scope checked before reuse |
-| `architecture/` | Generated explanation of existing implemented methods |
-| `history/` | Historical decision context and archived plans (`history/plans/`) |
-| `canon/`, `decisions/` | Superseded guidance awaiting the mapped file-level consolidation |
-
-The new annotation design is not governed by older Gan/ExECT output conventions.
-Existing benchmark split, scoring and evidence safeguards still apply.
+Dissertation methods and claims live with the manuscript in
+[publication notes](../publications/dissertation/notes/README.md).
+The [JAMIA outline](../publications/jamia-one-shot/README.md) is a separate planned
+paper. Existing benchmark labels, permissions and results do not transfer to it
+or to the longitudinal task.

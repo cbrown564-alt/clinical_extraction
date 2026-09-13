@@ -1,4 +1,4 @@
-from scripts import check_locked_aggregate_safety as safety
+from scripts.checks import check_locked_aggregate_safety as safety
 
 
 def test_forbidden_paths_finds_nested_locked_row_content() -> None:

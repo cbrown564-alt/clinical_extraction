@@ -131,24 +131,16 @@ def test_living_roster_is_the_six_paper_models() -> None:
         == "reasoning_medium"
     )
     assert (
-        paper_work_suffix(replace(MODELS["gpt56luna"], reasoning_effort="high"))
-        == "reasoning_high"
+        paper_work_suffix(replace(MODELS["gpt56luna"], reasoning_effort="high")) == "reasoning_high"
     )
     assert paper_work_suffix(MODELS["qwen38_27b"]) is None
+    assert paper_work_suffix(replace(MODELS["qwen38_27b"], temperature=1.0)) == "temperature_1"
     assert (
-        paper_work_suffix(replace(MODELS["qwen38_27b"], temperature=1.0))
-        == "temperature_1"
-    )
-    assert (
-        paper_work_suffix(
-            replace(MODELS["gpt56luna"], reasoning_effort="high", temperature=0.0)
-        )
+        paper_work_suffix(replace(MODELS["gpt56luna"], reasoning_effort="high", temperature=0.0))
         == "reasoning_high_temperature_0"
     )
     assert paper_work_suffix(MODELS["grok46"]) is None
-    assert (
-        paper_work_suffix(replace(MODELS["grok46"], temperature=1.0)) == "temperature_1"
-    )
+    assert paper_work_suffix(replace(MODELS["grok46"], temperature=1.0)) == "temperature_1"
     assert apply_temperature(MODELS["grok46"], None) is MODELS["grok46"]
     assert apply_temperature(MODELS["grok46"], 1.0).temperature == 1.0
     with pytest.raises(RuntimeError, match="living paper setting"):
@@ -332,8 +324,6 @@ def test_verify_gan_test450_is_aggregate_only() -> None:
     assert "incorrect_source_row_indices" not in payload
 
 
-
-
 def test_grok46_paper_lm_uses_openrouter(monkeypatch: pytest.MonkeyPatch) -> None:
     captured: dict[str, Any] = {}
 
@@ -380,8 +370,6 @@ def test_grok46_is_living_compact() -> None:
     assert structured.PROMPT_VERSION == before == structured.EXECT_LLM_PRE_POST
 
 
-
-
 def test_gemini_reasoning_ablation_is_dev140_medium_only() -> None:
     before = structured.PROMPT_VERSION
     with pytest.raises(RuntimeError, match="development-only"):
@@ -407,8 +395,6 @@ def test_gemini_reasoning_ablation_is_dev140_medium_only() -> None:
         )
     assert MODELS["gemini37flash"].reasoning_effort == "low"
     assert structured.PROMPT_VERSION == before == structured.EXECT_LLM_PRE_POST
-
-
 
 
 def test_luna_paper_lm_sends_explicit_low_reasoning_effort(

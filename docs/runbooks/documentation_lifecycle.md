@@ -2,16 +2,16 @@
 
 Updated: 2026-09-08. Keep one current owner for each subject.
 
-| Subject | Owner during repository migration |
+| Subject | Owner |
 | --- | --- |
 | Current state and verification | `PROJECT_STATUS.md` (local-only) |
 | Scope, work order and repository migration | `docs/plans/ACTIVE_ROADMAP.md` |
 | Reading paths and current locations | `docs/NAVIGATION.md` |
-| Existing manuscript argument and claim context | `docs/paper/README.md` and the section owners it names |
-| Existing result inventory | `paper_experiments/inventory.json` |
+| Existing manuscript argument and claim context | `publications/dissertation/notes/README.md` and the section owners it names |
+| Existing result inventory | `results/letter-benchmarks/inventory.json` |
 | Longitudinal task, queries and pilot policy | `docs/longitudinal/task_definition.md` |
 | Longitudinal literature rationale | `docs/reference/longitudinal_epilepsy_rationale.md` |
-| Longitudinal annotation/generation/evaluation implementation | Future `docs/longitudinal/` owners, created when the corresponding work begins |
+| Longitudinal annotation/generation/evaluation implementation | `docs/longitudinal/` task, annotation, generation and evaluation owners |
 | Study protocol and interpretation | `docs/research/<track>/` |
 | Shared software and evidence rules | `docs/design/`; source and tests own implementation facts |
 | Repeatable procedure | `docs/runbooks/` |

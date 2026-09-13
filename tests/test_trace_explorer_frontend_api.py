@@ -10,13 +10,7 @@ from clinical_extraction.inspection.api.app import create_app
 from clinical_extraction.inspection.frontend_data import FrontendDataStore
 from clinical_extraction.inspection.index import build_index
 
-TRACE_FIXTURE = (
-    Path("src")
-    / "clinical_extraction"
-    / "trace_explorer"
-    / "fixtures"
-    / "syn_014.json"
-)
+TRACE_FIXTURE = Path("src") / "clinical_extraction" / "inspection" / "fixtures" / "syn_014.json"
 FRONTEND_FIXTURES = Path("frontend") / "public" / "mock-data"
 EXECT_SPLIT_MANIFEST = Path("data") / "ExECTv2 (2025)" / "splits" / "exectv2_split_v2.json"
 GAN_SPLIT_MANIFEST = Path("data") / "Gan (2026)" / "splits" / "gan2026_split_v1.json"
@@ -72,11 +66,7 @@ def test_frontend_catalog_and_read_only_surfaces_use_the_live_api(client: TestCl
     run_ids = {run["run_id"] for run in body["runs"]}
     assert "rules" in run_ids
     assert "exectv2_winning_mode_gpt56sol_llm_plus_rules_dev140" not in run_ids
-    hybrid = [
-        run
-        for run in body["runs"]
-        if run.get("kind") == "llm_with_rules"
-    ]
+    hybrid = [run for run in body["runs"] if run.get("kind") == "llm_with_rules"]
     active_hybrid = [run for run in hybrid if run.get("active_method") == "llm_with_rules"]
     models = {run["model"] for run in active_hybrid}
     if active_hybrid:

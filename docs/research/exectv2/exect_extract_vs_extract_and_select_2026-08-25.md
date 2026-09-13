@@ -4,8 +4,8 @@ Date: 2026-08-25
 Status: working ablation draft; not a results column
 Owners: [find-and-select vs find](../exectv2/exect_one_call_select_vs_rule_select_2026-08-25.md),
 [ExECT inventory grid](../exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md)
-Related: [three variables](three_variables_rules_model_thinking_2026-08-23.md),
-[source-near find vs bundled encode](gan_source_near_vs_bundled_encode_2026-08-23.md)
+Related: [three variables](../shared/three_variables_rules_model_thinking_2026-08-23.md),
+[source-near find vs bundled encode](../gan2026/gan_source_near_vs_bundled_encode_2026-08-23.md)
 
 This is the ExECT select-ownership ablation. It is not the five-cell
 grid and not a roster result. Holdout is aggregate-only. Do not
@@ -105,7 +105,7 @@ holdout misses.
 Synthesis of the Gemini inventory find cell and the live
 find-and-select ablation. Mechanism on `dev140` may name
 letters; holdout may not. Companion models were not restaged.
-See [three variables](three_variables_rules_model_thinking_2026-08-23.md)
+See [three variables](../shared/three_variables_rules_model_thinking_2026-08-23.md)
 for the roster reading, and
-[source-near find vs bundled encode](gan_source_near_vs_bundled_encode_2026-08-23.md)
+[source-near find vs bundled encode](../gan2026/gan_source_near_vs_bundled_encode_2026-08-23.md)
 for the Gan analog: bundling a later stage into find.

@@ -28,11 +28,11 @@ and investigations.
 This is not the planned six-model comparison. Full200 contains dev140 and
 held-out test60, so it is not an independent holdout. The living roster is
 Gemini 3.7 Flash, GPT-5.6 Luna, GPT-5.6 Sol, hosted DeepSeek V4 Flash, local Qwen
-3.6:35B, and local Gemma 4 26B ([decision 0052](../../decisions/0052-gemini-37-flash-holdout-six-model-slot.md)).
+3.6:35B, and local Gemma 4 26B ([decision 0052](../decisions/0052-gemini-37-flash-holdout-six-model-slot.md)).
 GPT-4.1-mini remains historical Decision 0039 evidence. DeepSeek V4 Flash uses the
 `deepseek/deepseek-chat` API identifier. The retained historical row has
 incomplete runtime metadata, so it does not satisfy the final condition. See
-[decision 0039](../../decisions/0039-final-exect-six-model-roster.md).
+[decision 0039](../decisions/0039-final-exect-six-model-roster.md).
 
 The historical rows also do not measure one consistent model-led method.
 Prescription was supplied by the deterministic Prescription producer, and
@@ -44,7 +44,7 @@ as model-to-model results.
 
 All six selected models completed the same decision-0041 one-call pipeline with
 prompt `exectv2_hybrid_key_family_event_ledger_v0.9.24`, Diagnosis/Prescription
-`default` / `default` assembly ([decision 0045](../../decisions/0045-exect-default-policy-not-joint-combined.md)),
+`default` / `default` assembly ([decision 0045](../decisions/0045-exect-default-policy-not-joint-combined.md)),
 and the internal clinical fact recovery scorer (`clinical_headline`).
 
 | Model | dev140 F1 | test60 F1 | Test operational result |
@@ -61,11 +61,11 @@ test result is retained holdout evidence for this internal scorer, not the
 published ExECT benchmark or clinical validation. Qwen and Gemma have the same
 retained aggregate status as the four hosted conditions. Their provider route,
 local runtime, and parse behavior remain explicit comparison caveats. See the
-[hosted protocol and result](../../experiments/exectv2/reliability/exectv2_hosted_test60_protocol_2026-07-15.md).
+[hosted protocol and result](../../research/exectv2/reliability/exectv2_hosted_test60_protocol_2026-07-15.md).
 
 ## Corrected model-led architecture candidates
 
-[Decision 0040](../../decisions/0040-final-exect-llm-with-rules-family-ownership.md)
+[Decision 0040](../decisions/0040-final-exect-llm-with-rules-family-ownership.md)
 requires the named model to supply the candidate facts for all four main
 families. It permits attributable deterministic correction but prohibits the
 Prescription substitution and Seizure Frequency extractor union.
@@ -84,7 +84,7 @@ these results, including the decision-0037 `state_profile`, exact-evidence,
 schema/parse, fact-origin, and deterministic-regression records. They are
 development-inclusive, aggregate-only, and unpromoted. Nonzero deterministic
 correct-to-wrong counts prevent treating them as final model rows. See the
-[component audit](../../experiments/exectv2/reliability/exectv2_llm_with_rules_component_audit_2026-07-14.md).
+[component audit](../../research/exectv2/reliability/exectv2_llm_with_rules_component_audit_2026-07-14.md).
 
 The permitted dev140 mechanism analysis finds 160 wrong-to-correct, 41
 correct-to-wrong, and 118 changed-still-wrong model/family rows, all with exact
@@ -100,9 +100,9 @@ replay composes both implemented components exactly and is now the disclosed
 fallback for the fixed comparison: 172 rescues, 3 regressions, and 153/160
 current-policy rescues retained, compared with 161, 9, and 143/160 for the
 previous fallback. The known component failures remain explicit caveats.
-See the [dev140 regression analysis](../../experiments/exectv2/reliability/exectv2_model_led_dev140_regression_analysis_2026-07-15.md),
-[Prescription result](../../experiments/exectv2/reliability/exectv2_prescription_bounded_policy_candidate_2026-07-15.md),
-and [decision 0045](../../decisions/0045-exect-default-policy-not-joint-combined.md)
+See the [dev140 regression analysis](../../research/exectv2/reliability/exectv2_model_led_dev140_regression_analysis_2026-07-15.md),
+[Prescription result](../../research/exectv2/reliability/exectv2_prescription_bounded_policy_candidate_2026-07-15.md),
+and [decision 0045](../decisions/0045-exect-default-policy-not-joint-combined.md)
 for the archived Diagnosis-guard and joint-policy readouts.
 
 The selected internal calibration result reports full200 Brier 0.2225, base-rate
@@ -134,7 +134,7 @@ fixed rules-only score from 0.8599 to 0.8926, while the hybrid candidate moves
 from 0.8984 to 0.9034. A fixed LLM-only prompt candidate regresses from 0.6861
 to 0.6210 and is rejected. These are inspected dev140 development results; none
 is promoted and test60 was not inspected. See the
-[component comparison](../../experiments/exectv2/diagnosis/exectv2_diagnosis_component_comparison_2026-07-14.md).
+[component comparison](../../research/exectv2/diagnosis/exectv2_diagnosis_component_comparison_2026-07-14.md).
 
 A later predeclared no-call GPT-4.1-mini ablation tested the structured
 four-family output as the final Diagnosis producer under the same deterministic
@@ -147,7 +147,7 @@ second model pass. During pre-score validation, the study
 also found that the initial six-model runner selected the first 140 sorted
 letters rather than manifest dev140. Affected partial runs are excluded, and
 the corrected runner now enforces manifest IDs before starting or resuming.
-See the [single-call Diagnosis ablation](../../experiments/exectv2/diagnosis/exectv2_gpt41mini_single_call_diagnosis_ablation_2026-07-15.md).
+See the [single-call Diagnosis ablation](../../research/exectv2/diagnosis/exectv2_gpt41mini_single_call_diagnosis_ablation_2026-07-15.md).
 
 The common six-model panel is complete and hash-selected in the retained
 evidence index. Independent clinical review is still required for

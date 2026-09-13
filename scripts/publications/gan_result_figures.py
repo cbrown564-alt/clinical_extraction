@@ -334,7 +334,9 @@ def load_living_purist_confusion_matrix(
 ) -> ConfusionMatrixData:
     """Load gold and predicted purist categories for the specified model and split."""
 
-    from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_cell_replay import gan_living_extract_rows_path
+    from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_cell_replay import (
+        gan_living_extract_rows_path,
+    )
     from clinical_extraction.evaluation.letter_benchmarks.methods import gan_machine_split
     from clinical_extraction.tasks.shared.epilepsy.normalization import (
         label_to_frequency_record,
@@ -395,7 +397,9 @@ def load_living_pragmatic_confusion_matrix(
 ) -> ConfusionMatrixData:
     """Load gold and predicted pragmatic categories for the specified model and split."""
 
-    from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_cell_replay import gan_living_extract_rows_path
+    from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_cell_replay import (
+        gan_living_extract_rows_path,
+    )
     from clinical_extraction.evaluation.letter_benchmarks.methods import gan_machine_split
     from clinical_extraction.tasks.shared.epilepsy.normalization import (
         label_to_frequency_record,

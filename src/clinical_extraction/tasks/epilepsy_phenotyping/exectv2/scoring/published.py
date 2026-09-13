@@ -13,7 +13,7 @@ from dataclasses import dataclass
 
 from pydantic import BaseModel
 
-from clinical_extraction.core.scoring import PRF1, multiset_prf1, prf1_from_counts, sum_prf1
+from clinical_extraction.evaluation.scoring import PRF1, multiset_prf1, prf1_from_counts, sum_prf1
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     POINT_RANGE_TRIPLES,
 )

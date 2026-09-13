@@ -7,14 +7,14 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.core.jsonl import (
+    load_jsonl_rows,
+)
 from clinical_extraction.core.paths import discover_repo_root
 from clinical_extraction.evaluation.letter_benchmarks.methods import gan_machine_split
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import load_records_for_split
 from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation.gan_cell_replay import (
     score_label,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    load_jsonl_rows,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
     DEFAULT_SEMANTIC_FAMILY_ORDER,
@@ -78,8 +78,7 @@ def replay_adjacent_swaps(split: str = "dev750") -> dict[str, Any]:
             cell_results[cell_id] = {"missing": str(path)}
             continue
         raw_rows = {
-            int(row["source_row_index"]): str(row["raw_output"])
-            for row in load_jsonl_rows(path)
+            int(row["source_row_index"]): str(row["raw_output"]) for row in load_jsonl_rows(path)
         }
         baseline_ok: dict[int, bool] = {}
         baseline_label: dict[int, str | None] = {}
@@ -139,11 +138,7 @@ def replay_adjacent_swaps(split: str = "dev750") -> dict[str, Any]:
     adopt: list[str] = []
     for swap_index, (pair, _order) in enumerate(adjacent_semantic_family_orders()):
         name = f"swap:{pair[0]}|{pair[1]}"
-        complete_cells = [
-            cell
-            for cell in cell_results.values()
-            if "swaps" in cell
-        ]
+        complete_cells = [cell for cell in cell_results.values() if "swaps" in cell]
         if len(complete_cells) != len(CELLS):
             continue
         if all(
@@ -167,9 +162,7 @@ def write_adjacent_swap_artifact(path: Path | None = None) -> Path:
     """Write the adjacent-swap replay artifact."""
 
     payload = replay_adjacent_swaps()
-    out = path or (
-        ROOT / "experiments/paper/gan_semantic_family_order/dev750_adjacent_swaps.json"
-    )
+    out = path or (ROOT / "experiments/paper/gan_semantic_family_order/dev750_adjacent_swaps.json")
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return out

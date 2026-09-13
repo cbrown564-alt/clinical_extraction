@@ -1,13 +1,13 @@
 # ExECT gold phrase variants: why the inventory rules do not belong in the prompt
 
-Date: 2026-08-13  
-Status: paper source; development gold only; writing-test passed 2026-08-14  
-Parent: [why the proposed method is a model plus recorded rules](why_hybrid_architecture_2026-08-09.md)  
-Companion catalog: [every development gold key and its official source phrases](exect_gold_phrase_variant_catalog_2026-08-13.md)  
-Workbook: [mention spreadsheet](../artifacts/exect_gold_phrase_variants_2026-08-13.xlsx)  
-Artifact: [`experiments/exectv2_gold_phrase_variant_inventory_20260813.json`](../../../experiments/exectv2_gold_phrase_variant_inventory_20260813.json)  
-Regenerator: `python scripts/build_exectv2_gold_phrase_variant_inventory.py`  
-Sibling: [Gan phrase-variant inventory](gan_gold_phrase_variants_2026-08-13.md)
+Date: 2026-08-13\
+Status: paper source; development gold only; writing-test passed 2026-08-14\
+Parent: [why the proposed method is a model plus recorded rules](../shared/why_hybrid_architecture_2026-08-09.md)\
+Companion catalog: [every development gold key and its official source phrases](exect_gold_phrase_variant_catalog_2026-08-13.md)\
+Workbook: [mention spreadsheet](../artifacts/exect_gold_phrase_variants_2026-08-13.xlsx)\
+Artifact: [`experiments/exectv2_gold_phrase_variant_inventory_20260813.json`](../../../experiments/exectv2_gold_phrase_variant_inventory_20260813.json)\
+Regenerator: `python scripts/benchmarks/build_exectv2_gold_phrase_variant_inventory.py`\
+Sibling: [Gan phrase-variant inventory](../gan2026/gan_gold_phrase_variants_2026-08-13.md)
 
 ## The short answer
 
@@ -180,7 +180,7 @@ is the mention-level view, including the recovered letter span.
 The constructions below are mutually exclusive within a family. They are
 assigned from the **recovered letter span** when one exists, otherwise
 from the official span, in a fixed order, by
-`scripts/build_exectv2_gold_phrase_variant_inventory.py`. This is a
+`scripts/benchmarks/build_exectv2_gold_phrase_variant_inventory.py`. This is a
 review taxonomy, not a change to gold or to the scorer. **0 mentions**
 remain `other_paraphrase`. Some recoveries are still weak; they stay
 labelled `type_token_only` or `official_span_expanded_to_sentence`
@@ -323,10 +323,10 @@ and [ExECT gold taxonomy](../exectv2/gold_task_taxonomy_2026-08-06.md)
 own the task definition. This draft adds a gold-only phrase inventory on
 development mentions.
 
-Project lane: [why the proposed method is a model plus recorded rules](why_hybrid_architecture_2026-08-09.md)
+Project lane: [why the proposed method is a model plus recorded rules](../shared/why_hybrid_architecture_2026-08-09.md)
 owns the architectural claim. Pipeline behaviour stays with
-[system architecture](../../canon/01_system_architecture.md) and
-[paper provenance](../../canon/10_paper_provenance.md). Decision 0046
+[system architecture](../../history/canon/01_system_architecture.md) and
+[paper provenance](../../history/canon/10_paper_provenance.md). Decision 0046
 still owns the primary four-family comparison.
 
 This draft does not establish that a long prompt would fail, that the
