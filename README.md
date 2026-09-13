@@ -72,3 +72,29 @@ results/letter-benchmarks/ Tracked paper fills and replayable local raws
 docs/                      Methods notes and project documentation
 examples/                  Pinned walkthrough inputs
 ```
+
+## Package and commands
+
+`core/` owns source/request identity, artifacts, persistence and provider mechanics.
+`tasks/` owns clinical extraction, projections and benchmark evaluation;
+`evaluation/` owns shared metrics and explicitly scoped old-study adapters.
+`inspection/` serves the existing review API. The
+[architecture](docs/design/architecture.md) explains these boundaries.
+
+The installed `clinical-extract` command (or `python run.py`) provides:
+
+| Operation | Purpose |
+| --- | --- |
+| `extract --task gan\|exect` | Capture ordinary notes into immutable artifacts and a local SQLite store |
+| `replay --task gan\|exect` | Read the exact saved request/runtime; never invoke a model |
+| `gan`, `exect` | Retained operational methods and output formats |
+| `benchmark gan`, `benchmark exect` | Dataset runners with their existing split and checkpoint controls |
+| `evaluate` | Verify, replay, reparse and score retained benchmark results |
+| `inspect`, `index` | Local inspection API and trace indexing |
+
+Use an operation's `--help` for input/runtime flags. New capture defaults to
+`runs/extraction/artifacts.sqlite3`; pass the same input, model and runtime settings
+to replay. Changed requests are refused. Failed captures remain stored until an
+explicit `--retry-failed` capture; their earlier execution records remain available.
+Old Python package paths and separate task-specific console aliases are retired.
+The no-install HPC/vLLM route and `requirements.txt` remain supported.

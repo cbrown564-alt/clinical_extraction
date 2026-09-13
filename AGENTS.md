@@ -6,7 +6,7 @@ The active programme has three strands: a primary one-shot, evidence-grounded ex
 
 ## Document owners
 
-Use `README.md` for the repository map, `docs/NAVIGATION.md` for documentation owners, `docs/plans/ACTIVE_ROADMAP.md` for the project plan and repository migration, and `PROJECT_STATUS.md` for current work. Existing manuscript methods and claims remain under `docs/paper/README.md` until the planned migration. The August paper-final cut is historical scope for the earlier paper, not the current repository plan. Closed numbered decisions are [`docs/history/decisions.md`](docs/history/decisions.md).
+Use `README.md` for the repository map, `docs/NAVIGATION.md` for documentation owners, `docs/plans/ACTIVE_ROADMAP.md` for the project plan and repository migration, and `PROJECT_STATUS.md` for current work. Existing manuscript methods and claims remain under `publications/dissertation/notes/README.md` in the migrated layout. The August paper-final cut is historical scope for the earlier paper, not the current repository plan. Closed numbered decisions are [`docs/history/decisions.md`](docs/history/decisions.md).
 
 Do not add another roadmap, status board, evidence register, or research canon. Keep detailed results in their existing artifact or log; update `PROJECT_STATUS.md` only after its evidence owner.
 
@@ -26,4 +26,4 @@ Keep model-facing prompts, schemas, and field descriptions clear and task-releva
 
 Run focused tests while iterating. Before a broad completion claim, activate `.venv` and run the relevant combination of `python -m pytest`, `ruff check src tests`, and `mypy src`. Do not run expensive model calls, inspect locked data, or regenerate broad artifacts merely to update documentation.
 
-Pytest tiers follow [pytest is the research-validity firewall](docs/paper/decisions/pytest-is-the-research-validity-firewall.md): plain `pytest` is the always-on firewall (`-m "not deep"`). Use `pytest -m deep` only for the capped deep allowlist. New always-on cases must pass always-on admission and should replace or narrow an existing case for the same obligation. Terms: `CONTEXT.md` Verification.
+Pytest tiers follow [pytest is the research-validity firewall](docs/runbooks/pytest-is-the-research-validity-firewall.md): plain `pytest` is the always-on firewall (`-m "not deep"`). Use `pytest -m deep` only for the capped deep allowlist. New always-on cases must pass always-on admission and should replace or narrow an existing case for the same obligation. Terms: `CONTEXT.md` Verification.
