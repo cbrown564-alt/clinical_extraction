@@ -4,6 +4,7 @@ This directory contains research publications, dissertation materials, and manus
 
 ## Substructure
 
+- [`jamia-one-shot/`](jamia-one-shot/README.md): Strand A working manuscript outline; evaluation and capability claims remain prospective.
 - `dissertation/`: The MSc AI dissertation manuscript (*Extract, then decide: a two-stage pipeline to identify seizure frequency patterns in epilepsy clinic letters*), accompanying supporting materials, templates, handbooks, and historical draft archives.
 
 Future publication folders (such as `exect-comparison/` or `longitudinal-benchmark/`) will be introduced only when actual manuscripts are prepared.
