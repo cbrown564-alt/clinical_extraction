@@ -61,7 +61,7 @@ P/R/F1. Zero model calls. No Compact/headline numbers.
 `scratch/holdout/exect_rules_only_stage_rungs_test60_20260827/` (path,
 sha256, byte count only in the public artifact). The public artifact
 contains aggregates only and is added to
-`scripts/check_locked_aggregate_safety.py`.
+`scripts/checks/check_locked_aggregate_safety.py`.
 
 ## Code change
 
@@ -70,8 +70,8 @@ three-stage runner (no behavior change to `run_letter` or
 `run_letter_three_stage`), pinned by a focused test that the select
 stop equals `run_letter` output. Runner scripts:
 
-- `scripts/measure_exect_rules_only_stage_rungs_dev140.py`
-- `scripts/measure_exect_rules_only_stage_rungs_test60_aggregate.py`
+- `scripts/benchmarks/measure_exect_rules_only_stage_rungs_dev140.py`
+- `scripts/benchmarks/measure_exect_rules_only_stage_rungs_test60_aggregate.py`
 
 Artifacts:
 

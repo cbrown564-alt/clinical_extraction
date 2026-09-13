@@ -12,9 +12,9 @@ and claim boundary. No composite reliability score or pooled task ranking is
 calculated.
 
 This report is generated from
-[`shared_reliability_scorecard_20260718.json`](../../experiments/shared_reliability_scorecard_20260718.json).
+[`shared_reliability_scorecard_20260718.json`](../../../experiments/shared_reliability_scorecard_20260718.json).
 The exact selected sources and hashes are owned by the
-[retained evidence index](../../experiments/retained_evidence_manifest.md).
+[retained evidence index](retained_evidence_manifest.md).
 
 ## Gan 2026 task scorecard
 

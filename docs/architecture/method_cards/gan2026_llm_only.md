@@ -1,7 +1,7 @@
 <!-- GENERATED FILE. Do not edit by hand.
      Source: src/clinical_extraction/architecture/ (stage manifests +
      executed teaching cases). Regenerate with
-     python scripts/build_architecture_docs.py -->
+     python scripts/checks/build_architecture_docs.py -->
 
 # Gan 2026 - LLM only
 
@@ -26,7 +26,7 @@ The prompt carries the Gan rule taxonomy, and the model returns a single decisio
 | Who first proposes the clinical answer? | the model (stage gan.llm.model_call), with one deterministic override at gan.llm.selected_evidence_repair |
 | Which later stages may change clinical meaning? | `gan.llm.selected_evidence_repair` |
 | What final representation is scored? | One Gan label string per letter, projected to a Purist and a Pragmatic category. |
-| What evidence shows whether each component helped or harmed? | `docs/paper/methods.md`, `docs/paper/claims.md` |
+| What evidence shows whether each component helped or harmed? | `publications/dissertation/notes/methods.md`, `publications/dissertation/notes/claims.md` |
 
 ## Stages
 
@@ -140,7 +140,7 @@ Parse the repaired label into a frequency record; an unparseable label is record
 | In | repaired label (str) | 'roughly a few a month' |
 | Out | GanFrequencyRecord or an unscorable_final_label error | unscorable_final_label: unrecognized label |
 
-- Code: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/label_parser.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/label_parser.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser:label_to_frequency_record`)
+- Code: [`src/clinical_extraction/tasks/shared/epilepsy/normalization.py`](../../../src/clinical_extraction/tasks/shared/epilepsy/normalization.py) (`clinical_extraction.tasks.shared.epilepsy.normalization:label_to_frequency_record`)
 - Test: [`tests/test_gan2026_labels.py`](../../../tests/test_gan2026_labels.py)
 - Proven in a trace by: `parse_errors`
 - Paper wording: Labels that cannot be parsed into the benchmark representation are recorded as unscorable.
@@ -188,7 +188,7 @@ Entry point: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestra
 | `gan.llm.json_schema_repair` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm:parse_decision_json_with_trace` | `tests/test_gan2026_schema_repair.py` |
 | `gan.llm.schema_validation` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm:CanonicalLlmDecisionRecord` | `tests/test_gan2026_llm_pipeline.py` |
 | `gan.llm.selected_evidence_repair` | `clinical_extraction.tasks.seizure_frequency.gan2026.normalize:repair_prediction_label_with_evidence` | `tests/test_gan2026_benchmark_prediction_repair_policy.py` |
-| `gan.llm.scorable_label_check` | `clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser:label_to_frequency_record` | `tests/test_gan2026_labels.py` |
+| `gan.llm.scorable_label_check` | `clinical_extraction.tasks.shared.epilepsy.normalization:label_to_frequency_record` | `tests/test_gan2026_labels.py` |
 | `gan.llm.evidence_containment` | `clinical_extraction.core.evidence:evidence_is_substring` | `tests/test_core_evidence.py` |
 | `gan.llm.score` | `clinical_extraction.tasks.seizure_frequency.gan2026.labels:map_purist` | `tests/test_gan2026_labels.py` |
 

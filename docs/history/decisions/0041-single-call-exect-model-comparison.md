@@ -81,4 +81,4 @@ containing any identifier outside the frozen set before a model call begins.
 
 Evidence owner:
 
-- [GPT-4.1-mini single-call Diagnosis ablation](../../experiments/exectv2/diagnosis/exectv2_gpt41mini_single_call_diagnosis_ablation_2026-07-15.md)
+- [GPT-4.1-mini single-call Diagnosis ablation](../../research/exectv2/diagnosis/exectv2_gpt41mini_single_call_diagnosis_ablation_2026-07-15.md)

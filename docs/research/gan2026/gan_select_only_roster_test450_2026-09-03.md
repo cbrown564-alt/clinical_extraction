@@ -4,7 +4,7 @@ Date: 2026-09-03
 Protocol: [protocol](gan_select_only_roster_test450_protocol_2026-09-03.md)
 Artifact: [aggregates](gan_select_only_roster_test450_2026-09-03.json)
 Module: `clinical_extraction.paper.gan_select_only_roster`
-Replay: `python scripts/measure_gan_select_only_roster.py`
+Replay: `python scripts/benchmarks/measure_gan_select_only_roster.py`
 Tests: `tests/test_gan_select_only_roster.py`
 Model calls: 0. Holdout is aggregate-only.
 
@@ -56,7 +56,7 @@ Luna 0.773, DeepSeek 0.838, Qwen 0.782, Gemma 0.751.
 
 ```bash
 source .venv/bin/activate
-python scripts/measure_gan_select_only_roster.py
+python scripts/benchmarks/measure_gan_select_only_roster.py
 python -m pytest tests/test_gan_select_only_roster.py -q
 ```
 

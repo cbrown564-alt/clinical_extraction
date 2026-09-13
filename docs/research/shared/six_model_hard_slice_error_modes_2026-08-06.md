@@ -2,11 +2,11 @@
 
 Date: 2026-08-06  
 Status: development mechanism answer on retained no-call artifacts  
-Paper-library role: cross-model technical record; start with [failures and limits](../paper/failures_and_limits_2026-08-10.md)
+Paper-library role: cross-model technical record; start with [failures and limits](failures_and_limits_2026-08-10.md)
 
 Protocol: [hard-slice error-mode protocol](six_model_hard_slice_error_modes_protocol_2026-08-06.md)  
 Parent: [category-cut performance](six_model_category_cut_performance_2026-08-06.md)  
-Artifact: [`experiments/six_model_hard_slice_error_modes_20260806.json`](../../experiments/six_model_hard_slice_error_modes_20260806.json)
+Artifact: [`experiments/six_model_hard_slice_error_modes_20260806.json`](../../../experiments/six_model_hard_slice_error_modes_20260806.json)
 
 ## Plain answer
 

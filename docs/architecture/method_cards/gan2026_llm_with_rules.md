@@ -1,7 +1,7 @@
 <!-- GENERATED FILE. Do not edit by hand.
      Source: src/clinical_extraction/architecture/ (stage manifests +
      executed teaching cases). Regenerate with
-     python scripts/build_architecture_docs.py -->
+     python scripts/checks/build_architecture_docs.py -->
 
 # Gan 2026 - LLM with rules
 
@@ -26,7 +26,7 @@ One structured call returns two linked objects: an event ledger of source-near s
 | Who first proposes the clinical answer? | the model proposes and selects (gan.llm_with_rules.model_call); ten deterministic repair families may change the answer afterwards |
 | Which later stages may change clinical meaning? | `gan.llm_with_rules.repair.selected_evidence`, `gan.llm_with_rules.repair.monthly_diary`, `gan.llm_with_rules.repair.usual_interval`, `gan.llm_with_rules.repair.typical_over_ytd`, `gan.llm_with_rules.repair.breakthrough`, `gan.llm_with_rules.repair.non_epileptic`, `gan.llm_with_rules.repair.residual_jerk`, `gan.llm_with_rules.repair.post_change_burst`, `gan.llm_with_rules.repair.dated_sequence`, `gan.llm_with_rules.repair.elapsed_anchor` |
 | What final representation is scored? | One Gan label string per letter, projected to a Purist and a Pragmatic category. |
-| What evidence shows whether each component helped or harmed? | `docs/paper/methods.md`, `docs/paper/claims.md` |
+| What evidence shows whether each component helped or harmed? | `publications/dissertation/notes/methods.md`, `publications/dissertation/notes/claims.md` |
 
 ## Stages
 
@@ -350,7 +350,7 @@ Parse the repaired label into a frequency record; an unparseable label is record
 | In | repaired label (str) | 'a few a month' |
 | Out | GanFrequencyRecord or an unscorable_final_label error | unscorable_final_label: unrecognized label |
 
-- Code: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/label_parser.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/label_parser.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser:label_to_frequency_record`)
+- Code: [`src/clinical_extraction/tasks/shared/epilepsy/normalization.py`](../../../src/clinical_extraction/tasks/shared/epilepsy/normalization.py) (`clinical_extraction.tasks.shared.epilepsy.normalization:label_to_frequency_record`)
 - Test: [`tests/test_gan2026_labels.py`](../../../tests/test_gan2026_labels.py)
 - Proven in a trace by: `parse_errors`
 - Paper wording: Labels that cannot be parsed into the benchmark representation are recorded as unscorable.
@@ -412,7 +412,7 @@ Entry point: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestra
 | `gan.llm_with_rules.repair.post_change_burst` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:post_change_burst_label_from_events` | `tests/test_gan2026_hybrid_structured_events_contract.py` |
 | `gan.llm_with_rules.repair.dated_sequence` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:dated_sequence_label_from_events` | `tests/test_gan2026_hybrid_structured_events_contract.py` |
 | `gan.llm_with_rules.repair.elapsed_anchor` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:elapsed_since_anchor_label_from_events` | `tests/test_gan2026_hybrid_structured_events_contract.py` |
-| `gan.llm_with_rules.scorable_label_check` | `clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser:label_to_frequency_record` | `tests/test_gan2026_labels.py` |
+| `gan.llm_with_rules.scorable_label_check` | `clinical_extraction.tasks.shared.epilepsy.normalization:label_to_frequency_record` | `tests/test_gan2026_labels.py` |
 | `gan.llm_with_rules.evidence_containment` | `clinical_extraction.core.evidence:evidence_is_substring` | `tests/test_core_evidence.py` |
 | `gan.llm_with_rules.score` | `clinical_extraction.tasks.seizure_frequency.gan2026.labels:map_purist` | `tests/test_gan2026_labels.py` |
 
@@ -424,7 +424,7 @@ These paths exist and are easy to mistake for this runner. They are named here s
 | --- | --- | --- |
 | `src/clinical_extraction/tasks/seizure_frequency/gan2026/runners/hybrid_structured_events.py` | research entry point | CLI wrapper over run_split; adds no clinical stage. |
 | `src/clinical_extraction/tasks/seizure_frequency/gan2026/experiments/repair_modes.py` | experiment control | Named repair modes switch repair families on and off for ablation. The default comparison uses llm_select. |
-| `src/clinical_extraction/paper/cli.py` | replay path | python -m clinical_extraction.paper run --method gan_llm_extract_raw --model <slug> --split <dev750\|test450> |
+| `src/clinical_extraction/operational/evaluation_cli.py` | replay path | Historical live dispatcher retired. Use clinical-extract extract for current profiles; clinical-extract evaluate for saved-result verification. |
 
 ## Executable trace
 

@@ -1,7 +1,7 @@
 <!-- GENERATED FILE. Do not edit by hand.
      Source: src/clinical_extraction/architecture/ (stage manifests +
      executed teaching cases). Regenerate with
-     python scripts/build_architecture_docs.py -->
+     python scripts/checks/build_architecture_docs.py -->
 
 # ExECTv2 - Rules only
 
@@ -26,7 +26,7 @@ No model is involved. Nine entity-specific extractors run over the same note tex
 | Who first proposes the clinical answer? | the nine deterministic extractors (stage exect.rules.extract_entities); the four-family projection is scorer-facing |
 | Which later stages may change clinical meaning? | `exect.rules.extract_entities` |
 | What final representation is scored? | An all-nine PredictedLetter plus an explicit four-family comparison projection, each scored under its named view. |
-| What evidence shows whether each component helped or harmed? | `docs/paper/methods.md`, `docs/paper/claims.md` |
+| What evidence shows whether each component helped or harmed? | `publications/dissertation/notes/methods.md`, `publications/dissertation/notes/claims.md` |
 
 ## Stages
 

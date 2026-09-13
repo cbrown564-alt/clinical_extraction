@@ -7,7 +7,7 @@ Taxonomy audit: [rule taxonomy audit](gan_rules_taxonomy_audit_2026-08-29.md)
 Artifacts: `experiments/gan2026_rules_only_three_stage_20260829/`
 (`dev750_recall_first_summary.json`, `dev750_recall_first_rows.jsonl`,
 `rule_inventory.json`)
-Script: `scripts/measure_gan_rules_only_recall_first_dev750.py`
+Script: `scripts/benchmarks/measure_gan_rules_only_recall_first_dev750.py`
 
 Dataset `dev750` (development, row review permitted); Purist scorer via
 `score_label`; zero model calls; `test450` never loaded. Program:

@@ -92,6 +92,6 @@ could conceal missing or diagnostic evidence elsewhere.
 
 ## Evidence and owners
 
-- Current claims: [paper claim status](../../canon/10_paper_provenance.md)
-- Selected files and hashes: [retained evidence index](../../experiments/retained_evidence_manifest.md)
+- Current claims: [paper claim status](../canon/10_paper_provenance.md)
+- Selected files and hashes: [retained evidence index](../../research/shared/retained_evidence_manifest.md)
 - Current work: [active roadmap](../../plans/ACTIVE_ROADMAP.md)

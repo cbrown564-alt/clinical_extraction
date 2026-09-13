@@ -2,9 +2,9 @@
 
 Date: 2026-08-13  
 Status: **complete** (predeclared before scoring; executed 2026-08-13)  
-Parents: [Decision 0043](../../decisions/0043-gan-hosted-comparison-uses-v05-prompt.md),
+Parents: [Decision 0043](../../history/decisions/0043-gan-hosted-comparison-uses-v05-prompt.md),
 [Decision 0047](../../decisions/0047-gan-primary-orchestration-and-scoring-boundary.md),
-[July 18 six-model comparison protocol](../../experiments/gan2026/gan2026_six_model_validation_comparison_protocol_2026-07-18.md),
+[July 18 six-model comparison protocol](gan2026_six_model_validation_comparison_protocol_2026-07-18.md),
 [July 31 floors replay](../../experiments/gan2026_six_model_current_floors_replay_20260731/replay_summary.json)  
 Report target: `docs/research/gan2026/six_model_current_stack_dev750_replay_2026-08-13.md`  
 Artifact target: `experiments/gan2026_six_model_current_stack_dev750_replay_20260813/`

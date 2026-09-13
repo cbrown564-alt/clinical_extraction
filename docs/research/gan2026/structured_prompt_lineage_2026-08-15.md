@@ -2,11 +2,11 @@
 
 Date: 2026-08-15
 Status: development review complete; `v0.5` remains the selected live prompt
-Trigger: ExECT structured-prompt bloat/v10 note (pruned; recover from Git history); living owner [Decision 0053](../../decisions/0053-gan-structured-events-final-prompt.md)
+Trigger: ExECT structured-prompt bloat/v10 note (pruned; recover from Git history); living owner [Decision 0053](../../history/decisions/0053-gan-structured-events-final-prompt.md)
 Selected prompt: `gan2026_hybrid_structured_events_v0.5` under
-[Decision 0043](../../decisions/0043-gan-hosted-comparison-uses-v05-prompt.md)
+[Decision 0043](../../history/decisions/0043-gan-hosted-comparison-uses-v05-prompt.md)
 Successor payload: `gan2026_hybrid_structured_events_final` under
-[Decision 0053](../../decisions/0053-gan-structured-events-final-prompt.md)
+[Decision 0053](../../history/decisions/0053-gan-structured-events-final-prompt.md)
 (envelope hygiene; not selected until a matched panel exists)
 
 ## Plain answer
@@ -47,7 +47,7 @@ It is not the selected comparison identity yet.
 The ExECT sibling found that the published EA0133 payload is 59,213
 characters: 84 rules and 49 worked examples grown in five days of
 ordinary commits. Appendix A of the
-[six-model walkthrough](../paper/six_model_single_letter_walkthrough_2026-08-15.md)
+[six-model walkthrough](../shared/six_model_single_letter_walkthrough_2026-08-15.md)
 would otherwise present that LLM condition as an annotation manual.
 
 Gan needed the same question asked of its selected prompt. Decision
@@ -164,7 +164,7 @@ worked-example list.
 
 | Add-on | Why it is accretion |
 | :--- | :--- |
-| `v0.6` overlapping-window seizure-free precedence | Written after DeepSeek Chat validation failures. Useful for that condition; not a shared task statement ([Decision 0043](../../decisions/0043-gan-hosted-comparison-uses-v05-prompt.md)). |
+| `v0.6` overlapping-window seizure-free precedence | Written after DeepSeek Chat validation failures. Useful for that condition; not a shared task statement ([Decision 0043](../../history/decisions/0043-gan-hosted-comparison-uses-v05-prompt.md)). |
 | `v0.7` countable-fact check, dated-count conservation, cluster-axis split, “no seizures since review” vs active auras, silent-reasoning line | Written after DeepSeek Reasoner validation failures. Eight extra instructions, including gold-shaped examples (`two seizures in February`, `four morning jerks since 03/2015`). |
 | `v0.8_luna_rate` | Range preservation, clinic/diary totals, cluster both-axes. Luna-versus-Luna study; not a six-model default. |
 | `v0.8_luna_current` | Short-quiet-spell → unknown, yearly rate over long quiet stretches, questionable-event abstention. Same study. |
@@ -194,7 +194,7 @@ later failure patches:
 - dated last-event extraction even when selection is seizure-free (10)
 - keep a since-anchor count in the event list (11)
 
-The [gold phrase-variant brief](../paper/gan_gold_phrase_variants_2026-08-13.md)
+The [gold phrase-variant brief](gan_gold_phrase_variants_2026-08-13.md)
 argues that normalisation and render rules do not belong in the
 prompt. Instruction 8 already lists seven gold-dialect strings. That
 is a small leak, not a 333-label inventory.

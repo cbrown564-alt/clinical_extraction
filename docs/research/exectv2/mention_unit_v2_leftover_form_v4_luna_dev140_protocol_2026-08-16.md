@@ -5,7 +5,7 @@ Status: complete; episodes **answer**, implicit period v4 **answer**, last-event
 Result: [leftover-form v4](mention_unit_v2_leftover_form_v4_luna_dev140_2026-08-16.md)  
 Prior: [leftover-form v3](mention_unit_v2_leftover_form_v3_luna_dev140_2026-08-16.md)  
 Review: [prompt fundamentals](../../history/plans/exect_prompt_fundamentals_2026-08-16.md)\
-Decision: [0055](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md)
+Decision: [0055](../../history/decisions/0055-exect-semantic-inventory-and-method-contracts.md)
 
 Fork A stays. Mention-unit v2 language stays frozen. Default encoder
 stays `landed`. Decision 0050 and `test60` are unchanged. No new

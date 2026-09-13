@@ -3,12 +3,12 @@
 Date: 2026-08-23
 Revised: 2026-08-29 (Gan rules row 0.72 after three-stage Phase D)
 Status: working results draft; not a cited table owner
-Owners: [methods](../../paper/methods.md),
-[claims](../../paper/claims.md),
+Owners: [methods](../../../publications/dissertation/notes/methods.md),
+[claims](../../../publications/dissertation/notes/claims.md),
 [Gan five-cell grid](../gan2026/gan_five_cell_grid_2026-08-22.md),
 [ExECT cell 4](../exectv2/exect_rule_select_after_llm_encode_2026-08-22.md)
-Related: [source-near find and separate encode](gan_source_near_vs_bundled_encode_2026-08-23.md),
-[find then Select vs find-and-select](exect_extract_vs_extract_and_select_2026-08-25.md),
+Related: [source-near find and separate encode](../gan2026/gan_source_near_vs_bundled_encode_2026-08-23.md),
+[find then Select vs find-and-select](../exectv2/exect_extract_vs_extract_and_select_2026-08-25.md),
 [Grok temperature 0](../gan2026/gan_grok46_temperature_0_2026-08-28.md),
 [Gemini temperature 1](../gan2026/gan_gemini37flash_temperature_1_2026-08-28.md)
 

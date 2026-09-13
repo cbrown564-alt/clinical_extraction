@@ -22,7 +22,7 @@ five-cell rules row.
 
 Program: `run_record_three_stage` in
 `src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestration/three_stage.py`;
-measurement `scripts/measure_gan_rules_only_three_stage_dev750.py`;
+measurement `scripts/benchmarks/measure_gan_rules_only_three_stage_dev750.py`;
 tests `tests/test_gan2026_three_stage.py`.
 
 ## Stage stops under the predeclared stop policy

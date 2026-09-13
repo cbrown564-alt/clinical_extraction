@@ -28,7 +28,7 @@ Gan scores one rendered seizure-frequency label per letter.
 
 The band definitions and the `unknown` / no-seizure sentinels belong to the
 Gan dataset paper and to
-[Gan clinical policy](../../canon/06_gan_clinical_policy.md). This glossary
+[Gan clinical policy](../../history/canon/06_gan_clinical_policy.md). This glossary
 does not redefine them. What counts as one correct answer on each gold is
 [what the two golds already decided](what_the_two_golds_already_decided_2026-08-17.md).
 
@@ -72,10 +72,10 @@ selected fills, holdout limits, or claim strength.
 
 ## Evidence owners
 
-- [ExECT scoring](../../canon/04_scoring.md)
-- [Gan clinical policy](../../canon/06_gan_clinical_policy.md)
-- [Paper claim status](../../canon/10_paper_provenance.md)
-- [Decision 0046](../../decisions/0046-exect-primary-method-comparison-boundary.md)
+- [ExECT scoring](../../history/canon/04_scoring.md)
+- [Gan clinical policy](../../history/canon/06_gan_clinical_policy.md)
+- [Paper claim status](../../history/canon/10_paper_provenance.md)
+- [Decision 0046](../../history/decisions/0046-exect-primary-method-comparison-boundary.md)
 
 ## Writing test
 

@@ -4,7 +4,7 @@ Revised: 2026-09-02 (rebuilt as a ladder for an MSc AI examiner:
 data first, two open costs, clinical policy plus one sentence of
 IE decomposition, questions plus results preview, short map).
 Matches `paper/draft/Extract, then decide.tex` Section I.
-Scope: [paper-story simplification](../history/decisions/paper-story-simplification.md)
+Scope: [paper-story simplification](../decisions/paper-story-simplification.md)
 
 An epilepsy clinic letter is a short narrative, about 400 words, that a specialist writes after seeing a patient. It records the patient's history, how they are doing now and what treatment is planned. For research, the most useful fact in that letter is usually how often the patient is having seizures: seizure frequency is the main measure of how well epilepsy is controlled and the usual outcome in clinical trials (Fisher et al., 2014). Epilepsy affects about 1% of the UK population (Wigglesworth et al., 2023), so these letters exist in large numbers, but the frequency is rarely recorded anywhere else in a structured form. A study that needs it must have experts read every letter by hand, which is slow and inconsistent.
 

@@ -17,7 +17,7 @@ machine-only scoring. It does not authorize human inspection of locked rows.
 ## What “Phase-C style” means here
 
 Follow the Decision 0046 Phase C **pattern** (see
-[primary-method surface protocol](../experiments/exectv2/reliability/exectv2_primary_method_comparison_surface_protocol_2026-08-01.md)):
+[primary-method surface protocol](../research/exectv2/reliability/exectv2_primary_method_comparison_surface_protocol_2026-08-01.md)):
 
 - the machine may read sealed holdout predictions and locked gold to score;
 - public `experiments/` / docs outputs must stay aggregate-only;
@@ -101,14 +101,14 @@ Hash pointer owner:
    contents.
 6. Run `scripts/build_six_model_holdout_category_aggregates.py` under the unlock
    protocol; confirm fidelity gates and
-   `scripts/check_locked_aggregate_safety.py`.
+   `scripts/checks/check_locked_aggregate_safety.py`.
 
 ## After restore: scoring gate
 
 1. Predeclare a short extension protocol (blocked-arm unlock only).
 2. Score gold buckets × sealed predictions in-process.
 3. Emit public aggregates only; keep the artifact in
-   `scripts/check_locked_aggregate_safety.py`.
+   `scripts/checks/check_locked_aggregate_safety.py`.
 4. Cross-check overall Purist / clinical-headline against existing panels
    before trusting bucket tables.
 5. Update the holdout category-aggregates report and `PROJECT_STATUS.md`.
@@ -134,6 +134,6 @@ lenses already published.
 
 - Study: [holdout category aggregates](../research/shared/six_model_holdout_category_aggregates_2026-08-06.md)
 - Unlock protocol: [blocked-arm unlock](../research/shared/six_model_holdout_category_aggregates_unlock_protocol_2026-08-06.md)
-- Pattern precedent: [Decision 0046 Phase C](../experiments/exectv2/reliability/exectv2_primary_method_comparison_surface_protocol_2026-08-01.md)
-- Safety checker: `scripts/check_locked_aggregate_safety.py`
+- Pattern precedent: [Decision 0046 Phase C](../research/exectv2/reliability/exectv2_primary_method_comparison_surface_protocol_2026-08-01.md)
+- Safety checker: `scripts/checks/check_locked_aggregate_safety.py`
 - Scratch policy: [REGENERATION.md](../REGENERATION.md), root `.gitignore` (`scratch/*`)

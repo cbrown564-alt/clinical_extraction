@@ -81,7 +81,7 @@ Below floor: report scores, omit lens.
    a_priori letter bucket.
 7. Assign x/y/z lenses; emit public aggregates; keep family lenses from the
    parent study.
-8. Pass `scripts/check_locked_aggregate_safety.py`.
+8. Pass `scripts/checks/check_locked_aggregate_safety.py`.
 
 ## Stop rule
 

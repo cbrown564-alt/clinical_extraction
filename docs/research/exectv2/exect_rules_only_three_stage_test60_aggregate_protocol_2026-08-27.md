@@ -92,7 +92,7 @@ SeizureFrequency recall **0.7973** vs rules comparator recall in the
 
 `test60` is not touched until Gate A passes on current HEAD.
 
-Re-run `scripts/measure_exect_rules_only_three_stage_dev140.py` and
+Re-run `scripts/benchmarks/measure_exect_rules_only_three_stage_dev140.py` and
 confirm:
 
 | Target | Value |
@@ -123,7 +123,7 @@ above by reference.
 
 Before citing the result:
 
-- `scripts/check_locked_aggregate_safety.py` is extended with the new
+- `scripts/checks/check_locked_aggregate_safety.py` is extended with the new
   public artifact path and must pass.
 - No letter id, note text, prediction, or failure case from `test60`
   appears in committed files or status prose.

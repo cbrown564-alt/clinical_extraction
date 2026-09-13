@@ -7,7 +7,7 @@ Report: [result](gan_rules_source_near_find_test450_2026-08-31.md)
 Parent: [find dialects](gan_rules_find_llm_dialects_protocol_2026-08-31.md)
 Frozen candidate: `phase_c_candidate_config()`
 Guardrail: `gan2026-scoring-guardrail`;
-[holdout is aggregate-only](../../paper/decisions/holdout-is-aggregate-only.md)
+[holdout is aggregate-only](../../benchmarks/holdout-is-aggregate-only.md)
 
 ## Primary question
 

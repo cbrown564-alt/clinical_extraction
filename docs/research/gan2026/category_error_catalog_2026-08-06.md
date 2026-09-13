@@ -2,7 +2,7 @@
 
 Date: 2026-08-06  
 Status: development catalog with pipeline ablation reading  
-Paper-library role: complete Gan error record; start with [failures and limits](../paper/failures_and_limits_2026-08-10.md)
+Paper-library role: complete Gan error record; start with [failures and limits](../shared/failures_and_limits_2026-08-10.md)
 
 Protocol: [gan category error catalog protocol](category_error_catalog_protocol_2026-08-06.md)  
 Parent: [category-cut performance](../shared/six_model_category_cut_performance_2026-08-06.md)  

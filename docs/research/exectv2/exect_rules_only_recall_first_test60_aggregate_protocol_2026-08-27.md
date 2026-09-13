@@ -5,7 +5,7 @@ Status: complete; Gate A and Gate B executed 2026-08-27
 Report: [replay results](exect_rules_only_recall_first_test60_aggregate_2026-08-27.md)
 Development candidate: [recall-first restructure results](exect_rules_only_recall_first_restructure_2026-08-27.md)
 Frozen config: `RECALL_FIRST_THREE_STAGE_CONFIG` in `orchestration/rules.py`
-Runner: `scripts/measure_exect_rules_only_recall_first_test60_aggregate.py`
+Runner: `scripts/benchmarks/measure_exect_rules_only_recall_first_test60_aggregate.py`
 
 ## Primary question
 
@@ -84,7 +84,7 @@ select stop must carry all precision recovery.
 
 ## Gate A — development parity (precondition)
 
-Re-run `scripts/measure_exect_rules_only_recall_first_dev140.py
+Re-run `scripts/benchmarks/measure_exect_rules_only_recall_first_dev140.py
 phase_c_candidate` on current HEAD and confirm:
 
 | Target | Value |
@@ -103,7 +103,7 @@ under `scratch/holdout/exect_rules_only_recall_first_test60_20260827/`
 artifact
 (`experiments/exect_rules_only_recall_first_test60_aggregate_20260827.json`)
 contains aggregates only: candidate stage rungs, comparator select
-scores, deltas. `scripts/check_locked_aggregate_safety.py` is extended
+scores, deltas. `scripts/checks/check_locked_aggregate_safety.py` is extended
 with the new artifact path and must pass. No letter id, note text,
 prediction, or failure case from `test60` appears in committed files.
 

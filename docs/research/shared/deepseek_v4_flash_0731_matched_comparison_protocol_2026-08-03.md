@@ -1,8 +1,8 @@
 # DeepSeek V4-Flash-0731 matched comparison protocol
 
-Date: 2026-08-03  
-Status: complete (aggregate synthesis; no new model calls)  
-Artifact: [`experiments/deepseek_v4_flash_0731_matched_comparison_20260803.json`](../../experiments/deepseek_v4_flash_0731_matched_comparison_20260803.json)  
+Date: 2026-08-03\
+Status: complete (aggregate synthesis; no new model calls)\
+Artifact: [`experiments/deepseek_v4_flash_0731_matched_comparison_20260803.json`](../../../experiments/deepseek_v4_flash_0731_matched_comparison_20260803.json)\
 Report: [matched comparison report](deepseek_v4_flash_0731_matched_comparison_report_2026-08-03.md)
 
 ## Primary question

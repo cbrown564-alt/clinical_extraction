@@ -3,7 +3,7 @@
 Date: 2026-08-15
 Status: complete; no large drop. Live `v0.5` control (sidecar absent).
 Evidence: [run](structured_prompt_final_luna_dev20_2026-08-15.md)
-Parent: [decision 0053](../../decisions/0053-gan-structured-events-final-prompt.md)
+Parent: [decision 0053](../../history/decisions/0053-gan-structured-events-final-prompt.md)
 Prompt: `gan2026_hybrid_structured_events_final`
 
 ## Primary question

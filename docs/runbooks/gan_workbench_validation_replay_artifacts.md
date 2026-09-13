@@ -11,7 +11,7 @@ replay.
 `availability === "not_retained"`.
 
 The API sets that flag when a condition fails completeness in
-`src/clinical_extraction/trace_explorer/gan2026_comparison.py`: missing
+`src/clinical_extraction/tasks/seizure_frequency/gan2026/evaluation/review_records.py`: missing
 file, wrong row count, index mismatch, or missing
 `gan2026.row_trace.v1` traces.
 
@@ -45,7 +45,7 @@ ExECT is a separate catalog, not the Gan pipeline picker.
 - Compact frontend projection:
   `frontend/public/mock-data/exectv2/runs.json`
 - Builder:
-  `python scripts/build_trace_explorer_exectv2_comparison.py`
+  `python scripts/benchmarks/build_trace_explorer_exectv2_comparison.py`
 
 The catalog is 12 model cells (six models × `llm_with_rules` / `llm`)
 plus live `rules`. DeepSeek in this July 15 package is the pre-0731
@@ -55,7 +55,7 @@ cell. Holdout ExECT stays under `scratch/holdout/` and
 Rebuild the projection only after the source package changes:
 
 ```powershell
-.venv\Scripts\python.exe scripts/build_trace_explorer_exectv2_comparison.py
+.venv\Scripts\python.exe scripts/benchmarks/build_trace_explorer_exectv2_comparison.py
 ```
 
 ## Check

@@ -6,7 +6,7 @@ Paper-library role: detailed case record; use the [row-evidence workbook](../art
 
 Protocol: [examples protocol](six_model_hard_slice_error_mode_examples_protocol_2026-08-06.md)  
 Parent: [hard-slice error modes](six_model_hard_slice_error_modes_2026-08-06.md)  
-Artifact: [`experiments/six_model_hard_slice_error_mode_examples_20260806.json`](../../experiments/six_model_hard_slice_error_mode_examples_20260806.json)
+Artifact: [`experiments/six_model_hard_slice_error_mode_examples_20260806.json`](../../../experiments/six_model_hard_slice_error_mode_examples_20260806.json)
 
 ## How to read this
 

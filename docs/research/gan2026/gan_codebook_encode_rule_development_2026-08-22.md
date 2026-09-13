@@ -220,7 +220,7 @@ Run from the repository environment:
 
 ```bash
 source .venv/bin/activate
-python scripts/analyze_gan_codebook_encode_rules_dev750.py
+python scripts/benchmarks/analyze_gan_codebook_encode_rules_dev750.py
 ```
 
 Artifacts:

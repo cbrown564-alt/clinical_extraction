@@ -19,7 +19,7 @@ family?
 The [family error catalog](family_error_catalog_2026-08-06.md) treats
 family rules as one blob between `raw_lane_mentions` and
 `predicted_mentions`. Architecture manifests name ordered clinical stages with
-asymmetric family ownership ([Decision 0040](../../decisions/0040-final-exect-llm-with-rules-family-ownership.md)).
+asymmetric family ownership ([Decision 0040](../../history/decisions/0040-final-exect-llm-with-rules-family-ownership.md)).
 Without a band + first-changer reading under **true ordered replay**, hybrid
 talk cannot say which stages earn their keep, which create Prescription harm,
 or whether Seizure Frequency credit belongs to projection/suppression rather
@@ -31,7 +31,7 @@ than the thin SF lens.
 | --- | --- |
 | Split | ExECT `dev140`; development inspection permitted |
 | Surface | `llm_with_rules` only (six retained single-call structured + SF sidecars) |
-| Policy | `StructuredMethodConfig.selected()`: Diagnosis/Prescription `default` / `default`, SF projection ablation `combined` ([0045](../../decisions/0045-exect-default-policy-not-joint-combined.md)) |
+| Policy | `StructuredMethodConfig.selected()`: Diagnosis/Prescription `default` / `default`, SF projection ablation `combined` ([0045](../../history/decisions/0045-exect-default-policy-not-joint-combined.md)) |
 | Baseline | earliest replayable saved model surface: `*_structured.jsonl` `structured_events` (or re-parse saved `raw_output` when needed for fidelity), **not** the post-lens `predicted_mentions` |
 | Replay mode | **true ordered no-call replay** through current deterministic functions; not provenance reconstruction alone |
 | Bands | post-flatten → producer gate → SF clinical → Diagnosis lens → Prescription lens → Investigations lens → evidence gate |

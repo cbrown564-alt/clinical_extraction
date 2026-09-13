@@ -4,7 +4,7 @@ Date: 2026-08-28
 Revised: 2026-08-29 (`last_event_well_since` promoted)
 Status: completed
 Protocol: [cell-3 codebook roster replay protocol](gan_cell3_codebook_roster_replay_protocol_2026-08-28.md)
-Decision: [six-model roster](../../paper/decisions/six-model-roster.md)
+Decision: [six-model roster](../../../publications/dissertation/notes/decisions/six-model-roster.md)
 Artifact: `paper_experiments/gan/rungs/{slug}/{split}/comparison.json`
 
 ## Question

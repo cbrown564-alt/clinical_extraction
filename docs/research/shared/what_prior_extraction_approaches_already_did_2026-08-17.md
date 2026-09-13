@@ -119,7 +119,7 @@ that this implementation is the method those reviews imagined.
 
 This source belongs to the literature lane. Project scores, stage
 replays, and component harms stay with the task stories and
-[paper claim status](../../canon/10_paper_provenance.md).
+[paper claim status](../../history/canon/10_paper_provenance.md).
 
 The project-lane account of the proposed method is
 [why the proposed method is a model plus recorded rules](why_hybrid_architecture_2026-08-09.md).

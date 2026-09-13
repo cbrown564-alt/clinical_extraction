@@ -3,11 +3,11 @@
 Date: 2026-08-06
 Correction: within-family categories adopted 2026-08-08
 Status: development catalog with subtype and pipeline ablation reading
-Paper-library role: complete ExECT error record; start with [failures and limits](../paper/failures_and_limits_2026-08-10.md)
+Paper-library role: complete ExECT error record; start with [failures and limits](../shared/failures_and_limits_2026-08-10.md)
 Protocol: [exect family error catalog protocol](family_error_catalog_protocol_2026-08-06.md)
 Parent: [category-cut performance](../shared/six_model_category_cut_performance_2026-08-06.md)
 Companions: [task-shape framework](../shared/task_shape_framework_2026-08-06.md), [hard-slice modes](../shared/six_model_hard_slice_error_modes_2026-08-06.md), [Gan error catalog](../gan2026/category_error_catalog_2026-08-06.md)
-Artifact: [`experiments/exectv2_family_error_catalog_20260806.json`](../../experiments/exectv2_family_error_catalog_20260806.json)
+Artifact: [`experiments/exectv2_family_error_catalog_20260806.json`](../../../experiments/exectv2_family_error_catalog_20260806.json)
 
 ## Plain answer
 
@@ -364,7 +364,7 @@ Same letter-exact modes on both surfaces for this roster (rules are a no-op here
 
 | Need | Where |
 | --- | --- |
-| Per-model subtype exact rates and mode counts | JSON `within_family_surfaces.*.families.*.*.models` in [`exectv2_family_error_catalog_20260806.json`](../../experiments/exectv2_family_error_catalog_20260806.json) |
+| Per-model subtype exact rates and mode counts | JSON `within_family_surfaces.*.families.*.*.models` in [`exectv2_family_error_catalog_20260806.json`](../../../experiments/exectv2_family_error_catalog_20260806.json) |
 | Up to two examples per subtype × imperfect mode × surface | JSON `within_family_surfaces.*...examples_by_mode` |
 | SF floor token lens and rescue context | [hard-slice error modes](../shared/six_model_hard_slice_error_modes_2026-08-06.md) |
 | Family F1 competence (x/y/z) | [category-cut](../shared/six_model_category_cut_performance_2026-08-06.md) |

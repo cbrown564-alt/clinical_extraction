@@ -3,8 +3,8 @@
 Date: 2026-08-22
 Status: development extracts complete; holdout medium/high extracts started, aggregate-only
 Owner: this file
-Related: [methods](../../paper/methods.md),
-[six-model roster](../../paper/decisions/six-model-roster.md)
+Related: [methods](../../../publications/dissertation/notes/methods.md),
+[six-model roster](../../../publications/dissertation/notes/decisions/six-model-roster.md)
 
 ## Question
 

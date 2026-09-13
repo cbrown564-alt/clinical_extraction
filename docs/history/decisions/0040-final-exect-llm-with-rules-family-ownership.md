@@ -119,10 +119,10 @@ comparison scorer and must disclose its entity-agnostic recall behavior.
 
 Evidence owners:
 
-- [Diagnosis component comparison](../../experiments/exectv2/diagnosis/exectv2_diagnosis_component_comparison_2026-07-14.md)
-- [LLM-with-rules component audit](../../experiments/exectv2/reliability/exectv2_llm_with_rules_component_audit_2026-07-14.md)
-- [Bounded Prescription policy result](../../experiments/exectv2/reliability/exectv2_prescription_bounded_policy_candidate_2026-07-15.md)
+- [Diagnosis component comparison](../../research/exectv2/diagnosis/exectv2_diagnosis_component_comparison_2026-07-14.md)
+- [LLM-with-rules component audit](../../research/exectv2/reliability/exectv2_llm_with_rules_component_audit_2026-07-14.md)
+- [Bounded Prescription policy result](../../research/exectv2/reliability/exectv2_prescription_bounded_policy_candidate_2026-07-15.md)
 - Archived Diagnosis-guard and joint-policy readouts: recover from Git
   history; living owner is
   [decision 0045](0045-exect-default-policy-not-joint-combined.md)
-- [GPT-4.1-mini single-call Diagnosis ablation](../../experiments/exectv2/diagnosis/exectv2_gpt41mini_single_call_diagnosis_ablation_2026-07-15.md)
+- [GPT-4.1-mini single-call Diagnosis ablation](../../research/exectv2/diagnosis/exectv2_gpt41mini_single_call_diagnosis_ablation_2026-07-15.md)

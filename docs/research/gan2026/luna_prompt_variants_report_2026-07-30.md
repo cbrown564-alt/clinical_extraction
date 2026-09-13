@@ -40,10 +40,10 @@ Splits:
   failures.
 
 Owners:
-[dev750 protocol](../../experiments/gan2026/gan2026_luna_prompt_variants_dev750_protocol_2026-07-30.md),
-[dev750 panel](../../experiments/gan2026/gan2026_luna_prompt_variants_dev750_2026-07-30.md),
-[test450 protocol](../../experiments/gan2026/gan2026_luna_prompt_variants_test450_protocol_2026-07-30.md),
-[test450 panel](../../experiments/gan2026/gan2026_luna_prompt_variants_test450_2026-07-30.md).
+[dev750 protocol](gan2026_luna_prompt_variants_dev750_protocol_2026-07-30.md),
+[dev750 panel](gan2026_luna_prompt_variants_dev750_2026-07-30.md),
+[test450 protocol](gan2026_luna_prompt_variants_test450_protocol_2026-07-30.md),
+[test450 panel](gan2026_luna_prompt_variants_test450_2026-07-30.md).
 
 ## Results
 

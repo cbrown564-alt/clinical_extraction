@@ -89,7 +89,7 @@ unchanged. Seizure frequency remains the rules-only holdout floor.
 
 Owners:
 [`dev140` JSON](../../experiments/exectv2_rules_only_four_family_clinical_headline_dev140_20260815.json),
-[`test60` JSON](../../experiments/exectv2_rules_only_four_family_clinical_headline_test60_20260815.json).
+[`test60` JSON](../../../experiments/exectv2_rules_only_four_family_clinical_headline_test60_20260815.json).
 
 ## Claim boundary
 

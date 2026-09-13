@@ -116,9 +116,9 @@ That distinction keeps the paper's language precise:
 This source belongs to the literature evidence lane. It motivates requirements;
 it does not show that the project satisfies them. Project implementation and
 measured behaviour remain with the
-[system architecture](../../canon/01_system_architecture.md),
-[cross-task reliability owner](../../canon/09_cross_task_reliability.md), and
-[paper claim status](../../canon/10_paper_provenance.md).
+[system architecture](../../history/canon/01_system_architecture.md),
+[cross-task reliability owner](../../history/canon/09_cross_task_reliability.md), and
+[paper claim status](../../history/canon/10_paper_provenance.md).
 
 ## Writing test
 

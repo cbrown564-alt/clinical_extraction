@@ -2,7 +2,7 @@
 
 Date: 2026-09-02
 Status: proposal archive. Current decisions live in
-[paper-story simplification](../../paper/decisions/paper-story-simplification.md).
+[paper-story simplification](../../../publications/dissertation/notes/decisions/paper-story-simplification.md).
 Do not treat this file as the claim or results owner.
 Draft under discussion: `paper/draft/FES.tex` (10 pages compiled: title,
 declaration, 8-page body; 5,100 body words, 8 tables, 5 figures).

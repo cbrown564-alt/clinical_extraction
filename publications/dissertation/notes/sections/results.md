@@ -10,9 +10,9 @@ section D keeps three codebook prompt ablations; inventory panel moves
 to supporting material)
 Status: structured draft matching `paper/draft/Extract, then decide.tex`
 Owner: this file
-Scope: [Gan is the dissertation paper](../history/decisions/gan-is-the-dissertation-paper.md),
-[paper-story simplification](../history/decisions/paper-story-simplification.md)
-Feasibility: [100-letter descriptive study](../../research/gan2026/gan_inventory_feasibility_dev750_n100_2026-08-28.md)
+Scope: [Gan is the dissertation paper](../decisions/gan-is-the-dissertation-paper.md),
+[paper-story simplification](../decisions/paper-story-simplification.md)
+Feasibility: [100-letter descriptive study](../../../../docs/research/gan2026/gan_inventory_feasibility_dev750_n100_2026-08-28.md)
 
 Paper stage names are **extract** (one LLM call; implementation
 `find` with the codebook prompt, which already writes the gold form,
@@ -67,7 +67,7 @@ prompt on the same record (383/450 Purist, 391/450 Pragmatic).
 Sources:
 `paper_experiments/gan/rungs/gemini37flash/test450/comparison.json`,
 `paper_experiments/gan/five_cell_grid/gemini37flash/test450/comparison.json`,
-[the `test450` class report](../../research/gan2026/gan_test450_classification_report_2026-08-28.md).
+[the `test450` class report](../../../../docs/research/gan2026/gan_test450_classification_report_2026-08-28.md).
 
 The provisional answer is the extraction call's own pick and is what
 a one-prompt system would submit. Rules add +0.07 (32 letters) and the
@@ -75,7 +75,7 @@ second call adds +0.06 (28 letters) on the same record. The two
 executors differ on 28 letters (rules correct on 16, the second call
 on 12). Paired exact McNemar on that pair: Δ+0.009, 95% CI −0.014 to
 0.032, *p* = 0.57, compatible with no difference. Owner:
-[paired `test450` tests](../../research/gan2026/gan_paired_significance_test450_2026-08-29.md).
+[paired `test450` tests](../../../../docs/research/gan2026/gan_paired_significance_test450_2026-08-29.md).
 
 The comparison with the previously reported fine-tuned benchmark
 (Gan et al. Synthetic 1,166: Purist 0.81, Pragmatic 0.85) is bounded:
@@ -94,9 +94,9 @@ find with rule encode and select is 0.82 (368). The same extract
 without the second rule encode (`llm_select_only`) is 0.85 (382),
 five below Hybrid. Cell 3 versus rules throughout: 99 vs 37
 discordant, Δ+0.138, 95% CI 0.089 to 0.187, *p* = 1.0×10⁻⁷. Owner:
-[five-cell grid](../../research/gan2026/gan_five_cell_grid_2026-08-22.md).
+[five-cell grid](../../../../docs/research/gan2026/gan_five_cell_grid_2026-08-22.md).
 Per
-[paper-story simplification](../history/decisions/paper-story-simplification.md),
+[paper-story simplification](../decisions/paper-story-simplification.md),
 Rules-only leaves the dissertation and supporting materials; the
 rows stay valid as research history.
 
@@ -112,7 +112,7 @@ with no extract answer-or-evidence hit are **1** (Hybrid) and **0**
 (LLM-only). So residual final errors are mostly interpretation and
 label convention on an already-rich record, not missed detection.
 Owner and replay:
-[extract content recall](../../research/gan2026/gan_extract_content_recall_2026-09-03.md),
+[extract content recall](../../../../docs/research/gan2026/gan_extract_content_recall_2026-09-03.md),
 `python scripts/measure_gan_extract_content_recall.py`
 (zero model calls; holdout aggregate-only).
 
@@ -120,7 +120,7 @@ Hybrid submitted 387/450 cited Purist-correct labels. Residual errors
 were not spread evenly across frequency bands. Table 2 is the living
 per-class reading for Hybrid; the LLM-only companion is Table 2c.
 Gold and predicted ε only; no letter text and no row ids. Source:
-[the `test450` class report](../../research/gan2026/gan_test450_classification_report_2026-08-28.md).
+[the `test450` class report](../../../../docs/research/gan2026/gan_test450_classification_report_2026-08-28.md).
 Hybrid class scores use the same 387/450 living replay as Table 1.
 
 The harder bins are Unknown, Seizure free, and
@@ -138,8 +138,8 @@ On Hybrid, 37 of 54 errors are incorrect `unknown` answers
 unknown 8). The paper keeps one confusion figure (Pragmatic) and this
 compact reading; the detailed residual taxonomy stays in supporting
 material. Owner:
-[gold → unknown](../../research/gan2026/gan_pragmatic_unknown_error_mode_2026-08-29.md),
-[rate → unknown](../../research/gan2026/gan_pragmatic_infrequent_error_mode_2026-08-29.md).
+[gold → unknown](../../../../docs/research/gan2026/gan_pragmatic_unknown_error_mode_2026-08-29.md),
+[rate → unknown](../../../../docs/research/gan2026/gan_pragmatic_infrequent_error_mode_2026-08-29.md).
 
 Development case review explains the hard categories: competing
 temporal readings, cluster structure, and uncertainty that cannot be
@@ -268,9 +268,9 @@ codebook ledger scored encode **0.78 → 0.69** (89 harm, 21 rescue;
 748 parsed letters) and both select paths at **0.79** (select after
 encode 592; select from extract 590). That study is why the LLM row
 skips the extra encode call. Owners:
-[later-stage encode/select decision](../history/decisions/gan-later-stage-encode-select-prompts.md),
-[encode on codebook extract](../../research/gan2026/gan_encode_on_codebook_extract_2026-08-22.md),
-[select-from-extract](../../research/gan2026/gan_select_from_extract_2026-08-22.md).
+[later-stage encode/select decision](../decisions/gan-later-stage-encode-select-prompts.md),
+[encode on codebook extract](../../../../docs/research/gan2026/gan_encode_on_codebook_extract_2026-08-22.md),
+[select-from-extract](../../../../docs/research/gan2026/gan_select_from_extract_2026-08-22.md).
 
 This is not the five-cell historical selected-evidence encoder
 (Gemini encode 346 / select 362). That remains a different ablation.
@@ -332,10 +332,10 @@ three-step ask with the event schema scores 277 / 288 / 292 on
 `holgate_dialect_v1`. The same ask with one answer field, and no
 schema or quote rule, scores 198 at find on that dialect map.
 There is no ledger to encode or select. Owner:
-[prompt-component ablation](../../research/gan2026/gan_extract_prompt_component_ablation_2026-08-30.md),
-[round 2](../../research/gan2026/gan_extract_prompt_component_ablation_round2_2026-08-30.md),
-[combined ablation protocol](../../research/gan2026/gan_extract_prompt_component_ablation_combined_protocol_2026-09-03.md),
-[source-near vs bundled encode](../../research/gan2026/gan_source_near_vs_bundled_encode_2026-08-23.md).
+[prompt-component ablation](../../../../docs/research/gan2026/gan_extract_prompt_component_ablation_2026-08-30.md),
+[round 2](../../../../docs/research/gan2026/gan_extract_prompt_component_ablation_round2_2026-08-30.md),
+[combined ablation protocol](../../../../docs/research/gan2026/gan_extract_prompt_component_ablation_combined_protocol_2026-09-03.md),
+[source-near vs bundled encode](../../../../docs/research/gan2026/gan_source_near_vs_bundled_encode_2026-08-23.md).
 
 | Find request | Provisional / find | Encode | Final / select |
 | --- | ---: | ---: | ---: |
@@ -405,7 +405,7 @@ rule select.
 **Table 3.** Gemini 3.7 Flash Purist temperature ablation on the
 living cell-3 stack. Temperature 0 select is the living codebook
 replay (387/450), the same total as Table 1. Source:
-[Gemini temperature 1](../../research/gan2026/gan_gemini37flash_temperature_1_2026-08-28.md)
+[Gemini temperature 1](../../../../docs/research/gan2026/gan_gemini37flash_temperature_1_2026-08-28.md)
 and the living paired-test replay.
 
 Holdout select was 0.860 at temperature 0 against 0.842 at
@@ -485,7 +485,7 @@ result shows that the design can execute
 on a single laptop GPU under the same synthetic task conditions, not
 real-letter performance, clinical
 validity, workflow fit, privacy compliance, or deployment readiness
-([paper-story simplification](../history/decisions/paper-story-simplification.md),
+([paper-story simplification](../decisions/paper-story-simplification.md),
 Decision 6).
 
 ## F2. Rule select without encode separates encode from decide *(repository)*
@@ -514,8 +514,8 @@ no-call `llm_select_only` on each promoted `gan_llm_extract` ledger
 (Hybrid − select-only) is +0.011 / +0.015 / +0.047 / +0.018 / +0.022 /
 +0.022. Holding encode off, rule select and LLM select differ by
 −0.002 / −0.002 / −0.002 / +0.035 / +0.087 / +0.084. Owners:
-[select-only roster](../../research/gan2026/gan_select_only_roster_test450_2026-09-03.md),
-[protocol](../../research/gan2026/gan_select_only_roster_test450_protocol_2026-09-03.md).
+[select-only roster](../../../../docs/research/gan2026/gan_select_only_roster_test450_2026-09-03.md),
+[protocol](../../../../docs/research/gan2026/gan_select_only_roster_test450_protocol_2026-09-03.md).
 Do not retune Table 1 or Table 4. Not a paper row.
 
 ## H. Same-model policy-example select on holdout *(repository transfer row)*
@@ -549,10 +549,10 @@ the Purist stop versus find (+11, +23, +23, and +28). Qwen and Gemma
 moved off Vercel AI Gateway. Gemini is the cited later-stage model;
 its row is the promoted same-model select cell (383/450), not a roster
 replacement. Owners:
-[hosted protocol](../../research/gan2026/gan_llm_select_policy_examples_hosted_test450_protocol_2026-09-03.md),
-[hosted report](../../research/gan2026/gan_llm_select_policy_examples_hosted_test450_2026-09-03.md),
-[local protocol](../../research/gan2026/gan_llm_select_policy_examples_local_test450_protocol_2026-09-02.md),
-[local report](../../research/gan2026/gan_llm_select_policy_examples_local_test450_2026-09-03.md).
+[hosted protocol](../../../../docs/research/gan2026/gan_llm_select_policy_examples_hosted_test450_protocol_2026-09-03.md),
+[hosted report](../../../../docs/research/gan2026/gan_llm_select_policy_examples_hosted_test450_2026-09-03.md),
+[local protocol](../../../../docs/research/gan2026/gan_llm_select_policy_examples_local_test450_protocol_2026-09-02.md),
+[local report](../../../../docs/research/gan2026/gan_llm_select_policy_examples_local_test450_2026-09-03.md).
 Work cells:
 `scratch/holdout/paper/gan_llm_select_from_extract/{slug}/gan_llm_extract/test450/`.
 Do not inspect holdout rows. Do not retune Table 1 or Table 4 from
@@ -565,7 +565,7 @@ micro-F1, and configuration.
 ## G. The same letters support a broader clinical inventory, descriptively (supporting material)
 
 Per
-[paper-story simplification](../history/decisions/paper-story-simplification.md),
+[paper-story simplification](../decisions/paper-story-simplification.md),
 this panel is descriptive only and sits in the supporting materials,
 not the main paper. The Gan gold is one current seizure-frequency
 state. The same synthetic letters also mention diagnoses, medicines,
@@ -647,7 +647,7 @@ the LLM-only class table (Table 2c), the descriptive inventory panel
 (section G), the residual taxonomy, hardware and API settings, and
 the directional evidence protocol summary. The cited extraction
 request is
-[`gan_llm_extract_prompt_template.json`](<../../../publications/dissertation/supporting materials/gan_llm_extract_prompt_template.json>).
+[`gan_llm_extract_prompt_template.json`](<../../supporting materials/gan_llm_extract_prompt_template.json>).
 Rules-only rows (Table 2a and the five-cell rules row) are
 repository history only. ExECT locked totals are later-paper
 evidence, not dissertation tables.

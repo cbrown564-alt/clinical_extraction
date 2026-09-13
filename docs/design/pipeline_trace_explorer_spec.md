@@ -86,7 +86,7 @@ The explorer is subordinate to these owners:
   owns the selected one-call ExECT graph.
 - [`evidence_groundedness_metric.md`](../reference/evidence_groundedness_metric.md)
   owns evidence grades.
-- [`exectv2_semantic_support_review_substrate_protocol_2026-07-18.md`](../experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md)
+- [`exectv2_semantic_support_review_substrate_protocol_2026-07-18.md`](../research/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md)
   owns the 48-item sample, review question, required fields, and claim boundary.
 
 The UI must use the score and evidence names from these documents. It must not

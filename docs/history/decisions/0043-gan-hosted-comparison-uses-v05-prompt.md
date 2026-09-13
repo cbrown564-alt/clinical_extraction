@@ -115,7 +115,7 @@ Until that panel is complete:
 
 Evidence owners:
 
-- [Gan results and holdout rules](../../canon/06_gan_clinical_policy.md)
-- [Matched v0.5 hosted protocol](../../experiments/gan2026/gan2026_matched_v05_test450_protocol_2026-07-16.md)
-- [Matched v0.5 local extension](../../experiments/gan2026/gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md)
-- [Retained evidence manifest](../../experiments/retained_evidence_manifest.md)
+- [Gan results and holdout rules](../canon/06_gan_clinical_policy.md)
+- [Matched v0.5 hosted protocol](../../research/gan2026/gan2026_matched_v05_test450_protocol_2026-07-16.md)
+- [Matched v0.5 local extension](../../research/gan2026/gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md)
+- [Retained evidence manifest](../../research/shared/retained_evidence_manifest.md)

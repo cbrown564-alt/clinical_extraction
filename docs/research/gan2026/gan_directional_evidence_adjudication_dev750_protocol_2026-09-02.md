@@ -1,10 +1,10 @@
 # Protocol: directional source exactness and semantic-support adjudication on Gan `dev750`
 
-Date: 2026-09-02  
-Status: development-first protocol drafted; adjudication not started  
-Owner: this file  
-Paper decision: [paper-story simplification](../../paper/decisions/paper-story-simplification.md)  
-Prompt: [model-facing adjudication prompt](gan_directional_evidence_adjudication_prompt_2026-09-02.json)  
+Date: 2026-09-02\
+Status: development-first protocol drafted; adjudication not started\
+Owner: this file\
+Paper decision: [paper-story simplification](../../../publications/dissertation/notes/decisions/paper-story-simplification.md)\
+Prompt: [model-facing adjudication prompt](gan_directional_evidence_adjudication_prompt_2026-09-02.json)\
 Rendered example: [rendered prompt example](gan_directional_evidence_adjudication_rendered_example_2026-09-02.md)
 
 ## Primary question

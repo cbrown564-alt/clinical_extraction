@@ -5,7 +5,7 @@ paper provenance and the six-model comparison.
 
 Date: 2026-08-03  
 Protocol: [matched comparison protocol](deepseek_v4_flash_0731_matched_comparison_protocol_2026-08-03.md)  
-Artifact: [`experiments/deepseek_v4_flash_0731_matched_comparison_20260803.json`](../../experiments/deepseek_v4_flash_0731_matched_comparison_20260803.json)
+Artifact: [`experiments/deepseek_v4_flash_0731_matched_comparison_20260803.json`](../../../experiments/deepseek_v4_flash_0731_matched_comparison_20260803.json)
 
 ## Finding
 
@@ -16,7 +16,7 @@ improves both ExECT arms by about **+0.02 clinical fact F1** on `dev140` and
 matched pre-0731 prior; the 0731 cell is **332/450** Purist.
 
 This is provider-update evidence. The 0731 holdout figures are folded into
-[`experiments/six_model_final_panel_20260803/`](../../experiments/six_model_final_panel_20260803/panel_aggregate.json),
+[`experiments/six_model_final_panel_20260803/`](../../../experiments/six_model_final_panel_20260803/panel_aggregate.json),
 which the [six-model comparison report](six_model_comparison_report_2026-07-18.md)
 cites as the final results. Decision 0046 Sol method-row fills remain the paper
 ExECT method identity.
@@ -126,7 +126,7 @@ This cell is also the DeepSeek row in the 2026-08-01 six-model llm_only
 | Gan 0731 live roots | `scratch/holdout/gan2026_test450_deepseek_v4_flash_0731_20260731/` |
 | ExECT 0731 `test60` root | `scratch/holdout/exectv2_test60_deepseek_v4_flash_0731_20260731/` |
 | Charts | `docs/research/assets/deepseek_v4_flash_0731_comparison_2026-08-03/` |
-| Chart script | `scripts/render_deepseek_v4_flash_0731_comparison_charts.py` |
+| Chart script | `scripts/publications/render_deepseek_v4_flash_0731_comparison_charts.py` |
 | Parent six-model synthesis | [six-model comparison report](six_model_comparison_report_2026-07-18.md) |
 
 ## Decision

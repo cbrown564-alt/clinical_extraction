@@ -48,9 +48,9 @@ The same six models were evaluated with the fixed ExECTv2 and Gan pipelines:
 GPT-4.1-mini, GPT-5.6 Luna, GPT-5.6 Sol, DeepSeek V4 Flash, Qwen 3.6:35B, and
 Gemma 4 26B. Primary ranking uses final LLM-with-rules results on locked
 holdout
-([decision 0050](../../decisions/0050-current-stack-hybrid-primary-fills.md);
+([decision 0050](../../history/decisions/0050-current-stack-hybrid-primary-fills.md);
 historical 3 Aug snapshot:
-[final panel](../../experiments/six_model_final_panel_20260803/panel_aggregate.json)).
+[final panel](../../../experiments/six_model_final_panel_20260803/panel_aggregate.json)).
 
 | Model | ExECT test60 | Gan test450 |
 | --- | ---: | ---: |
@@ -63,11 +63,11 @@ historical 3 Aug snapshot:
 | GPT-4.1-mini | 0.77 | 0.83 |
 
 Primary hybrid ranking is the 14 Aug current-stack no-call remasure
-([decision 0050](../../decisions/0050-current-stack-hybrid-primary-fills.md);
-[living fills](../../experiments/current_stack/latest/fills.json)).
+([decision 0050](../../history/decisions/0050-current-stack-hybrid-primary-fills.md);
+[living fills](../../../experiments/current_stack/latest/fills.json)).
 DeepSeek uses the selected 0731 raws (ExECT 0.8292, Gan 366/450). Sol remains
 the Decision 0046 method-identity row. Gemini is the living six-model slot
-([decision 0052](../../decisions/0052-gemini-37-flash-holdout-six-model-slot.md));
+([decision 0052](../../history/decisions/0052-gemini-37-flash-holdout-six-model-slot.md));
 GPT-4.1-mini is historical 0039.
 Absolute gaps are modest (ExECT about `0.74`–`0.85`; Gan Purist about
 `0.80`–`0.84`). External Artificial Analysis context aligns with a compressed
@@ -89,7 +89,7 @@ among the six; Luna and DeepSeek sit close on Healthcare.
 
 These AA scores are not ExECT or Gan results. AA “max” / reasoning variants are
 not asserted to match the project’s extraction settings. Source:
-[`experiments/six_model_external_capability_cost_snapshot_20260731.json`](../../experiments/six_model_external_capability_cost_snapshot_20260731.json).
+[`experiments/six_model_external_capability_cost_snapshot_20260731.json`](../../../experiments/six_model_external_capability_cost_snapshot_20260731.json).
 
 ## 2. DeepSeek 0731: a better model lifts both tasks
 
@@ -377,7 +377,7 @@ flowchart TD
 Each model uses the same data, prompt, processing steps, and score as the other
 models within a task. Scores from the two tasks are not combined. Diagnosis /
 Prescription policy is **`default` / `default`**
-([decision 0045](../../decisions/0045-exect-default-policy-not-joint-combined.md)).
+([decision 0045](../../history/decisions/0045-exect-default-policy-not-joint-combined.md)).
 Qwen and Gemma use the same prompt and method as the hosted models, but run
 locally.
 
@@ -488,24 +488,24 @@ Owners: [Gan `dev750`](../gan2026/six_model_current_stack_dev750_replay_2026-08-
 ## Sources and technical detail
 
 - [Current-stack primary panel](../../experiments/six_model_current_stack_primary_panel_20260813/panel_aggregate.json)
-- [Historical 3 Aug six-model panel](../../experiments/six_model_final_panel_20260803/panel_aggregate.json)
+- [Historical 3 Aug six-model panel](../../../experiments/six_model_final_panel_20260803/panel_aggregate.json)
 - [2026-08-13 current-stack Gan `dev750` hybrid replay](../gan2026/six_model_current_stack_dev750_replay_2026-08-13.md)
 - [2026-08-13 current-stack remaining-cell replay](six_model_current_stack_remaining_cells_replay_2026-08-13.md)
-- [Project status](../../PROJECT_STATUS.md)
-- [Paper claim status](../../canon/10_paper_provenance.md)
-- [CONTEXT.md glossary](../../CONTEXT.md)
-- [Plain-language glossary](../reference/plain_language_glossary.md)
-- [Decision 0048](../../decisions/0048-comprehension-and-handoff-refactor.md)
-- [Retained evidence index](../../experiments/retained_evidence_manifest.md)
+- [Project status](../../../PROJECT_STATUS.md)
+- [Paper claim status](../../history/canon/10_paper_provenance.md)
+- [CONTEXT.md glossary](../../../CONTEXT.md)
+- [Plain-language glossary](../../reference/plain_language_glossary.md)
+- [Decision 0048](../../history/decisions/0048-comprehension-and-handoff-refactor.md)
+- [Retained evidence index](retained_evidence_manifest.md)
 - [Shared reliability report](reliability_scorecard_2026-07-18.md)
-- [Reliability framework](../design/reliability_evaluation_framework.md)
-- [External AA capability/cost snapshot](../../experiments/six_model_external_capability_cost_snapshot_20260731.json)
+- [Reliability framework](../../design/reliability_evaluation_framework.md)
+- [External AA capability/cost snapshot](../../../experiments/six_model_external_capability_cost_snapshot_20260731.json)
 - [Artificial Analysis Healthcare & Medical Index](https://artificialanalysis.ai/models/capabilities/healthcare-and-medical)
 - [Why the error floor persists](why_the_error_floor_persists_2026-07-31.md)
 - [DeepSeek V4-Flash-0731 matched comparison](deepseek_v4_flash_0731_matched_comparison_report_2026-08-03.md)
   (provider-update study; values already folded into the final panel)
-- [ExECT SF reliability protocol](../../experiments/exectv2/reliability/exectv2_six_model_sf_overinference_protocol_2026-07-18.md)
-- [ExECT SF reliability result](../../experiments/exectv2/reliability/exectv2_six_model_sf_overinference_2026-07-18.md)
+- [ExECT SF reliability protocol](../exectv2/reliability/exectv2_six_model_sf_overinference_protocol_2026-07-18.md)
+- [ExECT SF reliability result](../exectv2/reliability/exectv2_six_model_sf_overinference_2026-07-18.md)
 - [Open mechanism questions A–C protocol](six_model_open_mechanism_questions_abc_protocol_2026-08-03.md)
 - [Open mechanism questions A–C artifact](../../experiments/six_model_open_mechanism_questions_abc_20260803.json)
 - Current-stack remasure / panel / charts: `python scripts/run_current_stack.py all`

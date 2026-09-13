@@ -2,8 +2,8 @@
 
 Date: 2026-08-15
 Status: complete
-Protocol: recovered from git history; living owner is [Decision 0053](../../decisions/0053-gan-structured-events-final-prompt.md).
-Decision: [0053](../../decisions/0053-gan-structured-events-final-prompt.md)
+Protocol: recovered from git history; living owner is [Decision 0053](../../history/decisions/0053-gan-structured-events-final-prompt.md).
+Decision: [0053](../../history/decisions/0053-gan-structured-events-final-prompt.md)
 Model: `openai/gpt-5.6-luna`
 Sample: all 750 Gan `dev750` rows; `test450` not touched
 

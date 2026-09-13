@@ -12,8 +12,8 @@ select) on both Gan and ExECT. Gan cell-3 find is
 peak. Cell 4 (LLM encode then rule select) stays
 Gemini-only. All five ExECT rows use 4-family micro F1.
 
-Claim wording: [`docs/paper/claims.md`](../../docs/paper/claims.md).
-Methods: [`docs/paper/methods.md`](../../docs/paper/methods.md).
+Claim wording: [`docs/paper/claims.md`](../../publications/dissertation/notes/claims.md).
+Methods: [`docs/paper/methods.md`](../../publications/dissertation/notes/methods.md).
 Roster: [`roster.json`](roster.json). Inventory: [`inventory.json`](inventory.json).
 
 ## Cited cells

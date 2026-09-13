@@ -3,7 +3,7 @@
 Date: 2026-08-25
 Status: development plus holdout aggregate; not a cited five-cell replacement
 Owner: this file
-Paper reading: [recognise then Select vs recognise-and-select](../paper/exect_extract_vs_extract_and_select_2026-08-25.md)
+Paper reading: [recognise then Select vs recognise-and-select](exect_extract_vs_extract_and_select_2026-08-25.md)
 Split: Gemini `dev140` (review permitted) and Gemini `test60` (aggregate only).
 Holdout rows were not inspected.
 

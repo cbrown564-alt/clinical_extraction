@@ -2,7 +2,7 @@
 
 Date: 2026-08-06  
 Status: development leave-one-family-out necessity check  
-Paper-library role: Gan counterfactual record; start with [failures and limits](../paper/failures_and_limits_2026-08-10.md)
+Paper-library role: Gan counterfactual record; start with [failures and limits](../shared/failures_and_limits_2026-08-10.md)
 
 Protocol: recovered from git history; this report is the answer.  
 Parent: [unknown_sentinel clinical harm](unknown_sentinel_clinical_harm_2026-08-06.md)  

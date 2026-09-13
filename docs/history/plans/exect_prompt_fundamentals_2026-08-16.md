@@ -373,9 +373,9 @@ unread; do not add an eighth cue.
 ## Sources
 
 - v9 extract: [annotation_guidelines_v9_extracted.md](../../research/exectv2/annotation_guidelines_v9_extracted.md)
-- Guideline vs prompt / zoo drafts (v10–v27): pruned; recover from Git history. Living owners: [Decision 0054](../../decisions/0054-model-request-order-and-metadata-are-explicit.md), [prompt variant slots](../../research/exectv2/prompt_variant_slots_2026-08-16.md).
+- Guideline vs prompt / zoo drafts (v10–v27): pruned; recover from Git history. Living owners: [Decision 0054](../decisions/0054-model-request-order-and-metadata-are-explicit.md), [prompt variant slots](../../research/exectv2/prompt_variant_slots_2026-08-16.md).
 - Fork A: [campaign](exect_llm_representation_and_hybrid_revaluation_2026-08-16.md),
-  [Decision 0055](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md),
+  [Decision 0055](../decisions/0055-exect-semantic-inventory-and-method-contracts.md),
   [instruction job](../../research/exectv2/prompt_variant_slots_2026-08-16.md),
   [trust-item](../../research/exectv2/prompt_variant_slots_2026-08-16.md),
   (mention-unit v1 pruned; recover from Git history),

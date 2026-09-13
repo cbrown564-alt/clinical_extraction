@@ -7,7 +7,7 @@ Paper-library role: aggregate-only technical record; start with the [performance
 Protocol: [holdout category aggregates protocol](six_model_holdout_category_aggregates_protocol_2026-08-06.md)  
 Unlock protocol: [blocked-arm unlock](six_model_holdout_category_aggregates_unlock_protocol_2026-08-06.md)  
 Parent: [category-cut performance](six_model_category_cut_performance_2026-08-06.md)  
-Artifact: [`experiments/six_model_holdout_category_aggregates_20260806.json`](../../experiments/six_model_holdout_category_aggregates_20260806.json)
+Artifact: [`experiments/six_model_holdout_category_aggregates_20260806.json`](../../../experiments/six_model_holdout_category_aggregates_20260806.json)
 
 ## Plain answer
 

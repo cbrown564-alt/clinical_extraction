@@ -1,11 +1,11 @@
 # Gan 2026 Rules-Only Phase G1–G5 Remeasure & Fairness Plateau Closure
 
-**Date**: 2026-08-15  
+**Date**: 2026-08-15\
 **Datasets & Splits**:
 - Gan 2026 `validation` (750 development records, `dev750`)
-- Gan 2026 `test` (450 locked holdout records, `test450` — evaluated aggregate-only)  
-**Method**: `deterministic_canonical_pipeline` (Rules-Only)  
-**Governance**: [Decision 0046](../../decisions/0046-exect-primary-method-comparison-boundary.md); peer [E5 remasure](../exectv2/rules_only_campaign_e5_remeasure_2026-08-15.md)  
+- Gan 2026 `test` (450 locked holdout records, `test450` — evaluated aggregate-only)\
+**Method**: `deterministic_canonical_pipeline` (Rules-Only)\
+**Governance**: [Decision 0046](../../history/decisions/0046-exect-primary-method-comparison-boundary.md); peer [E5 remasure](../exectv2/rules_only_campaign_e5_remeasure_2026-08-15.md)\
 **Machine-Readable Artifact**: [`experiments/gan2026_rules_only_residual_catalog_dev750_20260815.json`](file:///Users/cobro/code/clinical-extraction/experiments/gan2026_rules_only_residual_catalog_dev750_20260815.json)
 
 ---

@@ -4,7 +4,7 @@ Date: 2026-08-13
 Status: complete
 Protocol: [predeclared protocol](gemini37flash_llm_only_dev750_test450_protocol_2026-08-13.md)
 Artifact: [`experiments/gan2026_six_model_llm_only_gemini37flash_20260813/summary.json`](../../experiments/gan2026_six_model_llm_only_gemini37flash_20260813/summary.json)
-Decision: [0051](../../decisions/0051-gemini-37-flash-succeeds-gpt41mini-six-model-slot.md)
+Decision: [0051](../../history/decisions/0051-gemini-37-flash-succeeds-gpt41mini-six-model-slot.md)
 
 ## Finding
 

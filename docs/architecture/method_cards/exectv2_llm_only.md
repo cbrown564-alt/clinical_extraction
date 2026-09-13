@@ -1,7 +1,7 @@
 <!-- GENERATED FILE. Do not edit by hand.
      Source: src/clinical_extraction/architecture/ (stage manifests +
      executed teaching cases). Regenerate with
-     python scripts/build_architecture_docs.py -->
+     python scripts/checks/build_architecture_docs.py -->
 
 # ExECTv2 - LLM only
 
@@ -26,7 +26,7 @@ ExECT LLM only (`exect_llm_only`) uses its own request, separate from ExECT LLM 
 | Who first proposes the clinical answer? | the named model (stage exect.llm.model_call); deterministic stages only parse, represent, and gate its findings |
 | Which later stages may change clinical meaning? | none - the first proposer is the only one |
 | What final representation is scored? | The raw_candidate four-family PredictedLetter from the ExECT LLM only request, scored per entity and overall (raw F1). |
-| What evidence shows whether each component helped or harmed? | `docs/paper/methods.md`, `docs/paper/claims.md` |
+| What evidence shows whether each component helped or harmed? | `publications/dissertation/notes/methods.md`, `publications/dissertation/notes/claims.md` |
 
 ## Stages
 

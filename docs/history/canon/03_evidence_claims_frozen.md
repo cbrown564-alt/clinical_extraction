@@ -12,7 +12,7 @@ Last updated: 2026-07-20
 Use this order:
 
 1. a present file whose hash has been recomputed;
-2. the [retained evidence index](../../experiments/retained_evidence_manifest.md);
+2. the [retained evidence index](../../research/shared/retained_evidence_manifest.md);
 3. current paper claim and scoring summaries;
 4. current source and tests;
 5. the retained run registry.

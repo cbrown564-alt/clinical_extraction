@@ -6,7 +6,7 @@ Protocol: [three-stage reconstruction protocol](exect_rules_only_three_stage_rec
 Holdout: [test60 aggregate replay](exect_rules_only_three_stage_test60_aggregate_2026-08-27.md)
 Brief: [reconstruction brief](exect_rules_only_three_stage_reconstruction_brief_2026-08-27.md)
 Artifact: [`experiments/exect_rules_only_three_stage_reconstruction_20260827/summary.json`](../../../experiments/exect_rules_only_three_stage_reconstruction_20260827/summary.json)
-Runner: `scripts/measure_exect_rules_only_three_stage_dev140.py`
+Runner: `scripts/benchmarks/measure_exect_rules_only_three_stage_dev140.py`
 
 ## Answer
 

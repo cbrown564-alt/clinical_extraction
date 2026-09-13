@@ -4,9 +4,9 @@ Date: 2026-08-13
 Status: complete; aggregate-only
 Authorization: the user requested Gemini `test450` and `test60` live cells
 and promotion into the living six-model hybrid fills.
-Decision: [0051](../../decisions/0051-gemini-37-flash-succeeds-gpt41mini-six-model-slot.md)
+Decision: [0051](../../history/decisions/0051-gemini-37-flash-succeeds-gpt41mini-six-model-slot.md)
 Amends: six-model slots in
-[decision 0050](../../decisions/0050-current-stack-hybrid-primary-fills.md)
+[decision 0050](../../history/decisions/0050-current-stack-hybrid-primary-fills.md)
 Does not change: Decision 0046 Sol method identity; rules-only or LLM-only fills
 
 ## Question

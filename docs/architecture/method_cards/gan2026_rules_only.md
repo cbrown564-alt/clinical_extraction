@@ -1,7 +1,7 @@
 <!-- GENERATED FILE. Do not edit by hand.
      Source: src/clinical_extraction/architecture/ (stage manifests +
      executed teaching cases). Regenerate with
-     python scripts/build_architecture_docs.py -->
+     python scripts/checks/build_architecture_docs.py -->
 
 # Gan 2026 - Rules only
 
@@ -26,7 +26,7 @@ No model is involved. Pattern rules read the letter and emit candidate seizure-f
 | Who first proposes the clinical answer? | deterministic rules (stage gan.rules.select_and_render) |
 | Which later stages may change clinical meaning? | `gan.rules.select_and_render` |
 | What final representation is scored? | One Gan label string per letter, projected to a Purist and a Pragmatic category. |
-| What evidence shows whether each component helped or harmed? | `docs/paper/methods.md`, `docs/paper/claims.md` |
+| What evidence shows whether each component helped or harmed? | `publications/dissertation/notes/methods.md`, `publications/dissertation/notes/claims.md` |
 
 ## Stages
 

@@ -3,13 +3,13 @@
 Paper-library status: historical paper-packaging record. Paper provenance C18 and C19 now own
 the durable claim boundaries.
 
-Date: 2026-08-06  
-Status: packaging complete; primary score fills preserved  
-Protocol: [claim-boundary packaging protocol](paper_claim_boundary_hybrid_mechanism_c16_0046_protocol_2026-08-06.md)  
-Canon owner: [paper provenance](../../canon/10_paper_provenance.md)  
-Decision owner: [Decision 0046](../../decisions/0046-exect-primary-method-comparison-boundary.md)  
-Parent: [cross-task hybrid mechanism synthesis](cross_task_hybrid_mechanism_synthesis_2026-08-06.md)  
-Artifact: [`experiments/paper_claim_boundary_hybrid_mechanism_c16_0046_20260806.json`](../../experiments/paper_claim_boundary_hybrid_mechanism_c16_0046_20260806.json)
+Date: 2026-08-06\
+Status: packaging complete; primary score fills preserved\
+Protocol: [claim-boundary packaging protocol](paper_claim_boundary_hybrid_mechanism_c16_0046_protocol_2026-08-06.md)\
+Canon owner: [paper provenance](../../history/canon/10_paper_provenance.md)\
+Decision owner: [Decision 0046](../../history/decisions/0046-exect-primary-method-comparison-boundary.md)\
+Parent: [cross-task hybrid mechanism synthesis](cross_task_hybrid_mechanism_synthesis_2026-08-06.md)\
+Artifact: [`experiments/paper_claim_boundary_hybrid_mechanism_c16_0046_20260806.json`](../../../experiments/paper_claim_boundary_hybrid_mechanism_c16_0046_20260806.json)
 
 ## Plain answer
 

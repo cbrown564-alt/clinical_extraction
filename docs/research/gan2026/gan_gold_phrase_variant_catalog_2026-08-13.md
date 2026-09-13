@@ -4,7 +4,7 @@ Date: 2026-08-13
 Status: generated development catalog; first draft  
 Parent: [phrase-variant argument](gan_gold_phrase_variants_2026-08-13.md)  
 Artifact: [`experiments/gan2026_gold_phrase_variant_inventory_20260813.json`](../../../experiments/gan2026_gold_phrase_variant_inventory_20260813.json)  
-Regenerator: `python scripts/build_gan2026_gold_phrase_variant_inventory.py`
+Regenerator: `python scripts/benchmarks/build_gan2026_gold_phrase_variant_inventory.py`
 
 Every distinct official `gold_reference` for every gold label on Gan
 `train` + `validation` (1,050 rows). Locked `test` rows were not loaded.

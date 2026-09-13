@@ -9,12 +9,12 @@ Last updated: 2026-08-28
 
 Living paper scores are the Gemini 3.7 Flash five-cell grids
 ([Gan](../../research/gan2026/gan_five_cell_grid_2026-08-22.md),
-[claims](../../paper/claims.md)). Sol, current-stack hybrid fills, and
+[claims](../../../publications/dissertation/notes/claims.md)). Sol, current-stack hybrid fills, and
 decision 0050 numbers in this file are historical. Do not cite them
 as selected results.
 
 This file states how strongly the paper may make each claim. The
-[retained evidence index](../../experiments/retained_evidence_manifest.md) records
+[retained evidence index](../../research/shared/retained_evidence_manifest.md) records
 the exact files and hashes. The [manuscript](../../research/shared/manuscript_2026-06-26.md)
 must not make a stronger claim than either source supports.
 

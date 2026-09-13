@@ -4,7 +4,7 @@ Date: 2026-08-06
 Status: gold-label framework (no model performance cuts)  
 Parent: [task-shape framework](../shared/task_shape_framework_2026-08-06.md)  
 Artifact: [`experiments/exectv2_gold_task_taxonomy_20260806.json`](../../experiments/exectv2_gold_task_taxonomy_20260806.json)  
-Regenerator: `python scripts/build_gold_task_taxonomy_inventories.py`
+Regenerator: `python scripts/benchmarks/build_gold_task_taxonomy_inventories.py`
 
 ## Broad shape of the ExECT task
 
@@ -15,9 +15,9 @@ ExECT asks a different question of the same kind of letter:
 Gold is a **set of mentions** with attributes. The paper and six-model
 comparison surface is **four-family clinical fact F1** (Diagnosis, Seizure
 Frequency, Prescription, Investigations), not nine-entity published phrase/CUI
-metrics ([Decision 0046](../../decisions/0046-exect-primary-method-comparison-boundary.md)).
+metrics ([Decision 0046](../../history/decisions/0046-exect-primary-method-comparison-boundary.md)).
 Unlike Gan, there is no exhaustive single label and **no valid unknown-only
-denominator** ([Decision 0044](../../decisions/0044-shared-reliability-criteria-use-task-specific-measures.md)).
+denominator** ([Decision 0044](../../history/decisions/0044-shared-reliability-criteria-use-task-specific-measures.md)).
 
 ```mermaid
 flowchart TB
@@ -177,7 +177,7 @@ Whole-letter composition buckets remain in the category-cut artifact as a
 secondary workload lens. Primary ExECT conclusions come from the family-
 internal Diagnosis, SF, Prescription, and Investigation subtypes above.
 
-The later [phrase-variant inventory](../paper/exect_gold_phrase_variants_2026-08-13.md)
+The later [phrase-variant inventory](exect_gold_phrase_variants_2026-08-13.md)
 lists official source spans behind development four-family gold keys. It does
 not change these buckets.
 

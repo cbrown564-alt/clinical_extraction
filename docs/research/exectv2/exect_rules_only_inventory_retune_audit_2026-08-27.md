@@ -26,7 +26,7 @@ read.
 Cited ExECT scoring is 4-family micro F1
 (`clinical_inventory_unit_keys`). Diagnosis is unique concepts with
 **no most-specific collapse**. De-duplication belongs to Select
-([score definitions](../paper/score_definitions_2026-08-17.md)).
+([score definitions](../shared/score_definitions_2026-08-17.md)).
 `clinical_headline_unit_keys` remains the Compact ablation: Diagnosis
 405 raw mentions → 289 collapsed units on `dev140`; inventory Diagnosis
 is **329**.

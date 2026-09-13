@@ -2,7 +2,7 @@
 
 Date: 2026-07-31  
 Status: Phase 2 candidate U **stopped (negative)** — insufficient UNK-slice gain; full-750 scale-up aborted  
-Protocol: [gan2026_deepseek_unknown_competence_protocol_2026-07-31.md](../../experiments/gan2026/gan2026_deepseek_unknown_competence_protocol_2026-07-31.md)
+Protocol: [gan2026_deepseek_unknown_competence_protocol_2026-07-31.md](gan2026_deepseek_unknown_competence_protocol_2026-07-31.md)
 
 ## Decision
 
@@ -53,7 +53,7 @@ Delta: **+2** final Purist; LLM-only UNK accuracy **worse**; false SF better;
 over-read mixed. Collaboration gates not approached for LLM-only.
 
 Artifact:
-[experiments/gan2026_deepseek_unknown_heavy_slice_u_vs_a_20260731.json](../../experiments/gan2026_deepseek_unknown_heavy_slice_u_vs_a_20260731.json).
+[experiments/gan2026_deepseek_unknown_heavy_slice_u_vs_a_20260731.json](../../../experiments/gan2026_deepseek_unknown_heavy_slice_u_vs_a_20260731.json).
 U rows retained under
 `scratch/validation/gan2026_deepseek_unknown_prompt_dev750_20260731/U_deepseek_unknown/`
 (**170 only**; incomplete scale-up checkpoints removed).

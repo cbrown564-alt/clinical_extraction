@@ -3,7 +3,7 @@
 Date: 2026-08-13
 Status: complete for the two permitted development cells
 Protocol: [successor protocol](six_model_gemini37flash_successor_protocol_2026-08-13.md)
-Decision: [0051](../../decisions/0051-gemini-37-flash-succeeds-gpt41mini-six-model-slot.md)
+Decision: [0051](../../history/decisions/0051-gemini-37-flash-succeeds-gpt41mini-six-model-slot.md)
 
 Thinking is `reasoning_effort=low`. These are development candidate cells, not
 Decision 0050 primary fills and not holdout.
@@ -44,7 +44,7 @@ no-call replay of an older raw.
 
 Live locked-split cells, no row inspection
 ([holdout protocol](six_model_gemini37flash_holdout_protocol_2026-08-13.md),
-[decision 0052](../../decisions/0052-gemini-37-flash-holdout-six-model-slot.md)):
+[decision 0052](../../history/decisions/0052-gemini-37-flash-holdout-six-model-slot.md)):
 
 | Cell | Gemini 3.7 Flash |
 | --- | ---: |

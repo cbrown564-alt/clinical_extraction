@@ -4,7 +4,7 @@ Date: 2026-09-03
 Protocol: [protocol](gan_candidate_set_recall_test450_protocol_2026-09-03.md)
 Artifact: [aggregates](gan_extract_content_recall_2026-09-03.json)
 Module: `clinical_extraction.paper.gan_extract_content_recall`
-Replay: `python scripts/measure_gan_extract_content_recall.py`
+Replay: `python scripts/benchmarks/measure_gan_extract_content_recall.py`
 Tests: `tests/test_gan_extract_content_recall.py`
 Model calls: 0. Holdout is aggregate-only.
 
@@ -40,7 +40,7 @@ failures 0.
 
 ```bash
 source .venv/bin/activate
-python scripts/measure_gan_extract_content_recall.py
+python scripts/benchmarks/measure_gan_extract_content_recall.py
 python -m pytest tests/test_gan_extract_content_recall.py -q
 ```
 

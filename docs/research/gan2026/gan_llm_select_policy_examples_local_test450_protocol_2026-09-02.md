@@ -5,8 +5,8 @@ Status: complete
 Report: [result](gan_llm_select_policy_examples_local_test450_2026-09-03.md)
 Owner: this file
 Guardrail: `gan2026-scoring-guardrail`;
-[holdout is aggregate-only](../../paper/decisions/holdout-is-aggregate-only.md);
-[later-stage select](../../paper/decisions/gan-later-stage-encode-select-prompts.md)
+[holdout is aggregate-only](../../benchmarks/holdout-is-aggregate-only.md);
+[later-stage select](../../../publications/dissertation/notes/decisions/gan-later-stage-encode-select-prompts.md)
 
 ## Primary question
 

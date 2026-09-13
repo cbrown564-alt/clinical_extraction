@@ -1,12 +1,12 @@
 # Gan gold phrase variants: why the rules do not belong in the prompt
 
-Date: 2026-08-13  
-Status: paper source; development gold only; writing-test passed 2026-08-14  
-Parent: [why the proposed method is a model plus recorded rules](why_hybrid_architecture_2026-08-09.md)  
-Companion catalog: [every development gold label and its official source phrases](gan_gold_phrase_variant_catalog_2026-08-13.md)  
-Workbook: [row spreadsheet](../artifacts/gan_gold_phrase_variants_2026-08-13.xlsx)  
-Artifact: [`experiments/gan2026_gold_phrase_variant_inventory_20260813.json`](../../../experiments/gan2026_gold_phrase_variant_inventory_20260813.json)  
-Regenerator: `python scripts/build_gan2026_gold_phrase_variant_inventory.py`
+Date: 2026-08-13\
+Status: paper source; development gold only; writing-test passed 2026-08-14\
+Parent: [why the proposed method is a model plus recorded rules](../shared/why_hybrid_architecture_2026-08-09.md)\
+Companion catalog: [every development gold label and its official source phrases](gan_gold_phrase_variant_catalog_2026-08-13.md)\
+Workbook: [row spreadsheet](../artifacts/gan_gold_phrase_variants_2026-08-13.xlsx)\
+Artifact: [`experiments/gan2026_gold_phrase_variant_inventory_20260813.json`](../../../experiments/gan2026_gold_phrase_variant_inventory_20260813.json)\
+Regenerator: `python scripts/benchmarks/build_gan2026_gold_phrase_variant_inventory.py`
 
 ## The short answer
 
@@ -35,7 +35,7 @@ language and selects evidence. Deterministic stages own the output dialect,
 the selection policies, and the record of what changed.
 
 This draft is Gan only. The ExECT sibling is
-[exect_gold_phrase_variants_2026-08-13.md](exect_gold_phrase_variants_2026-08-13.md).
+[exect_gold_phrase_variants_2026-08-13.md](../exectv2/exect_gold_phrase_variants_2026-08-13.md).
 It is not a performance claim.
 
 ## What “exhaustive” means here
@@ -154,7 +154,7 @@ put in the model call.
 The constructions below are mutually exclusive. They are assigned from the
 **recovered letter span** when one exists, otherwise from the official
 reference, in a fixed order, by
-`scripts/build_gan2026_gold_phrase_variant_inventory.py`. This is a review
+`scripts/benchmarks/build_gan2026_gold_phrase_variant_inventory.py`. This is a review
 taxonomy, not a change to gold or to the scorer. **63 rows (6.0%)** remain
 `other_paraphrase`.
 
@@ -293,7 +293,7 @@ the winner rule, and the record of the change stay deterministic.
   justifying rate).
 - **ExECT now has a sibling draft.** Diagnosis aliases, prescription
   renderings, and seizure-frequency state phrases on `dev140` live in
-  [exect_gold_phrase_variants_2026-08-13.md](exect_gold_phrase_variants_2026-08-13.md).
+  [exect_gold_phrase_variants_2026-08-13.md](../exectv2/exect_gold_phrase_variants_2026-08-13.md).
 - **No prompt-length experiment.** The token, latency, and interference
   costs are argued from the size of the dialect. They are not measured
   here as a prompt-ablation result.
@@ -305,10 +305,10 @@ and [Gan gold taxonomy](../gan2026/gold_task_taxonomy_2026-08-06.md) own the
 task definition. This draft adds a gold-only phrase inventory on
 development rows.
 
-Project lane: [why the proposed method is a model plus recorded rules](why_hybrid_architecture_2026-08-09.md)
+Project lane: [why the proposed method is a model plus recorded rules](../shared/why_hybrid_architecture_2026-08-09.md)
 owns the architectural claim. Pipeline behaviour stays with
-[system architecture](../../canon/01_system_architecture.md) and
-[paper provenance](../../canon/10_paper_provenance.md).
+[system architecture](../../history/canon/01_system_architecture.md) and
+[paper provenance](../../history/canon/10_paper_provenance.md).
 
 This draft does not establish that a long prompt would fail, that the
 current hybrid is optimal, or that every construction is a clinical

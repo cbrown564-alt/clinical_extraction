@@ -4,7 +4,7 @@ Date: 2026-08-16
 Status: complete; **answer**  
 Prior: [mention-unit v2 `dev140`](mention_unit_v2_fork_a_luna_dev140_2026-08-16.md)  
 Review: [prompt fundamentals](../../history/plans/exect_prompt_fundamentals_2026-08-16.md)\
-Decision: [0055](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md)
+Decision: [0055](../../history/decisions/0055-exect-semantic-inventory-and-method-contracts.md)
 
 Fork A stays. Decision 0050 and `test60` are unchanged. This study
 does not retune the prompt or the landed encoder. No new model calls.

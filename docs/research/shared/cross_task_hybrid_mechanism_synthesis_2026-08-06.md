@@ -6,7 +6,7 @@ Paper-library role: cross-task technical record; start with the [component deck]
 
 Protocol: [cross-task hybrid mechanism synthesis protocol](cross_task_hybrid_mechanism_synthesis_protocol_2026-08-06.md)  
 Parents: [task-shape](task_shape_framework_2026-08-06.md), [category-cut](six_model_category_cut_performance_2026-08-06.md), [Gan catalog](../gan2026/category_error_catalog_2026-08-06.md), [Gan stage ablation](../gan2026/hybrid_stage_ablation_2026-08-06.md), [ExECT catalog](../exectv2/family_error_catalog_2026-08-06.md), [ExECT stage ablation](../exectv2/hybrid_stage_ablation_2026-08-06.md)  
-Artifact: [`experiments/cross_task_hybrid_mechanism_synthesis_20260806.json`](../../experiments/cross_task_hybrid_mechanism_synthesis_20260806.json)
+Artifact: [`experiments/cross_task_hybrid_mechanism_synthesis_20260806.json`](../../../experiments/cross_task_hybrid_mechanism_synthesis_20260806.json)
 
 > **Update 2026-08-10:** The Prescription statements below describe the v09
 > development lens and are now historical context. A per-rule decomposition
@@ -234,7 +234,7 @@ attribution and named residual harms.
 | Gan stage ledger | [Gan hybrid stage ablation](../gan2026/hybrid_stage_ablation_2026-08-06.md) |
 | ExECT stage ledger | [ExECT hybrid stage ablation](../exectv2/hybrid_stage_ablation_2026-08-06.md) |
 | Full error-mode catalogs | [Gan](../gan2026/category_error_catalog_2026-08-06.md), [ExECT](../exectv2/family_error_catalog_2026-08-06.md) |
-| Regenerate this page | `python scripts/build_cross_task_hybrid_mechanism_synthesis.py` |
+| Regenerate this page | `python scripts/benchmarks/build_cross_task_hybrid_mechanism_synthesis.py` |
 
 ## Method
 

@@ -7,7 +7,7 @@ Paper-library role: Gan component-attribution record; start with the [component 
 Protocol: [hybrid stage ablation protocol](hybrid_stage_ablation_protocol_2026-08-06.md)  
 Parent: [category error catalog](category_error_catalog_2026-08-06.md)  
 Companions: [task-shape framework](../shared/task_shape_framework_2026-08-06.md), [architecture stage diagram](../../architecture/diagrams/gan2026_llm_with_rules_stages.md)  
-Artifact: [`experiments/gan2026_hybrid_stage_ablation_20260806.json`](../../experiments/gan2026_hybrid_stage_ablation_20260806.json)
+Artifact: [`experiments/gan2026_hybrid_stage_ablation_20260806.json`](../../../experiments/gan2026_hybrid_stage_ablation_20260806.json)
 
 ## Plain answer
 

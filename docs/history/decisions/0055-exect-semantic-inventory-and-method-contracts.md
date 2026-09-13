@@ -144,7 +144,7 @@ This amendment does not promote a candidate or change Decision 0050.
 The research-lane implementation of Fork A is
 `exectv2_semantic_inventory_v4`. The live `dev20` run is a
 **negative_result**:
-[v4 result](../../research/exectv2/../../decisions/0055-exect-semantic-inventory-and-method-contracts.md).
+[v4 result](0055-exect-semantic-inventory-and-method-contracts.md).
 v3 remains the prior revise result.
 
 ## Amendment: mention-unit instruction job (2026-08-16)

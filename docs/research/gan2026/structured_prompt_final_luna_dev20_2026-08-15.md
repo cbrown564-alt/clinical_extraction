@@ -3,7 +3,7 @@
 Date: 2026-08-15
 Status: complete
 Protocol: [final Luna `dev20` protocol](structured_prompt_final_protocol_2026-08-15.md)
-Decision: [0053](../../decisions/0053-gan-structured-events-final-prompt.md)
+Decision: [0053](../../history/decisions/0053-gan-structured-events-final-prompt.md)
 Model: `openai/gpt-5.6-luna`
 Sample: frozen 20 rows from Gan `dev750`; `test450` not touched
 

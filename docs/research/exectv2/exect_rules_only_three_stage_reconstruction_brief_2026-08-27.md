@@ -6,9 +6,9 @@ Owner: this file
 For: the next session that rebuilds standalone rules, not a prompt tweak
 Related: [inventory retune audit](exect_rules_only_inventory_retune_audit_2026-08-27.md),
 [27 Aug patch](exect_rules_only_inventory_retune_2026-08-27.md),
-[score definitions](../paper/score_definitions_2026-08-17.md),
-[recognise then Select](../paper/exect_extract_vs_extract_and_select_2026-08-25.md),
-[rule catalogue](../../paper/rule_catalogue.md)
+[score definitions](../shared/score_definitions_2026-08-17.md),
+[recognise then Select](exect_extract_vs_extract_and_select_2026-08-25.md),
+[rule catalogue](../../../publications/dissertation/notes/rule_catalogue.md)
 
 ## Why this exists
 
@@ -45,7 +45,7 @@ The locked taxonomy (2026-08-21) is:
 | **Select** | Gate, drop, rewrite, reselect, or invent. This is where precision, parent/child inventory, and competing readings live. |
 
 De-duplication belongs to Select, not to the scorer
-([score definitions](../paper/score_definitions_2026-08-17.md)).
+([score definitions](../shared/score_definitions_2026-08-17.md)).
 
 Cell 3 used that split. Gemini `test60`: recognise **0.8491** (P 0.836 /
 R 0.863) → Select **0.8674** (P 0.873 / R 0.863). Recall held;

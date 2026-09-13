@@ -44,7 +44,7 @@ preserves historical behaviour; that alone does not prove a repair-free conditio
 
 Counts and historical row policies are documented in the
 [dataset description](../shared/dataset_description_2026-08-26.md).
-The [holdout policy](../../paper/decisions/holdout-is-aggregate-only.md) applies
+The [holdout policy](../../benchmarks/holdout-is-aggregate-only.md) applies
 throughout. Repeated historical evaluation must be disclosed; an old holdout must
 not be described as newly untouched. No locked rows or errors are needed for planning.
 

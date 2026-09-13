@@ -6,7 +6,7 @@ Protocol:
 [candidate-volume protocol](gan_cell3_candidate_volume_dev750_protocol_2026-08-29.md)
 Artifact:
 [`gan_cell3_candidate_volume_dev750_2026-08-29.json`](gan_cell3_candidate_volume_dev750_2026-08-29.json)
-Owners: [six-model roster](../../paper/decisions/six-model-roster.md),
+Owners: [six-model roster](../../../publications/dissertation/notes/decisions/six-model-roster.md),
 [codebook rung replay](gan_cell3_codebook_roster_replay_2026-08-28.md)
 
 This is a no-call replay of the living six-model cell 3 stack on Gan
@@ -188,7 +188,7 @@ The volume difference between find and selected evidence is a property
 of the find call. Encode and living rule select do not add or drop
 selected-event ids on this split. Later select-stop Purist movement is
 label rewrite on that already-narrowed set, as in
-[Gemini cell 3 encode→select](../paper/gan_gemini_cell3_encode_to_select_dev750_2026-08-29.md).
+[Gemini cell 3 encode→select](gan_gemini_cell3_encode_to_select_dev750_2026-08-29.md).
 
 ## Claim boundary
 

@@ -85,7 +85,7 @@ Gan et al. 2026 Table 3 class support, UNK:
 Our `test450` Purist UNK **class support** in the
 [class report](gan_test450_classification_report_2026-08-28.md) is 102/450 (22.7%).
 That is the scored UNK bin, not gold-kind `unknown` alone.
-[Dataset gold support](../paper/dataset_gold_support_2026-08-22.md) records
+[Dataset gold support](../shared/dataset_gold_support_2026-08-22.md) records
 gold-kind `unknown` 60/450 (13.3%) and Purist unknown (gold-kind unknown +
 `no_reference`) 76/450. Different cuts. Do not treat 23% as gold-kind unknown.
 

@@ -105,4 +105,4 @@ diagnosis.
   replayable cell paths.
 
 Claim strength remains governed by
-[paper claims](../../paper/claims.md).
+[paper claims](../../../publications/dissertation/notes/claims.md).

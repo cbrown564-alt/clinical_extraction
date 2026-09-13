@@ -62,7 +62,7 @@ Cited cell-1 select is now 325/450 Purist / 345/450 Pragmatic from the
 Phase D rung replay; no new per-class holdout report. n=450; dropped=0._
 Gold ε is living `gold_monthly_frequency` (Purist UNK support 76/450),
 the same bins as cells 3 and 5. See
-[dataset gold support](../paper/dataset_gold_support_2026-08-22.md).
+[dataset gold support](../shared/dataset_gold_support_2026-08-22.md).
 
 #### Purist
 

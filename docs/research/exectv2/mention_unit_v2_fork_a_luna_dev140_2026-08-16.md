@@ -5,7 +5,7 @@ Status: complete; **revise**
 Protocol: [mention_unit_v2_fork_a_luna_dev140_protocol_2026-08-16.md](mention_unit_v2_fork_a_luna_dev140_protocol_2026-08-16.md)  
 Prior: [mention-unit v2 `dev20`](mention_unit_v2_fork_a_luna_dev20_2026-08-16.md)  
 Review: [prompt fundamentals](../../history/plans/exect_prompt_fundamentals_2026-08-16.md)\
-Decision: [0055](../../decisions/0055-exect-semantic-inventory-and-method-contracts.md)
+Decision: [0055](../../history/decisions/0055-exect-semantic-inventory-and-method-contracts.md)
 
 ## Executive result
 

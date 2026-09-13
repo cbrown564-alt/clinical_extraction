@@ -5,9 +5,9 @@ Status: complete
 Owner: this file
 Report: [aggregates](gan_encode_then_select_living_prompt_test450_2026-09-02.md)
 Guardrail: `gan2026-scoring-guardrail`;
-[holdout is aggregate-only](../../paper/decisions/holdout-is-aggregate-only.md)
-Related: [later-stage encode/select](../../paper/decisions/gan-later-stage-encode-select-prompts.md),
-[source-near vs bundled encode](../paper/gan_source_near_vs_bundled_encode_2026-08-23.md),
+[holdout is aggregate-only](../../benchmarks/holdout-is-aggregate-only.md)
+Related: [later-stage encode/select](../../../publications/dissertation/notes/decisions/gan-later-stage-encode-select-prompts.md),
+[source-near vs bundled encode](gan_source_near_vs_bundled_encode_2026-08-23.md),
 [policy-example select](gan_llm_select_policy_examples_test450_protocol_2026-08-31.md)
 
 ## Primary question

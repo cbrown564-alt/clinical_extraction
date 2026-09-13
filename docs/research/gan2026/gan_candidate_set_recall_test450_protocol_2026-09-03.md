@@ -5,14 +5,14 @@ Status: complete (superseded metric owner below)
 Owner: this file
 Report: [extract content recall](gan_extract_content_recall_2026-09-03.md)
 Artifact: [aggregates](gan_extract_content_recall_2026-09-03.json)
-Replay: `python scripts/measure_gan_extract_content_recall.py`
+Replay: `python scripts/benchmarks/measure_gan_extract_content_recall.py`
 Related development measurement: prior session on `dev750` (same
 definition; not an owner file).
 Paper context:
-[paper story simplification archive](../paper/paper_story_simplification_2026-09-02.md);
-[paper-story simplification](../../paper/decisions/paper-story-simplification.md)
+[paper story simplification archive](../shared/paper_story_simplification_2026-09-02.md);
+[paper-story simplification](../../../publications/dissertation/notes/decisions/paper-story-simplification.md)
 Guardrail: `gan2026-scoring-guardrail`;
-[holdout is aggregate-only](../../paper/decisions/holdout-is-aggregate-only.md)
+[holdout is aggregate-only](../../benchmarks/holdout-is-aggregate-only.md)
 
 ## Primary question
 

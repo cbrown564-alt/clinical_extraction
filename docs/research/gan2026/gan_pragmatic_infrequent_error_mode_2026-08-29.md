@@ -231,7 +231,7 @@ in-cluster count (`unknown, 3 per cluster`, `unknown, 4 per cluster`,
   frequent.
 
 This is the Gan cluster floor named in
-[failures and limits](../paper/failures_and_limits_2026-08-10.md).
+[failures and limits](../shared/failures_and_limits_2026-08-10.md).
 
 #### Electrographic hourly EEG (4)
 

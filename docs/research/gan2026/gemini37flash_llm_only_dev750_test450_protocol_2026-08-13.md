@@ -6,15 +6,15 @@ Report: [2026-08-13 report](gemini37flash_llm_only_dev750_test450_2026-08-13.md)
 Authorization: [PROJECT_STATUS](../../../PROJECT_STATUS.md) next item 1; user
 requested `gan2026_llm_only_canonical_pipeline_v0.8` on inspectable `dev750`
 and aggregate-only `test450` with Gemini 3.7 Flash.
-Decision: [0051](../../decisions/0051-gemini-37-flash-succeeds-gpt41mini-six-model-slot.md)
-Does not change: [decision 0050](../../decisions/0050-current-stack-hybrid-primary-fills.md)
-hybrid fills, [decision 0052](../../decisions/0052-gemini-37-flash-holdout-six-model-slot.md)
+Decision: [0051](../../history/decisions/0051-gemini-37-flash-succeeds-gpt41mini-six-model-slot.md)
+Does not change: [decision 0050](../../history/decisions/0050-current-stack-hybrid-primary-fills.md)
+hybrid fills, [decision 0052](../../history/decisions/0052-gemini-37-flash-holdout-six-model-slot.md)
 hybrid holdout slot, Decision 0046 Sol method identity, or GPT-4.1-mini scores.
 
 Parents:
 [successor protocol](../shared/six_model_gemini37flash_successor_protocol_2026-08-13.md),
-[July 18 LLM-only arm](../../experiments/gan2026/gan2026_six_model_validation_comparison_protocol_2026-07-18.md),
-[August 1 LLM-only test450 panel](../../experiments/gan2026/gan2026_six_model_llm_only_test450_protocol_2026-08-01.md).
+[July 18 LLM-only arm](gan2026_six_model_validation_comparison_protocol_2026-07-18.md),
+[August 1 LLM-only test450 panel](gan2026_six_model_llm_only_test450_protocol_2026-08-01.md).
 
 ## Question
 

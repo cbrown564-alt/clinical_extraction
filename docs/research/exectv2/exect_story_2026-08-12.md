@@ -140,7 +140,7 @@ The trace keeps the quoted hedge and names the dictionary rewrite. The
 rewrite is a gold-format rule, not an unqualified clinical diagnosis. The
 case ledger also records the model reading as defensible.
 
-See the [case explorer](reviewable_case_pair_2026-08-09.md)
+See the [case explorer](../shared/reviewable_case_pair_2026-08-09.md)
 for the recorded object.
 
 ## What this evidence supports
@@ -164,11 +164,11 @@ improves F1.
 
 ## Evidence owners
 
-- [Decision 0046](../../decisions/0046-exect-primary-method-comparison-boundary.md)
+- [Decision 0046](../../history/decisions/0046-exect-primary-method-comparison-boundary.md)
 - [Inventory both-find protocol](../exectv2/exect_both_extract_on_inventory_protocol_2026-08-23.md)
 - [Decision 0058](../../decisions/0058-compact-ledger-is-the-paper-cited-exect-hybrid.md) (Compact/headline ablation; not cited score)
 - [Paper Compact cells](../../../paper_experiments/exectv2_compact_ledger/README.md) (historical ablation artifacts)
-- [Paper claim status C10, C17, C18, and C19](../../canon/10_paper_provenance.md)
+- [Paper claim status C10, C17, C18, and C19](../../history/canon/10_paper_provenance.md)
 - [Six-model comparison](../shared/six_model_comparison_report_2026-07-18.md)
 - [ExECT stage replay](../exectv2/hybrid_stage_ablation_2026-08-06.md)
 - [Rescue source provenance](../shared/hybrid_rescue_source_provenance_2026-08-13.md)
